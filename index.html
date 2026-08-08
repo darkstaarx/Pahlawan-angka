@@ -1,0 +1,42 @@
+<!doctype html><html lang="ms"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pahlawan Angka Coach V5</title>
+
+
+
+
+<link rel="stylesheet" href="css/game.css">
+</head><body><div class="app">
+<header><div class="brand">⚔️ Pahlawan Angka</div><div class="grow"></div><span class="chip badge">1→2→3 Coach MVP</span></header>
+<section id="setup" class="screen on"><div class="card"><h2>Pahlawan Angka Coach</h2><p class="mut">Pilih nama anak dan watak utama. Adaptive engine kekal sama — cuma gaya hero dan final blow akan ikut watak pilihan.</p><input id="child" value="Aiman"><div class="heroPickWrap"><div class="mut" style="margin-bottom:8px">Pilih watak</div><div class="heroGrid"><button class="heroPick active" id="pick-wira" onclick="chooseHero('wira')"><img id="pickImgWira" alt="Wira"><div class="heroMeta"><b>Wira</b><span>Kuasa ais</span></div></button><button class="heroPick" id="pick-bunga" onclick="chooseHero('bunga')"><img id="pickImgBunga" alt="Bunga"><div class="heroMeta"><b>Bunga</b><span>Kuasa bunga</span></div></button></div></div><button class="btn primary" style="margin-top:12px" onclick="startNew()">Mula</button><div id="resume" style="margin-top:9px"></div></div></section>
+<section id="game" class="screen">
+<div class="row" style="margin-bottom:9px"><span class="chip" id="coachMode">Calibrate</span><span class="chip" id="gradeLayer">D2 Core</span><div class="grow"></div><button class="btn ghost small" onclick="openParent()">Parent</button></div>
+<div class="battle" id="battleArena"><div class="arena-flash" id="arenaFlash"></div><div class="sky"><b id="skillTitle"></b><span id="why"></span><div class="bar"><span id="mastery"></span></div></div>
+<div class="unit hero" id="hero"><div class="nm" id="heroName">Wira</div><div class="hp"><span id="heroHp"></span></div><div class="impact-flash"></div><div class="impact-slash"></div><div class="impact-burst">💥</div><div class="sprite" id="heroVisual"><img id="heroIdle" class="hero-frame hero-frame-idle" src="assets/heroes/wira/idle.webp" alt="" draggable="false"><img id="heroAttack" class="hero-frame hero-frame-attack" src="assets/heroes/wira/attack.webp" alt="" draggable="false"></div></div>
+<div class="unit enemy" id="enemy"><div class="nm" id="enemyName">Rakasa 1</div><div class="hp"><span id="enemyHp"></span></div><div class="impact-flash"></div><div class="impact-slash"></div><div class="impact-burst">💥</div><img id="iceFx" class="finisher-ice" src="assets/fx/wira/finisher.webp" alt="" draggable="false"><img class="finisher-bloom" id="bloomFx" src="assets/fx/bunga/finisher.webp" alt="" draggable="false"><div class="sprite">👾</div></div><div class="ground"></div></div>
+<div class="qcard"><div class="qmeta"><span id="kind"></span><div class="grow"></div><span id="evidence"></span></div><div class="question" id="question"></div><div class="answers" id="answers"></div><div class="feedback" id="feedback"></div><div class="row"><button class="btn secondary small" onclick="hint()">💡 Hint</button><div class="grow"></div><span class="mut" id="streak">0 streak</span></div></div>
+</section>
+<section id="parent" class="screen"><div class="tabs"><button class="btn secondary small" onclick="tab('summary')">Ringkasan</button><button class="btn secondary small" onclick="tab('core')">D2 KSSR</button><button class="btn secondary small" onclick="tab('levels')">D1/D3</button><button class="btn secondary small" onclick="tab('engine')">Coach Log</button><button class="btn secondary small" onclick="exportCSV()">Export</button></div><div id="summaryTab"></div><div id="coreTab" class="hidden"></div><div id="levelsTab" class="hidden"></div><div id="engineTab" class="hidden"></div></section>
+<div class="bottom"><button class="btn ghost small" onclick="goGame()">🎮 Main</button><button class="btn ghost small" onclick="openParent()">📊 Parent</button><button class="btn ghost small" onclick="resetAll()">↺ Reset</button></div>
+</div>
+
+<script src="data/kssr/knowledge-graph.js"></script>
+<script src="questions/helpers.js"></script>
+<script src="questions/d1/recovery.js"></script>
+<script src="questions/d2/topic-1.js"></script>
+<script src="questions/d2/topic-2.js"></script>
+<script src="questions/d2/topic-3.js"></script>
+<script src="questions/d2/topic-4.js"></script>
+<script src="questions/d2/topic-5.js"></script>
+<script src="questions/d2/topic-6.js"></script>
+<script src="questions/d2/topic-7.js"></script>
+<script src="questions/d2/topic-8.js"></script>
+<script src="questions/d3/stretch.js"></script>
+<script src="questions/index.js"></script>
+<script src="js/engine/adaptive.js"></script>
+<script src="js/heroes.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/parent.js"></script>
+<script src="js/app.js"></script>
+
+</body></html>

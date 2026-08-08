@@ -1,0 +1,29 @@
+{
+  "source_single_html_bytes": 4559905,
+  "new_index_html_bytes": 3810162,
+  "file_count": 29,
+  "missing_references": [],
+  "js_syntax_failures": [],
+  "asset_files": [
+    "assets/fx/wira/finisher.webp",
+    "assets/fx/bunga/finisher.webp",
+    "assets/heroes/wira/idle.webp",
+    "assets/heroes/wira/attack.webp",
+    "assets/heroes/bunga/idle.webp",
+    "assets/heroes/bunga/attack.webp"
+  ],
+  "question_modules": [
+    "questions/index.js",
+    "questions/helpers.js",
+    "questions/d1/recovery.js",
+    "questions/d3/stretch.js",
+    "questions/d2/topic-2.js",
+    "questions/d2/topic-1.js",
+    "questions/d2/topic-8.js",
+    "questions/d2/topic-6.js",
+    "questions/d2/topic-7.js",
+    "questions/d2/topic-4.js",
+    "questions/d2/topic-5.js",
+    "questions/d2/topic-3.js"
+  ]
+}
