@@ -1,0 +1,750 @@
+{
+  "skills": [
+    {
+      "id": "D1.N20",
+      "grade": 1,
+      "domain": "Nombor",
+      "title": "Nombor hingga 20",
+      "prereq": [],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.N100",
+      "grade": 1,
+      "domain": "Nombor",
+      "title": "Nombor hingga 100",
+      "prereq": [
+        "D1.N20"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.PV100",
+      "grade": 1,
+      "domain": "Nombor",
+      "title": "Nilai tempat hingga 100",
+      "prereq": [
+        "D1.N100"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.CMP100",
+      "grade": 1,
+      "domain": "Nombor",
+      "title": "Banding nombor hingga 100",
+      "prereq": [
+        "D1.N100"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.ADD20",
+      "grade": 1,
+      "domain": "Operasi",
+      "title": "Tambah hingga 20",
+      "prereq": [
+        "D1.N20"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.SUB20",
+      "grade": 1,
+      "domain": "Operasi",
+      "title": "Tolak hingga 20",
+      "prereq": [
+        "D1.N20"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.ADD100",
+      "grade": 1,
+      "domain": "Operasi",
+      "title": "Tambah hingga 100",
+      "prereq": [
+        "D1.ADD20",
+        "D1.PV100"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.SUB100",
+      "grade": 1,
+      "domain": "Operasi",
+      "title": "Tolak hingga 100",
+      "prereq": [
+        "D1.SUB20",
+        "D1.PV100"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.FRAC",
+      "grade": 1,
+      "domain": "Pecahan",
+      "title": "Pecahan asas",
+      "prereq": [],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.MONEY",
+      "grade": 1,
+      "domain": "Wang",
+      "title": "Wang asas",
+      "prereq": [
+        "D1.ADD20"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.TIME",
+      "grade": 1,
+      "domain": "Masa",
+      "title": "Masa asas",
+      "prereq": [],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.MEASURE",
+      "grade": 1,
+      "domain": "Ukuran",
+      "title": "Banding ukuran",
+      "prereq": [],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.SHAPE",
+      "grade": 1,
+      "domain": "Ruang",
+      "title": "Bentuk asas",
+      "prereq": [],
+      "role": "recovery"
+    },
+    {
+      "id": "D1.DATA",
+      "grade": 1,
+      "domain": "Data",
+      "title": "Data mudah",
+      "prereq": [
+        "D1.CMP100"
+      ],
+      "role": "recovery"
+    },
+    {
+      "id": "D2.1.1",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Nilai nombor hingga 1000",
+      "prereq": [
+        "D1.N100"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.1.2",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Menulis nombor",
+      "prereq": [
+        "D2.1.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.1.3",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Rangkaian nombor",
+      "prereq": [
+        "D2.1.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.1.4",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Nilai tempat hingga 1000",
+      "prereq": [
+        "D1.PV100",
+        "D2.1.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.1.5",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Menganggar",
+      "prereq": [
+        "D2.1.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.1.6",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Membundar",
+      "prereq": [
+        "D2.1.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.1.7",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Pola nombor",
+      "prereq": [
+        "D2.1.3"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.1.8",
+      "grade": 2,
+      "chapter": "1",
+      "domain": "Nombor",
+      "title": "Masalah nombor",
+      "prereq": [
+        "D2.1.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.2.1",
+      "grade": 2,
+      "chapter": "2",
+      "domain": "Operasi",
+      "title": "Tambah hingga 1000",
+      "prereq": [
+        "D1.ADD100",
+        "D2.1.4"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.2.2",
+      "grade": 2,
+      "chapter": "2",
+      "domain": "Operasi",
+      "title": "Tolak hingga 1000",
+      "prereq": [
+        "D1.SUB100",
+        "D2.1.4"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.2.3",
+      "grade": 2,
+      "chapter": "2",
+      "domain": "Operasi",
+      "title": "Darab asas",
+      "prereq": [
+        "D1.ADD100"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.2.4",
+      "grade": 2,
+      "chapter": "2",
+      "domain": "Operasi",
+      "title": "Bahagi asas",
+      "prereq": [
+        "D2.2.3"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.2.5",
+      "grade": 2,
+      "chapter": "2",
+      "domain": "Operasi",
+      "title": "Masalah operasi",
+      "prereq": [
+        "D2.2.1",
+        "D2.2.2"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.3.1",
+      "grade": 2,
+      "chapter": "3",
+      "domain": "Pecahan",
+      "title": "Pecahan wajar",
+      "prereq": [
+        "D1.FRAC"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.3.2",
+      "grade": 2,
+      "chapter": "3",
+      "domain": "Perpuluhan",
+      "title": "Perpuluhan persepuluh",
+      "prereq": [
+        "D2.1.4"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.3.3",
+      "grade": 2,
+      "chapter": "3",
+      "domain": "Pecahan",
+      "title": "Hubungan pecahan & perpuluhan",
+      "prereq": [
+        "D2.3.1",
+        "D2.3.2"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.3.4",
+      "grade": 2,
+      "chapter": "3",
+      "domain": "Pecahan",
+      "title": "Masalah pecahan/perpuluhan",
+      "prereq": [
+        "D2.3.3"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.4.1",
+      "grade": 2,
+      "chapter": "4",
+      "domain": "Wang",
+      "title": "Nilai wang hingga RM100",
+      "prereq": [
+        "D1.MONEY"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.4.2",
+      "grade": 2,
+      "chapter": "4",
+      "domain": "Wang",
+      "title": "Tambah wang",
+      "prereq": [
+        "D2.4.1",
+        "D2.2.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.4.3",
+      "grade": 2,
+      "chapter": "4",
+      "domain": "Wang",
+      "title": "Tolak wang",
+      "prereq": [
+        "D2.4.1",
+        "D2.2.2"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.4.4",
+      "grade": 2,
+      "chapter": "4",
+      "domain": "Wang",
+      "title": "Darab wang",
+      "prereq": [
+        "D2.4.1",
+        "D2.2.3"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.4.5",
+      "grade": 2,
+      "chapter": "4",
+      "domain": "Wang",
+      "title": "Bahagi wang",
+      "prereq": [
+        "D2.4.1",
+        "D2.2.4"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.4.6",
+      "grade": 2,
+      "chapter": "4",
+      "domain": "Wang",
+      "title": "Simpanan & kewangan",
+      "prereq": [
+        "D2.4.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.4.7",
+      "grade": 2,
+      "chapter": "4",
+      "domain": "Wang",
+      "title": "Masalah wang",
+      "prereq": [
+        "D2.4.2",
+        "D2.4.3"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.5.1",
+      "grade": 2,
+      "chapter": "5",
+      "domain": "Masa",
+      "title": "Jam & minit",
+      "prereq": [
+        "D1.TIME"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.5.2",
+      "grade": 2,
+      "chapter": "5",
+      "domain": "Masa",
+      "title": "Perkaitan masa",
+      "prereq": [
+        "D2.5.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.5.3",
+      "grade": 2,
+      "chapter": "5",
+      "domain": "Masa",
+      "title": "Masalah masa",
+      "prereq": [
+        "D2.5.2"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.6.1",
+      "grade": 2,
+      "chapter": "6",
+      "domain": "Ukuran",
+      "title": "Panjang",
+      "prereq": [
+        "D1.MEASURE"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.6.2",
+      "grade": 2,
+      "chapter": "6",
+      "domain": "Ukuran",
+      "title": "Jisim",
+      "prereq": [
+        "D1.MEASURE"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.6.3",
+      "grade": 2,
+      "chapter": "6",
+      "domain": "Ukuran",
+      "title": "Isi padu cecair",
+      "prereq": [
+        "D1.MEASURE"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.6.4",
+      "grade": 2,
+      "chapter": "6",
+      "domain": "Ukuran",
+      "title": "Masalah ukuran",
+      "prereq": [
+        "D2.6.1",
+        "D2.6.2",
+        "D2.6.3"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.7.1",
+      "grade": 2,
+      "chapter": "7",
+      "domain": "Ruang",
+      "title": "Bentuk 3D",
+      "prereq": [
+        "D1.SHAPE"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.7.2",
+      "grade": 2,
+      "chapter": "7",
+      "domain": "Ruang",
+      "title": "Bentuk 2D",
+      "prereq": [
+        "D1.SHAPE"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.7.3",
+      "grade": 2,
+      "chapter": "7",
+      "domain": "Ruang",
+      "title": "Masalah ruang",
+      "prereq": [
+        "D2.7.1",
+        "D2.7.2"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.8.1",
+      "grade": 2,
+      "chapter": "8",
+      "domain": "Data",
+      "title": "Kumpul & susun data",
+      "prereq": [
+        "D1.DATA"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.8.2",
+      "grade": 2,
+      "chapter": "8",
+      "domain": "Data",
+      "title": "Carta palang",
+      "prereq": [
+        "D2.8.1"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D2.8.3",
+      "grade": 2,
+      "chapter": "8",
+      "domain": "Data",
+      "title": "Masalah data",
+      "prereq": [
+        "D2.8.2"
+      ],
+      "role": "core"
+    },
+    {
+      "id": "D3.N10000",
+      "grade": 3,
+      "domain": "Nombor",
+      "title": "Nombor hingga 10,000",
+      "prereq": [
+        "D2.1.1",
+        "D2.1.4"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.ADD10000",
+      "grade": 3,
+      "domain": "Operasi",
+      "title": "Tambah hingga 10,000",
+      "prereq": [
+        "D2.2.1",
+        "D3.N10000"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.SUB10000",
+      "grade": 3,
+      "domain": "Operasi",
+      "title": "Tolak hingga 10,000",
+      "prereq": [
+        "D2.2.2",
+        "D3.N10000"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.MUL",
+      "grade": 3,
+      "domain": "Operasi",
+      "title": "Fakta darab lebih luas",
+      "prereq": [
+        "D2.2.3"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.DIV",
+      "grade": 3,
+      "domain": "Operasi",
+      "title": "Fakta bahagi lebih luas",
+      "prereq": [
+        "D2.2.4",
+        "D3.MUL"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.FRAC",
+      "grade": 3,
+      "domain": "Pecahan",
+      "title": "Pecahan setara mudah",
+      "prereq": [
+        "D2.3.1"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.DEC",
+      "grade": 3,
+      "domain": "Perpuluhan",
+      "title": "Perpuluhan lebih luas",
+      "prereq": [
+        "D2.3.2"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.MONEY",
+      "grade": 3,
+      "domain": "Wang",
+      "title": "Operasi wang lebih kompleks",
+      "prereq": [
+        "D2.4.2",
+        "D2.4.3"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.TIME",
+      "grade": 3,
+      "domain": "Masa",
+      "title": "Tempoh masa",
+      "prereq": [
+        "D2.5.3"
+      ],
+      "role": "stretch"
+    },
+    {
+      "id": "D3.DATA",
+      "grade": 3,
+      "domain": "Data",
+      "title": "Tafsiran carta lebih kompleks",
+      "prereq": [
+        "D2.8.2"
+      ],
+      "role": "stretch"
+    }
+  ],
+  "recovery_map": {
+    "D2.1.1": [
+      "D1.N100",
+      "D1.CMP100"
+    ],
+    "D2.1.4": [
+      "D1.PV100",
+      "D1.N100"
+    ],
+    "D2.2.1": [
+      "D1.ADD100",
+      "D1.PV100",
+      "D1.ADD20"
+    ],
+    "D2.2.2": [
+      "D1.SUB100",
+      "D1.PV100",
+      "D1.SUB20"
+    ],
+    "D2.2.3": [
+      "D1.ADD100",
+      "D1.ADD20"
+    ],
+    "D2.2.4": [
+      "D2.2.3",
+      "D1.ADD100"
+    ],
+    "D2.3.1": [
+      "D1.FRAC"
+    ],
+    "D2.4.1": [
+      "D1.MONEY",
+      "D1.ADD20"
+    ],
+    "D2.5.1": [
+      "D1.TIME"
+    ],
+    "D2.6.1": [
+      "D1.MEASURE"
+    ],
+    "D2.6.2": [
+      "D1.MEASURE"
+    ],
+    "D2.6.3": [
+      "D1.MEASURE"
+    ],
+    "D2.7.1": [
+      "D1.SHAPE"
+    ],
+    "D2.7.2": [
+      "D1.SHAPE"
+    ],
+    "D2.8.1": [
+      "D1.DATA",
+      "D1.CMP100"
+    ]
+  },
+  "stretch_map": {
+    "D2.1.1": "D3.N10000",
+    "D2.1.4": "D3.N10000",
+    "D2.2.1": "D3.ADD10000",
+    "D2.2.2": "D3.SUB10000",
+    "D2.2.3": "D3.MUL",
+    "D2.2.4": "D3.DIV",
+    "D2.3.1": "D3.FRAC",
+    "D2.3.2": "D3.DEC",
+    "D2.4.2": "D3.MONEY",
+    "D2.4.3": "D3.MONEY",
+    "D2.5.3": "D3.TIME",
+    "D2.8.2": "D3.DATA"
+  },
+  "engine_config": {
+    "school_grade": 2,
+    "core_grade": 2,
+    "recovery_grade": 1,
+    "stretch_grade": 3,
+    "unlock_mastery": 50,
+    "unlock_confidence": 35,
+    "min_evidence_unlock": 4,
+    "recovery_trigger_mastery": 38,
+    "recovery_trigger_confidence": 45,
+    "stretch_trigger_mastery": 82,
+    "stretch_trigger_confidence": 70,
+    "stretch_min_evidence": 6,
+    "mastery_review_threshold": 85,
+    "anti_repeat_window": 3,
+    "parent_focus_boost": 4.0,
+    "forgetting_half_life_hours": 72
+  }
+}
