@@ -19,4 +19,5 @@ const HEROES = {
     "theme": "bloom"
   }
 };
-let selectedHero=(db&&db.hero)||"wira";
+const savedProfile=JSON.parse(localStorage.getItem("pa_coach_v5")||"null");
+let selectedHero=(savedProfile&&savedProfile.hero)||"wira";
