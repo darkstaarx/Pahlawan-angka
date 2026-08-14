@@ -1,0 +1,696 @@
+{
+  "summary": {
+    "status": "pass",
+    "skills": 114,
+    "samples": 1710,
+    "minimumArchetypes": 3,
+    "coverageSkillsAdded": 12,
+    "failures": []
+  },
+  "reports": [
+    {
+      "id": "D1.N20",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.N100",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.PV100",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.CMP100",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.ADD20",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.SUB20",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.ADD100",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.SUB100",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.FRAC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.MONEY",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.TIME",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.MEASURE",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.SHAPE",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D1.DATA",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.1",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.2",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.3",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.4",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.5",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.6",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.7",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.1.8",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.2.1",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.2.2",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.2.3",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.2.4",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.2.5",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.3.1",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.3.2",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.3.3",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.3.4",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.4.1",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.4.2",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.4.3",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.4.4",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.4.5",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.4.6",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.4.7",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.5.1",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.5.2",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.5.3",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.6.1",
+      "archetypes": 3,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D2.6.2",
+      "archetypes": 3,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D2.6.3",
+      "archetypes": 3,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D2.6.4",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.7.1",
+      "archetypes": 3,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D2.7.2",
+      "archetypes": 3,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D2.7.3",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.8.1",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.8.2",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D2.8.3",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.N10000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.PV10000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.ADD10000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.SUB10000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.MUL",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.DIV",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.FRAC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.DEC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.MONEY",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.TIME",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.MEASURE",
+      "archetypes": 6,
+      "representations": 3,
+      "demands": 4
+    },
+    {
+      "id": "D3.SHAPE",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.DATA",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.N100000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.PV100000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.ADD",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.SUB",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.MUL",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.DIV",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.FRAC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.DEC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.MONEY",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.TIME",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.MEASURE",
+      "archetypes": 6,
+      "representations": 3,
+      "demands": 4
+    },
+    {
+      "id": "D4.PERIM",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.DATA",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.N1000000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.PV1000000",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.MUL",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.DIV",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.FRAC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.DEC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.PERCENT",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.MONEY",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.TIME",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.MEASURE",
+      "archetypes": 6,
+      "representations": 3,
+      "demands": 4
+    },
+    {
+      "id": "D5.AREA",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.COORD",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.DATA",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.NUMBERS",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.OPS",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.FRAC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.DEC",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.PERCENT",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.RATIO",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.MONEY",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.TIME",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.MEASURE",
+      "archetypes": 6,
+      "representations": 3,
+      "demands": 4
+    },
+    {
+      "id": "D6.AREA",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.COORD",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D6.DATA",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D3.PERCENT",
+      "archetypes": 4,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D3.POSITION",
+      "archetypes": 5,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.PERCENT",
+      "archetypes": 5,
+      "representations": 5,
+      "demands": 4
+    },
+    {
+      "id": "D4.COORD",
+      "archetypes": 4,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D4.RATIO",
+      "archetypes": 5,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D4.RATE",
+      "archetypes": 4,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.ADD",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.SUB",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 3
+    },
+    {
+      "id": "D5.OPS",
+      "archetypes": 3,
+      "representations": 3,
+      "demands": 2
+    },
+    {
+      "id": "D5.RATIO",
+      "archetypes": 5,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D5.RATE",
+      "archetypes": 5,
+      "representations": 4,
+      "demands": 3
+    },
+    {
+      "id": "D6.PROB",
+      "archetypes": 5,
+      "representations": 3,
+      "demands": 3
+    }
+  ]
+}

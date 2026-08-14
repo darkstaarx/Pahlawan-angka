@@ -1,0 +1,27 @@
+/* v3.7.6 — grounded formation, persistent HUD, normalized poses and boss FOV. */
+.battle{--arena-floor:20px;--unit-h:126px}
+.battle>.unitHud{position:absolute;top:auto;bottom:calc(var(--arena-floor) + var(--unit-h) + 2px);width:128px;height:27px;padding-inline:6px;z-index:18}
+.battle>.heroHud{left:8px}.battle>.enemyHud{right:8px}
+.battle .unit{bottom:var(--arena-floor);min-height:var(--unit-h)}
+.battle #hero .sprite,.battle .enemySpriteWrap{height:var(--unit-h)}
+.battle #hero .battlePet{left:62%;bottom:-3px;width:50px;min-width:50px;max-width:50px;height:50px;z-index:7}
+.battle #hero:not(.attacking) .battlePet{transform:none!important;animation:none!important}
+.battle #hero:not(.attacking) .battlePet .battle-pet-frame{animation:none!important}
+#hero .hero-frame{display:block;left:50%!important;bottom:0!important;width:auto;height:auto!important;max-height:100%;max-width:100%;transform:translateX(-50%);visibility:hidden;opacity:0!important}
+#hero:not(.attacking) .hero-frame-idle,#hero.attacking.phase-anticipation .hero-frame-anticipation,#hero.attacking.phase-contact .hero-frame-attack,#hero.attacking.phase-follow-through .hero-frame-follow-through,#hero.attacking.phase-recover .hero-frame-idle{visibility:visible;opacity:1!important}
+#hero.attacking .hero-frame-idle{visibility:hidden}#hero.attacking.phase-recover .hero-frame-idle{visibility:visible}
+#hero .hero-frame-attack,#hero .hero-frame-follow-through{max-width:112%}
+#enemy[data-enemy-tier="boss"]{width:154px;overflow:visible}
+#enemy[data-enemy-tier="boss"] .enemySpriteWrap{width:166px;margin-left:-12px;overflow:hidden;align-items:flex-end}
+#enemy[data-enemy-tier="boss"] #enemySprite{height:148px;width:auto;max-width:190px;object-fit:contain;object-position:center bottom;transform:translateY(7px)}
+.bossVictory{position:absolute;inset:0;z-index:30;display:grid;place-items:center;pointer-events:none;opacity:0;overflow:hidden;background:radial-gradient(circle at 50% 54%,rgba(255,219,92,.38),transparent 46%)}
+.bossVictory.show{animation:paVictoryLayer 1.45s ease-out both}
+.bossVictory::before,.bossVictory::after{content:"";position:absolute;inset:12%;border:2px solid rgba(255,225,122,.7);border-radius:50%;opacity:0}
+.bossVictory.show::before{animation:paVictoryRing 1s ease-out .12s both}.bossVictory.show::after{animation:paVictoryRing 1s ease-out .28s both}
+.bossVictoryBanner{padding:8px 18px;border-radius:999px;border:1px solid #ffe79a;color:#fff8d2;background:linear-gradient(180deg,#6b470eeb,#2b1a08ee);box-shadow:0 0 24px #ffd85d99,0 7px 18px #0008;font-size:18px;font-weight:1000;letter-spacing:.06em;text-shadow:0 2px 2px #000;transform:scale(.55) translateY(12px);opacity:0}
+.bossVictory.show .bossVictoryBanner{animation:paVictoryBanner 1.25s cubic-bezier(.2,.85,.25,1) .12s both}
+@keyframes paVictoryLayer{0%{opacity:0}12%,78%{opacity:1}100%{opacity:0}}
+@keyframes paVictoryRing{0%{opacity:.9;transform:scale(.2)}100%{opacity:0;transform:scale(1.35)}}
+@keyframes paVictoryBanner{0%{opacity:0;transform:scale(.55) translateY(12px)}24%,72%{opacity:1;transform:scale(1) translateY(0)}100%{opacity:0;transform:scale(1.08) translateY(-8px)}}
+@media(max-width:600px){.battle{--arena-floor:15px;--unit-h:118px}.battle .unit{bottom:var(--arena-floor)!important;width:128px!important;min-height:var(--unit-h)!important}.battle>.unitHud{bottom:calc(var(--arena-floor) + var(--unit-h) + 1px);width:126px}.battle>.heroHud{left:7px}.battle>.enemyHud{right:7px}.battle #hero .battlePet{left:64%;bottom:-2px;width:47px;min-width:47px;max-width:47px;height:47px}#enemy[data-enemy-tier="boss"]{width:150px!important;right:-3px!important}#enemy[data-enemy-tier="boss"] .enemySpriteWrap{width:166px;height:var(--unit-h);margin-left:-16px}#enemy[data-enemy-tier="boss"] #enemySprite{height:143px;max-width:190px;transform:translateY(9px)}}
+@media(prefers-reduced-motion:reduce){.bossVictory.show,.bossVictory.show::before,.bossVictory.show::after,.bossVictory.show .bossVictoryBanner{animation-duration:.01ms!important}}

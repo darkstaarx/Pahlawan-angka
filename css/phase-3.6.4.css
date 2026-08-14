@@ -1,0 +1,89 @@
+/* Phase 3.6.3/3.6.4 UI overrides: dedicated Misi, fixed DEV control, immersive login */
+.devQuickBtn{border:1px solid #f3c84b;background:#2b2410;color:#ffd95a;font:900 11px/1 system-ui;border-radius:10px;padding:8px 9px;margin-right:7px;letter-spacing:.08em;box-shadow:0 0 0 1px #0005 inset}.devQuickBtn.hidden{display:none}
+.devOverlay{position:fixed;inset:0;z-index:300;background:#020712cc;backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:16px}.devOverlay.hidden{display:none}.devModal{width:min(100%,620px);max-height:88dvh;overflow:auto;position:relative;border-radius:24px 24px 16px 16px}.devModal .devPanel{margin:0}.devClose{position:absolute;right:12px;top:10px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid #405273;background:#101a2d;color:#fff;font-size:25px;line-height:1}.dev-open{overflow:hidden}
+.hubQuickGrid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}.hubQuickCard{border:1px solid #263d61;background:#101c31;color:#fff;border-radius:18px;padding:14px;display:grid;grid-template-columns:44px 1fr 18px;align-items:center;text-align:left;gap:10px;font:inherit}.hubQuickCard b{display:block;font-size:15px}.hubQuickCard small{display:block;color:#95a7c4;margin-top:3px}.hubQuickIcon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#1c3153;color:#ffd95a;font-size:20px}.hubQuickCard.coach{background:linear-gradient(135deg,#18224b,#312064)}.hubQuickCard.mission{background:linear-gradient(135deg,#102849,#12395a)}.hubQuickCard.treasure{background:linear-gradient(135deg,#312310,#463814)}
+body[data-screen="missions"] #missions{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 24px)}
+body[data-screen="login"] .app{background:linear-gradient(180deg,#dff4ff 0,#f5fbff 42%,#eef5ff 100%)}
+#login{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:28px}.loginShell{width:min(100%,460px);margin:0 auto}.loginSceneWrap{margin:0 0 12px;padding:0 10px}.loginScene{width:100%;display:block;aspect-ratio:941/953;object-fit:cover;object-position:center top;border-radius:28px;box-shadow:0 18px 46px #17365b24;border:1px solid #ffffffcc}.loginCard{margin:0 14px;padding:20px 18px 18px;border-radius:26px;background:#ffffffef;color:#13213a;border:1px solid #dbe7f5;box-shadow:0 18px 45px #163b6b1f;backdrop-filter:blur(12px)}.loginCard h2{color:#13213a}.loginCard .mut,.loginCard .label{color:#6b7890}.loginCard input{background:#f8fbff;color:#15213a;border-color:#d8e4f2}.loginCard input::placeholder{color:#9ba8ba}.quickLogin{background:#f6f9fe;color:#17213a;border-color:#d9e5f4;box-shadow:0 6px 16px #274c7a12}.quickLogin small{color:#738198}.quickLogin.student{background:linear-gradient(145deg,#eef7ff,#f9fcff);border-color:#74aef0}.quickLogin.parent{background:linear-gradient(145deg,#f6f0ff,#fff);border-color:#b09ae7}.loginDivider{color:#8b98aa}.loginDivider:before,.loginDivider:after{background:#dce5ef}.demoHint{background:#f3f7fc;color:#738198;border:1px solid #e0e8f2}.demoHint b{color:#223653}.loginError{background:#fff0f2;border-color:#f2bcc5;color:#8e2f3d}
+@media(max-width:600px){.loginSceneWrap{padding:0 8px}.loginScene{border-radius:22px}.loginCard{margin:0 10px;padding:18px 16px}}
+@media(min-width:601px){.hubQuickGrid{grid-template-columns:repeat(3,1fr)}.devOverlay{align-items:center}.devModal{border-radius:24px}}
+
+/* Phase 3.6.6 — full-bleed login wallpaper with the controls layered above it */
+body[data-screen="login"]{
+  background:#0b1e35;
+}
+body[data-screen="login"] .app{
+  position:relative;
+  isolation:isolate;
+  min-height:100dvh;
+  background:#0b1e35 url("../assets/branding/login-scene.webp") center top / cover no-repeat;
+}
+body[data-screen="login"] .app::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent 44%,rgba(7,19,34,.10) 57%,rgba(7,17,31,.54) 78%,rgba(5,12,23,.82) 100%);
+}
+#login{
+  position:relative;
+  z-index:1;
+  min-height:100dvh;
+  padding:max(58dvh,510px) 14px max(32px,env(safe-area-inset-bottom));
+}
+.loginShell{
+  width:min(100%,460px);
+  margin:0 auto;
+}
+.loginSceneWrap{display:none}
+.loginCard{
+  position:relative;
+  z-index:1;
+  margin:0;
+  background:rgba(255,255,255,.90);
+  border:1px solid rgba(255,255,255,.86);
+  box-shadow:0 20px 54px rgba(4,20,40,.35);
+  backdrop-filter:blur(16px) saturate(1.08);
+  -webkit-backdrop-filter:blur(16px) saturate(1.08);
+}
+@media(max-width:600px){
+  #login{padding-inline:14px}
+  .loginCard{margin:0;padding:18px 16px}
+}
+@media(max-height:760px){
+  #login{padding-top:max(54dvh,390px)}
+}
+@media(min-width:601px){
+  #login{padding-top:max(57dvh,540px)}
+}
+
+/* One locked pet scale for every standby/attack asset. Pet stays below hero scale. */
+.battlePet{
+  left:25%;
+  bottom:7%;
+  width:auto;
+  min-width:0;
+  max-width:none;
+  height:84px;
+  aspect-ratio:1 / 1;
+  overflow:visible;
+}
+.battlePet .battle-pet-frame,
+.battlePet img{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:auto;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  object-fit:contain;
+  object-position:center bottom;
+}
+@media(min-width:601px){
+  .battlePet{left:25%;bottom:7%;height:108px}
+}
+@media(min-width:1025px){
+  .battlePet{left:25%;bottom:7%;height:122px}
+}

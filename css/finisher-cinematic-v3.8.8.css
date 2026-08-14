@@ -1,0 +1,66 @@
+/* v3.8.9 — simple in-arena blackout: preserve the real battle scale and hero position. */
+.battle{isolation:isolate}
+.finisherCinematic{
+ position:absolute;inset:0;z-index:80;overflow:hidden;display:block;
+ background:#000;opacity:0;visibility:hidden;pointer-events:none;isolation:isolate
+}
+.finisherCinematic.active{visibility:visible;animation:cinematicCurtainSimple 1.58s ease-out both}
+.cinematicSpeedLines,.cinematicTitle{display:none!important}
+.cinematicHero{
+ position:absolute;left:var(--hero-x,5%);top:var(--hero-y,28%);
+ width:var(--hero-w,132px);height:var(--hero-h,150px);max-width:none;
+ object-fit:contain;object-position:center bottom;z-index:5;opacity:0;
+ transform:scale(.96);transform-origin:50% 88%;
+ filter:brightness(.38) saturate(.8) drop-shadow(0 8px 9px #000)
+}
+.finisherCinematic.active .cinematicHero{animation:cinematicHeroSimple 1.58s ease-out both}
+.cinematicAura{
+ position:absolute;
+ left:var(--hero-center-x,72px);top:auto;bottom:var(--aura-bottom,-12px);
+ width:var(--aura-w,270px);height:auto;max-width:none;
+ z-index:3;opacity:0;transform:translateX(-50%) scale(.12) rotate(-28deg);
+ transform-origin:50% 50%;
+ filter:saturate(1.5) contrast(1.12) brightness(1.2) drop-shadow(0 0 11px rgba(91,208,255,.98))
+}
+.finisherCinematic.active .cinematicAura{animation:cinematicAuraSimple 1.58s cubic-bezier(.16,.72,.22,1) both}
+.cinematicPowerColumn{
+ position:absolute;
+ left:var(--hero-center-x,72px);top:var(--power-y,58px);
+ width:var(--power-w,103px);height:var(--power-h,123px);
+ transform:translateX(-50%) scaleY(.05);transform-origin:50% 100%;opacity:0;z-index:4;
+ background:linear-gradient(90deg,transparent,rgba(75,193,255,.08) 24%,rgba(255,255,255,.56) 50%,rgba(75,193,255,.08) 76%,transparent);
+ filter:blur(4px)
+}
+.finisherCinematic[data-hero="bunga"] .cinematicPowerColumn{background:linear-gradient(90deg,transparent,rgba(96,255,156,.08) 24%,rgba(255,251,206,.58) 50%,rgba(255,126,205,.08) 76%,transparent)}
+.finisherCinematic.active .cinematicPowerColumn{animation:cinematicPowerSimple 1.58s ease-out both}
+.cinematicFlash{position:absolute;inset:0;z-index:9;opacity:0;background:#fff}
+.finisherCinematic.active .cinematicFlash{animation:cinematicReleaseFlashSimple 1.58s linear both}
+.cinematicAura.hidden{display:none}
+@keyframes cinematicCurtainSimple{0%{opacity:0}8%,82%{opacity:1}91%{opacity:1}100%{opacity:0}}
+@keyframes cinematicHeroSimple{
+ 0%,8%{opacity:0;transform:scale(.96);filter:brightness(.25) saturate(.65)}
+ 18%{opacity:1}
+ 38%{opacity:1;transform:scale(1);filter:brightness(.58) saturate(1)}
+ 60%,78%{opacity:1;transform:scale(1.035);filter:brightness(1.18) saturate(1.2) drop-shadow(0 0 12px #72d9ff)}
+ 84%{opacity:1;transform:scale(1.05);filter:brightness(1.8)}
+ 100%{opacity:0;transform:translateX(10%) scale(1.05);filter:brightness(2.4)}
+}
+@keyframes cinematicAuraSimple{
+ 0%,10%{opacity:0;transform:translateX(-50%) scale(.12) rotate(-28deg)}
+ 25%{opacity:.82;transform:translateX(-50%) scale(.62) rotate(-12deg)}
+ 48%,76%{opacity:1;transform:translateX(-50%) scale(1) rotate(12deg)}
+ 83%{opacity:.7;transform:translateX(-50%) scale(.25) rotate(28deg)}
+ 100%{opacity:0;transform:translateX(-50%) scale(.08) rotate(34deg)}
+}
+@keyframes cinematicPowerSimple{0%,18%{opacity:0;transform:translateX(-50%) scaleY(.05)}42%{opacity:.58;transform:translateX(-50%) scaleY(.72)}62%,78%{opacity:.88;transform:translateX(-50%) scaleY(1)}86%,100%{opacity:0;transform:translateX(-50%) scaleY(1.15)}}
+@keyframes cinematicReleaseFlashSimple{0%,79%{opacity:0}84%{opacity:.78}90%,100%{opacity:0}}
+/* The old in-arena aura remains disabled; the equipped aura is shown only in the blackout beat. */
+#hero>.mathAuraRig{display:none!important}
+@media(prefers-reduced-motion:reduce){
+ .finisherCinematic.active{animation:cinematicCurtainSimple 1.3s ease both}
+ .finisherCinematic.active .cinematicHero{animation:cinematicHeroReducedSimple 1.3s ease both}
+ .finisherCinematic.active .cinematicAura{animation:cinematicAuraReducedSimple 1.3s ease both}
+ .cinematicPowerColumn{display:none}
+ @keyframes cinematicHeroReducedSimple{0%,100%{opacity:0}18%,80%{opacity:1;transform:scale(1)}}
+ @keyframes cinematicAuraReducedSimple{0%,100%{opacity:0}20%,78%{opacity:1;transform:translateX(-50%) scale(1)}}
+}

@@ -1,0 +1,80 @@
+/* v3.7.5 — reliable combat layering, aligned unit HUDs and compact mobile play. */
+
+/* Both names and HP bars use the same geometry, independent of sprite proportions. */
+.unitHud{
+  position:relative;
+  z-index:11;
+  width:100%;
+  height:27px;
+  display:grid;
+  grid-template-rows:14px 8px;
+  gap:3px;
+  padding-inline:8px;
+  pointer-events:none;
+}
+.unitHud .nm{
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  line-height:14px;
+  text-shadow:0 1px 3px #000,0 0 6px #000;
+}
+.unitHud .hp{width:100%;height:8px;margin:0;border:1px solid rgba(255,255,255,.32);box-shadow:0 1px 4px #0008}
+.unitHud .hp span{transition:width .24s ease-out}
+
+/* The travelling pet must cross the enemy's stacking context, not pass behind it. */
+#hero.attacking{z-index:12}
+#hero.attacking .battlePet{z-index:14}
+#hero.attacking .battlePet .battle-pet-frame{filter:drop-shadow(0 7px 6px rgba(0,0,0,.62))}
+#enemy.defeat-crack,#enemy.defeat-shatter{z-index:13}
+
+/* Hint is a compact in-card utility, not a full extra row. */
+.qmeta{align-items:center;gap:7px;min-height:28px}
+.qmeta .hintBtn{
+  margin:0 0 0 2px;
+  padding:5px 8px;
+  min-height:28px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  border-radius:9px;
+  border:1px solid #c7d2eb;
+  background:#edf2ff;
+  color:#263653;
+  line-height:1;
+}
+.qmeta .hintBtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.feedback:empty{display:none}
+
+@media(max-width:600px){
+  body[data-screen="game"] header{height:50px}
+  #game.screen{padding:8px 10px 12px}
+  #game .gameTop{gap:7px;margin-bottom:5px;min-height:38px}
+  #game .gameTop .iconBtn{width:38px;height:38px}
+  #game .battleMeta{margin-bottom:5px}
+  #game .battleMeta .chip{padding:4px 7px}
+  #game .battle{height:198px;margin-bottom:7px;border-radius:17px}
+  #game .battle .sky{top:7px;left:8px;right:8px;padding:5px 8px}
+  #game .battle .unit{bottom:25px;width:124px;min-height:136px}
+  #game .battle .hero{left:2px}
+  #game .battle .enemy{right:2px}
+  #game .battle .ground{height:31px}
+  #game .qcard{padding:9px 10px 10px;border-radius:16px}
+  #game .question{font-size:clamp(20px,6.1vw,25px);min-height:0;padding:6px 4px 8px;line-height:1.22}
+  #game .answers{gap:7px}
+  #game .ans{padding:10px 5px;font-size:18px;border-radius:12px}
+  #game .feedback{min-height:0;padding:7px 2px 0;font-size:12px}
+}
+
+/* Short-height phones get an extra density pass while preserving tap targets. */
+@media(max-width:600px) and (max-height:780px){
+  body[data-screen="game"] header{height:46px}
+  #game.screen{padding-top:6px}
+  #game .gameTop{min-height:34px;margin-bottom:3px}
+  #game .battleMeta{margin-bottom:3px}
+  #game .battle{height:184px}
+  #game .qcard{padding-top:7px}
+  #game .question{font-size:clamp(19px,5.7vw,23px);padding-block:4px 7px}
+  #game .ans{padding-block:9px}
+}

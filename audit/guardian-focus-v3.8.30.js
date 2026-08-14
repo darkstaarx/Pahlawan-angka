@@ -1,0 +1,12 @@
+const fs=require('fs'),assert=require('assert');
+const read=p=>fs.readFileSync(p,'utf8');
+const focus=read('js/guardian-focus.js'),adaptive=read('js/engine/adaptive.js'),battle=read('js/battle.js'),parent=read('js/parent.js'),html=read('index.html'),sw=read('sw.js');
+assert(/\[5,10,15\]\.includes/.test(focus),'question count allow-list missing');
+assert(/guardianFocus&&sess\.focusSkill/.test(adaptive),'focus skill lock missing');
+assert(/sess\.missionAnswered>=sess\.focusTarget/.test(battle),'focus completion guard missing');
+assert(/guardianCorrectFeedback/.test(battle)&&/guardianHint/.test(battle),'graduated feedback hooks missing');
+assert(/openGuardianFocus/.test(parent),'parent launch action missing');
+assert(/guardianFocusHistory/.test(focus),'before-after history missing');
+assert(/v3\.9\.0/.test(html)&&/pahlawan-angka-v3\.9\.0/.test(sw),'version/cache not updated');
+assert(sw.includes("'./js/guardian-focus.js'")&&sw.includes("'./css/guardian-focus-v3.8.30.css'"),'focus assets absent from app shell');
+console.log('guardian focus audit: 8 checks passed');

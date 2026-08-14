@@ -1,0 +1,18 @@
+{
+  "phase": "2.5",
+  "skills": 102,
+  "coach_min_questions": 30,
+  "coach_max_questions": 45,
+  "mission_questions": 10,
+  "new_engine": "js/engine/frontier.js",
+  "js_syntax": "pass",
+  "missing_local_references": 0,
+  "checks": {
+    "frontier_loaded": true,
+    "coach_30": true,
+    "coach_45": true,
+    "coach_dispatch": true,
+    "learning_finish": true,
+    "battle_finish": true
+  }
+}

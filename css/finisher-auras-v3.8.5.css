@@ -1,0 +1,24 @@
+/* v3.8.5 — approved JRPG sigils anchored to each hero's true foot position. */
+#hero>.mathAuraRig{position:absolute;left:50%;bottom:-18px;width:clamp(190px,58vw,270px);aspect-ratio:1;transform:translateX(-50%);transform-origin:50% 62%;opacity:0;visibility:hidden;pointer-events:none;z-index:1;mix-blend-mode:screen}
+#hero>.mathAuraRig .mathFinisherAura{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;max-width:none;transform:scale(.18) rotate(-24deg);opacity:0}
+#hero>.mathAuraRig .mathAuraCore{position:absolute;left:50%;top:62%;width:16%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.1);background:radial-gradient(circle,#fff 0 9%,#8ae8ff 18%,rgba(72,166,255,.5) 38%,transparent 70%);filter:blur(1px);opacity:0}
+#hero>.mathAuraRig .mathAuraSpark{position:absolute;left:50%;top:62%;width:5px;height:52%;transform:translate(-50%,-95%) scaleY(0);transform-origin:center bottom;background:linear-gradient(transparent,#fff 78%,#89e5ff);box-shadow:-20px 28px 0 -1px #fff,22px 18px 0 -1px #fff;opacity:0}
+#hero>.sprite{position:relative;z-index:3}
+#hero>.battlePet{z-index:4}
+#hero>.mathAuraRig.active{visibility:visible;animation:auraRigLife .76s ease-out both}
+#hero>.mathAuraRig.active .mathFinisherAura{animation:auraRiseSpin .76s cubic-bezier(.16,.72,.22,1) both}
+#hero>.mathAuraRig.active .mathAuraCore{animation:auraCoreBoost .76s ease-out both}
+#hero>.mathAuraRig.active .mathAuraSpark{animation:auraSparkRise .32s ease-out both}
+#hero.charging-finisher.phase-anticipation .hero-frame{filter:drop-shadow(0 0 6px #dff8ff) drop-shadow(0 0 13px #5ac8ff)}
+#hero.charging-finisher.phase-contact .hero-frame{filter:brightness(1.35) drop-shadow(0 0 10px #fff)}
+#hero>.mathAuraRig[data-aura="operations"]{filter:hue-rotate(-8deg) drop-shadow(0 0 8px rgba(255,157,25,.82))}
+#hero>.mathAuraRig[data-aura="fractions"]{filter:drop-shadow(0 0 8px rgba(171,73,255,.82))}
+#hero>.mathAuraRig[data-aura="data"]{filter:drop-shadow(0 0 8px rgba(20,236,211,.78))}
+@keyframes auraRigLife{0%{opacity:0}10%{opacity:1}72%{opacity:1}100%{opacity:0}}
+@keyframes auraRiseSpin{0%{opacity:0;transform:scale(.18) rotate(-24deg)}16%{opacity:.86;transform:scale(.66) rotate(-9deg)}32%{opacity:1;transform:scale(1) rotate(4deg)}42%{opacity:.98;transform:scale(1.05) rotate(12deg)}52%{opacity:0;transform:scale(.18) rotate(26deg)}100%{opacity:0;transform:scale(.18) rotate(26deg)}}
+@keyframes auraCoreBoost{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}24%{opacity:.9;transform:translate(-50%,-50%) scale(1.2)}40%{opacity:.9;transform:translate(-50%,-50%) scale(2.1)}52%{opacity:0;transform:translate(-50%,-50%) scale(.18)}100%{opacity:0;transform:translate(-50%,-50%) scale(.18)}}
+@keyframes auraSparkRise{0%{opacity:0;transform:translate(-50%,-70%) scaleY(0)}35%{opacity:1}100%{opacity:0;transform:translate(-50%,-100%) scaleY(1)}}
+body.hero-bunga #hero>.mathAuraRig{left:49%;bottom:-17px}
+@media (min-width:601px){#hero>.mathAuraRig{bottom:-23px;width:clamp(255px,42vw,350px)}}
+@media (orientation:landscape) and (max-height:650px){#hero>.mathAuraRig{bottom:-15px;width:clamp(175px,23vw,260px)}}
+@media (prefers-reduced-motion:reduce){#hero>.mathAuraRig.active .mathFinisherAura{animation:auraReduced .76s ease-out both}@keyframes auraReduced{0%,100%{opacity:0}20%,72%{opacity:.9;transform:scale(1)}}}

@@ -1,0 +1,22 @@
+window.PAQuestionBanks = window.PAQuestionBanks || {};
+window.PAQuestionBanks.d6 = function(id,s,shift){
+ if(id==="D6.NUMBERS"){let start=R(100000,900000),step=pick([25,50,100,250]),ans=start+step*3;return Q(`${start}, ${start+step}, ${start+step*2}, ?`,ans,[N(ans-step,"pattern"),N(ans+step,"pattern"),N(start+3,"pattern")],"Cari beza yang tetap.","Darjah 6",true,shift)}
+ if(id==="D6.OPS"){let a=R(40,90),b=R(10,25),c=R(2,9),ans=a+b*c;return Q(`${a} + ${b} × ${c} = ?`,ans,[N((a+b)*c,"operation"),N(a+b+c,"operation"),N(a*b+c,"operation")],"Selesaikan darab dahulu, kemudian tambah.","Darjah 6",true,true)}
+ if(id==="D6.FRAC"){let d=pick([3,4,5,6,8,10]),whole=R(1,5),n=R(1,d-1),ans=`${whole*d+n}/${d}`;return Q(`Tukar nombor bercampur <b>${whole} ${n}/${d}</b> kepada pecahan tak wajar.`,ans,[N(`${whole+n}/${d}`,"fraction"),N(`${whole*d-n}/${d}`,"fraction"),N(`${whole}/${n+d}`,"fraction")],"Darab nombor bulat dengan penyebut, kemudian tambah pengangka.","Darjah 6",true,true)}
+ if(id==="D6.DEC"){let a=R(120,999)/100,b=R(110,699)/100,mode=pick(["add","subtract"]);if(mode==="subtract"&&b>a)[a,b]=[b,a];let ans=mode==="add"?a+b:a-b,sign=mode==="add"?"+":"−";return Q(`${decimalFmt(a,2)} ${sign} ${decimalFmt(b,2)} = ?`,decimalFmt(ans,2),[N(decimalFmt(ans+.1,2),"decimal"),N(decimalFmt(ans+.01,2),"decimal"),N(decimalFmt(Math.max(0,ans-.01),2),"decimal")],"Selarikan titik perpuluhan hingga dua tempat.","Darjah 6",true,true)}
+ if(id==="D6.PERCENT"){let pct=pick([10,15,20,25,30,40,50,60,75]),base=pick([40,50,60,80,100,120,160,200]),ans=tidyNumber(base*pct/100);return Q(`${pct}% daripada ${base} = ?`,ans,[N(tidyNumber(base*(100-pct)/100),"percent"),N(base+pct,"operation"),N(pct,"percent")],"Tukar peratus kepada pecahan /100.","Darjah 6",true,true)}
+ if(id==="D6.RATIO"){let a=pick([2,3,4]),b=pick([3,4,5]),mul=pick([2,3,4]),ans=`${a*mul}:${b*mul}`;return Q(`Nisbah setara bagi <b>${a}:${b}</b> ialah?`,ans,[N(`${a+b}:${b}`,"ratio"),N(`${a}:${b*mul}`,"ratio"),N(`${a*mul}:${b}`,"ratio")],"Darab kedua-dua bahagian dengan nombor yang sama.","Darjah 6",true,true)}
+ if(id==="D6.MONEY"){let budget=pick([200,250,300]),spend=pick([85,120,145]),save=pick([20,30,40]),ans=budget-spend-save;return Q(`Aiman ada RM${budget}. Dia belanja RM${spend}, kemudian memasukkan RM${save} ke dalam tabung yang tidak boleh digunakan. Berapa wang yang masih boleh dibelanjakan?`,`RM${ans}`,[N(`RM${budget-spend}`,"money"),N(`RM${spend+save}`,"operation"),N(`RM${ans+10}`,"same_end")],`Tolak wang yang dibelanjakan dan wang yang dimasukkan ke tabung: ${budget} − ${spend} − ${save}.`,"Darjah 6",true,true)}
+ if(id==="D6.TIME"){
+  const speed=pick([40,50,60,70,80,90,100]),minutes=pick([30,60,90,120,150,180,210]),dist=speed*minutes/60,hours=minutes/60;
+  const ans=minutes%60===0?`${minutes/60} jam`:`${Math.floor(hours)} jam ${minutes%60} minit`;
+  const plus30=minutes+30,minus30=Math.max(30,minutes-30);
+  const fmt=m=>m%60===0?`${m/60} jam`:`${Math.floor(m/60)} jam ${m%60} minit`;
+  return Q(`Sebuah kereta bergerak ${dist} km pada ${speed} km/j. Tempoh perjalanan?`,ans,[N(fmt(plus30),"time"),N(fmt(minus30),"time"),N(`${tidyNumber(speed/dist)} jam`,"operation")],"Tempoh = jarak ÷ laju.","Darjah 6",true,true)
+ }
+ if(id==="D6.MEASURE"){let kg=R(1,9),g=R(1,19)*50,ans=kg*1000+g;return Q(`${kg} kg ${g} g = berapa g?`,ans,[N(kg+g,"unit"),N(kg*100+g,"unit"),N(ans+100,"unit")],"1 kg = 1000 g.","Darjah 6",true,true)}
+ if(id==="D6.AREA"){let l=pick([8,10,12]),w=pick([5,6,7]),h=pick([2,3,4]),ans=l*w*h;return Q(`Sebuah kuboid mempunyai panjang ${l} cm, lebar ${w} cm dan tinggi ${h} cm. Isipadunya?`,ans,[N(2*(l+w+h),"area"),N(l*w,"area"),N(ans+h,"area")],"Isipadu kuboid = panjang × lebar × tinggi.","Darjah 6",true,true)}
+ if(id==="D6.COORD"){let x=R(1,4),y=R(1,4),label=pick(['P','Q','R','S']),ans=x+y;return Q(`${coordGrid(x,y)}Titik ${label} berada pada (${x},${y}). Nilai x + y = ?`,ans,[N(x*y,"coord"),N(String(x)+String(y),"coord"),N(Math.abs(x-y),"coord")],"Baca koordinat x dan y dahulu.","Darjah 6",true,true)}
+ if(id==="D6.DATA"){let labels=['Merah','Biru','Hijau'],vals=[R(10,25),R(10,25),R(10,25)],sum=vals.reduce((a,b)=>a+b,0),target=labels[1],ans=Math.round(vals[1]/sum*100);return Q(`${barChart(labels,vals)}Anggaran peratus bagi kategori <b>${target}</b>?`,`${ans}%`,[N(`${Math.round(vals[0]/sum*100)}%`,"percent"),N(`${Math.round(vals[2]/sum*100)}%`,"percent"),N(`${sum}%`,"percent")],"Peratus = bahagian ÷ jumlah × 100.","Darjah 6",true,true)}
+ return null;
+};

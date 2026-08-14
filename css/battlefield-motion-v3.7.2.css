@@ -1,0 +1,48 @@
+/* v3.7.2 — layered battlefield and pose-to-pose hero attacks. */
+.battle{
+  isolation:isolate;
+  background:#17384a url("../assets/battlefields/forest-temple/arena-v1.webp") center 58%/cover no-repeat;
+  border-color:rgba(255,224,145,.48);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 -38px 60px rgba(4,18,18,.28),0 12px 28px rgba(0,0,0,.28);
+}
+.battle::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(5,20,34,.13) 0%,rgba(7,26,27,0) 42%,rgba(4,18,19,.16) 76%,rgba(3,14,16,.42) 100%);
+}
+.battle::after{
+  content:"";position:absolute;inset:-2% -4%;z-index:1;pointer-events:none;opacity:.22;
+  background:radial-gradient(ellipse at 28% 66%,rgba(255,220,119,.35),transparent 25%),radial-gradient(ellipse at 76% 65%,rgba(114,220,174,.24),transparent 28%);
+  animation:paArenaLight 7s ease-in-out infinite alternate;
+}
+@keyframes paArenaLight{from{transform:translate3d(-.8%,0,0);opacity:.16}to{transform:translate3d(.8%,-.5%,0);opacity:.28}}
+.battle .sky{z-index:8;background:linear-gradient(135deg,rgba(5,18,32,.84),rgba(11,32,42,.68));border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.battle .unit{z-index:5}
+.battle .ground{z-index:2;height:34px;background:linear-gradient(180deg,rgba(31,68,46,0),rgba(5,23,20,.46));border-top:1px solid rgba(220,235,151,.16)}
+.battle .unit::after{content:"";position:absolute;left:20%;right:20%;bottom:-7px;height:13px;z-index:0;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.38),transparent 68%);filter:blur(2px);pointer-events:none}
+.arena-flash{z-index:9}
+
+/* The wrapper handles travel; these images only change pose on one locked baseline. */
+#hero .hero-frame{top:auto;bottom:0;left:50%;height:100%;max-height:none;opacity:0;transform:translateX(-50%);object-position:center bottom;transition:opacity 45ms linear;filter:drop-shadow(0 7px 6px rgba(0,0,0,.48))}
+#hero .hero-frame-idle{opacity:1}
+#hero.attacking .hero-frame{opacity:0}
+#hero.attacking.phase-anticipation .hero-frame-anticipation{opacity:1}
+#hero.attacking.phase-contact .hero-frame-attack{opacity:1}
+#hero.attacking.phase-follow-through .hero-frame-follow-through{opacity:1}
+#hero.attacking.phase-recover .hero-frame-idle{opacity:1}
+#hero .hero-frame-attack{left:57%;height:104%}
+#hero .hero-frame-follow-through{left:54%}
+
+/* Shorter travel because the pose itself now carries the force. */
+#hero.attacking .sprite{animation:paPoseAttackRight .62s cubic-bezier(.2,.72,.25,1) both}
+#hero.attacking.charging-finisher .sprite{animation-duration:.72s}
+@keyframes paPoseAttackRight{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  20%{transform:translate3d(-5px,2px,0) scale(.98,1.02)}
+  40%,49%{transform:translate3d(37px,-2px,0) scale(1.025,.985)}
+  64%{transform:translate3d(27px,0,0) scale(1.01)}
+  84%{transform:translate3d(5px,0,0) scale(.995,1.005)}
+  100%{transform:translate3d(0,0,0) scale(1)}
+}
+@media(max-width:600px){.battle{background-position:center 58%}.battle .ground{height:30px}}
+@media(min-width:601px){#hero .hero-frame-attack{height:103%}}
+@media(prefers-reduced-motion:reduce){.battle::after{animation:none}.hero-frame{transition:none!important}}

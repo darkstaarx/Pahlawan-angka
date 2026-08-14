@@ -1,0 +1,16 @@
+.coachPortrait{overflow:hidden;padding:0!important;background:radial-gradient(circle at 50% 35%,#3f7492,#172b4b 72%)!important}
+.coachPortrait img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transform:scale(1.42) translateY(10%)}
+.learningIntro{position:relative;min-height:116px;align-items:stretch;padding:12px 13px 12px 116px;overflow:hidden}
+.coachAvatar{position:absolute;left:3px;bottom:0;width:112px;height:120px;background:radial-gradient(circle at 45% 45%,#315c78 0,#172744 67%,transparent 68%);border-radius:0;overflow:hidden}
+.coachAvatar img{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;transition:opacity .16s ease,transform .22s ease;filter:drop-shadow(0 7px 9px #0006)}
+.coachAvatar img.pose-teach{transform:scale(1.03)}.coachAvatar img.pose-encourage{transform:scale(1.02)}
+.coachSpeech{position:relative;align-self:center;min-width:0}.coachSpeech:before{content:"";position:absolute;left:-14px;top:25px;border:7px solid transparent;border-right-color:#2b456b}
+.coachName{display:inline-block;margin-bottom:4px;color:#ffd76b;font-size:9px;font-weight:950;letter-spacing:.12em}.coachSpeech b{display:block;font-size:14px;line-height:1.25}.learningIntro .coachSpeech p{margin-top:5px}
+@media(max-width:380px){.learningIntro{padding-left:99px}.coachAvatar{width:96px;height:112px}.coachSpeech b{font-size:13px}.learningIntro .coachSpeech p{font-size:12px}}
+.learningWorkspace{display:grid;grid-template-columns:132px minmax(0,1fr);gap:10px;align-items:stretch}
+.coachStage{position:relative;min-height:330px;overflow:hidden;border:1px solid #35507a;border-radius:20px;background:linear-gradient(180deg,#173452,#101b30 72%);display:flex;align-items:flex-end;justify-content:center}
+.coachStageGlow{position:absolute;inset:12% -35% 10%;background:radial-gradient(circle,#59c8d34a 0,transparent 67%)}
+.coachStage img{position:relative;z-index:1;width:170px;max-width:none;height:94%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 10px 12px #0008);transition:transform .22s ease}
+.coachStage img.pose-teach{transform:translateX(4px) scale(1.04)}.coachStage img.pose-encourage{transform:scale(1.04)}
+.coachStage>span{position:absolute;z-index:2;left:8px;right:8px;bottom:8px;padding:6px;border-radius:9px;background:#0c1729d9;color:#ffd76b;text-align:center;font-size:10px;font-weight:950;letter-spacing:.05em}
+@media(max-width:520px){.learningWorkspace{grid-template-columns:100px minmax(0,1fr)}.coachStage{min-height:300px}.coachStage img{width:145px}.learningBody{padding:13px}.learningBody h2{font-size:21px}}

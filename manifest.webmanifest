@@ -1,0 +1,36 @@
+{
+  "id": "./",
+  "name": "Pahlawan Angka",
+  "short_name": "Pahlawan Angka",
+  "description": "RPG Matematik adaptif KSSR untuk murid sekolah rendah Malaysia.",
+  "lang": "ms-MY",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#08101d",
+  "theme_color": "#08101d",
+  "categories": ["education", "games", "kids"],
+  "icons": [
+    {
+      "src": "assets/icons/pa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/pa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/pa-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

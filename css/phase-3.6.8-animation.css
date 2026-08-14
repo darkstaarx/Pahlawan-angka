@@ -1,0 +1,132 @@
+/* Phase 3.6.8 — motion polish. Loaded last so legacy animation rules cannot override it. */
+
+/* Idle motion: quiet breathing/weight shift, with different rhythm for each unit. */
+#hero:not(.attacking):not(.hit) .sprite{
+  animation:paHeroIdle 3.1s ease-in-out infinite;
+  transform-origin:50% 100%;
+  will-change:transform;
+}
+#enemy:not(.attacking):not(.hit) .sprite{
+  animation:paEnemyIdle 2.75s ease-in-out infinite;
+  transform-origin:50% 100%;
+  will-change:transform;
+}
+@keyframes paHeroIdle{
+  0%,100%{transform:translate3d(0,0,0) rotate(0) scale(1)}
+  42%{transform:translate3d(0,-3px,0) rotate(-.45deg) scale(1.012,1.025)}
+  58%{transform:translate3d(0,-4px,0) rotate(-.7deg) scale(1.016,1.03)}
+}
+@keyframes paEnemyIdle{
+  0%,100%{transform:translate3d(0,0,0) rotate(-.35deg) scale(1)}
+  50%{transform:translate3d(0,-5px,0) rotate(.8deg) scale(1.018)}
+}
+
+/* Attack arc: anticipation -> acceleration -> short hit-stop -> recoil -> recovery. */
+#hero.attacking .sprite{
+  animation:paAttackRight .62s cubic-bezier(.2,.72,.25,1) both;
+  transform-origin:48% 100%;
+  will-change:transform;
+}
+#enemy.attacking .sprite{
+  animation:paAttackLeft .62s cubic-bezier(.2,.72,.25,1) both;
+  transform-origin:52% 100%;
+  will-change:transform;
+}
+#hero.attacking.charging-finisher .sprite,
+#enemy.attacking.charging-finisher .sprite{animation-duration:.72s}
+@keyframes paAttackRight{
+  0%{transform:translate3d(0,0,0) scale(1) rotate(0)}
+  13%{transform:translate3d(-7px,2px,0) scale(.96,1.03) rotate(-2deg)}
+  27%{transform:translate3d(-9px,1px,0) scale(.94,1.05) rotate(-2.7deg)}
+  40%{transform:translate3d(48px,-2px,0) scale(1.08,.96) rotate(1.5deg)}
+  46%{transform:translate3d(52px,-2px,0) scale(1.08,.96) rotate(1.5deg)}
+  63%{transform:translate3d(31px,0,0) scale(1.025) rotate(-.8deg)}
+  82%{transform:translate3d(-3px,0,0) scale(.99,1.01) rotate(-.35deg)}
+  100%{transform:translate3d(0,0,0) scale(1) rotate(0)}
+}
+@keyframes paAttackLeft{
+  0%{transform:translate3d(0,0,0) scale(1) rotate(0)}
+  13%{transform:translate3d(7px,2px,0) scale(.96,1.03) rotate(2deg)}
+  27%{transform:translate3d(9px,1px,0) scale(.94,1.05) rotate(2.7deg)}
+  40%{transform:translate3d(-48px,-2px,0) scale(1.08,.96) rotate(-1.5deg)}
+  46%{transform:translate3d(-52px,-2px,0) scale(1.08,.96) rotate(-1.5deg)}
+  63%{transform:translate3d(-31px,0,0) scale(1.025) rotate(.8deg)}
+  82%{transform:translate3d(3px,0,0) scale(.99,1.01) rotate(.35deg)}
+  100%{transform:translate3d(0,0,0) scale(1) rotate(0)}
+}
+
+/* Target reaction has a readable contact pose followed by a damped settle. */
+#hero.hit .sprite,#enemy.hit:not(.finisher) .sprite{
+  animation:paHitRight .52s cubic-bezier(.18,.8,.25,1) both;
+  transform-origin:50% 100%;
+}
+#hero.hit .sprite{animation-name:paHitLeft}
+@keyframes paHitRight{
+  0%{transform:translate3d(0,0,0) scale(1);filter:brightness(1)}
+  8%,14%{transform:translate3d(0,0,0) scale(1.14,.86);filter:brightness(2.8) saturate(.2)}
+  30%{transform:translate3d(21px,-2px,0) scale(.9,1.1) rotate(7deg);filter:brightness(1.35)}
+  54%{transform:translate3d(-8px,0,0) scale(1.025) rotate(-2.5deg);filter:brightness(1)}
+  74%{transform:translate3d(4px,0,0) rotate(1deg)}
+  100%{transform:translate3d(0,0,0) scale(1) rotate(0);filter:brightness(1)}
+}
+@keyframes paHitLeft{
+  0%{transform:translate3d(0,0,0) scale(1);filter:brightness(1)}
+  8%,14%{transform:translate3d(0,0,0) scale(1.14,.86);filter:brightness(2.8) saturate(.2)}
+  30%{transform:translate3d(-21px,-2px,0) scale(.9,1.1) rotate(-7deg);filter:brightness(1.35)}
+  54%{transform:translate3d(8px,0,0) scale(1.025) rotate(2.5deg);filter:brightness(1)}
+  74%{transform:translate3d(-4px,0,0) rotate(-1deg)}
+  100%{transform:translate3d(0,0,0) scale(1) rotate(0);filter:brightness(1)}
+}
+
+/* Pet assists at the target: dash to the enemy, hit, then return to formation. */
+.battle-pet-idle{animation:paPetIdle 2.35s ease-in-out infinite}
+#hero.attacking .battle-pet-idle{opacity:0;animation:none}
+#hero.attacking .battlePet{
+  animation:paPetDash .62s cubic-bezier(.2,.72,.25,1) both;
+  will-change:transform;
+}
+#hero.attacking.charging-finisher .battlePet{animation-duration:.72s}
+#hero.attacking .battle-pet-attack{
+  opacity:1;
+  animation:paPetStrike .62s cubic-bezier(.2,.72,.25,1) both;
+  transform-origin:50% 100%;
+}
+#hero.attacking.charging-finisher .battle-pet-attack{animation-duration:.72s}
+@keyframes paPetIdle{
+  0%,100%{transform:translateX(-50%) translateY(0) rotate(-1deg)}
+  48%{transform:translateX(-50%) translateY(-3px) rotate(.6deg)}
+  58%{transform:translateX(-50%) translateY(-4px) rotate(1deg)}
+}
+@keyframes paPetDash{
+  0%{transform:translate3d(0,0,0)}
+  14%{transform:translate3d(-5px,1px,0)}
+  39%,48%{transform:translate3d(var(--pet-dash-x,150px),-8px,0)}
+  58%{transform:translate3d(calc(var(--pet-dash-x,150px) - 10px),-3px,0)}
+  100%{transform:translate3d(0,0,0)}
+}
+@keyframes paPetStrike{
+  0%{transform:translateX(-50%) scale(.94,1.04) rotate(-3deg)}
+  34%{transform:translateX(-50%) scale(1.04,.97) rotate(2deg)}
+  40%,48%{transform:translateX(-50%) scale(1.13,.92) rotate(7deg)}
+  62%{transform:translateX(-50%) scale(1.01) rotate(-2deg)}
+  100%{transform:translateX(-50%) scale(1) rotate(0)}
+}
+
+/* Camera response starts at contact and settles quickly instead of vibrating evenly. */
+.battle.shake{animation:paCameraHit .3s cubic-bezier(.22,.75,.3,1)}
+@keyframes paCameraHit{
+  0%,100%{transform:translate3d(0,0,0)}
+  12%{transform:translate3d(-5px,2px,0)}
+  27%{transform:translate3d(4px,-2px,0)}
+  45%{transform:translate3d(-2.5px,1px,0)}
+  68%{transform:translate3d(1.5px,-.5px,0)}
+}
+
+/* Preserve the existing Wira/Bunga finisher FX; only soften the attack lead-in. */
+.unit.hit .impact-flash{animation-duration:.44s}
+.unit.hit .impact-burst{animation-duration:.5s}
+
+@media(prefers-reduced-motion:reduce){
+  #hero .sprite,#enemy .sprite,.battlePet,.battle-pet-frame{animation-duration:.01ms!important;animation-iteration-count:1!important}
+  .battle.shake,.battle.finisher-shake{animation:none!important}
+}

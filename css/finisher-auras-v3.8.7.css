@@ -1,0 +1,31 @@
+/* v3.8.7 — readable Khazanah boost and boss-scale correction. */
+#hero>.mathAuraRig{position:absolute;left:50%;bottom:-23px;width:clamp(230px,68vw,315px);aspect-ratio:1;transform:translateX(-50%);transform-origin:50% 62%;opacity:0;visibility:hidden;pointer-events:none;z-index:2;isolation:isolate}
+#hero>.mathAuraRig::before{content:"";position:absolute;left:50%;top:62%;width:66%;height:28%;border-radius:50%;transform:translate(-50%,-50%) scale(.2);opacity:0;background:radial-gradient(ellipse,rgba(255,255,255,.72) 0 5%,rgba(67,190,255,.4) 24%,rgba(29,83,190,.22) 48%,transparent 72%);filter:blur(2px);box-shadow:0 0 22px rgba(76,204,255,.55)}
+#hero>.mathAuraRig .mathFinisherAura{position:absolute;inset:0;left:0;bottom:auto;width:100%;height:100%;object-fit:contain;max-width:none;transform:scale(.12) rotate(-28deg);opacity:0;visibility:visible;filter:saturate(1.35) contrast(1.12) brightness(1.18) drop-shadow(0 0 7px rgba(125,225,255,.95))}
+#hero>.mathAuraRig .mathAuraCore{position:absolute;left:50%;top:62%;width:18%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(.1);background:radial-gradient(circle,#fff 0 9%,#a8f2ff 18%,rgba(55,174,255,.62) 38%,transparent 72%);filter:blur(1px);opacity:0}
+#hero>.mathAuraRig .mathAuraSpark{position:absolute;left:50%;top:62%;width:6px;height:58%;transform:translate(-50%,-95%) scaleY(0);transform-origin:center bottom;background:linear-gradient(transparent,#fff 78%,#8eeaff);box-shadow:-24px 28px 0 -1px #fff,25px 18px 0 -1px #fff;opacity:0}
+#hero>.sprite{position:relative;z-index:3}#hero>.battlePet{z-index:4}
+#hero>.mathAuraRig.active{visibility:visible;animation:auraRigLifeV387 1.08s ease-out both}
+#hero>.mathAuraRig.active::before{animation:auraFloorPulseV387 1.08s ease-out both}
+#hero>.mathAuraRig.active .mathFinisherAura{visibility:visible!important;animation:auraRiseSpinV387 1.08s cubic-bezier(.16,.72,.22,1) both}
+#hero>.mathAuraRig.active .mathAuraCore{animation:auraCoreBoostV387 1.08s ease-out both}
+#hero>.mathAuraRig.active .mathAuraSpark{animation:auraSparkRiseV387 .56s ease-out both}
+#hero.charging-finisher.phase-anticipation .hero-frame{filter:brightness(1.12) drop-shadow(0 0 7px #fff) drop-shadow(0 0 17px #4ccaff)}
+#hero.charging-finisher.phase-contact .hero-frame{filter:brightness(1.48) drop-shadow(0 0 12px #fff)}
+#hero>.mathAuraRig[data-aura="operations"]{filter:hue-rotate(-8deg) drop-shadow(0 0 11px rgba(255,157,25,.95))}
+#hero>.mathAuraRig[data-aura="fractions"]{filter:drop-shadow(0 0 11px rgba(171,73,255,.95))}
+#hero>.mathAuraRig[data-aura="data"]{filter:drop-shadow(0 0 11px rgba(20,236,211,.92))}
+@keyframes auraRigLifeV387{0%{opacity:0}7%{opacity:1}58%{opacity:1}72%{opacity:.9}100%{opacity:0}}
+@keyframes auraRiseSpinV387{0%{opacity:0;transform:scale(.12) rotate(-28deg)}18%{opacity:.92;transform:scale(.64) rotate(-13deg)}38%{opacity:1;transform:scale(.94) rotate(0)}52%{opacity:1;transform:scale(1.06) rotate(12deg)}58%{opacity:1;transform:scale(1.1) rotate(17deg)}72%{opacity:.28;transform:scale(.28) rotate(32deg)}100%{opacity:0;transform:scale(.12) rotate(38deg)}}
+@keyframes auraFloorPulseV387{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}22%{opacity:.75;transform:translate(-50%,-50%) scale(.85)}52%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}72%{opacity:0;transform:translate(-50%,-50%) scale(.22)}100%{opacity:0}}
+@keyframes auraCoreBoostV387{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}28%{opacity:.95;transform:translate(-50%,-50%) scale(1.2)}54%{opacity:1;transform:translate(-50%,-50%) scale(2.35)}72%{opacity:0;transform:translate(-50%,-50%) scale(.16)}100%{opacity:0}}
+@keyframes auraSparkRiseV387{0%{opacity:0;transform:translate(-50%,-70%) scaleY(0)}35%{opacity:1}100%{opacity:0;transform:translate(-50%,-100%) scaleY(1)}}
+body.hero-bunga #hero>.mathAuraRig{left:49%;bottom:-22px}
+#game #enemy[data-enemy-tier="boss"]{width:clamp(166px,44vw,220px)!important;right:clamp(-12px,-1vw,8px)!important;overflow:visible!important}
+#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{width:clamp(184px,48vw,240px)!important;height:calc(var(--unit-h,132px) + 36px)!important;margin-left:-22px!important;overflow:visible!important}
+#game #enemy[data-enemy-tier="boss"] #enemySprite,#game #enemy[data-enemy-tier="boss"] .enemy-frame{width:clamp(174px,46vw,230px)!important;height:calc(var(--unit-h,132px) + 34px)!important;max-width:240px!important;object-fit:contain;object-position:center bottom}
+#game #enemy[data-enemy-tier="boss"] #enemySprite{transform:translateY(8px)}
+#game #enemy[data-enemy-tier="boss"] .enemy-frame:not(.enemy-frame-idle){transform:translateX(-50%) translateY(8px)}
+@media(min-width:601px){#hero>.mathAuraRig{bottom:-28px;width:clamp(290px,46vw,390px)}}
+@media(orientation:landscape) and (max-height:650px){#hero>.mathAuraRig{bottom:-19px;width:clamp(220px,29vw,300px)}#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{height:calc(var(--unit-h) + 28px)!important}#game #enemy[data-enemy-tier="boss"] #enemySprite,#game #enemy[data-enemy-tier="boss"] .enemy-frame{height:calc(var(--unit-h) + 27px)!important}}
+@media(prefers-reduced-motion:reduce){#hero>.mathAuraRig.active .mathFinisherAura{animation:auraReducedV387 1.08s ease-out both}@keyframes auraReducedV387{0%,100%{opacity:0}15%,62%{opacity:1;transform:scale(1)}}}

@@ -1,0 +1,302 @@
+{
+  "samplesPerSkill": 1000,
+  "skills": {
+    "D2.1.1": {
+      "uniquePrompts": 673,
+      "uniqueAnswers": 466,
+      "visualSamples": 331,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.1.2": {
+      "uniquePrompts": 762,
+      "uniqueAnswers": 762,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.1.3": {
+      "uniquePrompts": 978,
+      "uniqueAnswers": 588,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.1.4": {
+      "uniquePrompts": 913,
+      "uniqueAnswers": 376,
+      "visualSamples": 206,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.1.5": {
+      "uniquePrompts": 1,
+      "uniqueAnswers": 8,
+      "visualSamples": 1000,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.1.6": {
+      "uniquePrompts": 717,
+      "uniqueAnswers": 90,
+      "visualSamples": 1000,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.1.7": {
+      "uniquePrompts": 966,
+      "uniqueAnswers": 420,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.1.8": {
+      "uniquePrompts": 1000,
+      "uniqueAnswers": 545,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.2.1": {
+      "uniquePrompts": 998,
+      "uniqueAnswers": 516,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.2.2": {
+      "uniquePrompts": 1000,
+      "uniqueAnswers": 588,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.2.3": {
+      "uniquePrompts": 169,
+      "uniqueAnswers": 41,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.2.4": {
+      "uniquePrompts": 357,
+      "uniqueAnswers": 87,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.2.5": {
+      "uniquePrompts": 609,
+      "uniqueAnswers": 388,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.3.1": {
+      "uniquePrompts": 160,
+      "uniqueAnswers": 31,
+      "visualSamples": 631,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.3.2": {
+      "uniquePrompts": 140,
+      "uniqueAnswers": 9,
+      "visualSamples": 502,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.3.3": {
+      "uniquePrompts": 81,
+      "uniqueAnswers": 17,
+      "visualSamples": 513,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.3.4": {
+      "uniquePrompts": 53,
+      "uniqueAnswers": 19,
+      "visualSamples": 335,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.4.1": {
+      "uniquePrompts": 198,
+      "uniqueAnswers": 38,
+      "visualSamples": 1000,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.4.2": {
+      "uniquePrompts": 861,
+      "uniqueAnswers": 483,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.4.3": {
+      "uniquePrompts": 638,
+      "uniqueAnswers": 318,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.4.4": {
+      "uniquePrompts": 295,
+      "uniqueAnswers": 100,
+      "visualSamples": 540,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.4.5": {
+      "uniquePrompts": 237,
+      "uniqueAnswers": 38,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.4.6": {
+      "uniquePrompts": 507,
+      "uniqueAnswers": 231,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.4.7": {
+      "uniquePrompts": 532,
+      "uniqueAnswers": 206,
+      "visualSamples": 387,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.5.1": {
+      "uniquePrompts": 1,
+      "uniqueAnswers": 144,
+      "visualSamples": 1000,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.5.2": {
+      "uniquePrompts": 12,
+      "uniqueAnswers": 12,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.5.3": {
+      "uniquePrompts": 375,
+      "uniqueAnswers": 49,
+      "visualSamples": 1000,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.6.1": {
+      "uniquePrompts": 177,
+      "uniqueAnswers": 22,
+      "visualSamples": 347,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.6.2": {
+      "uniquePrompts": 77,
+      "uniqueAnswers": 13,
+      "visualSamples": 323,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.6.3": {
+      "uniquePrompts": 77,
+      "uniqueAnswers": 13,
+      "visualSamples": 357,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.6.4": {
+      "uniquePrompts": 415,
+      "uniqueAnswers": 172,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.7.1": {
+      "uniquePrompts": 17,
+      "uniqueAnswers": 5,
+      "visualSamples": 397,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.7.2": {
+      "uniquePrompts": 31,
+      "uniqueAnswers": 4,
+      "visualSamples": 316,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.7.3": {
+      "uniquePrompts": 40,
+      "uniqueAnswers": 8,
+      "visualSamples": 0,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.8.1": {
+      "uniquePrompts": 982,
+      "uniqueAnswers": 8,
+      "visualSamples": 544,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.8.2": {
+      "uniquePrompts": 130,
+      "uniqueAnswers": 13,
+      "visualSamples": 1000,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    },
+    "D2.8.3": {
+      "uniquePrompts": 346,
+      "uniqueAnswers": 19,
+      "visualSamples": 1000,
+      "exceptions": 0,
+      "duplicateOptionSamples": 0,
+      "badSamples": 0
+    }
+  },
+  "failures": []
+}

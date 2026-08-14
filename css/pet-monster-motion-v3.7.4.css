@@ -1,0 +1,103 @@
+/* v3.7.4 — pose-to-pose pet attacks and non-violent monster shatter defeat. */
+
+/* The pet wrapper travels; all four frames share one height-locked baseline. */
+.battlePet .battle-pet-frame{
+  opacity:0;
+  width:auto;
+  min-width:100%;
+  height:100%;
+  max-height:none;
+  object-fit:contain;
+  object-position:center bottom;
+  animation:none;
+  transition:opacity 38ms linear;
+}
+.battlePet .battle-pet-idle{opacity:1}
+#hero.attacking .battlePet .battle-pet-frame{opacity:0;animation:none}
+#hero.attacking.phase-anticipation .battle-pet-anticipation{opacity:1}
+#hero.attacking.phase-contact .battle-pet-attack{opacity:1}
+#hero.attacking.phase-follow-through .battle-pet-follow-through{opacity:1}
+#hero.attacking.phase-recover .battle-pet-idle{opacity:1}
+
+/* Anticipate beside the hero, strike at the enemy, then carry momentum before returning. */
+#hero.attacking .battlePet{
+  animation:paPetFourPhase .62s cubic-bezier(.2,.72,.25,1) both;
+  transform-origin:50% 100%;
+}
+#hero.attacking.charging-finisher .battlePet{animation-duration:.72s}
+@keyframes paPetFourPhase{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  20%{transform:translate3d(-5px,1px,0) scale(.96,1.035)}
+  40%,49%{transform:translate3d(var(--pet-dash-x,150px),-3px,0) scale(1.02,.99)}
+  64%{transform:translate3d(calc(var(--pet-dash-x,150px) - 10px),0,0) scale(1)}
+  84%{transform:translate3d(7px,0,0) scale(.99,1.01)}
+  100%{transform:translate3d(0,0,0) scale(1)}
+}
+
+/* Monster defeat layer reuses the current monster image, clipped into unique fragments. */
+.enemySpriteWrap{position:relative}
+.monster-defeat-layer{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  overflow:visible;
+  filter:drop-shadow(0 5px 5px rgba(0,0,0,.35));
+}
+.monster-shard{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  opacity:0;
+  transform-origin:50% 64%;
+}
+#enemy.defeat-crack #enemySprite{animation:paMonsterCrack 210ms ease-out both}
+#enemy.defeat-shatter #enemySprite{opacity:0}
+#enemy.defeat-shatter .monster-shard{
+  animation:paMonsterShard 620ms cubic-bezier(.18,.72,.28,1) both;
+  animation-delay:var(--delay,0ms);
+}
+.monster-defeat-dust{
+  position:absolute;
+  left:50%;
+  bottom:4%;
+  width:72%;
+  height:34%;
+  z-index:6;
+  transform:translateX(-50%);
+  opacity:0;
+  background:
+    radial-gradient(circle at 12% 70%,rgba(225,241,255,.9) 0 3%,transparent 4%),
+    radial-gradient(circle at 34% 42%,rgba(154,211,255,.85) 0 4%,transparent 5%),
+    radial-gradient(circle at 58% 62%,rgba(255,222,132,.85) 0 3%,transparent 4%),
+    radial-gradient(circle at 82% 35%,rgba(213,238,255,.8) 0 3%,transparent 4%);
+}
+#enemy.defeat-shatter .monster-defeat-dust{animation:paMonsterDust 580ms ease-out both}
+@keyframes paMonsterCrack{
+  0%{transform:translate3d(0,0,0) scale(1);filter:brightness(1)}
+  38%{transform:translate3d(-2px,0,0) scale(1.04);filter:brightness(2.1) saturate(.5)}
+  70%{transform:translate3d(2px,0,0) scale(.98);filter:brightness(1.35)}
+  100%{transform:translate3d(0,0,0) scale(1);filter:brightness(1.7)}
+}
+@keyframes paMonsterShard{
+  0%{opacity:1;transform:translate3d(0,0,0) rotate(0) scale(1)}
+  28%{opacity:1;transform:translate3d(var(--sx-mid),var(--sy-mid),0) rotate(var(--rot-mid)) scale(.99)}
+  100%{opacity:0;transform:translate3d(var(--sx),calc(var(--sy) + 26px),0) rotate(var(--rot)) scale(.72)}
+}
+@keyframes paMonsterDust{
+  0%{opacity:0;transform:translateX(-50%) translateY(2px) scale(.55)}
+  24%{opacity:.9}
+  100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(1.45)}
+}
+#enemy[data-enemy-tier="boss"].defeat-shatter .monster-shard{animation-duration:760ms}
+
+@media(prefers-reduced-motion:reduce){
+  #hero.attacking .battlePet{animation:none}
+  #enemy.defeat-crack #enemySprite{animation:none}
+  #enemy.defeat-shatter .monster-shard{animation:paMonsterFade 180ms linear both}
+  #enemy.defeat-shatter .monster-defeat-dust{display:none}
+}
+@keyframes paMonsterFade{from{opacity:1}to{opacity:0}}

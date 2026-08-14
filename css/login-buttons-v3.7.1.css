@@ -1,0 +1,70 @@
+/* Custom Pahlawan Angka login controls — no emoji/icon-font dependency. */
+body[data-screen="login"] .loginActions{gap:10px;padding-bottom:9px}
+body[data-screen="login"] .loginAction{
+  position:relative;
+  min-height:68px;
+  justify-content:flex-start;
+  gap:13px;
+  padding:8px 48px 8px 9px;
+  border-radius:15px;
+  overflow:hidden;
+  text-align:left;
+  box-shadow:0 10px 22px rgba(2,11,23,.35),inset 0 1px 0 rgba(255,255,255,.28);
+  transition:transform .15s ease,filter .15s ease,box-shadow .15s ease;
+}
+body[data-screen="login"] .loginAction::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border:1px solid rgba(243,198,90,.48);
+  border-radius:11px;
+  pointer-events:none;
+}
+body[data-screen="login"] .loginAction::after{
+  content:"";
+  position:absolute;
+  right:17px;
+  top:50%;
+  width:22px;
+  height:22px;
+  transform:translateY(-50%);
+  background:currentColor;
+  -webkit-mask:url("../assets/ui/login/menu-arrow.svg") center/contain no-repeat;
+  mask:url("../assets/ui/login/menu-arrow.svg") center/contain no-repeat;
+  opacity:.72;
+}
+body[data-screen="login"] .loginAction:active{transform:translateY(1px) scale(.992);filter:brightness(.95)}
+body[data-screen="login"] .loginAction:focus-visible{outline:3px solid #f2c75b;outline-offset:3px}
+body[data-screen="login"] .loginAction.student{
+  color:#fff;
+  border-color:#78baf0;
+  background:linear-gradient(145deg,rgba(31,104,169,.96),rgba(12,50,94,.97));
+}
+body[data-screen="login"] .loginAction.parent{
+  color:#163557;
+  border-color:#f1d47b;
+  background:linear-gradient(145deg,rgba(255,253,241,.97),rgba(224,235,241,.96));
+}
+body[data-screen="login"] .loginCrest{
+  position:relative;
+  z-index:1;
+  flex:0 0 49px;
+  width:49px;
+  height:49px;
+  object-fit:contain;
+  filter:drop-shadow(0 4px 5px rgba(0,0,0,.26));
+}
+body[data-screen="login"] .loginActionCopy{position:relative;z-index:1;display:grid;gap:2px;min-width:0}
+body[data-screen="login"] .loginActionCopy b{font-size:16px;line-height:1.15;letter-spacing:.01em}
+body[data-screen="login"] .loginActionCopy small{font-size:10px;line-height:1.25;font-weight:700;opacity:.72;letter-spacing:.025em}
+body[data-screen="login"] #loginResume .btn{position:relative;font-size:12px;font-weight:800;letter-spacing:.02em}
+body[data-screen="login"] #loginResume .resumeIcon{display:inline-block;width:15px;height:15px;margin-right:7px;vertical-align:-3px}
+body[data-screen="login"] .loginVersion{font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+@media (hover:hover){
+  body[data-screen="login"] .loginAction:hover{transform:translateY(-2px);filter:brightness(1.05);box-shadow:0 14px 28px rgba(2,11,23,.42),inset 0 1px 0 rgba(255,255,255,.3)}
+}
+@media(max-width:380px){
+  body[data-screen="login"] .loginAction{min-height:62px}
+  body[data-screen="login"] .loginCrest{flex-basis:44px;width:44px;height:44px}
+  body[data-screen="login"] .loginActionCopy b{font-size:15px}
+}

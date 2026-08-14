@@ -1,0 +1,48 @@
+{
+  "samplesPerSkill": 1000,
+  "skills": {
+    "D2.4.1": {
+      "uniquePrompts": 206,
+      "uniqueAnswers": 38,
+      "visualSamples": 1000,
+      "failures": []
+    },
+    "D2.4.2": {
+      "uniquePrompts": 857,
+      "uniqueAnswers": 476,
+      "visualSamples": 0,
+      "failures": []
+    },
+    "D2.4.3": {
+      "uniquePrompts": 649,
+      "uniqueAnswers": 328,
+      "visualSamples": 0,
+      "failures": []
+    },
+    "D2.4.4": {
+      "uniquePrompts": 295,
+      "uniqueAnswers": 101,
+      "visualSamples": 538,
+      "failures": []
+    },
+    "D2.4.5": {
+      "uniquePrompts": 238,
+      "uniqueAnswers": 38,
+      "visualSamples": 0,
+      "failures": []
+    },
+    "D2.4.6": {
+      "uniquePrompts": 514,
+      "uniqueAnswers": 233,
+      "visualSamples": 0,
+      "failures": []
+    },
+    "D2.4.7": {
+      "uniquePrompts": 535,
+      "uniqueAnswers": 208,
+      "visualSamples": 394,
+      "failures": []
+    }
+  },
+  "failures": []
+}

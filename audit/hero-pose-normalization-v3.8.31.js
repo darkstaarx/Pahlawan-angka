@@ -1,0 +1,10 @@
+const fs=require('fs'),assert=require('assert');
+const css=fs.readFileSync('css/hero-pose-normalization-v3.8.31.css','utf8');
+const html=fs.readFileSync('index.html','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+['hero-frame-anticipation','hero-frame-attack','hero-frame-follow-through','body.hero-bunga','body:not(.hero-bunga)','object-position:center bottom'].forEach(x=>assert(css.includes(x),`missing ${x}`));
+assert(!/animation-duration|@keyframes/.test(css),'attack timing changed');
+assert(/Pahlawan Angka · v3\.9\.0/.test(html),'visible version missing');
+assert(html.includes('hero-pose-normalization-v3.8.31.css?v=3.8.31'),'stylesheet cache query missing');
+assert(sw.includes('pahlawan-angka-v3.9.0')&&sw.includes("'./css/hero-pose-normalization-v3.8.31.css'"),'PWA cache missing pose stylesheet');
+console.log('hero pose normalization: 9 checks passed');

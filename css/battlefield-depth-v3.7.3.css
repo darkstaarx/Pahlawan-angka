@@ -1,0 +1,60 @@
+/* v3.7.3 — grounded idle motion and a cave-framed arena with true depth. */
+.battle{
+  background-color:#0b2228;
+  background-image:url("../assets/battlefields/cave-temple/arena-depth-v2.webp");
+  background-position:center 64%;
+  background-size:cover;
+}
+
+/* Preserve the cave silhouette; light only the playable floor and vanishing point. */
+.battle::before{
+  background:
+    linear-gradient(180deg,rgba(2,10,16,.18) 0%,rgba(4,18,23,.02) 48%,rgba(2,12,15,.34) 100%),
+    radial-gradient(ellipse at 50% 53%,rgba(190,228,201,.10),transparent 38%);
+}
+.battle::after{
+  opacity:.14;
+  animation:paCaveLight 8s ease-in-out infinite alternate;
+  background:radial-gradient(ellipse at 50% 58%,rgba(207,232,178,.22),transparent 34%);
+}
+@keyframes paCaveLight{from{opacity:.09}to{opacity:.16}}
+
+/* Feet stay locked to the baseline. Breathing comes from the torso-height scale. */
+#hero:not(.attacking):not(.hit) .sprite{
+  animation:paGroundedHeroIdle 3.4s ease-in-out infinite;
+  transform-origin:50% 100%;
+}
+#enemy:not(.attacking):not(.hit) .sprite{
+  animation:paGroundedEnemyIdle 3.1s ease-in-out infinite;
+  transform-origin:50% 100%;
+}
+@keyframes paGroundedHeroIdle{
+  0%,100%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(0,0,0) scale(1.004,1.012)}
+}
+@keyframes paGroundedEnemyIdle{
+  0%,100%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(0,0,0) scale(.997,1.009)}
+}
+
+/* Pet remains planted beside the hero; only a very small weight shift remains. */
+.battle-pet-idle{animation:paGroundedPetIdle 3s ease-in-out infinite}
+@keyframes paGroundedPetIdle{
+  0%,100%{transform:translateX(-50%) rotate(-.35deg) scale(1)}
+  50%{transform:translateX(-50%) rotate(.35deg) scale(1.006,.994)}
+}
+
+/* Stronger contact shadows visually pin all units to the stone platform. */
+.battle .unit::after{
+  bottom:-5px;
+  height:10px;
+  background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent 69%);
+  filter:blur(1.5px);
+}
+
+@media(max-width:600px){
+  .battle{background-position:center 66%}
+}
+@media(prefers-reduced-motion:reduce){
+  .battle::after{animation:none}
+}

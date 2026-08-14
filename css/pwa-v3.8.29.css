@@ -1,0 +1,16 @@
+/* v3.8.29 — official PA identity in existing branding slots only. */
+.appHeader .brandMark{
+  overflow:hidden;
+  padding:0;
+  background:#071a3d;
+  border-color:#385f9a;
+}
+.appHeader .brandMark img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+@media(display-mode:standalone){
+  body{overscroll-behavior-y:none}
+}

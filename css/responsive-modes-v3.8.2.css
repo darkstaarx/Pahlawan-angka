@@ -1,0 +1,131 @@
+/* v3.8.2 — height-aware responsive modes.
+   Loaded last so low landscape displays do not inherit desktop sizing. */
+
+:root{--screen-inline:clamp(10px,2.4vw,24px)}
+.app{min-height:100dvh}
+.screen{min-width:0}
+
+/* Phone portrait: preserve the familiar vertical game while using short phones well. */
+@media (orientation:portrait) and (max-width:600px){
+  #game.screen{padding:clamp(6px,1.5dvh,10px) 10px 12px}
+  #game .battle{height:clamp(174px,29dvh,205px)}
+  #game .question{font-size:clamp(19px,6vw,25px)}
+  #learning.screen{padding-inline:10px}
+  #learning .learningBody{min-height:clamp(280px,44dvh,360px)}
+}
+
+/* Tablet portrait: use the extra width but keep readable line lengths. */
+@media (orientation:portrait) and (min-width:601px){
+  .app{max-width:min(820px,100vw)}
+  #game,#learning{width:min(100%,760px);margin-inline:auto}
+  #game .battle{height:clamp(260px,34dvh,330px)}
+  #game .qcard{padding:clamp(16px,2.2vw,22px)}
+  #game .question{font-size:clamp(28px,4vw,34px);min-height:clamp(86px,12dvh,118px)}
+  #learning .learningIntro,#learning .learningSteps,#learning .learningWorkspace{max-width:720px;margin-inline:auto}
+  #learning .learningSteps{margin-block:12px}
+}
+
+/* Normal tablet/desktop landscape: generous, but never scale endlessly. */
+@media (orientation:landscape) and (min-height:651px){
+  .app{max-width:min(980px,100vw)}
+  #game,#learning{width:min(100%,900px);margin-inline:auto}
+  #game .battle{height:clamp(270px,39dvh,330px)}
+  #game .question{min-height:clamp(82px,14dvh,118px)}
+}
+
+/* Compact landscape: phones, car displays and short split-screen windows.
+   Height and aspect ratio are the decisive constraints, not CSS width. */
+@media (orientation:landscape) and (max-height:650px) and (min-aspect-ratio:16/9){
+  html,body{min-height:100%;overflow-x:hidden}
+  body{min-height:100dvh}
+  .app{max-width:100vw;min-height:100dvh;box-shadow:none}
+  .appHeader,.appBottomNav{display:none!important}
+  .screen{padding:5px var(--screen-inline) 8px}
+
+  #game.screen.on{display:grid;grid-template-rows:auto minmax(108px,34dvh) minmax(0,1fr);height:100dvh;overflow:hidden;gap:4px;padding-block:max(3px,env(safe-area-inset-top)) max(4px,env(safe-area-inset-bottom))}
+  #game .gameTop{min-height:28px;height:clamp(28px,7dvh,36px);margin:0;gap:5px;grid-template-columns:32px minmax(0,1fr) auto auto 30px}
+  #game .gameTop .iconBtn,#game .miniSoundBtn{width:30px;height:30px;min-height:30px}
+  #game .gameTop .iconBtn svg{width:18px;height:18px}
+  #game .missionHud b{font-size:clamp(10px,2.2dvh,12px)}
+  #game .missionProgress{height:3px;margin-top:2px}
+  #game .gradeMini,#game .missionCount{display:none}
+  #game .combo{font-size:clamp(9px,2dvh,11px)}
+
+  #game .battle{height:auto!important;min-height:108px;margin:0;border-radius:12px;--arena-floor:10px;--unit-h:clamp(78px,25dvh,116px)}
+  #game .battle .unit{bottom:var(--arena-floor)!important;width:clamp(94px,15vw,142px)!important;min-height:var(--unit-h)!important}
+  #game .battle .hero{left:clamp(2px,3vw,38px)}
+  #game .battle .enemy{right:clamp(2px,3vw,38px)}
+  #game #hero .sprite{height:var(--unit-h);width:clamp(112px,18vw,170px)}
+  #game .hero-frame{height:calc(var(--unit-h) - 2px);max-width:100%}
+  #game .hero-frame-attack{height:auto;max-height:var(--unit-h);max-width:100%}
+  #game .enemySpriteWrap{height:var(--unit-h)}
+  #game #enemySprite,#game .enemy-frame{height:calc(var(--unit-h) - 3px);max-width:clamp(116px,18vw,190px)}
+  #game #enemy[data-enemy-tier="minion"] #enemySprite{height:calc(var(--unit-h) - 12px)}
+  #game #enemy[data-enemy-tier="boss"]{width:clamp(122px,18vw,176px)!important;right:clamp(-3px,1vw,20px)!important}
+  #game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{width:clamp(136px,20vw,200px);height:var(--unit-h);margin-left:-10px}
+  #game #enemy[data-enemy-tier="boss"] #enemySprite{height:calc(var(--unit-h) + 12px);max-width:210px;transform:translateY(8px)}
+  #game #hero .battlePet{left:63%;bottom:-1px;width:clamp(34px,5.5vw,48px);min-width:0;height:clamp(34px,10dvh,48px)}
+  #game .battle>.unitHud{bottom:calc(var(--arena-floor) + var(--unit-h) - 2px);width:clamp(104px,18vw,160px);padding:3px 5px}
+  #game .battle>.heroHud{left:clamp(4px,2vw,24px)}
+  #game .battle>.enemyHud{right:clamp(4px,2vw,24px)}
+  #game .unitHud .nm{font-size:clamp(8px,1.8dvh,11px)}
+  #game .unitHud .hp{height:5px;margin-top:2px}
+  #game .battle .ground{height:clamp(20px,6dvh,30px)}
+
+  #game .qcard{min-height:0;overflow:auto;overscroll-behavior:contain;padding:5px 8px 6px;border-radius:12px}
+  #game .qmeta{min-height:22px;align-items:center;font-size:9px}
+  #game .qmeta>#kind{max-width:62%}
+  #game .hintBtn{width:28px;height:24px;padding:3px;margin:0;border-radius:8px}
+  #game .hintBtn span{display:none}
+  #game .hintBtn svg{width:15px;height:15px}
+  #game .question{font-size:clamp(16px,4.4dvh,23px);line-height:1.15;min-height:clamp(32px,10dvh,52px);padding:2px 4px 4px}
+  #game .answers{gap:clamp(4px,1dvh,7px)}
+  #game .ans{font-size:clamp(13px,3.2dvh,18px);line-height:1.1;min-height:clamp(30px,8dvh,42px);padding:4px;border-radius:9px}
+  #game .feedback:empty{display:none}
+  #game .feedback:not(:empty){min-height:0;padding:4px 2px 0;font-size:10px}
+  #game .checkpointCard{width:min(72vw,430px);padding:10px}
+  #game .checkpointCard h2{font-size:17px}
+  #game .checkpointProof{padding:5px}
+
+  /* Coach becomes a compact two-column learning workspace. */
+  #learning.screen.on{display:grid;grid-template-columns:minmax(220px,30%) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);gap:6px 10px;height:100dvh;overflow:hidden;padding-block:max(4px,env(safe-area-inset-top)) max(5px,env(safe-area-inset-bottom))}
+  #learning .learningTop{grid-column:1/-1;min-height:30px;padding:0;margin:0}
+  #learning .learningTop .iconBtn{width:30px;height:30px}
+  #learning .learningTop .eyebrow{display:none}
+  #learning .learningTop h2{font-size:clamp(15px,3.6dvh,20px);margin:0}
+  #learning .learningIntro{grid-column:1;grid-row:2/4;min-height:0;height:100%;margin:0;padding:10px 9px 10px clamp(76px,10vw,112px);border-radius:14px;align-items:flex-start}
+  #learning .coachAvatar{width:clamp(72px,9.5vw,106px);height:clamp(100px,30dvh,142px)}
+  #learning .coachSpeech:before{top:18px}
+  #learning .coachSpeech b{font-size:clamp(12px,2.8dvh,15px)}
+  #learning .coachSpeech p{font-size:clamp(10px,2.3dvh,13px);line-height:1.3}
+  #learning .learningSteps{grid-column:2;grid-row:2;margin:0;gap:3px}
+  #learning .learnStep{font-size:8px;gap:2px}
+  #learning .learnStep span{width:22px;height:22px}
+  #learning .learningWorkspace{grid-column:2;grid-row:3;display:grid;grid-template-columns:clamp(78px,10vw,112px) minmax(0,1fr);gap:6px;min-height:0;height:100%;overflow:hidden;margin:0}
+  #learning .coachStage{min-height:0;height:100%;border-radius:12px}
+  #learning .coachStage img{width:clamp(105px,14vw,155px);height:96%}
+  #learning .coachStage>span{font-size:8px;bottom:5px;padding:4px}
+  #learning .learningBody{grid-column:2;min-height:0;height:100%;overflow:auto;overscroll-behavior:contain;margin:0;padding:clamp(9px,2.2dvh,16px)}
+  #learning .learningBody h2{font-size:clamp(18px,4dvh,24px);margin:4px 0 8px}
+  #learning .learningBody p{font-size:clamp(11px,2.5dvh,14px);line-height:1.35;margin:8px auto}
+  #learning .workedProblem{font-size:clamp(17px,4dvh,22px);padding:9px;margin:7px 0}
+  #learning .workedSteps{gap:5px;margin:7px 0}
+  #learning .workedSteps>div{padding:6px 8px}
+  #learning .workedSteps p{font-size:11px}
+  #learning .learningNext{margin-top:8px;padding-block:8px}
+}
+
+/* Extremely short landscape (common Android head units). */
+@media (orientation:landscape) and (max-height:430px) and (min-aspect-ratio:16/9){
+  #game.screen.on{grid-template-rows:28px minmax(96px,31dvh) minmax(0,1fr)}
+  #game .battle{--unit-h:clamp(70px,23dvh,94px)}
+  #game .battle>.unitHud{bottom:calc(var(--arena-floor) + var(--unit-h) - 4px)}
+  #game .qmeta{min-height:18px}
+  #game .hintBtn{height:20px}
+  #game .question{min-height:28px}
+  #learning .coachName{font-size:8px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #game *,#learning *{scroll-behavior:auto}
+}

@@ -1,0 +1,43 @@
+/* Pose assets have different canvas ratios and transparent margins. These
+   corrections preserve one perceived body scale and one terrain baseline. */
+#game #hero .hero-frame{transform-origin:50% 100%!important}
+
+/* Wira's contact artwork is panoramic because the ice slash occupies half of
+   its canvas. Compensate for that canvas without resizing the source asset. */
+body:not(.hero-bunga) #game #hero .hero-frame-anticipation{
+  transform:translateX(-50%) scale(1.12)!important;
+}
+body:not(.hero-bunga) #game #hero .hero-frame-attack{
+  left:calc(50% + 27px)!important;
+  bottom:0!important;
+  max-width:none!important;
+  transform:translateX(-50%) scale(1.48)!important;
+}
+body:not(.hero-bunga) #game #hero .hero-frame-follow-through{
+  left:calc(50% + 12px)!important;
+  bottom:0!important;
+  max-width:none!important;
+  transform:translateX(-50%) scale(1.24)!important;
+}
+
+/* Bunga's action silhouettes are broader than her upright idle pose. Keep the
+   action energy but prevent the body from jumping forward in apparent size. */
+body.hero-bunga #game #hero .hero-frame-idle{
+  transform:translateX(-50%) scale(1.06)!important;
+}
+body.hero-bunga #game #hero .hero-frame-anticipation{
+  transform:translateX(-50%) scale(.96)!important;
+}
+body.hero-bunga #game #hero .hero-frame-attack{
+  left:calc(50% + 9px)!important;
+  bottom:0!important;
+  transform:translateX(-50%) scale(.94)!important;
+}
+body.hero-bunga #game #hero .hero-frame-follow-through{
+  left:calc(50% + 5px)!important;
+  bottom:0!important;
+  transform:translateX(-50%) scale(.98)!important;
+}
+
+/* The pose changes, but the contact point with the terrain never does. */
+#game #hero.attacking .hero-frame{object-position:center bottom!important}

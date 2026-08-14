@@ -1,0 +1,732 @@
+{
+  "generatedAt": "2026-08-14T22:40:00.293Z",
+  "scope": "Darjah 3-6, KSSR rotation v3.9.0",
+  "totalSamples": 31500,
+  "skills": 63,
+  "problems": [],
+  "summary": [
+    {
+      "id": "D3.N10000",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D3.PV10000",
+      "samples": 500,
+      "unique": 496,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 0.8
+    },
+    {
+      "id": "D3.ADD10000",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D3.SUB10000",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D3.MUL",
+      "samples": 500,
+      "unique": 359,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 28.2
+    },
+    {
+      "id": "D3.DIV",
+      "samples": 500,
+      "unique": 353,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 29.4
+    },
+    {
+      "id": "D3.FRAC",
+      "samples": 500,
+      "unique": 74,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 85.2
+    },
+    {
+      "id": "D3.DEC",
+      "samples": 500,
+      "unique": 483,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 3.4
+    },
+    {
+      "id": "D3.MONEY",
+      "samples": 500,
+      "unique": 234,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 53.2
+    },
+    {
+      "id": "D3.TIME",
+      "samples": 500,
+      "unique": 178,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 64.4
+    },
+    {
+      "id": "D3.MEASURE",
+      "samples": 500,
+      "unique": 413,
+      "archetypes": [
+        "mixed_to_minor",
+        "minor_to_mixed",
+        "operation_story",
+        "conversion_error",
+        "missing_component",
+        "compare_units"
+      ],
+      "repeatRate": 17.4
+    },
+    {
+      "id": "D3.SHAPE",
+      "samples": 500,
+      "unique": 123,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 75.4
+    },
+    {
+      "id": "D3.DATA",
+      "samples": 500,
+      "unique": 480,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 4
+    },
+    {
+      "id": "D4.N100000",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D4.PV100000",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D4.ADD",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "choose_strategy",
+        "error_analysis",
+        "solve_direct"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D4.SUB",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D4.MUL",
+      "samples": 500,
+      "unique": 436,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 12.8
+    },
+    {
+      "id": "D4.DIV",
+      "samples": 500,
+      "unique": 377,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 24.6
+    },
+    {
+      "id": "D4.FRAC",
+      "samples": 500,
+      "unique": 191,
+      "archetypes": [
+        "choose_strategy",
+        "solve_direct",
+        "error_analysis"
+      ],
+      "repeatRate": 61.8
+    },
+    {
+      "id": "D4.DEC",
+      "samples": 500,
+      "unique": 488,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 2.4
+    },
+    {
+      "id": "D4.MONEY",
+      "samples": 500,
+      "unique": 335,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 33
+    },
+    {
+      "id": "D4.TIME",
+      "samples": 500,
+      "unique": 425,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 15
+    },
+    {
+      "id": "D4.MEASURE",
+      "samples": 500,
+      "unique": 413,
+      "archetypes": [
+        "mixed_to_minor",
+        "operation_story",
+        "missing_component",
+        "minor_to_mixed",
+        "compare_units",
+        "conversion_error"
+      ],
+      "repeatRate": 17.4
+    },
+    {
+      "id": "D4.PERIM",
+      "samples": 500,
+      "unique": 194,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 61.2
+    },
+    {
+      "id": "D4.DATA",
+      "samples": 500,
+      "unique": 493,
+      "archetypes": [
+        "choose_strategy",
+        "error_analysis",
+        "solve_direct"
+      ],
+      "repeatRate": 1.4
+    },
+    {
+      "id": "D5.N1000000",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D5.PV1000000",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "error_analysis",
+        "solve_direct",
+        "choose_strategy"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D5.MUL",
+      "samples": 500,
+      "unique": 473,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 5.4
+    },
+    {
+      "id": "D5.DIV",
+      "samples": 500,
+      "unique": 262,
+      "archetypes": [
+        "choose_strategy",
+        "solve_direct",
+        "error_analysis"
+      ],
+      "repeatRate": 47.6
+    },
+    {
+      "id": "D5.FRAC",
+      "samples": 500,
+      "unique": 175,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 65
+    },
+    {
+      "id": "D5.DEC",
+      "samples": 500,
+      "unique": 401,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 19.8
+    },
+    {
+      "id": "D5.PERCENT",
+      "samples": 500,
+      "unique": 81,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 83.8
+    },
+    {
+      "id": "D5.MONEY",
+      "samples": 500,
+      "unique": 360,
+      "archetypes": [
+        "choose_strategy",
+        "solve_direct",
+        "error_analysis"
+      ],
+      "repeatRate": 28
+    },
+    {
+      "id": "D5.TIME",
+      "samples": 500,
+      "unique": 425,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 15
+    },
+    {
+      "id": "D5.MEASURE",
+      "samples": 500,
+      "unique": 411,
+      "archetypes": [
+        "mixed_to_minor",
+        "minor_to_mixed",
+        "missing_component",
+        "compare_units",
+        "operation_story",
+        "conversion_error"
+      ],
+      "repeatRate": 17.8
+    },
+    {
+      "id": "D5.AREA",
+      "samples": 500,
+      "unique": 171,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 65.8
+    },
+    {
+      "id": "D5.COORD",
+      "samples": 500,
+      "unique": 175,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 65
+    },
+    {
+      "id": "D5.DATA",
+      "samples": 500,
+      "unique": 496,
+      "archetypes": [
+        "solve_direct",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 0.8
+    },
+    {
+      "id": "D6.NUMBERS",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D6.OPS",
+      "samples": 500,
+      "unique": 496,
+      "archetypes": [
+        "choose_strategy",
+        "error_analysis",
+        "solve_direct"
+      ],
+      "repeatRate": 0.8
+    },
+    {
+      "id": "D6.FRAC",
+      "samples": 500,
+      "unique": 278,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 44.4
+    },
+    {
+      "id": "D6.DEC",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "error_analysis",
+        "solve_direct",
+        "choose_strategy"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D6.PERCENT",
+      "samples": 500,
+      "unique": 192,
+      "archetypes": [
+        "error_analysis",
+        "choose_strategy",
+        "solve_direct"
+      ],
+      "repeatRate": 61.6
+    },
+    {
+      "id": "D6.RATIO",
+      "samples": 500,
+      "unique": 45,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 91
+    },
+    {
+      "id": "D6.MONEY",
+      "samples": 500,
+      "unique": 81,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 83.8
+    },
+    {
+      "id": "D6.TIME",
+      "samples": 500,
+      "unique": 144,
+      "archetypes": [
+        "error_analysis",
+        "solve_direct",
+        "choose_strategy"
+      ],
+      "repeatRate": 71.2
+    },
+    {
+      "id": "D6.MEASURE",
+      "samples": 500,
+      "unique": 419,
+      "archetypes": [
+        "missing_component",
+        "conversion_error",
+        "minor_to_mixed",
+        "mixed_to_minor",
+        "operation_story",
+        "compare_units"
+      ],
+      "repeatRate": 16.2
+    },
+    {
+      "id": "D6.AREA",
+      "samples": 500,
+      "unique": 81,
+      "archetypes": [
+        "choose_strategy",
+        "solve_direct",
+        "error_analysis"
+      ],
+      "repeatRate": 83.8
+    },
+    {
+      "id": "D6.COORD",
+      "samples": 500,
+      "unique": 179,
+      "archetypes": [
+        "solve_direct",
+        "error_analysis",
+        "choose_strategy"
+      ],
+      "repeatRate": 64.2
+    },
+    {
+      "id": "D6.DATA",
+      "samples": 500,
+      "unique": 487,
+      "archetypes": [
+        "error_analysis",
+        "solve_direct",
+        "choose_strategy"
+      ],
+      "repeatRate": 2.6
+    },
+    {
+      "id": "D3.PERCENT",
+      "samples": 500,
+      "unique": 123,
+      "archetypes": [
+        "content_visual_percent",
+        "choose_strategy",
+        "error_analysis",
+        "content_quantity_percent",
+        "content_fraction_percent"
+      ],
+      "repeatRate": 75.4
+    },
+    {
+      "id": "D3.POSITION",
+      "samples": 500,
+      "unique": 131,
+      "archetypes": [
+        "content_read_grid",
+        "choose_strategy",
+        "error_analysis",
+        "content_move_point",
+        "content_reverse_axes"
+      ],
+      "repeatRate": 73.8
+    },
+    {
+      "id": "D4.PERCENT",
+      "samples": 500,
+      "unique": 131,
+      "archetypes": [
+        "content_fraction_percent",
+        "choose_strategy",
+        "error_analysis",
+        "content_quantity_percent",
+        "content_visual_percent"
+      ],
+      "repeatRate": 73.8
+    },
+    {
+      "id": "D4.COORD",
+      "samples": 500,
+      "unique": 130,
+      "archetypes": [
+        "content_reverse_axes",
+        "choose_strategy",
+        "error_analysis",
+        "content_read_grid",
+        "content_move_point"
+      ],
+      "repeatRate": 74
+    },
+    {
+      "id": "D4.RATIO",
+      "samples": 500,
+      "unique": 229,
+      "archetypes": [
+        "content_missing_ratio",
+        "choose_strategy",
+        "error_analysis",
+        "content_write_ratio",
+        "content_equivalent_ratio"
+      ],
+      "repeatRate": 54.2
+    },
+    {
+      "id": "D4.RATE",
+      "samples": 500,
+      "unique": 167,
+      "archetypes": [
+        "content_unit_rate",
+        "choose_strategy",
+        "error_analysis",
+        "content_scale_rate",
+        "content_missing_rate"
+      ],
+      "repeatRate": 66.6
+    },
+    {
+      "id": "D5.ADD",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "content_large_add",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D5.SUB",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "content_large_sub",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D5.OPS",
+      "samples": 500,
+      "unique": 500,
+      "archetypes": [
+        "content_combined_order",
+        "choose_strategy",
+        "error_analysis"
+      ],
+      "repeatRate": 0
+    },
+    {
+      "id": "D5.RATIO",
+      "samples": 500,
+      "unique": 228,
+      "archetypes": [
+        "content_equivalent_ratio",
+        "choose_strategy",
+        "error_analysis",
+        "content_missing_ratio",
+        "content_write_ratio"
+      ],
+      "repeatRate": 54.4
+    },
+    {
+      "id": "D5.RATE",
+      "samples": 500,
+      "unique": 166,
+      "archetypes": [
+        "content_unit_rate",
+        "choose_strategy",
+        "error_analysis",
+        "content_scale_rate",
+        "content_missing_rate"
+      ],
+      "repeatRate": 66.8
+    },
+    {
+      "id": "D6.PROB",
+      "samples": 500,
+      "unique": 126,
+      "archetypes": [
+        "content_certain_impossible",
+        "choose_strategy",
+        "error_analysis",
+        "content_fraction_chance",
+        "content_compare_chance"
+      ],
+      "repeatRate": 74.8
+    }
+  ]
+}

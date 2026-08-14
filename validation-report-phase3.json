@@ -1,0 +1,10 @@
+{
+  "phase": "3.0",
+  "js_syntax": "PASS",
+  "missing_local_references": 0,
+  "monster_assets": 4,
+  "audio_assets": 8,
+  "wang_repair_merged": true,
+  "coach_min_questions": 30,
+  "coach_max_questions": 45
+}

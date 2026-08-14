@@ -1,0 +1,135 @@
+/* v3.8.25 — battle-scene staging only. HUD, quiz geometry and gameplay stay unchanged. */
+#game .battle{
+  --pa-floor:10px;
+  --pa-hero-h:136px;
+  --pa-minion-h:108px;
+  --pa-boss-h:150px;
+  --pa-unit-w:136px;
+  --pa-hero-inset:6.5%;
+  --pa-enemy-inset:6.5%;
+  --pa-pet-box:54px;
+  background-position:center 63%;
+  isolation:isolate;
+  box-shadow:inset 0 0 0 1px rgba(222,242,222,.1),inset 0 -54px 54px rgba(1,10,12,.36),0 9px 22px rgba(0,0,0,.26);
+}
+#game .battle::before{
+  z-index:1;
+  background:
+    linear-gradient(180deg,rgba(1,8,14,.27) 0%,rgba(3,15,18,.01) 39%,rgba(2,12,14,.08) 61%,rgba(0,7,9,.46) 100%),
+    radial-gradient(ellipse at 50% 54%,rgba(211,237,198,.14),transparent 36%);
+}
+#game .battle::after{
+  z-index:1;
+  opacity:.16;
+  background:
+    radial-gradient(ellipse at 21% 74%,rgba(216,191,117,.18),transparent 27%),
+    radial-gradient(ellipse at 79% 72%,rgba(82,180,139,.15),transparent 28%);
+}
+#game .battle .ground{
+  z-index:2;
+  height:42px;
+  border:0;
+  background:linear-gradient(180deg,transparent,rgba(2,15,15,.15) 42%,rgba(1,9,11,.42));
+}
+
+/* A shared floor and unit box keeps idle and attack poses on one perspective plane. */
+#game .battle .unit{
+  bottom:var(--pa-floor)!important;
+  width:var(--pa-unit-w)!important;
+  min-height:var(--pa-hero-h)!important;
+  z-index:4;
+  overflow:visible;
+}
+#game #hero{left:var(--pa-hero-inset)!important;right:auto!important}
+#game #enemy{right:var(--pa-enemy-inset)!important;left:auto!important}
+#game #hero .sprite,#game #enemy .enemySpriteWrap{
+  position:relative;
+  width:var(--pa-unit-w)!important;
+  transform-origin:50% 100%;
+  overflow:visible;
+}
+#game #hero .sprite{height:var(--pa-hero-h)!important}
+#game #enemy .enemySpriteWrap{height:var(--pa-minion-h)!important;margin-top:calc(var(--pa-hero-h) - var(--pa-minion-h))}
+#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{
+  width:calc(var(--pa-unit-w) + 22px)!important;
+  height:var(--pa-boss-h)!important;
+  margin-top:calc(var(--pa-hero-h) - var(--pa-boss-h));
+  margin-left:-11px!important;
+}
+
+/* Normalize transparent canvases without altering source artwork. */
+#game #hero .hero-frame{
+  bottom:0!important;top:auto!important;left:50%!important;
+  width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;
+  transform:translateX(-50%);transform-origin:50% 100%;object-position:center bottom;
+  filter:brightness(.92) saturate(.92) contrast(1.035) drop-shadow(0 3px 2px rgba(1,8,9,.5))!important;
+}
+#game #enemy #enemySprite,#game #enemy .enemy-frame{
+  bottom:0!important;top:auto!important;
+  width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  object-fit:contain;object-position:center bottom;transform-origin:50% 100%;
+  filter:brightness(.91) saturate(.91) contrast(1.04) drop-shadow(0 3px 2px rgba(1,8,9,.5))!important;
+}
+#game #enemy .enemy-frame:not(.enemy-frame-idle){left:50%;transform:translateX(-50%)}
+#game #enemy[data-enemy-tier="boss"] #enemySprite{transform:translateY(6px)}
+#game #enemy[data-enemy-tier="boss"] .enemy-frame:not(.enemy-frame-idle){transform:translateX(-50%) translateY(6px)}
+
+/* Restrained floor contact: broad for bosses, compact for minions and pets. */
+#game .battle .unit::after{
+  content:"";position:absolute;z-index:0;pointer-events:none;
+  left:22%;right:22%;bottom:-1px;height:11px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(0,5,7,.66) 0%,rgba(1,12,12,.34) 45%,transparent 72%);
+  filter:blur(1.5px);
+}
+#game #enemy[data-enemy-tier="minion"]::after{left:29%;right:29%;opacity:.82}
+#game #enemy[data-enemy-tier="boss"]::after{left:13%;right:13%;height:13px}
+
+/* Pet remains beside/slightly behind the hero and about 40% of hero height. */
+#game #hero .battlePet{
+  left:63%!important;bottom:0!important;
+  width:var(--pa-pet-box)!important;min-width:var(--pa-pet-box)!important;max-width:var(--pa-pet-box)!important;height:var(--pa-pet-box)!important;
+  z-index:5!important;
+}
+#game #hero .battlePet[data-pet="arif"]{--pa-pet-box:68px;left:61%!important}
+#game #hero .battlePet[data-pet="tiko"]{--pa-pet-box:76px;left:59%!important;bottom:22px!important}
+#game #hero .battlePet .battle-pet-frame{
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  object-fit:contain;object-position:center bottom;
+  filter:brightness(.92) saturate(.92) contrast(1.03) drop-shadow(0 3px 2px rgba(1,8,9,.5))!important;
+}
+#game #hero .battlePet::after{left:23%;right:23%;bottom:0;height:8px;opacity:.78}
+#game #hero .battlePet[data-pet="tiko"]::after{bottom:-20px;opacity:.25}
+
+/* Explicit scene stack: environment → shadows/units → attacks → feedback → HUD. */
+#game .battle .unit .sprite{z-index:4}
+#game #hero.attacking{z-index:10}
+#game #hero.attacking .battlePet{z-index:12!important}
+#game .battle .impact-flash,#game .battle .impact-slash,#game .battle .impact-burst,
+#game .battle .finisher-ice,#game .battle .finisher-bloom,#game .battle .petImpactFx{z-index:13}
+#game .battle>.unitHud{z-index:18}
+#game .battle>.heroHud{left:8px}
+#game .battle>.enemyHud{right:8px}
+
+@media(max-width:600px){
+  #game .battle{
+    --pa-floor:9px;
+    --pa-hero-h:132px;
+    --pa-minion-h:101px;
+    --pa-boss-h:145px;
+    --pa-unit-w:132px;
+    --pa-hero-inset:5.5%;
+    --pa-enemy-inset:5.5%;
+    --pa-pet-box:52px;
+  }
+  #game .battle>.unitHud{bottom:calc(var(--pa-floor) + var(--pa-hero-h) + 1px);width:126px}
+  #game #hero .battlePet[data-pet="arif"]{--pa-pet-box:66px}
+  #game #hero .battlePet[data-pet="tiko"]{--pa-pet-box:74px;bottom:21px!important}
+}
+
+@media(max-width:370px){
+  #game .battle{--pa-hero-inset:3.5%;--pa-enemy-inset:3.5%;--pa-unit-w:128px}
+}
+
+@media(min-width:601px){
+  #game .battle{--pa-hero-inset:9%;--pa-enemy-inset:9%;--pa-unit-w:146px;--pa-hero-h:146px;--pa-minion-h:116px;--pa-boss-h:158px;--pa-pet-box:58px}
+}

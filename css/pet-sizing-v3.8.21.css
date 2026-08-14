@@ -1,0 +1,13 @@
+/* Pet-specific staging must load after responsive-modes, which locks the legacy pets to 47px. */
+@media(max-width:600px){
+  .battle #hero .battlePet[data-pet="arif"]{left:53%;bottom:0;width:70px;min-width:70px;max-width:70px;height:70px}
+  .battle #hero .battlePet[data-pet="tiko"]{left:51%;bottom:27px;width:82px;min-width:82px;max-width:82px;height:82px}
+}
+@media(min-width:601px){
+  .battle #hero .battlePet[data-pet="arif"]{left:54%;bottom:0;width:78px;min-width:78px;max-width:78px;height:78px}
+  .battle #hero .battlePet[data-pet="tiko"]{left:52%;bottom:31px;width:90px;min-width:90px;max-width:90px;height:90px}
+}
+.battlePet[data-pet="arif"] .battle-pet-frame,
+.battlePet[data-pet="tiko"] .battle-pet-frame{width:100%!important;height:100%!important;max-height:none!important;object-fit:contain;object-position:center bottom}
+.battlePet[data-pet="tiko"] .battle-pet-idle{animation:tikoHover 2.1s ease-in-out infinite!important}
+@keyframes tikoHover{0%,100%{transform:translateX(-50%) translateY(0) rotate(-1deg)}50%{transform:translateX(-50%) translateY(-5px) rotate(1.5deg)}}

@@ -1,0 +1,107 @@
+/* v3.8.28 — correct sprite scale, companion slot and shared terrain perspective. */
+#game .battle{
+  --pa-floor:8px;
+  --pa-hero-h:112px;
+  --pa-minion-h:86px;
+  --pa-boss-h:128px;
+  --pa-unit-w:118px;
+  --pa-hero-inset:10%;
+  --pa-enemy-inset:10%;
+  --pa-pet-box:45px;
+  background-image:url("../assets/battlefields/nusantara-temple/arena-v1.png")!important;
+  background-position:center center!important;
+  background-size:cover!important;
+}
+
+/* Keep the new floor readable. Edge framing blends it into the navy shell. */
+#game .battle::before{
+  background:
+    linear-gradient(180deg,rgba(3,12,18,.22),rgba(3,15,18,.02) 35%,rgba(2,11,13,.06) 72%,rgba(1,7,9,.22)),
+    linear-gradient(90deg,rgba(2,9,13,.22),transparent 18%,transparent 82%,rgba(2,9,13,.22))!important;
+}
+#game .battle::after{opacity:.07!important}
+#game .battle .ground{
+  height:34px;
+  background:linear-gradient(180deg,transparent,rgba(2,10,11,.16))!important;
+}
+
+/* Moderate hero, smaller normal enemy, boss allowed to dominate. */
+#game .battle .unit{
+  width:var(--pa-unit-w)!important;
+  min-height:var(--pa-hero-h)!important;
+  bottom:var(--pa-floor)!important;
+}
+#game #hero{left:var(--pa-hero-inset)!important}
+#game #enemy{right:var(--pa-enemy-inset)!important}
+#game #hero .sprite{
+  width:var(--pa-unit-w)!important;
+  height:var(--pa-hero-h)!important;
+}
+#game #enemy .enemySpriteWrap{
+  width:var(--pa-unit-w)!important;
+  height:var(--pa-minion-h)!important;
+  margin-top:calc(var(--pa-hero-h) - var(--pa-minion-h))!important;
+}
+#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{
+  width:calc(var(--pa-unit-w) + 20px)!important;
+  height:var(--pa-boss-h)!important;
+  margin-top:calc(var(--pa-hero-h) - var(--pa-boss-h))!important;
+  margin-left:-10px!important;
+}
+
+/* One neutral grade bridges painterly heroes and simpler enemy artwork. */
+#game #hero .hero-frame,
+#game #enemy #enemySprite,
+#game #enemy .enemy-frame,
+#game #hero .battlePet .battle-pet-frame{
+  filter:brightness(.94) saturate(.9) contrast(1.025)
+    drop-shadow(0 2px 1px rgba(1,7,8,.42))
+    drop-shadow(0 5px 4px rgba(1,7,8,.18))!important;
+}
+
+/* Companion owns a visible rear-left slot instead of hiding between Wira's legs. */
+#game #hero .battlePet{
+  left:-7%!important;
+  bottom:0!important;
+  width:var(--pa-pet-box)!important;
+  min-width:var(--pa-pet-box)!important;
+  max-width:var(--pa-pet-box)!important;
+  height:var(--pa-pet-box)!important;
+  z-index:3!important;
+}
+#game #hero .battlePet[data-pet="arif"]{--pa-pet-box:54px;left:-13%!important}
+#game #hero .battlePet[data-pet="tiko"]{--pa-pet-box:60px;left:-17%!important;bottom:17px!important}
+
+/* Shadows meet the feet and follow each silhouette's visual weight. */
+#game .battle .unit::after{
+  left:28%;right:28%;bottom:-2px;height:9px;
+  background:radial-gradient(ellipse,rgba(0,5,6,.62),rgba(1,9,9,.3) 48%,transparent 73%);
+  filter:blur(1px);transform:scaleY(.58);
+}
+#game #enemy[data-enemy-tier="minion"]::after{left:34%;right:34%;height:8px}
+#game #enemy[data-enemy-tier="boss"]::after{left:16%;right:16%;height:12px;transform:scaleY(.68)}
+#game #hero .battlePet::after{
+  left:25%;right:25%;bottom:-1px;height:6px;opacity:.62;
+  background:radial-gradient(ellipse,rgba(0,5,6,.58),transparent 72%);
+}
+#game #hero .battlePet[data-pet="tiko"]::after{bottom:-17px;opacity:.28;transform:scaleX(.7)}
+
+/* HUD tracks the new visual height; question-card geometry is untouched. */
+#game .battle>.unitHud{bottom:calc(var(--pa-floor) + var(--pa-hero-h) + 2px)}
+
+@media(max-width:370px){
+  #game .battle{
+    --pa-hero-inset:8%;--pa-enemy-inset:8%;
+    --pa-hero-h:106px;--pa-minion-h:82px;--pa-boss-h:122px;--pa-unit-w:112px;--pa-pet-box:42px;
+  }
+  #game #hero .battlePet{left:-4%!important}
+  #game #hero .battlePet[data-pet="arif"]{--pa-pet-box:51px;left:-10%!important}
+  #game #hero .battlePet[data-pet="tiko"]{--pa-pet-box:57px;left:-14%!important;bottom:16px!important}
+}
+
+@media(min-width:601px){
+  #game .battle{
+    --pa-hero-inset:12%;--pa-enemy-inset:12%;
+    --pa-hero-h:122px;--pa-minion-h:94px;--pa-boss-h:138px;--pa-unit-w:128px;--pa-pet-box:49px;
+  }
+}

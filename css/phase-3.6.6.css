@@ -1,0 +1,112 @@
+/* Phase 3.6.6 — cache-safe full-screen login and consistent pet frames. */
+body[data-screen="login"]{background:#0b1e35}
+body[data-screen="login"] .app{
+  position:relative;
+  isolation:isolate;
+  min-height:100dvh;
+  background:#0b1e35 url("../assets/branding/login-scene-v2.webp") center top/cover no-repeat;
+}
+body[data-screen="login"] .app::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent 44%,rgba(7,19,34,.10) 57%,rgba(7,17,31,.54) 78%,rgba(5,12,23,.82) 100%);
+}
+body[data-screen="login"] .appHeader{display:none}
+body[data-screen="login"] #login{
+  position:relative;
+  z-index:1;
+  min-height:100dvh;
+  padding:0 20px max(18px,env(safe-area-inset-bottom));
+}
+body[data-screen="login"] .loginShell{
+  width:min(100%,460px);
+  min-height:100dvh;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+body[data-screen="login"] .loginSceneWrap{display:none}
+body[data-screen="login"] .loginActions{
+  display:grid;
+  gap:12px;
+  padding-bottom:10px;
+}
+body[data-screen="login"] .loginAction{
+  min-height:58px;
+  width:100%;
+  border:1px solid rgba(255,255,255,.74);
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:11px;
+  padding:13px 18px;
+  font:inherit;
+  font-size:16px;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 12px 28px rgba(3,13,26,.30);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+body[data-screen="login"] .loginAction span{font-size:21px}
+body[data-screen="login"] .loginAction.student{background:rgba(22,76,132,.92)}
+body[data-screen="login"] .loginAction.parent{background:rgba(255,255,255,.92);color:#17243b;border-color:rgba(255,255,255,.92)}
+body[data-screen="login"] #loginResume:empty{display:none}
+body[data-screen="login"] #loginResume .btn{
+  min-height:52px;
+  margin-top:0;
+  border-radius:18px;
+  background:rgba(8,24,45,.78);
+  border-color:rgba(255,255,255,.45);
+  color:#fff;
+}
+body[data-screen="login"] .loginVersion{
+  padding-top:3px;
+  text-align:center;
+  color:rgba(255,255,255,.72);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-shadow:0 1px 4px rgba(0,0,0,.72);
+}
+
+/* Pet is locked to 40% of the rendered hero height in every breakpoint. */
+.battlePet{
+  left:29%;
+  bottom:7%;
+  width:49px;
+  height:49px;
+  min-width:0;
+  max-width:none;
+  overflow:visible;
+}
+.battlePet .battle-pet-frame,
+.battlePet img{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:auto;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  object-fit:contain;
+  transform:translateX(-50%);
+  filter:drop-shadow(0 7px 6px rgba(0,0,0,.45));
+  pointer-events:none;
+}
+.battle-pet-idle{opacity:1;animation:petIdleFrame 2.2s ease-in-out infinite}
+.battle-pet-attack{opacity:0}
+.unit#hero.attacking .battle-pet-idle{opacity:0;animation:none}
+.unit#hero.attacking .battle-pet-attack{opacity:1;animation:petAttack .46s cubic-bezier(.22,.88,.32,1)}
+@media(max-width:600px){
+  body[data-screen="login"] #login{padding-inline:18px}
+}
+@media(min-width:601px){
+  .battlePet{width:64px;height:64px}
+}
+@media(min-width:1025px){.battlePet{width:73px;height:73px}}

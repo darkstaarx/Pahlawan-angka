@@ -1,0 +1,117 @@
+/* v3.8.27 — battle-only terrain grounding and restrained asset blending. */
+#game .battle{
+  --pa-floor:10px;
+  --pa-hero-inset:6.75%;
+  --pa-enemy-inset:6.75%;
+  --pa-grade-brightness:.91;
+  --pa-grade-saturation:.89;
+  --pa-grade-contrast:1.045;
+  background-position:center 64%;
+}
+
+/* A quiet foreground glaze ties transparent artwork to the painted terrain. */
+#game .battle .ground{
+  z-index:2;
+  height:48px;
+  background:
+    linear-gradient(180deg,transparent 0%,rgba(5,22,19,.08) 32%,rgba(1,10,11,.42) 100%),
+    radial-gradient(ellipse at 22% 74%,rgba(91,111,72,.13),transparent 31%),
+    radial-gradient(ellipse at 78% 73%,rgba(70,105,77,.12),transparent 31%);
+  pointer-events:none;
+}
+
+/* Every pose ends on the same floor anchor; artwork itself stays untouched. */
+#game #hero,
+#game #enemy{
+  bottom:var(--pa-floor)!important;
+  transform-origin:50% 100%;
+}
+#game #hero{left:var(--pa-hero-inset)!important}
+#game #enemy{right:var(--pa-enemy-inset)!important}
+#game #hero .sprite,
+#game #enemy .enemySpriteWrap{
+  bottom:0;
+  transform-origin:50% 100%;
+}
+
+#game #hero .hero-frame,
+#game #enemy #enemySprite,
+#game #enemy .enemy-frame,
+#game #hero .battlePet .battle-pet-frame{
+  filter:
+    brightness(var(--pa-grade-brightness))
+    saturate(var(--pa-grade-saturation))
+    contrast(var(--pa-grade-contrast))
+    drop-shadow(0 2px 1px rgba(2,10,10,.46))
+    drop-shadow(0 6px 5px rgba(1,7,8,.22))!important;
+}
+
+/* Contact shadows are deliberately short: contact, not a floating halo. */
+#game .battle .unit::after{
+  z-index:1;
+  left:25%;right:25%;bottom:-2px;height:10px;
+  background:radial-gradient(ellipse,rgba(0,4,5,.72) 0%,rgba(1,9,9,.42) 43%,transparent 73%);
+  filter:blur(1.25px);
+  transform:scaleY(.62);
+  transform-origin:50% 50%;
+}
+#game #enemy[data-enemy-tier="minion"]::after{
+  left:31%;right:31%;height:9px;opacity:.82;
+}
+#game #enemy[data-enemy-tier="boss"]::after{
+  left:14%;right:14%;height:13px;opacity:.92;transform:scaleY(.72);
+}
+
+/* Pet reads as the hero's companion, close and slightly behind the lead silhouette. */
+#game #hero .battlePet{
+  left:61%!important;
+  bottom:0!important;
+  z-index:3!important;
+  transform-origin:50% 100%;
+}
+#game #hero .battlePet::after{
+  z-index:-1;
+  left:24%;right:24%;bottom:-1px;height:7px;
+  opacity:.72;
+  background:radial-gradient(ellipse,rgba(0,4,5,.68),rgba(1,10,10,.3) 48%,transparent 72%);
+  filter:blur(1px);
+}
+#game #hero .battlePet[data-pet="arif"]{left:59.5%!important}
+/* Tiko's asset is airborne by design; its faint projected shadow still lands on the shared plane. */
+#game #hero .battlePet[data-pet="tiko"]{left:57.5%!important;bottom:22px!important}
+#game #hero .battlePet[data-pet="tiko"]::after{bottom:-22px;opacity:.3;transform:scaleX(.72)}
+
+/* Scene depth: shadows sit below characters; attacks and feedback remain unobstructed. */
+#game .battle::before,#game .battle::after{z-index:1}
+#game .battle .ground{z-index:2}
+#game .battle .unit{z-index:4}
+#game #hero .sprite,#game #enemy .enemySpriteWrap{z-index:4}
+#game #hero.attacking,#game #enemy.attacking{z-index:10}
+#game #hero.attacking .battlePet{z-index:12!important}
+#game .battle .impact-flash,#game .battle .impact-slash,#game .battle .impact-burst,
+#game .battle .finisher-ice,#game .battle .finisher-bloom,#game .battle .petImpactFx{z-index:13}
+#game .battle>.unitHud{z-index:18}
+
+@media(max-width:600px){
+  #game .battle{
+    --pa-floor:9px;
+    --pa-hero-inset:5.75%;
+    --pa-enemy-inset:5.75%;
+  }
+  #game .battle .ground{height:44px}
+  #game #hero .battlePet{left:60%!important}
+  #game #hero .battlePet[data-pet="arif"]{left:58.5%!important}
+  #game #hero .battlePet[data-pet="tiko"]{left:56.5%!important}
+}
+
+@media(max-width:370px){
+  #game .battle{--pa-hero-inset:3.75%;--pa-enemy-inset:3.75%}
+}
+
+@media(min-width:601px){
+  #game .battle{--pa-hero-inset:9%;--pa-enemy-inset:9%}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #game #hero .sprite,#game #enemy .sprite,#game #hero .battlePet{transform-origin:50% 100%}
+}
