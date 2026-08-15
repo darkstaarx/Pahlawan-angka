@@ -32,15 +32,34 @@ body:not(.hero-bunga) #game #hero .hero-frame-follow-through{left:calc(50% + 13p
 
 /* The blackout pose uses the same visible height as the arena hero. */
 .finisherCinematic .cinematicHero{
-  top:var(--hero-y,28%)!important;
+  left:var(--hero-center-x,72px)!important;
+  top:auto!important;
+  bottom:var(--hero-bottom,8px)!important;
   width:auto!important;
-  height:var(--hero-h,136px)!important;
+  height:var(--cinematic-hero-h,160px)!important;
   max-height:none!important;
   object-fit:contain!important;
   object-position:center bottom!important;
+}
+.finisherCinematic.active .cinematicHero{animation:cinematicHeroNormalized 1.05s ease-out both!important}
+@keyframes cinematicHeroNormalized{
+  0%,8%{opacity:0;transform:translateX(-50%) scale(.96);filter:brightness(.25) saturate(.65)}
+  18%{opacity:1}
+  38%{opacity:1;transform:translateX(-50%) scale(1);filter:brightness(.58) saturate(1)}
+  60%,78%{opacity:1;transform:translateX(-50%) scale(1.035);filter:brightness(1.18) saturate(1.2) drop-shadow(0 0 12px #72d9ff)}
+  84%{opacity:1;transform:translateX(-50%) scale(1.05);filter:brightness(1.8)}
+  100%{opacity:0;transform:translateX(-40%) scale(1.05);filter:brightness(2.4)}
 }
 
 @media(max-width:370px){
   #game .battle>.heroHud{left:12px!important}
   #game .battle>.enemyHud{right:12px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .finisherCinematic.active .cinematicHero{animation:cinematicHeroNormalizedReduced .72s ease both!important}
+  @keyframes cinematicHeroNormalizedReduced{
+    0%,100%{opacity:0;transform:translateX(-50%) scale(1)}
+    18%,80%{opacity:1;transform:translateX(-50%) scale(1)}
+  }
 }
