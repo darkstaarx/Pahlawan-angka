@@ -68,6 +68,7 @@ function recentForSkill(skillId,n=5){
   return sess.responseHistory.filter(x=>x.skill===skillId).slice(-n);
 }
 function misconceptionLabel(tag){
+  if(typeof masteryMisconceptionLabel==='function')return masteryMisconceptionLabel(tag);
   const labels={
     place:'nilai tempat',digit_value:'nilai digit',units_only:'kumpul semula',same_end:'cara mengira',operation:'operasi yang sesuai',fraction:'pecahan',decimal:'perpuluhan',money:'nilai wang',time:'masa',unit:'unit ukuran',shape:'ciri bentuk',data:'carta dan data',fact:'darab',division:'bahagi',estimate:'anggaran',percent:'peratus',ratio:'nisbah',area:'luas dan isipadu',coord:'koordinat'
   };

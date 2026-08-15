@@ -40,8 +40,9 @@ function rapidSecureEvidence(id){
   const formats=new Set(recent.map(x=>x.format)).size;
   // Response time is behavioural context only. Slow, careful reading must not
   // block mastery; genuinely impulsive wrong answers are handled by intervention.js.
-  const secure=correct===recent.length&&noHints&&(formats>=2 || recent.some(x=>x.format.endsWith('|shift')));
-  return{secure,confidence:secure?Math.min(98,82+formats*4):Math.round(correct/recent.length*100),median:med,formats,need};
+  const kbDecision=typeof masteryEvidenceDecision==='function'?masteryEvidenceDecision(id,h):null;
+  const secure=correct===recent.length&&noHints&&(kbDecision?kbDecision.secure:(formats>=2 || recent.some(x=>x.format.endsWith('|shift'))));
+  return{secure,confidence:secure?Math.min(98,82+formats*4):Math.round(correct/recent.length*100),median:med,formats,need,kb:kbDecision};
 }
 function coachGradeSkills(g){return GRAPH.skills.filter(x=>x.grade===g)}
 function sameChapterUnseenAfter(id){
