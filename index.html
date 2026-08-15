@@ -17,6 +17,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
 <script defer src="js/cloud.js?v=3.15.0"></script>
 <link rel="stylesheet" href="css/kssr-question-v3.9.0.css?v=3.10.0">
+<link rel="stylesheet" href="css/visual-coach-v3.16.0.css?v=3.16.0">
 <link rel="stylesheet" href="css/game.css?v=3.14.1"><link rel="stylesheet" href="css/phase-3.6.4.css"><link rel="stylesheet" href="css/phase-3.6.6.css?v=3.6.7"><link rel="stylesheet" href="css/phase-3.6.8-animation.css?v=3.6.9"><link rel="stylesheet" href="css/login-buttons-v3.7.1.css?v=3.7.1"><link rel="stylesheet" href="css/battlefield-motion-v3.7.2.css?v=3.7.2"><link rel="stylesheet" href="css/battlefield-depth-v3.7.3.css?v=3.7.3"><link rel="stylesheet" href="css/pet-monster-motion-v3.7.4.css?v=3.7.4"><link rel="stylesheet" href="css/mobile-battle-v3.7.5.css?v=3.7.5"><link rel="stylesheet" href="css/combat-fov-v3.7.6.css?v=3.7.6"><link rel="stylesheet" href="css/battle-flow-v3.7.7.css?v=3.7.7"><link rel="stylesheet" href="css/boss-motion-v3.7.9.css?v=3.8.15"><link rel="stylesheet" href="css/coach-mascot-v3.8.1.css?v=3.8.3"><link rel="stylesheet" href="css/responsive-modes-v3.8.2.css?v=3.8.3"><link rel="stylesheet" href="css/pet-sizing-v3.8.21.css?v=3.8.21"><link rel="stylesheet" href="css/battle-polish-v3.8.22.css?v=3.8.22"><link rel="stylesheet" href="css/battle-scene-v3.8.25.css?v=3.8.25"><link rel="stylesheet" href="css/coach-teaching-v3.8.26.css?v=3.8.26"><link rel="stylesheet" href="css/battle-scene-v3.8.27.css?v=3.8.27"><link rel="stylesheet" href="css/battle-scene-v3.8.28.css?v=3.8.28"><link rel="stylesheet" href="css/pwa-v3.8.29.css?v=3.8.29"><link rel="stylesheet" href="css/guardian-focus-v3.8.30.css?v=3.8.30"><link rel="stylesheet" href="css/hero-pose-normalization-v3.8.31.css?v=3.8.31"><link rel="stylesheet" href="css/battle-fix-v3.9.1.css?v=3.10.0"><link rel="stylesheet" href="css/battle-fix-v3.11.css?v=3.11.0"><link rel="stylesheet" href="css/pet-staging-v3.14.3.css?v=3.14.3"></head><body data-screen="login"><div class="app">
 <header class="appHeader"><div class="brand"><span class="brandMark" aria-hidden="true"><img src="assets/icons/pa-64.png?v=3.8.31" alt=""></span><span>Pahlawan Angka</span></div><div class="grow"></div><button id="devQuickBtn" class="devQuickBtn hidden" onclick="openDevPanel()" aria-label="Developer Mode">DEV</button><button class="soundBtn" data-sound-toggle onclick="toggleSound()" aria-label="Bunyi">🔊</button><span class="chip badge">Coach RPG</span></header>
 
@@ -102,6 +103,12 @@
   <div class="learningIntro card"><div class="coachAvatar"><img id="coachMascot" src="assets/coach/cikgu-wajar/welcome.webp" alt="Cikgu Wajar"></div><div class="coachSpeech"><div class="coachName">CIKGU WAJAR</div><b id="coachLine">Mari kita fahamkan dahulu</b><p id="learningReason">Kita fahamkan konsep dahulu sebelum sambung berlawan.</p></div></div>
   <div class="learningSteps"><div class="learnStep active"><span>1</span>Faham</div><div class="learnStep"><span>2</span>Bina</div><div class="learnStep"><span>3</span>Sambung</div><div class="learnStep"><span>4</span>Cuba</div><div class="learnStep"><span>5</span>Guna</div></div>
   <div class="learningWorkspace">
+    <div id="visualCoachArena" class="visualCoachArena" aria-label="Demonstrasi visual Cikgu Wajar">
+      <div class="visualCoachShade"></div>
+      <div class="visualCoachCast"><img id="visualCoachHero" class="visualCoachHero" alt="Hero menunjukkan contoh"><img id="visualCoachPet" class="visualCoachPet hidden" alt="Haiwan teman membantu contoh"></div>
+      <div id="visualCoachBoard" class="visualCoachBoard"></div>
+      <div class="visualCoachWajar"><img src="assets/coach/cikgu-wajar/teach.webp" alt="Cikgu Wajar"><b id="visualCoachCue">Lihat dahulu</b></div>
+    </div>
     <aside class="coachStage" aria-label="Cikgu Wajar membimbing pembelajaran">
       <div class="coachStageGlow" aria-hidden="true"></div>
       <img id="coachStageMascot" src="assets/coach/cikgu-wajar/welcome.webp" alt="Cikgu Wajar">

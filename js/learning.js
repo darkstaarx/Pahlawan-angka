@@ -152,7 +152,43 @@ function contrastPanel(plan){
  return `<section class="coachCompare" aria-label="Bandingkan cara salah dan betul"><div class="compareExample"><small>CONTOH MUDAH</small><p>${question}</p></div><div class="coachContrast"><div class="compareWrong"><small>JANGAN BUAT BEGINI</small><b>${wrong}</b><p>${whyWrong}</p></div><div class="compareRight"><small>BUAT BEGINI</small><b>${right}</b><p>${whyRight}</p></div></div></section>`;
 }
 function microSteps(plan){return plan.steps.map((x,i)=>`<div><span>${i+1}</span><p>${x}${i===0?' <em>Berhenti dan semak langkah ini dahulu.</em>':''}</p></div>`).join('')}
+function visualCoachMode(key,m){
+ if(key==='place')return'place';
+ if(key==='fraction')return'fraction';
+ if(key==='operation')return /tolak/i.test(m?.title||'')?'subtract':'add';
+ return null;
+}
+function visualCoachDots(count,cls=''){return Array.from({length:count},()=>`<i class="${cls}"></i>`).join('')}
+function renderVisualCoachArena(stage,key,m){
+ const arena=document.getElementById('visualCoachArena'),board=document.getElementById('visualCoachBoard'),hero=document.getElementById('visualCoachHero'),pet=document.getElementById('visualCoachPet'),cue=document.getElementById('visualCoachCue');
+ if(!arena||!board)return;const mode=visualCoachMode(key,m);arena.classList.toggle('hidden',!mode);arena.classList.toggle('vcCheckpoint',stage>2);arena.classList.remove('vcSuccess');board.classList.remove('vcDone');if(!mode)return;
+ const heroData=HEROES?.[db?.hero]||HEROES?.wira;if(hero&&heroData)hero.src=stage===1?heroData.anticipation:heroData.idle;
+ const petId=db?.rewards?.equippedPet,petData=typeof REWARD_PETS!=='undefined'?REWARD_PETS[petId]:null;if(pet&&petData){pet.src=petData.front;pet.classList.remove('hidden')}else pet?.classList.add('hidden');
+ if(stage>2){board.innerHTML='<div class="vcResult">?</div>';if(cue)cue.textContent='Cuba sendiri';return}
+ if(cue)cue.textContent=stage===0?'Lihat dahulu':stage===1?'Sentuh yang menyala':'Bagus!';
+ const scenes={
+  place:[`<div class="vcNumber"><span class="hot">1</span>8</div>`,`<div class="vcSplit"><button class="vcTap" onclick="visualCoachInteract('place')"><span class="vcTens">${visualCoachDots(10)}</span></button><strong>+</strong><span class="vcOnes">${visualCoachDots(8)}</span></div>`,`<div class="vcResult">10 + 8 = 18</div>`],
+  fraction:[`<div class="vcFraction"><span></span><span></span></div>`,`<button class="vcTap" onclick="visualCoachInteract('fraction')"><span class="vcFraction"><span></span><span></span></span></button>`,`<div class="vcResult">1 daripada 2 = ½</div>`],
+  add:[`<div><div class="vcOrbs">${visualCoachDots(3)}</div><div class="vcEquation">3 + 2</div></div>`,`<button class="vcTap" onclick="visualCoachInteract('add')"><div class="vcOrbs">${visualCoachDots(3)} ${visualCoachDots(2)}</div><div class="vcEquation">Gabungkan</div></button>`,`<div class="vcResult">3 + 2 = 5</div>`],
+  subtract:[`<div><div class="vcCrystals">${Array.from({length:5},()=>'<i class="vcCrystal"></i>').join('')}</div><div class="vcEquation">5 − 2</div></div>`,`<button class="vcTap" onclick="visualCoachInteract('subtract')"><div class="vcCrystals">${Array.from({length:5},(_,i)=>`<i class="vcCrystal ${i>2?'target':''}"></i>`).join('')}</div><div class="vcEquation">Pecahkan 2</div></button>`,`<div class="vcResult">5 − 2 = 3</div>`]
+ };
+ board.innerHTML=scenes[mode][stage];arena.dataset.mode=mode;arena.dataset.complete='0';
+}
+function visualCoachInteract(mode){
+ const arena=document.getElementById('visualCoachArena'),board=document.getElementById('visualCoachBoard'),cue=document.getElementById('visualCoachCue');if(!arena||arena.dataset.mode!==mode||arena.dataset.complete==='1')return;arena.dataset.complete='1';
+ if(mode==='subtract')board.querySelectorAll('.vcCrystal.target').forEach(x=>x.classList.add('break'));
+ else board.classList.add('vcDone');arena.classList.add('vcSuccess');if(cue)cue.textContent='Ya, betul!';if(typeof playSfx==='function')playSfx('correct');setTimeout(learningAdvance,650);
+}
+function visualCoachContent(stage,key,m){
+ const mode=visualCoachMode(key,m);if(!mode||stage>2)return'';
+ const copy={place:['Lihat kedudukan digit','Sentuh satu kumpulan puluh','1 puluh bernilai…'],fraction:['Lihat satu bentuk penuh','Sentuh satu daripada dua bahagian','Bahagian berwarna ialah…'],add:['Mulakan dengan nombor kecil','Satukan semua orb','Jumlah semuanya…'],subtract:['Mulakan dengan 5 kristal','Pecahkan 2 kristal','Yang tinggal…']}[mode];
+ if(stage===0)return `<div class="visualCoachOnly"><div class="stageTag">CONTOH MUDAH</div><h2>${copy[0]}</h2><p>Tak perlu kira besar dahulu.</p><button class="btn primary learningNext" onclick="learningAdvance()">Lihat caranya →</button></div>`;
+ if(stage===1)return `<div class="visualCoachOnly"><div class="stageTag">SENTUH</div><h2>${copy[1]}</h2><p>Buat satu langkah sahaja.</p></div>`;
+ const choices=mode==='place'?[['10',true],['1',false]]:mode==='fraction'?[['1/2',true],['2/1',false]]:mode==='add'?[['5',true],['6',false]]:[['3',true],['2',false]];
+ return `<div class="visualCoachOnly"><div class="stageTag">SEMAK</div><h2>${copy[2]}</h2><div class="learningChoices">${choices.map(([label,ok])=>`<button onclick="learningGuidedChoice(this,${ok})">${label}</button>`).join('')}</div><div id="guidedFeedback" class="learningFeedback"></div></div>`;
+}
 function stageContent(stage,key,m,strategy='model'){
+ const visual=visualCoachContent(stage,key,m);if(visual)return visual;
  const plan=conceptTeachingPlanFor(m.id,key),spec=lessonSpecFor(m.id,key);
  const badge=`<div class="stageTag">${coachStrategyLabel(strategy).toUpperCase()}</div>`;
  if(stage===0)return `${badge}<h2>${strategy==='contrast'?'Mari lihat cara yang membantu':strategy==='micro'?'Kita kecilkan cabaran':'Mari fahamkan konsep'}</h2>${strategy==='contrast'?'':`<div class="workedProblem">${plan.problem}</div><p>${plan.ask}</p>`}${strategy==='contrast'?contrastPanel(plan):strategy==='micro'?'<div class="lessonGoal">🎯 Buat <b>satu keputusan kecil</b> pada satu masa. Tidak perlu fikir semua langkah serentak.</div>':'<div class="lessonGoal">🎯 Kita gunakan <b>contoh yang lebih mudah</b> untuk memahami konsep yang sama.</div>'}<button class="btn primary learningNext" onclick="learningAdvance()">${strategy==='contrast'?'Saya sudah nampak bezanya →':'Tunjuk caranya →'}</button>`;
@@ -180,6 +216,7 @@ function learningStart(skillId,intervention,opts={}){
 function renderLearningStage(){
   if(!learningState)return;
   const s=learningState.stage,m=META[learningState.skillId];
+  renderVisualCoachArena(s,learningState.key,m);
   const mascot=document.getElementById('coachMascot'),stageMascot=document.getElementById('coachStageMascot'),line=document.getElementById('coachLine');
   [mascot,stageMascot].forEach(img=>{if(img){
     const pose=s===0?'welcome':(s<3?'teach':'encourage');
