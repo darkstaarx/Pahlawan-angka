@@ -39,7 +39,7 @@ function terrainThemeFor(meta){
 function setBattleTerrain(meta){
  const arena=document.getElementById('battleArena');if(!arena)return;
  const theme=terrainThemeFor(meta),src=TERRAIN_BY_THEME[theme]||TERRAIN_BY_THEME.number;
- const value=`url("${src}?v=3.16.1")`;
+ const absoluteSrc=new URL(`${src}?v=3.16.3`,document.baseURI).href,value=`url("${absoluteSrc}")`;
  if(arena.dataset.terrain===theme&&arena.style.getPropertyValue('--battle-terrain')===value)return;
  arena.dataset.terrain=theme;arena.style.setProperty('--battle-terrain',value);
 }
