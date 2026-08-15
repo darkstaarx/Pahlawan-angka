@@ -20,12 +20,14 @@ function generate(id,s){
   if(!sess.questionFingerprints)sess.questionFingerprints=[];
   if(!sess.questionHistory)sess.questionHistory=[];
   const recent=new Set(sess.questionFingerprints.slice(-18));
+  const recentArchetypes=sess.questionHistory.filter(x=>x.skillId===id).slice(-2).map(x=>x.archetypeId);
   const attempts=(sess.mode==='confirm'?8:16);
   for(let i=0;i<attempts;i++){
     q=bank ? bank(id,s,shift || i>7) : null;
     if(!q)break;
     fp=questionFingerprint(q);
-    if(!recent.has(fp))break;
+    const repeatedArchetype=recentArchetypes.length&&recentArchetypes.at(-1)===(q.archetypeId||'legacy');
+    if(!recent.has(fp)&&(!repeatedArchetype||i===attempts-1))break;
   }
   q=q || Q("2 + 2 = ?",4,[N(3,"generic"),N(5,"generic"),N(6,"generic")],"Tambah kedua-dua nombor.","Fallback",false,false);
   fp=questionFingerprint(q);
