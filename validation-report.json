@@ -1,18 +1,27 @@
 {
-  "phase": "2.5",
+  "phase": "3.18.1",
   "skills": 102,
-  "coach_min_questions": 30,
-  "coach_max_questions": 45,
+  "coach_min_questions": 8,
+  "coach_max_questions": 15,
   "mission_questions": 10,
   "new_engine": "js/engine/frontier.js",
+  "content_integrity": "questions/kssr-content-integrity-v3.18.1.js",
+  "validated_against_commit": "6e807f510f8c1a23f22eace31c93c42d474964db",
   "js_syntax": "pass",
+  "content_samples": 4160,
+  "content_failures": 0,
   "missing_local_references": 0,
   "checks": {
     "frontier_loaded": true,
-    "coach_30": true,
-    "coach_45": true,
+    "coach_8": true,
+    "coach_15": true,
     "coach_dispatch": true,
     "learning_finish": true,
-    "battle_finish": true
+    "battle_finish": true,
+    "content_rotation_session": true,
+    "competency_frontier_gate": true,
+    "competency_stretch_gate": true,
+    "mandatory_competency_groups": true,
+    "skill_contract_sampling": true
   }
 }
