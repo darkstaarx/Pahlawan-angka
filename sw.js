@@ -1,4 +1,4 @@
-const CACHE_NAME='pahlawan-angka-v3.9.0';
+const CACHE_NAME='pahlawan-angka-v3.9.1';
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
@@ -10,7 +10,7 @@ const APP_SHELL=[
   './css/battle-flow-v3.7.7.css','./css/boss-motion-v3.7.9.css','./css/coach-mascot-v3.8.1.css',
   './css/responsive-modes-v3.8.2.css','./css/pet-sizing-v3.8.21.css','./css/battle-polish-v3.8.22.css',
   './css/battle-scene-v3.8.25.css','./css/coach-teaching-v3.8.26.css','./css/battle-scene-v3.8.27.css',
-  './css/battle-scene-v3.8.28.css','./css/pwa-v3.8.29.css','./css/guardian-focus-v3.8.30.css','./css/hero-pose-normalization-v3.8.31.css',
+  './css/battle-scene-v3.8.28.css','./css/pwa-v3.8.29.css','./css/guardian-focus-v3.8.30.css','./css/hero-pose-normalization-v3.8.31.css','./css/battle-fix-v3.9.1.css',
   './data/kssr/knowledge-graph.js','./data/kssr/alignment-v3.9.0.js','./questions/helpers.js','./questions/index.js','./questions/kssr-archetypes-v3.9.0.js',
   './questions/d1/core.js','./questions/d2/topic-1.js','./questions/d2/topic-2.js','./questions/d2/topic-3.js',
   './questions/d2/topic-4.js','./questions/d2/topic-5.js','./questions/d2/topic-6.js','./questions/d2/topic-7.js','./questions/d2/topic-8.js',
@@ -36,6 +36,15 @@ self.addEventListener('fetch',event=>{
     event.respondWith(fetch(event.request).then(response=>{
       const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));return response;
     }).catch(()=>caches.match('./index.html')));
+    return;
+  }
+  // Code must be network-first so a new build cannot be masked by an older
+  // cached JS/CSS response. The cache remains an offline fallback.
+  if(event.request.destination==='script'||event.request.destination==='style'){
+    event.respondWith(fetch(event.request).then(response=>{
+      if(response&&response.status===200){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));}
+      return response;
+    }).catch(()=>caches.match(event.request,{ignoreSearch:true})));
     return;
   }
   event.respondWith(caches.match(event.request,{ignoreSearch:true}).then(cached=>cached||fetch(event.request).then(response=>{
