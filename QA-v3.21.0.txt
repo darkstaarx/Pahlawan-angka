@@ -1,0 +1,50 @@
+Pahlawan Angka v3.21.0 QA
+===========================
+
+Baseline
+--------
+Live GitHub Pages baseline: 512ebc224c7b6c88b342dbfe2c79bc9432036a56
+Parent release: v3.20.0 Daily Quest + Spaced Review
+.nojekyll preserved.
+
+Syntax
+------
+PASS js/world-response-v3.21.0.js
+PASS js/pwa.js
+PASS sw.js
+
+World Response to Learning
+--------------------------
+PASS v3.21.0 static invariants
+PASS v3.21.0 runtime integration
+PASS learning-only proof gate: mastery >=85, confidence >=70, evidence >=4, stability >=55
+PASS competency-integrity gate respected
+PASS future locked chapter cannot restore
+PASS first-load migration does not replay retrospective celebrations
+PASS new verified proof queues world-change event
+PASS restored landmark is monotonic after later isolated mistakes
+PASS coins / XP cannot advance world state
+PASS world state persisted in child save state
+PASS reduced-motion support
+
+Regression
+----------
+PASS Daily Quest + Spaced Review v3.20.0 invariants
+PASS Daily Quest + Spaced Review v3.20.0 runtime integration
+PASS sensory learning v3.19.0 invariants
+PASS sensory runtime v3.19.0 wrappers
+PASS Cikgu Wajar manipulatives v3.19.1 invariants
+PASS Cikgu Wajar manipulatives v3.19.1 runtime integration
+PASS version sync: app v3.21.0; integrity v3.18.1; sensory v3.19.0; manipulatives v3.19.1; daily review v3.20.0; world response v3.21.0
+
+Content integrity regression
+----------------------------
+Skills: 52 repaired paths
+Samples: 4,160
+Failures: 0
+Frontier competency gate: PASS
+Stretch competency gate: PASS
+
+Notes
+-----
+This release is additive. It does not change question generation, mastery formulas, adaptive routing, battle damage/layout, Daily Quest selection rules, Supabase schema, or parental play-time controls.

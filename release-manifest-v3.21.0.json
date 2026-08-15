@@ -1,0 +1,32 @@
+{
+  "version": "3.21.0",
+  "name": "World Response to Learning",
+  "baseline_commit": "512ebc224c7b6c88b342dbfe2c79bc9432036a56",
+  "layers": {
+    "curriculum_integrity": "3.18.1",
+    "sensory_learning": "3.19.0",
+    "cikgu_manipulatives": "3.19.1",
+    "daily_review": "3.20.0",
+    "world_response": "3.21.0"
+  },
+  "question_generator_changed": false,
+  "mastery_formula_changed": false,
+  "adaptive_routing_changed": false,
+  "battle_layout_changed": false,
+  "parent_timer_changed": false,
+  "proof_gate": {
+    "mastery": 85,
+    "confidence": 70,
+    "evidence": 4,
+    "stability": 55,
+    "competency_integrity": true
+  },
+  "world_stages": [
+    "dormant",
+    "awakening",
+    "restoring",
+    "restored"
+  ],
+  "milestones_monotonic": true,
+  "reward_economy_can_advance_world": false
+}
