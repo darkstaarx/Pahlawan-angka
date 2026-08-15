@@ -1,0 +1,12 @@
+/* Pahlawan Angka v3.20.0 — Daily Quest + Spaced Review */
+.hubDailyCompact.paDailyQuestCard{position:relative;cursor:pointer;outline:none;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.hubDailyCompact.paDailyQuestCard:not(.complete):hover,.hubDailyCompact.paDailyQuestCard:not(.complete):focus-visible{transform:translateY(-1px);border-color:#79d7ff;box-shadow:0 10px 26px #06101a66,0 0 0 2px #79d7ff22}
+.hubDailyCompact.paDailyQuestCard:not(.complete) .dailyIcon{animation:paDailyReadyPulse 2.6s ease-in-out infinite}
+.hubDailyCompact.paDailyQuestCard.inProgress{border-color:#8fc8ff88}
+.hubDailyCompact.paDailyQuestCard.complete{cursor:default;opacity:.84;border-color:#66d59f66;box-shadow:inset 0 0 0 1px #66d59f22}
+.hubDailyCompact.paDailyQuestCard.complete .dailyIcon{filter:saturate(.75)}
+.paDailyMeta{display:block;margin-top:4px;font-size:10px;line-height:1.25;color:#a9bdd5;font-weight:650;letter-spacing:.01em}
+.hubDailyCompact.paDailyQuestCard .dailyReward{white-space:nowrap}
+body[data-screen="game"] #missionTitle{transition:opacity .16s ease}
+@keyframes paDailyReadyPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 transparent)}50%{transform:scale(1.05);filter:drop-shadow(0 0 8px #71cfff66)}}
+@media (prefers-reduced-motion:reduce){.hubDailyCompact.paDailyQuestCard,.hubDailyCompact.paDailyQuestCard .dailyIcon{animation:none!important;transition:none!important;transform:none!important}}

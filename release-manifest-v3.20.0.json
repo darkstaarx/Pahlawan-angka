@@ -1,0 +1,28 @@
+{
+  "version": "3.20.0",
+  "name": "Daily Quest + Spaced Review",
+  "baseline_commit": "809dc2a2ab4452206d7489a47677050140fdf340",
+  "layers": {
+    "curriculum_integrity": "3.18.1",
+    "sensory_learning": "3.19.0",
+    "cikgu_manipulatives": "3.19.1",
+    "daily_review": "3.20.0"
+  },
+  "daily_questions": 8,
+  "completion_coins": 15,
+  "daily_streak": false,
+  "parent_focus_max_questions": 3,
+  "normal_skill_max_questions": 2,
+  "learning_engine_formula_changed": false,
+  "question_generator_changed": false,
+  "battle_layout_changed": false,
+  "parental_time_controls_changed": false,
+  "selection_signals": [
+    "parent_focus",
+    "misconception_evidence",
+    "mandatory_competency_gap",
+    "review_due_time",
+    "fragile_mastery_confidence_stability"
+  ],
+  "migration": "Legacy same-day Daily reward claim is respected to prevent double-reward on upgrade day."
+}

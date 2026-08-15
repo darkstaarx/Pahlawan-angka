@@ -1,0 +1,48 @@
+Pahlawan Angka v3.20.0 QA
+===========================
+
+Baseline
+--------
+GitHub main / live Pages recovery baseline: 809dc2a2ab4452206d7489a47677050140fdf340
+.nojekyll preserved in replacement overlay.
+
+Syntax
+------
+PASS js/daily-spaced-review-v3.20.0.js
+PASS js/pwa.js
+PASS sw.js
+
+Daily Quest / Spaced Review
+---------------------------
+PASS v3.20.0 static invariants
+PASS v3.20.0 runtime integration
+PASS 8-question daily target
+PASS Parent Focus represented and capped at 3/8
+PASS future locked chapter excluded from planner
+PASS immediate same-skill repeat avoided when alternatives exist
+PASS within-session confirmation can override planned queue
+PASS per-skill review timestamps / wrong / hint evidence persisted
+PASS reward granted once only
+PASS legacy same-day claimed reward migration guard
+PASS no daily streak mechanic
+PASS reduced-motion support
+
+Regression
+----------
+PASS sensory learning v3.19.0 invariants
+PASS sensory runtime v3.19.0 wrappers
+PASS Cikgu Wajar manipulatives v3.19.1 invariants
+PASS Cikgu Wajar manipulatives v3.19.1 runtime integration
+PASS version sync: app v3.20.0; integrity v3.18.1; sensory v3.19.0; manipulatives v3.19.1; daily review v3.20.0
+
+Content integrity regression
+----------------------------
+Skills: 52 repaired paths
+Samples: 4,160
+Failures: 0
+Frontier competency gate: PASS
+Stretch competency gate: PASS
+
+Notes
+-----
+The local QA mirror intentionally contains only the files needed for regression tests, so a local full APP_SHELL asset-existence scan is not used as a release gate. Existing service-worker entries are preserved from the live baseline; v3.20.0 only adds its new JS/CSS entries and bumps the cache version.

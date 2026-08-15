@@ -1,0 +1,18 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/daily-spaced-review-v3.20.0.js','utf8');
+const css=fs.readFileSync('css/daily-spaced-review-v3.20.0.css','utf8');
+const pwa=fs.readFileSync('js/pwa.js','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+assert(/const VERSION='3\.20\.0'/.test(js),'daily review version missing');
+assert(/const TARGET=8/.test(js),'daily quest must remain short at 8 questions');
+assert(/Fokus Ibu Bapa/.test(js)&&/MAX_FOCUS_PER_SKILL=3/.test(js),'parent focus cap missing');
+assert(/lastPractice/.test(js)&&/lastWrong/.test(js)&&/reviewIntervalDays/.test(js),'spaced-review memory incomplete');
+assert(/PAContentIntegrity\?\.requirements/.test(js),'daily review must respect mandatory competency evidence');
+assert(/confirmationSkill/.test(js),'within-session clean confirmation must outrank planned review');
+assert(/state\.rewardClaimed/.test(js),'one-time daily reward guard missing');
+assert(/PROGRESSION\.streakEvery=999999/.test(js),'daily quest should suppress grind/streak bonus');
+assert(!/dailyStreak|streakDays|consecutiveDays/.test(js),'daily streak mechanic must not be added');
+assert(/prefers-reduced-motion:reduce/.test(css),'reduced-motion support missing');
+assert(/const DAILY_REVIEW_VERSION='3\.20\.0'/.test(pwa),'PWA loader missing daily-review version');
+assert(/daily-spaced-review-v3\.20\.0\.js/.test(sw)&&/daily-spaced-review-v3\.20\.0\.css/.test(sw),'service worker missing daily review files');
+console.log('PASS Daily Quest + Spaced Review v3.20.0 invariants');
