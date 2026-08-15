@@ -1,8 +1,8 @@
-const CACHE_NAME='pahlawan-angka-v3.16.3';
+const CACHE_NAME='pahlawan-angka-v3.16.4';
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
-  './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg','./assets/audio/forest-battle-ambience.mp3',
+  './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
   './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
   './css/game.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',

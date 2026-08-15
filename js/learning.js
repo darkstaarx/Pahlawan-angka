@@ -157,6 +157,7 @@ function visualCoachMode(key,m){
  if(m?.id==='D2.1.4'||/nilai tempat/i.test(m?.title||''))return'place';
  if(key==='place'&&m?.grade===1)return'place-basic';
  if(key==='fraction')return'fraction';
+ if(key==='groups'&&/bahagi/i.test(m?.title||''))return'divide';
  if(key==='operation')return /tolak/i.test(m?.title||'')?'subtract':'add';
  return null;
 }
@@ -177,20 +178,25 @@ function renderVisualCoachArena(stage,key,m){
   fraction:[`<div class="vcFraction"><span></span><span></span></div>`,`<button class="vcTap" onclick="visualCoachInteract('fraction')"><span class="vcFraction"><span></span><span></span></span></button>`,`<div class="vcResult">1 daripada 2 = ½</div>`],
   add:[`<div><div class="vcOrbs">${visualCoachDots(3)}</div><div class="vcEquation">3 + 2</div></div>`,`<button class="vcTap" onclick="visualCoachInteract('add')"><div class="vcOrbs">${visualCoachDots(3)} ${visualCoachDots(2)}</div><div class="vcEquation">Gabungkan</div></button>`,`<div class="vcResult">3 + 2 = 5</div>`],
   subtract:[`<div><div class="vcCrystals">${Array.from({length:5},()=>'<i class="vcCrystal"></i>').join('')}</div><div class="vcEquation">5 − 2</div></div>`,`<button class="vcTap" onclick="visualCoachInteract('subtract')"><div class="vcCrystals">${Array.from({length:5},(_,i)=>`<i class="vcCrystal ${i>2?'target':''}"></i>`).join('')}</div><div class="vcEquation">Pecahkan 2</div></button>`,`<div class="vcResult">5 − 2 = 3</div>`]
+  ,divide:[`<div><span class="vcBoulder whole"></span><div class="vcEquation">1 batu</div></div>`,`<button class="vcRockAction" onclick="visualCoachInteract('divide')"><span class="vcBoulder whole"></span><b>Slash untuk bahagi 2</b></button>`,`<div><div class="vcRockHalves"><span class="vcBoulder left"><b>½</b></span><span class="vcBoulder right"><b>½</b></span></div><div class="vcEquation">1 ÷ 2 = ½ setiap bahagian</div></div>`]
  };
  board.innerHTML=scenes[mode][stage];arena.dataset.mode=mode;arena.dataset.complete='0';
 }
 function visualCoachInteract(mode){
  const arena=document.getElementById('visualCoachArena'),board=document.getElementById('visualCoachBoard'),cue=document.getElementById('visualCoachCue');if(!arena||arena.dataset.mode!==mode||arena.dataset.complete==='1')return;arena.dataset.complete='1';
+ if(mode==='divide'){
+  const hero=document.getElementById('visualCoachHero'),heroData=HEROES?.[db?.hero]||HEROES?.wira;if(hero&&heroData)hero.src=heroData.attack;
+  board.innerHTML='<div class="vcSlashRock"><i></i><div class="vcRockHalves"><span class="vcBoulder left"><b>½</b></span><span class="vcBoulder right"><b>½</b></span></div></div>';if(typeof playSfx==='function')playSfx(db?.hero==='wira'?'wiraSword':'attack');arena.classList.add('vcSuccess');if(cue)cue.textContent='Dua bahagian sama!';setTimeout(learningAdvance,1000);return;
+ }
  if(mode==='subtract')board.querySelectorAll('.vcCrystal.target').forEach(x=>x.classList.add('break'));
  else board.classList.add('vcDone');arena.classList.add('vcSuccess');if(cue)cue.textContent='Ya, betul!';if(typeof playSfx==='function')playSfx('correct');setTimeout(learningAdvance,650);
 }
 function visualCoachContent(stage,key,m){
  const mode=visualCoachMode(key,m);if(!mode||stage>2)return'';
- const copy={number:['Lihat nombor tiga digit','Sentuh blok nombor','Blok itu menunjukkan…'],compare:['Banding dari kiri','Ratus sama—sentuh puluh','Simbol yang betul…'],place:['Cari digit di tempat puluh','Sentuh digit puluh','4 puluh bernilai…'],'place-basic':['Kembali kepada satu puluh','Sentuh satu kumpulan puluh','1 puluh bernilai…'],fraction:['Lihat satu bentuk penuh','Sentuh satu daripada dua bahagian','Bahagian berwarna ialah…'],add:['Kembali kepada tambah asas','Satukan semua orb','Jumlah semuanya…'],subtract:['Kembali kepada tolak asas','Pecahkan 2 kristal','Yang tinggal…']}[mode];
+ const copy={number:['Lihat nombor tiga digit','Sentuh blok nombor','Blok itu menunjukkan…'],compare:['Banding dari kiri','Ratus sama—sentuh puluh','Simbol yang betul…'],place:['Cari digit di tempat puluh','Sentuh digit puluh','4 puluh bernilai…'],'place-basic':['Kembali kepada satu puluh','Sentuh satu kumpulan puluh','1 puluh bernilai…'],fraction:['Lihat satu bentuk penuh','Sentuh satu daripada dua bahagian','Bahagian berwarna ialah…'],add:['Kembali kepada tambah asas','Satukan semua orb','Jumlah semuanya…'],subtract:['Kembali kepada tolak asas','Pecahkan 2 kristal','Yang tinggal…'],divide:['Mulakan dengan satu batu','Bahagi kepada dua sama besar','Setiap bahagian ialah…']}[mode];
  if(stage===0)return `<div class="visualCoachOnly"><div class="stageTag">CONTOH MUDAH</div><h2>${copy[0]}</h2><p>Tak perlu kira besar dahulu.</p><button class="btn primary learningNext" onclick="learningAdvance()">Lihat caranya →</button></div>`;
  if(stage===1)return `<div class="visualCoachOnly"><div class="stageTag">SENTUH</div><h2>${copy[1]}</h2><p>Buat satu langkah sahaja.</p></div>`;
- const choices=mode==='number'?[['342',true],['34',false]]:mode==='compare'?[['>',true],['<',false]]:mode==='place'?[['40',true],['4',false]]:mode==='place-basic'?[['10',true],['1',false]]:mode==='fraction'?[['1/2',true],['2/1',false]]:mode==='add'?[['5',true],['6',false]]:[['3',true],['2',false]];
+ const choices=mode==='number'?[['342',true],['34',false]]:mode==='compare'?[['>',true],['<',false]]:mode==='place'?[['40',true],['4',false]]:mode==='place-basic'?[['10',true],['1',false]]:mode==='fraction'||mode==='divide'?[['1/2',true],['2',false]]:mode==='add'?[['5',true],['6',false]]:[['3',true],['2',false]];
  return `<div class="visualCoachOnly"><div class="stageTag">SEMAK</div><h2>${copy[2]}</h2><div class="learningChoices">${choices.map(([label,ok])=>`<button onclick="learningGuidedChoice(this,${ok})">${label}</button>`).join('')}</div><div id="guidedFeedback" class="learningFeedback"></div></div>`;
 }
 function stageContent(stage,key,m,strategy='model'){
@@ -241,7 +247,7 @@ function learningChoice(btn,correct){
   if(correct){btn.classList.add('correct');setTimeout(learningAdvance,450)}else{btn.classList.add('wrong');setTimeout(()=>{btn.disabled=false;btn.classList.remove('wrong');btn.parentElement.querySelectorAll('button').forEach(x=>x.disabled=false)},650)}
 }
 function renderLearningCheckpoint(label){
-  const id=learningState.skillId,s=scoreState(id);let q=generate(id,s);
+  const id=learningState.skillId,s=scoreState(id),mode=visualCoachMode(learningState.key,META[id]);let q=mode==='divide'&&learningState.stage===3?{prompt:'1 batu dibahagi kepada 2 bahagian sama besar.<br>Setiap bahagian ialah?',answer:'1/2',wrong:[{v:'1',tag:'division'},{v:'2',tag:'division'}]}:generate(id,s);
   const transfer=learningState.stage===4;
   if(transfer&&learningState.lastCheckpointPrompt){for(let i=0;i<5&&q.prompt===learningState.lastCheckpointPrompt;i++)q=generate(id,s)}
   q.skill=id;learningState.q=q;learningState.qStart=performance.now();if(!transfer)learningState.lastCheckpointPrompt=q.prompt;
@@ -362,10 +368,10 @@ function devForceLearning(type='misconception'){
 function devOpenVisualCoach(mode='place'){
  if(!db||!isDevMode())return;
  const grade=+(document.getElementById('devGrade')?.value||db.schoolGrade),selected=document.getElementById('devSkill')?.value;
- const matches=m=>{const text=`${m?.domain||''} ${m?.title||''}`;if(mode==='place')return /nilai tempat/i.test(text);if(mode==='fraction')return /pecahan/i.test(text);if(mode==='subtract')return /tolak/i.test(text);return /tambah/i.test(text)};
+ const matches=m=>{const text=`${m?.domain||''} ${m?.title||''}`;if(mode==='place')return /nilai tempat/i.test(text);if(mode==='fraction')return /pecahan/i.test(text);if(mode==='subtract')return /tolak/i.test(text);if(mode==='divide')return /bahagi/i.test(text);return /tambah/i.test(text)};
  const meta=(META[selected]&&matches(META[selected]))?META[selected]:GRAPH.skills.find(x=>x.grade===grade&&matches(x))||GRAPH.skills.find(matches);
  if(!meta){showRewardToast('Demo visual belum tersedia untuk mod ini.');return}
- closeDevPanel();learningStart(meta.id,{type:'manual',tag:mode==='place'?'place':mode==='fraction'?'fraction':'operation',reason:'DEV Visual Coach Lab'},{dev:true});
+ closeDevPanel();learningStart(meta.id,{type:'manual',tag:mode==='place'?'place':mode==='fraction'?'fraction':mode==='divide'?'division':'operation',reason:'DEV Visual Coach Lab'},{dev:true});
 }
 function devPreviewTerrain(theme='number'){
  if(!db||!isDevMode()||!TERRAIN_BY_THEME[theme])return;

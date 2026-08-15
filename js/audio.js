@@ -13,7 +13,6 @@ const PA_AUDIO={
 };
 const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
-const PA_FOREST_VOLUME={ambient:.055,boss:.035};
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
 const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,mode:'off'};
@@ -22,12 +21,12 @@ function ensureBattleAudio(){
   if(PA_BATTLE_AUDIO.ctx)return PA_BATTLE_AUDIO.ctx;
   const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return null;
   try{
-    const ctx=new AudioCtx(),master=ctx.createGain(),forest=new Audio('assets/audio/forest-battle-ambience.mp3');master.gain.value=0;master.connect(ctx.destination);forest.loop=true;forest.preload='auto';forest.volume=0;
+    const ctx=new AudioCtx(),master=ctx.createGain();master.gain.value=0;master.connect(ctx.destination);
     const bossGain=ctx.createGain(),bossFilter=ctx.createBiquadFilter();bossGain.gain.value=0;bossFilter.type='lowpass';bossFilter.frequency.value=520;bossGain.connect(bossFilter).connect(master);
     /* Keep the boss chord above phone speakers' weak sub-bass range. */
     [[110,'triangle',.32],[164.81,'sine',.2],[220,'triangle',.11]].forEach(([frequency,type,level])=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type=type;osc.frequency.value=frequency;gain.gain.value=level;osc.connect(gain).connect(bossGain);osc.start()});
     const bossLfo=ctx.createOscillator(),bossDepth=ctx.createGain();bossLfo.frequency.value=.42;bossDepth.gain.value=.018;bossLfo.connect(bossDepth).connect(bossGain.gain);bossLfo.start();
-    Object.assign(PA_BATTLE_AUDIO,{ctx,master,bossGain,forest});return ctx;
+    Object.assign(PA_BATTLE_AUDIO,{ctx,master,bossGain,forest:null});return ctx;
   }catch(e){return null}
 }
 function fadeForestAmbience(target){
@@ -47,7 +46,7 @@ function setBattleAudioMode(mode='off'){
   /* Battle biasa ialah ambience sahaja: daun, angin dan hidupan hutan jauh.
      Muzik/synth hanya masuk secara terkawal semasa boss. */
   const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=(activeMode==='off'?0:.32)*PA_VOLUME_SCALE;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
-  fadeForestAmbience(activeMode==='ambient'?PA_FOREST_VOLUME.ambient:activeMode==='boss'?PA_FOREST_VOLUME.boss:0);
+  fadeForestAmbience(0);
   PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime((activeMode==='boss'?.09:0)*PA_VOLUME_SCALE,now,fade/3);
   if(activeMode==='boss'){bossDrum();PA_BATTLE_AUDIO.bossTimer=setInterval(bossDrum,1600)}
 }
@@ -72,7 +71,6 @@ function unlockSfx(){
   if(paAudioUnlocked)return;
   paAudioUnlocked=true;
   ensureBattleAudio();
-  const forest=PA_BATTLE_AUDIO.forest;if(forest&&!paMuted){try{forest.volume=.001;const fp=forest.play();if(fp&&fp.then)fp.then(()=>syncBattleAudio()).catch(()=>{});}catch(e){}}
   syncBattleAudio();
   // Mobile browsers require the first playback to follow a user gesture.
   const a=PA_AUDIO_CACHE.ui;
