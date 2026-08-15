@@ -1,0 +1,15 @@
+/* v3.14.3 — independent companion slot and pose-normalised pet art. */
+#game #hero .battlePet{--pa-pet-box:58px;left:-30px!important;bottom:0!important;width:var(--pa-pet-box)!important;min-width:var(--pa-pet-box)!important;max-width:var(--pa-pet-box)!important;height:var(--pa-pet-box)!important;z-index:4!important}
+#game #hero .battlePet[data-pet="arif"]{--pa-pet-box:68px;left:-38px!important;bottom:0!important}
+#game #hero .battlePet[data-pet="tiko"]{--pa-pet-box:62px;left:-34px!important;bottom:14px!important}
+#game #hero .battlePet .battle-pet-frame{left:50%!important;bottom:0!important;width:calc(100% * var(--pet-art-scale,1))!important;min-width:0!important;height:calc(100% * var(--pet-art-scale,1))!important;max-height:none!important;object-fit:contain!important;object-position:center bottom!important;transform:translateX(-50%)}
+/* Landscape attack art otherwise shrinks inside the same square canvas. */
+#game #hero .battlePet[data-pet="aurora"] .battle-pet-anticipation,#game #hero .battlePet[data-pet="aurora"] .battle-pet-follow-through{width:112%!important;height:112%!important}
+#game #hero .battlePet[data-pet="aurora"] .battle-pet-attack{width:122%!important;height:122%!important}
+#game #hero .battlePet[data-pet="pembaris"] .battle-pet-anticipation,#game #hero .battlePet[data-pet="pembaris"] .battle-pet-follow-through{width:134%!important;height:134%!important}
+#game #hero .battlePet[data-pet="pembaris"] .battle-pet-attack{width:154%!important;height:154%!important}
+/* Hub scene keeps both silhouettes readable. */
+.hubHeroCharacter{width:68%!important}.hubScenePet{left:68%;width:35%;height:76px}.hubScenePet[data-pet="aurora"],.hubScenePet[data-pet="pembaris"]{left:66%;width:38%;height:80px}.hubScenePet[data-pet="arif"]{left:65%;width:40%;height:82px}.hubScenePet[data-pet="tiko"]{left:68%;width:36%;height:76px}
+/* Equipped rewards use profile portraits and an explicit active marker. */
+.hubLoadout .loadoutSlot{grid-template-columns:46px 1fr;gap:9px;padding:6px 7px}.hubLoadout .loadoutThumb{position:relative;width:44px;height:44px;border-radius:50%;overflow:visible;border:2px solid #55749e;background:radial-gradient(circle at 50% 42%,#315d8d,#091629 72%);box-shadow:inset 0 0 0 2px #08162a,0 3px 9px #0006}.hubLoadout .loadoutThumb.aura{background:radial-gradient(circle at 50% 50%,#62549b,#11152a 72%)}.hubLoadout .loadoutThumb img{width:86%;height:86%;border-radius:50%;object-fit:contain;object-position:center}.hubLoadout .loadoutThumb.equipped{border-color:#e7be49;box-shadow:inset 0 0 0 2px #0b1930,0 0 12px #e7be4938}.hubLoadout .loadoutThumb.equipped::after{content:"✓";position:absolute;right:-3px;bottom:-2px;width:15px;height:15px;border-radius:50%;display:grid;place-items:center;background:#52d69a;color:#08261c;border:2px solid #10213a;font-size:9px;font-weight:1000;line-height:1}
+@media(max-width:380px){#game #hero .battlePet{left:-24px!important}#game #hero .battlePet[data-pet="arif"]{--pa-pet-box:64px;left:-30px!important}#game #hero .battlePet[data-pet="tiko"]{--pa-pet-box:58px;left:-28px!important}}
