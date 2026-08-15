@@ -1,0 +1,11 @@
+const fs=require('fs'),assert=require('assert');
+const html=fs.readFileSync('index.html','utf8'),css=fs.readFileSync('css/game.css','utf8'),progression=fs.readFileSync('js/progression.js','utf8');
+assert(html.includes('id="hubScenePet"'),'hub profile must stage the equipped pet beside the hero');
+assert(html.includes('id="hubContinueTitle"')&&html.includes('continueHubMission()'),'primary continue-adventure CTA must exist');
+assert(!/<button class="hubQuickCard mission"/.test(html)&&!/<button class="hubQuickCard treasure"/.test(html),'hub must not duplicate bottom-nav Mission and Khazanah actions');
+const petRule=css.match(/\.hubScenePet\{([^}]*)}/)?.[1]||'';assert(petRule.includes('width:39%')&&petRule.includes('height:78px')&&petRule.includes('object-fit:contain')&&petRule.includes('bottom:7px'),'pet must be independently scaled, contained and grounded');
+assert(!/\.hubScenePet\{[^}]*width:100%/.test(css),'hub pet must never use full-width artwork sizing');
+assert(/\.hubHeroCharacter\{[^}]*width:72%/.test(css),'hero and pet must have separate visual scales');
+assert(progression.includes("scenePet.dataset.pet=db.rewards?.equippedPet"),'pet-specific hub staging must follow equipped state');
+assert(progression.includes('chapterMasteryPct(currentChapter)'),'continue CTA must show real mission progress');
+console.log('PASS RPG hub: primary quest, compact support cards, no duplicate navigation, pet scaled and grounded independently');

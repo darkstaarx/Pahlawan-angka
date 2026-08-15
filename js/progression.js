@@ -66,6 +66,9 @@ function renderHub(){
   const petImg=document.getElementById('hubEquippedPetImg'),auraImg=document.getElementById('hubEquippedAuraImg');
   document.getElementById('hubEquippedPetName').textContent=pet?.name||'Tiada';document.getElementById('hubEquippedAuraName').textContent=aura?.name||'Tiada';
   if(petImg){petImg.src=pet?.front||'';petImg.classList.toggle('hidden',!pet);petImg.alt=pet?.name||''}if(auraImg){auraImg.src=aura?.image||'';auraImg.classList.toggle('hidden',!aura);auraImg.alt=aura?.name||''}
+  const scenePet=document.getElementById('hubScenePet');if(scenePet){scenePet.src=pet?.front||'';scenePet.alt=pet?.name||'';scenePet.classList.toggle('hidden',!pet);scenePet.dataset.pet=db.rewards?.equippedPet||''}
+  const currentChapter=String(db.activeMissionChapter||db.coreFrontier||1),currentPct=chapterMasteryPct(currentChapter);document.getElementById('hubContinueTitle').textContent=kssrMissionLabel(currentChapter);document.getElementById('hubContinueFill').style.width=currentPct+'%';document.getElementById('hubContinueText').textContent=`Kemajuan ${currentPct}%`;
+  const loadoutHint=document.getElementById('hubLoadoutHint');if(loadoutHint)loadoutHint.textContent=pet||aura?'Digunakan dalam battle seterusnya':'Belum dilengkapi · Lihat Khazanah';
   const daily=Math.min(PROGRESSION.dailyTarget,db.daily.correct||0);
   document.getElementById('dailyText').textContent=`${daily}/${PROGRESSION.dailyTarget} jawapan betul`;
   document.getElementById('dailyFill').style.width=Math.round(daily/PROGRESSION.dailyTarget*100)+'%';
@@ -73,6 +76,7 @@ function renderHub(){
   // Mission cards live on the dedicated Misi screen.
   screen('hub'); save();
 }
+function continueHubMission(){if(!db)return;startMission(String(db.activeMissionChapter||db.coreFrontier||1))}
 function renderMissions(){
   if(!db)return;
   if(typeof enforceRestuLock==='function' && enforceRestuLock())return;
