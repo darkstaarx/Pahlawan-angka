@@ -1,9 +1,9 @@
-const CACHE_NAME='pahlawan-angka-v3.14.6';
+const CACHE_NAME='pahlawan-angka-v3.15.0';
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
   './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg','./assets/audio/forest-battle-ambience.mp3',
-  './css/game.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
+  './css/game.css','./css/cloud-auth-v3.15.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
   './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
   './css/login-buttons-v3.7.1.css','./css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
   './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',
@@ -17,7 +17,7 @@ const APP_SHELL=[
   './questions/d3/core.js','./questions/d4/core.js','./questions/d5/core.js','./questions/d6/core.js',
   './js/engine/telemetry.js','./js/engine/intervention.js','./js/engine/frontier.js','./js/engine/adaptive.js',
   './js/heroes.js','./js/progression.js','./js/rewards-v2.js','./js/learning.js','./js/audio.js',
-  './js/battle.js','./js/parent.js','./js/guardian-focus.js','./js/app.js','./js/phase-3.6.4.js','./js/pwa.js'
+  './js/battle.js','./js/parent.js','./js/guardian-focus.js','./js/app.js','./js/cloud.js','./js/phase-3.6.4.js','./js/pwa.js'
 ];
 
 self.addEventListener('install',event=>{
