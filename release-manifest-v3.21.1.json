@@ -1,0 +1,22 @@
+{
+  "version": "3.21.1",
+  "baseline_commit": "7edac7776bd11c6f929635ea9ecefb02631b267a",
+  "layers": {
+    "integrity": "3.18.1",
+    "sensory": "3.19.0",
+    "manipulatives": "3.19.1",
+    "daily_review": "3.20.0",
+    "world_response": "3.21.0",
+    "dev_experiments": "3.21.1"
+  },
+  "world_response_normal_user_visible": false,
+  "world_response_dev_preview_mutates_learning": false,
+  "boss_typed_max_per_encounter": 2,
+  "boss_typed_safe_formats": ["number", "money", "percent"],
+  "question_generator_changed": false,
+  "mastery_formula_changed": false,
+  "adaptive_routing_changed": false,
+  "battle_damage_changed": false,
+  "daily_quest_selection_changed": false,
+  "parent_time_controls_changed": false
+}
