@@ -1,7 +1,7 @@
 const fs=require('fs'),assert=require('assert');
 const audio=fs.readFileSync('js/audio.js','utf8'),app=fs.readFileSync('js/app.js','utf8'),battle=fs.readFileSync('js/battle.js','utf8'),html=fs.readFileSync('index.html','utf8');
-assert(audio.includes('function ensureBattleAudio()')&&audio.includes('createBufferSource()'),'battle ambience must be generated locally');
-assert(audio.includes("activeMode==='ambient'?.16")&&audio.includes("activeMode==='boss'?.06"),'ambient and boss wind levels must remain audible but restrained');
+assert(audio.includes("new Audio('assets/audio/forest-battle-ambience.mp3')")&&audio.includes('forest.loop=true'),'battle ambience must use the bundled seamless forest recording');
+assert(audio.includes("activeMode==='ambient'?.5")&&audio.includes("activeMode==='boss'?.28"),'forest ambience must remain clearly audible during battle and boss phases');
 assert(audio.includes('function bossDrum()')&&audio.includes("activeMode==='boss'?.075"),'boss layer must add a distinct phone-audible score');
 assert(audio.includes("screenId!=='game'")&&app.includes("syncBattleAudio(id)"),'audio must stop outside battle screens');
 assert(app.includes("stage.tier==='boss'?'boss':'ambient'"),'enemy tier must drive the audio crossfade');

@@ -1,0 +1,7 @@
+Forest Ambience
+Creator: TinyWorlds
+Source: https://opengameart.org/content/forest-ambience
+License: Creative Commons Zero (CC0 1.0)
+Source file: Forest_Ambience.mp3
+
+Project modification: loudness-normalised to -17 LUFS and re-encoded at 112 kbps for mobile delivery.

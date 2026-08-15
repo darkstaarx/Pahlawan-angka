@@ -1,8 +1,8 @@
-const CACHE_NAME='pahlawan-angka-v3.14.5';
+const CACHE_NAME='pahlawan-angka-v3.14.6';
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
-  './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg',
+  './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg','./assets/audio/forest-battle-ambience.mp3',
   './css/game.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
   './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
   './css/login-buttons-v3.7.1.css','./css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
