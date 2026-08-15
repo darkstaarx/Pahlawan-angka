@@ -116,12 +116,18 @@ function chooseCoachFrontierSkill(){
   c.currentSkill=pick;sess.mode='review';return pick;
 }
 function coachCoveredDomains(){const c=ensureCoachSession();return Object.values(c?.domains||{}).filter(x=>x.attempts>=2).length}
+function coachResolvedDomains(){
+  const c=ensureCoachSession();
+  return Object.values(c?.frontier||{}).filter(x=>x&&(x.status==='secure'||x.status==='challenge')).length;
+}
 function shouldFinishAdaptiveCoach(){
   if(!sess?.coachAdaptive||sess.devBankTest)return false;
   const n=sess.missionAnswered||0;if(n<COACH_SESSION.minQuestions)return false;if(n>=COACH_SESSION.maxQuestions)return true;
-  const c=ensureCoachSession(),covered=coachCoveredDomains(),activeUncertain=Object.values(c.uncertain||{}).filter(Boolean).length;
-  // Keep the placement journey short; mixed evidence may continue only up to 15 challenges.
-  return covered>=COACH_SESSION.minDomains && activeUncertain<=2 && !sess.recoveryFor && !sess.confirmSkill;
+  const c=ensureCoachSession(),covered=coachCoveredDomains(),resolved=coachResolvedDomains(),activeUncertain=Object.values(c.uncertain||{}).filter(Boolean).length;
+  // Exposure alone is not a resolved placement result. Finish early only when
+  // four domains each have clear secure/challenge evidence; otherwise keep
+  // sampling (up to 15 questions) instead of reporting a false frontier.
+  return covered>=COACH_SESSION.minDomains && resolved>=COACH_SESSION.minDomains && activeUncertain<=2 && !sess.recoveryFor && !sess.confirmSkill;
 }
 function coachFrontierSummary(){
   const c=ensureCoachSession();if(!c)return[];
