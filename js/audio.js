@@ -42,9 +42,11 @@ function setBattleAudioMode(mode='off'){
   clearInterval(PA_BATTLE_AUDIO.bossTimer);PA_BATTLE_AUDIO.bossTimer=null;
   if(!paAudioUnlocked)return;
   const ctx=ensureBattleAudio();if(!ctx)return;if(ctx.state==='suspended')ctx.resume().catch(()=>{});
-  const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=.75,target=activeMode==='off'?0:.42;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
-  fadeForestAmbience(activeMode==='ambient'?.5:activeMode==='boss'?.28:0);
-  PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime(activeMode==='boss'?.075:0,now,fade/3);
+  /* Battle biasa ialah ambience sahaja: daun, angin dan hidupan hutan jauh.
+     Muzik/synth hanya masuk secara terkawal semasa boss. */
+  const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=activeMode==='off'?0:.32;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
+  fadeForestAmbience(activeMode==='ambient'?.16:activeMode==='boss'?.1:0);
+  PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime(activeMode==='boss'?.09:0,now,fade/3);
   if(activeMode==='boss'){bossDrum();PA_BATTLE_AUDIO.bossTimer=setInterval(bossDrum,1600)}
 }
 function syncBattleAudio(screenId=document.body?.dataset?.screen){

@@ -15,6 +15,33 @@ const BOSS_BY_CHAPTER={
  '7':{name:'Penjaga Ruang',image:'assets/enemies/geometry/penjaga-ruang.webp',frames:'assets/enemies/geometry/frames',tone:'geometry'},
  '8':{name:'Penjaga Data',image:'assets/enemies/data/penjaga-data.webp',frames:'assets/enemies/data/frames',tone:'data'}
 };
+const TERRAIN_BY_THEME={
+ number:'assets/battlefields/forest-temple/arena-v1.webp',
+ operation:'assets/battlefields/operations-forge/arena-v1.webp',
+ fraction:'assets/battlefields/cave-temple/arena-depth-v2.webp',
+ money:'assets/battlefields/money-market/arena-v1.webp',
+ time:'assets/battlefields/time-tower/arena-v1.webp',
+ measure:'assets/battlefields/measurement-court/arena-v1.webp',
+ shape:'assets/battlefields/nusantara-temple/arena-v1.webp',
+ data:'assets/battlefields/data-observatory/arena-v1.webp'
+};
+function terrainThemeFor(meta){
+ const domain=String(meta?.domain||'').toLowerCase(),chapter=Number(meta?.chapter||0);
+ if(/wang/.test(domain)||chapter===4)return'money';
+ if(/masa/.test(domain)||chapter===5)return'time';
+ if(/ukuran|panjang|jisim|isipadu/.test(domain)||chapter===6)return'measure';
+ if(/ruang|bentuk|koordinat|kedudukan/.test(domain)||chapter===7)return'shape';
+ if(/data|kebolehjadian/.test(domain)||chapter===8)return'data';
+ if(/pecahan|perpuluhan|peratus|nisbah|kadaran/.test(domain)||chapter===3)return'fraction';
+ if(/operasi|tambah|tolak|darab|bahagi/.test(domain)||chapter===2)return'operation';
+ return'number';
+}
+function setBattleTerrain(meta){
+ const arena=document.getElementById('battleArena');if(!arena)return;
+ const theme=terrainThemeFor(meta),src=TERRAIN_BY_THEME[theme]||TERRAIN_BY_THEME.number;
+ if(arena.dataset.terrain===theme)return;
+ arena.dataset.terrain=theme;arena.style.setProperty('--battle-terrain',`url("${src}")`);
+}
 if(db && !db.schoolGrade) db.schoolGrade=2;
 let selectedHero='wira';
 let sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:"calibrate",recoveryFor:null,stretchFor:null};
@@ -90,7 +117,7 @@ function gradeLabel(n){return `Darjah ${n}`}
 function roleLabel(g){ if(!db) return 'Misi'; if(g<db.schoolGrade) return 'Misi Asas'; if(g>db.schoolGrade) return 'Cabaran Bonus'; return 'Misi Matematik'; }
 function nextQ(){
  if(sess.learningActive)return;
- let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
+ let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;setBattleTerrain(m);
  sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;
  sess.recent.push(id);if(sess.recent.length>10)sess.recent.shift();
  document.getElementById("skillTitle").textContent=sess.bossStretchCurrent?`Cabaran Boss · Darjah ${m.grade} · ${m.domain}`:(m.grade===db.schoolGrade?(m.textbookUnit?`Unit ${m.textbookUnit} · ${m.textbookUnitTitle}`:m.title):(m.grade>db.schoolGrade?`Cabaran Bonus · ${m.domain}`:`Misi Asas · ${m.domain}`));

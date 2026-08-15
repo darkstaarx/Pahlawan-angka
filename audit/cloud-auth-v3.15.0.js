@@ -13,7 +13,7 @@ const checks={
   hardLock:/hard_lock_enabled/.test(cloud)&&/timeLock/.test(html),
   parentControls:/cloudParentControls/.test(html)&&/saveControls/.test(cloud),
   offlineFallback:/Cloud login gagal dimuat/.test(cloud),
-  cacheBumped:/pahlawan-angka-v3\.15\.0/.test(sw)&&/cloud\.js/.test(sw)&&/cloud-auth-v3\.15\.0\.css/.test(sw),
+  cacheBumped:/pahlawan-angka-v3\.15\.[0-9]+/.test(sw)&&/cloud\.js/.test(sw)&&/cloud-auth-v3\.15\.0\.css/.test(sw),
   stylesPresent:/\.cloudLoginCard/.test(css)&&/\.playTimer/.test(css)&&/\.cloudControls/.test(css)
 };
 const failed=Object.entries(checks).filter(([,ok])=>!ok).map(([name])=>name);

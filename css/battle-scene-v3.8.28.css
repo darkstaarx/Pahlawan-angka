@@ -8,7 +8,7 @@
   --pa-hero-inset:10%;
   --pa-enemy-inset:10%;
   --pa-pet-box:45px;
-  background-image:url("../assets/battlefields/nusantara-temple/arena-v1.png")!important;
+  background-image:var(--battle-terrain,url("../assets/battlefields/forest-temple/arena-v1.webp"))!important;
   background-position:center center!important;
   background-size:cover!important;
 }
