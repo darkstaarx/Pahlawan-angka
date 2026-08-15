@@ -153,7 +153,9 @@ function contrastPanel(plan){
 }
 function microSteps(plan){return plan.steps.map((x,i)=>`<div><span>${i+1}</span><p>${x}${i===0?' <em>Berhenti dan semak langkah ini dahulu.</em>':''}</p></div>`).join('')}
 function visualCoachMode(key,m){
- if(key==='place')return'place';
+ if(m?.id==='D2.1.1')return learningState?.tag==='compare'?'compare':'number';
+ if(m?.id==='D2.1.4'||/nilai tempat/i.test(m?.title||''))return'place';
+ if(key==='place'&&m?.grade===1)return'place-basic';
  if(key==='fraction')return'fraction';
  if(key==='operation')return /tolak/i.test(m?.title||'')?'subtract':'add';
  return null;
@@ -162,12 +164,16 @@ function visualCoachDots(count,cls=''){return Array.from({length:count},()=>`<i 
 function renderVisualCoachArena(stage,key,m){
  const arena=document.getElementById('visualCoachArena'),board=document.getElementById('visualCoachBoard'),hero=document.getElementById('visualCoachHero'),pet=document.getElementById('visualCoachPet'),cue=document.getElementById('visualCoachCue');
  if(!arena||!board)return;const mode=visualCoachMode(key,m);arena.classList.toggle('hidden',!mode);arena.classList.toggle('vcCheckpoint',stage>2);arena.classList.remove('vcSuccess');board.classList.remove('vcDone');if(!mode)return;
+ const terrainTheme=typeof terrainThemeFor==='function'?terrainThemeFor(m):'number',terrainSrc=typeof TERRAIN_BY_THEME!=='undefined'?(TERRAIN_BY_THEME[terrainTheme]||TERRAIN_BY_THEME.number):'assets/battlefields/forest-temple/arena-v1.webp';arena.dataset.terrain=terrainTheme;arena.style.setProperty('--coach-terrain',`url("${terrainSrc}?v=3.16.2")`);
  const heroData=HEROES?.[db?.hero]||HEROES?.wira;if(hero&&heroData)hero.src=stage===1?heroData.anticipation:heroData.idle;
  const petId=db?.rewards?.equippedPet,petData=typeof REWARD_PETS!=='undefined'?REWARD_PETS[petId]:null;if(pet&&petData){pet.src=petData.front;pet.classList.remove('hidden')}else pet?.classList.add('hidden');
  if(stage>2){board.innerHTML='<div class="vcResult">?</div>';if(cue)cue.textContent='Cuba sendiri';return}
  if(cue)cue.textContent=stage===0?'Lihat dahulu':stage===1?'Sentuh yang menyala':'Bagus!';
  const scenes={
-  place:[`<div class="vcNumber"><span class="hot">1</span>8</div>`,`<div class="vcSplit"><button class="vcTap" onclick="visualCoachInteract('place')"><span class="vcTens">${visualCoachDots(10)}</span></button><strong>+</strong><span class="vcOnes">${visualCoachDots(8)}</span></div>`,`<div class="vcResult">10 + 8 = 18</div>`],
+  number:[`<div class="vcNumber">342</div>`,`<button class="vcTap" onclick="visualCoachInteract('number')"><span class="vcBaseTen"><span class="vcHundreds">${visualCoachDots(3)}</span><span class="vcRods">${visualCoachDots(4)}</span><span class="vcUnits">${visualCoachDots(2)}</span></span></button>`,`<div class="vcResult">300 + 40 + 2 = 342</div>`],
+  compare:[`<div class="vcResult">342&nbsp;&nbsp;?&nbsp;&nbsp;324</div>`,`<button class="vcTap" onclick="visualCoachInteract('compare')"><div class="vcPlaceSlots"><span><b>3</b><small>RATUS</small></span><span class="hot"><b>4 &gt; 2</b><small>PULUH</small></span></div></button>`,`<div class="vcResult">342 &gt; 324</div>`],
+  place:[`<div class="vcNumber">3<span class="hot">4</span>2</div>`,`<div class="vcPlaceSlots"><button><b>3</b><small>RATUS</small></button><button class="hot" onclick="visualCoachInteract('place')"><b>4</b><small>PULUH</small></button><button><b>2</b><small>SA</small></button></div>`,`<div class="vcResult">4 puluh = 40</div>`],
+  'place-basic':[`<div class="vcNumber"><span class="hot">1</span>8</div>`,`<div class="vcSplit"><button class="vcTap" onclick="visualCoachInteract('place-basic')"><span class="vcTens">${visualCoachDots(10)}</span></button><strong>+</strong><span class="vcOnes">${visualCoachDots(8)}</span></div>`,`<div class="vcResult">10 + 8 = 18</div>`],
   fraction:[`<div class="vcFraction"><span></span><span></span></div>`,`<button class="vcTap" onclick="visualCoachInteract('fraction')"><span class="vcFraction"><span></span><span></span></span></button>`,`<div class="vcResult">1 daripada 2 = ½</div>`],
   add:[`<div><div class="vcOrbs">${visualCoachDots(3)}</div><div class="vcEquation">3 + 2</div></div>`,`<button class="vcTap" onclick="visualCoachInteract('add')"><div class="vcOrbs">${visualCoachDots(3)} ${visualCoachDots(2)}</div><div class="vcEquation">Gabungkan</div></button>`,`<div class="vcResult">3 + 2 = 5</div>`],
   subtract:[`<div><div class="vcCrystals">${Array.from({length:5},()=>'<i class="vcCrystal"></i>').join('')}</div><div class="vcEquation">5 − 2</div></div>`,`<button class="vcTap" onclick="visualCoachInteract('subtract')"><div class="vcCrystals">${Array.from({length:5},(_,i)=>`<i class="vcCrystal ${i>2?'target':''}"></i>`).join('')}</div><div class="vcEquation">Pecahkan 2</div></button>`,`<div class="vcResult">5 − 2 = 3</div>`]
@@ -181,10 +187,10 @@ function visualCoachInteract(mode){
 }
 function visualCoachContent(stage,key,m){
  const mode=visualCoachMode(key,m);if(!mode||stage>2)return'';
- const copy={place:['Lihat kedudukan digit','Sentuh satu kumpulan puluh','1 puluh bernilai…'],fraction:['Lihat satu bentuk penuh','Sentuh satu daripada dua bahagian','Bahagian berwarna ialah…'],add:['Mulakan dengan nombor kecil','Satukan semua orb','Jumlah semuanya…'],subtract:['Mulakan dengan 5 kristal','Pecahkan 2 kristal','Yang tinggal…']}[mode];
+ const copy={number:['Lihat nombor tiga digit','Sentuh blok nombor','Blok itu menunjukkan…'],compare:['Banding dari kiri','Ratus sama—sentuh puluh','Simbol yang betul…'],place:['Cari digit di tempat puluh','Sentuh digit puluh','4 puluh bernilai…'],'place-basic':['Kembali kepada satu puluh','Sentuh satu kumpulan puluh','1 puluh bernilai…'],fraction:['Lihat satu bentuk penuh','Sentuh satu daripada dua bahagian','Bahagian berwarna ialah…'],add:['Kembali kepada tambah asas','Satukan semua orb','Jumlah semuanya…'],subtract:['Kembali kepada tolak asas','Pecahkan 2 kristal','Yang tinggal…']}[mode];
  if(stage===0)return `<div class="visualCoachOnly"><div class="stageTag">CONTOH MUDAH</div><h2>${copy[0]}</h2><p>Tak perlu kira besar dahulu.</p><button class="btn primary learningNext" onclick="learningAdvance()">Lihat caranya →</button></div>`;
  if(stage===1)return `<div class="visualCoachOnly"><div class="stageTag">SENTUH</div><h2>${copy[1]}</h2><p>Buat satu langkah sahaja.</p></div>`;
- const choices=mode==='place'?[['10',true],['1',false]]:mode==='fraction'?[['1/2',true],['2/1',false]]:mode==='add'?[['5',true],['6',false]]:[['3',true],['2',false]];
+ const choices=mode==='number'?[['342',true],['34',false]]:mode==='compare'?[['>',true],['<',false]]:mode==='place'?[['40',true],['4',false]]:mode==='place-basic'?[['10',true],['1',false]]:mode==='fraction'?[['1/2',true],['2/1',false]]:mode==='add'?[['5',true],['6',false]]:[['3',true],['2',false]];
  return `<div class="visualCoachOnly"><div class="stageTag">SEMAK</div><h2>${copy[2]}</h2><div class="learningChoices">${choices.map(([label,ok])=>`<button onclick="learningGuidedChoice(this,${ok})">${label}</button>`).join('')}</div><div id="guidedFeedback" class="learningFeedback"></div></div>`;
 }
 function stageContent(stage,key,m,strategy='model'){
@@ -356,7 +362,7 @@ function devForceLearning(type='misconception'){
 function devOpenVisualCoach(mode='place'){
  if(!db||!isDevMode())return;
  const grade=+(document.getElementById('devGrade')?.value||db.schoolGrade),selected=document.getElementById('devSkill')?.value;
- const matches=m=>{const text=`${m?.domain||''} ${m?.title||''}`;if(mode==='place')return /nombor|nilai tempat/i.test(text);if(mode==='fraction')return /pecahan/i.test(text);if(mode==='subtract')return /tolak/i.test(text);return /tambah/i.test(text)};
+ const matches=m=>{const text=`${m?.domain||''} ${m?.title||''}`;if(mode==='place')return /nilai tempat/i.test(text);if(mode==='fraction')return /pecahan/i.test(text);if(mode==='subtract')return /tolak/i.test(text);return /tambah/i.test(text)};
  const meta=(META[selected]&&matches(META[selected]))?META[selected]:GRAPH.skills.find(x=>x.grade===grade&&matches(x))||GRAPH.skills.find(matches);
  if(!meta){showRewardToast('Demo visual belum tersedia untuk mod ini.');return}
  closeDevPanel();learningStart(meta.id,{type:'manual',tag:mode==='place'?'place':mode==='fraction'?'fraction':'operation',reason:'DEV Visual Coach Lab'},{dev:true});
