@@ -6,6 +6,7 @@ Adaptive placement confidence fix.
 - Unresolved mixed evidence continues to be sampled up to the 15-question cap.
 - Added end-to-end regression coverage for misconception, retry, hint dependence, confirmation, recovery, advancement and session completion.
 - Bumped the service-worker cache and adaptive frontier asset version.
+- Main-page release label is synchronised and guarded by `audit/version-sync.js`.
 
 Validation:
 
