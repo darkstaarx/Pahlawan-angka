@@ -211,7 +211,7 @@ function moneyQ(id,shift,s){
 }
 
 function shape3DQ(shift){let x=[["kubus","6 muka sama besar"],["kuboid","6 muka segi empat"],["silinder","2 muka bulat"],["sfera","tiada muka rata"]][R(0,3)],all=["kubus","kuboid","silinder","sfera"];return Q(`Bentuk 3D: <b>${x[1]}</b>`,x[0],all.filter(y=>y!==x[0]).map(y=>N(y,"shape")).slice(0,3),"Padankan ciri bentuk.","D2 Core · Ruang",false,shift)}
-function shape2DQ(shift){let x=[["segi tiga",3],["segi empat sama",4],["segi lima",5]][R(0,2)],all=["segi tiga","segi empat sama","segi lima","bulatan"];return Q(`Bentuk 2D yang mempunyai ${x[1]} sisi?`,x[0],all.filter(y=>y!==x[0]).map(y=>N(y,"shape")).slice(0,3),"Kira sisi lurus.","D2 Core · Ruang",false,shift)}
+function shape2DQ(shift){let shapes=[["segi tiga",3,"3 sisi lurus"],["segi empat sama",4,"4 sisi sama panjang"],["segi empat tepat",4,"4 sisi; sisi bertentangan sama panjang"],["bulatan",0,"tiada sisi lurus"]],x=shapes[R(0,3)];return Q(`Bentuk 2D yang mempunyai <b>${x[2]}</b> ialah?`,x[0],shapes.filter(y=>y[0]!==x[0]).map(y=>N(y[0],"shape")),"Gunakan semua ciri yang diberi.","D2 Core · Ruang",false,shift)}
 
 function numWords(n){
  const o=["sifar","satu","dua","tiga","empat","lima","enam","tujuh","lapan","sembilan"],t=["sepuluh","sebelas","dua belas","tiga belas","empat belas","lima belas","enam belas","tujuh belas","lapan belas","sembilan belas"];
