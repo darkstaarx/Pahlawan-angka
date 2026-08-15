@@ -1,7 +1,7 @@
 const fs=require('fs'),vm=require('vm'),path=require('path');
 const root=path.resolve(__dirname,'..'),sess={questionHistory:[],recent:[]};
 const ctx={window:{PAQuestionBanks:{}},console,Math,sess};ctx.window.window=ctx.window;ctx.window.sess=sess;ctx.global=ctx;vm.createContext(ctx);
-for(const f of ['data/kssr/knowledge-graph.js','data/kssr/alignment-v3.9.0.js','questions/helpers.js','questions/d1/core.js','questions/d2/topic-1.js','questions/d2/topic-2.js','questions/d2/topic-3.js','questions/d2/topic-4.js','questions/d2/topic-5.js','questions/d2/topic-6.js','questions/d2/topic-7.js','questions/d2/topic-8.js','questions/d3/core.js','questions/d4/core.js','questions/d5/core.js','questions/d6/core.js','questions/kssr-archetypes-v3.9.0.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});
+for(const f of ['data/kssr/knowledge-graph.js','data/kssr/alignment-v3.9.0.js','questions/helpers.js','questions/d1/core.js','questions/d2/topic-1.js','questions/d2/topic-2.js','questions/d2/topic-3.js','questions/d2/topic-4.js','questions/d2/topic-5.js','questions/d2/topic-6.js','questions/d2/topic-7.js','questions/d2/topic-8.js','questions/d3/core.js','questions/d4/core.js','questions/d5/core.js','questions/d6/core.js','questions/kssr-archetypes-v3.9.0.js','questions/kssr-content-v3.11.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});
 const ids=vm.runInContext('GRAPH.skills.filter(x=>x.grade>=3&&x.grade<=6).map(x=>x.id)',ctx),problems=[],summary=[],longDecimal=/-?\d+\.\d{3,}/;
 for(const id of ids){
  const bank=ctx.window.PAQuestionBanks['d'+id[1]],seen=new Set(),archetypes=new Set();let repeats=0;sess.questionHistory=[];

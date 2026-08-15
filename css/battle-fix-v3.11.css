@@ -1,0 +1,6 @@
+/* Bosses share the floor baseline with the hero and grow upward into the arena. */
+#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{transform:translateY(-10px)!important;overflow:visible!important}
+#game #enemy[data-enemy-tier="boss"] #enemySprite{transform:translateY(0)!important;object-position:center bottom!important}
+#game #enemy[data-enemy-tier="boss"] .enemy-frame:not(.enemy-frame-idle){transform:translateX(-50%) translateY(0)!important;object-position:center bottom!important}
+#game #enemy[data-enemy-tier="boss"]::after{transform:translateY(-2px) scaleY(.68)!important}
+@media(max-width:600px){#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{transform:translateY(-8px)!important}}
