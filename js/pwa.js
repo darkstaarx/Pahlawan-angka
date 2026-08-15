@@ -1,14 +1,26 @@
-// Load the post-bank curriculum integrity guard before the page becomes interactive.
+// Pahlawan Angka release loader.
 (()=>{
-  const src='questions/kssr-content-integrity-v3.18.1.js?v=3.18.1';
-  if(document.querySelector(`script[src^="questions/kssr-content-integrity-v3.18.1.js"]`))return;
+  const APP_VERSION='3.19.0';
+  const INTEGRITY_VERSION='3.18.1';
+  const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
+  const sensoryCss=`css/sensory-learning-v${APP_VERSION}.css?v=${APP_VERSION}`;
+  const sensoryJs=`js/sensory-learning-v${APP_VERSION}.js?v=${APP_VERSION}`;
+
   if(document.readyState==='loading'){
-    document.write(`<script src="${src}"><\/script>`);
-    return;
+    if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);
+    if(!document.querySelector(`link[href^="css/sensory-learning-v${APP_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${sensoryCss}">`);
+    if(!document.querySelector(`script[src^="js/sensory-learning-v${APP_VERSION}.js"]`))document.write(`<script src="${sensoryJs}"><\/script>`);
+  }else{
+    const loadScript=(src,selector,onload)=>{
+      if(document.querySelector(selector)){onload?.();return}
+      const s=document.createElement('script');s.src=src;s.async=false;if(onload)s.onload=onload;document.head.appendChild(s);
+    };
+    const loadSensory=()=>{
+      if(!document.querySelector(`link[href^="css/sensory-learning-v${APP_VERSION}.css"]`)){const l=document.createElement('link');l.rel='stylesheet';l.href=sensoryCss;document.head.appendChild(l)}
+      loadScript(sensoryJs,`script[src^="js/sensory-learning-v${APP_VERSION}.js"]`);
+    };
+    loadScript(guard,`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`,loadSensory);
   }
-  const script=document.createElement('script');
-  script.src=src;script.async=false;
-  document.head.appendChild(script);
 })();
 
 (()=>{

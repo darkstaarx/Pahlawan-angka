@@ -1,0 +1,30 @@
+/* Pahlawan Angka v3.19.0 — Sensory Learning Foundation */
+:root{--pa-sense-correct:#4fe09d;--pa-sense-reflect:#f0c66a;--pa-sense-hint:#7fc7ff;--pa-sense-mastery:#ffd76a}
+.qcard{position:relative}
+.qcard.pa-sensory-question{animation:paQuestionSettle .28s cubic-bezier(.2,.75,.2,1)}
+.qcard.pa-sensory-correct{animation:paCorrectCard .82s ease-out}
+.qcard.pa-sensory-reflect{animation:paReflectCard .86s ease-out}
+.qcard.pa-sensory-hint{animation:paHintCard .92s ease-out}
+.paLearningSignal{display:inline-flex;align-items:center;gap:.35rem;margin-top:.55rem;padding:.38rem .62rem;border-radius:999px;font-size:.78rem;font-weight:800;line-height:1.15;opacity:0;transform:translateY(3px);transition:opacity .16s ease,transform .16s ease;border:1px solid transparent;background:rgba(8,16,29,.72);pointer-events:none}
+.paLearningSignal.show{opacity:1;transform:translateY(0)}
+.paLearningSignal.tone-correct{color:#cffff0;border-color:color-mix(in srgb,var(--pa-sense-correct) 58%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--pa-sense-correct) 16%,transparent)}
+.paLearningSignal.tone-reflect{color:#fff2c8;border-color:color-mix(in srgb,var(--pa-sense-reflect) 52%,transparent)}
+.paLearningSignal.tone-hint{color:#d9f1ff;border-color:color-mix(in srgb,var(--pa-sense-hint) 52%,transparent)}
+.paMasteryMoment{position:absolute;inset:0;z-index:34;display:grid;place-items:center;pointer-events:none;opacity:0;visibility:hidden;overflow:hidden}
+.paMasteryMoment.show{visibility:visible;animation:paMasteryMoment 1.9s ease both}
+.paMasteryGlow{position:absolute;width:72%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,218,104,.30),rgba(255,218,104,.08) 38%,transparent 68%);filter:blur(2px);transform:scale(.4)}
+.paMasteryMoment.show .paMasteryGlow{animation:paMasteryGlow 1.5s ease-out both}
+.paMasteryPanel{position:relative;display:grid;justify-items:center;gap:.16rem;min-width:min(78%,300px);padding:.78rem 1rem .84rem;border-radius:18px;background:linear-gradient(180deg,rgba(11,22,42,.94),rgba(7,13,25,.91));border:1px solid rgba(255,220,112,.58);box-shadow:0 18px 48px rgba(0,0,0,.35),0 0 32px rgba(255,215,106,.13);text-align:center;transform:scale(.84) translateY(6px)}
+.paMasteryMoment.show .paMasteryPanel{animation:paMasteryPanel 1.9s cubic-bezier(.2,.8,.25,1) both}
+.paMasteryRune{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;margin-top:-27px;margin-bottom:.18rem;background:linear-gradient(145deg,#fff1a9,#d9a73c);color:#33230b;font-size:1.35rem;border:3px solid rgba(255,255,255,.45);box-shadow:0 0 26px rgba(255,215,106,.34)}
+.paMasteryMoment small{font-size:.66rem;letter-spacing:.13em;font-weight:900;color:#ffe7a4}.paMasteryMoment b{font-size:1rem;color:#fff}.paMasteryMoment span{font-size:.72rem;color:#d8e3f4}
+body[data-screen="learning"] .visualCoachArena{box-shadow:inset 0 0 28px rgba(127,199,255,.05)}
+body[data-screen="learning"] .coachStageGlow{animation-duration:4.6s!important}
+@keyframes paQuestionSettle{0%{opacity:.78;transform:translateY(5px)}100%{opacity:1;transform:none}}
+@keyframes paCorrectCard{0%{box-shadow:0 0 0 0 rgba(79,224,157,0)}28%{box-shadow:0 0 0 2px rgba(79,224,157,.42),0 0 26px rgba(79,224,157,.11)}100%{box-shadow:0 0 0 0 rgba(79,224,157,0)}}
+@keyframes paReflectCard{0%{box-shadow:0 0 0 0 rgba(240,198,106,0)}30%{box-shadow:0 0 0 1px rgba(240,198,106,.42),0 0 20px rgba(240,198,106,.08)}100%{box-shadow:0 0 0 0 rgba(240,198,106,0)}}
+@keyframes paHintCard{0%{box-shadow:0 0 0 0 rgba(127,199,255,0)}32%{box-shadow:0 0 0 1px rgba(127,199,255,.42),0 0 23px rgba(127,199,255,.09)}100%{box-shadow:0 0 0 0 rgba(127,199,255,0)}}
+@keyframes paMasteryMoment{0%{opacity:0}12%,74%{opacity:1}100%{opacity:0}}
+@keyframes paMasteryGlow{0%{transform:scale(.35);opacity:0}28%{opacity:1}100%{transform:scale(1.25);opacity:0}}
+@keyframes paMasteryPanel{0%{transform:scale(.82) translateY(8px);opacity:0}18%,72%{transform:scale(1) translateY(0);opacity:1}100%{transform:scale(.98) translateY(-3px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.qcard.pa-sensory-question,.qcard.pa-sensory-correct,.qcard.pa-sensory-reflect,.qcard.pa-sensory-hint,.paMasteryMoment.show,.paMasteryMoment.show .paMasteryGlow,.paMasteryMoment.show .paMasteryPanel{animation:none!important}.paMasteryMoment.show{opacity:1;visibility:visible}.paLearningSignal{transition:none}.coachStageGlow{animation:none!important}}

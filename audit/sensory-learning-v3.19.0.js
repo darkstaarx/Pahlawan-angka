@@ -1,0 +1,16 @@
+const fs=require('fs'),assert=require('assert');
+const sensory=fs.readFileSync('js/sensory-learning-v3.19.0.js','utf8');
+const css=fs.readFileSync('css/sensory-learning-v3.19.0.css','utf8');
+const pwa=fs.readFileSync('js/pwa.js','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+const lock=fs.readFileSync('SENSORY-LEARNING-LOCK-v3.19.md','utf8');
+assert(/const VERSION='3\.19\.0'/.test(sensory),'sensory version missing');
+assert(/PAContentIntegrity\?\.requirements/.test(sensory),'mastery does not consult integrity requirements');
+assert(/after\.mastery<MASTER_THRESHOLD\|\|!after\.requirement\.ok/.test(sensory),'mastery gate missing threshold/evidence check');
+assert(/if\(kind==='correct'\).*vibrate/.test(sensory),'correct haptic missing');
+assert(!/kind==='wrong'.*vibrate/.test(sensory),'wrong-answer haptic must not exist');
+assert(/prefers-reduced-motion/.test(css),'reduced-motion support missing');
+assert(/sensory-learning-v\$\{APP_VERSION\}\.js/.test(pwa)&&/sensory-learning-v\$\{APP_VERSION\}\.css/.test(pwa),'PWA loader missing sensory templates');
+assert(/sensory-learning-v3\.19\.0\.js/.test(sw)&&/sensory-learning-v3\.19\.0\.css/.test(sw),'service worker missing sensory files');
+assert(/Sensory feedback exists to make mathematical thinking feel responsive/.test(lock),'sensory lock missing core rule');
+console.log('PASS sensory learning v3.19.0 invariants');

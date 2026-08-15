@@ -1,0 +1,25 @@
+{
+  "release": "3.19.0",
+  "name": "Sensory Learning Foundation",
+  "base_commit": "b121c3457b2bc1263e27d38b74e0783983e989ea",
+  "curriculum_integrity_version": "3.18.1",
+  "changes_scoring_or_mastery_formula": false,
+  "changes_question_generation": false,
+  "changes_battle_layout": false,
+  "tests": {
+    "javascript_syntax": "pass",
+    "sensory_runtime_wrappers": "pass",
+    "sensory_invariants": "pass",
+    "version_sync": "pass",
+    "content_integrity_samples": 4160,
+    "content_integrity_failures": 0
+  },
+  "locked_rules": [
+    "wrong_answer_is_calm_not_punitive",
+    "no_wrong_answer_haptic",
+    "assisted_correct_is_not_clean_mastery",
+    "mastery_requires_threshold_and_competency_evidence",
+    "boss_and_final_blow_remain_peak_intensity",
+    "prefers_reduced_motion_supported"
+  ]
+}
