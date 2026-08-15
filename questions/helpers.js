@@ -32,12 +32,22 @@ function fallbackChoice(answer,d){
  return generic[(d-1)%generic.length];
 }
 function choiceKey(value){return String(tidyDisplay(value)).replace(/\s+/g,' ').trim().toLocaleLowerCase('ms')}
+function semanticChoiceKey(value){
+ const raw=choiceKey(value), compact=raw.replace(/\s+/g,'');
+ let m=compact.match(/^rm(-?\d+(?:\.\d+)?)$/);if(m)return `money:${tidyNumber(Number(m[1]))}`;
+ m=compact.match(/^(-?\d+(?:\.\d+)?)%$/);if(m)return `percent:${tidyNumber(Number(m[1]))}`;
+ m=compact.match(/^(-?\d+)\/(-?\d+)$/);if(m){const n=Number(m[1]),d=Number(m[2]);if(d){const g=gcd(Math.abs(n),Math.abs(d));return `fraction:${n/g}/${d/g}`}}
+ // Expanded notation is an addition statement: 20 + 5 and 5 + 20 are the same answer.
+ if(/^-?\d+(?:\.\d+)?(?:\+-?\d+(?:\.\d+)?)+$/.test(compact))return `sum:${tidyNumber(compact.split('+').reduce((a,x)=>a+Number(x),0))}`;
+ if(/^-?\d+(?:\.\d+)?(?:[×*]-?\d+(?:\.\d+)?)+$/.test(compact))return `product:${tidyNumber(compact.split(/[×*]/).reduce((a,x)=>a*Number(x),1))}`;
+ return `text:${raw}`;
+}
 function Q(prompt,answer,wrong,hint,kind="Adaptive",diagnostic=false,formatShift=false){
  answer=tidyDisplay(answer);
  wrong=(wrong||[]).map(x=>x==null?x:{...x,v:tidyDisplay(x.v),label:tidyDisplay(x.label)});
- let seen=new Set([choiceKey(answer)]),w=[];
- for(let x of wrong){if(x!=null){const key=choiceKey(x.label??x.v);if(!seen.has(key)){seen.add(key);w.push(x)}}}
- let d=1,guard=0;while(w.length<3&&guard++<20){let v=fallbackChoice(answer,d++),key=choiceKey(v);if(!seen.has(key)){w.push(N(v,"generated"));seen.add(key)}}
+ let seen=new Set([semanticChoiceKey(answer)]),w=[];
+ for(let x of wrong){if(x!=null){const key=semanticChoiceKey(x.label??x.v);if(!seen.has(key)){seen.add(key);w.push(x)}}}
+ let d=1,guard=0;while(w.length<3&&guard++<20){let v=fallbackChoice(answer,d++),key=semanticChoiceKey(v);if(!seen.has(key)){w.push(N(v,"generated"));seen.add(key)}}
  if(w.length!==3)throw new Error(`Pilihan unik tidak dapat dijana untuk jawapan: ${answer}`);
  return{prompt,answer,wrong:w.slice(0,3),hint,kind,diagnostic,formatShift}
 }
@@ -229,14 +239,15 @@ function barChart(labels,vals){
 function clockSvg(hour,minute){
  let h=((hour%12)+(minute/60))*30-90,m=minute*6-90,rad=x=>x*Math.PI/180;
  let hx=50+18*Math.cos(rad(h)), hy=50+18*Math.sin(rad(h)), mx=50+26*Math.cos(rad(m)), my=50+26*Math.sin(rad(m));
- return `<svg viewBox="0 0 100 100" width="96" height="96" style="display:block;margin:0 auto 10px"><circle cx="50" cy="50" r="42" fill="#fff" stroke="#405072" stroke-width="4"/>${Array.from({length:12},(_,i)=>{let a=i*30-90,x1=50+34*Math.cos(rad(a)),y1=50+34*Math.sin(rad(a)),x2=50+39*Math.cos(rad(a)),y2=50+39*Math.sin(rad(a));return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#405072" stroke-width="3"/>`}).join('')}<line x1="50" y1="50" x2="${hx}" y2="${hy}" stroke="#405072" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="${mx}" y2="${my}" stroke="#78a9ff" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#405072"/></svg>`
+ const nums=Array.from({length:12},(_,i)=>{const a=(i+1)*30-90,x=50+31*Math.cos(rad(a)),y=50+31*Math.sin(rad(a));return `<text x="${x}" y="${y+2.5}" text-anchor="middle" font-size="7" font-weight="800" fill="#405072">${i+1}</text>`}).join('');
+ return `<svg class="clockVisual" viewBox="0 0 100 100" width="112" height="112" role="img" aria-label="Muka jam analog" style="display:block;margin:0 auto 10px"><circle cx="50" cy="50" r="45" fill="#f9fbff" stroke="#405072" stroke-width="4"/>${nums}<line x1="50" y1="50" x2="${hx}" y2="${hy}" stroke="#26344f" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="${mx}" y2="${my}" stroke="#4388e8" stroke-width="3.5" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#26344f"/></svg>`
 }
 function shapeSvg(type){
- let map={triangle:'<polygon points="50,12 88,82 12,82" fill="#ffd36d" stroke="#405072" stroke-width="3"/>',square:'<rect x="18" y="18" width="64" height="64" rx="4" fill="#8ab4ff" stroke="#405072" stroke-width="3"/>',rectangle:'<rect x="12" y="24" width="76" height="52" rx="4" fill="#8fd9a8" stroke="#405072" stroke-width="3"/>',circle:'<circle cx="50" cy="50" r="34" fill="#ffb4ca" stroke="#405072" stroke-width="3"/>'};
+ let map={triangle:'<polygon points="50,12 88,82 12,82" fill="#ffd36d" stroke="#405072" stroke-width="3"/>',square:'<rect x="18" y="18" width="64" height="64" rx="4" fill="#8ab4ff" stroke="#405072" stroke-width="3"/>',rectangle:'<rect x="12" y="24" width="76" height="52" rx="4" fill="#8fd9a8" stroke="#405072" stroke-width="3"/>',pentagon:'<polygon points="50,10 88,38 74,84 26,84 12,38" fill="#c8a7ef" stroke="#405072" stroke-width="3"/>',circle:'<circle cx="50" cy="50" r="34" fill="#ffb4ca" stroke="#405072" stroke-width="3"/>'};
  return `<svg viewBox="0 0 100 100" width="96" height="96" style="display:block;margin:0 auto 10px">${map[type]||map.square}</svg>`
 }
 function coordGrid(x,y){
- return `<div style="font-family:monospace;white-space:pre;line-height:1.15;display:inline-block;text-align:left;background:#fff;padding:8px 10px;border-radius:10px;border:1px solid #c8d1ea;margin:0 auto 10px">${[4,3,2,1,0].map(r=>`${r} | ${[0,1,2,3,4].map(c=>c===x&&r===y?'●':'·').join(' ')}`).join('\n')}\n    0 1 2 3 4</div>`
+ return `<div class="coordVisual" role="img" aria-label="Grid koordinat dengan titik pada ${x}, ${y}" style="font-family:monospace;white-space:pre;line-height:1.15;display:inline-block;text-align:left;background:#fff;padding:8px 10px;border-radius:10px;border:2px solid #8394b2;margin:0 auto 10px">${[4,3,2,1,0].map(r=>`${r} | ${[0,1,2,3,4].map(c=>c===x&&r===y?'●':'·').join(' ')}`).join('\n')}\n    0 1 2 3 4</div>`
 }
 function gcd(a,b){while(b){[a,b]=[b,a%b]}return a}
 function simplify(n,d){let g=gcd(Math.abs(n),Math.abs(d)); return [n/g,d/g]}
@@ -310,8 +321,15 @@ function barChart(labels,vals){
 }
 function uniqueValues(n,min=2,max=10){const a=[];while(a.length<n){const v=R(min,max);if(!a.includes(v))a.push(v)}return a}
 function fractionVisual(num,den){
- let cells='';for(let i=0;i<den;i++)cells+=`<div style="flex:1;height:22px;border:1px solid #7c8fb5;background:${i<num?'#7fd6a7':'#e7edff'}"></div>`;
- return `<div class="fractionVisual" style="width:min(240px,92%);display:flex;border-radius:10px;overflow:hidden;margin:0 auto 10px">${cells}</div>`;
+ let cells='';for(let i=0;i<den;i++)cells+=`<div style="flex:1;height:34px;border-left:${i?'2px':'0'} solid #516684;background:${i<num?'#62c991':'#edf2ff'}"></div>`;
+ return `<div class="fractionVisual" role="img" aria-label="Satu keseluruhan dibahagi kepada ${den} bahagian sama besar; ${num} bahagian berlorek" style="width:min(280px,94%);display:flex;border:3px solid #516684;border-radius:10px;overflow:hidden;margin:2px auto 12px;box-shadow:0 2px 0 #d3daea">${cells}</div>`;
+}
+function rectangleMeasureSvg(length,width){
+ return `<svg class="geometryVisual" viewBox="0 0 260 130" width="min(290px,94%)" role="img" aria-label="Segi empat tepat berukuran ${length} sentimeter kali ${width} sentimeter" style="display:block;margin:0 auto 10px"><rect x="45" y="25" width="170" height="78" rx="3" fill="#dceaff" stroke="#405072" stroke-width="4"/><text x="130" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#405072">${length} cm</text><text x="228" y="68" text-anchor="middle" font-size="15" font-weight="900" fill="#405072" transform="rotate(90 228 68)">${width} cm</text></svg>`;
+}
+function comparisonBarsSvg(a,b,unit,labelA='A',labelB='B'){
+ const max=Math.max(a,b),wa=50+150*a/max,wb=50+150*b/max;
+ return `<svg class="measureVisual" viewBox="0 0 280 105" width="min(300px,96%)" role="img" aria-label="Perbandingan ${a} ${unit} dengan ${b} ${unit}" style="display:block;margin:0 auto 10px"><text x="15" y="30" font-size="13" font-weight="900">${labelA}</text><rect x="42" y="14" width="${wa}" height="24" rx="6" fill="#78a9ff"/><text x="${48+wa}" y="31" font-size="12" font-weight="800">${a} ${unit}</text><text x="15" y="78" font-size="13" font-weight="900">${labelB}</text><rect x="42" y="62" width="${wb}" height="24" rx="6" fill="#8bd3a8"/><text x="${48+wb}" y="79" font-size="12" font-weight="800">${b} ${unit}</text></svg>`;
 }
 function fractionWrongChoices(num,den){
  const ans=`${num}/${den}`,cands=[];
