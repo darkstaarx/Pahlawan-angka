@@ -39,8 +39,9 @@ function terrainThemeFor(meta){
 function setBattleTerrain(meta){
  const arena=document.getElementById('battleArena');if(!arena)return;
  const theme=terrainThemeFor(meta),src=TERRAIN_BY_THEME[theme]||TERRAIN_BY_THEME.number;
- if(arena.dataset.terrain===theme)return;
- arena.dataset.terrain=theme;arena.style.setProperty('--battle-terrain',`url("${src}")`);
+ const value=`url("${src}?v=3.16.1")`;
+ if(arena.dataset.terrain===theme&&arena.style.getPropertyValue('--battle-terrain')===value)return;
+ arena.dataset.terrain=theme;arena.style.setProperty('--battle-terrain',value);
 }
 if(db && !db.schoolGrade) db.schoolGrade=2;
 let selectedHero='wira';

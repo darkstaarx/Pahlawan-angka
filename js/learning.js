@@ -353,6 +353,20 @@ function devForceLearning(type='misconception'){
   const tag=type==='guessing'?'guessing':bestDiagnosticTag(id);
   learningStart(id,{type,tag,reason:type==='guessing'?'DEV: simulasi jawapan terlalu cepat / meneka.':'DEV: simulasi misconception berulang.'},{dev:true});
 }
+function devOpenVisualCoach(mode='place'){
+ if(!db||!isDevMode())return;
+ const grade=+(document.getElementById('devGrade')?.value||db.schoolGrade),selected=document.getElementById('devSkill')?.value;
+ const matches=m=>{const text=`${m?.domain||''} ${m?.title||''}`;if(mode==='place')return /nombor|nilai tempat/i.test(text);if(mode==='fraction')return /pecahan/i.test(text);if(mode==='subtract')return /tolak/i.test(text);return /tambah/i.test(text)};
+ const meta=(META[selected]&&matches(META[selected]))?META[selected]:GRAPH.skills.find(x=>x.grade===grade&&matches(x))||GRAPH.skills.find(matches);
+ if(!meta){showRewardToast('Demo visual belum tersedia untuk mod ini.');return}
+ closeDevPanel();learningStart(meta.id,{type:'manual',tag:mode==='place'?'place':mode==='fraction'?'fraction':'operation',reason:'DEV Visual Coach Lab'},{dev:true});
+}
+function devPreviewTerrain(theme='number'){
+ if(!db||!isDevMode()||!TERRAIN_BY_THEME[theme])return;
+ const domainMatch={number:/nombor/i,operation:/operasi|tambah|tolak|darab|bahagi/i,fraction:/pecahan|perpuluhan|peratus/i,money:/wang/i,time:/masa/i,measure:/ukuran|panjang|jisim|isipadu/i,shape:/ruang|bentuk|koordinat/i,data:/data|kebolehjadian/i}[theme];
+ const grade=+(document.getElementById('devGrade')?.value||db.schoolGrade),meta=GRAPH.skills.find(x=>x.grade===grade&&domainMatch.test(`${x.domain} ${x.title}`))||GRAPH.skills.find(x=>domainMatch.test(`${x.domain} ${x.title}`));
+ if(!meta)return;closeDevPanel();startDevSkill(meta.id);setBattleTerrain(meta);showRewardToast(`Terrain ${theme} dibuka`);
+}
 function bestDiagnosticTag(id){
  const m=META[id]||{};
  if(m.domain==='Nombor')return'place';if(m.domain==='Pecahan')return'fraction';if(m.domain==='Perpuluhan')return'decimal';if(m.domain==='Wang')return'money';if(m.domain==='Masa')return'time';if(m.domain==='Ukuran')return'unit';if(m.domain==='Ruang')return'shape';if(m.domain==='Data')return'data';if(m.domain==='Peratus')return'percent';if(m.domain==='Nisbah')return'ratio';return'operation';

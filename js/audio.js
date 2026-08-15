@@ -12,6 +12,7 @@ const PA_AUDIO={
   wrong:'assets/audio/wrong.wav'
 };
 const PA_AUDIO_CACHE={};
+const PA_VOLUME_SCALE=.8;
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
 const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,mode:'off'};
@@ -44,9 +45,9 @@ function setBattleAudioMode(mode='off'){
   const ctx=ensureBattleAudio();if(!ctx)return;if(ctx.state==='suspended')ctx.resume().catch(()=>{});
   /* Battle biasa ialah ambience sahaja: daun, angin dan hidupan hutan jauh.
      Muzik/synth hanya masuk secara terkawal semasa boss. */
-  const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=activeMode==='off'?0:.32;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
-  fadeForestAmbience(activeMode==='ambient'?.16:activeMode==='boss'?.1:0);
-  PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime(activeMode==='boss'?.09:0,now,fade/3);
+  const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=(activeMode==='off'?0:.32)*PA_VOLUME_SCALE;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
+  fadeForestAmbience((activeMode==='ambient'?.16:activeMode==='boss'?.1:0)*PA_VOLUME_SCALE);
+  PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime((activeMode==='boss'?.09:0)*PA_VOLUME_SCALE,now,fade/3);
   if(activeMode==='boss'){bossDrum();PA_BATTLE_AUDIO.bossTimer=setInterval(bossDrum,1600)}
 }
 function syncBattleAudio(screenId=document.body?.dataset?.screen){
@@ -60,7 +61,7 @@ function preloadSfx(){
       const a=new Audio();
       a.preload='auto';
       a.src=src;
-      a.volume=name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65));
+      a.volume=(name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65)))*PA_VOLUME_SCALE;
       a.load();
       PA_AUDIO_CACHE[name]=a;
     }catch(e){}
@@ -75,7 +76,7 @@ function unlockSfx(){
   // Mobile browsers require the first playback to follow a user gesture.
   const a=PA_AUDIO_CACHE.ui;
   if(a&&!paMuted){
-    try{a.volume=0.001;const p=a.play();if(p&&p.then)p.then(()=>{a.pause();a.currentTime=0;a.volume=.65;}).catch(()=>{a.volume=.65;});}catch(e){}
+    try{a.volume=0.001;const p=a.play();if(p&&p.then)p.then(()=>{a.pause();a.currentTime=0;a.volume=.65*PA_VOLUME_SCALE;}).catch(()=>{a.volume=.65*PA_VOLUME_SCALE;});}catch(e){}
   }
 }
 function playSfx(name){
@@ -84,7 +85,7 @@ function playSfx(name){
   try{
     const base=PA_AUDIO_CACHE[name];
     const a=base?base.cloneNode(true):new Audio(src);
-    a.volume=name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65));
+    a.volume=(name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65)))*PA_VOLUME_SCALE;
     a.preload='auto';
     const p=a.play(); if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
