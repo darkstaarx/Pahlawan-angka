@@ -1,0 +1,17 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/combat-polish-v3.21.2.js','utf8');
+const css=fs.readFileSync('css/combat-polish-v3.21.2.css','utf8');
+assert(/const VERSION='3\.21\.2'/.test(js),'combat polish version missing');
+assert(/paTerrainToneLayer/.test(js)&&/paTerrainToneLayer/.test(css),'terrain tone layer missing');
+assert(/saturate\(var\(--pa-terrain-saturation\)\).*brightness\(var\(--pa-terrain-brightness\)\)/.test(css),'terrain saturation/brightness reduction missing');
+assert(/#enemy\[data-enemy-tier="boss"\] \.enemy-frame/.test(css),'boss frame normalisation missing');
+assert(/width:100%!important;height:100%!important/.test(css),'boss frames do not share one box');
+assert(/bottom:0!important/.test(css)&&/object-position:center bottom!important/.test(css),'boss foot anchor missing');
+assert(/--pa-boss-pose-scale/.test(css)&&/tone-fraction \.enemy-frame-contact\{--pa-boss-pose-scale:1\.42\}/.test(css),'per-boss source-padding normalisation missing');
+assert(/@keyframes paBossAttackStable/.test(css),'stable boss attack travel missing');
+const bossMotion=css.match(/@keyframes paBossAttackStable\{([\s\S]*?)\}\n@keyframes/)?.[1]||'';
+assert(!/scale\(/.test(bossMotion),'boss attack must not resize during lunge');
+assert(/startVictoryCelebration/.test(js)&&/triggerBossVictory/.test(js),'boss victory celebration hook missing');
+assert(/#hero\.paVictory \.sprite/.test(css)&&/\.battlePet\.paPetVictory/.test(css),'hero + selected pet victory animations missing');
+assert(/prefers-reduced-motion:reduce/.test(css),'reduced-motion support missing');
+console.log('PASS v3.21.2 combat polish invariants');

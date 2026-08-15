@@ -1,0 +1,566 @@
+{
+  "version": "3.21.2",
+  "note": "Alpha-bound audit of actual boss art used to choose pose-normalisation factors.",
+  "bosses": {
+    "place-value": {
+      "idle": {
+        "canvas": [
+          760,
+          513
+        ],
+        "alpha_bbox": [
+          30,
+          0,
+          760,
+          513
+        ],
+        "visible_fraction": {
+          "width": 0.961,
+          "height": 1.0
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          156,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.695
+        },
+        "css_pose_scale": 1.05
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          181,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.646
+        },
+        "css_pose_scale": 1.12
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          135,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.736
+        },
+        "css_pose_scale": 1.04
+      }
+    },
+    "operations": {
+      "idle": {
+        "canvas": [
+          699,
+          980
+        ],
+        "alpha_bbox": [
+          0,
+          0,
+          699,
+          924
+        ],
+        "visible_fraction": {
+          "width": 1.0,
+          "height": 0.943
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          156,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.695
+        },
+        "css_pose_scale": 1.25
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          190,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.629
+        },
+        "css_pose_scale": 1.34
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          73,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.857
+        },
+        "css_pose_scale": 1.12
+      }
+    },
+    "fractions": {
+      "idle": {
+        "canvas": [
+          705,
+          980
+        ],
+        "alpha_bbox": [
+          0,
+          15,
+          705,
+          980
+        ],
+        "visible_fraction": {
+          "width": 1.0,
+          "height": 0.985
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          171,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.666
+        },
+        "css_pose_scale": 1.32
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          242,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.527
+        },
+        "css_pose_scale": 1.42
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          101,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.803
+        },
+        "css_pose_scale": 1.14
+      }
+    },
+    "money": {
+      "idle": {
+        "canvas": [
+          1060,
+          1484
+        ],
+        "alpha_bbox": [
+          5,
+          62,
+          1059,
+          1405
+        ],
+        "visible_fraction": {
+          "width": 0.994,
+          "height": 0.905
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          92,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.82
+        },
+        "css_pose_scale": 1.08
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          205,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.6
+        },
+        "css_pose_scale": 1.2
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          43,
+          42,
+          469,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.832,
+          "height": 0.918
+        },
+        "css_pose_scale": 1.0
+      }
+    },
+    "time": {
+      "idle": {
+        "canvas": [
+          655,
+          980
+        ],
+        "alpha_bbox": [
+          1,
+          0,
+          655,
+          921
+        ],
+        "visible_fraction": {
+          "width": 0.998,
+          "height": 0.94
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          120,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.766
+        },
+        "css_pose_scale": 1.18
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          158,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.691
+        },
+        "css_pose_scale": 1.25
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          116,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.773
+        },
+        "css_pose_scale": 1.15
+      }
+    },
+    "measurement": {
+      "idle": {
+        "canvas": [
+          1142,
+          1378
+        ],
+        "alpha_bbox": [
+          3,
+          6,
+          1125,
+          1363
+        ],
+        "visible_fraction": {
+          "width": 0.982,
+          "height": 0.985
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          44,
+          42,
+          468,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.828,
+          "height": 0.918
+        },
+        "css_pose_scale": 1.03
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          112,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.781
+        },
+        "css_pose_scale": 1.12
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          64,
+          42,
+          447,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.748,
+          "height": 0.918
+        },
+        "css_pose_scale": 1.03
+      }
+    },
+    "geometry": {
+      "idle": {
+        "canvas": [
+          1125,
+          1398
+        ],
+        "alpha_bbox": [
+          24,
+          56,
+          1112,
+          1378
+        ],
+        "visible_fraction": {
+          "width": 0.967,
+          "height": 0.946
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          131,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.744
+        },
+        "css_pose_scale": 1.12
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          214,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.582
+        },
+        "css_pose_scale": 1.25
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          67,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.869
+        },
+        "css_pose_scale": 1.05
+      }
+    },
+    "data": {
+      "idle": {
+        "canvas": [
+          1055,
+          1491
+        ],
+        "alpha_bbox": [
+          14,
+          21,
+          1041,
+          1458
+        ],
+        "visible_fraction": {
+          "width": 0.973,
+          "height": 0.964
+        },
+        "css_pose_scale": 1.0
+      },
+      "anticipation": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          188,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.633
+        },
+        "css_pose_scale": 1.2
+      },
+      "contact": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          210,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.59
+        },
+        "css_pose_scale": 1.28
+      },
+      "follow-through": {
+        "canvas": [
+          512,
+          512
+        ],
+        "alpha_bbox": [
+          21,
+          164,
+          491,
+          512
+        ],
+        "visible_fraction": {
+          "width": 0.918,
+          "height": 0.68
+        },
+        "css_pose_scale": 1.16
+      }
+    }
+  }
+}

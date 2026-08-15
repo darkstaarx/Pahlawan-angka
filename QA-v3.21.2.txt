@@ -1,0 +1,72 @@
+Pahlawan Angka v3.21.2 QA
+===========================
+
+Baseline
+--------
+f6e882b605c7e63ebc3be8615ca76188fda3c885
+(v3.21.1 DEV World Lab + boss typed answers)
+
+Scope
+-----
+PASS World Response retired from active runtime/DEV/PWA/SW
+PASS stale World Response child-profile experiment state is purged safely
+PASS boss attack pose box and bottom foot anchor normalised
+PASS boss source transparent-padding audited across 8 bosses / 32 pose assets
+PASS pose-specific scale factors applied for visible-size consistency
+PASS boss lunge uses horizontal translation only; no attack-time scale transform
+PASS boss contact shadow follows attack travel
+PASS hero victory celebration after boss defeat
+PASS selected visible pet celebrates with hero
+PASS victory animation moves inner art, not battle unit baseline
+PASS terrain rendered on dedicated background layer
+PASS terrain saturation/brightness reduced without dimming combatants
+PASS reduced-motion fallbacks present
+
+Boss typed answer regression
+----------------------------
+PASS safe numeric typed answer normalisation
+PASS money typed answer normalisation (RM optional)
+PASS percentage typed answer normalisation (% optional)
+PASS fraction/time formats fall back to A/B/C/D
+PASS boss typed maximum = 2
+PASS one or zero typed questions remains valid when formats are unsuitable
+PASS second typed item is not back-to-back
+PASS Auto Coach boss excluded
+PASS Guardian Focus excluded
+PASS boss stretch probe excluded
+PASS DEV Force Typed still obeys safe-format filter
+
+Release/version
+---------------
+PASS app v3.21.2
+PASS integrity v3.18.1
+PASS sensory v3.19.0
+PASS manipulatives v3.19.1
+PASS daily review v3.20.0
+PASS dev experiments v3.21.2
+PASS combat polish v3.21.2
+PASS no World Response reference in active loader or service worker
+
+Regression
+----------
+PASS Daily Quest v3.20.0 static + runtime
+PASS Sensory learning v3.19.0 static + runtime
+PASS Cikgu Wajar manipulatives v3.19.1 static + runtime
+
+Content integrity regression
+----------------------------
+Skills: 52 repaired paths
+Samples: 4,160
+Failures: 0
+Frontier competency gate: PASS
+Stretch competency gate: PASS
+
+Untouched
+---------
+Question generator
+Mastery formula
+Adaptive routing
+Battle damage/rewards
+Daily Quest selection
+Parent play-time controls
+Supabase schema

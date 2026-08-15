@@ -1,12 +1,12 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.21.1';
+  const APP_VERSION='3.21.2';
   const INTEGRITY_VERSION='3.18.1';
   const SENSORY_VERSION='3.19.0';
   const MANIPULATIVE_VERSION='3.19.1';
   const DAILY_REVIEW_VERSION='3.20.0';
-  const WORLD_RESPONSE_VERSION='3.21.0';
-  const DEV_EXPERIMENTS_VERSION='3.21.1';
+  const DEV_EXPERIMENTS_VERSION='3.21.2';
+  const COMBAT_POLISH_VERSION='3.21.2';
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${SENSORY_VERSION}`;
@@ -14,10 +14,10 @@
   const manipJs=`js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js?v=${MANIPULATIVE_VERSION}`;
   const dailyCss=`css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css?v=${DAILY_REVIEW_VERSION}`;
   const dailyJs=`js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js?v=${DAILY_REVIEW_VERSION}`;
-  const worldCss=`css/world-response-v${WORLD_RESPONSE_VERSION}.css?v=${WORLD_RESPONSE_VERSION}`;
-  const worldJs=`js/world-response-v${WORLD_RESPONSE_VERSION}.js?v=${WORLD_RESPONSE_VERSION}`;
   const devCss=`css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css?v=${DEV_EXPERIMENTS_VERSION}`;
   const devJs=`js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js?v=${DEV_EXPERIMENTS_VERSION}`;
+  const combatCss=`css/combat-polish-v${COMBAT_POLISH_VERSION}.css?v=${COMBAT_POLISH_VERSION}`;
+  const combatJs=`js/combat-polish-v${COMBAT_POLISH_VERSION}.js?v=${COMBAT_POLISH_VERSION}`;
 
   if(document.readyState==='loading'){
     if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);
@@ -27,43 +27,22 @@
     if(!document.querySelector(`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`))document.write(`<script src="${manipJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${dailyCss}">`);
     if(!document.querySelector(`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`))document.write(`<script src="${dailyJs}"><\/script>`);
-    if(!document.querySelector(`link[href^="css/world-response-v${WORLD_RESPONSE_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${worldCss}">`);
-    if(!document.querySelector(`script[src^="js/world-response-v${WORLD_RESPONSE_VERSION}.js"]`))document.write(`<script src="${worldJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${devCss}">`);
     if(!document.querySelector(`script[src^="js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js"]`))document.write(`<script src="${devJs}"><\/script>`);
+    if(!document.querySelector(`link[href^="css/combat-polish-v${COMBAT_POLISH_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${combatCss}">`);
+    if(!document.querySelector(`script[src^="js/combat-polish-v${COMBAT_POLISH_VERSION}.js"]`))document.write(`<script src="${combatJs}"><\/script>`);
   }else{
-    const loadCss=(src,selector)=>{
-      if(document.querySelector(selector))return;
-      const l=document.createElement('link');l.rel='stylesheet';l.href=src;document.head.appendChild(l);
-    };
-    const loadScript=(src,selector,onload)=>{
-      if(document.querySelector(selector)){onload?.();return}
-      const s=document.createElement('script');s.src=src;s.async=false;if(onload)s.onload=onload;document.head.appendChild(s);
-    };
-    const loadDev=()=>{
-      loadCss(devCss,`link[href^="css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css"]`);
-      loadScript(devJs,`script[src^="js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js"]`);
-    };
-    const loadWorld=()=>{
-      loadCss(worldCss,`link[href^="css/world-response-v${WORLD_RESPONSE_VERSION}.css"]`);
-      loadScript(worldJs,`script[src^="js/world-response-v${WORLD_RESPONSE_VERSION}.js"]`,loadDev);
-    };
-    const loadDaily=()=>{
-      loadCss(dailyCss,`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`);
-      loadScript(dailyJs,`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`,loadWorld);
-    };
-    const loadManip=()=>{
-      loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);
-      loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadDaily);
-    };
-    const loadSensory=()=>{
-      loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);
-      loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);
-    };
+    const loadCss=(src,selector)=>{if(document.querySelector(selector))return;const l=document.createElement('link');l.rel='stylesheet';l.href=src;document.head.appendChild(l);};
+    const loadScript=(src,selector,onload)=>{if(document.querySelector(selector)){onload?.();return}const s=document.createElement('script');s.src=src;s.async=false;if(onload)s.onload=onload;document.head.appendChild(s);};
+    const loadCombat=()=>{loadCss(combatCss,`link[href^="css/combat-polish-v${COMBAT_POLISH_VERSION}.css"]`);loadScript(combatJs,`script[src^="js/combat-polish-v${COMBAT_POLISH_VERSION}.js"]`);};
+    const loadDev=()=>{loadCss(devCss,`link[href^="css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css"]`);loadScript(devJs,`script[src^="js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js"]`,loadCombat);};
+    const loadDaily=()=>{loadCss(dailyCss,`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`);loadScript(dailyJs,`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`,loadDev);};
+    const loadManip=()=>{loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadDaily);};
+    const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
     loadScript(guard,`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`,loadSensory);
   }
 
-  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,worldResponse:WORLD_RESPONSE_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION};
+  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION};
 })();
 
 (()=>{
@@ -71,9 +50,7 @@
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(registration=>{
       registration.update().catch(()=>{});
-      document.addEventListener('visibilitychange',()=>{
-        if(document.visibilityState==='visible')registration.update().catch(()=>{});
-      });
+      document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')registration.update().catch(()=>{});});
     }).catch(error=>console.warn('PWA service worker tidak dapat didaftarkan:',error));
   });
 })();

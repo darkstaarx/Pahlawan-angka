@@ -1,0 +1,14 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/dev-experiments-v3.21.2.js','utf8');
+const css=fs.readFileSync('css/dev-experiments-v3.21.2.css','utf8');
+assert(/const VERSION='3\.21\.2'/.test(js),'typed patch version missing');
+assert(/\(sess\.bossTypedUsed\|\|0\)>=2/.test(js),'boss typed hard maximum 2 missing');
+assert(/n>=4&&n-last>=2/.test(js),'second typed question separation missing');
+assert(/typedEligible/.test(js)&&/parseAnswerSpec/.test(js),'safe typed answer filter missing');
+assert(/sess\.coachAdaptive\|\|sess\.devBankTest\|\|sess\.guardianFocus\|\|sess\.bossStretchCurrent/.test(js),'diagnostic/probe exclusions missing');
+assert(/responseMode='typed'/.test(js),'typed response mode marker missing');
+assert(/Tiada pilihan jawapan/.test(js),'typed UX copy missing');
+assert(/purgeRetiredWorldState/.test(js),'retired World Response state cleanup missing');
+assert(!/World Response Lab|devToggleWorldResponse|devPreviewWorldStage|PAWorldResponse/.test(js),'World Response experiment still active in dev module');
+assert(!/paWorld/.test(css),'World Response CSS still active in typed stylesheet');
+console.log('PASS v3.21.2 Boss Typed Answer invariants; World Response experiment removed');

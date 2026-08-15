@@ -1,0 +1,20 @@
+{
+  "version": "3.21.2",
+  "baseline_commit": "f6e882b605c7e63ebc3be8615ca76188fda3c885",
+  "name": "Combat Polish Cleanup",
+  "layers": {
+    "integrity": "3.18.1",
+    "sensory": "3.19.0",
+    "manipulatives": "3.19.1",
+    "daily_review": "3.20.0",
+    "dev_experiments": "3.21.2",
+    "combat_polish": "3.21.2"
+  },
+  "world_response": "retired",
+  "question_generator_changed": false,
+  "mastery_formula_changed": false,
+  "adaptive_routing_changed": false,
+  "battle_logic_changed": false,
+  "battle_presentation_changed": true,
+  "parent_time_controls_changed": false
+}
