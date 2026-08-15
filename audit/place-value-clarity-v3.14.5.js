@@ -1,0 +1,10 @@
+const fs=require('fs'),assert=require('assert');
+const content=fs.readFileSync('questions/kssr-content-v3.11.js','utf8'),d5=fs.readFileSync('questions/d5/core.js','utf8');
+const placeTask=content.match(/function placeTask\(id\)([\s\S]*?)function operationTask/)?.[1]||'';
+assert(placeTask,'placeTask generator not found');
+assert(!/Apakah nilai digit <b>\$\{d\}<\/b> dalam/.test(placeTask),'integer prompt must not identify a repeated digit by value alone');
+assert(placeTask.includes('digit yang ditanda pada tempat')&&placeTask.includes('border-bottom:3px'),'target digit needs its place name and a visual marker');
+assert(placeTask.includes('validPositions')&&placeTask.includes('candidate!==value'),'zero targets and duplicate correct-value distractors must be excluded');
+assert(content.includes('digit terakhir')&&content.includes("place=dp===1?'persepuluh':'perseratus'"),'decimal prompt must identify the exact decimal place');
+assert(d5.includes('pada tempat <b>perseratus</b>'),'Darjah 5 decimal prompt must identify perseratus explicitly');
+console.log('PASS place-value clarity: repeated digits are targeted by marker and named place');

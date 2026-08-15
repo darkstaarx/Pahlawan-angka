@@ -1,11 +1,11 @@
 const fs=require('fs'),assert=require('assert');
 const audio=fs.readFileSync('js/audio.js','utf8'),app=fs.readFileSync('js/app.js','utf8'),battle=fs.readFileSync('js/battle.js','utf8'),html=fs.readFileSync('index.html','utf8');
 assert(audio.includes('function ensureBattleAudio()')&&audio.includes('createBufferSource()'),'battle ambience must be generated locally');
-assert(audio.includes("activeMode==='ambient'?.045")&&audio.includes("activeMode==='boss'?.018"),'ambient and boss wind levels must remain restrained');
-assert(audio.includes('function bossDrum()')&&audio.includes("activeMode==='boss'?.055"),'boss layer must add a distinct low-volume score');
+assert(audio.includes("activeMode==='ambient'?.16")&&audio.includes("activeMode==='boss'?.06"),'ambient and boss wind levels must remain audible but restrained');
+assert(audio.includes('function bossDrum()')&&audio.includes("activeMode==='boss'?.075"),'boss layer must add a distinct phone-audible score');
 assert(audio.includes("screenId!=='game'")&&app.includes("syncBattleAudio(id)"),'audio must stop outside battle screens');
 assert(app.includes("stage.tier==='boss'?'boss':'ambient'"),'enemy tier must drive the audio crossfade');
 assert(battle.includes("setBattleAudioMode('off')"),'boss defeat must fade the boss score out');
 assert(audio.includes("document.addEventListener('visibilitychange'")&&audio.includes("if(paMuted)setBattleAudioMode('off')"),'mute and background-tab lifecycle must stop audio');
-assert(html.includes('js/audio.js?v=3.14.4')&&html.includes('js/app.js?v=3.14.4'),'updated audio callers need cache-busting tokens');
+assert(/js\/audio\.js\?v=3\.14\.[4-9]/.test(html)&&/js\/app\.js\?v=3\.14\.[4-9]/.test(html),'updated audio callers need cache-busting tokens');
 console.log('PASS battle audio: subtle wind, boss score, crossfade, mute and screen lifecycle');

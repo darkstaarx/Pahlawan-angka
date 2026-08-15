@@ -13,7 +13,7 @@ window.PAQuestionBanks.d5 = function(id,s,shift){
   }
   if(mode==="place"){
    const whole=R(1,9),tenths=R(1,9),hundredths=R(1,9),n=`${whole}.${tenths}${hundredths}`;
-   return Q(`Apakah nilai digit <b>${hundredths}</b> dalam <b>${n}</b>?`,`${hundredths}/100`,[N(`${hundredths}/10`,"place"),N(hundredths,"digit_value"),N(`${tenths}/100`,"place")],"Digit kedua selepas titik perpuluhan ialah perseratus.","Darjah 5",true,true)
+   return Q(`Apakah nilai digit <b>${hundredths}</b> pada tempat <b>perseratus</b> dalam <b>${n}</b>?`,`${hundredths}/100`,[N(`${hundredths}/10`,"place"),N(hundredths,"digit_value"),N(`${tenths}/100`,"place")],"Digit kedua selepas titik perpuluhan ialah perseratus.","Darjah 5",true,true)
   }
   const a=R(120,850)/100,b=R(10,Math.min(300,Math.round(a*100)-1))/100;
   const ans=mode==="add"?a+b:a-b,sign=mode==="add"?"+":"−";
