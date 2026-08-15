@@ -10,7 +10,7 @@ function ensureCoachSession(){
   return sess.coach;
 }
 function coachHistory(id){const c=ensureCoachSession();return c?(c.responses[id]||(c.responses[id]=[])):[]}
-function coachFormatSignature(q){return [q?.kind||'q',q?.diagnostic?'d':'n',q?.formatShift?'s':'b'].join('|')}
+function coachFormatSignature(q){return [q?.representation||'symbolic',q?.demand||'procedure',q?.contextId||'general',q?.kind||'q',q?.formatShift?'shift':'base'].join('|')}
 function median(xs){if(!xs.length)return 999;const a=[...xs].sort((x,y)=>x-y),m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2}
 function recordFrontierResponse(id,ok,sec,usedHint,q){
   if(!sess.coachAdaptive||sess.devBankTest)return;
@@ -38,8 +38,9 @@ function rapidSecureEvidence(id){
   const h=coachHistory(id),recent=h.slice(-need);if(recent.length<need)return{secure:false,confidence:0};
   const correct=recent.filter(x=>x.ok).length, noHints=recent.every(x=>!x.hint), times=recent.filter(x=>x.ok).map(x=>x.sec), med=median(times);
   const formats=new Set(recent.map(x=>x.format)).size;
-  const saneSpeed=times.every(x=>x>=.65)&&med<=COACH_SESSION.rapidMedianSeconds;
-  const secure=correct===recent.length&&noHints&&saneSpeed&&(formats>=2 || recent.some(x=>x.format.includes('|s')));
+  // Response time is behavioural context only. Slow, careful reading must not
+  // block mastery; genuinely impulsive wrong answers are handled by intervention.js.
+  const secure=correct===recent.length&&noHints&&(formats>=2 || recent.some(x=>x.format.endsWith('|shift')));
   return{secure,confidence:secure?Math.min(98,82+formats*4):Math.round(correct/recent.length*100),median:med,formats,need};
 }
 function coachGradeSkills(g){return GRAPH.skills.filter(x=>x.grade===g)}

@@ -57,9 +57,9 @@ function ensureSessionHistory(){
   sess.confirmSkill=sess.confirmSkill||null;
   sess.confirmRemaining=sess.confirmRemaining||0;
 }
-function recordCoachResponse(skillId,ok,tag,sec,usedHint){
+function recordCoachResponse(skillId,ok,tag,sec,usedHint,itemId){
   ensureCoachMemory();ensureSessionHistory();
-  sess.responseHistory.push({skill:skillId,ok:!!ok,tag:tag||'',sec:Number(sec)||0,hint:!!usedHint,t:Date.now()});
+  sess.responseHistory.push({skill:skillId,ok:!!ok,tag:tag||'',sec:Number(sec)||0,hint:!!usedHint,item:String(itemId??''),t:Date.now()});
   if(sess.responseHistory.length>40)sess.responseHistory.shift();
   Object.keys(sess.interventionCooldown).forEach(k=>{sess.interventionCooldown[k]=Math.max(0,(sess.interventionCooldown[k]||0)-1)});
 }
@@ -89,9 +89,11 @@ function evaluateIntervention(skillId){
   if(last5.length<2)return null;
 
   const wrong=last5.filter(x=>!x.ok);
-  const tagCounts={};
-  wrong.forEach(x=>{if(x.tag&&x.tag!=='generic')tagCounts[x.tag]=(tagCounts[x.tag]||0)+1});
-  const repeated=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1])[0];
+  // A retry on the same item is supporting evidence, not a second independent
+  // misconception. Intervention requires the same tag on two distinct items.
+  const tagItems={};
+  wrong.forEach(x=>{if(x.tag&&x.tag!=='generic'){tagItems[x.tag]=tagItems[x.tag]||new Set();tagItems[x.tag].add(x.item||`legacy-${x.t}`)}});
+  const repeated=Object.entries(tagItems).map(([tag,items])=>[tag,items.size]).sort((a,b)=>b[1]-a[1])[0];
   if(repeated&&repeated[1]>=INTERVENTION_CFG.sameMisconception){
     return{type:'misconception',tag:repeated[0],reason:interventionReason('misconception',repeated[0])};
   }
@@ -108,11 +110,11 @@ function evaluateIntervention(skillId){
   }
   return null;
 }
-function scheduleConfirmation(skillId){
+function scheduleConfirmation(skillId,count=2){
   ensureSessionHistory();
   if(sess.devBankTest)return;
   sess.confirmSkill=skillId;
-  sess.confirmRemaining=Math.max(sess.confirmRemaining||0,2);
+  sess.confirmRemaining=Math.max(sess.confirmRemaining||0,count);
 }
 function consumeConfirmation(skillId){
   if(sess.confirmSkill!==skillId)return;
