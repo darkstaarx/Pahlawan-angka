@@ -1,3 +1,16 @@
+// Load the post-bank curriculum integrity guard before the page becomes interactive.
+(()=>{
+  const src='questions/kssr-content-integrity-v3.18.js?v=3.18.0';
+  if(document.querySelector(`script[src^="questions/kssr-content-integrity-v3.18.js"]`))return;
+  if(document.readyState==='loading'){
+    document.write(`<script src="${src}"><\/script>`);
+    return;
+  }
+  const script=document.createElement('script');
+  script.src=src;script.async=false;
+  document.head.appendChild(script);
+})();
+
 (()=>{
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
