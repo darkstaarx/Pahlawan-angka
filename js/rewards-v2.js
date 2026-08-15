@@ -49,8 +49,17 @@ function unequipAura(){ensureRewards();db.rewards.equippedAura=null;save();rende
 function buyReward(type,id){
  ensureRewards();const items=type==='pet'?REWARD_PETS:REWARD_AURAS,item=items[id],store=type==='pet'?db.rewards.pets:db.rewards.auras;if(!item||store[id])return;
  const price=Number(item.price||0);if((db.coins||0)<price){showRewardToast(`Perlu ${price-(db.coins||0)} syiling lagi`);return;}
- db.coins-=price;store[id]={unlockedAt:Date.now(),purchased:true,price};save();renderTreasure();if(typeof renderHub==='function')renderHub();showRewardToast(`${item.name} dibeli!`);
+ db.coins-=price;store[id]={unlockedAt:Date.now(),purchased:true,price};
+ if(type==='pet')db.rewards.equippedPet=id;else db.rewards.equippedAura=id;
+ save();renderTreasure();renderBattlePet();showPurchaseCelebration(type,item);
 }
+function showPurchaseCelebration(type,item){
+ const ov=document.getElementById('purchaseOverlay'),img=document.getElementById('purchaseImage');if(!ov||!img)return;
+ img.src=type==='pet'?item.front:item.image;img.alt=item.name;document.getElementById('purchaseTitle').textContent=item.name;
+ document.getElementById('purchaseText').textContent=type==='pet'?'Teman baharu anda sudah bersedia untuk battle seterusnya.':'Aura baharu anda akan muncul pada serangan terakhir.';
+ ov.classList.remove('hidden');if(typeof playSfx==='function')playSfx('ui');
+}
+function closePurchaseCelebration(){document.getElementById('purchaseOverlay')?.classList.add('hidden');renderTreasure()}
 function renderBattlePet(){
  const wrap=document.getElementById('battlePet'),idle=document.getElementById('battlePetIdle'),anticipation=document.getElementById('battlePetAnticipation'),attack=document.getElementById('battlePetAttack'),follow=document.getElementById('battlePetFollowThrough'); if(!wrap||!idle||!anticipation||!attack||!follow||!db)return;ensureRewards(); const id=db.rewards.equippedPet,item=REWARD_PETS[id];
  if(!item){wrap.classList.add('hidden');wrap.removeAttribute('data-pet');return;} wrap.dataset.pet=id;wrap.style.setProperty('--pet-art-scale',String(item.battleScale||1));idle.src=item.front;idle.alt=`${item.name} bersedia`;anticipation.src=item.anticipation;anticipation.alt=`${item.name} mengambil ancang-ancang`;attack.src=item.battle;attack.alt=`${item.name} menyerang`;follow.src=item.followThrough;follow.alt=`${item.name} selepas serangan`;wrap.classList.remove('hidden');

@@ -61,6 +61,11 @@ function renderHub(){
   document.getElementById('hubCoins').textContent=`🪙 ${db.coins}`;
   document.getElementById('hubXpText').textContent=`${db.levelXp||0} / ${levelNeed} XP`;
   document.getElementById('hubXpFill').style.width=xpPct+'%';
+  if(typeof ensureRewards==='function')ensureRewards();
+  const pet=typeof REWARD_PETS!=='undefined'?REWARD_PETS[db.rewards?.equippedPet]:null,aura=typeof REWARD_AURAS!=='undefined'?REWARD_AURAS[db.rewards?.equippedAura]:null;
+  const petImg=document.getElementById('hubEquippedPetImg'),auraImg=document.getElementById('hubEquippedAuraImg');
+  document.getElementById('hubEquippedPetName').textContent=pet?.name||'Tiada';document.getElementById('hubEquippedAuraName').textContent=aura?.name||'Tiada';
+  if(petImg){petImg.src=pet?.front||'';petImg.classList.toggle('hidden',!pet);petImg.alt=pet?.name||''}if(auraImg){auraImg.src=aura?.image||'';auraImg.classList.toggle('hidden',!aura);auraImg.alt=aura?.name||''}
   const daily=Math.min(PROGRESSION.dailyTarget,db.daily.correct||0);
   document.getElementById('dailyText').textContent=`${daily}/${PROGRESSION.dailyTarget} jawapan betul`;
   document.getElementById('dailyFill').style.width=Math.round(daily/PROGRESSION.dailyTarget*100)+'%';

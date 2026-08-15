@@ -1,0 +1,13 @@
+const fs=require('fs'),vm=require('vm'),path=require('path');
+const root=path.resolve(__dirname,'..'),ctx={console,Math};ctx.window=ctx;ctx.sess={questionFingerprints:[],questionHistory:[],mode:'practice'};vm.createContext(ctx);
+const files=['data/kssr/knowledge-graph.js','data/kssr/alignment-v3.9.0.js','questions/helpers.js','questions/d1/core.js',...Array.from({length:8},(_,i)=>`questions/d2/topic-${i+1}.js`),'questions/d3/core.js','questions/d4/core.js','questions/d5/core.js','questions/d6/core.js','questions/kssr-archetypes-v3.9.0.js','questions/kssr-content-v3.11.js','questions/index.js'];
+for(const f of files)vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx,{filename:f});
+vm.runInContext('globalThis.__skills=GRAPH.skills;globalThis.__generate=generate',ctx);
+const failures=[],topics={};
+for(const skill of ctx.__skills){ctx.sess.questionFingerprints=[];ctx.sess.questionHistory=[];const counts={},reps=new Set(),demands=new Set();let consecutive=0,last='';
+ for(let i=0;i<60;i++){const q=ctx.__generate(skill.id,{evidence:5,confidence:60,mastery:60,correct:4,wrong:1}),a=q.archetypeId||'legacy';counts[a]=(counts[a]||0)+1;reps.add(q.representation||'symbolic');demands.add(q.demand||'procedure');if(a===last)consecutive++;last=a;}
+ const archetypes=Object.keys(counts),dominant=Math.max(...Object.values(counts))/60;if(archetypes.length<3)failures.push({id:skill.id,type:'fewer-than-3-actions',archetypes});if(consecutive)failures.push({id:skill.id,type:'consecutive-repeat',count:consecutive});if(dominant>.55)failures.push({id:skill.id,type:'dominant-action',share:+dominant.toFixed(2),counts});
+ const key=`D${skill.grade}.T${skill.chapter}`,t=topics[key]||(topics[key]={grade:skill.grade,topic:String(skill.chapter),skills:0,questions:0,actions:new Set(),representations:new Set(),demands:new Set()});t.skills++;t.questions+=60;archetypes.forEach(x=>t.actions.add(x));reps.forEach(x=>t.representations.add(x));demands.forEach(x=>t.demands.add(x));
+}
+const topicSummary=Object.fromEntries(Object.entries(topics).map(([k,t])=>[k,{grade:t.grade,topic:t.topic,skills:t.skills,questions:t.questions,actions:t.actions.size,representations:[...t.representations],demands:[...t.demands]}]));
+const report={status:failures.length?'fail':'pass',skills:ctx.__skills.length,totalSamples:ctx.__skills.length*60,topics:Object.keys(topics).length,failures,topicSummary};fs.writeFileSync(path.join(__dirname,'topic-repetition-v3.14.0-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({status:report.status,skills:report.skills,totalSamples:report.totalSamples,topics:report.topics,failures},null,2));process.exitCode=failures.length?1:0;

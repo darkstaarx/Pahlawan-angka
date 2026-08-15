@@ -339,3 +339,7 @@ function fractionWrongChoices(num,den){
  let d=2;while(cands.length<3){const n=1,v=`${n}/${d}`;if(v!==ans&&!cands.includes(v))cands.push(v);d++}
  return cands.slice(0,3).map(x=>N(x,'fraction'));
 }
+function fractionSetVisual(selected,total){
+ const dots=Array.from({length:total},(_,i)=>`<circle cx="${22+(i%5)*42}" cy="${22+Math.floor(i/5)*42}" r="14" fill="${i<selected?'#62c991':'#e5ebf7'}" stroke="#516684" stroke-width="2"/>`).join('');
+ return `<svg class="fractionSetVisual" viewBox="0 0 220 ${total>5?86:46}" width="min(250px,92%)" role="img" aria-label="${selected} daripada ${total} objek dipilih" style="display:block;margin:0 auto 10px">${dots}</svg>`;
+}

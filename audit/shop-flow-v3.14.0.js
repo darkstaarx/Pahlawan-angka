@@ -1,0 +1,6 @@
+const fs=require('fs'),assert=require('assert');
+const rewards=fs.readFileSync('js/rewards-v2.js','utf8'),html=fs.readFileSync('index.html','utf8'),progression=fs.readFileSync('js/progression.js','utf8');
+const buy=rewards.match(/function buyReward[\s\S]*?\n}/)?.[0]||'';
+assert(buy.includes("db.rewards.equippedPet=id"),'purchased pet must auto-equip');assert(buy.includes("db.rewards.equippedAura=id"),'purchased aura must auto-equip');assert(buy.includes('renderBattlePet()'),'purchase must refresh active battle loadout');assert(!buy.includes('renderHub()'),'purchase must not navigate to hub');assert(buy.includes('showPurchaseCelebration'),'purchase must show celebration');
+assert(html.includes('id="purchaseOverlay"')&&html.includes('Teruskan di Khazanah'),'purchase celebration must remain in Khazanah');assert(html.includes('id="hubEquippedPetName"')&&html.includes('id="hubEquippedAuraName"'),'hub must display equipped loadout');assert(progression.includes("REWARD_PETS[db.rewards?.equippedPet]")&&progression.includes("REWARD_AURAS[db.rewards?.equippedAura]"),'hub loadout must read saved equipment');
+console.log('PASS shop flow: purchase celebration, stay in Khazanah, auto-equip, battle refresh and hub loadout');

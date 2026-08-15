@@ -1,0 +1,794 @@
+{
+  "status": "pass",
+  "skills": 114,
+  "totalSamples": 6840,
+  "topics": 48,
+  "failures": [],
+  "topicSummary": {
+    "D1.T1": {
+      "grade": 1,
+      "topic": "1",
+      "skills": 4,
+      "questions": 240,
+      "actions": 11,
+      "representations": [
+        "symbolic",
+        "verbal",
+        "story"
+      ],
+      "demands": [
+        "concept",
+        "procedure",
+        "reasoning",
+        "application"
+      ]
+    },
+    "D1.T2": {
+      "grade": 1,
+      "topic": "2",
+      "skills": 4,
+      "questions": 240,
+      "actions": 4,
+      "representations": [
+        "symbolic",
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "application",
+        "procedure"
+      ]
+    },
+    "D1.T3": {
+      "grade": 1,
+      "topic": "3",
+      "skills": 1,
+      "questions": 60,
+      "actions": 3,
+      "representations": [
+        "story",
+        "visual",
+        "symbolic"
+      ],
+      "demands": [
+        "application",
+        "concept"
+      ]
+    },
+    "D1.T4": {
+      "grade": 1,
+      "topic": "4",
+      "skills": 1,
+      "questions": 60,
+      "actions": 3,
+      "representations": [
+        "visual"
+      ],
+      "demands": [
+        "application",
+        "concept"
+      ]
+    },
+    "D1.T5": {
+      "grade": 1,
+      "topic": "5",
+      "skills": 1,
+      "questions": 60,
+      "actions": 3,
+      "representations": [
+        "visual"
+      ],
+      "demands": [
+        "concept",
+        "application"
+      ]
+    },
+    "D1.T6": {
+      "grade": 1,
+      "topic": "6",
+      "skills": 1,
+      "questions": 60,
+      "actions": 3,
+      "representations": [
+        "story"
+      ],
+      "demands": [
+        "concept",
+        "application"
+      ]
+    },
+    "D1.T7": {
+      "grade": 1,
+      "topic": "7",
+      "skills": 1,
+      "questions": 60,
+      "actions": 3,
+      "representations": [
+        "visual"
+      ],
+      "demands": [
+        "concept",
+        "application"
+      ]
+    },
+    "D1.T8": {
+      "grade": 1,
+      "topic": "8",
+      "skills": 1,
+      "questions": 60,
+      "actions": 3,
+      "representations": [
+        "visual"
+      ],
+      "demands": [
+        "application",
+        "concept"
+      ]
+    },
+    "D2.T1": {
+      "grade": 2,
+      "topic": "1",
+      "skills": 8,
+      "questions": 480,
+      "actions": 24,
+      "representations": [
+        "symbolic",
+        "verbal",
+        "story",
+        "number-line"
+      ],
+      "demands": [
+        "concept",
+        "application",
+        "procedure",
+        "reasoning"
+      ]
+    },
+    "D2.T2": {
+      "grade": 2,
+      "topic": "2",
+      "skills": 5,
+      "questions": 300,
+      "actions": 4,
+      "representations": [
+        "symbolic",
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "procedure",
+        "application"
+      ]
+    },
+    "D2.T3": {
+      "grade": 2,
+      "topic": "3",
+      "skills": 4,
+      "questions": 240,
+      "actions": 17,
+      "representations": [
+        "visual",
+        "verbal",
+        "symbolic"
+      ],
+      "demands": [
+        "reasoning",
+        "concept",
+        "application",
+        "procedure"
+      ]
+    },
+    "D2.T4": {
+      "grade": 2,
+      "topic": "4",
+      "skills": 7,
+      "questions": 420,
+      "actions": 4,
+      "representations": [
+        "story"
+      ],
+      "demands": [
+        "application",
+        "procedure",
+        "reasoning"
+      ]
+    },
+    "D2.T5": {
+      "grade": 2,
+      "topic": "5",
+      "skills": 3,
+      "questions": 180,
+      "actions": 4,
+      "representations": [
+        "visual",
+        "story"
+      ],
+      "demands": [
+        "application",
+        "concept",
+        "procedure"
+      ]
+    },
+    "D2.T6": {
+      "grade": 2,
+      "topic": "6",
+      "skills": 4,
+      "questions": 240,
+      "actions": 3,
+      "representations": [
+        "visual",
+        "story"
+      ],
+      "demands": [
+        "application",
+        "concept"
+      ]
+    },
+    "D2.T7": {
+      "grade": 2,
+      "topic": "7",
+      "skills": 3,
+      "questions": 180,
+      "actions": 6,
+      "representations": [
+        "symbolic",
+        "visual"
+      ],
+      "demands": [
+        "concept",
+        "application",
+        "procedure"
+      ]
+    },
+    "D2.T8": {
+      "grade": 2,
+      "topic": "8",
+      "skills": 3,
+      "questions": 180,
+      "actions": 5,
+      "representations": [
+        "visual",
+        "table"
+      ],
+      "demands": [
+        "concept",
+        "application",
+        "reasoning"
+      ]
+    },
+    "D3.T1": {
+      "grade": 3,
+      "topic": "1",
+      "skills": 2,
+      "questions": 120,
+      "actions": 11,
+      "representations": [
+        "symbolic",
+        "story",
+        "verbal"
+      ],
+      "demands": [
+        "procedure",
+        "reasoning",
+        "concept",
+        "application"
+      ]
+    },
+    "D3.T2": {
+      "grade": 3,
+      "topic": "2",
+      "skills": 4,
+      "questions": 240,
+      "actions": 4,
+      "representations": [
+        "symbolic",
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "procedure",
+        "application"
+      ]
+    },
+    "D3.T3": {
+      "grade": 3,
+      "topic": "3",
+      "skills": 3,
+      "questions": 180,
+      "actions": 10,
+      "representations": [
+        "visual",
+        "symbolic"
+      ],
+      "demands": [
+        "concept",
+        "reasoning",
+        "procedure",
+        "application"
+      ]
+    },
+    "D3.T4": {
+      "grade": 3,
+      "topic": "4",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "story"
+      ],
+      "demands": [
+        "procedure",
+        "application",
+        "reasoning"
+      ]
+    },
+    "D3.T5": {
+      "grade": 3,
+      "topic": "5",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "visual",
+        "story"
+      ],
+      "demands": [
+        "application",
+        "procedure",
+        "concept"
+      ]
+    },
+    "D3.T6": {
+      "grade": 3,
+      "topic": "6",
+      "skills": 1,
+      "questions": 60,
+      "actions": 6,
+      "representations": [
+        "symbolic",
+        "story",
+        "error-analysis"
+      ],
+      "demands": [
+        "reasoning",
+        "procedure",
+        "application",
+        "concept"
+      ]
+    },
+    "D3.T7": {
+      "grade": 3,
+      "topic": "7",
+      "skills": 2,
+      "questions": 120,
+      "actions": 6,
+      "representations": [
+        "visual"
+      ],
+      "demands": [
+        "procedure",
+        "reasoning",
+        "application",
+        "concept"
+      ]
+    },
+    "D3.T8": {
+      "grade": 3,
+      "topic": "8",
+      "skills": 1,
+      "questions": 60,
+      "actions": 5,
+      "representations": [
+        "visual",
+        "table"
+      ],
+      "demands": [
+        "concept",
+        "application",
+        "reasoning"
+      ]
+    },
+    "D4.T1": {
+      "grade": 4,
+      "topic": "1",
+      "skills": 2,
+      "questions": 120,
+      "actions": 11,
+      "representations": [
+        "symbolic",
+        "verbal",
+        "story"
+      ],
+      "demands": [
+        "concept",
+        "procedure",
+        "reasoning",
+        "application"
+      ]
+    },
+    "D4.T2": {
+      "grade": 4,
+      "topic": "2",
+      "skills": 4,
+      "questions": 240,
+      "actions": 4,
+      "representations": [
+        "symbolic",
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "procedure",
+        "application"
+      ]
+    },
+    "D4.T3": {
+      "grade": 4,
+      "topic": "3",
+      "skills": 3,
+      "questions": 180,
+      "actions": 10,
+      "representations": [
+        "symbolic",
+        "visual"
+      ],
+      "demands": [
+        "procedure",
+        "reasoning",
+        "concept",
+        "application"
+      ]
+    },
+    "D4.T4": {
+      "grade": 4,
+      "topic": "4",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "application",
+        "procedure"
+      ]
+    },
+    "D4.T5": {
+      "grade": 4,
+      "topic": "5",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "visual",
+        "story"
+      ],
+      "demands": [
+        "application",
+        "concept",
+        "procedure"
+      ]
+    },
+    "D4.T6": {
+      "grade": 4,
+      "topic": "6",
+      "skills": 1,
+      "questions": 60,
+      "actions": 6,
+      "representations": [
+        "symbolic",
+        "error-analysis",
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "procedure",
+        "application",
+        "concept"
+      ]
+    },
+    "D4.T7": {
+      "grade": 4,
+      "topic": "7",
+      "skills": 4,
+      "questions": 240,
+      "actions": 12,
+      "representations": [
+        "visual",
+        "symbolic",
+        "table",
+        "story"
+      ],
+      "demands": [
+        "procedure",
+        "reasoning",
+        "concept",
+        "application"
+      ]
+    },
+    "D4.T8": {
+      "grade": 4,
+      "topic": "8",
+      "skills": 1,
+      "questions": 60,
+      "actions": 5,
+      "representations": [
+        "table",
+        "visual"
+      ],
+      "demands": [
+        "reasoning",
+        "application",
+        "concept"
+      ]
+    },
+    "D5.T1": {
+      "grade": 5,
+      "topic": "1",
+      "skills": 2,
+      "questions": 120,
+      "actions": 11,
+      "representations": [
+        "symbolic",
+        "verbal",
+        "story"
+      ],
+      "demands": [
+        "procedure",
+        "concept",
+        "reasoning",
+        "application"
+      ]
+    },
+    "D5.T2": {
+      "grade": 5,
+      "topic": "2",
+      "skills": 5,
+      "questions": 300,
+      "actions": 4,
+      "representations": [
+        "symbolic",
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "application",
+        "procedure"
+      ]
+    },
+    "D5.T3": {
+      "grade": 5,
+      "topic": "3",
+      "skills": 3,
+      "questions": 180,
+      "actions": 10,
+      "representations": [
+        "visual",
+        "symbolic"
+      ],
+      "demands": [
+        "concept",
+        "reasoning",
+        "procedure",
+        "application"
+      ]
+    },
+    "D5.T4": {
+      "grade": 5,
+      "topic": "4",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "story"
+      ],
+      "demands": [
+        "application",
+        "reasoning",
+        "procedure"
+      ]
+    },
+    "D5.T5": {
+      "grade": 5,
+      "topic": "5",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "story",
+        "visual"
+      ],
+      "demands": [
+        "concept",
+        "application",
+        "procedure"
+      ]
+    },
+    "D5.T6": {
+      "grade": 5,
+      "topic": "6",
+      "skills": 1,
+      "questions": 60,
+      "actions": 6,
+      "representations": [
+        "symbolic",
+        "story",
+        "error-analysis"
+      ],
+      "demands": [
+        "concept",
+        "procedure",
+        "application",
+        "reasoning"
+      ]
+    },
+    "D5.T7": {
+      "grade": 5,
+      "topic": "7",
+      "skills": 4,
+      "questions": 240,
+      "actions": 12,
+      "representations": [
+        "visual",
+        "symbolic",
+        "story",
+        "table"
+      ],
+      "demands": [
+        "reasoning",
+        "procedure",
+        "application",
+        "concept"
+      ]
+    },
+    "D5.T8": {
+      "grade": 5,
+      "topic": "8",
+      "skills": 1,
+      "questions": 60,
+      "actions": 5,
+      "representations": [
+        "visual",
+        "table"
+      ],
+      "demands": [
+        "application",
+        "concept",
+        "reasoning"
+      ]
+    },
+    "D6.T1": {
+      "grade": 6,
+      "topic": "1",
+      "skills": 1,
+      "questions": 60,
+      "actions": 6,
+      "representations": [
+        "story",
+        "symbolic",
+        "verbal"
+      ],
+      "demands": [
+        "reasoning",
+        "procedure",
+        "concept"
+      ]
+    },
+    "D6.T2": {
+      "grade": 6,
+      "topic": "2",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "story",
+        "symbolic"
+      ],
+      "demands": [
+        "application",
+        "reasoning",
+        "procedure"
+      ]
+    },
+    "D6.T3": {
+      "grade": 6,
+      "topic": "3",
+      "skills": 4,
+      "questions": 240,
+      "actions": 12,
+      "representations": [
+        "visual",
+        "symbolic"
+      ],
+      "demands": [
+        "concept",
+        "procedure",
+        "application",
+        "reasoning"
+      ]
+    },
+    "D6.T4": {
+      "grade": 6,
+      "topic": "4",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "story"
+      ],
+      "demands": [
+        "reasoning",
+        "application",
+        "procedure"
+      ]
+    },
+    "D6.T5": {
+      "grade": 6,
+      "topic": "5",
+      "skills": 1,
+      "questions": 60,
+      "actions": 4,
+      "representations": [
+        "visual",
+        "story"
+      ],
+      "demands": [
+        "application",
+        "procedure",
+        "concept"
+      ]
+    },
+    "D6.T6": {
+      "grade": 6,
+      "topic": "6",
+      "skills": 1,
+      "questions": 60,
+      "actions": 6,
+      "representations": [
+        "symbolic",
+        "story",
+        "error-analysis"
+      ],
+      "demands": [
+        "concept",
+        "procedure",
+        "reasoning",
+        "application"
+      ]
+    },
+    "D6.T7": {
+      "grade": 6,
+      "topic": "7",
+      "skills": 2,
+      "questions": 120,
+      "actions": 6,
+      "representations": [
+        "visual"
+      ],
+      "demands": [
+        "procedure",
+        "reasoning",
+        "application",
+        "concept"
+      ]
+    },
+    "D6.T8": {
+      "grade": 6,
+      "topic": "8",
+      "skills": 2,
+      "questions": 120,
+      "actions": 8,
+      "representations": [
+        "visual",
+        "table",
+        "story"
+      ],
+      "demands": [
+        "application",
+        "reasoning",
+        "concept"
+      ]
+    }
+  }
+}
