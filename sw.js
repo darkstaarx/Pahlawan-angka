@@ -1,4 +1,4 @@
-const CACHE_NAME='pahlawan-angka-v3.16.6';
+const CACHE_NAME='pahlawan-angka-v3.17.0';
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
