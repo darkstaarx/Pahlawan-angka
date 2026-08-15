@@ -59,6 +59,7 @@ function screen(id){
   document.querySelectorAll(".screen").forEach(x=>x.classList.remove("on"));
   const target=document.getElementById(id); if(target) target.classList.add("on");
   document.body.dataset.screen=id;
+  if(typeof syncBattleAudio==='function')syncBattleAudio(id);
   updateBottomNav(id);
   updateDevQuickButton();
   window.scrollTo({top:0,left:0,behavior:"auto"});
@@ -171,6 +172,7 @@ function applyEnemyVariant(forceReset=false){
     enemy.classList.remove('tone-place','tone-operation','tone-fraction','tone-money','tone-time','tone-measurement','tone-geometry','tone-data','tone-minion-a','tone-minion-b','tone-minion-c');
     enemy.classList.add('tone-'+e.tone);
   }
+  if(typeof setBattleAudioMode==='function')setBattleAudioMode(stage.tier==='boss'?'boss':'ambient');
   battle();
   if(stage.tier==='boss'&&isNewEnemy&&typeof triggerBossEntrance==='function')setTimeout(triggerBossEntrance,40);
 }

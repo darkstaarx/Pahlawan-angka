@@ -224,6 +224,7 @@ function resolveAnswer(o,btn,question,ok){
   if(typeof playSfx==='function')setTimeout(()=>playSfx('enemyDown'),defeatStartDelay);
 	  if(boss){
    sess.bossDefeated=true;
+   if(typeof setBattleAudioMode==='function')setBattleAudioMode('off');
    if(sess.coachAdaptive){sess.bossActive=false;sess.coachBossChapter=null;}
 	   const victoryDelay=enemyTransitionDelay;
 	   setTimeout(triggerBossVictory,victoryDelay);
