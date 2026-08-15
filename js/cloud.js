@@ -3,13 +3,17 @@
   const URL='https://pxxekdeqlxwqwaqvfbnh.supabase.co';
   const KEY='sb_publishable_xVRVgrb4EP6RnFv_p6WI_g_u67xGW6C';
   const ACTIVE_SCREENS=new Set(['hub','missions','treasure','game','learning','result']);
-  const state={client:null,user:null,childId:null,controls:null,sessionId:null,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,saveTimer:null,authMode:'login',locked:false,ready:false};
+  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,authMode:'login',locked:false,ready:false};
   const $=id=>document.getElementById(id);
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const currentScreen=()=>document.body.dataset.screen||'';
   const playing=()=>ACTIVE_SCREENS.has(currentScreen())&&!document.hidden&&!state.locked;
   const formatTime=seconds=>{const mins=Math.floor(Math.max(0,seconds)/60),hrs=Math.floor(mins/60),rest=mins%60;return hrs?`${hrs}:${String(rest).padStart(2,'0')}`:`${String(mins).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`};
+  const localDay=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`};
+  const timerKey=()=>state.childId?`pa_play_seconds_${state.childId}_${localDay()}`:'';
+  const readLocalSeconds=()=>Number(localStorage.getItem(timerKey())||0);
+  const rememberLocalSeconds=()=>{const total=Math.floor(state.todayBefore+state.sessionSeconds);if(!timerKey()||total===state.lastLocalSecond)return;state.lastLocalSecond=total;localStorage.setItem(timerKey(),String(total));};
 
   function setAuthMode(mode){
     state.authMode=mode==='register'?'register':'login';
@@ -73,11 +77,15 @@
     state.controls=control||null;
     const cloudState=saveRow?.state&&Object.keys(saveRow.state).length?saveRow.state:null;
     const localMatches=db&&(!db.cloudChildId||db.cloudChildId===childId);
-    if(cloudState){db=cloudState;}
+    const localUpdated=localMatches?Number(db.lastSavedAt||0):0;
+    const cloudUpdated=saveRow?.client_updated_at?new Date(saveRow.client_updated_at).getTime():Number(cloudState?.lastSavedAt||0);
+    const keepNewerLocal=!!(cloudState&&localMatches&&localUpdated>cloudUpdated);
+    if(cloudState&&!keepNewerLocal){db=cloudState;}
     else if(!localMatches){db=null;}
     if(db){db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));}
     else{await createBlankLocal(profile);}
     await loadTodaySeconds();renderAccount();updateTimer();
+    if(keepNewerLocal)await syncSaveNow();
     if(navigate||currentScreen()==='login'){initAll();ensureProgression();renderHub();}
   }
 
@@ -94,38 +102,59 @@
     }catch(error){console.warn('Cloud profile creation failed',error);showRewardToast('Progress disimpan pada peranti · sync akan dicuba lagi');}
   }
 
-  function scheduleSave(){clearTimeout(state.saveTimer);if(!state.user||!state.childId||!db)return;state.saveTimer=setTimeout(syncSaveNow,900);}
+  function scheduleSave(){
+    clearTimeout(state.saveTimer);if(!db)return;
+    db.lastSavedAt=Date.now();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+    if(!state.user||!state.childId)return;state.saveTimer=setTimeout(syncSaveNow,900);
+  }
   async function syncSaveNow(){
-    if(!state.user||!state.childId||!db)return;
-    const now=new Date().toISOString();db.cloudChildId=state.childId;db.lastSavedAt=Date.now();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
-    const {error}=await state.client.from('game_saves').upsert({child_id:state.childId,schema_version:1,state:db,xp:Number(db.xp||0),coins:Number(db.coins||0),level:Number(db.level||1),active_mission_chapter:db.activeMissionChapter==null?null:String(db.activeMissionChapter),client_updated_at:now},{onConflict:'child_id'});
-    if(error)console.warn('Cloud save failed',error);
+    if(!state.user||!state.childId||!db)return false;
+    if(state.saveInFlight){state.savePending=true;return false;}
+    state.saveInFlight=true;clearTimeout(state.saveTimer);
+    if(!db.lastSavedAt)db.lastSavedAt=Date.now();db.cloudChildId=state.childId;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+    const snapshot=JSON.parse(JSON.stringify(db)),savedAt=Number(snapshot.lastSavedAt);
+    const {error}=await state.client.from('game_saves').upsert({child_id:state.childId,schema_version:1,state:snapshot,xp:Number(snapshot.xp||0),coins:Number(snapshot.coins||0),level:Number(snapshot.level||1),active_mission_chapter:snapshot.activeMissionChapter==null?null:String(snapshot.activeMissionChapter),client_updated_at:new Date(savedAt).toISOString()},{onConflict:'child_id'});
+    state.saveInFlight=false;
+    if(error){console.warn('Cloud save failed',error);state.savePending=true;state.saveTimer=setTimeout(syncSaveNow,3000);return false;}
+    const changed=Number(db?.lastSavedAt||0)>savedAt,pending=state.savePending;state.savePending=false;
+    if(changed||pending)state.saveTimer=setTimeout(syncSaveNow,0);
+    return true;
   }
 
   async function loadTodaySeconds(){
-    if(!state.childId)return;const start=new Date();start.setHours(0,0,0,0);
-    const {data,error}=await state.client.from('play_sessions').select('active_seconds').eq('child_id',state.childId).gte('started_at',start.toISOString()).not('ended_at','is',null);
-    state.todayBefore=error?0:(data||[]).reduce((sum,row)=>sum+Number(row.active_seconds||0),0);state.sessionSeconds=0;
+    if(!state.childId)return;
+    const {data,error}=await state.client.from('daily_play_totals').select('active_seconds').eq('child_id',state.childId).eq('play_date',localDay()).maybeSingle();
+    const cloudTotal=error?0:Number(data?.active_seconds||0),safeTotal=Math.max(cloudTotal,readLocalSeconds());
+    state.timerActive=false;state.sessionSeconds=0;state.todayBefore=safeTotal;state.lastLocalSecond=Math.floor(safeTotal);state.lastTick=performance.now();state.lastFlush=safeTotal;
+    rememberLocalSeconds();
   }
 
-  async function ensurePlaySession(){
-    if(!state.user||!state.childId||state.sessionId||state.locked)return;
-    const device=sessionStorage.getItem('pa_device_session')||crypto.randomUUID();sessionStorage.setItem('pa_device_session',device);
-    const {data,error}=await state.client.from('play_sessions').insert({child_id:state.childId,device_session_id:device}).select('id').single();
-    if(error){console.warn('Play session start failed',error);return;}state.sessionId=data.id;state.sessionSeconds=0;state.lastTick=performance.now();state.lastFlush=0;
+  function ensurePlaySession(){
+    if(!state.user||!state.childId||state.timerActive||state.locked)return;
+    state.timerActive=true;state.sessionSeconds=0;state.lastTick=performance.now();state.lastFlush=state.todayBefore;
   }
 
   async function endPlaySession(reason='user_exit'){
-    if(!state.sessionId)return;tick();const id=state.sessionId;state.sessionId=null;
-    await state.client.from('play_sessions').update({active_seconds:Math.floor(state.sessionSeconds),last_heartbeat_at:new Date().toISOString(),ended_at:new Date().toISOString(),end_reason:reason}).eq('id',id);
-    state.todayBefore+=state.sessionSeconds;state.sessionSeconds=0;
+    if(!state.timerActive)return;tick();state.timerActive=false;state.todayBefore+=state.sessionSeconds;state.sessionSeconds=0;rememberLocalSeconds();await syncDailyTotal(reason);
+  }
+
+  async function syncDailyTotal(reason='heartbeat'){
+    rememberLocalSeconds();if(!state.user||!state.childId)return false;
+    if(state.dailySyncInFlight){state.dailySyncPending=true;return false;}state.dailySyncInFlight=true;
+    const localTotal=Math.floor(state.todayBefore+state.sessionSeconds);
+    const {data,error:readError}=await state.client.from('daily_play_totals').select('active_seconds').eq('child_id',state.childId).eq('play_date',localDay()).maybeSingle();
+    if(readError){state.dailySyncInFlight=false;console.warn('Daily timer read failed',readError);return false;}
+    const activeSeconds=Math.max(localTotal,Number(data?.active_seconds||0));
+    const {error}=await state.client.from('daily_play_totals').upsert({child_id:state.childId,play_date:localDay(),active_seconds:activeSeconds,last_sync_reason:reason,updated_at:new Date().toISOString()},{onConflict:'child_id,play_date'});
+    state.dailySyncInFlight=false;if(error){console.warn('Daily timer sync failed',error);return false;}state.lastFlush=localTotal;
+    if(state.dailySyncPending){state.dailySyncPending=false;setTimeout(()=>syncDailyTotal('pending'),0);}return true;
   }
 
   function tick(){
     const now=performance.now();if(!state.lastTick)state.lastTick=now;
-    if(playing()&&state.sessionId)state.sessionSeconds+=(now-state.lastTick)/1000;
-    state.lastTick=now;updateTimer();checkLimit();
-    if(state.sessionId&&state.sessionSeconds-state.lastFlush>=30){state.lastFlush=state.sessionSeconds;state.client.from('play_sessions').update({active_seconds:Math.floor(state.sessionSeconds),last_heartbeat_at:new Date().toISOString()}).eq('id',state.sessionId).then(({error})=>{if(error)console.warn('Timer sync failed',error)});}
+    if(playing()&&state.timerActive)state.sessionSeconds+=(now-state.lastTick)/1000;
+    state.lastTick=now;rememberLocalSeconds();updateTimer();checkLimit();
+    if(state.timerActive&&state.todayBefore+state.sessionSeconds-state.lastFlush>=120)syncDailyTotal();
   }
 
   function updateTimer(){
@@ -154,7 +183,7 @@
 
   function renderParentControls(){
     const el=$('cloudParentControls');if(!el)return;if(!state.user||!state.childId){el.innerHTML='';return;}const c=state.controls||{};
-    el.innerHTML=`<section class="cloudControls card"><div class="cloudControlsHead"><div><div class="eyebrow">KESEJAHTERAAN DIGITAL</div><h3>Had Masa Bermain</h3></div><span class="cloudSync">☁ Disimpan</span></div><div class="limitGrid"><label>Had sehari (minit)<input id="dailyLimit" type="number" min="5" max="480" value="${c.daily_limit_minutes??''}" placeholder="Tiada had"></label><label>Had satu sesi (minit)<input id="sessionLimit" type="number" min="5" max="180" value="${c.session_limit_minutes??''}" placeholder="Tiada had"></label><label>Peringatan rehat (minit)<input id="nudgeLimit" type="number" min="5" max="120" value="${c.soft_nudge_minutes??30}"></label><label class="limitToggle"><input id="hardLock" type="checkbox" ${c.hard_lock_enabled?'checked':''}> Kunci apabila had dicapai</label><label class="limitToggle"><input id="showTimer" type="checkbox" ${c.show_elapsed_timer!==false?'checked':''}> Paparkan timer kepada anak</label></div><div class="cloudControlActions"><button class="btn primary small" onclick="PACloud.saveControls()">Simpan had</button><button class="btn ghost small" onclick="PACloud.logout()">Log keluar akaun</button></div></section>`;
+    el.innerHTML=`<section class="cloudControls card"><div class="cloudControlsHead"><div><div class="eyebrow">KESEJAHTERAAN DIGITAL</div><h3>Had Masa Bermain</h3></div><span class="cloudSync">☁ Disimpan</span></div><div class="todayPlayTotal"><span>⏱</span><small>Jumlah hari ini</small><b>${formatTime(state.todayBefore+state.sessionSeconds)}</b></div><div class="limitGrid"><label>Had sehari (minit)<input id="dailyLimit" type="number" min="5" max="480" value="${c.daily_limit_minutes??''}" placeholder="Tiada had"></label><label>Had satu sesi (minit)<input id="sessionLimit" type="number" min="5" max="180" value="${c.session_limit_minutes??''}" placeholder="Tiada had"></label><label>Peringatan rehat (minit)<input id="nudgeLimit" type="number" min="5" max="120" value="${c.soft_nudge_minutes??30}"></label><label class="limitToggle"><input id="hardLock" type="checkbox" ${c.hard_lock_enabled?'checked':''}> Kunci apabila had dicapai</label><label class="limitToggle"><input id="showTimer" type="checkbox" ${c.show_elapsed_timer!==false?'checked':''}> Paparkan timer kepada anak</label></div><div class="cloudControlActions"><button class="btn primary small" onclick="PACloud.saveControls()">Simpan had</button><button class="btn ghost small" onclick="PACloud.logout()">Log keluar akaun</button></div></section>`;
   }
 
   async function saveControls(){
@@ -177,7 +206,7 @@
     state.client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});wireLegacy();
     const {data}=await state.client.auth.getSession();if(data.session)await signedIn(data.session);else renderAccount();
     state.client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session&&session.user.id!==state.user?.id)setTimeout(()=>signedIn(session),0);if(event==='SIGNED_OUT'){state.user=null;renderAccount();}});
-    setInterval(tick,1000);document.addEventListener('visibilitychange',()=>{tick();if(document.hidden)syncSaveNow();});window.addEventListener('online',()=>{syncSaveNow();if(playing())ensurePlaySession()});state.ready=true;
+    setInterval(tick,1000);document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else state.lastTick=performance.now();});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
   window.PACloud={init,setAuthMode,submitAuth,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,logout,state};
