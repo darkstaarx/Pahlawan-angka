@@ -1,0 +1,80 @@
+Pahlawan Angka v3.19.1 QA
+===========================
+
+[syntax]
+PASS js/cikgu-manipulatives-v3.19.1.js
+PASS js/pwa.js
+PASS sw.js
+
+[release audits]
+PASS Cikgu Wajar manipulatives v3.19.1 invariants
+PASS Cikgu Wajar manipulatives v3.19.1 runtime integration
+PASS sensory learning v3.19.0 invariants under modular release loader
+PASS sensory runtime v3.19.0 wrappers
+PASS version sync: app v3.19.1; integrity v3.18.1; sensory v3.19.0; manipulatives v3.19.1
+
+[content integrity regression]
+[Pahlawan Angka] Content Integrity Guard v3.18.1 active
+{
+  "version": "3.18.1",
+  "skills": 52,
+  "samples": 4160,
+  "failures": [],
+  "frontier_gate": true,
+  "stretch_gate": true,
+  "recovery": {
+    "D3.PERCENT": [
+      "D2.3.3"
+    ],
+    "D3.POSITION": [
+      "D2.7.3"
+    ],
+    "D4.PERCENT": [
+      "D3.PERCENT"
+    ],
+    "D4.COORD": [
+      "D3.POSITION"
+    ],
+    "D4.RATIO": [
+      "D4.FRAC"
+    ],
+    "D4.RATE": [
+      "D4.RATIO"
+    ],
+    "D5.ADD": [
+      "D4.ADD"
+    ],
+    "D5.SUB": [
+      "D4.SUB"
+    ],
+    "D5.OPS": [
+      "D5.ADD",
+      "D5.SUB",
+      "D5.MUL",
+      "D5.DIV"
+    ],
+    "D5.RATIO": [
+      "D4.RATIO"
+    ],
+    "D5.RATE": [
+      "D4.RATE"
+    ],
+    "D6.PROB": [
+      "D5.DATA"
+    ]
+  },
+  "stretch": {
+    "D2.3.3": "D3.PERCENT",
+    "D2.7.3": "D3.POSITION",
+    "D3.PERCENT": "D4.PERCENT",
+    "D3.POSITION": "D4.COORD",
+    "D4.RATIO": "D5.RATIO",
+    "D4.RATE": "D5.RATE",
+    "D4.ADD": "D5.ADD",
+    "D4.SUB": "D5.SUB",
+    "D5.ADD": "D6.OPS",
+    "D5.SUB": "D6.OPS",
+    "D5.RATIO": "D6.RATIO",
+    "D5.DATA": "D6.DATA"
+  }
+}

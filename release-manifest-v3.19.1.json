@@ -1,0 +1,19 @@
+{
+  "version": "3.19.1",
+  "name": "Cikgu Wajar Visual Manipulatives",
+  "baseline_commit": "b1afc0b9671dbba024339a4a948193e51433a9b8",
+  "layers": {
+    "curriculum_integrity": "3.18.1",
+    "sensory_learning": "3.19.0",
+    "cikgu_manipulatives": "3.19.1"
+  },
+  "learning_engine_changed": false,
+  "question_generator_changed": false,
+  "battle_layout_changed": false,
+  "enhanced_modes": ["number","compare","place","place-basic","add","subtract","multiply","divide","fraction","decimal","percent","ratio","money","time","measure","shape","area","data","coord"],
+  "critical_repairs": [
+    "division uses equal sharing instead of slicing one object",
+    "measurement selects ruler/scale/vessel by skill",
+    "upper-primary decimal/percent/ratio/coordinate visual coverage"
+  ]
+}

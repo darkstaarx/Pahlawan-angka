@@ -10,7 +10,8 @@ assert(/after\.mastery<MASTER_THRESHOLD\|\|!after\.requirement\.ok/.test(sensory
 assert(/if\(kind==='correct'\).*vibrate/.test(sensory),'correct haptic missing');
 assert(!/kind==='wrong'.*vibrate/.test(sensory),'wrong-answer haptic must not exist');
 assert(/prefers-reduced-motion/.test(css),'reduced-motion support missing');
-assert(/sensory-learning-v\$\{APP_VERSION\}\.js/.test(pwa)&&/sensory-learning-v\$\{APP_VERSION\}\.css/.test(pwa),'PWA loader missing sensory templates');
+assert(/const SENSORY_VERSION='3\.19\.0'/.test(pwa),'PWA loader changed sensory foundation version unexpectedly');
+assert(/sensory-learning-v\$\{SENSORY_VERSION\}\.js/.test(pwa)&&/sensory-learning-v\$\{SENSORY_VERSION\}\.css/.test(pwa),'PWA loader missing sensory templates');
 assert(/sensory-learning-v3\.19\.0\.js/.test(sw)&&/sensory-learning-v3\.19\.0\.css/.test(sw),'service worker missing sensory files');
 assert(/Sensory feedback exists to make mathematical thinking feel responsive/.test(lock),'sensory lock missing core rule');
-console.log('PASS sensory learning v3.19.0 invariants');
+console.log('PASS sensory learning v3.19.0 invariants under modular release loader');
