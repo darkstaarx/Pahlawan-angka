@@ -1,7 +1,13 @@
 // Darjah 1 prerequisite recovery generators.
 window.PAQuestionBanks = window.PAQuestionBanks || {};
 window.PAQuestionBanks.d1 = function(id,s,shift){
-if(id==="D1.N20"||id==="D1.N100"){let max=id==="D1.N20"?20:100,a=R(1,max),b=R(1,max);return Q(`Yang manakah lebih besar?<br><b>${a}</b> atau <b>${b}</b>`,Math.max(a,b),[N(Math.min(a,b),"compare"),N(a+b,"operation"),N(Math.abs(a-b),"operation")],"Banding nilai nombor, bukan bentuk digit.","Recovery",false,shift)}
+if(id==="D1.N20"||id==="D1.N100"){
+ let max=id==="D1.N20"?20:100,a=R(1,max),b=R(1,max);while(b===a)b=R(1,max);
+ let larger=Math.max(a,b),smaller=Math.min(a,b),askLarger=R(0,1)===0;
+ return Q(askLarger?`Pilih nombor yang lebih besar.`:`Pilih nombor yang lebih kecil.`,askLarger?larger:smaller,
+  [N(askLarger?smaller:larger,"compare"),N(Math.min(max,larger+1),"compare"),N(Math.max(1,smaller-1),"compare")],
+  "Bandingkan nilai kedua-dua nombor.","Recovery",false,shift)
+}
 if(id==="D1.PV100"){
   let n=uniqueDigitNumber(2),str=String(n),tens=+str[0],ones=+str[1],mode=R(0,3);
   if(mode===0){let pos=R(0,1),d=+str[pos],ans=pos===0?d*10:d,place=pos===0?"puluh":"sa";return Q(`Apakah nilai digit <b>${d}</b> pada tempat <b>${place}</b> dalam <b>${n}</b>?`,ans,[N(d,"digit_value"),N(pos===0?d:d*10,"place"),N(ans+10,"place")],"Lihat kedudukan digit dahulu.","Recovery",true,true)}

@@ -1,0 +1,46 @@
+/* v3.9.1 — authoritative mobile battle HUD and Wira pose sizing. */
+#game .battle>.unitHud{
+  top:12px!important;
+  bottom:auto!important;
+  width:31%!important;
+  height:30px!important;
+  padding:0!important;
+}
+#game .battle>.heroHud{left:16px!important}
+#game .battle>.enemyHud{right:16px!important}
+#game .battle>.unitHud .nm{font-size:12px!important;line-height:15px!important}
+#game .battle>.unitHud .hp{height:8px!important;margin-top:3px!important}
+
+/* All Wira poses share one body-height target and the same floor anchor.
+   Wide attack canvases may overflow horizontally but never shrink vertically. */
+body:not(.hero-bunga) #game #hero .hero-frame-idle,
+body:not(.hero-bunga) #game #hero .hero-frame-anticipation,
+body:not(.hero-bunga) #game #hero .hero-frame-attack,
+body:not(.hero-bunga) #game #hero .hero-frame-follow-through{
+  top:auto!important;
+  bottom:0!important;
+  height:var(--pa-hero-h)!important;
+  max-height:none!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+}
+body:not(.hero-bunga) #game #hero .hero-frame-idle{left:50%!important;transform:translateX(-50%) scale(1)!important}
+body:not(.hero-bunga) #game #hero .hero-frame-anticipation{left:50%!important;transform:translateX(-50%) scale(1)!important}
+body:not(.hero-bunga) #game #hero .hero-frame-attack{left:calc(50% + 28px)!important;transform:translateX(-50%) scale(1)!important}
+body:not(.hero-bunga) #game #hero .hero-frame-follow-through{left:calc(50% + 13px)!important;transform:translateX(-50%) scale(1)!important}
+
+/* The blackout pose uses the same visible height as the arena hero. */
+.finisherCinematic .cinematicHero{
+  top:var(--hero-y,28%)!important;
+  width:auto!important;
+  height:var(--hero-h,136px)!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+}
+
+@media(max-width:370px){
+  #game .battle>.heroHud{left:12px!important}
+  #game .battle>.enemyHud{right:12px!important}
+}

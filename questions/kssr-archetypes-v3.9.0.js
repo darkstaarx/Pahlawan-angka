@@ -50,15 +50,12 @@
  function wrap(key){const original=originals[key];banks[key]=function(id,s,shift){
   let q=measurement(id);if(q)return q;
   q=addedSkill(id);
-  if(q){
-   const last=recentFor(id).at(-1)?.archetypeId||'';
-   if(last==='choose_strategy')return errorQuestion(id,q);
-   if(last==='error_analysis'||!last){q.archetypeId=`content_${q.archetypeId}`;return q;}
-   return methodQuestion(id,q);
-  }
+  // The battle quiz always asks pupils to solve curriculum mathematics.
+  // Strategy and misconception tags stay as silent evidence for the adaptive
+  // engine, Cikgu Wajar and Parent Mode; they are never replacement questions.
+  if(q){q.archetypeId=`content_${q.archetypeId}`;return q;}
   q=original?original(id,s,shift):null;if(!q)return null;
-  const mode=rotate(id,['solve_direct','choose_strategy','error_analysis']);
-  if(mode==='choose_strategy')return methodQuestion(id,q);if(mode==='error_analysis')return errorQuestion(id,q);return baseWithMeta(id,q);
+  return baseWithMeta(id,q);
  }}
  ['d1','d2t1','d2t2','d2t3','d2t4','d2t5','d2t6','d2t7','d2t8','d3','d4','d5','d6'].forEach(wrap);
 })();

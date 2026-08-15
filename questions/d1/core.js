@@ -1,6 +1,14 @@
 window.PAQuestionBanks = window.PAQuestionBanks || {};
 window.PAQuestionBanks.d1 = function(id,s,shift){
- if(id==="D1.N20"||id==="D1.N100"){let max=id==="D1.N20"?20:100,a=R(1,max),b=R(1,max);return Q(`Yang manakah lebih besar?<br><b>${a}</b> atau <b>${b}</b>`,Math.max(a,b),[N(Math.min(a,b),"compare"),N(a+b,"operation"),N(Math.abs(a-b),"operation")],"Banding nilai nombor, bukan bentuk digit.","Darjah 1",false,shift)}
+ if(id==="D1.N20"||id==="D1.N100"){
+   let max=id==="D1.N20"?20:100,values=[];while(values.length<4){let n=R(1,max);if(!values.includes(n))values.push(n)}
+   let [a,b]=values,larger=Math.max(a,b),smaller=Math.min(a,b),mode=R(0,3),prompt,answer,wrong;
+   if(mode===0){answer=Math.max(...values);prompt=`Pilih nombor yang paling besar.<br><b>${values.join(', ')}</b>`;wrong=values.filter(n=>n!==answer).map(n=>N(n,"compare"))}
+   else if(mode===1){answer=Math.min(...values);prompt=`Pilih nombor yang paling kecil.<br><b>${values.join(', ')}</b>`;wrong=values.filter(n=>n!==answer).map(n=>N(n,"compare"))}
+   else if(mode===2){prompt=`Isi tempat kosong.<br><b>${smaller} &lt; ___</b>`;answer=larger;wrong=[N(smaller,"compare"),N(Math.max(1,smaller-1),"compare"),N(Math.max(1,smaller-2),"compare")]}
+   else{prompt=`Susun nombor daripada kecil kepada besar.<br><b>${a}, ${b}</b>`;answer=`${smaller}, ${larger}`;wrong=[N(`${larger}, ${smaller}`,"compare"),N(`${a}, ${a}`,"compare"),N(`${b}, ${b}`,"compare")]}
+   return Q(prompt,answer,wrong,"Bandingkan nilai kedua-dua nombor.","Darjah 1",false,shift)
+ }
  if(id==="D1.PV100"){
    let n=uniqueDigitNumber(2),str=String(n),tens=+str[0],ones=+str[1],mode=R(0,4);
    if(mode===0){let pos=R(0,1),d=+str[pos],ans=pos===0?d*10:d,place=pos===0?"puluh":"sa";return Q(`Apakah nilai digit <b>${d}</b> pada tempat <b>${place}</b> dalam <b>${n}</b>?`,ans,[N(d,"digit_value"),N(pos===0?d:d*10,"place"),N(ans+10,"place")],"Lihat kedudukan digit dahulu.","Darjah 1",true,true)}
