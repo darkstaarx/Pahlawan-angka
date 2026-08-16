@@ -1,0 +1,32 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/profile-manager-v3.24.0.js','utf8');
+const css=fs.readFileSync('css/profile-manager-v3.24.0.css','utf8');
+const pwa=fs.readFileSync('js/pwa.js','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+
+assert(/const VERSION='3\.24\.0'/.test(js),'profile manager version missing');
+assert(/assets\/heroes\/wira\/idle\.webp/.test(js),'Wira production art not used');
+assert(/assets\/heroes\/bunga\/idle\.webp/.test(js),'Bunga production art not used');
+assert(!/generated|imagegen|dall-e/i.test(js+css),'generated mockup asset leaked into production');
+assert(/is_active:false/.test(js),'soft delete missing');
+assert(!/\.delete\(\)/.test(js),'hard delete must not be used');
+assert(/from\('child_profiles'\).*insert/s.test(js),'child profile insert missing');
+assert(/from\('child_profiles'\).*update/s.test(js),'child profile update missing');
+assert(/gradeProgressArchive/.test(js),'grade transition archive missing');
+assert(/window\.goSetup=wrapped/.test(js),'signed-in setup route override missing');
+assert(/pmSwitchProfile/.test(js),'hub profile switch missing');
+assert(/PAProfileManager/.test(js),'profile manager API missing');
+assert(/MutationObserver/.test(js),'legacy-account observer missing');
+assert(/if\(!box\.querySelector\('\.pmManager'\)\)queueMicrotask/.test(js),'observer idempotent guard missing');
+assert(/pmHeroChoice\.selected/.test(css),'RPG hero selection state missing');
+assert(/pmProfileCard\.active/.test(css),'active profile treatment missing');
+assert(/pmDeleteModal/.test(css),'delete confirmation treatment missing');
+assert(/PROFILE_MANAGER_VERSION='3\.24\.0'/.test(pwa),'release loader profile version missing');
+assert(/Y6_REPAIR_VERSION='3\.23\.0'/.test(pwa),'Year 6 repair version not preserved');
+assert(/DEPTH_VERSION='3\.22\.0'/.test(pwa),'KSSR depth version not preserved');
+assert(/TYPED_UI_VERSION='3\.21\.8'/.test(pwa),'typed UI version not preserved');
+assert(/profile-manager-v3\.24\.0/.test(sw),'service worker profile assets missing');
+assert(/pahlawan-angka-v3\.24\.0/.test(sw),'service worker cache not bumped');
+assert(!/world-response-v3\.21\.0/.test(pwa+sw),'World Response returned');
+
+console.log('PASS v3.24.0 static: two-page signed-in flow, CRUD profile manager, soft delete, original hero art, RPG treatment');

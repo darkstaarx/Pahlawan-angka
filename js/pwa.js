@@ -1,6 +1,6 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.23.0';
+  const APP_VERSION='3.24.0';
   const INTEGRITY_VERSION='3.18.1';
   const DEPTH_VERSION='3.22.0';
   const Y6_REPAIR_VERSION='3.23.0';
@@ -13,6 +13,7 @@
   const TARGET_ANCHOR_VERSION='3.21.5';
   const FINISHER_HOTSPOT_VERSION='3.21.6';
   const TYPED_UI_VERSION='3.21.8';
+  const PROFILE_MANAGER_VERSION='3.24.0';
 
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;
@@ -37,6 +38,8 @@
   const finisherJs=`js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js?v=${FINISHER_HOTSPOT_VERSION}`;
   const typedCss=`css/typed-answer-ui-v${TYPED_UI_VERSION}.css?v=${TYPED_UI_VERSION}`;
   const typedJs=`js/typed-answer-ui-v${TYPED_UI_VERSION}.js?v=${TYPED_UI_VERSION}`;
+  const profileCss=`css/profile-manager-v${PROFILE_MANAGER_VERSION}.css?v=${PROFILE_MANAGER_VERSION}`;
+  const profileJs=`js/profile-manager-v${PROFILE_MANAGER_VERSION}.js?v=${PROFILE_MANAGER_VERSION}`;
 
   if(document.readyState==='loading'){
     if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);
@@ -62,10 +65,13 @@
     if(!document.querySelector(`script[src^="js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js"]`))document.write(`<script src="${finisherJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/typed-answer-ui-v${TYPED_UI_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${typedCss}">`);
     if(!document.querySelector(`script[src^="js/typed-answer-ui-v${TYPED_UI_VERSION}.js"]`))document.write(`<script src="${typedJs}"><\/script>`);
+    if(!document.querySelector(`link[href^="css/profile-manager-v${PROFILE_MANAGER_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${profileCss}">`);
+    if(!document.querySelector(`script[src^="js/profile-manager-v${PROFILE_MANAGER_VERSION}.js"]`))document.write(`<script src="${profileJs}"><\/script>`);
   }else{
     const loadCss=(src,selector)=>{if(document.querySelector(selector))return;const l=document.createElement('link');l.rel='stylesheet';l.href=src;document.head.appendChild(l);};
     const loadScript=(src,selector,onload)=>{if(document.querySelector(selector)){onload?.();return}const s=document.createElement('script');s.src=src;s.async=false;if(onload)s.onload=onload;document.head.appendChild(s);};
-    const loadTyped=()=>{loadCss(typedCss,`link[href^="css/typed-answer-ui-v${TYPED_UI_VERSION}.css"]`);loadScript(typedJs,`script[src^="js/typed-answer-ui-v${TYPED_UI_VERSION}.js"]`);};
+    const loadProfile=()=>{loadCss(profileCss,`link[href^="css/profile-manager-v${PROFILE_MANAGER_VERSION}.css"]`);loadScript(profileJs,`script[src^="js/profile-manager-v${PROFILE_MANAGER_VERSION}.js"]`);};
+    const loadTyped=()=>{loadCss(typedCss,`link[href^="css/typed-answer-ui-v${TYPED_UI_VERSION}.css"]`);loadScript(typedJs,`script[src^="js/typed-answer-ui-v${TYPED_UI_VERSION}.js"]`,loadProfile);};
     const loadFinisher=()=>{loadCss(finisherCss,`link[href^="css/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.css"]`);loadScript(finisherJs,`script[src^="js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js"]`,loadTyped);};
     const loadTarget=()=>{loadCss(targetCss,`link[href^="css/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.css"]`);loadScript(targetJs,`script[src^="js/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.js"]`,loadFinisher);};
     const loadBoss=()=>{loadCss(bossCss,`link[href^="css/boss-stage-dev-v${BOSS_LAB_VERSION}.css"]`);loadScript(bossJs,`script[src^="js/dev-boss-lab-v${BOSS_LAB_VERSION}.js"]`,loadTarget);};
@@ -78,7 +84,7 @@
     const loadDepth=()=>{loadCss(depthCss,`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`);loadScript(depthJs,`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`,loadY6Repair);};
     loadScript(guard,`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`,loadDepth);
   }
-  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,kssrDepth:DEPTH_VERSION,year6SpaceData:Y6_REPAIR_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION,finisherHotspots:FINISHER_HOTSPOT_VERSION,typedAnswerUI:TYPED_UI_VERSION};
+  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,kssrDepth:DEPTH_VERSION,year6SpaceData:Y6_REPAIR_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION,finisherHotspots:FINISHER_HOTSPOT_VERSION,typedAnswerUI:TYPED_UI_VERSION,profileManager:PROFILE_MANAGER_VERSION};
 })();
 
 (()=>{

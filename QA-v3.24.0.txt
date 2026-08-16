@@ -1,0 +1,70 @@
+Pahlawan Angka v3.24.0 QA
+==========================
+
+Expected base
+-------------
+a7c954d40f6c64e16587b9c9c43a74ecf1bcc960
+
+Static
+------
+PASS Profile Manager version 3.24.0
+PASS signed-in goSetup -> Profile Manager
+PASS Hub has Tukar profil action
+PASS Create child implemented
+PASS Edit child implemented
+PASS Delete child uses is_active=false
+PASS no client hard-delete call
+PASS guardian family ownership used for inserts
+PASS original production Wira idle art used
+PASS original production Bunga idle art used
+PASS generated mockup assets not referenced
+PASS active profile RPG gold treatment
+PASS create/edit hero RPG selection treatment
+PASS delete confirmation UI present
+PASS observer is idempotent (renders only when .pmManager absent)
+
+Grade transition
+----------------
+PASS old grade chapter state archived
+PASS new grade starts at frontier 1 when no prior archive exists
+PASS returning to old grade restores archived chapter state
+PASS skill evidence is not erased
+
+Supabase
+--------
+No DDL migration.
+Uses existing:
+- child_profiles.is_active
+- child_profiles INSERT/UPDATE guardian RLS
+- game_saves guardian RLS
+
+Release regression
+------------------
+PASS KSSR depth 3.22.0 preserved
+PASS Year 6 repair 3.23.0 preserved
+PASS typed answer 3.21.8 preserved
+PASS combat layers preserved
+PASS World Response remains retired
+PASS service worker cache 3.24.0
+
+Commands
+--------
+node --check js/profile-manager-v3.24.0.js
+node --check js/pwa.js
+node --check sw.js
+node audit/profile-manager-static-v3.24.0.js
+node audit/profile-manager-logic-v3.24.0.js
+node audit/version-sync.js
+
+Manual smoke test
+-----------------
+1. Login guardian -> should land on Profile Manager, not Setup.
+2. Choose existing Baba -> Hub.
+3. Hub back / Tukar profil -> Profile Manager.
+4. Create profile -> choose hero -> profile is created and opens Hub.
+5. Edit inactive profile name/hero -> changes persist.
+6. Edit grade -> chapter progress for the other grade must not carry over.
+7. Delete inactive profile -> disappears from list.
+8. Delete active profile -> switches safely to another active profile.
+9. Delete last profile -> Profile Manager empty state + create modal.
+10. Reload -> inactive/deleted profile must remain hidden.

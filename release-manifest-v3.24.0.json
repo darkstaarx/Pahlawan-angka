@@ -1,0 +1,48 @@
+{
+  "version": "3.24.0",
+  "baseline": "a7c954d40f6c64e16587b9c9c43a74ecf1bcc960",
+  "title": "Profile Manager + Two-Page Child Flow",
+  "signed_in_pages": [
+    "guardian_profile_manager",
+    "student_hub"
+  ],
+  "legacy_setup": "offline_fallback_only",
+  "profile_operations": [
+    "create",
+    "edit",
+    "select",
+    "soft_delete"
+  ],
+  "delete": {
+    "mode": "soft",
+    "column": "child_profiles.is_active",
+    "hard_delete": false,
+    "schema_migration": false
+  },
+  "hero_assets": {
+    "production_generated_art_shipped": false,
+    "wira": "assets/heroes/wira/idle.webp",
+    "bunga": "assets/heroes/bunga/idle.webp",
+    "treatment": "identity-safe cropped portrait placeholder",
+    "future": "replace src with approved happy/inviting bust portraits"
+  },
+  "grade_change": {
+    "archive_key": "gradeProgressArchive",
+    "preserve_skill_evidence": true
+  },
+  "preserve": {
+    "integrity": "3.18.1",
+    "kssrDepth": "3.22.0",
+    "year6SpaceData": "3.23.0",
+    "sensory": "3.19.0",
+    "manipulatives": "3.19.1",
+    "dailyReview": "3.20.0",
+    "devExperiments": "3.21.2",
+    "combatPolish": "3.21.3",
+    "bossLab": "3.21.4",
+    "targetAnchor": "3.21.5",
+    "finisherHotspots": "3.21.6",
+    "typedAnswerUI": "3.21.8",
+    "worldResponse": "retired"
+  }
+}

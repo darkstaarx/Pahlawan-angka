@@ -1,10 +1,11 @@
-const CACHE_NAME='pahlawan-angka-v3.23.0';
+const CACHE_NAME='pahlawan-angka-v3.24.0';
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
   './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
   './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
+  './assets/heroes/wira/idle.webp','./assets/heroes/bunga/idle.webp',
   './css/game.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
   './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
   './css/login-buttons-v3.7.1.css','./css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
@@ -15,7 +16,7 @@ const APP_SHELL=[
   './css/battle-scene-v3.8.28.css','./css/pwa-v3.8.29.css','./css/guardian-focus-v3.8.30.css','./css/hero-pose-normalization-v3.8.31.css','./css/battle-fix-v3.9.1.css','./css/battle-fix-v3.11.css','./css/pet-staging-v3.14.3.css',
   './css/sensory-learning-v3.19.0.css','./css/cikgu-manipulatives-v3.19.1.css','./css/daily-spaced-review-v3.20.0.css',
   './css/dev-experiments-v3.21.2.css','./css/combat-polish-v3.21.3.css','./css/boss-stage-dev-v3.21.4.css','./css/combat-target-anchor-v3.21.5.css','./css/finisher-alpha-hotspots-v3.21.6.css','./css/typed-answer-ui-v3.21.8.css',
-  './css/kssr-assessment-depth-v3.22.0.css','./css/kssr-year6-space-data-v3.23.0.css',
+  './css/kssr-assessment-depth-v3.22.0.css','./css/kssr-year6-space-data-v3.23.0.css','./css/profile-manager-v3.24.0.css',
   './data/kssr/knowledge-graph.js','./data/kssr/mastery-knowledge-v1.js','./data/kssr/alignment-v3.9.0.js',
   './questions/helpers.js','./questions/index.js','./questions/kssr-archetypes-v3.9.0.js','./questions/kssr-content-v3.11.js','./questions/kssr-content-integrity-v3.18.1.js','./questions/kssr-assessment-depth-v3.22.0.js','./questions/kssr-year6-space-data-v3.23.0.js',
   './questions/d1/core.js','./questions/d2/topic-1.js','./questions/d2/topic-2.js','./questions/d2/topic-3.js',
@@ -25,7 +26,7 @@ const APP_SHELL=[
   './js/heroes.js','./js/progression.js','./js/rewards-v2.js','./js/learning.js','./js/audio.js',
   './js/battle.js','./js/parent.js','./js/guardian-focus.js','./js/app.js','./js/cloud.js','./js/phase-3.6.4.js',
   './js/sensory-learning-v3.19.0.js','./js/cikgu-manipulatives-v3.19.1.js','./js/daily-spaced-review-v3.20.0.js',
-  './js/dev-experiments-v3.21.2.js','./js/combat-polish-v3.21.3.js','./js/dev-boss-lab-v3.21.4.js','./js/combat-target-anchor-v3.21.5.js','./js/finisher-alpha-hotspots-v3.21.6.js','./js/typed-answer-ui-v3.21.8.js','./js/pwa.js'
+  './js/dev-experiments-v3.21.2.js','./js/combat-polish-v3.21.3.js','./js/dev-boss-lab-v3.21.4.js','./js/combat-target-anchor-v3.21.5.js','./js/finisher-alpha-hotspots-v3.21.6.js','./js/typed-answer-ui-v3.21.8.js','./js/profile-manager-v3.24.0.js','./js/pwa.js'
 ];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('pahlawan-angka-')&&key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
