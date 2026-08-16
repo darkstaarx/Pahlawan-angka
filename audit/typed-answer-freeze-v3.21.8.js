@@ -1,0 +1,16 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/typed-answer-ui-v3.21.8.js','utf8');
+const pwa=fs.readFileSync('js/pwa.js','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+assert(!/new\s+MutationObserver/.test(js),'observer constructor must not exist');
+assert(!/queueMicrotask\(\(\)=>scan/.test(js),'recursive scan loop remained');
+assert(/dataset\.paTypedPolished===VERSION/.test(js),'idempotent guard missing');
+assert(/form\.dataset\.paTypedPolished=VERSION/.test(js),'guard assignment missing');
+assert(/const previousNextQ=window\.nextQ/.test(js),'nextQ integration missing');
+assert(/polishCurrentTyped\(\)/.test(js),'post-render polish missing');
+assert(/replaceChildren/.test(js),'single controlled label replacement missing');
+assert(/TYPED_UI_VERSION='3\.21\.8'/.test(pwa),'loader not bumped');
+assert(/FINISHER_HOTSPOT_VERSION='3\.21\.6'/.test(pwa),'combat baseline changed');
+assert(/typed-answer-ui-v3\.21\.8/.test(sw),'SW new UI missing');
+assert(!/typed-answer-ui-v3\.21\.7/.test(sw),'SW still caches broken UI');
+console.log('PASS v3.21.8: observer loop removed; typed UI polish is one-shot and idempotent');

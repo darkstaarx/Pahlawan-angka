@@ -1,0 +1,16 @@
+{
+  "version": "3.21.8",
+  "baseline": "b4bed5e1db9c26c8678476c29c753440a273b8e4",
+  "severity": "hotfix",
+  "rootCause": "recursive DOM observer loop in v3.21.7 typed-answer presentation",
+  "scope": [
+    "typed-answer presentation runtime only"
+  ],
+  "preserve": {
+    "typedLogic": "3.21.2",
+    "combatPolish": "3.21.3",
+    "bossLab": "3.21.4",
+    "targetAnchor": "3.21.5",
+    "finisherHotspots": "3.21.6"
+  }
+}

@@ -1,6 +1,6 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.21.7';
+  const APP_VERSION='3.21.8';
   const INTEGRITY_VERSION='3.18.1';
   const SENSORY_VERSION='3.19.0';
   const MANIPULATIVE_VERSION='3.19.1';
@@ -10,7 +10,7 @@
   const BOSS_LAB_VERSION='3.21.4';
   const TARGET_ANCHOR_VERSION='3.21.5';
   const FINISHER_HOTSPOT_VERSION='3.21.6';
-  const TYPED_UI_VERSION='3.21.7';
+  const TYPED_UI_VERSION='3.21.8';
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${SENSORY_VERSION}`;
@@ -65,8 +65,10 @@
     const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
     loadScript(guard,`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`,loadSensory);
   }
+
   window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION,finisherHotspots:FINISHER_HOTSPOT_VERSION,typedAnswerUI:TYPED_UI_VERSION};
 })();
+
 (()=>{
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{

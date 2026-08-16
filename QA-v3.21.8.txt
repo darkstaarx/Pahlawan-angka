@@ -1,0 +1,24 @@
+Pahlawan Angka v3.21.8 QA
+==========================
+
+Baseline: b4bed5e1db9c26c8678476c29c753440a273b8e4
+
+PASS observer constructor removed
+PASS recursive microtask scan removed
+PASS one-shot per-form guard
+PASS nextQ post-render integration
+PASS typed UI wording retained
+PASS keyboard compact state retained
+PASS max-2 boss typed logic untouched
+PASS DEV Force Typed untouched
+PASS v3.21.6 final-blow hotspot retained
+PASS v3.21.5 target/defeat anchor retained
+PASS v3.21.4 DEV boss jump retained
+
+Manual:
+1. Hub -> normal battle entry
+2. DEV -> Boss Fight Test
+3. Force Typed Preview -> typed question
+4. submit -> next question
+5. keyboard open/close
+All must remain responsive.
