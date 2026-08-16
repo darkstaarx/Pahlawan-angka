@@ -1,0 +1,45 @@
+Pahlawan Angka v3.21.3 QA
+==========================
+
+Baseline
+--------
+a0844708d7f30330cdefabc86246417e25fc13c6
+
+Scope
+-----
+PASS CSS-only hero victory animation removed from active combat layer
+PASS CSS-only pet victory animation removed from active combat layer
+PASS placeholder victory spark FX removed
+PASS stale v3.21.2 victory classes/FX are defensively purged
+PASS boss victory/checkpoint flow remains callable
+PASS boss attack stable box / bottom anchor preserved
+PASS boss horizontal lunge + grounded shadow preserved
+PASS calmer terrain layer preserved without dimming combatants
+PASS Boss Typed Answer DEV layer remains v3.21.2 and loaded
+PASS World Response remains retired
+PASS victory animation marked pending real multi-frame assets
+
+Syntax
+------
+PASS js/combat-polish-v3.21.3.js
+PASS js/pwa.js
+PASS sw.js
+PASS audit/version-sync.js
+PASS audit/victory-asset-lock-v3.21.3.js
+
+Not changed
+-----------
+Question generator
+Mastery / confidence / evidence / stability
+Competency integrity
+Adaptive routing
+Cikgu Wajar
+Daily Quest
+Battle damage / rewards
+Parent play-time controls
+Supabase schema
+
+Note
+----
+This patch intentionally does NOT add a replacement victory animation.
+Victory motion returns only after real Wira/Bunga/pet frame assets are created and normalised.

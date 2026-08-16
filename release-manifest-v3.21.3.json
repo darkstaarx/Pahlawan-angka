@@ -1,0 +1,25 @@
+{
+  "version": "3.21.3",
+  "name": "Victory Asset Lock",
+  "expectedBase": "a0844708d7f30330cdefabc86246417e25fc13c6",
+  "changes": [
+    "Remove CSS-only hero victory motion",
+    "Remove CSS-only selected-pet victory motion",
+    "Remove placeholder victory spark FX",
+    "Preserve v3.21.2 boss sizing/foot-anchor and terrain tone-down",
+    "Preserve v3.21.2 safe boss typed-answer experiment",
+    "Keep World Response retired"
+  ],
+  "victoryAnimationStatus": "pending-real-multiframe-assets",
+  "unchanged": [
+    "question generation",
+    "mastery formula",
+    "competency integrity",
+    "adaptive routing",
+    "Cikgu Wajar",
+    "Daily Quest",
+    "battle damage and rewards",
+    "parent play-time controls",
+    "Supabase schema"
+  ]
+}

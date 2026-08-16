@@ -1,12 +1,12 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.21.2';
+  const APP_VERSION='3.21.3';
   const INTEGRITY_VERSION='3.18.1';
   const SENSORY_VERSION='3.19.0';
   const MANIPULATIVE_VERSION='3.19.1';
   const DAILY_REVIEW_VERSION='3.20.0';
   const DEV_EXPERIMENTS_VERSION='3.21.2';
-  const COMBAT_POLISH_VERSION='3.21.2';
+  const COMBAT_POLISH_VERSION='3.21.3';
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${SENSORY_VERSION}`;

@@ -1,0 +1,20 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/combat-polish-v3.21.3.js','utf8');
+const css=fs.readFileSync('css/combat-polish-v3.21.3.css','utf8');
+const pwa=fs.readFileSync('js/pwa.js','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+
+assert(/const VERSION='3\.21\.3'/.test(js),'combat patch version mismatch');
+assert(/purgeLegacyVictoryState/.test(js),'legacy victory cleanup missing');
+assert(/victoryAssetStatus:'pending-real-frames'/.test(js),'asset-pending status missing');
+assert(!/function\s+startVictoryCelebration|ensureVictoryFx|classList\.add\('paVictory'\)|classList\.add\('paPetVictory'\)/.test(js),'CSS-only victory trigger still active');
+assert(!/@keyframes\s+paHeroVictory|@keyframes\s+paPetVictory|@keyframes\s+paVictorySpark|\.paVictoryFx\s*\{/.test(css),'CSS-only victory animation still active');
+assert(/paBossAttackStable/.test(css)&&/paBossShadowStable/.test(css),'boss attack stabilisation missing');
+assert(/--pa-terrain-saturation:\.68/.test(css)&&/--pa-terrain-brightness:\.76/.test(css),'terrain tone-down missing');
+assert(/DEV_EXPERIMENTS_VERSION='3\.21\.2'/.test(pwa),'typed-boss DEV layer changed unexpectedly');
+assert(/COMBAT_POLISH_VERSION='3\.21\.3'/.test(pwa),'combat loader version mismatch');
+assert(/pahlawan-angka-v3\.21\.3/.test(sw),'service-worker cache not bumped');
+assert(/dev-experiments-v3\.21\.2/.test(sw),'typed-boss DEV layer missing from SW');
+assert(/combat-polish-v3\.21\.3/.test(sw),'combat patch missing from SW');
+assert(!/world-response-v3\.21\.0/.test(pwa+sw),'retired World Response returned');
+console.log('PASS v3.21.3: CSS-only hero/pet victory removed; real-frame asset lock active; boss/terrain/typed-boss layers preserved');

@@ -1,0 +1,30 @@
+/* Pahlawan Angka v3.21.3 — boss grounding + calmer terrain. Victory awaits real frame assets. */
+
+/* Terrain tone lives on its own layer so hero/pet/enemy clarity is untouched. */
+#game .battle{background-image:none!important;background-color:#07111c!important;--pa-terrain-saturation:.68;--pa-terrain-brightness:.76}
+#game .battle>.paTerrainToneLayer{position:absolute;inset:-1px;z-index:0;pointer-events:none;background-image:var(--battle-terrain,url("../assets/battlefields/forest-temple/arena-v1.webp"));background-position:center center;background-size:cover;background-repeat:no-repeat;filter:saturate(var(--pa-terrain-saturation)) brightness(var(--pa-terrain-brightness)) contrast(.97);transform:scale(1.008);transform-origin:center}
+#game .battle>.paTerrainToneLayer::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,8,15,.22),rgba(3,9,15,.12) 43%,rgba(1,6,11,.32) 100%),linear-gradient(90deg,rgba(2,7,12,.14),transparent 22%,transparent 78%,rgba(2,7,12,.14))}
+#game .battle::before{background:linear-gradient(180deg,rgba(2,8,15,.28),rgba(3,9,14,.04) 38%,rgba(2,7,12,.12) 70%,rgba(1,5,9,.3)),linear-gradient(90deg,rgba(2,7,12,.2),transparent 19%,transparent 81%,rgba(2,7,12,.2))!important}
+#game .battle::after{opacity:.035!important}
+
+/* Every boss pose owns exactly the same box and exactly the same foot anchor. */
+#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{position:relative!important;width:calc(var(--pa-unit-w) + 20px)!important;height:var(--pa-boss-h)!important;overflow:visible!important;transform-origin:center bottom!important}
+#game #enemy[data-enemy-tier="boss"] .enemy-frame{position:absolute!important;left:50%!important;right:auto!important;top:auto!important;bottom:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:contain!important;object-position:center bottom!important;transform:translateX(-50%) scale(var(--pa-boss-pose-scale,1))!important;transform-origin:center bottom!important}
+/* Source attack canvases carry different transparent padding. These per-pose factors were audited against real alpha bounds so visible body size stays consistent. */
+#game #enemy.tone-place .enemy-frame-anticipation{--pa-boss-pose-scale:1.05}#game #enemy.tone-place .enemy-frame-contact{--pa-boss-pose-scale:1.12}#game #enemy.tone-place .enemy-frame-follow-through{--pa-boss-pose-scale:1.04}
+#game #enemy.tone-operation .enemy-frame-anticipation{--pa-boss-pose-scale:1.25}#game #enemy.tone-operation .enemy-frame-contact{--pa-boss-pose-scale:1.34}#game #enemy.tone-operation .enemy-frame-follow-through{--pa-boss-pose-scale:1.12}
+#game #enemy.tone-fraction .enemy-frame-anticipation{--pa-boss-pose-scale:1.32}#game #enemy.tone-fraction .enemy-frame-contact{--pa-boss-pose-scale:1.42}#game #enemy.tone-fraction .enemy-frame-follow-through{--pa-boss-pose-scale:1.14}
+#game #enemy.tone-money .enemy-frame-anticipation{--pa-boss-pose-scale:1.08}#game #enemy.tone-money .enemy-frame-contact{--pa-boss-pose-scale:1.20}
+#game #enemy.tone-time .enemy-frame-anticipation{--pa-boss-pose-scale:1.18}#game #enemy.tone-time .enemy-frame-contact{--pa-boss-pose-scale:1.25}#game #enemy.tone-time .enemy-frame-follow-through{--pa-boss-pose-scale:1.15}
+#game #enemy.tone-measurement .enemy-frame-anticipation{--pa-boss-pose-scale:1.03}#game #enemy.tone-measurement .enemy-frame-contact{--pa-boss-pose-scale:1.12}#game #enemy.tone-measurement .enemy-frame-follow-through{--pa-boss-pose-scale:1.03}
+#game #enemy.tone-geometry .enemy-frame-anticipation{--pa-boss-pose-scale:1.12}#game #enemy.tone-geometry .enemy-frame-contact{--pa-boss-pose-scale:1.25}#game #enemy.tone-geometry .enemy-frame-follow-through{--pa-boss-pose-scale:1.05}
+#game #enemy.tone-data .enemy-frame-anticipation{--pa-boss-pose-scale:1.20}#game #enemy.tone-data .enemy-frame-contact{--pa-boss-pose-scale:1.28}#game #enemy.tone-data .enemy-frame-follow-through{--pa-boss-pose-scale:1.16}
+#game #enemy[data-enemy-tier="boss"].attacking .enemySpriteWrap{animation:paBossAttackStable .62s cubic-bezier(.2,.72,.25,1) both!important}
+#game #enemy[data-enemy-tier="boss"].attacking::after{animation:paBossShadowStable .62s cubic-bezier(.2,.72,.25,1) both!important;transform-origin:center!important}
+@keyframes paBossAttackStable{0%{transform:translate3d(0,0,0)}20%{transform:translate3d(5px,0,0)}43%,51%{transform:translate3d(-25px,0,0)}68%{transform:translate3d(-17px,0,0)}84%{transform:translate3d(-5px,0,0)}100%{transform:translate3d(0,0,0)}}
+@keyframes paBossShadowStable{0%{transform:translateX(0) scaleY(.68)}20%{transform:translateX(4px) scaleY(.68)}43%,51%{transform:translateX(-22px) scaleY(.68)}68%{transform:translateX(-15px) scaleY(.68)}100%{transform:translateX(0) scaleY(.68)}}
+
+/* Intentionally NO hero/pet victory keyframes here.
+   Victory animation returns only when dedicated multi-frame hero + pet assets are wired. */
+@media(max-width:380px){#game .battle{--pa-terrain-saturation:.66;--pa-terrain-brightness:.74}}
+@media(prefers-reduced-motion:reduce){#game #enemy[data-enemy-tier="boss"].attacking .enemySpriteWrap,#game #enemy[data-enemy-tier="boss"].attacking::after{animation:none!important}}
