@@ -1,0 +1,46 @@
+{
+  "version": "3.22.0",
+  "baseline": "70a152d8fdeffa19d96765a9cdab215adb2a2d7e",
+  "title": "KSSR Assessment Depth & Variety",
+  "architecture": {
+    "load_after": "kssr-content-integrity-v3.18.1",
+    "enhanced_skill_nodes": 65,
+    "preserved_d2_contract_nodes": 37,
+    "total_current_contracts_accounted": 102,
+    "generic_cross_skill_override": false
+  },
+  "qa": {
+    "runtime_samples": 7800,
+    "visual_samples": 2223,
+    "reasoning_samples": 1078,
+    "application_samples": 2014,
+    "syntax": "pass",
+    "static_contract_audit": "pass",
+    "version_sync": "pass"
+  },
+  "high_impact_changes": [
+    "D1 place value no rounding",
+    "D3 fraction representation/equivalence/compatible denominator operations",
+    "D4 fraction mixed/improper and multi-term operations",
+    "D5 fraction multiplication",
+    "D6 fraction division",
+    "D5/D6 decimal depth",
+    "D5/D6 percent >100 and inverse",
+    "D6 time zones",
+    "D6 proportional ratio",
+    "upper-primary reasoning/table/diagram/missing-value variety"
+  ],
+  "preserve": {
+    "integrity": "3.18.1",
+    "sensory": "3.19.0",
+    "manipulatives": "3.19.1",
+    "dailyReview": "3.20.0",
+    "devExperiments": "3.21.2",
+    "combatPolish": "3.21.3",
+    "bossLab": "3.21.4",
+    "targetAnchor": "3.21.5",
+    "finisherHotspots": "3.21.6",
+    "typedAnswerUI": "3.21.8",
+    "worldResponse": "retired"
+  }
+}

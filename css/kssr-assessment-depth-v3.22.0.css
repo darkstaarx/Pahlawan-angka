@@ -1,0 +1,19 @@
+/* Pahlawan Angka v3.22.0 — clean KSSR-style mathematics diagrams.
+   Diagrams intentionally look like textbook/worksheet figures, not RPG decoration. */
+.kssrDiagram{--kd-accent:#4f83d1;max-width:360px;margin:4px auto 12px;text-align:center;color:#24334d;font-size:12px}
+.kssrDiagram svg{display:block;width:100%;height:auto;max-height:230px;overflow:visible}
+.kssrDiagram text{font:700 11px system-ui,-apple-system,Segoe UI,sans-serif;fill:#34425b;text-anchor:middle}
+.kssrDiagram .kd-label{font-weight:900;fill:#1c2a43}
+.kssrDiagram .kd-line{stroke:#667792;stroke-width:2}
+.kssrDiagram .kd-grid{stroke:#cfd7e5;stroke-width:1}
+.kssrDiagram .kd-fill{fill:var(--kd-accent);stroke:#405b82;stroke-width:1.2}
+.kssrDiagram .kd-empty{fill:#fff;stroke:#8090a8;stroke-width:1.2}
+.kssrDiagram .kd-accent{fill:var(--kd-accent);stroke:#234a80;stroke-width:1}
+.kssrDiagram .kd-shape{fill:#edf3fc;stroke:#4c6488;stroke-width:3}
+.kd-pictograph{background:#f7f9fc;border:1px solid #d8dfeb;border-radius:12px;padding:10px 12px;text-align:left}
+.kd-picto-row{display:grid;grid-template-columns:76px 1fr;gap:8px;align-items:center;padding:4px 0}.kd-picto-row span{letter-spacing:5px;color:#4f83d1;font-size:15px}.kd-pictograph small{display:block;margin-top:5px;color:#66758c}
+.kd-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}.kd-table th,.kd-table td{border:1px solid #cdd6e4;padding:7px 8px;text-align:center}.kd-table th{background:#eef3fa;font-weight:900}.kd-table td{font-weight:750}
+.kd-timebar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px}.kd-timebar div{height:7px;border-radius:999px;background:#d9e1ed;position:relative}.kd-timebar i{position:absolute;inset:0;border-radius:inherit;background:#5b8def}.kd-timebar span{font-weight:900}
+.kd-bars{display:grid;gap:12px;justify-content:start;padding:12px 26px}.kd-bars i{height:14px;border-radius:4px;background:#5b8def;display:block}
+.qcard:has(.kssrDiagram) .question{line-height:1.28}
+@media(max-width:380px){.kssrDiagram{max-width:320px}.kd-table th,.kd-table td{padding:6px;font-size:11px}}

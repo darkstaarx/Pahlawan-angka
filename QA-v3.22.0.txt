@@ -1,0 +1,46 @@
+Pahlawan Angka v3.22.0 QA
+==========================
+
+Expected base
+-------------
+70a152d8fdeffa19d96765a9cdab215adb2a2d7e
+
+Static / architecture
+---------------------
+PASS explicit skill-contract layer, no generic domain override
+PASS depth layer loads after integrity v3.18.1
+PASS D2 v3.18.1 bank preserved
+PASS D1.PV100 depth layer contains no rounding archetype
+PASS D5.FRAC uses multiplication archetypes
+PASS D6.FRAC uses division archetypes
+PASS D6.DEC includes decimal×decimal and decimal÷decimal
+PASS D6.PERCENT includes >100% and inverse
+PASS D6.RATIO includes simplest/proportion/table
+PASS D6.TIME uses time-zone archetypes; no speed-distance-time
+PASS graphics use inline KSSR-style SVG/HTML
+PASS no new external art asset dependency
+PASS World Response remains retired
+
+Runtime generator harness
+-------------------------
+PASS 7,800 samples
+PASS 65 enhanced skills × 120
+PASS visual samples observed: 2,223
+PASS reasoning samples observed: 1,078
+PASS application samples observed: 2,014
+PASS no null answer
+PASS 3 unique distractors per generated sample in harness
+PASS explicit D2 contract status count: 37
+
+Regression scope
+----------------
+No mastery/adaptive/coach/daily/combat/parent/Supabase files changed.
+
+After merge run
+---------------
+node --check questions/kssr-assessment-depth-v3.22.0.js
+node --check js/pwa.js
+node --check sw.js
+node audit/kssr-depth-static-v3.22.0.js
+node audit/kssr-depth-runtime-v3.22.0.js
+node audit/version-sync.js
