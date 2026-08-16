@@ -1,0 +1,18 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/finisher-alpha-hotspots-v3.21.6.js','utf8');
+const css=fs.readFileSync('css/finisher-alpha-hotspots-v3.21.6.css','utf8');
+const pwa=fs.readFileSync('js/pwa.js','utf8'),sw=fs.readFileSync('sw.js','utf8');
+assert(/getImageData/.test(js),'alpha analysis missing');
+assert(/mode==='bunga-ground'/.test(js),'Bunga lower-alpha hotspot missing');
+assert(/bandStart=minY\+\(maxY-minY\)\*\.35/.test(js),'Wira visible strike-mass analysis missing');
+assert(/targetX-hotspot\.x\*renderedW/.test(js),'Wira hotspot-to-target placement missing');
+assert(/targetY-hotspot\.y\*renderedH/.test(js),'Wira vertical hotspot placement missing');
+assert(/targetX-hotspot\.x\*renderedW/.test(js),'Bunga hotspot x placement missing');
+assert(/targetY-hotspot\.y\*renderedH/.test(js),'Bunga ground hotspot y placement missing');
+assert(/transform-origin:var\(--pa-bunga-hotspot-x/.test(css),'Bunga scale origin not pinned to measured root');
+assert(/translate3d\(0,-280px/.test(css),'Wira horizontal drift still present');
+assert(!/translateX\(28%|translateX\(34%/.test(css),'legacy Bunga horizontal sweep leaked into new layer');
+assert(/FINISHER_HOTSPOT_VERSION='3\.21\.6'/.test(pwa));
+assert(/TARGET_ANCHOR_VERSION='3\.21\.5'/.test(pwa));
+assert(/finisher-alpha-hotspots-v3\.21\.6/.test(sw));
+console.log('PASS v3.21.6: Wira and Bunga final blows use measured artwork alpha hotspots + live boss geometry');

@@ -1,0 +1,16 @@
+{
+  "version": "3.21.6",
+  "baseline": "3670076a324e20addc14f814b00ffca5673ef2a7",
+  "supersedes": "unpublished Wira-only v3.21.6 hotspot draft",
+  "scope": [
+    "Wira alpha-aware final blow hotspot",
+    "Bunga alpha-aware root hotspot"
+  ],
+  "preserve": {
+    "targetAnchor": "3.21.5",
+    "bossLab": "3.21.4",
+    "combatPolish": "3.21.3",
+    "worldResponse": "retired",
+    "victoryFrames": "pending-real-assets"
+  }
+}

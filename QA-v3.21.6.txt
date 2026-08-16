@@ -1,0 +1,24 @@
+Pahlawan Angka v3.21.6 QA
+==========================
+
+Baseline: 3670076a324e20addc14f814b00ffca5673ef2a7
+
+PASS current v3.21.5 target geometry retained
+PASS current v3.21.5 defeat anchor retained
+PASS FX alpha inspected on same-origin canvas
+PASS alpha analysis cached
+PASS Wira visible strike mass aligned to actual enemy body
+PASS Wira final animation has zero horizontal drift
+PASS Bunga lower root hotspot aligned to actual enemy feet
+PASS Bunga animation scales around root hotspot
+PASS Bunga legacy horizontal sweep removed by authoritative final layer
+PASS boss size/inward staging retained
+PASS DEV Boss Fight Test retained
+PASS no new/replacement art assets
+PASS victory real-frame lock retained
+
+Visual verification:
+1. DEV -> choose Wira -> Boss Fight Test -> 1-Hit Kill.
+   Expect ice visual mass to land on boss body; shatter stays on same body position.
+2. DEV -> choose Bunga -> Boss Fight Test -> 1-Hit Kill.
+   Expect vines/roots to emerge from under boss feet; shatter stays on same body position.

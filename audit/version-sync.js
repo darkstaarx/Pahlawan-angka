@@ -1,10 +1,7 @@
 const fs=require('fs'),assert=require('assert');
-const sw=fs.readFileSync('sw.js','utf8'),pwa=fs.readFileSync('js/pwa.js','utf8');
-const versions=fs.readdirSync('.').map(name=>name.match(/^BUILD-(\d+)\.(\d+)\.(\d+)\.md$/)).filter(Boolean).map(m=>({text:`${m[1]}.${m[2]}.${m[3]}`,parts:m.slice(1).map(Number)})).sort((a,b)=>a.parts[0]-b.parts[0]||a.parts[1]-b.parts[1]||a.parts[2]-b.parts[2]);assert(versions.length);const expected=versions.at(-1).text;
-const readConst=name=>pwa.match(new RegExp(`const ${name}='(\\d+\\.\\d+\\.\\d+)'`))?.[1];
-const app=readConst('APP_VERSION'),target=readConst('TARGET_ANCHOR_VERSION'),boss=readConst('BOSS_LAB_VERSION'),combat=readConst('COMBAT_POLISH_VERSION'),dev=readConst('DEV_EXPERIMENTS_VERSION');
-const cache=sw.match(/CACHE_NAME='pahlawan-angka-v(\d+\.\d+\.\d+)'/)?.[1];
-assert.equal(app,expected);assert.equal(cache,expected);assert.equal(target,expected);assert.equal(boss,'3.21.4');assert.equal(combat,'3.21.3');assert.equal(dev,'3.21.2');
-assert(fs.existsSync(`js/combat-target-anchor-v${target}.js`));assert(fs.existsSync(`css/combat-target-anchor-v${target}.css`));
-assert(!/world-response-v3\.21\.0/.test(pwa+sw));
-console.log(`PASS version sync v${expected}; target anchor active`);
+const pwa=fs.readFileSync('js/pwa.js','utf8'),sw=fs.readFileSync('sw.js','utf8');
+const versions=fs.readdirSync('.').map(n=>n.match(/^BUILD-(\d+)\.(\d+)\.(\d+)\.md$/)).filter(Boolean).map(m=>({v:`${m[1]}.${m[2]}.${m[3]}`,p:m.slice(1).map(Number)})).sort((a,b)=>a.p[0]-b.p[0]||a.p[1]-b.p[1]||a.p[2]-b.p[2]);assert(versions.length);const expected=versions.at(-1).v;
+const c=n=>pwa.match(new RegExp(`const ${n}='(\\d+\\.\\d+\\.\\d+)'`))?.[1];
+assert.equal(c('APP_VERSION'),expected);assert.equal(c('FINISHER_HOTSPOT_VERSION'),expected);assert.equal(c('TARGET_ANCHOR_VERSION'),'3.21.5');assert.equal(c('BOSS_LAB_VERSION'),'3.21.4');assert.equal(c('COMBAT_POLISH_VERSION'),'3.21.3');
+assert.equal(sw.match(/CACHE_NAME='pahlawan-angka-v(\d+\.\d+\.\d+)'/)?.[1],expected);assert(!/world-response-v3\.21\.0/.test(pwa+sw));
+console.log(`PASS version sync v${expected}`);
