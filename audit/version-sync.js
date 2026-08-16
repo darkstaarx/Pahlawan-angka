@@ -3,13 +3,12 @@ const sw=fs.readFileSync('sw.js','utf8'),pwa=fs.readFileSync('js/pwa.js','utf8')
 const versions=fs.readdirSync('.').map(name=>name.match(/^BUILD-(\d+)\.(\d+)\.(\d+)\.md$/)).filter(Boolean).map(m=>({text:`${m[1]}.${m[2]}.${m[3]}`,parts:m.slice(1).map(Number)})).sort((a,b)=>a.parts[0]-b.parts[0]||a.parts[1]-b.parts[1]||a.parts[2]-b.parts[2]);
 assert(versions.length,'No BUILD-x.y.z.md release marker found');const expected=versions.at(-1).text;
 const readConst=name=>pwa.match(new RegExp(`const ${name}='(\\d+\\.\\d+\\.\\d+)'`))?.[1];
-const appVersion=readConst('APP_VERSION'),integrityVersion=readConst('INTEGRITY_VERSION'),sensoryVersion=readConst('SENSORY_VERSION'),manipVersion=readConst('MANIPULATIVE_VERSION'),dailyVersion=readConst('DAILY_REVIEW_VERSION'),devVersion=readConst('DEV_EXPERIMENTS_VERSION'),combatVersion=readConst('COMBAT_POLISH_VERSION'),bossLabVersion=readConst('BOSS_LAB_VERSION');
+const appVersion=readConst('APP_VERSION'),integrityVersion=readConst('INTEGRITY_VERSION'),sensoryVersion=readConst('SENSORY_VERSION'),manipVersion=readConst('MANIPULATIVE_VERSION'),dailyVersion=readConst('DAILY_REVIEW_VERSION'),devVersion=readConst('DEV_EXPERIMENTS_VERSION'),combatVersion=readConst('COMBAT_POLISH_VERSION'),bossLabVersion=readConst('BOSS_LAB_VERSION'),defeatVersion=readConst('DEFEAT_ANCHOR_VERSION');
 const cache=sw.match(/CACHE_NAME='pahlawan-angka-v(\d+\.\d+\.\d+)(?:-[^']+)?'/)?.[1];
 assert.equal(appVersion,expected);assert.equal(cache,expected);
-assert.equal(integrityVersion,'3.18.1');assert.equal(sensoryVersion,'3.19.0');assert.equal(manipVersion,'3.19.1');assert.equal(dailyVersion,'3.20.0');assert.equal(devVersion,'3.21.2');assert.equal(combatVersion,'3.21.3');assert.equal(bossLabVersion,expected);
+assert.equal(integrityVersion,'3.18.1');assert.equal(sensoryVersion,'3.19.0');assert.equal(manipVersion,'3.19.1');assert.equal(dailyVersion,'3.20.0');assert.equal(devVersion,'3.21.2');assert.equal(combatVersion,'3.21.3');assert.equal(bossLabVersion,'3.21.4');assert.equal(defeatVersion,expected);
 assert(!/WORLD_RESPONSE_VERSION|worldResponse:|world-response-v3\.21\.0/.test(pwa),'PWA still references retired World Response');
 assert(!/world-response-v3\.21\.0/.test(sw),'SW still caches retired World Response');
-for(const path of [`questions/kssr-content-integrity-v${integrityVersion}.js`,`js/sensory-learning-v${sensoryVersion}.js`,`js/cikgu-manipulatives-v${manipVersion}.js`,`js/daily-spaced-review-v${dailyVersion}.js`,`js/dev-experiments-v${devVersion}.js`,`js/combat-polish-v${combatVersion}.js`,`js/dev-boss-lab-v${bossLabVersion}.js`,`css/boss-stage-dev-v${bossLabVersion}.css`])assert(fs.existsSync(path),`Missing ${path}`);
-assert(new RegExp(`dev-boss-lab-v${expected.replace(/\./g,'\\.')}`).test(sw));
-assert(new RegExp(`boss-stage-dev-v${expected.replace(/\./g,'\\.')}`).test(sw));
-console.log(`PASS version sync: app v${expected}; dev v${devVersion}; combat v${combatVersion}; boss lab v${bossLabVersion}; World Response retired`);
+for(const path of [`js/dev-experiments-v${devVersion}.js`,`js/combat-polish-v${combatVersion}.js`,`js/dev-boss-lab-v${bossLabVersion}.js`,`css/boss-stage-dev-v${bossLabVersion}.css`,`js/combat-defeat-anchor-v${defeatVersion}.js`,`css/combat-defeat-anchor-v${defeatVersion}.css`])assert(fs.existsSync(path),`Missing ${path}`);
+assert(new RegExp(`combat-defeat-anchor-v${expected.replace(/\./g,'\\.')}`).test(sw));
+console.log(`PASS version sync: app v${expected}; boss lab v${bossLabVersion}; defeat anchor v${defeatVersion}; World Response retired`);

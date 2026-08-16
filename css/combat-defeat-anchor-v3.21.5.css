@@ -1,0 +1,74 @@
+/* Pahlawan Angka v3.21.5 — shatter at the exact rendered enemy position. */
+
+.paAnchoredDefeat{
+  position:absolute;
+  z-index:15;
+  pointer-events:none;
+  overflow:visible;
+  filter:drop-shadow(0 5px 5px rgba(0,0,0,.35));
+}
+.paAnchoredShard{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain;
+  object-position:center bottom;
+  opacity:0;
+  transform:none;
+  transform-origin:50% 64%;
+  filter:none!important;
+}
+.paAnchoredDefeat.active .paAnchoredShard{
+  animation:paAnchoredBossShard 760ms cubic-bezier(.18,.72,.28,1) both;
+  animation-delay:var(--delay,0ms);
+}
+.paAnchoredDefeatDust{
+  position:absolute;
+  left:50%;
+  bottom:4%;
+  width:72%;
+  height:34%;
+  z-index:2;
+  transform:translateX(-50%);
+  opacity:0;
+  background:
+    radial-gradient(circle at 12% 70%,rgba(225,241,255,.9) 0 3%,transparent 4%),
+    radial-gradient(circle at 34% 42%,rgba(154,211,255,.85) 0 4%,transparent 5%),
+    radial-gradient(circle at 58% 62%,rgba(255,222,132,.85) 0 3%,transparent 4%),
+    radial-gradient(circle at 82% 35%,rgba(213,238,255,.8) 0 3%,transparent 4%);
+}
+.paAnchoredDefeat.active .paAnchoredDefeatDust{animation:paAnchoredBossDust 580ms ease-out both}
+
+/* Flash/filter only: never overwrite the frame's transform, x/y, scale or foot anchor. */
+#game #enemy .enemy-frame.paDefeatSourceCrack{
+  animation:paDefeatFrameFlash 175ms ease-out both!important;
+}
+#game #enemy.paDefeatShatter .enemy-frame{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+
+@keyframes paDefeatFrameFlash{
+  0%{filter:brightness(1) saturate(1)}
+  45%{filter:brightness(2.15) saturate(.55)}
+  100%{filter:brightness(1.6) saturate(.75)}
+}
+@keyframes paAnchoredBossShard{
+  0%{opacity:1;transform:translate3d(0,0,0) rotate(0) scale(1)}
+  28%{opacity:1;transform:translate3d(var(--sx-mid),var(--sy-mid),0) rotate(var(--rot-mid)) scale(.99)}
+  100%{opacity:0;transform:translate3d(var(--sx),calc(var(--sy) + 26px),0) rotate(var(--rot)) scale(.72)}
+}
+@keyframes paAnchoredBossDust{
+  0%{opacity:0;transform:translateX(-50%) translateY(2px) scale(.55)}
+  24%{opacity:.9}
+  100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(1.45)}
+}
+@media(prefers-reduced-motion:reduce){
+  #game #enemy .enemy-frame.paDefeatSourceCrack{animation:none!important}
+  .paAnchoredDefeat.active .paAnchoredShard{animation:paAnchoredBossFade 180ms linear both}
+  .paAnchoredDefeatDust{display:none}
+}
+@keyframes paAnchoredBossFade{from{opacity:1}to{opacity:0}}

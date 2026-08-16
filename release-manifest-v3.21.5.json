@@ -1,0 +1,14 @@
+{
+  "version": "3.21.5",
+  "baseline": "693560cd9d5756fe60502ad500a1e12aa0a65e60",
+  "scope": [
+    "boss defeat position/shatter anchoring"
+  ],
+  "preserve": {
+    "devExperiments": "3.21.2",
+    "combatPolish": "3.21.3",
+    "bossLab": "3.21.4",
+    "worldResponse": "retired",
+    "victoryFrames": "pending-real-assets"
+  }
+}

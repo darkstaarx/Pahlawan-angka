@@ -1,0 +1,23 @@
+Pahlawan Angka v3.21.5 QA
+==========================
+
+Baseline: 693560cd9d5756fe60502ad500a1e12aa0a65e60
+
+PASS active visible enemy frame detected
+PASS actual rendered frame rectangle used
+PASS shatter layer mounted arena-relative at exact x/y/w/h
+PASS legacy wrapper-relative monster-defeat layer removed
+PASS crack flash does not modify transform/scale/foot anchor
+PASS all enemy frames hidden only after anchored shatter begins
+PASS cleanup before next enemy/screen
+PASS v3.21.4 boss size/inward staging preserved
+PASS DEV direct boss jump preserved
+PASS v3.21.3 victory asset lock preserved
+PASS World Response remains retired
+
+Run:
+node --check js/combat-defeat-anchor-v3.21.5.js
+node --check js/pwa.js
+node --check sw.js
+node audit/boss-defeat-anchor-v3.21.5.js
+node audit/version-sync.js
