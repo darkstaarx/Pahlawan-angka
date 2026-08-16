@@ -1,0 +1,55 @@
+Pahlawan Angka v3.23.0 QA — Tahun 6 Space + Data
+=================================================
+
+Expected base
+-------------
+d0a7a5d8acf4b6dcf348d05bddc0ed5ae3cf813e
+
+Static / curriculum architecture
+--------------------------------
+PASS D6.AREA retired from active graph
+PASS D6.DATA retired from active graph
+PASS D6.ANGLE added — 6.1.1 / 6.1.2
+PASS D6.CIRCLE added — 6.2.1 / 6.2.2
+PASS D6.SPACE_PROBLEM added — 6.3.1
+PASS D6.PIE added — 8.1.1
+PASS D6.PROB corrected — 8.2.1 / 8.2.2
+PASS D6.DATA_PROBLEM added — 8.3.1
+PASS D6.COORD corrected to Koordinat / textbook Unit 7
+PASS old learner D6.AREA/D6.DATA state archived, not transferred
+PASS mandatory competency evidence contracts installed
+PASS no prob_fraction in v3.23 active probability path
+PASS no cuboid-volume generator in v3.23 Year 6 Space path
+PASS pie-chart structures include 45°, 90°, 180°
+PASS mathematical diagrams implemented as inline SVG/HTML
+PASS World Response remains retired
+
+Runtime generator harness
+-------------------------
+PASS 2,400 generated samples
+PASS 6 managed generator nodes × 400 samples
+PASS visual samples: 2,039
+PASS reasoning samples: 1,000
+PASS application samples: 467
+PASS every generated sample has answer + 3 unique distractors
+PASS all mandatory archetype families observed
+PASS all prompted angle values <= 180°
+PASS D6.PROB produced no fractional probability answers
+PASS mastery remains blocked until mandatory competency subtypes are independently evidenced
+
+Release/load regression
+-----------------------
+PASS v3.22.0 assessment-depth layer preserved
+PASS v3.18.1 integrity preserved
+PASS v3.19–v3.21 UX/combat versions preserved
+PASS v3.23.0 repair loads after v3.22.0 and before sensory/UX layers
+PASS service-worker cache version 3.23.0
+
+Commands
+--------
+node --check questions/kssr-year6-space-data-v3.23.0.js
+node --check js/pwa.js
+node --check sw.js
+node audit/year6-space-data-static-v3.23.0.js
+node audit/year6-space-data-runtime-v3.23.0.js
+node audit/version-sync.js

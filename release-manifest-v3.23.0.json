@@ -1,0 +1,83 @@
+{
+  "version": "3.23.0",
+  "baseline": "d0a7a5d8acf4b6dcf348d05bddc0ed5ae3cf813e",
+  "title": "Tahun 6 Space + Data Curriculum Repair",
+  "scope": [
+    "retire legacy D6.AREA and D6.DATA active mastery nodes",
+    "add D6 angle/circle/space-problem skills",
+    "add D6 pie/data-problem skills",
+    "make D6 probability qualitative with reasons",
+    "correct D6 coordinate domain/alignment",
+    "archive legacy evidence without mastery transfer"
+  ],
+  "graph": {
+    "baseline_active_skills": 114,
+    "retired": 2,
+    "added": 5,
+    "expected_active_skills": 117,
+    "retired_ids": [
+      "D6.AREA",
+      "D6.DATA"
+    ],
+    "added_ids": [
+      "D6.ANGLE",
+      "D6.CIRCLE",
+      "D6.SPACE_PROBLEM",
+      "D6.PIE",
+      "D6.DATA_PROBLEM"
+    ],
+    "corrected_ids": [
+      "D6.PROB",
+      "D6.COORD"
+    ]
+  },
+  "standards": {
+    "D6.ANGLE": [
+      "6.1.1",
+      "6.1.2"
+    ],
+    "D6.CIRCLE": [
+      "6.2.1",
+      "6.2.2"
+    ],
+    "D6.SPACE_PROBLEM": [
+      "6.3.1"
+    ],
+    "D6.PIE": [
+      "8.1.1"
+    ],
+    "D6.PROB": [
+      "8.2.1",
+      "8.2.2"
+    ],
+    "D6.DATA_PROBLEM": [
+      "8.3.1"
+    ],
+    "D6.COORD": [
+      "7.1.1"
+    ]
+  },
+  "qa": {
+    "runtime_samples": 2400,
+    "visual_samples": 2039,
+    "reasoning_samples": 1000,
+    "application_samples": 467,
+    "syntax": "pass",
+    "static_contract_audit": "pass",
+    "runtime_contract_audit": "pass"
+  },
+  "preserve": {
+    "integrity": "3.18.1",
+    "assessmentDepth": "3.22.0",
+    "sensory": "3.19.0",
+    "manipulatives": "3.19.1",
+    "dailyReview": "3.20.0",
+    "devExperiments": "3.21.2",
+    "combatPolish": "3.21.3",
+    "bossLab": "3.21.4",
+    "targetAnchor": "3.21.5",
+    "finisherHotspots": "3.21.6",
+    "typedAnswerUI": "3.21.8",
+    "worldResponse": "retired"
+  }
+}

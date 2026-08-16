@@ -1,0 +1,77 @@
+/* Pahlawan Angka v3.23.0 — Tahun 6 KSSR Space + Data diagrams.
+   Textbook-style figures: readable, restrained and not game decoration. */
+
+.y6kDiagram{
+  max-width:360px;
+  margin:5px auto 12px;
+  text-align:center;
+  color:#263650;
+  font-size:12px;
+}
+.y6kDiagram svg{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:255px;
+  overflow:visible;
+}
+.y6kDiagram text{
+  font:700 11px system-ui,-apple-system,Segoe UI,sans-serif;
+  fill:#35445e;
+  text-anchor:middle;
+}
+.y6kDiagram small{
+  display:block;
+  margin-top:5px;
+  color:#65748a;
+  font-weight:750;
+}
+.y6-guide{fill:none;stroke:#a7b2c3;stroke-width:2}
+.y6-tick{stroke:#7b899f;stroke-width:1.25}
+.y6-ray,.y6-mini-ray{stroke:#465b79;stroke-width:3;stroke-linecap:round}
+.y6-accent-stroke{stroke:#3f77bc!important}
+.y6-accent{fill:#3f77bc;stroke:#285d9d;stroke-width:1}
+.y6-angle-arc{fill:none;stroke:#3f77bc;stroke-width:3}
+.y6-shape{fill:#eef3fa;stroke:#536b8e;stroke-width:3}
+.y6-qmark{font-size:16px!important;font-weight:950!important;fill:#243a5c!important}
+.y6-mini-bg{fill:#f7f9fc;stroke:#d5deea;stroke-width:1}
+.y6-mini-label{font-size:13px!important;font-weight:950!important;text-anchor:start!important}
+.y6-circle{fill:#f8fafc;stroke:#526a8d;stroke-width:3}
+.y6-diameter{stroke:#4f6485;stroke-width:3}
+.y6-radius{stroke:#4f6485;stroke-width:3}
+.y6-highlight{stroke:#3f77bc;stroke-width:6;stroke-linecap:round}
+.y6-muted-line{stroke:#aeb9ca;stroke-width:2.5}
+.y6-muted-dot{fill:#aeb9ca}
+.y6-pie-a{fill:#d9e5f4;stroke:#61738e;stroke-width:1.2}
+.y6-pie-b{fill:#edf1f7;stroke:#61738e;stroke-width:1.2}
+.y6-pie-c{fill:#c7d8ec;stroke:#61738e;stroke-width:1.2}
+.y6-pie-d{fill:#e2e8f1;stroke:#61738e;stroke-width:1.2}
+.y6-pie-label{font-weight:900!important;fill:#263650!important}
+.y6-pie-value{font-size:10px!important;fill:#53627a!important}
+.y6-table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+}
+.y6-table th,.y6-table td{
+  border:1px solid #cfd8e6;
+  padding:7px 8px;
+  text-align:center;
+}
+.y6-table th{background:#eef3f9;font-weight:900;color:#2d3f5a}
+.y6-table td{font-weight:750;color:#35445c}
+.y6-bag{fill:#f4f6f9;stroke:#73839a;stroke-width:2.5}
+.y6-ball-red{fill:#d9939a;stroke:#80545b;stroke-width:2}
+.y6-ball-blue{fill:#8faed1;stroke:#536b87;stroke-width:2}
+.y6-ball-green{fill:#9fc4ad;stroke:#567463;stroke-width:2}
+.qcard:has(.y6kDiagram) .question{line-height:1.28}
+.qcard:has(.y6kDiagram) .answers{margin-top:7px}
+@media(max-width:380px){
+  .y6kDiagram{max-width:320px}
+  .y6-table th,.y6-table td{padding:6px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+  .y6kDiagram *{transition:none!important;animation:none!important}
+}

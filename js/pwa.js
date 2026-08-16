@@ -1,8 +1,9 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.22.0';
+  const APP_VERSION='3.23.0';
   const INTEGRITY_VERSION='3.18.1';
   const DEPTH_VERSION='3.22.0';
+  const Y6_REPAIR_VERSION='3.23.0';
   const SENSORY_VERSION='3.19.0';
   const MANIPULATIVE_VERSION='3.19.1';
   const DAILY_REVIEW_VERSION='3.20.0';
@@ -16,6 +17,8 @@
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;
   const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${DEPTH_VERSION}`;
+  const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;
+  const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${SENSORY_VERSION}`;
   const manipCss=`css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css?v=${MANIPULATIVE_VERSION}`;
@@ -39,6 +42,8 @@
     if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);
     if(!document.querySelector(`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${depthCss}">`);
     if(!document.querySelector(`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`))document.write(`<script src="${depthJs}"><\/script>`);
+    if(!document.querySelector(`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${y6Css}">`);
+    if(!document.querySelector(`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`))document.write(`<script src="${y6Js}"><\/script>`);
     if(!document.querySelector(`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${sensoryCss}">`);
     if(!document.querySelector(`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`))document.write(`<script src="${sensoryJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${manipCss}">`);
@@ -69,10 +74,11 @@
     const loadDaily=()=>{loadCss(dailyCss,`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`);loadScript(dailyJs,`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`,loadDev);};
     const loadManip=()=>{loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadDaily);};
     const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
-    const loadDepth=()=>{loadCss(depthCss,`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`);loadScript(depthJs,`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`,loadSensory);};
+    const loadY6Repair=()=>{loadCss(y6Css,`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`);loadScript(y6Js,`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`,loadSensory);};
+    const loadDepth=()=>{loadCss(depthCss,`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`);loadScript(depthJs,`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`,loadY6Repair);};
     loadScript(guard,`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`,loadDepth);
   }
-  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,kssrDepth:DEPTH_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION,finisherHotspots:FINISHER_HOTSPOT_VERSION,typedAnswerUI:TYPED_UI_VERSION};
+  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,kssrDepth:DEPTH_VERSION,year6SpaceData:Y6_REPAIR_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION,finisherHotspots:FINISHER_HOTSPOT_VERSION,typedAnswerUI:TYPED_UI_VERSION};
 })();
 
 (()=>{
