@@ -1,0 +1,41 @@
+/* Pahlawan Angka v3.21.4 — boss visual scale + inward staging only. */
+
+/* Bosses must read larger than the hero without changing the shared floor anchor. */
+#game .battle{
+  --pa-boss-stage-extra-w:54px;
+  --pa-boss-stage-extra-h:32px;
+  --pa-boss-stage-inset:24px;
+}
+#game #enemy[data-enemy-tier="boss"]{
+  right:calc(var(--pa-enemy-inset) + var(--pa-boss-stage-inset))!important;
+}
+#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap{
+  width:calc(var(--pa-unit-w) + var(--pa-boss-stage-extra-w))!important;
+  height:calc(var(--pa-boss-h) + var(--pa-boss-stage-extra-h))!important;
+  margin-top:calc(var(--pa-hero-h) - var(--pa-boss-h) - var(--pa-boss-stage-extra-h))!important;
+  margin-left:calc(var(--pa-boss-stage-extra-w) / -2)!important;
+  transform-origin:50% 100%!important;
+}
+/* Existing pose-normalisation factors remain authoritative; this layer only increases the common boss stage box. */
+#game #enemy[data-enemy-tier="boss"] .enemy-frame{
+  object-position:center bottom!important;
+  transform-origin:50% 100%!important;
+}
+#game #enemy[data-enemy-tier="boss"]::after{
+  left:9%!important;
+  right:9%!important;
+  height:14px!important;
+}
+
+.paDevBossLab .paDevBossLabel{display:grid;gap:5px;margin:8px 0}
+.paDevBossLab .paDevBossLabel span{font-size:10px;font-weight:900;color:#b9c7da}
+.paDevBossLab select{width:100%;min-height:40px}
+.paDevBossActions{margin-top:7px}
+
+@media(max-width:380px){
+  #game .battle{
+    --pa-boss-stage-extra-w:48px;
+    --pa-boss-stage-extra-h:28px;
+    --pa-boss-stage-inset:20px;
+  }
+}

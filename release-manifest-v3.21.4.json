@@ -1,0 +1,16 @@
+{
+  "version": "3.21.4",
+  "baseline": "9c11039c7bfab507d60a3d479f98391f61363898",
+  "scope": [
+    "boss scale increase",
+    "boss inward staging",
+    "DEV direct boss jump"
+  ],
+  "preserve": {
+    "devExperiments": "3.21.2",
+    "combatPolish": "3.21.3",
+    "dailyReview": "3.20.0",
+    "worldResponse": "retired",
+    "victoryFrames": "pending-real-assets"
+  }
+}

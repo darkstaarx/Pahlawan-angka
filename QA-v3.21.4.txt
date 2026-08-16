@@ -1,0 +1,28 @@
+Pahlawan Angka v3.21.4 QA
+==========================
+
+Baseline
+--------
+9c11039c7bfab507d60a3d479f98391f61363898
+
+Scope
+-----
+PASS boss common visual box enlarged
+PASS boss shifted inward from right edge
+PASS bottom-anchor rule preserved
+PASS current combat-polish v3.21.3 preserved
+PASS DEV Boss Fight Test added
+PASS boss selection follows available chapters for chosen grade
+PASS direct jump starts at boss phase without nine minion questions
+PASS DEV bank-test flag retained for test session
+PASS current dev-experiments v3.21.2 retained
+PASS World Response remains retired
+PASS CSS-only victory motion not reintroduced
+
+Run after merge
+---------------
+node --check js/dev-boss-lab-v3.21.4.js
+node --check js/pwa.js
+node --check sw.js
+node audit/boss-stage-dev-v3.21.4.js
+node audit/version-sync.js
