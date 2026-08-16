@@ -1,0 +1,9 @@
+{
+  "version": "3.24.2",
+  "baseline": "3607b75523fa7b37a688633d10766f792452ce32",
+  "scope": "profile UI only",
+  "approvedAssetsPreserved": [
+    "assets/heroes/wira/profile-happy-v1.webp",
+    "assets/heroes/bunga/profile-happy-v1.webp"
+  ]
+}
