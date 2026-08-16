@@ -1,0 +1,17 @@
+{
+  "version": "3.24.1",
+  "baseline": "bc6ae24bea485ede9bf5a747d8db3f43c3ab6aeb",
+  "type": "cache-hotfix",
+  "rootCause": "index.html still used js/pwa.js?v=3.18.0",
+  "approvedAssets": [
+    "assets/heroes/wira/profile-happy-v1.webp",
+    "assets/heroes/bunga/profile-happy-v1.webp"
+  ],
+  "changes": [
+    "index pwa cache key -> 3.24.1",
+    "profile manager new JS/CSS URL",
+    "service worker cache -> 3.24.1",
+    "force reload shell/script/style requests",
+    "one-time client refresh on SW activation"
+  ]
+}

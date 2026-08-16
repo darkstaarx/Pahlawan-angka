@@ -1,6 +1,6 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.24.0';
+  const APP_VERSION='3.24.1';
   const INTEGRITY_VERSION='3.18.1';
   const DEPTH_VERSION='3.22.0';
   const Y6_REPAIR_VERSION='3.23.0';
@@ -13,7 +13,7 @@
   const TARGET_ANCHOR_VERSION='3.21.5';
   const FINISHER_HOTSPOT_VERSION='3.21.6';
   const TYPED_UI_VERSION='3.21.8';
-  const PROFILE_MANAGER_VERSION='3.24.0';
+  const PROFILE_MANAGER_VERSION='3.24.1';
 
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;

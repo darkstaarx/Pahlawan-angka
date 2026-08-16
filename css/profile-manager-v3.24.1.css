@@ -1,0 +1,49 @@
+/* Pahlawan Angka v3.24.1 — Profile Manager.
+   Portraits deliberately reuse production Wira/Bunga idle art to preserve identity.
+   Future happy bust assets may replace the image src without changing this layout. */
+.cloudLoginCard.pmSigned{padding-bottom:18px}
+.cloudLoginCard.pmSigned .authPrivacy,.cloudLoginCard.pmSigned .loginDivider,.cloudLoginCard.pmSigned #loginResume{display:none!important}
+.pmManager{display:grid;gap:14px;margin-top:12px}
+.pmAccountLine{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:12px 13px;border:1px solid rgba(98,137,194,.28);border-radius:16px;background:rgba(5,18,36,.58)}
+.pmAccountLine .pmCloud{font-size:22px;text-align:center}.pmAccountLine span:nth-child(2){display:grid;min-width:0}.pmAccountLine b{font-size:14px}.pmAccountLine small{color:#9caac0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pmLogoutMini{border:1px solid #445979;background:#0b192d;color:#dbe6f8;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:900}
+.pmSectionHead{display:flex;align-items:end;justify-content:space-between;padding:2px 3px}.pmSectionHead>span{display:grid;gap:2px}.pmSectionHead small{font-size:10px;font-weight:950;letter-spacing:.12em;color:#f4c842}.pmSectionHead b{font-size:16px}.pmSectionHead em{font-style:normal;color:#93a6c2;font-size:11px}
+.pmProfiles{display:grid;gap:10px}
+.pmProfileCard{position:relative;display:grid;grid-template-columns:1fr auto;align-items:stretch;border:1px solid #304766;border-radius:19px;background:linear-gradient(135deg,rgba(18,42,72,.96),rgba(8,24,44,.96));overflow:hidden;box-shadow:inset 0 1px rgba(255,255,255,.03)}
+.pmProfileCard.active{border-color:#f3c53e;box-shadow:0 0 0 2px rgba(243,197,62,.13),0 8px 25px rgba(0,0,0,.24),inset 0 0 30px rgba(243,197,62,.06)}
+.pmProfileOpen{appearance:none;border:0;background:transparent;color:inherit;display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;align-items:center;text-align:left;padding:10px 38px 10px 10px;min-height:108px}
+.pmPortrait{position:relative;display:block;overflow:hidden;border-radius:16px;background:radial-gradient(circle at 50% 36%,rgba(74,134,219,.35),rgba(10,25,45,.96) 70%);height:86px;width:84px}
+.pmPortrait img{position:absolute;left:50%;bottom:-8%;width:116%;height:116%;object-fit:contain;transform:translateX(-50%) scale(1.02);transform-origin:50% 70%}
+.pmPortrait.pm-bunga{background:radial-gradient(circle at 50% 34%,rgba(110,181,99,.34),rgba(10,31,34,.96) 72%)}
+.pmPortrait.pm-bunga img{bottom:-7%;transform:translateX(-50%) scale(1.02)}
+.pmProfileCopy{min-width:0;display:grid;align-content:center;gap:4px}.pmProfileTitle{display:flex;gap:8px;align-items:center;min-width:0}.pmProfileTitle b{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pmProfileTitle em{font-style:normal;background:#1aa96b;color:#eafff5;border-radius:999px;padding:3px 7px;font-size:9px;font-weight:1000;text-transform:uppercase;letter-spacing:.05em}
+.pmProfileCopy>small{color:#bdc9dc;font-size:12px}.pmProfileStats{display:flex;gap:6px;margin-top:2px}.pmProfileStats i{font-style:normal;background:#132b4c;border:1px solid #28496e;border-radius:999px;padding:3px 7px;color:#e6eefc;font-size:10px;font-weight:900}.pmProfileStats i:last-child{color:#ffd95d}
+.pmMiniXp{width:min(170px,95%);height:5px;border-radius:99px;background:#1f3554;overflow:hidden;margin-top:2px}.pmMiniXp span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ffd447,#ff9d4d)}
+.pmMore{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:33px;height:46px;border:0;background:transparent;color:#d8e4f7;font-size:25px;border-radius:12px}.pmMore:active{background:#1a3150}
+.pmAddProfile{min-height:51px;border:1px solid #f4c33a;border-radius:16px;background:linear-gradient(180deg,#ffda5b,#f3bd31);color:#17130a;font-weight:1000;font-size:15px;box-shadow:0 7px 19px rgba(197,140,20,.2)}
+.pmGuardianNote{margin:0 6px;color:#8798b2;font-size:10px;text-align:center}
+.pmEmpty{display:grid;justify-items:center;text-align:center;gap:7px;padding:27px 16px;border:1px dashed #405679;border-radius:18px;background:rgba(8,24,43,.52)}.pmEmptyRune{font-size:27px;color:#ffd449}.pmEmpty b{font-size:17px}.pmEmpty p{margin:0;color:#9bacbf;font-size:12px;max-width:280px}
+
+.pmOverlay{position:fixed;inset:0;z-index:9000;display:grid;place-items:center;padding:18px;background:rgba(3,9,20,.78);backdrop-filter:blur(8px);overflow:auto}.pmOverlay.hidden{display:none!important}.pmModalOpen{overflow:hidden}
+.pmModal{position:relative;width:min(100%,470px);border:1px solid #37527a;border-radius:23px;background:linear-gradient(180deg,#102541,#09182d);padding:19px;box-shadow:0 28px 70px rgba(0,0,0,.56),inset 0 1px rgba(255,255,255,.05)}
+.pmClose{position:absolute;right:13px;top:12px;width:36px;height:36px;border:1px solid #405b80;border-radius:12px;background:#152e50;color:#eef5ff;font-size:24px;line-height:1}
+.pmModalHead{display:flex;align-items:center;gap:10px;padding-right:42px;margin-bottom:16px}.pmRune{display:grid;place-items:center;width:42px;height:42px;border:1px solid #725f27;border-radius:14px;background:radial-gradient(circle,#765e20,#15233e);color:#ffd74f}.pmModalHead>span:last-child{display:grid}.pmModalHead small{font-size:9px;letter-spacing:.14em;color:#f2c947;font-weight:1000}.pmModalHead h2{margin:2px 0 0;font-size:21px}
+.pmField{display:grid;gap:6px;margin-top:11px}.pmField>span,.pmHeroLabel>span{font-size:11px;color:#c3d1e5;font-weight:900}.pmField input,.pmField select{width:100%;height:48px;border:1px solid #425d83;border-radius:13px;background:#08172c;color:#f5f8ff;padding:0 13px;font-size:15px;outline:0}.pmField input:focus,.pmField select:focus{border-color:#5d9bee;box-shadow:0 0 0 3px rgba(93,155,238,.12)}
+.pmHeroLabel{display:flex;justify-content:space-between;gap:10px;align-items:end;margin:16px 1px 8px}.pmHeroLabel small{font-size:9px;color:#798ca8;text-align:right;max-width:210px}
+.pmHeroGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pmHeroChoice{position:relative;overflow:hidden;display:grid;grid-template-rows:134px auto;border:1px solid #365174;border-radius:18px;background:#0b1c34;color:#edf4ff;padding:0;text-align:left;transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease}.pmHeroChoice.selected{border-color:#f4c43e;box-shadow:0 0 0 2px rgba(244,196,62,.18),0 9px 24px rgba(0,0,0,.25)}.pmHeroChoice:active{transform:translateY(1px)}
+.pmHeroStage{position:relative;display:block;overflow:hidden;background:radial-gradient(circle at 50% 36%,rgba(58,122,213,.42),rgba(8,22,41,.95) 72%)}.pmHeroStage-bunga{background:radial-gradient(circle at 50% 34%,rgba(91,168,90,.4),rgba(8,29,31,.95) 72%)}.pmHeroStage img{position:absolute;left:50%;bottom:-5%;width:118%;height:118%;object-fit:contain;transform:translateX(-50%) scale(1.02)}.pmHeroStage-bunga img{bottom:-4%;transform:translateX(-50%) scale(1.01)}
+.pmHeroChoiceCopy{display:grid;padding:9px 10px 10px}.pmHeroChoiceCopy b{font-size:17px}.pmHeroChoiceCopy small{color:#aabbd2;font-size:11px}.pmHeroChoiceCopy em{font-style:normal;margin-top:7px;border-radius:999px;border:1px solid #455a79;text-align:center;padding:5px;color:#c9d6e8;font-size:10px;font-weight:900}.pmHeroChoice.selected .pmHeroChoiceCopy em{background:#ffd34e;border-color:#ffd34e;color:#18140a}
+.pmInvite{position:absolute;right:8px;top:8px;font-style:normal;background:#fff4ca;color:#54430d;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:1000;opacity:0;transform:translateY(-3px);transition:.15s}.pmHeroChoice.selected .pmInvite{opacity:1;transform:none}
+.pmError{min-height:19px;color:#ff8a94;font-size:11px;margin-top:8px}.pmPrimary,.pmSecondary,.pmDanger{height:49px;border-radius:14px;font-weight:1000;font-size:14px}.pmPrimary{width:100%;border:0;background:linear-gradient(180deg,#ffdb5c,#f3bd31);color:#18140a;box-shadow:0 7px 18px rgba(199,145,28,.22)}.pmPrimary:disabled,.pmDanger:disabled{opacity:.6}
+.pmActionModal{width:min(100%,390px)}.pmActionBtn{width:100%;display:grid;grid-template-columns:36px 1fr;align-items:center;gap:9px;text-align:left;border:1px solid #355071;border-radius:15px;background:#0c1c32;color:#ecf4ff;padding:12px;margin-top:9px;font-size:20px}.pmActionBtn span{display:grid}.pmActionBtn b{font-size:14px}.pmActionBtn small{font-size:10px;color:#93a5bf}.pmActionBtn.danger{border-color:#743243;color:#ff9aa3;background:#25131e}
+.pmDeleteModal{width:min(100%,410px);border-color:#8c3445;background:linear-gradient(180deg,#28121e,#130e19);text-align:center}.pmDeleteIcon{margin:0 auto 10px;display:grid;place-items:center;width:54px;height:54px;border:1px solid #e84a5c;border-radius:18px;background:#5b1725;color:#ff8794;font-size:28px}.pmDeleteModal h2{margin:0;font-size:21px}.pmDeleteModal>p{color:#c9b6c0;font-size:12px;line-height:1.5}.pmDeleteNotice{border:1px solid #6f3441;border-radius:12px;background:#381725;color:#e9bec7;padding:9px;font-size:10px}.pmDeleteActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.pmSecondary{border:1px solid #465b78;background:#0c192b;color:#edf4ff}.pmDanger{border:0;background:#ef3e53;color:#fff}
+
+.pmSwitchProfile{justify-self:start;margin-top:8px;border:1px solid #3f5a7e;background:#102949;color:#e6effe;border-radius:999px;padding:6px 10px;font-size:10px;font-weight:900}
+body[data-screen="hub"] .pmSwitchProfile{display:inline-block}
+
+@media(max-width:390px){
+ .pmProfileOpen{grid-template-columns:74px minmax(0,1fr);min-height:99px}.pmPortrait{width:74px;height:78px}.pmProfileTitle b{font-size:17px}
+ .pmHeroGrid{gap:8px}.pmHeroChoice{grid-template-rows:120px auto}.pmModal{padding:16px}.pmHeroLabel{display:grid;align-items:start}.pmHeroLabel small{text-align:left}
+}
+@media(prefers-reduced-motion:reduce){.pmHeroChoice,.pmInvite{transition:none}}
