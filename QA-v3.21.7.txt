@@ -1,0 +1,23 @@
+Pahlawan Angka v3.21.7 QA
+==========================
+
+Baseline: 801ffcd2c57fd0e5324ff0decbd65d3d687b83f4
+
+PASS typed gameplay logic untouched
+PASS max 2 boss typed questions preserved
+PASS BOSS PROOF removed from pupil presentation
+PASS Taip jawapan sendiri removed
+PASS helper/debug sentence removed
+PASS Jawapan kamu label present
+PASS input large + centered
+PASS Jawab button compact
+PASS empty field has no CSS nudge animation
+PASS keyboard-aware whitespace compaction
+PASS question/battle not hidden when keyboard opens
+PASS DEV Force Typed Preview preserved
+PASS v3.21.6 finisher hotspot layer preserved
+PASS World Response remains retired
+
+Visual test:
+DEV -> Boss Fight Test -> Force Typed Preview ON
+Check one typed question before and after numeric keyboard opens.

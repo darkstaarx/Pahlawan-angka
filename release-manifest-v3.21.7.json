@@ -1,0 +1,15 @@
+{
+  "version": "3.21.7",
+  "baseline": "801ffcd2c57fd0e5324ff0decbd65d3d687b83f4",
+  "scope": [
+    "typed answer presentation only"
+  ],
+  "preserve": {
+    "typedLogic": "3.21.2",
+    "combatPolish": "3.21.3",
+    "bossLab": "3.21.4",
+    "targetAnchor": "3.21.5",
+    "finisherHotspots": "3.21.6",
+    "worldResponse": "retired"
+  }
+}

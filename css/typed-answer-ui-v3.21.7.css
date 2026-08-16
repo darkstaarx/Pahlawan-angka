@@ -1,0 +1,130 @@
+/* Pahlawan Angka v3.21.7 — pupil-facing typed-answer UI. */
+
+.paTypedAnswer.paTypedAnswerClean{
+  width:100%;
+  display:grid;
+  gap:7px;
+  padding:2px 0 0;
+}
+.paTypedAnswerClean .paTypedLabel{
+  display:block;
+  margin:0;
+  color:#46536b;
+  text-align:left;
+  font-size:11px;
+  line-height:1.2;
+}
+.paTypedAnswerClean .paTypedLabel b{
+  display:block;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.01em;
+}
+.paTypedAnswerClean .paTypedRow{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 108px;
+  align-items:stretch;
+  gap:9px;
+}
+.paTypedAnswerClean .paTypedInput{
+  min-width:0;
+  width:100%;
+  height:56px;
+  padding:0 14px;
+  border:2px solid #9cabc1;
+  border-radius:16px;
+  background:#fff;
+  color:#101827;
+  outline:none;
+  text-align:center;
+  font-size:27px;
+  line-height:1;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+  box-shadow:inset 0 1px 0 #fff;
+  transition:border-color .14s ease,box-shadow .14s ease,background .14s ease;
+}
+.paTypedAnswerClean .paTypedInput::placeholder{
+  color:#9aa5b7;
+  font-size:18px;
+  font-weight:800;
+}
+.paTypedAnswerClean .paTypedInput:focus{
+  border-color:#427fd1;
+  box-shadow:0 0 0 3px rgba(66,127,209,.14);
+}
+.paTypedAnswerClean .paTypedInput.needsValue{
+  border-color:#dc5965;
+  animation:none!important;
+}
+.paTypedAnswerClean .paTypedInput:disabled{
+  opacity:1;
+  background:#eef2f8;
+  color:#475269;
+}
+.paTypedAnswerClean .paTypedSubmit{
+  min-width:0;
+  height:56px;
+  padding:0 13px;
+  border:0;
+  border-radius:16px;
+  background:#ffd24b;
+  color:#171717;
+  font-size:15px;
+  font-weight:1000;
+  box-shadow:0 5px 14px rgba(154,115,22,.20);
+}
+.paTypedAnswerClean .paTypedSubmit:active:not(:disabled){
+  transform:translateY(1px);
+}
+.paTypedAnswerClean .paTypedSubmit:disabled{opacity:.68}
+.paTypedAnswerClean .paTypedSubmit.ok{background:#55d98a;color:#0c2d1c}
+.paTypedAnswerClean .paTypedSubmit.no{background:#ff6875;color:#3a0e14}
+
+/* Typed mode replaces the four-option grid, so reclaim that space. */
+.qcard.paTypedQCard{
+  padding-bottom:13px;
+}
+.qcard.paTypedQCard .answers.paTypedAnswers{
+  display:block;
+}
+.qcard.paTypedQCard .question{
+  min-height:70px;
+  padding-bottom:5px;
+}
+.qcard.paTypedQCard .feedback{
+  min-height:42px;
+  padding-top:7px;
+}
+
+/* When the numeric keyboard materially reduces the visual viewport,
+   compact only whitespace; never hide the battle scene or question. */
+body.paTypedKeyboardOpen .qcard.paTypedQCard{
+  padding-top:11px;
+  padding-bottom:10px;
+}
+body.paTypedKeyboardOpen .qcard.paTypedQCard .qmeta{
+  margin-bottom:0;
+}
+body.paTypedKeyboardOpen .qcard.paTypedQCard .question{
+  min-height:58px;
+  padding-top:3px;
+  padding-bottom:3px;
+}
+body.paTypedKeyboardOpen .paTypedAnswerClean{
+  gap:5px;
+}
+body.paTypedKeyboardOpen .qcard.paTypedQCard .feedback{
+  min-height:34px;
+  padding-top:5px;
+}
+
+@media(max-width:380px){
+  .paTypedAnswerClean .paTypedRow{grid-template-columns:minmax(0,1fr) 94px;gap:7px}
+  .paTypedAnswerClean .paTypedInput{height:54px;font-size:25px;padding:0 10px}
+  .paTypedAnswerClean .paTypedSubmit{height:54px;font-size:14px;padding:0 10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .paTypedAnswerClean .paTypedInput,
+  .paTypedAnswerClean .paTypedSubmit{transition:none}
+}
