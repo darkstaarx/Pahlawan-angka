@@ -5,8 +5,8 @@
 'use strict';
 const VERSION='3.24.0';
 const HERO={
-  wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/idle.webp'},
-  bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/idle.webp'}
+  wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/profile-happy-v1.webp'},
+  bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'}
 };
 let rendering=false, statsLoading=false, editorHero='wira', editorProfileId=null, deleteProfileId=null, emptyPrompted=false;
 const $=id=>document.getElementById(id);
@@ -130,7 +130,7 @@ function ensureUi(){
           <div class="pmModalHead"><span class="pmRune">✦</span><span><small>PROFIL ANAK</small><h2 id="pmEditorTitle">Cipta Profil Anak</h2></span></div>
           <label class="pmField"><span>Nama anak</span><input id="pmChildName" maxlength="40" autocomplete="off" placeholder="Nama anak"></label>
           <label class="pmField"><span>Darjah</span><select id="pmChildGrade">${[1,2,3,4,5,6].map(g=>`<option value="${g}">Darjah ${g}</option>`).join('')}</select></label>
-          <div class="pmHeroLabel"><span>Pilih pahlawan</span><small>Portrait sementara menggunakan art production asal.</small></div>
+          <div class="pmHeroLabel"><span>Pilih pahlawan</span><small>Pilih pahlawan yang akan menemani pengembaraan.</small></div>
           <div class="pmHeroGrid">
             ${heroChoice('wira')}${heroChoice('bunga')}
           </div>
@@ -381,7 +381,7 @@ window.PAProfileManager={
   version:VERSION,open:openManager,refresh:()=>renderManager({refreshStats:true}),select:selectProfile,
   create:()=>openEditor(),edit:openEditor,openEditor,closeEditor,chooseHero,saveProfile,
   actions,closeActions,openDelete,closeDelete,confirmDelete,transitionGrade,
-  assetMode:'production-original-idle-crop'
+  assetMode:'approved-happy-profile-v1'
 };
 document.documentElement.dataset.profileManager=VERSION;
 })();
