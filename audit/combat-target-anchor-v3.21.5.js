@@ -1,0 +1,18 @@
+const fs=require('fs'),assert=require('assert');
+const js=fs.readFileSync('js/combat-target-anchor-v3.21.5.js','utf8');
+const css=fs.readFileSync('css/combat-target-anchor-v3.21.5.css','utf8');
+const pwa=fs.readFileSync('js/pwa.js','utf8');
+const sw=fs.readFileSync('sw.js','utf8');
+assert(/activeEnemyFrame/.test(js));
+assert(/syncEnemyTargetAnchor/.test(js));
+assert(/window\.triggerImpact=function/.test(js),'impact wrapper missing');
+assert(/--pa-finisher-x/.test(js)&&/--pa-finisher-y/.test(js),'Wira finisher anchor missing');
+assert(/--pa-bloom-left/.test(js)&&/--pa-bloom-bottom/.test(js),'Bunga finisher anchor missing');
+assert(/getBoundingClientRect\(\)/.test(js),'live render measurement missing');
+assert(/window\.triggerMonsterDefeat=createAnchoredDefeat/.test(js),'defeat replacement missing');
+assert(/finisher-ice/.test(css)&&/var\(--pa-finisher-x/.test(css),'ice CSS anchor missing');
+assert(/finisher-bloom/.test(css)&&/var\(--pa-bloom-left/.test(css),'bloom CSS anchor missing');
+assert(/impact-flash/.test(css)&&/impact-slash/.test(css)&&/impact-burst/.test(css),'normal impact anchors missing');
+assert(/TARGET_ANCHOR_VERSION='3\.21\.5'/.test(pwa));
+assert(/combat-target-anchor-v3\.21\.5/.test(sw));
+console.log('PASS v3.21.5 r2: hit, Wira/Bunga final blow and defeat share actual rendered target anchor');

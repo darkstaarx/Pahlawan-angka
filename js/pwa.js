@@ -8,7 +8,7 @@
   const DEV_EXPERIMENTS_VERSION='3.21.2';
   const COMBAT_POLISH_VERSION='3.21.3';
   const BOSS_LAB_VERSION='3.21.4';
-  const DEFEAT_ANCHOR_VERSION='3.21.5';
+  const TARGET_ANCHOR_VERSION='3.21.5';
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${SENSORY_VERSION}`;
@@ -22,8 +22,8 @@
   const combatJs=`js/combat-polish-v${COMBAT_POLISH_VERSION}.js?v=${COMBAT_POLISH_VERSION}`;
   const bossCss=`css/boss-stage-dev-v${BOSS_LAB_VERSION}.css?v=${BOSS_LAB_VERSION}`;
   const bossJs=`js/dev-boss-lab-v${BOSS_LAB_VERSION}.js?v=${BOSS_LAB_VERSION}`;
-  const defeatCss=`css/combat-defeat-anchor-v${DEFEAT_ANCHOR_VERSION}.css?v=${DEFEAT_ANCHOR_VERSION}`;
-  const defeatJs=`js/combat-defeat-anchor-v${DEFEAT_ANCHOR_VERSION}.js?v=${DEFEAT_ANCHOR_VERSION}`;
+  const targetCss=`css/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.css?v=${TARGET_ANCHOR_VERSION}`;
+  const targetJs=`js/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.js?v=${TARGET_ANCHOR_VERSION}`;
 
   if(document.readyState==='loading'){
     if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);
@@ -39,13 +39,13 @@
     if(!document.querySelector(`script[src^="js/combat-polish-v${COMBAT_POLISH_VERSION}.js"]`))document.write(`<script src="${combatJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/boss-stage-dev-v${BOSS_LAB_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${bossCss}">`);
     if(!document.querySelector(`script[src^="js/dev-boss-lab-v${BOSS_LAB_VERSION}.js"]`))document.write(`<script src="${bossJs}"><\/script>`);
-    if(!document.querySelector(`link[href^="css/combat-defeat-anchor-v${DEFEAT_ANCHOR_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${defeatCss}">`);
-    if(!document.querySelector(`script[src^="js/combat-defeat-anchor-v${DEFEAT_ANCHOR_VERSION}.js"]`))document.write(`<script src="${defeatJs}"><\/script>`);
+    if(!document.querySelector(`link[href^="css/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${targetCss}">`);
+    if(!document.querySelector(`script[src^="js/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.js"]`))document.write(`<script src="${targetJs}"><\/script>`);
   }else{
     const loadCss=(src,selector)=>{if(document.querySelector(selector))return;const l=document.createElement('link');l.rel='stylesheet';l.href=src;document.head.appendChild(l);};
     const loadScript=(src,selector,onload)=>{if(document.querySelector(selector)){onload?.();return}const s=document.createElement('script');s.src=src;s.async=false;if(onload)s.onload=onload;document.head.appendChild(s);};
-    const loadDefeat=()=>{loadCss(defeatCss,`link[href^="css/combat-defeat-anchor-v${DEFEAT_ANCHOR_VERSION}.css"]`);loadScript(defeatJs,`script[src^="js/combat-defeat-anchor-v${DEFEAT_ANCHOR_VERSION}.js"]`);};
-    const loadBoss=()=>{loadCss(bossCss,`link[href^="css/boss-stage-dev-v${BOSS_LAB_VERSION}.css"]`);loadScript(bossJs,`script[src^="js/dev-boss-lab-v${BOSS_LAB_VERSION}.js"]`,loadDefeat);};
+    const loadTarget=()=>{loadCss(targetCss,`link[href^="css/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.css"]`);loadScript(targetJs,`script[src^="js/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.js"]`);};
+    const loadBoss=()=>{loadCss(bossCss,`link[href^="css/boss-stage-dev-v${BOSS_LAB_VERSION}.css"]`);loadScript(bossJs,`script[src^="js/dev-boss-lab-v${BOSS_LAB_VERSION}.js"]`,loadTarget);};
     const loadCombat=()=>{loadCss(combatCss,`link[href^="css/combat-polish-v${COMBAT_POLISH_VERSION}.css"]`);loadScript(combatJs,`script[src^="js/combat-polish-v${COMBAT_POLISH_VERSION}.js"]`,loadBoss);};
     const loadDev=()=>{loadCss(devCss,`link[href^="css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css"]`);loadScript(devJs,`script[src^="js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js"]`,loadCombat);};
     const loadDaily=()=>{loadCss(dailyCss,`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`);loadScript(dailyJs,`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`,loadDev);};
@@ -53,10 +53,8 @@
     const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
     loadScript(guard,`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`,loadSensory);
   }
-
-  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,defeatAnchor:DEFEAT_ANCHOR_VERSION};
+  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION};
 })();
-
 (()=>{
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{

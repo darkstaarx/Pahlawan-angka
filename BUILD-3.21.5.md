@@ -1,19 +1,18 @@
-# Pahlawan Angka v3.21.5
-
-## Boss Defeat Anchor Fix
+# Pahlawan Angka v3.21.5 — Combat Target Anchor
 
 Baseline: `693560cd9d5756fe60502ad500a1e12aa0a65e60`.
 
-### Fix
-The legacy defeat system cloned `#enemySprite` inside `enemySpriteWrap`. That assumption became invalid after boss scale/inward staging and pose normalisation. A defeated boss could therefore appear to jump toward the middle of the arena before shattering.
+This revised v3.21.5 supersedes the earlier defeat-only draft.
 
-v3.21.5:
-- detects the enemy frame that is actually visible at defeat time;
-- snapshots its rendered rectangle with `getBoundingClientRect()`;
-- places the shatter layer directly on the battle arena at that exact rectangle;
-- uses that same visible frame image for the shards;
-- does not animate/overwrite the source frame transform during the crack flash;
-- cleans the anchored layer before the next enemy/screen.
+## Fixes
+- Normal hit flash/slash/burst follow the actual rendered enemy body.
+- Wira final-blow ice strike lands on the actual rendered boss body.
+- Bunga final-blow vine/root grows from the actual rendered boss foot position.
+- Boss defeat/shatter snapshots the actual visible frame at the actual rendered position.
+- One shared geometry source (`getBoundingClientRect`) is used so future boss size/staging adjustments do not desynchronise FX.
 
-### Preserved
-Boss scale + inward staging v3.21.4, DEV direct boss jump, typed boss answers, terrain grade, victory asset lock, learning systems.
+## Preserved
+v3.21.4 boss scale/inward staging + DEV direct boss jump.
+v3.21.3 victory asset lock.
+v3.21.2 boss typed-answer experiment.
+World Response remains retired.
