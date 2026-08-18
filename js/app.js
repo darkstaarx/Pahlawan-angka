@@ -1,14 +1,14 @@
 let db=JSON.parse(localStorage.getItem("pa_coach_v6_full")||localStorage.getItem("pa_coach_v5")||"null");
 let uiSession=JSON.parse(localStorage.getItem('pa_dummy_login')||'null');
 const MINION_ENEMIES=[
- {name:'Nombot Kecil',image:'assets/enemies/minions/minion-a.svg',tone:'minion-a'},
- {name:'Operabot',image:'assets/enemies/minions/minion-b.svg',tone:'minion-b'},
- {name:'Kristal Misteri',image:'assets/enemies/minions/minion-c.svg',tone:'minion-c'}
+ {name:'Askabus',image:'assets/enemies/minions/askabus.webp',tone:'minion-a'},
+ {name:'Syilinggit',image:'assets/enemies/minions/syilinggit.webp',tone:'minion-b'},
+ {name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'}
 ];
 const BOSS_BY_CHAPTER={
  '1':{name:'Maharaja Nilai Tempat',image:'assets/enemies/place-value/maharaja-nilai-tempat.webp',frames:'assets/enemies/place-value/frames',tone:'place'},
  '2':{name:'Jeneral Tambah-Tolak',image:'assets/enemies/operations/jeneral-tambah-tolak.webp',frames:'assets/enemies/operations/frames',tone:'operation'},
- '3':{name:'Raja Bahagian Sama',image:'assets/enemies/fractions/raja-bahagian-sama.webp',frames:'assets/enemies/fractions/frames',tone:'fraction'},
+ '3':{name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'fraction'},
  '4':{name:'Penjaga Wang',image:'assets/enemies/money/penjaga-wang.webp',frames:'assets/enemies/money/frames',tone:'money'},
  '5':{name:'Penguasa Jam Berdetik',image:'assets/enemies/time/penguasa-jam-berdetik.webp',frames:'assets/enemies/time/frames',tone:'time'},
  '6':{name:'Penjaga Ukuran',image:'assets/enemies/measurement/penjaga-ukuran.webp',frames:'assets/enemies/measurement/frames',tone:'measurement'},

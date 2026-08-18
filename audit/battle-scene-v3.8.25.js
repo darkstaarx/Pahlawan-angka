@@ -29,7 +29,8 @@ for(const name of fs.readdirSync(source+'/css')){
 const assets=[
   'assets/heroes/wira/idle.webp','assets/heroes/wira/attack.webp','assets/heroes/bunga/idle.webp','assets/heroes/bunga/attack.webp',
   'assets/pets/aurora/standby-v2.webp','assets/pets/arif/standby.png','assets/pets/kucing-pembaris/standby-v2.webp','assets/pets/tiko/standby.png',
-  'assets/enemies/minions/minion-a.svg','assets/enemies/place-value/maharaja-nilai-tempat.webp',
+  'assets/enemies/minions/askabus.webp','assets/enemies/minions/syilinggit.webp','assets/enemies/minions/pigiramid.webp',
+  'assets/enemies/place-value/maharaja-nilai-tempat.webp',
   'assets/fx/wira/finisher.webp','assets/fx/bunga/finisher-thorn-bloom-v2.png'
 ];
 assets.forEach(rel=>assert(fs.existsSync(root+'/'+rel)&&fs.statSync(root+'/'+rel).size>0,`missing asset ${rel}`));
