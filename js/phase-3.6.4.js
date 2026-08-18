@@ -28,5 +28,17 @@
     screen('missions');save();
   };
   window.navMission=function(){if(!db)return goLogin();renderMissions();};
+
+  // v3.24.3 enemy roster: approved production names/assets.
+  // Pigiramid replaces the third generic minion slot.
+  if(typeof MINION_ENEMIES!=='undefined'&&Array.isArray(MINION_ENEMIES)){
+    MINION_ENEMIES[2]={name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'};
+  }
+  // Bahbahgi replaces the Chapter 3 fraction boss. Intentionally no frame directory:
+  // keep one consistent approved static battle asset instead of falling back to old Raja Bahagian Sama frames.
+  if(typeof BOSS_BY_CHAPTER!=='undefined'){
+    BOSS_BY_CHAPTER['3']={name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'fraction'};
+  }
+
   updateDevQuickButton();
 })();
