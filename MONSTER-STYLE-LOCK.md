@@ -19,3 +19,5 @@ Production asset rules:
 - No card frame, scenery, logo, or UI baked into the image.
 - Child-appropriate design.
 - Clear mathematical motif readable at mobile battle scale.
+- No sexualized/revealing character design.
+- Do not use generic slime/goblin monster art for these four slots.
