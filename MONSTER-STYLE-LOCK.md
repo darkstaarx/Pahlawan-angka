@@ -7,7 +7,9 @@ The following monster concepts are approved and must stay in the same visual uni
 3. Bahbahgi — purple / gold math wizard with division / equal-part motifs.
 4. Penguasa Jam Berdetik — blue / white / gold clockwork knight, clock / gears / hourglass motifs.
 
-Approved generic minion addition:
+Approved generic minion roster:
+- Askabus — purple / gold abacus minion with arithmetic motifs.
+- Syilinggit — Malaysian money / coin minion with RM motifs.
 - Pigiramid — pyramid / triangle stone golem with clear geometry motifs.
 
 Production asset rules:
@@ -21,3 +23,5 @@ Production asset rules:
 - Clear mathematical motif readable at mobile battle scale.
 - No sexualized/revealing character design.
 - Do not use generic slime/goblin monster art for these four slots.
+- Generic runtime minion rotation must not use placeholder SVG enemies.
+- Enemy/boss sprite images must not use whole-body drop shadows; grounding shadow belongs at the feet on the arena floor.

@@ -29,16 +29,76 @@
   };
   window.navMission=function(){if(!db)return goLogin();renderMissions();};
 
-  // v3.24.3 enemy roster: approved production names/assets.
-  // Pigiramid replaces the third generic minion slot.
+  // v3.24.3 — approved generic minion roster only. No placeholder rotation.
   if(typeof MINION_ENEMIES!=='undefined'&&Array.isArray(MINION_ENEMIES)){
-    MINION_ENEMIES[2]={name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'};
+    MINION_ENEMIES.splice(0,MINION_ENEMIES.length,
+      {name:'Askabus',image:'assets/enemies/minions/askabus.webp',tone:'minion-a'},
+      {name:'Syilinggit',image:'assets/enemies/minions/syilinggit.webp',tone:'minion-b'},
+      {name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'}
+    );
   }
+
   // Bahbahgi replaces the Chapter 3 fraction boss. Intentionally no frame directory:
   // keep one consistent approved static battle asset instead of falling back to old Raja Bahagian Sama frames.
   if(typeof BOSS_BY_CHAPTER!=='undefined'){
     BOSS_BY_CHAPTER['3']={name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'fraction'};
   }
 
+  // Load the authoritative enemy grounding layer after legacy battle CSS.
+  (function ensureEnemyGroundingCss(){
+    if(document.querySelector('link[data-pa-enemy-grounding="3.24.3"]'))return;
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='css/enemy-contact-shadow-v3.24.3.css?v=3.24.3';
+    link.dataset.paEnemyGrounding='3.24.3';
+    document.head.appendChild(link);
+  })();
+
+  // Product rule: typed/free-response is boss-only.
+  // The old DEV Force Typed switch may remain useful, but it must never leak typed UI into minion rounds.
+  function installBossOnlyTypedGuard(){
+    const previousNextQ=window.nextQ;
+    if(typeof previousNextQ!=='function'||previousNextQ.__paBossOnlyTypedGuard)return;
+
+    function restoreChoiceAnswersForMinion(){
+      if(!sess||sess.enemyTier==='boss')return;
+      const q=sess.q,answers=document.getElementById('answers');
+      if(!q||!answers)return;
+      const typedForm=answers.querySelector('.paTypedAnswer');
+      if(!typedForm&&!sess.typedAnswerActive)return;
+
+      sess.typedAnswerActive=false;
+      q.responseMode='choice';
+      document.body?.classList.remove('paTypedInputFocused','paTypedKeyboardOpen');
+      answers.classList.remove('paTypedAnswers');
+      document.querySelector('.qcard')?.classList.remove('paTypedQCard');
+      answers.innerHTML='';
+
+      const options=[{v:q.answer,tag:'correct',label:q.answer},...(q.wrong||[])];
+      shuffle(options).forEach(o=>{
+        const b=document.createElement('button');
+        b.className='ans';
+        b.textContent=o.label??o.v;
+        b.dataset.v=String(o.v);
+        b.dataset.questionToken=String(q.token);
+        b.onclick=()=>respond(o,b,q);
+        answers.appendChild(b);
+      });
+    }
+
+    const guardedNextQ=function(){
+      const out=previousNextQ.apply(this,arguments);
+      restoreChoiceAnswersForMinion();
+      return out;
+    };
+    guardedNextQ.__paBossOnlyTypedGuard=true;
+    window.nextQ=guardedNextQ;
+    restoreChoiceAnswersForMinion();
+  }
+
+  if(document.readyState==='complete')installBossOnlyTypedGuard();
+  else window.addEventListener('load',installBossOnlyTypedGuard,{once:true});
+
+  window.PAEnemyRosterPatch={version:'3.24.3',minions:['Askabus','Syilinggit','Pigiramid'],bossOnlyTyped:true};
   updateDevQuickButton();
 })();

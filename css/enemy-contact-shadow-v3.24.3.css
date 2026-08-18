@@ -1,0 +1,69 @@
+/* Pahlawan Angka v3.24.3 — enemy grounding hotfix.
+   Enemy art keeps only neutral grading; no whole-body silhouette/drop shadow.
+   Grounding comes from a compact contact shadow at the feet. */
+
+/* The base .sprite rule applies a whole-body drop-shadow to the composed enemy.
+   Remove it for enemies only. Hero/pet rendering is untouched. */
+#game #enemy .sprite{
+  filter:none!important;
+}
+
+/* Keep the approved enemy/boss artwork graded into the arena without casting a
+   second silhouette behind the whole body. Covers static minions, boss idle art,
+   and boss animation frames. */
+#game #enemy #enemySprite,
+#game #enemy .enemy-frame{
+  filter:brightness(.94) saturate(.9) contrast(1.025)!important;
+}
+
+/* Defeat snapshot should not recreate a full-body shadow either. */
+.paAnchoredDefeat{
+  filter:none!important;
+}
+
+/* One shared floor-contact shadow for every enemy. */
+#game #enemy::after{
+  content:""!important;
+  position:absolute!important;
+  left:33%!important;
+  right:33%!important;
+  bottom:-1px!important;
+  height:8px!important;
+  border-radius:50%!important;
+  background:radial-gradient(
+    ellipse at center,
+    rgba(0,5,7,.52) 0%,
+    rgba(0,7,9,.34) 38%,
+    rgba(0,8,10,.14) 58%,
+    transparent 74%
+  )!important;
+  filter:blur(1.15px)!important;
+  transform:scaleY(.52)!important;
+  transform-origin:50% 50%!important;
+  opacity:.72!important;
+  pointer-events:none!important;
+  z-index:0!important;
+}
+
+/* Bosses may have a wider stance, but the shadow remains a floor-contact ellipse,
+   not a body-sized black silhouette. */
+#game #enemy[data-enemy-tier="boss"]::after{
+  left:20%!important;
+  right:20%!important;
+  bottom:-1px!important;
+  height:10px!important;
+  transform:scaleY(.56)!important;
+  opacity:.68!important;
+}
+
+#game #enemy[data-enemy-tier="minion"]::after{
+  left:34%!important;
+  right:34%!important;
+  height:8px!important;
+}
+
+/* Keep visible artwork above the contact shadow. */
+#game #enemy .enemySpriteWrap{
+  position:relative;
+  z-index:2!important;
+}
