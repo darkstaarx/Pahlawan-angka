@@ -45,7 +45,7 @@ const fractionStrip=(n,d,color='#5b8def')=>{
 };
 const fractionSet=(n,d)=>{
   const cols=Math.min(5,d),rows=Math.ceil(d/cols),w=300,h=Math.max(80,rows*48+16),r=13,gap=44,x0=(w-(cols-1)*gap)/2,y0=28;
-  let dots='';for(let i=0;i<d;i++){let c=i%cols,rr=Math.floor(i/cols);dots+=`<circle cx="${x0+(c-(cols-1)/2)*gap}" cy="${y0+rr*46}" r="${r}" class="${i<n?'kd-fill':'kd-empty'}"/>`}
+  let dots='';for(let i=0;i<d;i++){let c=i%cols,rr=Math.floor(i/cols);dots+=`<circle cx="${x0+c*gap}" cy="${y0+rr*46}" r="${r}" class="${i<n?'kd-fill':'kd-empty'}"/>`}
   return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" aria-label="kumpulan pecahan">${dots}</svg></div>`;
 };
 const hundredGrid=pct=>{

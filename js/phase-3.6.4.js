@@ -46,11 +46,11 @@
 
   // Load the authoritative enemy grounding layer after legacy battle CSS.
   (function ensureEnemyGroundingCss(){
-    if(document.querySelector('link[data-pa-enemy-grounding="3.24.3"]'))return;
+    if(document.querySelector('link[data-pa-enemy-grounding="3.24.4"]'))return;
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='css/enemy-contact-shadow-v3.24.3.css?v=3.24.3';
-    link.dataset.paEnemyGrounding='3.24.3';
+    link.href='css/enemy-contact-shadow-v3.24.4.css?v=3.24.4';
+    link.dataset.paEnemyGrounding='3.24.4';
     document.head.appendChild(link);
   })();
 

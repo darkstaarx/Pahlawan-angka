@@ -12,6 +12,9 @@ Approved generic minion roster:
 - Syilinggit — Malaysian money / coin minion with RM motifs.
 - Pigiramid — pyramid / triangle stone golem with clear geometry motifs.
 
+Retained standalone enemy asset (not part of the three-minion runtime rotation):
+- Wipening — hooded purple / gold arithmetic wizard. Wipening is a separate character and must not replace Askabus.
+
 Production asset rules:
 - Same anime/JRPG rendering family as Wira and Bunga.
 - Full-body battle character.
