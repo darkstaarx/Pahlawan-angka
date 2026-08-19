@@ -118,7 +118,7 @@ function gradeLabel(n){return `Darjah ${n}`}
 function roleLabel(g){ if(!db) return 'Misi'; if(g<db.schoolGrade) return 'Misi Asas'; if(g>db.schoolGrade) return 'Cabaran Bonus'; return 'Misi Matematik'; }
 function nextQ(){
  if(sess.learningActive)return;
- let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;setBattleTerrain(m);
+ let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
  sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;
  sess.recent.push(id);if(sess.recent.length>10)sess.recent.shift();
  document.getElementById("skillTitle").textContent=sess.bossStretchCurrent?`Cabaran Boss · Darjah ${m.grade} · ${m.domain}`:(m.grade===db.schoolGrade?(m.textbookUnit?`Unit ${m.textbookUnit} · ${m.textbookUnitTitle}`:m.title):(m.grade>db.schoolGrade?`Cabaran Bonus · ${m.domain}`:`Misi Asas · ${m.domain}`));
@@ -174,6 +174,11 @@ function applyEnemyVariant(forceReset=false){
   if(!e)return;
   const key=stage.tier==='boss'?`boss-${stage.chapter}`:`minion-${stage.index||0}`;
   const isNewEnemy=forceReset||sess.enemyKey!==key;
+  const terrainMeta=sess?.q?.skill?META[sess.q.skill]:null;
+  if(terrainMeta&&(isNewEnemy||sess.terrainEnemyKey!==key)){
+    setBattleTerrain(terrainMeta);
+    sess.terrainEnemyKey=key;
+  }
   if(isNewEnemy){
     sess.enemyKey=key;
     sess.enemyMaxHp=stage.tier==='boss'?PROGRESSION.bossHits*4:12;

@@ -1,0 +1,104 @@
+/* Pahlawan Angka v3.24.5 — character grounding + minion staging. */
+
+/* Remove generic full-body wrapper shadows without blocking combat animation filters. */
+#game #hero .sprite,
+#game #enemy .sprite{filter:none}
+
+/* Remove legacy frame drop-shadows; keep only neutral arena grading. */
+body #game #hero .hero-frame{
+  filter:brightness(.96) saturate(.96) contrast(1.02)!important;
+}
+#game #enemy #enemySprite,
+#game #enemy .enemy-frame{
+  filter:brightness(.95) saturate(.93) contrast(1.02)!important;
+}
+#game #hero .battlePet .battle-pet-frame{
+  filter:brightness(.96) saturate(.96) contrast(1.02)!important;
+}
+.monster-defeat-layer,
+.paAnchoredDefeat{filter:none!important}
+
+/* Retire the old unit-wide puddle. Preserve Bunga's finisher overlay. */
+#game #hero::after,
+#game #enemy::after{opacity:0!important}
+#game #enemy.hit.finisher.tint-bloom::after{opacity:1!important}
+
+/* Contact shadows stay with the moving feet. */
+#game #hero .sprite::after,
+#game #enemy .enemySpriteWrap::after{
+  content:"";
+  position:absolute;
+  left:31%;
+  right:31%;
+  bottom:0;
+  height:8px;
+  border-radius:50%;
+  background:radial-gradient(ellipse at center,
+    rgba(0,4,6,.48) 0%,
+    rgba(0,7,9,.29) 40%,
+    rgba(0,8,10,.11) 60%,
+    transparent 76%);
+  filter:blur(1px);
+  transform:scaleY(.48);
+  transform-origin:50% 50%;
+  opacity:.70;
+  pointer-events:none;
+  z-index:-1;
+}
+#game #enemy[data-enemy-tier="boss"] .enemySpriteWrap::after{
+  left:22%;
+  right:22%;
+  height:10px;
+  transform:scaleY(.54);
+  opacity:.66;
+}
+
+/* Pet keeps only a compact foot-contact ellipse. */
+#game #hero .battlePet::after{
+  left:28%!important;
+  right:28%!important;
+  height:7px!important;
+  opacity:.64!important;
+}
+
+/* Production minions: inward, slightly raised, per-silhouette scale. */
+#game #enemy[data-enemy-tier="minion"]{
+  right:calc(var(--pa-enemy-inset) + 6px)!important;
+}
+#game #enemy[data-enemy-tier="minion"] .enemySpriteWrap{
+  width:var(--pa-unit-w)!important;
+  height:calc(var(--pa-minion-h) + 6px)!important;
+  margin-top:calc(var(--pa-hero-h) - var(--pa-minion-h) - 6px)!important;
+  margin-left:0!important;
+  overflow:visible!important;
+  transform-origin:50% 100%!important;
+}
+#game #enemy[data-enemy-tier="minion"] #enemySprite{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:auto!important;
+  bottom:0!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  transform:none!important;
+  transform-origin:50% 100%!important;
+}
+#game #enemy[data-enemy-tone="minion-a"] .enemySpriteWrap{
+  transform:translate(-4px,-3px) scale(.92)!important;
+}
+#game #enemy[data-enemy-tone="minion-b"] .enemySpriteWrap{
+  transform:translate(-3px,-3px) scale(.91)!important;
+}
+#game #enemy[data-enemy-tone="minion-c"] .enemySpriteWrap{
+  transform:translate(-3px,-3px) scale(.91)!important;
+}
+@media(max-width:370px){
+  #game #enemy[data-enemy-tier="minion"]{
+    right:calc(var(--pa-enemy-inset) + 8px)!important;
+  }
+}

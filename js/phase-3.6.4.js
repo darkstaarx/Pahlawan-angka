@@ -44,13 +44,14 @@
     BOSS_BY_CHAPTER['3']={name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'fraction'};
   }
 
-  // Load the authoritative enemy grounding layer after legacy battle CSS.
-  (function ensureEnemyGroundingCss(){
-    if(document.querySelector('link[data-pa-enemy-grounding="3.24.4"]'))return;
+  // Load the authoritative character grounding/staging layer after legacy battle CSS.
+  (function ensureUnitGroundingCss(){
+    if(document.querySelector('link[data-pa-unit-grounding="3.24.5"]'))return;
+    document.querySelector('link[data-pa-enemy-grounding]')?.remove();
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='css/enemy-contact-shadow-v3.24.4.css?v=3.24.4';
-    link.dataset.paEnemyGrounding='3.24.4';
+    link.href='css/unit-grounding-v3.24.5.css?v=3.24.5';
+    link.dataset.paUnitGrounding='3.24.5';
     document.head.appendChild(link);
   })();
 

@@ -1,6 +1,6 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.24.2';
+  const APP_VERSION='3.24.5';
   const INTEGRITY_VERSION='3.18.1';
   const DEPTH_VERSION='3.22.0';
   const Y6_REPAIR_VERSION='3.23.0';
