@@ -1,6 +1,6 @@
 // Pahlawan Angka release loader.
 (()=>{
-  const APP_VERSION='3.24.5';
+  const APP_VERSION=globalThis.PA_APP_VERSION||'0.0.0';
   const INTEGRITY_VERSION='3.18.1';
   const DEPTH_VERSION='3.22.0';
   const Y6_REPAIR_VERSION='3.23.0';
@@ -90,7 +90,7 @@
 (()=>{
   if(!('serviceWorker' in navigator))return;
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(registration=>{
+    navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(registration=>{
       registration.update().catch(()=>{});
       document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')registration.update().catch(()=>{});});
     }).catch(error=>console.warn('PWA service worker tidak dapat didaftarkan:',error));
