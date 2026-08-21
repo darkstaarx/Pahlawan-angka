@@ -16,8 +16,8 @@ window.PAQuestionBanks.d2t7 = function(id,s,shift){
    if(mode==='net'){
      const t=pick(['cube','cuboid']),ans=t==='cube'?'kubus':'kuboid';return Q(`${shapeNetSvg(t)}Bentangan ini boleh dilipat menjadi bentuk apa?`,ans,[N(ans==='kubus'?'kuboid':'kubus','shape'),N('silinder','shape'),N('kon','shape')],"Bayangkan setiap bahagian dilipat pada garisan tepi.","D2 Application · Bentangan",true,true);
    }
-   const objects=[['dadu','kubus'],['kotak hadiah sama sisi','kubus'],['kotak kasut','kuboid'],['kotak pensel','kuboid'],['tin minuman','silinder'],['gelas silinder','silinder'],['kon aiskrim','kon'],['kon trafik','kon'],['hiasan piramid','piramid'],['bumbung piramid','piramid']];const [obj,ans]=pick(objects);
-   return Q(`Objek <b>${obj}</b> paling hampir dengan bentuk 3D apa?`,ans,shuffle(shapes.filter(y=>y.name!==ans)).slice(0,3).map(y=>N(y.name,'shape')),"Fikir bentuk keseluruhan objek.","D2 Application · Bentuk 3D",false,true);
+   const objects=[['dadu','kubus'],['kotak hadiah sama sisi','kubus'],['kotak kasut','kuboid'],['kotak pensel','kuboid'],['tin minuman','silinder'],['batang lilin bulat','silinder'],['aiskrim bertapak bulat dan berhujung runcing','kon'],['penanda keselamatan jalan berhujung runcing','kon'],['hiasan bertapak segi empat dan berpuncak','piramid'],['bumbung khemah bertapak segi empat dan berpuncak','piramid']];const [obj,ans]=pick(objects);
+   return Q(`Objek <b>${obj}</b> paling hampir dengan bentuk 3D apa?`,ans,shuffle(shapes.filter(y=>y.name!==ans)).slice(0,3).map(y=>N(y.name,'shape')),"Perhatikan permukaan rata atau melengkung, kemudian cari bentuk tapak dan puncaknya.","D2 Application · Bentuk 3D",false,true);
  }
  if(id==="D2.7.2"){
    const shapes=[{key:'triangle',name:'segi tiga',sides:3,corners:3},{key:'square',name:'segi empat sama',sides:4,corners:4},{key:'rectangle',name:'segi empat tepat',sides:4,corners:4},{key:'circle',name:'bulatan',sides:0,corners:0}];

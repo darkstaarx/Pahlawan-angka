@@ -57,8 +57,8 @@
     let score=.5,reasons=[];
 
     if(id===db.focus){score+=7;reasons.push(['focus',8,'Fokus Ibu Bapa']);}
-    if(mem.lastWrong&&now-mem.lastWrong<=7*DAY_MS){score+=4.3;reasons.push(['mis',7,'Betulkan kesilapan terkini']);}
-    else if(mis>=2){score+=Math.min(3.2,1.5+mis*.18);reasons.push(['mis',6,'Semak kesilapan yang pernah berlaku']);}
+    if(mem.lastWrong&&now-mem.lastWrong<=7*DAY_MS){score+=4.3;reasons.push(['mis',7,'Kukuhkan kemahiran terkini']);}
+    else if(mis>=2){score+=Math.min(3.2,1.5+mis*.18);reasons.push(['mis',6,'Bina keyakinan dengan latihan']);}
     if(requiredEvidenceGap(id)&&evidence>0){score+=2.8;reasons.push(['evidence',5,'Bukti kemahiran belum lengkap']);}
     if(overdue>=1){score+=Math.min(4.2,1.7+overdue);reasons.push(['due',4,'Masa untuk ulang semula']);}
     if(evidence===0){score+=.75;reasons.push(['new',1,'Kenal kemahiran']);}

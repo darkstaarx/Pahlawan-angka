@@ -127,7 +127,7 @@ function nextQ(){
  document.getElementById("gradeLayer").textContent=m.grade===db.schoolGrade?gradeLabel(m.grade):(m.grade<db.schoolGrade?"Asas":"Bonus");
  document.getElementById("mastery").style.width=sess.devBankTest?Math.max(3,s.mastery)+"%":Math.min(100,Math.round((sess.missionAnswered||0)/(sess.coachAdaptive?PROGRESSION.coachMinQuestions:PROGRESSION.missionQuestions)*100))+"%";
  document.getElementById("kind").textContent=sess.bossStretchCurrent?`Cabaran Boss · ${m.title}`:m.title;
- document.getElementById("evidence").textContent=sess.guardianFocus?`Soalan ${(sess.missionAnswered||0)+1}/${sess.focusTarget}`:(sess.devBankTest?`${id} · Test ${(sess.missionAnswered||0)+1}`:(sess.coachAdaptive?`Coach Probe ${(sess.missionAnswered||0)+1}`:(sess.bossStretchCurrent?'Cabaran Boss +1 Darjah':`Soalan ${(sess.missionAnswered||0)+1}`))); updateMissionHud();
+ document.getElementById("evidence").textContent=sess.guardianFocus?`Soalan ${(sess.missionAnswered||0)+1}/${sess.focusTarget}`:(sess.devBankTest?`${id} · Test ${(sess.missionAnswered||0)+1}`:(sess.coachAdaptive?`Cabaran Cikgu ${(sess.missionAnswered||0)+1}`:(sess.bossStretchCurrent?'Cabaran Boss +1 Darjah':`Soalan ${(sess.missionAnswered||0)+1}`))); updateMissionHud();
  applyEnemyVariant();
  document.getElementById("question").innerHTML=q.prompt;document.getElementById("feedback").textContent="";
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.remove('needs-help','used');hintButton.disabled=false;hintButton.setAttribute('aria-label','Guna Petunjuk');}
