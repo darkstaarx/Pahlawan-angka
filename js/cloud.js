@@ -3,7 +3,7 @@
   const URL='https://pxxekdeqlxwqwaqvfbnh.supabase.co';
   const KEY='sb_publishable_xVRVgrb4EP6RnFv_p6WI_g_u67xGW6C';
   const ACTIVE_SCREENS=new Set(['hub','missions','treasure','game','learning','result']);
-  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,authMode:'login',locked:false,ready:false};
+  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -60,10 +60,11 @@
     const {data,error}=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,updated_at').eq('is_active',true).order('created_at');
     if(error)throw error;
     state.profiles=data||[];
-    if(!state.profiles.length){state.childId=null;if(db){await attachNewChild();return;}renderAccount();screen('setup');return;}
+    if(!state.profiles.length){state.childId=null;state.needsOnboarding=true;renderAccount();screen('setup');return;}
     const remembered=localStorage.getItem('pa_active_child_id');
     const profile=state.profiles.find(p=>p.id===remembered)||state.profiles[0];
     await selectChild(profile.id,false);
+    state.needsOnboarding=false;
   }
 
   async function selectChild(childId,navigate=true){
@@ -98,7 +99,7 @@
     try{
       const {data,error}=await state.client.rpc('create_initial_child',{child_display_name:db.name,child_grade:db.schoolGrade,child_hero_id:db.hero||'wira'});
       if(error)throw error;state.childId=data;db.cloudChildId=data;localStorage.setItem('pa_active_child_id',data);localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
-      await loadProfiles();await syncSaveNow();if(playing())ensurePlaySession();showRewardToast('Progress kini disimpan ke awan ✓');
+      await loadProfiles();state.needsOnboarding=false;await syncSaveNow();if(playing())ensurePlaySession();showRewardToast('Progress kini disimpan ke awan ✓');
     }catch(error){console.warn('Cloud profile creation failed',error);showRewardToast('Progress disimpan pada peranti · sync akan dicuba lagi');}
   }
 
@@ -178,7 +179,7 @@
     if(resume)resume.classList.toggle('hidden',!signed&&!!db?.cloudChildId);
     if(!signed){box.innerHTML='';return;}
     const profiles=(state.profiles||[]).map(p=>`<button class="cloudProfile ${p.id===state.childId?'active':''}" onclick="PACloud.selectChild('${p.id}')"><span class="cloudProfileIcon">⚔</span><span><b>${safe(p.display_name)}</b><small>Darjah ${p.grade}</small></span><em>${p.id===state.childId?'Aktif':'Pilih'}</em></button>`).join('');
-    box.innerHTML=`<div class="cloudAccountHead"><span>☁</span><span><b>Akaun tersambung</b><small>${safe(state.user.email||'')}</small></span></div><div class="cloudProfiles">${profiles||'<small>Belum ada profil anak.</small>'}</div><div class="cloudAccountActions"><button class="btn secondary small" onclick="screen('setup')">+ Profil anak</button><button class="btn ghost small" onclick="PACloud.logout()">Log keluar</button></div>`;
+    box.innerHTML=`<div class="cloudAccountHead"><span>☁</span><span><b>Akaun tersambung</b><small>${safe(state.user.email||'')}</small></span></div><div class="cloudProfiles">${profiles||'<small>Belum ada profil anak.</small>'}</div><div class="cloudAccountActions"><button class="btn secondary small" onclick="PACloud.addChild()">+ Profil anak</button><button class="btn ghost small" onclick="PACloud.logout()">Log keluar</button></div>`;
   }
 
   function renderParentControls(){
@@ -191,6 +192,15 @@
     const payload={child_id:state.childId,daily_limit_minutes:value('dailyLimit'),session_limit_minutes:value('sessionLimit'),soft_nudge_minutes:value('nudgeLimit')||30,hard_lock_enabled:!!$('hardLock')?.checked,show_elapsed_timer:!!$('showTimer')?.checked};
     const {data,error}=await state.client.from('parental_controls').upsert(payload,{onConflict:'child_id'}).select().single();if(error){showRewardToast('Tetapan gagal disimpan');return;}state.controls=data;state.locked=false;updateTimer();renderParentControls();showRewardToast('Had masa disimpan ✓');
   }
+
+  async function saveOnboardingControls(values){
+    if(!state.user||!state.childId)throw new Error('Profil anak belum tersedia');
+    const payload={child_id:state.childId,...values};
+    const {data,error}=await state.client.from('parental_controls').upsert(payload,{onConflict:'child_id'}).select().single();
+    if(error)throw error;state.controls=data;state.locked=false;updateTimer();return data;
+  }
+
+  function addChild(){state.needsOnboarding=true;screen('setup')}
 
   async function logout(){await syncSaveNow();await endPlaySession('user_exit');await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
 
@@ -209,6 +219,6 @@
     setInterval(tick,1000);document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else state.lastTick=performance.now();});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
-  window.PACloud={init,setAuthMode,submitAuth,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,logout,state};
+  window.PACloud={init,setAuthMode,submitAuth,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,addChild,logout,state};
   init().catch(error=>{console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
 })();

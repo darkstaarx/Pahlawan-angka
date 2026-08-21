@@ -20,6 +20,9 @@ create table if not exists public.family_subscriptions (
 alter table public.app_user_roles enable row level security;
 alter table public.family_subscriptions enable row level security;
 
+grant select on table public.app_user_roles to authenticated;
+grant select on table public.family_subscriptions to authenticated;
+
 drop policy if exists "read own role" on public.app_user_roles;
 create policy "read own role" on public.app_user_roles for select to authenticated using (user_id=auth.uid());
 
@@ -30,7 +33,7 @@ create policy "read own family subscription" on public.family_subscriptions for 
 
 create or replace function public.get_commercial_access()
 returns table(role text,plan text,status text,current_period_end timestamptz,profile_limit integer)
-language sql security definer set search_path=public stable
+language sql security invoker set search_path=public stable
 as $$
   select coalesce(r.role,'guardian'),coalesce(s.plan,'free'),coalesce(s.status,'inactive'),s.current_period_end,
     case when coalesce(s.status,'inactive') in ('active','trialing') and s.plan='family_plus' then 5 else 2 end

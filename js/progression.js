@@ -109,7 +109,7 @@ function startMission(ch=null){
   const arena=document.getElementById('battleArena');if(arena)arena.classList.remove('boss-cleared');
   document.getElementById('bossCheckpoint')?.classList.remove('show');
   const coachAdaptive=!ch;
-  sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:'calibrate',recoveryFor:null,stretchFor:null,missionChapter:db.activeMissionChapter,missionAnswered:0,missionCorrect:0,missionHints:0,missionSkills:{},missionFinished:false,devBankTest:false,devSkill:null,coachAdaptive,coach:null,questionFingerprints:[],bossActive:false,bossDefeated:false,bossQuestionsAnswered:0,bossStretchAsked:false,bossStretchCurrent:false};
+  sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:'calibrate',recoveryFor:null,stretchFor:null,missionChapter:db.activeMissionChapter,missionAnswered:0,missionCorrect:0,missionHints:0,missionSkills:{},missionFinished:false,devBankTest:false,devSkill:null,coachAdaptive,introMission:!!db.onboarding?.introActive,coach:null,questionFingerprints:[],bossActive:false,bossDefeated:false,bossQuestionsAnswered:0,bossStretchAsked:false,bossStretchCurrent:false};
   applyHeroToBattle();updateMissionHud();nextQ();battle();screen('game');
 }
 function startSession(){startMission(db.activeMissionChapter||null)}
@@ -121,7 +121,7 @@ function updateMissionHud(){
   const bossN=Math.min(PROGRESSION.bossHits,Number(sess.bossQuestionsAnswered||0));
   document.getElementById('missionCount').textContent=sess.guardianFocus?`${n}/${sess.focusTarget}`:(sess.devBankTest?`#${n+1}`:(isCoach?(n<4?'Mencari asas':n<8?'Menguji kuasa':'Hampir ditemui'):(bossPhase?`BOSS ${bossN}/${PROGRESSION.bossHits}`:`${Math.min(PROGRESSION.regularMissionQuestions,n)}/${PROGRESSION.regularMissionQuestions}`)));
   document.getElementById('missionProgressFill').style.width=sess.guardianFocus?Math.min(100,Math.round(n/sess.focusTarget*100))+'%':(sess.devBankTest?'100%':(isCoach?Math.min(100,Math.round(n/PROGRESSION.coachMinQuestions*100))+'%':Math.round(Math.min(PROGRESSION.missionQuestions,n)/PROGRESSION.missionQuestions*100)+'%'));
-  const title=sess.guardianFocus?`Latihan Fokus · ${META[sess.focusSkill]?.title||''}`:(sess.devBankTest?`DEV · ${sess.devSkill}`:(sess.missionChapter?kssrMissionLabel(sess.missionChapter):'Cikgu Dimensi · Cari Kuasa Terbaik'));
+  const title=sess.guardianFocus?`Latihan Fokus · ${META[sess.focusSkill]?.title||''}`:(sess.devBankTest?`DEV · ${sess.devSkill}`:(sess.introMission?'Misi Pengenalan':(sess.missionChapter?kssrMissionLabel(sess.missionChapter):'Cikgu Dimensi · Cari Kuasa Terbaik')));
   document.getElementById('missionTitle').textContent=title;
 }
 function recordMissionAnswer(ok,skillId,usedHint){
@@ -177,6 +177,7 @@ function finishCoachSession(){
   document.getElementById('resultRewards').innerHTML=`<span>+${bonusCoins} 🪙</span><span>+${bonusXp} XP</span>`;
   document.getElementById('resultCoach').textContent=challenge?`Frontier semasa — ${top}. Coach jumpa cabaran sebenar pada ${challenge}; sesi seterusnya akan sambung dari situ.`:`Frontier semasa — ${top||'profil masih sedang dibina'}. Coach akan sambung dari tahap tertinggi yang telah dibuktikan.`;
   document.getElementById('resultTitle').textContent='Profil Coach Dikemas Kini';
+  if(sess.introMission&&db.onboarding){db.onboarding.introActive=false;db.onboarding.introCompletedAt=Date.now()}
   db.lastCoachProfile={at:Date.now(),questions:sess.missionAnswered,accuracy,summary};save();screen('result');
 }
 
