@@ -51,7 +51,7 @@ function finishGuardianFocus(){
  document.getElementById('resultStars').textContent=accuracy>=80?'★★★':accuracy>=60?'★★☆':'★☆☆';
  document.getElementById('resultScore').textContent=`${correct}/${n} betul · ${hints} petunjuk digunakan`;
  document.getElementById('resultRewards').innerHTML=`<span>Penguasaan ${Math.round(b.mastery)}% → ${Math.round(a.mastery)}%</span><span>${gain>=0?'+':''}${gain}% perubahan</span>`;
- document.getElementById('resultCoach').textContent=accuracy>=80?`Bukti untuk ${META[id].title} semakin kukuh. Kembali ke misi biasa untuk semakan dalam bentuk lain.`:`Cikgu Wajar akan kembali kepada contoh lebih mudah dan asas berkaitan jika kesalahan yang sama berulang.`;
+ document.getElementById('resultCoach').textContent=accuracy>=80?`Bukti untuk ${META[id].title} semakin kukuh. Kembali ke misi biasa untuk semakan dalam bentuk lain.`:`Cikgu Dimensi akan kembali kepada contoh lebih mudah dan asas berkaitan jika kesalahan yang sama berulang.`;
  screen('result');
 }
 function repeatGuardianFocus(){if(sess?.focusSkill){openGuardianFocus(sess.focusSkill);screen('parent')}}

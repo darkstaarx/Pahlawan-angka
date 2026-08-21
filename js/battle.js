@@ -157,7 +157,7 @@ function beginHintRetry(o,btn,question){
  s.mastery=Math.max(0,s.mastery-(layerDelta>0?1.2:2.2));s.confidence=Math.max(0,s.confidence-(layerDelta>0?2:4));s.stability=Math.max(0,s.stability-3);if(layerDelta>0)s.probeFail++;
  recordCoachResponse(id,false,o.tag,sec,false,question.token);recordFrontierResponse(id,false,sec,false,question);
  if(window.PATelemetry)PATelemetry.response(id,false,o.tag,sec,false,question,sess.mode+'-first-attempt');
- const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Wajar');}
+ const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Dimensi');}
  document.getElementById('feedback').innerHTML='<b>Belum tepat—jangan risau.</b> Rentak dibekukan. Tekan <b>Petunjuk</b> yang menyala, kemudian cuba sekali lagi.';
  document.getElementById('streak').textContent=sess.streak+' rentak · dibekukan';if(typeof playSfx==='function')playSfx('wrong');battle();save();
 }
@@ -170,7 +170,7 @@ function resolveAnswer(o,btn,question,ok){
   let ql=evidenceQuality(sec,question,sess.hint),baseGain=layerDelta>0?6:(layerDelta<0?9:8),gain=baseGain*ql*(1-s.mastery/135);
   s.mastery=Math.min(100,s.mastery+gain);s.confidence=Math.min(100,s.confidence+(layerDelta>0?4.5:5.5)*ql);s.stability=Math.min(100,s.stability+4*ql);
   if(layerDelta>0)s.probePass++;
-  document.getElementById("feedback").innerHTML=(typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?'Bagus! Kamu gunakan Petunjuk dan berjaya membetulkan jawapan.':(sec<1.15?'Betul. Cikgu Wajar akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
+  document.getElementById("feedback").innerHTML=(typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?'Bagus! Kamu gunakan Petunjuk dan berjaya membetulkan jawapan.':(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
   const devOneHit=!!(db&&isDevMode()&&db.devOneHit);let willFinish=devOneHit||sess.ehp<=4;usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(!willFinish&&typeof playSfx==='function'&&db&&db.hero!=='wira')playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish);sess.ehp-=devOneHit?Math.max(4,sess.ehp):4
  }else{
   btn.classList.add("no");s.wrong++;s.evidence++;sess.streak=0;
@@ -256,7 +256,7 @@ function hint(){
  if(!sess.hint){sess.hint=true;scoreState(sess.q.skill).hints++;}
  const button=document.querySelector('.hintBtn');if(button){button.classList.remove('needs-help');button.classList.add('used');button.setAttribute('aria-label','Petunjuk telah dibuka');}
  const help=typeof guardianHint==='function'?guardianHint(sess.q,sess.hintLevel):sess.q.hint;
- document.getElementById('feedback').innerHTML=`<b>Cikgu Wajar bantu:</b> ${help}<br><span class="retryPrompt">Sekarang pilih jawapan sekali lagi.</span>`;
+ document.getElementById('feedback').innerHTML=`<b>Cikgu Dimensi bantu:</b> ${help}<br><span class="retryPrompt">Sekarang pilih jawapan sekali lagi.</span>`;
  if(sess.retryState)document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});
  save();
 }

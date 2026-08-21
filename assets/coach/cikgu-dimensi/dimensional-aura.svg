@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#7BE7FF" stop-opacity="0"/>
+      <stop offset=".58" stop-color="#54D9FF" stop-opacity=".10"/>
+      <stop offset=".78" stop-color="#5CCBFF" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#2C75FF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle cx="128" cy="128" r="118" fill="url(#g)"/>
+  <circle cx="128" cy="128" r="103" stroke="#74E5FF" stroke-opacity=".72" stroke-width="2" stroke-dasharray="9 11" filter="url(#glow)"/>
+  <circle cx="128" cy="128" r="87" stroke="#8FB6FF" stroke-opacity=".40" stroke-width="1.4" stroke-dasharray="2 12"/>
+  <g fill="#B8F4FF" fill-opacity=".86" font-family="Arial, sans-serif" font-weight="700" text-anchor="middle" filter="url(#glow)">
+    <text x="128" y="25" font-size="15">×</text>
+    <text x="218" y="80" font-size="13">÷</text>
+    <text x="216" y="187" font-size="14">+</text>
+    <text x="128" y="239" font-size="13">=</text>
+    <text x="38" y="187" font-size="14">−</text>
+    <text x="37" y="80" font-size="12">△</text>
+  </g>
+  <path d="M128 37 145 67 128 82 111 67 128 37Z" stroke="#FFD76A" stroke-opacity=".42"/>
+  <path d="M198 128 169 145 154 128 169 111 198 128Z" stroke="#77E7FF" stroke-opacity=".38"/>
+  <path d="M128 219 111 189 128 174 145 189 128 219Z" stroke="#77E7FF" stroke-opacity=".34"/>
+  <path d="M58 128 87 111 102 128 87 145 58 128Z" stroke="#FFD76A" stroke-opacity=".34"/>
+</svg>

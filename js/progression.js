@@ -114,7 +114,7 @@ function updateMissionHud(){
   const bossN=Math.min(PROGRESSION.bossHits,Number(sess.bossQuestionsAnswered||0));
   document.getElementById('missionCount').textContent=sess.guardianFocus?`${n}/${sess.focusTarget}`:(sess.devBankTest?`#${n+1}`:(isCoach?(n<4?'Mencari asas':n<8?'Menguji kuasa':'Hampir ditemui'):(bossPhase?`BOSS ${bossN}/${PROGRESSION.bossHits}`:`${Math.min(PROGRESSION.regularMissionQuestions,n)}/${PROGRESSION.regularMissionQuestions}`)));
   document.getElementById('missionProgressFill').style.width=sess.guardianFocus?Math.min(100,Math.round(n/sess.focusTarget*100))+'%':(sess.devBankTest?'100%':(isCoach?Math.min(100,Math.round(n/PROGRESSION.coachMinQuestions*100))+'%':Math.round(Math.min(PROGRESSION.missionQuestions,n)/PROGRESSION.missionQuestions*100)+'%'));
-  const title=sess.guardianFocus?`Latihan Fokus · ${META[sess.focusSkill]?.title||''}`:(sess.devBankTest?`DEV · ${sess.devSkill}`:(sess.missionChapter?kssrMissionLabel(sess.missionChapter):'Cikgu Wajar · Cari Kuasa Terbaik'));
+  const title=sess.guardianFocus?`Latihan Fokus · ${META[sess.focusSkill]?.title||''}`:(sess.devBankTest?`DEV · ${sess.devSkill}`:(sess.missionChapter?kssrMissionLabel(sess.missionChapter):'Cikgu Dimensi · Cari Kuasa Terbaik'));
   document.getElementById('missionTitle').textContent=title;
 }
 function recordMissionAnswer(ok,skillId,usedHint){

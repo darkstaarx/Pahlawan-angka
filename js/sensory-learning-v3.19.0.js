@@ -77,7 +77,7 @@
   }
   function onFirstWrong(q){
     const card=qcard();replayClass(card,'pa-sensory-reflect',900);setIntensity('calm',900);
-    showSignal('Cikgu Wajar: cari petunjuk, kemudian cuba semula','reflect',1200);emit('reflect',{skill:q?.skill});
+    showSignal('Cikgu Dimensi: cari petunjuk, kemudian cuba semula','reflect',1200);emit('reflect',{skill:q?.skill});
   }
   function onHint(q){
     const card=qcard();replayClass(card,'pa-sensory-hint',1000);setIntensity('calm',1050);
@@ -136,7 +136,7 @@
       }
     }else{
       replayClass(card,'pa-sensory-reflect',1000);setIntensity('calm',1000);
-      showSignal('Semak langkah Cikgu Wajar · kita bina semula','reflect',1300);emit('incorrect-resolved',{skill:id});
+      showSignal('Semak langkah Cikgu Dimensi · kita bina semula','reflect',1300);emit('incorrect-resolved',{skill:id});
     }
   }
 

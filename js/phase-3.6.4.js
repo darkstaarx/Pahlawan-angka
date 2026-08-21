@@ -100,6 +100,41 @@
   if(document.readyState==='complete')installBossOnlyTypedGuard();
   else window.addEventListener('load',installBossOnlyTypedGuard,{once:true});
 
+  // Cikgu Dimensi v0.2.1 loader. Additive only: legacy adaptive/intervention,
+  // telemetry and spaced-review systems remain authoritative.
+  (function loadDimensionalView(){
+    if(document.querySelector('script[data-pa-dimensional-view="0.2.1"]'))return;
+    const styles=[
+      ['css/cikgu-dimensi-place-value-v0.1.css?v=0.2.1','place-value'],
+      ['css/cikgu-dimensi-core-v0.2.css?v=0.2.1','core']
+    ];
+    styles.forEach(([href,key])=>{
+      if(document.querySelector(`link[data-pa-dimensional-style="${key}"]`))return;
+      const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.paDimensionalStyle=key;document.head.appendChild(link);
+    });
+    const queue=[
+      'js/engine/dimensional-memory.js?v=0.2.1',
+      'js/engine/dimensional-portal.js?v=0.2.1',
+      'js/engine/representations/place-value.js?v=0.2.1',
+      'js/engine/representations/fraction-area.js?v=0.2.1',
+      'js/engine/representations/number-line.js?v=0.2.1',
+      'js/engine/representations/grouping-array.js?v=0.2.1',
+      'js/engine/representations/number-bond.js?v=0.2.1',
+      'js/engine/representations/bar-relational.js?v=0.2.1',
+      'js/engine/dimensional-catalog.js?v=0.2.1',
+      'js/engine/dimensional-view.js?v=0.2.1',
+      'js/engine/dimensional-lab.js?v=0.2.1'
+    ];
+    const loadAt=index=>{
+      if(index>=queue.length)return;
+      const script=document.createElement('script');script.src=queue[index];script.async=false;
+      if(index===queue.length-1)script.dataset.paDimensionalView='0.2.1';
+      script.onload=()=>loadAt(index+1);script.onerror=()=>console.warn('Cikgu Dimensi gagal dimuat:',queue[index]);
+      document.head.appendChild(script);
+    };
+    loadAt(0);
+  })();
+
   window.PAEnemyRosterPatch={version:'3.24.3',minions:['Askabus','Syilinggit','Pigiramid'],bossOnlyTyped:true};
   updateDevQuickButton();
 })();

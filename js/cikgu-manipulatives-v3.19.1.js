@@ -1,4 +1,4 @@
-/* Pahlawan Angka v3.19.1 — Cikgu Wajar Visual Manipulatives
+/* Pahlawan Angka v3.19.1 — Cikgu Dimensi Visual Manipulatives
  * Teaching-only layer. It changes visual explanation and interaction only;
  * it never changes question generation, scoring, mastery, evidence, damage,
  * adaptive routing, checkpoints, or Restu logic.
@@ -238,7 +238,7 @@
 
   function contentEnhanced(stage,key,m){
     const mode=modeFor(key,m),spec=contentSpec(mode,m);if(!ENHANCED.has(mode)||!spec||stage>2)return null;
-    if(stage===0)return `<div class="visualCoachOnly pam-copy"><div class="stageTag">LIHAT</div><h2>${spec.a}</h2><p>Cikgu Wajar tunjuk satu hubungan dahulu. Tak perlu hafal langkah panjang.</p><button class="btn primary learningNext" onclick="learningAdvance()">Lihat caranya →</button></div>`;
+    if(stage===0)return `<div class="visualCoachOnly pam-copy"><div class="stageTag">LIHAT</div><h2>${spec.a}</h2><p>Cikgu Dimensi tunjuk satu hubungan dahulu. Tak perlu hafal langkah panjang.</p><button class="btn primary learningNext" onclick="learningAdvance()">Lihat caranya →</button></div>`;
     if(stage===1)return `<div class="visualCoachOnly pam-copy"><div class="stageTag">CUBA DENGAN MODEL</div><h2>${spec.b}</h2><p>Sentuh model di atas. Kita ubah <b>satu perkara sahaja</b>.</p></div>`;
     return `<div class="visualCoachOnly pam-copy"><div class="stageTag">SEMAK FAHAM</div><h2>${spec.c}</h2><div class="learningChoices">${spec.choices.map(([label,ok])=>`<button onclick="learningGuidedChoice(this,${ok})">${label}</button>`).join('')}</div><div id="guidedFeedback" class="learningFeedback"></div></div>`;
   }

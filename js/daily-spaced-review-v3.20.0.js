@@ -169,7 +169,7 @@
     if(resultTitle)resultTitle.textContent='Ulang Kaji Hari Ini Selesai';if(stars)stars.textContent='✓';
     if(score)score.textContent=`${clean}/${TARGET} sendiri · ${hints} dengan petunjuk`;
     if(rewards)rewards.innerHTML=`<span>+${COMPLETION_COINS} 🪙</span><span>${correct}/${TARGET} jawapan betul</span>`;
-    if(coach)coach.textContent=nextLabel?`Esok Cikgu Wajar akan semak semula ${nextLabel} jika bukti masih belum stabil.`:'Cukup untuk hari ini. Esok Cikgu Wajar akan pilih semakan seterusnya berdasarkan bukti terbaru.';
+    if(coach)coach.textContent=nextLabel?`Esok Cikgu Dimensi akan semak semula ${nextLabel} jika bukti masih belum stabil.`:'Cukup untuk hari ini. Esok Cikgu Dimensi akan pilih semakan seterusnya berdasarkan bukti terbaru.';
     save?.();screen('result');
   }
 

@@ -1,6 +1,6 @@
 function setFocus(id){
  db.focus=db.focus===id?null:id;
- log(db.focus?`Ibu bapa memilih ${META[id].title} sebagai misi utama.`:"Pelan latihan kembali kepada pilihan Cikgu Wajar.");
+ log(db.focus?`Ibu bapa memilih ${META[id].title} sebagai misi utama.`:"Pelan latihan kembali kepada pilihan Cikgu Dimensi.");
  save();renderParent();
 }
 
@@ -41,7 +41,7 @@ function skillReason(m,s,level){
  if(level===0)return `Belum cukup cabaran diselesaikan untuk membaca kuasa ${parentSafe(m.title)}.`;
  if(level===3)return `Berjaya ${s.correct} daripada ${attempts} cabaran${Number(s.hints||0)===0?' tanpa Petunjuk':''}.`;
  if(mis)return `Berjaya ${s.correct} daripada ${attempts} cabaran; ${PARENT_MISCONCEPTION_COPY[mis[0]]||'corak kesalahan yang sama masih berulang'}.`;
- if(hintRate>.4)return `Asasnya sudah kelihatan, tetapi Petunjuk atau bantuan Cikgu Wajar masih kerap diperlukan.`;
+ if(hintRate>.4)return `Asasnya sudah kelihatan, tetapi Petunjuk atau bantuan Cikgu Dimensi masih kerap diperlukan.`;
  if(level===2)return `Berjaya ${s.correct} daripada ${attempts} cabaran. Kuasa ini semakin stabil dengan latihan.`;
  return `Berjaya ${s.correct} daripada ${attempts} cabaran (${accuracy}%). Asas kemahiran ini perlu dibina semula.`;
 }
@@ -50,9 +50,9 @@ function powerCard(m,s){
  return `<article class="powerCard level-${level}"><div class="powerSeal"><span>${level||'?'}</span></div><div class="powerCopy"><div class="powerTitle"><b>${parentSafe(m.title)}</b>${powerStars(level)}</div><small>${powerLabel(level)}</small><p>${skillReason(m,s,level)}</p></div></article>`;
 }
 function nextMissionCopy(m,s){
- if(!m)return {title:"Teruskan pengembaraan",text:"Selesaikan beberapa cabaran lagi supaya Cikgu Wajar dapat memilih misi yang paling berguna.",action:"Kumpul sekurang-kurangnya 5 jawapan untuk membuka ringkasan pertama."};
+ if(!m)return {title:"Teruskan pengembaraan",text:"Selesaikan beberapa cabaran lagi supaya Cikgu Dimensi dapat memilih misi yang paling berguna.",action:"Kumpul sekurang-kurangnya 5 jawapan untuk membuka ringkasan pertama."};
  const mis=topMisEntry(s),attempts=skillAttempts(s),hintRate=attempts?Number(s.hints||0)/attempts:0;
- let action=mis?`Cikgu Wajar akan gunakan contoh visual untuk membantu apabila ${PARENT_MISCONCEPTION_COPY[mis[0]]||'kesalahan yang sama muncul'}.`:hintRate>.4?"Cikgu Wajar akan pecahkan latihan kepada langkah lebih kecil sebelum meminta jawapan tanpa Petunjuk.":"Cikgu Wajar akan beri latihan pendek pada tahap semasa, kemudian semak semula dengan bentuk soalan berbeza.";
+ let action=mis?`Cikgu Dimensi akan gunakan contoh visual untuk membantu apabila ${PARENT_MISCONCEPTION_COPY[mis[0]]||'kesalahan yang sama muncul'}.`:hintRate>.4?"Cikgu Dimensi akan pecahkan latihan kepada langkah lebih kecil sebelum meminta jawapan tanpa Petunjuk.":"Cikgu Dimensi akan beri latihan pendek pada tahap semasa, kemudian semak semula dengan bentuk soalan berbeza.";
  return {title:m.title,text:`Ini misi paling penting untuk menguatkan kuasa ${db.name} sekarang.`,action};
 }
 function parentPowerSummary(core,attempts){
@@ -62,7 +62,7 @@ function parentPowerSummary(core,attempts){
  const developing=ranked.filter(m=>powerLevel(scoreState(m.id))===2).sort((a,b)=>scoreState(a.id).mastery-scoreState(b.id).mastery);
  const mission=priority[0]||developing[0]||null;
  const display=[...priority,...developing.filter(m=>!priority.includes(m)),...strong].slice(0,5);
- if(attempts<5)return {headline:`Perjalanan ${db.name} baru bermula`,intro:"Cikgu Wajar masih mengumpul petunjuk daripada cara jawapan dibuat. Selepas beberapa cabaran lagi, kuasa yang mantap dan misi utama akan muncul di sini.",strong,priority,display,mission:null};
+ if(attempts<5)return {headline:`Perjalanan ${db.name} baru bermula`,intro:"Cikgu Dimensi masih mengumpul petunjuk daripada cara jawapan dibuat. Selepas beberapa cabaran lagi, kuasa yang mantap dan misi utama akan muncul di sini.",strong,priority,display,mission:null};
  if(priority.length)return {headline:`${db.name} sedang menguatkan kuasa Darjah ${coreGrade()}`,intro:`${strong.length?'Beberapa kuasa sudah semakin mantap. ':''}Sekarang ada ${priority.length===1?'satu misi utama':'dua misi utama'} yang perlu diberi perhatian sebelum cabaran menjadi lebih sukar.`,strong,priority,display,mission};
  if(developing.length)return {headline:`Kuasa ${db.name} semakin stabil`,intro:"Tiada jurang besar dikesan setakat ini. Beberapa kemahiran masih sedang dikuatkan melalui latihan pendek dan semakan semula.",strong,priority,display,mission};
  return {headline:`Pengembaraan ${db.name} berjalan baik`,intro:"Kuasa yang telah diuji menunjukkan kemajuan yang baik. Teruskan misi biasa supaya pencapaian ini kekal konsisten.",strong,priority,display,mission};
@@ -73,20 +73,20 @@ function parentLogText(raw){
  const skillMatch=GRAPH.skills.find(m=>text.includes(m.id));
  const skillName=skillMatch?.title||"kemahiran ini";
  if(text.startsWith("HP habis"))return "Tenaga hero habis. Tiada kemajuan dipadam dan sesi pengukuhan diteruskan.";
- if(/Learning Camp dicetuskan/.test(text))return `Cikgu Wajar membuka Kem Latihan untuk membantu ${skillName}.`;
+ if(/Learning Camp dicetuskan/.test(text))return `Cikgu Dimensi membuka Kem Latihan untuk membantu ${skillName}.`;
  if(/Learning cycle belum berjaya/.test(text))return `${skillName} masih perlukan satu lagi sesi bantuan sebelum meneruskan misi.`;
- if(/Learning Camp .*prerequisite/.test(text))return `Cikgu Wajar kembali kepada asas yang berkaitan untuk menguatkan ${skillName}.`;
- if(/Cikgu Wajar tukar strategi/.test(text))return `Cara pertama belum cukup membantu ${skillName}, jadi Cikgu Wajar menukar pendekatan pembelajaran.`;
+ if(/Learning Camp .*prerequisite/.test(text))return `Cikgu Dimensi kembali kepada asas yang berkaitan untuk menguatkan ${skillName}.`;
+ if(/Cikgu (?:Wajar|Dimensi) tukar strategi/.test(text))return `Cara pertama belum cukup membantu ${skillName}, jadi Cikgu Dimensi menukar pendekatan pembelajaran.`;
  if(/Restu Parent Lock diaktifkan/.test(text))return `Rehat ulang kaji diaktifkan untuk ${skillName}.`;
  if(/Restu Parent dibuka/.test(text))return `Restu ibu bapa diberi dan pengembaraan boleh diteruskan.`;
  if(/Learning Camp selesai/.test(text))return `Kem Latihan untuk ${skillName} berjaya diselesaikan selepas pendekatan yang sesuai ditemui.`;
  if(/Coach buka Topik/.test(text))return "Wilayah baharu dibuka selepas kemahiran sebelumnya semakin stabil.";
- if(/Recovery selesai/.test(text))return `Latihan asas untuk ${skillName} selesai; Cikgu Wajar akan menyemak kemahiran utama semula.`;
+ if(/Recovery selesai/.test(text))return `Latihan asas untuk ${skillName} selesai; Cikgu Dimensi akan menyemak kemahiran utama semula.`;
  if(/menunjukkan bukti melebihi/.test(text))return `${skillName} berjaya melepasi cabaran tahap lebih tinggi.`;
  if(/Stretch .*belum stabil/.test(text))return `Cabaran tahap lebih tinggi untuk ${skillName} belum stabil; latihan kekal pada tahap semasa.`;
- if(/lemah; coach turun/.test(text))return `Cikgu Wajar kembali kepada asas berkaitan untuk membantu ${skillName}.`;
+ if(/lemah; coach turun/.test(text))return `Cikgu Dimensi kembali kepada asas berkaitan untuk membantu ${skillName}.`;
  if(/kuat; coach mulakan/.test(text))return `${skillName} semakin mantap, jadi satu cabaran bonus telah dibuka.`;
- return text.replace(/Parent Focus:/gi,"Fokus ibu bapa:").replace(/Coach/gi,"Cikgu Wajar");
+ return text.replace(/Parent Focus:/gi,"Fokus ibu bapa:").replace(/Coach/gi,"Cikgu Dimensi").replace(/Cikgu Wajar/gi,"Cikgu Dimensi");
 }
 
 function renderParent(){
@@ -97,12 +97,12 @@ function renderParent(){
  const tested=core.filter(m=>powerLevel(scoreState(m.id))>0),starTotal=tested.reduce((z,m)=>z+powerLevel(scoreState(m.id)),0);
  const cards=summary.display.length?summary.display.map(m=>powerCard(m,scoreState(m.id))).join(""):`<div class="parentEmpty"><span>✦</span><b>Kuasa masih diteroka</b><p>Jawab beberapa soalan lagi untuk membuka penilaian setiap kemahiran.</p></div>`;
  document.getElementById("summaryTab").innerHTML=`
-  <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">CATATAN CIKGU WAJAR</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Wajar menunjukkan perjalanan tiga bintang"></section>
+  <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">CATATAN CIKGU DIMENSI</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Dimensi menunjukkan perjalanan tiga bintang"></section>
   <div class="parentStats"><div><span>⚔</span><b>${db.coreFrontier}/${totalChapters()}</b><small>Wilayah dibuka</small></div><div><span>🎯</span><b>${accuracy}%</b><small>Ketepatan</small></div><div><span>★</span><b>${starTotal}/${tested.length*3||0}</b><small>Bintang kuasa</small></div></div>
   <section class="card powerSection"><div class="sectionHead parentSectionHead"><div><div class="eyebrow">PETA KUASA</div><h3>Kuasa yang telah diuji</h3></div><span class="parentLegend">★ Misi · ★★ Dikuatkan · ★★★ Mantap</span></div><div class="powerList">${cards}</div></section>
-  <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-wajar/welcome.webp" alt=""><span><b>Langkah Cikgu Wajar</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
+  <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-wajar/welcome.webp" alt=""><span><b>Langkah Cikgu Dimensi</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
  let byCh={};core.forEach(m=>(byCh[m.chapter]??=[]).push(m));
- document.getElementById("coreTab").innerHTML=`<div class="card"><h2>Kemahiran Darjah ${g}</h2><p class="mut">Pilih satu kemahiran jika mahu lebih banyak latihan pada bahagian itu. Cikgu Wajar masih akan menyelitkan ulang kaji penting supaya asas lain tidak tertinggal.</p>${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3 style="margin-top:15px">Topik ${ch}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;
+ document.getElementById("coreTab").innerHTML=`<div class="card"><h2>Kemahiran Darjah ${g}</h2><p class="mut">Pilih satu kemahiran jika mahu lebih banyak latihan pada bahagian itu. Cikgu Dimensi masih akan menyelitkan ulang kaji penting supaya asas lain tidak tertinggal.</p>${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3 style="margin-top:15px">Topik ${ch}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;
  document.getElementById("levelsTab").innerHTML=`<div class="card"><h2>Pengukuhan Asas · ${gradeLabel(prev)}</h2>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada latihan asas tambahan diperlukan.</p>"}</div><div class="card"><h2>Cabaran Lanjutan · ${gradeLabel(next)}</h2>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div>`;
  document.getElementById("engineTab").innerHTML=`<div class="card"><h2>Rekod Latihan</h2>${db.logs.length?db.logs.map(x=>`<p class="mut">${new Date(x.t).toLocaleString("ms-MY")}: ${parentSafe(parentLogText(x.text))}</p>`).join(""):"<p class='mut'>Belum ada rekod penting.</p>"}</div>`;
  tab("summary");
