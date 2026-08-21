@@ -18,6 +18,7 @@
 <script defer src="js/cloud.js?v=3.16.6"></script>
 <script defer src="js/commercial-foundation-v3.25.0.js?v=3.25.0"></script>
 <script defer src="js/guardian-onboarding-v3.25.1.js?v=3.25.1"></script>
+<link rel="stylesheet" href="css/google-auth-v3.25.2.css?v=3.25.2">
 <link rel="stylesheet" href="css/kssr-question-v3.9.0.css?v=3.10.0">
 <link rel="stylesheet" href="css/visual-coach-v3.16.0.css?v=3.17.0">
 <link rel="stylesheet" href="css/commercial-foundation-v3.25.0.css?v=3.25.0">
@@ -29,12 +30,11 @@
   <div class="loginShell">
     <div class="loginActions cloudLoginCard" aria-label="Log masuk penjaga">
       <div class="cloudLoginHead"><img class="loginCrest" src="assets/ui/login/guardian-crest.svg" alt=""><span><b>Akaun Ibu Bapa</b><small>Progress anak disimpan dengan selamat</small></span></div>
-      <div class="authTabs"><button id="authLoginTab" class="active" type="button" onclick="PACloud.setAuthMode('login')">Log masuk</button><button id="authRegisterTab" type="button" onclick="PACloud.setAuthMode('register')">Daftar</button></div>
-      <form id="authForm" class="authForm" onsubmit="PACloud.submitAuth(event)">
-        <label>E-mel<input id="authEmail" type="email" autocomplete="email" inputmode="email" required placeholder="ibu@contoh.com"></label>
-        <label>Kata laluan<input id="authPassword" type="password" autocomplete="current-password" minlength="8" required placeholder="Minimum 8 aksara"></label>
-        <button id="authSubmit" class="btn primary heroStart" type="submit">Log masuk</button>
-      </form>
+      <div id="authForm" class="googleAuthPublic">
+        <button id="googleAuthButton" class="googleAuthButton" type="button" onclick="PACloud.signInGoogle()"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.5-.2-2.2H12v4h5.4a4.6 4.6 0 0 1-2 3v2.6h3.3c1.9-1.8 2.9-4.4 2.9-7.4z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.4L15.4 17c-.9.6-2.1 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3v2.7A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 13.9A6 6 0 0 1 6.1 12c0-.7.1-1.3.3-1.9V7.4H3A10 10 0 0 0 2 12c0 1.7.4 3.2 1 4.6l3.4-2.7z"/><path fill="#EA4335" d="M12 6c1.5 0 2.8.5 3.9 1.5l2.9-2.9A9.8 9.8 0 0 0 3 7.4l3.4 2.7C7.2 7.8 9.4 6 12 6z"/></svg><span>Teruskan dengan Google</span></button>
+        <p>Satu akaun penjaga untuk mengurus semua profil anak.</p>
+      </div>
+      <details id="adminAuth" class="adminAuth"><summary>Akses admin</summary><form class="authForm" onsubmit="PACloud.submitAuth(event)"><label>E-mel<input id="authEmail" type="email" autocomplete="email" inputmode="email" required></label><label>Kata laluan<input id="authPassword" type="password" autocomplete="current-password" minlength="8" required></label><button id="authSubmit" class="btn secondary heroStart" type="submit">Log masuk admin</button></form></details>
       <div id="loginError" class="loginError" role="alert"></div>
       <div id="cloudAccount" class="cloudAccount hidden"></div>
       <div class="authPrivacy">Akaun adalah untuk penjaga. Anak bermain melalui profil tanpa e-mel sendiri.</div>

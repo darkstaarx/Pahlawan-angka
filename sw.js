@@ -11,7 +11,7 @@ const APP_SHELL=[
   './assets/heroes/wira/hub/adventure-v1.webp','./assets/heroes/bunga/hub/adventure-v1.webp','./assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
   './assets/pets/aurora/hub/adventure-v1.webp','./assets/pets/arif/hub/adventure-v1.webp','./assets/pets/kucing-pembaris/hub/adventure-v1.webp','./assets/pets/tiko/hub/adventure-v1.webp',
   './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg',
-  './css/game.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
+  './css/game.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/google-auth-v3.25.2.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
   './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
   './css/login-buttons-v3.7.1.css','./css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
   './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',

@@ -43,6 +43,13 @@
     }catch(error){message(authMessage(error),true)}finally{if(button){button.disabled=false;button.textContent=state.authMode==='login'?'Log masuk':'Cipta akaun penjaga'}}
   }
 
+  async function signInGoogle(){
+    const button=$('googleAuthButton');message('');if(button){button.disabled=true;button.querySelector('span').textContent='Membuka Google…'}
+    const redirectTo=location.origin+location.pathname;
+    const {error}=await state.client.auth.signInWithOAuth({provider:'google',options:{redirectTo,queryParams:{prompt:'select_account'}}});
+    if(error){message('Log masuk Google belum tersedia. Cuba lagi sebentar.',true);if(button){button.disabled=false;button.querySelector('span').textContent='Teruskan dengan Google'}}
+  }
+
   function authMessage(error){
     const raw=String(error?.message||error||'').toLowerCase();
     if(raw.includes('invalid login'))return 'E-mel atau kata laluan tidak tepat.';
@@ -174,8 +181,8 @@
   }
 
   function renderAccount(){
-    const form=$('authForm'),tabs=document.querySelector('.authTabs'),box=$('cloudAccount'),resume=$('loginResume');if(!box)return;
-    const signed=!!state.user;form?.classList.toggle('hidden',signed);tabs?.classList.toggle('hidden',signed);box.classList.toggle('hidden',!signed);
+    const form=$('authForm'),tabs=document.querySelector('.authTabs'),admin=$('adminAuth'),box=$('cloudAccount'),resume=$('loginResume');if(!box)return;
+    const signed=!!state.user;form?.classList.toggle('hidden',signed);tabs?.classList.toggle('hidden',signed);admin?.classList.toggle('hidden',signed);box.classList.toggle('hidden',!signed);
     if(resume)resume.classList.toggle('hidden',!signed&&!!db?.cloudChildId);
     if(!signed){box.innerHTML='';return;}
     const profiles=(state.profiles||[]).map(p=>`<button class="cloudProfile ${p.id===state.childId?'active':''}" onclick="PACloud.selectChild('${p.id}')"><span class="cloudProfileIcon">⚔</span><span><b>${safe(p.display_name)}</b><small>Darjah ${p.grade}</small></span><em>${p.id===state.childId?'Aktif':'Pilih'}</em></button>`).join('');
@@ -219,6 +226,6 @@
     setInterval(tick,1000);document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else state.lastTick=performance.now();});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
-  window.PACloud={init,setAuthMode,submitAuth,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,addChild,logout,state};
+  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,addChild,logout,state};
   init().catch(error=>{console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
 })();
