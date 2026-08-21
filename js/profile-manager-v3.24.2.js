@@ -3,7 +3,7 @@
 // Existing setup screen remains only as an offline/legacy fallback.
 (()=>{
 'use strict';
-const VERSION='3.24.2';
+const VERSION='3.25.3';
 const HERO={
   wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/profile-happy-v1.webp'},
   bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'}
@@ -252,6 +252,9 @@ async function saveProfile(){
   if(!name||name.length>40){errorBox.textContent='Masukkan nama anak antara 1 hingga 40 aksara.';return}
   if(grade<1||grade>6){errorBox.textContent='Pilih Darjah 1 hingga Darjah 6.';return}
   if(!HERO[hero]){errorBox.textContent='Pilih pahlawan.';return}
+  if(!editorProfileId&&!(state.profiles||[]).length&&window.PAOnboarding?.beginProfile){
+    closeEditor();window.PAOnboarding.beginProfile({name,grade,hero});return;
+  }
   button.disabled=true;button.textContent='Menyimpan…';errorBox.textContent='';
   try{
     let targetId=editorProfileId;
@@ -326,7 +329,9 @@ async function confirmDelete(){
 
 async function selectProfile(id){
   if(!profileById(id))await refreshProfiles();
-  await cloud()?.selectChild?.(id,true);
+  const profile=profileById(id);await cloud()?.selectChild?.(id,false);
+  if(!db?.onboarding?.completed&&profile&&window.PAOnboarding?.beginExisting)return window.PAOnboarding.beginExisting(profile);
+  if(typeof renderHub==='function')renderHub();
 }
 async function openManager(){
   if(!signed())return screen('login');

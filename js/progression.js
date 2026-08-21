@@ -54,6 +54,8 @@ function lockedMissionCopy(ch){const previous=Math.max(1,+ch-1);return `Buka sel
 
 function renderHub(){
   if(!db)return;
+  const cloudState=window.PACloud?.state,activeProfile=cloudState?.profiles?.find?.(p=>p.id===cloudState.childId);
+  if(cloudState?.user&&!db.onboarding?.completed&&activeProfile&&window.PAOnboarding?.beginExisting){window.PAOnboarding.beginExisting(activeProfile);return;}
   if(typeof enforceRestuLock==='function' && enforceRestuLock())return;
   ensureProgression(); updateFrontier();
   const h=HEROES[db.hero||'wira'];

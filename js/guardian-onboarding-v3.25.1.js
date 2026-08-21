@@ -4,13 +4,16 @@ let step=1,draft=null,busy=false;
 const $=id=>document.getElementById(id);
 const goals={school:['Ikut tahap sekolah','Latihan disusun mengikut darjah anak.'],foundation:['Kukuhkan asas','Utamakan asas yang belum stabil.'],exam:['Persediaan penilaian','Seimbangkan ketepatan, kefahaman dan format soalan.']};
 function needsWizard(){return !!window.PACloud?.state?.user&&window.PACloud.state.needsOnboarding===true}
+function openDraft(data){draft={pin:'',daily:20,session:20,goal:'school',...data};step=1;busy=false;render();screen('guardianOnboarding')}
 function begin(){
  const name=($('child')?.value||'').trim(),grade=Number($('gradeSelect')?.value||2);
  if(!name){$('child')?.focus();return}
  if(!needsWizard()){window.startNew();return}
  const hero=$('pick-bunga')?.classList.contains('active')?'bunga':'wira';
- draft={name,grade,hero,pin:'',daily:20,session:20,goal:'school'};step=1;render();screen('guardianOnboarding')
+ openDraft({name,grade,hero,source:'setup'})
 }
+function beginProfile(data){openDraft({...data,source:'profile-manager'})}
+function beginExisting(profile){openDraft({name:profile.display_name,grade:Number(profile.grade),hero:profile.hero_id||'wira',existingId:profile.id,source:'profile-manager'})}
 function field(){return $('onboardingBody')}
 function render(){
  $('onboardingStepLabel').textContent=`Langkah ${step} daripada 4`;$('onboardingProgressFill').style.width=`${step*25}%`;
@@ -23,17 +26,23 @@ function next(){
  if(step===1){const a=($('obPin')?.value||'').trim(),b=($('obPin2')?.value||'').trim();if(!/^\d{4}$/.test(a)||a!==b)return error(a!==b?'PIN tidak sepadan.':'Masukkan PIN 4 digit.');draft.pin=a}
  if(step<4){step++;render()}
 }
-function back(){if(busy)return;if(step>1){step--;render()}else screen('setup')}
+function back(){if(busy)return;if(step>1){step--;render()}else if(draft?.source==='profile-manager')window.PAProfileManager?.open?.();else screen('setup')}
 function chooseTime(n){draft.daily=n;draft.session=n;render()}
 function chooseGoal(id){if(goals[id])draft.goal=id;render()}
 function error(message){const el=$('obError');if(el)el.textContent=message}
 async function finish(){
  if(busy)return;busy=true;render();
  try{
-  window.startNew();
-  db.parentPin=draft.pin;db.learningGoal=draft.goal;db.onboarding={completed:true,completedAt:Date.now(),introPending:true};save();
-  screen('guardianOnboarding');
-  await waitForChild();
+  if(draft.existingId){
+   await window.PACloud?.selectChild?.(draft.existingId,false);
+  }else{
+   if($('child'))$('child').value=draft.name;if($('gradeSelect'))$('gradeSelect').value=String(draft.grade);
+   if(typeof window.chooseHero==='function')window.chooseHero(draft.hero);
+   window.startNew();
+   db.parentPin=draft.pin;db.learningGoal=draft.goal;db.onboarding={completed:true,completedAt:Date.now(),introPending:true};save();
+   screen('guardianOnboarding');
+   await waitForChild();
+  }
   db.parentPin=draft.pin;db.learningGoal=draft.goal;db.onboarding={completed:true,completedAt:Date.now(),introPending:true};save();
   await window.PACloud?.saveOnboardingControls?.({daily_limit_minutes:draft.daily,session_limit_minutes:draft.session,soft_nudge_minutes:15,hard_lock_enabled:true,show_elapsed_timer:true});
   await window.PACloud?.syncSaveNow?.();
@@ -43,5 +52,5 @@ async function finish(){
 function waitForChild(){return new Promise((resolve,reject)=>{let tries=0;const timer=setInterval(()=>{const s=window.PACloud?.state;if(s?.childId&&!s.needsOnboarding){clearInterval(timer);resolve()}else if(++tries>60){clearInterval(timer);reject(new Error('child profile timeout'))}},150)})}
 function startIntro(){if(!db)return;db.onboarding.introPending=false;db.onboarding.introActive=true;db.onboarding.introStartedAt=Date.now();save();startMission(null)}
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-window.PAOnboarding={begin,next,back,chooseTime,chooseGoal,finish,startIntro};
+window.PAOnboarding={begin,beginProfile,beginExisting,next,back,chooseTime,chooseGoal,finish,startIntro};
 })();
