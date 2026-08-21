@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/pa-180.png?v=3.10.0">
 <title>Pahlawan Angka</title>
 <link rel="stylesheet" href="css/finisher-auras-v3.8.7.css?v=3.8.7">
+<link rel="stylesheet" href="css/hub-adventure-v3.24.11.css?v=3.24.11">
 <link rel="stylesheet" href="css/finisher-cinematic-v3.8.8.css?v=3.8.16">
 <link rel="stylesheet" href="css/cloud-auth-v3.15.0.css?v=3.16.6">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
@@ -54,7 +55,7 @@
 
 <section id="hub" class="screen">
   <div class="topNav hubTopNav"><button class="iconBtn" onclick="goSetup()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button><div><div class="eyebrow">LAMAN UTAMA</div><b>Hub Murid</b></div><div class="grow"></div></div>
-  <div class="hubProfile card"><div class="hubScene"><img id="hubHeroImg" class="hubHeroCharacter"><img id="hubScenePet" class="hubScenePet hidden" alt=""></div><div class="hubProfileInfo"><div class="eyebrow" id="hubGrade">Darjah 2</div><h2 id="hubName">Aiman</h2><div class="row"><span class="levelPill" id="hubLevel">Lv. 1</span><span class="coinPill" id="hubCoins">🪙 0</span></div><div class="xpRow"><div class="xpTrack"><span id="hubXpFill"></span></div><small id="hubXpText">0 / 120 XP</small></div></div></div>
+  <div class="hubProfile card"><div class="hubScene"><img id="hubMathFx" class="hubMathFx" alt="" aria-hidden="true"><img id="hubHeroImg" class="hubHeroCharacter"><img id="hubScenePet" class="hubScenePet hidden" alt=""></div><div class="hubProfileInfo"><div class="eyebrow" id="hubGrade">Darjah 2</div><h2 id="hubName">Aiman</h2><div class="row"><span class="levelPill" id="hubLevel">Lv. 1</span><span class="coinPill" id="hubCoins">🪙 0</span></div><div class="xpRow"><div class="xpTrack"><span id="hubXpFill"></span></div><small id="hubXpText">0 / 120 XP</small></div></div></div>
   <div id="playTimer" class="playTimer" aria-live="polite"><span>⏱</span><b>00:00</b><small>Masa bermain hari ini</small></div>
   <button class="hubContinue card" onclick="continueHubMission()"><span class="continueSword">⚔</span><span class="continueBody"><small>SAMBUNG PENGEMBARAAN</small><b id="hubContinueTitle">Unit 1 · Nombor</b><span class="continueProgress"><span id="hubContinueFill"></span></span><em id="hubContinueText">Kemajuan 0%</em></span><span class="continueArrow">›</span></button>
   <button class="hubCoachCompact" onclick="startMission(null)"><span class="hubCoachPortrait"><img src="assets/coach/cikgu-wajar/welcome.webp" alt="Cikgu Dimensi"></span><span><b>Auto Coach</b><small>Cari tahap terbaik anda</small></span><span>›</span></button>

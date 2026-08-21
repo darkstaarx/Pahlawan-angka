@@ -54,7 +54,9 @@ function renderHub(){
   const h=HEROES[db.hero||'wira'];
   const levelNeed=xpForLevel(db.level),xpPct=Math.min(100,Math.round((db.levelXp||0)/levelNeed*100));
   document.body.classList.toggle('hero-bunga',(db.hero||'wira')==='bunga');
-  document.getElementById('hubHeroImg').src=h.idle;
+  const heroId=db.hero||'wira',hubHero=document.getElementById('hubHeroImg'),hubFx=document.getElementById('hubMathFx');
+  hubHero.src=h.hub||h.idle; hubHero.alt=h.name;
+  if(hubFx){hubFx.src=h.hubFx||'';hubFx.classList.toggle('hidden',!h.hubFx);hubFx.dataset.hero=heroId}
   document.getElementById('hubName').textContent=db.name;
   document.getElementById('hubGrade').textContent=`Darjah ${db.schoolGrade}`;
   document.getElementById('hubLevel').textContent=`Lv. ${db.level}`;
@@ -66,7 +68,7 @@ function renderHub(){
   const petImg=document.getElementById('hubEquippedPetImg'),auraImg=document.getElementById('hubEquippedAuraImg');
   document.getElementById('hubEquippedPetName').textContent=pet?.name||'Tiada';document.getElementById('hubEquippedAuraName').textContent=aura?.name||'Tiada';
   if(petImg){petImg.src=pet?.front||'';petImg.classList.toggle('hidden',!pet);petImg.alt=pet?.name||'';petImg.closest('.loadoutThumb')?.classList.toggle('equipped',!!pet)}if(auraImg){auraImg.src=aura?.image||'';auraImg.classList.toggle('hidden',!aura);auraImg.alt=aura?.name||'';auraImg.closest('.loadoutThumb')?.classList.toggle('equipped',!!aura)}
-  const scenePet=document.getElementById('hubScenePet');if(scenePet){scenePet.src=pet?.front||'';scenePet.alt=pet?.name||'';scenePet.classList.toggle('hidden',!pet);scenePet.dataset.pet=db.rewards?.equippedPet||''}
+  const scenePet=document.getElementById('hubScenePet');if(scenePet){scenePet.src=pet?.hub||pet?.front||'';scenePet.alt=pet?.name||'';scenePet.classList.toggle('hidden',!pet);scenePet.dataset.pet=db.rewards?.equippedPet||''}
   const currentChapter=String(db.activeMissionChapter||db.coreFrontier||1),currentPct=chapterMasteryPct(currentChapter);document.getElementById('hubContinueTitle').textContent=kssrMissionLabel(currentChapter);document.getElementById('hubContinueFill').style.width=currentPct+'%';document.getElementById('hubContinueText').textContent=`Kemajuan ${currentPct}%`;
   const loadoutHint=document.getElementById('hubLoadoutHint');if(loadoutHint)loadoutHint.textContent=pet||aura?'Digunakan dalam battle seterusnya':'Belum dilengkapi · Lihat Khazanah';
   const daily=Math.min(PROGRESSION.dailyTarget,db.daily.correct||0);
