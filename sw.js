@@ -11,7 +11,7 @@ const APP_SHELL=[
   './assets/heroes/wira/hub/adventure-v1.webp','./assets/heroes/bunga/hub/adventure-v1.webp','./assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
   './assets/pets/aurora/hub/adventure-v1.webp','./assets/pets/arif/hub/adventure-v1.webp','./assets/pets/kucing-pembaris/hub/adventure-v1.webp','./assets/pets/tiko/hub/adventure-v1.webp',
   './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg',
-  './css/game.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
+  './css/game.css','./css/commercial-foundation-v3.25.0.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
   './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
   './css/login-buttons-v3.7.1.css','./css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
   './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',
@@ -31,7 +31,7 @@ const APP_SHELL=[
   './js/engine/telemetry.js','./js/engine/intervention.js','./js/engine/frontier.js','./js/engine/adaptive.js',
   './js/engine/dimensional-memory.js','./js/engine/dimensional-portal.js','./js/engine/representations/place-value.js','./js/engine/representations/fraction-area.js','./js/engine/representations/number-line.js','./js/engine/representations/grouping-array.js','./js/engine/representations/number-bond.js','./js/engine/representations/bar-relational.js','./js/engine/dimensional-catalog.js','./js/engine/dimensional-view.js','./js/engine/dimensional-lab.js',
   './js/heroes.js','./js/progression.js','./js/rewards-v2.js','./js/learning.js','./js/audio.js',
-  './js/battle.js','./js/parent.js','./js/guardian-focus.js','./js/app.js','./js/cloud.js','./js/phase-3.6.4.js','./js/dev-cikgu-dimensi-v3.24.10.js',
+  './js/battle.js','./js/parent.js','./js/guardian-focus.js','./js/app.js','./js/cloud.js','./js/commercial-foundation-v3.25.0.js','./js/phase-3.6.4.js','./js/dev-cikgu-dimensi-v3.24.10.js',
   './js/sensory-learning-v3.19.0.js','./js/cikgu-manipulatives-v3.19.1.js','./js/daily-spaced-review-v3.20.0.js',
   './js/dev-experiments-v3.21.2.js','./js/combat-polish-v3.21.3.js','./js/dev-boss-lab-v3.21.4.js','./js/combat-target-anchor-v3.21.5.js','./js/finisher-alpha-hotspots-v3.21.6.js','./js/typed-answer-ui-v3.21.8.js','./js/profile-manager-v3.24.2.js','./js/pwa.js'
 ];

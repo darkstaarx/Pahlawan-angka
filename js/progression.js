@@ -1,7 +1,12 @@
 // Student-facing progression layer. Does not replace the adaptive coach.
 const DEV_BUILD=true;
 const PROGRESSION={missionQuestions:14,regularMissionQuestions:9,bossHits:5,coachMinQuestions:8,coachMaxQuestions:15,missionBoost:3.2,xpPerCorrect:12,xpPerWrong:0,dailyTarget:15,coinPerCorrect:1,streakEvery:5,streakCoinBonus:5,masteryCoinBonus:50,learningCoinBonus:10};
-function isDevMode(){return DEV_BUILD && !!(db&&db.devMode)}
+function isDevMode(){
+ const host=location.hostname;
+ const local=host==='localhost'||host==='127.0.0.1'||host==='[::1]';
+ const authorised=local||window.PACommercial?.canUseDev?.()===true;
+ return DEV_BUILD&&authorised&&!!(db&&db.devMode)
+}
 
 function ensureProgression(){
   if(!db)return;
@@ -14,7 +19,7 @@ function ensureProgression(){
   db.activeMissionChapter=db.activeMissionChapter||null;
   db.totalCorrect=db.totalCorrect||0;
   db.totalQuestions=db.totalQuestions||0;
-  if(localStorage.getItem('pa_dev_unlocked')==='1')db.devMode=true;
+  if(localStorage.getItem('pa_dev_unlocked')==='1'&&(location.hostname==='localhost'||location.hostname==='127.0.0.1'||window.PACommercial?.canUseDev?.()===true))db.devMode=true;
   const today=new Date().toISOString().slice(0,10);
   if(!db.daily || db.daily.date!==today)db.daily={date:today,correct:0,claimed:false};
   recalcLevel();

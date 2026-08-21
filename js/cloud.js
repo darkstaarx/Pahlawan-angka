@@ -53,7 +53,7 @@
 
   async function signedIn(session){
     state.user=session?.user||null;if(!state.user)return;
-    message('');await loadProfiles();renderAccount();
+    message('');await window.PACommercial?.refresh?.();await loadProfiles();renderAccount();
   }
 
   async function loadProfiles(){
@@ -192,7 +192,7 @@
     const {data,error}=await state.client.from('parental_controls').upsert(payload,{onConflict:'child_id'}).select().single();if(error){showRewardToast('Tetapan gagal disimpan');return;}state.controls=data;state.locked=false;updateTimer();renderParentControls();showRewardToast('Had masa disimpan ✓');
   }
 
-  async function logout(){await syncSaveNow();await endPlaySession('user_exit');await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];renderAccount();screen('login');}
+  async function logout(){await syncSaveNow();await endPlaySession('user_exit');await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
 
   function wireLegacy(){
     const oldSave=window.save;window.save=function(){oldSave();scheduleSave()};

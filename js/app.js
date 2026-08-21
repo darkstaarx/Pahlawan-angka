@@ -106,7 +106,10 @@ function isDemoStudent(){return !!(uiSession&&uiSession.role==='student')}
 let devVersionTaps=0,devVersionTapTimer=null;
 function tapVersionForDev(){
  devVersionTaps++;clearTimeout(devVersionTapTimer);devVersionTapTimer=setTimeout(()=>devVersionTaps=0,1200);
- if(devVersionTaps<3)return;devVersionTaps=0;localStorage.setItem('pa_dev_unlocked','1');
+ if(devVersionTaps<3)return;devVersionTaps=0;
+ const local=location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.hostname==='[::1]';
+ if(!local&&window.PACommercial?.canUseDev?.()!==true){localStorage.removeItem('pa_dev_unlocked');if(db)db.devMode=false;showRewardToast('DEV hanya tersedia untuk pentadbir.');return}
+ localStorage.setItem('pa_dev_unlocked','1');
  if(db){db.devMode=true;save();updateDevQuickButton();openDevPanel()}else{showRewardToast('DEV dibuka · masuk sebagai Murid dahulu')}
 }
 function updateDevQuickButton(){const b=document.getElementById('devQuickBtn');if(!b)return;b.classList.toggle('hidden',!(db&&isDevMode()));}
