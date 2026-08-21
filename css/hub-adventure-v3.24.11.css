@@ -2,11 +2,11 @@
 .hubProfile{background:radial-gradient(circle at 20% 35%,rgba(71,180,255,.22),transparent 33%),linear-gradient(90deg,rgba(13,40,69,.8),rgba(12,28,52,.94)),url('../assets/battlefields/forest-temple/arena-v1.webp') center/cover}
 .hubProfile:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,216,91,.08),transparent 32%),radial-gradient(circle at 25% 88%,rgba(72,220,171,.13),transparent 29%);mix-blend-mode:screen;z-index:0}
 .hubScene{isolation:isolate}
-.hubHeroCharacter{left:-9%!important;bottom:-3px!important;width:99%!important;height:178px!important;z-index:2;animation:hubAdventureBreathe 3.8s ease-in-out infinite}
+.hubHeroCharacter{left:-9%!important;bottom:-11px!important;width:99%!important;height:178px!important;z-index:2;animation:hubAdventureBreathe 3.8s ease-in-out infinite}
 body.hero-bunga .hubHeroCharacter{left:-8%!important;width:93%!important;height:165px!important}
-.hubMathFx{position:absolute;left:-12%;bottom:5px;width:92%;height:145px;object-fit:contain;opacity:.28;filter:saturate(1.08) drop-shadow(0 0 7px rgba(77,194,255,.3));z-index:1;pointer-events:none;animation:hubMathDrift 8s ease-in-out infinite}
-.hubMathFx[data-hero="bunga"]{left:-17%;bottom:-3px;width:100%;height:158px;opacity:.24;filter:saturate(.95) drop-shadow(0 0 7px rgba(157,232,96,.28));animation-duration:9.5s}
-.hubScenePet{left:62%!important;bottom:5px!important;width:38%!important;height:79px!important;z-index:3;animation:hubPetReady 2.8s ease-in-out infinite}
+.hubMathFx{position:absolute;left:-12%;bottom:-3px;width:92%;height:145px;object-fit:contain;opacity:.28;filter:saturate(1.08) drop-shadow(0 0 7px rgba(77,194,255,.3));z-index:1;pointer-events:none;animation:hubMathDrift 8s ease-in-out infinite}
+.hubMathFx[data-hero="bunga"]{left:-17%;bottom:-11px;width:100%;height:158px;opacity:.24;filter:saturate(.95) drop-shadow(0 0 7px rgba(157,232,96,.28));animation-duration:9.5s}
+.hubScenePet{left:62%!important;bottom:-2px!important;width:38%!important;height:79px!important;z-index:3;animation:hubPetReady 2.8s ease-in-out infinite}
 .hubScenePet[data-pet="aurora"]{left:55%!important;width:47%!important;height:86px!important}
 .hubScenePet[data-pet="arif"]{left:62%!important;width:37%!important;height:78px!important}
 .hubScenePet[data-pet="pembaris"]{left:60%!important;width:40%!important;height:82px!important}
