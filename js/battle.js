@@ -37,7 +37,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
  if(!attacker||!target||!arena||!flash)return;
  const pet=attackerId==="hero"?document.getElementById("battlePet"):null,hasPet=!!(pet&&!pet.classList.contains("hidden")&&db?.rewards?.equippedPet);
  const heroLead=hasPet?420:0,finisherContact=820;
- let attackDuration=(finisher?1450:800)+heroLead,contactDelay=(finisher?finisherContact:390)+heroLead,hitDuration=finisher?(tint==="bloom"?1080:900):520,shakeClass=finisher?"finisher-shake":"shake",tintClass=tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice"),pulse=tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice");
+ let attackDuration=(finisher?1450:720)+heroLead,contactDelay=(finisher?finisherContact:390)+heroLead,hitDuration=finisher?(tint==="bloom"?1080:900):520,shakeClass=finisher?"finisher-shake":"shake",tintClass=tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice"),pulse=tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice");
  if(attackerId==="hero"){
    if(pet&&!pet.classList.contains("hidden")){
      const petRect=pet.getBoundingClientRect(),targetRect=target.getBoundingClientRect();
@@ -58,8 +58,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    }else{
     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-movement")},heroLead+140);
     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+320);
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+550);
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+710);
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+620);
    }
  }else if(attacker.dataset.enemyTier==="boss"){
    clearHeroPhases();attacker.classList.add("phase-anticipation");

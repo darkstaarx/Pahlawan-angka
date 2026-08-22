@@ -16,8 +16,11 @@ for(const file of expected){
  if(!action.includes(file))failures.push('not wired '+file);
  if(!sw.includes(file))failures.push('not cached '+file);
 }
-if((action.match(/asset:'assets\/heroes\//g)||[]).length!==6)failures.push('contact attack count is not six');
-if(!sw.includes('assets/heroes/wira/attack.webp')||!sw.includes('assets/heroes/bunga/attack.webp'))failures.push('original movement frames are not cached');
+if((action.match(/asset:'assets\/heroes\//g)||[]).length!==8)failures.push('contact attack count is not eight (four per hero)');
+for(const original of ['assets/heroes/wira/attack.webp','assets/heroes/bunga/attack.webp']){
+ if(!action.includes(original))failures.push('original contact attack not wired '+original);
+ if(!sw.includes(original))failures.push('original contact attack not cached '+original);
+}
 if(!/if\(finisher\)return/.test(action))failures.push('finisher exclusion missing');
 if(!/strike\.src=chosen\.asset/.test(action))failures.push('selected asset is not applied to the strike frame');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',assets:expected.length,failures},null,2));

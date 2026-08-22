@@ -1,4 +1,4 @@
-// App shell v3.31.2 — stance, original movement pose, variant contact, follow-through.
+// App shell v3.31.3 — stance, follow-through movement pose, four contact attacks.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
