@@ -377,7 +377,7 @@ function observeLegacyAccount(){
 
 function boot(){
   ensureUi();installOverrides();observeLegacyAccount();installHubSwitch();syncSignedShell();
-  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
   if(signed())renderManager().then(()=>{
     if(document.body.dataset.screen==='setup')screen('login');
   });

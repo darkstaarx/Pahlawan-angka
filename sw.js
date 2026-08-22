@@ -1,4 +1,4 @@
-// App shell v3.33.2 — force-refresh battle state machine and contact sizing.
+// App shell v3.33.3 — reliable controller takeover and truthful release footer.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
