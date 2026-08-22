@@ -1,4 +1,4 @@
-// App shell v3.30.3 — normalize transparent attack-frame floor baselines.
+// App shell v3.31.0 — three-phase attacks and DEV Attack Lab.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

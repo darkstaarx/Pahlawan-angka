@@ -5,7 +5,7 @@ const rewards=read('js/rewards-v2.js'),progress=read('js/progression.js');
 const html=read('index.html'),sw=read('sw.js'),version=read('js/version.js');
 const failures=[];
 const check=(ok,msg)=>{if(!ok)failures.push(msg)};
-check(/PA_APP_VERSION='3\.30\.3'/.test(version),'version is not 3.30.3');
+check(/PA_APP_VERSION='3\.31\.0'/.test(version),'version is not 3.31.0');
 check((action.match(/id:'(?:dash|arc|pulse)'/g)||[]).length===3,'Wira does not have three variants');
 check((action.match(/id:'(?:sweep|spiral|thorn)'/g)||[]).length===3,'Bunga does not have three variants');
 check(/if\(finisher\)return/.test(action),'finisher is not excluded from regular variants');

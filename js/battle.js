@@ -37,7 +37,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
  if(!attacker||!target||!arena||!flash)return;
  const pet=attackerId==="hero"?document.getElementById("battlePet"):null,hasPet=!!(pet&&!pet.classList.contains("hidden")&&db?.rewards?.equippedPet);
  const heroLead=hasPet?420:0,finisherContact=820;
- let attackDuration=(finisher?1450:620)+heroLead,contactDelay=(finisher?finisherContact:245)+heroLead,hitDuration=finisher?(tint==="bloom"?1080:900):520,shakeClass=finisher?"finisher-shake":"shake",tintClass=tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice"),pulse=tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice");
+ let attackDuration=(finisher?1450:720)+heroLead,contactDelay=(finisher?finisherContact:285)+heroLead,hitDuration=finisher?(tint==="bloom"?1080:900):520,shakeClass=finisher?"finisher-shake":"shake",tintClass=tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice"),pulse=tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice");
  if(attackerId==="hero"){
    if(pet&&!pet.classList.contains("hidden")){
      const petRect=pet.getBoundingClientRect(),targetRect=target.getBoundingClientRect();
@@ -45,15 +45,22 @@ function triggerImpact(attackerId,targetId,tint,finisher){
      pet.style.setProperty("--pet-dash-x",Math.min(48,Math.max(0,targetFront-petCenter))+"px");
    }
  }
- const clearHeroPhases=()=>attacker.classList.remove("phase-anticipation","phase-contact","phase-follow-through","phase-recover");
+ const clearHeroPhases=()=>attacker.classList.remove("phase-anticipation","phase-movement","phase-contact","phase-follow-through","phase-recover");
  const startAttacker=()=>{attacker.classList.remove("attacking","charging-finisher");if(attackerId==="hero"&&typeof prepareHeroAttackVariant==="function")prepareHeroAttackVariant(attacker,finisher);void attacker.offsetWidth;attacker.classList.add("attacking");if(finisher){if(attackerId==="hero")triggerFinisherCinematic();attacker.classList.add("charging-finisher");}};
  if(heroLead)setTimeout(startAttacker,heroLead);else startAttacker();
  if(hasPet)triggerPetFollowUp(target,0);
  if(attackerId==="hero"){
    clearHeroPhases();setTimeout(()=>attacker.classList.add("phase-anticipation"),heroLead);
-   setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+(finisher?finisherContact:150));
-   setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+(finisher?1010:340));
-   setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+(finisher?1200:500));
+   if(finisher){
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+finisherContact);
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+1010);
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+1200);
+   }else{
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-movement")},heroLead+120);
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+285);
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+445);
+    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+590);
+   }
  }else if(attacker.dataset.enemyTier==="boss"){
    clearHeroPhases();attacker.classList.add("phase-anticipation");
    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},145);

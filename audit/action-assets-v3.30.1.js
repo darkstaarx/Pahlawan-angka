@@ -18,6 +18,6 @@ for(const file of expected){
 }
 if((action.match(/asset:'assets\/heroes\//g)||[]).length!==6)failures.push('variant asset count is not six');
 if(!/if\(finisher\)return/.test(action))failures.push('finisher exclusion missing');
-if(!/attack\.src=chosen\.asset/.test(action))failures.push('selected asset is not applied');
+if(!/strike\.src=chosen\.asset/.test(action))failures.push('selected asset is not applied to the strike frame');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',assets:expected.length,failures},null,2));
 process.exitCode=failures.length?1:0;
