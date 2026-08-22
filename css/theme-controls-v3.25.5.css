@@ -1,0 +1,34 @@
+/* Pahlawan Angka v3.25.5 — one visual language for form controls and battle choices. */
+:root{color-scheme:dark;--pa-control-bg:#091a30;--pa-control-hi:#132d4d;--pa-control-line:#3a567a;--pa-control-gold:#f3c847;--pa-control-text:#f4f7fc;--pa-control-mut:#9fb0c8}
+
+/* Native fields: retain accessibility while removing the browser-default appearance. */
+select,input[type="date"],input[type="time"],input[type="number"]{font:inherit;color:var(--pa-control-text);background-color:var(--pa-control-bg);border:1px solid var(--pa-control-line);border-radius:13px;min-height:46px;outline:0;box-shadow:inset 0 1px rgba(255,255,255,.035);transition:border-color .16s ease,box-shadow .16s ease,background-color .16s ease}
+select{appearance:none;-webkit-appearance:none;padding:0 44px 0 14px;background-image:linear-gradient(45deg,transparent 50%,#f5cf55 50%),linear-gradient(135deg,#f5cf55 50%,transparent 50%),linear-gradient(180deg,#173251,#091a30);background-position:calc(100% - 19px) 50%,calc(100% - 13px) 50%,0 0;background-size:6px 6px,6px 6px,100% 100%;background-repeat:no-repeat}
+select:focus,input[type="date"]:focus,input[type="time"]:focus,input[type="number"]:focus{border-color:var(--pa-control-gold);box-shadow:0 0 0 3px rgba(243,200,71,.15),inset 0 1px rgba(255,255,255,.04)}
+select:disabled,input:disabled{opacity:.55;cursor:not-allowed}select option{background:#0b1d34;color:#f4f7fc}
+input[type="date"]::-webkit-calendar-picker-indicator,input[type="time"]::-webkit-calendar-picker-indicator{filter:invert(88%) sepia(71%) saturate(734%) hue-rotate(339deg) brightness(101%);opacity:.9}
+input[type="number"]{-moz-appearance:textfield;padding-inline:14px}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+
+input[type="checkbox"]{appearance:none;-webkit-appearance:none;display:inline-grid!important;place-content:center;flex:0 0 auto;width:21px!important;height:21px!important;margin:0;border:1.5px solid #587496;border-radius:6px;background:#08182c;box-shadow:inset 0 1px rgba(255,255,255,.04);transition:.15s}
+input[type="checkbox"]::before{content:"";width:10px;height:6px;border:0 solid #17200d;border-width:0 0 3px 3px;transform:rotate(-45deg) scale(0);margin-top:-2px;transition:transform .12s ease}
+input[type="checkbox"]:checked{border-color:#f3c847;background:linear-gradient(180deg,#ffdc61,#eeb92d);box-shadow:0 0 0 3px rgba(243,200,71,.12)}input[type="checkbox"]:checked::before{transform:rotate(-45deg) scale(1)}
+input[type="checkbox"]:focus-visible{outline:3px solid rgba(94,158,238,.35);outline-offset:2px}
+
+input[type="range"]{appearance:none;-webkit-appearance:none;width:100%;height:6px;border:0;border-radius:99px;background:linear-gradient(90deg,#f3c847,#f0a93b);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+input[type="range"]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:3px solid #f6d75b;border-radius:50%;background:#102a49;box-shadow:0 3px 10px rgba(0,0,0,.4),0 0 0 4px rgba(243,200,71,.12)}
+input[type="range"]::-moz-range-thumb{width:19px;height:19px;border:3px solid #f6d75b;border-radius:50%;background:#102a49;box-shadow:0 3px 10px rgba(0,0,0,.4)}
+
+/* Battle answers: royal rune tiles, designed for quick reading and large touch targets. */
+#game .answers:not(.paTypedAnswers){counter-reset:pa-answer;gap:9px;margin-top:5px}
+#game .answers:not(.paTypedAnswers)>.ans{counter-increment:pa-answer;position:relative;display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:9px;min-height:61px;padding:9px 12px 9px 9px;border:1px solid #3b5f8d;border-radius:15px;background:linear-gradient(145deg,#17375f 0%,#0c2441 68%,#091b33 100%);color:#f7f9ff;text-align:left;line-height:1.15;box-shadow:0 5px 12px rgba(4,14,29,.2),inset 0 1px rgba(255,255,255,.065);text-shadow:0 1px 1px rgba(0,0,0,.3);transition:transform .12s ease,border-color .14s ease,box-shadow .14s ease,background .14s ease}
+#game .answers:not(.paTypedAnswers)>.ans::before{content:counter(pa-answer,upper-alpha);display:grid;place-items:center;width:32px;height:32px;border:1px solid rgba(248,207,77,.52);border-radius:10px;background:linear-gradient(180deg,rgba(250,208,74,.18),rgba(190,135,25,.08));color:#ffdb64;font-size:13px;font-weight:1000;text-shadow:none;box-shadow:inset 0 1px rgba(255,255,255,.07)}
+#game .answers:not(.paTypedAnswers)>.ans:active{transform:translateY(1px) scale(.992)}
+#game .answers:not(.paTypedAnswers)>.ans:focus-visible{outline:3px solid rgba(255,212,80,.32);outline-offset:2px;border-color:#f4ca48}
+#game .answers:not(.paTypedAnswers)>.ans.ok{border-color:#36ca82;background:linear-gradient(145deg,#176345,#0c422f);color:#effff7;box-shadow:0 0 0 2px rgba(54,202,130,.14),0 6px 14px rgba(3,38,25,.22)}
+#game .answers:not(.paTypedAnswers)>.ans.ok::before{content:"✓";border-color:#7ce7ae;background:#32bd78;color:#062618}
+#game .answers:not(.paTypedAnswers)>.ans.no{border-color:#ef7180;background:linear-gradient(145deg,#682837,#421926);color:#fff3f4;box-shadow:0 0 0 2px rgba(239,113,128,.12)}
+#game .answers:not(.paTypedAnswers)>.ans.no::before{content:"×";border-color:#ff9aa5;background:#dc5364;color:#fff}
+
+@media(hover:hover){#game .answers:not(.paTypedAnswers)>.ans:hover{border-color:#dcb749;box-shadow:0 0 0 2px rgba(243,200,71,.1),0 7px 15px rgba(4,14,29,.26)}}
+@media(max-width:390px){#game .answers:not(.paTypedAnswers)>.ans{grid-template-columns:30px minmax(0,1fr);gap:7px;min-height:56px;padding:8px 9px 8px 8px;font-size:clamp(15px,4.35vw,18px)}#game .answers:not(.paTypedAnswers)>.ans::before{width:28px;height:28px;border-radius:9px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){select,input[type="checkbox"],#game .answers:not(.paTypedAnswers)>.ans{transition:none}}
