@@ -153,21 +153,60 @@ function missingNumberSteps(prompt,answer){
  if((match=prompt.match(new RegExp(`${number}\\s*÷\\s*${blank}\\s*=\\s*${number}`))))return `Cari pembahagi: ${match[1]} ÷ ${match[2]} = ${answer}. Semakan: ${match[1]} ÷ ${answer} = ${match[2]}.`;
  return null;
 }
+function estimationSteps(prompt,answer,numbers){
+ const pair=prompt.match(/(-?\d+(?:\.\d+)?)\s*([+−\-×x÷])\s*(-?\d+(?:\.\d+)?)/);if(!pair)return null;
+ const a=Number(pair[1]),op=pair[2].toLowerCase().replace('x','×').replace('-','−'),b=Number(pair[3]);
+ if(op==='÷'){const q=numericValue(answer);return Number.isFinite(q)?`Semak dengan operasi songsang: ${q} × ${b} = ${a}. Jadi ${answer} ialah jawapan yang munasabah.`:`Gunakan darab untuk menyemak bahagi: pembahagi × hasil bahagi mestilah hampir dengan ${a}. Jawapan yang munasabah ialah ${answer}.`}
+ const unit=n=>Math.abs(n)>=1000?100:Math.abs(n)>=10?10:1,round=n=>Math.round(n/unit(n))*unit(n),ra=round(a),rb=op==='×'&&Math.abs(b)<10?b:round(b);
+ const estimate=op==='+'?ra+rb:op==='−'?ra-rb:ra*rb;
+ return `Anggarkan nombor: ${a} ≈ ${ra}${rb!==b?`, ${b} ≈ ${rb}`:''}. Maka ${ra} ${op} ${rb} ≈ ${estimate}; ${answer} paling hampir dan munasabah.`;
+}
+function geometrySteps(prompt,answer,numbers){
+ if(/perimeter/i.test(prompt)&&numbers.length>=2){const [l,w]=numbers,sum=l+w;return `Perimeter = 2 × (panjang + lebar) = 2 × (${l} + ${w}) = 2 × ${sum} = ${answer}.`}
+ if(/isi padu/i.test(prompt)&&numbers.length>=3){const [l,w,h]=numbers;return `Isi padu = panjang × lebar × tinggi = ${l} × ${w} × ${h} = ${answer}.`}
+ if(/\bluas(?:nya)?\b/i.test(prompt)&&numbers.length>=2){const [l,w]=numbers;return `Luas = panjang × lebar = ${l} × ${w} = ${answer}.`}
+ return null;
+}
+function percentageSteps(prompt,answer,numbers){
+ let match=prompt.match(/(\d+(?:\.\d+)?)%\s+daripada\s+(\d+(?:\.\d+)?)/i);if(match)return `${match[1]}% daripada ${match[2]} = ${match[1]} ÷ 100 × ${match[2]} = ${answer}.`;
+ match=prompt.match(/(\d+(?:\.\d+)?)%\s+daripada\s+_{2,}\s+(?:ialah|=)\s+(\d+(?:\.\d+)?)/i);if(match)return `Cari nilai penuh: ${match[2]} ÷ ${match[1]} × 100 = ${answer}. Semakan: ${match[1]}% daripada ${answer} = ${match[2]}.`;
+ match=prompt.match(/(\d+)\s*\/\s*(\d+)\s+bersamaan/i);if(match&&/%/.test(String(answer)))return `Tukar pecahan kepada peratus: ${match[1]} ÷ ${match[2]} × 100% = ${answer}.`;
+ if(/peratus/i.test(prompt)&&numbers.length>=2&&Number.isFinite(numericValue(answer)))return `Gunakan peratus sebagai pecahan daripada 100 dan gantikan nombor dalam soalan. Hasil pengiraan ialah ${answer}.`;
+ return null;
+}
+function fractionSteps(prompt,answer){
+ let match=prompt.match(/(\d+)\s*\/\s*(\d+)\s*=\s*(?:_{2,}|□)\s*\/\s*(\d+)/);if(match){const factor=Number(match[3])/Number(match[2]),num=Number(match[1])*factor;return `Penyebut ${match[2]} didarab ${factor} untuk menjadi ${match[3]}. Darab pengangka dengan nombor yang sama: ${match[1]} × ${factor} = ${num}. Jadi jawapannya ${answer}.`}
+ match=prompt.match(/pecahan setara[^\d]*(\d+)\s*\/\s*(\d+)/i);const ans=String(answer).match(/(\d+)\s*\/\s*(\d+)/);if(match&&ans){const factor=Number(ans[2])/Number(match[2]);return `Darab pengangka dan penyebut dengan nombor yang sama: (${match[1]} × ${factor}) / (${match[2]} × ${factor}) = ${answer}.`}
+ match=prompt.match(/(\d+)\s+(\d+)\s*\/\s*(\d+)/);if(match&&/^\s*\d+\s*\/\s*\d+\s*$/.test(String(answer)))return `Tukar nombor bercampur: (${match[1]} × ${match[3]}) + ${match[2]} = ${Number(match[1])*Number(match[3])+Number(match[2])}. Kekalkan penyebut ${match[3]}: ${answer}.`;
+ return null;
+}
+function measurementSteps(prompt,answer){
+ let m=prompt.match(/(\d+)\s*m\s+(\d+)\s*cm[^.?!]*(?:tambah|ditambah)\s*(\d+)\s*cm/i);if(m)return `Tukar meter kepada sentimeter dahulu: ${m[1]} × 100 + ${m[2]} = ${Number(m[1])*100+Number(m[2])} cm. Kemudian tambah ${m[3]} cm: ${Number(m[1])*100+Number(m[2])} + ${m[3]} = ${answer}.`;
+ m=prompt.match(/(\d+)\s*(m|km|kg|L)\s+(\d+)\s*(cm|m|g|mL)[^?]*(?:berapa|=)/i);if(m){const factor=/^(m:cm|km:m|kg:g|L:mL)$/.test(`${m[2]}:${m[4]}`)?1000:100;if(m[2]==='m'&&m[4]==='cm')return `${m[1]} m = ${m[1]} × 100 = ${Number(m[1])*100} cm. Tambah ${m[3]} cm: ${Number(m[1])*100} + ${m[3]} = ${answer}.`;return `${m[1]} ${m[2]} = ${m[1]} × ${factor} = ${Number(m[1])*factor} ${m[4]}. Tambah ${m[3]} ${m[4]}: ${Number(m[1])*factor} + ${m[3]} = ${answer}.`}
+ m=prompt.match(/(\d+)\s*(km|kg|L)\s+(?:_{2,}|□)\s*(m|g|mL)\s*=\s*(\d+)/i);if(m){const base=Number(m[1])*1000;return `${m[1]} ${m[2]} = ${m[1]} × 1000 = ${base} ${m[3]}. Baki: ${m[4]} - ${base} = ${answer}.`}
+ return null;
+}
 function solutionFor(item){
  const prompt=item.prompt,answer=item.answer,answerNumber=numericValue(answer),numbers=(prompt.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),direct=prompt.match(/(-?\d+(?:\.\d+)?(?:\s*[+−\-×÷]\s*-?\d+(?:\.\d+)?)+)\s*=\s*\?/);
  const missing=missingNumberSteps(prompt,answer);if(missing)return missing;
+ const geometry=geometrySteps(prompt,answer,numbers);if(geometry)return geometry;
+ const percentage=percentageSteps(prompt,answer,numbers);if(percentage)return percentage;
+ const fraction=fractionSteps(prompt,answer);if(fraction)return fraction;
+ const measurement=measurementSteps(prompt,answer);if(measurement)return measurement;
  if(/nilai digit/i.test(prompt)&&numbers.length>=2){const digit=Number((prompt.match(/nilai digit\s+(\d+)/i)||[])[1]);if(Number.isFinite(digit)&&digit!==0&&Number.isFinite(answerNumber)){const place=Math.round(answerNumber/digit);return `${digit} berada pada nilai tempat ${place===1000?'ribu':place===100?'ratus':place===10?'puluh':'sa'}: ${digit} × ${place} = ${answer}.`}}
  if(/dibundarkan kepada\s+\d+/i.test(prompt)&&/manakah/i.test(prompt)){const target=Number((prompt.match(/dibundarkan kepada\s+(\d+)/i)||[])[1]),unit=/ribu/i.test(prompt)?1000:/ratus/i.test(prompt)?100:/puluh/i.test(prompt)?10:1,low=target-unit/2,high=target+unit/2-1,digit=Math.floor(Number(answer)/(unit/10))%10;return `Julat yang dibundarkan kepada ${target} ialah ${low} hingga ${high}. ${answer} berada dalam julat itu (digit penentu ${digit}), jadi jawapannya betul.`}
  if(/bundarkan/i.test(prompt)&&numbers.length){const n=numbers[0],unit=/ribu/i.test(prompt)?1000:/ratus/i.test(prompt)?100:/puluh/i.test(prompt)?10:1,digit=Math.floor(n/(unit/10))%10;return `Lihat digit penentu ${digit}. Oleh sebab ${digit}${digit>=5?' ≥ 5, naikkan digit di sebelah kiri':' < 5, kekalkan digit di sebelah kiri'}: ${n} ≈ ${answer}.`}
- if(/tanpa mengira semula|anggaran|munasabah/i.test(prompt)&&Number.isFinite(answerNumber)&&numbers.length>=2){const rounded=numbers.map(n=>Math.round(n/10)*10),estimate=rounded.reduce((a,b)=>a+b,0);return `Anggar kepada puluh terdekat: ${numbers.map((n,i)=>`${n} ≈ ${rounded[i]}`).join(', ')}. Maka ${rounded.join(' + ')} ≈ ${estimate}; ${answer} paling hampir dan munasabah.`}
+ if(/tanpa mengira semula|anggaran|munasabah/i.test(prompt)&&Number.isFinite(answerNumber)&&numbers.length>=2){const estimate=estimationSteps(prompt,answer,numbers);if(estimate)return estimate}
+ if(/pukul\s+\d{1,2}:00/i.test(prompt)&&/\d+\s*jam/i.test(prompt)){const start=Number((prompt.match(/pukul\s+(\d{1,2}):00/i)||[])[1]),duration=Number((prompt.match(/(\d+)\s*jam/i)||[])[1]);if(Number.isFinite(start)&&Number.isFinite(duration))return `Gerakkan masa ${duration} jam ke hadapan: ${start}:00 + ${duration} jam = ${answer}.`}
  if(Number.isFinite(answerNumber)&&numbers.length>=2){
   const sum=numbers.reduce((a,b)=>a+b,0),subtract=numbers.slice(1).reduce((a,b)=>a-b,numbers[0]),product=numbers.reduce((a,b)=>a*b,1),divide=numbers.length===2?numbers[0]/numbers[1]:NaN;
   if(almost(subtract,answerNumber))return subtractionSteps(numbers,answer);
   if(almost(sum,answerNumber))return additionSteps(numbers,answer);
   if(almost(divide,answerNumber))return `Bahagi sama rata: ${numbers[0]} ÷ ${numbers[1]} = ${answer}.`;
-  if(almost(product,answerNumber)){const repeat=numbers.length===2&&numbers[0]<=12?Array(numbers[0]).fill(numbers[1]).join(' + '):null;return repeat?`Darab ialah tambah berulang: ${repeat} = ${answer}.`:`Darabkan setiap faktor: ${numbers.join(' × ')} = ${answer}.`}
+  if(almost(product,answerNumber)){const repeat=numbers.length===2&&numbers[0]<=6?Array(numbers[0]).fill(numbers[1]).join(' + '):null;return repeat?`Darab ialah tambah berulang: ${repeat} = ${answer}.`:`Darabkan setiap faktor: ${numbers.join(' × ')} = ${answer}.`}
  }
- if(/bentuk|sisi|bucu|permukaan|puncak/i.test(prompt)){const shape=String(answer).toLowerCase(),reason=shape.includes('silinder')?'dua permukaan rata berbentuk bulatan dan satu permukaan melengkung':shape.includes('kon')?'satu tapak bulat, satu permukaan melengkung dan satu puncak':shape.includes('piramid')?'satu tapak serta permukaan sisi yang bertemu pada satu puncak':shape.includes('kubus')?'enam permukaan rata berbentuk segi empat sama':shape.includes('kuboid')?'enam permukaan rata berbentuk segi empat tepat':shape.includes('sfera')?'satu permukaan melengkung tanpa bucu':null;return reason?`Kenal pasti cirinya: ${reason}. Oleh itu, bentuk itu ialah ${answer}.`:`${item.hint} Ciri tersebut sepadan dengan ${answer}.`}
+ if(/membentuk nombor/i.test(prompt))return `Gabungkan nilai yang diberi mengikut nilai tempat. Nombor yang terbentuk ialah ${answer}.`;
+ if(/\bbentuk\b|sisi|bucu|permukaan|puncak/i.test(prompt)){const shape=String(answer).toLowerCase(),reason=shape.includes('silinder')?'dua permukaan rata berbentuk bulatan dan satu permukaan melengkung':shape.includes('kon')?'satu tapak bulat, satu permukaan melengkung dan satu puncak':shape.includes('piramid')?'satu tapak serta permukaan sisi yang bertemu pada satu puncak':shape.includes('kubus')?'enam permukaan rata berbentuk segi empat sama':shape.includes('kuboid')?'enam permukaan rata berbentuk segi empat tepat':shape.includes('sfera')?'satu permukaan melengkung tanpa bucu':null;return reason?`Kenal pasti cirinya: ${reason}. Oleh itu, bentuk itu ialah ${answer}.`:`${item.hint} Ciri tersebut sepadan dengan ${answer}.`}
  if(direct){const expression=direct[1].replace(/\s+/g,' '),ops=expression.match(/[+−\-×÷]/g)||[],values=(expression.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);if(ops.every(op=>op==='+'))return additionSteps(values,answer);if(ops.every(op=>op==='−'||op==='-'))return subtractionSteps(values,answer);return `${expression} = ${answer}.`}
  if(/susun|urutan/i.test(prompt))return `Bandingkan nilai tempat terbesar dahulu. Susunan yang betul ialah ${answer}.`;
  return `${item.hint} Hasil akhirnya ialah ${answer}.`;

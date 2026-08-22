@@ -17,7 +17,7 @@
  function maxFor(id){if(id.includes('20'))return 20;if(id.includes('1000000'))return 1000000;if(id.includes('100000'))return 100000;if(id.includes('10000'))return 10000;if(id.includes('1000')||id.startsWith('D2.1'))return 1000;return 100}
  function randNumber(max){const min=max<=20?1:max/10;return R(Math.ceil(min),max-1)}
  function numberTask(id){
-  const max=maxFor(id),mode=rotate(id,['compare','order','words','sequence','clues','round']),a=randNumber(max),b=randNumber(max);
+  const max=maxFor(id),modes=id.startsWith('D1.')?['compare','order','words','sequence','clues']:['compare','order','words','sequence','clues','round'],mode=rotate(id,modes),a=randNumber(max),b=randNumber(max);
   if(mode==='compare'){const ans=a>b?'>':a<b?'<':'=';return mark(Q(`<b>${a}</b> ___ <b>${b}</b>`,ans,[N(ans==='>'?'<':'>','compare'),N('=','compare'),N('Tidak dapat ditentukan','compare')],'Banding digit dari kiri. Jika sama, bergerak ke digit seterusnya.','KSSR · Banding Nombor',true,true),id,mode,'symbolic','concept','compare',['place','same_end'])}
   if(mode==='order'){let xs=[a,b,randNumber(max),randNumber(max)];xs=[...new Set(xs)];while(xs.length<4)xs.push(randNumber(max));const asc=Math.random()<.5,ans=[...xs].sort((x,y)=>asc?x-y:y-x).join(', ');return mark(Q(`Susun nombor berikut secara ${asc?'menaik':'menurun'}:<br><b>${xs.join(', ')}</b>`,ans,[N([...xs].sort((x,y)=>asc?y-x:x-y).join(', '),'compare'),N([xs[1],xs[0],xs[2],xs[3]].join(', '),'same_end'),N(xs.join(', '),'generated')],'Banding dari nilai tempat terbesar.','KSSR · Susun Nombor',true,true),id,mode,'symbolic','procedure','order',['place','same_end'])}
   if(mode==='words'){const n=randNumber(max),ans=numWords(n);return mark(Q(`Pilih nombor dalam perkataan bagi <b>${n}</b>.`,ans,[N(numWords(Math.max(1,n-10)),'place'),N(numWords(Math.min(max,n+100)),'place'),N(numWords(reverseN(n)),'same_end')],'Baca mengikut nilai tempat terbesar dahulu.','KSSR · Angka dan Perkataan',true,true),id,mode,'verbal','concept','number-name',['place'])}
@@ -32,9 +32,9 @@
   if(mode==='expanded'){const digitSum=s.split('').join(' + '),wrongPlace=parts.map((x,i)=>i===0?Math.max(1,x/10):x).join(' + ');return mark(Q(`Cerakinkan <b>${n}</b> mengikut nilai tempat.`,expanded,[N(digitSum,'digit_value'),N(wrongPlace,'place'),N(String(n),'generated')],'Tulis nilai sebenar setiap digit dari nilai tempat terbesar ke terkecil.','KSSR · Cerakin',true,true),id,mode,'symbolic','procedure','expanded',['digit_value','place']);}
   if(mode==='compose')return mark(Q(`<b>${expanded}</b> membentuk nombor?`,n,[N(reverseN(n),'place'),N(n+10**pow,'place'),N(Math.max(0,n-10**pow),'place')],'Gabungkan nilai setiap tempat.','KSSR · Bina Nombor',true,true),id,mode,'symbolic','application','compose',['place']);
   return mark(Q(`${expanded.replace(String(value),'___')} = <b>${n}</b>. Nilai yang hilang?`,value,[N(d,'digit_value'),N(10**pow,'place'),N(value+10**pow,'place')],'Cari bahagian nilai tempat yang belum ditulis.','KSSR · Nilai Hilang',true,true),id,mode,'symbolic','reasoning','missing',['digit_value','place'])}
- function operationTask(id,op){const grade=+id[1],limit=[0,100,1000,10000,100000,1000000,1000000][grade],mode=rotate(id,['direct','story','missing','check']);let a,b,ans,sym;
-  if(op==='add'){a=R(grade<3?5:100,Math.floor(limit*.6));b=R(2,Math.floor(limit*.3));ans=a+b;sym='+'}
-  if(op==='sub'){a=R(grade<3?10:200,Math.floor(limit*.9));b=R(2,a-1);ans=a-b;sym='−'}
+ function operationTask(id,op){const grade=+id[1],limit=[0,100,1000,10000,100000,1000000,1000000][grade],within20=/\.(?:ADD|SUB)20$/.test(id),mode=rotate(id,['direct','story','missing','check']);let a,b,ans,sym;
+  if(op==='add'){if(within20){a=R(1,19);b=R(1,20-a)}else{a=R(grade<3?5:100,Math.floor(limit*.6));b=R(2,Math.floor(limit*.3))}ans=a+b;sym='+'}
+  if(op==='sub'){a=within20?R(2,20):R(grade<3?10:200,Math.floor(limit*.9));b=R(1,a-1);ans=a-b;sym='−'}
   if(op==='mul'){a=R(2,grade<4?12:99);b=R(2,grade<5?9:25);ans=a*b;sym='×'}
   if(op==='div'){b=R(2,grade<4?10:20);ans=R(2,grade<4?12:40);a=b*ans;sym='÷'}
   const wrong=[N(op==='add'?a-b:op==='sub'?a+b:op==='mul'?a+b:b,'operation'),N(ans+(op==='mul'||op==='div'?b:10),'fact'),N(Math.max(0,ans-(op==='mul'||op==='div'?b:10)),'place')];
