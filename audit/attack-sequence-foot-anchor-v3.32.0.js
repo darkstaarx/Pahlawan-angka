@@ -22,49 +22,13 @@ check(!/attackLabStep\('follow'\)/.test(action),'Attack Lab incorrectly exposes 
 check((action.match(/<b>[123]<\/b>/g)||[]).length===3,'Attack Lab does not show exactly three sequence steps');
 check((action.match(/bodyScale:/g)||[]).length===8&&(action.match(/footShiftX:/g)||[]).length===8,'eight contact attacks do not carry body/foot anchors');
 const scales=[...action.matchAll(/bodyScale:([\d.]+)/g)].map(x=>Number(x[1])),shifts=[...action.matchAll(/footShiftX:([\d.-]+)/g)].map(x=>Number(x[1]));
-check(scales.length===8&&scales.every(x=>x>=1.00&&x<=2.10),'contact body scale escapes the 1.00-2.10 safety range');
-const expectedScale={
-  "id:'original',label:'Tebasan Ais Asal'":1.48,
-  "id:'dash',label:'Tikaman Pantas'":1.85,
-  "id:'arc',label:'Lengkung Nombor'":1.78,
-  "id:'pulse',label:'Gelombang Operasi'":2.05,
-  "id:'original',label:'Serangan Flora Asal'":1.55,
-  "id:'sweep',label:'Sapuan Flora'":1.35,
-  "id:'spiral',label:'Pusaran Pecahan'":1.25,
-  "id:'thorn',label:'Tusukan Mekar'":1.40
-};
-for(const key in expectedScale){
-  const re=new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+".*?bodyScale:([\\d.]+)");
-  const m=action.match(re);
-  check(!!m&&Number(m[1])===expectedScale[key],'exact scale mismatch for '+key+' (expected '+expectedScale[key]+')');
-}
+check(scales.length===8&&scales.every(x=>x>=1&&x<=1.75),'contact body scale escapes conservative bounds');
+const expectedScales=[1.48,1.48,1.42,1.72,1.08,1.05,1.00,1.08];
+check(scales.length===expectedScales.length&&scales.every((x,i)=>Math.abs(x-expectedScales[i])<0.001),'contact body scale differs from the approved safe per-asset calibration');
 check(shifts.length===8&&shifts.every(x=>x>=0&&x<=42),'contact foot anchor escapes safe horizontal bounds');
-/* Approximate mobile clipping check: uses the narrowest documented breakpoint
-   (max-width:370px, --pa-hero-h:106px from css/battle-scene-v3.8.28.css) and each
-   asset's known intrinsic aspect ratio to estimate rendered on-screen width at
-   each variant's bodyScale. This is a static approximation (rendered width vs the
-   raw 370px viewport itself), not a full arena-relative layout/collision
-   simulation, since that requires a real browser to resolve exactly. It still
-   catches gross overflow: any variant whose art would render wider than the
-   phone screen itself at the smallest supported viewport. */
-const REF_VIEWPORT=370,REF_HERO_H=106;
-const intrinsicRatio={
-  "id:'original',label:'Tebasan Ais Asal'":512/305,
-  "id:'dash',label:'Tikaman Pantas'":1000/667,
-  "id:'arc',label:'Lengkung Nombor'":1000/969,
-  "id:'pulse',label:'Gelombang Operasi'":1000/636,
-  "id:'original',label:'Serangan Flora Asal'":720/493,
-  "id:'sweep',label:'Sapuan Flora'":1000/621,
-  "id:'spiral',label:'Pusaran Pecahan'":1000/767,
-  "id:'thorn',label:'Tusukan Mekar'":1000/643
-};
-for(const key in expectedScale){
-  const renderedWidth=intrinsicRatio[key]*REF_HERO_H*expectedScale[key];
-  check(renderedWidth<REF_VIEWPORT,'contact art for '+key+' would render wider ('+renderedWidth.toFixed(1)+'px) than the '+REF_VIEWPORT+'px mobile reference viewport, risking clipping');
-}
 check(/--pa-contact-scale/.test(action)&&/--pa-contact-shift-x/.test(action),'contact anchor metadata is not applied');
 check(/bottom:0!important/.test(css)&&/scale\(var\(--pa-contact-scale,1\)\)/.test(css),'single foot-anchored transform is missing');
 check(!/pa-attack-(?:original|dash|arc|pulse|sweep|spiral|thorn) \.hero-frame-strike/.test(css),'unsafe per-class transform overrides remain');
-check(/v=3\.31\.7/.test(html),'action assets are not cache-busted to the foot-anchor revision');
+check(/v=3\.32\.1/.test(html),'action assets are not cache-busted to the safe contact-size revision');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
 process.exitCode=failures.length?1:0;

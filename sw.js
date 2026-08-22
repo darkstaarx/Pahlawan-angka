@@ -1,4 +1,4 @@
-// App shell v3.32.0 — foot-anchored attacks + effort-aware Guardian Restu.
+// App shell v3.32.1 — safe foot-anchored contact attack sizing.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
