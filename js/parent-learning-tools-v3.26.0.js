@@ -84,10 +84,11 @@ async function shareCard(){
  }catch(error){console.error(error);alert('Kad kemajuan belum dapat disediakan.')}finally{state.busy=false}
 }
 
+function printVisualDependent(raw){return /blok\s+nilai\s+tempat|waktu\s+yang\s+ditunjukkan|bahagian\s+berlorek|berdasarkan\s+(?:rajah|carta|graf)|(?:rajah|carta|graf)\s+(?:di atas|berikut)|paksi[- ]?[xy]\s+(?:di atas|berikut)/i.test(String(raw||''))}
 function plainPrompt(raw){const div=document.createElement('div'),spaced=String(raw||'').replace(/<br\s*\/?\s*>/gi,' ').replace(/<\/(?:div|p|li|section|h[1-6])>/gi,' ');div.innerHTML=spaced;let text=(div.textContent||'').replace(/\s+/g,' ').replace(/([.!?])(?=[A-Za-z])/g,'$1 ').trim();if(/^Mempunyai\b/i.test(text))text='Bentuk ini '+text.charAt(0).toLowerCase()+text.slice(1);return text}
 const optionDependent=prompt=>/\b(?:manakah|yang mana|pilih|antara berikut|jawapan[^.?!]{0,30}munasabah|anggaran[^.?!]{0,25}sesuai)\b/i.test(prompt);
 function printableQuestion(q){
- const raw=String(q?.prompt||'');if(!raw||/<(?:svg|img|canvas|table)\b/i.test(raw)||/(moneyVisual|clockFace|barChart|pictureGraph|coordinateGrid|shapeVisual|dataChart)/i.test(raw))return null;const prompt=plainPrompt(raw);if(prompt.length<3||prompt.length>260)return null;
+ const raw=String(q?.prompt||'');if(!raw||printVisualDependent(raw)||/<(?:svg|img|canvas|table)\b/i.test(raw)||/(moneyVisual|clockFace|barChart|pictureGraph|coordinateGrid|shapeVisual|dataChart)/i.test(raw))return null;const prompt=plainPrompt(raw);if(prompt.length<3||prompt.length>260)return null;
  const answer=String(q.answer??'').replace(/\s+/g,' ').trim(),choices=optionDependent(prompt)?shuffle([{value:answer,correct:true},...(q.wrong||[]).map(x=>({value:String(x?.label??x?.v??'').replace(/\s+/g,' ').trim(),correct:false}))]).filter(x=>x.value).slice(0,4):null;
  return{prompt,answer,hint:plainPrompt(q.hint||'Semak langkah pengiraan dengan teliti.'),skill:q.skill,choices};
 }
