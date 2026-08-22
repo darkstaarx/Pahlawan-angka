@@ -46,6 +46,7 @@
   }
 
   async function signInGoogle(){
+    const trust=window.PABetaTrust?.prepareOAuth?.();if(trust&&trust.ok===false)return message(trust.message,true);
     const button=$('googleAuthButton');message('');if(button){button.disabled=true;button.querySelector('span').textContent='Membuka Google…'}
     const redirectTo=location.origin+location.pathname;
     const {error}=await state.client.auth.signInWithOAuth({provider:'google',options:{redirectTo,queryParams:{prompt:'select_account'}}});
@@ -62,8 +63,12 @@
 
   async function signedIn(session){
     state.user=session?.user||null;if(!state.user)return;
-    message('');await window.PACommercial?.refresh?.();await loadProfiles();renderAccount();
+    message('');
+    try{if(window.PABetaTrust&&!await window.PABetaTrust.ensureConsent(state.client,state.user))return}catch(error){console.warn('Consent check failed',error);message('Persetujuan penjaga belum dapat disahkan. Semak sambungan dan cuba semula.',true);return}
+    await resumeAfterConsent();
   }
+
+  async function resumeAfterConsent(){if(!state.user)return;message('');await window.PACommercial?.refresh?.();await loadProfiles();renderAccount()}
 
   async function loadProfiles(){
     const {data,error}=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,updated_at').eq('is_active',true).order('created_at');
@@ -234,6 +239,6 @@
     setInterval(tick,1000);document.addEventListener('pointerdown',markInteraction,{passive:true,capture:true});document.addEventListener('keydown',markInteraction,{passive:true,capture:true});document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else{state.lastTick=performance.now();markInteraction()}});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
-  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,state};
+  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,resumeAfterConsent,state};
   init().catch(error=>{console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
 })();

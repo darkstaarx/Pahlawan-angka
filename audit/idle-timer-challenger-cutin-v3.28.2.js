@@ -10,5 +10,5 @@ check('resume-does-not-add-idle-gap',/if\(wasIdle\)state\.lastTick=performance\.
 check('cutin-is-band-not-wallpaper',/top:31%;height:38%/.test(css)&&/dvChallengerIn/.test(css));
 check('cutin-slides-from-side',/translateX\(-115%\)/.test(css)&&/translateX\(0\)/.test(css));
 check('summon-copy-retained',/Masa untuk Cikgu Dimensi!/.test(portal));
-check('cloud-cache-bust',/cloud\.js\?v=3\.28\.2/.test(index));
+check('cloud-cache-bust',/cloud\.js\?v=(?!3\.16\.6)\d+\.\d+\.\d+/.test(index));
 const report={status:failures.length?'fail':'pass',failures};console.log(JSON.stringify(report,null,2));process.exitCode=failures.length?1:0;

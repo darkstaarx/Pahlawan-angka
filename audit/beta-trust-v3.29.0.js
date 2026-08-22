@@ -1,0 +1,16 @@
+const fs=require('fs'),path=require('path'),root=path.resolve(__dirname,'..'),failures=[];
+const read=file=>fs.readFileSync(path.join(root,file),'utf8'),check=(name,value)=>{if(!value)failures.push(name)};
+const trust=read('js/beta-trust-v3.29.0.js'),cloud=read('js/cloud.js'),sql=read('supabase/schema/beta_trust_foundation_v1.sql'),index=read('index.html'),sw=read('sw.js');
+check('consent-before-google',/prepareOAuth/.test(cloud)&&/guardianConsent/.test(trust));
+check('consent-versioned',/PRIVACY_VERSION/.test(trust)&&/TERMS_VERSION/.test(trust));
+check('existing-user-blocked',/ensureConsent/.test(cloud)&&/ensureConsent\(state\.client,state\.user\)/.test(cloud));
+check('privacy-data-list',/Pembelajaran:/.test(trust)&&/tidak meminta tarikh lahir/.test(trust));
+check('no-child-advertising',/tidak menjual data/.test(trust)&&/pengiklanan/.test(trust));
+check('guardian-rights',/akses, pembetulan atau pemadaman/.test(trust));
+check('feedback-privacy-copy',/Jangan masukkan nama penuh atau jawapan anak/.test(trust));
+check('feedback-context-limited',/platform:navigator\.platform/.test(trust)&&!/question_id/.test(trust));
+check('consent-rls',/alter table public\.guardian_consents enable row level security/.test(sql)&&/guardian_consents_select_own/.test(sql));
+check('feedback-rls',/alter table public\.beta_feedback enable row level security/.test(sql)&&/beta_feedback_insert_own/.test(sql));
+check('ownership-check',/f\.owner_user_id=\(select auth\.uid\(\)\)/.test(sql));
+check('frontend-wired',/beta-trust-v3\.29\.0/.test(index)&&/beta-trust-v3\.29\.0/.test(sw));
+const report={status:failures.length?'fail':'pass',failures};console.log(JSON.stringify(report,null,2));process.exitCode=failures.length?1:0;
