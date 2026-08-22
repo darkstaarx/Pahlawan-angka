@@ -157,6 +157,7 @@ function respond(o,btn,question){
 }
 function beginHintRetry(o,btn,question){
  const id=question.skill,s=scoreState(id),sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade();
+ const effortLock=window.PAEffortGuard?.firstWrong?.(question,sec)===true;
  sess.retryState={wrongTag:o.tag,wrongValue:o.v,firstSeconds:sec,streakBefore:sess.streak};
  btn.classList.add('no');document.querySelectorAll('.ans').forEach(x=>x.disabled=true);
  s.wrong++;s.evidence++;s.mis[o.tag]=(s.mis[o.tag]||0)+1;
@@ -166,9 +167,11 @@ function beginHintRetry(o,btn,question){
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Dimensi');}
  document.getElementById('feedback').innerHTML='<b>Hampir!</b> Rentak disimpan. Tekan <b>Petunjuk</b> yang menyala, kemudian cuba sekali lagi.';
  document.getElementById('streak').textContent=sess.streak+' rentak · dibekukan';if(typeof playSfx==='function')playSfx('wrong');battle();save();
+ if(effortLock){setTimeout(()=>activateEffortRestuLock(id),500);return;}
 }
 function resolveAnswer(o,btn,question,ok){
  let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false;
+ window.PAEffortGuard?.retryResolved?.(question,ok);
  document.querySelectorAll(".ans").forEach(x=>x.disabled=true);
  if(ok){
   btn.classList.add("ok");s.correct++;s.evidence++;if(!sess.retryState)sess.streak++;
@@ -264,6 +267,7 @@ function showHintOverlay(help){
 }
 function hint(){
  if(!sess.q)return;
+ window.PAEffortGuard?.hintOpened?.(sess.q);
  sess.hintLevel=(sess.hintLevel||0)+1;
  if(!sess.hint){sess.hint=true;scoreState(sess.q.skill).hints++;}
  const button=document.querySelector('.hintBtn');if(button){button.classList.remove('needs-help');button.classList.add('used');button.setAttribute('aria-label','Petunjuk telah dibuka');}

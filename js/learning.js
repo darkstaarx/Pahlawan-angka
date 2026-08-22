@@ -231,6 +231,7 @@ function learningGuidedChoice(btn,correct){
  else{btn.classList.add('wrong');if(box)box.textContent='Belum. Tengok semula langkah yang Coach tunjuk tadi.';setTimeout(()=>{btn.classList.remove('wrong');btn.parentElement.querySelectorAll('button').forEach(x=>x.disabled=false)},700)}
 }
 function learningStart(skillId,intervention,opts={}){
+  if(!opts.dev)window.PAEffortGuard?.coachStarted?.(skillId);
   const m=META[skillId];if(!m)return;
   ensureCoachMemory();
   const strategyPlan=coachStrategyPlan(skillId,intervention?.type||'manual',intervention?.tag||'generic');
@@ -319,12 +320,24 @@ function activateRestuLock(skillId){
   sess.learningActive=false;
   showRestuLock(skillId,title);
 }
+function activateEffortRestuLock(skillId){
+  if(!db||db?.restuLock?.active)return;
+  db.restuLock={active:true,mode:'effort',skillId,until:0,createdAt:Date.now()};
+  log(`Restu Penjaga diaktifkan untuk semakan usaha pada ${skillId}.`);save();
+  learningState=null;sess.learningActive=false;
+  showRestuLock(skillId,META[skillId]?.title);
+}
 function showRestuLock(skillId,title){
   const lock=db?.restuLock;if(!lock||!lock.active)return false;
+  const card=document.querySelector('#restu .restuLock'),heading=card?.querySelector('h1'),eyebrow=card?.querySelector('.eyebrow');
+  const effort=lock.mode==='effort';card?.classList.toggle('effortMode',effort);
   const msg=document.getElementById('restuMessage');
-  if(msg)msg.textContent=`Coach sudah mengajar “${title||META[skillId]?.title||'kemahiran ini'}” dua kali, tetapi jawapan masih belum stabil. Ambil masa untuk rujuk buku teks atau nota dahulu.`;
+  if(eyebrow)eyebrow.textContent=effort?'RESTU PENJAGA':'RESTU PARENT';
+  if(heading)heading.textContent=effort?'Ibu Bapa, semak usaha sebentar':'Berhenti sekejap untuk ulang kaji';
+  if(msg)msg.textContent=effort?'Cikgu Dimensi mengesan beberapa jawapan dipilih terlalu cepat walaupun petunjuk dan bimbingan telah diberikan. Mohon pastikan anak sedang membaca, berfikir dan mencuba sendiri.':`Coach sudah mengajar “${title||META[skillId]?.title||'kemahiran ini'}” dua kali, tetapi jawapan masih belum stabil. Ambil masa untuk rujuk buku teks atau nota dahulu.`;
   const key=document.getElementById('restuKeyInput'),err=document.getElementById('restuError');if(key)key.value='';if(err){err.textContent='';err.classList.remove('show')}
-  screen('restu');startRestuCountdown();return true;
+  const effortPin=document.getElementById('effortRestuPin'),effortErr=document.getElementById('effortRestuError');if(effortPin)effortPin.value='';if(effortErr){effortErr.textContent='';effortErr.classList.remove('show')}
+  screen('restu');if(effort)setTimeout(()=>effortPin?.focus(),100);else startRestuCountdown();return true;
 }
 function startRestuCountdown(){
   if(restuTimerHandle)clearInterval(restuTimerHandle);
@@ -339,7 +352,7 @@ function startRestuCountdown(){
 }
 function clearRestuLock(reason){
   const skillId=db?.restuLock?.skillId;if(!db)return;
-  db.restuLock={active:false,skillId:null,until:0,clearedAt:Date.now(),reason};
+  db.restuLock={active:false,mode:null,skillId:null,until:0,clearedAt:Date.now(),reason};
   db.restuLearningFailures=db.restuLearningFailures||{};if(skillId)db.restuLearningFailures[skillId]=0;
   log(`Restu Parent dibuka${skillId?' untuk '+skillId:''}: ${reason}.`);save();
   if(restuTimerHandle){clearInterval(restuTimerHandle);restuTimerHandle=null;}
@@ -347,13 +360,24 @@ function clearRestuLock(reason){
   if(sess && (sess.coachAdaptive||sess.missionChapter||sess.devBankTest)){nextQ();screen('game');}
   else renderHub();
 }
+function verifyEffortRestuPin(){
+  const lock=db?.restuLock,field=document.getElementById('effortRestuPin'),err=document.getElementById('effortRestuError'),pin=(field?.value||'').trim();
+  const fail=message=>{if(err){err.textContent=message;err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong')};
+  if(!lock?.active||lock.mode!=='effort')return;
+  if(!/^\d{4}$/.test(pin))return fail('Masukkan PIN Penjaga 4 digit.');
+  if(!db.parentPin)return fail('PIN Penjaga belum ditetapkan. Sila buka Parent Mode untuk menyediakan PIN.');
+  if(pin!==db.parentPin)return fail('PIN tidak tepat. Minta ibu bapa atau penjaga mencuba semula.');
+  window.PAEffortGuard?.resetAfterParent?.();if(typeof playSfx==='function')playSfx('ui');clearRestuLock('Ibu bapa mengesahkan anak bersedia mencuba semula');
+}
 function restuContinueAfterStudy(){
   const lock=db?.restuLock;if(!lock||!lock.active)return;
+  if(lock.mode==='effort')return;
   if(Date.now()<lock.until)return;
   clearRestuLock('self-study minimum 5 minit selesai');
 }
 function verifyRestuKey(){
   const val=(document.getElementById('restuKeyInput')?.value||'').trim().toUpperCase(),err=document.getElementById('restuError');
+  if(db?.restuLock?.mode==='effort')return;
   if(val!==DUMMY_RESTU_KEY){if(err){err.textContent='Restu Key tidak tepat.';err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong');return;}
   if(typeof playSfx==='function')playSfx('ui');clearRestuLock('Restu Key ibu bapa');
 }
@@ -363,6 +387,7 @@ function enforceRestuLock(){
 }
 function learningComplete(){
   const id=learningState.skillId,origin=learningState.originSkill||id,fromDev=learningState.fromDev;
+  if(!fromDev)window.PAEffortGuard?.coachFinished?.(origin);
   db.restuLearningFailures=db.restuLearningFailures||{};db.restuLearningFailures[origin]=0;
   ensureCoachMemory();db.coachMemory.recovered[id]=(db.coachMemory.recovered[id]||0)+1;recordCoachStrategyResult(id,learningState.strategy,true);setInterventionCooldown(id);
   if(!fromDev){addCoins(10);addXp(15);sess.hp=Math.min(20,(sess.hp||12)+4);showRewardToast('Konsep dikuasai semula! +10 🪙 · +15 XP · +HP');}

@@ -86,6 +86,7 @@ function evaluateIntervention(skillId){
   ensureSessionHistory();
   if(sess.devBankTest && !sess.devLearningTest)return null;
   if((sess.interventionCooldown[skillId]||0)>0)return null;
+  if(window.PAEffortGuard?.shouldCoach?.(skillId))return{type:'guessing',tag:'guessing',reason:'Jawapan dipilih terlalu cepat walaupun petunjuk telah dibuka. Cikgu Dimensi akan bantu kamu berhenti, lihat dan fikir satu langkah pada satu masa.'};
   const last5=recentForSkill(skillId,5);
   if(last5.length<2)return null;
 

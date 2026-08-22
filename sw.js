@@ -1,9 +1,10 @@
-// App shell v3.31.6 — correct Bunga contact scale from visible-body proportions.
+// App shell v3.32.0 — foot-anchored attacks + effort-aware Guardian Restu.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest','./js/version.js',
   './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js',
+  './css/effort-restu-v3.32.0.css','./js/effort-guard-v3.32.0.js',
   './assets/heroes/wira/attack.webp','./assets/heroes/wira/frames/attack-dash-v2.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
   './assets/heroes/bunga/attack.webp','./assets/heroes/bunga/frames/attack-sweep-v2.webp','./assets/heroes/bunga/frames/attack-spiral-v2.webp','./assets/heroes/bunga/frames/attack-thorn-v2.webp',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',

@@ -2,16 +2,16 @@
 (function(){
   const variants={
     wira:[
-      {id:'original',label:'Tebasan Ais Asal',asset:'assets/heroes/wira/attack.webp'},
-      {id:'dash',label:'Tikaman Pantas',asset:'assets/heroes/wira/frames/attack-dash-v2.webp'},
-      {id:'arc',label:'Lengkung Nombor',asset:'assets/heroes/wira/frames/attack-arc-v2.webp'},
-      {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp'}
+      {id:'original',label:'Tebasan Ais Asal',asset:'assets/heroes/wira/attack.webp',bodyScale:1.48,footShiftX:28},
+      {id:'dash',label:'Tikaman Pantas',asset:'assets/heroes/wira/frames/attack-dash-v2.webp',bodyScale:1.85,footShiftX:38},
+      {id:'arc',label:'Lengkung Nombor',asset:'assets/heroes/wira/frames/attack-arc-v2.webp',bodyScale:1.78,footShiftX:28},
+      {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:2.05,footShiftX:40}
     ],
     bunga:[
-      {id:'original',label:'Serangan Flora Asal',asset:'assets/heroes/bunga/attack.webp'},
-      {id:'sweep',label:'Sapuan Flora',asset:'assets/heroes/bunga/frames/attack-sweep-v2.webp'},
-      {id:'spiral',label:'Pusaran Pecahan',asset:'assets/heroes/bunga/frames/attack-spiral-v2.webp'},
-      {id:'thorn',label:'Tusukan Mekar',asset:'assets/heroes/bunga/frames/attack-thorn-v2.webp'}
+      {id:'original',label:'Serangan Flora Asal',asset:'assets/heroes/bunga/attack.webp',bodyScale:1.55,footShiftX:9},
+      {id:'sweep',label:'Sapuan Flora',asset:'assets/heroes/bunga/frames/attack-sweep-v2.webp',bodyScale:1.35,footShiftX:18},
+      {id:'spiral',label:'Pusaran Pecahan',asset:'assets/heroes/bunga/frames/attack-spiral-v2.webp',bodyScale:1.25,footShiftX:10},
+      {id:'thorn',label:'Tusukan Mekar',asset:'assets/heroes/bunga/frames/attack-thorn-v2.webp',bodyScale:1.40,footShiftX:12}
     ]
   };
   let last={wira:-1,bunga:-1};
@@ -34,12 +34,15 @@
     const hero=(typeof db!=='undefined'&&db&&db.hero)||'wira',chosen=pick(hero);
     el.classList.add('pa-attack-variant','pa-attack-'+chosen.id);el.dataset.attackVariant=chosen.id;
     const strike=strikeFrame();if(strike){strike.src=chosen.asset;strike.alt=chosen.label}
+    el.style.setProperty('--pa-contact-scale',String(chosen.bodyScale));
+    el.style.setProperty('--pa-contact-shift-x',chosen.footShiftX+'px');
     const arena=document.getElementById('battleArena');if(arena){arena.dataset.heroAttack=chosen.id;arena.dataset.heroKind=hero}
   };
   window.clearHeroAttackVariant=function(el){
     if(!el)return;
     [...el.classList].filter(x=>x==='pa-attack-variant'||x.startsWith('pa-attack-')).forEach(x=>el.classList.remove(x));
     delete el.dataset.attackVariant;
+    el.style.removeProperty('--pa-contact-scale');el.style.removeProperty('--pa-contact-shift-x');
     const arena=document.getElementById('battleArena');if(arena){delete arena.dataset.heroAttack;delete arena.dataset.heroKind}
   };
   function ensureAttackLab(){
