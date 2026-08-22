@@ -1,11 +1,12 @@
 // Pahlawan Angka v3.26.0 — skill report exports and premium worksheet studio.
 (()=>{
 'use strict';
-const state={mode:'recommended',count:20,topic:'',busy:false};
+const state={mode:'recommended',count:10,topic:'',busy:false};
 const $=id=>document.getElementById(id);
 const safe=value=>typeof parentSafe==='function'?parentSafe(value):String(value??'');
 const allowed=()=>!!(window.PACommercial?.isPremium?.()||window.PACommercial?.canUseDev?.());
 const gate=()=>{if(allowed())return true;window.PACommercial?.openPricing?.();return false};
+const worksheetLimit=()=>allowed()?40:10;
 const slug=value=>String(value||'anak').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'anak';
 const dateLabel=()=>new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'long',year:'numeric'});
 function coreSkills(){const g=typeof coreGrade==='function'?coreGrade():Number(db?.schoolGrade||1);return GRAPH.skills.filter(m=>m.grade===g&&m.role==='core')}
@@ -17,7 +18,7 @@ function snapshot(){
 }
 function miniBars(rows){return rows.slice(0,4).map(x=>`<span><b>${safe(x.m.title)}</b><i style="--w:${Math.max(3,Math.round(x.s.mastery||0))}%"></i><em>${x.attempts?x.accuracy+'%':'baru'}</em></span>`).join('')}
 function markup(){
- const snap=snapshot(),topics=coreSkills();if(!state.topic)state.topic=topics[0]?.id||'';
+ const snap=snapshot(),topics=coreSkills(),limit=worksheetLimit();if(!state.topic)state.topic=topics[0]?.id||'';if(state.count>limit)state.count=limit;
  return `<div class="paParentTools">
  <section class="paExportCard"><div class="paToolHead"><span class="paToolIcon">▤</span><div><small>ANALISIS PEMBELAJARAN</small><h3>Laporan yang mudah dikongsi</h3></div><span class="paProPill">PRO</span></div><p class="paToolCopy">Ringkasan kemahiran yang kemas untuk simpanan keluarga, perbincangan bersama guru atau perkongsian media sosial.</p><div class="paSkillSnapshot"><div><b>${snap.attempts}</b><small>soalan dijawab</small></div><div><b>${snap.attempts?snap.accuracy+'%':'-'}</b><small>ketepatan</small></div><div><b>${snap.strong.length}</b><small>kemahiran mantap</small></div></div><div class="paExportPreview"><div class="paExportPreviewHead"><b>Pratonton kemahiran utama</b><span>Darjah ${snap.grade}</span></div><div class="paMiniBars">${miniBars([...snap.priority,...snap.developing,...snap.strong])||'<span><b>Belum cukup bukti</b><i style="--w:8%"></i><em>baru</em></span>'}</div></div><div class="paToolActions"><button class="paToolBtn primary" onclick="PAParentTools.exportReport()">Muat turun PDF</button><button class="paToolBtn" onclick="PAParentTools.shareCard()">Kongsi kad kemajuan</button></div></section>
  <section class="paWorksheetCard"><div class="paToolHead"><span class="paToolIcon">✎</span><div><small>STUDIO WORKSHEET</small><h3>Latihan untuk dicetak</h3></div><span class="paProPill">PRO</span></div><p class="paToolCopy">Pilih latihan mengikut satu topik, campuran Darjah ${snap.grade}, atau keutamaan yang dikenal pasti oleh Cikgu Dimensi.</p><div class="paWorksheetModes"><button class="paWorksheetMode ${state.mode==='topic'?'active':''}" onclick="PAParentTools.mode('topic')"><span>◎</span><b>Topik</b><small>Satu kemahiran</small></button><button class="paWorksheetMode ${state.mode==='grade'?'active':''}" onclick="PAParentTools.mode('grade')"><span>▦</span><b>Darjah</b><small>Latihan campuran</small></button><button class="paWorksheetMode ${state.mode==='recommended'?'active':''}" onclick="PAParentTools.mode('recommended')"><span>✦</span><b>Disyorkan</b><small>Ikut bukti anak</small></button></div><div class="paWorksheetOptions"><label>Fokus worksheet<select id="paWorksheetTopic" ${state.mode==='topic'?'':'disabled'} onchange="PAParentTools.topic(this.value)">${topics.map(m=>`<option value="${m.id}" ${m.id===state.topic?'selected':''}>${safe(m.title)}</option>`).join('')}</select></label><label>Bilangan soalan<div class="paCountPicker">${[10,20,30,40].map(n=>`<button class="${state.count===n?'active':''}" onclick="PAParentTools.count(${n})">${n}</button>`).join('')}</div></label></div><div class="paWorksheetHint"><span>✦</span><span><b>Cadangan Cikgu Dimensi</b><br>${safe(recommendationCopy(snap))}</span></div><div class="paToolActions"><button class="paToolBtn" onclick="PAParentTools.worksheet(false)">Versi murid</button><button class="paToolBtn primary" onclick="PAParentTools.worksheet(true)">Murid + skema</button></div><div id="paWorksheetStatus" class="paWorksheetStatus"></div></section></div>`;
@@ -28,9 +29,16 @@ function recommendationCopy(snap){
  if(!snap.tested.length)return 'Belum cukup bukti. Worksheet akan menggunakan campuran asas pada darjah semasa.';
  return 'Tiada jurang utama dikesan. Worksheet akan mengukuhkan kemahiran melalui format soalan yang berbeza.';
 }
-function mount(){const core=$('coreTab');if(!core)return;const head=core.querySelector('.parentReportHead');if(!head)return;let host=$('paParentTools');if(!host){host=document.createElement('div');host.id='paParentTools';head.after(host)}host.innerHTML=markup()}
+function applyWorksheetAccessUI(host){
+ const full=allowed(),card=host?.querySelector('.paWorksheetCard');if(!card)return;
+ const pill=card.querySelector('.paProPill'),copy=card.querySelector('.paToolCopy');
+ if(pill)pill.textContent=full?'PRO':'CUBA · 10';
+ if(copy&&!full)copy.textContent='Pelan percuma boleh mencuba dan memuat turun worksheet sehingga 10 soalan.';
+ card.querySelectorAll('.paCountPicker button').forEach(button=>{const n=Number(button.textContent);button.disabled=!full&&n>10;button.title=button.disabled?'Premium diperlukan':''});
+}
+function mount(){const core=$('coreTab');if(!core)return;const head=core.querySelector('.parentReportHead');if(!head)return;let host=$('paParentTools');if(!host){host=document.createElement('div');host.id='paParentTools';head.after(host)}host.innerHTML=markup();applyWorksheetAccessUI(host)}
 function mode(value){state.mode=value;mount()}
-function count(value){state.count=Math.max(10,Math.min(40,Number(value)||20));mount()}
+function count(value){state.count=Math.max(10,Math.min(worksheetLimit(),Number(value)||10));mount()}
 function topic(value){state.topic=value}
 function status(text,error=false){const el=$('paWorksheetStatus');if(el){el.textContent=text||'';el.classList.toggle('error',error)}}
 
@@ -237,7 +245,7 @@ function solutionFor(item){
  return `${item.hint} Hasil akhirnya ialah ${answer}.`;
 }
 async function worksheet(includeAnswers){
- if(!gate()||state.busy)return;state.busy=true;status('Cikgu Dimensi sedang menyusun worksheet...');
+ if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun worksheet...');
  try{
   const pack=makeQuestions(),pages=[],studentChunks=balancedChunks(pack.items,5);let studentStart=0;for(const subset of studentChunks){const p=await page(pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`),ctx=p.ctx;let y=270;if(studentStart===0){ctx.fillStyle='#526173';ctx.font='20px Arial';ctx.fillText('Nama: ______________________________',78,y);ctx.fillText(`Tarikh: ${dateLabel()}`,720,y);y+=62}for(let i=0;i<subset.length;i++){const item=subset[i],number=studentStart+i+1;roundRect(ctx,78,y,1084,190,18,'#ffffff','#ddd8cc');ctx.fillStyle='#0e2b4a';ctx.font='900 22px Arial';ctx.fillText(`${number}.`,102,y+37);ctx.fillStyle='#17263a';ctx.font='23px Arial';const bottom=drawWrapped(ctx,item.prompt,147,y+37,970,30,3);if(item.choices?.length){ctx.font='18px Arial';item.choices.forEach((choice,index)=>{const col=index%2,row=Math.floor(index/2),x=147+col*470,cy=Math.max(y+98,bottom+12)+row*39;roundRect(ctx,x,cy,440,31,9,'#f4f6f8','#c9cfd4');ctx.fillStyle='#26364a';ctx.fillText('○  '+choice.value,x+12,cy+22)})}else{ctx.strokeStyle='#bfc5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(147,Math.max(y+112,bottom+20));ctx.lineTo(1090,Math.max(y+112,bottom+20));ctx.stroke();ctx.fillStyle='#8993a0';ctx.font='16px Arial';ctx.fillText('Jawapan / ruang kerja',147,Math.max(y+140,bottom+48))}y+=225}footer(ctx,pages.length+1,'Pahlawan Angka | Worksheet murid');pages.push(p.canvas);studentStart+=subset.length}
   if(includeAnswers){const answerChunks=balancedChunks(pack.items,7);let answerStart=0;for(const subset of answerChunks){const p=await page('Skema dan Cara Menjawab',`${pack.title} | Untuk ibu bapa / penjaga`),ctx=p.ctx;let y=272;for(let i=0;i<subset.length;i++){const item=subset[i],number=answerStart+i+1;roundRect(ctx,78,y,1084,178,16,i%2?'#f4f1e9':'#ffffff','#ddd8cc');ctx.fillStyle='#0e2b4a';ctx.font='900 18px Arial';drawWrapped(ctx,`${number}. ${item.prompt}`,102,y+27,1010,22,3);ctx.fillStyle='#9a6b17';ctx.font='900 14px Arial';ctx.fillText('CARA',102,y+102);ctx.fillStyle='#536174';ctx.font='16px Arial';drawWrapped(ctx,solutionFor(item),164,y+102,680,20,3);roundRect(ctx,862,y+121,274,42,12,'#102b4a','#d4aa35');ctx.fillStyle='#f5cf52';ctx.font='900 17px Arial';ctx.textAlign='center';ctx.fillText(`Jawapan: ${item.answer}`,999,y+148);ctx.textAlign='left';y+=190}footer(ctx,pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(p.canvas);answerStart+=subset.length}}

@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const DEFAULT={role:'guardian',plan:'free',status:'inactive',current_period_end:null,profile_limit:2};
+const DEFAULT={role:'guardian',plan:'free',status:'inactive',current_period_end:null,profile_limit:1};
 let access={...DEFAULT},wrapped=false;
 const premium=()=>['active','trialing'].includes(access.status)&&['premium','family_plus'].includes(access.plan);
 const canUseDev=()=>access.role==='admin';
@@ -12,7 +12,7 @@ async function refresh(){
  if(!canUseDev()){localStorage.removeItem('pa_dev_unlocked');if(typeof db!=='undefined'&&db)db.devMode=false}
  render();installProfileLimit();return access
 }
-function pricingMarkup(){return `<section class="paPlanCard"><div><small>PELAN KELUARGA</small><h3>${premium()?'Premium aktif':'Pelan Percuma'}</h3><p>${premium()?'Semua ciri keluarga telah dibuka.':'Dua profil anak percuma. Premium akan dibuka selepas beta.'}</p></div><button type="button" onclick="PACommercial.openPricing()">${premium()?'Lihat pelan':'Lihat harga'}</button></section>`}
+function pricingMarkup(){return `<section class="paPlanCard"><div><small>PELAN KELUARGA</small><h3>${premium()?'Premium aktif':'Pelan Percuma'}</h3><p>${premium()?'Semua ciri keluarga telah dibuka.':'Satu profil anak dan worksheet percubaan 10 soalan.'}</p></div><button type="button" onclick="PACommercial.openPricing()">${premium()?'Lihat pelan':'Lihat harga'}</button></section>`}
 function render(){
  const controls=document.getElementById('cloudParentControls');if(controls&&!document.getElementById('paPlanMount')){const mount=document.createElement('div');mount.id='paPlanMount';controls.before(mount)}
  const mount=document.getElementById('paPlanMount');if(mount)mount.innerHTML=pricingMarkup();
@@ -26,7 +26,11 @@ function render(){
 function closePricing(){document.getElementById('paPricingOverlay')?.classList.add('hidden')}
 function installProfileLimit(){
  const pm=window.PAProfileManager;if(!pm||wrapped)return;const original=pm.create;
- pm.create=function(){const count=window.PACloud?.state?.profiles?.length||0;if(count>=Number(access.profile_limit||2)&&!premium()){openPricing();return}return original.apply(pm,arguments)};
+ pm.create=function(){
+  const count=window.PACloud?.state?.profiles?.length||0;
+  if(!canUseDev()&&count>=Number(access.profile_limit||1)&&!premium()){openPricing();return}
+  return original.apply(pm,arguments)
+ };
  wrapped=true
 }
 function boot(){refresh();setInterval(()=>{installProfileLimit();render()},1200)}
