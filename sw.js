@@ -1,4 +1,4 @@
-// App shell v3.26.2 — worked solutions and explicit final answers.
+// App shell v3.26.3 — teaching-grade worksheet solutions and balanced pages.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

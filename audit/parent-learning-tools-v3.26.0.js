@@ -11,5 +11,7 @@ if(!source.includes('[10,20,30,40]'))failures.push({type:'question-count-options
 if(!/PACommercial\?\.isPremium/.test(source))failures.push({type:'premium-gate-missing'});
 if(!/optionDependent/.test(source)||!/item\.choices/.test(source))failures.push({type:'choice-dependent-printing-missing'});
 if(!/solutionFor/.test(source)||!/Skema dan Cara Menjawab/.test(source)||!/Jawapan:/.test(source))failures.push({type:'worked-solution-missing'});
+if(!/balancedChunks\(pack\.items,5\)/.test(source)||!/balancedChunks\(pack\.items,7\)/.test(source))failures.push({type:'balanced-pdf-pagination-missing'});
+if(!/Gunakan operasi songsang/.test(source)||!/Anggar kepada puluh terdekat/.test(source)||!/Julat yang dibundarkan/.test(source))failures.push({type:'teaching-steps-incomplete'});
 if(/service_role|secret[_-]?key/i.test(source))failures.push({type:'client-secret-risk'});
 const report={status:failures.length?'fail':'pass',skills:ctx.__skills.length,fallbacks:fallback.size,failures};console.log(JSON.stringify(report,null,2));process.exitCode=failures.length?1:0;
