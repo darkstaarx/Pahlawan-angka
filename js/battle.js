@@ -53,7 +53,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    clearHeroPhases();setTimeout(()=>attacker.classList.add("phase-anticipation"),heroLead);
    if(finisher){
     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+finisherContact);
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+1010);
+    if(db?.hero!=="bunga")setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+1010);
     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+1200);
    }else{
     if(db?.hero==="bunga"){

@@ -1,4 +1,4 @@
-// App shell v3.33.6 — Bunga attack stance matches idle visible-body scale.
+// App shell v3.33.7 — two-phase Bunga finisher and answer-safe number line.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

@@ -35,7 +35,7 @@ const chooseMode=(id,s,modes)=>{
 const wrongNums=(ans,step=1,tag='operation')=>[N(ans+step,tag),N(Math.max(0,ans-step),tag),N(ans+step*2,tag)];
 const numLine=(min,max,value,label='')=>{
   const w=310,h=72,p=22,range=max-min||1,x=p+(value-min)/range*(w-2*p);
-  const ticks=Array.from({length:6},(_,i)=>{const tx=p+i*(w-2*p)/5,n=Math.round(min+i*range/5);return `<g><line x1="${tx}" y1="34" x2="${tx}" y2="42"/><text x="${tx}" y="59">${n}</text></g>`}).join('');
+  const ticks=Array.from({length:6},(_,i)=>{const tx=p+i*(w-2*p)/5,n=Math.round(min+i*range/5),shown=n===value?'':n;return `<g><line x1="${tx}" y1="34" x2="${tx}" y2="42"/><text x="${tx}" y="59">${shown}</text></g>`}).join('');
   return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" aria-label="garis nombor"><line x1="${p}" y1="38" x2="${w-p}" y2="38" class="kd-line"/>${ticks}<circle cx="${x}" cy="38" r="6" class="kd-accent"/><text x="${x}" y="18" class="kd-label">${label||value}</text></svg></div>`;
 };
 const fractionStrip=(n,d,color='#5b8def')=>{
