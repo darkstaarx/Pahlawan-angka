@@ -89,22 +89,32 @@ function parentLogText(raw){
  return text.replace(/Parent Focus:/gi,"Fokus ibu bapa:").replace(/Coach/gi,"Cikgu Dimensi").replace(/Cikgu Wajar/gi,"Cikgu Dimensi");
 }
 
+function parentInsightItem(m,type){
+ if(!m)return `<div class="parentInsightEmpty">Belum cukup latihan untuk membuat rumusan.</div>`;
+ const s=scoreState(m.id),attempts=skillAttempts(s),accuracy=skillAccuracy(s);
+ return `<article class="parentInsightItem ${type}"><span>${type==='strong'?'✓':'→'}</span><div><b>${parentSafe(m.title)}</b><small>${attempts?`${accuracy}% tepat daripada ${attempts} soalan`:'Masih diteroka'}</small></div></article>`;
+}
+function parentActivityList(){
+ const rows=(db.logs||[]).slice(-8).reverse();
+ if(!rows.length)return `<div class="parentEmpty"><span>◷</span><b>Belum ada aktiviti penting</b><p>Aktiviti pembelajaran akan muncul selepas anak mula menyelesaikan misi.</p></div>`;
+ return `<div class="parentTimeline">${rows.map(x=>`<article><time>${new Date(x.t).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</time><span></span><p>${parentSafe(parentLogText(x.text))}</p></article>`).join('')}</div>`;
+}
+
 function renderParent(){
  updateFrontier();
  const g=coreGrade(),prev=Math.max(1,g-1),next=Math.min(6,g+1),core=GRAPH.skills.filter(x=>x.grade===g);
  const attempts=core.reduce((z,m)=>z+skillAttempts(scoreState(m.id)),0),correct=core.reduce((z,m)=>z+Number(scoreState(m.id).correct||0),0),accuracy=attempts?Math.round(correct/attempts*100):0;
  const recovering=GRAPH.skills.filter(x=>x.grade===prev&&scoreState(x.id).evidence>0),stretching=GRAPH.skills.filter(x=>x.grade===next&&scoreState(x.id).evidence>0),summary=parentPowerSummary(core,attempts),missionCopy=nextMissionCopy(summary.mission,summary.mission?scoreState(summary.mission.id):null);
- const tested=core.filter(m=>powerLevel(scoreState(m.id))>0),starTotal=tested.reduce((z,m)=>z+powerLevel(scoreState(m.id)),0);
- const cards=summary.display.length?summary.display.map(m=>powerCard(m,scoreState(m.id))).join(""):`<div class="parentEmpty"><span>✦</span><b>Kuasa masih diteroka</b><p>Jawab beberapa soalan lagi untuk membuka penilaian setiap kemahiran.</p></div>`;
+ const strongLead=summary.strong[0]||null,priorityLead=summary.priority[0]||summary.mission||null;
  document.getElementById("summaryTab").innerHTML=`
-  <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">CATATAN CIKGU DIMENSI</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Dimensi menunjukkan perjalanan tiga bintang"></section>
-  <div class="parentStats"><div><span>⚔</span><b>${db.coreFrontier}/${totalChapters()}</b><small>Wilayah dibuka</small></div><div><span>🎯</span><b>${accuracy}%</b><small>Ketepatan</small></div><div><span>★</span><b>${starTotal}/${tested.length*3||0}</b><small>Bintang kuasa</small></div></div>
-  <section class="card powerSection"><div class="sectionHead parentSectionHead"><div><div class="eyebrow">PETA KUASA</div><h3>Kuasa yang telah diuji</h3></div><span class="parentLegend">★ Misi · ★★ Dikuatkan · ★★★ Mantap</span></div><div class="powerList">${cards}</div></section>
+  <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">RINGKASAN ${parentSafe(db.name).toUpperCase()} · DARJAH ${g}</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Dimensi menerangkan kemajuan anak"></section>
+  <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>Soalan dijawab</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>Ketepatan semasa</small></div><div><span>✓</span><b>${summary.strong.length}</b><small>Kemahiran mantap</small></div></div>
+  <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">PERLU PERHATIAN</div>${parentInsightItem(priorityLead,'priority')}</div></section>
   <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-wajar/welcome.webp" alt=""><span><b>Langkah Cikgu Dimensi</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
  let byCh={};core.forEach(m=>(byCh[m.chapter]??=[]).push(m));
- document.getElementById("coreTab").innerHTML=`<div class="card"><h2>Kemahiran Darjah ${g}</h2><p class="mut">Pilih satu kemahiran jika mahu lebih banyak latihan pada bahagian itu. Cikgu Dimensi masih akan menyelitkan ulang kaji penting supaya asas lain tidak tertinggal.</p>${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3 style="margin-top:15px">Topik ${ch}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;
- document.getElementById("levelsTab").innerHTML=`<div class="card"><h2>Pengukuhan Asas · ${gradeLabel(prev)}</h2>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada latihan asas tambahan diperlukan.</p>"}</div><div class="card"><h2>Cabaran Lanjutan · ${gradeLabel(next)}</h2>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div>`;
- document.getElementById("engineTab").innerHTML=`<div class="card"><h2>Rekod Latihan</h2>${db.logs.length?db.logs.map(x=>`<p class="mut">${new Date(x.t).toLocaleString("ms-MY")}: ${parentSafe(parentLogText(x.text))}</p>`).join(""):"<p class='mut'>Belum ada rekod penting.</p>"}</div>`;
+ document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat bukti latihan mengikut topik. Pilih “Latih” hanya jika mahu memberi tumpuan tambahan.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;
+ document.getElementById("levelsTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">JULAT PEMBELAJARAN</div><h2>Asas dan cabaran</h2><p>Cikgu Dimensi boleh turun kepada asas atau naik kepada cabaran apabila bukti pembelajaran memerlukannya.</p></section><div class="parentLevelGrid"><div class="card"><h3>Pengukuhan asas</h3><small>${gradeLabel(prev)}</small>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Tiada pengukuhan tambahan diperlukan sekarang.</p>"}</div><div class="card"><h3>Cabaran lanjutan</h3><small>${gradeLabel(next)}</small>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div></div>`;
+ document.getElementById("engineTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">AKTIVITI TERKINI</div><h2>Apa yang berlaku semasa latihan</h2><p>Hanya peristiwa pembelajaran penting dipaparkan di sini.</p></section><section class="card parentActivityCard">${parentActivityList()}</section>`;
  tab("summary");
 }
 
@@ -113,7 +123,7 @@ function skillHTML(m,allowFocus){
  return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${skillAttempts(s)?`${s.correct}/${skillAttempts(s)} betul`:"Belum dicuba"}${Number(s.hints||0)?` · ${s.hints} Petunjuk`:''}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
 }
 function tab(n){
- ["summary","core","levels","engine"].forEach(x=>document.getElementById(x+"Tab").classList.toggle("hidden",x!==n));
+ ["summary","core","levels","engine","settings"].forEach(x=>document.getElementById(x+"Tab").classList.toggle("hidden",x!==n));
  document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(b=>b.classList.toggle('active',b.dataset.parentTab===n));
 }
 function exportCSV(){let rows=[["Skill","Grade","Role","Title","Mastery","Confidence","Evidence","Correct","Wrong","Misconception"],...GRAPH.skills.map(m=>{let s=scoreState(m.id);return[m.id,m.grade,m.role,m.title,Math.round(s.mastery),Math.round(s.confidence),s.evidence,s.correct,s.wrong,topMis(s)]})];let csv=rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n"),blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pahlawan-angka-kemajuan.csv";a.click();URL.revokeObjectURL(a.href)}

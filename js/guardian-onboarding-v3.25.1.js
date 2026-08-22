@@ -2,7 +2,7 @@
 'use strict';
 let step=1,draft=null,busy=false;
 const $=id=>document.getElementById(id);
-const goals={school:['Ikut tahap sekolah','Latihan disusun mengikut darjah anak.'],foundation:['Kukuhkan asas','Utamakan asas yang belum stabil.'],exam:['Persediaan penilaian','Seimbangkan ketepatan, kefahaman dan format soalan.']};
+const goals={school:['Ikut tahap sekolah','Latihan disusun mengikut darjah anak.'],foundation:['Kukuhkan asas','Utamakan asas yang belum stabil.'],exam:['Persediaan ujian','Latihan campuran mengikut format ujian sekolah.']};
 function needsWizard(){return !!window.PACloud?.state?.user&&window.PACloud.state.needsOnboarding===true}
 function openDraft(data){draft={pin:'',daily:20,session:20,goal:'school',...data};step=1;busy=false;render();screen('guardianOnboarding')}
 function begin(){

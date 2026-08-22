@@ -1,0 +1,38 @@
+#parent{--parent-line:#304868;--parent-muted:#9dafc8;--parent-gold:#ffd34d}
+#parent .parentTop{margin-bottom:14px}
+#parent .parentTop h2{font-size:24px}
+#parent .parentTabs{display:flex;gap:7px;overflow-x:auto;padding:4px 1px 10px;margin:0 0 10px;scrollbar-width:none}
+#parent .parentTabs::-webkit-scrollbar{display:none}
+#parent .parentTabs button{flex:0 0 auto;border-radius:999px;padding:9px 14px;background:#111f35;border-color:#304766;color:#9eafc7}
+#parent .parentTabs button.active{background:#f2c94c;color:#162036;border-color:#ffe17a;box-shadow:0 5px 16px #eab42b30}
+#parent .parentJourney{min-height:198px;padding:20px 42% 20px 17px;border-radius:21px;background:radial-gradient(circle at 84% 42%,#25617d 0,#183b5a 24%,transparent 54%),linear-gradient(135deg,#17304f,#0c192d)}
+#parent .parentJourney h2{font-size:22px;line-height:1.16}
+#parent .parentJourney p{font-size:12px;line-height:1.55}
+#parent .parentStats{gap:8px;margin:10px 0}
+#parent .parentStats>div{border-radius:16px;padding:12px 9px;background:linear-gradient(145deg,#172b48,#101d32)}
+#parent .parentStats span{background:#243d60}
+#parent .parentStats small{line-height:1.2}
+.parentInsights{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px;margin-bottom:10px}
+.parentInsightColumn{min-width:0}.parentInsightColumn>.eyebrow{margin:0 0 8px}
+.parentInsightItem{display:flex;align-items:center;gap:9px;min-height:62px;padding:10px;border:1px solid #334b6c;border-radius:14px;background:#101e33}
+.parentInsightItem>span{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:10px;font-weight:950}
+.parentInsightItem.strong>span{background:#123d32;color:#6be0ac}.parentInsightItem.priority>span{background:#47341c;color:#ffd071}
+.parentInsightItem div{min-width:0}.parentInsightItem b,.parentInsightItem small{display:block}.parentInsightItem b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.parentInsightItem small{margin-top:4px;color:var(--parent-muted);font-size:9px;line-height:1.3}
+.parentInsightEmpty{min-height:62px;padding:12px;border:1px dashed #334861;border-radius:14px;color:#879ab5;font-size:10px;line-height:1.45}
+#parent .nextMission{margin-bottom:10px;border-radius:19px}
+.parentReportHead{margin-bottom:10px;padding:17px;background:linear-gradient(145deg,#172b47,#101c30)}
+.parentReportHead h2{margin:3px 0 6px;font-size:21px}.parentReportHead p{margin:0;color:var(--parent-muted);font-size:11px;line-height:1.5}
+.parentSkillReport{padding:15px}.parentSkillReport>h3{margin:18px 0 8px;padding-bottom:7px;border-bottom:1px solid #2e4462;font-size:14px}.parentSkillReport>h3:first-child{margin-top:0}
+.parentLevelGrid{display:grid;gap:10px}.parentLevelGrid>.card{padding:15px}.parentLevelGrid h3{margin:0}.parentLevelGrid>.card>small{display:block;margin:3px 0 12px;color:#f0c955;font-weight:850}
+.parentActivityCard{padding:8px 15px}.parentTimeline article{display:grid;grid-template-columns:68px 12px 1fr;gap:8px;align-items:start;padding:11px 0;border-bottom:1px solid #263b58}.parentTimeline article:last-child{border-bottom:0}.parentTimeline time{color:#8396b2;font-size:9px;line-height:1.4}.parentTimeline article>span{position:relative;width:8px;height:8px;margin-top:2px;border-radius:50%;background:#f0c64a;box-shadow:0 0 0 4px #f0c64a20}.parentTimeline p{margin:0;color:#c1cde0;font-size:11px;line-height:1.45}
+.parentSettingsIntro{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;margin-bottom:10px}.parentSettingsIntro h3{margin:2px 0 4px}.parentSettingsIntro p{margin:0;color:var(--parent-muted);font-size:10px}.parentSettingsIntro button{flex:0 0 auto}
+#settingsTab .paPlanCard,#settingsTab .cloudControls{margin-bottom:10px}
+@media(max-width:430px){
+ #parent .parentJourney{min-height:188px;padding:17px 39% 17px 14px}
+ #parent .parentJourney h2{font-size:19px}
+ #parent .parentJourney p{font-size:10px}
+ #parent .parentStats>div{padding:10px 4px}
+ .parentInsights{grid-template-columns:1fr;gap:10px}
+ .parentSettingsIntro{align-items:flex-start;flex-direction:column}.parentSettingsIntro button{width:100%}
+}
+@media(min-width:760px){.parentLevelGrid{grid-template-columns:1fr 1fr}}
