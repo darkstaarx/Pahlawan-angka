@@ -1,4 +1,4 @@
-// App shell v3.26.1 — preserve answer choices required by printable questions.
+// App shell v3.26.2 — worked solutions and explicit final answers.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
