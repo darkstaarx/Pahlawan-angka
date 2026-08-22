@@ -1,4 +1,4 @@
-// App shell v3.33.1 — enlarged foot-anchored Bunga contact attacks.
+// App shell v3.33.2 — force-refresh battle state machine and contact sizing.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
