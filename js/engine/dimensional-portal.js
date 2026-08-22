@@ -24,7 +24,7 @@
   function open({onDone,duration=1050}={}){
     const o=ensure();if(!o){onDone?.();return}
     o.classList.remove('show','activate');void o.offsetWidth;o.classList.add('show');
-    const ms=motionOK()?Math.max(0,Number(duration)||0):0;
+    const ms=motionOK()?Math.max(1800,Number(duration)||0):0;
     if(ms===0){o.classList.add('activate');o.classList.remove('show','activate');onDone?.();return}
     const activateAt=Math.min(320,Math.max(180,Math.round(ms*.28)));
     setTimeout(()=>o.classList.add('activate'),activateAt);

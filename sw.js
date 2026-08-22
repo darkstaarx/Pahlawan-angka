@@ -1,4 +1,4 @@
-// App shell v3.28.2 — fair idle timer and challenger-style Dimensi cut-in.
+// App shell v3.28.3 — readable Cikgu Dimensi challenger hold.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
