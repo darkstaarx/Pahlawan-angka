@@ -141,10 +141,21 @@ function subtractionSteps(numbers,answer){
 function balancedChunks(items,maxPerPage){
  const pageCount=Math.max(1,Math.ceil(items.length/maxPerPage)),base=Math.floor(items.length/pageCount),extra=items.length%pageCount,chunks=[];let start=0;for(let pageIndex=0;pageIndex<pageCount;pageIndex++){const size=base+(pageIndex<extra?1:0);chunks.push(items.slice(start,start+size));start+=size}return chunks;
 }
+function missingNumberSteps(prompt,answer){
+ const blank='(?:_{2,}|□|—|\\?)',number='(-?\\d+(?:\\.\\d+)?)';let match;
+ if((match=prompt.match(new RegExp(`${blank}\\s*\\+\\s*${number}\\s*=\\s*${number}`))))return `Gunakan operasi songsang: ${match[2]} - ${match[1]} = ${answer}. Semakan: ${answer} + ${match[1]} = ${match[2]}.`;
+ if((match=prompt.match(new RegExp(`${number}\\s*\\+\\s*${blank}\\s*=\\s*${number}`))))return `Gunakan operasi songsang: ${match[2]} - ${match[1]} = ${answer}. Semakan: ${match[1]} + ${answer} = ${match[2]}.`;
+ if((match=prompt.match(new RegExp(`${blank}\\s*[−-]\\s*${number}\\s*=\\s*${number}`))))return `Cari nombor asal dengan operasi songsang: ${match[2]} + ${match[1]} = ${answer}. Semakan: ${answer} - ${match[1]} = ${match[2]}.`;
+ if((match=prompt.match(new RegExp(`${number}\\s*[−-]\\s*${blank}\\s*=\\s*${number}`))))return `Cari nombor yang ditolak: ${match[1]} - ${match[2]} = ${answer}. Semakan: ${match[1]} - ${answer} = ${match[2]}.`;
+ if((match=prompt.match(new RegExp(`${blank}\\s*[×x]\\s*${number}\\s*=\\s*${number}`))))return `Gunakan operasi songsang: ${match[2]} ÷ ${match[1]} = ${answer}. Semakan: ${answer} × ${match[1]} = ${match[2]}.`;
+ if((match=prompt.match(new RegExp(`${number}\\s*[×x]\\s*${blank}\\s*=\\s*${number}`))))return `Gunakan operasi songsang: ${match[2]} ÷ ${match[1]} = ${answer}. Semakan: ${match[1]} × ${answer} = ${match[2]}.`;
+ if((match=prompt.match(new RegExp(`${blank}\\s*÷\\s*${number}\\s*=\\s*${number}`))))return `Cari nombor asal: ${match[2]} × ${match[1]} = ${answer}. Semakan: ${answer} ÷ ${match[1]} = ${match[2]}.`;
+ if((match=prompt.match(new RegExp(`${number}\\s*÷\\s*${blank}\\s*=\\s*${number}`))))return `Cari pembahagi: ${match[1]} ÷ ${match[2]} = ${answer}. Semakan: ${match[1]} ÷ ${answer} = ${match[2]}.`;
+ return null;
+}
 function solutionFor(item){
  const prompt=item.prompt,answer=item.answer,answerNumber=numericValue(answer),numbers=(prompt.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),direct=prompt.match(/(-?\d+(?:\.\d+)?(?:\s*[+−\-×÷]\s*-?\d+(?:\.\d+)?)+)\s*=\s*\?/);
- const missingAddend=prompt.match(/(?:_{2,}|□|\?)\s*\+\s*(-?\d+(?:\.\d+)?)\s*=\s*(-?\d+(?:\.\d+)?)/)||prompt.match(/(-?\d+(?:\.\d+)?)\s*\+\s*(?:_{2,}|□|\?)\s*=\s*(-?\d+(?:\.\d+)?)/);
- if(missingAddend)return `Gunakan operasi songsang: ${missingAddend[2]} - ${missingAddend[1]} = ${answer}. Semakan: ${answer} + ${missingAddend[1]} = ${missingAddend[2]}.`;
+ const missing=missingNumberSteps(prompt,answer);if(missing)return missing;
  if(/nilai digit/i.test(prompt)&&numbers.length>=2){const digit=Number((prompt.match(/nilai digit\s+(\d+)/i)||[])[1]);if(Number.isFinite(digit)&&digit!==0&&Number.isFinite(answerNumber)){const place=Math.round(answerNumber/digit);return `${digit} berada pada nilai tempat ${place===1000?'ribu':place===100?'ratus':place===10?'puluh':'sa'}: ${digit} × ${place} = ${answer}.`}}
  if(/dibundarkan kepada\s+\d+/i.test(prompt)&&/manakah/i.test(prompt)){const target=Number((prompt.match(/dibundarkan kepada\s+(\d+)/i)||[])[1]),unit=/ribu/i.test(prompt)?1000:/ratus/i.test(prompt)?100:/puluh/i.test(prompt)?10:1,low=target-unit/2,high=target+unit/2-1,digit=Math.floor(Number(answer)/(unit/10))%10;return `Julat yang dibundarkan kepada ${target} ialah ${low} hingga ${high}. ${answer} berada dalam julat itu (digit penentu ${digit}), jadi jawapannya betul.`}
  if(/bundarkan/i.test(prompt)&&numbers.length){const n=numbers[0],unit=/ribu/i.test(prompt)?1000:/ratus/i.test(prompt)?100:/puluh/i.test(prompt)?10:1,digit=Math.floor(n/(unit/10))%10;return `Lihat digit penentu ${digit}. Oleh sebab ${digit}${digit>=5?' ≥ 5, naikkan digit di sebelah kiri':' < 5, kekalkan digit di sebelah kiri'}: ${n} ≈ ${answer}.`}

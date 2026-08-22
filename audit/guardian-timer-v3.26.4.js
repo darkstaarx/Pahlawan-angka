@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'..');
+const onboarding=fs.readFileSync(path.join(root,'js/guardian-onboarding-v3.25.1.js'),'utf8');
+const css=fs.readFileSync(path.join(root,'css/guardian-onboarding-v3.25.1.css'),'utf8');
+const cloud=fs.readFileSync(path.join(root,'js/cloud.js'),'utf8');
+const failures=[];
+if(!/id="obCustomTime"/.test(onboarding)||!/customTime\(this\.value\)/.test(onboarding))failures.push('manual-time-input-missing');
+if(!/daily<5\|\|draft\.daily>180/.test(onboarding))failures.push('manual-time-validation-missing');
+if(!/hard_lock_enabled:draft\.hardLock/.test(onboarding))failures.push('hard-lock-choice-not-persisted');
+if(!/\.customTimeField/.test(css))failures.push('manual-time-theme-missing');
+if(!/daily_limit_minutes/.test(cloud)||!/session_limit_minutes/.test(cloud))failures.push('timer-runtime-fields-missing');
+console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
+process.exitCode=failures.length?1:0;
