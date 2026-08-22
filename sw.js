@@ -1,4 +1,4 @@
-// App shell v3.28.1 — visible hints and Cikgu Dimensi eye cut-in.
+// App shell v3.28.2 — fair idle timer and challenger-style Dimensi cut-in.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

@@ -3,12 +3,14 @@
   const URL='https://pxxekdeqlxwqwaqvfbnh.supabase.co';
   const KEY='sb_publishable_xVRVgrb4EP6RnFv_p6WI_g_u67xGW6C';
   const ACTIVE_SCREENS=new Set(['hub','missions','treasure','game','learning','result']);
-  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,authMode:'login',locked:false,ready:false,needsOnboarding:false};
+  const IDLE_AFTER_MS=120000;
+  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const currentScreen=()=>document.body.dataset.screen||'';
-  const playing=()=>ACTIVE_SCREENS.has(currentScreen())&&!document.hidden&&!state.locked;
+  const playing=()=>ACTIVE_SCREENS.has(currentScreen())&&!document.hidden&&!state.locked&&(Date.now()-state.lastInteractionAt<IDLE_AFTER_MS);
+  const markInteraction=()=>{const wasIdle=Date.now()-state.lastInteractionAt>=IDLE_AFTER_MS;state.lastInteractionAt=Date.now();if(wasIdle)state.lastTick=performance.now()};
   const formatTime=seconds=>{const mins=Math.floor(Math.max(0,seconds)/60),hrs=Math.floor(mins/60),rest=mins%60;return hrs?`${hrs}:${String(rest).padStart(2,'0')}`:`${String(mins).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`};
   const localDay=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`};
   const timerKey=()=>state.childId?`pa_play_seconds_${state.childId}_${localDay()}`:'';
@@ -229,7 +231,7 @@
     state.client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});wireLegacy();
     const {data}=await state.client.auth.getSession();if(data.session)await signedIn(data.session);else renderAccount();
     state.client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session&&session.user.id!==state.user?.id)setTimeout(()=>signedIn(session),0);if(event==='SIGNED_OUT'){state.user=null;renderAccount();}});
-    setInterval(tick,1000);document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else state.lastTick=performance.now();});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
+    setInterval(tick,1000);document.addEventListener('pointerdown',markInteraction,{passive:true,capture:true});document.addEventListener('keydown',markInteraction,{passive:true,capture:true});document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else{state.lastTick=performance.now();markInteraction()}});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
   window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,state};

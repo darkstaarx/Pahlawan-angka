@@ -103,10 +103,10 @@
   // Cikgu Dimensi v0.2.1 loader. Additive only: legacy adaptive/intervention,
   // telemetry and spaced-review systems remain authoritative.
   (function loadDimensionalView(){
-    if(document.querySelector('script[data-pa-dimensional-view="0.2.2"]'))return;
+    if(document.querySelector('script[data-pa-dimensional-view="0.2.3"]'))return;
     const styles=[
       ['css/cikgu-dimensi-place-value-v0.1.css?v=0.2.1','place-value'],
-      ['css/cikgu-dimensi-core-v0.2.css?v=0.2.2','core']
+      ['css/cikgu-dimensi-core-v0.2.css?v=0.2.3','core']
     ];
     styles.forEach(([href,key])=>{
       if(document.querySelector(`link[data-pa-dimensional-style="${key}"]`))return;
@@ -128,7 +128,7 @@
     const loadAt=index=>{
       if(index>=queue.length)return;
       const script=document.createElement('script');script.src=queue[index];script.async=false;
-      if(index===queue.length-1)script.dataset.paDimensionalView='0.2.2';
+      if(index===queue.length-1)script.dataset.paDimensionalView='0.2.3';
       script.onload=()=>loadAt(index+1);script.onerror=()=>console.warn('Cikgu Dimensi gagal dimuat:',queue[index]);
       document.head.appendChild(script);
     };
