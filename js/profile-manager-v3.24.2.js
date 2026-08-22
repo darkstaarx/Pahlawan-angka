@@ -183,7 +183,9 @@ function openEditor(id=null){
   editorProfileId=p?.id||null;editorHero=p?.hero_id||'wira';
   $('pmEditorTitle').textContent=p?'Edit Profil Anak':'Cipta Profil Anak';
   $('pmChildName').value=p?.display_name||'';
-  $('pmChildGrade').value=String(p?.grade||Math.max(1,Math.min(6,Number(db?.schoolGrade||2))));
+  const gradeSelect=$('pmChildGrade');
+  gradeSelect.value=String(p?.grade||Math.max(1,Math.min(6,Number(db?.schoolGrade||2))));
+  gradeSelect.dispatchEvent(new Event('change',{bubbles:true}));
   $('pmSaveProfile').textContent=p?'Simpan Perubahan':'Cipta Profil';
   $('pmEditorError').textContent='';
   chooseHero(editorHero);

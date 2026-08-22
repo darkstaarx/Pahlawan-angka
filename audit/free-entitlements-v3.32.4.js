@@ -14,7 +14,20 @@ check(/const worksheetLimit=\(\)=>allowed\(\)\?40:10/.test(tools),'worksheet pla
 check(/if\(state\.busy\)return;state\.count=Math\.min\(state\.count,worksheetLimit\(\)\)/.test(tools),'worksheet generator does not enforce the plan limit');
 check(!/if\(!gate\(\)\|\|state\.busy\)return;state\.busy=true;status\('Cikgu Dimensi sedang menyusun worksheet/.test(tools),'free worksheet remains behind the old hard paywall');
 check(/button\.disabled=!full&&n>10/.test(tools),'free worksheet picker does not disable counts above ten');
-check(/PA_APP_VERSION='3\.32\.4'/.test(version),'app version is not 3.32.4');
+const parseVersion=v=>{
+  const m=v.match(/PA_APP_VERSION='(\d+)\.(\d+)\.(\d+)'/);
+  return m?[Number(m[1]),Number(m[2]),Number(m[3])]:null;
+};
+const atLeast=(current,minimum)=>{
+  for(let i=0;i<3;i++){
+    if(current[i]>minimum[i])return true;
+    if(current[i]<minimum[i])return false;
+  }
+  return true;
+};
+const MIN_VERSION=[3,32,4];
+const currentVersion=parseVersion(version);
+check(!!currentVersion&&atLeast(currentVersion,MIN_VERSION),'app version is below the minimum required 3.32.4 for free entitlements');
 check(/parent-learning-tools-v3\.26\.0\.js\?v=3\.32\.4/.test(html),'worksheet tool is not cache-busted');
 
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));

@@ -1,4 +1,4 @@
-// App shell v3.32.4 — one free profile + 10-question worksheet trial.
+// App shell v3.32.5 — synchronize themed grade picker values.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

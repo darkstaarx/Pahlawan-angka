@@ -39,7 +39,7 @@
   const typedCss=`css/typed-answer-ui-v${TYPED_UI_VERSION}.css?v=${TYPED_UI_VERSION}`;
   const typedJs=`js/typed-answer-ui-v${TYPED_UI_VERSION}.js?v=${TYPED_UI_VERSION}`;
   const profileCss=`css/profile-manager-v${PROFILE_MANAGER_VERSION}.css?v=${PROFILE_MANAGER_VERSION}`;
-  const profileJs=`js/profile-manager-v${PROFILE_MANAGER_VERSION}.js?v=${PROFILE_MANAGER_VERSION}`;
+  const profileJs=`js/profile-manager-v${PROFILE_MANAGER_VERSION}.js?v=${APP_VERSION}`;
 
   if(document.readyState==='loading'){
     if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);

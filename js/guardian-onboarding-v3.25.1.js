@@ -38,7 +38,7 @@ async function finish(){
   if(draft.existingId){
    await window.PACloud?.selectChild?.(draft.existingId,false);
   }else{
-   if($('child'))$('child').value=draft.name;if($('gradeSelect'))$('gradeSelect').value=String(draft.grade);
+   if($('child'))$('child').value=draft.name;if($('gradeSelect')){$('gradeSelect').value=String(draft.grade);$('gradeSelect').dispatchEvent(new Event('change',{bubbles:true}))}
    if(typeof window.chooseHero==='function')window.chooseHero(draft.hero);
    window.startNew();
    db.parentPin=draft.pin;db.learningGoal=draft.goal;db.onboarding={completed:true,completedAt:Date.now(),introPending:true};save();
