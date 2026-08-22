@@ -1,11 +1,11 @@
-// App shell v3.31.0 — three-phase attacks and DEV Attack Lab.
+// App shell v3.31.1 — stance moves first; contact uses original + two new attacks.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest','./js/version.js',
   './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js',
-  './assets/heroes/wira/frames/attack-dash-v2.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
-  './assets/heroes/bunga/frames/attack-sweep-v2.webp','./assets/heroes/bunga/frames/attack-spiral-v2.webp','./assets/heroes/bunga/frames/attack-thorn-v2.webp',
+  './assets/heroes/wira/attack.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
+  './assets/heroes/bunga/attack.webp','./assets/heroes/bunga/frames/attack-spiral-v2.webp','./assets/heroes/bunga/frames/attack-thorn-v2.webp',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
   './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',

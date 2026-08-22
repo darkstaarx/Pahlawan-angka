@@ -15,7 +15,8 @@ body.hero-bunga #game #hero.pa-attack-spiral.attacking .sprite{animation-name:pa
 
 /* Three distinct readable phases: stance -> movement -> actual strike. */
 #game #hero .hero-frame-strike{top:auto!important;bottom:0!important;height:var(--pa-hero-h)!important;width:auto!important;max-width:none!important;object-fit:contain!important;object-position:center bottom!important;opacity:0!important;transform-origin:50% 100%!important}
-#game #hero.phase-movement .hero-frame-attack{opacity:1!important}
+#game #hero.phase-movement .hero-frame-anticipation{opacity:1!important}
+#game #hero.phase-movement .hero-frame-attack{opacity:0!important}
 #game #hero.phase-movement .hero-frame-strike{opacity:0!important}
 #game #hero.phase-contact:not(.charging-finisher) .hero-frame-attack{opacity:0!important}
 #game #hero.phase-contact:not(.charging-finisher) .hero-frame-strike{opacity:1!important}

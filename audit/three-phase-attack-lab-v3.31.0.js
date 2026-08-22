@@ -12,10 +12,13 @@ const movementAt=battle.indexOf('phase-movement'),contactAt=battle.indexOf('phas
 check(movementAt>=0&&contactAt>movementAt&&followAt>contactAt,'phase sequence is not stance -> movement -> contact -> follow-through');
 check(/hero-frame-strike/.test(action)&&/attack\.src=chosen\.asset/.test(action)===false,'variant asset incorrectly replaces movement frame');
 check(/strike\.src=chosen\.asset/.test(action),'variant asset is not assigned to strike frame');
-check(/phase-movement \.hero-frame-attack/.test(css),'movement frame is not displayed');
+check(/phase-movement \.hero-frame-anticipation\{opacity:1/.test(css),'stance frame does not remain visible during movement');
+check(/phase-movement \.hero-frame-attack\{opacity:0/.test(css),'original attack frame is incorrectly used as movement');
 check(/phase-contact:not\(\.charging-finisher\) \.hero-frame-strike/.test(css),'strike frame is not displayed at contact');
 check(/charging-finisher\.phase-contact \.hero-frame-attack/.test(css),'finisher frame preservation missing');
 check(/Attack Lab/.test(action)&&/attackLabStep/.test(action)&&/playAttackLab/.test(action),'DEV Attack Lab missing');
-check(/v=3\.31\.0/.test(html),'action files are not cache-busted to 3.31.0');
+check(/step==='strike'\?item\.asset:h\.anticipation/.test(action),'Attack Lab movement does not use the stance frame');
+check(/assets\/heroes\/wira\/attack\.webp/.test(action)&&/assets\/heroes\/bunga\/attack\.webp/.test(action),'original attacks are not retained in the contact pool');
+check(/v=3\.31\.1/.test(html),'action files are not cache-busted to 3.31.1');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
 process.exitCode=failures.length?1:0;

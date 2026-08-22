@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 files="
+assets/heroes/wira/frames/attack-arc-v2.webp
 assets/heroes/wira/frames/attack-pulse-v2.webp
-assets/heroes/bunga/frames/attack-sweep-v2.webp
 assets/heroes/bunga/frames/attack-spiral-v2.webp
 assets/heroes/bunga/frames/attack-thorn-v2.webp
 "
