@@ -1,4 +1,4 @@
-// App shell v3.32.9 — corrected Bunga portal movement landmark.
+// App shell v3.33.0 — simple two-phase Bunga attacks.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

@@ -56,8 +56,12 @@ function triggerImpact(attackerId,targetId,tint,finisher){
     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+1010);
     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+1200);
    }else{
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-movement")},heroLead+140);
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+320);
+    if(db?.hero==="bunga"){
+     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+260);
+    }else{
+     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-movement")},heroLead+140);
+     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+320);
+    }
     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+620);
    }
  }else if(attacker.dataset.enemyTier==="boss"){
