@@ -4,6 +4,16 @@
  const hist=id=>((typeof sess!=='undefined'&&sess.questionHistory)||[]).filter(x=>x.skillId===id).slice(-5);
  function rotate(id,modes){const used=hist(id),last=used.at(-1)?.archetypeId,counts=Object.fromEntries(modes.map(x=>[x,used.filter(y=>y.archetypeId===x).length]));return [...modes].sort((a,b)=>(a===last)-(b===last)||counts[a]-counts[b]||Math.random()-.5)[0]}
  function mark(q,id,a,rep,demand,context='general',targets=[]){Object.assign(q,{archetypeId:a,representation:rep,demand,contextId:context,difficultyBand:demand==='reasoning'?4:demand==='application'?3:demand==='procedure'?2:1,misconceptionTargets:targets,familyKey:id});return q}
+ function reasonableEstimate(a,b,op){
+  if(op==='add'||op==='sub'){const unit=Math.max(a,b)>=1000?100:10,ra=Math.round(a/unit)*unit,rb=Math.round(b/unit)*unit;return op==='add'?ra+rb:ra-rb}
+  if(op==='mul'){const unit=a>=100?100:a>=20?10:1;return Math.round(a/unit)*unit*b}
+  return a/b;
+ }
+ function reasonableWrong(a,b,ans,op,existing){
+  const estimate=reasonableEstimate(a,b,op),correctDistance=Math.abs(ans-estimate),step=Math.max(10,10**Math.max(1,String(Math.round(Math.abs(ans))).length-2)),seen=new Set([ans]),choices=[];
+  const add=value=>{value=Math.round(Number(value));if(Number.isFinite(value)&&value>=0&&!seen.has(value)&&Math.abs(value-estimate)>correctDistance){seen.add(value);choices.push(N(value,'estimate'))}};
+  (existing||[]).forEach(x=>add(x?.v));for(let scale=1;choices.length<3&&scale<12;scale++){add(ans+step*scale);add(Math.max(0,ans-step*scale))}return choices.slice(0,3);
+ }
  function maxFor(id){if(id.includes('20'))return 20;if(id.includes('1000000'))return 1000000;if(id.includes('100000'))return 100000;if(id.includes('10000'))return 10000;if(id.includes('1000')||id.startsWith('D2.1'))return 1000;return 100}
  function randNumber(max){const min=max<=20?1:max/10;return R(Math.ceil(min),max-1)}
  function numberTask(id){
@@ -31,7 +41,7 @@
   if(mode==='direct')return mark(Q(`${a} ${sym} ${b} = ?`,ans,wrong,`Gunakan operasi ${sym} dan semak nilai tempat.`,'KSSR · Operasi',true,true),id,mode,'symbolic','procedure','direct',['operation']);
   if(mode==='story'){const stem=op==='add'?`Sebuah perpustakaan mempunyai ${a} buku dan menerima ${b} buku lagi.`:op==='sub'?`Sebuah stor mempunyai ${a} kotak dan menghantar ${b} kotak.`:op==='mul'?`Ada ${a} kumpulan dengan ${b} objek dalam setiap kumpulan.`:`${a} objek dibahagi sama rata kepada ${b} kumpulan.`;return mark(Q(`${stem} Berapakah hasilnya?`,ans,wrong,'Kenal pasti perubahan atau kumpulan dalam cerita.','KSSR · Masalah Harian',true,true),id,mode,'story','application','daily',['operation']);}
   if(mode==='missing'){if(op==='add')return mark(Q(`___ + ${b} = ${ans}`,a,[N(ans+b,'operation'),N(ans-b+10,'place'),N(b,'operation')],'Gunakan operasi songsang.','KSSR · Nombor Hilang',true,true),id,mode,'symbolic','reasoning','unknown',['operation']);if(op==='sub')return mark(Q(`${a} − ___ = ${ans}`,b,[N(a+ans,'operation'),N(a-ans+10,'place'),N(ans,'operation')],'Gunakan operasi songsang.','KSSR · Nombor Hilang',true,true),id,mode,'symbolic','reasoning','unknown',['operation']);return mark(Q(`${a} ${sym} ___ = ${ans}`,b,[N(a,'operation'),N(ans,'operation'),N(b+1,'fact')],'Gunakan hubungan operasi songsang.','KSSR · Faktor Hilang',true,true),id,mode,'symbolic','reasoning','unknown',['operation','fact']);}
-  const claim=wrong[0].v;return mark(Q(`Tanpa mengira semula sepenuhnya, jawapan manakah munasabah bagi <b>${a} ${sym} ${b}</b>?`,ans,[N(claim,'operation'),wrong[1],wrong[2]],'Anggar dahulu, kemudian semak operasi.','KSSR · Semak Kewajaran',true,true),id,mode,'symbolic','reasoning','estimate',['estimate','operation'])}
+  return mark(Q(`Tanpa mengira semula sepenuhnya, jawapan manakah munasabah bagi <b>${a} ${sym} ${b}</b>?`,ans,reasonableWrong(a,b,ans,op,wrong),'Anggar dahulu. Pilih satu jawapan yang paling hampir dengan anggaran.','KSSR · Semak Kewajaran',true,true),id,mode,'symbolic','reasoning','estimate',['estimate','operation'])}
  function timeTask(id){const mode=rotate(id,['find_end','find_start','find_duration','compare']),start=R(7,12)*60+R(0,11)*5,dur=pick([20,30,45,60,75,90,120]),end=start+dur,fmt=m=>`${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`,timeline=timelineSvg(Math.floor(start/60),start%60,Math.floor(end/60),end%60);
   if(mode==='find_end')return mark(Q(`${clockSvg(Math.floor(start/60),start%60)}Aktiviti bermula pada waktu yang ditunjukkan dan berlangsung <b>${dur} minit</b>. Bilakah tamat?`,fmt(end),[N(fmt(start),'time'),N(fmt(end+15),'time'),N(fmt(end-15),'time')],'Tambah tempoh pada masa mula.','KSSR · Masa Tamat',true,true),id,mode,'visual','application','schedule',['time']);
   if(mode==='find_start')return mark(Q(`${clockSvg(Math.floor(end/60),end%60)}Aktiviti tamat pada waktu yang ditunjukkan selepas <b>${dur} minit</b>. Bilakah bermula?`,fmt(start),[N(fmt(end),'time'),N(fmt(start+15),'time'),N(fmt(start-15),'time')],'Tolak tempoh daripada masa tamat.','KSSR · Masa Mula',true,true),id,mode,'visual','application','schedule',['time']);
