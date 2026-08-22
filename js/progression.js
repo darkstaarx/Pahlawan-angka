@@ -138,10 +138,12 @@ function recordMissionAnswer(ok,skillId,usedHint){
   }
   if(ok){
     sess.missionCorrect=(sess.missionCorrect||0)+1;db.totalCorrect++;db.daily.correct=(db.daily.correct||0)+1;addXp(PROGRESSION.xpPerCorrect);addCoins(PROGRESSION.coinPerCorrect);
+    db.bestStreak=Math.max(db.bestStreak||0,sess.streak||0);
     if(sess.streak>0&&sess.streak%PROGRESSION.streakEvery===0){addCoins(PROGRESSION.streakCoinBonus);showRewardToast(`${sess.streak} rentak! +${PROGRESSION.streakCoinBonus} 🪙`)}
   } else addXp(PROGRESSION.xpPerWrong);
   if(usedHint)sess.missionHints=(sess.missionHints||0)+1;
   db.totalQuestions=(db.totalQuestions||0)+1;
+  if(typeof evaluateMilestoneBadges==='function')evaluateMilestoneBadges();
   sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok?1:-1);
   if(db.daily.correct>=PROGRESSION.dailyTarget&&!db.daily.claimed){db.daily.claimed=true;addCoins(25);showRewardToast('Daily Quest selesai! +25 🪙')}
   updateMissionHud();save();
@@ -166,6 +168,7 @@ function finishMission(){
   document.getElementById('resultCoach').textContent=next;
   document.getElementById('resultTitle').textContent=stars===3?'Misi Hebat!':stars===2?'Misi Selesai!':'Misi Selesai';
   if(typeof processMissionRewards==='function')processMissionRewards();
+  if(typeof evaluateMilestoneBadges==='function')evaluateMilestoneBadges();
   save();screen('result');
 }
 function finishCoachSession(){

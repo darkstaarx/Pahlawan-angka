@@ -46,7 +46,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    }
  }
  const clearHeroPhases=()=>attacker.classList.remove("phase-anticipation","phase-contact","phase-follow-through","phase-recover");
- const startAttacker=()=>{attacker.classList.remove("attacking","charging-finisher");void attacker.offsetWidth;attacker.classList.add("attacking");if(finisher){if(attackerId==="hero")triggerFinisherCinematic();attacker.classList.add("charging-finisher");}};
+ const startAttacker=()=>{attacker.classList.remove("attacking","charging-finisher");if(attackerId==="hero"&&typeof prepareHeroAttackVariant==="function")prepareHeroAttackVariant(attacker,finisher);void attacker.offsetWidth;attacker.classList.add("attacking");if(finisher){if(attackerId==="hero")triggerFinisherCinematic();attacker.classList.add("charging-finisher");}};
  if(heroLead)setTimeout(startAttacker,heroLead);else startAttacker();
  if(hasPet)triggerPetFollowUp(target,0);
  if(attackerId==="hero"){
@@ -61,7 +61,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},500);
  }
  arena.classList.remove("attack-from-hero","attack-from-enemy");arena.classList.add(attackerId==="hero"?"attack-from-hero":"attack-from-enemy");
- setTimeout(()=>{attacker.classList.remove("attacking","charging-finisher");clearHeroPhases();arena.classList.remove("attack-from-hero","attack-from-enemy")},attackDuration);
+ setTimeout(()=>{attacker.classList.remove("attacking","charging-finisher");clearHeroPhases();if(attackerId==="hero"&&typeof clearHeroAttackVariant==="function")clearHeroAttackVariant(attacker);arena.classList.remove("attack-from-hero","attack-from-enemy")},attackDuration);
  setTimeout(()=>{
    target.classList.remove("hit","tint-red","tint-ice","tint-bloom","finisher");void target.offsetWidth;target.classList.add("hit",tintClass);if(finisher)target.classList.add("finisher");setTimeout(()=>target.classList.remove("hit","tint-red","tint-ice","tint-bloom","finisher"),hitDuration);
    arena.classList.remove("shake","finisher-shake");void arena.offsetWidth;arena.classList.add(shakeClass);setTimeout(()=>arena.classList.remove(shakeClass),hitDuration);

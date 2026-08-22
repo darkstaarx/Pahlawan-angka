@@ -5,12 +5,16 @@ const REWARD_PETS={
  tiko:{id:'tiko',name:'Tiko Burung Waktu',desc:'Burung waktu yang mengunci musuh dengan gelang jam.',price:200,front:'assets/pets/tiko/front.png',hub:'assets/pets/tiko/hub/adventure-v1.webp',anticipation:'assets/pets/tiko/anticipation.png',battle:'assets/pets/tiko/battle.png',followThrough:'assets/pets/tiko/follow-through.png',fx:'assets/fx/pets/tiko/impact.png'}
 };
 const REWARD_BADGES={
- pemula:{id:'pemula',name:'Pemula Berani',icon:'⭐',desc:'Tamatkan misi pertama.'},
- nombor:{id:'nombor',name:'Pakar Nombor',icon:'📘',desc:'Kalahkan boss Topik Nombor.'},
- operasi:{id:'operasi',name:'Jagoan Operasi',icon:'➕',desc:'Kalahkan boss Topik Operasi.'},
- pecahan:{id:'pecahan',name:'Raja Pecahan',icon:'◔',desc:'Kalahkan boss Topik Pecahan.'},
- tanpaHint:{id:'tanpaHint',name:'Tanpa Bantuan',icon:'💡',desc:'Tamatkan misi tanpa menggunakan Petunjuk.'},
- cabaran:{id:'cabaran',name:'Cabaran Boss',icon:'👑',desc:'Jawab betul soalan Boss Darjah +1.'}
+ pemula:{id:'pemula',name:'Langkah Pertama',icon:'⭐',desc:'Tamatkan misi pertama.',target:1,metric:()=>db.rewards.firstMissionDone?1:0},
+ rentak5:{id:'rentak5',name:'Rentak Lima',icon:'⚡',desc:'Capai 5 jawapan betul berturut-turut.',target:5,metric:()=>db.bestStreak||0},
+ tepat50:{id:'tepat50',name:'50 Tepat',icon:'🎯',desc:'Kumpulkan 50 jawapan betul.',target:50,metric:()=>db.totalCorrect||0},
+ bintang3:{id:'bintang3',name:'Bintang Sempurna',icon:'🌟',desc:'Dapatkan 3 bintang dalam satu misi.',target:3,metric:()=>Math.max(0,...Object.values(db.chapterStars||{}).map(Number))},
+ nombor:{id:'nombor',name:'Pakar Nombor',icon:'🔢',desc:'Kalahkan boss Topik Nombor.',target:1,metric:()=>db.rewards.badges.nombor?1:0},
+ operasi:{id:'operasi',name:'Jagoan Operasi',icon:'➕',desc:'Kalahkan boss Topik Operasi.',target:1,metric:()=>db.rewards.badges.operasi?1:0},
+ pecahan:{id:'pecahan',name:'Wira Pecahan',icon:'◔',desc:'Kalahkan boss Topik Pecahan.',target:1,metric:()=>db.rewards.badges.pecahan?1:0},
+ tanpaHint:{id:'tanpaHint',name:'Yakin Sendiri',icon:'💡',desc:'Tamatkan misi tanpa menggunakan Petunjuk.',target:1,metric:()=>db.rewards.badges.tanpaHint?1:0},
+ gigih:{id:'gigih',name:'Gigih Berlatih',icon:'🛡️',desc:'Jawab 100 soalan sepanjang pengembaraan.',target:100,metric:()=>db.totalQuestions||0},
+ cabaran:{id:'cabaran',name:'Penakluk Cabaran',icon:'👑',desc:'Jawab betul cabaran Boss Darjah +1.',target:1,metric:()=>db.rewards.bossStretchWin?1:0}
 };
 const REWARD_AURAS={
  numbers:{id:'numbers',name:'Lingkaran Nombor',desc:'Sigil nilai tempat untuk serangan terakhir.',price:60,image:'assets/fx/math-auras-approved/numbers-normalized.webp'},
@@ -70,7 +74,7 @@ function renderTreasure(){
  ensureRewards(); const c=document.getElementById('treasureCoins');if(c)c.textContent=`🪙 ${db.coins||0}`;
  const pets=document.getElementById('petCollection'); if(pets)pets.innerHTML=Object.values(REWARD_PETS).map(p=>shopCard('pet',p)).join('');
  const auras=document.getElementById('auraCollection');if(auras)auras.innerHTML=Object.values(REWARD_AURAS).map(a=>shopCard('aura',a)).join('');
- const badges=document.getElementById('badgeCollection'); if(badges)badges.innerHTML=Object.values(REWARD_BADGES).map(b=>{const owned=!!db.rewards.badges[b.id];return `<div class="badgeCard ${owned?'owned':'locked'}"><div class="badgeMedal">${owned?b.icon:'🔒'}</div><b>${b.name}</b><small>${b.desc}</small><span>${owned?'✓ Diperoleh':'Belum diperoleh'}</span></div>`}).join('');
+ const badges=document.getElementById('badgeCollection'); if(badges)badges.innerHTML=Object.values(REWARD_BADGES).map(b=>{const record=db.rewards.badges[b.id],owned=!!record,current=Math.min(b.target,Number(b.metric?.()||0)),pct=Math.round(current/b.target*100),date=record?.unlockedAt?new Date(record.unlockedAt).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'}):'';return `<article class="badgeCard ${owned?'owned':'locked'}"><div class="badgeMedal">${owned?b.icon:'?'}</div><b>${b.name}</b><small>${b.desc}</small><div class="badgeProgress" aria-label="${current} daripada ${b.target}"><i style="width:${pct}%"></i></div><span>${owned?`✓ Diperoleh · ${date}`:`${current}/${b.target} kemajuan`}</span></article>`}).join('');
 }
 function shopCard(type,item){const store=type==='pet'?db.rewards.pets:db.rewards.auras,owned=!!store[item.id],eq=type==='pet'?db.rewards.equippedPet===item.id:db.rewards.equippedAura===item.id,img=type==='pet'?item.front:item.image,short=Math.max(0,item.price-(db.coins||0)),action=type==='pet'?`equipPet('${item.id}')`:`equipAura('${item.id}')`,remove=type==='pet'?'unequipPet()':'unequipAura()';return `<div class="petCard ${type==='aura'?'auraCard':''} ${owned?'owned':'shopItem'}"><div class="petArtWrap ${type==='aura'?'auraArtWrap':''}"><img src="${img}" alt="${item.name}"></div><div class="petInfo"><div class="petStatus">${eq?'Dilengkapi':owned?'Dimiliki':'Kedai'}</div><h3>${item.name}</h3><p>${item.desc}</p>${owned?`<button class="btn ${eq?'secondary':'primary'} small" onclick="${eq?remove:action}">${eq?'Tanggalkan':'Lengkapi'}</button>`:`<button class="btn primary small shopBuy" onclick="buyReward('${type}','${item.id}')">🪙 ${item.price}</button><small class="coinShort">${short?`Lagi ${short} syiling`:'Boleh dibeli sekarang'}</small>`}</div></div>`}
 function devAddShopCoins(){if(typeof isDevMode==='function'&&!isDevMode())return;db.coins=(db.coins||0)+500;save();renderTreasure();if(typeof renderHub==='function')renderHub();showRewardToast('DEV: +500 Syiling Kedai')}
@@ -111,4 +115,11 @@ function processMissionRewards(){
  if((sess?.missionHints||0)===0)queueUnlock('badge','tanpaHint');
  if(db.rewards.bossStretchWin)queueUnlock('badge','cabaran');
  save();
+}
+function evaluateMilestoneBadges(){
+ ensureRewards();
+ if((db.bestStreak||0)>=5)queueUnlock('badge','rentak5');
+ if((db.totalCorrect||0)>=50)queueUnlock('badge','tepat50');
+ if((db.totalQuestions||0)>=100)queueUnlock('badge','gigih');
+ if(Math.max(0,...Object.values(db.chapterStars||{}).map(Number))>=3)queueUnlock('badge','bintang3');
 }
