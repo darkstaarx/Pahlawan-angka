@@ -26,7 +26,7 @@ body.hero-bunga #game #hero .hero-frame-idle{
   transform:translateX(-50%) scale(1.06)!important;
 }
 body.hero-bunga #game #hero .hero-frame-anticipation{
-  transform:translateX(-50%) scale(1.06)!important;
+  transform:translateX(-50%) scale(1.39)!important;
 }
 body.hero-bunga #game #hero .hero-frame-attack{
   left:calc(50% + 9px)!important;
