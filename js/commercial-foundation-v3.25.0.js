@@ -18,8 +18,9 @@ function render(){
  const mount=document.getElementById('paPlanMount');if(mount)mount.innerHTML=pricingMarkup();
  const manager=document.querySelector('.pmManager');if(manager&&!manager.querySelector('.paManagerPlan'))manager.insertAdjacentHTML('beforeend',`<div class="paManagerPlan">${pricingMarkup()}</div>`)
 }
-function openPricing(){
+ function openPricing(){
  let overlay=document.getElementById('paPricingOverlay');if(!overlay){document.body.insertAdjacentHTML('beforeend',`<div id="paPricingOverlay" class="paPricingOverlay hidden" role="dialog" aria-modal="true"><div class="paPricing"><button class="paPricingClose" onclick="PACommercial.closePricing()">×</button><small>PAHLAWAN ANGKA PREMIUM</small><h2>Satu pelan untuk keluarga</h2><div class="paPrices"><article><b>Bulanan</b><strong>RM14.90</strong><span>/bulan</span></article><article class="best"><em>JIMAT</em><b>Tahunan</b><strong>RM119</strong><span>/tahun</span></article></div><ul><li>Semua topik Darjah 1–6</li><li>Auto Coach dan latihan fokus penuh</li><li>Laporan kemajuan keluarga</li><li>Dua profil anak</li></ul><button class="paFounder" disabled>Pembayaran dibuka selepas beta</button><p>Tiada pembelian boleh dibuat oleh murid.</p></div></div>`);overlay=document.getElementById('paPricingOverlay')}
+ overlay.querySelector('ul').innerHTML='<li>Semua topik Darjah 1-6</li><li>Laporan kemahiran PDF dan kad perkongsian</li><li>Worksheet topik, darjah dan cadangan Cikgu Dimensi</li><li>Sehingga 40 soalan bersama skema jawapan</li><li>Dua profil anak</li>';
  overlay.classList.remove('hidden')
 }
 function closePricing(){document.getElementById('paPricingOverlay')?.classList.add('hidden')}

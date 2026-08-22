@@ -30,7 +30,7 @@
     select.dataset.paPicker='true';select.classList.add('paNativeSelect');
     const wrap=document.createElement('div');wrap.className='paSelectEnhanced';select.parentNode.insertBefore(wrap,select);wrap.appendChild(select);
     const trigger=document.createElement('button');trigger.type='button';trigger.className='paSelectTrigger';trigger.innerHTML='<span></span><i class="paSelectChevron" aria-hidden="true">⌄</i>';trigger.querySelector('span').textContent=selectedLabel(select);
-    trigger.setAttribute('aria-label',select.getAttribute('aria-label')||select.closest('label')?.querySelector('span')?.textContent?.trim()||'Pilih');trigger.onclick=()=>openPicker(select,trigger);
+    trigger.setAttribute('aria-label',select.getAttribute('aria-label')||select.closest('label')?.querySelector('span')?.textContent?.trim()||'Pilih');trigger.disabled=select.disabled;trigger.onclick=()=>openPicker(select,trigger);
     select.addEventListener('change',()=>{trigger.querySelector('span').textContent=selectedLabel(select);});wrap.appendChild(trigger);
   }
   function scan(root=document){root.querySelectorAll?.('select').forEach(enhance);}
