@@ -1,0 +1,16 @@
+const fs=require('fs'),path=require('path'),root=path.resolve(__dirname,'..'),failures=[];
+const read=file=>fs.readFileSync(path.join(root,file),'utf8');
+const check=(name,value)=>{if(!value)failures.push(name)};
+const battle=read('js/battle.js'),portal=read('js/engine/dimensional-portal.js'),css=read('css/hint-overlay-v3.28.1.css'),dimCss=read('css/cikgu-dimensi-core-v0.2.css'),index=read('index.html'),sw=read('sw.js');
+check('hint-overlay-called',/showHintOverlay\(help\)/.test(battle));
+check('hint-text-safe',/querySelector\('h2'\)\.textContent=String\(help/.test(battle));
+check('hint-dialog-accessible',/aria-modal/.test(battle)&&/aria-labelledby/.test(battle));
+check('hint-retry-visible',/Sekarang cuba pilih jawapan sekali lagi/.test(battle));
+check('hint-dismiss-action',/Faham, saya cuba/.test(battle)&&/closeHintOverlay/.test(battle));
+check('cutin-asset-exists',fs.existsSync(path.join(root,'assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp')));
+check('cutin-copy',/Masa untuk Cikgu Dimensi!/.test(portal)&&/DIMENSIONAL MODE/.test(portal));
+check('cutin-not-fancy-portal',!/dvPortalRing/.test(portal));
+check('dark-screen',/background:#01040b/.test(dimCss));
+check('reduced-motion',/prefers-reduced-motion/.test(dimCss)&&/prefers-reduced-motion/.test(css));
+check('assets-wired',/hint-overlay-v3\.28\.1\.css/.test(index)&&/dimensional-eye-cutin-v1\.webp/.test(sw));
+const report={status:failures.length?'fail':'pass',failures};console.log(JSON.stringify(report,null,2));process.exitCode=failures.length?1:0;

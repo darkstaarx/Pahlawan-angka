@@ -250,6 +250,12 @@ function resolveAnswer(o,btn,question,ok){
  else if(!sess.devBankTest && !sess.coachAdaptive && sess.missionAnswered>=PROGRESSION.missionQuestions && sess.bossDefeated){setTimeout(finishMission,bossClearDelay)}
  else{setTimeout(nextQ,enemyDefeated?1250:1050)}
 }
+function closeHintOverlay(){const overlay=document.getElementById('paHintOverlay');if(overlay){overlay.classList.remove('show');setTimeout(()=>overlay.remove(),180)}}
+function showHintOverlay(help){
+ let overlay=document.getElementById('paHintOverlay');if(!overlay){overlay=document.createElement('div');overlay.id='paHintOverlay';overlay.className='paHintOverlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','paHintTitle');document.body.appendChild(overlay)}
+ overlay.innerHTML='<section class="paHintPanel"><div class="paHintMark" aria-hidden="true">✦</div><small>PETUNJUK CIKGU DIMENSI</small><h2 id="paHintTitle"></h2><p>Sekarang cuba pilih jawapan sekali lagi.</p><button type="button" onclick="closeHintOverlay()">Faham, saya cuba</button></section>';
+ overlay.querySelector('h2').textContent=String(help||'Lihat semula maklumat penting dalam soalan.');requestAnimationFrame(()=>{overlay.classList.add('show');overlay.querySelector('button')?.focus()});
+}
 function hint(){
  if(!sess.q)return;
  sess.hintLevel=(sess.hintLevel||0)+1;
@@ -257,6 +263,7 @@ function hint(){
  const button=document.querySelector('.hintBtn');if(button){button.classList.remove('needs-help');button.classList.add('used');button.setAttribute('aria-label','Petunjuk telah dibuka');}
  const help=(sess.guardianFocus&&typeof guardianHint==='function')?guardianHint(sess.q,sess.hintLevel):sess.q.hint;
  document.getElementById('feedback').innerHTML=`<b>Cikgu Dimensi bantu:</b> ${help}<br><span class="retryPrompt">Sekarang pilih jawapan sekali lagi.</span>`;
+ showHintOverlay(help);
  if(sess.retryState)document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});
  save();
 }

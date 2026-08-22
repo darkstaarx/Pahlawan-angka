@@ -103,10 +103,10 @@
   // Cikgu Dimensi v0.2.1 loader. Additive only: legacy adaptive/intervention,
   // telemetry and spaced-review systems remain authoritative.
   (function loadDimensionalView(){
-    if(document.querySelector('script[data-pa-dimensional-view="0.2.1"]'))return;
+    if(document.querySelector('script[data-pa-dimensional-view="0.2.2"]'))return;
     const styles=[
       ['css/cikgu-dimensi-place-value-v0.1.css?v=0.2.1','place-value'],
-      ['css/cikgu-dimensi-core-v0.2.css?v=0.2.1','core']
+      ['css/cikgu-dimensi-core-v0.2.css?v=0.2.2','core']
     ];
     styles.forEach(([href,key])=>{
       if(document.querySelector(`link[data-pa-dimensional-style="${key}"]`))return;
@@ -114,7 +114,7 @@
     });
     const queue=[
       'js/engine/dimensional-memory.js?v=0.2.1',
-      'js/engine/dimensional-portal.js?v=0.2.1',
+      'js/engine/dimensional-portal.js?v=0.2.2',
       'js/engine/representations/place-value.js?v=0.2.1',
       'js/engine/representations/fraction-area.js?v=0.2.1',
       'js/engine/representations/number-line.js?v=0.2.1',
@@ -128,7 +128,7 @@
     const loadAt=index=>{
       if(index>=queue.length)return;
       const script=document.createElement('script');script.src=queue[index];script.async=false;
-      if(index===queue.length-1)script.dataset.paDimensionalView='0.2.1';
+      if(index===queue.length-1)script.dataset.paDimensionalView='0.2.2';
       script.onload=()=>loadAt(index+1);script.onerror=()=>console.warn('Cikgu Dimensi gagal dimuat:',queue[index]);
       document.head.appendChild(script);
     };

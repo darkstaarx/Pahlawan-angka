@@ -1,4 +1,4 @@
-// App shell v3.28.0 — insight-first guardian report.
+// App shell v3.28.1 — visible hints and Cikgu Dimensi eye cut-in.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
@@ -11,8 +11,8 @@ const APP_SHELL=[
   './assets/heroes/wira/idle.webp','./assets/heroes/bunga/idle.webp','./assets/heroes/wira/profile-happy-v1.webp','./assets/heroes/bunga/profile-happy-v1.webp',
   './assets/heroes/wira/hub/adventure-v1.webp','./assets/heroes/bunga/hub/adventure-v1.webp','./assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
   './assets/pets/aurora/hub/adventure-v1.webp','./assets/pets/arif/hub/adventure-v1.webp','./assets/pets/kucing-pembaris/hub/adventure-v1.webp','./assets/pets/tiko/hub/adventure-v1.webp',
-  './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg',
-  './css/game.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/parent-pin-recovery-v3.27.3.css','./css/google-auth-v3.25.2.css','./css/parent-dashboard-v3.25.4.css','./css/theme-controls-v3.25.5.css','./css/custom-picker-v3.25.6.css','./css/parent-learning-tools-v3.26.0.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
+  './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg','./assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp',
+  './css/game.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/parent-pin-recovery-v3.27.3.css','./css/google-auth-v3.25.2.css','./css/parent-dashboard-v3.25.4.css','./css/theme-controls-v3.25.5.css','./css/custom-picker-v3.25.6.css','./css/parent-learning-tools-v3.26.0.css','./css/hint-overlay-v3.28.1.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
   './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
   './css/login-buttons-v3.7.1.css','./css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
   './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',
