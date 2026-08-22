@@ -14,12 +14,12 @@ check(/strike\.src=chosen\.asset/.test(action),'variant asset is not assigned to
 check(/phase-movement \.hero-frame-anticipation\{opacity:0/.test(css),'stance frame remains visible during movement');
 check(/phase-movement \.hero-frame-follow-through\{[^}]*opacity:1/.test(css),'movement does not use frame 4 / follow-through asset');
 check(/phase-movement \.hero-frame-attack\{opacity:0/.test(css),'original actual attack leaks into movement');
-check(/phase-contact:not\(\.charging-finisher\) \.hero-frame-strike/.test(css),'strike frame is not displayed at contact');
+check(/phase-contact:not\(\.charging-finisher\) \.hero-frame-strike\{[^}]*visibility:visible!important;opacity:1!important/.test(css),'strike frame is hidden by legacy battle visibility rules');
 check(/charging-finisher\.phase-contact \.hero-frame-attack/.test(css),'finisher frame preservation missing');
 check(/Attack Lab/.test(action)&&/attackLabStep/.test(action)&&/playAttackLab/.test(action),'DEV Attack Lab missing');
 check(/step==='movement'\?h\.followThrough/.test(action),'Attack Lab movement does not use frame 4');
 check(!/attackLabStep\('follow'\)/.test(action),'Attack Lab incorrectly exposes a fourth sequence step');
 check((action.match(/<b>[123]<\/b>/g)||[]).length===3,'Attack Lab does not show exactly three sequence steps');
-check(/v=3\.31\.3/.test(html),'action files are not cache-busted to 3.31.3');
+check(/v=3\.31\.4/.test(html),'action files are not cache-busted to 3.31.4');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
 process.exitCode=failures.length?1:0;

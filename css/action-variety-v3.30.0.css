@@ -20,7 +20,7 @@ body.hero-bunga #game #hero.pa-attack-spiral.attacking .sprite{animation-name:pa
 #game #hero.phase-movement .hero-frame-follow-through{visibility:visible!important;opacity:1!important}
 #game #hero.phase-movement .hero-frame-strike{opacity:0!important}
 #game #hero.phase-contact:not(.charging-finisher) .hero-frame-attack{opacity:0!important}
-#game #hero.phase-contact:not(.charging-finisher) .hero-frame-strike{opacity:1!important}
+#game #hero.phase-contact:not(.charging-finisher) .hero-frame-strike{visibility:visible!important;opacity:1!important}
 #game #hero.charging-finisher.phase-contact .hero-frame-attack{opacity:1!important}
 #game #hero.charging-finisher.phase-contact .hero-frame-strike{opacity:0!important}
 body:not(.hero-bunga) #game #hero .hero-frame-strike{left:calc(50% + 28px)!important;transform:translateX(-50%) scale(1)!important}

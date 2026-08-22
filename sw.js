@@ -1,4 +1,4 @@
-// App shell v3.31.3 — stance, follow-through movement pose, four contact attacks.
+// App shell v3.31.4 — expose variant contact frame above legacy visibility rules.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
