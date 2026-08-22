@@ -207,6 +207,12 @@
     if(error)throw error;state.controls=data;state.locked=false;updateTimer();return data;
   }
 
+  async function confirmGuardianEmail(value){
+    const email=String(value||'').trim().toLowerCase();if(!email||!state.client||!state.user)return false;
+    const {data,error}=await state.client.auth.getUser();if(error||!data?.user||data.user.id!==state.user.id)return false;
+    return String(data.user.email||'').trim().toLowerCase()===email;
+  }
+
   function addChild(){state.needsOnboarding=true;screen('setup')}
 
   async function logout(){await syncSaveNow();await endPlaySession('user_exit');await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
@@ -226,6 +232,6 @@
     setInterval(tick,1000);document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else state.lastTick=performance.now();});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
-  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,addChild,logout,state};
+  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,state};
   init().catch(error=>{console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
 })();

@@ -249,10 +249,25 @@ function returnFromLearning(){ if(confirm('Keluar dari Kem Latihan dan kembali k
 function openParentPin(){
   if(!db){setLoginError('Belum ada profil murid. Cipta profil murid dahulu.');return;}
   const input=document.getElementById('parentPinInput'),err=document.getElementById('parentPinError');
-  if(input)input.value='';if(err){err.textContent='';err.classList.remove('show')}
+  if(input)input.value='';if(err){err.textContent='';err.classList.remove('show')}hideParentPinRecovery();
   const title=document.querySelector('#parentPin .parentPinCard h2'),button=document.querySelector('#parentPin .parentPinCard .btn'),creating=!db.parentPin;
   if(title)title.textContent=creating?'Cipta PIN Ibu Bapa':'PIN Ibu Bapa';if(button)button.textContent=creating?'Simpan PIN':'Buka Parent Mode';
   screen('parentPin');setTimeout(()=>input&&input.focus(),80);
+}
+function showParentPinRecovery(){
+  const recovery=document.getElementById('parentPinRecovery'),entry=document.getElementById('parentPinEntry'),err=document.getElementById('parentPinRecoveryError'),email=document.getElementById('parentPinEmail');
+  if(!window.PACloud?.state?.user){if(err){err.textContent='Log masuk ke akaun penjaga dahulu untuk mencipta PIN baharu.';err.classList.add('show')}recovery?.classList.remove('hidden');entry?.classList.add('hidden');return}
+  entry?.classList.add('hidden');recovery?.classList.remove('hidden');if(err){err.textContent='';err.classList.remove('show')}if(email){email.value='';setTimeout(()=>email.focus(),80)}
+}
+function hideParentPinRecovery(){
+  document.getElementById('parentPinEntry')?.classList.remove('hidden');document.getElementById('parentPinRecovery')?.classList.add('hidden');for(const id of ['parentPinEmail','parentPinNew','parentPinNew2']){const el=document.getElementById(id);if(el)el.value=''}const err=document.getElementById('parentPinRecoveryError');if(err){err.textContent='';err.classList.remove('show')}
+}
+async function recoverParentPin(){
+  const email=(document.getElementById('parentPinEmail')?.value||'').trim(),pin=(document.getElementById('parentPinNew')?.value||'').trim(),confirmPin=(document.getElementById('parentPinNew2')?.value||'').trim(),err=document.getElementById('parentPinRecoveryError'),button=document.getElementById('parentPinRecoveryButton');
+  const fail=message=>{if(err){err.textContent=message;err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong')};
+  if(!/^\S+@\S+\.\S+$/.test(email))return fail('Masukkan e-mel penjaga yang sah.');if(!/^\d{4}$/.test(pin))return fail('PIN baharu mesti mempunyai 4 digit.');if(pin!==confirmPin)return fail('PIN baharu tidak sepadan.');
+  if(button){button.disabled=true;button.textContent='Mengesahkan…'}if(err){err.textContent='';err.classList.remove('show')}
+  try{if(!await window.PACloud?.confirmGuardianEmail?.(email))return fail('E-mel tidak sepadan dengan akaun penjaga yang sedang log masuk.');db.parentPin=pin;save();await window.PACloud?.syncSaveNow?.();hideParentPinRecovery();const main=document.getElementById('parentPinError');if(main){main.textContent='PIN baharu berjaya disimpan. Masukkan PIN untuk meneruskan.';main.classList.add('show','success')}document.getElementById('parentPinInput')?.focus();if(typeof playSfx==='function')playSfx('ui')}catch(error){console.error(error);fail('Pengesahan belum berjaya. Semak sambungan dan cuba semula.')}finally{if(button){button.disabled=false;button.textContent='Simpan PIN baharu'}}
 }
 function verifyParentPin(){
   const input=document.getElementById('parentPinInput'),err=document.getElementById('parentPinError');
