@@ -1,4 +1,4 @@
-// App shell v3.27.0 — worksheet mathematics and solution integrity.
+// App shell v3.27.1 — balanced worksheet composition.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
