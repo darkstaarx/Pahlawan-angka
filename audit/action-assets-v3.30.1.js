@@ -7,7 +7,8 @@ const expected=[
  'assets/heroes/wira/frames/attack-pulse-v2.webp',
  'assets/heroes/bunga/frames/attack-sweep-v2.webp',
  'assets/heroes/bunga/frames/attack-spiral-v2.webp',
- 'assets/heroes/bunga/frames/attack-thorn-v2.webp'
+ 'assets/heroes/bunga/frames/attack-original-aura-v3.webp',
+ 'assets/heroes/bunga/frames/attack-thorn-summon-v3.webp'
 ];
 const failures=[];
 for(const file of expected){
@@ -17,7 +18,7 @@ for(const file of expected){
  if(!sw.includes(file))failures.push('not cached '+file);
 }
 if((action.match(/asset:'assets\/heroes\//g)||[]).length!==8)failures.push('contact attack count is not eight (four per hero)');
-for(const original of ['assets/heroes/wira/attack.webp','assets/heroes/bunga/attack.webp']){
+for(const original of ['assets/heroes/wira/attack.webp']){
  if(!action.includes(original))failures.push('original contact attack not wired '+original);
  if(!sw.includes(original))failures.push('original contact attack not cached '+original);
 }

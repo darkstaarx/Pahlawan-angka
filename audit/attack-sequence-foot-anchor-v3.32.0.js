@@ -29,6 +29,6 @@ check(shifts.length===8&&shifts.every(x=>x>=0&&x<=42),'contact foot anchor escap
 check(/--pa-contact-scale/.test(action)&&/--pa-contact-shift-x/.test(action),'contact anchor metadata is not applied');
 check(/bottom:0!important/.test(css)&&/scale\(var\(--pa-contact-scale,1\)\)/.test(css),'single foot-anchored transform is missing');
 check(!/pa-attack-(?:original|dash|arc|pulse|sweep|spiral|thorn) \.hero-frame-strike/.test(css),'unsafe per-class transform overrides remain');
-check(/v=3\.32\.1/.test(html),'action assets are not cache-busted to the safe contact-size revision');
+check(/v=3\.32\.2/.test(html),'action assets are not cache-busted to the compact Bunga contact-pose revision');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
 process.exitCode=failures.length?1:0;
