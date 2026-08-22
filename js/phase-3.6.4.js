@@ -34,14 +34,14 @@
     MINION_ENEMIES.splice(0,MINION_ENEMIES.length,
       {name:'Askabus',image:'assets/enemies/minions/askabus.webp',tone:'minion-a'},
       {name:'Syilinggit',image:'assets/enemies/minions/syilinggit.webp',tone:'minion-b'},
-      {name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'}
+      {name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'},
+      {name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'minion-b',specialty:'division'}
     );
   }
 
-  // Bahbahgi replaces the Chapter 3 fraction boss. Intentionally no frame directory:
-  // keep one consistent approved static battle asset instead of falling back to old Raja Bahagian Sama frames.
+  // Bahbahgi is a division minion. Keep the dedicated fraction guardian as the Chapter 3 boss.
   if(typeof BOSS_BY_CHAPTER!=='undefined'){
-    BOSS_BY_CHAPTER['3']={name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'fraction'};
+    BOSS_BY_CHAPTER['3']={name:'Raja Bahagian Sama',image:'assets/enemies/fractions/raja-bahagian-sama.webp',frames:'assets/enemies/fractions/frames',tone:'fraction'};
   }
 
   // Load the authoritative character grounding/staging layer after legacy battle CSS.

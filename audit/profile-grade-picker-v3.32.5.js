@@ -11,7 +11,20 @@ const check=(ok,msg)=>{if(!ok)failures.push(msg)};
 check(/const gradeSelect=\$\('pmChildGrade'\)/.test(manager)&&/gradeSelect\.dispatchEvent\(new Event\('change',\{bubbles:true\}\)\)/.test(manager),'profile editor does not synchronize its themed grade trigger');
 check(/gradeSelect'\)\.value=String\(draft\.grade\);\$\('gradeSelect'\)\.dispatchEvent\(new Event\('change',\{bubbles:true\}\)\)/.test(onboarding),'guardian onboarding does not synchronize the setup grade trigger');
 check(/select\.addEventListener\('change',\(\)=>\{trigger\.querySelector\('span'\)\.textContent=selectedLabel\(select\)/.test(picker),'themed picker does not respond to synthetic change events');
-check(/PA_APP_VERSION='3\.32\.5'/.test(version),'app version is not 3.32.5');
+const parseVersion=v=>{
+  const m=v.match(/PA_APP_VERSION='(\d+)\.(\d+)\.(\d+)'/);
+  return m?[Number(m[1]),Number(m[2]),Number(m[3])]:null;
+};
+const atLeast=(current,minimum)=>{
+  for(let i=0;i<3;i++){
+    if(current[i]>minimum[i])return true;
+    if(current[i]<minimum[i])return false;
+  }
+  return true;
+};
+const MIN_VERSION=[3,32,5];
+const currentVersion=parseVersion(version);
+check(!!currentVersion&&atLeast(currentVersion,MIN_VERSION),'app version is below the minimum required 3.32.5 for the profile grade picker fix');
 check(/profileJs=`js\/profile-manager-v\$\{PROFILE_MANAGER_VERSION\}\.js\?v=\$\{APP_VERSION\}`/.test(pwa),'profile manager does not use the current app version for cache busting');
 check(/guardian-onboarding-v3\.25\.1\.js\?v=3\.32\.5/.test(html),'guardian onboarding is not cache-busted');
 

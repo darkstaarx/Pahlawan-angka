@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const root=__dirname+'/..';
-const context={db:{coachMemory:{},masteryRewards:{}},sess:{responseHistory:[],interventionCooldown:{}},console};
+const context={db:{coachMemory:{},masteryRewards:{}},sess:{responseHistory:[],interventionCooldown:{}},window:{},console};
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(root+'/js/engine/intervention.js','utf8'),context);
 

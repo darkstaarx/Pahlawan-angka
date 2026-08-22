@@ -3,12 +3,13 @@ let uiSession=JSON.parse(localStorage.getItem('pa_dummy_login')||'null');
 const MINION_ENEMIES=[
  {name:'Askabus',image:'assets/enemies/minions/askabus.webp',tone:'minion-a'},
  {name:'Syilinggit',image:'assets/enemies/minions/syilinggit.webp',tone:'minion-b'},
- {name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'}
+ {name:'Pigiramid',image:'assets/enemies/minions/pigiramid.webp',tone:'minion-c'},
+ {name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'minion-b',specialty:'division'}
 ];
 const BOSS_BY_CHAPTER={
  '1':{name:'Maharaja Nilai Tempat',image:'assets/enemies/place-value/maharaja-nilai-tempat.webp',frames:'assets/enemies/place-value/frames',tone:'place'},
  '2':{name:'Jeneral Tambah-Tolak',image:'assets/enemies/operations/jeneral-tambah-tolak.webp',frames:'assets/enemies/operations/frames',tone:'operation'},
- '3':{name:'Bahbahgi',image:'assets/enemies/fractions/bahbahgi.webp',tone:'fraction'},
+ '3':{name:'Raja Bahagian Sama',image:'assets/enemies/fractions/raja-bahagian-sama.webp',frames:'assets/enemies/fractions/frames',tone:'fraction'},
  '4':{name:'Penjaga Wang',image:'assets/enemies/money/penjaga-wang.webp',frames:'assets/enemies/money/frames',tone:'money'},
  '5':{name:'Penguasa Jam Berdetik',image:'assets/enemies/time/penguasa-jam-berdetik.webp',frames:'assets/enemies/time/frames',tone:'time'},
  '6':{name:'Penjaga Ukuran',image:'assets/enemies/measurement/penjaga-ukuran.webp',frames:'assets/enemies/measurement/frames',tone:'measurement'},
@@ -154,7 +155,12 @@ screen('login');refreshLoginResume();
 
 function enemyStageForQuestion(){
   const answered=Number(sess?.missionAnswered||0);
-  if(sess?.devBankTest)return {tier:'minion',index:answered%3};
+  const skillId=String(sess?.q?.skill||'');
+  const skillMeta=typeof META!=='undefined'?(META[skillId]||{}):{};
+  const divisionRound=/\bdiv\b|bahagi|division/i.test([skillId,skillMeta.title,skillMeta.domain,sess?.q?.title,sess?.q?.misconception].filter(Boolean).join(' '));
+  const minionIndex=divisionRound?MINION_ENEMIES.findIndex(x=>x.specialty==='division'):-1;
+  const themedMinion=()=>({tier:'minion',index:minionIndex>=0?minionIndex:Math.floor(answered/3)%3});
+  if(sess?.devBankTest)return themedMinion();
   if(sess?.coachAdaptive){
     if(sess.bossActive&&sess.coachBossChapter)return {tier:'boss',chapter:String(sess.coachBossChapter)};
     const checkpoint=answered>0 && (answered+1)%10===0;
@@ -163,13 +169,13 @@ function enemyStageForQuestion(){
       sess.bossActive=true;sess.coachBossChapter=ch;
       return {tier:'boss',chapter:ch};
     }
-    return {tier:'minion',index:Math.floor(answered/3)%3};
+    return themedMinion();
   }
   if(sess?.missionChapter){
     if(answered>=PROGRESSION.regularMissionQuestions && !sess.bossDefeated)return {tier:'boss',chapter:String(sess.missionChapter)};
-    return {tier:'minion',index:Math.min(2,Math.floor(answered/3))};
+    return divisionRound?themedMinion():{tier:'minion',index:Math.min(2,Math.floor(answered/3))};
   }
-  return {tier:'minion',index:Math.floor(answered/3)%3};
+  return themedMinion();
 }
 function applyEnemyVariant(forceReset=false){
   const stage=enemyStageForQuestion();

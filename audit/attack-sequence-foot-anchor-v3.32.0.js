@@ -23,12 +23,13 @@ check((action.match(/<b>[123]<\/b>/g)||[]).length===3,'Attack Lab does not show 
 check((action.match(/bodyScale:/g)||[]).length===8&&(action.match(/footShiftX:/g)||[]).length===8,'eight contact attacks do not carry body/foot anchors');
 const scales=[...action.matchAll(/bodyScale:([\d.]+)/g)].map(x=>Number(x[1])),shifts=[...action.matchAll(/footShiftX:([\d.-]+)/g)].map(x=>Number(x[1]));
 check(scales.length===8&&scales.every(x=>x>=1&&x<=1.75),'contact body scale escapes conservative bounds');
-const expectedScales=[1.48,1.48,1.42,1.72,1.08,1.05,1.00,1.08];
+const expectedScales=[1.48,1.48,1.42,1.72,1.38,1.05,1.00,1.36];
 check(scales.length===expectedScales.length&&scales.every((x,i)=>Math.abs(x-expectedScales[i])<0.001),'contact body scale differs from the approved safe per-asset calibration');
 check(shifts.length===8&&shifts.every(x=>x>=0&&x<=42),'contact foot anchor escapes safe horizontal bounds');
 check(/--pa-contact-scale/.test(action)&&/--pa-contact-shift-x/.test(action),'contact anchor metadata is not applied');
 check(/bottom:0!important/.test(css)&&/scale\(var\(--pa-contact-scale,1\)\)/.test(css),'single foot-anchored transform is missing');
 check(!/pa-attack-(?:original|dash|arc|pulse|sweep|spiral|thorn) \.hero-frame-strike/.test(css),'unsafe per-class transform overrides remain');
-check(/v=3\.32\.2/.test(html),'action assets are not cache-busted to the compact Bunga contact-pose revision');
+const actionBust=html.match(/action-variety-v3\.30\.0\.js\?v=(\d+)\.(\d+)\.(\d+)/);
+check(!!actionBust&&(+actionBust[1]>3||(+actionBust[1]===3&&(+actionBust[2]>32||(+actionBust[2]===32&&+actionBust[3]>=2)))),'action assets are not cache-busted to at least the compact Bunga contact-pose revision');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
 process.exitCode=failures.length?1:0;

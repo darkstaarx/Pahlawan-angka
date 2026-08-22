@@ -8,10 +8,10 @@
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
     ],
     bunga:[
-      {id:'original',label:'Putaran Aura Bunga',asset:'assets/heroes/bunga/frames/attack-original-aura-v3.webp',bodyScale:1.08,footShiftX:9},
+      {id:'original',label:'Putaran Aura Bunga',asset:'assets/heroes/bunga/frames/attack-original-aura-v3.webp',bodyScale:1.38,footShiftX:9},
       {id:'sweep',label:'Sapuan Flora',asset:'assets/heroes/bunga/frames/attack-sweep-v2.webp',bodyScale:1.05,footShiftX:18},
       {id:'spiral',label:'Pusaran Pecahan',asset:'assets/heroes/bunga/frames/attack-spiral-v2.webp',bodyScale:1.00,footShiftX:10},
-      {id:'thorn',label:'Seruan Mekar',asset:'assets/heroes/bunga/frames/attack-thorn-summon-v3.webp',bodyScale:1.08,footShiftX:12}
+      {id:'thorn',label:'Seruan Mekar',asset:'assets/heroes/bunga/frames/attack-thorn-summon-v3.webp',bodyScale:1.36,footShiftX:12}
     ]
   };
   let last={wira:-1,bunga:-1};
