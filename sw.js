@@ -1,4 +1,4 @@
-// App shell v3.33.3 — reliable controller takeover and truthful release footer.
+// App shell v3.33.4 — predecoded, larger Bunga contact attacks.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

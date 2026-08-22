@@ -23,7 +23,7 @@ check((action.match(/<b>[123]<\/b>/g)||[]).length===3,'Attack Lab does not show 
 check((action.match(/bodyScale:/g)||[]).length===7&&(action.match(/footShiftX:/g)||[]).length===7,'seven contact attacks do not carry body/foot anchors');
 const scales=[...action.matchAll(/bodyScale:([\d.]+)/g)].map(x=>Number(x[1])),shifts=[...action.matchAll(/footShiftX:([\d.-]+)/g)].map(x=>Number(x[1]));
 check(scales.length===7&&scales.every(x=>x>=1&&x<=1.75),'contact body scale escapes conservative bounds');
-const expectedScales=[1.48,1.48,1.42,1.72,1.25,1.25,1.25];
+const expectedScales=[1.48,1.48,1.42,1.72,1.55,1.55,1.55];
 check(scales.length===expectedScales.length&&scales.every((x,i)=>Math.abs(x-expectedScales[i])<0.001),'contact body scale differs from the approved safe per-asset calibration');
 check(shifts.length===7&&shifts.every(x=>x>=0&&x<=42),'contact foot anchor escapes safe horizontal bounds');
 check(/--pa-contact-scale/.test(action)&&/--pa-contact-shift-x/.test(action),'contact anchor metadata is not applied');

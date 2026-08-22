@@ -8,11 +8,16 @@
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
     ],
     bunga:[
-      {id:'addition',label:'Cantuman Ros',asset:'assets/heroes/bunga/frames/attack-addition-v4.webp',bodyScale:1.25,footShiftX:0},
-      {id:'subtraction',label:'Susutan Kelopak',asset:'assets/heroes/bunga/frames/attack-subtraction-v4.webp',bodyScale:1.25,footShiftX:0},
-      {id:'division',label:'Belahan Orkid',asset:'assets/heroes/bunga/frames/attack-division-v4.webp',bodyScale:1.25,footShiftX:0}
+      {id:'addition',label:'Cantuman Ros',asset:'assets/heroes/bunga/frames/attack-addition-v4.webp',bodyScale:1.55,footShiftX:0},
+      {id:'subtraction',label:'Susutan Kelopak',asset:'assets/heroes/bunga/frames/attack-subtraction-v4.webp',bodyScale:1.55,footShiftX:0},
+      {id:'division',label:'Belahan Orkid',asset:'assets/heroes/bunga/frames/attack-division-v4.webp',bodyScale:1.55,footShiftX:0}
     ]
   };
+  /* Decode attack artwork before the first battle so stance never cuts to an
+     empty contact frame on mobile browsers. Retain references for the session. */
+  const preloadedFrames=Object.values(variants).flat().map(({asset})=>{
+    const image=new Image();image.decoding='async';image.src=asset;return image;
+  });
   let last={wira:-1,bunga:-1};
   function strikeFrame(){
     let frame=document.getElementById('heroStrike');
@@ -86,5 +91,5 @@
     lab.timer.push(setTimeout(()=>window.attackLabStep('stance'),1850));
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureAttackLab,{once:true});else ensureAttackLab();
-  window.PAActionVariety={variants,strikeFrame};
+  window.PAActionVariety={variants,strikeFrame,preloadedFrames};
 })();

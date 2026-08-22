@@ -7,7 +7,7 @@ const failures=[];
 const check=(ok,message)=>{if(!ok)failures.push(message)};
 
 for(const id of ['addition','subtraction','division']){
-  check(new RegExp("id:'"+id+"'[^\\n]+bodyScale:1\\.25,footShiftX:0").test(action),id+' is not enlarged with a fixed X anchor');
+  check(new RegExp("id:'"+id+"'[^\\n]+bodyScale:1\\.55,footShiftX:0").test(action),id+' is not enlarged with a fixed X anchor');
 }
 check(/hero-frame-strike[^}]+bottom:0!important[^}]+transform-origin:50% 100%!important/.test(css),'battle contact frame is not anchored to its base');
 check(/data-step="strike"[^}]+scale\(var\(--pa-lab-contact-scale,1\)\)[^}]+transform-origin:50% 100%/.test(css),'Attack Lab does not preview the same bottom-anchored scale');

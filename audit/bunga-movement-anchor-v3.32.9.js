@@ -6,7 +6,7 @@ const css=fs.readFileSync('css/action-variety-v3.30.0.css','utf8');
 const version=fs.readFileSync('js/version.js','utf8');
 
 for(const id of ['addition','subtraction','division']){
-  check(new RegExp("id:'"+id+"'[^\\n]+bodyScale:1\\.25,footShiftX:0").test(js),id+' contact scale is not the approved 1.25');
+  check(new RegExp("id:'"+id+"'[^\\n]+bodyScale:1\\.55,footShiftX:0").test(js),id+' contact scale is not the browser-validated 1.55');
 }
 check(/db\?\.hero==="bunga"[\s\S]*?phase-contact/.test(fs.readFileSync('js/battle.js','utf8')),'Bunga does not skip directly to contact');
 check(/bunga-two-phase[^}]+paAttackLabSteps/.test(css),'Attack Lab two-phase layout is missing');
