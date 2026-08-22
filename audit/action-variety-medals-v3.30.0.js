@@ -5,7 +5,7 @@ const rewards=read('js/rewards-v2.js'),progress=read('js/progression.js');
 const html=read('index.html'),sw=read('sw.js'),version=read('js/version.js');
 const failures=[];
 const check=(ok,msg)=>{if(!ok)failures.push(msg)};
-check(/PA_APP_VERSION='3\.31\.4'/.test(version),'version is not 3.31.4');
+check(/PA_APP_VERSION='3\.31\.6'/.test(version),'version is not 3.31.6');
 check((action.match(/id:'original'/g)||[]).length===2,'both original contact attacks are not retained');
 check((action.match(/id:'(?:dash|arc|pulse)'/g)||[]).length===3,'Wira does not have original plus three new contact attacks');
 check((action.match(/id:'(?:sweep|spiral|thorn)'/g)||[]).length===3,'Bunga does not have original plus three new contact attacks');

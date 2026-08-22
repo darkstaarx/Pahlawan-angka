@@ -1,4 +1,4 @@
-// App shell v3.31.4 — expose variant contact frame above legacy visibility rules.
+// App shell v3.31.6 — correct Bunga contact scale from visible-body proportions.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

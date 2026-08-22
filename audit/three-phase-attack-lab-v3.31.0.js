@@ -20,6 +20,8 @@ check(/Attack Lab/.test(action)&&/attackLabStep/.test(action)&&/playAttackLab/.t
 check(/step==='movement'\?h\.followThrough/.test(action),'Attack Lab movement does not use frame 4');
 check(!/attackLabStep\('follow'\)/.test(action),'Attack Lab incorrectly exposes a fourth sequence step');
 check((action.match(/<b>[123]<\/b>/g)||[]).length===3,'Attack Lab does not show exactly three sequence steps');
-check(/v=3\.31\.4/.test(html),'action files are not cache-busted to 3.31.4');
+for(const id of ['original','dash','arc','pulse','sweep','spiral','thorn'])check(new RegExp('pa-attack-'+id+' \\.hero-frame-strike').test(css),'contact scale correction missing for '+id);
+for(const id of ['original','sweep','spiral','thorn'])check(new RegExp('hero-bunga[^}]*pa-attack-'+id+'[^}]*scale\\(1\\.[2-9]').test(css),'Bunga remains undersized for '+id);
+check(/v=3\.31\.6/.test(html),'action files are not cache-busted to 3.31.6');
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
 process.exitCode=failures.length?1:0;
