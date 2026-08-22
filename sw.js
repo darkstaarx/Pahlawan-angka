@@ -1,4 +1,4 @@
-// App shell v3.27.3 — guardian PIN recovery.
+// App shell v3.28.0 — insight-first guardian report.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
