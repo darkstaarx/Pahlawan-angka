@@ -1,4 +1,4 @@
-/* Three controlled regular-attack presentations per hero. Pet combo and finishers are excluded. */
+/* Controlled regular-attack presentations. Pet combo and finishers are excluded. */
 (function(){
   const variants={
     wira:[
@@ -8,10 +8,9 @@
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
     ],
     bunga:[
-      {id:'original',label:'Putaran Aura Bunga',asset:'assets/heroes/bunga/frames/attack-original-aura-v3.webp',bodyScale:1.38,footShiftX:9},
-      {id:'sweep',label:'Sapuan Flora',asset:'assets/heroes/bunga/frames/attack-sweep-v2.webp',bodyScale:1.05,footShiftX:18},
-      {id:'spiral',label:'Pusaran Pecahan',asset:'assets/heroes/bunga/frames/attack-spiral-v2.webp',bodyScale:1.00,footShiftX:10},
-      {id:'thorn',label:'Seruan Mekar',asset:'assets/heroes/bunga/frames/attack-thorn-summon-v3.webp',bodyScale:1.36,footShiftX:12}
+      {id:'addition',label:'Cantuman Ros',asset:'assets/heroes/bunga/frames/attack-addition-v4.webp',bodyScale:1.00,footShiftX:0},
+      {id:'subtraction',label:'Susutan Kelopak',asset:'assets/heroes/bunga/frames/attack-subtraction-v4.webp',bodyScale:1.00,footShiftX:0},
+      {id:'division',label:'Belahan Orkid',asset:'assets/heroes/bunga/frames/attack-division-v4.webp',bodyScale:1.00,footShiftX:0}
     ]
   };
   let last={wira:-1,bunga:-1};

@@ -5,19 +5,20 @@ const expected=[
  'assets/heroes/wira/frames/attack-dash-v2.webp',
  'assets/heroes/wira/frames/attack-arc-v2.webp',
  'assets/heroes/wira/frames/attack-pulse-v2.webp',
- 'assets/heroes/bunga/frames/attack-sweep-v2.webp',
- 'assets/heroes/bunga/frames/attack-spiral-v2.webp',
- 'assets/heroes/bunga/frames/attack-original-aura-v3.webp',
- 'assets/heroes/bunga/frames/attack-thorn-summon-v3.webp'
+ 'assets/heroes/bunga/frames/attack-stance-aura-v4.webp',
+ 'assets/heroes/bunga/frames/attack-movement-portal-v4.webp',
+ 'assets/heroes/bunga/frames/attack-addition-v4.webp',
+ 'assets/heroes/bunga/frames/attack-subtraction-v4.webp',
+ 'assets/heroes/bunga/frames/attack-division-v4.webp'
 ];
 const failures=[];
 for(const file of expected){
  if(!fs.existsSync(file))failures.push('missing '+file);
  else if(fs.statSync(file).size<50000)failures.push('suspiciously small '+file);
- if(!action.includes(file))failures.push('not wired '+file);
+ if(!action.includes(file)&&!fs.readFileSync('js/heroes.js','utf8').includes(file))failures.push('not wired '+file);
  if(!sw.includes(file))failures.push('not cached '+file);
 }
-if((action.match(/asset:'assets\/heroes\//g)||[]).length!==8)failures.push('contact attack count is not eight (four per hero)');
+if((action.match(/asset:'assets\/heroes\//g)||[]).length!==7)failures.push('contact attack count is not seven (four Wira, three Bunga)');
 for(const original of ['assets/heroes/wira/attack.webp']){
  if(!action.includes(original))failures.push('original contact attack not wired '+original);
  if(!sw.includes(original))failures.push('original contact attack not cached '+original);
