@@ -8,9 +8,9 @@
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
     ],
     bunga:[
-      {id:'addition',label:'Cantuman Ros',asset:'assets/heroes/bunga/frames/attack-addition-v4.webp',bodyScale:1.00,footShiftX:0},
-      {id:'subtraction',label:'Susutan Kelopak',asset:'assets/heroes/bunga/frames/attack-subtraction-v4.webp',bodyScale:1.00,footShiftX:0},
-      {id:'division',label:'Belahan Orkid',asset:'assets/heroes/bunga/frames/attack-division-v4.webp',bodyScale:1.00,footShiftX:0}
+      {id:'addition',label:'Cantuman Ros',asset:'assets/heroes/bunga/frames/attack-addition-v4.webp',bodyScale:1.25,footShiftX:0},
+      {id:'subtraction',label:'Susutan Kelopak',asset:'assets/heroes/bunga/frames/attack-subtraction-v4.webp',bodyScale:1.25,footShiftX:0},
+      {id:'division',label:'Belahan Orkid',asset:'assets/heroes/bunga/frames/attack-division-v4.webp',bodyScale:1.25,footShiftX:0}
     ]
   };
   let last={wira:-1,bunga:-1};
@@ -71,6 +71,7 @@
     clearTimers();if(lab.hero==='bunga'&&step==='movement')step='strike';const h=typeof HEROES!=='undefined'?(HEROES[lab.hero]||HEROES.wira):null,item=labItem(),img=document.getElementById('paAttackLabFrame'),status=document.getElementById('paAttackLabStatus');if(!h||!img)return;
     const source=step==='stance'?h.anticipation:step==='movement'?h.followThrough:item.asset;
     img.src=source;img.dataset.step=step;img.dataset.hero=lab.hero;
+    img.style.setProperty('--pa-lab-contact-scale',step==='strike'?String(item.bodyScale):'1');
     if(status)status.textContent=step==='stance'?'1 · Bersedia dan mengambil ancang-ancang':step==='movement'?'2 · Bergerak menuju sasaran':'3 · '+item.label+' mengenai sasaran';
   };
   window.playAttackLab=function(){

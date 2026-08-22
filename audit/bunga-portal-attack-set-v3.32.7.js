@@ -16,7 +16,7 @@ for(const name of files){
 }
 check(heroes.includes(base+'attack-stance-aura-v4.webp'),'Bunga stance is not the normalized aura frame');
 check(heroes.includes(base+'attack-movement-portal-v4.webp'),'Bunga movement is not the portal casting frame');
-for(const id of ['addition','subtraction','division'])check(new RegExp(`id:'${id}'[^\\n]+attack-${id}-v4\\.webp[^\\n]+bodyScale:1\\.00,footShiftX:0`).test(action),'invalid '+id+' contact mapping');
+for(const id of ['addition','subtraction','division'])check(new RegExp(`id:'${id}'[^\\n]+attack-${id}-v4\\.webp[^\\n]+bodyScale:1\\.25,footShiftX:0`).test(action),'invalid '+id+' contact mapping');
 check(!/id:'(?:sweep|spiral|thorn)'/.test((action.match(/bunga:\[([\s\S]*?)\n\s*\]/)||[])[1]||''),'legacy Bunga contact rotation remains');
 const release=version.match(/PA_APP_VERSION='(\d+)\.(\d+)\.(\d+)'/);
 check(!!release&&(+release[1]>3||(+release[1]===3&&(+release[2]>32||(+release[2]===32&&+release[3]>=7)))),'app version is older than Bunga portal set v3.32.7');

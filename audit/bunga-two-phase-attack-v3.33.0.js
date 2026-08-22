@@ -13,7 +13,8 @@ check(/lab\.hero==='bunga'&&step==='movement'\)step='strike'/.test(action),'Bung
 check(/if\(lab\.hero==='bunga'\)[\s\S]*?attackLabStep\('strike'\)/.test(action),'Bunga playback is not stance-to-strike');
 check(/bunga-two-phase \.paAttackLabSteps\{grid-template-columns:repeat\(2,1fr\)\}/.test(css),'Bunga lab is not a two-column sequence');
 check(/bunga-two-phase \[data-lab-step="movement"\]\{display:none\}/.test(css),'Bunga movement button remains visible');
-check(/PA_APP_VERSION='3\.33\.0'/.test(version),'app version is not 3.33.0');
+const release=version.match(/PA_APP_VERSION='(\d+)\.(\d+)\.(\d+)'/);
+check(!!release&&(+release[1]>3||(+release[1]===3&&(+release[2]>33||(+release[2]===33&&+release[3]>=0)))),'app version is older than Bunga two-phase v3.33.0');
 
 console.log(JSON.stringify({status:failures.length?'fail':'pass',failures},null,2));
 if(failures.length)process.exit(1);
