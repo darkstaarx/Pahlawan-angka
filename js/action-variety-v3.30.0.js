@@ -8,9 +8,9 @@
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
     ],
     bunga:[
-      {id:'addition',label:'Cantuman Ros',asset:'assets/heroes/bunga/frames/attack-addition-v4.webp',bodyScale:1.25,footShiftX:0},
-      {id:'subtraction',label:'Susutan Kelopak',asset:'assets/heroes/bunga/frames/attack-subtraction-v4.webp',bodyScale:1.25,footShiftX:0},
-      {id:'division',label:'Belahan Orkid',asset:'assets/heroes/bunga/frames/attack-division-v4.webp',bodyScale:1.25,footShiftX:0}
+      {id:'addition',label:'Cantuman Ros',asset:'assets/heroes/bunga/frames/attack-addition-v4.webp',bodyScale:1.00,footShiftX:0},
+      {id:'subtraction',label:'Susutan Kelopak',asset:'assets/heroes/bunga/frames/attack-subtraction-v4.webp',bodyScale:1.00,footShiftX:0},
+      {id:'division',label:'Belahan Orkid',asset:'assets/heroes/bunga/frames/attack-division-v4.webp',bodyScale:1.00,footShiftX:0}
     ]
   };
   let last={wira:-1,bunga:-1};
