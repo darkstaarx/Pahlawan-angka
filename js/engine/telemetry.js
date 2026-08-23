@@ -7,14 +7,16 @@
   if(!id){id='s-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);sessionStorage.setItem('pa_anon_session',id)}
   return id;
  }
+ function enabled(){try{return !!db&&!db.telemetryOptOut}catch(_){return false}}
  function record(type,payload={}){
-  if(!db||db.telemetryOptOut)return;
+  if(!enabled())return false;
   const events=read();
   events.push({schema:1,type,session:anonymousSession(),at:Date.now(),grade:Number(db.schoolGrade||0),...payload});
   localStorage.setItem(KEY,JSON.stringify(events.slice(-MAX)));
+  return true;
  }
  function response(skillId,ok,tag,sec,usedHint,q,mode){
-  record('response',{
+  return record('response',{
    skillId,correct:!!ok,misconception:ok?'':(tag||'generic'),seconds:Math.round((Number(sec)||0)*10)/10,
    usedHint:!!usedHint,mode:mode||'practice',itemId:String(q?.token||''),archetypeId:q?.archetypeId||'legacy',
    representation:q?.representation||'symbolic',demand:q?.demand||'procedure',difficultyBand:Number(q?.difficultyBand||2),
@@ -26,5 +28,5 @@
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pahlawan-angka-learning-events.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
  }
  function clear(){localStorage.removeItem(KEY)}
- window.PATelemetry={record,response,read,exportData,clear};
+ window.PATelemetry={record,response,read,exportData,clear,enabled};
 })();

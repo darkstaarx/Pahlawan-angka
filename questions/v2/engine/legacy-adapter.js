@@ -270,8 +270,12 @@
       templateId: details.templateId || null,
       fingerprint: details.fingerprint || null
     };
+    var accepted = false;
     try {
-      if (root.PATelemetry && typeof root.PATelemetry.record === 'function') root.PATelemetry.record('qsv2_shadow', payload);
+      if (root.PATelemetry && typeof root.PATelemetry.record === 'function') accepted = root.PATelemetry.record('qsv2_shadow', payload) === true;
+    } catch (_) {}
+    try {
+      if (accepted && root.PAQSV2ShadowSync && typeof root.PAQSV2ShadowSync.enqueue === 'function') root.PAQSV2ShadowSync.enqueue(payload);
     } catch (_) {}
   }
 
