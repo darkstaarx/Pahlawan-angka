@@ -1,4 +1,4 @@
-// App shell v3.33.7 — two-phase Bunga finisher and answer-safe number line.
+// App shell v3.35.0 — Question System v2 controlled D3 Topic 7 pilot (default OFF).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
@@ -29,7 +29,7 @@ const APP_SHELL=[
   './css/kssr-assessment-depth-v3.22.0.css','./css/kssr-year6-space-data-v3.23.0.css','./css/profile-manager-v3.24.2.css',
   './css/unit-grounding-v3.24.5.css','./css/cikgu-dimensi-place-value-v0.1.css','./css/cikgu-dimensi-core-v0.2.css','./css/hub-adventure-v3.24.11.css',
   './data/kssr/knowledge-graph.js','./data/kssr/mastery-knowledge-v1.js','./data/kssr/alignment-v3.9.0.js',
-  './questions/helpers.js','./questions/index.js','./questions/kssr-archetypes-v3.9.0.js','./questions/kssr-content-v3.11.js','./questions/kssr-content-integrity-v3.18.1.js','./questions/kssr-assessment-depth-v3.22.0.js','./questions/kssr-year6-space-data-v3.23.0.js',
+  './questions/helpers.js','./questions/index.js','./questions/v2/dist/runtime.js','./questions/v2/engine/legacy-adapter.js','./questions/kssr-archetypes-v3.9.0.js','./questions/kssr-content-v3.11.js','./questions/kssr-content-integrity-v3.18.1.js','./questions/kssr-assessment-depth-v3.22.0.js','./questions/kssr-year6-space-data-v3.23.0.js',
   './questions/d1/core.js','./questions/d2/topic-1.js','./questions/d2/topic-2.js','./questions/d2/topic-3.js',
   './questions/d2/topic-4.js','./questions/d2/topic-5.js','./questions/d2/topic-6.js','./questions/d2/topic-7.js','./questions/d2/topic-8.js',
   './questions/d3/core.js','./questions/d4/core.js','./questions/d5/core.js','./questions/d6/core.js',

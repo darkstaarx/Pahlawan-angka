@@ -1,0 +1,252 @@
+{
+  "schema": "pa.kssr.d3.coverage-snapshot.v1",
+  "grade": 3,
+  "auditDate": "2026-08-23",
+  "curriculumFile": "data/kssr/d3-sp-curriculum-v1.json",
+  "statusSummary": {
+    "covered": 5,
+    "partial": 15,
+    "missing": 30
+  },
+  "statusPolicy": {
+    "covered": "Active production questions provide adequate evidence for the stated SP scope.",
+    "partial": "Active production questions touch the SP but omit material scope, range, representation, or operation requirements.",
+    "missing": "No active production question family directly assesses the SP.",
+    "outOfScope": "Question content must not contribute to Year 3 mastery for the mapped SP."
+  },
+  "coverage": [
+    {
+      "id": "1.1.1",
+      "status": "partial"
+    },
+    {
+      "id": "1.1.2",
+      "status": "covered"
+    },
+    {
+      "id": "1.2.1",
+      "status": "missing"
+    },
+    {
+      "id": "1.3.1",
+      "status": "covered"
+    },
+    {
+      "id": "1.4.1",
+      "status": "partial"
+    },
+    {
+      "id": "1.4.2",
+      "status": "covered"
+    },
+    {
+      "id": "2.1.1",
+      "status": "partial"
+    },
+    {
+      "id": "2.1.2",
+      "status": "missing"
+    },
+    {
+      "id": "2.2.1",
+      "status": "partial"
+    },
+    {
+      "id": "3.1.1",
+      "status": "covered"
+    },
+    {
+      "id": "3.1.2",
+      "status": "missing"
+    },
+    {
+      "id": "3.1.3",
+      "status": "missing"
+    },
+    {
+      "id": "3.1.4",
+      "status": "missing"
+    },
+    {
+      "id": "3.1.5",
+      "status": "missing"
+    },
+    {
+      "id": "3.2.1",
+      "status": "partial"
+    },
+    {
+      "id": "3.2.2",
+      "status": "partial"
+    },
+    {
+      "id": "3.3.1",
+      "status": "partial"
+    },
+    {
+      "id": "3.3.2",
+      "status": "partial"
+    },
+    {
+      "id": "3.4.1",
+      "status": "partial"
+    },
+    {
+      "id": "4.1.1",
+      "status": "partial"
+    },
+    {
+      "id": "4.1.2",
+      "status": "missing"
+    },
+    {
+      "id": "4.2.1",
+      "status": "partial"
+    },
+    {
+      "id": "4.3.1",
+      "status": "missing"
+    },
+    {
+      "id": "4.4.1",
+      "status": "missing"
+    },
+    {
+      "id": "5.1.1",
+      "status": "partial"
+    },
+    {
+      "id": "5.1.2",
+      "status": "missing"
+    },
+    {
+      "id": "5.2.1",
+      "status": "missing"
+    },
+    {
+      "id": "5.2.2",
+      "status": "missing"
+    },
+    {
+      "id": "5.3.1",
+      "status": "missing"
+    },
+    {
+      "id": "6.1.1",
+      "status": "covered"
+    },
+    {
+      "id": "6.1.2",
+      "status": "partial"
+    },
+    {
+      "id": "6.1.3",
+      "status": "missing"
+    },
+    {
+      "id": "6.2.1",
+      "status": "missing"
+    },
+    {
+      "id": "6.2.2",
+      "status": "missing"
+    },
+    {
+      "id": "6.2.3",
+      "status": "missing"
+    },
+    {
+      "id": "6.3.1",
+      "status": "missing"
+    },
+    {
+      "id": "6.3.2",
+      "status": "missing"
+    },
+    {
+      "id": "6.3.3",
+      "status": "missing"
+    },
+    {
+      "id": "7.1.1",
+      "status": "missing"
+    },
+    {
+      "id": "7.1.2",
+      "status": "missing"
+    },
+    {
+      "id": "7.1.3",
+      "status": "missing"
+    },
+    {
+      "id": "7.2.1",
+      "status": "missing"
+    },
+    {
+      "id": "7.2.2",
+      "status": "missing"
+    },
+    {
+      "id": "7.3.1",
+      "status": "missing"
+    },
+    {
+      "id": "8.1.1",
+      "status": "missing"
+    },
+    {
+      "id": "8.1.2",
+      "status": "partial"
+    },
+    {
+      "id": "8.1.3",
+      "status": "partial"
+    },
+    {
+      "id": "9.1.1",
+      "status": "missing"
+    },
+    {
+      "id": "9.2.1",
+      "status": "missing"
+    },
+    {
+      "id": "9.2.2",
+      "status": "missing"
+    }
+  ],
+  "productionFindings": [
+    {
+      "severity": "critical",
+      "legacySkill": "D3.SHAPE",
+      "finding": "Current production perimeter/area rectangle tasks are not Year 3 Topic 7 evidence and must be excluded from Year 3 mastery."
+    },
+    {
+      "severity": "high",
+      "legacySkill": "D3.DEC",
+      "finding": "Current generic decimal generator uses one decimal place for Grade 3; SP 3.2.1 and 3.2.2 require up to two decimal places."
+    },
+    {
+      "severity": "high",
+      "legacySkill": "D3.MEASURE",
+      "finding": "Current production coverage is dominated by m/cm; kg/g and L/mL families are absent."
+    },
+    {
+      "severity": "high",
+      "legacySkill": "D3.DATA",
+      "finding": "Current production bar-chart families do not assess Year 3 pie-chart or cross-representation requirements."
+    },
+    {
+      "severity": "high",
+      "legacySkill": "D3.MUL/D3.DIV",
+      "finding": "Current Grade 3 multiplication/division ranges are materially below the four-digit by one-digit/10/100/1000 scope."
+    },
+    {
+      "severity": "high",
+      "legacySkill": "D3.PERCENT",
+      "finding": "Current visual uses a 10-cell model rather than the required hundred-square representation for SP 3.3.1."
+    }
+  ],
+  "note": "This is a pre-Topic-7-fix production snapshot. Update with a new dated snapshot after each deployed curriculum patch; do not mutate history."
+}

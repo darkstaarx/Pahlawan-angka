@@ -1,0 +1,975 @@
+{
+  "schema": "pa.qsv2.curriculum-registry.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "sourceDocument": {
+    "title": "Dokumen Penjajaran KSSR (Semakan 2017) Edisi 3 Matematik Tahap I",
+    "publisher": "Bahagian Pembangunan Kurikulum, Kementerian Pendidikan Malaysia",
+    "year3Pages": "40-62",
+    "officialPolicyPage": "https://www.moe.gov.my/surat-siaran-kpm-bil-6-tahun-2024",
+    "contentCopyReviewed": "https://ecentral.my/wp-content/uploads/2024/09/DOKUMEN-PENJAJARAN_KSSR-MATEMATIK-TAHAP-1_EDISI-3-compressed.pdf"
+  },
+  "sourceSchema": "pa.kssr.d3.curriculum.v1",
+  "importedSpCount": 50,
+  "declaredSpCount": 50,
+  "importNote": "DATA ONLY import for Question System v2 Phase 1. All records start as status=mapped regardless of legacy production coverage. No record is status=enabled until an executable v2 template exists and passes validation (Phase 2+). Phase 1.1: competencyId for the six D3 Topic 7 SPs (7.1.1, 7.1.2, 7.1.3, 7.2.1, 7.2.2, 7.3.1) has been replaced with reviewed canonical values (competencyIdStatus=\"canonical\"). All other 44 SPs retain auto-generated, provisional competencyId values (competencyIdStatus=\"provisional\") pending later human review. No status changed from \"mapped\".",
+  "standards": [
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T1",
+      "contentStandard": "1.1",
+      "standardId": "1.1.1",
+      "competencyId": "nama_nombor_angka_perkataan_nilai_tempat_digit",
+      "titleMs": "Nama nombor; angka/perkataan; nilai tempat/digit",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Nombor Bulat hingga 10 000",
+      "topicPriority": "P2",
+      "legacySkills": [
+        "D3.N10000",
+        "D3.PV10000"
+      ],
+      "sourceStandardPriority": "P2",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T1",
+      "contentStandard": "1.1",
+      "standardId": "1.1.2",
+      "competencyId": "banding_nilai_hingga_tiga_nombor",
+      "titleMs": "Banding nilai hingga tiga nombor",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Nombor Bulat hingga 10 000",
+      "topicPriority": "P2",
+      "legacySkills": [
+        "D3.N10000"
+      ],
+      "sourceStandardPriority": "P2",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T1",
+      "contentStandard": "1.2",
+      "standardId": "1.2.1",
+      "competencyId": "anggaran_kuantiti_munasabah_berasaskan_rujukan",
+      "titleMs": "Anggaran kuantiti munasabah berasaskan rujukan",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Nombor Bulat hingga 10 000",
+      "topicPriority": "P2",
+      "legacySkills": [
+        "D3.N10000"
+      ],
+      "sourceStandardPriority": "P2",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T1",
+      "contentStandard": "1.3",
+      "standardId": "1.3.1",
+      "competencyId": "bundar_hingga_ribu_terdekat",
+      "titleMs": "Bundar hingga ribu terdekat",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Nombor Bulat hingga 10 000",
+      "topicPriority": "P2",
+      "legacySkills": [
+        "D3.N10000"
+      ],
+      "sourceStandardPriority": "P2",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T1",
+      "contentStandard": "1.4",
+      "standardId": "1.4.1",
+      "competencyId": "pola_naik_turun_1_10_100_1000",
+      "titleMs": "Pola naik/turun 1, 10, 100, 1000",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Nombor Bulat hingga 10 000",
+      "topicPriority": "P2",
+      "legacySkills": [
+        "D3.N10000"
+      ],
+      "sourceStandardPriority": "P2",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T1",
+      "contentStandard": "1.4",
+      "standardId": "1.4.2",
+      "competencyId": "lengkap_pelbagai_pola_nombor_mudah",
+      "titleMs": "Lengkap pelbagai pola nombor mudah",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Nombor Bulat hingga 10 000",
+      "topicPriority": "P2",
+      "legacySkills": [
+        "D3.N10000"
+      ],
+      "sourceStandardPriority": "P2",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "contentStandard": "2.1",
+      "standardId": "2.1.1",
+      "competencyId": "masalah_tambah_tolak_hingga_tiga_nombor_jumlah_1",
+      "titleMs": "Masalah tambah/tolak hingga tiga nombor; jumlah <=10000",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Operasi Asas",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.ADD10000",
+        "D3.SUB10000"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "contentStandard": "2.1",
+      "standardId": "2.1.2",
+      "competencyId": "masalah_operasi_bergabung_tambah_tolak_10000",
+      "titleMs": "Masalah operasi bergabung tambah-tolak <=10000",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Operasi Asas",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.ADD10000",
+        "D3.SUB10000"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "contentStandard": "2.2",
+      "standardId": "2.2.1",
+      "competencyId": "darab_bahagi_hingga_4_digit_dengan_1_digit_10_10",
+      "titleMs": "Darab/bahagi hingga 4 digit dengan 1 digit, 10, 100, 1000",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Operasi Asas",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MUL",
+        "D3.DIV"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.1",
+      "standardId": "3.1.1",
+      "competencyId": "pecahan_setara_penyebut_10",
+      "titleMs": "Pecahan setara; penyebut <=10",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.FRAC"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.1",
+      "standardId": "3.1.2",
+      "competencyId": "pecahan_wajar_kepada_bentuk_termudah",
+      "titleMs": "Pecahan wajar kepada bentuk termudah",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.FRAC"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.1",
+      "standardId": "3.1.3",
+      "competencyId": "tambah_dan_tolak_dua_pecahan_wajar",
+      "titleMs": "Tambah dan tolak dua pecahan wajar",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.FRAC"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.1",
+      "standardId": "3.1.4",
+      "competencyId": "kenal_pecahan_tak_wajar_dan_nombor_bercampur",
+      "titleMs": "Kenal pecahan tak wajar dan nombor bercampur",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.FRAC"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.1",
+      "standardId": "3.1.5",
+      "competencyId": "pecahan_perseratus_kepada_perpuluhan",
+      "titleMs": "Pecahan perseratus kepada perpuluhan",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.FRAC",
+        "D3.DEC"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.2",
+      "standardId": "3.2.1",
+      "competencyId": "banding_dua_perpuluhan_hingga_dua_tempat",
+      "titleMs": "Banding dua perpuluhan hingga dua tempat",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.DEC"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.2",
+      "standardId": "3.2.2",
+      "competencyId": "tambah_tolak_dua_perpuluhan_hingga_dua_tempat_ha",
+      "titleMs": "Tambah/tolak dua perpuluhan hingga dua tempat; hasil tambah <=0.99",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.DEC"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.3",
+      "standardId": "3.3.1",
+      "competencyId": "peratus_dalam_petak_seratus_dan_sebaliknya",
+      "titleMs": "Peratus dalam petak seratus dan sebaliknya",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.PERCENT"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.3",
+      "standardId": "3.3.2",
+      "competencyId": "sebut_tulis_1_hingga_100",
+      "titleMs": "Sebut/tulis 1% hingga 100%",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.PERCENT"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "contentStandard": "3.4",
+      "standardId": "3.4.1",
+      "competencyId": "hubung_pecahan_perpuluhan_dan_peratus",
+      "titleMs": "Hubung pecahan, perpuluhan dan peratus",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pecahan, Perpuluhan dan Peratus",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.FRAC",
+        "D3.DEC",
+        "D3.PERCENT"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "contentStandard": "4.1",
+      "standardId": "4.1.1",
+      "competencyId": "tambah_tolak_hingga_tiga_nilai_wang_rm10000",
+      "titleMs": "Tambah/tolak hingga tiga nilai wang <=RM10000",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Wang",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.MONEY"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "contentStandard": "4.1",
+      "standardId": "4.1.2",
+      "competencyId": "operasi_bergabung_tambah_tolak_wang_rm10000",
+      "titleMs": "Operasi bergabung tambah-tolak wang <=RM10000",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Wang",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.MONEY"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "contentStandard": "4.2",
+      "standardId": "4.2.1",
+      "competencyId": "darab_bahagi_wang_dengan_1_digit_10_100_1000",
+      "titleMs": "Darab/bahagi wang dengan 1 digit, 10, 100, 1000",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Wang",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.MONEY"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "contentStandard": "4.3",
+      "standardId": "4.3.1",
+      "competencyId": "kenal_mata_wang_negara_asean",
+      "titleMs": "Kenal mata wang negara ASEAN",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Wang",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.MONEY"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "contentStandard": "4.4",
+      "standardId": "4.4.1",
+      "competencyId": "keperluan_dan_kehendak_sebagai_asas_simpanan_per",
+      "titleMs": "Keperluan dan kehendak sebagai asas simpanan/perbelanjaan",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Wang",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.MONEY"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "contentStandard": "5.1",
+      "standardId": "5.1.1",
+      "competencyId": "baca_dan_rekod_waktu_aktiviti",
+      "titleMs": "Baca dan rekod waktu aktiviti",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Masa dan Waktu",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.TIME"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "contentStandard": "5.1",
+      "standardId": "5.1.2",
+      "competencyId": "tukar_jam_minit_dan_minit_saat",
+      "titleMs": "Tukar jam-minit dan minit-saat",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Masa dan Waktu",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.TIME"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "contentStandard": "5.2",
+      "standardId": "5.2.1",
+      "competencyId": "tambah_tolak_hingga_tiga_nilai_masa",
+      "titleMs": "Tambah/tolak hingga tiga nilai masa",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Masa dan Waktu",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.TIME"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "contentStandard": "5.2",
+      "standardId": "5.2.2",
+      "competencyId": "operasi_bergabung_tambah_tolak_masa",
+      "titleMs": "Operasi bergabung tambah-tolak masa",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Masa dan Waktu",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.TIME"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "contentStandard": "5.3",
+      "standardId": "5.3.1",
+      "competencyId": "darab_bahagi_masa_dengan_satu_digit",
+      "titleMs": "Darab/bahagi masa dengan satu digit",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Masa dan Waktu",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.TIME"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.1",
+      "standardId": "6.1.1",
+      "competencyId": "tukar_meter_sentimeter",
+      "titleMs": "Tukar meter-sentimeter",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.1",
+      "standardId": "6.1.2",
+      "competencyId": "tambah_tolak_hingga_tiga_ukuran_panjang",
+      "titleMs": "Tambah/tolak hingga tiga ukuran panjang",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.1",
+      "standardId": "6.1.3",
+      "competencyId": "darab_bahagi_panjang_dengan_satu_digit",
+      "titleMs": "Darab/bahagi panjang dengan satu digit",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.2",
+      "standardId": "6.2.1",
+      "competencyId": "tukar_kilogram_gram",
+      "titleMs": "Tukar kilogram-gram",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.2",
+      "standardId": "6.2.2",
+      "competencyId": "tambah_tolak_hingga_tiga_ukuran_jisim",
+      "titleMs": "Tambah/tolak hingga tiga ukuran jisim",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.2",
+      "standardId": "6.2.3",
+      "competencyId": "darab_bahagi_jisim_dengan_satu_digit",
+      "titleMs": "Darab/bahagi jisim dengan satu digit",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.3",
+      "standardId": "6.3.1",
+      "competencyId": "tukar_liter_mililiter",
+      "titleMs": "Tukar liter-mililiter",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.3",
+      "standardId": "6.3.2",
+      "competencyId": "tambah_tolak_hingga_tiga_isi_padu_cecair",
+      "titleMs": "Tambah/tolak hingga tiga isi padu cecair",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "contentStandard": "6.3",
+      "standardId": "6.3.3",
+      "competencyId": "darab_bahagi_isi_padu_cecair_dengan_satu_digit",
+      "titleMs": "Darab/bahagi isi padu cecair dengan satu digit",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Ukuran dan Sukatan",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.MEASURE"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T7",
+      "contentStandard": "7.1",
+      "standardId": "7.1.1",
+      "competencyId": "identify_prism",
+      "titleMs": "Kenal prisma segi empat sama, segi empat tepat, segi tiga",
+      "prerequisites": [],
+      "status": "enabled",
+      "topicTitleMs": "Ruang",
+      "topicPriority": "P0-CRITICAL",
+      "legacySkills": [
+        "D3.SHAPE"
+      ],
+      "sourceStandardPriority": "P0-CRITICAL",
+      "competencyIdStatus": "canonical",
+      "competencyIdReviewNote": "Reviewed and locked for the Phase 2 D3 Topic 7 pilot. Do not change without re-review."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T7",
+      "contentStandard": "7.1",
+      "standardId": "7.1.2",
+      "competencyId": "describe_prism_features",
+      "titleMs": "Ciri prisma: permukaan, tapak, bucu, tepi",
+      "prerequisites": [],
+      "status": "enabled",
+      "topicTitleMs": "Ruang",
+      "topicPriority": "P0-CRITICAL",
+      "legacySkills": [
+        "D3.SHAPE"
+      ],
+      "sourceStandardPriority": "P0-CRITICAL",
+      "competencyIdStatus": "canonical",
+      "competencyIdReviewNote": "Reviewed and locked for the Phase 2 D3 Topic 7 pilot. Do not change without re-review."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T7",
+      "contentStandard": "7.1",
+      "standardId": "7.1.3",
+      "competencyId": "classify_prism_vs_non_prism",
+      "titleMs": "Banding prisma dan bukan prisma",
+      "prerequisites": [],
+      "status": "enabled",
+      "topicTitleMs": "Ruang",
+      "topicPriority": "P0-CRITICAL",
+      "legacySkills": [
+        "D3.SHAPE"
+      ],
+      "sourceStandardPriority": "P0-CRITICAL",
+      "competencyIdStatus": "canonical",
+      "competencyIdReviewNote": "Reviewed and locked for the Phase 2 D3 Topic 7 pilot. Do not change without re-review."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T7",
+      "contentStandard": "7.2",
+      "standardId": "7.2.1",
+      "competencyId": "identify_regular_polygon",
+      "titleMs": "Kenal pentagon, heksagon, heptagon, oktagon sekata",
+      "prerequisites": [],
+      "status": "enabled",
+      "topicTitleMs": "Ruang",
+      "topicPriority": "P0-CRITICAL",
+      "legacySkills": [
+        "D3.SHAPE"
+      ],
+      "sourceStandardPriority": "P0-CRITICAL",
+      "competencyIdStatus": "canonical",
+      "competencyIdReviewNote": "Reviewed and locked for the Phase 2 D3 Topic 7 pilot. Do not change without re-review."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T7",
+      "contentStandard": "7.2",
+      "standardId": "7.2.2",
+      "competencyId": "create_regular_polygon_pattern",
+      "titleMs": "Hasilkan corak berasaskan poligon sekata",
+      "prerequisites": [],
+      "status": "enabled",
+      "topicTitleMs": "Ruang",
+      "topicPriority": "P0-CRITICAL",
+      "legacySkills": [
+        "D3.SHAPE"
+      ],
+      "sourceStandardPriority": "P0-CRITICAL",
+      "competencyIdStatus": "canonical",
+      "competencyIdReviewNote": "Reviewed and locked for the Phase 2 D3 Topic 7 pilot. Do not change without re-review."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T7",
+      "contentStandard": "7.3",
+      "standardId": "7.3.1",
+      "competencyId": "identify_and_draw_symmetry_axis",
+      "titleMs": "Kenal dan lukis paksi simetri",
+      "prerequisites": [],
+      "status": "enabled",
+      "topicTitleMs": "Ruang",
+      "topicPriority": "P0-CRITICAL",
+      "legacySkills": [
+        "D3.SHAPE"
+      ],
+      "sourceStandardPriority": "P0-CRITICAL",
+      "competencyIdStatus": "canonical",
+      "competencyIdReviewNote": "Reviewed and locked for the Phase 2 D3 Topic 7 pilot. Do not change without re-review."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "contentStandard": "8.1",
+      "standardId": "8.1.1",
+      "competencyId": "kedudukan_objek_relatif_kepada_titik_rujukan",
+      "titleMs": "Kedudukan objek relatif kepada titik rujukan",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Koordinat",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.POSITION"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "contentStandard": "8.1",
+      "standardId": "8.1.2",
+      "competencyId": "kenal_objek_melalui_paksi_mengufuk_mencancang",
+      "titleMs": "Kenal objek melalui paksi mengufuk/mencancang",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Koordinat",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.POSITION"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "contentStandard": "8.1",
+      "standardId": "8.1.3",
+      "competencyId": "tentukan_kedudukan_pada_paksi_mengufuk_mencancan",
+      "titleMs": "Tentukan kedudukan pada paksi mengufuk/mencancang",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Koordinat",
+      "topicPriority": "P1",
+      "legacySkills": [
+        "D3.POSITION"
+      ],
+      "sourceStandardPriority": "P1",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T9",
+      "contentStandard": "9.1",
+      "standardId": "9.1.1",
+      "competencyId": "kumpul_kelas_dan_susun_data_situasi_harian",
+      "titleMs": "Kumpul, kelas dan susun data situasi harian",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pengurusan Data",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.DATA"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T9",
+      "contentStandard": "9.2",
+      "standardId": "9.2.1",
+      "competencyId": "baca_dan_dapatkan_maklumat_carta_pai",
+      "titleMs": "Baca dan dapatkan maklumat carta pai",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pengurusan Data",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.DATA"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    },
+    {
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T9",
+      "contentStandard": "9.2",
+      "standardId": "9.2.2",
+      "competencyId": "hubung_piktograf_carta_palang_dan_carta_pai",
+      "titleMs": "Hubung piktograf, carta palang dan carta pai",
+      "prerequisites": [],
+      "status": "mapped",
+      "topicTitleMs": "Pengurusan Data",
+      "topicPriority": "P0",
+      "legacySkills": [
+        "D3.DATA"
+      ],
+      "sourceStandardPriority": "P0",
+      "competencyIdStatus": "provisional",
+      "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    }
+  ]
+}

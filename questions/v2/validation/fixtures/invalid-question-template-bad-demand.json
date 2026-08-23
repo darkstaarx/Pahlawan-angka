@@ -1,0 +1,17 @@
+{
+  "templateId": "D3-T7-712-prism-features-v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T7",
+  "standardId": "7.1.2",
+  "competencyId": "prism_features",
+  "archetypeId": "count_faces",
+  "familyKey": "D3.T7.7.1.2.prism_features",
+  "representation": "visual",
+  "demand": "bogus_demand",
+  "difficultyBand": 1,
+  "misconceptionTargets": [],
+  "generator": "geometry.countFaces",
+  "renderer": "geometry",
+  "responseType": "mcq"
+}

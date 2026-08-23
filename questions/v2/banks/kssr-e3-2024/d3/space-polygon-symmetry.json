@@ -1,0 +1,108 @@
+{
+  "schema": "pa.qsv2.template-set.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T7",
+  "note": "Phase 2A-2 pilot: D3 Topic 7.2 (Poligon sekata) and 7.3 (Paksi simetri) only. Includes constrained interactive evidence for standards that require producing/drawing, while production routing remains dormant.",
+  "templates": [
+    {
+      "templateId": "D3-T7-721-regular-polygon-picture-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.2.1", "competencyId": "identify_regular_polygon",
+      "archetypeId": "identify_polygon_from_picture",
+      "familyKey": "D3.T7.7.2.1.identify_regular_polygon.picture",
+      "representation": "visual", "demand": "concept", "difficultyBand": 1,
+      "misconceptionTargets": ["polygon_name_side_count_confusion"],
+      "generator": "geometry.identifyRegularPolygon", "renderer": "geometry2d", "responseType": "mcq",
+      "params": {"mode": "identify_picture"}
+    },
+    {
+      "templateId": "D3-T7-721-regular-polygon-sides-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.2.1", "competencyId": "identify_regular_polygon",
+      "archetypeId": "identify_polygon_from_sides",
+      "familyKey": "D3.T7.7.2.1.identify_regular_polygon.sides",
+      "representation": "text", "demand": "concept", "difficultyBand": 2,
+      "misconceptionTargets": ["polygon_name_side_count_confusion"],
+      "generator": "geometry.identifyRegularPolygon", "renderer": null, "responseType": "mcq",
+      "params": {"mode": "identify_sides"}
+    },
+    {
+      "templateId": "D3-T7-721-regular-polygon-gallery-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.2.1", "competencyId": "identify_regular_polygon",
+      "archetypeId": "select_named_regular_polygon",
+      "familyKey": "D3.T7.7.2.1.identify_regular_polygon.gallery",
+      "representation": "visual", "demand": "reasoning", "difficultyBand": 2,
+      "misconceptionTargets": ["polygon_name_side_count_confusion"],
+      "generator": "geometry.identifyRegularPolygon", "renderer": "geometry2d", "responseType": "mcq",
+      "params": {"mode": "select_named"}
+    },
+    {
+      "templateId": "D3-T7-722-polygon-pattern-continue-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.2.2", "competencyId": "create_regular_polygon_pattern",
+      "archetypeId": "continue_regular_polygon_pattern",
+      "familyKey": "D3.T7.7.2.2.create_regular_polygon_pattern.continue",
+      "representation": "visual", "demand": "concept", "difficultyBand": 1,
+      "misconceptionTargets": ["pattern_unit_confusion", "pattern_position_confusion"],
+      "generator": "geometry.regularPolygonPattern", "renderer": "geometry2d", "responseType": "mcq",
+      "params": {"mode": "continue_pattern"}
+    },
+    {
+      "templateId": "D3-T7-722-polygon-pattern-unit-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.2.2", "competencyId": "create_regular_polygon_pattern",
+      "archetypeId": "identify_smallest_repeating_unit",
+      "familyKey": "D3.T7.7.2.2.create_regular_polygon_pattern.unit",
+      "representation": "visual", "demand": "reasoning", "difficultyBand": 2,
+      "misconceptionTargets": ["pattern_unit_confusion"],
+      "generator": "geometry.regularPolygonPattern", "renderer": "geometry2d", "responseType": "mcq",
+      "params": {"mode": "identify_unit"}
+    },
+    {
+      "templateId": "D3-T7-722-polygon-pattern-construct-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.2.2", "competencyId": "create_regular_polygon_pattern",
+      "archetypeId": "construct_regular_polygon_pattern",
+      "familyKey": "D3.T7.7.2.2.create_regular_polygon_pattern.construct",
+      "representation": "visual", "demand": "application", "difficultyBand": 3,
+      "misconceptionTargets": ["pattern_unit_confusion", "pattern_position_confusion"],
+      "generator": "geometry.regularPolygonPattern", "renderer": "geometry2d", "responseType": "interactive",
+      "params": {"mode": "construct_pattern"}
+    },
+    {
+      "templateId": "D3-T7-731-symmetry-count-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.3.1", "competencyId": "identify_and_draw_symmetry_axis",
+      "archetypeId": "identify_symmetry_axis_count",
+      "familyKey": "D3.T7.7.3.1.identify_and_draw_symmetry_axis.count",
+      "representation": "visual", "demand": "concept", "difficultyBand": 1,
+      "misconceptionTargets": ["symmetry_axis_count_confusion"],
+      "generator": "geometry.symmetryAxis", "renderer": "geometry2d", "responseType": "mcq",
+      "params": {"mode": "count_axes"}
+    },
+    {
+      "templateId": "D3-T7-731-symmetry-select-axis-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.3.1", "competencyId": "identify_and_draw_symmetry_axis",
+      "archetypeId": "select_valid_symmetry_axis",
+      "familyKey": "D3.T7.7.3.1.identify_and_draw_symmetry_axis.select",
+      "representation": "visual", "demand": "reasoning", "difficultyBand": 2,
+      "misconceptionTargets": ["symmetry_axis_orientation_confusion"],
+      "generator": "geometry.symmetryAxis", "renderer": "geometry2d", "responseType": "mcq",
+      "params": {"mode": "select_axis"}
+    },
+    {
+      "templateId": "D3-T7-731-symmetry-draw-axis-v1",
+      "curriculumVersion": "KSSR-E3-2024", "grade": 3, "topicId": "D3.T7",
+      "standardId": "7.3.1", "competencyId": "identify_and_draw_symmetry_axis",
+      "archetypeId": "draw_valid_symmetry_axis",
+      "familyKey": "D3.T7.7.3.1.identify_and_draw_symmetry_axis.draw",
+      "representation": "visual", "demand": "application", "difficultyBand": 3,
+      "misconceptionTargets": ["symmetry_axis_orientation_confusion"],
+      "generator": "geometry.symmetryAxis", "renderer": "geometry2d", "responseType": "interactive",
+      "params": {"mode": "draw_axis"}
+    }
+  ]
+}

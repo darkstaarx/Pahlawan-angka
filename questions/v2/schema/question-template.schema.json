@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pahlawanangka.local/schema/question-template.schema.json",
+  "title": "Pahlawan Angka Question Template",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "templateId",
+    "curriculumVersion",
+    "grade",
+    "topicId",
+    "standardId",
+    "competencyId",
+    "archetypeId",
+    "familyKey",
+    "representation",
+    "demand",
+    "difficultyBand",
+    "misconceptionTargets",
+    "generator",
+    "responseType"
+  ],
+  "properties": {
+    "templateId": {"type": "string", "minLength": 1},
+    "curriculumVersion": {"type": "string", "minLength": 1},
+    "grade": {"type": "integer", "minimum": 1, "maximum": 6},
+    "topicId": {"type": "string", "minLength": 1},
+    "standardId": {"type": "string", "minLength": 1},
+    "competencyId": {"type": "string", "pattern": "^[a-z0-9_\\-]+$"},
+    "archetypeId": {"type": "string", "pattern": "^[a-z0-9_\\-]+$"},
+    "familyKey": {"type": "string", "minLength": 1},
+    "representation": {"type": "string", "minLength": 1},
+    "demand": {
+      "type": "string",
+      "enum": ["foundation", "concept", "procedure", "application", "reasoning", "transfer"]
+    },
+    "difficultyBand": {"type": "integer", "minimum": 1, "maximum": 5},
+    "misconceptionTargets": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "generator": {"type": "string", "minLength": 1},
+    "renderer": {"type": ["string", "null"]},
+    "responseType": {"type": "string", "enum": ["mcq", "typed_numeric", "typed_text", "interactive"]},
+    "params": {"type": "object"}
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T7",
+    "standardId": "7.2.1",
+    "competencyId": "regular_polygon",
+    "titleMs": "Poligon sekata",
+    "prerequisites": ["7.9.9"],
+    "status": "mapped"
+  }
+]

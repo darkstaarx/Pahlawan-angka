@@ -1,0 +1,24 @@
+[
+  {
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T7",
+    "contentStandard": "7.1",
+    "standardId": "7.1.1",
+    "competencyId": "identify_prism",
+    "titleMs": "Mengenal prisma",
+    "prerequisites": [],
+    "status": "mapped"
+  },
+  {
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T7",
+    "contentStandard": "7.2",
+    "standardId": "7.2.1",
+    "competencyId": "identify_regular_polygon",
+    "titleMs": "Mengenal poligon sekata",
+    "prerequisites": [],
+    "status": "mapped"
+  }
+]

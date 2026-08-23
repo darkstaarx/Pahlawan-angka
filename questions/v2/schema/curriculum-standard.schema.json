@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pahlawanangka.local/schema/curriculum-standard.schema.json",
+  "title": "Pahlawan Angka Curriculum Standard",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "curriculumVersion",
+    "grade",
+    "topicId",
+    "standardId",
+    "competencyId",
+    "titleMs",
+    "status"
+  ],
+  "properties": {
+    "curriculumVersion": {"type": "string", "minLength": 1},
+    "grade": {"type": "integer", "minimum": 1, "maximum": 6},
+    "topicId": {"type": "string", "minLength": 1},
+    "contentStandard": {"type": ["string", "null"]},
+    "standardId": {"type": "string", "minLength": 1},
+    "competencyId": {"type": "string", "pattern": "^[a-z0-9_\\-]+$"},
+    "titleMs": {"type": "string", "minLength": 1},
+    "prerequisites": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "status": {
+      "type": "string",
+      "enum": ["enabled", "mapped", "legacy", "retired", "needs_human_review"]
+    }
+  }
+}

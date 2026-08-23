@@ -1,0 +1,17 @@
+{
+  "templateId": "D3-T7-999-ghost-sp-v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T7",
+  "standardId": "7.9.9",
+  "competencyId": "does_not_exist",
+  "archetypeId": "identify_from_picture",
+  "familyKey": "D3.T7.7.9.9.does_not_exist",
+  "representation": "visual",
+  "demand": "concept",
+  "difficultyBand": 1,
+  "misconceptionTargets": [],
+  "generator": "geometry.identifyPrism",
+  "renderer": "geometry",
+  "responseType": "mcq"
+}

@@ -1,0 +1,17 @@
+{
+  "templateId": "D3-T7-711-identify-prism-wrong-topic-v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T9",
+  "standardId": "7.1.1",
+  "competencyId": "identify_prism",
+  "archetypeId": "identify_from_picture",
+  "familyKey": "D3.T7.7.1.1.identify_prism",
+  "representation": "visual",
+  "demand": "concept",
+  "difficultyBand": 1,
+  "misconceptionTargets": ["prism_vs_non_prism"],
+  "generator": "geometry.identifyPrism",
+  "renderer": "geometry",
+  "responseType": "mcq"
+}
