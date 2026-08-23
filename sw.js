@@ -1,4 +1,4 @@
-// App shell v3.42.0 — D3 Topic 7 beta LIVE rollout (default SHADOW; remote consent gate + legacy fallback).
+// App shell v3.43.0 — D3 full-year curriculum canonicalization (Topic 7 beta LIVE unchanged; default SHADOW elsewhere).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

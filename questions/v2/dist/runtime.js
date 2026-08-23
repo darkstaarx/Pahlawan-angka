@@ -23,7 +23,7 @@
     "topicId": "D3.T1",
     "contentStandard": "1.1",
     "standardId": "1.1.1",
-    "competencyId": "nama_nombor_angka_perkataan_nilai_tempat_digit",
+    "competencyId": "represent_numbers_to_10000",
     "titleMs": "Nama nombor; angka/perkataan; nilai tempat/digit",
     "prerequisites": [],
     "status": "mapped",
@@ -34,8 +34,9 @@
       "D3.PV10000"
     ],
     "sourceStandardPriority": "P2",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -43,7 +44,7 @@
     "topicId": "D3.T1",
     "contentStandard": "1.1",
     "standardId": "1.1.2",
-    "competencyId": "banding_nilai_hingga_tiga_nombor",
+    "competencyId": "compare_numbers_to_10000",
     "titleMs": "Banding nilai hingga tiga nombor",
     "prerequisites": [],
     "status": "mapped",
@@ -53,8 +54,9 @@
       "D3.N10000"
     ],
     "sourceStandardPriority": "P2",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -62,7 +64,7 @@
     "topicId": "D3.T1",
     "contentStandard": "1.2",
     "standardId": "1.2.1",
-    "competencyId": "anggaran_kuantiti_munasabah_berasaskan_rujukan",
+    "competencyId": "estimate_quantities_using_reference",
     "titleMs": "Anggaran kuantiti munasabah berasaskan rujukan",
     "prerequisites": [],
     "status": "mapped",
@@ -72,8 +74,9 @@
       "D3.N10000"
     ],
     "sourceStandardPriority": "P2",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -81,7 +84,7 @@
     "topicId": "D3.T1",
     "contentStandard": "1.3",
     "standardId": "1.3.1",
-    "competencyId": "bundar_hingga_ribu_terdekat",
+    "competencyId": "round_numbers_to_nearest_thousand",
     "titleMs": "Bundar hingga ribu terdekat",
     "prerequisites": [],
     "status": "mapped",
@@ -91,8 +94,9 @@
       "D3.N10000"
     ],
     "sourceStandardPriority": "P2",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -100,7 +104,7 @@
     "topicId": "D3.T1",
     "contentStandard": "1.4",
     "standardId": "1.4.1",
-    "competencyId": "pola_naik_turun_1_10_100_1000",
+    "competencyId": "recognize_number_patterns_by_place_value_steps",
     "titleMs": "Pola naik/turun 1, 10, 100, 1000",
     "prerequisites": [],
     "status": "mapped",
@@ -110,8 +114,9 @@
       "D3.N10000"
     ],
     "sourceStandardPriority": "P2",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -119,7 +124,7 @@
     "topicId": "D3.T1",
     "contentStandard": "1.4",
     "standardId": "1.4.2",
-    "competencyId": "lengkap_pelbagai_pola_nombor_mudah",
+    "competencyId": "complete_number_patterns",
     "titleMs": "Lengkap pelbagai pola nombor mudah",
     "prerequisites": [],
     "status": "mapped",
@@ -129,8 +134,9 @@
       "D3.N10000"
     ],
     "sourceStandardPriority": "P2",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -138,7 +144,7 @@
     "topicId": "D3.T2",
     "contentStandard": "2.1",
     "standardId": "2.1.1",
-    "competencyId": "masalah_tambah_tolak_hingga_tiga_nombor_jumlah_1",
+    "competencyId": "solve_addition_subtraction_word_problems",
     "titleMs": "Masalah tambah/tolak hingga tiga nombor; jumlah <=10000",
     "prerequisites": [],
     "status": "mapped",
@@ -149,8 +155,9 @@
       "D3.SUB10000"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -158,7 +165,7 @@
     "topicId": "D3.T2",
     "contentStandard": "2.1",
     "standardId": "2.1.2",
-    "competencyId": "masalah_operasi_bergabung_tambah_tolak_10000",
+    "competencyId": "solve_mixed_addition_subtraction_problems",
     "titleMs": "Masalah operasi bergabung tambah-tolak <=10000",
     "prerequisites": [],
     "status": "mapped",
@@ -169,8 +176,9 @@
       "D3.SUB10000"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -178,7 +186,7 @@
     "topicId": "D3.T2",
     "contentStandard": "2.2",
     "standardId": "2.2.1",
-    "competencyId": "darab_bahagi_hingga_4_digit_dengan_1_digit_10_10",
+    "competencyId": "multiply_divide_numbers_by_1digit_powers10",
     "titleMs": "Darab/bahagi hingga 4 digit dengan 1 digit, 10, 100, 1000",
     "prerequisites": [],
     "status": "mapped",
@@ -189,8 +197,9 @@
       "D3.DIV"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -198,7 +207,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.1",
     "standardId": "3.1.1",
-    "competencyId": "pecahan_setara_penyebut_10",
+    "competencyId": "identify_equivalent_fractions",
     "titleMs": "Pecahan setara; penyebut <=10",
     "prerequisites": [],
     "status": "mapped",
@@ -208,8 +217,9 @@
       "D3.FRAC"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -217,7 +227,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.1",
     "standardId": "3.1.2",
-    "competencyId": "pecahan_wajar_kepada_bentuk_termudah",
+    "competencyId": "simplify_proper_fractions",
     "titleMs": "Pecahan wajar kepada bentuk termudah",
     "prerequisites": [],
     "status": "mapped",
@@ -227,8 +237,9 @@
       "D3.FRAC"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -236,7 +247,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.1",
     "standardId": "3.1.3",
-    "competencyId": "tambah_dan_tolak_dua_pecahan_wajar",
+    "competencyId": "add_subtract_proper_fractions",
     "titleMs": "Tambah dan tolak dua pecahan wajar",
     "prerequisites": [],
     "status": "mapped",
@@ -246,8 +257,9 @@
       "D3.FRAC"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -255,7 +267,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.1",
     "standardId": "3.1.4",
-    "competencyId": "kenal_pecahan_tak_wajar_dan_nombor_bercampur",
+    "competencyId": "identify_improper_fractions_and_mixed_numbers",
     "titleMs": "Kenal pecahan tak wajar dan nombor bercampur",
     "prerequisites": [],
     "status": "mapped",
@@ -265,8 +277,9 @@
       "D3.FRAC"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -274,7 +287,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.1",
     "standardId": "3.1.5",
-    "competencyId": "pecahan_perseratus_kepada_perpuluhan",
+    "competencyId": "convert_hundredths_fractions_to_decimals",
     "titleMs": "Pecahan perseratus kepada perpuluhan",
     "prerequisites": [],
     "status": "mapped",
@@ -285,8 +298,9 @@
       "D3.DEC"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -294,7 +308,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.2",
     "standardId": "3.2.1",
-    "competencyId": "banding_dua_perpuluhan_hingga_dua_tempat",
+    "competencyId": "compare_decimals_to_hundredths",
     "titleMs": "Banding dua perpuluhan hingga dua tempat",
     "prerequisites": [],
     "status": "mapped",
@@ -304,8 +318,9 @@
       "D3.DEC"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -313,7 +328,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.2",
     "standardId": "3.2.2",
-    "competencyId": "tambah_tolak_dua_perpuluhan_hingga_dua_tempat_ha",
+    "competencyId": "add_subtract_decimals_to_hundredths",
     "titleMs": "Tambah/tolak dua perpuluhan hingga dua tempat; hasil tambah <=0.99",
     "prerequisites": [],
     "status": "mapped",
@@ -323,8 +338,9 @@
       "D3.DEC"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -332,7 +348,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.3",
     "standardId": "3.3.1",
-    "competencyId": "peratus_dalam_petak_seratus_dan_sebaliknya",
+    "competencyId": "represent_percent_on_hundred_grid",
     "titleMs": "Peratus dalam petak seratus dan sebaliknya",
     "prerequisites": [],
     "status": "mapped",
@@ -342,8 +358,9 @@
       "D3.PERCENT"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -351,7 +368,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.3",
     "standardId": "3.3.2",
-    "competencyId": "sebut_tulis_1_hingga_100",
+    "competencyId": "read_write_percent_1_to_100",
     "titleMs": "Sebut/tulis 1% hingga 100%",
     "prerequisites": [],
     "status": "mapped",
@@ -361,8 +378,9 @@
       "D3.PERCENT"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -370,7 +388,7 @@
     "topicId": "D3.T3",
     "contentStandard": "3.4",
     "standardId": "3.4.1",
-    "competencyId": "hubung_pecahan_perpuluhan_dan_peratus",
+    "competencyId": "relate_fractions_decimals_percent",
     "titleMs": "Hubung pecahan, perpuluhan dan peratus",
     "prerequisites": [],
     "status": "mapped",
@@ -382,8 +400,9 @@
       "D3.PERCENT"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -391,7 +410,7 @@
     "topicId": "D3.T4",
     "contentStandard": "4.1",
     "standardId": "4.1.1",
-    "competencyId": "tambah_tolak_hingga_tiga_nilai_wang_rm10000",
+    "competencyId": "add_subtract_money_values",
     "titleMs": "Tambah/tolak hingga tiga nilai wang <=RM10000",
     "prerequisites": [],
     "status": "mapped",
@@ -401,8 +420,9 @@
       "D3.MONEY"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -410,7 +430,7 @@
     "topicId": "D3.T4",
     "contentStandard": "4.1",
     "standardId": "4.1.2",
-    "competencyId": "operasi_bergabung_tambah_tolak_wang_rm10000",
+    "competencyId": "solve_mixed_addition_subtraction_money",
     "titleMs": "Operasi bergabung tambah-tolak wang <=RM10000",
     "prerequisites": [],
     "status": "mapped",
@@ -420,8 +440,9 @@
       "D3.MONEY"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -429,7 +450,7 @@
     "topicId": "D3.T4",
     "contentStandard": "4.2",
     "standardId": "4.2.1",
-    "competencyId": "darab_bahagi_wang_dengan_1_digit_10_100_1000",
+    "competencyId": "multiply_divide_money",
     "titleMs": "Darab/bahagi wang dengan 1 digit, 10, 100, 1000",
     "prerequisites": [],
     "status": "mapped",
@@ -439,8 +460,9 @@
       "D3.MONEY"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -448,7 +470,7 @@
     "topicId": "D3.T4",
     "contentStandard": "4.3",
     "standardId": "4.3.1",
-    "competencyId": "kenal_mata_wang_negara_asean",
+    "competencyId": "identify_asean_currencies",
     "titleMs": "Kenal mata wang negara ASEAN",
     "prerequisites": [],
     "status": "mapped",
@@ -458,8 +480,9 @@
       "D3.MONEY"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -467,7 +490,7 @@
     "topicId": "D3.T4",
     "contentStandard": "4.4",
     "standardId": "4.4.1",
-    "competencyId": "keperluan_dan_kehendak_sebagai_asas_simpanan_per",
+    "competencyId": "distinguish_needs_and_wants_for_money_choices",
     "titleMs": "Keperluan dan kehendak sebagai asas simpanan/perbelanjaan",
     "prerequisites": [],
     "status": "mapped",
@@ -477,8 +500,9 @@
       "D3.MONEY"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -486,7 +510,7 @@
     "topicId": "D3.T5",
     "contentStandard": "5.1",
     "standardId": "5.1.1",
-    "competencyId": "baca_dan_rekod_waktu_aktiviti",
+    "competencyId": "read_record_time_of_activities",
     "titleMs": "Baca dan rekod waktu aktiviti",
     "prerequisites": [],
     "status": "mapped",
@@ -496,8 +520,9 @@
       "D3.TIME"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -505,7 +530,7 @@
     "topicId": "D3.T5",
     "contentStandard": "5.1",
     "standardId": "5.1.2",
-    "competencyId": "tukar_jam_minit_dan_minit_saat",
+    "competencyId": "convert_hours_minutes_seconds",
     "titleMs": "Tukar jam-minit dan minit-saat",
     "prerequisites": [],
     "status": "mapped",
@@ -515,8 +540,9 @@
       "D3.TIME"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -524,7 +550,7 @@
     "topicId": "D3.T5",
     "contentStandard": "5.2",
     "standardId": "5.2.1",
-    "competencyId": "tambah_tolak_hingga_tiga_nilai_masa",
+    "competencyId": "add_subtract_time_values",
     "titleMs": "Tambah/tolak hingga tiga nilai masa",
     "prerequisites": [],
     "status": "mapped",
@@ -534,8 +560,9 @@
       "D3.TIME"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -543,7 +570,7 @@
     "topicId": "D3.T5",
     "contentStandard": "5.2",
     "standardId": "5.2.2",
-    "competencyId": "operasi_bergabung_tambah_tolak_masa",
+    "competencyId": "solve_mixed_addition_subtraction_time",
     "titleMs": "Operasi bergabung tambah-tolak masa",
     "prerequisites": [],
     "status": "mapped",
@@ -553,8 +580,9 @@
       "D3.TIME"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -562,7 +590,7 @@
     "topicId": "D3.T5",
     "contentStandard": "5.3",
     "standardId": "5.3.1",
-    "competencyId": "darab_bahagi_masa_dengan_satu_digit",
+    "competencyId": "multiply_divide_time",
     "titleMs": "Darab/bahagi masa dengan satu digit",
     "prerequisites": [],
     "status": "mapped",
@@ -572,8 +600,9 @@
       "D3.TIME"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -581,7 +610,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.1",
     "standardId": "6.1.1",
-    "competencyId": "tukar_meter_sentimeter",
+    "competencyId": "convert_metres_centimetres",
     "titleMs": "Tukar meter-sentimeter",
     "prerequisites": [],
     "status": "mapped",
@@ -591,8 +620,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -600,7 +630,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.1",
     "standardId": "6.1.2",
-    "competencyId": "tambah_tolak_hingga_tiga_ukuran_panjang",
+    "competencyId": "add_subtract_lengths",
     "titleMs": "Tambah/tolak hingga tiga ukuran panjang",
     "prerequisites": [],
     "status": "mapped",
@@ -610,8 +640,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -619,7 +650,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.1",
     "standardId": "6.1.3",
-    "competencyId": "darab_bahagi_panjang_dengan_satu_digit",
+    "competencyId": "multiply_divide_lengths",
     "titleMs": "Darab/bahagi panjang dengan satu digit",
     "prerequisites": [],
     "status": "mapped",
@@ -629,8 +660,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -638,7 +670,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.2",
     "standardId": "6.2.1",
-    "competencyId": "tukar_kilogram_gram",
+    "competencyId": "convert_kilograms_grams",
     "titleMs": "Tukar kilogram-gram",
     "prerequisites": [],
     "status": "mapped",
@@ -648,8 +680,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -657,7 +690,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.2",
     "standardId": "6.2.2",
-    "competencyId": "tambah_tolak_hingga_tiga_ukuran_jisim",
+    "competencyId": "add_subtract_masses",
     "titleMs": "Tambah/tolak hingga tiga ukuran jisim",
     "prerequisites": [],
     "status": "mapped",
@@ -667,8 +700,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -676,7 +710,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.2",
     "standardId": "6.2.3",
-    "competencyId": "darab_bahagi_jisim_dengan_satu_digit",
+    "competencyId": "multiply_divide_masses",
     "titleMs": "Darab/bahagi jisim dengan satu digit",
     "prerequisites": [],
     "status": "mapped",
@@ -686,8 +720,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -695,7 +730,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.3",
     "standardId": "6.3.1",
-    "competencyId": "tukar_liter_mililiter",
+    "competencyId": "convert_litres_millilitres",
     "titleMs": "Tukar liter-mililiter",
     "prerequisites": [],
     "status": "mapped",
@@ -705,8 +740,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -714,7 +750,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.3",
     "standardId": "6.3.2",
-    "competencyId": "tambah_tolak_hingga_tiga_isi_padu_cecair",
+    "competencyId": "add_subtract_liquid_volumes",
     "titleMs": "Tambah/tolak hingga tiga isi padu cecair",
     "prerequisites": [],
     "status": "mapped",
@@ -724,8 +760,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -733,7 +770,7 @@
     "topicId": "D3.T6",
     "contentStandard": "6.3",
     "standardId": "6.3.3",
-    "competencyId": "darab_bahagi_isi_padu_cecair_dengan_satu_digit",
+    "competencyId": "multiply_divide_liquid_volumes",
     "titleMs": "Darab/bahagi isi padu cecair dengan satu digit",
     "prerequisites": [],
     "status": "mapped",
@@ -743,8 +780,9 @@
       "D3.MEASURE"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -866,7 +904,7 @@
     "topicId": "D3.T8",
     "contentStandard": "8.1",
     "standardId": "8.1.1",
-    "competencyId": "kedudukan_objek_relatif_kepada_titik_rujukan",
+    "competencyId": "describe_relative_position_from_reference",
     "titleMs": "Kedudukan objek relatif kepada titik rujukan",
     "prerequisites": [],
     "status": "mapped",
@@ -876,8 +914,9 @@
       "D3.POSITION"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -885,7 +924,7 @@
     "topicId": "D3.T8",
     "contentStandard": "8.1",
     "standardId": "8.1.2",
-    "competencyId": "kenal_objek_melalui_paksi_mengufuk_mencancang",
+    "competencyId": "identify_object_using_horizontal_vertical_axes",
     "titleMs": "Kenal objek melalui paksi mengufuk/mencancang",
     "prerequisites": [],
     "status": "mapped",
@@ -895,8 +934,9 @@
       "D3.POSITION"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -904,7 +944,7 @@
     "topicId": "D3.T8",
     "contentStandard": "8.1",
     "standardId": "8.1.3",
-    "competencyId": "tentukan_kedudukan_pada_paksi_mengufuk_mencancan",
+    "competencyId": "locate_position_on_horizontal_vertical_axes",
     "titleMs": "Tentukan kedudukan pada paksi mengufuk/mencancang",
     "prerequisites": [],
     "status": "mapped",
@@ -914,8 +954,9 @@
       "D3.POSITION"
     ],
     "sourceStandardPriority": "P1",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -923,7 +964,7 @@
     "topicId": "D3.T9",
     "contentStandard": "9.1",
     "standardId": "9.1.1",
-    "competencyId": "kumpul_kelas_dan_susun_data_situasi_harian",
+    "competencyId": "collect_classify_organize_data",
     "titleMs": "Kumpul, kelas dan susun data situasi harian",
     "prerequisites": [],
     "status": "mapped",
@@ -933,8 +974,9 @@
       "D3.DATA"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -942,7 +984,7 @@
     "topicId": "D3.T9",
     "contentStandard": "9.2",
     "standardId": "9.2.1",
-    "competencyId": "baca_dan_dapatkan_maklumat_carta_pai",
+    "competencyId": "read_interpret_pie_chart",
     "titleMs": "Baca dan dapatkan maklumat carta pai",
     "prerequisites": [],
     "status": "mapped",
@@ -952,8 +994,9 @@
       "D3.DATA"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   },
   {
     "curriculumVersion": "KSSR-E3-2024",
@@ -961,7 +1004,7 @@
     "topicId": "D3.T9",
     "contentStandard": "9.2",
     "standardId": "9.2.2",
-    "competencyId": "hubung_piktograf_carta_palang_dan_carta_pai",
+    "competencyId": "relate_pictograph_bar_chart_pie_chart",
     "titleMs": "Hubung piktograf, carta palang dan carta pai",
     "prerequisites": [],
     "status": "mapped",
@@ -971,8 +1014,9 @@
       "D3.DATA"
     ],
     "sourceStandardPriority": "P0",
-    "competencyIdStatus": "provisional",
-    "competencyIdReviewNote": "Auto-generated from titleMs by slugification. Not yet human-reviewed. Must not be treated as canonical."
+    "competencyIdStatus": "canonical",
+    "competencyIdReviewNote": "Human-reviewed and locked in Phase 3A-0 Darjah 3 full-year curriculum canonicalization. Change only with curriculum re-review and evidence migration review.",
+    "competencyIdReviewVersion": "D3-FULL-YEAR-CANONICAL-v1"
   }
 ];
   var TEMPLATES = [
@@ -1573,7 +1617,7 @@
     "renderers/geometry/prism.js"
   ]
 };
-  var SOURCE_HASH = "5a716015a84bea5a44a61b8fa177a92e49a56079d7768cda4cb7afe66844ac0b";
+  var SOURCE_HASH = "58e2a058615282b71fe22f7ebac36d532829325a1eb44169dce054b505e06462";
 
   var generators = Object.create(null);
   var renderers = Object.create(null);

@@ -328,12 +328,13 @@ console.log('\n5. Real D3 curriculum registry (questions/v2/curriculum/kssr-e3-2
   check('reported mapped count is 44', d3Bucket.mapped, 44);
   check('reported enabled count is 6', d3Bucket.enabled, 6);
 
-  const canonicalIds = ['identify_prism', 'describe_prism_features', 'classify_prism_vs_non_prism', 'identify_regular_polygon', 'create_regular_polygon_pattern', 'identify_and_draw_symmetry_axis'];
+  const topic7CanonicalIds = ['identify_prism', 'describe_prism_features', 'classify_prism_vs_non_prism', 'identify_regular_polygon', 'create_regular_polygon_pattern', 'identify_and_draw_symmetry_axis'];
   const canonicalRecords = d3Records.filter((r) => r.competencyIdStatus === 'canonical');
   const provisionalRecords = d3Records.filter((r) => r.competencyIdStatus === 'provisional');
-  check('exactly 6 D3 records are marked competencyIdStatus="canonical"', canonicalRecords.length, 6);
-  check('exactly 44 D3 records are marked competencyIdStatus="provisional"', provisionalRecords.length, 44);
-  checkTrue('the 6 canonical records are exactly the Topic 7 pilot SPs with the reviewed IDs', canonicalRecords.every((r) => canonicalIds.includes(r.competencyId)) && canonicalRecords.length === canonicalIds.length);
+  check('all 50 D3 records are marked competencyIdStatus="canonical"', canonicalRecords.length, 50);
+  check('zero D3 records remain competencyIdStatus="provisional"', provisionalRecords.length, 0);
+  const canonicalTopic7 = canonicalRecords.filter((r) => r.topicId === 'D3.T7');
+  checkTrue('the 6 Topic 7 canonical IDs remain exactly the reviewed pilot IDs', canonicalTopic7.length === 6 && canonicalTopic7.every((r) => topic7CanonicalIds.includes(r.competencyId)) && topic7CanonicalIds.every((id) => canonicalTopic7.some((r) => r.competencyId === id)));
 
   // Phase 2B: the six Topic 7 SPs are now enabled, so readiness must be
   // substantive against the real 18-template bank and real authored source keys.

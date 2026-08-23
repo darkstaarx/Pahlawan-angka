@@ -1,0 +1,403 @@
+{
+  "schema": "pa.qsv2.d3-canonical-map.v1",
+  "reviewVersion": "D3-FULL-YEAR-CANONICAL-v1",
+  "baseCommit": "a9b36a520c0abf86db66c9d0d3f0c4c2ce8bb339",
+  "records": [
+    {
+      "topicId": "D3.T1",
+      "standardId": "1.1.1",
+      "expectedOldCompetencyId": "nama_nombor_angka_perkataan_nilai_tempat_digit",
+      "canonicalCompetencyId": "represent_numbers_to_10000",
+      "legacyCoverage": "partial",
+      "action": "EXPAND",
+      "representationPlan": "symbolic + place-value + words"
+    },
+    {
+      "topicId": "D3.T1",
+      "standardId": "1.1.2",
+      "expectedOldCompetencyId": "banding_nilai_hingga_tiga_nombor",
+      "canonicalCompetencyId": "compare_numbers_to_10000",
+      "legacyCoverage": "partial",
+      "action": "EXPAND",
+      "representationPlan": "symbolic + ordering"
+    },
+    {
+      "topicId": "D3.T1",
+      "standardId": "1.2.1",
+      "expectedOldCompetencyId": "anggaran_kuantiti_munasabah_berasaskan_rujukan",
+      "canonicalCompetencyId": "estimate_quantities_using_reference",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "visual/context estimate"
+    },
+    {
+      "topicId": "D3.T1",
+      "standardId": "1.3.1",
+      "expectedOldCompetencyId": "bundar_hingga_ribu_terdekat",
+      "canonicalCompetencyId": "round_numbers_to_nearest_thousand",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "number-line/place-value"
+    },
+    {
+      "topicId": "D3.T1",
+      "standardId": "1.4.1",
+      "expectedOldCompetencyId": "pola_naik_turun_1_10_100_1000",
+      "canonicalCompetencyId": "recognize_number_patterns_by_place_value_steps",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "sequence + place-value"
+    },
+    {
+      "topicId": "D3.T1",
+      "standardId": "1.4.2",
+      "expectedOldCompetencyId": "lengkap_pelbagai_pola_nombor_mudah",
+      "canonicalCompetencyId": "complete_number_patterns",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "sequence/missing-term"
+    },
+    {
+      "topicId": "D3.T2",
+      "standardId": "2.1.1",
+      "expectedOldCompetencyId": "masalah_tambah_tolak_hingga_tiga_nombor_jumlah_1",
+      "canonicalCompetencyId": "solve_addition_subtraction_word_problems",
+      "legacyCoverage": "partial",
+      "action": "EXPAND",
+      "representationPlan": "word problem + bar/relational"
+    },
+    {
+      "topicId": "D3.T2",
+      "standardId": "2.1.2",
+      "expectedOldCompetencyId": "masalah_operasi_bergabung_tambah_tolak_10000",
+      "canonicalCompetencyId": "solve_mixed_addition_subtraction_problems",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "multi-step context"
+    },
+    {
+      "topicId": "D3.T2",
+      "standardId": "2.2.1",
+      "expectedOldCompetencyId": "darab_bahagi_hingga_4_digit_dengan_1_digit_10_10",
+      "canonicalCompetencyId": "multiply_divide_numbers_by_1digit_powers10",
+      "legacyCoverage": "partial",
+      "action": "REWRITE",
+      "representationPlan": "symbolic + groups/array + context"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.1.1",
+      "expectedOldCompetencyId": "pecahan_setara_penyebut_10",
+      "canonicalCompetencyId": "identify_equivalent_fractions",
+      "legacyCoverage": "partial",
+      "action": "EXPAND",
+      "representationPlan": "fraction area + symbolic"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.1.2",
+      "expectedOldCompetencyId": "pecahan_wajar_kepada_bentuk_termudah",
+      "canonicalCompetencyId": "simplify_proper_fractions",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "fraction area + symbolic"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.1.3",
+      "expectedOldCompetencyId": "tambah_dan_tolak_dua_pecahan_wajar",
+      "canonicalCompetencyId": "add_subtract_proper_fractions",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "fraction area + symbolic"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.1.4",
+      "expectedOldCompetencyId": "kenal_pecahan_tak_wajar_dan_nombor_bercampur",
+      "canonicalCompetencyId": "identify_improper_fractions_and_mixed_numbers",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "fraction area + classification"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.1.5",
+      "expectedOldCompetencyId": "pecahan_perseratus_kepada_perpuluhan",
+      "canonicalCompetencyId": "convert_hundredths_fractions_to_decimals",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "hundred-grid + symbolic"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.2.1",
+      "expectedOldCompetencyId": "banding_dua_perpuluhan_hingga_dua_tempat",
+      "canonicalCompetencyId": "compare_decimals_to_hundredths",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "place-value + number line"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.2.2",
+      "expectedOldCompetencyId": "tambah_tolak_dua_perpuluhan_hingga_dua_tempat_ha",
+      "canonicalCompetencyId": "add_subtract_decimals_to_hundredths",
+      "legacyCoverage": "partial",
+      "action": "REWRITE",
+      "representationPlan": "place-value + symbolic; current legacy range mismatched"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.3.1",
+      "expectedOldCompetencyId": "peratus_dalam_petak_seratus_dan_sebaliknya",
+      "canonicalCompetencyId": "represent_percent_on_hundred_grid",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "hundred-grid required"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.3.2",
+      "expectedOldCompetencyId": "sebut_tulis_1_hingga_100",
+      "canonicalCompetencyId": "read_write_percent_1_to_100",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "symbolic + words"
+    },
+    {
+      "topicId": "D3.T3",
+      "standardId": "3.4.1",
+      "expectedOldCompetencyId": "hubung_pecahan_perpuluhan_dan_peratus",
+      "canonicalCompetencyId": "relate_fractions_decimals_percent",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "multiple representations"
+    },
+    {
+      "topicId": "D3.T4",
+      "standardId": "4.1.1",
+      "expectedOldCompetencyId": "tambah_tolak_hingga_tiga_nilai_wang_rm10000",
+      "canonicalCompetencyId": "add_subtract_money_values",
+      "legacyCoverage": "partial",
+      "action": "EXPAND",
+      "representationPlan": "money context + calculation"
+    },
+    {
+      "topicId": "D3.T4",
+      "standardId": "4.1.2",
+      "expectedOldCompetencyId": "operasi_bergabung_tambah_tolak_wang_rm10000",
+      "canonicalCompetencyId": "solve_mixed_addition_subtraction_money",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "multi-step money context"
+    },
+    {
+      "topicId": "D3.T4",
+      "standardId": "4.2.1",
+      "expectedOldCompetencyId": "darab_bahagi_wang_dengan_1_digit_10_100_1000",
+      "canonicalCompetencyId": "multiply_divide_money",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "money context + groups"
+    },
+    {
+      "topicId": "D3.T4",
+      "standardId": "4.3.1",
+      "expectedOldCompetencyId": "kenal_mata_wang_negara_asean",
+      "canonicalCompetencyId": "identify_asean_currencies",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "visual currency/country match"
+    },
+    {
+      "topicId": "D3.T4",
+      "standardId": "4.4.1",
+      "expectedOldCompetencyId": "keperluan_dan_kehendak_sebagai_asas_simpanan_per",
+      "canonicalCompetencyId": "distinguish_needs_and_wants_for_money_choices",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "scenario classification/reasoning"
+    },
+    {
+      "topicId": "D3.T5",
+      "standardId": "5.1.1",
+      "expectedOldCompetencyId": "baca_dan_rekod_waktu_aktiviti",
+      "canonicalCompetencyId": "read_record_time_of_activities",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "clock/timetable visual"
+    },
+    {
+      "topicId": "D3.T5",
+      "standardId": "5.1.2",
+      "expectedOldCompetencyId": "tukar_jam_minit_dan_minit_saat",
+      "canonicalCompetencyId": "convert_hours_minutes_seconds",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "clock/unit relation"
+    },
+    {
+      "topicId": "D3.T5",
+      "standardId": "5.2.1",
+      "expectedOldCompetencyId": "tambah_tolak_hingga_tiga_nilai_masa",
+      "canonicalCompetencyId": "add_subtract_time_values",
+      "legacyCoverage": "partial",
+      "action": "EXPAND",
+      "representationPlan": "timeline/clock + symbolic"
+    },
+    {
+      "topicId": "D3.T5",
+      "standardId": "5.2.2",
+      "expectedOldCompetencyId": "operasi_bergabung_tambah_tolak_masa",
+      "canonicalCompetencyId": "solve_mixed_addition_subtraction_time",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "multi-step timeline/context"
+    },
+    {
+      "topicId": "D3.T5",
+      "standardId": "5.3.1",
+      "expectedOldCompetencyId": "darab_bahagi_masa_dengan_satu_digit",
+      "canonicalCompetencyId": "multiply_divide_time",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "equal groups/time context"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.1.1",
+      "expectedOldCompetencyId": "tukar_meter_sentimeter",
+      "canonicalCompetencyId": "convert_metres_centimetres",
+      "legacyCoverage": "partial",
+      "action": "REWRITE",
+      "representationPlan": "measurement relation; avoid decimal-only shortcut"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.1.2",
+      "expectedOldCompetencyId": "tambah_tolak_hingga_tiga_ukuran_panjang",
+      "canonicalCompetencyId": "add_subtract_lengths",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "ruler/context + mixed units"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.1.3",
+      "expectedOldCompetencyId": "darab_bahagi_panjang_dengan_satu_digit",
+      "canonicalCompetencyId": "multiply_divide_lengths",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "measurement context"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.2.1",
+      "expectedOldCompetencyId": "tukar_kilogram_gram",
+      "canonicalCompetencyId": "convert_kilograms_grams",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "scale/mass context"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.2.2",
+      "expectedOldCompetencyId": "tambah_tolak_hingga_tiga_ukuran_jisim",
+      "canonicalCompetencyId": "add_subtract_masses",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "scale/context + mixed units"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.2.3",
+      "expectedOldCompetencyId": "darab_bahagi_jisim_dengan_satu_digit",
+      "canonicalCompetencyId": "multiply_divide_masses",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "mass context"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.3.1",
+      "expectedOldCompetencyId": "tukar_liter_mililiter",
+      "canonicalCompetencyId": "convert_litres_millilitres",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "container/liquid visual"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.3.2",
+      "expectedOldCompetencyId": "tambah_tolak_hingga_tiga_isi_padu_cecair",
+      "canonicalCompetencyId": "add_subtract_liquid_volumes",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "container/context + mixed units"
+    },
+    {
+      "topicId": "D3.T6",
+      "standardId": "6.3.3",
+      "expectedOldCompetencyId": "darab_bahagi_isi_padu_cecair_dengan_satu_digit",
+      "canonicalCompetencyId": "multiply_divide_liquid_volumes",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "liquid-volume context"
+    },
+    {
+      "topicId": "D3.T8",
+      "standardId": "8.1.1",
+      "expectedOldCompetencyId": "kedudukan_objek_relatif_kepada_titik_rujukan",
+      "canonicalCompetencyId": "describe_relative_position_from_reference",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "grid/map visual required"
+    },
+    {
+      "topicId": "D3.T8",
+      "standardId": "8.1.2",
+      "expectedOldCompetencyId": "kenal_objek_melalui_paksi_mengufuk_mencancang",
+      "canonicalCompetencyId": "identify_object_using_horizontal_vertical_axes",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "grid axes visual required"
+    },
+    {
+      "topicId": "D3.T8",
+      "standardId": "8.1.3",
+      "expectedOldCompetencyId": "tentukan_kedudukan_pada_paksi_mengufuk_mencancan",
+      "canonicalCompetencyId": "locate_position_on_horizontal_vertical_axes",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "grid axes visual required"
+    },
+    {
+      "topicId": "D3.T9",
+      "standardId": "9.1.1",
+      "expectedOldCompetencyId": "kumpul_kelas_dan_susun_data_situasi_harian",
+      "canonicalCompetencyId": "collect_classify_organize_data",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "table/classification; interactive desirable"
+    },
+    {
+      "topicId": "D3.T9",
+      "standardId": "9.2.1",
+      "expectedOldCompetencyId": "baca_dan_dapatkan_maklumat_carta_pai",
+      "canonicalCompetencyId": "read_interpret_pie_chart",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "pie-chart visual required"
+    },
+    {
+      "topicId": "D3.T9",
+      "standardId": "9.2.2",
+      "expectedOldCompetencyId": "hubung_piktograf_carta_palang_dan_carta_pai",
+      "canonicalCompetencyId": "relate_pictograph_bar_chart_pie_chart",
+      "legacyCoverage": "missing",
+      "action": "REWRITE",
+      "representationPlan": "multiple chart representations required"
+    }
+  ]
+}
