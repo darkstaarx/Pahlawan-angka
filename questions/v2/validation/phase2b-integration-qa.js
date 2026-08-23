@@ -12,7 +12,7 @@ function loadRuntime(){
   return ctx.PAQuestionSystemV2;
 }
 const runtime=loadRuntime();
-const root={document:{},localStorage:makeStorage(),performance:{now:()=>123.456},PAQuestionSystemV2:runtime,PA_QSV2_FLAGS:{}};
+const root={document:{},localStorage:makeStorage(),performance:{now:()=>123.456},PAQuestionSystemV2:runtime,PA_QSV2_FLAGS:{},PAD3Topic7LiveCutover:{authorizeLive:(skillId)=>({allowed:skillId==='D3.SHAPE'})}};
 const bridge=createBridge(root);
 
 // Feature flag / readiness surface.
@@ -73,7 +73,7 @@ const prodCtx={console,Math};prodCtx.window=prodCtx;prodCtx.globalThis=prodCtx;p
 prodCtx.PAQuestionBanks={d3:(id)=>({prompt:'LEGACY:'+id,answer:'legacy',wrong:[{v:'a'},{v:'b'},{v:'c'}],archetypeId:'legacy'})};
 prodCtx.Q=(prompt,answer,wrong,hint,kind,diagnostic,formatShift)=>({prompt,answer,wrong,hint,kind,diagnostic,formatShift});
 prodCtx.N=(v,tag)=>({v,label:v,tag});
-prodCtx.PAQuestionSystemV2Bridge=createBridge({document:{},localStorage:makeStorage(),performance:{now:()=>1},PAQuestionSystemV2:runtime,PA_QSV2_FLAGS:{d3Topic7:'off'}});
+prodCtx.PAQuestionSystemV2Bridge=createBridge({document:{},localStorage:makeStorage(),performance:{now:()=>1},PAQuestionSystemV2:runtime,PA_QSV2_FLAGS:{d3Topic7:'off'},PAD3Topic7LiveCutover:{authorizeLive:(skillId)=>({allowed:skillId==='D3.SHAPE'})}});
 vm.createContext(prodCtx);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'fixtures','phase2b','questions-index.js'),'utf8'),prodCtx,{filename:'questions/index.js'});
 let q=prodCtx.generate('D3.SHAPE',{mastery:50,evidence:1,confidence:50,correct:0,wrong:0});

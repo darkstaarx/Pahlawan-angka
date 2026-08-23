@@ -25,7 +25,7 @@ function generate(id,s){
   const v2Bridge=window.PAQuestionSystemV2Bridge;
   if(v2Bridge&&typeof v2Bridge.tryGenerate==='function'){
     try{
-      q=v2Bridge.tryGenerate(id,s,{history:sess.questionHistory,recentFingerprints:sess.questionFingerprints});
+      q=v2Bridge.tryGenerate(id,s,{history:sess.questionHistory,recentFingerprints:sess.questionFingerprints,stateRoot:(typeof db!=='undefined'?db:null)});
     }catch(_){q=null}
   }
   if(!q){

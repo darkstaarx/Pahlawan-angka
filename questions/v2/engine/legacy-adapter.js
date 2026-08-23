@@ -277,6 +277,29 @@
     try {
       if (accepted && root.PAQSV2ShadowSync && typeof root.PAQSV2ShadowSync.enqueue === 'function') root.PAQSV2ShadowSync.enqueue(payload);
     } catch (_) {}
+    try {
+      if (accepted && root.PAQSV2PilotSync && typeof root.PAQSV2PilotSync.enqueue === 'function') root.PAQSV2PilotSync.enqueue(payload);
+    } catch (_) {}
+  }
+
+  function freshLiveMetrics() {
+    return { attempts: 0, generated: 0, fallbacks: 0, errors: 0, blocked: 0, lastOutcome: null, lastReason: null, lastDurationMs: null, lastTemplateId: null, lastCompetencyId: null, lastFingerprint: null };
+  }
+
+  function liveEvent(root, bridge, outcome, details, startedAt) {
+    details = details || {};
+    var duration = Math.max(0, nowMs(root) - Number(startedAt || 0));
+    duration = Math.round(duration * 10) / 10;
+    bridge.liveMetrics.attempts++;
+    if (outcome === 'generated') bridge.liveMetrics.generated++;
+    else if (outcome === 'error') bridge.liveMetrics.errors++;
+    else if (outcome === 'blocked') bridge.liveMetrics.blocked++;
+    else bridge.liveMetrics.fallbacks++;
+    bridge.liveMetrics.lastOutcome = outcome; bridge.liveMetrics.lastReason = details.reason || null; bridge.liveMetrics.lastDurationMs = duration; bridge.liveMetrics.lastTemplateId = details.templateId || null; bridge.liveMetrics.lastCompetencyId = details.competencyId || null; bridge.liveMetrics.lastFingerprint = details.fingerprint || null;
+    var payload = { mode: 'live', outcome: outcome, reason: details.reason || null, generationMs: duration, standardId: details.standardId || null, competencyId: details.competencyId || null, templateId: details.templateId || null, fingerprint: details.fingerprint || null };
+    var accepted = false;
+    try { if (root.PATelemetry && typeof root.PATelemetry.record === 'function') accepted = root.PATelemetry.record('qsv2_live', payload) === true; } catch (_) {}
+    try { if (accepted && root.PAQSV2PilotSync && typeof root.PAQSV2PilotSync.enqueue === 'function') root.PAQSV2PilotSync.enqueue(payload); } catch (_) {}
   }
 
   function createBridge(root) {
@@ -284,6 +307,7 @@
       lastError: null,
       lastShadow: null,
       shadowMetrics: freshShadowMetrics(),
+      liveMetrics: freshLiveMetrics(),
       getMode: function () { return configuredMode(root); },
       setPilotMode: function (mode, persist) {
         mode = normaliseMode(mode);
@@ -324,21 +348,27 @@
           enabledStandards: records.map(function (r) { return r.standardId; }).sort(),
           battleCompatibleTemplates: liveTemplates.length,
           sourceHash: runtime && runtime.sourceHash ? runtime.sourceHash : null,
-          shadowMetrics: Object.assign({}, bridge.shadowMetrics)
+          shadowMetrics: Object.assign({}, bridge.shadowMetrics),
+          liveMetrics: Object.assign({}, bridge.liveMetrics)
         };
       },
       tryGenerate: function (legacySkillId, state, context) {
         bridge.lastError = null;
         var mode = configuredMode(root);
         if (mode === 'off' || legacySkillId !== PILOT_LEGACY_SKILL) return null;
-        var startedAt = mode === 'shadow' ? nowMs(root) : 0;
+        context = context || {};
+        var startedAt = nowMs(root);
+        if (mode === 'live') {
+          var cutover = root.PAD3Topic7LiveCutover;
+          var auth = cutover && typeof cutover.authorizeLive === 'function' ? cutover.authorizeLive(legacySkillId, context.stateRoot || null) : { allowed: false };
+          if (!auth || auth.allowed !== true) { liveEvent(root, bridge, 'blocked', { reason: 'live_not_authorized' }, startedAt); return null; }
+        }
         var runtime = root.PAQuestionSystemV2;
         if (!runtime || !runtime._generators || !runtime._renderers) {
           if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'runtime_missing' }, startedAt);
+          else liveEvent(root, bridge, 'fallback', { reason: 'runtime_missing' }, startedAt);
           return null;
         }
-
-        context = context || {};
         var history = Array.isArray(context.history) ? context.history : [];
         var rng = typeof context.rng === 'function' ? context.rng : liveRng(root);
         try {
@@ -346,34 +376,18 @@
           var q = null, tpl = null;
           for (var attempt = 0; attempt < 10; attempt++) {
             tpl = selectTemplate(runtime, legacySkillId, state || {}, history, rng);
-            if (!tpl) {
-              if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt);
-              return null;
-            }
+            if (!tpl) { if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt); else liveEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt); return null; }
             var generator = runtime._generators[tpl.generator];
-            if (typeof generator !== 'function') {
-              if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'generator_missing', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId }, startedAt);
-              return null;
-            }
-            var raw = generator(tpl.params || {}, rng);
-            q = assembleLegacyQuestion(runtime, tpl, raw);
+            if (typeof generator !== 'function') { var gd={ reason: 'generator_missing', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId }; if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', gd, startedAt); else liveEvent(root, bridge, 'fallback', gd, startedAt); return null; }
+            var raw = generator(tpl.params || {}, rng); q = assembleLegacyQuestion(runtime, tpl, raw);
             if (!recent.has(legacyQuestionFingerprint(q)) || attempt === 9) break;
           }
-          if (mode === 'shadow') {
-            bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q };
-            shadowEvent(root, bridge, 'generated', {
-              reason: 'ok',
-              standardId: tpl.standardId,
-              competencyId: tpl.competencyId,
-              templateId: tpl.templateId,
-              fingerprint: q.qsv2GeneratorFingerprint || null
-            }, startedAt);
-            return null;
-          }
-          return q;
+          var details={ reason: 'ok', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId, fingerprint: q.qsv2GeneratorFingerprint || null };
+          if (mode === 'shadow') { bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q }; shadowEvent(root, bridge, 'generated', details, startedAt); return null; }
+          liveEvent(root, bridge, 'generated', details, startedAt); return q;
         } catch (err) {
           bridge.lastError = err && err.message ? err.message : String(err);
-          if (mode === 'shadow') shadowEvent(root, bridge, 'error', { reason: 'exception' }, startedAt);
+          if (mode === 'shadow') shadowEvent(root, bridge, 'error', { reason: 'exception' }, startedAt); else liveEvent(root, bridge, 'error', { reason: 'exception' }, startedAt);
           return null;
         }
       }

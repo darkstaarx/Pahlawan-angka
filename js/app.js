@@ -120,17 +120,18 @@ function goGame(){db?renderHub():screen("login")}
 function openParent(){if(!db)return;openParentPin()}
 function gradeLabel(n){return `Darjah ${n}`}
 function roleLabel(g){ if(!db) return 'Misi'; if(g<db.schoolGrade) return 'Misi Asas'; if(g>db.schoolGrade) return 'Cabaran Bonus'; return 'Misi Matematik'; }
+function qsv2LearnerTitle(meta,q){return window.PAD3Topic7LiveCutover?.displayTitle?.(meta,q)||(meta?.title||'Kemahiran')}
 function nextQ(){
  if(sess.learningActive)return;
  let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
- sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;
+ sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;if(q.qsv2Pilot)q.qsv2AttemptId=window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null;
  sess.recent.push(id);if(sess.recent.length>10)sess.recent.shift();
- document.getElementById("skillTitle").textContent=sess.bossStretchCurrent?`Cabaran Boss · Darjah ${m.grade} · ${m.domain}`:(m.grade===db.schoolGrade?(m.textbookUnit?`Unit ${m.textbookUnit} · ${m.textbookUnitTitle}`:m.title):(m.grade>db.schoolGrade?`Cabaran Bonus · ${m.domain}`:`Misi Asas · ${m.domain}`));
+ document.getElementById("skillTitle").textContent=sess.bossStretchCurrent?`Cabaran Boss · Darjah ${m.grade} · ${m.domain}`:(m.grade===db.schoolGrade?(q.qsv2Pilot?qsv2LearnerTitle(m,q):(m.textbookUnit?`Unit ${m.textbookUnit} · ${m.textbookUnitTitle}`:m.title)):(m.grade>db.schoolGrade?`Cabaran Bonus · ${m.domain}`:`Misi Asas · ${m.domain}`));
  document.getElementById("why").textContent="";
  document.getElementById("coachMode").textContent=sess.guardianFocus?"Fokus Penjaga":(sess.devBankTest?"DEV TEST":(sess.mode==="recover"?"Bantuan":(sess.mode==="stretch"?"Bonus":"Misi")));
  document.getElementById("gradeLayer").textContent=m.grade===db.schoolGrade?gradeLabel(m.grade):(m.grade<db.schoolGrade?"Asas":"Bonus");
  document.getElementById("mastery").style.width=sess.devBankTest?Math.max(3,s.mastery)+"%":Math.min(100,Math.round((sess.missionAnswered||0)/(sess.coachAdaptive?PROGRESSION.coachMinQuestions:PROGRESSION.missionQuestions)*100))+"%";
- document.getElementById("kind").textContent=sess.bossStretchCurrent?`Cabaran Boss · ${m.title}`:m.title;
+ document.getElementById("kind").textContent=sess.bossStretchCurrent?`Cabaran Boss · ${m.title}`:qsv2LearnerTitle(m,q);
  document.getElementById("evidence").textContent=sess.guardianFocus?`Soalan ${(sess.missionAnswered||0)+1}/${sess.focusTarget}`:(sess.devBankTest?`${id} · Test ${(sess.missionAnswered||0)+1}`:(sess.coachAdaptive?`Cabaran Cikgu ${(sess.missionAnswered||0)+1}`:(sess.bossStretchCurrent?'Cabaran Boss +1 Darjah':`Soalan ${(sess.missionAnswered||0)+1}`))); updateMissionHud();
  applyEnemyVariant();
  document.getElementById("question").innerHTML=q.prompt;document.getElementById("feedback").textContent="";

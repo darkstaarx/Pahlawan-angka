@@ -160,13 +160,15 @@ function respond(o,btn,question){
  resolveAnswer(o,btn,question,ok);
 }
 function beginHintRetry(o,btn,question){
- const id=question.skill,s=scoreState(id),sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade();
+ const id=question.skill,s=scoreState(id),sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true;
  const effortLock=window.PAEffortGuard?.firstWrong?.(question,sec)===true;
  sess.retryState={wrongTag:o.tag,wrongValue:o.v,firstSeconds:sec,streakBefore:sess.streak};
  btn.classList.add('no');document.querySelectorAll('.ans').forEach(x=>x.disabled=true);
- s.wrong++;s.evidence++;s.mis[o.tag]=(s.mis[o.tag]||0)+1;
- s.mastery=Math.max(0,s.mastery-(layerDelta>0?1.2:2.2));s.confidence=Math.max(0,s.confidence-(layerDelta>0?2:4));s.stability=Math.max(0,s.stability-3);if(layerDelta>0)s.probeFail++;
- recordCoachResponse(id,false,o.tag,sec,false,question.token);recordFrontierResponse(id,false,sec,false,question);
+ if(!qsv2Target){
+  s.wrong++;s.evidence++;s.mis[o.tag]=(s.mis[o.tag]||0)+1;
+  s.mastery=Math.max(0,s.mastery-(layerDelta>0?1.2:2.2));s.confidence=Math.max(0,s.confidence-(layerDelta>0?2:4));s.stability=Math.max(0,s.stability-3);if(layerDelta>0)s.probeFail++;
+  recordCoachResponse(id,false,o.tag,sec,false,question.token);recordFrontierResponse(id,false,sec,false,question);
+ }
  if(window.PATelemetry)PATelemetry.response(id,false,o.tag,sec,false,question,sess.mode+'-first-attempt');
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Dimensi');}
  document.getElementById('feedback').innerHTML='<b>Hampir!</b> Rentak disimpan. Tekan <b>Petunjuk</b> yang menyala, kemudian cuba sekali lagi.';
@@ -174,7 +176,7 @@ function beginHintRetry(o,btn,question){
  if(effortLock){setTimeout(()=>activateEffortRestuLock(id),500);return;}
 }
 function resolveAnswer(o,btn,question,ok){
- let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false;
+ let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):null;
  window.PAEffortGuard?.retryResolved?.(question,ok);
  document.querySelectorAll(".ans").forEach(x=>x.disabled=true);
  if(ok){
@@ -194,22 +196,28 @@ function resolveAnswer(o,btn,question,ok){
   if(!sess.coachAdaptive){triggerImpact("enemy","hero","red",false);sess.hp-=3}
  }
 
+ if(qsv2Target){
+   window.PAD3Topic7LiveCutover?.restoreLegacyState?.(question,s,qsv2LegacySnapshot);
+   window.PAD3Topic7LiveCutover?.recordBattleResult?.(db,question,sess,ok);
+ }
 
  if(bossStretch){
    if(ok&&db){ if(typeof ensureRewards==='function')ensureRewards(); db.rewards.bossStretchWin=true; save(); }
    document.getElementById('feedback').textContent=ok?'Cabaran Boss berjaya! Ini bukti kamu boleh cuba tahap Darjah '+META[id].grade+'.':'Cubaan yang berani! Jawapan ini membantu Cikgu memilih cabaran yang paling sesuai untuk kamu.';
  }
- recordCoachResponse(id,ok,o.tag,sec,sess.hint,question.token);
- recordFrontierResponse(id,ok,sec,sess.hint,question);
- if(window.PATelemetry)PATelemetry.response(id,ok,o.tag,sec,sess.hint,question,sess.retryState?sess.mode+'-retry':sess.mode);
- if(!bossStretch){
-   if(ok){
-     // A corrected retry proves that the hint helped, not yet that the pupil
-     // can solve independently. Require one fresh, unassisted item.
-     if(sess.retryState&&sess.hint)scheduleConfirmation(id,1);else consumeConfirmation(id);
-   }else scheduleConfirmation(id);
+ if(!qsv2Target){
+  recordCoachResponse(id,ok,o.tag,sec,sess.hint,question.token);
+  recordFrontierResponse(id,ok,sec,sess.hint,question);
+  if(!bossStretch){
+    if(ok){
+      // A corrected retry proves that the hint helped, not yet that the pupil
+      // can solve independently. Require one fresh, unassisted item.
+      if(sess.retryState&&sess.hint)scheduleConfirmation(id,1);else consumeConfirmation(id);
+    }else scheduleConfirmation(id);
+  }
  }
- const intervention=bossStretch?null:evaluateIntervention(id);
+ if(window.PATelemetry)PATelemetry.response(id,ok,o.tag,sec,sess.hint,question,sess.retryState?sess.mode+'-retry':sess.mode);
+ const intervention=(bossStretch||qsv2Target)?null:evaluateIntervention(id);
  if(sess.enemyTier==='boss'&&!sess.coachAdaptive&&!sess.devBankTest)sess.bossQuestionsAnswered=(sess.bossQuestionsAnswered||0)+1;
  recordMissionAnswer(ok,id,sess.hint);
  if(sess.guardianFocus&&typeof guardianRecordAnswer==='function')guardianRecordAnswer(ok,id,sess.hint);

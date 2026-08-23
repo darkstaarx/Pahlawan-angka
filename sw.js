@@ -1,4 +1,4 @@
-// App shell v3.39.0 — D3 Topic 7 evidence epoch prepared (default SHADOW).
+// App shell v3.40.0 — D3 Topic 7 controlled LIVE pilot (default SHADOW; DEV/admin cutover only).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
@@ -28,15 +28,15 @@ const APP_SHELL=[
   './css/dev-experiments-v3.21.2.css','./css/combat-polish-v3.21.3.css','./css/boss-stage-dev-v3.21.4.css','./css/combat-target-anchor-v3.21.5.css','./css/finisher-alpha-hotspots-v3.21.6.css','./css/typed-answer-ui-v3.21.8.css',
   './css/kssr-assessment-depth-v3.22.0.css','./css/kssr-year6-space-data-v3.23.0.css','./css/profile-manager-v3.24.2.css',
   './css/unit-grounding-v3.24.5.css','./css/cikgu-dimensi-place-value-v0.1.css','./css/cikgu-dimensi-core-v0.2.css','./css/hub-adventure-v3.24.11.css',
-  './data/kssr/knowledge-graph.js','./data/kssr/mastery-knowledge-v1.js','./data/kssr/alignment-v3.9.0.js','./data/kssr/d3-topic7-curriculum-correction-v3.38.0.js','./data/kssr/d3-topic7-evidence-epoch-v3.39.0.js',
-  './questions/helpers.js','./questions/index.js','./questions/v2/dist/runtime.js','./questions/v2/engine/legacy-adapter.js','./js/dev-qsv2-v3.36.0.js','./questions/kssr-archetypes-v3.9.0.js','./questions/kssr-content-v3.11.js','./questions/kssr-content-integrity-v3.18.1.js','./questions/kssr-assessment-depth-v3.22.0.js','./questions/kssr-year6-space-data-v3.23.0.js',
+  './data/kssr/knowledge-graph.js','./data/kssr/mastery-knowledge-v1.js','./data/kssr/alignment-v3.9.0.js','./data/kssr/d3-topic7-curriculum-correction-v3.38.0.js','./data/kssr/d3-topic7-evidence-epoch-v3.39.0.js','./data/kssr/d3-topic7-live-cutover-v3.40.0.js',
+  './questions/helpers.js','./questions/index.js','./questions/v2/dist/runtime.js','./questions/v2/engine/legacy-adapter.js','./js/dev-qsv2-v3.36.0.js','./js/dev-qsv2-live-v3.40.0.js','./questions/kssr-archetypes-v3.9.0.js','./questions/kssr-content-v3.11.js','./questions/kssr-content-integrity-v3.18.1.js','./questions/kssr-assessment-depth-v3.22.0.js','./questions/kssr-year6-space-data-v3.23.0.js',
   './questions/d1/core.js','./questions/d2/topic-1.js','./questions/d2/topic-2.js','./questions/d2/topic-3.js',
   './questions/d2/topic-4.js','./questions/d2/topic-5.js','./questions/d2/topic-6.js','./questions/d2/topic-7.js','./questions/d2/topic-8.js',
   './questions/d3/core.js','./questions/d4/core.js','./questions/d5/core.js','./questions/d6/core.js',
   './js/engine/telemetry.js','./js/engine/intervention.js','./js/engine/frontier.js','./js/engine/adaptive.js',
   './js/engine/dimensional-memory.js','./js/engine/dimensional-portal.js','./js/engine/representations/place-value.js','./js/engine/representations/fraction-area.js','./js/engine/representations/number-line.js','./js/engine/representations/grouping-array.js','./js/engine/representations/number-bond.js','./js/engine/representations/bar-relational.js','./js/engine/dimensional-catalog.js','./js/engine/dimensional-view.js','./js/engine/dimensional-lab.js',
   './js/heroes.js','./js/progression.js','./js/rewards-v2.js','./js/learning.js','./js/audio.js',
-  './js/battle.js','./js/parent.js','./js/parent-learning-tools-v3.26.0.js','./js/guardian-focus.js','./js/app.js','./js/beta-trust-v3.29.0.js','./js/cloud.js','./js/qsv2-shadow-sync-v3.37.0.js','./js/commercial-foundation-v3.25.0.js','./js/guardian-onboarding-v3.25.1.js','./js/custom-picker-v3.25.6.js','./js/phase-3.6.4.js','./js/dev-cikgu-dimensi-v3.24.10.js',
+  './js/battle.js','./js/parent.js','./js/parent-learning-tools-v3.26.0.js','./js/guardian-focus.js','./js/app.js','./js/beta-trust-v3.29.0.js','./js/cloud.js','./js/qsv2-shadow-sync-v3.37.0.js','./js/qsv2-pilot-sync-v3.40.0.js','./js/commercial-foundation-v3.25.0.js','./js/guardian-onboarding-v3.25.1.js','./js/custom-picker-v3.25.6.js','./js/phase-3.6.4.js','./js/dev-cikgu-dimensi-v3.24.10.js',
   './js/sensory-learning-v3.19.0.js','./js/cikgu-manipulatives-v3.19.1.js','./js/daily-spaced-review-v3.20.0.js',
   './js/dev-experiments-v3.21.2.js','./js/combat-polish-v3.21.3.js','./js/dev-boss-lab-v3.21.4.js','./js/combat-target-anchor-v3.21.5.js','./js/finisher-alpha-hotspots-v3.21.6.js','./js/typed-answer-ui-v3.21.8.js','./js/profile-manager-v3.24.2.js','./js/pwa.js'
 ];

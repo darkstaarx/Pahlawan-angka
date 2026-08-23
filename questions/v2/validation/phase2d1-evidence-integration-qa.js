@@ -16,16 +16,19 @@ const correction=read('data/kssr/d3-topic7-curriculum-correction-v3.38.0.js');
 const evidence=read('data/kssr/d3-topic7-evidence-epoch-v3.39.0.js');
 const adapter=read('questions/v2/engine/legacy-adapter.js');
 const cloud=read('js/cloud.js');
+const releaseMatch=version.match(/PA_APP_VERSION='([^']+)'/);
+const releaseVersion=releaseMatch?releaseMatch[1]:'';
+function versionAtLeast(v,min){const a=String(v).split('.').map(Number),b=String(min).split('.').map(Number);for(let i=0;i<3;i++){const x=a[i]||0,y=b[i]||0;if(x!==y)return x>y}return true}
 
-check(/PA_APP_VERSION='3\.39\.0'/.test(version),'release version is 3.39.0');
+check(versionAtLeast(releaseVersion,'3.39.0'),'release version is at least 3.39.0');
 check(index.includes('data/kssr/d3-topic7-evidence-epoch-v3.39.0.js?v=3.39.0'),'evidence epoch script loaded');
 check(index.indexOf('d3-topic7-curriculum-correction-v3.38.0.js')<index.indexOf('d3-topic7-evidence-epoch-v3.39.0.js'),'evidence layer loads after curriculum correction');
-check(index.indexOf('d3-topic7-evidence-epoch-v3.39.0.js')<index.indexOf('js/app.js?v=3.39.0'),'evidence API loads before app init');
+check(index.indexOf('d3-topic7-evidence-epoch-v3.39.0.js')<index.indexOf('js/app.js?v='+releaseVersion),'evidence API loads before app init');
 check(count(index,'d3-topic7-evidence-epoch-v3.39.0.js')===1,'evidence script loaded exactly once');
-check(index.includes('js/app.js?v=3.39.0'),'app cache-bust updated');
-check(index.includes('js/version.js?v=3.39.0'),'version cache-bust updated');
-check(index.includes('js/pwa.js?v=3.39.0'),'pwa cache-bust updated');
-check(sw.startsWith('// App shell v3.39.0'),'service worker release header updated');
+check(index.includes('js/app.js?v='+releaseVersion),'app cache-bust follows current release');
+check(index.includes('js/version.js?v='+releaseVersion),'version cache-bust follows current release');
+check(index.includes('js/pwa.js?v='+releaseVersion),'pwa cache-bust follows current release');
+check(sw.startsWith('// App shell v'+releaseVersion),'service worker header follows current release');
 check(sw.includes("'./data/kssr/d3-topic7-evidence-epoch-v3.39.0.js'"),'service worker precaches evidence module');
 check(count(sw,'d3-topic7-evidence-epoch-v3.39.0.js')===1,'service worker precache has one evidence entry');
 
