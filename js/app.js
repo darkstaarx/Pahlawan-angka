@@ -51,7 +51,7 @@ function save(){localStorage.setItem("pa_coach_v6_full",JSON.stringify(db))}
 function initSkill(id){
  if(!db.skills[id]) db.skills[id]={mastery:(META[id].grade===db.schoolGrade?18:0),confidence:8,evidence:0,correct:0,wrong:0,hints:0,mis:{},lastSeen:0,stability:0,probePass:0,probeFail:0};
 }
-function initAll(){GRAPH.skills.forEach(x=>initSkill(x.id))}
+function initAll(){GRAPH.skills.forEach(x=>initSkill(x.id));window.PAD3Topic7Evidence?.ensure?.(db)}
 function chooseHero(id){selectedHero=id;document.querySelectorAll('.heroPick').forEach(x=>{const active=x.id==='pick-'+id;x.classList.toggle('active',active);x.setAttribute('aria-pressed',active?'true':'false')})}
 function applyHeroToBattle(){
  let h=HEROES[(db&&db.hero)||selectedHero||"wira"];
