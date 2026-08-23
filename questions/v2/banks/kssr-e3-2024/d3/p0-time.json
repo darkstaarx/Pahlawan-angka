@@ -1,0 +1,355 @@
+{
+  "schema": "pa.qsv2.template-set.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T5",
+  "phase": "3A-1",
+  "status": "shadow_authored",
+  "templates": [
+    {
+      "templateId": "D3-T5-511-analog_read-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.1.1",
+      "competencyId": "read_record_time_of_activities",
+      "archetypeId": "read_analogue_clock",
+      "familyKey": "D3.T5:read_record_time_of_activities:read_analogue_clock",
+      "representation": "clock",
+      "demand": "foundation",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "hour_minute_hand"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "read_record_time_of_activities",
+        "mode": "analog_read"
+      }
+    },
+    {
+      "templateId": "D3-T5-511-digital_words-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.1.1",
+      "competencyId": "read_record_time_of_activities",
+      "archetypeId": "digital_time_to_words",
+      "familyKey": "D3.T5:read_record_time_of_activities:digital_time_to_words",
+      "representation": "textual",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "hour_minute_hand"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "read_record_time_of_activities",
+        "mode": "digital_words"
+      }
+    },
+    {
+      "templateId": "D3-T5-511-schedule_activity-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.1.1",
+      "competencyId": "read_record_time_of_activities",
+      "archetypeId": "read_activity_schedule",
+      "familyKey": "D3.T5:read_record_time_of_activities:read_activity_schedule",
+      "representation": "timetable",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "schedule_lookup"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "read_record_time_of_activities",
+        "mode": "schedule_activity"
+      }
+    },
+    {
+      "templateId": "D3-T5-512-hours_minutes-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.1.2",
+      "competencyId": "convert_hours_minutes_seconds",
+      "archetypeId": "convert_hours_to_minutes",
+      "familyKey": "D3.T5:convert_hours_minutes_seconds:convert_hours_to_minutes",
+      "representation": "unit_relation",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "time_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_hours_minutes_seconds",
+        "mode": "hours_minutes"
+      }
+    },
+    {
+      "templateId": "D3-T5-512-minutes_seconds-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.1.2",
+      "competencyId": "convert_hours_minutes_seconds",
+      "archetypeId": "convert_minutes_to_seconds",
+      "familyKey": "D3.T5:convert_hours_minutes_seconds:convert_minutes_to_seconds",
+      "representation": "unit_relation",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "time_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_hours_minutes_seconds",
+        "mode": "minutes_seconds"
+      }
+    },
+    {
+      "templateId": "D3-T5-512-mixed_time-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.1.2",
+      "competencyId": "convert_hours_minutes_seconds",
+      "archetypeId": "convert_minutes_to_hours_minutes",
+      "familyKey": "D3.T5:convert_hours_minutes_seconds:convert_minutes_to_hours_minutes",
+      "representation": "timeline",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "time_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_hours_minutes_seconds",
+        "mode": "mixed_time"
+      }
+    },
+    {
+      "templateId": "D3-T5-521-add_durations-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.2.1",
+      "competencyId": "add_subtract_time_values",
+      "archetypeId": "add_time_values",
+      "familyKey": "D3.T5:add_subtract_time_values:add_time_values",
+      "representation": "timeline",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "time_regrouping"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_time_values",
+        "mode": "add_durations"
+      }
+    },
+    {
+      "templateId": "D3-T5-521-subtract_durations-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.2.1",
+      "competencyId": "add_subtract_time_values",
+      "archetypeId": "subtract_time_values",
+      "familyKey": "D3.T5:add_subtract_time_values:subtract_time_values",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "time_regrouping"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_time_values",
+        "mode": "subtract_durations"
+      }
+    },
+    {
+      "templateId": "D3-T5-521-difference_timeline-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.2.1",
+      "competencyId": "add_subtract_time_values",
+      "archetypeId": "find_time_difference",
+      "familyKey": "D3.T5:add_subtract_time_values:find_time_difference",
+      "representation": "timeline",
+      "demand": "application",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "elapsed_time"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_time_values",
+        "mode": "difference_timeline"
+      }
+    },
+    {
+      "templateId": "D3-T5-522-schedule_two_step-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.2.2",
+      "competencyId": "solve_mixed_addition_subtraction_time",
+      "archetypeId": "two_step_time_schedule",
+      "familyKey": "D3.T5:solve_mixed_addition_subtraction_time:two_step_time_schedule",
+      "representation": "timetable",
+      "demand": "application",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "operation_order"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_time",
+        "mode": "schedule_two_step"
+      }
+    },
+    {
+      "templateId": "D3-T5-522-duration_adjustment-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.2.2",
+      "competencyId": "solve_mixed_addition_subtraction_time",
+      "archetypeId": "mixed_time_adjustment",
+      "familyKey": "D3.T5:solve_mixed_addition_subtraction_time:mixed_time_adjustment",
+      "representation": "timeline",
+      "demand": "application",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "operation_order"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_time",
+        "mode": "duration_adjustment"
+      }
+    },
+    {
+      "templateId": "D3-T5-522-choose_time_expression-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.2.2",
+      "competencyId": "solve_mixed_addition_subtraction_time",
+      "archetypeId": "choose_expression_for_time_problem",
+      "familyKey": "D3.T5:solve_mixed_addition_subtraction_time:choose_expression_for_time_problem",
+      "representation": "timeline",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "operation_order"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_time",
+        "mode": "choose_time_expression"
+      }
+    },
+    {
+      "templateId": "D3-T5-531-repeat_duration-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.3.1",
+      "competencyId": "multiply_divide_time",
+      "archetypeId": "multiply_time_duration",
+      "familyKey": "D3.T5:multiply_divide_time:multiply_time_duration",
+      "representation": "timeline",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "time_multiplication"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_time",
+        "mode": "repeat_duration"
+      }
+    },
+    {
+      "templateId": "D3-T5-531-share_duration-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.3.1",
+      "competencyId": "multiply_divide_time",
+      "archetypeId": "divide_time_duration",
+      "familyKey": "D3.T5:multiply_divide_time:divide_time_duration",
+      "representation": "grouping_array",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "time_division"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_time",
+        "mode": "share_duration"
+      }
+    },
+    {
+      "templateId": "D3-T5-531-missing_groups-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T5",
+      "standardId": "5.3.1",
+      "competencyId": "multiply_divide_time",
+      "archetypeId": "inverse_time_groups",
+      "familyKey": "D3.T5:multiply_divide_time:inverse_time_groups",
+      "representation": "grouping_array",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_time",
+        "mode": "missing_groups"
+      }
+    }
+  ]
+}

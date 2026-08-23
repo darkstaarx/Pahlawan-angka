@@ -1,0 +1,226 @@
+{
+  "schema": "pa.qsv2.template-set.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T8",
+  "topicTitleMs": "Koordinat",
+  "authoringPhase": "3A-1-FULL",
+  "templates": [
+    {
+      "templateId": "D3-8-811-describe_cardinal_relative_position-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.1",
+      "competencyId": "describe_relative_position_from_reference",
+      "archetypeId": "describe_cardinal_relative_position",
+      "familyKey": "d3.d3_t8.describe_relative_position_from_reference",
+      "representation": "relative_grid",
+      "demand": "concept",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_relative_direction"
+      }
+    },
+    {
+      "templateId": "D3-8-811-describe_relative_distance-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.1",
+      "competencyId": "describe_relative_position_from_reference",
+      "archetypeId": "describe_relative_distance",
+      "familyKey": "d3.d3_t8.describe_relative_position_from_reference",
+      "representation": "distance_grid",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_relative_distance"
+      }
+    },
+    {
+      "templateId": "D3-8-811-compare_two_object_positions-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.1",
+      "competencyId": "describe_relative_position_from_reference",
+      "archetypeId": "compare_two_object_positions",
+      "familyKey": "d3.d3_t8.describe_relative_position_from_reference",
+      "representation": "reference_grid",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_relative_compare"
+      }
+    },
+    {
+      "templateId": "D3-8-812-identify_object_at_axis_intersection-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.2",
+      "competencyId": "identify_object_using_horizontal_vertical_axes",
+      "archetypeId": "identify_object_at_axis_intersection",
+      "familyKey": "d3.d3_t8.identify_object_using_horizontal_vertical_axes",
+      "representation": "axis_intersection_grid",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_identify_axes"
+      }
+    },
+    {
+      "templateId": "D3-8-812-identify_object_from_axis_clue-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.2",
+      "competencyId": "identify_object_using_horizontal_vertical_axes",
+      "archetypeId": "identify_object_from_axis_clue",
+      "familyKey": "d3.d3_t8.identify_object_using_horizontal_vertical_axes",
+      "representation": "axis_clue_grid",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_identify_clue"
+      }
+    },
+    {
+      "templateId": "D3-8-812-match_object_to_position_description-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.2",
+      "competencyId": "identify_object_using_horizontal_vertical_axes",
+      "archetypeId": "match_object_to_position_description",
+      "familyKey": "d3.d3_t8.identify_object_using_horizontal_vertical_axes",
+      "representation": "position_match_grid",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_match_description"
+      }
+    },
+    {
+      "templateId": "D3-8-813-read_horizontal_vertical_position-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.3",
+      "competencyId": "locate_position_on_horizontal_vertical_axes",
+      "archetypeId": "read_horizontal_vertical_position",
+      "familyKey": "d3.d3_t8.locate_position_on_horizontal_vertical_axes",
+      "representation": "coordinate_read_grid",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_read_position"
+      }
+    },
+    {
+      "templateId": "D3-8-813-choose_moves_to_target-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.3",
+      "competencyId": "locate_position_on_horizontal_vertical_axes",
+      "archetypeId": "choose_moves_to_target",
+      "familyKey": "d3.d3_t8.locate_position_on_horizontal_vertical_axes",
+      "representation": "movement_grid",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_moves_to_target"
+      }
+    },
+    {
+      "templateId": "D3-8-813-locate_after_movement_instruction-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T8",
+      "standardId": "8.1.3",
+      "competencyId": "locate_position_on_horizontal_vertical_axes",
+      "archetypeId": "locate_after_movement_instruction",
+      "familyKey": "d3.d3_t8.locate_position_on_horizontal_vertical_axes",
+      "representation": "movement_trace_grid",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "horizontal_vertical_confusion",
+        "reference_point_confusion",
+        "direction_distance_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "coord_follow_moves"
+      }
+    }
+  ]
+}

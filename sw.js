@@ -1,4 +1,4 @@
-// App shell v3.43.0 — D3 full-year curriculum canonicalization (Topic 7 beta LIVE unchanged; default SHADOW elsewhere).
+// App shell v3.44.0 — full Darjah 3 authored SHADOW bank (9/9 topics authored; Topic 7 beta LIVE unchanged; default SHADOW elsewhere).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

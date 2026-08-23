@@ -1,0 +1,701 @@
+{
+  "schema": "pa.qsv2.template-set.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T3",
+  "phase": "3A-1",
+  "status": "shadow_authored",
+  "templates": [
+    {
+      "templateId": "D3-T3-311-symbolic_match-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.1",
+      "competencyId": "identify_equivalent_fractions",
+      "archetypeId": "equivalent_fraction_symbolic",
+      "familyKey": "D3.T3:identify_equivalent_fractions:equivalent_fraction_symbolic",
+      "representation": "symbolic",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "scale_one_part_only"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "identify_equivalent_fractions",
+        "mode": "symbolic_match"
+      }
+    },
+    {
+      "templateId": "D3-T3-311-area_match-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.1",
+      "competencyId": "identify_equivalent_fractions",
+      "archetypeId": "equivalent_fraction_area",
+      "familyKey": "D3.T3:identify_equivalent_fractions:equivalent_fraction_area",
+      "representation": "fraction_area",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "visual_fraction_equivalence"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "identify_equivalent_fractions",
+        "mode": "area_match"
+      }
+    },
+    {
+      "templateId": "D3-T3-311-missing_number-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.1",
+      "competencyId": "identify_equivalent_fractions",
+      "archetypeId": "equivalent_fraction_missing_number",
+      "familyKey": "D3.T3:identify_equivalent_fractions:equivalent_fraction_missing_number",
+      "representation": "symbolic",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "scale_one_part_only"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "identify_equivalent_fractions",
+        "mode": "missing_number"
+      }
+    },
+    {
+      "templateId": "D3-T3-312-simplest_form-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.2",
+      "competencyId": "simplify_proper_fractions",
+      "archetypeId": "simplify_fraction_direct",
+      "familyKey": "D3.T3:simplify_proper_fractions:simplify_fraction_direct",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "not_fully_simplified"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "simplify_proper_fractions",
+        "mode": "simplest_form"
+      }
+    },
+    {
+      "templateId": "D3-T3-312-common_factor-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.2",
+      "competencyId": "simplify_proper_fractions",
+      "archetypeId": "identify_common_factor_for_simplification",
+      "familyKey": "D3.T3:simplify_proper_fractions:identify_common_factor_for_simplification",
+      "representation": "symbolic",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "wrong_common_factor"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "simplify_proper_fractions",
+        "mode": "common_factor"
+      }
+    },
+    {
+      "templateId": "D3-T3-312-area_simplify-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.2",
+      "competencyId": "simplify_proper_fractions",
+      "archetypeId": "simplify_fraction_from_area",
+      "familyKey": "D3.T3:simplify_proper_fractions:simplify_fraction_from_area",
+      "representation": "fraction_area",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "visual_fraction_equivalence"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "simplify_proper_fractions",
+        "mode": "area_simplify"
+      }
+    },
+    {
+      "templateId": "D3-T3-313-add_same_denominator-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.3",
+      "competencyId": "add_subtract_proper_fractions",
+      "archetypeId": "add_proper_fractions",
+      "familyKey": "D3.T3:add_subtract_proper_fractions:add_proper_fractions",
+      "representation": "fraction_area",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "add_denominators"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_proper_fractions",
+        "mode": "add_same_denominator"
+      }
+    },
+    {
+      "templateId": "D3-T3-313-subtract_same_denominator-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.3",
+      "competencyId": "add_subtract_proper_fractions",
+      "archetypeId": "subtract_proper_fractions",
+      "familyKey": "D3.T3:add_subtract_proper_fractions:subtract_proper_fractions",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "subtract_denominators"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_proper_fractions",
+        "mode": "subtract_same_denominator"
+      }
+    },
+    {
+      "templateId": "D3-T3-313-context_fraction-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.3",
+      "competencyId": "add_subtract_proper_fractions",
+      "archetypeId": "fraction_operation_context",
+      "familyKey": "D3.T3:add_subtract_proper_fractions:fraction_operation_context",
+      "representation": "fraction_area",
+      "demand": "application",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "operation_selection",
+        "add_denominators"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_proper_fractions",
+        "mode": "context_fraction"
+      }
+    },
+    {
+      "templateId": "D3-T3-314-improper_to_mixed-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.4",
+      "competencyId": "identify_improper_fractions_and_mixed_numbers",
+      "archetypeId": "convert_improper_to_mixed",
+      "familyKey": "D3.T3:identify_improper_fractions_and_mixed_numbers:convert_improper_to_mixed",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "whole_remainder_confusion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "identify_improper_fractions_and_mixed_numbers",
+        "mode": "improper_to_mixed"
+      }
+    },
+    {
+      "templateId": "D3-T3-314-mixed_to_improper-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.4",
+      "competencyId": "identify_improper_fractions_and_mixed_numbers",
+      "archetypeId": "convert_mixed_to_improper",
+      "familyKey": "D3.T3:identify_improper_fractions_and_mixed_numbers:convert_mixed_to_improper",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "whole_remainder_confusion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "identify_improper_fractions_and_mixed_numbers",
+        "mode": "mixed_to_improper"
+      }
+    },
+    {
+      "templateId": "D3-T3-314-picture_identify-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.4",
+      "competencyId": "identify_improper_fractions_and_mixed_numbers",
+      "archetypeId": "identify_mixed_number_from_picture",
+      "familyKey": "D3.T3:identify_improper_fractions_and_mixed_numbers:identify_mixed_number_from_picture",
+      "representation": "fraction_area",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "whole_remainder_confusion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "identify_improper_fractions_and_mixed_numbers",
+        "mode": "picture_identify"
+      }
+    },
+    {
+      "templateId": "D3-T3-315-hundredths_symbolic-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.5",
+      "competencyId": "convert_hundredths_fractions_to_decimals",
+      "archetypeId": "hundredths_to_decimal",
+      "familyKey": "D3.T3:convert_hundredths_fractions_to_decimals:hundredths_to_decimal",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "decimal_place_value"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_hundredths_fractions_to_decimals",
+        "mode": "hundredths_symbolic"
+      }
+    },
+    {
+      "templateId": "D3-T3-315-hundred_grid-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.5",
+      "competencyId": "convert_hundredths_fractions_to_decimals",
+      "archetypeId": "hundred_grid_to_decimal",
+      "familyKey": "D3.T3:convert_hundredths_fractions_to_decimals:hundred_grid_to_decimal",
+      "representation": "hundred_grid",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "decimal_place_value"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_hundredths_fractions_to_decimals",
+        "mode": "hundred_grid"
+      }
+    },
+    {
+      "templateId": "D3-T3-315-place_value-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.1.5",
+      "competencyId": "convert_hundredths_fractions_to_decimals",
+      "archetypeId": "decimal_place_value_from_hundredths",
+      "familyKey": "D3.T3:convert_hundredths_fractions_to_decimals:decimal_place_value_from_hundredths",
+      "representation": "place_value",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "decimal_place_value"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_hundredths_fractions_to_decimals",
+        "mode": "place_value"
+      }
+    },
+    {
+      "templateId": "D3-T3-321-compare_pair-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.2.1",
+      "competencyId": "compare_decimals_to_hundredths",
+      "archetypeId": "compare_decimal_pair",
+      "familyKey": "D3.T3:compare_decimals_to_hundredths:compare_decimal_pair",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "compare_decimal_digits"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "compare_decimals_to_hundredths",
+        "mode": "compare_pair"
+      }
+    },
+    {
+      "templateId": "D3-T3-321-number_line-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.2.1",
+      "competencyId": "compare_decimals_to_hundredths",
+      "archetypeId": "compare_decimals_number_line",
+      "familyKey": "D3.T3:compare_decimals_to_hundredths:compare_decimals_number_line",
+      "representation": "number_line",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "compare_decimal_digits"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "compare_decimals_to_hundredths",
+        "mode": "number_line"
+      }
+    },
+    {
+      "templateId": "D3-T3-321-largest-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.2.1",
+      "competencyId": "compare_decimals_to_hundredths",
+      "archetypeId": "select_largest_decimal",
+      "familyKey": "D3.T3:compare_decimals_to_hundredths:select_largest_decimal",
+      "representation": "contextual",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "compare_decimal_digits"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "compare_decimals_to_hundredths",
+        "mode": "largest"
+      }
+    },
+    {
+      "templateId": "D3-T3-322-add_decimals-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.2.2",
+      "competencyId": "add_subtract_decimals_to_hundredths",
+      "archetypeId": "add_decimals_hundredths",
+      "familyKey": "D3.T3:add_subtract_decimals_to_hundredths:add_decimals_hundredths",
+      "representation": "place_value",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "decimal_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_decimals_to_hundredths",
+        "mode": "add_decimals"
+      }
+    },
+    {
+      "templateId": "D3-T3-322-subtract_decimals-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.2.2",
+      "competencyId": "add_subtract_decimals_to_hundredths",
+      "archetypeId": "subtract_decimals_hundredths",
+      "familyKey": "D3.T3:add_subtract_decimals_to_hundredths:subtract_decimals_hundredths",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "decimal_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_decimals_to_hundredths",
+        "mode": "subtract_decimals"
+      }
+    },
+    {
+      "templateId": "D3-T3-322-missing_decimal-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.2.2",
+      "competencyId": "add_subtract_decimals_to_hundredths",
+      "archetypeId": "missing_addend_decimal",
+      "familyKey": "D3.T3:add_subtract_decimals_to_hundredths:missing_addend_decimal",
+      "representation": "bar_model",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "decimal_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_decimals_to_hundredths",
+        "mode": "missing_decimal"
+      }
+    },
+    {
+      "templateId": "D3-T3-331-grid_to_percent-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.3.1",
+      "competencyId": "represent_percent_on_hundred_grid",
+      "archetypeId": "hundred_grid_to_percent",
+      "familyKey": "D3.T3:represent_percent_on_hundred_grid:hundred_grid_to_percent",
+      "representation": "hundred_grid_read",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "percent_out_of_100"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "represent_percent_on_hundred_grid",
+        "mode": "grid_to_percent"
+      }
+    },
+    {
+      "templateId": "D3-T3-331-percent_to_shaded-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.3.1",
+      "competencyId": "represent_percent_on_hundred_grid",
+      "archetypeId": "percent_to_shaded_count",
+      "familyKey": "D3.T3:represent_percent_on_hundred_grid:percent_to_shaded_count",
+      "representation": "hundred_grid_construct",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "percent_out_of_100"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "represent_percent_on_hundred_grid",
+        "mode": "percent_to_shaded"
+      }
+    },
+    {
+      "templateId": "D3-T3-331-unshaded_percent-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.3.1",
+      "competencyId": "represent_percent_on_hundred_grid",
+      "archetypeId": "infer_unshaded_percent",
+      "familyKey": "D3.T3:represent_percent_on_hundred_grid:infer_unshaded_percent",
+      "representation": "hundred_grid_complement",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "complement_to_100"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "represent_percent_on_hundred_grid",
+        "mode": "unshaded_percent"
+      }
+    },
+    {
+      "templateId": "D3-T3-332-symbol_to_words-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.3.2",
+      "competencyId": "read_write_percent_1_to_100",
+      "archetypeId": "percent_symbol_to_words",
+      "familyKey": "D3.T3:read_write_percent_1_to_100:percent_symbol_to_words",
+      "representation": "symbolic",
+      "demand": "foundation",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "percent_notation"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "read_write_percent_1_to_100",
+        "mode": "symbol_to_words"
+      }
+    },
+    {
+      "templateId": "D3-T3-332-words_to_symbol-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.3.2",
+      "competencyId": "read_write_percent_1_to_100",
+      "archetypeId": "percent_words_to_symbol",
+      "familyKey": "D3.T3:read_write_percent_1_to_100:percent_words_to_symbol",
+      "representation": "textual",
+      "demand": "foundation",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "percent_notation"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "read_write_percent_1_to_100",
+        "mode": "words_to_symbol"
+      }
+    },
+    {
+      "templateId": "D3-T3-332-number_to_percent-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.3.2",
+      "competencyId": "read_write_percent_1_to_100",
+      "archetypeId": "number_out_of_100_to_percent",
+      "familyKey": "D3.T3:read_write_percent_1_to_100:number_out_of_100_to_percent",
+      "representation": "hundred_grid",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "percent_out_of_100"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "read_write_percent_1_to_100",
+        "mode": "number_to_percent"
+      }
+    },
+    {
+      "templateId": "D3-T3-341-match_triple-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.4.1",
+      "competencyId": "relate_fractions_decimals_percent",
+      "archetypeId": "match_fraction_decimal_percent",
+      "familyKey": "D3.T3:relate_fractions_decimals_percent:match_fraction_decimal_percent",
+      "representation": "cross_representation",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "cross_representation"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "relate_fractions_decimals_percent",
+        "mode": "match_triple"
+      }
+    },
+    {
+      "templateId": "D3-T3-341-find_mismatch-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.4.1",
+      "competencyId": "relate_fractions_decimals_percent",
+      "archetypeId": "find_non_equivalent_representation",
+      "familyKey": "D3.T3:relate_fractions_decimals_percent:find_non_equivalent_representation",
+      "representation": "cross_representation",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "cross_representation"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "relate_fractions_decimals_percent",
+        "mode": "find_mismatch"
+      }
+    },
+    {
+      "templateId": "D3-T3-341-grid_bridge-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T3",
+      "standardId": "3.4.1",
+      "competencyId": "relate_fractions_decimals_percent",
+      "archetypeId": "hundred_grid_fraction_decimal_percent",
+      "familyKey": "D3.T3:relate_fractions_decimals_percent:hundred_grid_fraction_decimal_percent",
+      "representation": "hundred_grid",
+      "demand": "transfer",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "cross_representation"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "relate_fractions_decimals_percent",
+        "mode": "grid_bridge"
+      }
+    }
+  ]
+}

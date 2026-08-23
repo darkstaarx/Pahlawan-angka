@@ -1,0 +1,631 @@
+{
+  "schema": "pa.qsv2.template-set.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T6",
+  "phase": "3A-1",
+  "status": "shadow_authored",
+  "templates": [
+    {
+      "templateId": "D3-T6-611-m_to_cm-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.1",
+      "competencyId": "convert_metres_centimetres",
+      "archetypeId": "metres_to_centimetres",
+      "familyKey": "D3.T6:convert_metres_centimetres:metres_to_centimetres",
+      "representation": "unit_conversion_symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "length_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_metres_centimetres",
+        "mode": "m_to_cm"
+      }
+    },
+    {
+      "templateId": "D3-T6-611-cm_to_m_cm-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.1",
+      "competencyId": "convert_metres_centimetres",
+      "archetypeId": "centimetres_to_mixed_metres",
+      "familyKey": "D3.T6:convert_metres_centimetres:centimetres_to_mixed_metres",
+      "representation": "mixed_unit_length",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "length_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_metres_centimetres",
+        "mode": "cm_to_m_cm"
+      }
+    },
+    {
+      "templateId": "D3-T6-611-equivalent_length-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.1",
+      "competencyId": "convert_metres_centimetres",
+      "archetypeId": "choose_equivalent_length",
+      "familyKey": "D3.T6:convert_metres_centimetres:choose_equivalent_length",
+      "representation": "length_equivalence",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "length_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_metres_centimetres",
+        "mode": "equivalent_length"
+      }
+    },
+    {
+      "templateId": "D3-T6-612-add_lengths-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.2",
+      "competencyId": "add_subtract_lengths",
+      "archetypeId": "add_length_values",
+      "familyKey": "D3.T6:add_subtract_lengths:add_length_values",
+      "representation": "ruler",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "unit_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_lengths",
+        "mode": "add_lengths"
+      }
+    },
+    {
+      "templateId": "D3-T6-612-subtract_lengths-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.2",
+      "competencyId": "add_subtract_lengths",
+      "archetypeId": "subtract_length_values",
+      "familyKey": "D3.T6:add_subtract_lengths:subtract_length_values",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "unit_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_lengths",
+        "mode": "subtract_lengths"
+      }
+    },
+    {
+      "templateId": "D3-T6-612-missing_length-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.2",
+      "competencyId": "add_subtract_lengths",
+      "archetypeId": "find_missing_length",
+      "familyKey": "D3.T6:add_subtract_lengths:find_missing_length",
+      "representation": "bar_model",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "part_whole_confusion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_lengths",
+        "mode": "missing_length"
+      }
+    },
+    {
+      "templateId": "D3-T6-613-repeat_length-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.3",
+      "competencyId": "multiply_divide_lengths",
+      "archetypeId": "multiply_length",
+      "familyKey": "D3.T6:multiply_divide_lengths:multiply_length",
+      "representation": "bar_model",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_lengths",
+        "mode": "repeat_length"
+      }
+    },
+    {
+      "templateId": "D3-T6-613-share_length-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.3",
+      "competencyId": "multiply_divide_lengths",
+      "archetypeId": "divide_length",
+      "familyKey": "D3.T6:multiply_divide_lengths:divide_length",
+      "representation": "bar_model",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_lengths",
+        "mode": "share_length"
+      }
+    },
+    {
+      "templateId": "D3-T6-613-inverse_length-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.1.3",
+      "competencyId": "multiply_divide_lengths",
+      "archetypeId": "inverse_length_factor",
+      "familyKey": "D3.T6:multiply_divide_lengths:inverse_length_factor",
+      "representation": "ruler",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_lengths",
+        "mode": "inverse_length"
+      }
+    },
+    {
+      "templateId": "D3-T6-621-kg_to_g-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.1",
+      "competencyId": "convert_kilograms_grams",
+      "archetypeId": "kilograms_to_grams",
+      "familyKey": "D3.T6:convert_kilograms_grams:kilograms_to_grams",
+      "representation": "unit_conversion_symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "mass_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_kilograms_grams",
+        "mode": "kg_to_g"
+      }
+    },
+    {
+      "templateId": "D3-T6-621-g_to_kg_g-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.1",
+      "competencyId": "convert_kilograms_grams",
+      "archetypeId": "grams_to_mixed_kilograms",
+      "familyKey": "D3.T6:convert_kilograms_grams:grams_to_mixed_kilograms",
+      "representation": "mixed_unit_mass",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "mass_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_kilograms_grams",
+        "mode": "g_to_kg_g"
+      }
+    },
+    {
+      "templateId": "D3-T6-621-equivalent_mass-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.1",
+      "competencyId": "convert_kilograms_grams",
+      "archetypeId": "choose_equivalent_mass",
+      "familyKey": "D3.T6:convert_kilograms_grams:choose_equivalent_mass",
+      "representation": "mass_equivalence",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "mass_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_kilograms_grams",
+        "mode": "equivalent_mass"
+      }
+    },
+    {
+      "templateId": "D3-T6-622-add_masses-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.2",
+      "competencyId": "add_subtract_masses",
+      "archetypeId": "add_mass_values",
+      "familyKey": "D3.T6:add_subtract_masses:add_mass_values",
+      "representation": "scale",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "unit_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_masses",
+        "mode": "add_masses"
+      }
+    },
+    {
+      "templateId": "D3-T6-622-subtract_masses-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.2",
+      "competencyId": "add_subtract_masses",
+      "archetypeId": "subtract_mass_values",
+      "familyKey": "D3.T6:add_subtract_masses:subtract_mass_values",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "unit_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_masses",
+        "mode": "subtract_masses"
+      }
+    },
+    {
+      "templateId": "D3-T6-622-missing_mass-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.2",
+      "competencyId": "add_subtract_masses",
+      "archetypeId": "find_missing_mass",
+      "familyKey": "D3.T6:add_subtract_masses:find_missing_mass",
+      "representation": "bar_model",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "part_whole_confusion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_masses",
+        "mode": "missing_mass"
+      }
+    },
+    {
+      "templateId": "D3-T6-623-repeat_mass-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.3",
+      "competencyId": "multiply_divide_masses",
+      "archetypeId": "multiply_mass",
+      "familyKey": "D3.T6:multiply_divide_masses:multiply_mass",
+      "representation": "grouping_array",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_masses",
+        "mode": "repeat_mass"
+      }
+    },
+    {
+      "templateId": "D3-T6-623-share_mass-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.3",
+      "competencyId": "multiply_divide_masses",
+      "archetypeId": "divide_mass",
+      "familyKey": "D3.T6:multiply_divide_masses:divide_mass",
+      "representation": "grouping_array",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_masses",
+        "mode": "share_mass"
+      }
+    },
+    {
+      "templateId": "D3-T6-623-inverse_mass-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.2.3",
+      "competencyId": "multiply_divide_masses",
+      "archetypeId": "inverse_mass_factor",
+      "familyKey": "D3.T6:multiply_divide_masses:inverse_mass_factor",
+      "representation": "scale",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_masses",
+        "mode": "inverse_mass"
+      }
+    },
+    {
+      "templateId": "D3-T6-631-l_to_ml-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.1",
+      "competencyId": "convert_litres_millilitres",
+      "archetypeId": "litres_to_millilitres",
+      "familyKey": "D3.T6:convert_litres_millilitres:litres_to_millilitres",
+      "representation": "unit_conversion_symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "volume_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_litres_millilitres",
+        "mode": "l_to_ml"
+      }
+    },
+    {
+      "templateId": "D3-T6-631-ml_to_l_ml-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.1",
+      "competencyId": "convert_litres_millilitres",
+      "archetypeId": "millilitres_to_mixed_litres",
+      "familyKey": "D3.T6:convert_litres_millilitres:millilitres_to_mixed_litres",
+      "representation": "mixed_unit_volume",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "volume_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_litres_millilitres",
+        "mode": "ml_to_l_ml"
+      }
+    },
+    {
+      "templateId": "D3-T6-631-equivalent_volume-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.1",
+      "competencyId": "convert_litres_millilitres",
+      "archetypeId": "choose_equivalent_volume",
+      "familyKey": "D3.T6:convert_litres_millilitres:choose_equivalent_volume",
+      "representation": "volume_equivalence",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "volume_unit_conversion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "convert_litres_millilitres",
+        "mode": "equivalent_volume"
+      }
+    },
+    {
+      "templateId": "D3-T6-632-add_volumes-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.2",
+      "competencyId": "add_subtract_liquid_volumes",
+      "archetypeId": "add_liquid_volumes",
+      "familyKey": "D3.T6:add_subtract_liquid_volumes:add_liquid_volumes",
+      "representation": "container",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "unit_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_liquid_volumes",
+        "mode": "add_volumes"
+      }
+    },
+    {
+      "templateId": "D3-T6-632-subtract_volumes-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.2",
+      "competencyId": "add_subtract_liquid_volumes",
+      "archetypeId": "subtract_liquid_volumes",
+      "familyKey": "D3.T6:add_subtract_liquid_volumes:subtract_liquid_volumes",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "unit_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_liquid_volumes",
+        "mode": "subtract_volumes"
+      }
+    },
+    {
+      "templateId": "D3-T6-632-missing_volume-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.2",
+      "competencyId": "add_subtract_liquid_volumes",
+      "archetypeId": "find_missing_liquid_volume",
+      "familyKey": "D3.T6:add_subtract_liquid_volumes:find_missing_liquid_volume",
+      "representation": "bar_model",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "part_whole_confusion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "add_subtract_liquid_volumes",
+        "mode": "missing_volume"
+      }
+    },
+    {
+      "templateId": "D3-T6-633-repeat_volume-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.3",
+      "competencyId": "multiply_divide_liquid_volumes",
+      "archetypeId": "multiply_liquid_volume",
+      "familyKey": "D3.T6:multiply_divide_liquid_volumes:multiply_liquid_volume",
+      "representation": "container",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_liquid_volumes",
+        "mode": "repeat_volume"
+      }
+    },
+    {
+      "templateId": "D3-T6-633-share_volume-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.3",
+      "competencyId": "multiply_divide_liquid_volumes",
+      "archetypeId": "divide_liquid_volume",
+      "familyKey": "D3.T6:multiply_divide_liquid_volumes:divide_liquid_volume",
+      "representation": "container",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_liquid_volumes",
+        "mode": "share_volume"
+      }
+    },
+    {
+      "templateId": "D3-T6-633-inverse_volume-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T6",
+      "standardId": "6.3.3",
+      "competencyId": "multiply_divide_liquid_volumes",
+      "archetypeId": "inverse_liquid_volume_factor",
+      "familyKey": "D3.T6:multiply_divide_liquid_volumes:inverse_liquid_volume_factor",
+      "representation": "grouping_array",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_liquid_volumes",
+        "mode": "inverse_volume"
+      }
+    }
+  ]
+}

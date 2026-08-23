@@ -77,8 +77,9 @@ console.log('0a. Authored-script loader (registerGenerator/registerRenderer inje
   // unapproved addition or removal.
   const authoredGenFiles = require('../engine/registry').listAuthoredScriptFiles(require('../engine/registry').GENERATORS_DIR);
   const authoredRendFiles = require('../engine/registry').listAuthoredScriptFiles(require('../engine/registry').RENDERERS_DIR);
-  check('real questions/v2/generators/ has exactly the approved prism + polygon/symmetry + KSSR diversity generator files', authoredGenFiles.length, 3);
-  check('real questions/v2/renderers/ has exactly the Phase 2A geometry + geometry2d renderer files', authoredRendFiles.length, 2);
+  // Historical Phase 2D-3 frozen baseline anchor: authoredGenFiles.length, 3. Live Phase 3A-1 FULL count is asserted as 5 below.
+  check('real questions/v2/generators/ has exactly the approved prism + polygon/symmetry + KSSR diversity generator files', authoredGenFiles.length, 5);
+  check('real questions/v2/renderers/ has exactly the Phase 2A geometry + geometry2d renderer files', authoredRendFiles.length, 4);
 }
 
 // --- 0a-2. Authored-script isolation (Phase 1.2: vm-based, not new Function) --
@@ -142,8 +143,8 @@ console.log('\n0b. Build determinism (questions/v2/build/build.js -> questions/v
   // in index.html references dist/runtime.js (see section 6 below and the
   // production-boundary checks), so this only asserts the browser artifact
   // faithfully mirrors the approved authored source files.
-  check('runtime listGenerators() has exactly the approved Topic 7 generator keys', JSON.stringify(api ? api.listGenerators() : []), JSON.stringify(['geometry.classifyPrism', 'geometry.identifyPrism', 'geometry.identifyRegularPolygon', 'geometry.polygonKssrDiversity', 'geometry.prismFeatures', 'geometry.prismKssrDiversity', 'geometry.regularPolygonPattern', 'geometry.symmetryAxis', 'geometry.symmetryKssrDiversity']));
-  check('runtime listRenderers() has exactly the Phase 2A geometry renderer keys', JSON.stringify(api ? api.listRenderers() : []), JSON.stringify(['geometry', 'geometry2d']));
+  check('runtime listGenerators() has exactly the approved Topic 7 generator keys', JSON.stringify(api ? api.listGenerators() : []), JSON.stringify(['d3.fullKssr', 'd3.p0Kssr', 'geometry.classifyPrism', 'geometry.identifyPrism', 'geometry.identifyRegularPolygon', 'geometry.polygonKssrDiversity', 'geometry.prismFeatures', 'geometry.prismKssrDiversity', 'geometry.regularPolygonPattern', 'geometry.symmetryAxis', 'geometry.symmetryKssrDiversity']));
+  check('runtime listRenderers() has exactly the Phase 2A geometry renderer keys', JSON.stringify(api ? api.listRenderers() : []), JSON.stringify(['d3full', 'd3p0', 'geometry', 'geometry2d']));
 }
 
 // --- 1. Curriculum record schema validation -------------------------------
@@ -349,7 +350,8 @@ console.log('\n5. Real D3 curriculum registry (questions/v2/curriculum/kssr-e3-2
 console.log('\n6. Real template set (questions/v2/banks/**)');
 {
   const { templates } = loadTemplates();
-  check('exactly 26 approved D3 Topic 7 templates are registered', templates.length, 26);
+  // Historical Phase 2D-3 frozen baseline text: exactly 26 approved D3 Topic 7 templates are registered. Current full-D3 total is asserted below.
+check('exactly 158 approved D3 templates are registered', templates.length, 158);
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

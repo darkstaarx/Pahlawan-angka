@@ -1,0 +1,217 @@
+{
+  "schema": "pa.qsv2.template-set.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T2",
+  "phase": "3A-1",
+  "status": "shadow_authored",
+  "templates": [
+    {
+      "templateId": "D3-T2-211-context_result-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.1",
+      "competencyId": "solve_addition_subtraction_word_problems",
+      "archetypeId": "word_problem_result",
+      "familyKey": "D3.T2:solve_addition_subtraction_word_problems:word_problem_result",
+      "representation": "contextual",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "operation_selection"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_addition_subtraction_word_problems",
+        "mode": "context_result"
+      }
+    },
+    {
+      "templateId": "D3-T2-211-missing_part_bar-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.1",
+      "competencyId": "solve_addition_subtraction_word_problems",
+      "archetypeId": "word_problem_missing_part",
+      "familyKey": "D3.T2:solve_addition_subtraction_word_problems:word_problem_missing_part",
+      "representation": "bar_model",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "part_whole_confusion"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_addition_subtraction_word_problems",
+        "mode": "missing_part_bar"
+      }
+    },
+    {
+      "templateId": "D3-T2-211-choose_operation-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.1",
+      "competencyId": "solve_addition_subtraction_word_problems",
+      "archetypeId": "choose_operation_from_context",
+      "familyKey": "D3.T2:solve_addition_subtraction_word_problems:choose_operation_from_context",
+      "representation": "contextual",
+      "demand": "reasoning",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "operation_selection"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_addition_subtraction_word_problems",
+        "mode": "choose_operation"
+      }
+    },
+    {
+      "templateId": "D3-T2-212-add_then_subtract-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_problems",
+      "archetypeId": "mixed_add_then_subtract",
+      "familyKey": "D3.T2:solve_mixed_addition_subtraction_problems:mixed_add_then_subtract",
+      "representation": "contextual",
+      "demand": "application",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "operation_order"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_problems",
+        "mode": "add_then_subtract"
+      }
+    },
+    {
+      "templateId": "D3-T2-212-subtract_then_add-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_problems",
+      "archetypeId": "mixed_subtract_then_add",
+      "familyKey": "D3.T2:solve_mixed_addition_subtraction_problems:mixed_subtract_then_add",
+      "representation": "contextual",
+      "demand": "application",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "operation_order"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_problems",
+        "mode": "subtract_then_add"
+      }
+    },
+    {
+      "templateId": "D3-T2-212-choose_expression-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_problems",
+      "archetypeId": "choose_expression_for_two_step",
+      "familyKey": "D3.T2:solve_mixed_addition_subtraction_problems:choose_expression_for_two_step",
+      "representation": "bar_model",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "operation_order"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_problems",
+        "mode": "choose_expression"
+      }
+    },
+    {
+      "templateId": "D3-T2-221-one_digit-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.2.1",
+      "competencyId": "multiply_divide_numbers_by_1digit_powers10",
+      "archetypeId": "multiply_divide_one_digit",
+      "familyKey": "D3.T2:multiply_divide_numbers_by_1digit_powers10:multiply_divide_one_digit",
+      "representation": "grouping_array",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_numbers_by_1digit_powers10",
+        "mode": "one_digit"
+      }
+    },
+    {
+      "templateId": "D3-T2-221-powers10-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.2.1",
+      "competencyId": "multiply_divide_numbers_by_1digit_powers10",
+      "archetypeId": "multiply_divide_powers10",
+      "familyKey": "D3.T2:multiply_divide_numbers_by_1digit_powers10:multiply_divide_powers10",
+      "representation": "place_value",
+      "demand": "concept",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "zero_place_value"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_numbers_by_1digit_powers10",
+        "mode": "powers10"
+      }
+    },
+    {
+      "templateId": "D3-T2-221-missing_factor-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.2.1",
+      "competencyId": "multiply_divide_numbers_by_1digit_powers10",
+      "archetypeId": "inverse_missing_factor",
+      "familyKey": "D3.T2:multiply_divide_numbers_by_1digit_powers10:inverse_missing_factor",
+      "representation": "grouping_array",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "multiply_divide_inverse"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "multiply_divide_numbers_by_1digit_powers10",
+        "mode": "missing_factor"
+      }
+    }
+  ]
+}

@@ -3,11 +3,12 @@
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const repo=path.resolve(process.argv[2]||process.cwd());let passed=0,failed=0;const failures=[];
 function ok(v,m,c){if(v){passed++;return true;}failed++;if(failures.length<80)failures.push({message:m,context:c||null});return false}
+function versionAtLeast(v,min){const a=String(v).split('.').map(Number),b=String(min).split('.').map(Number);for(let i=0;i<3;i++){if((a[i]||0)>(b[i]||0))return true;if((a[i]||0)<(b[i]||0))return false;}return true}
 function txt(rel){return fs.readFileSync(path.join(repo,rel),'utf8')}
 function json(rel){return JSON.parse(txt(rel))}
 const version=txt('js/version.js'),index=txt('index.html'),sw=txt('sw.js'),adapter=txt('questions/v2/engine/legacy-adapter.js'),cut=txt('data/kssr/d3-topic7-live-cutover-v3.40.0.js'),roll=txt('js/qsv2-beta-rollout-v3.42.0.js'),p2d4=txt('questions/v2/validation/phase2d4-integration-qa.js'),curr=json('questions/v2/curriculum/kssr-e3-2024/d3.json');
 const release=(version.match(/PA_APP_VERSION='([^']+)'/)||[])[1]||'';
-ok(release==='3.43.0','release is 3.43.0');
+ok(versionAtLeast(release,'3.43.0'),'release is at least 3.43.0');
 for(const token of [
  'js/qsv2-beta-rollout-v3.42.0.js?v='+release,
  'js/cloud.js?v='+release,
@@ -45,8 +46,9 @@ if(fs.existsSync(runtimeFile)){
   ok(t7.length===26,'Topic 7 template count unchanged at 26');
   ok(t7.filter(t=>t.responseType==='mcq').length===24,'Topic 7 battle MCQ count unchanged at 24');
   ok(t7.filter(t=>t.responseType==='interactive').length===2,'Topic 7 interactive count unchanged at 2');
-  ok(rt.listGenerators().length===9,'no new authored generator introduced in canonicalization phase');
-  ok(rt.listRenderers().length===2,'no new authored renderer introduced in canonicalization phase');
+  const topic7Generators=['geometry.classifyPrism','geometry.identifyPrism','geometry.identifyRegularPolygon','geometry.polygonKssrDiversity','geometry.prismFeatures','geometry.prismKssrDiversity','geometry.regularPolygonPattern','geometry.symmetryAxis','geometry.symmetryKssrDiversity'];
+  ok(topic7Generators.every(k=>rt.listGenerators().includes(k)),'Topic 7 generator registry remains present after later phases');
+  ok(['geometry','geometry2d'].every(k=>rt.listRenderers().includes(k)),'Topic 7 renderer registry remains present after later phases');
  }
 }
 

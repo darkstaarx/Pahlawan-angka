@@ -1,0 +1,385 @@
+{
+  "schema": "pa.qsv2.template-set.v1",
+  "curriculumVersion": "KSSR-E3-2024",
+  "grade": 3,
+  "topicId": "D3.T4",
+  "topicTitleMs": "Wang",
+  "authoringPhase": "3A-1-FULL",
+  "templates": [
+    {
+      "templateId": "D3-4-411-add_multiple_money_values-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.1.1",
+      "competencyId": "add_subtract_money_values",
+      "archetypeId": "add_multiple_money_values",
+      "familyKey": "d3.d3_t4.add_subtract_money_values",
+      "representation": "money_items",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_add"
+      }
+    },
+    {
+      "templateId": "D3-4-411-subtract_money_from_budget-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.1.1",
+      "competencyId": "add_subtract_money_values",
+      "archetypeId": "subtract_money_from_budget",
+      "familyKey": "d3.d3_t4.add_subtract_money_values",
+      "representation": "money_budget",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_subtract"
+      }
+    },
+    {
+      "templateId": "D3-4-411-compare_two_money_totals-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.1.1",
+      "competencyId": "add_subtract_money_values",
+      "archetypeId": "compare_two_money_totals",
+      "familyKey": "d3.d3_t4.add_subtract_money_values",
+      "representation": "money_receipt",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_compare"
+      }
+    },
+    {
+      "templateId": "D3-4-412-purchase_then_find_change-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_money",
+      "archetypeId": "purchase_then_find_change",
+      "familyKey": "d3.d3_t4.solve_mixed_addition_subtraction_money",
+      "representation": "money_items",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_mixed_change"
+      }
+    },
+    {
+      "templateId": "D3-4-412-track_budget_with_mixed_changes-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_money",
+      "archetypeId": "track_budget_with_mixed_changes",
+      "familyKey": "d3.d3_t4.solve_mixed_addition_subtraction_money",
+      "representation": "money_budget",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_mixed_budget"
+      }
+    },
+    {
+      "templateId": "D3-4-412-identify_correct_mixed_money_result-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_money",
+      "archetypeId": "identify_correct_mixed_money_result",
+      "familyKey": "d3.d3_t4.solve_mixed_addition_subtraction_money",
+      "representation": "textual",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_mixed_error"
+      }
+    },
+    {
+      "templateId": "D3-4-421-multiply_equal_item_prices-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.2.1",
+      "competencyId": "multiply_divide_money",
+      "archetypeId": "multiply_equal_item_prices",
+      "familyKey": "d3.d3_t4.multiply_divide_money",
+      "representation": "money_items",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_multiply"
+      }
+    },
+    {
+      "templateId": "D3-4-421-divide_money_equally-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.2.1",
+      "competencyId": "multiply_divide_money",
+      "archetypeId": "divide_money_equally",
+      "familyKey": "d3.d3_t4.multiply_divide_money",
+      "representation": "money_share",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_divide"
+      }
+    },
+    {
+      "templateId": "D3-4-421-find_unit_price_from_total-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.2.1",
+      "competencyId": "multiply_divide_money",
+      "archetypeId": "find_unit_price_from_total",
+      "familyKey": "d3.d3_t4.multiply_divide_money",
+      "representation": "money_items",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "money_unit_price"
+      }
+    },
+    {
+      "templateId": "D3-4-431-country_to_currency-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.3.1",
+      "competencyId": "identify_asean_currencies",
+      "archetypeId": "country_to_currency",
+      "familyKey": "d3.d3_t4.identify_asean_currencies",
+      "representation": "currency_country_card",
+      "demand": "foundation",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "currency_country_to_name"
+      }
+    },
+    {
+      "templateId": "D3-4-431-currency_to_country-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.3.1",
+      "competencyId": "identify_asean_currencies",
+      "archetypeId": "currency_to_country",
+      "familyKey": "d3.d3_t4.identify_asean_currencies",
+      "representation": "currency_name_card",
+      "demand": "concept",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "currency_name_to_country"
+      }
+    },
+    {
+      "templateId": "D3-4-431-match_currency_code_to_name-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.3.1",
+      "competencyId": "identify_asean_currencies",
+      "archetypeId": "match_currency_code_to_name",
+      "familyKey": "d3.d3_t4.identify_asean_currencies",
+      "representation": "currency_code_card",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "currency_code_match"
+      }
+    },
+    {
+      "templateId": "D3-4-441-identify_need_among_choices-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.4.1",
+      "competencyId": "distinguish_needs_and_wants_for_money_choices",
+      "archetypeId": "identify_need_among_choices",
+      "familyKey": "d3.d3_t4.distinguish_needs_and_wants_for_money_choices",
+      "representation": "needs_wants",
+      "demand": "foundation",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "needs_identify"
+      }
+    },
+    {
+      "templateId": "D3-4-441-choose_sensible_saving_decision-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.4.1",
+      "competencyId": "distinguish_needs_and_wants_for_money_choices",
+      "archetypeId": "choose_sensible_saving_decision",
+      "familyKey": "d3.d3_t4.distinguish_needs_and_wants_for_money_choices",
+      "representation": "money_budget",
+      "demand": "application",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "needs_saving_choice"
+      }
+    },
+    {
+      "templateId": "D3-4-441-explain_need_before_want-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T4",
+      "standardId": "4.4.1",
+      "competencyId": "distinguish_needs_and_wants_for_money_choices",
+      "archetypeId": "explain_need_before_want",
+      "familyKey": "d3.d3_t4.distinguish_needs_and_wants_for_money_choices",
+      "representation": "contextual",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "money_operation_confusion",
+        "money_unit_confusion",
+        "currency_country_confusion",
+        "need_want_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "needs_priority_reason"
+      }
+    }
+  ]
+}

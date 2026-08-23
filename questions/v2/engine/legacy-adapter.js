@@ -21,6 +21,8 @@
 
   var CURRICULUM_VERSION = 'KSSR-E3-2024';
   var PILOT_LEGACY_SKILL = 'D3.SHAPE';
+  var D3_SHADOW_TOPICS = {'D3.T1':true,'D3.T2':true,'D3.T3':true,'D3.T4':true,'D3.T5':true,'D3.T6':true,'D3.T8':true,'D3.T9':true};
+  var D3_SHADOW_SKILLS = {'D3.N10000':true,'D3.PV10000':true,'D3.ADD10000':true,'D3.SUB10000':true,'D3.MUL':true,'D3.DIV':true,'D3.FRAC':true,'D3.DEC':true,'D3.PERCENT':true,'D3.MONEY':true,'D3.TIME':true,'D3.MEASURE':true,'D3.POSITION':true,'D3.DATA':true};
   var STORAGE_KEY = 'pa.qsv2.d3Topic7';
   var DEFAULT_MODE = 'shadow';
   var VALID_MODES = { off: true, shadow: true, live: true };
@@ -90,6 +92,15 @@
     });
   }
 
+  function mappedShadowRecords(runtime, legacySkillId) {
+    if (!D3_SHADOW_SKILLS[legacySkillId]) return [];
+    return (runtime.curriculum || []).filter(function (rec) {
+      return rec.curriculumVersion === CURRICULUM_VERSION && rec.grade === 3 && rec.status === 'mapped' &&
+        D3_SHADOW_TOPICS[rec.topicId] === true && Array.isArray(rec.legacySkills) && rec.legacySkills.indexOf(legacySkillId) !== -1 &&
+        exactTemplates(runtime, rec).length > 0;
+    });
+  }
+
   function countRecent(history, field, value, limit) {
     var rows = (history || []).slice(-(limit || 12));
     var count = 0;
@@ -115,7 +126,7 @@
   }
 
   function selectTemplate(runtime, legacySkillId, state, history, rng) {
-    var records = enabledPilotRecords(runtime, legacySkillId).filter(function (rec) {
+    var records = (legacySkillId === PILOT_LEGACY_SKILL ? enabledPilotRecords(runtime, legacySkillId) : mappedShadowRecords(runtime, legacySkillId)).filter(function (rec) {
       return exactTemplates(runtime, rec).length > 0;
     });
     if (!records.length) return null;
@@ -180,6 +191,11 @@
     return String(choice && choice.id != null ? choice.id : '');
   }
 
+  function topicKind(topicId) {
+    var names={'D3.T1':'Darjah 3 · Nombor Bulat hingga 10 000','D3.T2':'Darjah 3 · Operasi Asas','D3.T3':'Darjah 3 · Pecahan, Perpuluhan & Peratus','D3.T4':'Darjah 3 · Wang','D3.T5':'Darjah 3 · Masa dan Waktu','D3.T6':'Darjah 3 · Ukuran dan Sukatan','D3.T7':'Darjah 3 · Ruang','D3.T8':'Darjah 3 · Koordinat','D3.T9':'Darjah 3 · Pengurusan Data'};
+    return names[topicId] || 'Darjah 3';
+  }
+
   function hintFor(competencyId) {
     var hints = {
       identify_prism: 'Perhatikan bentuk tapak dan permukaan sisi pepejal.',
@@ -219,8 +235,8 @@
       prompt: prompt,
       answer: answer,
       wrong: wrong,
-      hint: hintFor(tpl.competencyId),
-      kind: 'Darjah 3 · Ruang',
+      hint: (raw.meta && raw.meta.hintMs) || hintFor(tpl.competencyId),
+      kind: topicKind(tpl.topicId),
       diagnostic: true,
       formatShift: tpl.representation === 'visual',
       familyKey: tpl.familyKey,
@@ -235,7 +251,8 @@
       standardId: tpl.standardId,
       curriculumVersion: tpl.curriculumVersion,
       source: 'qsv2',
-      qsv2Pilot: true,
+      qsv2Pilot: tpl.topicId === 'D3.T7',
+      qsv2ShadowBatch: tpl.topicId !== 'D3.T7',
       qsv2GeneratorFingerprint: raw.meta && raw.meta.fingerprint ? raw.meta.fingerprint : null
     };
   }
@@ -375,8 +392,12 @@
       },
       tryGenerate: function (legacySkillId, state, context) {
         bridge.lastError = null;
-        var mode = configuredMode(root);
-        if (mode === 'off' || legacySkillId !== PILOT_LEGACY_SKILL) return null;
+        var isPilot = legacySkillId === PILOT_LEGACY_SKILL;
+        var isD3Shadow = D3_SHADOW_SKILLS[legacySkillId] === true;
+        var kill = !!(root.PA_QSV2_FLAGS && root.PA_QSV2_FLAGS.killSwitch);
+        var mode = isPilot ? configuredMode(root) : (isD3Shadow && !kill ? 'shadow' : 'off');
+        if (mode === 'off') return null;
+        if (mode === 'live' && !isPilot) return null;
         context = context || {};
         var startedAt = nowMs(root);
         if (mode === 'live') {
@@ -423,6 +444,7 @@
       selectTemplate: selectTemplate,
       assembleLegacyQuestion: assembleLegacyQuestion,
       enabledPilotRecords: enabledPilotRecords,
+      mappedShadowRecords: mappedShadowRecords,
       exactTemplates: exactTemplates,
       figureMarker: figureMarker,
       legacyQuestionFingerprint: legacyQuestionFingerprint
