@@ -1,7 +1,7 @@
-// Pahlawan Angka v3.40.0 — D3 Topic 7 controlled LIVE cutover.
+// Pahlawan Angka v3.42.0 — D3 Topic 7 controlled DEV + remotely gated beta LIVE cutover.
 (function(root){
   'use strict';
-  const VERSION='3.40.0';
+  const VERSION='3.42.0';
   const SKILL_ID='D3.SHAPE';
   const TOPIC_ID='D3.T7';
   const LIVE_FLAG='pa.qsv2.d3Topic7.controlledLive.v1';
@@ -17,7 +17,9 @@
     if(localHost())return true;
     try{return !!(root.PACommercial&&typeof root.PACommercial.canUseDev==='function'&&root.PACommercial.canUseDev()===true)}catch(_){return false}
   }
-  function topicFor(stateRoot){return stateRoot&&stateRoot.qsv2Evidence&&stateRoot.qsv2Evidence.topics&&stateRoot.qsv2Evidence.topics[TOPIC_ID]||null}
+  function betaAuthorized(stateRoot){
+    try{return !!(root.PAQSV2BetaRollout&&typeof root.PAQSV2BetaRollout.isEligible==='function'&&root.PAQSV2BetaRollout.isEligible(stateRoot)===true)}catch(_){return false}
+  }
   function liveFlag(){try{return storage()?.getItem(LIVE_FLAG)==='1'}catch(_){return false}}
   function persist(stateRoot){
     if(!stateRoot)return;
@@ -34,32 +36,41 @@
     if(!ensured.topic.legacy||ensured.topic.legacy.acceptedForTarget!==false)return {ok:false,reason:'legacy_evidence_gate_missing'};
     return {ok:true,topic:ensured.topic};
   }
+  function killActive(){const bridge=root.PAQuestionSystemV2Bridge;const s=bridge&&typeof bridge.getStatus==='function'?bridge.getStatus():null;return !!(s&&s.killSwitch)}
   function getStatus(stateRoot){
     const prep=ensurePrepared(stateRoot),bridge=root.PAQuestionSystemV2Bridge;
     const b=bridge&&typeof bridge.getStatus==='function'?bridge.getStatus():null;
+    const dev=devAuthorized(stateRoot),beta=betaAuthorized(stateRoot);
+    const controlled=!!(prep.ok&&dev&&liveFlag()&&prep.topic.status==='controlled_live');
+    const betaLive=!!(prep.ok&&beta&&prep.topic.status==='beta_live');
     return {
       version:VERSION,topicId:TOPIC_ID,compatibilitySkillId:SKILL_ID,targetTitle:TARGET_TITLE,
-      prepared:!!prep.ok,reason:prep.ok?'ok':prep.reason,devAuthorized:devAuthorized(stateRoot),
+      prepared:!!prep.ok,reason:prep.ok?'ok':prep.reason,devAuthorized:dev,betaEligible:beta,
       localLiveFlag:liveFlag(),bridgeMode:b&&b.mode||'off',killSwitch:!!(b&&b.killSwitch),
-      controlledLive:!!(prep.ok&&liveFlag()&&prep.topic.status==='controlled_live'),
+      controlledLive:controlled,betaLive:betaLive,liveAudience:controlled?'admin_dev':betaLive?'beta_guardian':'shadow',
       liveActivatedAt:prep.ok?prep.topic.liveActivatedAt||null:null,
+      betaLiveActivatedAt:prep.ok?prep.topic.betaLiveActivatedAt||null:null,
       evidence:root.PAD3Topic7Evidence&&typeof root.PAD3Topic7Evidence.summary==='function'?root.PAD3Topic7Evidence.summary(stateRoot):null
     };
   }
-  function activate(stateRoot){
-    if(!devAuthorized(stateRoot))return {ok:false,reason:'admin_dev_required'};
+  function prepareLive(stateRoot){
     const prep=ensurePrepared(stateRoot);if(!prep.ok)return prep;
     const bridge=root.PAQuestionSystemV2Bridge;if(!bridge||typeof bridge.setPilotMode!=='function')return {ok:false,reason:'bridge_missing'};
-    const bs=bridge.getStatus&&bridge.getStatus();if(bs&&bs.killSwitch)return {ok:false,reason:'kill_switch_active'};
+    if(killActive())return {ok:false,reason:'kill_switch_active'};
     const skill=stateRoot.skills&&stateRoot.skills[SKILL_ID];if(!skill)return {ok:false,reason:'legacy_skill_missing'};
     if(!prep.topic.legacy.cutoverSnapshot)prep.topic.legacy.cutoverSnapshot={capturedAt:now(),skill:clone(skill)};
+    return {ok:true,topic:prep.topic,bridge};
+  }
+  function activate(stateRoot){
+    if(!devAuthorized(stateRoot))return {ok:false,reason:'admin_dev_required'};
+    const prep=prepareLive(stateRoot);if(!prep.ok)return prep;
     prep.topic.status='controlled_live';
     if(!prep.topic.liveActivatedAt)prep.topic.liveActivatedAt=now();
     prep.topic.updatedAt=now();
     storage()?.setItem(LIVE_FLAG,'1');
-    bridge.setPilotMode('live',true);
+    prep.bridge.setPilotMode('live',true);
     persist(stateRoot);
-    return {ok:true,reason:'ok',mode:'live',topicId:TOPIC_ID};
+    return {ok:true,reason:'ok',mode:'live',audience:'admin_dev',topicId:TOPIC_ID};
   }
   function deactivate(stateRoot){
     try{storage()?.removeItem(LIVE_FLAG)}catch(_){}
@@ -69,13 +80,35 @@
     if(prep.ok){prep.topic.status='paused_shadow';prep.topic.lastDeactivatedAt=now();prep.topic.updatedAt=now();persist(stateRoot)}
     return {ok:true,reason:'ok',mode:'shadow'};
   }
+  function activateBeta(stateRoot){
+    if(!betaAuthorized(stateRoot))return {ok:false,reason:'beta_not_eligible'};
+    const prep=prepareLive(stateRoot);if(!prep.ok)return prep;
+    if(devAuthorized(stateRoot)&&liveFlag()&&prep.topic.status==='controlled_live'){
+      prep.bridge.setPilotMode('live',false);return {ok:true,reason:'controlled_dev_preserved',mode:'live',audience:'admin_dev',topicId:TOPIC_ID};
+    }
+    prep.topic.status='beta_live';
+    if(!prep.topic.betaLiveActivatedAt)prep.topic.betaLiveActivatedAt=now();
+    prep.topic.updatedAt=now();
+    prep.bridge.setPilotMode('live',false);
+    persist(stateRoot);
+    return {ok:true,reason:'ok',mode:'live',audience:'beta_guardian',topicId:TOPIC_ID};
+  }
+  function deactivateBeta(stateRoot,details){
+    const prep=ensurePrepared(stateRoot),bridge=root.PAQuestionSystemV2Bridge;
+    if(prep.ok&&devAuthorized(stateRoot)&&liveFlag()&&prep.topic.status==='controlled_live')return {ok:true,reason:'controlled_dev_preserved',mode:'live'};
+    if(bridge&&typeof bridge.setPilotMode==='function')bridge.setPilotMode('shadow',false);
+    if(prep.ok&&prep.topic.status==='beta_live'){
+      prep.topic.status='beta_paused';prep.topic.lastBetaDeactivatedAt=now();prep.topic.lastBetaDeactivationReason=details&&details.reason||'beta_not_eligible';prep.topic.updatedAt=now();persist(stateRoot);
+    }
+    return {ok:true,reason:details&&details.reason||'ok',mode:'shadow'};
+  }
   function authorizeLive(skillId,stateRoot){
     if(skillId!==SKILL_ID)return {allowed:false,reason:'skill_not_eligible'};
-    if(!devAuthorized(stateRoot))return {allowed:false,reason:'admin_dev_required'};
-    if(!liveFlag())return {allowed:false,reason:'controlled_live_flag_missing'};
+    if(killActive())return {allowed:false,reason:'kill_switch_active'};
     const prep=ensurePrepared(stateRoot);if(!prep.ok)return {allowed:false,reason:prep.reason};
-    if(prep.topic.status!=='controlled_live')return {allowed:false,reason:'cutover_not_active'};
-    return {allowed:true,reason:'ok',topicId:TOPIC_ID};
+    if(devAuthorized(stateRoot)&&liveFlag()&&prep.topic.status==='controlled_live')return {allowed:true,reason:'ok',audience:'admin_dev',topicId:TOPIC_ID};
+    if(betaAuthorized(stateRoot)&&prep.topic.status==='beta_live')return {allowed:true,reason:'ok',audience:'beta_guardian',topicId:TOPIC_ID};
+    return {allowed:false,reason:'live_not_authorized'};
   }
   function isTargetQuestion(question){
     return !!(question&&question.skill===SKILL_ID&&question.source==='qsv2'&&question.qsv2Pilot===true&&question.competencyId&&question.standardId);
@@ -103,5 +136,5 @@
       responseType:'mcq'
     });
   }
-  root.PAD3Topic7LiveCutover={version:VERSION,topicId:TOPIC_ID,compatibilitySkillId:SKILL_ID,targetTitle:TARGET_TITLE,activate,deactivate,authorizeLive,getStatus,isTargetQuestion,newAttemptId,displayTitle,captureLegacyState,restoreLegacyState,recordBattleResult,_test:{devAuthorized,liveFlag,ensurePrepared,LIVE_FLAG}};
+  root.PAD3Topic7LiveCutover={version:VERSION,topicId:TOPIC_ID,compatibilitySkillId:SKILL_ID,targetTitle:TARGET_TITLE,activate,deactivate,activateBeta,deactivateBeta,authorizeLive,getStatus,isTargetQuestion,newAttemptId,displayTitle,captureLegacyState,restoreLegacyState,recordBattleResult,_test:{devAuthorized,betaAuthorized,liveFlag,ensurePrepared,LIVE_FLAG}};
 })(typeof globalThis!=='undefined'?globalThis:this);

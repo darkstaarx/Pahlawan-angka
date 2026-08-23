@@ -99,7 +99,7 @@
     else if(!localMatches){db=null;}
     if(db){db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));}
     else{await createBlankLocal(profile);}
-    await loadTodaySeconds();renderAccount();updateTimer();
+    await loadTodaySeconds();await window.PAQSV2BetaRollout?.refresh?.(db);renderAccount();updateTimer();
     if(keepNewerLocal)await syncSaveNow();
     if(navigate||currentScreen()==='login'){initAll();ensureProgression();renderHub();}
   }
@@ -222,7 +222,7 @@
 
   function addChild(){state.needsOnboarding=true;screen('setup')}
 
-  async function logout(){await syncSaveNow();await endPlaySession('user_exit');await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
+  async function logout(){await syncSaveNow();await endPlaySession('user_exit');window.PAQSV2BetaRollout?.reset?.(db);await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
 
   function wireLegacy(){
     const oldSave=window.save;window.save=function(){oldSave();scheduleSave()};
