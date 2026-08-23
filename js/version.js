@@ -1,6 +1,6 @@
 /* Pahlawan Angka — single source of truth for release version.
    Future releases should bump ONLY this value. */
-globalThis.PA_APP_VERSION='3.40.0';
+globalThis.PA_APP_VERSION='3.41.0';
 
 (function syncVersionUi(){
   if(typeof document==='undefined')return;

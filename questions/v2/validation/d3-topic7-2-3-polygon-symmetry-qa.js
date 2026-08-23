@@ -51,7 +51,7 @@ console.log(`Target templates: ${targetTemplates.length}`);
 console.log(`Generators: ${Array.from(gens.keys()).sort().join(', ')}`);
 console.log(`Renderers: ${Array.from(rends.keys()).sort().join(', ')}\n`);
 
-check('exactly 9 Phase 2A-2 templates',targetTemplates.length===9,{got:targetTemplates.length});
+check('exactly 14 approved Topic 7.2/7.3 templates',targetTemplates.length===14,{got:targetTemplates.length});
 const expectedIds={
  '7.2.1':'identify_regular_polygon','7.2.2':'create_regular_polygon_pattern','7.3.1':'identify_and_draw_symmetry_axis'
 };

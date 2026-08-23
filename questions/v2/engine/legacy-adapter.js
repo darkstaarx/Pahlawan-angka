@@ -121,20 +121,41 @@
     if (!records.length) return null;
 
     var last = (history || []).length ? history[history.length - 1] : null;
-    var record = chooseMinScore(records, function (rec) {
-      var score = countRecent(history, 'competencyId', rec.competencyId, 12) * 20;
-      if (last && last.competencyId === rec.competencyId) score += 40;
+    // Avoid returning to the same competency within the previous two visible
+    // questions when other Topic 7 competencies are available.
+    var recordPool = records;
+    var cooledRecords = records.filter(function (rec) {
+      return countRecent(history, 'competencyId', rec.competencyId, 2) === 0;
+    });
+    if (cooledRecords.length) recordPool = cooledRecords;
+
+    var record = chooseMinScore(recordPool, function (rec) {
+      var score = countRecent(history, 'competencyId', rec.competencyId, 12) * 18;
+      score += countRecent(history, 'competencyId', rec.competencyId, 5) * 8;
+      if (last && last.competencyId === rec.competencyId) score += 60;
       return score;
     }, rng);
 
     var targetBand = targetDifficulty(state);
     var templates = exactTemplates(runtime, record);
+    // Prefer a template not shown in the previous six questions. If every
+    // template for this competency is still in cooldown, fall back to the
+    // full set rather than failing generation.
+    var freshTemplates = templates.filter(function (tpl) {
+      return countRecent(history, 'templateId', tpl.templateId, 6) === 0;
+    });
+    if (freshTemplates.length) templates = freshTemplates;
+
     return chooseMinScore(templates, function (tpl) {
-      var score = countRecent(history, 'templateId', tpl.templateId, 12) * 25;
-      score += countRecent(history, 'archetypeId', tpl.archetypeId, 8) * 12;
+      var score = countRecent(history, 'templateId', tpl.templateId, 60) * 28;
+      score += countRecent(history, 'templateId', tpl.templateId, 12) * 10;
+      score += countRecent(history, 'archetypeId', tpl.archetypeId, 8) * 16;
+      score += countRecent(history, 'representation', tpl.representation, 4) * 7;
+      score += countRecent(history, 'demand', tpl.demand, 4) * 5;
       score += Math.abs(Number(tpl.difficultyBand || 2) - targetBand) * 4;
-      if (last && last.archetypeId === tpl.archetypeId) score += 30;
-      if (last && last.representation === tpl.representation) score += 3;
+      if (last && last.archetypeId === tpl.archetypeId) score += 45;
+      if (last && last.representation === tpl.representation) score += 8;
+      if (last && last.demand === tpl.demand) score += 5;
       return score;
     }, rng);
   }
@@ -165,8 +186,8 @@
       describe_prism_features: 'Kira tapak, permukaan, bucu atau tepi satu demi satu.',
       classify_prism_vs_non_prism: 'Prisma mempunyai dua tapak yang sama bentuk, sama saiz dan selari.',
       identify_regular_polygon: 'Kira sisi dan bucu, kemudian semak sama ada semua sisinya sama panjang.',
-      create_regular_polygon_pattern: 'Cari unit pola yang berulang sebelum memilih sambungannya.',
-      identify_and_draw_symmetry_axis: 'Bayangkan bentuk dilipat pada garis itu. Kedua-dua bahagian mesti bertindih.'
+      create_regular_polygon_pattern: 'Cari bahagian bentuk yang berulang. Lihat urutan dari awal, kemudian sambungkan corak itu.',
+      identify_and_draw_symmetry_axis: 'Bayangkan bentuk dilipat dua. Garis paksi simetri mesti membuat kedua-dua bahagian bertindih tepat.'
     };
     return hints[competencyId] || 'Perhatikan ciri bentuk satu demi satu.';
   }

@@ -329,7 +329,7 @@
 
       return {
         value: {
-          promptMs: 'Perhatikan pepejal di bawah. Apakah bentuk tapak pepejal ini?',
+          promptMs: 'Prisma dinamakan mengikut bentuk dua tapaknya yang sama. Apakah bentuk tapak prisma ini?',
           answer: bAnswer,
           visual: { layout: 'single', figures: [{ id: 'main', solidId: bId }] },
         },

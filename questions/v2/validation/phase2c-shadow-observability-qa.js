@@ -13,7 +13,7 @@ eq(bridge.getMode(),'shadow','new install defaults to shadow');
 let status=bridge.getStatus();
 eq(status.defaultMode,'shadow','status exposes default shadow mode');
 eq(status.enabledStandards.length,6,'six Topic 7 standards enabled');
-eq(status.battleCompatibleTemplates,16,'sixteen battle-compatible MCQ templates');
+eq(status.battleCompatibleTemplates,24,'twenty-four battle-compatible MCQ templates');
 eq(status.shadowMetrics.attempts,0,'shadow metrics start empty');
 
 // Successful shadow: return null, generate privately, metadata-only telemetry.

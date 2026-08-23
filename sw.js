@@ -1,4 +1,4 @@
-// App shell v3.40.0 — D3 Topic 7 controlled LIVE pilot (default SHADOW; DEV/admin cutover only).
+// App shell v3.41.0 — D3 Topic 7 KSSR task diversity + anti-repeat (default SHADOW; DEV/admin cutover only).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

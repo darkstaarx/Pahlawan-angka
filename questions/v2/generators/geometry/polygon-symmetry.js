@@ -154,7 +154,7 @@
       var ans2 = makeChoice('unit:' + unit.join('-'), sequenceLabel(unit));
       var dis2 = wrongUnits.map(function (u, i) { return makeChoice('wrongunit:' + i + ':' + u.join('-'), sequenceLabel(u), 'pattern_unit_confusion'); });
       return {
-        value: { promptMs: 'Apakah unit ulangan TERKECIL bagi corak ini?', answer: ans2,
+        value: { promptMs: 'Bahagian manakah yang diulang untuk membina corak ini?', answer: ans2,
           visual: { kind: 'polygon_pattern', sequence: sequence, showQuestionMark: false } },
         distractors: shuffle(rng, dis2),
         meta: { archetype: 'identify_smallest_repeating_unit', misconceptionTargets: ['pattern_unit_confusion'],

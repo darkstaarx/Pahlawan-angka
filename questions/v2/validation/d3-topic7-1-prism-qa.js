@@ -126,7 +126,7 @@ console.log(`Renderer keys: ${Array.from(renderers.keys()).sort().join(', ')}\n`
 // --- Check 12 / 17: every template exercised, and cross-referenced to curriculum ---
 const prismStandardIds = new Set(['7.1.1', '7.1.2', '7.1.3']);
 const prismTemplates = templates.filter((t) => t.topicId === 'D3.T7' && prismStandardIds.has(t.standardId));
-check('exactly 9 D3 Topic 7.1 prism templates are present to exercise', prismTemplates.length === 9, {
+check('exactly 12 D3 Topic 7.1 prism templates are present to exercise', prismTemplates.length === 12, {
   found: prismTemplates.length,
 });
 

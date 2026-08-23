@@ -20,7 +20,7 @@ eq(bridge.getMode(),'shadow','Phase 2C default mode is SHADOW');
 let st=bridge.getStatus();
 ok(st.runtimeReady,'runtime ready');
 ok(JSON.stringify(Array.from(st.enabledStandards))===JSON.stringify(['7.1.1','7.1.2','7.1.3','7.2.1','7.2.2','7.3.1']),'exactly six Topic 7 SPs enabled');
-eq(st.battleCompatibleTemplates,16,'18 authored templates minus 2 interactive = 16 battle-compatible MCQs');
+eq(st.battleCompatibleTemplates,24,'26 authored templates minus 2 interactive = 24 battle-compatible MCQs');
 eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(1)}),null,'default SHADOW still returns null to legacy dispatcher');
 
 bridge.setPilotMode('live',false);
@@ -52,7 +52,7 @@ for(let i=0;i<1800;i++){
   if(history.length>60)history.shift();
 }
 eq(seenComp.size,6,'all six competencies surfaced in live routing');
-eq(seenTpl.size,16,'all sixteen battle-compatible templates surfaced');
+eq(seenTpl.size,24,'all twenty-four battle-compatible templates surfaced');
 ok(gallerySeen>0,'gallery templates exercised');
 
 // Shadow and kill-switch rollback behavior.
