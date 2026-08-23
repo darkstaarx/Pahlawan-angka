@@ -16,12 +16,12 @@ const root={document:{},localStorage:makeStorage(),performance:{now:()=>123.456}
 const bridge=createBridge(root);
 
 // Feature flag / readiness surface.
-eq(bridge.getMode(),'off','pilot defaults OFF');
+eq(bridge.getMode(),'shadow','Phase 2C default mode is SHADOW');
 let st=bridge.getStatus();
 ok(st.runtimeReady,'runtime ready');
 ok(JSON.stringify(Array.from(st.enabledStandards))===JSON.stringify(['7.1.1','7.1.2','7.1.3','7.2.1','7.2.2','7.3.1']),'exactly six Topic 7 SPs enabled');
 eq(st.battleCompatibleTemplates,16,'18 authored templates minus 2 interactive = 16 battle-compatible MCQs');
-eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(1)}),null,'OFF returns null');
+eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(1)}),null,'default SHADOW still returns null to legacy dispatcher');
 
 bridge.setPilotMode('live',false);
 eq(bridge.getMode(),'live','live mode set');
@@ -88,4 +88,4 @@ prodCtx.PAQuestionSystemV2Bridge.tryGenerate=()=>{throw new Error('forced bridge
 q=prodCtx.generate('D3.SHAPE',{mastery:50,evidence:1,confidence:50,correct:0,wrong:0});
 ok(q.prompt==='LEGACY:D3.SHAPE','dispatcher catches bridge fault and falls back to legacy');
 
-console.log(JSON.stringify({status:'pass',checks,liveSamples:1800,competencies:[...seenComp].sort(),battleCompatibleTemplates:seenTpl.size,gallerySamples:gallerySeen,defaultMode:'off',rollback:['flag-off','kill-switch','missing-runtime','bridge-error']},null,2));
+console.log(JSON.stringify({status:'pass',checks,liveSamples:1800,competencies:[...seenComp].sort(),battleCompatibleTemplates:seenTpl.size,gallerySamples:gallerySeen,defaultMode:'shadow',rollback:['flag-off','kill-switch','missing-runtime','bridge-error']},null,2));

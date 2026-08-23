@@ -1,6 +1,6 @@
 // questions/v2/engine/legacy-adapter.js
 //
-// Phase 2B controlled browser bridge for the D3 Topic 7 pilot.
+// Phase 2C controlled browser bridge for the D3 Topic 7 pilot with shadow observability.
 //
 // Contract:
 //   production questions/index.js -> PAQuestionSystemV2Bridge.tryGenerate(...)
@@ -22,6 +22,7 @@
   var CURRICULUM_VERSION = 'KSSR-E3-2024';
   var PILOT_LEGACY_SKILL = 'D3.SHAPE';
   var STORAGE_KEY = 'pa.qsv2.d3Topic7';
+  var DEFAULT_MODE = 'shadow';
   var VALID_MODES = { off: true, shadow: true, live: true };
   var seedCounter = 0;
 
@@ -34,9 +35,11 @@
 
   function safeStoredMode(root) {
     try {
-      return root.localStorage ? normaliseMode(root.localStorage.getItem(STORAGE_KEY)) : 'off';
+      if (!root.localStorage) return DEFAULT_MODE;
+      var stored = root.localStorage.getItem(STORAGE_KEY);
+      return stored == null ? DEFAULT_MODE : normaliseMode(stored);
     } catch (_) {
-      return 'off';
+      return DEFAULT_MODE;
     }
   }
 
@@ -222,10 +225,61 @@
     return raw.replace(/\s+/g, ' ').trim().toLowerCase();
   }
 
+  function nowMs(root) {
+    try { if (root.performance && typeof root.performance.now === 'function') return Number(root.performance.now()) || 0; } catch (_) {}
+    return Date.now();
+  }
+
+  function freshShadowMetrics() {
+    return {
+      attempts: 0,
+      generated: 0,
+      fallbacks: 0,
+      errors: 0,
+      lastOutcome: null,
+      lastReason: null,
+      lastDurationMs: null,
+      lastTemplateId: null,
+      lastCompetencyId: null,
+      lastFingerprint: null
+    };
+  }
+
+  function shadowEvent(root, bridge, outcome, details, startedAt) {
+    details = details || {};
+    var duration = Math.max(0, nowMs(root) - Number(startedAt || 0));
+    duration = Math.round(duration * 10) / 10;
+    bridge.shadowMetrics.attempts++;
+    if (outcome === 'generated') bridge.shadowMetrics.generated++;
+    else if (outcome === 'error') bridge.shadowMetrics.errors++;
+    else bridge.shadowMetrics.fallbacks++;
+    bridge.shadowMetrics.lastOutcome = outcome;
+    bridge.shadowMetrics.lastReason = details.reason || null;
+    bridge.shadowMetrics.lastDurationMs = duration;
+    bridge.shadowMetrics.lastTemplateId = details.templateId || null;
+    bridge.shadowMetrics.lastCompetencyId = details.competencyId || null;
+    bridge.shadowMetrics.lastFingerprint = details.fingerprint || null;
+
+    var payload = {
+      mode: 'shadow',
+      outcome: outcome,
+      reason: details.reason || null,
+      generationMs: duration,
+      standardId: details.standardId || null,
+      competencyId: details.competencyId || null,
+      templateId: details.templateId || null,
+      fingerprint: details.fingerprint || null
+    };
+    try {
+      if (root.PATelemetry && typeof root.PATelemetry.record === 'function') root.PATelemetry.record('qsv2_shadow', payload);
+    } catch (_) {}
+  }
+
   function createBridge(root) {
     var bridge = {
       lastError: null,
       lastShadow: null,
+      shadowMetrics: freshShadowMetrics(),
       getMode: function () { return configuredMode(root); },
       setPilotMode: function (mode, persist) {
         mode = normaliseMode(mode);
@@ -241,6 +295,18 @@
         delete root.PA_QSV2_FLAGS.d3Topic7;
         try { if (root.localStorage) root.localStorage.removeItem(STORAGE_KEY); } catch (_) {}
       },
+      setKillSwitch: function (active) {
+        root.PA_QSV2_FLAGS = root.PA_QSV2_FLAGS || {};
+        root.PA_QSV2_FLAGS.killSwitch = !!active;
+        return !!root.PA_QSV2_FLAGS.killSwitch;
+      },
+      resetShadowMetrics: function () {
+        bridge.shadowMetrics = freshShadowMetrics();
+        bridge.lastShadow = null;
+        bridge.lastError = null;
+        return Object.assign({}, bridge.shadowMetrics);
+      },
+      getShadowMetrics: function () { return Object.assign({}, bridge.shadowMetrics); },
       getStatus: function () {
         var runtime = root.PAQuestionSystemV2;
         var records = runtime ? enabledPilotRecords(runtime, PILOT_LEGACY_SKILL) : [];
@@ -248,19 +314,25 @@
         if (runtime) records.forEach(function (r) { liveTemplates = liveTemplates.concat(exactTemplates(runtime, r)); });
         return {
           mode: configuredMode(root),
+          defaultMode: DEFAULT_MODE,
           killSwitch: !!(root.PA_QSV2_FLAGS && root.PA_QSV2_FLAGS.killSwitch),
           runtimeReady: !!runtime,
           enabledStandards: records.map(function (r) { return r.standardId; }).sort(),
           battleCompatibleTemplates: liveTemplates.length,
-          sourceHash: runtime && runtime.sourceHash ? runtime.sourceHash : null
+          sourceHash: runtime && runtime.sourceHash ? runtime.sourceHash : null,
+          shadowMetrics: Object.assign({}, bridge.shadowMetrics)
         };
       },
       tryGenerate: function (legacySkillId, state, context) {
         bridge.lastError = null;
         var mode = configuredMode(root);
         if (mode === 'off' || legacySkillId !== PILOT_LEGACY_SKILL) return null;
+        var startedAt = mode === 'shadow' ? nowMs(root) : 0;
         var runtime = root.PAQuestionSystemV2;
-        if (!runtime || !runtime._generators || !runtime._renderers) return null;
+        if (!runtime || !runtime._generators || !runtime._renderers) {
+          if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'runtime_missing' }, startedAt);
+          return null;
+        }
 
         context = context || {};
         var history = Array.isArray(context.history) ? context.history : [];
@@ -270,20 +342,34 @@
           var q = null, tpl = null;
           for (var attempt = 0; attempt < 10; attempt++) {
             tpl = selectTemplate(runtime, legacySkillId, state || {}, history, rng);
-            if (!tpl) return null;
+            if (!tpl) {
+              if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt);
+              return null;
+            }
             var generator = runtime._generators[tpl.generator];
-            if (typeof generator !== 'function') return null;
+            if (typeof generator !== 'function') {
+              if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'generator_missing', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId }, startedAt);
+              return null;
+            }
             var raw = generator(tpl.params || {}, rng);
             q = assembleLegacyQuestion(runtime, tpl, raw);
             if (!recent.has(legacyQuestionFingerprint(q)) || attempt === 9) break;
           }
           if (mode === 'shadow') {
             bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q };
+            shadowEvent(root, bridge, 'generated', {
+              reason: 'ok',
+              standardId: tpl.standardId,
+              competencyId: tpl.competencyId,
+              templateId: tpl.templateId,
+              fingerprint: q.qsv2GeneratorFingerprint || null
+            }, startedAt);
             return null;
           }
           return q;
         } catch (err) {
           bridge.lastError = err && err.message ? err.message : String(err);
+          if (mode === 'shadow') shadowEvent(root, bridge, 'error', { reason: 'exception' }, startedAt);
           return null;
         }
       }
