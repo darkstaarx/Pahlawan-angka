@@ -1,4 +1,4 @@
-// App shell v3.37.0 — QS v2 central shadow telemetry (learner path remains legacy).
+// App shell v3.38.0 — D3 Topic 7 curriculum identity correction (default SHADOW).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
@@ -28,7 +28,7 @@ const APP_SHELL=[
   './css/dev-experiments-v3.21.2.css','./css/combat-polish-v3.21.3.css','./css/boss-stage-dev-v3.21.4.css','./css/combat-target-anchor-v3.21.5.css','./css/finisher-alpha-hotspots-v3.21.6.css','./css/typed-answer-ui-v3.21.8.css',
   './css/kssr-assessment-depth-v3.22.0.css','./css/kssr-year6-space-data-v3.23.0.css','./css/profile-manager-v3.24.2.css',
   './css/unit-grounding-v3.24.5.css','./css/cikgu-dimensi-place-value-v0.1.css','./css/cikgu-dimensi-core-v0.2.css','./css/hub-adventure-v3.24.11.css',
-  './data/kssr/knowledge-graph.js','./data/kssr/mastery-knowledge-v1.js','./data/kssr/alignment-v3.9.0.js',
+  './data/kssr/knowledge-graph.js','./data/kssr/mastery-knowledge-v1.js','./data/kssr/alignment-v3.9.0.js','./data/kssr/d3-topic7-curriculum-correction-v3.38.0.js',
   './questions/helpers.js','./questions/index.js','./questions/v2/dist/runtime.js','./questions/v2/engine/legacy-adapter.js','./js/dev-qsv2-v3.36.0.js','./questions/kssr-archetypes-v3.9.0.js','./questions/kssr-content-v3.11.js','./questions/kssr-content-integrity-v3.18.1.js','./questions/kssr-assessment-depth-v3.22.0.js','./questions/kssr-year6-space-data-v3.23.0.js',
   './questions/d1/core.js','./questions/d2/topic-1.js','./questions/d2/topic-2.js','./questions/d2/topic-3.js',
   './questions/d2/topic-4.js','./questions/d2/topic-5.js','./questions/d2/topic-6.js','./questions/d2/topic-7.js','./questions/d2/topic-8.js',
