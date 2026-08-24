@@ -19,10 +19,7 @@
       "demand": "foundation",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "place_value_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -44,10 +41,7 @@
       "demand": "concept",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "place_value_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -63,22 +57,19 @@
       "topicId": "D3.T1",
       "standardId": "1.1.1",
       "competencyId": "represent_numbers_to_10000",
-      "archetypeId": "number_to_expanded_form",
+      "archetypeId": "identify_digit_value",
       "familyKey": "d3.d3_t1.represent_numbers_to_10000",
-      "representation": "symbolic",
-      "demand": "procedure",
+      "representation": "place_value_model",
+      "demand": "concept",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "place_value_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
       "responseType": "mcq",
       "params": {
-        "mode": "number_to_expanded"
+        "mode": "digit_value"
       }
     },
     {
@@ -94,10 +85,7 @@
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "place_value_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -119,10 +107,7 @@
       "demand": "application",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "place_value_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -144,10 +129,7 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "place_value_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -163,16 +145,13 @@
       "topicId": "D3.T1",
       "standardId": "1.2.1",
       "competencyId": "estimate_quantities_using_reference",
-      "archetypeId": "estimate_repeated_reference_groups",
+      "archetypeId": "estimate_relative_to_reference_set",
       "familyKey": "d3.d3_t1.estimate_quantities_using_reference",
       "representation": "visual_reference",
       "demand": "application",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "estimation_vs_exact"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -194,10 +173,7 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "estimation_vs_exact"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -213,16 +189,13 @@
       "topicId": "D3.T1",
       "standardId": "1.2.1",
       "competencyId": "estimate_quantities_using_reference",
-      "archetypeId": "scale_reference_quantity",
+      "archetypeId": "judge_relative_reference_quantity",
       "familyKey": "d3.d3_t1.estimate_quantities_using_reference",
       "representation": "visual_reference",
       "demand": "concept",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "estimation_vs_exact"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -244,10 +217,7 @@
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "rounding_midpoint"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -269,10 +239,7 @@
       "demand": "concept",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "rounding_midpoint"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -294,10 +261,7 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
-        "pattern_step_confusion"
+        "rounding_midpoint"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -319,9 +283,6 @@
       "demand": "concept",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
         "pattern_step_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -344,9 +305,6 @@
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
         "pattern_step_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -369,9 +327,6 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
         "pattern_step_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -394,9 +349,6 @@
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
         "pattern_step_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -419,9 +371,6 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
         "pattern_step_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -444,9 +393,6 @@
       "demand": "concept",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "place_value_confusion",
-        "estimation_vs_exact",
-        "rounding_midpoint",
         "pattern_step_confusion"
       ],
       "generator": "d3.fullKssr",

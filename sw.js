@@ -1,4 +1,4 @@
-// App shell v3.44.0 — full Darjah 3 authored SHADOW bank (9/9 topics authored; Topic 7 beta LIVE unchanged; default SHADOW elsewhere).
+// App shell v3.45.0 — full Darjah 3 authored SHADOW bank semantic hardening (real-paper aligned; Topic 7 beta LIVE unchanged; default SHADOW elsewhere).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

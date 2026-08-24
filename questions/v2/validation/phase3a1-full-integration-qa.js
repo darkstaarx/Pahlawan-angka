@@ -2,10 +2,10 @@
 'use strict';
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
 const repo=path.resolve(process.argv[2]||path.join(__dirname,'../../..'));let checks=0;
-function ok(v,m){checks++;assert(v,m)}function txt(r){return fs.readFileSync(path.join(repo,r),'utf8')}function j(r){return JSON.parse(txt(r))}
+function ok(v,m){checks++;assert(v,m)}function txt(r){return fs.readFileSync(path.join(repo,r),'utf8')}function j(r){return JSON.parse(txt(r))}function versionAtLeast(v,min){const a=String(v).split('.').map(Number),b=String(min).split('.').map(Number);for(let i=0;i<3;i++){if((a[i]||0)>(b[i]||0))return true;if((a[i]||0)<(b[i]||0))return false;}return true}
 const version=txt('js/version.js'),index=txt('index.html'),sw=txt('sw.js'),adapter=txt('questions/v2/engine/legacy-adapter.js'),self=txt('questions/v2/validation/self-test.js'),p3a0=txt('questions/v2/validation/phase3a0-integration-qa.js');
 const release=(version.match(/PA_APP_VERSION='([^']+)'/)||[])[1]||'';
-ok(release==='3.44.0','release 3.44.0');
+ok(versionAtLeast(release,'3.44.0'),'release at least 3.44.0');
 for(const token of [
  'js/qsv2-beta-rollout-v3.42.0.js?v='+release,
  'js/cloud.js?v='+release,
@@ -17,7 +17,7 @@ for(const token of [
  'js/version.js?v='+release,
  'js/pwa.js?v='+release
 ])ok(index.includes(token),`cache bust follows release: ${token}`);
-ok(sw.startsWith('// App shell v3.44.0'),'service worker header v3.44.0');
+ok(sw.startsWith('// App shell v'+release),'service worker header follows current release');
 ok(sw.includes('full Darjah 3 authored SHADOW bank'),'service worker documents full D3 authoring');
 ok(/var DEFAULT_MODE = 'shadow'/.test(adapter),'bridge DEFAULT_MODE remains shadow');
 ok(adapter.includes("var D3_SHADOW_TOPICS = {'D3.T1':true,'D3.T2':true,'D3.T3':true,'D3.T4':true,'D3.T5':true,'D3.T6':true,'D3.T8':true,'D3.T9':true}"),'exact non-T7 shadow topic map');

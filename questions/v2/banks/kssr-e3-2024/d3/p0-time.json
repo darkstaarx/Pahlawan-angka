@@ -36,20 +36,20 @@
       "topicId": "D3.T5",
       "standardId": "5.1.1",
       "competencyId": "read_record_time_of_activities",
-      "archetypeId": "digital_time_to_words",
+      "archetypeId": "read_calendar_date",
       "familyKey": "D3.T5:read_record_time_of_activities:digital_time_to_words",
-      "representation": "textual",
+      "representation": "calendar",
       "demand": "concept",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "hour_minute_hand"
+        "calendar_lookup"
       ],
       "generator": "d3.p0Kssr",
       "renderer": "d3p0",
       "responseType": "mcq",
       "params": {
         "competencyId": "read_record_time_of_activities",
-        "mode": "digital_words"
+        "mode": "calendar_date"
       }
     },
     {
@@ -335,20 +335,21 @@
       "topicId": "D3.T5",
       "standardId": "5.3.1",
       "competencyId": "multiply_divide_time",
-      "archetypeId": "inverse_time_groups",
+      "archetypeId": "divide_then_multiply_time",
       "familyKey": "D3.T5:multiply_divide_time:inverse_time_groups",
       "representation": "grouping_array",
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "multiply_divide_inverse"
+        "multiply_divide_inverse",
+        "operation_order"
       ],
       "generator": "d3.p0Kssr",
       "renderer": "d3p0",
       "responseType": "mcq",
       "params": {
         "competencyId": "multiply_divide_time",
-        "mode": "missing_groups"
+        "mode": "divide_then_multiply"
       }
     }
   ]

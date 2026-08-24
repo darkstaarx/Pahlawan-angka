@@ -19,7 +19,6 @@
       "demand": "concept",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "horizontal_vertical_confusion",
         "reference_point_confusion",
         "direction_distance_confusion"
       ],
@@ -43,7 +42,6 @@
       "demand": "application",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "horizontal_vertical_confusion",
         "reference_point_confusion",
         "direction_distance_confusion"
       ],
@@ -67,7 +65,6 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "horizontal_vertical_confusion",
         "reference_point_confusion",
         "direction_distance_confusion"
       ],
@@ -91,9 +88,7 @@
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "horizontal_vertical_confusion",
-        "reference_point_confusion",
-        "direction_distance_confusion"
+        "horizontal_vertical_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -115,9 +110,7 @@
       "demand": "application",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "horizontal_vertical_confusion",
-        "reference_point_confusion",
-        "direction_distance_confusion"
+        "horizontal_vertical_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -139,9 +132,7 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "horizontal_vertical_confusion",
-        "reference_point_confusion",
-        "direction_distance_confusion"
+        "horizontal_vertical_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -164,7 +155,6 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "horizontal_vertical_confusion",
-        "reference_point_confusion",
         "direction_distance_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -188,7 +178,6 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "horizontal_vertical_confusion",
-        "reference_point_confusion",
         "direction_distance_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -212,7 +201,6 @@
       "difficultyBand": 3,
       "misconceptionTargets": [
         "horizontal_vertical_confusion",
-        "reference_point_confusion",
         "direction_distance_confusion"
       ],
       "generator": "d3.fullKssr",

@@ -176,7 +176,7 @@
       "competencyId": "multiply_divide_numbers_by_1digit_powers10",
       "archetypeId": "multiply_divide_powers10",
       "familyKey": "D3.T2:multiply_divide_numbers_by_1digit_powers10:multiply_divide_powers10",
-      "representation": "place_value",
+      "representation": "place_value_shift",
       "demand": "concept",
       "difficultyBand": 2,
       "misconceptionTargets": [

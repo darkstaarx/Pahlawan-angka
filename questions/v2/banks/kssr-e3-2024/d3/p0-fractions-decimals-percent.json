@@ -153,7 +153,7 @@
       "competencyId": "add_subtract_proper_fractions",
       "archetypeId": "add_proper_fractions",
       "familyKey": "D3.T3:add_subtract_proper_fractions:add_proper_fractions",
-      "representation": "fraction_area",
+      "representation": "fraction_area_pair",
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -176,7 +176,7 @@
       "competencyId": "add_subtract_proper_fractions",
       "archetypeId": "subtract_proper_fractions",
       "familyKey": "D3.T3:add_subtract_proper_fractions:subtract_proper_fractions",
-      "representation": "symbolic",
+      "representation": "symbolic_fraction_operation",
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -199,7 +199,7 @@
       "competencyId": "add_subtract_proper_fractions",
       "archetypeId": "fraction_operation_context",
       "familyKey": "D3.T3:add_subtract_proper_fractions:fraction_operation_context",
-      "representation": "fraction_area",
+      "representation": "contextual_fraction_area",
       "demand": "application",
       "difficultyBand": 3,
       "misconceptionTargets": [
@@ -269,7 +269,7 @@
       "competencyId": "identify_improper_fractions_and_mixed_numbers",
       "archetypeId": "identify_mixed_number_from_picture",
       "familyKey": "D3.T3:identify_improper_fractions_and_mixed_numbers:identify_mixed_number_from_picture",
-      "representation": "fraction_area",
+      "representation": "mixed_number_model",
       "demand": "concept",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -430,7 +430,7 @@
       "competencyId": "add_subtract_decimals_to_hundredths",
       "archetypeId": "add_decimals_hundredths",
       "familyKey": "D3.T3:add_subtract_decimals_to_hundredths:add_decimals_hundredths",
-      "representation": "place_value",
+      "representation": "decimal_operation",
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -453,7 +453,7 @@
       "competencyId": "add_subtract_decimals_to_hundredths",
       "archetypeId": "subtract_decimals_hundredths",
       "familyKey": "D3.T3:add_subtract_decimals_to_hundredths:subtract_decimals_hundredths",
-      "representation": "symbolic",
+      "representation": "decimal_operation",
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -637,7 +637,7 @@
       "competencyId": "relate_fractions_decimals_percent",
       "archetypeId": "match_fraction_decimal_percent",
       "familyKey": "D3.T3:relate_fractions_decimals_percent:match_fraction_decimal_percent",
-      "representation": "cross_representation",
+      "representation": "hundredths_cross_representation",
       "demand": "concept",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -660,7 +660,7 @@
       "competencyId": "relate_fractions_decimals_percent",
       "archetypeId": "find_non_equivalent_representation",
       "familyKey": "D3.T3:relate_fractions_decimals_percent:find_non_equivalent_representation",
-      "representation": "cross_representation",
+      "representation": "hundredths_cross_representation",
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [

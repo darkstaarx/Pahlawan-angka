@@ -15,7 +15,7 @@
       "competencyId": "collect_classify_organize_data",
       "archetypeId": "count_from_tally",
       "familyKey": "D3.T9:collect_classify_organize_data:count_from_tally",
-      "representation": "table",
+      "representation": "raw_data_tally",
       "demand": "procedure",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -38,7 +38,7 @@
       "competencyId": "collect_classify_organize_data",
       "archetypeId": "classify_and_count_items",
       "familyKey": "D3.T9:collect_classify_organize_data:classify_and_count_items",
-      "representation": "classification",
+      "representation": "raw_data_classification",
       "demand": "application",
       "difficultyBand": 2,
       "misconceptionTargets": [
@@ -61,7 +61,7 @@
       "competencyId": "collect_classify_organize_data",
       "archetypeId": "interpret_organized_table",
       "familyKey": "D3.T9:collect_classify_organize_data:interpret_organized_table",
-      "representation": "table",
+      "representation": "raw_data_to_table",
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
@@ -107,7 +107,7 @@
       "competencyId": "read_interpret_pie_chart",
       "archetypeId": "derive_count_from_pie",
       "familyKey": "D3.T9:read_interpret_pie_chart:derive_count_from_pie",
-      "representation": "pie_chart_fraction_count",
+      "representation": "pie_chart_read_value",
       "demand": "application",
       "difficultyBand": 3,
       "misconceptionTargets": [

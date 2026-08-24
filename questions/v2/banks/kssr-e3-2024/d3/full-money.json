@@ -20,9 +20,7 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -45,9 +43,7 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -70,9 +66,7 @@
       "difficultyBand": 3,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -95,9 +89,7 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -120,9 +112,7 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -145,9 +135,7 @@
       "difficultyBand": 3,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -170,9 +158,7 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -195,9 +181,7 @@
       "difficultyBand": 2,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -220,9 +204,7 @@
       "difficultyBand": 3,
       "misconceptionTargets": [
         "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "money_unit_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -244,10 +226,7 @@
       "demand": "foundation",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "currency_country_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -269,10 +248,7 @@
       "demand": "concept",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "currency_country_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -294,10 +270,7 @@
       "demand": "application",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
-        "need_want_confusion"
+        "currency_country_confusion"
       ],
       "generator": "d3.fullKssr",
       "renderer": "d3full",
@@ -319,9 +292,6 @@
       "demand": "foundation",
       "difficultyBand": 1,
       "misconceptionTargets": [
-        "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
         "need_want_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -344,9 +314,6 @@
       "demand": "application",
       "difficultyBand": 2,
       "misconceptionTargets": [
-        "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
         "need_want_confusion"
       ],
       "generator": "d3.fullKssr",
@@ -369,9 +336,6 @@
       "demand": "reasoning",
       "difficultyBand": 3,
       "misconceptionTargets": [
-        "money_operation_confusion",
-        "money_unit_confusion",
-        "currency_country_confusion",
         "need_want_confusion"
       ],
       "generator": "d3.fullKssr",
