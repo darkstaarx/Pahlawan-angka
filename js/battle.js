@@ -160,11 +160,11 @@ function respond(o,btn,question){
  resolveAnswer(o,btn,question,ok);
 }
 function beginHintRetry(o,btn,question){
- const id=question.skill,s=scoreState(id),sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true;
+ const id=question.skill,s=scoreState(id),sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target;
  const effortLock=window.PAEffortGuard?.firstWrong?.(question,sec)===true;
  sess.retryState={wrongTag:o.tag,wrongValue:o.v,firstSeconds:sec,streakBefore:sess.streak};
  btn.classList.add('no');document.querySelectorAll('.ans').forEach(x=>x.disabled=true);
- if(!qsv2Target){
+ if(!qsv2Isolated){
   s.wrong++;s.evidence++;s.mis[o.tag]=(s.mis[o.tag]||0)+1;
   s.mastery=Math.max(0,s.mastery-(layerDelta>0?1.2:2.2));s.confidence=Math.max(0,s.confidence-(layerDelta>0?2:4));s.stability=Math.max(0,s.stability-3);if(layerDelta>0)s.probeFail++;
   recordCoachResponse(id,false,o.tag,sec,false,question.token);recordFrontierResponse(id,false,sec,false,question);
@@ -176,7 +176,7 @@ function beginHintRetry(o,btn,question){
  if(effortLock){setTimeout(()=>activateEffortRestuLock(id),500);return;}
 }
 function resolveAnswer(o,btn,question,ok){
- let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):null;
+ let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):(qsv2NonT7Target?window.PAD3NonT7LiveIsolation?.captureLegacyState?.(question,s):null);
  window.PAEffortGuard?.retryResolved?.(question,ok);
  document.querySelectorAll(".ans").forEach(x=>x.disabled=true);
  if(ok){
@@ -199,13 +199,16 @@ function resolveAnswer(o,btn,question,ok){
  if(qsv2Target){
    window.PAD3Topic7LiveCutover?.restoreLegacyState?.(question,s,qsv2LegacySnapshot);
    window.PAD3Topic7LiveCutover?.recordBattleResult?.(db,question,sess,ok);
+ }else if(qsv2NonT7Target){
+   window.PAD3NonT7LiveIsolation?.restoreLegacyState?.(question,s,qsv2LegacySnapshot);
+   window.PAD3NonT7LiveIsolation?.recordBattleResult?.(db,question,sess,ok);
  }
 
  if(bossStretch){
    if(ok&&db){ if(typeof ensureRewards==='function')ensureRewards(); db.rewards.bossStretchWin=true; save(); }
    document.getElementById('feedback').textContent=ok?'Cabaran Boss berjaya! Ini bukti kamu boleh cuba tahap Darjah '+META[id].grade+'.':'Cubaan yang berani! Jawapan ini membantu Cikgu memilih cabaran yang paling sesuai untuk kamu.';
  }
- if(!qsv2Target){
+ if(!qsv2Isolated){
   recordCoachResponse(id,ok,o.tag,sec,sess.hint,question.token);
   recordFrontierResponse(id,ok,sec,sess.hint,question);
   if(!bossStretch){
@@ -217,7 +220,7 @@ function resolveAnswer(o,btn,question,ok){
   }
  }
  if(window.PATelemetry)PATelemetry.response(id,ok,o.tag,sec,sess.hint,question,sess.retryState?sess.mode+'-retry':sess.mode);
- const intervention=(bossStretch||qsv2Target)?null:evaluateIntervention(id);
+ const intervention=(bossStretch||qsv2Isolated)?null:evaluateIntervention(id);
  if(sess.enemyTier==='boss'&&!sess.coachAdaptive&&!sess.devBankTest)sess.bossQuestionsAnswered=(sess.bossQuestionsAnswered||0)+1;
  recordMissionAnswer(ok,id,sess.hint);
  if(sess.guardianFocus&&typeof guardianRecordAnswer==='function')guardianRecordAnswer(ok,id,sess.hint);

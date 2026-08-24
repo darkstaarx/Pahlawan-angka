@@ -124,7 +124,7 @@ function qsv2LearnerTitle(meta,q){return window.PAD3Topic7LiveCutover?.displayTi
 function nextQ(){
  if(sess.learningActive)return;
  let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
- sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;if(q.qsv2Pilot)q.qsv2AttemptId=window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null;
+ sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;if(q.qsv2Pilot)q.qsv2AttemptId=window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null;else if(q.qsv2Live)q.qsv2AttemptId=window.PAD3NonT7LiveIsolation?.newAttemptId?.(q,q.token)||null;
  sess.recent.push(id);if(sess.recent.length>10)sess.recent.shift();
  document.getElementById("skillTitle").textContent=sess.bossStretchCurrent?`Cabaran Boss · Darjah ${m.grade} · ${m.domain}`:(m.grade===db.schoolGrade?(q.qsv2Pilot?qsv2LearnerTitle(m,q):(m.textbookUnit?`Unit ${m.textbookUnit} · ${m.textbookUnitTitle}`:m.title)):(m.grade>db.schoolGrade?`Cabaran Bonus · ${m.domain}`:`Misi Asas · ${m.domain}`));
  document.getElementById("why").textContent="";

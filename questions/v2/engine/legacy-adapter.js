@@ -255,6 +255,7 @@
       misconceptionTargets: (raw.meta && raw.meta.misconceptionTargets) || tpl.misconceptionTargets || [],
       templateId: tpl.templateId,
       standardId: tpl.standardId,
+      topicId: tpl.topicId,
       curriculumVersion: tpl.curriculumVersion,
       source: 'qsv2',
       qsv2Pilot: tpl.topicId === 'D3.T7',
@@ -446,6 +447,13 @@
             rolloutRegistry.isFixtureLiveAuthorized(tpl.standardId, context)) {
             effectiveMode = 'live';
           }
+          // Phase 3A-3 R3: topic-agnostic LIVE marker + routing identity, so
+          // both the T7 and generic non-T7 mastery-isolation modules can
+          // recognise a live question without either needing to know about
+          // the other. Additive fields only -- does not change any
+          // existing field's value or presence.
+          q.legacySkillId = legacySkillId;
+          q.qsv2Live = (effectiveMode === 'live');
           var details={ reason: 'ok', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId, fingerprint: q.qsv2GeneratorFingerprint || null };
           if (effectiveMode === 'shadow') { bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q }; shadowEvent(root, bridge, 'generated', details, startedAt); return null; }
           liveEvent(root, bridge, 'generated', details, startedAt); return q;
