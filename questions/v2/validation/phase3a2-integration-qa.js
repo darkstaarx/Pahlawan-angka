@@ -3,10 +3,19 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
 const repo=path.resolve(process.argv[2]||path.join(__dirname,'../../..'));let checks=0;
 function ok(v,m){checks++;assert.ok(v,m)}function txt(r){return fs.readFileSync(path.join(repo,r),'utf8')}
+// Phase 3A-3: relaxed from an exact-match to a floor, matching the same
+// forward-compatibility treatment every prior phase's own integration test
+// received from its successor (see phase3a1-full-integration-qa.js's
+// treatment of Phase 3A-0, and phase3a0-integration-qa.js's treatment of
+// Phase 2D-4). Historical exact-match text preserved below as documentation.
+function versionAtLeast(v,min){const a=String(v).split('.').map(Number),b=String(min).split('.').map(Number);for(let i=0;i<3;i++){if((a[i]||0)>(b[i]||0))return true;if((a[i]||0)<(b[i]||0))return false;}return true}
 const version=txt('js/version.js'),index=txt('index.html'),sw=txt('sw.js'),adapter=txt('questions/v2/engine/legacy-adapter.js'),p3a1=txt('questions/v2/validation/phase3a1-full-integration-qa.js');
-const release=(version.match(/PA_APP_VERSION='([^']+)'/)||[])[1]||'';ok(release==='3.45.0','release exactly 3.45.0');
+const release=(version.match(/PA_APP_VERSION='([^']+)'/)||[])[1]||'';
+// Historical Phase 3A-2 frozen baseline text: release exactly 3.45.0. Live floor is asserted below.
+ok(versionAtLeast(release,'3.45.0'),'release at least 3.45.0');
 for(const token of ['js/qsv2-beta-rollout-v3.42.0.js?v='+release,'js/cloud.js?v='+release,'d3-topic7-live-cutover-v3.40.0.js?v='+release,'questions/v2/dist/runtime.js?v='+release,'questions/v2/engine/legacy-adapter.js?v='+release,'js/app.js?v='+release,'js/dev-qsv2-live-v3.40.0.js?v='+release,'js/version.js?v='+release,'js/pwa.js?v='+release])ok(index.includes(token),'cache bust follows 3.45.0: '+token);
-ok(sw.startsWith('// App shell v3.45.0'),'service worker header release');
+// Historical Phase 3A-2 frozen baseline text: sw.startsWith('// App shell v3.45.0'). Live floor is asserted below.
+ok(sw.startsWith('// App shell v'+release),'service worker header follows current release');
 ok(sw.includes('full Darjah 3 authored SHADOW bank'),'historical full-D3 header invariant retained');
 ok(sw.includes('default SHADOW'),'historical default SHADOW invariant retained');
 ok(sw.includes('semantic hardening'),'service worker documents semantic hardening');

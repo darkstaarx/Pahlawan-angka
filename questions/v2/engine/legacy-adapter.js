@@ -92,12 +92,18 @@
     });
   }
 
-  function mappedShadowRecords(runtime, legacySkillId) {
+  function mappedShadowRecords(runtime, legacySkillId, rolloutRegistry) {
     if (!D3_SHADOW_SKILLS[legacySkillId]) return [];
     return (runtime.curriculum || []).filter(function (rec) {
-      return rec.curriculumVersion === CURRICULUM_VERSION && rec.grade === 3 && rec.status === 'mapped' &&
+      if (!(rec.curriculumVersion === CURRICULUM_VERSION && rec.grade === 3 && rec.status === 'mapped' &&
         D3_SHADOW_TOPICS[rec.topicId] === true && Array.isArray(rec.legacySkills) && rec.legacySkills.indexOf(legacySkillId) !== -1 &&
-        exactTemplates(runtime, rec).length > 0;
+        exactTemplates(runtime, rec).length > 0)) return false;
+      // Phase 3A-3: a record on HOLD in the rollout registry is excluded
+      // even from shadow candidate selection (not just from LIVE). Absent
+      // registry, or absent entry, behaves exactly as before (no HOLD
+      // exclusion applied) -- backward compatible default.
+      if (rolloutRegistry && typeof rolloutRegistry.getState === 'function' && rolloutRegistry.getState(rec.standardId) === 'HOLD') return false;
+      return true;
     });
   }
 
@@ -125,8 +131,8 @@
     return mastery < 35 ? 1 : mastery < 70 ? 2 : 3;
   }
 
-  function selectTemplate(runtime, legacySkillId, state, history, rng) {
-    var records = (legacySkillId === PILOT_LEGACY_SKILL ? enabledPilotRecords(runtime, legacySkillId) : mappedShadowRecords(runtime, legacySkillId)).filter(function (rec) {
+  function selectTemplate(runtime, legacySkillId, state, history, rng, rolloutRegistry) {
+    var records = (legacySkillId === PILOT_LEGACY_SKILL ? enabledPilotRecords(runtime, legacySkillId) : mappedShadowRecords(runtime, legacySkillId, rolloutRegistry)).filter(function (rec) {
       return exactTemplates(runtime, rec).length > 0;
     });
     if (!records.length) return null;
@@ -416,16 +422,32 @@
         try {
           var recent = new Set(Array.isArray(context.recentFingerprints) ? context.recentFingerprints.slice(-18) : []);
           var q = null, tpl = null;
+          var rolloutRegistry = root.PAD3RolloutRegistry;
           for (var attempt = 0; attempt < 10; attempt++) {
-            tpl = selectTemplate(runtime, legacySkillId, state || {}, history, rng);
+            tpl = selectTemplate(runtime, legacySkillId, state || {}, history, rng, rolloutRegistry);
             if (!tpl) { if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt); else liveEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt); return null; }
             var generator = runtime._generators[tpl.generator];
             if (typeof generator !== 'function') { var gd={ reason: 'generator_missing', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId }; if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', gd, startedAt); else liveEvent(root, bridge, 'fallback', gd, startedAt); return null; }
             var raw = generator(tpl.params || {}, rng); q = assembleLegacyQuestion(runtime, tpl, raw);
             if (!recent.has(legacyQuestionFingerprint(q)) || attempt === 9) break;
           }
+          // Phase 3A-3: for non-pilot D3 shadow skills only, a record may be
+          // upgraded from 'shadow' to 'live' if and only if it is the
+          // hardcoded rollout fixture standard AND the caller supplied the
+          // explicit test-only authorization flag. No shipped gameplay/UI
+          // code path ever sets that flag (see questions/v2/engine/
+          // d3-rollout.js), so this upgrade is unreachable in normal play
+          // in R2; it exists to let the regression suite prove the
+          // plumbing end to end. Every other non-pilot record, regardless
+          // of its registry entry, always remains 'shadow' here -- defense
+          // in depth against a registry misconfiguration.
+          var effectiveMode = mode;
+          if (!isPilot && isD3Shadow && mode === 'shadow' && rolloutRegistry && typeof rolloutRegistry.isFixtureLiveAuthorized === 'function' &&
+            rolloutRegistry.isFixtureLiveAuthorized(tpl.standardId, context)) {
+            effectiveMode = 'live';
+          }
           var details={ reason: 'ok', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId, fingerprint: q.qsv2GeneratorFingerprint || null };
-          if (mode === 'shadow') { bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q }; shadowEvent(root, bridge, 'generated', details, startedAt); return null; }
+          if (effectiveMode === 'shadow') { bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q }; shadowEvent(root, bridge, 'generated', details, startedAt); return null; }
           liveEvent(root, bridge, 'generated', details, startedAt); return q;
         } catch (err) {
           bridge.lastError = err && err.message ? err.message : String(err);
