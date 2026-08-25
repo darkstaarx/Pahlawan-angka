@@ -39,14 +39,14 @@ function makeRoot(extra){
   const bridge=createBridge(root);
   let live=null;
   for(let seed=0;seed<80&&!live;seed++){
-    live=bridge.tryGenerate('D3.ADD10000',{mastery:50},{rng:_test.makeRng(9000000+seed),flags:{[registry.fixtureAuthFlag]:true}});
+    live=bridge.tryGenerate('D3.ADD10000',{mastery:50},{rng:_test.makeRng(9000000+seed)});
   }
-  ok(!!live,'a fixture-authorized live question was generated');
-  eq(live.qsv2Live,true,'qsv2Live is true for the fixture live question');
+  ok(!!live,'a live question was generated via the real production authorization path (no test flag)');
+  eq(live.qsv2Live,true,'qsv2Live is true for the live question');
   eq(live.qsv2Pilot,false,'qsv2Pilot remains false for a non-T7 live question (T7-only flag untouched)');
   eq(live.legacySkillId,'D3.ADD10000','legacySkillId is present and correct');
   eq(live.topicId,'D3.T2','topicId is present and correct');
-  eq(live.standardId,'2.1.1','standardId is the fixture standard');
+  ok(['2.1.1','2.1.2'].includes(live.standardId),'standardId is a real D3.ADD10000-mapped LIVE standard');
   ok(typeof live.competencyId==='string'&&live.competencyId.length>0,'competencyId is present');
   ok(typeof live.templateId==='string'&&live.templateId.length>0,'templateId is present');
   ok(iso.isTargetQuestion(live),'the isolation module recognises this question as a target');
@@ -57,14 +57,20 @@ function makeRoot(extra){
 // even though the new fields are present -- additive, not a behavior
 // change to what gets returned (still null to the dispatcher).
 // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+// 2. SHADOW questions (Phase 3A-4: exercised via a registry override,
+// since every real D3.MEASURE standard is now LIVE by default) still
+// carry qsv2Live:false and never reach the dispatcher.
+// ---------------------------------------------------------------------
 {
   const root=makeRoot();
+  const shadowRegistry=Object.assign({},registry,{isLiveAuthorized:()=>false,getState:(sid)=>sid==='6.3.3'?'HOLD':'SHADOW'});
+  root.PAD3RolloutRegistry=shadowRegistry;
   const bridge=createBridge(root);
-  for(const skill of ['D3.MONEY','D3.TIME','D3.MEASURE']){
-    const out=bridge.tryGenerate(skill,{mastery:50},{rng:_test.makeRng(9100000)});
-    eq(out,null,`${skill}: still null to the dispatcher (unchanged from R2)`);
+  for(let seed=0;seed<20;seed++){
+    const out=bridge.tryGenerate('D3.MEASURE',{mastery:50},{rng:_test.makeRng(9100000+seed)});
+    eq(out,null,`D3.MEASURE seed ${seed}: forced-SHADOW registry never returns a real question`);
   }
-  eq(bridge.tryGenerate('D3.ADD10000',{mastery:50},{rng:_test.makeRng(9200000)}),null,'fixture without auth flag: still null (unchanged from R2)');
   const shadow=bridge.lastShadow&&bridge.lastShadow.question;
   ok(shadow,'internal shadow question is still generated for telemetry');
   eq(shadow.qsv2Live,false,'internally-generated shadow question is tagged qsv2Live:false');
@@ -89,16 +95,17 @@ function makeRoot(extra){
 }
 
 // ---------------------------------------------------------------------
-// 4. Full capture -> mutate -> restore -> record cycle for the fixture
-// path, both correct and incorrect outcomes, proving the legacy skill
-// bucket is byte-identical before and after in both cases.
+// 4. Full capture -> mutate -> restore -> record cycle via the real
+// production authorization path (no flags), both correct and incorrect
+// outcomes, proving the legacy skill bucket is byte-identical before and
+// after in both cases.
 // ---------------------------------------------------------------------
 for(const outcome of [true,false]){
   const root=makeRoot();
   const bridge=createBridge(root);
   let live=null;
-  for(let seed=0;seed<80&&!live;seed++)live=bridge.tryGenerate('D3.ADD10000',{mastery:50},{rng:_test.makeRng(9400000+seed+(outcome?0:500)),flags:{[registry.fixtureAuthFlag]:true}});
-  ok(!!live,`fixture live question generated for outcome=${outcome}`);
+  for(let seed=0;seed<80&&!live;seed++)live=bridge.tryGenerate('D3.ADD10000',{mastery:50},{rng:_test.makeRng(9400000+seed+(outcome?0:500))});
+  ok(!!live,`live question generated for outcome=${outcome} via real production path`);
   const stateRoot={skills:{'D3.ADD10000':{mastery:50,confidence:60,evidence:5,correct:3,wrong:2,stability:70,mis:{}}}};
   const s=stateRoot.skills['D3.ADD10000'];
   const before=JSON.stringify(s);
@@ -115,8 +122,8 @@ for(const outcome of [true,false]){
   const rec=iso.recordBattleResult(stateRoot,live,{retryState:null,hint:false},outcome);
   ok(rec.accepted===true,'separate evidence was recorded for this attempt');
   const topic=stateRoot.qsv2Evidence.topics['D3.T2'];
-  eq(topic.competencies['2.1.1'].attempts,1,'exactly one evidence attempt recorded');
-  eq(topic.competencies['2.1.1'].finalCorrect,outcome?1:0,'correctness recorded accurately in evidence');
+  eq(topic.competencies[live.standardId].attempts,1,'exactly one evidence attempt recorded');
+  eq(topic.competencies[live.standardId].finalCorrect,outcome?1:0,'correctness recorded accurately in evidence');
 }
 
 // ---------------------------------------------------------------------
@@ -186,7 +193,7 @@ for(const outcome of [true,false]){
 {
   const root=makeRoot({PA_QSV2_FLAGS:{killSwitch:true}});
   const bridge=createBridge(root);
-  eq(bridge.tryGenerate('D3.ADD10000',{mastery:50},{rng:_test.makeRng(1),flags:{[registry.fixtureAuthFlag]:true}}),null,'kill switch still blocks the fixture even with auth flag set');
+  eq(bridge.tryGenerate('D3.ADD10000',{mastery:50},{rng:_test.makeRng(1)}),null,'kill switch still blocks live-authorized standards');
   eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(1)}),null,'kill switch still blocks T7 pilot');
 }
 
@@ -209,4 +216,4 @@ for(const outcome of [true,false]){
   ok(appSrc.includes('window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null'),"T7's own attempt-id line is unchanged verbatim");
 }
 
-console.log(JSON.stringify({status:'pass',checks,phase:'3A-3',revision:'R3',fixtureStandardId:registry.fixtureStandardId,masteryIsolation:'generic, additive companion module'},null,2));
+console.log(JSON.stringify({status:'pass',checks,phase:'3A-4',revision:'production-activation',masteryIsolation:'generic, additive companion module'},null,2));

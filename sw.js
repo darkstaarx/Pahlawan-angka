@@ -1,4 +1,4 @@
-// App shell v3.47.0 — full Darjah 3 authored SHADOW bank semantic hardening plus D3 non-Topic-7 rollout state plumbing and generic non-T7 mastery isolation (fixture-gated proof path only; Topic 7 beta LIVE unchanged; default SHADOW elsewhere).
+// App shell v3.48.0 — full Darjah 3 authored SHADOW bank semantic hardening plus D3 non-Topic-7 rollout state plumbing, generic non-T7 mastery isolation, and production-activated approved D3 non-T7 content (default SHADOW for any unlisted standard; Topic 7 beta LIVE unchanged).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

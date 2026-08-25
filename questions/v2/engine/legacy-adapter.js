@@ -432,19 +432,16 @@
             var raw = generator(tpl.params || {}, rng); q = assembleLegacyQuestion(runtime, tpl, raw);
             if (!recent.has(legacyQuestionFingerprint(q)) || attempt === 9) break;
           }
-          // Phase 3A-3: for non-pilot D3 shadow skills only, a record may be
-          // upgraded from 'shadow' to 'live' if and only if it is the
-          // hardcoded rollout fixture standard AND the caller supplied the
-          // explicit test-only authorization flag. No shipped gameplay/UI
-          // code path ever sets that flag (see questions/v2/engine/
-          // d3-rollout.js), so this upgrade is unreachable in normal play
-          // in R2; it exists to let the regression suite prove the
-          // plumbing end to end. Every other non-pilot record, regardless
-          // of its registry entry, always remains 'shadow' here -- defense
-          // in depth against a registry misconfiguration.
+          // Phase 3A-4: for non-pilot D3 shadow skills, a record's mode is
+          // upgraded from 'shadow' to 'live' whenever the rollout registry
+          // has explicitly authorized that standardId LIVE for production.
+          // No caller-supplied flag or hardcoded fixture constant is
+          // consulted -- the registry entry IS the authorization (see
+          // questions/v2/engine/d3-rollout.js). HOLD and any standardId
+          // absent from the registry both correctly remain 'shadow' here.
           var effectiveMode = mode;
-          if (!isPilot && isD3Shadow && mode === 'shadow' && rolloutRegistry && typeof rolloutRegistry.isFixtureLiveAuthorized === 'function' &&
-            rolloutRegistry.isFixtureLiveAuthorized(tpl.standardId, context)) {
+          if (!isPilot && isD3Shadow && mode === 'shadow' && rolloutRegistry && typeof rolloutRegistry.isLiveAuthorized === 'function' &&
+            rolloutRegistry.isLiveAuthorized(tpl.standardId)) {
             effectiveMode = 'live';
           }
           // Phase 3A-3 R3: topic-agnostic LIVE marker + routing identity, so
