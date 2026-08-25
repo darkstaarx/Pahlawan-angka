@@ -13,7 +13,7 @@ eq(p0Records.length,30,'exactly 30 P0 standards');
 ok(p0Records.every(r=>r.status==='mapped'),'all P0 authored standards remain mapped');
 ok(p0Records.every(r=>r.competencyIdStatus==='canonical'),'all P0 standards use canonical competency IDs');
 const p0Templates=rt.templates.filter(t=>t.curriculumVersion==='KSSR-E3-2024'&&t.grade===3&&topics.includes(t.topicId));
-eq(p0Templates.length,90,'exactly 90 Phase 3A-1 templates');
+eq(p0Templates.length,94,'exactly 94 Phase 3A-1 + fluency-balance templates');
 ok(p0Templates.every(t=>t.responseType==='mcq'),'all Phase 3A-1 templates are MCQ');
 ok(p0Templates.every(t=>t.generator==='d3.p0Kssr'),'all Phase 3A-1 templates use reviewed generator');
 ok(p0Templates.every(t=>t.renderer==='d3p0'),'all Phase 3A-1 templates use reviewed renderer');
@@ -22,8 +22,9 @@ ok(rt.listRenderers().includes('d3p0'),'P0 renderer registered');
 
 for(const rec of p0Records){
   const ts=p0Templates.filter(t=>t.standardId===rec.standardId&&t.competencyId===rec.competencyId&&t.topicId===rec.topicId);
-  eq(ts.length,3,`${rec.standardId} has exactly three distinct authored archetypes`);
-  eq(new Set(ts.map(t=>t.archetypeId)).size,3,`${rec.standardId} archetypes unique`);
+  const expected=(rec.standardId==='2.1.1'||rec.standardId==='2.1.2')?5:3;
+  eq(ts.length,expected,`${rec.standardId} has exactly ${expected} distinct authored archetypes`);
+  eq(new Set(ts.map(t=>t.archetypeId)).size,expected,`${rec.standardId} archetypes unique`);
   ok(new Set(ts.map(t=>t.representation)).size>=2,`${rec.standardId} uses at least two representations`);
   ok(new Set(ts.map(t=>t.demand)).size>=2,`${rec.standardId} uses at least two cognitive demands`);
 }

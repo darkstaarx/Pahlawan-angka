@@ -2006,6 +2006,52 @@
     }
   },
   {
+    "templateId": "D3-T2-211-direct_add-v1",
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T2",
+    "standardId": "2.1.1",
+    "competencyId": "solve_addition_subtraction_word_problems",
+    "archetypeId": "direct_addition_fluency",
+    "familyKey": "D3.T2:solve_addition_subtraction_word_problems:direct_addition_fluency",
+    "representation": "symbolic",
+    "demand": "procedure",
+    "difficultyBand": 1,
+    "misconceptionTargets": [
+      "place_value_alignment"
+    ],
+    "generator": "d3.p0Kssr",
+    "renderer": "d3p0",
+    "responseType": "mcq",
+    "params": {
+      "competencyId": "solve_addition_subtraction_word_problems",
+      "mode": "direct_add"
+    }
+  },
+  {
+    "templateId": "D3-T2-211-direct_subtract-v1",
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T2",
+    "standardId": "2.1.1",
+    "competencyId": "solve_addition_subtraction_word_problems",
+    "archetypeId": "direct_subtraction_fluency",
+    "familyKey": "D3.T2:solve_addition_subtraction_word_problems:direct_subtraction_fluency",
+    "representation": "symbolic",
+    "demand": "procedure",
+    "difficultyBand": 1,
+    "misconceptionTargets": [
+      "borrowing_error"
+    ],
+    "generator": "d3.p0Kssr",
+    "renderer": "d3p0",
+    "responseType": "mcq",
+    "params": {
+      "competencyId": "solve_addition_subtraction_word_problems",
+      "mode": "direct_subtract"
+    }
+  },
+  {
     "templateId": "D3-T2-211-missing_part_bar-v1",
     "curriculumVersion": "KSSR-E3-2024",
     "grade": 3,
@@ -2072,6 +2118,52 @@
     "params": {
       "competencyId": "solve_mixed_addition_subtraction_problems",
       "mode": "choose_expression"
+    }
+  },
+  {
+    "templateId": "D3-T2-212-direct_two_step-v1",
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T2",
+    "standardId": "2.1.2",
+    "competencyId": "solve_mixed_addition_subtraction_problems",
+    "archetypeId": "direct_two_step_fluency",
+    "familyKey": "D3.T2:solve_mixed_addition_subtraction_problems:direct_two_step_fluency",
+    "representation": "symbolic",
+    "demand": "procedure",
+    "difficultyBand": 2,
+    "misconceptionTargets": [
+      "operation_order"
+    ],
+    "generator": "d3.p0Kssr",
+    "renderer": "d3p0",
+    "responseType": "mcq",
+    "params": {
+      "competencyId": "solve_mixed_addition_subtraction_problems",
+      "mode": "direct_two_step"
+    }
+  },
+  {
+    "templateId": "D3-T2-212-missing_addend-v1",
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T2",
+    "standardId": "2.1.2",
+    "competencyId": "solve_mixed_addition_subtraction_problems",
+    "archetypeId": "missing_addend_fluency",
+    "familyKey": "D3.T2:solve_mixed_addition_subtraction_problems:missing_addend_fluency",
+    "representation": "symbolic",
+    "demand": "procedure",
+    "difficultyBand": 2,
+    "misconceptionTargets": [
+      "inverse_operation"
+    ],
+    "generator": "d3.p0Kssr",
+    "renderer": "d3p0",
+    "responseType": "mcq",
+    "params": {
+      "competencyId": "solve_mixed_addition_subtraction_problems",
+      "mode": "missing_addend"
     }
   },
   {
@@ -4617,7 +4709,7 @@
 ];
   var BUILD_MANIFEST = {
   "curriculumCount": 50,
-  "templateCount": 158,
+  "templateCount": 162,
   "generatorFiles": [
     "generators/d3/full-kssr.js",
     "generators/d3/p0-kssr.js",
@@ -4632,7 +4724,7 @@
     "renderers/geometry/prism.js"
   ]
 };
-  var SOURCE_HASH = "c685dcb3d18bb7e86821a4f6d24653bf743c3726e79a77933d0200e33876a351";
+  var SOURCE_HASH = "29774c8abbfba3864d1d075e16d93070d2e5fd8f1028b6540762c1011eeb127a";
 
   var generators = Object.create(null);
   var renderers = Object.create(null);
@@ -4975,6 +5067,14 @@ registerGenerator('d3.p0Kssr',function(params,rng){
       var x=ri(rng,1200,6000),y=ri(rng,300,1200),ans3=ch('subtract','Tolak');
       return pack('Ali mempunyai '+x+' keping kad. Dia memberikan '+y+' keping kepada kawannya. Operasi manakah patut digunakan untuk mencari baki?',ans3,[ch('add','Tambah','operation_selection'),ch('multiply','Darab','operation_selection'),ch('divide','Bahagi','operation_selection')],null,'choose_operation_from_context','Perkataan “memberikan” menunjukkan kuantiti berkurang.',['operation_selection'],{x:x,y:y});
     }
+    if(m==='direct_add'){
+      var da1=ri(rng,1200,7500),da2=ri(rng,300,Math.min(2499,9999-da1)),dans=da1+da2;
+      return numPack(da1+' + '+da2+' = ?',dans,[da1-da2,da1+da2+10,da2],null,'direct_addition_fluency','Susun mengikut nilai tempat: ribu, ratus, puluh, sa.',['place_value_alignment'],null,{a:da1,b:da2,operation:'add',result:dans},0,10000);
+    }
+    if(m==='direct_subtract'){
+      var ds1=ri(rng,4000,9800),ds2=ri(rng,300,Math.min(3500,ds1-500)),dsans=ds1-ds2;
+      return numPack(ds1+' − '+ds2+' = ?',dsans,[ds1+ds2,ds1-ds2-10,ds2],null,'direct_subtraction_fluency','Pinjam daripada nilai tempat sebelah jika perlu.',['borrowing_error'],null,{a:ds1,b:ds2,operation:'sub',result:dsans},0,10000);
+    }
   }
   if(c==='solve_mixed_addition_subtraction_problems'){
     if(m==='add_then_subtract'){
@@ -4988,6 +5088,14 @@ registerGenerator('d3.p0Kssr',function(params,rng){
     if(m==='choose_expression'){
       var aa=ri(rng,3000,6000),bb=ri(rng,400,1200),cc=ri(rng,200,900),lab=aa+' − '+bb+' + '+cc;
       return pack('Mula dengan '+aa+' unit. '+bb+' unit digunakan dan kemudian '+cc+' unit ditambah. Ungkapan manakah mewakili situasi itu?',ch('correct',lab),[ch('w1',aa+' + '+bb+' + '+cc,'operation_order'),ch('w2',aa+' − ('+bb+' + '+cc+')','operation_order'),ch('w3',aa+' + '+bb+' − '+cc,'operation_order')],barVisual([aa,-bb,cc],['mula','guna','tambah']),'choose_expression_for_two_step','Padankan setiap perubahan dengan tanda operasi.',['operation_order'],{a:aa,b:bb,c:cc});
+    }
+    if(m==='missing_addend'){
+      var ma1=ri(rng,1000,6000),matotal=ri(rng,ma1+500,Math.min(9999,ma1+4000)),maans=matotal-ma1;
+      return numPack(ma1+' + ___ = '+matotal,maans,[matotal+ma1,matotal-ma1-100,matotal],null,'missing_addend_fluency','Tolak nombor yang diketahui daripada jumlah untuk cari nombor yang hilang.',['inverse_operation'],null,{a:ma1,total:matotal,operation:'missing_add',result:maans},0,10000);
+    }
+    if(m==='direct_two_step'){
+      var t1=ri(rng,2000,5000),t2=ri(rng,300,1500),t3=ri(rng,200,1200),tans=t1+t2-t3;
+      return numPack(t1+' + '+t2+' − '+t3+' = ?',tans,[t1-t2+t3,t1+t2+t3,t1+t2],null,'direct_two_step_fluency','Kira dari kiri ke kanan mengikut turutan operasi.',['operation_order'],null,{a:t1,b:t2,c:t3,result:tans},0,10000);
     }
   }
   if(c==='multiply_divide_numbers_by_1digit_powers10'){

@@ -351,7 +351,7 @@ console.log('\n6. Real template set (questions/v2/banks/**)');
 {
   const { templates } = loadTemplates();
   // Historical Phase 2D-3 frozen baseline text: exactly 26 approved D3 Topic 7 templates are registered. Current full-D3 total is asserted below.
-check('exactly 158 approved D3 templates are registered', templates.length, 158);
+check('exactly 162 approved D3 templates are registered', templates.length, 162);
 }
 
 console.log(`\n${passed} passed, ${failed} failed`);

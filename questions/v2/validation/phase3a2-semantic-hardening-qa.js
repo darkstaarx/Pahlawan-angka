@@ -10,8 +10,8 @@ for(const f of ['questions/v2/generators/d3/full-kssr.js','questions/v2/generato
 const bankFiles=['full-number.json','p0-operations.json','p0-fractions-decimals-percent.json','full-money.json','p0-time.json','p0-measurement.json','full-coordinates.json','p0-data.json'];
 const bankBase='questions/v2/banks/kssr-e3-2024/d3/';
 const templates=bankFiles.flatMap(f=>js(bankBase+f).templates);
-eq(templates.length,132,'semantic QA covers exactly 132 non-T7 authored templates');
-const expected={'D3.T1':18,'D3.T2':9,'D3.T3':30,'D3.T4':15,'D3.T5':15,'D3.T6':27,'D3.T8':9,'D3.T9':9};for(const k of Object.keys(expected))eq(templates.filter(t=>t.topicId===k).length,expected[k],k+' template count');
+eq(templates.length,136,'semantic QA covers exactly 136 non-T7 authored templates');
+const expected={'D3.T1':18,'D3.T2':13,'D3.T3':30,'D3.T4':15,'D3.T5':15,'D3.T6':27,'D3.T8':9,'D3.T9':9};for(const k of Object.keys(expected))eq(templates.filter(t=>t.topicId===k).length,expected[k],k+' template count');
 
 // Metadata scope gates: prevent diagnostic contamination.
 for(const t of templates.filter(t=>t.topicId==='D3.T4')){

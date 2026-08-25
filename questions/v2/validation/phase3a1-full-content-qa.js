@@ -20,21 +20,22 @@ eq(allRecords.length,50,'D3 curriculum remains 50 standards');
 eq(nonT7Records.length,44,'all 44 non-Topic-7 standards covered by full-year authoring');
 ok(nonT7Records.every(r=>r.status==='mapped'),'all 44 non-T7 standards remain mapped');
 ok(nonT7Records.every(r=>r.competencyIdStatus==='canonical'),'all non-T7 standards use canonical competency IDs');
-eq(nonT7Templates.length,132,'exactly 132 non-T7 authored templates');
-eq(p0Templates.length,90,'P0 authored bank remains exactly 90 templates');
+eq(nonT7Templates.length,136,'exactly 136 non-T7 authored templates');
+eq(p0Templates.length,94,'P0 authored bank now includes fluency-balance additions, exactly 94 templates');
 eq(remainingTemplates.length,42,'T1/T4/T8 add exactly 42 templates');
-eq(rt.templates.length,158,'full D3 runtime contains 158 templates');
+eq(rt.templates.length,162,'full D3 runtime contains 162 templates');
 eq(t7.length,26,'Topic 7 template total remains 26');
 eq(t7.filter(t=>t.responseType==='mcq').length,24,'Topic 7 battle MCQ remains 24');
 eq(t7.filter(t=>t.responseType==='interactive').length,2,'Topic 7 interactive remains 2');
 
-const expectedTopicCounts={'D3.T1':18,'D3.T2':9,'D3.T3':30,'D3.T4':15,'D3.T5':15,'D3.T6':27,'D3.T7':26,'D3.T8':9,'D3.T9':9};
+const expectedTopicCounts={'D3.T1':18,'D3.T2':13,'D3.T3':30,'D3.T4':15,'D3.T5':15,'D3.T6':27,'D3.T7':26,'D3.T8':9,'D3.T9':9};
 for(const [topic,count] of Object.entries(expectedTopicCounts))eq(rt.templates.filter(t=>t.topicId===topic).length,count,`${topic} authored template count`);
 
 for(const rec of nonT7Records){
  const ts=nonT7Templates.filter(t=>t.standardId===rec.standardId&&t.competencyId===rec.competencyId&&t.topicId===rec.topicId);
- eq(ts.length,3,`${rec.standardId} has exactly three authored templates`);
- eq(new Set(ts.map(t=>t.archetypeId)).size,3,`${rec.standardId} has three distinct archetypes`);
+ const expected=(rec.standardId==='2.1.1'||rec.standardId==='2.1.2')?5:3;
+ eq(ts.length,expected,`${rec.standardId} has exactly ${expected} authored templates`);
+ eq(new Set(ts.map(t=>t.archetypeId)).size,expected,`${rec.standardId} has ${expected} distinct archetypes`);
  ok(new Set(ts.map(t=>t.representation)).size>=2,`${rec.standardId} has representation diversity`);
  ok(new Set(ts.map(t=>t.demand)).size>=2,`${rec.standardId} has cognitive-demand diversity`);
  ok(ts.every(t=>t.responseType==='mcq'),`${rec.standardId} authored battle bank remains MCQ`);
@@ -100,4 +101,4 @@ for(const skill of Object.keys(skillTopic)){
 const live=bridge.tryGenerate('D3.SHAPE',{mastery:60},{history:[],rng:_test.makeRng(993000)});
 ok(live&&live.source==='qsv2'&&live.qsv2Pilot===true,'historical Topic 7 LIVE path remains functional');
 
-console.log(JSON.stringify({status:'pass',checks,d3Standards:50,nonT7Standards:44,nonT7Templates:132,remainingTemplates:42,p0Templates:90,totalTemplates:158,samples,topic7:{templates:26,battle:24,interactive:2},shadowSkills:Object.keys(skillTopic),contentBank:'D3 9/9 topics authored',learnerVisibleExpansion:false},null,2));
+console.log(JSON.stringify({status:'pass',checks,d3Standards:50,nonT7Standards:44,nonT7Templates:136,remainingTemplates:42,p0Templates:94,totalTemplates:162,samples,topic7:{templates:26,battle:24,interactive:2},shadowSkills:Object.keys(skillTopic),contentBank:'D3 9/9 topics authored',learnerVisibleExpansion:false},null,2));

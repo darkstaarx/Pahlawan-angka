@@ -76,6 +76,52 @@
       }
     },
     {
+      "templateId": "D3-T2-211-direct_add-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.1",
+      "competencyId": "solve_addition_subtraction_word_problems",
+      "archetypeId": "direct_addition_fluency",
+      "familyKey": "D3.T2:solve_addition_subtraction_word_problems:direct_addition_fluency",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "place_value_alignment"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_addition_subtraction_word_problems",
+        "mode": "direct_add"
+      }
+    },
+    {
+      "templateId": "D3-T2-211-direct_subtract-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.1",
+      "competencyId": "solve_addition_subtraction_word_problems",
+      "archetypeId": "direct_subtraction_fluency",
+      "familyKey": "D3.T2:solve_addition_subtraction_word_problems:direct_subtraction_fluency",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 1,
+      "misconceptionTargets": [
+        "borrowing_error"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_addition_subtraction_word_problems",
+        "mode": "direct_subtract"
+      }
+    },
+    {
       "templateId": "D3-T2-212-add_then_subtract-v1",
       "curriculumVersion": "KSSR-E3-2024",
       "grade": 3,
@@ -142,6 +188,52 @@
       "params": {
         "competencyId": "solve_mixed_addition_subtraction_problems",
         "mode": "choose_expression"
+      }
+    },
+    {
+      "templateId": "D3-T2-212-missing_addend-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_problems",
+      "archetypeId": "missing_addend_fluency",
+      "familyKey": "D3.T2:solve_mixed_addition_subtraction_problems:missing_addend_fluency",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "inverse_operation"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_problems",
+        "mode": "missing_addend"
+      }
+    },
+    {
+      "templateId": "D3-T2-212-direct_two_step-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T2",
+      "standardId": "2.1.2",
+      "competencyId": "solve_mixed_addition_subtraction_problems",
+      "archetypeId": "direct_two_step_fluency",
+      "familyKey": "D3.T2:solve_mixed_addition_subtraction_problems:direct_two_step_fluency",
+      "representation": "symbolic",
+      "demand": "procedure",
+      "difficultyBand": 2,
+      "misconceptionTargets": [
+        "operation_order"
+      ],
+      "generator": "d3.p0Kssr",
+      "renderer": "d3p0",
+      "responseType": "mcq",
+      "params": {
+        "competencyId": "solve_mixed_addition_subtraction_problems",
+        "mode": "direct_two_step"
       }
     },
     {

@@ -32,9 +32,9 @@ ok(rt.curriculum.length===50,'runtime curriculum 50');
 ok(rt.curriculum.filter(r=>r.status==='enabled').length===6,'enabled remains exactly 6');
 ok(rt.curriculum.filter(r=>r.status==='enabled').every(r=>r.topicId==='D3.T7'),'only Topic 7 enabled');
 ok(rt.curriculum.filter(r=>r.status==='mapped').length===44,'44 non-T7 records remain mapped');
-ok(rt.templates.length===158,'full runtime template total 158');
+ok(rt.templates.length===162,'full runtime template total 162');
 const nonT7=rt.templates.filter(t=>t.topicId!=='D3.T7');
-ok(nonT7.length===132,'132 non-T7 authored templates');
+ok(nonT7.length===136,'136 non-T7 authored templates');
 ok(rt.templates.filter(t=>t.topicId==='D3.T1').length===18,'T1 18 templates');
 ok(rt.templates.filter(t=>t.topicId==='D3.T4').length===15,'T4 15 templates');
 ok(rt.templates.filter(t=>t.topicId==='D3.T8').length===9,'T8 9 templates');
@@ -42,7 +42,7 @@ const t7=rt.templates.filter(t=>t.topicId==='D3.T7');
 ok(t7.length===26&&t7.filter(t=>t.responseType==='mcq').length===24&&t7.filter(t=>t.responseType==='interactive').length===2,'Topic 7 remains 26/24/2');
 for(const k of ['d3.fullKssr','d3.p0Kssr','geometry.classifyPrism','geometry.identifyPrism','geometry.identifyRegularPolygon','geometry.polygonKssrDiversity','geometry.prismFeatures','geometry.prismKssrDiversity','geometry.regularPolygonPattern','geometry.symmetryAxis','geometry.symmetryKssrDiversity'])ok(rt.listGenerators().includes(k),`generator retained ${k}`);
 for(const k of ['d3full','d3p0','geometry','geometry2d'])ok(rt.listRenderers().includes(k),`renderer retained ${k}`);
-ok(self.includes('exactly 158 approved D3 templates are registered'),'self-test exact full-year template count');
+ok(self.includes('exactly 162 approved D3 templates are registered'),'self-test exact full-year template count');
 ok(self.includes("'d3.fullKssr'")&&self.includes("'d3.p0Kssr'"),'self-test exact D3 generator inventory');
 ok(self.includes("'d3full'")&&self.includes("'d3p0'"),'self-test exact D3 renderer inventory');
 ok(p3a0.includes("versionAtLeast(release,'3.43.0')"),'Phase 3A-0 historical integration forward-compatible');
@@ -52,4 +52,4 @@ ok(p3a0.includes('Topic 7 renderer registry remains present after later phases')
 for(const rel of ['questions/d3/core.js','questions/index.js','js/battle.js','js/app.js','data/kssr/d3-topic7-evidence-epoch-v3.39.0.js','data/kssr/d3-topic7-live-cutover-v3.40.0.js','js/qsv2-beta-rollout-v3.42.0.js'])ok(fs.existsSync(path.join(repo,rel)),`critical ${rel} remains present`);
 const migrations=fs.readdirSync(path.join(repo,'supabase/schema')).filter(n=>/3a1|full.?d3|full.?year.?author/i.test(n));ok(migrations.length===0,'no Supabase migration for full D3 authoring');
 
-console.log(JSON.stringify({status:'pass',checks,version:release,d3TopicsAuthored:'9/9',standards:50,nonT7Templates:132,totalTemplates:158,enabledTopic:'D3.T7 only',nonT7Mode:'shadow-only',supabaseMigration:false,learnerVisibleExpansion:false},null,2));
+console.log(JSON.stringify({status:'pass',checks,version:release,d3TopicsAuthored:'9/9',standards:50,nonT7Templates:136,totalTemplates:162,enabledTopic:'D3.T7 only',nonT7Mode:'shadow-only',supabaseMigration:false,learnerVisibleExpansion:false},null,2));
