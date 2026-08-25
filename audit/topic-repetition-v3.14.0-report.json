@@ -10,11 +10,12 @@
       "topic": "1",
       "skills": 4,
       "questions": 240,
-      "actions": 11,
+      "actions": 12,
       "representations": [
         "symbolic",
         "verbal",
-        "story"
+        "story",
+        "visual"
       ],
       "demands": [
         "concept",
@@ -30,13 +31,13 @@
       "questions": 240,
       "actions": 4,
       "representations": [
-        "symbolic",
-        "story"
+        "story",
+        "symbolic"
       ],
       "demands": [
-        "reasoning",
         "application",
-        "procedure"
+        "procedure",
+        "reasoning"
       ]
     },
     "D1.T3": {
@@ -46,13 +47,13 @@
       "questions": 60,
       "actions": 3,
       "representations": [
-        "story",
         "visual",
-        "symbolic"
+        "symbolic",
+        "story"
       ],
       "demands": [
-        "application",
-        "concept"
+        "concept",
+        "application"
       ]
     },
     "D1.T4": {
@@ -60,13 +61,14 @@
       "topic": "4",
       "skills": 1,
       "questions": 60,
-      "actions": 3,
+      "actions": 4,
       "representations": [
-        "visual"
+        "visual",
+        "story"
       ],
       "demands": [
-        "application",
-        "concept"
+        "concept",
+        "application"
       ]
     },
     "D1.T5": {
@@ -79,8 +81,8 @@
         "visual"
       ],
       "demands": [
-        "concept",
-        "application"
+        "application",
+        "concept"
       ]
     },
     "D1.T6": {
@@ -93,8 +95,8 @@
         "story"
       ],
       "demands": [
-        "concept",
-        "application"
+        "application",
+        "concept"
       ]
     },
     "D1.T7": {
@@ -134,14 +136,15 @@
       "representations": [
         "symbolic",
         "verbal",
+        "visual",
         "story",
         "number-line"
       ],
       "demands": [
         "concept",
         "application",
-        "procedure",
-        "reasoning"
+        "reasoning",
+        "procedure"
       ]
     },
     "D2.T2": {
@@ -156,8 +159,8 @@
       ],
       "demands": [
         "reasoning",
-        "procedure",
-        "application"
+        "application",
+        "procedure"
       ]
     },
     "D2.T3": {
@@ -167,14 +170,14 @@
       "questions": 240,
       "actions": 17,
       "representations": [
-        "visual",
         "verbal",
+        "visual",
         "symbolic"
       ],
       "demands": [
+        "application",
         "reasoning",
         "concept",
-        "application",
         "procedure"
       ]
     },
@@ -188,8 +191,8 @@
         "story"
       ],
       "demands": [
-        "application",
         "procedure",
+        "application",
         "reasoning"
       ]
     },
@@ -216,12 +219,12 @@
       "questions": 240,
       "actions": 3,
       "representations": [
-        "visual",
-        "story"
+        "story",
+        "visual"
       ],
       "demands": [
-        "application",
-        "concept"
+        "concept",
+        "application"
       ]
     },
     "D2.T7": {
@@ -231,8 +234,8 @@
       "questions": 180,
       "actions": 6,
       "representations": [
-        "symbolic",
-        "visual"
+        "visual",
+        "symbolic"
       ],
       "demands": [
         "concept",
@@ -252,8 +255,8 @@
       ],
       "demands": [
         "concept",
-        "application",
-        "reasoning"
+        "reasoning",
+        "application"
       ]
     },
     "D3.T1": {
@@ -264,13 +267,14 @@
       "actions": 11,
       "representations": [
         "symbolic",
+        "verbal",
         "story",
-        "verbal"
+        "visual"
       ],
       "demands": [
+        "concept",
         "procedure",
         "reasoning",
-        "concept",
         "application"
       ]
     },
@@ -286,8 +290,8 @@
       ],
       "demands": [
         "reasoning",
-        "procedure",
-        "application"
+        "application",
+        "procedure"
       ]
     },
     "D3.T3": {
@@ -297,13 +301,13 @@
       "questions": 180,
       "actions": 10,
       "representations": [
-        "visual",
-        "symbolic"
+        "symbolic",
+        "visual"
       ],
       "demands": [
-        "concept",
-        "reasoning",
         "procedure",
+        "reasoning",
+        "concept",
         "application"
       ]
     },
@@ -317,8 +321,8 @@
         "story"
       ],
       "demands": [
-        "procedure",
         "application",
+        "procedure",
         "reasoning"
       ]
     },
@@ -345,14 +349,14 @@
       "questions": 60,
       "actions": 6,
       "representations": [
-        "symbolic",
         "story",
+        "symbolic",
         "error-analysis"
       ],
       "demands": [
-        "reasoning",
-        "procedure",
         "application",
+        "procedure",
+        "reasoning",
         "concept"
       ]
     },
@@ -366,10 +370,10 @@
         "visual"
       ],
       "demands": [
-        "procedure",
         "reasoning",
-        "application",
-        "concept"
+        "procedure",
+        "concept",
+        "application"
       ]
     },
     "D3.T8": {
@@ -383,8 +387,8 @@
         "table"
       ],
       "demands": [
-        "concept",
         "application",
+        "concept",
         "reasoning"
       ]
     },
@@ -397,7 +401,8 @@
       "representations": [
         "symbolic",
         "verbal",
-        "story"
+        "story",
+        "visual"
       ],
       "demands": [
         "concept",
@@ -413,13 +418,13 @@
       "questions": 240,
       "actions": 4,
       "representations": [
-        "symbolic",
-        "story"
+        "story",
+        "symbolic"
       ],
       "demands": [
-        "reasoning",
+        "application",
         "procedure",
-        "application"
+        "reasoning"
       ]
     },
     "D4.T3": {
@@ -429,13 +434,13 @@
       "questions": 180,
       "actions": 10,
       "representations": [
-        "symbolic",
-        "visual"
+        "visual",
+        "symbolic"
       ],
       "demands": [
+        "concept",
         "procedure",
         "reasoning",
-        "concept",
         "application"
       ]
     },
@@ -449,9 +454,9 @@
         "story"
       ],
       "demands": [
-        "reasoning",
+        "procedure",
         "application",
-        "procedure"
+        "reasoning"
       ]
     },
     "D4.T5": {
@@ -465,9 +470,9 @@
         "story"
       ],
       "demands": [
+        "procedure",
         "application",
-        "concept",
-        "procedure"
+        "concept"
       ]
     },
     "D4.T6": {
@@ -477,14 +482,14 @@
       "questions": 60,
       "actions": 6,
       "representations": [
+        "story",
         "symbolic",
-        "error-analysis",
-        "story"
+        "error-analysis"
       ],
       "demands": [
-        "reasoning",
-        "procedure",
         "application",
+        "procedure",
+        "reasoning",
         "concept"
       ]
     },
@@ -501,10 +506,10 @@
         "story"
       ],
       "demands": [
-        "procedure",
         "reasoning",
-        "concept",
-        "application"
+        "procedure",
+        "application",
+        "concept"
       ]
     },
     "D4.T8": {
@@ -514,13 +519,13 @@
       "questions": 60,
       "actions": 5,
       "representations": [
-        "table",
-        "visual"
+        "visual",
+        "table"
       ],
       "demands": [
-        "reasoning",
         "application",
-        "concept"
+        "concept",
+        "reasoning"
       ]
     },
     "D5.T1": {
@@ -531,13 +536,14 @@
       "actions": 11,
       "representations": [
         "symbolic",
+        "story",
         "verbal",
-        "story"
+        "visual"
       ],
       "demands": [
         "procedure",
-        "concept",
         "reasoning",
+        "concept",
         "application"
       ]
     },
@@ -564,13 +570,13 @@
       "questions": 180,
       "actions": 10,
       "representations": [
-        "visual",
-        "symbolic"
+        "symbolic",
+        "visual"
       ],
       "demands": [
+        "procedure",
         "concept",
         "reasoning",
-        "procedure",
         "application"
       ]
     },
@@ -584,8 +590,8 @@
         "story"
       ],
       "demands": [
-        "application",
         "reasoning",
+        "application",
         "procedure"
       ]
     },
@@ -596,12 +602,12 @@
       "questions": 60,
       "actions": 4,
       "representations": [
-        "story",
-        "visual"
+        "visual",
+        "story"
       ],
       "demands": [
-        "concept",
         "application",
+        "concept",
         "procedure"
       ]
     },
@@ -613,14 +619,14 @@
       "actions": 6,
       "representations": [
         "symbolic",
-        "story",
-        "error-analysis"
+        "error-analysis",
+        "story"
       ],
       "demands": [
-        "concept",
+        "reasoning",
         "procedure",
-        "application",
-        "reasoning"
+        "concept",
+        "application"
       ]
     },
     "D5.T7": {
@@ -636,10 +642,10 @@
         "table"
       ],
       "demands": [
-        "reasoning",
         "procedure",
-        "application",
-        "concept"
+        "reasoning",
+        "concept",
+        "application"
       ]
     },
     "D5.T8": {
@@ -665,14 +671,14 @@
       "questions": 60,
       "actions": 6,
       "representations": [
-        "story",
         "symbolic",
-        "verbal"
+        "verbal",
+        "story"
       ],
       "demands": [
-        "reasoning",
         "procedure",
-        "concept"
+        "concept",
+        "reasoning"
       ]
     },
     "D6.T2": {
@@ -682,12 +688,12 @@
       "questions": 60,
       "actions": 4,
       "representations": [
-        "story",
-        "symbolic"
+        "symbolic",
+        "story"
       ],
       "demands": [
-        "application",
         "reasoning",
+        "application",
         "procedure"
       ]
     },
@@ -698,12 +704,12 @@
       "questions": 240,
       "actions": 12,
       "representations": [
-        "visual",
-        "symbolic"
+        "symbolic",
+        "visual"
       ],
       "demands": [
-        "concept",
         "procedure",
+        "concept",
         "application",
         "reasoning"
       ]
@@ -718,9 +724,9 @@
         "story"
       ],
       "demands": [
-        "reasoning",
+        "procedure",
         "application",
-        "procedure"
+        "reasoning"
       ]
     },
     "D6.T5": {
@@ -730,13 +736,13 @@
       "questions": 60,
       "actions": 4,
       "representations": [
-        "visual",
-        "story"
+        "story",
+        "visual"
       ],
       "demands": [
-        "application",
+        "concept",
         "procedure",
-        "concept"
+        "application"
       ]
     },
     "D6.T6": {
@@ -747,12 +753,12 @@
       "actions": 6,
       "representations": [
         "symbolic",
-        "story",
-        "error-analysis"
+        "error-analysis",
+        "story"
       ],
       "demands": [
-        "concept",
         "procedure",
+        "concept",
         "reasoning",
         "application"
       ]
@@ -769,8 +775,8 @@
       "demands": [
         "procedure",
         "reasoning",
-        "application",
-        "concept"
+        "concept",
+        "application"
       ]
     },
     "D6.T8": {
@@ -786,8 +792,8 @@
       ],
       "demands": [
         "application",
-        "reasoning",
-        "concept"
+        "concept",
+        "reasoning"
       ]
     }
   }
