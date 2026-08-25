@@ -69,9 +69,10 @@ function applyHeroToBattle(){
 
 function setupHeroPicker(){
  refreshLoginResume();
- let w=document.getElementById('pickImgWira'),b=document.getElementById('pickImgBunga');
+ let w=document.getElementById('pickImgWira'),b=document.getElementById('pickImgBunga'),s=document.getElementById('pickImgSidma');
  if(w)w.src=HEROES.wira.idle;
  if(b)b.src=HEROES.bunga.idle;
+ if(s&&HEROES.sidma)s.src=HEROES.sidma.idle;
  chooseHero((db&&db.hero)||selectedHero||'wira');
  if(db){document.getElementById('resume').innerHTML=`<button class=\"btn secondary\" onclick=\"resumeGame()\">Sambung ${db.name} · Darjah ${db.schoolGrade} · ${HEROES[db.hero||'wira'].name}</button>`} refreshLoginResume();
 }

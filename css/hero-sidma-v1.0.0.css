@@ -1,0 +1,115 @@
+/* Sidma (Rumus Sigma) — hero-specific normalization and FX layers.
+   Entirely new class/id names; does not modify any Wira/Bunga rule. */
+
+/* Body frame container: one consistent sprite box, matching the shared
+   hero height variable so Sidma never jumps scale relative to Wira/Bunga. */
+#game #hero .sidma-frames{
+  position:absolute;
+  left:0;right:0;bottom:0;top:0;
+  pointer-events:none;
+  z-index:2;
+}
+#game #hero .sidma-frame{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  top:auto;
+  height:var(--pa-hero-h);
+  max-height:none;
+  max-width:none;
+  width:auto;
+  object-fit:contain;
+  object-position:center bottom;
+  transform:translateX(-50%);
+  transform-origin:50% 100%;
+  opacity:0;
+  pointer-events:none;
+}
+#game #hero .sidma-frame.sidma-visible{opacity:1}
+
+/* Suppress all four legacy static hero-frame elements while Sidma's own
+   attack sequence runs, since the existing generic phase-class system
+   would otherwise also toggle their opacity using Wira-tuned timing. */
+#game #hero .hero-frame.sidma-legacy-suppressed{opacity:0!important}
+
+/* Caster-side charge FX — anchored near Sidma's casting hand, above the
+   body frame layer, entirely independent overlay. */
+#game #hero .sidma-charge-fx{
+  position:absolute;
+  left:64%;
+  top:26%;
+  height:46%;
+  width:auto;
+  max-width:none;
+  transform:translate(-50%,-50%) scale(.4);
+  opacity:0;
+  pointer-events:none;
+  z-index:3;
+  transition:opacity 160ms ease-out, transform 160ms ease-out;
+}
+#game #hero .sidma-charge-fx.sidma-charge-active{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  transition:opacity 220ms ease-out, transform 320ms cubic-bezier(.2,.8,.3,1.3);
+}
+
+/* Projectile — travels across the arena from Sidma's cast origin to the
+   enemy impact point. Position/scale/opacity driven entirely by JS via
+   custom properties; the PNG itself is never duplicated or resized on disk. */
+#game #battleArena .sidma-projectile-fx{
+  position:absolute;
+  left:0;top:0;
+  height:64px;
+  width:auto;
+  max-width:none;
+  opacity:0;
+  pointer-events:none;
+  z-index:6;
+  transform:translate(var(--sidma-start-x,0),var(--sidma-start-y,0)) translate(-50%,-50%) scale(.7);
+}
+#game #battleArena .sidma-projectile-fx.sidma-projectile-active{
+  opacity:1;
+  animation:sidma-projectile-fly var(--sidma-projectile-ms,285ms) linear forwards;
+}
+@keyframes sidma-projectile-fly{
+  0%{opacity:0;transform:translate(var(--sidma-start-x,0),var(--sidma-start-y,0)) translate(-50%,-50%) scale(.7)}
+  12%{opacity:1}
+  85%{opacity:1}
+  100%{opacity:0;transform:translate(var(--sidma-end-x,0),var(--sidma-end-y,0)) translate(-50%,-50%) scale(1.05)}
+}
+
+/* Enemy-side impact FX — follows the enemy's actual position (set via JS
+   getBoundingClientRect on every trigger), not a hardcoded coordinate. */
+#game #battleArena .sidma-enemy-impact-fx{
+  position:absolute;
+  height:120px;
+  width:auto;
+  max-width:none;
+  transform:translate(-50%,-50%) scale(.6);
+  opacity:0;
+  pointer-events:none;
+  z-index:5;
+}
+#game #battleArena .sidma-enemy-impact-fx.sidma-impact-active{
+  opacity:1;
+  animation:sidma-impact-pop 190ms ease-out forwards;
+}
+#game #battleArena .sidma-enemy-impact-fx.sidma-impact-end-active{
+  opacity:1;
+  animation:sidma-impact-end-fade 200ms ease-in forwards;
+}
+@keyframes sidma-impact-pop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes sidma-impact-end-fade{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #game #hero .sidma-charge-fx,
+  #game #battleArena .sidma-projectile-fx,
+  #game #battleArena .sidma-enemy-impact-fx{transition:none!important;animation:none!important}
+}
