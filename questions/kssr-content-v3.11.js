@@ -70,6 +70,49 @@
   if(mode==='convert')return mark(Q(`${pct/10}/10 bersamaan?`,`${pct}%`,[N(`${pct/10}%`,'percent'),N(`${100-pct}%`,'percent'),N(String(pct),'percent')],'Tukarkan kepada bahagian daripada 100.','KSSR · Pecahan dan Peratus',true,true),id,mode,'symbolic','concept','convert',['percent','fraction']);
   if(mode==='quantity')return mark(Q(`${pct}% daripada ${base} = ?`,part,[N(base-part,'percent'),N(pct,'percent'),N(base+pct,'operation')],'Darab kuantiti dengan pecahan per seratus.','KSSR · Peratus Kuantiti',true,true),id,mode,'symbolic','application','quantity',['percent']);
   return mark(Q(`${pct}% daripada ___ ialah ${part}. Apakah nilai keseluruhan?`,base,[N(part,'percent'),N(base-part,'operation'),N(base+pct,'percent')],'Gunakan operasi songsang untuk mencari 100%.','KSSR · Nilai Keseluruhan',true,true),id,mode,'symbolic','reasoning','missing',['percent','operation'])}
+ function moneySkillTask(id,s){
+  const q=originals.d2t4?originals.d2t4(id,s):null;
+  if(q&&(!q.archetypeId||q.archetypeId==='solve_direct')){
+    const names={'D2.4.1':'recognise','D2.4.2':'add','D2.4.3':'subtract','D2.4.4':'multiply','D2.4.5':'divide','D2.4.6':'save','D2.4.7':'apply'},name=names[id]||'direct';
+    let subMode='';
+    if(id==='D2.4.1'){
+      if(q.prompt.includes('nilai wang yang ditunjukkan'))subMode='_value';
+      else if(q.prompt.includes('jumlah wang semuanya'))subMode='_total';
+      else if(q.prompt.includes('nilainya lebih besar'))subMode='_compare';
+    }else if(id==='D2.4.7'){
+      if(q.prompt.includes('baki wangnya'))subMode='_balance';
+      else if(q.prompt.includes('kedua-dua barang'))subMode='_multiitem';
+      else if(q.prompt.includes('cukup untuk membelinya'))subMode='_enough';
+      else if(q.prompt.includes('wang yang tinggal'))subMode='_savings';
+      else if(q.prompt.includes('jumlah yang dibayar'))subMode='_total';
+    }
+    q.archetypeId='money_'+name+subMode;
+    q.representation=/moneyvisual|pricetag/i.test(q.prompt)?'visual':'symbolic';
+    q.demand=id==='D2.4.7'||id==='D2.4.6'?'application':id==='D2.4.1'?'concept':'procedure';
+    q.difficultyBand=q.demand==='application'?3:q.demand==='concept'?1:2;
+    q.misconceptionTargets=(q.misconceptionTargets&&q.misconceptionTargets.length)?q.misconceptionTargets:[q.wrong?.[0]?.tag||'money'];
+    q.contextId='money';q.familyKey=id;
+  }
+  return q;
+ }
+ function timeSkillTask(id,s){
+  const q=originals.d2t5?originals.d2t5(id,s):null;
+  if(q&&(!q.archetypeId||q.archetypeId==='solve_direct')){
+    const names={'D2.5.1':'read_clock','D2.5.2':'convert_unit','D2.5.3':'duration'},name=names[id]||'direct';
+    let subMode='';
+    if(id==='D2.5.3'){
+      if(q.prompt.includes('aktiviti tamat'))subMode='_end';
+      else if(q.prompt.includes('Berapakah tempoh'))subMode='_span';
+    }
+    q.archetypeId='time_'+name+subMode;
+    q.representation=/<svg|clockvisual|timelinevisual/i.test(q.prompt)?'visual':'symbolic';
+    q.demand=id==='D2.5.3'?'application':id==='D2.5.2'?'procedure':'concept';
+    q.difficultyBand=q.demand==='application'?3:q.demand==='procedure'?2:1;
+    q.misconceptionTargets=(q.misconceptionTargets&&q.misconceptionTargets.length)?q.misconceptionTargets:[q.wrong?.[0]?.tag||'time'];
+    q.contextId='time';q.familyKey=id;
+  }
+  return q;
+ }
  function moneyTask(id){const mode=rotate(id,['total','change','unit_price','budget']),a=pick([5,10,20,40,50,80]),b=pick([3,6,12,25]),qty=pick([2,3,4]),total=a+b;
   if(mode==='total')return mark(Q(`Buku berharga RM${a} dan alat tulis RM${b}. Jumlah bayaran?`,`RM${total}`,[N(`RM${Math.abs(a-b)}`,'operation'),N(`RM${a}`,'money'),N(`RM${total+10}`,'money')],'Tambah semua harga.','KSSR · Jumlah Wang',true,true),id,mode,'story','application','shopping',['money','operation']);
   if(mode==='change'){const pay=pick([100,200,300]),cost=Math.min(pay-10,total),ans=pay-cost;return mark(Q(`Bayar RM${pay} untuk pembelian RM${cost}. Berapakah baki?`,`RM${ans}`,[N(`RM${cost}`,'money'),N(`RM${pay+cost}`,'operation'),N(`RM${ans+10}`,'money')],'Baki = wang dibayar − jumlah harga.','KSSR · Baki Wang',true,true),id,mode,'story','application','shopping',['money','operation']);}
@@ -127,10 +170,11 @@
   q.archetypeId=`native_${a}`;q.representation=rep;q.demand=/story|difference|missing/.test(a)?'application':/compare|property|place|visual/.test(a)?'concept':'procedure';q.contextId=a;q.difficultyBand=q.demand==='application'?3:q.demand==='procedure'?2:1;q.misconceptionTargets=q.misconceptionTargets||[q.wrong?.[0]?.tag||'generated'];q.familyKey=id;return q;
  }
  function year2Words(id){const mode=rotate(id,['number_to_words','words_to_number','expanded_to_number']),n=R(101,999);if(mode==='number_to_words')return mark(Q(`Bagaimanakah <b>${n}</b> ditulis dalam perkataan?`,numWords(n),[N(numWords(n+10),'place'),N(numWords(Math.max(1,n-10)),'place'),N(numWords(reverseN(n)),'same_end')],'Baca ratus, puluh dan sa mengikut tertib.','Tahun 2 · Tulis Nombor',true,true),id,mode,'verbal','concept','number-name',['place']);if(mode==='words_to_number')return mark(Q(`Pilih angka bagi <b>${numWords(n)}</b>.`,n,[N(reverseN(n),'same_end'),N(n+100,'place'),N(Math.max(1,n-10),'place')],'Bina angka mengikut nilai tempat.','Tahun 2 · Kenal Angka',true,true),id,mode,'verbal','concept','number-name',['place']);const h=Math.floor(n/100)*100,t=Math.floor(n%100/10)*10,u=n%10,parts=[h,t,u].filter(Boolean).join(' + ');return mark(Q(`<b>${parts}</b> membentuk nombor?`,n,[N(reverseN(n),'same_end'),N(n+10,'place'),N(Math.max(1,n-100),'place')],'Gabungkan nilai ratus, puluh dan sa.','Tahun 2 · Bina Nombor',true,true),id,mode,'symbolic','application','expanded',['place','digit_value'])}
- function year2Sequence(id){const mode=rotate(id,['next','internal','rule']),step=pick([1,2,5,10,100]),down=Math.random()<.5,start=down?R(step*5,999):R(1,999-step*5),at=k=>start+(down?-step*k:step*k),xs=[at(0),at(1),at(2),at(3),at(4)];if(mode==='next')return mark(Q(`${xs.slice(0,4).join(', ')}, ___`,xs[4],[N(xs[3],'pattern'),N(xs[4]+step,'pattern'),N(xs[4]+(down?step*2:-step*2),'pattern')],'Cari beza tetap dan arah pola.','Tahun 2 · Sambung Rangkaian',true,true),id,mode,'symbolic','procedure','sequence',['pattern']);if(mode==='internal')return mark(Q(`${xs[0]}, ${xs[1]}, ___, ${xs[3]}, ${xs[4]}`,xs[2],[N(xs[1],'pattern'),N(xs[3],'pattern'),N(xs[2]+step,'pattern')],'Gunakan nombor sebelum dan selepas tempat kosong.','Tahun 2 · Nombor Hilang',true,true),id,mode,'symbolic','reasoning','sequence',['pattern']);return mark(Q(`Apakah aturan bagi ${xs.slice(0,4).join(', ')}?`,`${down?'Tolak':'Tambah'} ${step}`,[N(`${down?'Tambah':'Tolak'} ${step}`,'pattern'),N(`Tambah ${step*2}`,'pattern'),N(`Tolak ${step*2}`,'pattern')],'Banding beza antara dua nombor berturutan.','Tahun 2 · Aturan Pola',true,true),id,mode,'verbal','concept','sequence',['pattern'])}
+ function year2Sequence(id){const mode=rotate(id,id==='D2.1.3'?['next','internal']:id==='D2.1.7'?['next','rule']:['next','internal','rule']),step=pick([1,2,5,10,100]),down=Math.random()<.5,start=down?R(step*5,999):R(1,999-step*5),at=k=>start+(down?-step*k:step*k),xs=[at(0),at(1),at(2),at(3),at(4)];if(mode==='next')return mark(Q(`${xs.slice(0,4).join(', ')}, ___`,xs[4],[N(xs[3],'pattern'),N(xs[4]+step,'pattern'),N(xs[4]+(down?step*2:-step*2),'pattern')],'Cari beza tetap dan arah pola.','Tahun 2 · Sambung Rangkaian',true,true),id,mode,'symbolic','procedure','sequence',['pattern']);if(mode==='internal')return mark(Q(`${xs[0]}, ${xs[1]}, ___, ${xs[3]}, ${xs[4]}`,xs[2],[N(xs[1],'pattern'),N(xs[3],'pattern'),N(xs[2]+step,'pattern')],'Gunakan nombor sebelum dan selepas tempat kosong.','Tahun 2 · Nombor Hilang',true,true),id,mode,'symbolic','reasoning','sequence',['pattern']);return mark(Q(`Apakah aturan bagi ${xs.slice(0,4).join(', ')}?`,`${down?'Tolak':'Tambah'} ${step}`,[N(`${down?'Tambah':'Tolak'} ${step}`,'pattern'),N(`Tambah ${step*2}`,'pattern'),N(`Tolak ${step*2}`,'pattern')],'Banding beza antara dua nombor berturutan.','Tahun 2 · Aturan Pola',true,true),id,mode,'verbal','concept','sequence',['pattern'])}
  function year2Estimate(id){const mode=rotate(id,['nearest_ten','range','reasonable']),n=R(12,988),nearest=Math.round(n/10)*10;if(mode==='nearest_ten')return mark(Q(`Anggaran kepada puluh terdekat bagi <b>${n}</b> ialah?`,nearest,[N(Math.floor(n/10)*10,'estimate'),N(Math.ceil(n/10)*10,'estimate'),N(n,'estimate')],'Cari puluh yang paling hampir.','Tahun 2 · Anggar Puluh',true,true),id,mode,'number-line','concept','estimate',['estimate']);if(mode==='range'){const lo=Math.floor(n/100)*100,hi=lo+100;return mark(Q(`Nombor <b>${n}</b> berada antara?`,`${lo} dan ${hi}`,[N(`${lo-100} dan ${lo}`,'estimate'),N(`${hi} dan ${hi+100}`,'estimate'),N(`${n} dan ${n+100}`,'estimate')],'Cari dua ratus yang mengapit nombor.','Tahun 2 · Julat Anggaran',true,true),id,mode,'symbolic','concept','estimate',['estimate','place']);}return mark(Q(`Sebuah bekas mempunyai kira-kira <b>${n}</b> manik. Anggaran manakah paling munasabah?`,nearest,[N(nearest+100,'estimate'),N(Math.max(0,nearest-100),'estimate'),N(n+333,'estimate')],'Pilih nilai bulat yang dekat, bukan terlalu jauh.','Tahun 2 · Anggaran Munasabah',true,true),id,mode,'story','application','estimate',['estimate'])}
  function year2Round(id){const mode=rotate(id,['round_ten','round_hundred','missing_source']),n=R(101,999);if(mode==='round_ten'){const ans=Math.round(n/10)*10;return mark(Q(`Bundarkan <b>${n}</b> kepada puluh terdekat.`,ans,[N(Math.floor(n/10)*10,'round'),N(Math.ceil(n/10)*10,'round'),N(n,'round')],'Lihat digit sa.','Tahun 2 · Bundar Puluh',true,true),id,mode,'number-line','procedure','round',['round']);}if(mode==='round_hundred'){const ans=Math.round(n/100)*100;return mark(Q(`Bundarkan <b>${n}</b> kepada ratus terdekat.`,ans,[N(Math.floor(n/100)*100,'round'),N(Math.ceil(n/100)*100,'round'),N(Math.round(n/10)*10,'round')],'Lihat digit puluh.','Tahun 2 · Bundar Ratus',true,true),id,mode,'number-line','procedure','round',['round']);}const base=R(2,8)*100,ans=base+R(1,4)*10;return mark(Q(`Nombor manakah akan dibundarkan kepada <b>${base}</b> pada ratus terdekat?`,ans,[N(base+60,'round'),N(base+100,'round'),N(Math.max(0,base-100),'round')],'Nombor dalam separuh julat terdekat membundar kepada ratus itu.','Tahun 2 · Semak Bundaran',true,true),id,mode,'symbolic','reasoning','round',['round'])}
- function year2Measure(id){const mode=rotate(id,['unit_choice','compare','operation']),cfg=id==='D2.6.1'?{item:'reben',unit:'cm',quality:'panjang'}:id==='D2.6.2'?{item:'beras',unit:'g',quality:'jisim'}:id==='D2.6.3'?{item:'air',unit:'mL',quality:'isi padu'}:pick([{item:'reben',unit:'cm',quality:'panjang'},{item:'beras',unit:'g',quality:'jisim'},{item:'air',unit:'mL',quality:'isi padu'}]),a=R(2,8)*10,b=R(1,5)*10;
+ function year2Measure(id){const cfg=id==='D2.6.1'?{item:'reben',unit:'cm',quality:'panjang'}:id==='D2.6.2'?{item:'beras',unit:'g',quality:'jisim'}:id==='D2.6.3'?{item:'air',unit:'mL',quality:'isi padu'}:pick([{item:'reben',unit:'cm',quality:'panjang'},{item:'beras',unit:'g',quality:'jisim'},{item:'air',unit:'mL',quality:'isi padu'}]),mode=rotate(id,id==='D2.6.4'?['unit_choice','compare','operation']:['unit_choice','compare','operation','read']),a=R(2,8)*10,b=R(1,5)*10;
+  if(mode==='read'){const readVal=cfg.unit==='cm'?R(2,19):pick([100,200,300,400,500,600,700,800,900]),visual=cfg.unit==='cm'?rulerSvg(readVal):cfg.unit==='g'?scaleSvg(readVal):cylinderSvg(readVal),label=cfg.unit==='cm'?'Berapakah panjang yang ditunjukkan?':cfg.unit==='g'?'Jarum penimbang menunjukkan berapa gram?':'Berapakah isi padu air yang ditunjukkan?',step=cfg.unit==='cm'?1:100,bigUnit=cfg.unit==='cm'?'m':cfg.unit==='g'?'kg':'L';return mark(Q(`${visual}${label}`,`${readVal} ${cfg.unit}`,[N(`${readVal+step} ${cfg.unit}`,'unit'),N(`${Math.max(0,readVal-step)} ${cfg.unit}`,'unit'),N(`${readVal} ${bigUnit}`,'unit')],'Baca senggatan pada alat pengukur dengan teliti.','Tahun 2 · Baca Alat Ukur',true,true),id,mode,'visual','concept','instrument',['unit']);}
   if(mode==='unit_choice')return mark(Q(`Unit sesuai untuk mengukur ${cfg.quality} ${cfg.item}?`,cfg.unit,[N('jam','unit'),N('RM','unit'),N(cfg.unit==='cm'?'kg':'cm','unit')],'Pilih unit yang sepadan dengan perkara yang diukur.','Tahun 2 · Unit Ukuran',true,true),id,mode,'story','concept','measurement',['unit']);
   if(mode==='compare'){const larger=a>b?'A':a<b?'B':'Sama';return mark(Q(`${comparisonBarsSvg(a,b,cfg.unit,`${cfg.item} A`,`${cfg.item} B`)}Yang manakah lebih besar nilainya?`,larger,[N(larger==='A'?'B':'A','unit'),N(larger==='Sama'?'A':'Sama','unit'),N('Tidak dapat ditentukan','unit')],'Banding nilai dalam unit yang sama.','Tahun 2 · Banding Ukuran',true,true),id,mode,'visual','concept','measurement',['unit']);}
   const ans=a+b;return mark(Q(`${comparisonBarsSvg(a,b,cfg.unit,`${cfg.item} A`,`${cfg.item} B`)}Berapakah jumlah kedua-dua ukuran?`,`${ans} ${cfg.unit}`,[N(`${Math.abs(a-b)} ${cfg.unit}`,'operation'),N(`${a} ${cfg.unit}`,'unit'),N(`${ans+10} ${cfg.unit}`,'unit')],'Tambah nilai kerana unitnya sama.','Tahun 2 · Masalah Ukuran',true,true),id,mode,'visual','application','measurement',['unit','operation'])}
@@ -163,19 +207,18 @@
   }
   return null;
  }
- function year2Task(id){
+ function year2Task(id,s){
   if(id==='D2.1.2')return year2Words(id);if(id==='D2.1.3'||id==='D2.1.7')return year2Sequence(id);if(id==='D2.1.4')return placeTask(id);if(id==='D2.1.5')return year2Estimate(id);if(id==='D2.1.6')return year2Round(id);
-  if(id==='D2.1.8')return operationTask(id,Math.random()<.5?'add':'sub');if(id==='D2.2.1')return operationTask(id,'add');if(id==='D2.2.2')return operationTask(id,'sub');if(id==='D2.2.5')return operationTask(id,Math.random()<.5?'add':'sub');
-  if(/^D2\.3\.[1-4]$/.test(id))return year2Chapter3Task(id);if(/^D2\.4\.[1-7]$/.test(id))return moneyTask(id);if(id==='D2.5.1'||id==='D2.5.2')return timeTask(id);if(['D2.6.1','D2.6.2','D2.6.3','D2.6.4'].includes(id))return year2Measure(id);if(id==='D2.7.2')return year2Shape(id);
+  if(/^D2\.3\.[1-4]$/.test(id))return year2Chapter3Task(id);if(/^D2\.4\.[1-7]$/.test(id))return moneySkillTask(id,s);if(id==='D2.5.1'||id==='D2.5.2'||id==='D2.5.3')return timeSkillTask(id,s);if(['D2.6.1','D2.6.2','D2.6.3','D2.6.4'].includes(id))return year2Measure(id);if(id==='D2.7.2')return year2Shape(id);
   return null}
  function varied(id,s){
   if(+id[1]===1){const y1=year1Task(id);if(y1)return y1;}
-  if(+id[1]===2){const y2=year2Task(id);if(y2)return y2;}
+  if(+id[1]===2){const y2=year2Task(id,s);if(y2)return y2;}
   if(/^D[1-5]\.(N|CMP)|^D[2345]\.N\d/.test(id)||id==='D6.NUMBERS')return numberTask(id);
   if(id.includes('PV'))return placeTask(id);
   if(/ADD/.test(id))return operationTask(id,'add');if(/SUB/.test(id))return operationTask(id,'sub');
   if(/\.MUL$|\.2\.3$/.test(id))return operationTask(id,'mul');if(/\.DIV$|\.2\.4$/.test(id))return operationTask(id,'div');
-  if((+id[1]>=3&&/\.TIME$/.test(id))||/D2\.5\.3/.test(id))return timeTask(id);if((+id[1]>=3&&/\.DATA$/.test(id))||/D2\.8\./.test(id))return dataTask(id);
+  if(+id[1]>=3&&/\.TIME$/.test(id))return timeTask(id);if(+id[1]>=3&&/\.DATA$/.test(id))return dataTask(id);
   if(+id[1]>=3&&/\.FRAC$/.test(id))return fractionTask(id);if(+id[1]>=3&&/\.DEC$/.test(id))return decimalTask(id);if(+id[1]>=3&&/\.PERCENT$/.test(id))return percentTask(id);
   if(+id[1]>=3&&/\.MONEY$/.test(id))return moneyTask(id);if(+id[1]>=3&&/\.SHAPE$|\.PERIM$|\.AREA$/.test(id))return geometryTask(id);
   if(/\.COORD$|\.POSITION$/.test(id))return coordinateTask(id);if(/\.RATIO$/.test(id))return ratioTask(id);
