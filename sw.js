@@ -1,4 +1,4 @@
-// App shell v3.52.1 — Sidma Hub hero/background/profile assets plus Sidma hero integration (Rumus Sigma battle attack) plus Main Hub hero-switch control. D3 unchanged: full Darjah 3 authored SHADOW bank semantic hardening plus D3 non-Topic-7 rollout state plumbing, generic non-T7 mastery isolation, and production-activated approved D3 non-T7 content (default SHADOW for any unlisted standard; Topic 7 beta LIVE unchanged).
+// App shell v3.52.5 — Sidma battle alignment and enemy-side Rumus Penamat finisher. Curriculum systems unchanged.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

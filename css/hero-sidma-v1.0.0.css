@@ -27,6 +27,20 @@
 }
 #game #hero .sidma-frame.sidma-visible{opacity:1}
 
+/* The four approved source canvases share a baseline, but cast/release have
+   their painted body centre 10-13 source pixels farther right. These tiny
+   rendered offsets align the painted torso rather than the 1280px canvas. */
+#game #hero .sidma-frame-cast-start{margin-left:-1.75px}
+#game #hero .sidma-frame-release{margin-left:-2px}
+#game #hero .sidma-frame-recovery{margin-left:-.25px}
+
+/* Sidma's regular attack is a planted casting sequence. Do not layer the
+   shared Wira/Bunga 52px melee lunge over its body-frame choreography. */
+body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
+  animation:none!important;
+  transform:none!important;
+}
+
 /* Suppress all four legacy static hero-frame elements while Sidma's own
    attack sequence runs, since the existing generic phase-class system
    would otherwise also toggle their opacity using Wira-tuned timing. */
@@ -108,8 +122,50 @@
   100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}
 }
 
+/* Rumus Penamat: one enemy-side Sigma layer, using the approved normal
+   impact artwork at cinematic scale. No projectile crosses the arena. */
+#game #battleArena .sidma-finisher-fx{
+  position:absolute;
+  width:min(52vw,230px);
+  height:auto;
+  max-width:none;
+  opacity:0;
+  pointer-events:none;
+  z-index:15;
+  transform:translate(-50%,-50%) scale(.18);
+  transform-origin:50% 50%;
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 22px rgba(219,32,36,.9)) drop-shadow(0 0 34px rgba(244,183,50,.72));
+}
+#game #battleArena .sidma-finisher-fx.sidma-finisher-sigma-active{
+  animation:sidma-finisher-sigma 540ms cubic-bezier(.2,.72,.24,1) both;
+}
+#game #battleArena .sidma-finisher-fx.sidma-finisher-impact-end{
+  animation:sidma-finisher-impact-end 250ms ease-out both;
+}
+@keyframes sidma-finisher-sigma{
+  0%,18%{opacity:0;transform:translate(-50%,-50%) scale(.18)}
+  32%{opacity:.82;transform:translate(-50%,-50%) scale(.62)}
+  58%{opacity:1;transform:translate(-50%,-50%) scale(1.42)}
+  76%{opacity:1;transform:translate(-50%,-50%) scale(.72)}
+  88%{opacity:1;transform:translate(-50%,-50%) scale(.5);filter:brightness(1.9) drop-shadow(0 0 14px #fff) drop-shadow(0 0 30px #d91f28)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.7);filter:brightness(3) drop-shadow(0 0 22px #fff)}
+}
+@keyframes sidma-finisher-impact-end{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.82)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.28)}
+}
+
+/* Extend the existing blackout language with Sidma's red/white/gold charge. */
+.finisherCinematic[data-hero="sidma"] .cinematicPowerColumn{
+  background:linear-gradient(90deg,transparent,rgba(196,20,30,.16) 22%,rgba(255,255,255,.72) 50%,rgba(236,177,45,.2) 78%,transparent);
+}
+.finisherCinematic[data-hero="sidma"] .cinematicHero{
+  filter:drop-shadow(0 0 7px rgba(255,255,255,.78)) drop-shadow(0 0 18px rgba(190,19,29,.72));
+}
+
 @media(prefers-reduced-motion:reduce){
   #game #hero .sidma-charge-fx,
   #game #battleArena .sidma-projectile-fx,
-  #game #battleArena .sidma-enemy-impact-fx{transition:none!important;animation:none!important}
+  #game #battleArena .sidma-enemy-impact-fx,
+  #game #battleArena .sidma-finisher-fx{transition:none!important;animation:none!important}
 }

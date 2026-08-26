@@ -13,9 +13,11 @@
   const T_IDLE_RETURN=T_PROJECTILE_LAUNCH+TIMING.recovery;
   window.PA_SIDMA_TIMING={T_CAST_START,T_RELEASE,T_PROJECTILE_LAUNCH,T_IMPACT,T_IMPACT_END,T_IDLE_RETURN};
 
-  let timers=[];
+  let timers=[],finisherTimers=[];
   function clearTimers(){timers.forEach(clearTimeout);timers=[]}
+  function clearFinisherTimers(){finisherTimers.forEach(clearTimeout);finisherTimers=[]}
   function after(ms,fn){timers.push(setTimeout(fn,ms))}
+  function afterFinisher(ms,fn){finisherTimers.push(setTimeout(fn,ms))}
 
   function ensureBodyFrames(sprite){
     if(!sprite)return null;
@@ -60,6 +62,15 @@
     if(fx)return fx;
     fx=document.createElement('img');fx.id='sidmaEnemyImpactFx';fx.className='sidma-enemy-impact-fx';fx.alt='';fx.setAttribute('aria-hidden','true');
     arena.appendChild(fx);
+    return fx;
+  }
+
+  function ensureFinisherFx(layer){
+    if(!layer)return null;
+    let fx=document.getElementById('sidmaFinisherFx');
+    if(fx)return fx;
+    fx=document.createElement('img');fx.id='sidmaFinisherFx';fx.className='sidma-finisher-fx';fx.alt='';fx.setAttribute('aria-hidden','true');
+    layer.appendChild(fx);
     return fx;
   }
 
@@ -135,6 +146,31 @@
     const impactFx=document.getElementById('sidmaEnemyImpactFx');if(impactFx)impactFx.classList.remove('sidma-impact-active','sidma-impact-end-active');
   }
 
+  function resetSidmaFinisher(){
+    clearFinisherTimers();
+    const fx=document.getElementById('sidmaFinisherFx');
+    if(fx){fx.classList.remove('sidma-finisher-sigma-active','sidma-finisher-impact-end');fx.removeAttribute('src')}
+  }
+
+  function runSidmaFinisher(){
+    resetSidmaVisuals();resetSidmaFinisher();
+    const arena=document.getElementById('battleArena'),layer=document.getElementById('finisherCinematic'),enemy=document.getElementById('enemy'),fx=ensureFinisherFx(layer);
+    if(!arena||!layer||!enemy||!fx)return;
+    const layerBox=layer.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect();
+    const h=(typeof HEROES!=='undefined'&&HEROES.sidma)||{};
+    fx.style.left=(enemyBox.left-layerBox.left+enemyBox.width/2)+'px';
+    fx.style.top=(enemyBox.top-layerBox.top+enemyBox.height*.46)+'px';
+    fx.src=(h.fx&&h.fx.impact)||'';
+    // Preserve a distinct blackout/focus/charge beat before the enemy-side
+    // Sigma forms. Its 540ms expand/compress/burst ends at 820ms contact.
+    afterFinisher(280,()=>{void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(830,()=>{
+      fx.src=(h.fx&&h.fx.impactEnd)||'';
+      fx.classList.remove('sidma-finisher-sigma-active');void fx.offsetWidth;fx.classList.add('sidma-finisher-impact-end');
+    });
+    afterFinisher(1080,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
+  }
+
   const originalPrepare=window.prepareHeroAttackVariant;
   const originalClear=window.clearHeroAttackVariant;
 
@@ -142,7 +178,7 @@
     const hero=(typeof db!=='undefined'&&db&&db.hero)||'wira';
     if(hero==='sidma'){
       resetSidmaVisuals();
-      if(finisher)return;
+      if(finisher){runSidmaFinisher();return}
       runSidmaAttack(el);
       return;
     }
@@ -152,9 +188,9 @@
 
   window.clearHeroAttackVariant=function(el){
     const hero=(typeof db!=='undefined'&&db&&db.hero)||'wira';
-    if(hero==='sidma'){resetSidmaVisuals();return}
+    if(hero==='sidma'){resetSidmaVisuals();resetSidmaFinisher();return}
     if(typeof originalClear==='function')originalClear(el);
   };
 
-  window.PASidmaBattle={runSidmaAttack,resetSidmaVisuals,TIMING};
+  window.PASidmaBattle={runSidmaAttack,runSidmaFinisher,resetSidmaVisuals,resetSidmaFinisher,TIMING};
 })();

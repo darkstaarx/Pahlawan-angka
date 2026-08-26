@@ -23,10 +23,16 @@ function triggerFinisherCinematic(){
   layer.style.setProperty('--power-w',(heroRect.width*.78)+'px');
   layer.style.setProperty('--power-h',(heroRect.height*.82)+'px');
  }
- hero.src=h.auraFraming||h.anticipation||h.idle;hero.alt=h.name+' mengumpul kuasa';
- document.getElementById('cinematicHeroName').textContent=h.name.toUpperCase();
+ // Match the existing Wira/Bunga presentation: reuse the hero's approved
+ // focus/anticipation pose, while the distinctive final-blow art happens on
+ // the enemy side. Sidma's approved cast-start is its cinematic focus pose.
+ const sidmaFocus=(db.hero==='sidma'&&h.auraFraming);
+ hero.src=sidmaFocus||h.auraFraming||h.anticipation||h.idle;hero.alt=h.name+' mengumpul kuasa';
+ document.getElementById('cinematicHeroName').textContent=db.hero==='sidma'?'RUMUS PENAMAT':h.name.toUpperCase();
  if(item&&db.hero!=='bunga'){aura.src=item.image;aura.dataset.aura=type;aura.classList.remove('hidden')}else{aura.removeAttribute('src');aura.classList.add('hidden')}
  layer.dataset.hero=db.hero||'wira';layer.dataset.aura=type||'none';
+ layer.dataset.focusAsset='approved';
+ layer.setAttribute('aria-label',db.hero==='sidma'?'Rumus Penamat':'Serangan terakhir '+h.name);
  layer.classList.remove('active','release');void layer.offsetWidth;layer.classList.add('active');
  if(typeof playSfx==='function')playSfx('auraCharge');
  setTimeout(()=>{layer.classList.add('release');if(typeof playSfx==='function'&&db.hero!=='wira')playSfx('attack')},760);
