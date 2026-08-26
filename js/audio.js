@@ -89,6 +89,24 @@ function playSfx(name){
     const p=a.play(); if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
 }
+function playSidmaSfx(cue){
+  if(paMuted)return;
+  const ctx=ensureBattleAudio();if(!ctx)return;
+  if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+  const now=ctx.currentTime,out=ctx.createGain();out.gain.value=.42*PA_VOLUME_SCALE;out.connect(ctx.destination);
+  const tone=(type,from,to,start,duration,level)=>{const osc=ctx.createOscillator(),gain=ctx.createGain(),at=now+start;osc.type=type;osc.frequency.setValueAtTime(from,at);osc.frequency.exponentialRampToValueAtTime(Math.max(20,to),at+duration);gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(level,at+.018);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);osc.connect(gain).connect(out);osc.start(at);osc.stop(at+duration+.03)};
+  if(cue==='charge'){tone('sine',190,330,0,.42,.18);tone('triangle',285,520,.05,.34,.08)}
+  else if(cue==='release'){tone('triangle',420,980,0,.18,.22);tone('sine',260,150,.04,.24,.12)}
+  else if(cue==='impact'){tone('sine',740,510,0,.25,.18);tone('triangle',185,92,0,.2,.2)}
+  else if(cue==='finisher-charge'){tone('sine',110,245,0,.78,.2);tone('triangle',220,440,.12,.68,.09)}
+  else if(cue==='sigma-form'){tone('sine',392,398,0,.48,.2);tone('sine',588,596,.06,.52,.14);tone('triangle',784,790,.12,.54,.08)}
+  else if(cue==='compress'){tone('sawtooth',460,115,0,.2,.13);tone('sine',220,72,.02,.24,.17)}
+  else if(cue==='explode'){
+    tone('sine',125,42,0,.46,.3);tone('triangle',784,392,.04,.58,.16);
+    const length=Math.floor(ctx.sampleRate*.28),buffer=ctx.createBuffer(1,length,ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,2);const noise=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();noise.buffer=buffer;filter.type='lowpass';filter.frequency.value=720;gain.gain.setValueAtTime(.18,now);gain.gain.exponentialRampToValueAtTime(.0001,now+.28);noise.connect(filter).connect(gain).connect(out);noise.start(now)
+  }
+  setTimeout(()=>{try{out.disconnect()}catch(_){}},1200);
+}
 function toggleSound(){
   paMuted=!paMuted; localStorage.setItem('pa_muted',paMuted?'1':'0');
   updateSoundButtons();if(paMuted)setBattleAudioMode('off');else{unlockSfx();syncBattleAudio();playSfx('ui');}

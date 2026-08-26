@@ -91,10 +91,12 @@
     showFrame(stance);
     after(T_CAST_START,()=>{
       showFrame(cast);
+      if(typeof playSidmaSfx==='function')playSidmaSfx('charge');
       if(chargeFx){chargeFx.classList.remove('sidma-charge-active');void chargeFx.offsetWidth;chargeFx.classList.add('sidma-charge-active')}
     });
     after(T_RELEASE,()=>{
       showFrame(release);
+      if(typeof playSidmaSfx==='function')playSidmaSfx('release');
       if(chargeFx)chargeFx.classList.remove('sidma-charge-active');
       // Launch projectile from Sidma's position toward the enemy.
       const arenaBox=arena.getBoundingClientRect(),heroBox=sprite.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect();
@@ -112,6 +114,7 @@
       showFrame(recovery);
     });
     after(T_IMPACT,()=>{
+      if(typeof playSidmaSfx==='function')playSidmaSfx('impact');
       if(projectileFx)projectileFx.classList.remove('sidma-projectile-active');
       if(impactFx){
         const arenaBox=arena.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect();
@@ -161,10 +164,13 @@
     fx.style.left=(enemyBox.left-arenaBox.left+enemyBox.width/2)+'px';
     fx.style.top=(enemyBox.top-arenaBox.top+enemyBox.height*.46)+'px';
     fx.src=(h.fx&&h.fx.impact)||'';
+    if(typeof playSidmaSfx==='function')playSidmaSfx('finisher-charge');
     // Blackout/focus/release completes first. The Sigma then becomes visible
     // over the real enemy in the arena and bursts at the 1500ms contact beat.
-    afterFinisher(900,()=>{void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(900,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(1325,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('compress')});
     afterFinisher(1510,()=>{
+      if(typeof playSidmaSfx==='function')playSidmaSfx('explode');
       fx.src=(h.fx&&h.fx.impactEnd)||'';
       fx.classList.remove('sidma-finisher-sigma-active');void fx.offsetWidth;fx.classList.add('sidma-finisher-impact-end');
     });

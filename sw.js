@@ -1,11 +1,11 @@
-// App shell v3.52.6 — Sidma arena-side Rumus Penamat, solo finisher staging and FX isolation. Curriculum systems unchanged.
+// App shell v3.52.7 — Sidma eyes-closed focus, Sigma-chain charge, no-shake finisher and bespoke SFX. Curriculum systems unchanged.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest','./js/version.js',
   './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js',
   './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js',
-  './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp',
+  './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp','./assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp',
   './assets/heroes/sidma/hub/adventure-v1.webp','./assets/ui/coin-gold.svg','./assets/heroes/sidma/profile-happy-v1.webp','./assets/fx/hub/sidma-math-sigma-v1.webp',
   './assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
   './css/effort-restu-v3.32.0.css','./js/effort-guard-v3.32.0.js',

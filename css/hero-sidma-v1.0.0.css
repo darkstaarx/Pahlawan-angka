@@ -160,7 +160,27 @@ body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
   background:linear-gradient(90deg,transparent,rgba(196,20,30,.16) 22%,rgba(255,255,255,.72) 50%,rgba(236,177,45,.2) 78%,transparent);
 }
 .finisherCinematic[data-hero="sidma"] .cinematicHero{
-  filter:drop-shadow(0 0 7px rgba(255,255,255,.78)) drop-shadow(0 0 18px rgba(190,19,29,.72));
+  z-index:5;
+  filter:drop-shadow(0 0 7px rgba(255,255,255,.72)) drop-shadow(0 0 18px rgba(190,19,29,.65));
+}
+.sidmaSigmaChain{display:none}
+.finisherCinematic[data-hero="sidma"] .sidmaSigmaChain{
+  display:block;position:absolute;left:var(--hero-center-x,72px);bottom:var(--hero-bottom,8px);
+  width:calc(var(--cinematic-hero-h,160px)*1.18);height:var(--cinematic-hero-h,160px);
+  z-index:6;pointer-events:none;opacity:0;transform:translateX(-50%) scale(.78);
+  transform-origin:50% 58%;filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #d31825)
+}
+.finisherCinematic[data-hero="sidma"] .sidmaSigmaChain span{
+  position:absolute;left:50%;top:52%;
+  color:#f7c64a;font:bold 18px Georgia,serif;text-shadow:0 0 3px #fff,0 0 8px #c51120;
+  transform:translate(-50%,-50%) rotate(var(--sigma-angle)) translateY(calc(var(--cinematic-hero-h,160px)*-.48)) rotate(var(--sigma-counter))
+}
+.finisherCinematic.active[data-hero="sidma"] .sidmaSigmaChain{animation:sidma-sigma-chain-charge 1.05s ease-out both}
+@keyframes sidma-sigma-chain-charge{
+  0%,10%{opacity:0;transform:translateX(-50%) scale(.6) rotate(-10deg)}
+  30%{opacity:.55}
+  62%,78%{opacity:1;transform:translateX(-50%) scale(1) rotate(9deg)}
+  88%,100%{opacity:0;transform:translateX(-50%) scale(1.08) rotate(16deg)}
 }
 
 /* Rumus Penamat owns the enemy impact. Suppress the regular white slash,
