@@ -13,7 +13,7 @@
   const T_IDLE_RETURN=T_PROJECTILE_LAUNCH+TIMING.recovery;
   window.PA_SIDMA_TIMING={T_CAST_START,T_RELEASE,T_PROJECTILE_LAUNCH,T_IMPACT,T_IMPACT_END,T_IDLE_RETURN};
 
-  let timers=[],finisherTimers=[];
+  let timers=[],finisherTimers=[],normalAttackCount=0;
   function clearTimers(){timers.forEach(clearTimeout);timers=[]}
   function clearFinisherTimers(){finisherTimers.forEach(clearTimeout);finisherTimers=[]}
   function after(ms,fn){timers.push(setTimeout(fn,ms))}
@@ -72,6 +72,14 @@
     fx=document.createElement('img');fx.id='sidmaFinisherFx';fx.className='sidma-finisher-fx';fx.alt='';fx.setAttribute('aria-hidden','true');
     layer.appendChild(fx);
     return fx;
+  }
+
+  function ensureSkill2Frames(arena){
+    if(!arena)return null;
+    let group=document.getElementById('sidmaSkill2Frames');if(group)return group;
+    const h=(typeof HEROES!=='undefined'&&HEROES.sidma)||{},make=(cls,src)=>{const img=document.createElement('img');img.className='sidma-skill2-frame '+cls;img.alt='';img.setAttribute('aria-hidden','true');img.src=src||'';group.appendChild(img);return img};
+    group=document.createElement('div');group.id='sidmaSkill2Frames';group.className='sidma-skill2-frames';group.setAttribute('aria-hidden','true');
+    make('sidma-skill2-dash',h.frames&&h.frames.skill2Dash);make('sidma-skill2-impact',h.frames&&h.frames.skill2Impact);arena.appendChild(group);return group;
   }
 
   function showFrame(el){document.querySelectorAll('#sidmaFrames .sidma-frame').forEach(x=>x.classList.remove('sidma-visible'));if(el)el.classList.add('sidma-visible')}
@@ -140,6 +148,21 @@
     });
   }
 
+  function runSidmaSkill2(){
+    clearTimers();
+    const sprite=document.getElementById('heroVisual'),arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy');if(!sprite||!arena||!enemy)return;
+    const legacyFrames=['heroIdle','heroAnticipation','heroAttack','heroFollowThrough'].map(id=>document.getElementById(id)).filter(Boolean),frames=ensureBodyFrames(sprite),skill2=ensureSkill2Frames(arena);if(!frames||!skill2)return;
+    const stance=document.getElementById('sidmaAttackStance'),recovery=document.getElementById('sidmaRecovery'),dash=skill2.querySelector('.sidma-skill2-dash'),impact=skill2.querySelector('.sidma-skill2-impact');
+    const arenaBox=arena.getBoundingClientRect(),heroBox=sprite.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect(),startX=heroBox.left-arenaBox.left+heroBox.width/2,endX=enemyBox.left-arenaBox.left+enemyBox.width*.22,skill2Height=heroBox.height*1.1;
+    skill2.style.setProperty('--sidma-skill2-start-x',startX+'px');skill2.style.setProperty('--sidma-skill2-end-x',endX+'px');skill2.style.setProperty('--sidma-skill2-top',(heroBox.bottom-arenaBox.top-skill2Height)+'px');skill2.style.setProperty('--sidma-skill2-h',skill2Height+'px');
+    legacyFrames.forEach(img=>img.classList.add('sidma-legacy-suppressed'));showFrame(stance);
+    after(230,()=>{hideAllFrames();dash.classList.remove('active');void dash.offsetWidth;dash.classList.add('active');if(typeof playSidmaSfx==='function')playSidmaSfx('release')});
+    after(900,()=>{dash.classList.remove('active');impact.classList.remove('active');void impact.offsetWidth;impact.classList.add('active');if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form')});
+    after(1305,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('impact')});
+    after(1420,()=>{impact.classList.remove('active');showFrame(recovery)});
+    after(1660,()=>{hideAllFrames();legacyFrames.forEach(img=>img.classList.remove('sidma-legacy-suppressed'))});
+  }
+
   function resetSidmaVisuals(){
     clearTimers();
     hideAllFrames();
@@ -147,6 +170,7 @@
     const chargeFx=document.getElementById('sidmaChargeFx');if(chargeFx)chargeFx.classList.remove('sidma-charge-active');
     const projectileFx=document.getElementById('sidmaProjectileFx');if(projectileFx)projectileFx.classList.remove('sidma-projectile-active');
     const impactFx=document.getElementById('sidmaEnemyImpactFx');if(impactFx)impactFx.classList.remove('sidma-impact-active','sidma-impact-end-active');
+    const skill2=document.getElementById('sidmaSkill2Frames');if(skill2)skill2.querySelectorAll('.sidma-skill2-frame').forEach(frame=>frame.classList.remove('active'));
   }
 
   function resetSidmaFinisher(){
@@ -185,7 +209,7 @@
     if(hero==='sidma'){
       resetSidmaVisuals();
       if(finisher){runSidmaFinisher();return}
-      runSidmaAttack(el);
+      if(normalAttackCount++%2===0)runSidmaAttack(el);else runSidmaSkill2();
       return;
     }
     resetSidmaVisuals();
@@ -198,5 +222,5 @@
     if(typeof originalClear==='function')originalClear(el);
   };
 
-  window.PASidmaBattle={runSidmaAttack,runSidmaFinisher,resetSidmaVisuals,resetSidmaFinisher,TIMING};
+  window.PASidmaBattle={runSidmaAttack,runSidmaSkill2,runSidmaFinisher,resetSidmaVisuals,resetSidmaFinisher,TIMING};
 })();

@@ -46,6 +46,25 @@ body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
    would otherwise also toggle their opacity using Wira-tuned timing. */
 #game #hero .hero-frame.sidma-legacy-suppressed{opacity:0!important}
 
+/* Skill 2: the source canvases stay 16:9 and are rendered at the live hero
+   height. Separate body anchors prevent the large Sigma ring from changing
+   Sidma's apparent body scale or contact position. */
+#game #battleArena .sidma-skill2-frames{position:absolute;inset:0;z-index:14;pointer-events:none;overflow:visible}
+#game #battleArena .sidma-skill2-frame{position:absolute;left:0;top:var(--sidma-skill2-top,0);height:var(--sidma-skill2-h,var(--pa-hero-h));width:auto;max-width:none;opacity:0;pointer-events:none}
+#game #battleArena .sidma-skill2-dash.active{animation:sidma-skill2-dash 670ms cubic-bezier(.18,.7,.22,1) both}
+#game #battleArena .sidma-skill2-impact.active{animation:sidma-skill2-impact 520ms ease-out both}
+@keyframes sidma-skill2-dash{
+  0%{opacity:0;transform:translateX(calc(var(--sidma-skill2-start-x,0px) - 72%)) scale(.98)}
+  12%{opacity:1}
+  88%{opacity:1}
+  100%{opacity:0;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 72%)) scale(1)}
+}
+@keyframes sidma-skill2-impact{
+  0%{opacity:0;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 61%)) scale(.88);filter:brightness(.72)}
+  18%,72%{opacity:1;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 61%)) scale(1);filter:brightness(1)}
+  100%{opacity:0;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 61%)) scale(1.04);filter:brightness(1.6)}
+}
+
 /* Caster-side charge FX — anchored near Sidma's casting hand, above the
    body frame layer, entirely independent overlay. */
 #game #hero .sidma-charge-fx{

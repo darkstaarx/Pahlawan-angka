@@ -14,7 +14,8 @@ function triggerFinisherCinematic(){
   layer.style.setProperty('--hero-w',heroRect.width+'px');
   layer.style.setProperty('--hero-h',heroRect.height+'px');
   layer.style.setProperty('--hero-bottom',(arenaRect.bottom-heroRect.bottom)+'px');
-  layer.style.setProperty('--cinematic-hero-h',(heroRect.height*((db.hero||'wira')==='wira'?1.18:1.12))+'px');
+  const heroKey=db.hero||'wira',focusScale=heroKey==='wira'?1.18:(heroKey==='sidma'?1:1.12);
+  layer.style.setProperty('--cinematic-hero-h',(heroRect.height*focusScale)+'px');
   layer.style.setProperty('--hero-center-x',(heroRect.left-arenaRect.left+(heroRect.width/2))+'px');
   const auraWidth=heroRect.width*2.08;
   layer.style.setProperty('--aura-bottom',(arenaRect.bottom-heroRect.bottom-(auraWidth*.055))+'px');
