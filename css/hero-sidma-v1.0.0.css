@@ -137,7 +137,7 @@ body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
   filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 22px rgba(219,32,36,.9)) drop-shadow(0 0 34px rgba(244,183,50,.72));
 }
 #game #battleArena .sidma-finisher-fx.sidma-finisher-sigma-active{
-  animation:sidma-finisher-sigma 540ms cubic-bezier(.2,.72,.24,1) both;
+  animation:sidma-finisher-sigma 600ms cubic-bezier(.2,.72,.24,1) both;
 }
 #game #battleArena .sidma-finisher-fx.sidma-finisher-impact-end{
   animation:sidma-finisher-impact-end 250ms ease-out both;
@@ -162,6 +162,14 @@ body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
 .finisherCinematic[data-hero="sidma"] .cinematicHero{
   filter:drop-shadow(0 0 7px rgba(255,255,255,.78)) drop-shadow(0 0 18px rgba(190,19,29,.72));
 }
+
+/* Rumus Penamat owns the enemy impact. Suppress the regular white slash,
+   flash and emoji burst so the finisher reads as one clean Sigma explosion. */
+body.hero-sidma #game #enemy.hit.finisher .impact-flash,
+body.hero-sidma #game #enemy.hit.finisher .impact-slash,
+body.hero-sidma #game #enemy.hit.finisher .impact-burst,
+body.hero-sidma #game #enemy.hit.finisher .finisher-ice,
+body.hero-sidma #game #enemy.hit.finisher .finisher-bloom{display:none!important}
 
 @media(prefers-reduced-motion:reduce){
   #game #hero .sidma-charge-fx,

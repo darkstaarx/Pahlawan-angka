@@ -1,4 +1,4 @@
-// App shell v3.52.5 — Sidma battle alignment and enemy-side Rumus Penamat finisher. Curriculum systems unchanged.
+// App shell v3.52.6 — Sidma arena-side Rumus Penamat, solo finisher staging and FX isolation. Curriculum systems unchanged.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

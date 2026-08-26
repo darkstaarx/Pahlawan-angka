@@ -154,21 +154,21 @@
 
   function runSidmaFinisher(){
     resetSidmaVisuals();resetSidmaFinisher();
-    const arena=document.getElementById('battleArena'),layer=document.getElementById('finisherCinematic'),enemy=document.getElementById('enemy'),fx=ensureFinisherFx(layer);
-    if(!arena||!layer||!enemy||!fx)return;
-    const layerBox=layer.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect();
+    const arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy'),fx=ensureFinisherFx(arena);
+    if(!arena||!enemy||!fx)return;
+    const arenaBox=arena.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect();
     const h=(typeof HEROES!=='undefined'&&HEROES.sidma)||{};
-    fx.style.left=(enemyBox.left-layerBox.left+enemyBox.width/2)+'px';
-    fx.style.top=(enemyBox.top-layerBox.top+enemyBox.height*.46)+'px';
+    fx.style.left=(enemyBox.left-arenaBox.left+enemyBox.width/2)+'px';
+    fx.style.top=(enemyBox.top-arenaBox.top+enemyBox.height*.46)+'px';
     fx.src=(h.fx&&h.fx.impact)||'';
-    // Preserve a distinct blackout/focus/charge beat before the enemy-side
-    // Sigma forms. Its 540ms expand/compress/burst ends at 820ms contact.
-    afterFinisher(280,()=>{void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
-    afterFinisher(830,()=>{
+    // Blackout/focus/release completes first. The Sigma then becomes visible
+    // over the real enemy in the arena and bursts at the 1500ms contact beat.
+    afterFinisher(900,()=>{void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(1510,()=>{
       fx.src=(h.fx&&h.fx.impactEnd)||'';
       fx.classList.remove('sidma-finisher-sigma-active');void fx.offsetWidth;fx.classList.add('sidma-finisher-impact-end');
     });
-    afterFinisher(1080,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
+    afterFinisher(1760,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
   }
 
   const originalPrepare=window.prepareHeroAttackVariant;
