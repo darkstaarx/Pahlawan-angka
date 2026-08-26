@@ -44,7 +44,7 @@
     const cards=ORDER.filter(id=>HEROES[id]).map(id=>{
       const h=HEROES[id],active=id===current;
       return `<button type="button" class="paHeroSwitchCard${active?' active':''}" onclick="paSwitchHero('${id}')" aria-pressed="${active?'true':'false'}">
-        <span class="paHeroSwitchImg"><img src="${h.idle}" alt="${h.name}"></span>
+        <span class="paHeroSwitchImg"><img src="${h.profile||h.idle}" alt="${h.name}"></span>
         <span class="paHeroSwitchName">${h.name}</span>
         <span class="paHeroSwitchTag">${active?'✓ Sedang digunakan':'Pilih'}</span>
       </button>`;

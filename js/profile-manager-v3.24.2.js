@@ -7,7 +7,7 @@ const VERSION='3.25.3';
 const HERO={
   wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/profile-happy-v1.webp'},
   bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'},
-  sidma:{id:'sidma',name:'Sidma',power:'Rumus Sigma',src:'assets/heroes/sidma/idle.webp'}
+  sidma:{id:'sidma',name:'Sidma',power:'Rumus Sigma',src:'assets/heroes/sidma/profile-happy-v1.webp'}
 };
 let rendering=false, statsLoading=false, editorHero='wira', editorProfileId=null, deleteProfileId=null, emptyPrompted=false;
 const $=id=>document.getElementById(id);

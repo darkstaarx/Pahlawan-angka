@@ -1,4 +1,4 @@
-// App shell v3.52.0 — Sidma hero integration (Rumus Sigma battle attack) plus Main Hub hero-switch control. D3 unchanged: full Darjah 3 authored SHADOW bank semantic hardening plus D3 non-Topic-7 rollout state plumbing, generic non-T7 mastery isolation, and production-activated approved D3 non-T7 content (default SHADOW for any unlisted standard; Topic 7 beta LIVE unchanged).
+// App shell v3.52.1 — Sidma Hub hero/background/profile assets plus Sidma hero integration (Rumus Sigma battle attack) plus Main Hub hero-switch control. D3 unchanged: full Darjah 3 authored SHADOW bank semantic hardening plus D3 non-Topic-7 rollout state plumbing, generic non-T7 mastery isolation, and production-activated approved D3 non-T7 content (default SHADOW for any unlisted standard; Topic 7 beta LIVE unchanged).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
@@ -6,6 +6,7 @@ const APP_SHELL=[
   './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js',
   './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js',
   './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp',
+  './assets/heroes/sidma/hub/adventure-v1.webp','./assets/heroes/sidma/profile-happy-v1.webp','./assets/fx/hub/sidma-math-sigma-v1.webp',
   './assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
   './css/effort-restu-v3.32.0.css','./js/effort-guard-v3.32.0.js',
   './assets/heroes/wira/attack.webp','./assets/heroes/wira/frames/attack-dash-v2.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
