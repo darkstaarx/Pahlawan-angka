@@ -68,7 +68,7 @@ function renderHub(){
   document.getElementById('hubName').textContent=db.name;
   document.getElementById('hubGrade').textContent=`Darjah ${db.schoolGrade}`;
   document.getElementById('hubLevel').textContent=`Lv. ${db.level}`;
-  document.getElementById('hubCoins').textContent=`🪙 ${db.coins}`;
+  document.getElementById('hubCoins').innerHTML=`<img class="paCoinIcon" src="assets/ui/coin-gold.svg" alt=""> ${db.coins}`;
   document.getElementById('hubXpText').textContent=`${db.levelXp||0} / ${levelNeed} XP`;
   document.getElementById('hubXpFill').style.width=xpPct+'%';
   if(typeof ensureRewards==='function')ensureRewards();
@@ -82,7 +82,7 @@ function renderHub(){
   const daily=Math.min(PROGRESSION.dailyTarget,db.daily.correct||0);
   document.getElementById('dailyText').textContent=`${daily}/${PROGRESSION.dailyTarget} jawapan betul`;
   document.getElementById('dailyFill').style.width=Math.round(daily/PROGRESSION.dailyTarget*100)+'%';
-  document.getElementById('dailyReward').textContent=db.daily.claimed?'Selesai ✓':'Ganjaran: 25 🪙';
+  document.getElementById('dailyReward').innerHTML=db.daily.claimed?'Selesai ✓':'Ganjaran: 25 <img class="paCoinIcon" src="assets/ui/coin-gold.svg" alt="syiling emas">';
   // Mission cards live on the dedicated Misi screen.
   screen('hub'); save();
 }
@@ -165,7 +165,7 @@ function finishMission(){
   if(entries.length){const meta=META[entries[0][0]];if(meta)next=`Misi seterusnya akan beri lebih latihan pada ${meta.domain}.`}
   document.getElementById('resultStars').textContent=starString(stars);
   document.getElementById('resultScore').textContent=`${sess.missionCorrect}/${sess.missionAnswered} betul · ${accuracy}%`;
-  document.getElementById('resultRewards').innerHTML=`<span>+${coins} 🪙</span><span>+${bonusXp} XP</span>`;
+  document.getElementById('resultRewards').innerHTML=`<span>+${coins} <img class="paCoinIcon" src="assets/ui/coin-gold.svg" alt="syiling emas"></span><span>+${bonusXp} XP</span>`;
   document.getElementById('resultCoach').textContent=next;
   document.getElementById('resultTitle').textContent=stars===3?'Misi Hebat!':stars===2?'Misi Selesai!':'Misi Selesai';
   if(typeof processMissionRewards==='function')processMissionRewards();
@@ -180,7 +180,7 @@ function finishCoachSession(){
   const challenge=summary.filter(x=>x.status==='challenge').slice(0,2).map(x=>x.domain).join(' & ');
   document.getElementById('resultStars').textContent='🧭';
   document.getElementById('resultScore').textContent=`${sess.missionAnswered} soalan · ${accuracy}% betul · ${coachCoveredDomains()} domain dipetakan`;
-  document.getElementById('resultRewards').innerHTML=`<span>+${bonusCoins} 🪙</span><span>+${bonusXp} XP</span>`;
+  document.getElementById('resultRewards').innerHTML=`<span>+${bonusCoins} <img class="paCoinIcon" src="assets/ui/coin-gold.svg" alt="syiling emas"></span><span>+${bonusXp} XP</span>`;
   document.getElementById('resultCoach').textContent=challenge?`Frontier semasa — ${top}. Coach jumpa cabaran sebenar pada ${challenge}; sesi seterusnya akan sambung dari situ.`:`Frontier semasa — ${top||'profil masih sedang dibina'}. Coach akan sambung dari tahap tertinggi yang telah dibuktikan.`;
   document.getElementById('resultTitle').textContent='Profil Coach Dikemas Kini';
   if(sess.introMission&&db.onboarding){db.onboarding.introActive=false;db.onboarding.introCompletedAt=Date.now()}

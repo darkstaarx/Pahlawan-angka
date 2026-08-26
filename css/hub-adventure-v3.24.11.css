@@ -2,7 +2,7 @@
 .hubProfile{background:radial-gradient(circle at 20% 35%,rgba(71,180,255,.22),transparent 33%),linear-gradient(90deg,rgba(13,40,69,.8),rgba(12,28,52,.94)),url('../assets/battlefields/forest-temple/arena-v1.webp') center/cover}
 .hubProfile:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,216,91,.08),transparent 32%),radial-gradient(circle at 25% 88%,rgba(72,220,171,.13),transparent 29%);mix-blend-mode:screen;z-index:0}
 .hubScene{isolation:isolate}
-.hubHeroCharacter{left:-9%!important;bottom:-11px!important;width:99%!important;height:178px!important;z-index:2;animation:hubAdventureBreathe 3.8s ease-in-out infinite}
+.hubHeroCharacter{left:-9%!important;bottom:-32px!important;width:99%!important;height:178px!important;z-index:2;animation:hubAdventureBreathe 3.8s ease-in-out infinite}
 body.hero-bunga .hubHeroCharacter{left:-8%!important;width:93%!important;height:165px!important}
 body.hero-sidma .hubHeroCharacter{left:-10%!important;bottom:-32px!important;width:105%!important;height:188px!important;object-fit:contain!important;object-position:center bottom!important;filter:none!important;image-rendering:auto!important}
 body.hero-sidma .hubMathFx{left:-16%!important;bottom:-8px!important;width:102%!important;height:158px!important;opacity:.24!important;filter:saturate(1.04) drop-shadow(0 0 7px rgba(255,164,43,.28))!important}
@@ -17,4 +17,6 @@ body.hero-sidma .hubMathFx{left:-16%!important;bottom:-8px!important;width:102%!
 @keyframes hubMathDrift{0%,100%{transform:rotate(-2deg) scale(.98);opacity:.22}50%{transform:rotate(2deg) scale(1.03);opacity:.32}}
 @keyframes hubPetReady{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-4px) rotate(1deg)}}
 @media(max-width:380px){.hubHeroCharacter{left:-11%!important;width:102%!important;height:174px!important}body.hero-bunga .hubHeroCharacter{left:-9%!important;width:95%!important;height:162px!important}.hubMathFx{left:-15%;width:98%}.hubScenePet{left:61%!important}}
+.paCoinIcon{display:inline-block;width:1em;height:1em;vertical-align:-.12em;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.28))}
+#hubCoins .paCoinIcon{width:1.1em;height:1.1em;margin-right:.18em;vertical-align:-.16em}
 @media(prefers-reduced-motion:reduce){.hubHeroCharacter,.hubMathFx,.hubScenePet{animation:none!important}}
