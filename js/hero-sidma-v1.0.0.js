@@ -90,19 +90,19 @@
     const sprite=document.getElementById('heroVisual'),arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy');
     if(!sprite||!arena||!enemy)return;
     const legacyFrames=['heroIdle','heroAnticipation','heroAttack','heroFollowThrough'].map(id=>document.getElementById(id)).filter(Boolean);
-    const frames=ensureBodyFrames(sprite),chargeFx=ensureChargeFx(sprite),projectileFx=ensureProjectileFx(arena),impactFx=ensureEnemyImpactFx(arena);
+    const frames=ensureBodyFrames(sprite),chargeFx=ensureChargeFx(sprite),projectileFx=ensureProjectileFx(arena),impactFx=ensureEnemyImpactFx(arena),pet=document.getElementById('battlePet'),speed=(pet&&!pet.classList.contains('hidden')&&db?.rewards?.equippedPet)?0.68:1,at=ms=>Math.round(ms*speed);
     if(!frames)return;
     const stance=document.getElementById('sidmaAttackStance'),cast=document.getElementById('sidmaCastStart'),release=document.getElementById('sidmaRelease'),recovery=document.getElementById('sidmaRecovery');
 
     // Body: idle -> attack-stance -> cast-start (charge FX rides on top) -> release -> recovery -> idle
     legacyFrames.forEach(img=>img.classList.add('sidma-legacy-suppressed'));
     showFrame(stance);
-    after(T_CAST_START,()=>{
+    after(at(T_CAST_START),()=>{
       showFrame(cast);
       if(typeof playSidmaSfx==='function')playSidmaSfx('charge');
       if(chargeFx){chargeFx.classList.remove('sidma-charge-active');void chargeFx.offsetWidth;chargeFx.classList.add('sidma-charge-active')}
     });
-    after(T_RELEASE,()=>{
+    after(at(T_RELEASE),()=>{
       showFrame(release);
       if(typeof playSidmaSfx==='function')playSidmaSfx('release');
       if(chargeFx)chargeFx.classList.remove('sidma-charge-active');
@@ -114,14 +114,14 @@
         projectileFx.classList.remove('sidma-projectile-active');
         projectileFx.style.setProperty('--sidma-start-x',startX+'px');projectileFx.style.setProperty('--sidma-start-y',startY+'px');
         projectileFx.style.setProperty('--sidma-end-x',endX+'px');projectileFx.style.setProperty('--sidma-end-y',endY+'px');
-        projectileFx.style.setProperty('--sidma-projectile-ms',TIMING.projectile+'ms');
+        projectileFx.style.setProperty('--sidma-projectile-ms',at(TIMING.projectile)+'ms');
         void projectileFx.offsetWidth;projectileFx.classList.add('sidma-projectile-active');
       }
     });
-    after(T_PROJECTILE_LAUNCH,()=>{
+    after(at(T_PROJECTILE_LAUNCH),()=>{
       showFrame(recovery);
     });
-    after(T_IMPACT,()=>{
+    after(at(T_IMPACT),()=>{
       if(typeof playSidmaSfx==='function')playSidmaSfx('impact');
       if(projectileFx)projectileFx.classList.remove('sidma-projectile-active');
       if(impactFx){
@@ -132,17 +132,17 @@
         impactFx.classList.remove('sidma-impact-active','sidma-impact-end-active');void impactFx.offsetWidth;impactFx.classList.add('sidma-impact-active');
       }
     });
-    after(T_IMPACT_END,()=>{
+    after(at(T_IMPACT_END),()=>{
       if(impactFx){
         const h=(typeof HEROES!=='undefined'&&HEROES.sidma)||{};
         impactFx.src=(h.fx&&h.fx.impactEnd)||'';
         impactFx.classList.remove('sidma-impact-active');impactFx.classList.add('sidma-impact-end-active');
       }
     });
-    after(T_IMPACT_END+TIMING.impactEnd,()=>{
+    after(at(T_IMPACT_END+TIMING.impactEnd),()=>{
       if(impactFx)impactFx.classList.remove('sidma-impact-end-active');
     });
-    after(T_IDLE_RETURN,()=>{
+    after(at(T_IDLE_RETURN),()=>{
       hideAllFrames();
       legacyFrames.forEach(img=>img.classList.remove('sidma-legacy-suppressed'));
     });
@@ -153,14 +153,15 @@
     const sprite=document.getElementById('heroVisual'),arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy');if(!sprite||!arena||!enemy)return;
     const legacyFrames=['heroIdle','heroAnticipation','heroAttack','heroFollowThrough'].map(id=>document.getElementById(id)).filter(Boolean),frames=ensureBodyFrames(sprite),skill2=ensureSkill2Frames(arena);if(!frames||!skill2)return;
     const stance=document.getElementById('sidmaAttackStance'),recovery=document.getElementById('sidmaRecovery'),dash=skill2.querySelector('.sidma-skill2-dash'),impact=skill2.querySelector('.sidma-skill2-impact');
-    const arenaBox=arena.getBoundingClientRect(),heroBox=sprite.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect(),startX=heroBox.left-arenaBox.left+heroBox.width/2,endX=enemyBox.left-arenaBox.left+enemyBox.width*.22,skill2Height=heroBox.height*1.1;
+    const arenaBox=arena.getBoundingClientRect(),heroBox=sprite.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect(),startX=heroBox.left-arenaBox.left+heroBox.width/2,endX=enemyBox.left-arenaBox.left-heroBox.width*.22,skill2Height=heroBox.height*.8;
     skill2.style.setProperty('--sidma-skill2-start-x',startX+'px');skill2.style.setProperty('--sidma-skill2-end-x',endX+'px');skill2.style.setProperty('--sidma-skill2-top',(heroBox.bottom-arenaBox.top-skill2Height)+'px');skill2.style.setProperty('--sidma-skill2-h',skill2Height+'px');
     legacyFrames.forEach(img=>img.classList.add('sidma-legacy-suppressed'));showFrame(stance);
-    after(230,()=>{hideAllFrames();dash.classList.remove('active');void dash.offsetWidth;dash.classList.add('active');if(typeof playSidmaSfx==='function')playSidmaSfx('release')});
-    after(900,()=>{dash.classList.remove('active');impact.classList.remove('active');void impact.offsetWidth;impact.classList.add('active');if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form')});
-    after(1305,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('impact')});
-    after(1420,()=>{impact.classList.remove('active');showFrame(recovery)});
-    after(1660,()=>{hideAllFrames();legacyFrames.forEach(img=>img.classList.remove('sidma-legacy-suppressed'))});
+    after(120,()=>{hideAllFrames();dash.classList.remove('active','returning');void dash.offsetWidth;dash.classList.add('active');if(typeof playSidmaSfx==='function')playSidmaSfx('release')});
+    after(430,()=>{dash.classList.remove('active');impact.classList.remove('active');void impact.offsetWidth;impact.classList.add('active');if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form')});
+    after(650,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('impact')});
+    after(780,()=>{impact.classList.remove('active');dash.classList.remove('active');void dash.offsetWidth;dash.classList.add('returning')});
+    after(1000,()=>{dash.classList.remove('returning');showFrame(recovery)});
+    after(1250,()=>{hideAllFrames();legacyFrames.forEach(img=>img.classList.remove('sidma-legacy-suppressed'))});
   }
 
   function resetSidmaVisuals(){
@@ -170,7 +171,7 @@
     const chargeFx=document.getElementById('sidmaChargeFx');if(chargeFx)chargeFx.classList.remove('sidma-charge-active');
     const projectileFx=document.getElementById('sidmaProjectileFx');if(projectileFx)projectileFx.classList.remove('sidma-projectile-active');
     const impactFx=document.getElementById('sidmaEnemyImpactFx');if(impactFx)impactFx.classList.remove('sidma-impact-active','sidma-impact-end-active');
-    const skill2=document.getElementById('sidmaSkill2Frames');if(skill2)skill2.querySelectorAll('.sidma-skill2-frame').forEach(frame=>frame.classList.remove('active'));
+    const skill2=document.getElementById('sidmaSkill2Frames');if(skill2)skill2.querySelectorAll('.sidma-skill2-frame').forEach(frame=>frame.classList.remove('active','returning'));
   }
 
   function resetSidmaFinisher(){
@@ -189,16 +190,16 @@
     fx.style.top=(enemyBox.top-arenaBox.top+enemyBox.height*.46)+'px';
     fx.src=(h.fx&&h.fx.impact)||'';
     if(typeof playSidmaSfx==='function')playSidmaSfx('finisher-charge');
-    // Blackout/focus/release completes first. The Sigma then becomes visible
-    // over the real enemy in the arena and bursts at the 1500ms contact beat.
-    afterFinisher(900,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
-    afterFinisher(1325,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('compress')});
-    afterFinisher(1510,()=>{
+    // The release-hand beat completes as blackout clears. Only then does the
+    // Sigma form over the real enemy and burst at the 1630ms contact beat.
+    afterFinisher(1120,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(1450,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('compress')});
+    afterFinisher(1630,()=>{
       if(typeof playSidmaSfx==='function')playSidmaSfx('explode');
       fx.src=(h.fx&&h.fx.impactEnd)||'';
       fx.classList.remove('sidma-finisher-sigma-active');void fx.offsetWidth;fx.classList.add('sidma-finisher-impact-end');
     });
-    afterFinisher(1760,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
+    afterFinisher(1880,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
   }
 
   const originalPrepare=window.prepareHeroAttackVariant;
@@ -222,5 +223,5 @@
     if(typeof originalClear==='function')originalClear(el);
   };
 
-  window.PASidmaBattle={runSidmaAttack,runSidmaSkill2,runSidmaFinisher,resetSidmaVisuals,resetSidmaFinisher,TIMING};
+  window.PASidmaBattle={runSidmaAttack,runSidmaSkill2,runSidmaFinisher,resetSidmaVisuals,resetSidmaFinisher,getNextNormalSkill:()=>normalAttackCount%2===0?1:2,TIMING};
 })();

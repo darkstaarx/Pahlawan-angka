@@ -51,13 +51,18 @@ body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
    Sidma's apparent body scale or contact position. */
 #game #battleArena .sidma-skill2-frames{position:absolute;inset:0;z-index:14;pointer-events:none;overflow:visible}
 #game #battleArena .sidma-skill2-frame{position:absolute;left:0;top:var(--sidma-skill2-top,0);height:var(--sidma-skill2-h,var(--pa-hero-h));width:auto;max-width:none;opacity:0;pointer-events:none}
-#game #battleArena .sidma-skill2-dash.active{animation:sidma-skill2-dash 670ms cubic-bezier(.18,.7,.22,1) both}
-#game #battleArena .sidma-skill2-impact.active{animation:sidma-skill2-impact 520ms ease-out both}
+#game #battleArena .sidma-skill2-dash.active{animation:sidma-skill2-dash 300ms cubic-bezier(.12,.72,.18,1) both}
+#game #battleArena .sidma-skill2-dash.returning{animation:sidma-skill2-return 220ms cubic-bezier(.5,0,.8,.3) both}
+#game #battleArena .sidma-skill2-impact.active{animation:sidma-skill2-impact 350ms ease-out both}
 @keyframes sidma-skill2-dash{
-  0%{opacity:0;transform:translateX(calc(var(--sidma-skill2-start-x,0px) - 72%)) scale(.98)}
+  0%{opacity:0;transform:translateX(calc(var(--sidma-skill2-start-x,0px) - 72%)) scale(.98);filter:blur(1.4px) drop-shadow(-12px 0 5px rgba(226,28,39,.72))}
   12%{opacity:1}
   88%{opacity:1}
-  100%{opacity:0;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 72%)) scale(1)}
+  100%{opacity:0;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 72%)) scale(1);filter:blur(.5px) drop-shadow(-18px 0 7px rgba(244,54,48,.8))}
+}
+@keyframes sidma-skill2-return{
+  0%{opacity:.78;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 72%)) scale(.98);filter:blur(1px) drop-shadow(13px 0 5px rgba(226,28,39,.58))}
+  100%{opacity:0;transform:translateX(calc(var(--sidma-skill2-start-x,0px) - 72%)) scale(.94);filter:blur(1.8px)}
 }
 @keyframes sidma-skill2-impact{
   0%{opacity:0;transform:translateX(calc(var(--sidma-skill2-end-x,0px) - 61%)) scale(.88);filter:brightness(.72)}
