@@ -61,6 +61,7 @@ function renderHub(){
   const h=HEROES[db.hero||'wira'];
   const levelNeed=xpForLevel(db.level),xpPct=Math.min(100,Math.round((db.levelXp||0)/levelNeed*100));
   document.body.classList.toggle('hero-bunga',(db.hero||'wira')==='bunga');
+  document.body.classList.toggle('hero-sidma',(db.hero||'wira')==='sidma');
   const heroId=db.hero||'wira',hubHero=document.getElementById('hubHeroImg'),hubFx=document.getElementById('hubMathFx');
   hubHero.src=h.hub||h.idle; hubHero.alt=h.name;
   if(hubFx){hubFx.src=h.hubFx||'';hubFx.classList.toggle('hidden',!h.hubFx);hubFx.dataset.hero=heroId}
