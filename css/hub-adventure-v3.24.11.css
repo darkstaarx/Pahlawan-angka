@@ -4,7 +4,7 @@
 .hubScene{isolation:isolate}
 .hubHeroCharacter{left:-9%!important;bottom:-11px!important;width:99%!important;height:178px!important;z-index:2;animation:hubAdventureBreathe 3.8s ease-in-out infinite}
 body.hero-bunga .hubHeroCharacter{left:-8%!important;width:93%!important;height:165px!important}
-body.hero-sidma .hubHeroCharacter{left:-10%!important;bottom:-18px!important;width:105%!important;height:188px!important;object-fit:contain!important;object-position:center bottom!important;filter:none!important;image-rendering:auto!important}
+body.hero-sidma .hubHeroCharacter{left:-10%!important;bottom:-32px!important;width:105%!important;height:188px!important;object-fit:contain!important;object-position:center bottom!important;filter:none!important;image-rendering:auto!important}
 body.hero-sidma .hubMathFx{left:-16%!important;bottom:-8px!important;width:102%!important;height:158px!important;opacity:.24!important;filter:saturate(1.04) drop-shadow(0 0 7px rgba(255,164,43,.28))!important}
 .hubMathFx{position:absolute;left:-12%;bottom:-3px;width:92%;height:145px;object-fit:contain;opacity:.28;filter:saturate(1.08) drop-shadow(0 0 7px rgba(77,194,255,.3));z-index:1;pointer-events:none;animation:hubMathDrift 8s ease-in-out infinite}
 .hubMathFx[data-hero="bunga"]{left:-17%;bottom:-11px;width:100%;height:158px;opacity:.24;filter:saturate(.95) drop-shadow(0 0 7px rgba(157,232,96,.28));animation-duration:9.5s}
