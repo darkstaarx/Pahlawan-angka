@@ -34,7 +34,7 @@ function powerLevel(s){
  if(accuracy>=60||Number(s.mastery||0)>=50)return 2;
  return 1;
 }
-function powerLabel(level){return level===3?"Kuasa Mantap":level===2?"Sedang Dikuatkan":level===1?"Misi Utama":"Masih Diteroka"}
+function powerLabel(level){return level===3?"Kuasa Mantap":level===2?"Sedang Dikuatkan":level===1?"Fokus Seterusnya":"Masih Diteroka"}
 function powerStars(level){return `<span class="powerStars" aria-label="${level} daripada 3 bintang">${[1,2,3].map(n=>`<i class="${n<=level?'lit':''}">★</i>`).join("")}</span>`}
 function skillReason(m,s,level){
  const attempts=skillAttempts(s),accuracy=skillAccuracy(s),mis=topMisEntry(s),hintRate=attempts?Number(s.hints||0)/attempts:0;
@@ -43,7 +43,7 @@ function skillReason(m,s,level){
  if(mis)return `Berjaya ${s.correct} daripada ${attempts} cabaran; ${PARENT_MISCONCEPTION_COPY[mis[0]]||'corak kesalahan yang sama masih berulang'}.`;
  if(hintRate>.4)return `Asasnya sudah kelihatan, tetapi Petunjuk atau bantuan Cikgu Dimensi masih kerap diperlukan.`;
  if(level===2)return `Berjaya ${s.correct} daripada ${attempts} cabaran. Kuasa ini semakin stabil dengan latihan.`;
- return `Berjaya ${s.correct} daripada ${attempts} cabaran (${accuracy}%). Asas kemahiran ini perlu dibina semula.`;
+ return `Berjaya ${s.correct} daripada ${attempts} cabaran (${accuracy}%). Langkah seterusnya ialah mengukuhkan asas melalui latihan ringkas.`;
 }
 function powerCard(m,s){
  const level=powerLevel(s);
@@ -63,8 +63,8 @@ function parentPowerSummary(core,attempts){
  const mission=priority[0]||developing[0]||null;
  const display=[...priority,...developing.filter(m=>!priority.includes(m)),...strong].slice(0,5);
  if(attempts<5)return {headline:`Perjalanan ${db.name} baru bermula`,intro:"Cikgu Dimensi masih mengumpul petunjuk daripada cara jawapan dibuat. Selepas beberapa cabaran lagi, kuasa yang mantap dan misi utama akan muncul di sini.",strong,priority,display,mission:null};
- if(priority.length)return {headline:`${db.name} sedang menguatkan kuasa Darjah ${coreGrade()}`,intro:`${strong.length?'Beberapa kuasa sudah semakin mantap. ':''}Sekarang ada ${priority.length===1?'satu misi utama':'dua misi utama'} yang perlu diberi perhatian sebelum cabaran menjadi lebih sukar.`,strong,priority,display,mission};
- if(developing.length)return {headline:`Kuasa ${db.name} semakin stabil`,intro:"Tiada jurang besar dikesan setakat ini. Beberapa kemahiran masih sedang dikuatkan melalui latihan pendek dan semakan semula.",strong,priority,display,mission};
+ if(priority.length)return {headline:`${db.name} sedang menguatkan kuasa Darjah ${coreGrade()}`,intro:`${strong.length?'Beberapa kuasa sudah semakin mantap. ':''}Sekarang ada ${priority.length===1?'satu fokus seterusnya':'dua fokus seterusnya'} yang sesuai didahulukan sebelum cabaran menjadi lebih sukar.`,strong,priority,display,mission};
+ if(developing.length)return {headline:`Kuasa ${db.name} semakin stabil`,intro:"Corak pembelajaran kelihatan seimbang. Beberapa kemahiran sedang dikuatkan melalui latihan pendek dan semakan semula.",strong,priority,display,mission};
  return {headline:`Pengembaraan ${db.name} berjalan baik`,intro:"Kuasa yang telah diuji menunjukkan kemajuan yang baik. Teruskan misi biasa supaya pencapaian ini kekal konsisten.",strong,priority,display,mission};
 }
 
@@ -109,7 +109,7 @@ function renderParent(){
  document.getElementById("summaryTab").innerHTML=`
   <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">RINGKASAN ${parentSafe(db.name).toUpperCase()} · DARJAH ${g}</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Dimensi menerangkan kemajuan anak"></section>
   <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>Soalan dijawab</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>Ketepatan semasa</small></div><div><span>✓</span><b>${summary.strong.length}</b><small>Kemahiran mantap</small></div></div>
-  <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">PERLU PERHATIAN</div>${parentInsightItem(priorityLead,'priority')}</div></section>
+  <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">FOKUS SETERUSNYA</div>${parentInsightItem(priorityLead,'priority')}</div></section>
   <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-wajar/welcome.webp" alt=""><span><b>Langkah Cikgu Dimensi</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
  let byCh={};core.forEach(m=>(byCh[m.chapter]??=[]).push(m));
  document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat bukti latihan mengikut topik. Pilih “Latih” hanya jika mahu memberi tumpuan tambahan.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;

@@ -1,4 +1,4 @@
-// App shell v3.52.10 — Sidma finisher single-impact timing, bounded Sigma scale and clean recovery. Curriculum systems unchanged.
+// App shell v3.53.0 — one-off family pricing and parent-friendly progress language. Curriculum systems unchanged.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
