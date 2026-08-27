@@ -1,4 +1,4 @@
-// App shell v3.54.1 — Bunga scale/impact polish and Wira ice-electric finisher redesign.
+// App shell v3.54.2 — illustrated Wira ice-electric finisher asset set.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
@@ -10,6 +10,7 @@ const APP_SHELL=[
   './assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
   './css/effort-restu-v3.32.0.css','./js/effort-guard-v3.32.0.js',
   './assets/heroes/wira/attack.webp','./assets/heroes/wira/frames/attack-dash-v2.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
+  './assets/fx/wira/final-v2/fx-charge-aura-v1.webp','./assets/fx/wira/final-v2/fx-frost-seal-v1.webp','./assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp','./assets/fx/wira/final-v2/fx-impact-end-v1.webp',
   './assets/heroes/bunga/redesign-v1/runtime/idle-master-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/idle-breathe-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/profile-happy-v1.webp',
   './assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/quick-ready-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/staff-aim-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-projectile-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-impact-v1.webp',
   './assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp',
