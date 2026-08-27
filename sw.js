@@ -1,9 +1,9 @@
-// App shell v3.54.0 — Bunga mathematical-caster redesign and optimized transparent battle assets.
+// App shell v3.54.1 — Bunga scale/impact polish and Wira ice-electric finisher redesign.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest','./js/version.js',
-  './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js','./css/hero-bunga-v2.0.0.css','./js/hero-bunga-v2.0.0.js',
+  './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js','./css/hero-wira-finisher-v1.0.0.css','./js/hero-wira-finisher-v1.0.0.js','./css/hero-bunga-v2.0.0.css','./js/hero-bunga-v2.0.0.js',
   './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js',
   './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp','./assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp','./assets/heroes/sidma/frames/skill2-dash-v1.webp','./assets/heroes/sidma/frames/skill2-impact-v1.webp',
   './assets/heroes/sidma/hub/adventure-v1.webp','./assets/ui/coin-gold.svg','./assets/heroes/sidma/profile-happy-v1.webp','./assets/fx/hub/sidma-math-sigma-v1.webp',

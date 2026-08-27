@@ -1,6 +1,8 @@
 /* Bunga redesign v2 — stationary caster frames and isolated FX. */
 body.hero-bunga #game #hero .hero-frame-idle{height:calc(var(--pa-hero-h)*1.06)!important;bottom:0!important;left:50%!important;transform:translateX(-50%)!important}
 body.hero-bunga #game #hero.attacking:not(.charging-finisher) .sprite{animation:none!important;transform:none!important}
+body.hero-bunga #game #hero.charging-finisher .hero-frame:not(.hero-frame-idle){opacity:0!important;visibility:hidden!important}
+body.hero-bunga #game #hero.charging-finisher .hero-frame-idle{opacity:1!important;visibility:visible!important;height:calc(var(--pa-hero-h)*1.06)!important;transform:translateX(-50%)!important}
 #game #hero .hero-frame.bunga-v2-legacy-suppressed{opacity:0!important;visibility:hidden!important}
 #game #hero .bunga-v2-frames{position:absolute;inset:0;z-index:4;pointer-events:none}
 #game #hero .bunga-v2-frame{position:absolute;left:50%;bottom:0;top:auto;height:calc(var(--pa-hero-h)*1.06);width:auto;max-width:none;max-height:none;object-fit:contain;object-position:center bottom;transform:translateX(-50%);transform-origin:50% 100%;opacity:0;visibility:hidden;filter:drop-shadow(0 7px 6px rgba(0,0,0,.45));pointer-events:none}
@@ -12,7 +14,7 @@ body.hero-bunga #game #hero.attacking:not(.charging-finisher) .sprite{animation:
 #game #hero .bunga-v2-skill2-release{height:calc(var(--pa-hero-h)*1.08);bottom:5%}
 #game #hero .bunga-v2-recovery{height:calc(var(--pa-hero-h)*1.04)}
 
-#game #battleArena .bunga-v2-projectile,#game #battleArena .bunga-v2-normal-impact,#game #battleArena .bunga-v2-charge-arc,#game #battleArena .bunga-final-bloom{position:absolute;pointer-events:none;opacity:0;z-index:14;width:auto;max-width:none;transform:translate(-50%,-50%)}
+#game #battleArena .bunga-v2-projectile,#game #battleArena .bunga-v2-normal-impact,#game #battleArena .bunga-v2-charge-arc,#game #battleArena .bunga-final-bloom,#game #battleArena .bunga-final-ring{position:absolute;pointer-events:none;opacity:0;z-index:14;width:auto;max-width:none;transform:translate(-50%,-50%)}
 #game #battleArena .bunga-v2-projectile{left:0;top:0;height:min(12vw,54px)}
 #game #battleArena .bunga-v2-projectile.active{animation:bungaPetalFlight var(--bunga-flight-ms,250ms) linear both}
 @keyframes bungaPetalFlight{0%{opacity:0;transform:translate(var(--bunga-start-x),var(--bunga-start-y)) translate(-50%,-50%) scale(.74);filter:blur(.5px)}12%,82%{opacity:1}100%{opacity:0;transform:translate(var(--bunga-end-x),var(--bunga-end-y)) translate(-50%,-50%) scale(1);filter:blur(0)}}
@@ -35,12 +37,17 @@ body.hero-bunga #game #hero.attacking:not(.charging-finisher) .sprite{animation:
 @keyframes bungaFinalChargeAura{0%{opacity:0;transform:translateX(-50%) scale(.48) rotate(-16deg)}30%,78%{opacity:.85;transform:translateX(-50%) scale(.82) rotate(0)}100%{opacity:0;transform:translateX(-50%) scale(.9) rotate(8deg)}}
 body.hero-bunga #game #enemy>.finisher-bloom{display:none!important}
 #game #battleArena .bunga-final-bloom{height:var(--bunga-final-size,min(46vw,220px))}
+#game #battleArena .bunga-final-ring{height:var(--bunga-final-size,min(46vw,220px));z-index:13;filter:hue-rotate(-12deg) saturate(1.2) brightness(1.18) drop-shadow(0 0 16px rgba(255,224,116,.78))}
+#game #battleArena .bunga-final-ring.form{animation:bungaFinalRing 520ms cubic-bezier(.16,.74,.2,1) both}
+#game #battleArena .bunga-final-ring.compress{animation:bungaFinalRingCompress 210ms ease-in both}
 #game #battleArena .bunga-final-bloom.form{animation:bungaFinalForm 500ms cubic-bezier(.18,.72,.2,1) both}
 #game #battleArena .bunga-final-bloom.form.compress{animation:bungaFinalCompress 190ms ease-in both}
 #game #battleArena .bunga-final-bloom.impact{animation:bungaFinalImpact 300ms ease-out both}
 @keyframes bungaFinalForm{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-20deg)}25%{opacity:.75}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
 @keyframes bungaFinalCompress{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:1;transform:translate(-50%,-50%) scale(.46)}}
 @keyframes bungaFinalImpact{0%{opacity:1;transform:translate(-50%,-50%) scale(.42)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+@keyframes bungaFinalRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.18) rotate(28deg)}28%{opacity:.72}100%{opacity:.9;transform:translate(-50%,-50%) scale(1.18) rotate(-8deg)}}
+@keyframes bungaFinalRingCompress{0%{opacity:.9;transform:translate(-50%,-50%) scale(1.18) rotate(-8deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(.38) rotate(-34deg);filter:brightness(2.1) drop-shadow(0 0 24px #fff2ad)}}
 body.hero-bunga #game #battleArena.shake,body.hero-bunga #game #battleArena.finisher-shake{animation:none!important}
 
 @media(max-width:420px){#game #hero .bunga-v2-frame{height:calc(var(--pa-hero-h)*1.03)}#game #battleArena .bunga-v2-projectile{height:42px}.bunga-final-charge-aura{width:min(var(--aura-w,210px),50vw)}}

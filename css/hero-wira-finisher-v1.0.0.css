@@ -1,0 +1,23 @@
+/* Wira final v2 — restrained ice-electric seal formed directly on the enemy. */
+#game #battleArena .wira-frost-seal,#game #battleArena .wira-ice-core,#game #battleArena .wira-ice-burst{position:absolute;pointer-events:none;opacity:0;z-index:15;transform:translate(-50%,-50%);transform-origin:50% 50%}
+#game #battleArena .wira-frost-seal{width:var(--wira-final-size,min(42vw,190px));aspect-ratio:1;border:2px solid rgba(153,231,255,.86);border-radius:50%;box-shadow:0 0 11px #fff,0 0 27px rgba(58,180,255,.8),inset 0 0 18px rgba(110,224,255,.5)}
+#game #battleArena .wira-frost-seal::before,#game #battleArena .wira-frost-seal::after{content:"";position:absolute;inset:12%;border:2px solid rgba(219,250,255,.88);transform:rotate(45deg);box-shadow:0 0 10px #72dfff}
+#game #battleArena .wira-frost-seal::after{inset:25%;transform:rotate(22.5deg)}
+#game #battleArena .wira-frost-seal i{position:absolute;left:50%;top:50%;width:48%;height:2px;background:linear-gradient(90deg,#fff,rgba(69,201,255,.9),transparent);transform-origin:0 50%;transform:rotate(var(--arc-angle));filter:drop-shadow(0 0 5px #8eeaff);opacity:0}
+#game #battleArena .wira-frost-seal.form{animation:wiraSealForm 330ms ease-out both}
+#game #battleArena .wira-frost-seal.arcing i{animation:wiraArcPulse 210ms ease-out both}
+#game #battleArena .wira-frost-seal.compress{animation:wiraSealCompress 100ms ease-in both}
+#game #battleArena .wira-ice-core{height:var(--wira-final-size,min(42vw,190px));width:auto;max-width:none;filter:hue-rotate(8deg) brightness(1.35) drop-shadow(0 0 13px #8de8ff)}
+#game #battleArena .wira-ice-core.form{animation:wiraCoreForm 330ms ease-out both}
+#game #battleArena .wira-ice-core.compress{animation:wiraCoreCompress 100ms ease-in both}
+#game #battleArena .wira-ice-burst{height:var(--wira-final-size,min(42vw,190px));width:auto;max-width:none;filter:brightness(1.8) saturate(1.35) drop-shadow(0 0 18px #fff) drop-shadow(0 0 30px #42c8ff)}
+#game #battleArena .wira-ice-burst.impact{animation:wiraIceBurst 300ms cubic-bezier(.12,.72,.2,1) both}
+@keyframes wiraSealForm{0%{opacity:0;transform:translate(-50%,-50%) scale(.28) rotate(-28deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
+@keyframes wiraArcPulse{0%{opacity:0}35%{opacity:1}100%{opacity:.2}}
+@keyframes wiraSealCompress{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:1;transform:translate(-50%,-50%) scale(.38);filter:brightness(2.4)}}
+@keyframes wiraCoreForm{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}100%{opacity:.86;transform:translate(-50%,-50%) scale(.76)}}
+@keyframes wiraCoreCompress{0%{opacity:.86;transform:translate(-50%,-50%) scale(.76)}100%{opacity:1;transform:translate(-50%,-50%) scale(.22)}}
+@keyframes wiraIceBurst{0%{opacity:1;transform:translate(-50%,-50%) scale(.24)}38%{opacity:1;transform:translate(-50%,-50%) scale(1.02)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.18)}}
+body.hero-wira #game #enemy.hit.finisher .finisher-ice,body.hero-wira #game #enemy.hit.finisher .impact-slash,body.hero-wira #game #enemy.hit.finisher .impact-burst{display:none!important}
+@media(max-width:420px){#game #battleArena .wira-frost-seal{width:min(44vw,176px)}}
+@media(prefers-reduced-motion:reduce){#game #battleArena .wira-frost-seal.form,#game #battleArena .wira-ice-core.form,#game #battleArena .wira-ice-burst.impact{animation-duration:1ms!important}}

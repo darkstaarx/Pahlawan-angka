@@ -75,20 +75,20 @@
 
   function ensureFinisherFx(){
     const arena=document.getElementById('battleArena'),layer=document.getElementById('finisherCinematic');if(!arena||!layer)return null;const f=heroData().fx||{};
-    return{aura:makeFx('bungaFinalChargeAura','bunga-final-charge-aura',layer,f.finalAura),bloom:makeFx('bungaFinalBloom','bunga-final-bloom',arena,f.finalBloom)};
+    return{aura:makeFx('bungaFinalChargeAura','bunga-final-charge-aura',layer,f.finalAura),bloom:makeFx('bungaFinalBloom','bunga-final-bloom',arena,f.finalBloom),ring:makeFx('bungaFinalRing','bunga-final-ring',arena,f.finalBloom)};
   }
   function runFinisher(){
     resetNormal();resetFinisher();const arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy'),parts=ensureFinisherFx();if(!arena||!enemy||!parts)return;
     parts.aura.classList.add('active');playBungaSfx('float');
-    afterFinisher(TIMING.finisher.form,()=>{const p=enemyCentre(arena,enemy);positionAt(parts.bloom,p);parts.bloom.style.setProperty('--bunga-final-size',p.size+'px');parts.bloom.src=heroData().fx?.finalBloom||'';parts.bloom.classList.remove('form','impact');void parts.bloom.offsetWidth;parts.bloom.classList.add('form');playBungaSfx('circle')});
-    afterFinisher(TIMING.finisher.compress,()=>{parts.bloom.classList.add('compress');playBungaSfx('compress')});
-    afterFinisher(TIMING.finisher.impact,()=>{parts.bloom.src=heroData().fx?.finalImpact||'';parts.bloom.classList.remove('form','compress');void parts.bloom.offsetWidth;parts.bloom.classList.add('impact');playBungaSfx('final')});
+    afterFinisher(TIMING.finisher.form,()=>{const p=enemyCentre(arena,enemy),size=Math.min(arena.getBoundingClientRect().width*.4,p.size*1.22);[parts.bloom,parts.ring].forEach(x=>{positionAt(x,p);x.style.setProperty('--bunga-final-size',size+'px')});parts.bloom.src=heroData().fx?.finalBloom||'';parts.ring.src=heroData().fx?.finalBloom||'';parts.bloom.classList.remove('form','impact');parts.ring.classList.remove('form','compress');void parts.bloom.offsetWidth;parts.bloom.classList.add('form');parts.ring.classList.add('form');playBungaSfx('circle')});
+    afterFinisher(TIMING.finisher.compress,()=>{parts.bloom.classList.add('compress');parts.ring.classList.add('compress');playBungaSfx('compress')});
+    afterFinisher(TIMING.finisher.impact,()=>{parts.ring.classList.remove('form','compress');parts.bloom.src=heroData().fx?.finalImpact||'';parts.bloom.classList.remove('form','compress');void parts.bloom.offsetWidth;parts.bloom.classList.add('impact');playBungaSfx('final')});
     afterFinisher(TIMING.finisher.end,resetFinisher);
   }
   function showHurt(){if((db?.hero||'')!=='bunga')return;const sprite=document.getElementById('heroVisual');ensureFrames(sprite);suppressLegacy(true);show('bungaHurt');after(430,resetNormal)}
   function showDefeat(){if((db?.hero||'')!=='bunga')return;const sprite=document.getElementById('heroVisual');ensureFrames(sprite);suppressLegacy(true);show('bungaDefeat')}
   function resetNormal(){clearTimers();hideFrames();suppressLegacy(false);document.getElementById('bungaSkill1Projectile')?.classList.remove('active');document.getElementById('bungaNormalImpact')?.classList.remove('skill1','skill2');document.getElementById('bungaSkill2Arc')?.classList.remove('active','release')}
-  function resetFinisher(){clearFinisherTimers();document.getElementById('bungaFinalChargeAura')?.classList.remove('active');const b=document.getElementById('bungaFinalBloom');if(b){b.classList.remove('form','compress','impact');b.removeAttribute('src')}}
+  function resetFinisher(){clearFinisherTimers();document.getElementById('bungaFinalChargeAura')?.classList.remove('active');['bungaFinalBloom','bungaFinalRing'].forEach(id=>{const b=document.getElementById(id);if(b){b.classList.remove('form','compress','impact');b.removeAttribute('src')}})}
 
   const originalPrepare=window.prepareHeroAttackVariant,originalClear=window.clearHeroAttackVariant;
   window.prepareHeroAttackVariant=function(el,finisher){const hero=(typeof db!=='undefined'&&db&&db.hero)||'wira';if(hero==='bunga'){resetNormal();if(finisher)runFinisher();else if(normalAttackCount++%2===0)runSkill1();else runSkill2();return}resetNormal();resetFinisher();if(typeof originalPrepare==='function')originalPrepare(el,finisher)};
