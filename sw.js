@@ -1,23 +1,26 @@
-// App shell v3.53.0 — one-off family pricing and parent-friendly progress language. Curriculum systems unchanged.
+// App shell v3.54.0 — Bunga mathematical-caster redesign and optimized transparent battle assets.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
   './','./index.html','./manifest.webmanifest','./js/version.js',
-  './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js',
+  './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js','./css/hero-bunga-v2.0.0.css','./js/hero-bunga-v2.0.0.js',
   './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js',
   './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp','./assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp','./assets/heroes/sidma/frames/skill2-dash-v1.webp','./assets/heroes/sidma/frames/skill2-impact-v1.webp',
   './assets/heroes/sidma/hub/adventure-v1.webp','./assets/ui/coin-gold.svg','./assets/heroes/sidma/profile-happy-v1.webp','./assets/fx/hub/sidma-math-sigma-v1.webp',
   './assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
   './css/effort-restu-v3.32.0.css','./js/effort-guard-v3.32.0.js',
   './assets/heroes/wira/attack.webp','./assets/heroes/wira/frames/attack-dash-v2.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
-  './assets/heroes/bunga/attack.webp','./assets/heroes/bunga/frames/attack-stance-aura-v4.webp','./assets/heroes/bunga/frames/attack-movement-portal-v4.webp','./assets/heroes/bunga/frames/attack-addition-v4.webp','./assets/heroes/bunga/frames/attack-subtraction-v4.webp','./assets/heroes/bunga/frames/attack-division-v4.webp',
+  './assets/heroes/bunga/redesign-v1/runtime/idle-master-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/idle-breathe-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/profile-happy-v1.webp',
+  './assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/quick-ready-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/staff-aim-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-projectile-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-impact-v1.webp',
+  './assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp',
+  './assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/hurt-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/defeat-v1.webp',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
   './assets/branding/login-scene-v2.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
   './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
   './assets/enemies/minions/askabus.webp','./assets/enemies/minions/syilinggit.webp','./assets/enemies/minions/pigiramid.webp',
-  './assets/heroes/wira/idle.webp','./assets/heroes/bunga/idle.webp','./assets/heroes/wira/profile-happy-v1.webp','./assets/heroes/bunga/profile-happy-v1.webp',
-  './assets/heroes/wira/hub/adventure-v1.webp','./assets/heroes/bunga/hub/adventure-v1.webp','./assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
+  './assets/heroes/wira/idle.webp','./assets/heroes/wira/profile-happy-v1.webp',
+  './assets/heroes/wira/hub/adventure-v1.webp','./assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
   './assets/pets/aurora/hub/adventure-v1.webp','./assets/pets/arif/hub/adventure-v1.webp','./assets/pets/kucing-pembaris/hub/adventure-v1.webp','./assets/pets/tiko/hub/adventure-v1.webp',
   './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg','./assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp',
   './css/game.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/parent-pin-recovery-v3.27.3.css','./css/google-auth-v3.25.2.css','./css/parent-dashboard-v3.25.4.css','./css/theme-controls-v3.25.5.css','./css/custom-picker-v3.25.6.css','./css/parent-learning-tools-v3.26.0.css','./css/hint-overlay-v3.28.1.css','./css/beta-trust-v3.29.0.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
