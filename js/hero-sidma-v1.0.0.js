@@ -185,21 +185,24 @@
     const arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy'),fx=ensureFinisherFx(arena);
     if(!arena||!enemy||!fx)return;
     const arenaBox=arena.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect();
+    const enemyVisual=enemy.querySelector('.enemySpriteWrap')||enemy.querySelector('#enemySprite')||enemy;
+    const enemyVisualBox=enemyVisual.getBoundingClientRect();
     const h=(typeof HEROES!=='undefined'&&HEROES.sidma)||{};
     fx.style.left=(enemyBox.left-arenaBox.left+enemyBox.width/2)+'px';
-    fx.style.top=(enemyBox.top-arenaBox.top+enemyBox.height*.46)+'px';
+    fx.style.top=(enemyVisualBox.top-arenaBox.top+enemyVisualBox.height*.5)+'px';
+    fx.style.setProperty('--sidma-finisher-size',Math.min(arenaBox.width*.42,enemyVisualBox.height*1.45)+'px');
     fx.src=(h.fx&&h.fx.impact)||'';
     if(typeof playSidmaSfx==='function')playSidmaSfx('finisher-charge');
-    // The release-hand beat completes as blackout clears. Only then does the
-    // Sigma form over the real enemy and burst at the 1630ms contact beat.
-    afterFinisher(1120,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
-    afterFinisher(1450,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('compress')});
-    afterFinisher(1630,()=>{
+    // Release happens inside blackout; the arena Sigma then owns one readable
+    // form -> expand -> compress -> impact sequence.
+    afterFinisher(920,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(1290,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('compress')});
+    afterFinisher(1430,()=>{
       if(typeof playSidmaSfx==='function')playSidmaSfx('explode');
       fx.src=(h.fx&&h.fx.impactEnd)||'';
       fx.classList.remove('sidma-finisher-sigma-active');void fx.offsetWidth;fx.classList.add('sidma-finisher-impact-end');
     });
-    afterFinisher(1880,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
+    afterFinisher(1650,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
   }
 
   const originalPrepare=window.prepareHeroAttackVariant;

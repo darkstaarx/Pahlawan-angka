@@ -1,4 +1,4 @@
-// App shell v3.52.9 — Sidma pre-FX finisher release, fast blurred dash, return beat and pet-combo acceleration. Curriculum systems unchanged.
+// App shell v3.52.10 — Sidma finisher single-impact timing, bounded Sigma scale and clean recovery. Curriculum systems unchanged.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

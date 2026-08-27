@@ -36,8 +36,13 @@ function triggerFinisherCinematic(){
  layer.setAttribute('aria-label',db.hero==='sidma'?'Rumus Penamat':'Serangan terakhir '+h.name);
  layer.classList.remove('active','release');void layer.offsetWidth;layer.classList.add('active');
  if(db.hero!=='sidma'&&typeof playSfx==='function')playSfx('auraCharge');
- setTimeout(()=>{layer.classList.add('release');if(typeof playSfx==='function'&&db.hero!=='wira'&&db.hero!=='sidma')playSfx('attack')},760);
- setTimeout(()=>layer.classList.remove('active','release'),1080);
+ const sidmaFinisher=db.hero==='sidma';
+ setTimeout(()=>{
+  layer.classList.add('release');
+  if(sidmaFinisher&&h.frames?.release)hero.src=h.frames.release;
+  if(typeof playSfx==='function'&&db.hero!=='wira'&&!sidmaFinisher)playSfx('attack');
+ },sidmaFinisher?650:760);
+ setTimeout(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
 }
 function triggerImpact(attackerId,targetId,tint,finisher){
  let attacker=document.getElementById(attackerId),target=document.getElementById(targetId),arena=document.getElementById("battleArena"),flash=document.getElementById("arenaFlash");
@@ -47,11 +52,11 @@ function triggerImpact(attackerId,targetId,tint,finisher){
  // Final blows are the hero's solo climax. Pets still assist every regular
  // attack, but never add a separate hit or delay to any hero finisher.
  const hasPet=!!(!finisher&&pet&&!pet.classList.contains("hidden")&&db?.rewards?.equippedPet);
- const heroLead=hasPet?420:0,finisherContact=sidmaFinishing?1500:820;
+ const heroLead=hasPet?420:0,finisherContact=sidmaFinishing?1430:820;
  const sidmaAttacking=attackerId==="hero"&&db?.hero==="sidma"&&!finisher;
  const sidmaSkill=sidmaAttacking&&window.PASidmaBattle?.getNextNormalSkill?.(),sidmaSkill2=sidmaSkill===2;
  const sidmaContact=sidmaSkill2?650:(hasPet?890:1305),sidmaDuration=sidmaSkill2?1350:(hasPet?1250:1750);
- let attackDuration=(finisher?(sidmaFinishing?2130:1450):(sidmaAttacking?sidmaDuration:720))+heroLead,contactDelay=(finisher?(sidmaFinishing?1630:finisherContact):(sidmaAttacking?sidmaContact:390))+heroLead,hitDuration=finisher?(tint==="bloom"?1080:900):520,shakeClass=sidmaFinishing?null:(finisher?"finisher-shake":"shake"),tintClass=sidmaFinishing?null:(tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice")),pulse=sidmaFinishing?null:(tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice"));
+ let attackDuration=(finisher?(sidmaFinishing?1780:1450):(sidmaAttacking?sidmaDuration:720))+heroLead,contactDelay=(finisher?(sidmaFinishing?1430:finisherContact):(sidmaAttacking?sidmaContact:390))+heroLead,hitDuration=finisher?(tint==="bloom"?1080:(sidmaFinishing?360:900)):520,shakeClass=sidmaFinishing?null:(finisher?"finisher-shake":"shake"),tintClass=sidmaFinishing?null:(tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice")),pulse=sidmaFinishing?null:(tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice"));
  if(attackerId==="hero"){
    if(pet&&!pet.classList.contains("hidden")){
      const petRect=pet.getBoundingClientRect(),targetRect=target.getBoundingClientRect();
@@ -66,10 +71,16 @@ function triggerImpact(attackerId,targetId,tint,finisher){
  if(attackerId==="hero"){
    clearHeroPhases();setTimeout(()=>attacker.classList.add("phase-anticipation"),heroLead);
    if(finisher){
-    const phaseContact=sidmaFinishing?840:finisherContact,phaseFollow=sidmaFinishing?1040:finisherContact+190,phaseRecover=sidmaFinishing?1850:finisherContact+380;
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+phaseContact);
-    if(db?.hero!=="bunga")setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+phaseFollow);
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+phaseRecover);
+    if(sidmaFinishing){
+     // Sidma's release-hand pose lives inside the blackout. Keep the arena
+     // body anchored afterwards so no shared follow-through frame leaks out.
+     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+1580);
+    }else{
+     const phaseContact=finisherContact,phaseFollow=finisherContact+190,phaseRecover=finisherContact+380;
+     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+phaseContact);
+     if(db?.hero!=="bunga")setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+phaseFollow);
+     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+phaseRecover);
+    }
    }else{
     if(db?.hero==="bunga"){
      setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+260);
@@ -93,7 +104,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    flash.classList.remove("pulse-red","pulse-ice","pulse-bloom");if(pulse){void flash.offsetWidth;flash.classList.add(pulse);setTimeout(()=>flash.classList.remove(pulse),finisher?620:360)}
    if(typeof playSfx==='function'&&!(attackerId==='hero'&&db?.hero==='sidma'))playSfx(attackerId==='hero'&&db?.hero==='wira'?'wiraSword':'hit');
  },contactDelay)
- return {defeatDelay:finisher?contactDelay+850:(hasPet?1120:340),completionDelay:attackDuration+80};
+ return {defeatDelay:finisher?(sidmaFinishing?contactDelay+260:contactDelay+850):(hasPet?1120:340),completionDelay:attackDuration+80};
 }
 function triggerPetFollowUp(target,delay){
  const pet=document.getElementById('battlePet');if(!pet||pet.classList.contains('hidden'))return;
