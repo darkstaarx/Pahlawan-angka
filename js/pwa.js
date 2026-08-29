@@ -30,7 +30,7 @@
   const devJs=`js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js?v=${DEV_EXPERIMENTS_VERSION}`;
   const combatCss=`css/combat-polish-v${COMBAT_POLISH_VERSION}.css?v=${COMBAT_POLISH_VERSION}`;
   const combatJs=`js/combat-polish-v${COMBAT_POLISH_VERSION}.js?v=${COMBAT_POLISH_VERSION}`;
-  const bossCss=`css/boss-stage-dev-v${BOSS_LAB_VERSION}.css?v=${BOSS_LAB_VERSION}`;
+  const bossCss=`css/boss-stage-dev-v${BOSS_LAB_VERSION}.css?v=${APP_VERSION}`;
   const bossJs=`js/dev-boss-lab-v${BOSS_LAB_VERSION}.js?v=${BOSS_LAB_VERSION}`;
   const targetCss=`css/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.css?v=${TARGET_ANCHOR_VERSION}`;
   const targetJs=`js/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.js?v=${TARGET_ANCHOR_VERSION}`;

@@ -9,6 +9,6 @@ assert(!/controllerchange[\s\S]{0,300}location\.reload/.test(pwa),'controller ch
 assert(!/clients\.claim\s*\(/.test(sw),'new worker still takes control of an active page');
 assert(!/client\.navigate\s*\(/.test(sw),'service-worker activation still navigates active clients');
 assert(/registration\.update\(\)/.test(pwa),'background update check was removed');
-assert(/PA_APP_VERSION='3\.55\.2'/.test(version),'release version is not 3.55.2');
-assert(/js\/version\.js\?v=3\.55\.2/.test(html)&&/js\/pwa\.js\?v=3\.55\.2/.test(html),'HTML cache bust is stale');
+assert(/PA_APP_VERSION='3\.55\.3'/.test(version),'release version is not 3.55.3');
+assert(/js\/version\.js\?v=3\.55\.3/.test(html)&&/js\/pwa\.js\?v=3\.55\.3/.test(html),'HTML cache bust is stale');
 console.log('PASS v3.55.2: PWA updates install without reloading or navigating active play');
