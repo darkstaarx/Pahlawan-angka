@@ -61,6 +61,7 @@ function chooseManualMissionSkill(){
  return ranked[0][0];
 }
 function chooseModeAndSkill(){
+ if(sess?.demoMode&&window.PADemo){sess.mode=sess.missionAnswered>=7?'adaptive':'demo';return window.PADemo.chooseSkill()}
  if(sess&&sess.devBankTest&&sess.devSkill){sess.mode="dev";return sess.devSkill}
  if(sess&&sess.guardianFocus&&sess.focusSkill){sess.mode="focus";return sess.focusSkill}
  const confirm=confirmationSkill();if(confirm){sess.mode="confirm";return confirm}

@@ -47,7 +47,8 @@ function setBattleTerrain(meta){
 if(db && !db.schoolGrade) db.schoolGrade=2;
 let selectedHero='wira';
 let sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:"calibrate",recoveryFor:null,stretchFor:null};
-function save(){localStorage.setItem("pa_coach_v6_full",JSON.stringify(db))}
+function swapDemoState(nextDb,nextSess){const previous={db,sess};db=nextDb;sess=nextSess;return previous}
+function save(){if(sess?.demoMode||db?.demoMode)return;localStorage.setItem("pa_coach_v6_full",JSON.stringify(db))}
 function initSkill(id){
  if(!db.skills[id]) db.skills[id]={mastery:(META[id].grade===db.schoolGrade?18:0),confidence:8,evidence:0,correct:0,wrong:0,hints:0,mis:{},lastSeen:0,stability:0,probePass:0,probeFail:0};
 }
@@ -131,7 +132,7 @@ function nextQ(){
  document.getElementById("why").textContent="";
  document.getElementById("coachMode").textContent=sess.guardianFocus?"Fokus Penjaga":(sess.devBankTest?"DEV TEST":(sess.mode==="recover"?"Bantuan":(sess.mode==="stretch"?"Bonus":"Misi")));
  document.getElementById("gradeLayer").textContent=m.grade===db.schoolGrade?gradeLabel(m.grade):(m.grade<db.schoolGrade?"Asas":"Bonus");
- document.getElementById("mastery").style.width=sess.devBankTest?Math.max(3,s.mastery)+"%":Math.min(100,Math.round((sess.missionAnswered||0)/(sess.coachAdaptive?PROGRESSION.coachMinQuestions:PROGRESSION.missionQuestions)*100))+"%";
+ document.getElementById("mastery").style.width=sess.demoMode?Math.min(100,Math.round((sess.missionAnswered||0)/10*100))+"%":(sess.devBankTest?Math.max(3,s.mastery)+"%":Math.min(100,Math.round((sess.missionAnswered||0)/(sess.coachAdaptive?PROGRESSION.coachMinQuestions:PROGRESSION.missionQuestions)*100))+"%");
  document.getElementById("kind").textContent=sess.bossStretchCurrent?`Cabaran Boss · ${m.title}`:qsv2LearnerTitle(m,q);
  document.getElementById("evidence").textContent=sess.guardianFocus?`Soalan ${(sess.missionAnswered||0)+1}/${sess.focusTarget}`:(sess.devBankTest?`${id} · Test ${(sess.missionAnswered||0)+1}`:(sess.coachAdaptive?`Cabaran Cikgu ${(sess.missionAnswered||0)+1}`:(sess.bossStretchCurrent?'Cabaran Boss +1 Darjah':`Soalan ${(sess.missionAnswered||0)+1}`))); updateMissionHud();
  applyEnemyVariant();
@@ -162,6 +163,7 @@ function enemyStageForQuestion(){
   const divisionRound=/\bdiv\b|bahagi|division/i.test([skillId,skillMeta.title,skillMeta.domain,sess?.q?.title,sess?.q?.misconception].filter(Boolean).join(' '));
   const minionIndex=divisionRound?MINION_ENEMIES.findIndex(x=>x.specialty==='division'):-1;
   const themedMinion=()=>({tier:'minion',index:minionIndex>=0?minionIndex:Math.floor(answered/3)%3});
+  if(sess?.demoMode)return answered>=9?{tier:'boss',chapter:String(skillMeta.chapter||1)}:themedMinion();
   if(sess?.devBankTest)return themedMinion();
   if(sess?.coachAdaptive){
     if(sess.bossActive&&sess.coachBossChapter)return {tier:'boss',chapter:String(sess.coachBossChapter)};
@@ -192,7 +194,7 @@ function applyEnemyVariant(forceReset=false){
   }
   if(isNewEnemy){
     sess.enemyKey=key;
-    sess.enemyMaxHp=stage.tier==='boss'?PROGRESSION.bossHits*4:12;
+    sess.enemyMaxHp=stage.tier==='boss'?(sess.demoMode?4:PROGRESSION.bossHits*4):12;
     sess.ehp=sess.enemyMaxHp;
   }
   sess.enemyTier=stage.tier;

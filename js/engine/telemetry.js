@@ -7,7 +7,7 @@
   if(!id){id='s-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);sessionStorage.setItem('pa_anon_session',id)}
   return id;
  }
- function enabled(){try{return !!db&&!db.telemetryOptOut}catch(_){return false}}
+ function enabled(){try{return !!db&&!db.demoMode&&!db.telemetryOptOut}catch(_){return false}}
  function record(type,payload={}){
   if(!enabled())return false;
   const events=read();

@@ -188,14 +188,13 @@ function respond(o,btn,question){
  if(!active||!question||question.token!==active.token||btn.dataset.questionToken!==String(active.token))return;
  const ok=o.tag==='correct'&&String(o.v)===String(question.answer);
  if(!ok&&!sess.retryState){beginHintRetry(o,btn,question);return;}
- if(sess.retryState&&!sess.hint)return;
  resolveAnswer(o,btn,question,ok);
 }
 function beginHintRetry(o,btn,question){
  const id=question.skill,s=scoreState(id),sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target;
- const effortLock=window.PAEffortGuard?.firstWrong?.(question,sec)===true;
+ const effortLock=!sess.demoMode&&window.PAEffortGuard?.firstWrong?.(question,sec)===true;
  sess.retryState={wrongTag:o.tag,wrongValue:o.v,firstSeconds:sec,streakBefore:sess.streak};
- btn.classList.add('no');document.querySelectorAll('.ans').forEach(x=>x.disabled=true);
+ btn.classList.add('no');btn.disabled=true;
  if(!qsv2Isolated){
   s.wrong++;s.evidence++;s.mis[o.tag]=(s.mis[o.tag]||0)+1;
   s.mastery=Math.max(0,s.mastery-(layerDelta>0?1.2:2.2));s.confidence=Math.max(0,s.confidence-(layerDelta>0?2:4));s.stability=Math.max(0,s.stability-3);if(layerDelta>0)s.probeFail++;
@@ -203,7 +202,7 @@ function beginHintRetry(o,btn,question){
  }
  if(window.PATelemetry)PATelemetry.response(id,false,o.tag,sec,false,question,sess.mode+'-first-attempt');
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Dimensi');}
- document.getElementById('feedback').innerHTML='<b>Hampir!</b> Rentak disimpan. Tekan <b>Petunjuk</b> yang menyala, kemudian cuba sekali lagi.';
+ document.getElementById('feedback').innerHTML='<b>Hampir!</b> Cuba sekali lagi. Petunjuk tersedia jika perlu.';
  document.getElementById('streak').textContent=sess.streak+' rentak · dibekukan';if(typeof playSfx==='function')playSfx('wrong');battle();save();
  if(effortLock){setTimeout(()=>activateEffortRestuLock(id),500);return;}
 }
@@ -217,7 +216,7 @@ function resolveAnswer(o,btn,question,ok){
   let ql=evidenceQuality(sec,question,sess.hint),baseGain=layerDelta>0?6:(layerDelta<0?9:8),gain=baseGain*ql*(1-s.mastery/135);
   s.mastery=Math.min(100,s.mastery+gain);s.confidence=Math.min(100,s.confidence+(layerDelta>0?4.5:5.5)*ql);s.stability=Math.min(100,s.stability+4*ql);
   if(layerDelta>0)s.probePass++;
-  document.getElementById("feedback").innerHTML=(sess.guardianFocus&&typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?'Bagus! Petunjuk membantu kamu menemui jawapan.':(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
+  document.getElementById("feedback").innerHTML=(sess.guardianFocus&&typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?(sess.hint?'Bagus! Petunjuk membantu kamu menemui jawapan.':'Bagus! Kamu cuba semula dan menemui jawapan.'):(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
   const devOneHit=!!(db&&isDevMode()&&db.devOneHit);let willFinish=devOneHit||sess.ehp<=4;usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish);sess.ehp-=devOneHit?Math.max(4,sess.ehp):4
  }else{
   btn.classList.add("no");s.wrong++;s.evidence++;sess.streak=0;
@@ -258,6 +257,7 @@ function resolveAnswer(o,btn,question,ok){
  if(sess.guardianFocus&&typeof guardianRecordAnswer==='function')guardianRecordAnswer(ok,id,sess.hint);
 
  if(sess.devBankTest){db.skills[id]=devSnapshot;s=db.skills[id]}
+ else if(sess.demoMode){}
  else{
    ensureCoachMemory();
    if(beforeMastery<85&&s.mastery>=85&&!db.masteryRewards[id]){db.masteryRewards[id]=true;addCoins(PROGRESSION.masteryCoinBonus);showRewardToast(`Kemahiran dikuasai! +${PROGRESSION.masteryCoinBonus} 🪙`)}
@@ -286,19 +286,20 @@ function resolveAnswer(o,btn,question,ok){
 	   setTimeout(triggerBossVictory,victoryDelay);
 	   setTimeout(showBossCheckpoint,victoryDelay+1750);
   }
-  if(!sess.devBankTest){addCoins(boss?8:3);setTimeout(()=>showRewardToast(boss?"Boss ditewaskan! +8 🪙":"Raksasa ditewaskan! +3 🪙"),boss?enemyTransitionDelay:enemyTransitionDelay-220)}
+  if(!sess.devBankTest&&!sess.demoMode){addCoins(boss?8:3);setTimeout(()=>showRewardToast(boss?"Boss ditewaskan! +8 🪙":"Raksasa ditewaskan! +3 🪙"),boss?enemyTransitionDelay:enemyTransitionDelay-220)}
   if(!boss){
    setTimeout(nextEnemy,enemyTransitionDelay);
    setTimeout(nextQ,enemyTransitionDelay+120);
   }
  }
 
- if(intervention&&!enemyDefeated&&!(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget)){
+ if(intervention&&!sess.demoMode&&!enemyDefeated&&!(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget)){
    sess.confirmSkill=null;sess.confirmRemaining=0;
    log(`Learning Camp dicetuskan untuk ${id}: ${intervention.type} / ${intervention.tag}.`);
    setTimeout(()=>learningStart(id,intervention),850);
    return;
  }
+	 if(sess.demoMode&&sess.missionAnswered>=10){setTimeout(()=>window.PADemo?.finish?.(),enemyDefeated?3200:1150);return;}
 	 if(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget){setTimeout(finishGuardianFocus,1150);return;}
 	 if(enemyDefeated)return;
 	 const bossClearDelay=(enemyDefeated&&db&&db.hero==="bunga")?1500:1100;

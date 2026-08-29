@@ -118,12 +118,12 @@
   }
 
   function scheduleSave(){
-    clearTimeout(state.saveTimer);if(!db)return;
+    clearTimeout(state.saveTimer);if(!db||sess?.demoMode||db?.demoMode)return;
     db.lastSavedAt=Date.now();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
     if(!state.user||!state.childId)return;state.saveTimer=setTimeout(syncSaveNow,900);
   }
   async function syncSaveNow(){
-    if(!state.user||!state.childId||!db)return false;
+    if(!state.user||!state.childId||!db||sess?.demoMode||db?.demoMode)return false;
     if(state.saveInFlight){state.savePending=true;return false;}
     state.saveInFlight=true;clearTimeout(state.saveTimer);
     if(!db.lastSavedAt)db.lastSavedAt=Date.now();db.cloudChildId=state.childId;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
@@ -228,7 +228,7 @@
     const oldSave=window.save;window.save=function(){oldSave();scheduleSave()};
     const oldStart=window.startNew;window.startNew=function(){oldStart();if(state.user)attachNewChild()};
     const oldScreen=window.screen;window.screen=function(id){oldScreen(id);if(ACTIVE_SCREENS.has(id))ensurePlaySession();else if(['login','parent','setup'].includes(id))endPlaySession(id==='parent'?'parent_lock':'user_exit');if(id==='parent')setTimeout(renderParentControls,0)};
-    if(window.PATelemetry?.response){const oldResponse=window.PATelemetry.response;window.PATelemetry.response=function(skillId,ok,tag,sec,usedHint,q,mode){oldResponse(skillId,ok,tag,sec,usedHint,q,mode);if(!state.user||!state.childId)return;state.client.from('learning_attempts').insert({client_event_id:crypto.randomUUID(),child_id:state.childId,question_id:String(q?.token||''),skill_id:String(skillId),grade:Number(db?.schoolGrade||1),is_correct:!!ok,used_hint:!!usedHint,response_ms:Math.round((Number(sec)||0)*1000),misconception_tag:ok?null:(tag||'generic'),battle_type:mode==='boss'?'boss':'practice'}).then(({error})=>{if(error)console.warn('Attempt sync failed',error)});};}
+    if(window.PATelemetry?.response){const oldResponse=window.PATelemetry.response;window.PATelemetry.response=function(skillId,ok,tag,sec,usedHint,q,mode){oldResponse(skillId,ok,tag,sec,usedHint,q,mode);if(sess?.demoMode||!state.user||!state.childId)return;state.client.from('learning_attempts').insert({client_event_id:crypto.randomUUID(),child_id:state.childId,question_id:String(q?.token||''),skill_id:String(skillId),grade:Number(db?.schoolGrade||1),is_correct:!!ok,used_hint:!!usedHint,response_ms:Math.round((Number(sec)||0)*1000),misconception_tag:ok?null:(tag||'generic'),battle_type:mode==='boss'?'boss':'practice'}).then(({error})=>{if(error)console.warn('Attempt sync failed',error)});};}
   }
 
   async function init(){
