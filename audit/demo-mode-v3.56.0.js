@@ -8,12 +8,13 @@ has(app.includes('if(sess?.demoMode||db?.demoMode)return'),'local save is not de
 has(cloud.includes('sess?.demoMode||db?.demoMode'),'cloud save is not demo-guarded');
 has(telemetry.includes('!db.demoMode'),'local telemetry is not demo-guarded');
 has(demo.includes('10 soalan')&&demo.includes('missionAnswered:0'),'10-question demo setup missing');
+has(demo.includes("#login .cloudLoginCard, #login .loginCard"),'demo entry is not mounted against the live login container');
 has(app.includes("answered>=9?{tier:'boss'"),'question 10 mini boss staging missing');
 has(app.includes("sess.demoMode?4:PROGRESSION.bossHits*4"),'one-question demo boss HP missing');
 has(demo.includes('Muat Turun Worksheet Demo')&&tools.includes('async function demoWorksheet'),'demo worksheet path missing');
 has(tools.includes('VERSI DEMO')&&tools.includes("slice(0,8)"),'8-question watermarked worksheet missing');
 has(demo.includes('affierul@gmail.com')&&demo.includes('Maklum Balas Demo Pahlawan Angka'),'feedback mailto missing');
 has(!demo.includes('Nama anak')&&!demo.includes('child name'),'feedback includes child identity');
-has(index.includes('demo-mode-v3.56.0.js?v=3.56.0')&&index.includes('demo-mode-v3.56.0.css?v=3.56.0'),'demo assets not cache-busted');
-has(version.includes("'3.56.0'")&&sw.includes('v3.56.0'),'release version is not 3.56.0');
-console.log(JSON.stringify({status:fail.length?'fail':'pass',checks:15,failures:fail},null,2));if(fail.length)process.exit(1);
+has(index.includes('demo-mode-v3.56.0.js?v=3.56.1')&&index.includes('demo-mode-v3.56.0.css?v=3.56.0'),'demo assets not cache-busted');
+has(version.includes("'3.56.1'")&&sw.includes('v3.56.1'),'release version is not 3.56.1');
+console.log(JSON.stringify({status:fail.length?'fail':'pass',checks:16,failures:fail},null,2));if(fail.length)process.exit(1);

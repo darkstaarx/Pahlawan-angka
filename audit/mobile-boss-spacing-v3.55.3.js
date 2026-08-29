@@ -8,5 +8,5 @@ assert(/@media\(max-width:600px\)[\s\S]*--pa-boss-stage-inset:44px/.test(css),'m
 assert(/@media\(max-width:380px\).*--pa-boss-stage-inset:42px/.test(css),'narrow mobile boss inset is missing');
 assert(/right:calc\(var\(--pa-enemy-inset\) \+ var\(--pa-boss-stage-inset\)\)/.test(css),'boss-only stage inset is not applied');
 assert(/bossCss=`css\/boss-stage-dev-v\$\{BOSS_LAB_VERSION\}\.css\?v=\$\{APP_VERSION\}`/.test(pwa),'boss CSS does not use release cache bust');
-assert(/PA_APP_VERSION='3\.56\.0'/.test(version),'release version is not 3.56.0');
-console.log('PASS v3.56.0: mobile boss moves inward without changing hero or minion staging');
+assert(/PA_APP_VERSION='3\.56\.1'/.test(version),'release version is not 3.56.1');
+console.log('PASS v3.56.1: mobile boss moves inward without changing hero or minion staging');

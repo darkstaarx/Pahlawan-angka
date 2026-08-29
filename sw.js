@@ -1,4 +1,4 @@
-// App shell v3.56.0 — optional hints and isolated parent demo.
+// App shell v3.56.1 — mount guest demo on the live login card.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
