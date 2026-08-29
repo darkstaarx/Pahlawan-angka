@@ -1,4 +1,4 @@
-// App shell v3.55.0 — closed-beta question variety and hub readiness release.
+// App shell v3.55.1 — prevent late profile callbacks from interrupting battle.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

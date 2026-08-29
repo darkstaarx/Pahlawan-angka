@@ -9,7 +9,7 @@ const HERO={
   bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'},
   sidma:{id:'sidma',name:'Sidma',power:'Rumus Sigma',src:'assets/heroes/sidma/profile-happy-v1.webp'}
 };
-let rendering=false, statsLoading=false, editorHero='wira', editorProfileId=null, deleteProfileId=null, emptyPrompted=false;
+let rendering=false, statsLoading=false, editorHero='wira', editorProfileId=null, deleteProfileId=null, emptyPrompted=false, profileSelectPromise=null;
 const $=id=>document.getElementById(id);
 const safe=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const cloud=()=>window.PACloud||null;
@@ -333,10 +333,18 @@ async function confirmDelete(){
 }
 
 async function selectProfile(id){
-  if(!profileById(id))await refreshProfiles();
-  const profile=profileById(id);await cloud()?.selectChild?.(id,false);
-  if(!db?.onboarding?.completed&&profile&&window.PAOnboarding?.beginExisting)return window.PAOnboarding.beginExisting(profile);
-  if(typeof renderHub==='function')renderHub();
+  // Prevent double taps / overlapping cloud reads from completing later and
+  // pulling an active battle back to Hub.
+  if(profileSelectPromise)return profileSelectPromise;
+  profileSelectPromise=(async()=>{
+    if(!profileById(id))await refreshProfiles();
+    const profile=profileById(id);await cloud()?.selectChild?.(id,false);
+    const mayNavigate=document.body.dataset.screen==='login';
+    if(!mayNavigate)return;
+    if(!db?.onboarding?.completed&&profile&&window.PAOnboarding?.beginExisting)return window.PAOnboarding.beginExisting(profile);
+    if(typeof renderHub==='function')renderHub();
+  })();
+  try{return await profileSelectPromise}finally{profileSelectPromise=null}
 }
 async function openManager(){
   if(!signed())return screen('login');

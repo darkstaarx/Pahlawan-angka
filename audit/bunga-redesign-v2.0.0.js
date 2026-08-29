@@ -21,7 +21,7 @@ check(html.indexOf('hero-sidma-v1.0.0.js')<html.indexOf('hero-bunga-v2.0.0.js'),
 check(/finisher-bloom\{display:none!important\}/.test(moduleCss),'Legacy Bunga thorn finisher is hidden');
 check(/attacking:not\(\.charging-finisher\).*animation:none/.test(moduleCss.replace(/\n/g,' ')),'Generic melee motion is disabled for stationary Bunga');
 check(!/assets\/heroes\/wira/.test(moduleJs)&&!/assets\/heroes\/sidma/.test(moduleJs),'Bunga module does not reference Wira/Sidma assets');
-check(/PA_APP_VERSION='3\.55\.0'/.test(version)&&/hero-bunga-v2\.0\.0\.js\?v=3\.54\.1/.test(html),'Bunga polish remains loaded under app release 3.55.0');
+check(/PA_APP_VERSION='3\.55\.1'/.test(version)&&/hero-bunga-v2\.0\.0\.js\?v=3\.54\.1/.test(html),'Bunga polish remains loaded under app release 3.55.1');
 check(/bungaFinalRing/.test(moduleJs)&&/bunga-final-ring/.test(moduleCss),'Teorem Mekar uses a second geometric compression ring');
 check(assets.every(p=>sw.includes(`./${p}`)),'Every mapped Bunga runtime asset is available offline');
 console.log(`\n${pass} passed, ${fail} failed`);if(fail)process.exit(1);
