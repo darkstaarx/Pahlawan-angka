@@ -63,11 +63,11 @@ function sample(ctx,id,n,mastery){
     ok([...set].every(a=>a.startsWith('money_')),`${id}: archetype is explicitly money-namespaced`);
   }
   ok(archByskill['D2.4.1'].size===3&&['money_recognise_value','money_recognise_total','money_recognise_compare'].every(a=>archByskill['D2.4.1'].has(a)),'D2.4.1 exposes all 3 genuine internal sub-modes (value/total/compare), matching moneyQ\'s authored mode pool');
-  ok([...archByskill['D2.4.2']].every(a=>a==='money_add'),'D2.4.2 is tagged as addition');
-  ok([...archByskill['D2.4.3']].every(a=>a==='money_subtract'),'D2.4.3 is tagged as subtraction');
-  ok([...archByskill['D2.4.4']].every(a=>a==='money_multiply'),'D2.4.4 is tagged as multiplication');
-  ok([...archByskill['D2.4.5']].every(a=>a==='money_divide'),'D2.4.5 is tagged as division');
-  ok([...archByskill['D2.4.6']].every(a=>a==='money_save'),'D2.4.6 is tagged as savings');
+  ok([...archByskill['D2.4.2']].every(a=>a.startsWith('money_add_')),'D2.4.2 keeps the addition namespace across its sub-modes');
+  ok([...archByskill['D2.4.3']].every(a=>a.startsWith('money_subtract_')),'D2.4.3 keeps the subtraction namespace across its sub-modes');
+  ok([...archByskill['D2.4.4']].every(a=>a.startsWith('money_multiply_')),'D2.4.4 keeps the multiplication namespace across its sub-modes');
+  ok([...archByskill['D2.4.5']].every(a=>a.startsWith('money_divide_')),'D2.4.5 keeps the division namespace across its sub-modes');
+  ok([...archByskill['D2.4.6']].every(a=>a.startsWith('money_save_')),'D2.4.6 keeps the savings namespace across its sub-modes');
   ok(archByskill['D2.4.7'].size>=4,'D2.4.7 exposes multiple genuine internal sub-modes, matching moneyQ\'s 5-mode pool');
 }
 
@@ -79,18 +79,18 @@ function sample(ctx,id,n,mastery){
   const a1=new Set(sample(ctx,'D2.5.1',100).map(q=>q.archetypeId));
   const a2=new Set(sample(ctx,'D2.5.2',100).map(q=>q.archetypeId));
   const a3=new Set(sample(ctx,'D2.5.3',100).map(q=>q.archetypeId));
-  eq([...a1],['time_read_clock'],'D2.5.1 is exclusively clock-reading');
-  eq([...a2],['time_convert_unit'],'D2.5.2 is exclusively unit-conversion');
-  ok(a3.size===2&&a3.has('time_duration_end')&&a3.has('time_duration_span'),'D2.5.3 exposes both genuine internal sub-modes (find-end-time / find-duration), matching the original topic-5.js 2-mode design');
-  ok(a1.values().next().value!==a2.values().next().value,'D2.5.1 and D2.5.2 archetypes differ');
+  ok(a1.size===3&&['read_clock','match_words','later_time'].every(a=>a1.has(a)),'D2.5.1 covers clock reading, clock words and forward time');
+  ok(a2.size===3&&['convert_forward','convert_reverse','compare_units'].every(a=>a2.has(a)),'D2.5.2 covers forward/reverse conversion and unit comparison');
+  ok(a3.size===3&&['find_end','find_duration','find_start'].every(a=>a3.has(a)),'D2.5.3 covers end time, duration and start time');
+  ok(![...a1].some(a=>a2.has(a)),'D2.5.1 and D2.5.2 archetypes remain distinct');
   // Prove the actual conversion competency (hour->minute / day->hour / week->day) is present.
   const qs=sample(ctx,'D2.5.2',150);
   const sawHourMin=qs.some(q=>/jam.*=.*minit/i.test(q.prompt));
   const sawDayHour=qs.some(q=>/hari.*=.*jam/i.test(q.prompt));
   const sawWeekDay=qs.some(q=>/minggu.*=.*hari/i.test(q.prompt));
   ok(sawHourMin&&sawDayHour&&sawWeekDay,'D2.5.2 genuinely covers all three original conversion relationships (hour-minute, day-hour, week-day)');
-  ok(!qs.some(q=>/<svg|clockvisual|timelinevisual/i.test(q.prompt)),'D2.5.2 prompts are correctly tagged symbolic (no stray visual)');
-  ok(qs.every(q=>q.representation==='symbolic'),'D2.5.2 representation is symbolic, not misclassified as visual');
+  ok(!qs.some(q=>/<svg|clockvisual|timelinevisual/i.test(q.prompt)),'D2.5.2 has no stray visual');
+  ok(qs.filter(q=>q.archetypeId!=='compare_units').every(q=>q.representation==='symbolic'),'D2.5.2 conversion modes are symbolic');
 }
 
 // =======================================================================
@@ -103,8 +103,8 @@ function sample(ctx,id,n,mastery){
   ok(set1.size>=1&&set2.size>=1&&set3.size>=1,'each D2.8.x skill produces at least one archetype');
   const sawTally=a1.some(q=>/gundalan/i.test(q.prompt));
   ok(sawTally,'D2.8.1 genuinely reaches tally-table (gundalan) data-collection content');
-  const sawRawArrange=a1.some(q=>/Data dikumpul/.test(q.prompt)&&/disusun ke dalam jadual gundalan/.test(q.prompt));
-  ok(sawRawArrange,'D2.8.1 reaches the raw-data-to-tally arrangement mode specifically');
+  const sawRawCount=a1.some(q=>q.archetypeId==='raw_count'&&/^Data:/i.test(String(q.prompt).replace(/<[^>]*>/g,'')));
+  ok(sawRawCount,'D2.8.1 reaches the raw-data counting mode specifically');
 }
 
 // =======================================================================
@@ -250,11 +250,19 @@ ok(checks>100,'a substantial number of metadata/uniqueness checks ran across all
 // =======================================================================
 {
   const ctx=buildCtx();
-  const a13=new Set(sample(ctx,'D2.1.3',150).map(q=>q.archetypeId));
-  const a17=new Set(sample(ctx,'D2.1.7',150).map(q=>q.archetypeId));
-  eq([...a13].sort(),['internal','next'],'D2.1.3 (Rangkaian nombor) uses sequence-completion modes only');
-  eq([...a17].sort(),['next','rule'],'D2.1.7 (Pola nombor) uses pattern-rule modes, distinct from D2.1.3');
-  ok([...a13].join(',')!==[...a17].join(','),'D2.1.3 and D2.1.7 are no longer content-indistinguishable');
+  const q13=sample(ctx,'D2.1.3',300),q17=sample(ctx,'D2.1.7',300);
+  const a13=new Set(q13.map(q=>q.archetypeId)),a17=new Set(q17.map(q=>q.archetypeId));
+  eq([...a13].sort(),['missing_beginning','missing_end','missing_middle'],'D2.1.3 (Rangkaian nombor) uses sequence-completion modes only (end/middle/beginning)');
+  eq([...a17].sort(),['apply_rule','determine_direction','identify_rule'],'D2.1.7 (Pola nombor) uses pattern-rule modes, distinct from D2.1.3');
+  ok([...a13].join(',')!==[...a17].join(','),'D2.1.3 and D2.1.7 archetype labels are distinct');
+  // Content-level check: label distinctness alone is not sufficient -- verify
+  // the actual rendered prompts/answers never cross into the other skill's
+  // competency, since relabeling a shared render path would pass the label
+  // check above while silently reintroducing content-indistinguishability.
+  ok(!q13.some(q=>/Apakah aturan|bertambah atau berkurang/.test(q.prompt)),'D2.1.3 never renders rule-identification or direction-judgment content');
+  ok(!q13.some(q=>/Tambah \d|Tolak \d/.test(String(q.answer))),'D2.1.3 answers are always numbers, never a stated rule');
+  ok(!q17.some(q=>/^\d+(, \d+)+, ___$/.test(q.prompt.replace(/<[^>]*>/g,''))||/^___, \d+(, \d+)+$/.test(q.prompt.replace(/<[^>]*>/g,''))||/^\d+, \d+, ___, \d+, \d+$/.test(q.prompt.replace(/<[^>]*>/g,''))),'D2.1.7 never renders a bare blank-in-sequence completion prompt');
 }
+
 
 console.log(JSON.stringify({status:'pass',checks,restoredSkills:['D2.4.1..7','D2.5.1..3','D2.8.1..3','D2.6.1..3','D2.1.8','D2.2.1','D2.2.2','D2.2.5','D2.1.3','D2.1.7'],newArchetypeNamespaces:['money_*','time_*'],additionalFixIncluded:'D2.1.3/D2.1.7 routing split via year2Sequence (discovered during implementation, met the small-routing-fix criteria, included per explicit authorization)'},null,2));

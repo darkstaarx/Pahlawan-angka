@@ -129,6 +129,34 @@ function worksheetFallback(m){
  if(id==='D1.DATA'){
   const values=[wr(2,5),wr(6,9),wr(10,13)].sort(()=>Math.random()-.5),[a,b,c]=values,items=wp([['epal','oren','pisang'],['pensel','pemadam','pembaris'],['buku','komik','majalah']]),owner=wp(['Aina','Ravi','Mei Ling','Hakim']),max=Math.max(a,b,c),answer=items[[a,b,c].indexOf(max)];return{prompt:`Senarai ${owner} menunjukkan ${a} ${items[0]}, ${b} ${items[1]} dan ${c} ${items[2]}. Item manakah paling banyak?`,answer,hint:'Bandingkan ketiga-tiga bilangan.',skill:id,title:m.title};
  }
+ if(id==='D2.4.1'){
+  const mode=wp(['recognise','total','compare']),a=wp([1,2,5,10,20,50]),b=wp([1,2,5,10,20]);
+  if(mode==='recognise')return{prompt:`Sekeping wang kertas tertulis RM${a}. Apakah nilainya?`,answer:`RM${a}`,hint:'Baca nilai yang tertulis pada wang kertas.',skill:id,title:m.title};
+  if(mode==='total')return{prompt:`Aina mempunyai RM${a} dan RM${b}. Berapakah jumlah wangnya?`,answer:`RM${a+b}`,hint:'Tambah nilai kedua-dua wang.',skill:id,title:m.title};
+  return{prompt:`Hakim mempunyai RM${a} dan Ravi mempunyai RM${b}. Siapakah mempunyai nilai lebih besar?`,answer:a>b?'Hakim':a<b?'Ravi':'Sama',hint:'Bandingkan nilai dalam unit ringgit yang sama.',skill:id,title:m.title};
+ }
+ if(id==='D2.5.1'){
+  const h=wr(1,11),minute=wp([0,15,30,45]),later=wp([15,30,45,60]),start=h*60+minute,fmt=value=>`${Math.floor(value/60)%12||12}:${String(value%60).padStart(2,'0')}`;
+  return{prompt:`Sekarang pukul ${fmt(start)}. Apakah waktu ${later} minit kemudian?`,answer:fmt(start+later),hint:'Gerakkan masa ke hadapan mengikut bilangan minit.',skill:id,title:m.title};
+ }
+ if(id==='D2.5.3'){
+  const h=wr(7,14),minute=wp([0,15,30,45]),duration=wp([15,30,45,60,90]),start=h*60+minute,end=start+duration,fmt=value=>`${Math.floor(value/60)}:${String(value%60).padStart(2,'0')}`,mode=wp(['end','duration','start']);
+  if(mode==='end')return{prompt:`Aktiviti bermula pada ${fmt(start)} dan berlangsung ${duration} minit. Pukul berapakah aktiviti tamat?`,answer:fmt(end),hint:'Tambah tempoh kepada masa mula.',skill:id,title:m.title};
+  if(mode==='duration')return{prompt:`Aktiviti bermula pada ${fmt(start)} dan tamat pada ${fmt(end)}. Berapakah tempohnya?`,answer:`${duration} minit`,hint:'Kira pergerakan masa dari mula hingga tamat.',skill:id,title:m.title};
+  return{prompt:`Aktiviti tamat pada ${fmt(end)} selepas berlangsung ${duration} minit. Pukul berapakah aktiviti bermula?`,answer:fmt(start),hint:'Tolak tempoh daripada masa tamat.',skill:id,title:m.title};
+ }
+ if(id==='D2.8.2'){
+  const items=wp([['epal','oren','mangga'],['buku','komik','majalah'],['pensel','pemadam','pembaris']]),values=[wr(2,5),wr(6,9),wr(10,13)].sort(()=>Math.random()-.5),mode=wp(['read','most','difference']),i=wr(0,2),j=(i+1)%3;
+  if(mode==='read')return{prompt:`Satu rekod menunjukkan ${values[0]} ${items[0]}, ${values[1]} ${items[1]} dan ${values[2]} ${items[2]}. Berapakah bilangan ${items[i]}?`,answer:String(values[i]),hint:'Cari kategori yang diminta dan baca nilainya.',skill:id,title:m.title};
+  if(mode==='most'){const max=Math.max(...values);return{prompt:`Satu rekod menunjukkan ${values[0]} ${items[0]}, ${values[1]} ${items[1]} dan ${values[2]} ${items[2]}. Item manakah paling banyak?`,answer:items[values.indexOf(max)],hint:'Bandingkan ketiga-tiga nilai.',skill:id,title:m.title};}
+  return{prompt:`Satu rekod menunjukkan ${values[i]} ${items[i]} dan ${values[j]} ${items[j]}. Berapakah beza bilangannya?`,answer:String(Math.abs(values[i]-values[j])),hint:'Tolak nilai kecil daripada nilai besar.',skill:id,title:m.title};
+ }
+ if(id==='D2.8.3'){
+  const a=wr(3,12),b=wr(3,12),c=wr(3,12),mode=wp(['sum','difference','remaining']);
+  if(mode==='sum')return{prompt:`Sebuah kelas merekod ${a} buku cerita dan ${b} buku fakta. Berapakah jumlah kedua-duanya?`,answer:String(a+b),hint:'Tambah kedua-dua nilai.',skill:id,title:m.title};
+  if(mode==='difference')return{prompt:`Kumpulan A mengumpul ${a} item dan Kumpulan B mengumpul ${b} item. Berapakah beza bilangannya?`,answer:String(Math.abs(a-b)),hint:'Tolak nilai kecil daripada nilai besar.',skill:id,title:m.title};
+  return{prompt:`Jumlah tiga kategori ialah ${a+b+c}. Dua kategori mempunyai ${a} dan ${b} item. Berapakah nilai kategori ketiga?`,answer:String(c),hint:'Tolak dua nilai yang diketahui daripada jumlah.',skill:id,title:m.title};
+ }
  if(id==='D2.7.2'){
   const shapes=[['segi tiga','3 sisi dan 3 bucu'],['segi empat sama','4 sisi sama panjang dan 4 bucu'],['segi empat tepat','4 bucu serta dua sisi panjang dan dua sisi pendek'],['pentagon','5 sisi dan 5 bucu'],['heksagon','6 sisi dan 6 bucu']],x=wp(shapes),context=wp(['Kad A','Kad B','Corak jubin','Papan tanda','Lencana','Pelekat','Bingkai','Lukisan']);return{prompt:`${context} menunjukkan bentuk 2D dengan ${x[1]}. Apakah nama bentuk itu?`,answer:x[0],hint:'Padankan bilangan dan sifat sisi dengan nama bentuk.',skill:id,title:m.title};
  }

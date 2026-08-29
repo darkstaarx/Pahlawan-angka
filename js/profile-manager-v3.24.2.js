@@ -112,7 +112,9 @@ async function renderManager({refreshStats=false}={}){
     </div>`;
     if(document.body.dataset.screen==='setup'&&signed())screen('login');
     syncSignedShell();
-    if(!profiles.length&&!emptyPrompted){
+    // A signed-in profile list is briefly empty while cloud data is loading.
+    // Only open creation after cloud confirms this is genuinely a new family.
+    if(state.needsOnboarding===true&&!profiles.length&&!emptyPrompted){
       emptyPrompted=true;
       setTimeout(()=>openEditor(),120);
     }
@@ -348,7 +350,9 @@ function installHubSwitch(){
   if(back&&!back.dataset.pmBound){back.dataset.pmBound='1';back.onclick=()=>openManager();back.setAttribute('aria-label','Tukar profil anak')}
   const info=document.querySelector('#hub .hubProfileInfo');
   if(info&&!info.querySelector('.pmSwitchProfile')){
-    const b=document.createElement('button');b.type='button';b.className='pmSwitchProfile';b.textContent='↔ Tukar profil';b.onclick=()=>openManager();info.appendChild(b);
+    let actions=info.querySelector('.hubProfileActions');
+    if(!actions){actions=document.createElement('div');actions.className='hubProfileActions';info.appendChild(actions)}
+    const b=document.createElement('button');b.type='button';b.className='pmSwitchProfile';b.textContent='↔ Tukar Profil';b.onclick=()=>openManager();actions.prepend(b);
   }
 }
 

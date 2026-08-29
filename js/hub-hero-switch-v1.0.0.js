@@ -4,6 +4,11 @@
    no new persistence or database layer. */
 (function(){
   const ORDER=['wira','bunga','sidma'];
+  const SWITCH_ART={
+    wira:'assets/heroes/switch-cards/wira-v1.webp',
+    bunga:'assets/heroes/switch-cards/bunga-v1.webp',
+    sidma:'assets/heroes/switch-cards/sidma-v1.webp'
+  };
 
   function heroLabel(id){
     const h=(typeof HEROES!=='undefined'&&HEROES[id])||{};
@@ -44,14 +49,14 @@
     const cards=ORDER.filter(id=>HEROES[id]).map(id=>{
       const h=HEROES[id],active=id===current;
       return `<button type="button" class="paHeroSwitchCard${active?' active':''}" onclick="paSwitchHero('${id}')" aria-pressed="${active?'true':'false'}">
-        <span class="paHeroSwitchImg"><img src="${h.profile||h.idle}" alt="${h.name}"></span>
+        <span class="paHeroSwitchImg"><img src="${SWITCH_ART[id]||h.idle}" alt="${h.name}"></span>
         <span class="paHeroSwitchName">${h.name}</span>
         <span class="paHeroSwitchTag">${active?'✓ Sedang digunakan':'Pilih'}</span>
       </button>`;
     }).join('');
     overlay.innerHTML=`<div class="paHeroSwitchPanel">
       <button type="button" class="paHeroSwitchClose" onclick="paCloseHeroSwitch()" aria-label="Tutup">×</button>
-      <small>TUKAR WIRA</small>
+      <small>TUKAR PAHLAWAN</small>
       <h2 id="paHeroSwitchTitle">Pilih pahlawan untuk battle seterusnya</h2>
       <div class="paHeroSwitchGrid">${cards}</div>
     </div>`;
@@ -62,13 +67,20 @@
   function installHubHeroSwitchButton(){
     const info=document.querySelector('#hub .hubProfileInfo');
     if(!info||info.querySelector('.paHeroSwitchBtn'))return;
+    let actions=info.querySelector('.hubProfileActions');
+    if(!actions){
+      actions=document.createElement('div');actions.className='hubProfileActions';
+      const profileButton=info.querySelector('.pmSwitchProfile');
+      if(profileButton)actions.appendChild(profileButton);
+      info.appendChild(actions);
+    }
     const btn=document.createElement('button');
     btn.type='button';
     btn.className='paHeroSwitchBtn';
-    btn.textContent='⇄ Tukar Wira';
+    btn.textContent='⇄ Tukar Pahlawan';
     btn.setAttribute('aria-label','Tukar pahlawan');
     btn.onclick=openSwitcher;
-    info.appendChild(btn);
+    actions.appendChild(btn);
   }
 
   const originalRenderHub=window.renderHub;
