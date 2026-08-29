@@ -1,4 +1,4 @@
-// App shell v3.56.1 — mount guest demo on the live login card.
+// App shell v3.56.2 — browser-verified demo result and worksheet fixes.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

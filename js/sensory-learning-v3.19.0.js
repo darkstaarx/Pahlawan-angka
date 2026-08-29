@@ -125,8 +125,8 @@
     const card=qcard();const id=q?.skill;
     if(ok){
       replayClass(card,'pa-sensory-correct',920);setIntensity('medium',900);haptic('correct');
-      const assisted=typeof sess!=='undefined'&&!!(sess?.hint||sess?.retryState);
-      showSignal(assisted?'✓ Dibaiki dengan petunjuk · cuba satu lagi sendiri':`✓ ${competencyLabel(q)}`,assisted?'hint':'correct',assisted?1350:1100);emit('correct',{skill:id,competency:q?.competencyId||null,assisted});
+      const retried=typeof sess!=='undefined'&&!!sess?.retryState,usedHint=typeof sess!=='undefined'&&!!sess?.hint,assisted=retried||usedHint;
+      showSignal(usedHint?'✓ Dibaiki dengan petunjuk · cuba satu lagi sendiri':(retried?'✓ Berjaya selepas cuba semula':`✓ ${competencyLabel(q)}`),usedHint?'hint':'correct',assisted?1350:1100);emit('correct',{skill:id,competency:q?.competencyId||null,assisted,usedHint});
       const after=masterySnapshot(id);
       if(masteryBecameSecure(before,after)){
         const boss=typeof sess!=='undefined'&&sess?.enemyTier==='boss';

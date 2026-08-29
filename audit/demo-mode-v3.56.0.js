@@ -1,6 +1,6 @@
 const fs=require('fs'),fail=[];
 const read=f=>fs.readFileSync(f,'utf8'),has=(ok,msg)=>{if(!ok)fail.push(msg)};
-const battle=read('js/battle.js'),app=read('js/app.js'),cloud=read('js/cloud.js'),demo=read('js/demo-mode-v3.56.0.js'),tools=read('js/parent-learning-tools-v3.26.0.js'),index=read('index.html'),sw=read('sw.js'),version=read('js/version.js'),telemetry=read('js/engine/telemetry.js');
+const battle=read('js/battle.js'),app=read('js/app.js'),cloud=read('js/cloud.js'),demo=read('js/demo-mode-v3.56.0.js'),tools=read('js/parent-learning-tools-v3.26.0.js'),sensory=read('js/sensory-learning-v3.19.0.js'),pwa=read('js/pwa.js'),index=read('index.html'),sw=read('sw.js'),version=read('js/version.js'),telemetry=read('js/engine/telemetry.js');
 has(!battle.includes('if(sess.retryState&&!sess.hint)return'),'hint is still mandatory on retry');
 has(battle.includes("btn.classList.add('no');btn.disabled=true"),'first wrong does not leave other answers enabled');
 has(battle.includes('Petunjuk tersedia jika perlu'),'optional-hint learner copy missing');
@@ -15,6 +15,9 @@ has(demo.includes('Muat Turun Worksheet Demo')&&tools.includes('async function d
 has(tools.includes('VERSI DEMO')&&tools.includes("slice(0,8)"),'8-question watermarked worksheet missing');
 has(demo.includes('affierul@gmail.com')&&demo.includes('Maklum Balas Demo Pahlawan Angka'),'feedback mailto missing');
 has(!demo.includes('Nama anak')&&!demo.includes('child name'),'feedback includes child identity');
-has(index.includes('demo-mode-v3.56.0.js?v=3.56.1')&&index.includes('demo-mode-v3.56.0.css?v=3.56.0'),'demo assets not cache-busted');
-has(version.includes("'3.56.1'")&&sw.includes('v3.56.1'),'release version is not 3.56.1');
-console.log(JSON.stringify({status:fail.length?'fail':'pass',checks:16,failures:fail},null,2));if(fail.length)process.exit(1);
+has(demo.includes("screen('result');standardButtons(true)"),'normal result buttons are hidden before another wrapper can reveal them');
+has(tools.includes('!printVisualDependent(raw)')&&tools.includes("!/<(?:svg|img|canvas|table)\\b/i.test(raw)"),'demo worksheet does not reject visual-dependent questions');
+has(sensory.includes("retried?'✓ Berjaya selepas cuba semula'")&&pwa.includes('sensory-learning-v${SENSORY_VERSION}.js?v=${APP_VERSION}'),'unassisted retry feedback or sensory cache bust is missing');
+has(index.includes('demo-mode-v3.56.0.js?v=3.56.2')&&index.includes('demo-mode-v3.56.0.css?v=3.56.0'),'demo assets not cache-busted');
+has(version.includes("'3.56.2'")&&sw.includes('v3.56.2'),'release version is not 3.56.2');
+console.log(JSON.stringify({status:fail.length?'fail':'pass',checks:19,failures:fail},null,2));if(fail.length)process.exit(1);

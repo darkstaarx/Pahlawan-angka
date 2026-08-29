@@ -21,7 +21,7 @@
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;
   const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
-  const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${SENSORY_VERSION}`;
+  const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${APP_VERSION}`;
   const manipCss=`css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css?v=${MANIPULATIVE_VERSION}`;
   const manipJs=`js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js?v=${MANIPULATIVE_VERSION}`;
   const dailyCss=`css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css?v=${DAILY_REVIEW_VERSION}`;
