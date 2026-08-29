@@ -9,8 +9,8 @@ assert(/if\(profileSelectPromise\)return profileSelectPromise/.test(source),'ove
 assert(/const mayNavigate=document\.body\.dataset\.screen==='login'/.test(source),'late profile completion is not screen-gated');
 assert(/if\(!mayNavigate\)return/.test(source),'active battle can still be replaced by late navigation');
 assert(/finally\{profileSelectPromise=null\}/.test(source),'profile selection guard is not released');
-assert(/PA_APP_VERSION='3\.55\.1'/.test(version),'release version is not 3.55.1');
-assert(/js\/version\.js\?v=3\.55\.1/.test(html)&&/js\/pwa\.js\?v=3\.55\.1/.test(html),'release loader cache bust is stale');
+assert(/PA_APP_VERSION='3\.55\.2'/.test(version),'release version is not 3.55.2');
+assert(/js\/version\.js\?v=3\.55\.2/.test(html)&&/js\/pwa\.js\?v=3\.55\.2/.test(html),'release loader cache bust is stale');
 
 function extractFunction(text,name){
   const start=text.indexOf(`async function ${name}(`);assert(start>=0,`${name} missing`);

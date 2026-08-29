@@ -89,12 +89,6 @@
 
 (()=>{
   if(!('serviceWorker' in navigator))return;
-  let reloadingForController=false;
-  navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(reloadingForController)return;
-    reloadingForController=true;
-    location.reload();
-  });
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(registration=>{
       registration.update().catch(()=>{});

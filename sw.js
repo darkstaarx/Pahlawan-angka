@@ -1,4 +1,4 @@
-// App shell v3.55.1 — prevent late profile callbacks from interrupting battle.
+// App shell v3.55.2 — install updates without interrupting active play.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[
@@ -69,11 +69,6 @@ self.addEventListener('activate',event=>{
       .then(keys=>Promise.all(
         keys.filter(key=>key.startsWith('pahlawan-angka-')&&key!==CACHE_NAME)
             .map(key=>caches.delete(key))
-      ))
-      .then(()=>self.clients.claim())
-      .then(()=>self.clients.matchAll({type:'window'}))
-      .then(clients=>Promise.all(
-        clients.map(client=>client.navigate(client.url).catch(()=>null))
       ))
   );
 });
