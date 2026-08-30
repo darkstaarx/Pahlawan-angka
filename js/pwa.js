@@ -22,8 +22,11 @@
   const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${APP_VERSION}`;
-  const manipCss=`css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css?v=${MANIPULATIVE_VERSION}`;
-  const manipJs=`js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js?v=${MANIPULATIVE_VERSION}`;
+  const manipCss=`css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css?v=${MANIPULATIVE_VERSION}-time-lab-1`;
+  const manipJs=`js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js?v=${MANIPULATIVE_VERSION}-time-lab-1`;
+  const gamesCss='css/cikgu-mini-games-v1.0.0.css?v=1.0.0-dev-menu-1';
+  const gamesJs='js/cikgu-mini-games-v1.0.0.js?v=1.0.0-dev-menu-1';
+  const devGamesJs='js/dev-coach-games-v1.0.0.js?v=1.0.0';
   const dailyCss=`css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css?v=${DAILY_REVIEW_VERSION}`;
   const dailyJs=`js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js?v=${DAILY_REVIEW_VERSION}`;
   const devCss=`css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css?v=${DEV_EXPERIMENTS_VERSION}`;
@@ -51,6 +54,9 @@
     if(!document.querySelector(`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`))document.write(`<script src="${sensoryJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${manipCss}">`);
     if(!document.querySelector(`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`))document.write(`<script src="${manipJs}"><\/script>`);
+    if(!document.querySelector('link[href^="css/cikgu-mini-games-v1.0.0.css"]'))document.write(`<link rel="stylesheet" href="${gamesCss}">`);
+    if(!document.querySelector('script[src^="js/cikgu-mini-games-v1.0.0.js"]'))document.write(`<script src="${gamesJs}"><\/script>`);
+    if(!document.querySelector('script[src^="js/dev-coach-games-v1.0.0.js"]'))document.write(`<script src="${devGamesJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${dailyCss}">`);
     if(!document.querySelector(`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`))document.write(`<script src="${dailyJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${devCss}">`);
@@ -78,7 +84,9 @@
     const loadCombat=()=>{loadCss(combatCss,`link[href^="css/combat-polish-v${COMBAT_POLISH_VERSION}.css"]`);loadScript(combatJs,`script[src^="js/combat-polish-v${COMBAT_POLISH_VERSION}.js"]`,loadBoss);};
     const loadDev=()=>{loadCss(devCss,`link[href^="css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css"]`);loadScript(devJs,`script[src^="js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js"]`,loadCombat);};
     const loadDaily=()=>{loadCss(dailyCss,`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`);loadScript(dailyJs,`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`,loadDev);};
-    const loadManip=()=>{loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadDaily);};
+    const loadDevGames=()=>loadScript(devGamesJs,'script[src^="js/dev-coach-games-v1.0.0.js"]',loadDaily);
+    const loadGames=()=>{loadCss(gamesCss,'link[href^="css/cikgu-mini-games-v1.0.0.css"]');loadScript(gamesJs,'script[src^="js/cikgu-mini-games-v1.0.0.js"]',loadDevGames);};
+    const loadManip=()=>{loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadGames);};
     const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
     const loadY6Repair=()=>{loadCss(y6Css,`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`);loadScript(y6Js,`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`,loadSensory);};
     const loadDepth=()=>{loadCss(depthCss,`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`);loadScript(depthJs,`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`,loadY6Repair);};

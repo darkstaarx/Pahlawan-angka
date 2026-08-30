@@ -1,0 +1,55 @@
+/* Scoped teaching scenes. No arena/battle/global button overrides. */
+.visualCoachArena.cg-arena{min-height:330px;isolation:isolate;background:radial-gradient(ellipse at top,#19394a,#101d30);overflow:hidden}
+.cg-arena .visualCoachCast{display:none!important}
+.cg-arena .visualCoachBoard{inset:12px 8px 76px!important;width:auto!important;height:auto!important;display:block!important;transform:none!important}
+.cg-arena .visualCoachWajar{bottom:4px;left:12px;right:12px;justify-content:center}
+.cg-arena .visualCoachWajar img{width:48px;height:58px;object-fit:contain}
+.cg-arena .visualCoachWajar b{font-size:12px;max-width:230px}
+.cg-scene{position:relative;min-height:220px;padding-left:62px;color:#edf8ff;font-size:13px;text-align:center}
+.cg-objects{position:relative;z-index:1;min-width:0}
+.cg-objects svg{width:100%;max-height:170px;display:block;overflow:visible}
+.cg-objects p{margin:7px 0;line-height:1.35}
+.cg-objects strong{display:block;color:#ffe182;font-size:14px}
+.cg-actor{position:absolute;left:-6px;top:60px;width:90px;height:125px;z-index:2;pointer-events:none}
+.cg-actor img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 3px #0005)}
+.cg-act{animation:cg-help .45s ease-out both}
+@keyframes cg-help{0%{transform:translateX(-5px) rotate(-5deg)}50%{transform:translateX(13px) rotate(5deg)}100%{transform:translateX(0) rotate(0)}}
+.cg-cake .cg-act{animation-name:cg-cut}
+@keyframes cg-cut{0%{transform:rotate(-12deg)}45%{transform:translateX(15px) rotate(12deg)}100%{transform:none}}
+.cg-token{display:inline-block;width:13px;height:13px;border:1px solid #a57024;border-radius:3px;background:#ffd568;margin:2px}
+.cg-stock{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;min-height:32px}
+.cg-plates,.cg-crates{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.cg-plates span,.cg-crates>div{padding:6px;border:1px solid #7a9ca4;border-radius:8px;background:#172b40;flex:1;min-width:43px}
+.cg-plates b{display:block;font-size:10px;margin-top:4px}
+.cg-crates>div{flex-basis:27%;max-width:85px}
+.cg-crates b,.cg-crates small{font-size:11px}
+.cg-crates .cg-token{width:10px;height:10px;margin:1px}
+.cg-bridge{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:35px 0 14px;padding:8px;border-block:3px solid #967341;background:#28516a}
+.cg-bridge i{height:22px;border:1px dashed #b9d4d4;border-radius:3px}
+.cg-bridge .built{background:#a77747;border-style:solid}
+.cg-bridge .added{background:#ffd45b;border-style:solid}
+.cg-garden{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:4px;max-width:205px;margin:12px auto;padding:7px;border-radius:9px;background:#594526}
+.cg-plant{height:20px;border-bottom:5px solid #4c9d50;border-radius:55% 55% 20% 20%;background:#8cdb7c}
+.cg-plant.cg-extra{background:#ffdc78;border-color:#d29d3d}
+.cg-money-line{display:flex;justify-content:space-between;border-bottom:3px solid #829ab9;margin:36px 0 16px;padding-bottom:9px;font-size:11px}
+.cg-money-line span{padding:4px 2px;border-radius:5px}
+.cg-money-line .current{background:#ffdc78;color:#122237;font-weight:800}
+.cg-coin{background:#ffdc78;color:#132235;padding:7px;border:2px solid #c58f24;border-radius:50%;font-size:12px}
+.cg-hidden-model{padding:50px 20px;text-align:center;color:#fff;font-size:19px}
+#learningBody .cg-copy{color:inherit;text-align:left}
+.cg-copy h2{font-size:22px;margin:10px 0}
+.cg-copy p{font-size:16px;line-height:1.5;margin:10px 0}
+.cg-copy small{font-size:11px;letter-spacing:.06em;color:#e6ce8f}
+.cg-controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.cg-copy button{min-height:46px;padding:10px 12px;flex:1 1 100px;background:#ffda59;color:#102338;border:1px solid #b89439;border-radius:12px;font:700 14px/1.35 system-ui;cursor:pointer;touch-action:manipulation}
+.cg-copy button:disabled{opacity:.45;cursor:default}
+.cg-copy button:focus-visible{outline:3px solid #80dfff;outline-offset:3px}
+.cg-feedback{min-height:48px;border-left:3px solid #71c5d1;padding-left:10px}
+@media(prefers-reduced-motion:reduce){.cg-act{animation:none!important}}
+.cg-dev-dialog{box-sizing:border-box;width:min(96vw,520px);max-height:92dvh;margin:auto;padding:16px;border:1px solid #8aa4bc;border-radius:18px;background:#101e31;color:#f5f9ff;overflow:auto;overscroll-behavior:contain;font:15px/1.5 system-ui}
+.cg-dev-dialog::backdrop{background:#020a16df}
+.cg-dev-dialog header{display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:-16px;background:#101e31;padding:8px 0;z-index:4}
+.cg-dev-dialog header button,.cg-dev-dialog [data-preview-replay]{min-height:44px;padding:8px 12px;border:1px solid #8aa4bc;border-radius:10px;background:#ffdb68;color:#142338;font:700 13px system-ui;cursor:pointer}
+.cg-dev-dialog h2{font-size:22px;margin:12px 0 4px}
+.cg-dev-note,.cg-dev-step{font-size:12px;color:#c3d4e5}
+.cg-dev-scene{padding:12px 0;border-radius:12px;background:#173447;margin:12px 0}

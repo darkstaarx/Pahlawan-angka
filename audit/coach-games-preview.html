@@ -1,0 +1,20 @@
+<!doctype html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../"><title>Cikgu Dimensi — six-game test fixture</title>
+<link rel="stylesheet" href="css/visual-coach-v3.16.0.css"><link rel="stylesheet" href="css/cikgu-manipulatives-v3.19.1.css"><link rel="stylesheet" href="css/cikgu-mini-games-v1.0.0.css">
+<style>*{box-sizing:border-box}body{margin:0;padding:12px;background:#0b1424;color:#fff;font:15px system-ui}button{font:inherit;min-height:44px;border-radius:10px;padding:8px;background:#ffd84e;border:0;color:#102030;font-weight:700;cursor:pointer}.hidden{display:none!important}h1{font-size:20px}.learningBody{margin-top:12px;padding:14px;border:1px solid #314b6b;border-radius:16px;background:#122035}.learningChoices,.learningAnswers,nav{display:flex;gap:6px;flex-wrap:wrap}nav{margin:10px 0}nav button{font-size:12px;flex:1 1 90px}.learningAnswers button{flex:1}.learningFeedback{min-height:30px}.learnStep{color:#9ba9bd;font-size:12px}.learnStep.active{color:#ffe176}#stageRow{display:flex;justify-content:space-between;margin:10px 0}small{font-size:11px}#qaErrors{color:#ffac9e;white-space:pre-wrap}</style>
+</head><body><small>UJIAN MODUL · Tiada akaun, simpanan atau ganjaran</small><h1>Cikgu Dimensi · Mini-game</h1>
+<section id="devPanel"><h2>Panel Dev fixture</h2></section>
+<nav aria-label="Pilih aktiviti ujian legacy"><button onclick="beginGame('cake')">Dapur Wira</button><button onclick="beginGame('bridge')">Jambatan</button><button onclick="beginGame('supply')">Bekalan</button><button onclick="beginGame('garden')">Kebun</button><button onclick="beginGame('market')">Pasar</button><button onclick="beginGame('symmetry')">Simetri</button></nav>
+<div id="stageRow"><span class="learnStep">Faham</span><span class="learnStep">Bina</span><span class="learnStep">Sambung</span><span class="learnStep">Cuba</span><span class="learnStep">Guna</span></div>
+<div id="visualCoachArena" class="visualCoachArena"><div class="visualCoachShade"></div><div class="visualCoachCast"><img id="visualCoachHero" class="visualCoachHero"><img id="visualCoachPet" class="visualCoachPet"></div><div id="visualCoachBoard" class="visualCoachBoard"></div><div class="visualCoachWajar"><img src="assets/coach/cikgu-wajar/teach.webp" alt="Cikgu Dimensi"><b id="visualCoachCue"></b></div></div><div id="learningBody" class="learningBody"></div><pre id="qaErrors"></pre>
+<script>window.addEventListener('error',e=>{document.getElementById('qaErrors').textContent+=e.message+'\n'});</script>
+<script src="js/heroes.js"></script><script src="js/learning.js"></script>
+<script>
+// Host fixture only. Teaching functions are the actual shipped functions.
+const fixtures={cake:['D2.3.1','fraction','Pecahan'],bridge:['D1.ADD20','operation','Tambah'],supply:['D2.2.4','groups','Bahagi'],garden:['D2.2.3','groups','Darab'],market:['D2.4.3','money','Tolak wang'],symmetry:['D3.SHAPE','shape','Simetri']};
+const META=Object.fromEntries(Object.values(fixtures).map(([id,key,title])=>[id,{id,title,grade:id.startsWith('D3')?3:2}]));
+const db={hero:'sidma',rewards:{}},scoreState=()=>({}),shuffle=a=>a;
+const isDevMode=()=>true;function renderDevPanel(){}
+function generate(){return {prompt:'Soalan checkpoint fixture: 2 + 3?',answer:'5',wrong:[{v:'4'},{v:'6'}]}}
+function beginGame(kind){const [skillId,key]=fixtures[kind];document.body.dataset.complete='false';learningState={skillId,key,stage:0,strategy:'model',checkpointWrong:0,originalPrompt:kind==='symmetry'?'Berapakah paksi simetri?':''};renderLearningStage()}
+learningComplete=function(){document.body.dataset.complete='true';document.getElementById('learningBody').innerHTML='<h2>Aliran fixture selesai</h2><p>Pengujian akaun sebenar dan kembali ke battle tidak disimulasikan.</p>'};
+</script><script src="js/cikgu-manipulatives-v3.19.1.js"></script><script src="js/cikgu-mini-games-v1.0.0.js"></script><script src="js/dev-coach-games-v1.0.0.js"></script><script>window.addEventListener('DOMContentLoaded',()=>{renderDevPanel();beginGame('cake')},{once:true});</script></body></html>

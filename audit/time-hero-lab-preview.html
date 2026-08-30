@@ -1,0 +1,19 @@
+<!doctype html><html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../"><title>Ujian Sidma Masa</title>
+<link rel="stylesheet" href="css/visual-coach-v3.16.0.css"><link rel="stylesheet" href="css/cikgu-manipulatives-v3.19.1.css">
+<style>*{box-sizing:border-box}body{margin:0;padding:12px;background:#0b1424;color:#fff;font:15px system-ui}button{cursor:pointer;font:inherit;min-height:44px;border-radius:12px;padding:10px;background:#ffd84e;border:0;color:#102030;font-weight:700}.hidden{display:none!important}h1{font-size:22px}.learningBody{padding:12px;border:1px solid #314b6b;border-radius:16px;background:#122035}h2{font-size:20px}.learningChoices,.learningAnswers{display:flex;gap:8px;flex-wrap:wrap}.learningAnswers button,.learningChoices button{flex:1}.learningFeedback{min-height:30px}.wrong{background:#ffd1a8}.correct{background:#96ebbd}.learnStep{padding:3px;color:#9ba9bd}.learnStep.active{color:#ffe176}.learningNext{width:100%}#stageRow{display:flex;justify-content:space-between;margin:10px 0}p{line-height:1.5}small{font-size:11px}</style></head><body>
+<small>UJIAN TERAS MODUL · Tiada akaun, simpanan atau ganjaran</small><h1>Makmal Masa bersama Sidma</h1>
+<button onclick="beginLesson()">Mula semula</button><label><input id="reduce" type="checkbox" onchange="document.body.classList.toggle('qa-reduce',this.checked)"> Kurangkan gerakan (ujian CSS)</label>
+<style>.qa-reduce .pam-minute-hand,.qa-reduce .pam-hour-hand,.qa-reduce .pam-time-orbit,.qa-reduce .pam-time-rider{transition:none!important}</style>
+<div id="stageRow"><span class="learnStep">Faham</span><span class="learnStep">Bina</span><span class="learnStep">Sambung</span><span class="learnStep">Cuba</span><span class="learnStep">Guna</span></div>
+<div id="visualCoachArena" class="visualCoachArena"><div class="visualCoachShade"></div><div class="visualCoachCast"><img id="visualCoachHero" class="visualCoachHero"><img id="visualCoachPet" class="visualCoachPet"></div><div id="visualCoachBoard" class="visualCoachBoard"></div><div class="visualCoachWajar"><img src="assets/coach/cikgu-wajar/teach.webp" alt="Cikgu Dimensi"><b id="visualCoachCue"></b></div></div><div id="learningBody" class="learningBody"></div>
+<script src="js/heroes.js"></script><script src="js/learning.js"></script>
+<script>
+// Deterministic host fixture. Real shipped render, interaction and checkpoint
+// functions are used; account/persistence/reward completion is intentionally absent.
+const META={'D2.5.3':{id:'D2.5.3',grade:2,title:'Masalah masa',domain:'Masa'}};
+const db={hero:'wira',rewards:{}};
+const scoreState=()=>({}),shuffle=x=>x;
+function generate(){return learningState.stage===3?{prompt:'Mula 8:45, tambah 30 minit. Waktu tamat?',answer:'9:15',wrong:[{v:'8:75'},{v:'9:45'}]}:{prompt:'Mula 11:50, tambah 20 minit. Waktu tamat?',answer:'12:10',wrong:[{v:'11:70'},{v:'12:20'}]}}
+function beginLesson(){learningState={skillId:'D2.5.3',stage:0,key:'time',strategy:'model',checkpointWrong:0,originalPrompt:'Aktiviti bermula 7:15 dan berlangsung 30 minit. Bilakah tamat?'};renderLearningStage()}
+learningComplete=function(){document.getElementById('learningBody').innerHTML='<h2>Ujian lima langkah selesai</h2><p>Kembali ke permainan ialah tanggungjawab hos sebenar, bukan fixture ini.</p>';document.body.dataset.complete='true'};
+</script><script src="js/cikgu-manipulatives-v3.19.1.js"></script><script>beginLesson()</script></body></html>

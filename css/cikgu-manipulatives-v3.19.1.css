@@ -23,3 +23,25 @@
 @keyframes pamPop{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}@keyframes pamCellPulse{to{filter:brightness(1.25)}}@keyframes pamRotate{to{transform:rotate(90deg)}}@keyframes pamGrow{from{transform:scaleY(.15);opacity:.45}to{transform:scaleY(1);opacity:1}}
 @media (max-width:430px){.visualCoachArena[data-manipulative="3.19.1"] .pam-action{width:min(100%,210px)}.pam-percent-grid{width:112px;height:112px}.pam-ruler{width:160px}.pam-object{width:135px}.pam-result strong{font-size:21px}}
 @media (prefers-reduced-motion:reduce){.visualCoachArena[data-manipulative="3.19.1"] *{animation:none!important;transition:none!important}.pam-shape.active{transform:rotate(45deg)}}
+/* D2.5.3 elapsed-time laboratory. Scoped away from battle and other lessons. */
+.visualCoachArena.pam-time-lab{min-height:350px}
+.pam-time-lab .visualCoachCast{display:none}
+.pam-time-lab .visualCoachShade{background:#07111d55}
+.pam-time-lab .visualCoachBoard{inset:8px 0 auto;width:100%;height:280px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.pam-time-clock{position:relative;width:240px;height:240px;flex:none}
+.pam-time-clock svg{display:block;width:100%;height:100%}
+.pam-minute-hand,.pam-hour-hand{transition:transform .35s ease-in-out}
+.pam-time-orbit{position:absolute;left:50%;top:50%;width:0;height:0;transition:transform .35s ease-in-out;pointer-events:none}
+.pam-time-rider{position:absolute;left:0;top:-73px;width:0;height:0;transform-origin:0 0;transition:transform .35s ease-in-out}
+.pam-time-rider img{position:absolute;left:-108px;top:-25px;width:132px;height:88px;object-fit:contain;filter:drop-shadow(0 3px 3px #0008)}
+.pam-time-rider i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border:1px solid #fff;background:#69ddff;border-radius:50%}
+.pam-time-readout{font-size:15px;font-weight:800;color:#fff;background:#102036e8;border-radius:10px;padding:6px 10px}
+.pam-time-lab .visualCoachWajar{left:12px;right:12px;bottom:6px;justify-content:center}
+.pam-time-lab .visualCoachWajar img{width:60px;height:66px}
+.pam-time-lab .visualCoachWajar b{font-size:12px;white-space:normal;max-width:220px}
+.pam-time-controls{display:flex;gap:8px;justify-content:center}
+.pam-time-controls button{flex:1;min-height:48px;border:1px solid #8ddafa;border-radius:12px;background:#173550;color:#fff;font:inherit;font-weight:700;padding:8px}
+.pam-time-controls button:disabled{opacity:.4}
+.pam-time-controls button:focus-visible{outline:3px solid #ffd950;outline-offset:2px}
+.pam-time-question{font-size:20px;line-height:1.5;padding:25px}
+@media(prefers-reduced-motion:reduce){.pam-minute-hand,.pam-hour-hand,.pam-time-orbit,.pam-time-rider{transition:none}}

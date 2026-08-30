@@ -246,6 +246,8 @@
   function install(){
     if(typeof originalMode==='function')window.visualCoachMode=function(key,m){return modeFor(key,m)};
     if(typeof originalRender==='function')window.renderVisualCoachArena=function(stage,key,m){
+      document.getElementById('visualCoachArena')?.classList.remove('pam-time-lab');
+      if(m?.id==='D2.5.3'&&stage<=2){renderTimeLab(stage,m);return}
       const mode=modeFor(key,m);
       if(stage<=2&&ENHANCED.has(mode)){renderEnhanced(stage,key,m);return}
       return originalRender.call(this,stage,key,m);
@@ -255,12 +257,93 @@
       return originalInteract.call(this,mode);
     };
     if(typeof originalContent==='function')window.visualCoachContent=function(stage,key,m){
+      if(m?.id==='D2.5.3'&&stage<=2)return timeLabContent(stage);
       const enhanced=contentEnhanced(stage,key,m);if(enhanced!==null)return enhanced;
       return originalContent.call(this,stage,key,m);
     };
     const versionButton=document.querySelector('.loginVersion');if(versionButton)versionButton.textContent=`Pahlawan Angka · v${VERSION}`;
     document.documentElement.dataset.paManipulatives=VERSION;
   }
+
+  // First interactive lesson: deliberately scoped to elapsed-time problems.
+  // No global timers, scoring, question generators or intervention rules change.
+  function timeExample(prompt){
+    const plain=String(prompt||'').replace(/<svg[\s\S]*?<\/svg>/gi,'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ');
+    const hit=plain.match(/bermula(?: pada)?\s*(\d{1,2}):(\d{2})\s*dan berlangsung\s*(\d+) minit/i);
+    if(hit){
+      const [,h,m,d]=hit.map(Number);
+      if(h>=0&&h<24&&m>=0&&m<60&&m%5===0&&d>=5&&d<=120&&d%5===0)return{start:h*60+m,target:d,fromQuestion:true};
+    }
+    return{start:435,target:30,fromQuestion:false};
+  }
+  const timeLabel=minutes=>`${Math.floor(((minutes%1440)+1440)%1440/60)}:${String(((minutes%60)+60)%60).padStart(2,'0')}`;
+  function moveTime(model,delta){
+    if(delta!==5&&delta!==-5)return false;
+    const next=model.elapsed+delta;
+    if(next<0||next>model.target+15)return false;
+    model.elapsed=next;return true;
+  }
+  function timeModel(){
+    if(!learningState.timeLab)learningState.timeLab={...timeExample(learningState.originalPrompt),elapsed:0,stage:-1,shown:false};
+    return learningState.timeLab;
+  }
+  function renderTimeLab(stage,m){
+    const ctx=setupArena(stage,'time',m);if(!ctx)return;
+    const model=timeModel();
+    if(model.stage!==stage){model.stage=stage;if(stage<2){model.elapsed=0;model.shown=false}}
+    ctx.arena.classList.add('pam-time-lab');
+    if(stage===2){ctx.board.innerHTML='<div class="pam-time-question">Jam sudah disimpan.<br>Cuba ingat perjalanan tadi.</div>';ctx.cue.textContent='Sekarang kamu jawab';return}
+    ctx.board.innerHTML=`<div class="pam-time-clock" role="img" aria-label="Jam interaktif">
+      <svg viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="99" fill="#112b48" stroke="#d9efff" stroke-width="4"/>
+      ${Array.from({length:12},(_,i)=>{const a=(i+1)*Math.PI/6;return `<text x="${120+79*Math.sin(a)}" y="${125-79*Math.cos(a)}" text-anchor="middle" fill="#fff" font-size="15">${i+1}</text>`}).join('')}
+      ${Array.from({length:60},(_,i)=>`<line x1="120" y1="24" x2="120" y2="${i%5?28:33}" stroke="#89bad9" transform="rotate(${i*6} 120 120)"/>`).join('')}
+      <line class="pam-hour-hand" x1="120" y1="120" x2="120" y2="69" stroke="#ffe176" stroke-width="7" stroke-linecap="round"/>
+      <line class="pam-minute-hand" x1="120" y1="120" x2="120" y2="47" stroke="#69ddff" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="120" cy="120" r="6" fill="#fff"/></svg>
+      <div class="pam-time-orbit"><span class="pam-time-rider"><img src="assets/coach/time-lab/sidma-push-v1.png" alt="Sidma menolak jarum minit" draggable="false"/><i></i></span></div>
+      </div><div class="pam-time-readout" aria-live="polite"></div>`;
+    updateTimeLab();
+  }
+  function updateTimeLab(){
+    const arena=document.getElementById('visualCoachArena');if(!arena?.classList.contains('pam-time-lab')||learningState?.stage>1)return;
+    const model=timeModel(),now=model.start+model.elapsed,angle=(model.start%60+model.elapsed)*6;
+    arena.querySelector('.pam-minute-hand')?.setAttribute('transform',`rotate(${angle} 120 120)`);
+    arena.querySelector('.pam-hour-hand')?.setAttribute('transform',`rotate(${(model.start%720+model.elapsed)/2} 120 120)`);
+    const orbit=arena.querySelector('.pam-time-orbit');if(orbit)orbit.style.transform=`rotate(${angle}deg)`;
+    const rider=arena.querySelector('.pam-time-rider');if(rider)rider.style.transform=`rotate(${-angle}deg)`;
+    const readout=arena.querySelector('.pam-time-readout');if(readout)readout.textContent=`${timeLabel(model.start)} → ${timeLabel(now)} · +${model.elapsed} minit`;
+    arena.querySelector('.pam-time-clock')?.setAttribute('aria-label',`Jam ${timeLabel(now)}, sudah bergerak ${model.elapsed} minit`);
+    const status=document.getElementById('timeLabStatus');if(status)status.textContent=model.elapsed>model.target?`Terlebih ${model.elapsed-model.target} minit. Boleh undur.`:`Sudah ${model.elapsed} minit. Baki ${model.target-model.elapsed} minit.`;
+    const back=document.getElementById('timeLabBack'),forward=document.getElementById('timeLabForward');
+    if(back)back.disabled=model.elapsed===0;if(forward)forward.disabled=model.elapsed===model.target+15;
+    const cue=document.getElementById('visualCoachCue');if(cue)cue.textContent=model.elapsed?'Satu langkah = 5 minit':'Bantu Sidma gerakkan jarum';
+  }
+  function timeLabContent(stage){
+    const model=timeModel();
+    if(stage===2){
+      const answer=model.start+model.target;
+      // Rotated positions avoid teaching pupils to select the first option.
+      const values=[answer-5,answer+5,answer];
+      const offset=Math.floor(model.start/5)%3;values.push(...values.splice(0,offset));
+      return `<div class="visualCoachOnly pam-copy"><div class="stageTag">SEMAK FAHAM</div><h2>Mula ${timeLabel(model.start)}, tambah ${model.target} minit. Waktu tamat?</h2><div class="learningChoices">${values.map(n=>`<button onclick="learningGuidedChoice(this,${n===answer})">${timeLabel(n)}</button>`).join('')}</div><div id="guidedFeedback" class="learningFeedback"></div></div>`;
+    }
+    return `<div class="visualCoachOnly pam-copy"><div class="stageTag">${model.fromQuestion?'SOALAN TADI':'CONTOH LATIHAN'}</div><h2>Mula ${timeLabel(model.start)}. Tambah ${model.target} minit.</h2><p>${stage===0?'Cikgu tunjuk satu langkah bersama Sidma. Perhatikan kedua-dua jarum bergerak.':'Tekan +5 minit untuk bantu Sidma. Kamu tentukan bila hendak berhenti.'}</p>
+      <p id="timeLabStatus" role="status">Sudah 0 minit. Baki ${model.target} minit.</p>
+      ${stage===0?'<button class="btn primary learningNext" onclick="PACikguTimeLab.demonstrate(this)">Cikgu, tunjuk satu langkah</button>':`<div class="pam-time-controls"><button id="timeLabBack" disabled onclick="PACikguTimeLab.move(-5)">Undur 5 minit</button><button id="timeLabForward" onclick="PACikguTimeLab.move(5)">Tolak +5 minit</button></div><button class="btn primary learningNext" onclick="PACikguTimeLab.check()">Semak gerakan saya</button><p id="timeLabFeedback" role="status"></p>`}</div>`;
+  }
+  window.PACikguTimeLab={timeExample,timeLabel,moveTime,
+    demonstrate(button){
+      if(learningState?.stage!==0)return;const model=timeModel();
+      if(model.shown){learningAdvance();return}
+      model.shown=true;moveTime(model,5);updateTimeLab();button.textContent='Sekarang saya kawal dari mula →';
+    },
+    move(delta){if(learningState?.skillId!=='D2.5.3'||learningState.stage!==1)return;if(moveTime(timeModel(),delta)){const feedback=document.getElementById('timeLabFeedback');if(feedback)feedback.textContent='';updateTimeLab()}},
+    check(){
+      if(learningState?.skillId!=='D2.5.3'||learningState.stage!==1)return;
+      const model=timeModel();if(model.elapsed===model.target){learningAdvance();return}
+      const feedback=document.getElementById('timeLabFeedback');if(feedback)feedback.textContent=model.elapsed<model.target?'Belum cukup. Cuba tambah lagi dan perhatikan baki minit.':'Terlebih sedikit. Undur dan semak semula.';
+    }
+  };
 
   window.PACikguManipulatives={version:VERSION,enhancedModes:[...ENHANCED],modeFor,measureKind,scene,contentSpec};
   install();
