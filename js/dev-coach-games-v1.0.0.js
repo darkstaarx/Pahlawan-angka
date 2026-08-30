@@ -7,6 +7,7 @@
   const allowed=()=>{try{return typeof isDevMode==='function'&&isDevMode()}catch(_){return false}};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function dispose(target=dialog,focusTarget=returnFocus){
+    target?.querySelector('[data-fraction-preview]')?._fractionCleanup?.();
     target?.remove();
     if(target!==dialog)return;
     dialog=null;model=null;returnFocus=null;
@@ -20,6 +21,16 @@
   function paint(){
     if(!dialog||!model)return;
     const d=api().definitions[model.kind];
+    if(model.kind==='cake'&&stage<2&&window.PAFractionLesson){
+      dialog.querySelector('[data-preview-content]').innerHTML='<h2 id="cgDevTitle">Dapur Wira</h2><div data-fraction-preview></div>';
+      const owner=dialog;
+      window.PAFractionLesson.mount(dialog.querySelector('[data-fraction-preview]'),()=>{
+        if(dialog!==owner||!allowed())return;
+        owner.querySelector('[data-fraction-preview]')?._fractionCleanup?.();
+        stage=2;paint();
+      });
+      return;
+    }
     let body='';
     if(stage===0)body=`<p>${esc(d.goal)}</p><p>${esc(d.idea)}</p><button type="button" data-cg-next>Mula aktiviti →</button>`;
     if(stage===1)body=`<p>${esc(model.kind==='supply'&&model.phase===1?'Setiap pet memerlukan 3 bekalan. Gunakan semua 12.':d.goal)}</p><p role="status" class="cg-feedback">${esc(model.feedback||'Kamu kawal tindakan. Boleh cuba, undur atau mula semula.')}</p>${api().controls(model)}`;

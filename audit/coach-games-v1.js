@@ -35,7 +35,7 @@ const event=(attrs)=>({target:{disabled:false,dataset:attrs,closest(selector){re
 for(const [id,kind]of Object.entries(mappings)){
  ctx.learningState={skillId:id,stage:0,strategy:'model',originalPrompt:''};ctx.renderVisualCoachArena(0,'',{});
  check(els.visualCoachBoard.innerHTML.includes(api.definitions[kind].hero+'.webp'),'fixed hero, not selected profile');
- check(ctx.visualCoachContent(0,'',{}).includes('CONTOH LATIHAN'));
+ check(ctx.visualCoachContent(0,'',{}).includes(kind==='cake'?'Jom belajar':'CONTOH LATIHAN'));
  const prior=advanced;listeners[0](event({cgNext:''}));check(advanced===prior+1&&ctx.learningState.stage===1);
  listeners[0](event({cgNext:''}));check(advanced===prior+1,'cannot skip unsolved game');
  listeners[0](event({cgAction:'check'}));check(advanced===prior+1,'incorrect check cannot auto advance');

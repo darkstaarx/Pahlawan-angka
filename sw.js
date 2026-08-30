@@ -1,7 +1,8 @@
-// App shell v3.56.3 — browser-verified demo result and worksheet fixes.
+// App shell v3.56.4 — guided fraction overlay and free-play lesson.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
+  './js/fraction-lesson-v1.js',
   './js/cikgu-mini-games-v1.0.0.js','./js/dev-coach-games-v1.0.0.js','./css/cikgu-mini-games-v1.0.0.css',
   './assets/coach/time-lab/sidma-push-v1.png',
   './','./index.html','./manifest.webmanifest','./js/version.js',

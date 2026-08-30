@@ -25,8 +25,9 @@
   const manipCss=`css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css?v=${MANIPULATIVE_VERSION}-time-lab-1`;
   const manipJs=`js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js?v=${MANIPULATIVE_VERSION}-time-lab-1`;
   const gamesCss='css/cikgu-mini-games-v1.0.0.css?v=1.0.0-dev-menu-1';
-  const gamesJs='js/cikgu-mini-games-v1.0.0.js?v=1.0.0-dev-menu-1';
-  const devGamesJs='js/dev-coach-games-v1.0.0.js?v=1.0.0';
+  const fractionJs='js/fraction-lesson-v1.js?v=3.56.4';
+  const gamesJs='js/cikgu-mini-games-v1.0.0.js?v=3.56.4';
+  const devGamesJs='js/dev-coach-games-v1.0.0.js?v=3.56.4';
   const dailyCss=`css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css?v=${DAILY_REVIEW_VERSION}`;
   const dailyJs=`js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js?v=${DAILY_REVIEW_VERSION}`;
   const devCss=`css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css?v=${DEV_EXPERIMENTS_VERSION}`;
@@ -55,6 +56,7 @@
     if(!document.querySelector(`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${manipCss}">`);
     if(!document.querySelector(`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`))document.write(`<script src="${manipJs}"><\/script>`);
     if(!document.querySelector('link[href^="css/cikgu-mini-games-v1.0.0.css"]'))document.write(`<link rel="stylesheet" href="${gamesCss}">`);
+    if(!document.querySelector('script[src^="js/fraction-lesson-v1.js"]'))document.write(`<script src="${fractionJs}"><\/script>`);
     if(!document.querySelector('script[src^="js/cikgu-mini-games-v1.0.0.js"]'))document.write(`<script src="${gamesJs}"><\/script>`);
     if(!document.querySelector('script[src^="js/dev-coach-games-v1.0.0.js"]'))document.write(`<script src="${devGamesJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${dailyCss}">`);
@@ -85,7 +87,7 @@
     const loadDev=()=>{loadCss(devCss,`link[href^="css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css"]`);loadScript(devJs,`script[src^="js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js"]`,loadCombat);};
     const loadDaily=()=>{loadCss(dailyCss,`link[href^="css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css"]`);loadScript(dailyJs,`script[src^="js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js"]`,loadDev);};
     const loadDevGames=()=>loadScript(devGamesJs,'script[src^="js/dev-coach-games-v1.0.0.js"]',loadDaily);
-    const loadGames=()=>{loadCss(gamesCss,'link[href^="css/cikgu-mini-games-v1.0.0.css"]');loadScript(gamesJs,'script[src^="js/cikgu-mini-games-v1.0.0.js"]',loadDevGames);};
+    const loadGames=()=>{loadCss(gamesCss,'link[href^="css/cikgu-mini-games-v1.0.0.css"]');loadScript(fractionJs,'script[src^="js/fraction-lesson-v1.js"]',()=>loadScript(gamesJs,'script[src^="js/cikgu-mini-games-v1.0.0.js"]',loadDevGames));};
     const loadManip=()=>{loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadGames);};
     const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
     const loadY6Repair=()=>{loadCss(y6Css,`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`);loadScript(y6Js,`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`,loadSensory);};

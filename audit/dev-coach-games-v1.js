@@ -15,11 +15,11 @@ ok(!/(save\(|scheduleSave|syncSaveNow|learningStart|startBattle|award|coins|xp\s
 for(const id of ['cake','bridge','supply','garden','market','symmetry'])ok(dev.includes(`'${id}'`),`launcher includes ${id}`);
 ok(dev.includes('target!==dialog'),'stale dialog close event cannot dispose a newer preview');
 ok(dev.includes("window.PADevCoachGames={open,close,mount}"),'launcher exposes a narrow Dev QA API');
-ok(pwa.includes("const devGamesJs='js/dev-coach-games-v1.0.0.js?v=1.0.0'"),'release loader defines Dev launcher');
+ok(pwa.includes("const devGamesJs='js/dev-coach-games-v1.0.0.js?v=3.56.4'"),'release loader defines Dev launcher');
 ok(/const loadGames=.*loadScript\(gamesJs,[^;]+,loadDevGames\)/.test(pwa),'core mini-game loader hands off to Dev launcher');
 ok(sw.includes("'./js/dev-coach-games-v1.0.0.js'"),'service worker precaches Dev launcher');
 ok(sw.includes('coach-games-2'),'service worker cache is bumped');
-ok(html.includes('js/pwa.js?v=3.56.3-coach-games-2'),'index cache-bust is bumped');
+ok(html.includes('js/pwa.js?v=3.56.4'),'index cache-bust is bumped');
 
 const sandbox={window:{},globalThis:null,console,Math};sandbox.globalThis=sandbox;vm.createContext(sandbox);vm.runInContext(core,sandbox);
 for(const id of ['cake','bridge','supply','garden','market','symmetry']){

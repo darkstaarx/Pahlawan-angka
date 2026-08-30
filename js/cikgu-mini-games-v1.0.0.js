@@ -126,6 +126,19 @@
   function model(){const l=current(),kind=active();if(!l||!kind)return null;if(!l.miniGame||l.miniGame.kind!==kind)l.miniGame=create(kind);if(l.miniGame.stage!==l.stage){l.miniGame.stage=l.stage;if(l.stage===2){l.miniGame.recalled=false;l.miniGame.recallFeedback=''}}return l.miniGame}
   function body(stage){
     const s=model(),d=DEFINITIONS[s.kind];
+    if(s.kind==='cake'&&stage===1&&window.PAFractionLesson){
+      const owner=current();
+      requestAnimationFrame(()=>{
+        const host=document.getElementById('paFractionHost');
+        if(!host||current()!==owner||owner.stage!==1||active()!=='cake')return;
+        window.PAFractionLesson.mount(host,()=>{
+          if(current()!==owner||owner.stage!==1||active()!=='cake')return;
+          owner.miniGame.done=true;learningAdvance();
+        });
+      });
+      return '<div id="paFractionHost"></div>';
+    }
+    if(s.kind==='cake'&&stage===0)return '<section class="cg-copy"><h2>Dapur Wira</h2><p>Jom belajar separuh, suku dan satu kek penuh bersama Cikgu Dimensi.</p><button type="button" data-cg-next>Jom belajar</button></section>';
     if(stage===0)return `<section class="cg-copy"><small>CONTOH LATIHAN · ${esc(d.hero.toUpperCase())}</small><h2>${d.title}</h2><p>${d.goal}</p><p>${d.idea}</p><button type="button" data-cg-next>Bantu ${esc(d.hero)} →</button></section>`;
     if(stage===2)return `<section class="cg-copy"><small>TANPA MODEL · SEMAK FAHAM</small><h2>${d.title}</h2><p>${d.challenge}</p><div class="cg-controls">${d.choices.map((v,i)=>`<button type="button" data-cg-answer="${i}" ${s.recalled?'disabled':''}>${esc(v)}</button>`).join('')}</div><p role="status">${esc(s.recallFeedback||'')}</p>${s.recalled?'<button type="button" data-cg-next>Cuba soalan seterusnya →</button>':''}</section>`;
     return `<section class="cg-copy"><small>CONTOH LATIHAN · KAMU KAWAL</small><h2>${d.title}</h2><p>${s.kind==='supply'&&s.phase===1?'Setiap pet memerlukan 3 bekalan. Gunakan semua 12.':d.goal}</p><p class="cg-feedback" role="status">${esc(s.feedback||'Cuba satu tindakan. Kamu boleh ubah atau mula semula.')}</p>${controls(s)}</section>`;
@@ -133,6 +146,7 @@
   function paintArena(stage){
     const a=document.getElementById('visualCoachArena'),b=document.getElementById('visualCoachBoard');if(!a||!b)return;
     a.classList.remove('hidden','pam-time-lab','vcCheckpoint');a.classList.add('cg-arena');
+    if(active()==='cake'&&stage===1&&window.PAFractionLesson){a.classList.add('hidden');return}
     b.innerHTML=stage===2?'<p class="cg-hidden-model">Model disimpan. Ingat hubungan yang kamu bina tadi.</p>':scene(model());
     const cue=document.getElementById('visualCoachCue');if(cue)cue.textContent=stage===2?'Sekarang cuba tanpa model':'Tindakan kamu mengubah model';
   }
