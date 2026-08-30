@@ -124,7 +124,7 @@
     }
     if(id==='D2.5.3'){
       const startH=R(7,15),startM=pick([0,15,30,45]),dur=pick([15,30,45,60,90,120]),total=startH*60+startM+dur,endH=Math.floor(total/60),endM=total%60,ans=`${endH}:${String(endM).padStart(2,'0')}`;
-      return mark(Q(`${timelineSvg(startH,startM,endH,endM)}Aktiviti bermula ${startH}:${String(startM).padStart(2,'0')} dan berlangsung ${dur} minit. Bilakah tamat?`,ans,[N(`${startH}:${String(startM).padStart(2,'0')}`,'time'),N(`${endH}:${String((endM+15)%60).padStart(2,'0')}`,'time'),N(`${Math.max(1,endH-1)}:${String(endM).padStart(2,'0')}`,'time')],'Gerakkan masa ke hadapan mengikut tempoh.','Tahun 2 · Masalah Masa',true,true),id,'elapsed_time','visual','application',['time']);
+      return mark(Q(`${timelineSvg(startH,startM,endH,endM,{showEnd:false})}Aktiviti bermula ${startH}:${String(startM).padStart(2,'0')} dan berlangsung ${dur} minit. Bilakah tamat?`,ans,[N(`${startH}:${String(startM).padStart(2,'0')}`,'time'),N(`${endH}:${String((endM+15)%60).padStart(2,'0')}`,'time'),N(`${Math.max(1,endH-1)}:${String(endM).padStart(2,'0')}`,'time')],'Gerakkan masa ke hadapan mengikut tempoh.','Tahun 2 · Masalah Masa',true,true),id,'elapsed_time','visual','application',['time']);
     }
     return null;
   }

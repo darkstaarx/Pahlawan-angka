@@ -15,7 +15,7 @@
   const TYPED_UI_VERSION='3.21.8';
   const PROFILE_MANAGER_VERSION='3.24.2';
 
-  const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${INTEGRITY_VERSION}`;
+  const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;
   const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${APP_VERSION}`;
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;

@@ -1,4 +1,4 @@
-// App shell v3.56.2 — browser-verified demo result and worksheet fixes.
+// App shell v3.56.3 — browser-verified demo result and worksheet fixes.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}`;
 const APP_SHELL=[

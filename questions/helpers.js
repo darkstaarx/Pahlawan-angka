@@ -305,9 +305,10 @@ function cylinderSvg(ml){
  let marks='';for(let v=0;v<=1000;v+=100){const y=bottom-(v/max)*(bottom-top);marks+=`<line x1="76" y1="${y}" x2="89" y2="${y}" stroke="#405072" stroke-width="2"/>${v%200===0?`<text x="94" y="${y+4}" font-size="9">${v}</text>`:''}`}
  return `<svg viewBox="0 0 130 ${H}" width="130" style="display:block;margin:0 auto 10px"><path d="M40 10 L40 132 Q40 140 58 140 Q76 140 76 132 L76 10" fill="#f8fbff" stroke="#405072" stroke-width="3"/><rect x="43" y="${fy}" width="30" height="${fillH}" fill="#7fcfff" opacity=".8"/>${marks}<text x="58" y="149" text-anchor="middle" font-size="10" font-weight="800">mL</text></svg>`;
 }
-function timelineSvg(sh,sm,eh,em){
+function timelineSvg(sh,sm,eh,em,visibility={}){
  const fmt=(h,m)=>`${h}:${String(m).padStart(2,'0')}`;
- return `<svg viewBox="0 0 330 78" width="min(340px,98%)" style="display:block;margin:0 auto 10px"><line x1="42" y1="36" x2="288" y2="36" stroke="#405072" stroke-width="4"/><circle cx="55" cy="36" r="7" fill="#78a9ff"/><circle cx="275" cy="36" r="7" fill="#8bd3a8"/><text x="55" y="64" text-anchor="middle" font-size="13" font-weight="800">${fmt(sh,sm)}</text><text x="275" y="64" text-anchor="middle" font-size="13" font-weight="800">${fmt(eh,em)}</text><path d="M135 22 Q165 4 195 22" fill="none" stroke="#f0ae3d" stroke-width="3"/><path d="M190 16 l10 6 -10 6" fill="#f0ae3d"/></svg>`;
+ const startLabel=visibility.showStart===false?'?':fmt(sh,sm),endLabel=visibility.showEnd===false?'?':fmt(eh,em);
+ return `<svg viewBox="0 0 330 78" width="min(340px,98%)" style="display:block;margin:0 auto 10px"><line x1="42" y1="36" x2="288" y2="36" stroke="#405072" stroke-width="4"/><circle cx="55" cy="36" r="7" fill="#78a9ff"/><circle cx="275" cy="36" r="7" fill="#8bd3a8"/><text x="55" y="64" text-anchor="middle" font-size="13" font-weight="800">${startLabel}</text><text x="275" y="64" text-anchor="middle" font-size="13" font-weight="800">${endLabel}</text><path d="M135 22 Q165 4 195 22" fill="none" stroke="#f0ae3d" stroke-width="3"/><path d="M190 16 l10 6 -10 6" fill="#f0ae3d"/></svg>`;
 }
 function tallyTable(labels,vals){
  const tally=n=>{let s='';for(let i=0;i<n;i++)s+=(i>0&&i%5===0?' ':'')+'|';return s};

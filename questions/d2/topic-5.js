@@ -14,7 +14,7 @@ window.PAQuestionBanks.d2t5 = function(id,s,shift){
  if(id==="D2.5.3"){
    const startH=R(7,15),startM=pick([0,15,30,45]),dur=pick([15,30,45,60,90,120]);const total=startH*60+startM+dur,endH=Math.floor(total/60),endM=total%60,ans=`${endH}:${String(endM).padStart(2,'0')}`;
    const mode=Math.random()<.7?'end':'duration';
-   if(mode==='end')return Q(`${timelineSvg(startH,startM,endH,endM)}Aktiviti bermula pada <b>${startH}:${String(startM).padStart(2,'0')}</b> dan berlangsung <b>${dur} minit</b>. Pukul berapakah aktiviti tamat?`,ans,[N(`${endH}:${String((endM+15)%60).padStart(2,'0')}`,'time'),N(`${startH}:${String(startM).padStart(2,'0')}`,'time'),N(`${Math.max(1,endH-1)}:${String(endM).padStart(2,'0')}`,'time')],"Gerakkan masa ke hadapan mengikut tempoh.","D2 Application · Masalah Masa",true,true);
+   if(mode==='end')return Q(`${timelineSvg(startH,startM,endH,endM,{showEnd:false})}Aktiviti bermula pada <b>${startH}:${String(startM).padStart(2,'0')}</b> dan berlangsung <b>${dur} minit</b>. Pukul berapakah aktiviti tamat?`,ans,[N(`${endH}:${String((endM+15)%60).padStart(2,'0')}`,'time'),N(`${startH}:${String(startM).padStart(2,'0')}`,'time'),N(`${Math.max(1,endH-1)}:${String(endM).padStart(2,'0')}`,'time')],"Gerakkan masa ke hadapan mengikut tempoh.","D2 Application · Masalah Masa",true,true);
    return Q(`${timelineSvg(startH,startM,endH,endM)}Berapakah tempoh dari <b>${startH}:${String(startM).padStart(2,'0')}</b> hingga <b>${ans}</b>?`,`${dur} minit`,[N(`${Math.max(15,dur-15)} minit`,'time'),N(`${dur+15} minit`,'time'),N(`${dur+60} minit`,'time')],"Kira beza masa dari mula hingga tamat.","D2 Application · Tempoh",true,true);
  }
  return null;

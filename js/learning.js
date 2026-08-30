@@ -241,7 +241,9 @@ function learningStart(skillId,intervention,opts={}){
   db.coachMemory.interventions[skillId]=(db.coachMemory.interventions[skillId]||0)+1;
   document.getElementById('learningSkill').textContent=`${m.id} · ${m.title}`;
   document.getElementById('learningReason').textContent=learningState.reason;
-  renderLearningStage();screen('learning');save();
+  const enterLearning=()=>{renderLearningStage();screen('learning');save()};
+  if(!opts.dev&&window.PADimensionalPortal?.open)window.PADimensionalPortal.open({onDone:enterLearning,duration:850});
+  else enterLearning();
 }
 function renderLearningStage(){
   if(!learningState)return;
