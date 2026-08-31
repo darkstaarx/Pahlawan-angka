@@ -3,11 +3,17 @@ function tidyNumber(value,maxDp=2){
  if(typeof value!=="number"||!Number.isFinite(value))return value;
  return Number(value.toFixed(maxDp));
 }
+// Display cleanup must not perform curriculum rounding. Explicit strings retain
+// their decimal places; only long floating-point tails are normalized.
+function cleanNumericNoise(value){return Number.isFinite(value)?Number(value.toPrecision(15)):value}
 function tidyDisplay(value){
- if(typeof value==="number")return tidyNumber(value);
+ if(typeof value==="number")return cleanNumericNoise(value);
  if(typeof value!=="string")return value;
- // Remove IEEE-754 tails such as RM67.19999999999999 without changing fractions, ratios or times.
- return value.replace(/-?\d+\.\d{3,}/g,m=>String(tidyNumber(Number(m))));
+ return value.replace(/-?\d+\.\d{10,}/g,m=>String(cleanNumericNoise(Number(m))));
+}
+function questionLearningTitle(meta,q){
+ const title=String(q?.kind||'');
+ return /^(?:Tahun|Darjah) [1-6] · /.test(title)?title.replace(/^(?:Tahun|Darjah) [1-6] · /,''):(meta?.title||'Kemahiran');
 }
 function decimalFmt(value,dp=1){return Number(value).toFixed(dp)}
 function moneyFmtUpper(value){
@@ -34,12 +40,13 @@ function fallbackChoice(answer,d){
 function choiceKey(value){return String(tidyDisplay(value)).replace(/\s+/g,' ').trim().toLocaleLowerCase('ms')}
 function semanticChoiceKey(value){
  const raw=choiceKey(value), compact=raw.replace(/\s+/g,'');
+ if(/^-?\d+(?:\.\d+)?$/.test(compact))return `number:${cleanNumericNoise(Number(compact))}`;
  let m=compact.match(/^rm(-?\d+(?:\.\d+)?)$/);if(m)return `money:${tidyNumber(Number(m[1]))}`;
- m=compact.match(/^(-?\d+(?:\.\d+)?)%$/);if(m)return `percent:${tidyNumber(Number(m[1]))}`;
- m=compact.match(/^(-?\d+)\/(-?\d+)$/);if(m){const n=Number(m[1]),d=Number(m[2]);if(d){const g=gcd(Math.abs(n),Math.abs(d));return `fraction:${n/g}/${d/g}`}}
+ m=compact.match(/^(-?\d+(?:\.\d+)?)%$/);if(m)return `percent:${cleanNumericNoise(Number(m[1]))}`;
+ m=compact.match(/^(-?\d+)\/(-?\d+)$/);if(m){const n=Number(m[1]),d=Number(m[2]);if(d){const g=gcd(Math.abs(n),Math.abs(d));return Math.abs(d/g)===1?`number:${n/d}`:`fraction:${n/g}/${d/g}`}}
  // Expanded notation is an addition statement: 20 + 5 and 5 + 20 are the same answer.
- if(/^-?\d+(?:\.\d+)?(?:\+-?\d+(?:\.\d+)?)+$/.test(compact))return `sum:${tidyNumber(compact.split('+').reduce((a,x)=>a+Number(x),0))}`;
- if(/^-?\d+(?:\.\d+)?(?:[×*]-?\d+(?:\.\d+)?)+$/.test(compact))return `product:${tidyNumber(compact.split(/[×*]/).reduce((a,x)=>a*Number(x),1))}`;
+ if(/^-?\d+(?:\.\d+)?(?:\+-?\d+(?:\.\d+)?)+$/.test(compact))return `sum:${cleanNumericNoise(compact.split('+').reduce((a,x)=>a+Number(x),0))}`;
+ if(/^-?\d+(?:\.\d+)?(?:[×*]-?\d+(?:\.\d+)?)+$/.test(compact))return `product:${cleanNumericNoise(compact.split(/[×*]/).reduce((a,x)=>a*Number(x),1))}`;
  return `text:${raw}`;
 }
 function Q(prompt,answer,wrong,hint,kind="Adaptive",diagnostic=false,formatShift=false){

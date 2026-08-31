@@ -11,7 +11,7 @@ has(demo.includes('10 soalan')&&demo.includes('missionAnswered:0'),'10-question 
 has(demo.includes("#login .cloudLoginCard, #login .loginCard"),'demo entry is not mounted against the live login container');
 has(app.includes("answered>=9?{tier:'boss'"),'question 10 mini boss staging missing');
 has(app.includes("sess.demoMode?4:PROGRESSION.bossHits*4"),'one-question demo boss HP missing');
-has(demo.includes('Muat Turun Worksheet Demo')&&tools.includes('async function demoWorksheet'),'demo worksheet path missing');
+has(demo.includes('Muat Turun Lembaran Kerja')&&tools.includes('async function demoWorksheet'),'demo worksheet path missing');
 has(tools.includes('VERSI DEMO')&&tools.includes("slice(0,8)"),'8-question watermarked worksheet missing');
 has(demo.includes('affierul@gmail.com')&&demo.includes('Maklum Balas Demo Pahlawan Angka'),'feedback mailto missing');
 has(!demo.includes('Nama anak')&&!demo.includes('child name'),'feedback includes child identity');

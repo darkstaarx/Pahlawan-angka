@@ -130,7 +130,7 @@ function updateMissionHud(){
 function recordMissionAnswer(ok,skillId,usedHint){
   ensureProgression();
   sess.missionAnswered=(sess.missionAnswered||0)+1;
-  if(sess.demoMode){if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;if(usedHint)sess.missionHints=(sess.missionHints||0)+1;sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok?1:-1);window.PADemo?.record?.(skillId,ok,usedHint);updateMissionHud();return;}
+  if(sess.demoMode){if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;if(usedHint)sess.missionHints=(sess.missionHints||0)+1;sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok&&!sess.retryState&&!usedHint?1:-1);window.PADemo?.record?.(skillId,ok,usedHint);updateMissionHud();return;}
   if(sess.devBankTest){
     if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;
     if(usedHint)sess.missionHints=(sess.missionHints||0)+1;

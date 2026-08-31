@@ -203,7 +203,8 @@ function beginHintRetry(o,btn,question){
  if(window.PATelemetry)PATelemetry.response(id,false,o.tag,sec,false,question,sess.mode+'-first-attempt');
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Dimensi');}
  document.getElementById('feedback').innerHTML='<b>Belum tepat.</b> Cuba sekali lagi. Petunjuk tersedia jika perlu.';
- document.getElementById('streak').textContent=sess.streak+' rentak · dibekukan';if(typeof playSfx==='function')playSfx('wrong');battle();save();
+ if(question.hintSteps?.length){const note=document.createElement('div');note.textContent=question.hintSteps[0];document.getElementById('feedback').appendChild(note);}
+ document.getElementById('streak').textContent=sess.streak+' rentak · dibekukan';document.getElementById('streak').title='Rentak ialah jawapan betul berturut-turut. Kesilapan pertama membekukannya sementara kamu mencuba semula.';if(typeof playSfx==='function')playSfx('wrong');battle();save();
  if(effortLock){setTimeout(()=>activateEffortRestuLock(id),500);return;}
 }
 function resolveAnswer(o,btn,question,ok){
@@ -227,6 +228,7 @@ function resolveAnswer(o,btn,question,ok){
   if(!sess.coachAdaptive){triggerImpact("enemy","hero","red",false);sess.hp-=3}
  }
 
+ if(question.solution){const step=document.createElement('div');step.textContent=question.solution;document.getElementById('feedback').appendChild(step);}
  if(qsv2Target){
    window.PAD3Topic7LiveCutover?.restoreLegacyState?.(question,s,qsv2LegacySnapshot);
    window.PAD3Topic7LiveCutover?.recordBattleResult?.(db,question,sess,ok);
@@ -319,7 +321,7 @@ function hint(){
  sess.hintLevel=(sess.hintLevel||0)+1;
  if(!sess.hint){sess.hint=true;scoreState(sess.q.skill).hints++;}
  const button=document.querySelector('.hintBtn');if(button){button.classList.remove('needs-help');button.classList.add('used');button.setAttribute('aria-label','Petunjuk telah dibuka');}
- const help=(sess.guardianFocus&&typeof guardianHint==='function')?guardianHint(sess.q,sess.hintLevel):sess.q.hint;
+ const help=(sess.guardianFocus&&typeof guardianHint==='function')?guardianHint(sess.q,sess.hintLevel):(sess.q.hintSteps?.[Math.min(sess.hintLevel-1,sess.q.hintSteps.length-1)]||sess.q.hint);
  document.getElementById('feedback').innerHTML=`<b>Cikgu Dimensi bantu:</b> ${help}<br><span class="retryPrompt">Sekarang pilih jawapan sekali lagi.</span>`;
  showHintOverlay(help);
  if(sess.retryState)document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});
