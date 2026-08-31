@@ -285,8 +285,11 @@ function numberLineSvg(min,max,step,point=null){
  return `<svg viewBox="0 0 ${W} ${H}" width="min(330px,98%)" style="display:block;margin:0 auto 10px"><line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#405072" stroke-width="3"/>${ticks}${marker}</svg>`;
 }
 function dotsEstimateVisual(count){
- let dots='';for(let i=0;i<count;i++){const x=12+(i%10)*20+(i%3)*2,y=12+Math.floor(i/10)*18;dots+=`<circle cx="${x}" cy="${y}" r="5" fill="${i%3===0?'#78a9ff':i%3===1?'#8bd3a8':'#ffd36d'}"/>`}
- const rows=Math.ceil(count/10);return `<svg viewBox="0 0 220 ${Math.max(50,rows*18+18)}" width="min(240px,92%)" style="display:block;margin:0 auto 10px">${dots}</svg>`;
+ // Shuffle spaced, jittered positions: no rows of ten and no overlapping dots.
+ const slots=[];for(let row=0;row<12;row++)for(let col=0;col<20;col++)slots.push({x:10+col*14+(Math.random()-.5)*4,y:10+row*14+(Math.random()-.5)*4});
+ for(let i=slots.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[slots[i],slots[j]]=[slots[j],slots[i]]}
+ const dots=slots.slice(0,count).map(p=>`<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4" fill="#78a9ff"/>`).join('');
+ return `<svg role="img" aria-label="Kumpulan objek untuk dianggarkan" viewBox="0 0 288 176" width="min(288px,92%)" style="display:block;margin:0 auto 10px">${dots}</svg>`;
 }
 function decimalTenthsVisual(n){return fractionVisual(n,10)}
 function rulerSvg(cm){

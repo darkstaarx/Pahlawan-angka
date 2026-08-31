@@ -122,7 +122,7 @@ function updateMissionHud(){
   const isCoach=!!sess.coachAdaptive;
   const bossPhase=!isCoach&&!sess.devBankTest&&n>=PROGRESSION.regularMissionQuestions;
   const bossN=Math.min(PROGRESSION.bossHits,Number(sess.bossQuestionsAnswered||0));
-  document.getElementById('missionCount').textContent=sess.demoMode?(n>=9?`BOSS · ${Math.min(10,n+1)}/10`:`${n}/10`):(sess.guardianFocus?`${n}/${sess.focusTarget}`:(sess.devBankTest?`#${n+1}`:(isCoach?(n<4?'Mencari asas':n<8?'Menguji kuasa':'Hampir ditemui'):(bossPhase?`BOSS ${bossN}/${PROGRESSION.bossHits}`:`${Math.min(PROGRESSION.regularMissionQuestions,n)}/${PROGRESSION.regularMissionQuestions}`))));
+  document.getElementById('missionCount').textContent=sess.demoMode?(n>=9?`${Math.min(10,n)}/10 selesai · Boss Akhir`:`${n}/10`):(sess.guardianFocus?`${n}/${sess.focusTarget}`:(sess.devBankTest?`#${n+1}`:(isCoach?(n<4?'Mencari asas':n<8?'Menguji kuasa':'Hampir ditemui'):(bossPhase?`BOSS ${bossN}/${PROGRESSION.bossHits}`:`${Math.min(PROGRESSION.regularMissionQuestions,n)}/${PROGRESSION.regularMissionQuestions}`))));
   document.getElementById('missionProgressFill').style.width=sess.demoMode?Math.min(100,n*10)+'%':(sess.guardianFocus?Math.min(100,Math.round(n/sess.focusTarget*100))+'%':(sess.devBankTest?'100%':(isCoach?Math.min(100,Math.round(n/PROGRESSION.coachMinQuestions*100))+'%':Math.round(Math.min(PROGRESSION.missionQuestions,n)/PROGRESSION.missionQuestions*100)+'%')));
   const title=sess.demoMode?`Demo Darjah ${db.schoolGrade} · 10 Soalan`:(sess.guardianFocus?`Latihan Fokus · ${META[sess.focusSkill]?.title||''}`:(sess.devBankTest?`DEV · ${sess.devSkill}`:(sess.introMission?'Misi Pengenalan':(sess.missionChapter?kssrMissionLabel(sess.missionChapter):'Cikgu Dimensi · Cari Kuasa Terbaik'))));
   document.getElementById('missionTitle').textContent=title;
@@ -130,7 +130,7 @@ function updateMissionHud(){
 function recordMissionAnswer(ok,skillId,usedHint){
   ensureProgression();
   sess.missionAnswered=(sess.missionAnswered||0)+1;
-  if(sess.demoMode){if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;if(usedHint)sess.missionHints=(sess.missionHints||0)+1;sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok?1:-1);window.PADemo?.record?.(skillId,ok);updateMissionHud();return;}
+  if(sess.demoMode){if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;if(usedHint)sess.missionHints=(sess.missionHints||0)+1;sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok?1:-1);window.PADemo?.record?.(skillId,ok,usedHint);updateMissionHud();return;}
   if(sess.devBankTest){
     if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;
     if(usedHint)sess.missionHints=(sess.missionHints||0)+1;

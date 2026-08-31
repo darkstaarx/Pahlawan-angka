@@ -18,6 +18,6 @@ has(!demo.includes('Nama anak')&&!demo.includes('child name'),'feedback includes
 has(demo.includes("screen('result');standardButtons(true)"),'normal result buttons are hidden before another wrapper can reveal them');
 has(tools.includes('!printVisualDependent(raw)')&&tools.includes("!/<(?:svg|img|canvas|table)\\b/i.test(raw)"),'demo worksheet does not reject visual-dependent questions');
 has(sensory.includes("retried?'✓ Berjaya selepas cuba semula'")&&pwa.includes('sensory-learning-v${SENSORY_VERSION}.js?v=${APP_VERSION}'),'unassisted retry feedback or sensory cache bust is missing');
-has(index.includes('demo-mode-v3.56.0.js?v=3.56.3')&&index.includes('demo-mode-v3.56.0.css?v=3.56.0'),'demo assets not cache-busted');
-has(version.includes("'3.56.3'")&&sw.includes('v3.56.3'),'release version is not 3.56.3');
+has(index.includes('demo-mode-v3.56.0.js?v=3.56.5')&&index.includes('demo-mode-v3.56.0.css?v=3.56.0'),'demo assets not cache-busted');
+has(version.includes("'3.56.5'")&&sw.includes('v3.56.5'),'release version is not 3.56.5');
 console.log(JSON.stringify({status:fail.length?'fail':'pass',checks:19,failures:fail},null,2));if(fail.length)process.exit(1);

@@ -202,7 +202,7 @@ function beginHintRetry(o,btn,question){
  }
  if(window.PATelemetry)PATelemetry.response(id,false,o.tag,sec,false,question,sess.mode+'-first-attempt');
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Dimensi');}
- document.getElementById('feedback').innerHTML='<b>Hampir!</b> Cuba sekali lagi. Petunjuk tersedia jika perlu.';
+ document.getElementById('feedback').innerHTML='<b>Belum tepat.</b> Cuba sekali lagi. Petunjuk tersedia jika perlu.';
  document.getElementById('streak').textContent=sess.streak+' rentak · dibekukan';if(typeof playSfx==='function')playSfx('wrong');battle();save();
  if(effortLock){setTimeout(()=>activateEffortRestuLock(id),500);return;}
 }
