@@ -1,0 +1,20 @@
+.paDemoResult .resultBurst{font-size:42px}
+.paDemoResult .resultCard h1{font-size:27px;margin:8px 0 14px}
+.paDemoResult .resultScore{font-size:14px}
+.paDemoScoreGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.paDemoScoreGrid span{display:grid;align-content:center;min-height:86px;padding:10px 6px;border:1px solid #324566;border-radius:16px;background:#101c31}
+.paDemoScoreGrid b{font-size:29px;line-height:1;color:#ffd65a}
+.paDemoScoreGrid small{margin-top:7px;color:#dce6f5;font-size:11px;line-height:1.25}
+.paDemoHintUsed{width:max-content;max-width:100%;margin:10px auto 0;padding:7px 11px;border-radius:999px;background:#182944;color:#cbd8eb;font-size:11px}
+.paDemoResult .resultRewards{margin:12px 0}
+.paDemoResult .resultRewards span{padding:7px 10px;background:#14233b;color:#aebdd3;font-size:11px}
+.paDemoResult .coachNote{padding:15px;margin:12px 0;text-align:center}
+.paDemoResult .coachNote>b{font-size:17px}
+.paDemoResult .coachNote p{font-size:13px;margin-top:8px;color:#d0daea}
+.paDemoFocusLead{font-weight:800}
+.paDemoFocusChips{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:10px 0}
+.paDemoFocusChips span{padding:7px 10px;border:1px solid #415778;border-radius:999px;background:#172741;color:#fff;font-size:12px;font-weight:800}
+.paDemoEncouragement{color:#ffe07a;font-weight:800;line-height:1.4}
+.paDemoScreeningNote{display:block;margin-top:9px;color:#899ab3;font-size:10px}
+.paDemoResult .paDemoResultActions{margin-top:12px}
+@media(max-width:390px){.paDemoResult .resultCard{padding:17px}.paDemoResult .resultBurst{font-size:36px}.paDemoResult .resultCard h1{font-size:24px}.paDemoScoreGrid b{font-size:25px}.paDemoScoreGrid small{font-size:10px}.paDemoScoreGrid span{min-height:78px}}

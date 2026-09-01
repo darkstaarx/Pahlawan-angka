@@ -1,7 +1,8 @@
-// App shell v3.56.5 — demo screening evidence and estimation layout.
+// App shell v3.56.6 — child-friendly demo result summary.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
+  './css/demo-result-child-v3.56.6.css',
   './js/fraction-lesson-v1.js',
   './js/cikgu-mini-games-v1.0.0.js','./js/dev-coach-games-v1.0.0.js','./css/cikgu-mini-games-v1.0.0.css',
   './assets/coach/time-lab/sidma-push-v1.png',
