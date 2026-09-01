@@ -67,4 +67,3 @@ No client update or delete is allowed. Account/child erasure remains a privilege
 ## Reporting boundary
 
 The parent-facing report should show strengths, learning pattern, what helps, and the next action in child-friendly language. Counts, confidence thresholds and error tags stay in the internal evidence layer. Retention and transfer claims require later exposures using `spaced_review` and `transfer_check` selection reasons.
-
