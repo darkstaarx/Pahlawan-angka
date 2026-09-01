@@ -94,6 +94,13 @@ function parentInsightItem(m,type){
  const s=scoreState(m.id),attempts=skillAttempts(s),accuracy=skillAccuracy(s);
  return `<article class="parentInsightItem ${type}"><span>${type==='strong'?'✓':'→'}</span><div><b>${parentSafe(m.title)}</b><small>${attempts?`${accuracy}% tepat daripada ${attempts} soalan`:'Masih diteroka'}</small></div></article>`;
 }
+function learnerReviewCard(){
+ const report=window.PALearnerReview?.parentSummary?.(db,META,{name:db?.name,grade:coreGrade()});
+ if(!report)return '';
+ if(!report.ready)return `<section class="card learnerReviewCard"><div class="eyebrow">CARA BELAJAR SEKARANG</div><h3>${parentSafe(report.headline)}</h3><p>${parentSafe(report.intro)}</p></section>`;
+ const list=(title,items)=>items?.length?`<div class="learnerReviewGroup"><b>${parentSafe(title)}</b><ul>${items.map(x=>`<li>${parentSafe(x)}</li>`).join('')}</ul></div>`:'';
+ return `<section class="card learnerReviewCard"><div class="eyebrow">CARA BELAJAR SEKARANG</div><h3>${parentSafe(report.headline)}</h3><p>${parentSafe(report.intro)}</p><div class="learnerReviewGrid">${list('Yang sudah baik',report.strengths)}${list('Sedang dipelajari',report.learning)}</div><div class="learnerScoreMeaning"><b>Apa maksud pencapaian ini</b><p>${parentSafe(report.scoreMeaning)}</p></div><div class="learnerStyle"><b>Cara ${parentSafe(report.name)} belajar</b><p>${parentSafe(report.learningStyle)}</p></div>${list('Fokus latihan seterusnya',report.nextSteps)}<small>Ulasan ini berubah apabila Cikgu Dimensi mendapat bukti baharu daripada latihan.</small></section>`;
+}
 function parentActivityList(){
  const rows=(db.logs||[]).slice(-8).reverse();
  if(!rows.length)return `<div class="parentEmpty"><span>◷</span><b>Belum ada aktiviti penting</b><p>Aktiviti pembelajaran akan muncul selepas anak mula menyelesaikan misi.</p></div>`;
@@ -110,6 +117,7 @@ function renderParent(){
   <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">RINGKASAN ${parentSafe(db.name).toUpperCase()} · DARJAH ${g}</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Dimensi menerangkan kemajuan anak"></section>
   <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>Soalan dijawab</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>Ketepatan semasa</small></div><div><span>✓</span><b>${summary.strong.length}</b><small>Kemahiran mantap</small></div></div>
   <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">FOKUS SETERUSNYA</div>${parentInsightItem(priorityLead,'priority')}</div></section>
+  ${learnerReviewCard()}
   <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-wajar/welcome.webp" alt=""><span><b>Langkah Cikgu Dimensi</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
  let byCh={};core.forEach(m=>(byCh[m.chapter]??=[]).push(m));
  document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat bukti latihan mengikut topik. Pilih “Latih” hanya jika mahu memberi tumpuan tambahan.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;

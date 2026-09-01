@@ -18,7 +18,7 @@ has(!demo.includes('Nama anak')&&!demo.includes('child name'),'feedback includes
 has(demo.includes("screen('result');standardButtons(true)"),'normal result buttons are hidden before another wrapper can reveal them');
 has(tools.includes('!printVisualDependent(raw)')&&tools.includes("!/<(?:svg|img|canvas|table)\\b/i.test(raw)"),'demo worksheet does not reject visual-dependent questions');
 has(sensory.includes("retried?'✓ Berjaya selepas cuba semula'")&&pwa.includes('sensory-learning-v${SENSORY_VERSION}.js?v=${APP_VERSION}'),'unassisted retry feedback or sensory cache bust is missing');
-has(index.includes('demo-mode-v3.56.0.js?v=3.56.6')&&index.includes('demo-result-child-v3.56.6.css?v=3.56.6')&&index.includes('js/version.js?v=3.56.6'),'demo assets not cache-busted');
+has(index.includes('demo-mode-v3.56.0.js?v=3.56.6')&&index.includes('demo-result-child-v3.56.6.css?v=3.56.6')&&index.includes('js/version.js?v=3.57.0'),'demo assets not cache-busted');
 has(sw.includes("'./css/demo-result-child-v3.56.6.css'"),'child-friendly result CSS missing from offline shell');
-has(version.includes("'3.56.6'")&&sw.includes('v3.56.6'),'release version is not 3.56.6');
+has(version.includes("'3.57.0'")&&sw.includes('v3.57.0'),'release version is not 3.57.0');
 console.log(JSON.stringify({status:fail.length?'fail':'pass',checks:20,failures:fail},null,2));if(fail.length)process.exit(1);

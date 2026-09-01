@@ -194,6 +194,7 @@ function beginHintRetry(o,btn,question){
  const id=question.skill,s=scoreState(id),sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target;
  const effortLock=!sess.demoMode&&window.PAEffortGuard?.firstWrong?.(question,sec)===true;
  sess.retryState={wrongTag:o.tag,wrongValue:o.v,firstSeconds:sec,streakBefore:sess.streak};
+ window.PALearnerReview?.firstWrong?.(question,{tag:o.tag,value:o.v,seconds:sec});
  btn.classList.add('no');btn.disabled=true;
  if(!qsv2Isolated){
   s.wrong++;s.evidence++;s.mis[o.tag]=(s.mis[o.tag]||0)+1;
@@ -253,6 +254,7 @@ function resolveAnswer(o,btn,question,ok){
   }
  }
  if(window.PATelemetry)PATelemetry.response(id,ok,o.tag,sec,sess.hint,question,sess.retryState?sess.mode+'-retry':sess.mode);
+ window.PALearnerReview?.resolve?.(question,{correct:ok,tag:o.tag,seconds:sec,usedHint:!!sess.hint,hintLevel:sess.hintLevel||0},db);
  const intervention=(bossStretch||qsv2Isolated)?null:evaluateIntervention(id);
  if(sess.enemyTier==='boss'&&!sess.coachAdaptive&&!sess.devBankTest)sess.bossQuestionsAnswered=(sess.bossQuestionsAnswered||0)+1;
  recordMissionAnswer(ok,id,sess.hint);
@@ -319,6 +321,7 @@ function hint(){
  if(!sess.q)return;
  window.PAEffortGuard?.hintOpened?.(sess.q);
  sess.hintLevel=(sess.hintLevel||0)+1;
+ window.PALearnerReview?.hintUsed?.(sess.q,sess.hintLevel);
  if(!sess.hint){sess.hint=true;scoreState(sess.q.skill).hints++;}
  const button=document.querySelector('.hintBtn');if(button){button.classList.remove('needs-help');button.classList.add('used');button.setAttribute('aria-label','Petunjuk telah dibuka');}
  const help=(sess.guardianFocus&&typeof guardianHint==='function')?guardianHint(sess.q,sess.hintLevel):(sess.q.hintSteps?.[Math.min(sess.hintLevel-1,sess.q.hintSteps.length-1)]||sess.q.hint);
