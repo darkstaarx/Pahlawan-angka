@@ -1,4 +1,4 @@
-// App shell v3.57.0 — adaptive learner review shadow model.
+// App shell v3.57.1 — trustworthy encounter evidence and bounded support loops.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

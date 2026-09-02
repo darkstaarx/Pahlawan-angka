@@ -213,17 +213,17 @@ function resolveAnswer(o,btn,question,ok){
  window.PAEffortGuard?.retryResolved?.(question,ok);
  document.querySelectorAll(".ans").forEach(x=>x.disabled=true);
  if(ok){
-  btn.classList.add("ok");s.correct++;s.evidence++;if(!sess.retryState)sess.streak++;
+  btn.classList.add("ok");s.correct++;if(!sess.retryState)s.evidence++;if(!sess.retryState)sess.streak++;
   if(typeof playSfx==='function')playSfx('correct');
   let ql=evidenceQuality(sec,question,sess.hint),baseGain=layerDelta>0?6:(layerDelta<0?9:8),gain=baseGain*ql*(1-s.mastery/135);
   s.mastery=Math.min(100,s.mastery+gain);s.confidence=Math.min(100,s.confidence+(layerDelta>0?4.5:5.5)*ql);s.stability=Math.min(100,s.stability+4*ql);
-  if(layerDelta>0)s.probePass++;
+  if(layerDelta>0&&!sess.retryState&&!sess.hint)s.probePass++;
   document.getElementById("feedback").innerHTML=(sess.guardianFocus&&typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?(sess.hint?'Bagus! Petunjuk membantu kamu menemui jawapan.':'Bagus! Kamu cuba semula dan menemui jawapan.'):(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
   const devOneHit=!!(db&&isDevMode()&&db.devOneHit);let willFinish=devOneHit||sess.ehp<=4;usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish);sess.ehp-=devOneHit?Math.max(4,sess.ehp):4
  }else{
-  btn.classList.add("no");s.wrong++;s.evidence++;sess.streak=0;
-  if(typeof playSfx==='function'){playSfx('wrong');setTimeout(()=>playSfx('enemyAttack'),80);}s.mastery=Math.max(0,s.mastery-(layerDelta>0?2.2:4.5));s.confidence=Math.max(0,s.confidence-(layerDelta>0?4:7.5));s.stability=Math.max(0,s.stability-5);
-  s.mis[o.tag]=(s.mis[o.tag]||0)+1;if(layerDelta>0)s.probeFail++;
+  btn.classList.add("no");sess.streak=0;
+  if(!sess.retryState){s.wrong++;s.evidence++;s.mastery=Math.max(0,s.mastery-(layerDelta>0?2.2:4.5));s.confidence=Math.max(0,s.confidence-(layerDelta>0?4:7.5));s.stability=Math.max(0,s.stability-5);s.mis[o.tag]=(s.mis[o.tag]||0)+1;if(layerDelta>0)s.probeFail++}
+  if(typeof playSfx==='function'){playSfx('wrong');setTimeout(()=>playSfx('enemyAttack'),80);}
   let right=[...document.querySelectorAll(".ans")].find(x=>x.dataset.v===String(question.answer));if(right)right.classList.add("ok");
   document.getElementById("feedback").innerHTML=`<b>Jawapan: ${question.answer}</b><br>${explain(o.tag)}`;
   if(!sess.coachAdaptive){triggerImpact("enemy","hero","red",false);sess.hp-=3}
@@ -245,13 +245,7 @@ function resolveAnswer(o,btn,question,ok){
  if(!qsv2Isolated){
   recordCoachResponse(id,ok,o.tag,sec,sess.hint,question.token);
   recordFrontierResponse(id,ok,sec,sess.hint,question);
-  if(!bossStretch){
-    if(ok){
-      // A corrected retry proves that the hint helped, not yet that the pupil
-      // can solve independently. Require one fresh, unassisted item.
-      if(sess.retryState&&sess.hint)scheduleConfirmation(id,1);else consumeConfirmation(id);
-    }else scheduleConfirmation(id);
-  }
+  if(!bossStretch)updateConfirmationAfterEncounter(id,{correct:ok,hadRetry:!!sess.retryState,usedHint:!!sess.hint});
  }
  if(window.PATelemetry)PATelemetry.response(id,ok,o.tag,sec,sess.hint,question,sess.retryState?sess.mode+'-retry':sess.mode);
  window.PALearnerReview?.resolve?.(question,{correct:ok,tag:o.tag,seconds:sec,usedHint:!!sess.hint,hintLevel:sess.hintLevel||0},db);

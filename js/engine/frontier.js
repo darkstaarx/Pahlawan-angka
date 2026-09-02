@@ -65,7 +65,11 @@ function chooseSchoolGradeProbe(){
 function chooseCoachFrontierSkill(){
   const c=ensureCoachSession();
   // Preserve prerequisite recovery if the normal intervention/recovery system has opened one.
-  if(sess.recoveryFor){const rid=chooseRecovery(sess.recoveryFor);if(rid){sess.mode='recover';return rid}else sess.recoveryFor=null}
+  if(sess.recoveryFor){
+    const original=sess.recoveryFor,rid=chooseRecovery(original),rs=rid&&scoreState(rid);
+    if(rid&&(rs.evidence<3||rs.mastery<65)&&takeRecoveryStep()){c.currentSkill=rid;sess.mode='recover';return rid}
+    finishRecoveryCycle();c.currentSkill=original;sess.mode='recheck';return original;
+  }
 
   const last=c.currentSkill;
   if(last&&c.secure[last]){
@@ -96,7 +100,7 @@ function chooseCoachFrontierSkill(){
     }
     if(recent.length>=3&&recent.filter(x=>x.ok).length<=1){
       const rec=(REC[last]||[]).filter(x=>META[x]).sort((a,b)=>META[b].grade-META[a].grade)[0];
-      if(rec){sess.recoveryFor=last;c.currentSkill=rec;sess.mode='recover';return rec}
+      if(rec&&beginRecoveryCycle(last)){takeRecoveryStep();c.currentSkill=rec;sess.mode='recover';return rec}
     }
   }
   // Establish breadth across the learner's school-grade domains before spending questions on already-secure skills.

@@ -19,6 +19,28 @@ function updateFrontier(){
 function needsRecovery(coreId){ let s=scoreState(coreId); if(coreGrade()===1 || META[coreId].grade!==coreGrade() || !REC[coreId])return false; return s.evidence>=3 && (s.mastery<CFG.recovery_trigger_mastery || (s.wrong>=2 && s.confidence<CFG.recovery_trigger_confidence)) }
 function chooseRecovery(coreId){ let candidates=(REC[coreId]||[]).filter(id=>META[id]&&META[id].grade===recoveryGrade()); if(!candidates.length)return null; candidates.sort((a,b)=>(scoreState(a).mastery+scoreState(a).confidence*.5)-(scoreState(b).mastery+scoreState(b).confidence*.5)); return candidates[0] }
 function canStretch(coreId){ let s=scoreState(coreId), tgt=STR[coreId]; if(!tgt || coreGrade()===6)return false; return s.evidence>=CFG.stretch_min_evidence && s.mastery>=CFG.stretch_trigger_mastery && s.confidence>=CFG.stretch_trigger_confidence }
+const RECOVERY_MAX_STEPS=4;
+function ensureRecoveryGuard(){
+ sess.recoveryCycles=sess.recoveryCycles||{};
+ sess.recoverySteps=Number(sess.recoverySteps||0);
+}
+function beginRecoveryCycle(coreId){
+ ensureRecoveryGuard();
+ if(Number(sess.recoveryCycles[coreId]||0)>=1)return false;
+ sess.recoveryCycles[coreId]=Number(sess.recoveryCycles[coreId]||0)+1;
+ sess.recoveryFor=coreId;sess.recoverySteps=0;
+ return true;
+}
+function takeRecoveryStep(){
+ ensureRecoveryGuard();
+ if(sess.recoverySteps>=RECOVERY_MAX_STEPS)return false;
+ sess.recoverySteps++;return true;
+}
+function finishRecoveryCycle(){
+ const coreId=sess.recoveryFor;
+ sess.recoveryFor=null;sess.recoverySteps=0;
+ return coreId;
+}
 
 
 const BOSS_STRETCH_D3_BY_CHAPTER={
@@ -68,13 +90,13 @@ function chooseModeAndSkill(){
  if(sess&&sess.coachAdaptive)return chooseCoachFrontierSkill();
  if(sess&&sess.missionChapter&&!sess.coachAdaptive&&!sess.devBankTest)return chooseManualMissionSkill();
  updateFrontier();
- if(sess.recoveryFor){ let rid=chooseRecovery(sess.recoveryFor); if(rid){ let rs=scoreState(rid); if(rs.evidence<3 || rs.mastery<65){ sess.mode="recover"; return rid; } } log(`Recovery selesai untuk ${sess.recoveryFor}; coach kembali ke skill asal.`); let ret=sess.recoveryFor;sess.recoveryFor=null;sess.mode="recheck";return ret; }
+ if(sess.recoveryFor){ let rid=chooseRecovery(sess.recoveryFor); if(rid){ let rs=scoreState(rid); if((rs.evidence<3 || rs.mastery<65)&&takeRecoveryStep()){ sess.mode="recover"; return rid; } } let ret=finishRecoveryCycle();log(`Recovery selesai untuk ${ret}; coach kembali ke skill asal untuk semakan bebas.`);sess.mode="recheck";return ret; }
  if(sess.stretchFor){ let sid=STR[sess.stretchFor], ss=scoreState(sid); if(ss && ss.evidence<3 && ss.probeFail<2){sess.mode="stretch";return sid} let base=sess.stretchFor; if(ss && ss.probePass>=2) log(`${base} menunjukkan bukti melebihi ${gradeLabel(coreGrade())}; cabaran ${gradeLabel(META[sid].grade)} disahkan secara provisional.`); else log(`Stretch untuk ${base} belum stabil; coach kekalkan ${gradeLabel(coreGrade())} sebagai working level.`); sess.stretchFor=null;sess.mode="review";return base; }
  let core = GRAPH.skills.filter(x=>x.grade===coreGrade() && +x.chapter<=db.coreFrontier);
  let weighted=[];
  for(let m of core){ let s=scoreState(m.id); let coverage=s.evidence===0?3.2:s.evidence<2?2.0:1; let weak=s.evidence>=2?(s.mastery<35?2.5:s.mastery<50?1.9:s.mastery<70?1.35:s.mastery<85?.85:.42):1; let frontier=(+m.chapter===db.coreFrontier?1.35:1); let spaced=(Date.now()-s.lastSeen>24*36e5?1.35:1); let focus=(db.focus===m.id?CFG.parent_focus_boost:1); let mission=(sess.missionChapter&&String(m.chapter)===String(sess.missionChapter)?PROGRESSION.missionBoost:1); let repeat=sess.recent.slice(-CFG.anti_repeat_window).includes(m.id)?.12:1; let score=coverage*weak*frontier*spaced*focus*mission*repeat*(.88+Math.random()*.24); weighted.push([m.id,score]); }
  weighted.sort((a,b)=>b[1]-a[1]); let pool=weighted.slice(0,Math.min(4,weighted.length)), total=pool.reduce((z,x)=>z+x[1],0), r=Math.random()*total, pick=pool[0][0]; for(let x of pool){r-=x[1]; if(r<=0){pick=x[0];break}}
- if(needsRecovery(pick)){ let rid=chooseRecovery(pick); if(rid){sess.recoveryFor=pick;sess.mode="recover";log(`${pick} lemah; coach turun sementara ke prerequisite ${rid} untuk cari root cause.`);return rid} }
+ if(needsRecovery(pick)){ let rid=chooseRecovery(pick); if(rid&&beginRecoveryCycle(pick)){takeRecoveryStep();sess.mode="recover";log(`${pick} lemah; coach turun sementara ke prerequisite ${rid} untuk cari root cause.`);return rid} }
  if(canStretch(pick) && Math.random()<.42){ sess.stretchFor=pick;sess.mode="stretch";log(`${pick} kuat; coach mulakan stretch probe ${STR[pick]}.`);return STR[pick] }
  sess.mode = scoreState(pick).evidence<2 ? "calibrate" : (scoreState(pick).mastery<50 ? "teach" : scoreState(pick).mastery>=85 ? "review" : "practice");
  return pick;

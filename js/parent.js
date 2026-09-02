@@ -23,6 +23,15 @@ const PARENT_MISCONCEPTION_COPY={
 };
 
 function parentSafe(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
+function learnerRows(skillId=null){
+ const rows=window.PALearnerReview?.encounters?.(db,{grade:coreGrade()})||[];
+ return skillId?rows.filter(x=>x.skillId===skillId):rows;
+}
+function learnerDisplayStats(skillId=null){
+ const rows=learnerRows(skillId);if(!rows.length)return null;
+ const independent=rows.filter(x=>x.outcome==='independent').length,successful=rows.filter(x=>x.outcome!=='unresolved').length;
+ return {attempts:rows.length,independent,successful,assisted:rows.filter(x=>x.outcome==='assisted').length,corrected:rows.filter(x=>x.outcome==='corrected').length,independentRate:Math.round(independent/rows.length*100)};
+}
 function skillAttempts(s){return Number(s.correct||0)+Number(s.wrong||0)}
 function skillAccuracy(s){const n=skillAttempts(s);return n?Math.round(Number(s.correct||0)/n*100):0}
 function topMisEntry(s){return Object.entries(s.mis||{}).sort((a,b)=>b[1]-a[1])[0]||null}
@@ -91,8 +100,9 @@ function parentLogText(raw){
 
 function parentInsightItem(m,type){
  if(!m)return `<div class="parentInsightEmpty">Belum cukup latihan untuk membuat rumusan.</div>`;
- const s=scoreState(m.id),attempts=skillAttempts(s),accuracy=skillAccuracy(s);
- return `<article class="parentInsightItem ${type}"><span>${type==='strong'?'✓':'→'}</span><div><b>${parentSafe(m.title)}</b><small>${attempts?`${accuracy}% tepat daripada ${attempts} soalan`:'Masih diteroka'}</small></div></article>`;
+ const s=scoreState(m.id),clean=learnerDisplayStats(m.id),attempts=clean?.attempts||skillAttempts(s),accuracy=clean?.independentRate??skillAccuracy(s);
+ const label=clean?'betul sendiri':'jawapan betul';
+ return `<article class="parentInsightItem ${type}"><span>${type==='strong'?'✓':'→'}</span><div><b>${parentSafe(m.title)}</b><small>${attempts?`${accuracy}% ${label} daripada ${attempts} soalan`:'Masih diteroka'}</small></div></article>`;
 }
 function learnerReviewCard(){
  const report=window.PALearnerReview?.parentSummary?.(db,META,{name:db?.name,grade:coreGrade()});
@@ -110,12 +120,14 @@ function parentActivityList(){
 function renderParent(){
  updateFrontier();
  const g=coreGrade(),prev=Math.max(1,g-1),next=Math.min(6,g+1),core=GRAPH.skills.filter(x=>x.grade===g);
- const attempts=core.reduce((z,m)=>z+skillAttempts(scoreState(m.id)),0),correct=core.reduce((z,m)=>z+Number(scoreState(m.id).correct||0),0),accuracy=attempts?Math.round(correct/attempts*100):0;
+ const clean=learnerDisplayStats(),legacyAttempts=core.reduce((z,m)=>z+skillAttempts(scoreState(m.id)),0),legacyCorrect=core.reduce((z,m)=>z+Number(scoreState(m.id).correct||0),0),attempts=clean?.attempts||legacyAttempts,accuracy=clean?.independentRate??(legacyAttempts?Math.round(legacyCorrect/legacyAttempts*100):0);
  const recovering=GRAPH.skills.filter(x=>x.grade===prev&&scoreState(x.id).evidence>0),stretching=GRAPH.skills.filter(x=>x.grade===next&&scoreState(x.id).evidence>0),summary=parentPowerSummary(core,attempts),missionCopy=nextMissionCopy(summary.mission,summary.mission?scoreState(summary.mission.id):null);
+ const strongCount=clean&&window.PALearnerReview?.skillReviews?window.PALearnerReview.skillReviews(learnerRows(),META).filter(x=>x.state==='strong').length:summary.strong.length;
  const strongLead=summary.strong[0]||null,priorityLead=summary.priority[0]||summary.mission||null;
  document.getElementById("summaryTab").innerHTML=`
   <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">RINGKASAN ${parentSafe(db.name).toUpperCase()} · DARJAH ${g}</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Dimensi menerangkan kemajuan anak"></section>
-  <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>Soalan dijawab</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>Ketepatan semasa</small></div><div><span>✓</span><b>${summary.strong.length}</b><small>Kemahiran mantap</small></div></div>
+  <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>${clean?'Soalan sebenar':'Cubaan direkod'}</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>${clean?'Betul sendiri':'Jawapan betul'}</small></div><div><span>✓</span><b>${strongCount}</b><small>Kemahiran mantap</small></div></div>
+  ${clean?'<p class="parentEvidenceNote">Ringkasan cara belajar menggunakan rekod baharu sejak kemas kini.</p>':''}
   <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">FOKUS SETERUSNYA</div>${parentInsightItem(priorityLead,'priority')}</div></section>
   ${learnerReviewCard()}
   <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-wajar/welcome.webp" alt=""><span><b>Langkah Cikgu Dimensi</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
@@ -127,8 +139,10 @@ function renderParent(){
 }
 
 function skillHTML(m,allowFocus){
- const s=scoreState(m.id),level=powerLevel(s),cls=db.focus===m.id?"focus":"";
- return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${skillAttempts(s)?`${s.correct}/${skillAttempts(s)} betul`:"Belum dicuba"}${Number(s.hints||0)?` · ${s.hints} Petunjuk`:''}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
+ const s=scoreState(m.id),level=powerLevel(s),cls=db.focus===m.id?"focus":"",clean=learnerDisplayStats(m.id);
+ const evidence=clean?`${clean.independent}/${clean.attempts} betul sendiri`:(skillAttempts(s)?`${s.correct}/${skillAttempts(s)} jawapan betul`:"Belum dicuba");
+ const support=clean&&(clean.assisted||clean.corrected)?` · ${clean.assisted+clean.corrected} selepas bantuan/cuba semula`:(Number(s.hints||0)?` · ${s.hints} Petunjuk`:'');
+ return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${evidence}${support}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
 }
 function tab(n){
  ["summary","core","levels","engine","settings"].forEach(x=>document.getElementById(x+"Tab").classList.toggle("hidden",x!==n));

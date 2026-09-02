@@ -127,6 +127,21 @@ function confirmationSkill(){
   ensureSessionHistory();
   return sess.confirmSkill&&sess.confirmRemaining>0?sess.confirmSkill:null;
 }
+function updateConfirmationAfterEncounter(skillId,result={}){
+  ensureSessionHistory();
+  if(sess.devBankTest)return;
+  const wasConfirmation=sess.confirmSkill===skillId&&sess.confirmRemaining>0;
+  // A confirmation question always consumes one slot, including an unresolved
+  // answer. Otherwise a struggling pupil can be trapped on the same skill.
+  if(wasConfirmation){
+    consumeConfirmation(skillId);
+    return;
+  }
+  // Any corrected or assisted item needs one fresh independent check.
+  if(result.hadRetry&&result.correct){scheduleConfirmation(skillId,1);return}
+  // An unresolved item gets a bounded pair of fresh checks.
+  if(!result.correct)scheduleConfirmation(skillId,2);
+}
 function setInterventionCooldown(skillId){
   ensureSessionHistory();sess.interventionCooldown[skillId]=INTERVENTION_CFG.cooldownQuestions;
 }
