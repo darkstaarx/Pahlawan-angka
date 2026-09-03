@@ -1,4 +1,4 @@
-// App shell v3.57.2 — encouraging, evidence-aware early learner review copy.
+// App shell v3.57.3 — journey-owned battle presentation and Sidma dash dispatch.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

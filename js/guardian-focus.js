@@ -17,6 +17,7 @@ function startGuardianFocus(){
  db.focus=id;db.guardianFocusHistory=db.guardianFocusHistory||[];
  const before=guardianSnapshot(id);closeGuardianFocus();
  sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,hintLevel:0,enemy:1,recent:[],mode:'focus',recoveryFor:null,stretchFor:null,missionChapter:null,missionAnswered:0,missionCorrect:0,missionHints:0,missionSkills:{},missionFinished:false,devBankTest:false,devSkill:null,coachAdaptive:false,guardianFocus:true,focusSkill:id,focusTarget:[5,10,15].includes(count)?count:5,focusBefore:before,focusAttempts:[],questionFingerprints:[],bossActive:false,bossDefeated:false,bossQuestionsAnswered:0,bossStretchAsked:false,bossStretchCurrent:false};
+ resetBattlePresentation();
  log(`Latihan Fokus Penjaga dimulakan untuk ${id} (${sess.focusTarget} soalan).`);save();applyHeroToBattle();updateMissionHud();nextQ();battle();screen('game');
 }
 function guardianRecordAnswer(ok,id,usedHint){if(!sess.guardianFocus||id!==sess.focusSkill)return;sess.focusAttempts.push({ok:!!ok,hint:!!usedHint,at:Date.now()})}

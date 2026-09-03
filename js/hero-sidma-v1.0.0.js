@@ -13,7 +13,7 @@
   const T_IDLE_RETURN=T_PROJECTILE_LAUNCH+TIMING.recovery;
   window.PA_SIDMA_TIMING={T_CAST_START,T_RELEASE,T_PROJECTILE_LAUNCH,T_IMPACT,T_IMPACT_END,T_IDLE_RETURN};
 
-  let timers=[],finisherTimers=[],normalAttackCount=0;
+  let timers=[],finisherTimers=[];
   function clearTimers(){timers.forEach(clearTimeout);timers=[]}
   function clearFinisherTimers(){finisherTimers.forEach(clearTimeout);finisherTimers=[]}
   function after(ms,fn){timers.push(setTimeout(fn,ms))}
@@ -208,13 +208,16 @@
   const originalPrepare=window.prepareHeroAttackVariant;
   const originalClear=window.clearHeroAttackVariant;
 
+  function dispatchSidmaAttack(finisher){
+    if(finisher){runSidmaFinisher();return 'rumus-penamat'}
+    runSidmaSkill2();return 'jejak-sigma';
+  }
+
   window.prepareHeroAttackVariant=function(el,finisher){
     const hero=(typeof db!=='undefined'&&db&&db.hero)||'wira';
     if(hero==='sidma'){
       resetSidmaVisuals();
-      if(finisher){runSidmaFinisher();return}
-      if(normalAttackCount++%2===0)runSidmaAttack(el);else runSidmaSkill2();
-      return;
+      dispatchSidmaAttack(finisher);return;
     }
     resetSidmaVisuals();
     if(typeof originalPrepare==='function')originalPrepare(el,finisher);
@@ -226,5 +229,5 @@
     if(typeof originalClear==='function')originalClear(el);
   };
 
-  window.PASidmaBattle={runSidmaAttack,runSidmaSkill2,runSidmaFinisher,resetSidmaVisuals,resetSidmaFinisher,getNextNormalSkill:()=>normalAttackCount%2===0?1:2,TIMING};
+  window.PASidmaBattle={runSidmaAttack,runSidmaSkill2,runSidmaFinisher,dispatchSidmaAttack,resetSidmaVisuals,resetSidmaFinisher,getNextNormalSkill:()=>2,TIMING};
 })();

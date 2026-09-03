@@ -1,3 +1,51 @@
+// Every delayed battle callback belongs to the journey that created it.
+// Starting (or explicitly ending) a journey invalidates and clears the old set,
+// preventing presentation callbacks from crossing a session boundary.
+let battleJourneyGeneration=0;
+const battlePresentationTimers=new Set();
+function battleLater(fn,delay){
+ const generation=battleJourneyGeneration;
+ let timer=setTimeout(()=>{battlePresentationTimers.delete(timer);if(generation===battleJourneyGeneration)fn()},delay);
+ battlePresentationTimers.add(timer);return timer;
+}
+function cancelBattlePresentationTimers(){
+ battleJourneyGeneration++;
+ battlePresentationTimers.forEach(clearTimeout);battlePresentationTimers.clear();
+}
+function resetBattlePresentation(){
+ cancelBattlePresentationTimers();
+ const streak=document.getElementById('streak');
+ if(streak){streak.textContent=`${Number(sess?.streak)||0} rentak`;streak.removeAttribute('title');streak.classList.remove('frozen','active','pulse')}
+ const feedback=document.getElementById('feedback');if(feedback)feedback.textContent='';
+ document.querySelectorAll('#answers .ans').forEach(answer=>{answer.disabled=false;answer.classList.remove('ok','no','correct','wrong','selected','disabled')});
+ const hint=document.querySelector('.hintBtn');if(hint){hint.disabled=false;hint.classList.remove('needs-help','used')}
+ const hero=document.getElementById('hero'),enemy=document.getElementById('enemy'),pet=document.getElementById('battlePet'),arena=document.getElementById('battleArena'),flash=document.getElementById('arenaFlash');
+ hero?.classList.remove('attacking','charging-finisher','hit','tint-red','tint-ice','tint-bloom','finisher','phase-anticipation','phase-movement','phase-contact','phase-follow-through','phase-recover');
+ if(hero){[...hero.classList].filter(name=>name==='pa-attack-variant'||name.startsWith('pa-attack-')).forEach(name=>hero.classList.remove(name));delete hero.dataset.attackVariant;hero.style.removeProperty('--pa-contact-scale');hero.style.removeProperty('--pa-contact-shift-x')}
+ enemy?.classList.remove('attacking','charging-finisher','hit','pet-hit','tint-red','tint-ice','tint-bloom','finisher','phase-anticipation','phase-movement','phase-contact','phase-follow-through','phase-recover','defeat-crack','defeat-shatter','boss-drop');
+ enemy?.querySelector('.monster-defeat-layer')?.remove();
+ pet?.classList.remove('pet-attacking','pet-phase-anticipation','pet-phase-contact','pet-phase-follow-through','pet-phase-recover');
+ arena?.classList.remove('attack-from-hero','attack-from-enemy','shake','finisher-shake','boss-entering','boss-landed','boss-cleared');
+ if(arena){delete arena.dataset.heroAttack;delete arena.dataset.heroKind}
+ flash?.classList.remove('pulse-red','pulse-ice','pulse-bloom');
+ document.getElementById('finisherCinematic')?.classList.remove('active','release');
+ document.getElementById('petImpactFx')?.classList.remove('active');
+ document.getElementById('bossCheckpoint')?.classList.remove('show');
+ arena?.querySelector('.bossVictory')?.classList.remove('show');
+ arena?.querySelector('.bossEntrance')?.classList.remove('show');
+ document.getElementById('paHintOverlay')?.remove();
+ window.PASidmaBattle?.resetSidmaVisuals?.();window.PASidmaBattle?.resetSidmaFinisher?.();
+ window.PABungaBattle?.resetNormal?.();window.PABungaBattle?.resetFinisher?.();window.PAWiraFinisher?.reset?.();
+}
+if(typeof window!=='undefined')window.PABattlePresentation={begin:resetBattlePresentation,cancel:cancelBattlePresentationTimers,later:battleLater,generation:()=>battleJourneyGeneration,pending:()=>battlePresentationTimers.size};
+if(typeof window!=='undefined'){
+ ['startMission','startDevSkill'].forEach(name=>{
+  const original=window[name];if(typeof original!=='function'||original.__paJourneyBoundary)return;
+  const wrapped=function(){const result=original.apply(this,arguments);resetBattlePresentation();return result};
+  wrapped.__paJourneyBoundary=true;window[name]=wrapped;
+ });
+}
+
 function triggerFinisherCinematic(){
  const layer=document.getElementById('finisherCinematic'),hero=document.getElementById('cinematicHero'),aura=document.getElementById('cinematicAura');
  if(!layer||!hero||!aura||!db)return;
@@ -37,12 +85,12 @@ function triggerFinisherCinematic(){
  layer.classList.remove('active','release');void layer.offsetWidth;layer.classList.add('active');
  if(!['wira','sidma','bunga'].includes(db.hero)&&typeof playSfx==='function')playSfx('auraCharge');
  const sidmaFinisher=db.hero==='sidma';
- setTimeout(()=>{
+ battleLater(()=>{
   layer.classList.add('release');
   if(sidmaFinisher&&h.frames?.release)hero.src=h.frames.release;
   if(typeof playSfx==='function'&&db.hero!=='wira'&&db.hero!=='bunga'&&!sidmaFinisher)playSfx('attack');
  },sidmaFinisher?650:760);
- setTimeout(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
+ battleLater(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
 }
 function triggerImpact(attackerId,targetId,tint,finisher){
  let attacker=document.getElementById(attackerId),target=document.getElementById(targetId),arena=document.getElementById("battleArena"),flash=document.getElementById("arenaFlash");
@@ -71,42 +119,42 @@ function triggerImpact(attackerId,targetId,tint,finisher){
  }
  const clearHeroPhases=()=>attacker.classList.remove("phase-anticipation","phase-movement","phase-contact","phase-follow-through","phase-recover");
  const startAttacker=()=>{attacker.classList.remove("attacking","charging-finisher");if(attackerId==="hero"&&typeof prepareHeroAttackVariant==="function")prepareHeroAttackVariant(attacker,finisher);void attacker.offsetWidth;attacker.classList.add("attacking");if(finisher){if(attackerId==="hero")triggerFinisherCinematic();attacker.classList.add("charging-finisher");}};
- if(heroLead)setTimeout(startAttacker,heroLead);else startAttacker();
+ if(heroLead)battleLater(startAttacker,heroLead);else startAttacker();
  if(hasPet)triggerPetFollowUp(target,0);
  if(attackerId==="hero"){
-   clearHeroPhases();setTimeout(()=>attacker.classList.add("phase-anticipation"),heroLead);
+   clearHeroPhases();battleLater(()=>attacker.classList.add("phase-anticipation"),heroLead);
    if(finisher){
     if(sidmaFinishing){
      // Sidma's release-hand pose lives inside the blackout. Keep the arena
      // body anchored afterwards so no shared follow-through frame leaks out.
-     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+1580);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+1580);
     }else{
      const phaseContact=finisherContact,phaseFollow=finisherContact+190,phaseRecover=finisherContact+380;
-     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+phaseContact);
-     if(db?.hero!=="bunga")setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+phaseFollow);
-     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+phaseRecover);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+phaseContact);
+     if(db?.hero!=="bunga")battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+phaseFollow);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+phaseRecover);
     }
    }else{
     if(db?.hero==="bunga"){
-     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+260);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+260);
     }else{
-     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-movement")},heroLead+140);
-     setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+320);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-movement")},heroLead+140);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+320);
     }
-    setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+620);
+    battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+620);
    }
  }else if(attacker.dataset.enemyTier==="boss"){
    clearHeroPhases();attacker.classList.add("phase-anticipation");
-   setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},145);
-   setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},335);
-   setTimeout(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},500);
+   battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},145);
+   battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},335);
+   battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},500);
  }
  arena.classList.remove("attack-from-hero","attack-from-enemy");arena.classList.add(attackerId==="hero"?"attack-from-hero":"attack-from-enemy");
- setTimeout(()=>{attacker.classList.remove("attacking","charging-finisher");clearHeroPhases();if(attackerId==="hero"&&typeof clearHeroAttackVariant==="function")clearHeroAttackVariant(attacker);arena.classList.remove("attack-from-hero","attack-from-enemy")},attackDuration);
- setTimeout(()=>{
-   target.classList.remove("hit","tint-red","tint-ice","tint-bloom","finisher");void target.offsetWidth;target.classList.add("hit");if(tintClass)target.classList.add(tintClass);if(finisher)target.classList.add("finisher");setTimeout(()=>target.classList.remove("hit","tint-red","tint-ice","tint-bloom","finisher"),hitDuration);
-   arena.classList.remove("shake","finisher-shake");if(shakeClass){void arena.offsetWidth;arena.classList.add(shakeClass);setTimeout(()=>arena.classList.remove(shakeClass),hitDuration)}
-   flash.classList.remove("pulse-red","pulse-ice","pulse-bloom");if(pulse){void flash.offsetWidth;flash.classList.add(pulse);setTimeout(()=>flash.classList.remove(pulse),finisher?620:360)}
+ battleLater(()=>{attacker.classList.remove("attacking","charging-finisher");clearHeroPhases();if(attackerId==="hero"&&typeof clearHeroAttackVariant==="function")clearHeroAttackVariant(attacker);arena.classList.remove("attack-from-hero","attack-from-enemy")},attackDuration);
+ battleLater(()=>{
+   target.classList.remove("hit","tint-red","tint-ice","tint-bloom","finisher");void target.offsetWidth;target.classList.add("hit");if(tintClass)target.classList.add(tintClass);if(finisher)target.classList.add("finisher");battleLater(()=>target.classList.remove("hit","tint-red","tint-ice","tint-bloom","finisher"),hitDuration);
+   arena.classList.remove("shake","finisher-shake");if(shakeClass){void arena.offsetWidth;arena.classList.add(shakeClass);battleLater(()=>arena.classList.remove(shakeClass),hitDuration)}
+   flash.classList.remove("pulse-red","pulse-ice","pulse-bloom");if(pulse){void flash.offsetWidth;flash.classList.add(pulse);battleLater(()=>flash.classList.remove(pulse),finisher?620:360)}
    if(targetId==='hero'&&db?.hero==='bunga')window.PABungaBattle?.showHurt?.();
    if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&db?.hero==='wira'?'wiraSword':'hit');
  },contactDelay)
@@ -114,17 +162,17 @@ function triggerImpact(attackerId,targetId,tint,finisher){
 }
 function triggerPetFollowUp(target,delay){
  const pet=document.getElementById('battlePet');if(!pet||pet.classList.contains('hidden'))return;
- setTimeout(()=>{pet.classList.remove('pet-attacking','pet-phase-anticipation','pet-phase-contact','pet-phase-follow-through','pet-phase-recover');void pet.offsetWidth;pet.classList.add('pet-attacking','pet-phase-anticipation');
-  setTimeout(()=>pet.classList.replace('pet-phase-anticipation','pet-phase-contact'),180);
-  setTimeout(()=>{pet.classList.replace('pet-phase-contact','pet-phase-follow-through');triggerPetImpactFx(target);target.classList.remove('pet-hit');void target.offsetWidth;target.classList.add('pet-hit');setTimeout(()=>target.classList.remove('pet-hit'),330);if(typeof playSfx==='function')playSfx('hit')},360);
-  setTimeout(()=>pet.classList.replace('pet-phase-follow-through','pet-phase-recover'),570);
-  setTimeout(()=>pet.classList.remove('pet-attacking','pet-phase-recover'),760);
+ battleLater(()=>{pet.classList.remove('pet-attacking','pet-phase-anticipation','pet-phase-contact','pet-phase-follow-through','pet-phase-recover');void pet.offsetWidth;pet.classList.add('pet-attacking','pet-phase-anticipation');
+  battleLater(()=>pet.classList.replace('pet-phase-anticipation','pet-phase-contact'),180);
+  battleLater(()=>{pet.classList.replace('pet-phase-contact','pet-phase-follow-through');triggerPetImpactFx(target);target.classList.remove('pet-hit');void target.offsetWidth;target.classList.add('pet-hit');battleLater(()=>target.classList.remove('pet-hit'),330);if(typeof playSfx==='function')playSfx('hit')},360);
+  battleLater(()=>pet.classList.replace('pet-phase-follow-through','pet-phase-recover'),570);
+  battleLater(()=>pet.classList.remove('pet-attacking','pet-phase-recover'),760);
  },delay);
 }
 function triggerPetImpactFx(target){
  const id=db?.rewards?.equippedPet,item=typeof REWARD_PETS!=='undefined'&&REWARD_PETS[id];if(!item?.fx||!target)return;
  const arena=document.getElementById('battleArena');if(!arena)return;let fx=document.getElementById('petImpactFx');if(!fx){fx=document.createElement('img');fx.id='petImpactFx';fx.className='petImpactFx';fx.alt='';fx.setAttribute('aria-hidden','true');arena.appendChild(fx);}
- const arenaBox=arena.getBoundingClientRect(),box=target.getBoundingClientRect();fx.src=item.fx;fx.style.left=(box.left-arenaBox.left+box.width/2)+'px';fx.style.top=(box.top-arenaBox.top+box.height/2)+'px';fx.dataset.pet=id;fx.classList.remove('active');void fx.offsetWidth;fx.classList.add('active');setTimeout(()=>fx.classList.remove('active'),720);
+ const arenaBox=arena.getBoundingClientRect(),box=target.getBoundingClientRect();fx.src=item.fx;fx.style.left=(box.left-arenaBox.left+box.width/2)+'px';fx.style.top=(box.top-arenaBox.top+box.height/2)+'px';fx.dataset.pet=id;fx.classList.remove('active');void fx.offsetWidth;fx.classList.add('active');battleLater(()=>fx.classList.remove('active'),720);
 }
 function triggerBossEntrance(){
  const arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy');if(!arena||!enemy)return;
@@ -132,8 +180,8 @@ function triggerBossEntrance(){
  if(!layer){layer=document.createElement('div');layer.className='bossEntrance';layer.setAttribute('aria-hidden','true');layer.innerHTML='<div class="bossEntranceShade"></div><div class="bossEntranceFlash"></div><div class="bossEntranceBanner"><small>AMARAN</small><b>BOSS MUNCUL!</b></div>';arena.appendChild(layer);}
  arena.classList.remove('boss-entering');layer.classList.remove('show');enemy.classList.remove('boss-drop');void arena.offsetWidth;
  arena.classList.add('boss-entering');layer.classList.add('show');enemy.classList.add('boss-drop');
- setTimeout(()=>{if(typeof playSfx==='function')playSfx('hit');arena.classList.add('boss-landed')},920);
- setTimeout(()=>{arena.classList.remove('boss-entering','boss-landed');layer.classList.remove('show');enemy.classList.remove('boss-drop')},2350);
+ battleLater(()=>{if(typeof playSfx==='function')playSfx('hit');arena.classList.add('boss-landed')},920);
+ battleLater(()=>{arena.classList.remove('boss-entering','boss-landed');layer.classList.remove('show');enemy.classList.remove('boss-drop')},2350);
 }
 function triggerMonsterDefeat(){
  const enemy=document.getElementById('enemy'),sprite=document.getElementById('enemySprite'),wrap=sprite?.parentElement;
@@ -155,19 +203,25 @@ function triggerMonsterDefeat(){
   layer.appendChild(shard);
  });
  const dust=document.createElement('div');dust.className='monster-defeat-dust';layer.appendChild(dust);wrap.appendChild(layer);
- setTimeout(()=>{enemy.classList.remove('defeat-crack');enemy.classList.add('defeat-shatter')},175);
+ battleLater(()=>{enemy.classList.remove('defeat-crack');enemy.classList.add('defeat-shatter')},175);
 }
 function triggerBossVictory(){
  const arena=document.getElementById('battleArena');if(!arena)return;
  let layer=arena.querySelector('.bossVictory');
  if(!layer){layer=document.createElement('div');layer.className='bossVictory';layer.setAttribute('aria-hidden','true');layer.innerHTML='<div class="bossVictoryBanner">BOSS DITEWASKAN!</div>';arena.appendChild(layer);}
  layer.classList.remove('show');void layer.offsetWidth;layer.classList.add('show');
- setTimeout(()=>layer.classList.remove('show'),1500);
+ battleLater(()=>layer.classList.remove('show'),1500);
+}
+function scheduleBossPresentation(victoryDelay){
+ battleLater(triggerBossVictory,victoryDelay);
+ if(!sess?.demoMode)battleLater(showBossCheckpoint,victoryDelay+1750);
 }
 function showBossCheckpoint(){
  const overlay=document.getElementById('bossCheckpoint'),arena=document.getElementById('battleArena');if(!overlay||!arena)return;
- const entries=Object.entries(sess.missionSkills||{}).sort((a,b)=>b[1]-a[1]);
- const best=entries.length&&META[entries[0][0]]?META[entries[0][0]]:META[sess.q.skill];
+ const entries=Object.entries(sess?.missionSkills||{}).sort((a,b)=>b[1]-a[1]);
+ const currentSkill=sess?.q?.skill;
+ const best=entries.length&&META[entries[0][0]]?META[entries[0][0]]:(currentSkill&&META[currentSkill]);
+ if(!best)return;
  const accuracy=Math.round((sess.missionCorrect||0)/Math.max(1,sess.missionAnswered||1)*100);
  document.getElementById('bossCheckpointSkill').textContent=`Kamu berjaya menamatkan cabaran ${best?.domain||'matematik'}.`;
  document.getElementById('bossCheckpointProof').innerHTML=`<b>${sess.missionCorrect||0}/${sess.missionAnswered||0}</b><span>jawapan betul</span><b>${accuracy}%</b><span>ketepatan</span>`;
@@ -206,7 +260,7 @@ function beginHintRetry(o,btn,question){
  document.getElementById('feedback').innerHTML='<b>Belum tepat.</b> Cuba sekali lagi. Petunjuk tersedia jika perlu.';
  if(question.hintSteps?.length){const note=document.createElement('div');note.textContent=question.hintSteps[0];document.getElementById('feedback').appendChild(note);}
  document.getElementById('streak').textContent=sess.streak+' rentak · dibekukan';document.getElementById('streak').title='Rentak ialah jawapan betul berturut-turut. Kesilapan pertama membekukannya sementara kamu mencuba semula.';if(typeof playSfx==='function')playSfx('wrong');battle();save();
- if(effortLock){setTimeout(()=>activateEffortRestuLock(id),500);return;}
+ if(effortLock){battleLater(()=>activateEffortRestuLock(id),500);return;}
 }
 function resolveAnswer(o,btn,question,ok){
  let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):(qsv2NonT7Target?window.PAD3NonT7LiveIsolation?.captureLegacyState?.(question,s):null);
@@ -223,7 +277,7 @@ function resolveAnswer(o,btn,question,ok){
  }else{
   btn.classList.add("no");sess.streak=0;
   if(!sess.retryState){s.wrong++;s.evidence++;s.mastery=Math.max(0,s.mastery-(layerDelta>0?2.2:4.5));s.confidence=Math.max(0,s.confidence-(layerDelta>0?4:7.5));s.stability=Math.max(0,s.stability-5);s.mis[o.tag]=(s.mis[o.tag]||0)+1;if(layerDelta>0)s.probeFail++}
-  if(typeof playSfx==='function'){playSfx('wrong');setTimeout(()=>playSfx('enemyAttack'),80);}
+  if(typeof playSfx==='function'){playSfx('wrong');battleLater(()=>playSfx('enemyAttack'),80);}
   let right=[...document.querySelectorAll(".ans")].find(x=>x.dataset.v===String(question.answer));if(right)right.classList.add("ok");
   document.getElementById("feedback").innerHTML=`<b>Jawapan: ${question.answer}</b><br>${explain(o.tag)}`;
   if(!sess.coachAdaptive){triggerImpact("enemy","hero","red",false);sess.hp-=3}
@@ -274,38 +328,37 @@ function resolveAnswer(o,btn,question,ok){
   const shatterDuration=boss?935:795;
   const appreciationHold=boss?620:520;
   const enemyTransitionDelay=defeatStartDelay+shatterDuration+appreciationHold;
-  setTimeout(triggerMonsterDefeat,defeatStartDelay);
-  if(typeof playSfx==='function')setTimeout(()=>playSfx('enemyDown'),defeatStartDelay);
+  battleLater(triggerMonsterDefeat,defeatStartDelay);
+  if(typeof playSfx==='function')battleLater(()=>playSfx('enemyDown'),defeatStartDelay);
 	  if(boss){
    sess.bossDefeated=true;
    if(typeof setBattleAudioMode==='function')setBattleAudioMode('off');
    if(sess.coachAdaptive){sess.bossActive=false;sess.coachBossChapter=null;}
 	   const victoryDelay=enemyTransitionDelay;
-	   setTimeout(triggerBossVictory,victoryDelay);
-	   setTimeout(showBossCheckpoint,victoryDelay+1750);
+	   scheduleBossPresentation(victoryDelay);
   }
-  if(!sess.devBankTest&&!sess.demoMode){addCoins(boss?8:3);setTimeout(()=>showRewardToast(boss?"Boss ditewaskan! +8 🪙":"Raksasa ditewaskan! +3 🪙"),boss?enemyTransitionDelay:enemyTransitionDelay-220)}
+  if(!sess.devBankTest&&!sess.demoMode){addCoins(boss?8:3);battleLater(()=>showRewardToast(boss?"Boss ditewaskan! +8 🪙":"Raksasa ditewaskan! +3 🪙"),boss?enemyTransitionDelay:enemyTransitionDelay-220)}
   if(!boss){
-   setTimeout(nextEnemy,enemyTransitionDelay);
-   setTimeout(nextQ,enemyTransitionDelay+120);
+   battleLater(nextEnemy,enemyTransitionDelay);
+   battleLater(nextQ,enemyTransitionDelay+120);
   }
  }
 
  if(intervention&&!sess.demoMode&&!enemyDefeated&&!(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget)){
    sess.confirmSkill=null;sess.confirmRemaining=0;
    log(`Learning Camp dicetuskan untuk ${id}: ${intervention.type} / ${intervention.tag}.`);
-   setTimeout(()=>learningStart(id,intervention),850);
+   battleLater(()=>learningStart(id,intervention),850);
    return;
  }
-	 if(sess.demoMode&&sess.missionAnswered>=10){setTimeout(()=>window.PADemo?.finish?.(),enemyDefeated?3200:1150);return;}
-	 if(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget){setTimeout(finishGuardianFocus,1150);return;}
+	 if(sess.demoMode&&sess.missionAnswered>=10){battleLater(()=>window.PADemo?.finish?.(),enemyDefeated?3200:1150);return;}
+	 if(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget){battleLater(finishGuardianFocus,1150);return;}
 	 if(enemyDefeated)return;
 	 const bossClearDelay=(enemyDefeated&&db&&db.hero==="bunga")?1500:1100;
- if(sess.coachAdaptive && shouldFinishAdaptiveCoach()){setTimeout(finishCoachSession,bossClearDelay)}
- else if(!sess.devBankTest && !sess.coachAdaptive && sess.missionAnswered>=PROGRESSION.missionQuestions && sess.bossDefeated){setTimeout(finishMission,bossClearDelay)}
- else{setTimeout(nextQ,enemyDefeated?1250:Math.max(1050,ok?Number(sess.lastHeroImpact?.completionDelay||0):0))}
+ if(sess.coachAdaptive && shouldFinishAdaptiveCoach()){battleLater(finishCoachSession,bossClearDelay)}
+ else if(!sess.devBankTest && !sess.coachAdaptive && sess.missionAnswered>=PROGRESSION.missionQuestions && sess.bossDefeated){battleLater(finishMission,bossClearDelay)}
+ else{battleLater(nextQ,enemyDefeated?1250:Math.max(1050,ok?Number(sess.lastHeroImpact?.completionDelay||0):0))}
 }
-function closeHintOverlay(){const overlay=document.getElementById('paHintOverlay');if(overlay){overlay.classList.remove('show');setTimeout(()=>overlay.remove(),180)}}
+function closeHintOverlay(){const overlay=document.getElementById('paHintOverlay');if(overlay){overlay.classList.remove('show');battleLater(()=>overlay.remove(),180)}}
 function showHintOverlay(help){
  let overlay=document.getElementById('paHintOverlay');if(!overlay){overlay=document.createElement('div');overlay.id='paHintOverlay';overlay.className='paHintOverlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','paHintTitle');document.body.appendChild(overlay)}
  overlay.innerHTML='<section class="paHintPanel"><div class="paHintMark" aria-hidden="true">✦</div><small>PETUNJUK CIKGU DIMENSI</small><h2 id="paHintTitle"></h2><p>Sekarang cuba pilih jawapan sekali lagi.</p><button type="button" onclick="closeHintOverlay()">Faham, saya cuba</button></section>';

@@ -221,7 +221,7 @@ function applyEnemyVariant(forceReset=false){
   }
   if(typeof setBattleAudioMode==='function')setBattleAudioMode(stage.tier==='boss'?'boss':'ambient');
   battle();
-  if(stage.tier==='boss'&&isNewEnemy&&typeof triggerBossEntrance==='function')setTimeout(triggerBossEntrance,40);
+  if(stage.tier==='boss'&&isNewEnemy&&typeof triggerBossEntrance==='function')(window.PABattlePresentation?.later||setTimeout)(triggerBossEntrance,40);
 }
 function nextEnemy(){ sess.enemy=(sess.enemy||1)+1;applyEnemyVariant(true); }
 function goLogin(){ screen('login'); refreshLoginResume(); if(typeof updateSoundButtons==='function')updateSoundButtons(); }
