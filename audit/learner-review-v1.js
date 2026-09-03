@@ -79,6 +79,19 @@ function answer(db,question,{wrong=false,hint=false,correct=true,tag='place',sec
  const report=review.parentSummary(db,{'D2.PV1000':{title:'Nilai tempat'}},{name:'Sara',grade:2});ok(report.strengths.some(x=>/Nilai tempat/.test(x)));ok(/dalam sesi semasa/.test(report.strengths[0]));ok(/dibuat sendiri pada percubaan pertama/i.test(report.scoreMeaning));
 }
 
+// A broad, promising first screening must not sound like weak foundations.
+{
+ const db={},skills=['D6.SPACE_PROBLEM','D6.CIRCLE','D6.TIME','D6.ANGLE','D6.PROB','D6.MONEY'];
+ for(let i=0;i<6;i++)answer(db,q(110+i,skills[i]),{now:6500+i});
+ answer(db,q(116,'D6.MONEY'),{wrong:true,correct:false,tag:'generated',seconds:10,now:6510});
+ const meta=Object.fromEntries(skills.map(id=>[id,{title:id}])),report=review.parentSummary(db,meta,{name:'Profil A',grade:2});
+ ok(report.ready);equal(report.evidence.independent,6);equal(report.evidence.unresolved,1);
+ ok(/Permulaan Profil A sangat baik/.test(report.headline));
+ ok(/masih mengumpul bukti/i.test(report.intro));
+ ok(!/sedang membina asas Matematik/i.test(report.headline));
+ equal(review.skillReviews(review.encounters(db),meta).filter(x=>x.state==='strong').length,0);
+}
+
 // Parent copy remains careful and non-technical.
 {
  const db={};for(let i=0;i<6;i++)answer(db,q(120+i),{wrong:true,correct:false,tag:'place',seconds:6,now:7000+i});
@@ -97,7 +110,7 @@ function answer(db,question,{wrong=false,hint=false,correct=true,tag='place',sec
 {
  const root=path.resolve(__dirname,'..'),app=fs.readFileSync(path.join(root,'js/app.js'),'utf8'),battle=fs.readFileSync(path.join(root,'js/battle.js'),'utf8'),parent=fs.readFileSync(path.join(root,'js/parent.js'),'utf8'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
  ok(app.includes('PALearnerReview?.beginQuestion'));ok(battle.includes('PALearnerReview?.firstWrong'));ok(battle.includes('PALearnerReview?.hintUsed'));ok(battle.includes('PALearnerReview?.resolve'));
- ok(parent.includes('PALearnerReview?.parentSummary'));ok(html.includes('learner-review-v1.js?v=3.57.0'));ok(html.includes('learner-review-v1.css?v=3.57.0'));ok(sw.includes("'./css/learner-review-v1.css','./js/engine/learner-review-v1.js'"));
+ ok(parent.includes('PALearnerReview?.parentSummary'));ok(html.includes('learner-review-v1.js?v=3.57.2'));ok(html.includes('learner-review-v1.css?v=3.57.0'));ok(sw.includes("'./css/learner-review-v1.css','./js/engine/learner-review-v1.js'"));
  const moduleSource=fs.readFileSync(path.join(root,'js/engine/learner-review-v1.js'),'utf8');
  for(const forbidden of ['addCoins(','updateFrontier(','scheduleConfirmation(','mastery=','coreFrontier','completedMissions','chapterStars'])ok(!moduleSource.includes(forbidden),`shadow module excludes ${forbidden}`);
 }

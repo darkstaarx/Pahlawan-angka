@@ -131,9 +131,10 @@
     if(help)nextSteps.push('Selepas bantuan, beri satu soalan baharu untuk dicuba sendiri.');
     else nextSteps.push('Gunakan bentuk soalan berbeza untuk memastikan kefahaman, bukan hafalan.');
     nextSteps.push('Semak semula pada sesi lain untuk memastikan kefahaman kekal.');
+    const promisingStart=!strong.length&&!focus.length&&a.total>=5&&a.independent/a.total>=.8;
     return {
-      schema:SCHEMA,ready:true,name,headline:strong.length?`Asas ${name} semakin terbina`:`${name} sedang membina asas Matematik`,
-      intro:focus.length?'Beberapa kemahiran sudah kelihatan, dan latihan seterusnya akan memberi perhatian pada bahagian yang paling membantu.':'Corak pembelajaran setakat ini kelihatan seimbang. Teruskan latihan supaya kekuatan ini menjadi lebih konsisten.',
+      schema:SCHEMA,ready:true,name,headline:strong.length?`Asas ${name} semakin terbina`:(promisingStart?`Permulaan ${name} sangat baik`:`${name} sedang membina asas Matematik`),
+      intro:focus.length?'Beberapa kemahiran sudah kelihatan, dan latihan seterusnya akan memberi perhatian pada bahagian yang paling membantu.':(promisingStart?'Kebanyakan soalan dijawab sendiri. Cikgu Dimensi masih mengumpul bukti untuk memastikan kemahiran mana yang benar-benar kukuh.':'Corak pembelajaran setakat ini kelihatan seimbang. Teruskan latihan supaya kekuatan ini menjadi lebih konsisten.'),
       strengths:strong.map(s=>`${s.title} menunjukkan kefahaman yang baik dalam sesi semasa.`),learning:learning.slice(0,4),learningStyle,scoreMeaning,nextSteps:nextSteps.slice(0,3),
       evidence:{encounters:rows.length,independent:a.independent,corrected:a.corrected,assisted:a.assisted,unresolved:a.unresolved}
     };

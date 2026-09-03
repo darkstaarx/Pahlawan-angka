@@ -84,10 +84,12 @@ check(adaptiveCtx.finishRecoveryCycle()==='D4.CORE'&&adaptiveCtx.sess.recoveryFo
 check(/PALearnerReview\?\.encounters/.test(parent)&&/independentRate/.test(parent),'parent dashboard is not using encounter-level evidence');
 check(/clean\?'betul sendiri':'jawapan betul'/.test(parent),'legacy records must not be labelled as independent answers');
 check(/skillReviews\(learnerRows\(\),META\).*state==='strong'/.test(parent),'strong-skill count is not aligned to clean learner-review evidence');
-for(const file of ['js/engine/intervention.js','js/engine/frontier.js','js/engine/adaptive.js','js/battle.js','js/parent.js','js/version.js','js/pwa.js']){
+for(const file of ['js/engine/intervention.js','js/engine/frontier.js','js/engine/adaptive.js','js/battle.js','js/parent.js']){
  check(index.includes(`${file}?v=3.57.1`),`${file} is not cache-busted for v3.57.1`);
 }
-check(read('js/version.js').includes("PA_APP_VERSION='3.57.1'"),'release version is not v3.57.1');
-check(read('sw.js').includes('v3.57.1'),'service worker release comment is stale');
+check(index.includes('js/version.js?v=3.57.2'),'version loader is not cache-busted for v3.57.2');
+check(index.includes('js/pwa.js?v=3.57.2'),'PWA loader is not cache-busted for v3.57.2');
+check(read('js/version.js').includes("PA_APP_VERSION='3.57.2'"),'release version is not v3.57.2');
+check(read('sw.js').includes('v3.57.2'),'service worker release comment is stale');
 
 console.log(`PASS prelaunch adaptive evidence v3.57.1: ${checks} checks`);

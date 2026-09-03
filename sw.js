@@ -1,4 +1,4 @@
-// App shell v3.57.1 — trustworthy encounter evidence and bounded support loops.
+// App shell v3.57.2 — encouraging, evidence-aware early learner review copy.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
