@@ -2,6 +2,7 @@
 // Starting (or explicitly ending) a journey invalidates and clears the old set,
 // preventing presentation callbacks from crossing a session boundary.
 let battleJourneyGeneration=0;
+let battleDisplayedHp=null;
 const battlePresentationTimers=new Set();
 function battleLater(fn,delay){
  const generation=battleJourneyGeneration;
@@ -10,6 +11,7 @@ function battleLater(fn,delay){
 }
 function cancelBattlePresentationTimers(){
  battleJourneyGeneration++;
+ battleDisplayedHp=null;window.PACombatMotion?.reset?.();
  battlePresentationTimers.forEach(clearTimeout);battlePresentationTimers.clear();
 }
 function resetBattlePresentation(){
@@ -93,6 +95,13 @@ function triggerFinisherCinematic(){
  battleLater(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
 }
 function triggerImpact(attackerId,targetId,tint,finisher){
+ const motion=window.PACombatMotion?.begin?.(attackerId,targetId,finisher);
+ if(motion){
+  battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
+  battleLater(()=>{battleDisplayedHp=null;battle()},motion.contactDelay);
+  return motion;
+ }
+ window.PACombatMotion?.reset?.();
  let attacker=document.getElementById(attackerId),target=document.getElementById(targetId),arena=document.getElementById("battleArena"),flash=document.getElementById("arenaFlash");
  if(!attacker||!target||!arena||!flash)return;
  const pet=attackerId==="hero"?document.getElementById("battlePet"):null;
@@ -263,6 +272,7 @@ function beginHintRetry(o,btn,question){
  if(effortLock){battleLater(()=>activateEffortRestuLock(id),500);return;}
 }
 function resolveAnswer(o,btn,question,ok){
+ let responseMotion=null;
  let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):(qsv2NonT7Target?window.PAD3NonT7LiveIsolation?.captureLegacyState?.(question,s):null);
  window.PAEffortGuard?.retryResolved?.(question,ok);
  document.querySelectorAll(".ans").forEach(x=>x.disabled=true);
@@ -273,14 +283,14 @@ function resolveAnswer(o,btn,question,ok){
   s.mastery=Math.min(100,s.mastery+gain);s.confidence=Math.min(100,s.confidence+(layerDelta>0?4.5:5.5)*ql);s.stability=Math.min(100,s.stability+4*ql);
   if(layerDelta>0&&!sess.retryState&&!sess.hint)s.probePass++;
   document.getElementById("feedback").innerHTML=(sess.guardianFocus&&typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?(sess.hint?'Bagus! Petunjuk membantu kamu menemui jawapan.':'Bagus! Kamu cuba semula dan menemui jawapan.'):(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
-  const devOneHit=!!(db&&isDevMode()&&db.devOneHit);let willFinish=devOneHit||sess.ehp<=4;usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish);sess.ehp-=devOneHit?Math.max(4,sess.ehp):4
+  const devOneHit=!!(db&&isDevMode()&&db.devOneHit);let willFinish=devOneHit||sess.ehp<=4;usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish);responseMotion=sess.lastHeroImpact;sess.ehp-=devOneHit?Math.max(4,sess.ehp):4
  }else{
   btn.classList.add("no");sess.streak=0;
   if(!sess.retryState){s.wrong++;s.evidence++;s.mastery=Math.max(0,s.mastery-(layerDelta>0?2.2:4.5));s.confidence=Math.max(0,s.confidence-(layerDelta>0?4:7.5));s.stability=Math.max(0,s.stability-5);s.mis[o.tag]=(s.mis[o.tag]||0)+1;if(layerDelta>0)s.probeFail++}
   if(typeof playSfx==='function'){playSfx('wrong');battleLater(()=>playSfx('enemyAttack'),80);}
   let right=[...document.querySelectorAll(".ans")].find(x=>x.dataset.v===String(question.answer));if(right)right.classList.add("ok");
   document.getElementById("feedback").innerHTML=`<b>Jawapan: ${question.answer}</b><br>${explain(o.tag)}`;
-  if(!sess.coachAdaptive){triggerImpact("enemy","hero","red",false);sess.hp-=3}
+  if(!sess.coachAdaptive){responseMotion=triggerImpact("enemy","hero","red",false);sess.hp-=3}
  }
 
  if(question.solution){const step=document.createElement('div');step.textContent=question.solution;document.getElementById('feedback').appendChild(step);}
@@ -347,16 +357,16 @@ function resolveAnswer(o,btn,question,ok){
  if(intervention&&!sess.demoMode&&!enemyDefeated&&!(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget)){
    sess.confirmSkill=null;sess.confirmRemaining=0;
    log(`Learning Camp dicetuskan untuk ${id}: ${intervention.type} / ${intervention.tag}.`);
-   battleLater(()=>learningStart(id,intervention),850);
+   battleLater(()=>learningStart(id,intervention),Math.max(850,responseMotion?.completionDelay||0));
    return;
  }
-	 if(sess.demoMode&&sess.missionAnswered>=10){battleLater(()=>window.PADemo?.finish?.(),enemyDefeated?3200:1150);return;}
-	 if(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget){battleLater(finishGuardianFocus,1150);return;}
+	 if(sess.demoMode&&sess.missionAnswered>=10){battleLater(()=>window.PADemo?.finish?.(),enemyDefeated?3200:Math.max(1150,responseMotion?.completionDelay||0));return;}
+	 if(sess.guardianFocus&&sess.missionAnswered>=sess.focusTarget){battleLater(finishGuardianFocus,Math.max(1150,responseMotion?.completionDelay||0));return;}
 	 if(enemyDefeated)return;
-	 const bossClearDelay=(enemyDefeated&&db&&db.hero==="bunga")?1500:1100;
+	 const bossClearDelay=(enemyDefeated&&db&&db.hero==="bunga")?1500:Math.max(1100,responseMotion?.completionDelay||0);
  if(sess.coachAdaptive && shouldFinishAdaptiveCoach()){battleLater(finishCoachSession,bossClearDelay)}
  else if(!sess.devBankTest && !sess.coachAdaptive && sess.missionAnswered>=PROGRESSION.missionQuestions && sess.bossDefeated){battleLater(finishMission,bossClearDelay)}
- else{battleLater(nextQ,enemyDefeated?1250:Math.max(1050,ok?Number(sess.lastHeroImpact?.completionDelay||0):0))}
+ else{battleLater(nextQ,enemyDefeated?1250:Math.max(1050,Number(responseMotion?.completionDelay||0)))}
 }
 function closeHintOverlay(){const overlay=document.getElementById('paHintOverlay');if(overlay){overlay.classList.remove('show');battleLater(()=>overlay.remove(),180)}}
 function showHintOverlay(help){
@@ -377,4 +387,4 @@ function hint(){
  if(sess.retryState)document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});
  save();
 }
-function battle(){document.getElementById("heroHp").style.width=Math.max(0,sess.hp)/20*100+"%";let max=sess.enemyMaxHp||12;document.getElementById("enemyHp").style.width=Math.max(0,sess.ehp)/max*100+"%"}
+function battle(){const shown=battleDisplayedHp||sess;document.getElementById("heroHp").style.width=Math.max(0,shown.hp)/20*100+"%";let max=sess.enemyMaxHp||12;document.getElementById("enemyHp").style.width=Math.max(0,shown.ehp)/max*100+"%";window.PACombatMotion?.sync?.()}

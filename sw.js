@@ -1,7 +1,8 @@
-// App shell v3.57.3 — journey-owned battle presentation and Sidma dash dispatch.
+// App shell v3.57.4 — grounded Wira combat motion.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
+  './css/combat-motion-v1.css','./js/combat-motion-v1.js',
   './css/learner-review-v1.css','./js/engine/learner-review-v1.js',
   './css/demo-result-child-v3.56.6.css',
   './js/fraction-lesson-v1.js',
