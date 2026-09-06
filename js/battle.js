@@ -38,7 +38,7 @@ function resetBattlePresentation(){
  arena?.querySelector('.bossEntrance')?.classList.remove('show');
  document.getElementById('paHintOverlay')?.remove();
  window.PASidmaBattle?.resetSidmaVisuals?.();window.PASidmaBattle?.resetSidmaFinisher?.();
- window.PABungaBattle?.resetNormal?.();window.PABungaBattle?.resetFinisher?.();window.PAWiraFinisher?.reset?.();
+ window.PABungaBattle?.resetNormal?.();window.PABungaBattle?.resetFinisher?.();window.PAWiraFinisher?.reset?.();window.PABattleStory?.reset?.();
 }
 if(typeof window!=='undefined')window.PABattlePresentation={begin:resetBattlePresentation,cancel:cancelBattlePresentationTimers,later:battleLater,clear:timer=>{clearTimeout(timer);battlePresentationTimers.delete(timer)},generation:()=>battleJourneyGeneration,pending:()=>battlePresentationTimers.size};
 if(typeof window!=='undefined'){
@@ -95,7 +95,7 @@ function triggerFinisherCinematic(){
  },sidmaFinisher?650:760);
  battleLater(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
 }
-function triggerImpact(attackerId,targetId,tint,finisher){
+function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
  const motion=window.PACombatMotion?.begin?.(attackerId,targetId,finisher);
  if(motion){
   battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
@@ -169,7 +169,7 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&db?.hero==='wira'?'wiraSword':'hit');
  },contactDelay)
  battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
- const amount=attackerId==='hero'?(db?.devOneHit?Math.max(4,sess.ehp):4):3;
+ const requestedDamage=Number(damageAmount);const amount=attackerId==='hero'?(db?.devOneHit?Math.max(4,sess.ehp):(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4)):3;
  battleLater(()=>{battleDisplayedHp=null;battle();if(attackerId==='hero')window.PACombatMotion?.damageAtTarget?.(amount)},contactDelay);
  return {contactDelay,defeatDelay:finisher?(wiraFinishing?contactDelay+300:(sidmaFinishing?contactDelay+260:(bungaFinishing?contactDelay+330:contactDelay+850))):(hasPet?1120:340),completionDelay:attackDuration+80};
 }
@@ -287,7 +287,7 @@ function resolveAnswer(o,btn,question,ok){
   s.mastery=Math.min(100,s.mastery+gain);s.confidence=Math.min(100,s.confidence+(layerDelta>0?4.5:5.5)*ql);s.stability=Math.min(100,s.stability+4*ql);
   if(layerDelta>0&&!sess.retryState&&!sess.hint)s.probePass++;
   document.getElementById("feedback").innerHTML=(sess.guardianFocus&&typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?(sess.hint?'Bagus! Petunjuk membantu kamu menemui jawapan.':'Bagus! Kamu cuba semula dan menemui jawapan.'):(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
-  const devOneHit=!!(db&&isDevMode()&&db.devOneHit);let willFinish=devOneHit||sess.ehp<=4;usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish);responseMotion=sess.lastHeroImpact;sess.ehp-=devOneHit?Math.max(4,sess.ehp):4
+  const devOneHit=!!(db&&isDevMode()&&db.devOneHit),storyPlan=window.PABattleStory?.plan?.(),storyDamage=storyPlan&&Number.isFinite(Number(storyPlan.damage))?Math.max(0,Number(storyPlan.damage)):4,damage=devOneHit?Math.max(4,sess.ehp):storyDamage;let willFinish=devOneHit||(storyPlan?(!!storyPlan.finisherEligible&&sess.ehp<=Math.max(1,damage)):sess.ehp<=4);usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(storyPlan?.action==='guard'){responseMotion=window.PABattleStory?.playGuard?.()||{completionDelay:820};sess.lastHeroImpact=responseMotion}else if(storyPlan?.action==='event'){responseMotion=window.PABattleStory?.playEventSuccess?.()||{completionDelay:720};sess.lastHeroImpact=responseMotion}else{if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish,damage);responseMotion=sess.lastHeroImpact;sess.ehp-=damage}window.PABattleStory?.afterAnswer?.(true)
  }else{
   btn.classList.add("no");sess.streak=0;
   if(!sess.retryState){s.wrong++;s.evidence++;s.mastery=Math.max(0,s.mastery-(layerDelta>0?2.2:4.5));s.confidence=Math.max(0,s.confidence-(layerDelta>0?4:7.5));s.stability=Math.max(0,s.stability-5);s.mis[o.tag]=(s.mis[o.tag]||0)+1;if(layerDelta>0)s.probeFail++}
@@ -295,6 +295,7 @@ function resolveAnswer(o,btn,question,ok){
   let right=[...document.querySelectorAll(".ans")].find(x=>x.dataset.v===String(question.answer));if(right)right.classList.add("ok");
   document.getElementById("feedback").innerHTML=`<b>Jawapan: ${question.answer}</b><br>${explain(o.tag)}`;
   if(!sess.coachAdaptive){responseMotion=triggerImpact("enemy","hero","red",false);sess.hp-=3}
+  window.PABattleStory?.afterAnswer?.(false);
  }
 
  if(question.solution){const step=document.createElement('div');step.textContent=question.solution;document.getElementById('feedback').appendChild(step);}
