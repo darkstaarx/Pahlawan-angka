@@ -96,7 +96,7 @@ function triggerFinisherCinematic(){
  battleLater(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
 }
 function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
- const motion=window.PACombatMotion?.begin?.(attackerId,targetId,finisher);
+ const motion=window.PACombatMotion?.begin?.(attackerId,targetId,finisher,damageAmount);
  if(motion){
   battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
   battleLater(()=>{battleDisplayedHp=null;battle()},motion.contactDelay);
