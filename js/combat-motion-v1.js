@@ -141,9 +141,13 @@
   }else if(a.heroAttacks){
    if(t<220){pose='ready';hero.x-=a.min?0:6*s*ease(t/220)}
    else if(t<470){pose='ready';hero.x+=a.min?0:mix(-6*s,travel,ease((t-220)/250))}
-   else if(t<550){pose='strike';hero.x+=a.min?0:travel;hero.h*=310/290}
+   else if(t<550){pose='strike';hero.x+=a.min?0:travel}
    else if(t<850){pose='follow';hero.x+=a.min?0:travel}
    else hero.x+=a.min?0:travel*(1-ease((t-850)/470));
+   // Squash-emphasis on the strike beat, ramped continuously across a window
+   // straddling the pose cut so the scale never jumps in lockstep with it.
+   const strikeT=clamp((t-420)/180),bump=Math.max(0,1-Math.pow(2*strikeT-1,2));
+   hero.h*=1+(20/290)*bump;
    if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
   }else{
    const move=a.min?0:Math.max(0,a.enemy.x-a.hero.x-a.hero.w*.35-a.enemy.h*.28);
