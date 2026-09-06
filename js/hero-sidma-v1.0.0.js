@@ -10,7 +10,9 @@
   const T_PROJECTILE_LAUNCH=T_RELEASE+TIMING.release;
   const T_IMPACT=T_PROJECTILE_LAUNCH+TIMING.projectile;
   const T_IMPACT_END=T_IMPACT+TIMING.impact;
-  const T_IDLE_RETURN=T_PROJECTILE_LAUNCH+TIMING.recovery;
+  /* Hold the recovery pose until the enemy-side burst has finished. Returning
+     at launch+recovery snapped Sidma back to idle mid-explosion. */
+  const T_IDLE_RETURN=T_IMPACT_END+TIMING.impactEnd;
   window.PA_SIDMA_TIMING={T_CAST_START,T_RELEASE,T_PROJECTILE_LAUNCH,T_IMPACT,T_IMPACT_END,T_IDLE_RETURN};
 
   let timers=[],finisherTimers=[];
@@ -214,8 +216,18 @@
   const originalPrepare=window.prepareHeroAttackVariant;
   const originalClear=window.clearHeroAttackVariant;
 
+  /* Ordinary attacks alternate Rumus Sigma (ranged cast) and Jejak Sigma
+     (dash). The counter is the single source of truth shared with the canvas
+     renderer: getNextNormalSkill peeks, and whichever renderer actually plays
+     the attack advances it, so exactly one advance happens per attack. */
+  let normalAttackCount=0;
+  const getNextNormalSkill=()=>normalAttackCount%2===0?1:2;
+  const advanceNormalSkill=()=>{normalAttackCount++};
+
   function dispatchSidmaAttack(finisher){
     if(finisher){runSidmaFinisher();return 'rumus-penamat'}
+    const skill=getNextNormalSkill();advanceNormalSkill();
+    if(skill===1){runSidmaAttack();return 'rumus-sigma'}
     runSidmaSkill2();return 'jejak-sigma';
   }
 
@@ -235,5 +247,5 @@
     if(typeof originalClear==='function')originalClear(el);
   };
 
-  window.PASidmaBattle={runSidmaAttack,runSidmaSkill2,runSidmaFinisher,dispatchSidmaAttack,resetSidmaVisuals,resetSidmaFinisher,getNextNormalSkill:()=>2,TIMING};
+  window.PASidmaBattle={runSidmaAttack,runSidmaSkill2,runSidmaFinisher,dispatchSidmaAttack,resetSidmaVisuals,resetSidmaFinisher,getNextNormalSkill,advanceNormalSkill,TIMING};
 })();
