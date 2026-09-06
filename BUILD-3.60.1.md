@@ -1,8 +1,8 @@
-# Pahlawan Angka v3.60.0 — Rumus Sigma restored, Gelombang Operasi closes to melee
+# Pahlawan Angka v3.60.1 — Rumus Sigma restored, Gelombang Operasi closes to melee
 
 ## Scope
 
-Two combat-presentation changes, plus the release cache-busting they need.
+Two combat-presentation changes, plus the release cache-busting they need. This release follows v3.60.0 (narrative combat story director) and does not replace it — the story director's turn planning and its `damageAmount` plumbing through `triggerImpact()` → `PACombatMotion.begin()` are carried through intact.
 
 1. Sidma's ordinary attacks alternate again — Rumus Sigma (stationary ranged cast) and Jejak Sigma (dash).
 2. Wira's Gelombang Operasi now closes the distance before planting the sword, instead of reading as a ranged shockwave.
@@ -38,7 +38,13 @@ Note this DOM variant path is what pet-equipped players see; without a pet, Wira
 
 ## Release wiring
 
-`PA_APP_VERSION` is `3.60.0`, and the `?v=` cache-bust is bumped for every file changed here: `js/action-variety-v3.30.0.js`, `css/action-variety-v3.30.0.css`, `js/combat-motion-v1.js`, `js/hero-sidma-v1.0.0.js`, `css/hero-sidma-v1.0.0.css`, plus `js/version.js` and `js/pwa.js`. Files pulled in by `js/pwa.js`'s dynamic loader need no tag edit — their query is derived from `PA_APP_VERSION` at runtime.
+`PA_APP_VERSION` is `3.60.1`, and the `?v=` cache-bust is bumped for every file changed here: `js/action-variety-v3.30.0.js`, `css/action-variety-v3.30.0.css`, `js/combat-motion-v1.js`, `js/hero-sidma-v1.0.0.js`, `css/hero-sidma-v1.0.0.css`, plus `js/version.js` and `js/pwa.js`. The v3.60.0 tags for `js/battle.js` and `js/battle-story-v3.60.0.js` are left as that release set them. Files pulled in by `js/pwa.js`'s dynamic loader need no tag edit — their query is derived from `PA_APP_VERSION` at runtime.
+
+## Merge with v3.60.0
+
+`begin()` in `js/combat-motion-v1.js` was changed by both releases on the same lines. The resolution keeps both: v3.60.0's `damageAmount` parameter and `visualDamage` computation, and this release's `ranged` variant detection, per-variant `contactDelay`/`completionDelay`, and the `advanceNormalSkill()` call.
+
+The story director can replace an ordinary attack with a `guard` or `event` beat, in which case `triggerImpact()` is never called. Sidma's alternation counter only advances when an attack is actually played — by the canvas renderer once `begin()` commits, or by the DOM dispatcher — so those turns do not consume a variant.
 
 ## Verification
 
