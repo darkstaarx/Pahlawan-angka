@@ -168,11 +168,9 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    if(targetId==='hero'&&db?.hero==='bunga')window.PABungaBattle?.showHurt?.();
    if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&db?.hero==='wira'?'wiraSword':'hit');
  },contactDelay)
- if(db?.hero==='sidma'){
-  battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
-  const amount=attackerId==='hero'?(db.devOneHit?Math.max(4,sess.ehp):4):3;
-  battleLater(()=>{battleDisplayedHp=null;battle();if(finisher&&attackerId==='hero')window.PACombatMotion?.damageAtTarget?.(amount)},contactDelay);
- }
+ battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
+ const amount=attackerId==='hero'?(db?.devOneHit?Math.max(4,sess.ehp):4):3;
+ battleLater(()=>{battleDisplayedHp=null;battle();if(attackerId==='hero')window.PACombatMotion?.damageAtTarget?.(amount)},contactDelay);
  return {contactDelay,defeatDelay:finisher?(wiraFinishing?contactDelay+300:(sidmaFinishing?contactDelay+260:(bungaFinishing?contactDelay+330:contactDelay+850))):(hasPet?1120:340),completionDelay:attackDuration+80};
 }
 function triggerPetFollowUp(target,delay){
