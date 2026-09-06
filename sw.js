@@ -1,8 +1,8 @@
-// App shell v3.59.0 — KSSR Year 6 cognitive-depth hardening.
+// App shell v3.60.0 — narrative combat story director.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
-  './css/combat-motion-v1.css','./js/combat-motion-v1.js',
+  './css/combat-motion-v1.css','./js/combat-motion-v1.js','./css/battle-story-v3.60.0.css','./js/battle-story-v3.60.0.js',
   './css/learner-review-v1.css','./js/engine/learner-review-v1.js',
   './css/demo-result-child-v3.56.6.css',
   './js/fraction-lesson-v1.js',
