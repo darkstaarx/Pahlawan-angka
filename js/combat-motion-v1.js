@@ -97,7 +97,7 @@
   if(!min)for(let i=0;i<12;i++){const a=i*2.399,r=(15+q*(35+i%4*13))*s;ctx.fillStyle=color;ctx.fillRect(px+Math.cos(a)*r,py+Math.sin(a)*r,2,2)}
   ctx.font=`bold ${Math.max(16,30*s)}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#102132';ctx.fillStyle='#fff';const y=py-target.h*.2-(min?0:ease(q)*22);ctx.strokeText('−'+damage,target.x,y);ctx.fillText('−'+damage,target.x,y);ctx.restore();
  }
- function begin(attackerId,targetId,finisher){
+ function begin(attackerId,targetId,finisher,damageAmount=null){
   const key=heroKey(),set=heroArt();if(finisher||!['wira','sidma'].includes(key)||active)return null;
   const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet);
   if(hasPet&&key==='wira')return null;
@@ -109,7 +109,7 @@
   const lead=heroAttacks&&hasPet?420:0;
   const contactDelay=(heroAttacks?(key==='sidma'?650:470):390)+lead,completionDelay=(heroAttacks?1400:1100)+lead;
   const min=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?4:3,impacted:false,key,set,lead};
+  const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set,lead};
   scene.arena.classList.add('paMotionActive');
   if(lead&&typeof triggerPetFollowUp==='function')triggerPetFollowUp(byId('enemy'),0);
   if(key==='sidma'&&heroAttacks)window.PABattlePresentation.later(()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('release')},lead+180);
