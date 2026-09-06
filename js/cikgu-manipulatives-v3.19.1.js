@@ -261,7 +261,7 @@
       const enhanced=contentEnhanced(stage,key,m);if(enhanced!==null)return enhanced;
       return originalContent.call(this,stage,key,m);
     };
-    const versionButton=document.querySelector('.loginVersion');if(versionButton)versionButton.textContent=`Pahlawan Angka · v${VERSION}`;
+    const versionButton=document.querySelector('.loginVersion');if(versionButton)versionButton.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
     document.documentElement.dataset.paManipulatives=VERSION;
   }
 

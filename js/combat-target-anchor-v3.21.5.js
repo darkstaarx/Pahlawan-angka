@@ -157,5 +157,5 @@
     defeat:createAnchoredDefeat
   };
   document.documentElement.dataset.combatTargetAnchor=VERSION;
-  const version=q('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  const version=q('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
 })();

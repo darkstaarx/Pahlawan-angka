@@ -90,5 +90,5 @@
   window.PATypedAnswerUI={version:VERSION,polish:polishTypedForm,refresh:polishCurrentTyped,observer:false};
   document.documentElement.dataset.typedAnswerUi=VERSION;
   const version=document.querySelector('.loginVersion');
-  if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
 })();

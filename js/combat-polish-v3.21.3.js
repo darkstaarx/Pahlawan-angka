@@ -42,5 +42,5 @@
   ensureTerrainToneLayer();
   window.PACombatPolish={version:VERSION,ensureTerrainToneLayer,purgeLegacyVictoryState,victoryAssetStatus:'pending-real-frames'};
   document.documentElement.dataset.combatPolish=VERSION;
-  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
 })();

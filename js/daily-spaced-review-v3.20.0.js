@@ -234,5 +234,5 @@
   window.PADailyQuest={version:VERSION,target:TARGET,completionCoins:COMPLETION_COINS,ensure:ensureReviewStore,priority:skillPriority,buildPlan:buildDailyPlan,start:startDailyQuest,finish:finishDailyQuest,render:renderDailyCard};
   window.startDailyQuest=startDailyQuest;
   document.documentElement.dataset.dailyReview=VERSION;
-  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
 })();

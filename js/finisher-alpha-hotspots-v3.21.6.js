@@ -148,5 +148,5 @@
     cache
   };
   document.documentElement.dataset.finisherHotspots=VERSION;
-  const version=q('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  const version=q('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
 })();

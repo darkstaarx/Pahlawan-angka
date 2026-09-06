@@ -147,5 +147,5 @@
   window.PADevExperiments={version:VERSION,typedEligible,typedMatch,shouldTypedQuestion,purgeRetiredWorldState};
   window.devToggleForceTyped=devToggleForceTyped;
   document.documentElement.dataset.devExperiments=VERSION;
-  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  const version=document.querySelector('.loginVersion');if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
 })();
