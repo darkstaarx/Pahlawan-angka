@@ -1,8 +1,8 @@
 /* Bunga redesign v2 — isolated stationary-caster battle choreography. */
 (function(){
   const TIMING={
-    skill1:{aim:130,release:250,impact:500,recover:650,end:880},
-    skill2:{charge:210,release:650,impact:1050,recover:1160,end:1420},
+    skill1:{aim:160,release:320,impact:540,recover:680,end:900},
+    skill2:{charge:230,release:660,impact:1040,recover:1160,end:1420},
     finisher:{form:1080,compress:1390,impact:1550,end:1810}
   };
   let timers=[],finisherTimers=[],normalAttackCount=0;
@@ -25,6 +25,7 @@
   }
   function show(id){document.querySelectorAll('#bungaV2Frames .bunga-v2-frame').forEach(x=>x.classList.remove('bunga-v2-visible'));document.getElementById(id)?.classList.add('bunga-v2-visible')}
   function hideFrames(){document.querySelectorAll('#bungaV2Frames .bunga-v2-frame').forEach(x=>x.classList.remove('bunga-v2-visible'))}
+  function kick(){const g=document.getElementById('bungaV2Frames');if(!g)return;g.classList.remove('bunga-v2-kick');void g.offsetWidth;g.classList.add('bunga-v2-kick')}
 
   function makeFx(id,cls,parent,src){let fx=document.getElementById(id);if(fx)return fx;fx=document.createElement('img');fx.id=id;fx.className=cls;fx.alt='';fx.setAttribute('aria-hidden','true');fx.src=src||'';parent.appendChild(fx);return fx}
   function ensureNormalFx(arena){
@@ -57,7 +58,7 @@
     ensureFrames(sprite);const fx=ensureNormalFx(arena),pet=document.getElementById('battlePet'),speed=(pet&&!pet.classList.contains('hidden')&&db?.rewards?.equippedPet)?.78:1,at=ms=>Math.round(ms*speed);
     suppressLegacy(true);show('bungaSkill1Ready');
     after(at(TIMING.skill1.aim),()=>show('bungaSkill1Aim'));
-    after(at(TIMING.skill1.release),()=>{show('bungaSkill1Release');playBungaSfx('petal');const start=heroCastPoint(arena,sprite),end=enemyCentre(arena,enemy);fx.projectile.style.setProperty('--bunga-start-x',start.x+'px');fx.projectile.style.setProperty('--bunga-start-y',start.y+'px');fx.projectile.style.setProperty('--bunga-end-x',end.x+'px');fx.projectile.style.setProperty('--bunga-end-y',end.y+'px');fx.projectile.style.setProperty('--bunga-flight-ms',at(TIMING.skill1.impact-TIMING.skill1.release)+'ms');fx.projectile.classList.remove('active');void fx.projectile.offsetWidth;fx.projectile.classList.add('active')});
+    after(at(TIMING.skill1.release),()=>{show('bungaSkill1Release');kick();playBungaSfx('petal');const start=heroCastPoint(arena,sprite),end=enemyCentre(arena,enemy);fx.projectile.style.setProperty('--bunga-start-x',start.x+'px');fx.projectile.style.setProperty('--bunga-start-y',start.y+'px');fx.projectile.style.setProperty('--bunga-end-x',end.x+'px');fx.projectile.style.setProperty('--bunga-end-y',end.y+'px');fx.projectile.style.setProperty('--bunga-flight-ms',at(TIMING.skill1.impact-TIMING.skill1.release)+'ms');fx.projectile.classList.remove('active');void fx.projectile.offsetWidth;fx.projectile.classList.add('active')});
     after(at(TIMING.skill1.impact),()=>{fx.projectile.classList.remove('active');const p=enemyCentre(arena,enemy);positionAt(fx.impact,p);fx.impact.src=heroData().fx?.skill1Impact||'';fx.impact.classList.remove('skill1','skill2');void fx.impact.offsetWidth;fx.impact.classList.add('skill1');playBungaSfx('impact')});
     after(at(TIMING.skill1.recover),()=>{show('bungaRecovery');fx.impact.classList.remove('skill1')});
     after(at(TIMING.skill1.end),resetNormal);
@@ -67,7 +68,7 @@
     clearTimers();const sprite=document.getElementById('heroVisual'),arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy');if(!sprite||!arena||!enemy)return;
     ensureFrames(sprite);const fx=ensureNormalFx(arena);suppressLegacy(true);show('bungaSkill2Cast');
     after(TIMING.skill2.charge,()=>{show('bungaSkill2Charge');const h=sprite.getBoundingClientRect(),a=arena.getBoundingClientRect();positionAt(fx.arc,{x:h.left-a.left+h.width/2,y:h.top-a.top+h.height*.5});fx.arc.classList.remove('active');void fx.arc.offsetWidth;fx.arc.classList.add('active');playBungaSfx('float')});
-    after(TIMING.skill2.release,()=>{show('bungaSkill2Release');fx.arc.classList.add('release');playBungaSfx('circle')});
+    after(TIMING.skill2.release,()=>{show('bungaSkill2Release');kick();fx.arc.classList.add('release');playBungaSfx('circle')});
     after(TIMING.skill2.impact,()=>{fx.arc.classList.remove('active','release');const p=enemyCentre(arena,enemy);positionAt(fx.impact,p);fx.impact.src=heroData().fx?.skill2Impact||'';fx.impact.classList.remove('skill1','skill2');void fx.impact.offsetWidth;fx.impact.classList.add('skill2');playBungaSfx('impact')});
     after(TIMING.skill2.recover,()=>{show('bungaRecovery');fx.impact.classList.remove('skill2')});
     after(TIMING.skill2.end,resetNormal);
@@ -87,7 +88,7 @@
   }
   function showHurt(){if((db?.hero||'')!=='bunga')return;const sprite=document.getElementById('heroVisual');ensureFrames(sprite);suppressLegacy(true);show('bungaHurt');after(430,resetNormal)}
   function showDefeat(){if((db?.hero||'')!=='bunga')return;const sprite=document.getElementById('heroVisual');ensureFrames(sprite);suppressLegacy(true);show('bungaDefeat')}
-  function resetNormal(){clearTimers();hideFrames();suppressLegacy(false);document.getElementById('bungaSkill1Projectile')?.classList.remove('active');document.getElementById('bungaNormalImpact')?.classList.remove('skill1','skill2');document.getElementById('bungaSkill2Arc')?.classList.remove('active','release')}
+  function resetNormal(){clearTimers();hideFrames();suppressLegacy(false);document.getElementById('bungaV2Frames')?.classList.remove('bunga-v2-kick');document.getElementById('bungaSkill1Projectile')?.classList.remove('active');document.getElementById('bungaNormalImpact')?.classList.remove('skill1','skill2');document.getElementById('bungaSkill2Arc')?.classList.remove('active','release')}
   function resetFinisher(){clearFinisherTimers();document.getElementById('bungaFinalChargeAura')?.classList.remove('active');['bungaFinalBloom','bungaFinalRing'].forEach(id=>{const b=document.getElementById(id);if(b){b.classList.remove('form','compress','impact');b.removeAttribute('src')}})}
 
   const originalPrepare=window.prepareHeroAttackVariant,originalClear=window.clearHeroAttackVariant;
