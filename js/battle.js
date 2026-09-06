@@ -10,8 +10,9 @@ function battleLater(fn,delay){
  battlePresentationTimers.add(timer);return timer;
 }
 function cancelBattlePresentationTimers(){
- battleJourneyGeneration++;
- battleDisplayedHp=null;window.PACombatMotion?.reset?.();
+  battleJourneyGeneration++;
+  battleDisplayedHp=null;window.PACombatMotion?.reset?.();
+  window.PASidmaBattle?.resetSidmaVisuals?.();window.PASidmaBattle?.resetSidmaFinisher?.();
  battlePresentationTimers.forEach(clearTimeout);battlePresentationTimers.clear();
 }
 function resetBattlePresentation(){
@@ -39,7 +40,7 @@ function resetBattlePresentation(){
  window.PASidmaBattle?.resetSidmaVisuals?.();window.PASidmaBattle?.resetSidmaFinisher?.();
  window.PABungaBattle?.resetNormal?.();window.PABungaBattle?.resetFinisher?.();window.PAWiraFinisher?.reset?.();
 }
-if(typeof window!=='undefined')window.PABattlePresentation={begin:resetBattlePresentation,cancel:cancelBattlePresentationTimers,later:battleLater,generation:()=>battleJourneyGeneration,pending:()=>battlePresentationTimers.size};
+if(typeof window!=='undefined')window.PABattlePresentation={begin:resetBattlePresentation,cancel:cancelBattlePresentationTimers,later:battleLater,clear:timer=>{clearTimeout(timer);battlePresentationTimers.delete(timer)},generation:()=>battleJourneyGeneration,pending:()=>battlePresentationTimers.size};
 if(typeof window!=='undefined'){
  ['startMission','startDevSkill'].forEach(name=>{
   const original=window[name];if(typeof original!=='function'||original.__paJourneyBoundary)return;
@@ -167,7 +168,12 @@ function triggerImpact(attackerId,targetId,tint,finisher){
    if(targetId==='hero'&&db?.hero==='bunga')window.PABungaBattle?.showHurt?.();
    if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&db?.hero==='wira'?'wiraSword':'hit');
  },contactDelay)
- return {defeatDelay:finisher?(wiraFinishing?contactDelay+300:(sidmaFinishing?contactDelay+260:(bungaFinishing?contactDelay+330:contactDelay+850))):(hasPet?1120:340),completionDelay:attackDuration+80};
+ if(db?.hero==='sidma'){
+  battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
+  const amount=attackerId==='hero'?(db.devOneHit?Math.max(4,sess.ehp):4):3;
+  battleLater(()=>{battleDisplayedHp=null;battle();if(finisher&&attackerId==='hero')window.PACombatMotion?.damageAtTarget?.(amount)},contactDelay);
+ }
+ return {contactDelay,defeatDelay:finisher?(wiraFinishing?contactDelay+300:(sidmaFinishing?contactDelay+260:(bungaFinishing?contactDelay+330:contactDelay+850))):(hasPet?1120:340),completionDelay:attackDuration+80};
 }
 function triggerPetFollowUp(target,delay){
  const pet=document.getElementById('battlePet');if(!pet||pet.classList.contains('hidden'))return;

@@ -1,4 +1,4 @@
-// App shell v3.57.4 — grounded Wira combat motion.
+// App shell v3.57.5 — grounded Sidma combat and journey-owned finishers.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

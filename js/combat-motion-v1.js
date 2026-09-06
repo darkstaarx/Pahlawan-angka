@@ -1,10 +1,13 @@
-/* Wira's approved motion study, rendered over the live arena. Gameplay owns
+/* Wira and Sidma motion, rendered over the live arena. Gameplay owns
    damage; this layer owns only pixels, sound and the displayed HP deadline. */
 (()=>{
  'use strict';
  const byId=id=>document.getElementById(id),cache=new Map();
  const paths={idle:'assets/heroes/wira/idle.webp',ready:'assets/heroes/wira/frames/anticipation-v1.webp',strike:'assets/heroes/wira/frames/attack-arc-v2.webp',follow:'assets/heroes/wira/frames/follow-through-v1.webp'};
- const art={};let canvas,ctx,active=null,raf=0,observer;
+ const art={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
+ const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp'};
+ const heroKey=()=>typeof db!=='undefined'?db?.hero:null;
+ const heroArt=()=>heroKey()==='sidma'?sidmaArt:art;
  const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>1-Math.pow(1-clamp(x),3),mix=(a,b,t)=>a+(b-a)*t;
  function load(src){
   if(!src)return null;if(cache.has(src))return cache.get(src);
@@ -19,6 +22,7 @@
   }).catch(()=>{record.failed=true});return record;
  }
  Object.entries(paths).forEach(([key,src])=>art[key]=load(src));
+ Object.entries(sidmaPaths).forEach(([key,src])=>sidmaArt[key]=load(src));
  function ensure(){
   const arena=byId('battleArena');if(!arena)return null;
   if(!canvas){canvas=document.createElement('canvas');canvas.className='paCombatMotion';canvas.setAttribute('aria-hidden','true');arena.appendChild(canvas);ctx=canvas.getContext('2d');}
@@ -47,18 +51,44 @@
   else shadow(p.x,p.y,w*.28,5*s,.7);
  }
  function sprite(a,p,flash=false){ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.96) saturate(.96)';const w=p.h*a.w/a.h;ctx.drawImage(a.img,a.x,a.y,a.w,a.h,p.x-w/2,p.y-p.h,w,p.h);ctx.restore()}
+ // Source-space foot pivots keep body scale independent of the painted Sigma
+ // ring and cape. The artwork is drawn unmodified, including its own trail.
+ const sidmaPivots={idle:[632,670],ready:[632,670],dash:[780,660],strike:[700,690],follow:[632,670]};
+ function heroGeometry(scene){
+  const source=heroArt().idle,p=geometry(byId('heroIdle'),source,scene);
+  if(p&&heroKey()==='sidma'){const scale=p.h/source.h;p.x+=(632-source.x-source.w/2)*scale;p.y+=(670-source.y-source.h)*scale;p.h=590*scale}
+  return p;
+ }
+ function drawHero(key,set,pose,p,flash=false){
+  if(key!=='sidma'){sprite(set[pose],p,flash);return}
+  const a=set[pose],pivot=sidmaPivots[pose],scale=p.h/590;
+  ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.96) saturate(.96)';
+  ctx.drawImage(a.img,a.x,a.y,a.w,a.h,p.x+(a.x-pivot[0])*scale,p.y+(a.y-pivot[1])*scale,a.w*scale,a.h*scale);ctx.restore();
+ }
+ function heroShadow(key,set,pose,p){
+  if(key!=='sidma'){grounded(set[pose],p,pose);return}
+  const scale=p.h/590,pivot=sidmaPivots[pose];
+  const contacts=pose==='dash'?[[820,660]]:pose==='strike'?[[650,688]]:[[465,666],[790,670]];
+  shadow(p.x,p.y-2,100*scale,16*scale,.32);
+  contacts.forEach(([x,y])=>shadow(p.x+(x-pivot[0])*scale,p.y+(y-pivot[1])*scale+1,45*scale,10*scale,.85));
+ }
  function sync(){
   const arena=byId('battleArena');if(!arena)return;
-  const wira=typeof db!=='undefined'&&db?.hero==='wira';arena.classList.toggle('paGroundedWira',wira);
+  const supported=['wira','sidma'].includes(heroKey());arena.classList.toggle('paGroundedCombat',supported);
   const enemy=byId('enemySprite');load(enemy?.currentSrc||enemy?.getAttribute('src'));['enemyAnticipation','enemyAttack','enemyFollowThrough'].forEach(id=>{const img=byId(id);load(img?.currentSrc||img?.getAttribute('src'))});
   if(active||!canvas&&document.body.dataset.screen!=='game')return;
-  const scene=ensure();clear();if(!wira||!scene||document.body.dataset.screen!=='game')return;
+  const scene=ensure();clear();if(!supported||!scene||document.body.dataset.screen!=='game')return;
   if(byId('hero')?.classList.contains('attacking')||byId('enemy')?.classList.contains('attacking'))return;
   const enemyArt=load(enemy?.currentSrc||enemy?.getAttribute('src'));
-  grounded(art.idle,geometry(byId('heroIdle'),art.idle,scene),'idle');
+  const hero=heroGeometry(scene);if(hero)heroShadow(heroKey(),heroArt(),'idle',hero);
   if(!byId('enemy')?.classList.contains('paDefeatShatter'))grounded(enemyArt,geometry(enemy,enemyArt,scene));
  }
- function reset(){cancelAnimationFrame(raf);raf=0;active=null;byId('battleArena')?.classList.remove('paMotionActive');clear();}
+ function reset(){cancelAnimationFrame(raf);raf=0;active=null;canvas?.setAttribute('data-phase','idle');byId('battleArena')?.classList.remove('paMotionActive');byId('battleArena')?.querySelectorAll?.('.paMotionDamage').forEach(el=>el.remove());clear();}
+ function targetGeometry(){const scene=ensure(),img=byId('enemySprite');return scene?geometry(img,load(img?.currentSrc||img?.getAttribute('src')),scene):null}
+ function damageAtTarget(amount){
+  const p=targetGeometry(),arena=byId('battleArena');if(!p||!arena)return;
+  const label=document.createElement('span');label.className='paMotionDamage';label.setAttribute('aria-hidden','true');label.textContent='−'+amount;label.style.left=p.x+'px';label.style.top=(p.y-p.h*.72)+'px';arena.appendChild(label);window.PABattlePresentation.later(()=>label.remove(),600);
+ }
  function fx(target,elapsed,color,damage,min){
   if(elapsed<0||elapsed>500)return;const q=elapsed/500,s=target.h/290;
   const px=target.x-target.w*.18,py=target.y-target.h*.5;
@@ -68,21 +98,26 @@
   ctx.font=`bold ${Math.max(16,30*s)}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#102132';ctx.fillStyle='#fff';const y=py-target.h*.2-(min?0:ease(q)*22);ctx.strokeText('−'+damage,target.x,y);ctx.fillText('−'+damage,target.x,y);ctx.restore();
  }
  function begin(attackerId,targetId,finisher){
-  if(finisher||typeof db==='undefined'||db?.hero!=='wira'||active)return null;
-  const pet=byId('battlePet');if(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet)return null;
+  const key=heroKey(),set=heroArt();if(finisher||!['wira','sidma'].includes(key)||active)return null;
+  const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet);
+  if(hasPet&&key==='wira')return null;
   sync();const scene=ensure(),enemyImg=byId('enemySprite'),enemyArt=load(enemyImg?.currentSrc||enemyImg?.getAttribute('src'));
-  if(!scene||!Object.values(art).every(a=>a.ready)||!enemyArt?.ready)return null;
-  const hero=geometry(byId('heroIdle'),art.idle,scene),enemy=geometry(enemyImg,enemyArt,scene);if(!hero||!enemy)return null;
+  if(!scene||!Object.values(set).every(a=>a.ready)||!enemyArt?.ready)return null;
+  const hero=heroGeometry(scene),enemy=geometry(enemyImg,enemyArt,scene);if(!hero||!enemy)return null;
   const heroAttacks=attackerId==='hero'&&targetId==='enemy';if(!heroAttacks&&!(attackerId==='enemy'&&targetId==='hero'))return null;
   const enemyFrames=['enemyAnticipation','enemyAttack','enemyFollowThrough'].map(id=>{const img=byId(id);return load(img?.currentSrc||img?.getAttribute('src'))});
-  const contactDelay=heroAttacks?470:390,completionDelay=heroAttacks?1400:1100;
+  const lead=heroAttacks&&hasPet?420:0;
+  const contactDelay=(heroAttacks?(key==='sidma'?650:470):390)+lead,completionDelay=(heroAttacks?1400:1100)+lead;
   const min=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?4:3,impacted:false};
+  active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?4:3,impacted:false,key,set,lead};
   scene.arena.classList.add('paMotionActive');
+  if(lead&&typeof triggerPetFollowUp==='function')triggerPetFollowUp(byId('enemy'),0);
+  if(key==='sidma'&&heroAttacks)window.PABattlePresentation.later(()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('release')},lead+180);
   // These timers share the battle journey's cancellation boundary.
   window.PABattlePresentation.later(()=>{
    if(!active)return;active.impacted=true;
-   if(typeof playSfx==='function')playSfx(heroAttacks?'wiraSword':'hit');
+   if(key==='sidma'&&heroAttacks&&typeof playSidmaSfx==='function')playSidmaSfx('impact');
+   else if(typeof playSfx==='function')playSfx(heroAttacks?'wiraSword':'hit');
   },contactDelay);
   window.PABattlePresentation.later(()=>{reset();sync()},completionDelay);
   raf=requestAnimationFrame(render);
@@ -90,10 +125,20 @@
  }
  function render(now){
   const a=active;if(!a)return;if(document.body.dataset.screen!=='game'){reset();return}
-  const t=now-a.start,hit=t-a.contactDelay,hero={...a.hero},enemy={...a.enemy};let pose='idle',enemyArt=a.enemyArt;
+  const elapsed=now-a.start,t=elapsed-a.lead,hit=elapsed-a.contactDelay,hero={...a.hero},enemy={...a.enemy};let pose='idle',enemyArt=a.enemyArt;
   clear();const travel=Math.max(0,a.enemy.x-a.hero.x-a.enemy.w*.35-a.hero.h*.28);
   const s=a.hero.h/290;
-  if(a.heroAttacks){
+  if(a.heroAttacks&&a.key==='sidma'){
+   const sidmaTravel=Math.max(0,a.enemy.x-a.enemy.w*.2-a.hero.x-a.hero.h*.67);
+   if(t<0)pose='idle';
+   else if(t<180){pose='ready';hero.x-=a.min?0:4*s*ease(t/180)}
+   else if(t<530){pose='dash';hero.x+=a.min?0:sidmaTravel*ease((t-180)/350)}
+   else if(t<740){pose='strike';hero.x+=a.min?0:sidmaTravel}
+   else if(t<1120){pose='dash';hero.x+=a.min?0:sidmaTravel*(1-ease((t-740)/380))}
+   else if(t<1320)pose='follow';
+   if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
+   if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
+  }else if(a.heroAttacks){
    if(t<220){pose='ready';hero.x-=a.min?0:6*s*ease(t/220)}
    else if(t<470){pose='ready';hero.x+=a.min?0:mix(-6*s,travel,ease((t-220)/250))}
    else if(t<550){pose='strike';hero.x+=a.min?0:travel;hero.h*=310/290}
@@ -107,16 +152,17 @@
    else{enemy.x-=move*(1-ease((t-470)/430));enemyArt=t<680&&a.enemyFrames[2]?.ready?a.enemyFrames[2]:enemyArt}
    if(hit>=0&&!a.min)hero.x-=10*s*Math.exp(-hit/180)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
   }
-  grounded(art[pose],hero,pose);grounded(enemyArt,enemy);
-  sprite(enemyArt,enemy,a.heroAttacks&&hit>=0&&hit<80);sprite(art[pose],hero,!a.heroAttacks&&hit>=0&&hit<80);
-  const target=a.heroAttacks?enemy:hero;fx(target,hit,a.heroAttacks?'#a6efff':'#ffcb9a',a.damage,a.min);
+  if(a.pose!==pose){a.pose=pose;canvas.setAttribute('data-phase',pose)}
+  heroShadow(a.key,a.set,pose,hero);grounded(enemyArt,enemy);
+  sprite(enemyArt,enemy,a.heroAttacks&&hit>=0&&hit<80);drawHero(a.key,a.set,pose,hero,!a.heroAttacks&&hit>=0&&hit<80);
+  const target=a.heroAttacks?enemy:hero;fx(target,hit,a.heroAttacks?(a.key==='sidma'?'#ffb849':'#a6efff'):'#ffcb9a',a.damage,a.min);
   raf=requestAnimationFrame(render);
  }
- window.PACombatMotion={begin,reset,sync,isActive:()=>!!active};
+ window.PACombatMotion={begin,reset,sync,targetGeometry,damageAtTarget,isActive:()=>!!active};
  const mount=()=>{
   observer=new MutationObserver(()=>{if(active&&document.body.dataset.screen!=='game')reset();sync()});observer.observe(document.body,{attributes:true,attributeFilter:['data-screen']});
   const enemy=byId('enemySprite');if(enemy){enemy.addEventListener('load',sync);new MutationObserver(sync).observe(enemy,{attributes:true,attributeFilter:['src']})}
-  if(typeof ResizeObserver!=='undefined'){const ro=new ResizeObserver(()=>{if(active){const scene=ensure();const hero=geometry(byId('heroIdle'),art.idle,scene),enemy=geometry(byId('enemySprite'),active.enemyArt,scene);if(hero&&enemy)Object.assign(active,{scene,hero,enemy});}else sync()});ro.observe(byId('battleArena'))}
+  if(typeof ResizeObserver!=='undefined'){const ro=new ResizeObserver(()=>{if(active){const scene=ensure();const hero=heroGeometry(scene),enemy=geometry(byId('enemySprite'),active.enemyArt,scene);if(hero&&enemy)Object.assign(active,{scene,hero,enemy});}else sync()});ro.observe(byId('battleArena'))}
   sync();
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();

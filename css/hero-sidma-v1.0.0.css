@@ -220,4 +220,9 @@ body.hero-sidma #game #enemy.hit.finisher .finisher-bloom{display:none!important
   #game #battleArena .sidma-projectile-fx,
   #game #battleArena .sidma-enemy-impact-fx,
   #game #battleArena .sidma-finisher-fx{transition:none!important;animation:none!important}
+  #game #battleArena .sidma-finisher-fx.sidma-finisher-sigma-active,
+  #game #battleArena .sidma-finisher-fx.sidma-finisher-impact-end{opacity:1;transform:translate(-50%,-50%) scale(.8);filter:none}
+  #game #battleArena .sidma-skill2-frame.active{animation:none!important;opacity:1;transform:translateX(calc(var(--sidma-skill2-start-x,0px) - 72%))}
+  #game #battleArena .sidma-skill2-frame.returning{animation:none!important;opacity:0}
+  .finisherCinematic[data-hero="sidma"] .sidmaSigmaChain{animation:none!important}
 }

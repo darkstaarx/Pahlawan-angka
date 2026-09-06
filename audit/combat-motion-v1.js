@@ -31,6 +31,22 @@ for(const file of ['js/combat-motion-v1.js','css/combat-motion-v1.css','js/battl
 for(const file of ['js/combat-motion-v1.js','css/combat-motion-v1.css'])assert(sw.includes(file));
 console.log('PASS: hero/enemy impact HP timing, model integrity, stale-journey cancellation, release wiring');
 
+// The existing Rumus Penamat remains a solo cinematic, with display damage
+// at 1430ms and all its effects owned by the current battle journey.
+const fin=setup(),fc=fin.context;fc.db.hero='sidma';fc.sess.ehp=4;
+fc.PACombatMotion.begin=()=>null;
+fc.HEROES.sidma={fx:{impact:'sigma.webp',impactEnd:'sigma-end.webp'}};
+fin.ids.sidmaFinisherFx=fc.document.createElement('img');
+vm.runInContext(fs.readFileSync('js/hero-sidma-v1.0.0.js','utf8'),fc);
+fc.PASidmaBattle.runSidmaFinisher();
+assert(fin.callbacks.some(x=>x.delay===1430&&!x.cleared));assert(fc.PABattlePresentation.pending()>=4);
+fc.cancelBattlePresentationTimers();assert.equal(fc.PABattlePresentation.pending(),0);
+fin.callbacks.forEach(x=>x.fn());assert(!fin.ids.sidmaFinisherFx.classList.contains('sidma-finisher-impact-end'),'stale finisher reappeared');
+const finInfo=fc.triggerImpact('hero','enemy','sigma',true);assert.equal(finInfo.contactDelay,1430);fc.sess.ehp=0;fc.battle();assert.equal(fin.ids.enemyHp.style.width,(4/12*100)+'%');
+fin.callbacks.filter(x=>!x.cleared&&x.delay===1430).forEach(x=>x.fn());assert.equal(fin.ids.enemyHp.style.width,'0%');
+assert(finInfo.defeatDelay>finInfo.contactDelay);fc.cancelBattlePresentationTimers();
+console.log('PASS: Sidma finisher timing, defeat ordering, owned timers and stale FX cancellation');
+
 // Exercise the actual renderer's dispatch/cancellation with a deterministic
 // canvas and decoded assets. Browser QA covers the real artwork and layout.
 async function rendererChecks(){
@@ -45,12 +61,17 @@ async function rendererChecks(){
  const motion=c.PACombatMotion;
  assert.equal(motion.begin('hero','enemy',true),null,'finisher must retain existing renderer');
  c.db.rewards.equippedPet='aurora';assert.equal(motion.begin('hero','enemy',false),null,'pet combo must retain existing renderer');c.db.rewards.equippedPet=null;
- for(const from of ['hero','enemy'])for(const minimal of [false,true]){
+ for(const key of ['wira','sidma'])for(const from of ['hero','enemy'])for(const minimal of [false,true]){
+  c.db.hero=key;
   reduced=minimal;const info=motion.begin(from,from==='hero'?'enemy':'hero',false);assert(info?.motion);
-  const render=frames.get(id);for(const time of [0,250,470,550,900,1300])render(time);
+  const render=frames.get(id);for(const time of [0,250,470,530,650,740,900,1120,1300])render(time);
   motion.reset();assert(!motion.isActive());assert(!classes.has('paMotionActive'));
  }
- c.db.hero='bunga';assert.equal(motion.begin('hero','enemy',false),null);c.db.hero='sidma';assert.equal(motion.begin('hero','enemy',false),null);
- console.log('PASS: renderer phases, both attack directions, reduced motion, reset, pet/finisher/other-hero fallback');
+ c.db.hero='sidma';let petCalls=0;c.triggerPetFollowUp=()=>petCalls++;c.db.rewards.equippedPet='aurora';
+ const combo=motion.begin('hero','enemy',false);assert.equal(combo.contactDelay,1070);assert.equal(combo.completionDelay,1820);assert.equal(petCalls,1);
+ const comboRender=frames.get(id);for(const time of [0,360,420,600,1070,1200,1740])comboRender(time);motion.reset();
+ assert.equal(motion.begin('hero','enemy',true),null,'Sidma finisher remains a solo cinematic');assert.equal(petCalls,1);
+ c.db.hero='bunga';assert.equal(motion.begin('hero','enemy',false),null);
+ console.log('PASS: Wira/Sidma phases, attack/counterattack, reduced motion, pet-first combo, reset, finisher/Bunga fallback');
 }
 rendererChecks().catch(error=>{console.error(error);process.exitCode=1});

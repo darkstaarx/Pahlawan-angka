@@ -14,10 +14,11 @@
   window.PA_SIDMA_TIMING={T_CAST_START,T_RELEASE,T_PROJECTILE_LAUNCH,T_IMPACT,T_IMPACT_END,T_IDLE_RETURN};
 
   let timers=[],finisherTimers=[];
-  function clearTimers(){timers.forEach(clearTimeout);timers=[]}
-  function clearFinisherTimers(){finisherTimers.forEach(clearTimeout);finisherTimers=[]}
-  function after(ms,fn){timers.push(setTimeout(fn,ms))}
-  function afterFinisher(ms,fn){finisherTimers.push(setTimeout(fn,ms))}
+  const cancel=timer=>window.PABattlePresentation?.clear?window.PABattlePresentation.clear(timer):clearTimeout(timer);
+  function clearTimers(){timers.forEach(cancel);timers=[]}
+  function clearFinisherTimers(){finisherTimers.forEach(cancel);finisherTimers=[]}
+  function after(ms,fn){timers.push(window.PABattlePresentation?.later?window.PABattlePresentation.later(fn,ms):setTimeout(fn,ms))}
+  function afterFinisher(ms,fn){finisherTimers.push(window.PABattlePresentation?.later?window.PABattlePresentation.later(fn,ms):setTimeout(fn,ms))}
 
   function ensureBodyFrames(sprite){
     if(!sprite)return null;
@@ -188,16 +189,21 @@
     const enemyVisual=enemy.querySelector('.enemySpriteWrap')||enemy.querySelector('#enemySprite')||enemy;
     const enemyVisualBox=enemyVisual.getBoundingClientRect();
     const h=(typeof HEROES!=='undefined'&&HEROES.sidma)||{};
-    fx.style.left=(enemyBox.left-arenaBox.left+enemyBox.width/2)+'px';
-    fx.style.top=(enemyVisualBox.top-arenaBox.top+enemyVisualBox.height*.5)+'px';
-    fx.style.setProperty('--sidma-finisher-size',Math.min(arenaBox.width*.42,enemyVisualBox.height*1.45)+'px');
+    const anchorFx=()=>{
+      const body=window.PACombatMotion?.targetGeometry?.();
+      fx.style.left=(body?body.x:enemyBox.left-arenaBox.left+enemyBox.width/2)+'px';
+      fx.style.top=(body?body.y-body.h*.5:enemyVisualBox.top-arenaBox.top+enemyVisualBox.height*.5)+'px';
+      fx.style.setProperty('--sidma-finisher-size',Math.min(arena.getBoundingClientRect().width*.42,(body?.h||enemyVisualBox.height)*1.45)+'px');
+    };
+    anchorFx();
     fx.src=(h.fx&&h.fx.impact)||'';
     if(typeof playSidmaSfx==='function')playSidmaSfx('finisher-charge');
     // Release happens inside blackout; the arena Sigma then owns one readable
     // form -> expand -> compress -> impact sequence.
-    afterFinisher(920,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(920,()=>{anchorFx();if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
     afterFinisher(1290,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('compress')});
     afterFinisher(1430,()=>{
+      anchorFx();
       if(typeof playSidmaSfx==='function')playSidmaSfx('explode');
       fx.src=(h.fx&&h.fx.impactEnd)||'';
       fx.classList.remove('sidma-finisher-sigma-active');void fx.offsetWidth;fx.classList.add('sidma-finisher-impact-end');
