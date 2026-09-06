@@ -1,4 +1,4 @@
-// App shell v3.59.0 — KSSR Year 6 cognitive-depth hardening.
+// App shell v3.60.0 — Rumus Sigma restored, Gelombang Operasi closes to melee.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

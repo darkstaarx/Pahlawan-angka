@@ -32,6 +32,18 @@
     if(next===last[hero])next=(next+1)%pool.length;
     last[hero]=next;return pool[next];
   }
+  /* Gelombang Operasi plants the sword into the ground, so the hero has to be
+     standing beside the enemy for the ice to erupt on top of it. Measure the
+     real gap instead of leaning on a fixed nudge, which left him striking the
+     ground back at his own mark. */
+  function closeInDistance(){
+    const sprite=document.getElementById('heroVisual'),enemy=document.getElementById('enemy');
+    if(!sprite||!enemy)return null;
+    const target=enemy.querySelector('.enemySpriteWrap')||enemy;
+    const h=sprite.getBoundingClientRect(),e=target.getBoundingClientRect();
+    if(h.width<2||e.width<2)return null;
+    return Math.max(0,Math.round(e.left-h.right+Math.min(26,e.width*.2)));
+  }
   window.prepareHeroAttackVariant=function(el,finisher){
     window.clearHeroAttackVariant(el);if(finisher)return;
     const hero=(typeof db!=='undefined'&&db&&db.hero)||'wira',chosen=pick(hero);
@@ -39,13 +51,14 @@
     const strike=strikeFrame();if(strike){strike.src=chosen.asset;strike.alt=chosen.label}
     el.style.setProperty('--pa-contact-scale',String(chosen.bodyScale));
     el.style.setProperty('--pa-contact-shift-x',chosen.footShiftX+'px');
+    if(chosen.id==='pulse'){const gap=closeInDistance();if(gap!==null)el.style.setProperty('--pa-pulse-dash-x',gap+'px')}
     const arena=document.getElementById('battleArena');if(arena){arena.dataset.heroAttack=chosen.id;arena.dataset.heroKind=hero}
   };
   window.clearHeroAttackVariant=function(el){
     if(!el)return;
     [...el.classList].filter(x=>x==='pa-attack-variant'||x.startsWith('pa-attack-')).forEach(x=>el.classList.remove(x));
     delete el.dataset.attackVariant;
-    el.style.removeProperty('--pa-contact-scale');el.style.removeProperty('--pa-contact-shift-x');
+    el.style.removeProperty('--pa-contact-scale');el.style.removeProperty('--pa-contact-shift-x');el.style.removeProperty('--pa-pulse-dash-x');
     const arena=document.getElementById('battleArena');if(arena){delete arena.dataset.heroAttack;delete arena.dataset.heroKind}
   };
   function ensureAttackLab(){
