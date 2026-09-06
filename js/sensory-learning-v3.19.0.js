@@ -141,7 +141,7 @@
   }
 
   function install(){
-    const versionButton=document.querySelector('.loginVersion');if(versionButton)versionButton.textContent=`Pahlawan Angka · v${VERSION}`;
+    const versionButton=document.querySelector('.loginVersion');if(versionButton)versionButton.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
     document.documentElement.dataset.paSensory=VERSION;
 
     if(typeof window.nextQ==='function'){

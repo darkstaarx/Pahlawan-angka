@@ -117,5 +117,5 @@
   window.devJumpBoss=devJumpBoss;
   document.documentElement.dataset.devBossLab=VERSION;
   const version=document.querySelector('.loginVersion');
-  if(version)version.textContent=`Pahlawan Angka · v${VERSION}`;
+  if(version)version.textContent=`Pahlawan Angka · v${globalThis.PA_APP_VERSION||VERSION}`;
 })();
