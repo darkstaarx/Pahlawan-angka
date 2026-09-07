@@ -181,6 +181,118 @@ HIGH['D6.RATIO']=function(id,s,shift){
   return mark(Q('Murid berkata nisbah 4:6 setara dengan 6:8 kerana kedua-duanya tambah 2. Penilaian?','salah',[Nq('betul','ratio'),Nq('betul jika nombor genap','ratio'),Nq('tidak boleh dinilai','ratio')],'Nisbah setara mesti didarab atau dibahagi kedua-dua bahagian dengan faktor sama.','Tahun 6 · Analisis Nisbah Setara',true,true),id,'7.2.1','ratio_error_high','verbal','reasoning',s,['ratio','error_analysis']);
 };
 
+// Applied domains -----------------------------------------------------------
+CORE['D6.TIME']=function(id,s,shift){
+  const mode=rotate(id,['prior','time_midnight','time_reverse','time_previous_day','time_schedule','time_duration_core']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='time_midnight')return mark(Q('Kuala Lumpur ialah UTC+8 dan Tokyo UTC+9. Jika Kuala Lumpur 23:30, waktu Tokyo ialah?','00:30 hari berikutnya',[Nq('22:30 hari yang sama','time'),Nq('23:30 hari yang sama','time'),Nq('01:30 hari berikutnya','time')],'Tokyo 1 jam lebih awal; perhatikan pertukaran hari.','Tahun 6 · Zon Masa dan Pertukaran Hari',true,true),id,'4.1.2','time_midnight','story','application',s,['timezone','day_change']);
+  if(mode==='time_reverse'){
+    const h=choose([10,14,18]),m=choose([0,15,30,45]),ans=fmt(h-1,m);
+    return mark(Q('Tokyo menunjukkan '+fmt(h,m)+'. Apakah waktu pada masa yang sama di Kuala Lumpur?',ans,[Nq(fmt(h+1,m),'time'),Nq(fmt(h,m),'time'),Nq(fmt(h-2,m),'time')],'Kuala Lumpur 1 jam di belakang Tokyo.','Tahun 6 · Menentukan Waktu Zon Masa',true,true),id,'4.1.2','time_reverse','story','application',s,['timezone']);
+  }
+  if(mode==='time_previous_day')return mark(Q('Kuala Lumpur ialah UTC+8 dan Dubai UTC+4. Jika Kuala Lumpur 02:15, waktu Dubai ialah?','22:15 hari sebelumnya',[Nq('06:15 hari yang sama','time'),Nq('22:15 hari yang sama','time'),Nq('23:15 hari sebelumnya','time')],'Dubai 4 jam di belakang Kuala Lumpur; 02:15 ditolak 4 jam melintasi tengah malam.','Tahun 6 · Zon Masa dan Hari',true,true),id,'4.1.2','time_previous_day','story','application',s,['timezone','day_change']);
+  if(mode==='time_schedule')return mark(Q(table(['Bandar','UTC'],[['Kuala Lumpur','+8'],['Bangkok','+7'],['Tokyo','+9']])+'Mesyuarat bermula di Kuala Lumpur pada 09:00. Waktu serentak di Bangkok?','Bangkok 08:00',[Nq('Bangkok 10:00','time'),Nq('Bangkok 09:00','time'),Nq('Bangkok 07:00','time')],'Bangkok 1 jam di belakang Kuala Lumpur.','Tahun 6 · Jadual Zon Masa',true,true),id,'4.1.2','time_schedule','table','application',s,['timezone','table']);
+  const dep=choose([8,10,12]),dur=choose([2,3,4]),ans=fmt(dep+dur-4,0);
+  return mark(Q('Penerbangan berlepas dari Kuala Lumpur pada '+fmt(dep,0)+', mengambil masa '+dur+' jam dan tiba di Dubai. Apakah waktu tempatan tiba?',ans,[Nq(fmt(dep+dur,0),'time'),Nq(fmt(dep-4,0),'time'),Nq(fmt(dep+dur+4,0),'time')],'Tambah tempoh penerbangan, kemudian laraskan Dubai 4 jam di belakang Kuala Lumpur.','Tahun 6 · Masa Perjalanan dan Zon Masa',true,true),id,'4.2.1','time_duration_core','story','application',s,['timezone','duration']);
+};
+
+CORE['D6.MEASURE']=function(id,s,shift){
+  const mode=rotate(id,['prior','measure_unit_rate','measure_missing_length','measure_compare','measure_mass_liquid','measure_missing_liquid']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='measure_unit_rate'){
+    const L=choose([2,4]),M=choose([0.6,1.2]),ans=tidy(M/L,2);
+    return mark(Q(L+' m kabel berjisim '+M+' kg. Jisim bagi 1 m kabel?',ans+' kg',[Nq(M+' kg','unit'),Nq(tidy(M*L,2)+' kg','unit'),Nq((L-M)+' kg','operation')],'Bahagi jisim dengan panjang untuk kadar per meter.','Tahun 6 · Kadar Panjang dan Jisim',true,true),id,'5.1.1(i)','measure_unit_rate','story','application',s,['length','mass','rate']);
+  }
+  if(mode==='measure_missing_length'){
+    const per=choose([0.25,0.5,0.75]),mass=choose([1.5,2,3]),ans=tidy(mass/per,2);
+    return mark(Q('Setiap 1 m wayar berjisim '+per+' kg. Berapa meter wayar mempunyai jisim '+mass+' kg?',ans+' m',[Nq(mass+' m','unit'),Nq(tidy(mass*per,2)+' m','unit'),Nq((mass+per)+' m','operation')],'Panjang = jumlah jisim ÷ jisim per meter.','Tahun 6 · Hubungan Panjang dan Jisim',true,true),id,'5.1.1(i)','measure_missing_length','story','application',s,['length','mass','inverse']);
+  }
+  if(mode==='measure_compare')return mark(Q(table(['Pakej','Panjang','Jisim'],[['A','4 m','1.2 kg'],['B','6 m','1.5 kg']])+'Pakej mana mempunyai jisim per meter lebih rendah?','B',[Nq('A','unit'),Nq('sama','unit'),Nq('tidak boleh dibanding','unit')],'Banding jisim ÷ panjang bagi setiap pakej.','Tahun 6 · Membanding Hubungan Ukuran',true,true),id,'5.1.1(i)','measure_compare','table','application',s,['length','mass','compare']);
+  if(mode==='measure_mass_liquid'){
+    const V=choose([1,1.5,2]),M=choose([0.8,1.2,1.6]),k=choose([2,3]),ans=tidy(M*k,2);
+    return mark(Q(V+' L cecair berjisim '+M+' kg. '+(V*k)+' L cecair sama berjisim?',ans+' kg',[Nq(M+' kg','unit'),Nq(tidy(M+k,2)+' kg','unit'),Nq(tidy(ans+1,2)+' kg','unit')],'Skalakan isi padu dan jisim dengan faktor sama.','Tahun 6 · Jisim dan Isi Padu Cecair',true,true),id,'5.1.1(iii)','measure_mass_liquid','story','application',s,['mass','liquid']);
+  }
+  const L=choose([2,4]),V=choose([0.5,1]),need=choose([6,8,12]),ans=tidy(need*(V/L),2);
+  return mark(Q(L+' m kain memerlukan '+V+' L pewarna. '+need+' m kain memerlukan berapa liter?',ans+' L',[Nq(V+' L','unit'),Nq((need/L)+' L','unit'),Nq((need+V)+' L','operation')],'Cari bilangan kumpulan panjang, kemudian skalakan isi padu pewarna.','Tahun 6 · Panjang dan Isi Padu Cecair',true,true),id,'5.1.1(ii)','measure_missing_liquid','story','application',s,['length','liquid']);
+};
+
+CORE['D6.COORD']=function(id,s,shift){
+  const mode=rotate(id,['prior','coord_route_core','coord_missing_x','coord_missing_y','coord_compare_routes']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='coord_route_core'){
+    const sc=choose([2,5]),A={x:1,y:1,label:'A'},B={x:4,y:1,label:'B'},C={x:4,y:4,label:'C'},ans=6*sc;
+    return mark(Q(coord([A,B,C],sc)+'Laluan A→B→C. 1 petak = '+sc+' km. Jumlah jarak?',ans+' km',[Nq('6 km','scale'),Nq((3*sc)+' km','coord'),Nq((9*sc)+' km','coord')],'Tambah jarak mengufuk dan mencancang, kemudian gunakan skala.','Tahun 6 · Laluan Koordinat Berskala',true,true),id,'7.4.1','coord_route_core','visual','application',s,['coord','scale','route']);
+  }
+  if(mode==='coord_missing_x'){
+    const sc=choose([2,5]),x1=1,x2=choose([3,4,5]),dist=(x2-x1)*sc;
+    return mark(Q('A berada pada ('+x1+',3). B pada (x,3). Jika 1 petak = '+sc+' km dan jarak A ke B '+dist+' km ke kanan, nilai x?',x2,[Nq(x2-1,'coord'),Nq(x2+1,'coord'),Nq(dist,'scale')],'Tukar jarak sebenar kepada bilangan petak, kemudian tambah pada koordinat x.','Tahun 6 · Koordinat Hilang',true,true),id,'7.1.1','coord_missing_x','verbal','application',s,['coord','scale','inverse']);
+  }
+  if(mode==='coord_missing_y'){
+    const sc=choose([2,5]),y1=1,y2=choose([3,4,5]),dist=(y2-y1)*sc;
+    return mark(Q('A berada pada (2,'+y1+'). B pada (2,y). Jika 1 petak = '+sc+' km dan jarak A ke B '+dist+' km ke atas, nilai y?',y2,[Nq(y2-1,'coord'),Nq(y2+1,'coord'),Nq(dist,'scale')],'Tukar jarak sebenar kepada bilangan petak, kemudian tambah pada koordinat y.','Tahun 6 · Koordinat Hilang',true,true),id,'7.1.1','coord_missing_y','verbal','application',s,['coord','scale','inverse']);
+  }
+  const sc=5;
+  return mark(Q(coord([{x:1,y:1,label:'A'},{x:5,y:1,label:'B'},{x:3,y:4,label:'C'}],sc)+'Dari A, laluan ke B ialah 4 petak. Laluan ke C secara mengufuk kemudian mencancang ialah 5 petak. Laluan mana lebih pendek?','A ke B',[Nq('A ke C','route'),Nq('sama','route'),Nq('tidak boleh dibanding','route')],'Banding jumlah petak; skala sama untuk kedua-dua laluan.','Tahun 6 · Membanding Laluan',true,true),id,'7.4.1','coord_compare_routes','visual','application',s,['coord','route','compare']);
+};
+
+CORE['D6.SPACE_PROBLEM']=function(id,s,shift){
+  const mode=rotate(id,['prior','space_polygon_sum','space_compass_plan','space_straight_context','space_radius_paths']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='space_polygon_sum'){
+    const deg=choose([60,90,120,135]),n=choose([2,3]),ans=deg*n;
+    return mark(Q(protractor(deg)+'Dalam corak, '+n+' sudut yang sama seperti rajah dicantum. Jumlah sudut?',ans+'°',[Nq(deg+'°','space_reason'),Nq((deg+n)+'°','operation'),Nq((180-deg)+'°','angle_measure')],'Gunakan ukuran satu sudut dan bilangan sudut yang dicantum.','Tahun 6 · Masalah Ruang dan Sudut',true,true),id,'6.3.1','space_polygon_sum','visual','application',s,['space_reason','angle_measure']);
+  }
+  if(mode==='space_compass_plan'){
+    const d=choose([10,14,18]),r=d/2;
+    return mark(Q('Logo perlu mengandungi bulatan berdiameter '+d+' cm. Tetapan jangka yang betul sebelum melukis?',r+' cm',[Nq(d+' cm','circle_draw'),Nq((d+2)+' cm','circle_draw'),Nq((r/2)+' cm','circle_draw')],'Jangka ditetapkan pada jejari, separuh diameter.','Tahun 6 · Rancang Pembinaan Bulatan',true,true),id,'6.3.1','space_compass_plan','story','application',s,['circle_draw','space_reason']);
+  }
+  if(mode==='space_straight_context'){
+    const a=choose([60,75,105,120]),ans=180-a;
+    return mark(Q('Dua papan bertemu membentuk garis lurus. Satu sudut ialah '+a+'°. Sudut satu lagi?',ans+'°',[Nq(a+'°','angle_measure'),Nq((180+a)+'°','angle_measure'),Nq(Math.abs(90-a)+'°','angle_measure')],'Jumlah sudut pada garis lurus ialah 180°.','Tahun 6 · Masalah Harian Sudut',true,true),id,'6.3.1','space_straight_context','story','application',s,['angle_measure','space_reason']);
+  }
+  const d=choose([12,16,20]),r=d/2,count=choose([4,5,6]),ans=r*count;
+  return mark(Q(circle('parts')+'Sebuah taman bulatan berdiameter '+d+' m mempunyai '+count+' laluan dari pusat ke tepi. Jumlah panjang laluan?',ans+' m',[Nq((d*count)+' m','radius_diameter'),Nq(d+' m','radius_diameter'),Nq((r+count)+' m','operation')],'Setiap laluan ialah satu jejari.','Tahun 6 · Masalah Bulatan Harian',true,true),id,'6.3.1','space_radius_paths','visual','application',s,['radius_diameter','space_reason']);
+};
+
+HIGH['D6.TIME']=function(id,s,shift){
+  const mode=rotate(id,['prior','time_departure_reverse','time_day_cross_high','time_two_leg','time_error_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='time_departure_reverse')return mark(Q('Tokyo (UTC+9) menunjukkan 15:00 ketika sebuah penerbangan tiba selepas 7 jam dari Dubai (UTC+4). Pukul berapa penerbangan berlepas dari Dubai?','03:00',[Nq('08:00','time'),Nq('11:00','time'),Nq('13:00','time')],'15:00 Tokyo bersamaan 10:00 Dubai; tolak 7 jam untuk waktu berlepas.','Tahun 6 · Waktu Berlepas Songsang',true,true),id,'4.2.1','time_departure_reverse','story','reasoning',s,['timezone','duration','inverse']);
+  if(mode==='time_day_cross_high')return mark(Q('Kuala Lumpur 22:30. Dubai 4 jam di belakang. Aktiviti di Dubai bermula 2 jam kemudian. Apakah waktu aktiviti?','20:30 hari yang sama',[Nq('00:30 hari berikutnya','time'),Nq('18:30 hari yang sama','time'),Nq('16:30 hari yang sama','time')],'Tukar dahulu ke Dubai, kemudian tambah 2 jam.','Tahun 6 · Zon Masa Pelbagai Langkah',true,true),id,'4.2.1','time_day_cross_high','story','reasoning',s,['timezone','multi_step']);
+  if(mode==='time_two_leg')return mark(Q(table(['Segmen','Maklumat'],[['KL→Bangkok','2 jam'],['Rehat Bangkok','1 jam'],['Bangkok→Tokyo','5 jam']])+'Bertolak KL 08:00. Jumlah tempoh 8 jam; Tokyo 1 jam di hadapan KL. Waktu tiba Tokyo?','17:00',[Nq('16:00','time'),Nq('18:00','time'),Nq('15:00','time')],'Jumlahkan tempoh, kemudian laras beza zon.','Tahun 6 · Itinerari Masa',true,true),id,'4.2.1','time_two_leg','table','reasoning',s,['timezone','duration','multi_step']);
+  return mark(Q('Murid menukar 23:30 Kuala Lumpur kepada 00:30 Tokyo tetapi menulis "hari yang sama". Pembetulan?','00:30 hari berikutnya',[Nq('22:30 hari yang sama','time'),Nq('23:30 hari yang sama','time'),Nq('01:30 hari yang sama','time')],'Tambah 1 jam melintasi tengah malam, jadi hari berubah.','Tahun 6 · Analisis Kesilapan Zon Masa',true,true),id,'4.1.2','time_error_high','verbal','reasoning',s,['timezone','day_change','error_analysis']);
+};
+
+HIGH['D6.MEASURE']=function(id,s,shift){
+  const mode=rotate(id,['prior','measure_reverse_rate','measure_batches','measure_compare_high','measure_error_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='measure_reverse_rate')return mark(Q('4 m kabel berjisim 1.2 kg. Berapa meter kabel yang sama mempunyai jisim 3.6 kg?','12 m',[Nq('8 m','unit'),Nq('10 m','unit'),Nq('14 m','unit')],'Jisim meningkat 3 kali ganda, jadi panjang juga 3 kali ganda.','Tahun 6 · Hubungan Ukuran Songsang',true,true),id,'5.1.1(i)','measure_reverse_rate','story','reasoning',s,['length','mass','inverse']);
+  if(mode==='measure_batches')return mark(Q('Setiap 2 m kain memerlukan 0.5 L pewarna. Ada 1.4 L pewarna. Berapa kumpulan penuh 2 m boleh disiapkan?',2,[Nq(1,'liquid'),Nq(3,'liquid'),Nq(4,'liquid')],'1.4 ÷ 0.5 = 2.8, jadi hanya 2 kumpulan penuh.','Tahun 6 · Had Sumber Ukuran',true,true),id,'5.1.1(ii)','measure_batches','story','reasoning',s,['length','liquid','limit']);
+  if(mode==='measure_compare_high')return mark(Q(table(['Pilihan','Panjang','Jisim'],[['A','8 m','2.4 kg'],['B','10 m','2.5 kg']])+'Pilihan mana lebih ringan bagi setiap meter?','B',[Nq('A','unit'),Nq('sama','unit'),Nq('tidak boleh dibanding','unit')],'Banding jisim per meter: 2.4÷8 dan 2.5÷10.','Tahun 6 · Membanding Kadar Ukuran',true,true),id,'5.1.1(i)','measure_compare_high','table','reasoning',s,['length','mass','rate','compare']);
+  return mark(Q('Murid berkata jika 2 L cecair berjisim 1.6 kg, maka 5 L berjisim 4.0 kg. Penilaian?','betul',[Nq('salah, 5 L berjisim 3.2 kg','unit'),Nq('salah, jisim tidak berkadar untuk cecair sama','unit'),Nq('tidak boleh ditentukan','unit')],'Kadar 0.8 kg/L; 5 × 0.8 = 4.0 kg.','Tahun 6 · Menilai Hubungan Ukuran',true,true),id,'5.1.1(iii)','measure_error_high','verbal','reasoning',s,['mass','liquid','error_analysis']);
+};
+
+HIGH['D6.COORD']=function(id,s,shift){
+  const mode=rotate(id,['prior','coord_multistop_high','coord_scale_reverse_high','coord_shortest_high','coord_error_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='coord_multistop_high'){
+    const sc=5;
+    return mark(Q(coord([{x:1,y:1,label:'A'},{x:4,y:1,label:'B'},{x:4,y:5,label:'C'}],sc)+'Laluan A→B→C. 1 petak=5 km. Jumlah jarak?','35 km',[Nq('7 km','scale'),Nq('20 km','coord'),Nq('45 km','coord')],'3 petak + 4 petak = 7 petak; darab 5 km.','Tahun 6 · Laluan Berbilang Titik',true,true),id,'7.4.1','coord_multistop_high','visual','reasoning',s,['coord','scale','route']);
+  }
+  if(mode==='coord_scale_reverse_high')return mark(Q('A(1,2) ke B(5,2) mempunyai jarak sebenar 20 km. Berapakah skala bagi 1 petak?','5 km',[Nq('4 km','scale'),Nq('10 km','scale'),Nq('20 km','scale')],'Beza x = 4 petak; 20 ÷ 4 = 5 km setiap petak.','Tahun 6 · Menentukan Skala Koordinat',true,true),id,'7.1.1','coord_scale_reverse_high','verbal','reasoning',s,['coord','scale','inverse']);
+  if(mode==='coord_shortest_high')return mark(Q(table(['Laluan','Petak'],[['A→B→D',7],['A→C→D',9]])+'Jika 1 petak=2 km, laluan lebih pendek dan beza jarak?','A→B→D, lebih pendek 4 km',[Nq('A→C→D, lebih pendek 4 km','route'),Nq('A→B→D, lebih pendek 2 km','route'),Nq('kedua-duanya sama','route')],'Beza 2 petak × 2 km = 4 km.','Tahun 6 · Membanding Laluan Berskala',true,true),id,'7.4.1','coord_shortest_high','table','reasoning',s,['coord','route','compare']);
+  return mark(Q('Murid mengira jarak A(1,1) ke B(4,5) sebagai 5 petak dengan hanya melihat perubahan y. Pembetulan untuk laluan mendatar kemudian menegak?','7 petak',[Nq('4 petak','coord'),Nq('5 petak','coord'),Nq('20 petak','coord')],'Perubahan x=3 dan y=4; jumlah laluan grid=7 petak.','Tahun 6 · Analisis Laluan Koordinat',true,true),id,'7.4.1','coord_error_high','verbal','reasoning',s,['coord','error_analysis']);
+};
+
+HIGH['D6.SPACE_PROBLEM']=function(id,s,shift){
+  const mode=rotate(id,['prior','space_design_high','space_tool_high','space_error_high','space_relevance_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='space_design_high')return mark(Q('Sebuah logo memerlukan bulatan diameter 16 cm dan sudut 135°. Tetapan alat yang betul?','jangka 8 cm dan protraktor 135°',[Nq('jangka 16 cm dan protraktor 135°','space_reason'),Nq('jangka 8 cm dan protraktor 45°','space_reason'),Nq('jangka 32 cm dan protraktor 135°','space_reason')],'Tukar diameter kepada jejari; sudut kekal 135°.','Tahun 6 · Reka Bentuk Ruang',true,true),id,'6.3.1','space_design_high','story','reasoning',s,['circle_draw','angle_construct']);
+  if(mode==='space_tool_high')return mark(Q('Untuk membina bulatan diameter 12 cm dan sudut 120°, alat manakah perlu digunakan?','jangka bukaan 6 cm dan protraktor 120°',[Nq('pembaris sahaja','space_reason'),Nq('jangka bukaan 12 cm sahaja','space_reason'),Nq('protraktor 60° sahaja','space_reason')],'Bulatan perlukan jangka berdasarkan jejari; sudut perlukan protraktor.','Tahun 6 · Memilih Alat Ruang',true,true),id,'6.3.1','space_tool_high','verbal','reasoning',s,['circle_draw','angle_construct']);
+  if(mode==='space_error_high')return mark(Q('Murid melukis bulatan diameter 18 cm dengan jangka 18 cm. Mengapa hasilnya salah?','jangka sepatutnya 9 cm kerana bukaan jangka ialah jejari',[Nq('jangka mesti 36 cm','circle_draw'),Nq('diameter tidak berkaitan dengan jangka','circle_draw'),Nq('hasil sebenarnya betul','circle_draw')],'Jejari = diameter ÷ 2.','Tahun 6 · Analisis Kesilapan Ruang',true,true),id,'6.3.1','space_error_high','verbal','reasoning',s,['circle_draw','error_analysis']);
+  return mark(Q('Sebuah hiasan menggunakan 3 jejari bulatan 8 cm dan satu sudut 120° sebagai ukuran berasingan. Jumlah panjang tiga jejari?','24 cm',[Nq('8 cm','radius_diameter'),Nq('16 cm','radius_diameter'),Nq('120 cm','operation')],'Hanya maklumat panjang jejari digunakan untuk soalan panjang.','Tahun 6 · Memilih Maklumat Relevan Ruang',true,true),id,'6.3.1','space_relevance_high','story','reasoning',s,['space_reason','relevant_information']);
+};
+
 /*__REGISTRATIONS__*/
 
 banks.d6=function(id,s,shift){
