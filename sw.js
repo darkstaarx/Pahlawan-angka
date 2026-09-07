@@ -1,4 +1,4 @@
-// App shell v3.60.1 — Rumus Sigma restored, Gelombang Operasi closes to melee.
+// App shell v3.60.6 — Gelombang Operasi ice lands on contact.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
