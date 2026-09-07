@@ -293,6 +293,96 @@ HIGH['D6.SPACE_PROBLEM']=function(id,s,shift){
   return mark(Q('Sebuah hiasan menggunakan 3 jejari bulatan 8 cm dan satu sudut 120° sebagai ukuran berasingan. Jumlah panjang tiga jejari?','24 cm',[Nq('8 cm','radius_diameter'),Nq('16 cm','radius_diameter'),Nq('120 cm','operation')],'Hanya maklumat panjang jejari digunakan untuk soalan panjang.','Tahun 6 · Memilih Maklumat Relevan Ruang',true,true),id,'6.3.1','space_relevance_high','story','reasoning',s,['space_reason','relevant_information']);
 };
 
+// Geometry and data domains --------------------------------------------------
+CORE['D6.ANGLE']=function(id,s,shift){
+  const mode=rotate(id,['prior','angle_compare_polygon','angle_straight']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='angle_compare_polygon')return mark(Q(polygon(6)+polygon(8)+'Sudut pedalaman heksagon sekata ialah 120° dan oktagon sekata 135°. Poligon mana mempunyai sudut lebih besar?','oktagon sekata',[Nq('heksagon sekata','polygon_angle'),Nq('kedua-duanya sama','polygon_angle'),Nq('tidak boleh dibanding','polygon_angle')],'Banding ukuran sudut pedalaman yang diberi.','Tahun 6 · Membanding Sudut Poligon',true,true),id,'6.1.1','angle_compare_polygon','visual','application',s,['polygon_angle']);
+  const a=choose([45,60,75,105]),ans=180-a;
+  return mark(Q(protractor(a)+'Satu sudut pada garis lurus ialah '+a+'°. Berapakah sudut bersebelahan untuk membentuk 180°?',ans+'°',[Nq(a+'°','angle_measure'),Nq((180+a)+'°','angle_measure'),Nq(Math.abs(90-a)+'°','angle_measure')],'Sudut pada garis lurus berjumlah 180°.','Tahun 6 · Aplikasi Ukuran Sudut',true,true),id,'6.1.1','angle_straight','visual','application',s,['angle_measure']);
+};
+
+CORE['D6.CIRCLE']=function(id,s,shift){
+  const mode=rotate(id,['prior','circle_diameter_compass','circle_compare']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='circle_diameter_compass'){
+    const d=choose([8,10,12,16]),r=d/2;
+    return mark(Q('Sebuah bulatan perlu berdiameter '+d+' cm. Berapakah bukaan jangka lukis?',r+' cm',[Nq(d+' cm','circle_draw'),Nq((d*2)+' cm','circle_draw'),Nq((r+1)+' cm','circle_draw')],'Bukaan jangka ialah jejari, iaitu separuh diameter.','Tahun 6 · Melukis Bulatan daripada Diameter',true,true),id,'6.2.2','circle_diameter_compass','story','application',s,['circle_draw','radius_diameter']);
+  }
+  return mark(Q(table(['Bulatan','Jejari','Diameter'],[['A','4 cm','8 cm'],['B','5 cm','10 cm']])+'Bulatan mana lebih besar?','B',[Nq('A','radius_diameter'),Nq('sama','radius_diameter'),Nq('tidak boleh dibanding','radius_diameter')],'Banding jejari atau diameter; nilai lebih besar memberi bulatan lebih besar.','Tahun 6 · Jejari dan Diameter',true,true),id,'6.2.1','circle_compare','table','application',s,['radius_diameter']);
+};
+
+CORE['D6.PIE']=function(id,s,shift){
+  const mode=rotate(id,['prior','pie_infer_total_core','pie_combine']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  const sectors=[{label:'A',angle:180,value:40},{label:'B',angle:90,value:20},{label:'C',angle:45,value:10},{label:'D',angle:45,value:10}];
+  if(mode==='pie_infer_total_core')return mark(Q(pie(sectors)+'Sektor B ialah 90° dan mewakili 20 murid. Jumlah murid?',80,[Nq(40,'pie_quantity'),Nq(90,'pie_angle'),Nq(100,'pie_quantity')],'90° ialah 1/4 bulatan; darab kuantiti sektor dengan 4.','Tahun 6 · Inferens Carta Pai',true,true),id,'8.1.1','pie_infer_total_core','visual','application',s,['pie_quantity']);
+  return mark(Q(pie(sectors)+'Berapa murid dalam kategori C dan D bersama?',20,[Nq(10,'pie_quantity'),Nq(40,'pie_quantity'),Nq(90,'pie_angle')],'Gabungkan kuantiti dua sektor yang diminta.','Tahun 6 · Gabung Data Carta Pai',true,true),id,'8.1.1','pie_combine','visual','application',s,['pie_quantity','combine']);
+};
+
+CORE['D6.PROB']=function(id,s,shift){
+  const mode=rotate(id,['prior','prob_compare_core','prob_complement_core']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='prob_compare_core')return mark(Q(table(['Beg','Merah','Biru'],[['A',6,4],['B',3,7]])+'Beg mana lebih berkemungkinan menghasilkan guli merah?','Beg A',[Nq('Beg B','chance_reason'),Nq('sama kemungkinan','chance_reason'),Nq('mustahil untuk kedua-duanya','chance_reason')],'Banding bahagian guli merah dalam setiap beg.','Tahun 6 · Banding Kebolehjadian',true,true),id,'8.2.2','prob_compare_core','table','application',s,['chance_reason']);
+  return mark(Q(bag(8,2)+'Satu guli dipilih. Peristiwa manakah lebih berkemungkinan?','memilih guli merah',[Nq('memilih guli biru','chance_reason'),Nq('kedua-duanya sama kemungkinan','chance_reason'),Nq('kedua-duanya mustahil','chance_reason')],'Merah lebih banyak daripada biru, jadi lebih berkemungkinan dipilih.','Tahun 6 · Membanding Peristiwa',true,true),id,'8.2.2','prob_complement_core','visual','application',s,['chance_category','chance_reason']);
+};
+
+CORE['D6.DATA_PROBLEM']=function(id,s,shift){
+  const mode=rotate(id,['prior','data_decision_core','data_infer_total_core','data_compare_core']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  const sectors=[{label:'A',angle:180,value:40},{label:'B',angle:90,value:20},{label:'C',angle:45,value:10},{label:'D',angle:45,value:10}];
+  if(mode==='data_decision_core')return mark(Q(pie(sectors)+'Program hanya boleh memilih satu kategori dengan sokongan paling tinggi. Kategori?','A',[Nq('B','data_reason'),Nq('C','data_reason'),Nq('D','data_reason')],'Sektor terbesar mewakili sokongan tertinggi.','Tahun 6 · Keputusan daripada Data',true,true),id,'8.3.1','data_decision_core','visual','application',s,['data_reason']);
+  if(mode==='data_infer_total_core')return mark(Q(pie(sectors)+'Kategori C ialah 45° dan mewakili 10 murid. Jumlah murid?',80,[Nq(40,'pie_quantity'),Nq(45,'pie_angle'),Nq(90,'pie_quantity')],'45° ialah 1/8 bulatan; darab 10 dengan 8.','Tahun 6 · Inferens Data',true,true),id,'8.3.1','data_infer_total_core','visual','application',s,['data_reason','pie_quantity']);
+  return mark(Q(pie(sectors)+'Berapa kali ganda sokongan A berbanding B?',2,[Nq(1,'data_reason'),Nq(4,'data_reason'),Nq(20,'operation')],'Banding 180° dengan 90° atau 40 dengan 20.','Tahun 6 · Perbandingan Data',true,true),id,'8.3.1','data_compare_core','visual','application',s,['data_reason','compare']);
+};
+
+HIGH['D6.ANGLE']=function(id,s,shift){
+  const mode=rotate(id,['prior','angle_polygon_compare_high','angle_scale_high','angle_combined_high','angle_claim_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='angle_polygon_compare_high')return mark(Q(polygon(6)+polygon(8)+'Sudut pedalaman heksagon sekata 120° dan oktagon sekata 135°. Beza ukuran?','15°',[Nq('255°','polygon_angle'),Nq('30°','polygon_angle'),Nq('45°','polygon_angle')],'Banding dua ukuran sudut pedalaman.','Tahun 6 · Penaakulan Sudut Poligon',true,true),id,'6.1.1','angle_polygon_compare_high','visual','reasoning',s,['polygon_angle','compare']);
+  if(mode==='angle_scale_high')return mark(Q(protractor(135)+'Murid menggunakan skala yang bermula pada hujung salah dan membaca 45°. Apakah bacaan betul?','135°',[Nq('45°','angle_measure'),Nq('90°','angle_measure'),Nq('180°','angle_measure')],'Mulakan bacaan pada 0° di garis dasar yang digunakan.','Tahun 6 · Semak Skala Protraktor',true,true),id,'6.1.1','angle_scale_high','visual','reasoning',s,['angle_measure','scale_read']);
+  if(mode==='angle_combined_high')return mark(Q('Dua sudut 60° dan 75° dicantum tanpa bertindih. Sudut terhasil?','135°',[Nq('15°','angle_measure'),Nq('120°','angle_measure'),Nq('180°','angle_measure')],'Jumlahkan dua bukaan sudut.','Tahun 6 · Gabungan Sudut',true,true),id,'6.1.2','angle_combined_high','verbal','reasoning',s,['angle_construct']);
+  return mark(Q('Seorang murid mendakwa sudut 150° ialah sudut tirus kerana kurang daripada 180°. Penilaian?','salah, 150° ialah sudut cakah',[Nq('betul','angle_measure'),Nq('salah, 150° ialah sudut tegak','angle_measure'),Nq('tidak boleh ditentukan','angle_measure')],'Sudut tirus <90°, tegak 90°, cakah antara 90° dan 180°.','Tahun 6 · Menilai Dakwaan Sudut',true,true),id,'6.1.2','angle_claim_high','verbal','reasoning',s,['angle_construct','error_analysis']);
+};
+
+HIGH['D6.CIRCLE']=function(id,s,shift){
+  const mode=rotate(id,['prior','circle_compass_high','circle_two_high','circle_label_high','circle_design_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='circle_compass_high')return mark(Q('Bulatan perlu berdiameter 14 cm. Murid membuka jangka 14 cm. Apakah pembetulan?','bukaan jangka 7 cm',[Nq('kekal 14 cm','circle_draw'),Nq('bukaan 28 cm','circle_draw'),Nq('bukaan 3.5 cm','circle_draw')],'Jangka ditetapkan kepada jejari, separuh diameter.','Tahun 6 · Analisis Pembinaan Bulatan',true,true),id,'6.2.2','circle_compass_high','story','reasoning',s,['circle_draw','radius_diameter']);
+  if(mode==='circle_two_high')return mark(Q(table(['Bulatan','Diameter'],[['A','12 cm'],['B','18 cm']])+'Beza jejari A dan B?','3 cm',[Nq('6 cm','radius_diameter'),Nq('12 cm','radius_diameter'),Nq('15 cm','radius_diameter')],'Jejari ialah separuh diameter: 6 cm dan 9 cm.','Tahun 6 · Banding Jejari Bulatan',true,true),id,'6.2.1','circle_two_high','table','reasoning',s,['radius_diameter','compare']);
+  if(mode==='circle_label_high')return mark(Q('Rajah dilabel diameter = 10 cm tetapi garis yang ditanda hanya dari pusat ke lilitan. Apakah kesilapan?','garis itu jejari, bukan diameter',[Nq('diameter mesti lebih pendek daripada jejari','circle_part'),Nq('pusat tidak diperlukan','circle_part'),Nq('tiada kesilapan','circle_part')],'Jejari bermula di pusat dan berakhir di lilitan; diameter merentasi pusat.','Tahun 6 · Semak Label Bulatan',true,true),id,'6.2.1','circle_label_high','verbal','reasoning',s,['circle_part','error_analysis']);
+  return mark(Q('Reka bentuk memerlukan dua bulatan: A jejari 4 cm, B diameter 10 cm. Yang mana memerlukan bukaan jangka lebih besar?','B, 5 cm',[Nq('A, 8 cm','circle_draw'),Nq('sama, 4 cm','circle_draw'),Nq('tidak boleh dibanding','circle_draw')],'Bukaan jangka = jejari. A=4 cm, B=5 cm.','Tahun 6 · Rancang Bulatan',true,true),id,'6.2.2','circle_design_high','story','reasoning',s,['circle_draw','compare']);
+};
+
+HIGH['D6.PIE']=function(id,s,shift){
+  const mode=rotate(id,['prior','pie_total_high','pie_missing_high','pie_combine_high','pie_error_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  const sectors=[{label:'A',angle:180,value:40},{label:'B',angle:90,value:20},{label:'C',angle:45,value:10},{label:'D',angle:45,value:10}];
+  if(mode==='pie_total_high')return mark(Q(pie(sectors)+'Jika sektor B 90° mewakili 20 murid, jumlah murid?',80,[Nq(40,'pie_quantity'),Nq(90,'pie_angle'),Nq(100,'pie_quantity')],'90° ialah 1/4; jumlah = 20×4.','Tahun 6 · Inferens Carta Pai',true,true),id,'8.1.1','pie_total_high','visual','reasoning',s,['pie_quantity','inverse']);
+  if(mode==='pie_missing_high')return mark(Q('Dalam carta pai, tiga sektor diketahui 120°, 90° dan 60°. Sudut sektor keempat?','90°',[Nq('30°','pie_angle'),Nq('60°','pie_angle'),Nq('120°','pie_angle')],'Jumlah semua sektor carta pai ialah 360°.','Tahun 6 · Sudut Hilang Carta Pai',true,true),id,'8.1.1','pie_missing_high','verbal','reasoning',s,['pie_angle']);
+  if(mode==='pie_combine_high')return mark(Q(pie(sectors)+'Adakah gabungan B+C sama dengan A?','tidak, B+C=30 manakala A=40',[Nq('ya, kedua-duanya 40','data_reason'),Nq('ya, kedua-duanya 30','data_reason'),Nq('tidak boleh ditentukan','data_reason')],'Gabungkan kuantiti B dan C, kemudian banding dengan A.','Tahun 6 · Gabung dan Banding Carta Pai',true,true),id,'8.1.1','pie_combine_high','visual','reasoning',s,['pie_quantity','compare']);
+  return mark(Q('Sebuah carta pai mempunyai sektor 180°, 90°, 60° dan 45°. Adakah carta lengkap?','tidak, jumlahnya 375°',[Nq('ya, jumlahnya 360°','pie_angle'),Nq('tidak, jumlahnya 315°','pie_angle'),Nq('tidak boleh ditentukan','pie_angle')],'Semua sektor mesti berjumlah tepat 360°.','Tahun 6 · Semak Konsistensi Carta Pai',true,true),id,'8.1.1','pie_error_high','verbal','reasoning',s,['pie_angle','error_analysis']);
+};
+
+HIGH['D6.PROB']=function(id,s,shift){
+  const mode=rotate(id,['prior','prob_compare_high','prob_equalize_high','prob_error_high','prob_order_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='prob_compare_high')return mark(Q(table(['Beg','Merah','Jumlah'],[['A',4,10],['B',6,20]])+'Beg mana lebih berkemungkinan memberi merah?','Beg A',[Nq('Beg B','chance_reason'),Nq('sama kemungkinan','chance_reason'),Nq('tidak boleh dibanding','chance_reason')],'Banding bahagian merah: 4/10 lebih besar daripada 6/20.','Tahun 6 · Banding Kebolehjadian dengan Jumlah Berbeza',true,true),id,'8.2.2','prob_compare_high','table','reasoning',s,['chance_reason','compare']);
+  if(mode==='prob_equalize_high')return mark(Q('Beg ada 4 merah dan 6 biru. Berapa guli merah perlu ditambah supaya merah dan biru sama banyak?',2,[Nq(1,'chance_reason'),Nq(4,'chance_reason'),Nq(6,'chance_reason')],'Untuk sama kemungkinan, bilangan dua warna perlu sama.','Tahun 6 · Mengubah Kebolehjadian',true,true),id,'8.2.2','prob_equalize_high','story','reasoning',s,['chance_category','inverse']);
+  if(mode==='prob_error_high')return mark(Q('Murid berkata beg dengan 5 merah, 5 biru memberi merah "besar kemungkinan". Penilaian?','salah, sama kemungkinan',[Nq('betul','chance_reason'),Nq('salah, kecil kemungkinan','chance_reason'),Nq('mustahil','chance_reason')],'Dua hasil dengan bilangan sama memberi sama kemungkinan.','Tahun 6 · Analisis Kebolehjadian',true,true),id,'8.2.1/8.2.2','prob_error_high','verbal','reasoning',s,['chance_category','error_analysis']);
+  return mark(Q('Susun daripada kurang kepada lebih berkemungkinan memilih merah: Beg A 1 merah/9 biru; B 5/5; C 9/1.','A, B, C',[Nq('C, B, A','chance_reason'),Nq('B, A, C','chance_reason'),Nq('A, C, B','chance_reason')],'Banding bahagian merah bagi setiap beg.','Tahun 6 · Susunan Kebolehjadian',true,true),id,'8.2.2','prob_order_high','verbal','reasoning',s,['chance_reason','order']);
+};
+
+HIGH['D6.DATA_PROBLEM']=function(id,s,shift){
+  const mode=rotate(id,['prior','data_threshold_high','data_total_high','data_claim_high','data_combine_high']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  const sectors=[{label:'A',angle:180,value:40},{label:'B',angle:90,value:20},{label:'C',angle:45,value:10},{label:'D',angle:45,value:10}];
+  if(mode==='data_threshold_high')return mark(Q(pie(sectors)+'Syarat pemilihan: kategori mesti sekurang-kurangnya dua kali kategori kedua tertinggi. Kategori yang layak?','A',[Nq('B','data_reason'),Nq('C','data_reason'),Nq('tiada','data_reason')],'A=40 dan B=20; A tepat dua kali B.','Tahun 6 · Keputusan Berdasarkan Data',true,true),id,'8.3.1','data_threshold_high','visual','reasoning',s,['data_reason','threshold']);
+  if(mode==='data_total_high')return mark(Q('Sektor 45° mewakili 12 murid. Berapakah jumlah keseluruhan data?',96,[Nq(48,'pie_quantity'),Nq(45,'pie_angle'),Nq(108,'pie_quantity')],'45° ialah 1/8 bulatan; jumlah=12×8.','Tahun 6 · Inferens Jumlah Data',true,true),id,'8.3.1','data_total_high','verbal','reasoning',s,['data_reason','inverse']);
+  if(mode==='data_claim_high')return mark(Q(pie(sectors)+'Murid mendakwa B dan C bersama-sama mengatasi A. Penilaian?','salah, B+C=30 kurang daripada A=40',[Nq('betul, B+C=50','data_reason'),Nq('betul kerana dua kategori sentiasa lebih besar','data_reason'),Nq('tidak boleh ditentukan','data_reason')],'Jumlahkan B dan C sebelum membandingkan dengan A.','Tahun 6 · Menilai Dakwaan Data',true,true),id,'8.3.1','data_claim_high','visual','reasoning',s,['data_reason','error_analysis']);
+  return mark(Q(pie(sectors)+'Jika C dan D digabung menjadi satu kategori, sudut sektor baharu?','90°',[Nq('45°','pie_angle'),Nq('180°','pie_angle'),Nq('20°','operation')],'Gabungkan 45° + 45°.','Tahun 6 · Menggabung Kategori Data',true,true),id,'8.3.1','data_combine_high','visual','reasoning',s,['data_reason','combine']);
+};
+
 /*__REGISTRATIONS__*/
 
 banks.d6=function(id,s,shift){
