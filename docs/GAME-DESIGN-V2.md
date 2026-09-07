@@ -883,11 +883,274 @@ not:
 
 ---
 
+---
+
+# 29. EXISTING EDUCATIONAL SYSTEMS — MANDATORY REPOSITORY ORIENTATION
+
+The V2 document is **not a replacement for the existing product architecture**.
+
+Before any implementation agent changes game presentation, it must inspect the current production wiring and identify which modules are actually active on the current branch. File names and versions evolve; **`index.html` load order plus the live code on the branch are authoritative at task time.**
+
+## 29.1 Question source and dispatcher
+
+The game does not use an AI API to invent live questions.
+
+The current question path is repository-driven.
+
+Mandatory files/areas to inspect:
+
+- `questions/index.js` — production question dispatcher and anti-repeat history;
+- `questions/helpers.js` — shared question helpers;
+- `questions/d1/` — Darjah 1 bank;
+- `questions/d2/` — Darjah 2 topic banks;
+- `questions/d3/` — Darjah 3 bank;
+- `questions/d4/` — Darjah 4 bank;
+- `questions/d5/` — Darjah 5 bank;
+- `questions/d6/` — Darjah 6 bank;
+- active `questions/kssr-*.js` overlays / grade-specific curriculum modules loaded by the current app;
+- `questions/v2/` and its bridge/runtime where active.
+
+At the time this document was updated, `questions/index.js`:
+
+1. resolves a bank from the active skill ID;
+2. allows the Question System v2 bridge to attempt a question when enabled;
+3. otherwise falls back to the existing grade/topic bank;
+4. tracks fingerprints/history to reduce repetition;
+5. records metadata such as competency, archetype, representation and demand.
+
+Agents must **not bypass `generate()` with a new ad-hoc question source just to support a boss, mini-game, story beat or multiplayer mode.**
+
+A boss mini-game should consume or derive from the same approved curriculum/skill contract, not invent an unrelated mathematics layer.
+
+## 29.2 Question System v2
+
+Read:
+
+- `questions/v2/README.md`;
+- the current `questions/v2/engine/` bridge/rollout modules;
+- current runtime/build files actually loaded by `index.html`.
+
+The v2 system has historically used controlled rollout, bridge and legacy fallback behavior.
+
+Do not assume every file inside `questions/v2/` is live simply because it exists.
+
+Do not assume the README is newer than every grade-specific rollout file either.
+
+**Inspect current runtime wiring before making a claim about which bank is serving which Darjah/topic.**
+
+## 29.3 KSSR / curriculum source
+
+Mandatory curriculum orientation:
+
+- `data/kssr/knowledge-graph.js`;
+- `data/kssr/mastery-knowledge-v1.js`;
+- `data/kssr/alignment-v3.9.0.js`;
+- currently loaded curriculum correction / evidence / cutover files;
+- `KSSR-ASSESSMENT-CONTRACTS-v3.22.0.md`;
+- active content-integrity / assessment-depth modules under `questions/`;
+- latest grade-specific curriculum audits/build notes relevant to the requested Darjah.
+
+Important assessment rule already present in the repository:
+
+> A harder grade must test a different competency/demand, not merely use larger digits.
+
+V2 world names, bosses and mini-games must map onto the **actual skill/curriculum graph**, not a designer's guessed topic list.
+
+## 29.4 Adaptive engine
+
+Mandatory files:
+
+- `js/engine/adaptive.js`;
+- `js/engine/frontier.js`;
+- `js/engine/intervention.js`;
+- `js/engine/telemetry.js`;
+- related learner-review/evidence modules currently loaded.
+
+The adaptive layer already reasons about:
+
+- evidence;
+- mastery;
+- confidence;
+- wrong answers;
+- hints;
+- repeated misconceptions;
+- guessing/impulsive responses;
+- recovery;
+- confirmation;
+- frontier/progression;
+- stretch where configured.
+
+V2 presentation must not silently replace those decisions with RPG level, enemy level, character class or speed.
+
+### Darjah-world clarification
+
+The V2 player-facing world rule is:
+
+> A pupil explores the world/campaign of their selected Darjah; the map must not visually send them into another Darjah simply because an adaptive probe/recovery rule exists.
+
+The current adaptive engine may contain cross-grade recovery/stretch behavior.
+
+**Do not delete or reinterpret that behavior during animation/world work.**
+
+When V2 world implementation reaches that boundary, the agent must flag the exact current behavior for an explicit product decision on how recovery/stretch is presented without breaking the Darjah-specific campaign concept.
+
+---
+
+# 30. CIKGU DIMENSI — PRODUCT ROLE AND PROTECTED LEARNING CONCEPT
+
+Cikgu Dimensi is not decorative lore and is not a normal combat hero.
+
+Cikgu Dimensi is the product's **adaptive teacher/coach layer**.
+
+Current UI/product roles visible in the repository include:
+
+- “Cikgu Pilihkan” — chooses suitable practice according to current learner progress;
+- Learning Camp / `KEM LATIHAN`;
+- conceptual explanation before retrying;
+- visual/manipulative teaching;
+- stepped hints / scaffold;
+- focused practice support;
+- intervention when evidence suggests misconception, guessing or hint dependence.
+
+Mandatory files/references:
+
+- `index.html` — current Cikgu Dimensi entry points and Learning Camp UI;
+- `js/learning.js` — teaching flow and visual coach;
+- `js/engine/intervention.js` — evidence-driven intervention need and strategy selection;
+- `js/engine/adaptive.js` — adaptive routing / “Cikgu Pilihkan” context;
+- `js/guardian-focus.js` — focused practice and stepped hint behavior;
+- `js/cikgu-manipulatives-v3.19.1.js`;
+- `js/cikgu-mini-games-v1.0.0.js`;
+- `CIKGU-WAJAR-MANIPULATIVES-LOCK-v3.19.1.md`;
+- `COACH-MINI-GAMES-HANDOFF.md`;
+- any newer Cikgu/coach files active on the current branch.
+
+## 30.1 Learning sequence
+
+The existing Learning Camp uses the five-step learning language:
+
+```
+Faham
+→ Bina
+→ Sambung
+→ Cuba
+→ Guna
+```
+
+The intent is conceptual progression, not five cosmetic screens.
+
+The protected teaching principle is broadly:
+
+```
+show / make the relationship visible
+→ let the pupil act on a model
+→ connect model to representation/symbol
+→ check understanding
+→ return to independent application
+```
+
+## 30.2 Calm teaching zone
+
+Cikgu Dimensi teaching is deliberately calmer than combat.
+
+Inside the manipulative/teaching step, avoid:
+
+- combat shake;
+- damage;
+- HP pressure;
+- coins/confetti as the main teaching feedback;
+- mastery cinematics;
+- excessive VFX;
+- timer pressure unless separately approved.
+
+A successful manipulation by itself is **not mastery evidence**.
+
+Independent checkpoints remain responsible for evidence/mastery.
+
+## 30.3 Internal naming warning
+
+Some existing repository assets/docs/modules still use the older/internal label **`cikgu-wajar` / “Cikgu Wajar”**, while the pupil-facing UI calls the character **Cikgu Dimensi**.
+
+Do not blindly rename asset paths or modules during V2 work.
+
+Treat the shipped pupil-facing identity as **Cikgu Dimensi** unless an explicit rename project is approved.
+
+## 30.4 Role in the future RPG world
+
+Cikgu Dimensi should remain useful when the product becomes more game-like.
+
+Possible V2 presentation:
+
+- appears at a camp, academy, portal or safe learning space;
+- interrupts only when learning evidence justifies it;
+- explains boss mechanics when pedagogically useful;
+- guides the pupil back to a simpler representation;
+- recommends the next practice area.
+
+Do **not** reduce Cikgu Dimensi to an NPC who merely gives quests.
+
+The adaptive/teaching function is part of the product moat and must remain connected to evidence.
+
+---
+
+# 31. EXISTING BATTLE / STORY SYSTEM — REUSE BEFORE REBUILD
+
+Before creating a new animation or story framework, inspect the systems that already exist.
+
+Mandatory starting points:
+
+- `js/battle.js`;
+- `js/combat-motion-v1.js`;
+- `js/action-variety-v3.30.0.js`;
+- `js/battle-story-v3.60.0.js`;
+- `js/heroes.js`;
+- hero-specific animation/finisher modules;
+- active combat CSS;
+- current production hero/enemy/pet assets.
+
+At the time of this update, `js/battle-story-v3.60.0.js` already adds narrative combat beats such as attack, defend, counter, boss guard/break and finisher cues **without replacing question selection or mastery**.
+
+V2 agents should audit whether an existing subsystem can be generalized or replaced cleanly rather than stacking a second competing story/animation director on top of it.
+
+---
+
+# 32. MANDATORY READ ORDER FOR A V2 AGENT
+
+For animation-first work, an implementation agent should start with:
+
+1. `docs/GAME-DESIGN-V2.md`;
+2. current `index.html` script/style wiring;
+3. `BUILD-*.md` notes for the current app version and latest combat changes;
+4. `js/battle.js`;
+5. `js/combat-motion-v1.js`;
+6. `js/action-variety-v3.30.0.js`;
+7. `js/battle-story-v3.60.0.js`;
+8. `js/heroes.js` and the requested hero-specific files/assets;
+9. `questions/index.js` only to understand the protected boundary;
+10. `js/engine/adaptive.js`, `js/engine/intervention.js`, and `js/learning.js` only to understand the protected learning boundary;
+11. relevant QA/audit files.
+
+For world/boss/mini-game work, additionally read:
+
+- the active Darjah question bank;
+- active KSSR curriculum graph/contracts;
+- Cikgu Dimensi teaching files;
+- relevant topic audit reports.
+
+The first output should state:
+
+- current branch/SHA;
+- current application version;
+- exact active files inspected;
+- protected systems that will not be changed;
+- any conflict between this V2 direction and current runtime behavior.
+
+
 # 28. SHORT START PROMPT FOR FUTURE AGENTS
 
 When a future agent already has repository access, the user should be able to say:
 
-> Read `docs/GAME-DESIGN-V2.md` as the design source of truth. Inspect the actual repository and canonical production assets before proposing changes. Do not redesign characters or alter question/KSSR/adaptive logic. Work only on the explicitly requested phase. Run and visually verify the real game before reporting completion.
+> Read `docs/GAME-DESIGN-V2.md` as the design source of truth, including Sections 29–32. Follow the mandatory repository read order and inspect the current `index.html` wiring before proposing changes. Do not redesign characters or alter question/KSSR/adaptive/Cikgu Dimensi logic. Work only on the explicitly requested phase. Run and visually verify the real game before reporting completion.
 
 For the immediate animation proof of concept:
 
