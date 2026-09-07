@@ -24,7 +24,7 @@ GEN['8.1.1']=function(id,s){
  }
  if(mode==='read_quantity'){
   const x=choose(set);
-  return mark(q(pie(set)+'Jika jumlah data yang ditunjukkan mengikut nilai pada carta, berapakah kuantiti bagi '+x.label+'?',x.value,[Nq(x.angle,'pie'),Nq(x.value+10,'pie'),Nq(Math.max(1,x.value-5),'pie')],'Baca nilai kategori yang sepadan.','Tahun 6 · Kuantiti Carta Pai'),id,'8.1.1',mode,'visual',stage(s)===1?'concept':'application',s,['pie_quantity']);
+  return mark(q(pie(set,{showValues:true})+'Berapakah kuantiti bagi '+x.label+'?',x.value,[Nq(x.angle,'pie'),Nq(x.value+10,'pie'),Nq(Math.max(1,x.value-5),'pie')],'Baca nilai kategori yang sepadan.','Tahun 6 · Kuantiti Carta Pai'),id,'8.1.1',mode,'visual',stage(s)===1?'concept':'application',s,['pie_quantity']);
  }
  if(mode==='missing_angle'){
   const known=choose([[120,90,60],[180,72,54],[135,81,54]]),ans=360-known.reduce((a,b)=>a+b,0);
@@ -40,7 +40,10 @@ GEN['8.1.1']=function(id,s){
   return mark(q(pie([{label:'A',angle:180,value:40},{label:'B',angle:90,value:20},{label:'C',angle:45,value:10},{label:'D',angle:45,value:10}])+'Jika kategori C dan D digabung, sudut sektor baharu?', '90°',[Nq('45°','pie_angle'),Nq('180°','pie_angle'),Nq('20°','pie_angle')],'45° + 45° = 90°.','Tahun 6 · Menggabung Kategori Carta Pai'),id,'8.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['pie_angle','combine']);
  }
  if(mode==='compare'){
-  return mark(q(pie(set)+'Kategori terbesar berapa kali ganda kategori terkecil berdasarkan sudut?',Math.round(Math.max(...set.map(x=>x.angle))/Math.min(...set.map(x=>x.angle))),[Nq(2,'pie'),Nq(3,'pie'),Nq(5,'pie')],'Banding sudut terbesar dengan sudut terkecil.','Tahun 6 · Membanding Sektor'),id,'8.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['pie_angle','compare']);
+  const ratio=Math.max(...set.map(x=>x.angle))/Math.min(...set.map(x=>x.angle));
+  const ans=Number.isInteger(ratio)?ratio:Number(ratio.toFixed(2));
+  const wrong=[ans+1,Math.max(1,ans-1),Number((ans*2).toFixed(2))].filter((v,i,a)=>v!==ans&&a.indexOf(v)===i).slice(0,3).map(v=>Nq(v,'pie'));
+  return mark(q(pie(set)+'Kategori terbesar berapa kali ganda kategori terkecil berdasarkan sudut?',ans,wrong,'Bahagi sudut terbesar dengan sudut terkecil.','Tahun 6 · Membanding Sektor'),id,'8.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['pie_angle','compare']);
  }
  if(mode==='validate_chart'){
   return mark(q('Sebuah carta pai mempunyai sektor 180°, 90°, 60° dan 45°. Adakah carta itu lengkap?','tidak, jumlahnya 375°',[Nq('ya, jumlahnya 360°','pie_angle'),Nq('tidak, jumlahnya 315°','pie_angle'),Nq('tidak boleh ditentukan','pie_angle')],'Carta pai lengkap mesti berjumlah 360°.','Tahun 6 · Semak Carta Pai'),id,'8.1.1',mode,'verbal','reasoning',s,['pie_angle','error_analysis']);
