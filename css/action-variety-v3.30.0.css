@@ -12,15 +12,17 @@ body.hero-bunga #game #hero.pa-attack-sweep .paAttackFx{background:radial-gradie
 body.hero-bunga #game #hero.pa-attack-spiral .paAttackFx{width:68px;height:68px;border:5px dotted #ffe38c;border-radius:50%;box-shadow:inset 0 0 0 5px #6df1a844,0 0 15px #ff9bdb;animation:paSpiralFlora .64s ease-out both}
 body.hero-bunga #game #hero.pa-attack-thorn .paAttackFx{width:86px;height:22px;background:linear-gradient(90deg,#4dd98a,#eaff9a 76%,transparent);clip-path:polygon(0 38%,78% 38%,78% 0,100% 50%,78% 100%,78% 62%,0 62%);filter:drop-shadow(0 0 7px #57ef8f);animation:paThornFlora .6s ease-out both}
 #game #hero.pa-attack-arc.attacking .sprite{animation-name:paHeroArc!important}
-/* Gelombang Operasi holds at the enemy for the whole phase-contact window
-   (320-620ms), so it needs longer than the shared .52s lunge. It must still
-   finish before battle.js drops .attacking at heroLead+720ms, or the transform
-   snaps home mid-flight. */
+/* Gelombang Operasi's ice is baked into the strike artwork, which is shown for
+   the whole phase-contact window (320-620ms). The body has to stay planted at
+   the enemy for all of it, plus slack: those phase classes are setTimeout-driven
+   and drift later under load, while this animation runs on its own clock. Hence
+   700ms rather than the shared .52s lunge — and it must still finish before
+   battle.js drops .attacking at heroLead+720ms, or the transform snaps home. */
 #game #hero.pa-attack-pulse.attacking .sprite{animation-name:paHeroPulse!important;animation-duration:700ms!important}
 body.hero-bunga #game #hero.pa-attack-spiral.attacking .sprite{animation-name:paHeroSpiral!important}body.hero-bunga #game #hero.pa-attack-thorn.attacking .sprite{animation-name:paHeroThorn!important}
 @keyframes paDashTrail{0%,22%{opacity:0;transform:translate(-18px,7px) scale(.35)}42%{opacity:1}100%{opacity:0;transform:translate(72px,-5px) scale(1.2)}}@keyframes paArcTrail{0%,20%{opacity:0;transform:translate(-12px,18px) rotate(-80deg) scale(.4)}44%{opacity:1}100%{opacity:0;transform:translate(52px,-28px) rotate(65deg) scale(1.15)}}@keyframes paPulseTrail{0%,24%{opacity:0;transform:translate(-8px,4px) scale(.15)}48%{opacity:1}100%{opacity:0;transform:translate(62px,1px) scale(1.5)}}
 @keyframes paSweepFlora{0%,20%{opacity:0;transform:translate(-12px,12px) rotate(-25deg) scale(.3)}45%{opacity:1}100%{opacity:0;transform:translate(67px,-18px) rotate(55deg) scale(1.25)}}@keyframes paSpiralFlora{0%,20%{opacity:0;transform:translate(-5px,8px) rotate(0) scale(.2)}48%{opacity:1}100%{opacity:0;transform:translate(58px,-9px) rotate(250deg) scale(1.2)}}@keyframes paThornFlora{0%,25%{opacity:0;transform:translate(-18px,5px) scaleX(.15)}48%{opacity:1}100%{opacity:0;transform:translate(72px,-3px) scaleX(1.18)}}
-@keyframes paHeroArc{0%{transform:translate(0)}28%{transform:translate(-4px,5px)}58%{transform:translate(48px,-12px) rotate(-3deg)}100%{transform:translate(0)}}@keyframes paHeroPulse{0%{transform:translate(0)}12%{transform:translateX(-9px) scale(.97)}42%{transform:translateX(var(--pa-pulse-dash-x,34px)) scale(1.04)}88%{transform:translateX(var(--pa-pulse-dash-x,34px)) scale(1.02)}100%{transform:translate(0)}}@keyframes paHeroSpiral{0%{transform:translate(0)}30%{transform:translate(-4px,-3px) rotate(-2deg)}60%{transform:translate(38px,-8px) rotate(4deg)}100%{transform:translate(0)}}@keyframes paHeroThorn{0%{transform:translate(0)}32%{transform:translate(-8px,1px)}58%{transform:translate(50px,0) scaleX(1.04)}100%{transform:translate(0)}}
+@keyframes paHeroArc{0%{transform:translate(0)}28%{transform:translate(-4px,5px)}58%{transform:translate(48px,-12px) rotate(-3deg)}100%{transform:translate(0)}}@keyframes paHeroPulse{0%{transform:translate(0)}12%{transform:translateX(-9px) scale(.97)}42%{transform:translateX(var(--pa-pulse-dash-x,34px)) scale(1.04)}93%{transform:translateX(var(--pa-pulse-dash-x,34px)) scale(1.02)}100%{transform:translate(0)}}@keyframes paHeroSpiral{0%{transform:translate(0)}30%{transform:translate(-4px,-3px) rotate(-2deg)}60%{transform:translate(38px,-8px) rotate(4deg)}100%{transform:translate(0)}}@keyframes paHeroThorn{0%{transform:translate(0)}32%{transform:translate(-8px,1px)}58%{transform:translate(50px,0) scaleX(1.04)}100%{transform:translate(0)}}
 @media(prefers-reduced-motion:reduce){#game #hero.pa-attack-variant .paAttackFx{animation-duration:.3s!important}#game #hero.pa-attack-variant.attacking .sprite{animation:none!important}}
 
 /* Three distinct readable phases: stance -> movement -> actual strike. */

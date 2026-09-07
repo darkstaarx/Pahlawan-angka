@@ -1,8 +1,8 @@
-# Pahlawan Angka v3.60.2 — Gelombang Operasi ice lands on contact
+# Pahlawan Angka v3.60.6 — Gelombang Operasi ice lands on contact
 
 ## Scope
 
-One timing fix to Wira's `pulse` variant (Gelombang Operasi), plus the release cache-busting it needs. No question, curriculum, adaptive-selection, scoring, mastery, reward, progression, cloud or artwork behavior is changed.
+One timing fix to Wira's `pulse` variant (Gelombang Operasi), plus the release cache-busting it needs. It follows the v3.60.2–v3.60.5 Year 6 curriculum releases and changes nothing they touched. No question, curriculum, adaptive-selection, scoring, mastery, reward, progression, cloud or artwork behavior is changed.
 
 ## The bug
 
@@ -30,7 +30,7 @@ The ice window is 320–620ms but the body was only at the enemy 234–364ms —
 `css/action-variety-v3.30.0.css` only:
 
 - Give the pulse variant its own `animation-duration:700ms!important` alongside the existing `animation-name` override. It must stay under 720ms, because `js/battle.js` drops `.attacking` and the variant class at `heroLead+720` — past that the transform would snap home mid-flight.
-- Re-map `paHeroPulse` onto that 700ms base: wind-back at 12% (84ms), arrive at 42% (294ms, just before the ice turns on at 320ms), hold to 88% (616ms, just past ice-off at 620ms), home at 100%.
+- Re-map `paHeroPulse` onto that 700ms base: wind-back at 12% (84ms), arrive at 42% (294ms, just before the ice turns on at 320ms), hold to 93% (651ms), home at 100%. The hold runs past the nominal 620ms ice-off on purpose: the phase classes are `setTimeout`-driven and drift later under load, while the animation keeps its own clock — without that slack the ice reappears during the return on a heavy page.
 
 The body is now planted beside the enemy for the entire time the ice is on screen. The other three variants (`original`, `dash`, `arc`) are untouched and still run the shared 520ms lunge.
 
@@ -39,7 +39,7 @@ The body is now planted beside the enemy for the entire time the ice is on scree
 The v3.60.1 check missed this because it measured the body transform and forced `phase-contact` **separately** — never on one real timeline. This release's check samples both together while driving the real `triggerImpact()`, with a pet equipped so the DOM variant path runs:
 
 - Animation resolves to `paHeroPulse` at `0.7s`, measured gap 106px.
-- Across 121 samples where the ice frame is at opacity 1, translateX is **103–106px** — 100% at full extension, none anywhere near home.
+- Across two runs (166 and 136 ice-visible samples), translateX is **106px on every one** — 100% at full extension, none anywhere near home.
 - By the last sample while `.attacking` is still set, translateX is back to 0 — no snap.
 - Variant duration check: `original`/`dash` → `lungeRight2` 0.52s, `arc` → `paHeroArc` 0.52s, `pulse` → `paHeroPulse` 0.7s.
 - No console or page errors.
