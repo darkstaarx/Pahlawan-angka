@@ -185,7 +185,7 @@ body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
   animation:sidma-finisher-sigma 510ms cubic-bezier(.2,.72,.24,1) both;
 }
 #game #battleArena .sidma-finisher-fx.sidma-finisher-impact-end{
-  animation:sidma-finisher-impact-end 220ms ease-out both;
+  animation:sidma-finisher-impact-end 420ms cubic-bezier(.12,.8,.2,1) both;
 }
 @keyframes sidma-finisher-sigma{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}
@@ -195,9 +195,38 @@ body.hero-sidma #game #hero.attacking:not(.charging-finisher) .sprite{
   100%{opacity:1;transform:translate(-50%,-50%) scale(.48);filter:brightness(1.9) drop-shadow(0 0 14px #fff) drop-shadow(0 0 26px #d91f28)}
 }
 @keyframes sidma-finisher-impact-end{
-  0%{opacity:1;transform:translate(-50%,-50%) scale(.72)}
-  58%{opacity:1;transform:translate(-50%,-50%) scale(1.02)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(1.12)}
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.5);filter:brightness(2.8) drop-shadow(0 0 18px #fff) drop-shadow(0 0 42px #f22)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1.18);filter:brightness(3.2) drop-shadow(0 0 28px #fff) drop-shadow(0 0 68px #e21b2d)}
+  52%{opacity:1;transform:translate(-50%,-50%) scale(1.55);filter:brightness(1.6) drop-shadow(0 0 18px #fff) drop-shadow(0 0 54px #f0a52b)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.9);filter:brightness(1) drop-shadow(0 0 4px #fff)}
+}
+
+/* Heavy arena-sized release: concentric shockwave, hot core and radial rays. */
+#game #battleArena .sidma-finisher-blast{
+  position:absolute;left:50%;top:50%;width:var(--sidma-blast-size,min(70vw,320px));
+  aspect-ratio:1;z-index:14;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.08);
+  border-radius:50%;
+  background:
+    radial-gradient(circle,rgba(255,255,255,.98) 0 5%,rgba(255,224,120,.95) 9%,rgba(235,31,39,.84) 20%,rgba(145,10,22,.52) 34%,transparent 58%),
+    repeating-conic-gradient(from 0deg,rgba(255,255,255,.9) 0 2deg,transparent 2deg 14deg);
+  mix-blend-mode:screen;filter:blur(.2px) drop-shadow(0 0 18px #fff) drop-shadow(0 0 46px #e31d2f);
+}
+#game #battleArena .sidma-finisher-blast.charge{
+  animation:sidma-blast-charge 510ms ease-out both;
+}
+#game #battleArena .sidma-finisher-blast.explode{
+  animation:sidma-blast-explode 620ms cubic-bezier(.08,.72,.18,1) both;
+}
+@keyframes sidma-blast-charge{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.08) rotate(-18deg)}
+  55%{opacity:.6;transform:translate(-50%,-50%) scale(.7) rotate(8deg)}
+  100%{opacity:.85;transform:translate(-50%,-50%) scale(.55) rotate(18deg)}
+}
+@keyframes sidma-blast-explode{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.3) rotate(18deg);filter:brightness(2.8) drop-shadow(0 0 28px #fff)}
+  16%{opacity:1;transform:translate(-50%,-50%) scale(1.05) rotate(5deg)}
+  48%{opacity:.9;transform:translate(-50%,-50%) scale(1.55) rotate(-8deg)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(2.2) rotate(-18deg)}
 }
 
 /* Extend the existing blackout language with Sidma's red/white/gold charge. */

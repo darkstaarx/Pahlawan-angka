@@ -187,6 +187,13 @@
     resetSidmaVisuals();resetSidmaFinisher();
     const arena=document.getElementById('battleArena'),enemy=document.getElementById('enemy'),fx=ensureFinisherFx(arena);
     if(!arena||!enemy||!fx)return;
+    let blast=arena.querySelector('.sidma-finisher-blast');
+    if(!blast){
+      blast=document.createElement('div');
+      blast.className='sidma-finisher-blast';
+      blast.setAttribute('aria-hidden','true');
+      arena.appendChild(blast);
+    }
     const arenaBox=arena.getBoundingClientRect(),enemyBox=enemy.getBoundingClientRect();
     const enemyVisual=enemy.querySelector('.enemySpriteWrap')||enemy.querySelector('#enemySprite')||enemy;
     const enemyVisualBox=enemyVisual.getBoundingClientRect();
@@ -196,21 +203,24 @@
       fx.style.left=(body?body.x:enemyBox.left-arenaBox.left+enemyBox.width/2)+'px';
       fx.style.top=(body?body.y-body.h*.5:enemyVisualBox.top-arenaBox.top+enemyVisualBox.height*.5)+'px';
       fx.style.setProperty('--sidma-finisher-size',Math.min(arena.getBoundingClientRect().width*.42,(body?.h||enemyVisualBox.height)*1.45)+'px');
+      blast.style.left=fx.style.left;blast.style.top=fx.style.top;
+      blast.style.setProperty('--sidma-blast-size',Math.min(arena.getBoundingClientRect().width*.7,(body?.h||enemyVisualBox.height)*2.4)+'px');
     };
     anchorFx();
     fx.src=(h.fx&&h.fx.impact)||'';
     if(typeof playSidmaSfx==='function')playSidmaSfx('finisher-charge');
     // Release happens inside blackout; the arena Sigma then owns one readable
     // form -> expand -> compress -> impact sequence.
-    afterFinisher(920,()=>{anchorFx();if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
+    afterFinisher(920,()=>{anchorFx();if(typeof playSidmaSfx==='function')playSidmaSfx('sigma-form');void blast.offsetWidth;blast.className='sidma-finisher-blast charge';void fx.offsetWidth;fx.classList.add('sidma-finisher-sigma-active')});
     afterFinisher(1290,()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('compress')});
     afterFinisher(1430,()=>{
       anchorFx();
       if(typeof playSidmaSfx==='function')playSidmaSfx('explode');
       fx.src=(h.fx&&h.fx.impactEnd)||'';
       fx.classList.remove('sidma-finisher-sigma-active');void fx.offsetWidth;fx.classList.add('sidma-finisher-impact-end');
+      blast.className='sidma-finisher-blast explode';
     });
-    afterFinisher(1650,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src')});
+    afterFinisher(1850,()=>{fx.classList.remove('sidma-finisher-impact-end');fx.removeAttribute('src');blast.className='sidma-finisher-blast'});
   }
 
   const originalPrepare=window.prepareHeroAttackVariant;
