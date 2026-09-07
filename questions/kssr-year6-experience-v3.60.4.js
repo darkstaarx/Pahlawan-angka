@@ -10,6 +10,8 @@ const H=window.PAY6KSSRRepair?.helpers||{},VH=window.PAKSSRDepth?.visualHelpers|
 const choose=a=>pick(a),rand=(a,b)=>R(a,b),Nq=(v,t)=>N(v,t);
 const tidy=(v,d=2)=>typeof tidyNumber==='function'?tidyNumber(v,d):Number(Number(v).toFixed(d));
 const money=v=>typeof moneyFmtUpper==='function'?moneyFmtUpper(Number(tidy(v,2))):'RM'+Number(v).toFixed(2);
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t}return a||1};
+const fracText=(n,d)=>{const g=gcd(n,d);n/=g;d/=g;if(d===1)return String(n);if(n>d){const w=Math.floor(n/d),r=n%d;return r?w+' '+r+'/'+d:String(w)}return n+'/'+d};
 const table=(h,r)=>VH.miniTable?VH.miniTable(h,r):'<table>'+r.map(x=>'<tr>'+x.map(y=>'<td>'+y+'</td>').join('')+'</tr>').join('')+'</table>';
 const coord=(pts,scale)=>VH.coordinateMap?VH.coordinateMap(pts,scale):table(['Titik','x','y'],pts.map(p=>[p.label,p.x,p.y]));
 const protractor=d=>H.protractorSvg?H.protractorSvg(d):'<div class="kssrDiagram">Sudut '+d+'°</div>';
@@ -117,8 +119,8 @@ HIGH['D6.FRAC']=function(id,s,shift){
   const mode=rotate(id,['prior','frac_recipe_scale','frac_reverse','frac_compare','frac_error']);
   if(mode==='prior')return usePrior(prior(id,s,shift));
   if(mode==='frac_recipe_scale'){
-    const each=choose([[1,4],[1,2],[3,4]]),n=choose([4,6,8]),num=each[0]*n,den=each[1];
-    return mark(Q('Setiap hidangan menggunakan '+each[0]+'/'+each[1]+' L. Untuk '+n+' hidangan, jumlah bahan?',num+'/'+den+' L',[Nq(each[0]+'/'+(each[1]*n)+' L','fraction'),Nq(n+'/'+each[1]+' L','fraction'),Nq(String(n)+' L','fraction')],'Darab pecahan bagi satu hidangan dengan bilangan hidangan.','Tahun 6 · Pecahan dalam Resipi',true,true),id,'2.1.1/2.5.1','frac_recipe_scale','story','reasoning',s,['fraction','scale']);
+    const each=choose([[1,4],[1,2],[3,4]]),n=choose([4,6,8]),num=each[0]*n,den=each[1],ans=fracText(num,den);
+    return mark(Q('Setiap hidangan menggunakan '+each[0]+'/'+each[1]+' L. Untuk '+n+' hidangan, jumlah bahan?',ans+' L',[Nq(each[0]+'/'+(each[1]*n)+' L','fraction'),Nq(n+'/'+each[1]+' L','fraction'),Nq(String(n)+' L','fraction')],'Darab pecahan bagi satu hidangan dengan bilangan hidangan.','Tahun 6 · Pecahan dalam Resipi',true,true),id,'2.1.1/2.5.1','frac_recipe_scale','story','reasoning',s,['fraction','scale']);
   }
   if(mode==='frac_reverse'){
     const fv=choose([[3,4],[2,3]]),part=choose([6,8,12]),total=part*fv[1]/fv[0];
@@ -321,9 +323,10 @@ CORE['D6.PIE']=function(id,s,shift){
 };
 
 CORE['D6.PROB']=function(id,s,shift){
-  const mode=rotate(id,['prior','prob_compare_core','prob_complement_core']);
+  const mode=rotate(id,['prior','prob_compare_core','prob_complement_core','prob_order_core']);
   if(mode==='prior')return usePrior(prior(id,s,shift));
   if(mode==='prob_compare_core')return mark(Q(table(['Beg','Merah','Biru'],[['A',6,4],['B',3,7]])+'Beg mana lebih berkemungkinan menghasilkan guli merah?','Beg A',[Nq('Beg B','chance_reason'),Nq('sama kemungkinan','chance_reason'),Nq('mustahil untuk kedua-duanya','chance_reason')],'Banding bahagian guli merah dalam setiap beg.','Tahun 6 · Banding Kebolehjadian',true,true),id,'8.2.2','prob_compare_core','table','application',s,['chance_reason']);
+  if(mode==='prob_order_core')return mark(Q('Beg A: 2 merah, 8 biru. Beg B: 5 merah, 5 biru. Beg C: 8 merah, 2 biru. Susunan kebolehjadian merah daripada paling rendah ke paling tinggi?','A, B, C',[Nq('C, B, A','chance_reason'),Nq('B, A, C','chance_reason'),Nq('A, C, B','chance_reason')],'Banding bahagian merah bagi setiap beg.','Tahun 6 · Susunan Kebolehjadian',true,true),id,'8.2.2','prob_order_core','verbal','application',s,['chance_reason','order']);
   return mark(Q(bag(8,2)+'Satu guli dipilih. Peristiwa manakah lebih berkemungkinan?','memilih guli merah',[Nq('memilih guli biru','chance_reason'),Nq('kedua-duanya sama kemungkinan','chance_reason'),Nq('kedua-duanya mustahil','chance_reason')],'Merah lebih banyak daripada biru, jadi lebih berkemungkinan dipilih.','Tahun 6 · Membanding Peristiwa',true,true),id,'8.2.2','prob_complement_core','visual','application',s,['chance_category','chance_reason']);
 };
 
