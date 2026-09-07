@@ -55,7 +55,12 @@ function initSkill(id){
 function initAll(){GRAPH.skills.forEach(x=>initSkill(x.id));window.PAD3Topic7Evidence?.ensure?.(db)}
 function chooseHero(id){selectedHero=id;document.querySelectorAll('.heroPick').forEach(x=>{const active=x.id==='pick-'+id;x.classList.toggle('active',active);x.setAttribute('aria-pressed',active?'true':'false')})}
 function applyHeroToBattle(){
- let h=HEROES[(db&&db.hero)||selectedHero||"wira"];
+ const heroId=(db&&db.hero)||selectedHero||"wira";
+ // Demo and direct mission entry do not pass through renderHub(). Apply the
+ // hero's sizing rules here as well, before measuring the battle artwork.
+ document.body.classList.toggle('hero-bunga',heroId==='bunga');
+ document.body.classList.toggle('hero-sidma',heroId==='sidma');
+ let h=HEROES[heroId];
  document.getElementById('heroName').textContent=h.name;
  document.getElementById('heroIdle').src=h.idle;
  document.getElementById('heroAnticipation').src=h.anticipation;

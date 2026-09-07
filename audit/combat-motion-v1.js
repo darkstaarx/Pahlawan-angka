@@ -27,7 +27,8 @@ c.cancelBattlePresentationTimers();c.sess.hp=16;c.sess.ehp=6;c.battle();stale();
 assert.equal(h.ids.heroHp.style.width,'80%');assert.equal(h.ids.enemyHp.style.width,'50%');assert(h.resets()>0);assert.equal(c.PABattlePresentation.pending(),0);
 const release=fs.readFileSync('js/version.js','utf8').match(/PA_APP_VERSION='([^']+)'/)[1];
 const index=fs.readFileSync('index.html','utf8'),sw=fs.readFileSync('sw.js','utf8');
-for(const file of ['js/combat-motion-v1.js','css/combat-motion-v1.css','js/battle.js','js/version.js','js/pwa.js'])assert(index.includes(`${file}?v=${release}`),file+' cache-bust');
+for(const file of ['js/combat-motion-v1.js','css/combat-motion-v1.css','js/battle.js'])assert(index.includes(`${file}?v=3.57.5`),file+' motion cache-bust');
+for(const file of ['js/version.js','js/pwa.js','css/hero-sidma-v1.0.0.css'])assert(index.includes(`${file}?v=${release}`),file+' release cache-bust');
 for(const file of ['js/combat-motion-v1.js','css/combat-motion-v1.css'])assert(sw.includes(file));
 console.log('PASS: hero/enemy impact HP timing, model integrity, stale-journey cancellation, release wiring');
 

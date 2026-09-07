@@ -3,6 +3,26 @@
 
 /* Body frame container: one consistent sprite box, matching the shared
    hero height variable so Sidma never jumps scale relative to Wira/Bunga. */
+/* Sidma's 720px source contains only 590px of painted character, ending at
+   y=670. Match Wira's visible height and put the painted soles on the floor;
+   the canvas renderer measures this corrected idle frame for every pose. */
+body.hero-sidma #game #hero #heroIdle,
+body.hero-sidma #game #hero #heroAnticipation,
+body.hero-sidma #game #hero #heroAttack,
+body.hero-sidma #game #hero #heroFollowThrough,
+body.hero-sidma #game #hero #sidmaFrames .sidma-frame{
+  height:calc(var(--pa-hero-h) * 1.220339)!important;
+  bottom:calc(var(--pa-hero-h) * -.084746)!important;
+  width:auto!important;max-width:none!important;max-height:none!important;
+  left:50%!important;top:auto!important;
+  transform:translateX(-50%)!important;
+}
+/* The focus artwork is tightly cropped; only the wide release frame needs
+   the same transparent-canvas compensation as the regular battle poses. */
+.finisherCinematic.release[data-hero="sidma"] .cinematicHero{
+  height:calc(var(--cinematic-hero-h,160px) * 1.220339)!important;
+  bottom:calc(var(--hero-bottom,8px) - var(--cinematic-hero-h,160px) * .084746)!important;
+}
 #game #hero .sidma-frames{
   position:absolute;
   left:0;right:0;bottom:0;top:0;
