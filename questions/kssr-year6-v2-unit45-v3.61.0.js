@@ -5,6 +5,7 @@ const RT=window.PAY6V2Runtime;if(!RT)return;
 const {GEN,Nq,choose,q,mark,chooseMode,bandModes,stage,fmtTime,cities,table,tidy}=RT;
 
 function utcLabel(mins){const sign=mins>=0?'+':'−',a=Math.abs(mins),h=Math.floor(a/60),m=a%60;return 'UTC'+sign+h+(m?':'+String(m).padStart(2,'0'):'')}
+function durationLabel(mins){const a=Math.abs(mins),h=Math.floor(a/60),m=a%60;return (h?h+' jam':'')+(h&&m?' ':'')+(m?m+' minit':'')||'0 minit'}
 function cityPair(){const a=choose(cities),b=choose(cities.filter(x=>x.name!==a.name));return [a,b]}
 
 GEN['4.1.1']=function(id,s){
@@ -16,12 +17,12 @@ GEN['4.1.1']=function(id,s){
  }
  if(mode==='read_offset'){
   const c=choose(cities);
-  return mark(q('Jika '+c.name+' berada pada <b>'+utcLabel(c.offset)+'</b>, apakah maksudnya?','waktunya berbeza '+Math.abs(c.offset/60)+' jam daripada UTC mengikut arah tanda',[Nq('semua bandar mempunyai waktu sama','timezone'),Nq('UTC ialah nama bandar tersebut','timezone'),Nq('offset hanya menunjukkan jarak geografi','timezone')],'Offset UTC menerangkan beza waktu daripada UTC.','Tahun 6 · Membaca Zon Masa'),id,'4.1.1',mode,'verbal','concept',s,['timezone']);
+  return mark(q('Jika '+c.name+' berada pada <b>'+utcLabel(c.offset)+'</b>, apakah maksudnya?','waktunya berbeza '+durationLabel(c.offset)+' daripada UTC mengikut arah tanda',[Nq('semua bandar mempunyai waktu sama','timezone'),Nq('UTC ialah nama bandar tersebut','timezone'),Nq('offset hanya menunjukkan jarak geografi','timezone')],'Offset UTC menerangkan beza waktu daripada UTC.','Tahun 6 · Membaca Zon Masa'),id,'4.1.1',mode,'verbal','concept',s,['timezone']);
  }
  if(mode==='same_zone')return mark(q('Dua bandar masing-masing berada pada UTC+8. Apabila bandar pertama menunjukkan 10:30, bandar kedua menunjukkan?','10:30',[Nq('09:30','timezone'),Nq('11:30','timezone'),Nq('18:30','timezone')],'Offset yang sama bermaksud waktu serentak sama.','Tahun 6 · Zon Masa Sama'),id,'4.1.1',mode,'verbal',stage(s)===3?'reasoning':'application',s,['timezone']);
  if(mode==='compare_offsets'){
   const ans=Math.abs(a.offset-b.offset);
-  return mark(q(a.name+' '+utcLabel(a.offset)+' dan '+b.name+' '+utcLabel(b.offset)+'. Beza offset ialah?',(ans/60)+' jam',[Nq((ans/60+1)+' jam','timezone'),Nq(Math.max(0,ans/60-1)+' jam','timezone'),Nq((Math.abs(a.offset+b.offset)/60)+' jam','timezone')],'Cari beza mutlak dua offset UTC.','Tahun 6 · Banding Zon Masa'),id,'4.1.1',mode,'table',stage(s)===3?'reasoning':'application',s,['timezone','compare']);
+  return mark(q(a.name+' '+utcLabel(a.offset)+' dan '+b.name+' '+utcLabel(b.offset)+'. Beza offset ialah?',durationLabel(ans),[Nq(durationLabel(ans+60),'timezone'),Nq(durationLabel(Math.max(0,ans-60)),'timezone'),Nq(durationLabel(Math.abs(a.offset+b.offset)),'timezone')],'Cari beza mutlak dua offset UTC.','Tahun 6 · Banding Zon Masa'),id,'4.1.1',mode,'table',stage(s)===3?'reasoning':'application',s,['timezone','compare']);
  }
  if(mode==='timezone_claim')return mark(q('Murid berkata UTC+9:30 sentiasa 30 minit di hadapan UTC+9. Penilaian?','betul',[Nq('salah, beza 9 jam 30 minit','timezone'),Nq('salah, kedua-duanya sama','timezone'),Nq('tidak boleh dibanding','timezone')],'Banding offset: +9:30 − +9:00 = 30 minit.','Tahun 6 · Menilai Zon Masa'),id,'4.1.1',mode,'verbal','reasoning',s,['timezone','error_analysis']);
  return mark(q('UTC+5:30 dan UTC+9:30 berbeza berapa jam?', '4 jam',[Nq('5 jam','timezone'),Nq('14 jam','timezone'),Nq('4 jam 30 minit','timezone')],'9 jam 30 minit − 5 jam 30 minit = 4 jam.','Tahun 6 · Beza Zon Separuh Jam'),id,'4.1.1',mode,'verbal','reasoning',s,['timezone','half_hour']);
@@ -34,8 +35,8 @@ GEN['4.1.2']=function(id,s){
   return mark(q('Apabila '+a.name+' ('+utcLabel(a.offset)+') menunjukkan '+fmtTime(start)+', waktu di '+b.name+' ('+utcLabel(b.offset)+') ialah?',fmtTime(target),[Nq(fmtTime(target+60),'time'),Nq(fmtTime(target-60),'time'),Nq(fmtTime(start),'time')],'Tambah beza offset destinasi − asal.','Tahun 6 · Menentukan Waktu Zon Masa'),id,'4.1.2',mode,'story',stage(s)===1?'procedure':'application',s,['timezone']);
  }
  if(mode==='difference'){
-  const a=choose(cities),b=choose(cities.filter(x=>x.name!==a.name)),d=Math.abs(a.offset-b.offset),ans=(Math.floor(d/60)?Math.floor(d/60)+' jam ':'')+(d%60?d%60+' minit':'');
-  return mark(q('Berapakah beza waktu antara '+a.name+' ('+utcLabel(a.offset)+') dan '+b.name+' ('+utcLabel(b.offset)+')?',ans.trim(),[Nq((Math.floor(d/60)+1)+' jam','time'),Nq(Math.max(0,Math.floor(d/60)-1)+' jam','time'),Nq((d/60)+' minit','time')],'Cari beza mutlak offset UTC.','Tahun 6 · Perbezaan Waktu'),id,'4.1.2',mode,'verbal',stage(s)===1?'procedure':'application',s,['timezone','difference']);
+  const a=choose(cities),b=choose(cities.filter(x=>x.name!==a.name)),d=Math.abs(a.offset-b.offset),ans=durationLabel(d);
+  return mark(q('Berapakah beza waktu antara '+a.name+' ('+utcLabel(a.offset)+') dan '+b.name+' ('+utcLabel(b.offset)+')?',ans,[Nq((Math.floor(d/60)+1)+' jam','time'),Nq(Math.max(0,Math.floor(d/60)-1)+' jam','time'),Nq((d/60)+' minit','time')],'Cari beza mutlak offset UTC.','Tahun 6 · Perbezaan Waktu'),id,'4.1.2',mode,'verbal',stage(s)===1?'procedure':'application',s,['timezone','difference']);
  }
  if(mode==='half_hour')return mark(q('Kuala Lumpur UTC+8 menunjukkan 14:15. Waktu di New Delhi UTC+5:30 ialah?','11:45',[Nq('12:15','time'),Nq('11:15','time'),Nq('16:45','time')],'New Delhi 2 jam 30 minit di belakang Kuala Lumpur.','Tahun 6 · Zon Masa Separuh Jam'),id,'4.1.2',mode,'story',stage(s)===3?'reasoning':'application',s,['timezone','half_hour']);
  if(mode==='next_day')return mark(q('Kuala Lumpur UTC+8 menunjukkan 23:30. Waktu di Tokyo UTC+9 ialah?','00:30 hari berikutnya',[Nq('22:30 hari yang sama','time'),Nq('00:30 hari yang sama','time'),Nq('01:30 hari berikutnya','time')],'Tokyo 1 jam lebih awal dan melintasi tengah malam.','Tahun 6 · Pertukaran Hari'),id,'4.1.2',mode,'story',stage(s)===3?'reasoning':'application',s,['timezone','day_change']);
