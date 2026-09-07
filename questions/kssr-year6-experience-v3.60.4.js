@@ -46,7 +46,7 @@ function priorCore(id,s,shift){
 }
 const Z=[['Kuala Lumpur',8],['Tokyo',9],['Bangkok',7],['Dubai',4]];
 const fmt=(h,m)=>String((h%24+24)%24).padStart(2,'0')+':'+String(m).padStart(2,'0');
-const CORE={},HIGH={};
+const LOW={},CORE={},HIGH={};
 
 // Numeric domains -----------------------------------------------------------
 CORE['D6.DEC']=function(id,s,shift){
@@ -389,6 +389,42 @@ HIGH['D6.DATA_PROBLEM']=function(id,s,shift){
   return mark(Q(pie(sectors)+'Jika C dan D digabung menjadi satu kategori, sudut sektor baharu?','90°',[Nq('45°','pie_angle'),Nq('180°','pie_angle'),Nq('20°','operation')],'Gabungkan 45° + 45°.','Tahun 6 · Menggabung Kategori Data',true,true),id,'8.3.1','data_combine_high','visual','reasoning',s,['data_reason','combine']);
 };
 
+// Recovery breadth ----------------------------------------------------------
+LOW['D6.DEC']=function(id,s,shift){
+  const mode=rotate(id,['prior','dec_recovery_context']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  const a=choose([1.2,2.4,3.6]),b=choose([0.4,0.6,1.2]),ans=tidy(a/b,2);
+  return mark(Q(a+' L air dibahagi sama banyak ke dalam bekas '+b+' L. Berapa bekas?',ans,[Nq(tidy(a*b,2),'decimal'),Nq(tidy(a-b,2),'decimal'),Nq(ans+1,'decimal')],'Bahagi jumlah dengan kapasiti setiap bekas.','Tahun 6 · Perpuluhan Asas dalam Konteks',true,true),id,'2.2.2','dec_recovery_context','story','procedure',s,['decimal']);
+};
+LOW['D6.TIME']=function(id,s,shift){
+  const mode=rotate(id,['prior','time_recovery_ahead','time_recovery_same']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='time_recovery_ahead')return mark(Q('Tokyo UTC+9 dan Kuala Lumpur UTC+8. Bandar mana 1 jam lebih awal?','Tokyo',[Nq('Kuala Lumpur','timezone'),Nq('kedua-duanya sama','timezone'),Nq('Dubai','timezone')],'Bandar dengan nombor UTC lebih besar lebih awal.','Tahun 6 · Mengenal Zon Masa',true,true),id,'4.1.1','time_recovery_ahead','verbal','concept',s,['timezone']);
+  return mark(Q('Kuala Lumpur 10:00. Tokyo 1 jam lebih awal. Waktu Tokyo?','11:00',[Nq('09:00','time'),Nq('10:00','time'),Nq('12:00','time')],'Tambah 1 jam.','Tahun 6 · Zon Masa Asas',true,true),id,'4.1.2','time_recovery_same','story','procedure',s,['timezone']);
+};
+LOW['D6.SPACE_PROBLEM']=function(id,s,shift){
+  const mode=rotate(id,['prior','space_recovery_compass','space_recovery_radius']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  if(mode==='space_recovery_compass')return mark(Q('Bulatan berdiameter 10 cm hendak dilukis dengan jangka. Bukaan jangka?', '5 cm',[Nq('10 cm','circle_draw'),Nq('20 cm','circle_draw'),Nq('4 cm','circle_draw')],'Bukaan jangka ialah jejari, separuh diameter.','Tahun 6 · Masalah Bulatan Asas',true,true),id,'6.3.1','space_recovery_compass','story','application',s,['circle_draw']);
+  return mark(Q(circle('parts')+'Diameter taman 16 m. Jarak dari pusat ke tepi taman?', '8 m',[Nq('16 m','radius_diameter'),Nq('32 m','radius_diameter'),Nq('6 m','radius_diameter')],'Jarak pusat ke tepi ialah jejari.','Tahun 6 · Jejari dalam Masalah Harian',true,true),id,'6.3.1','space_recovery_radius','visual','application',s,['radius_diameter']);
+};
+LOW['D6.COORD']=function(id,s,shift){
+  const mode=rotate(id,['prior','coord_recovery_scale']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  return mark(Q('A dan B berjarak 3 petak pada grid. Jika 1 petak = 2 km, jarak sebenar?', '6 km',[Nq('3 km','scale'),Nq('5 km','scale'),Nq('8 km','scale')],'Darab bilangan petak dengan skala.','Tahun 6 · Skala Koordinat Asas',true,true),id,'7.1.1','coord_recovery_scale','verbal','application',s,['coord','scale']);
+};
+LOW['D6.PROB']=function(id,s,shift){
+  const mode=rotate(id,['prior','prob_recovery_everyday']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  return mark(Q('Apabila melambung syiling adil, mendapat kepala ialah peristiwa yang...', 'sama kemungkinan dengan mendapat ekor',[Nq('mustahil','chance_reason'),Nq('pasti','chance_reason'),Nq('lebih berkemungkinan daripada ekor','chance_reason')],'Syiling adil mempunyai dua hasil yang seimbang.','Tahun 6 · Kebolehjadian Asas',true,true),id,'8.2.1','prob_recovery_everyday','story','concept',s,['chance_category']);
+};
+LOW['D6.DATA_PROBLEM']=function(id,s,shift){
+  const mode=rotate(id,['prior','data_recovery_largest']);
+  if(mode==='prior')return usePrior(prior(id,s,shift));
+  const sectors=[{label:'A',angle:180,value:40},{label:'B',angle:90,value:20},{label:'C',angle:45,value:10},{label:'D',angle:45,value:10}];
+  return mark(Q(pie(sectors)+'Kategori mana mempunyai bahagian paling besar?', 'A',[Nq('B','data_reason'),Nq('C','data_reason'),Nq('D','data_reason')],'Sektor terbesar mewakili kuantiti terbesar.','Tahun 6 · Membaca Data Asas',true,true),id,'8.3.1','data_recovery_largest','visual','concept',s,['data_reason']);
+};
+
 /*__REGISTRATIONS__*/
 
 banks.d6=function(id,s,shift){
@@ -397,6 +433,7 @@ banks.d6=function(id,s,shift){
   if(st===3&&HIGH[id])q=HIGH[id](id,s,shift);
   else if(st===2&&CORE[id])q=CORE[id](id,s,shift);
   else if(st===2)q=priorCore(id,s,shift);
+  else if(st===1&&LOW[id])q=LOW[id](id,s,shift);
   else q=usePrior(prior(id,s,shift));
   if(q)q.kssrExperienceVersion=V;
   return q;
