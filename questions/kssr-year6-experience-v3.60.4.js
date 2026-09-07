@@ -21,7 +21,10 @@ const pie=(s,o={})=>H.pieSvg?H.pieSvg(s,o):table(['Kategori','Sudut'],s.map(x=>[
 const bag=(r,b,g=0)=>H.bagVisual?H.bagVisual(r,b,g):table(['Warna','Bilangan'],[['Merah',r],['Biru',b],['Hijau',g]]);
 const sessRef=()=>{try{return typeof sess!=='undefined'?sess:window.sess}catch(_){return window.sess}};
 function rotate(id,modes){
-  const recent=(sessRef()?.questionHistory||[]).filter(x=>x.skillId===id).slice(-14).map(x=>String(x.archetypeId||'').replace(/^y6x_/,'').replace(/^y6kssr_/,''));
+  const recent=(sessRef()?.questionHistory||[]).filter(x=>x.skillId===id).slice(-14).map(x=>{
+    const v=String(x.archetypeId||'').replace(/^y6x_/,'').replace(/^y6kssr_/,'');
+    return modes.includes(v)?v:(modes.includes('prior')?'prior':v);
+  });
   const last=recent.at(-1),counts=Object.fromEntries(modes.map(x=>[x,recent.filter(y=>y===x).length]));
   const pool=modes.filter(x=>x!==last);
   return (pool.length?pool:modes).sort((a,b)=>counts[a]-counts[b]||Math.random()-.5)[0];
