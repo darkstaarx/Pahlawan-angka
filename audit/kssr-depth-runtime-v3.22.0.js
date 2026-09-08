@@ -21,6 +21,7 @@ global.PAQuestionBanks={};
 for(const k of ['d1','d2t1','d2t2','d2t3','d2t4','d2t5','d2t6','d2t7','d2t8','d3','d4','d5','d6'])PAQuestionBanks[k]=(id,s,shift)=>Q(`fallback ${id}`,1,[N(2,'x'),N(3,'x'),N(4,'x')],'fallback','fallback',false,false);
 
 vm.runInThisContext(fs.readFileSync('questions/kssr-assessment-depth-v3.22.0.js','utf8'),{filename:'depth.js'});
+vm.runInThisContext(fs.readFileSync('js/game-question-interactions-v3.62.0.js','utf8'),{filename:'game-question-interactions.js'});
 
 const ids={
 d1:['D1.N20','D1.N100','D1.PV100','D1.CMP100','D1.ADD20','D1.SUB20','D1.ADD100','D1.SUB100','D1.FRAC','D1.MONEY','D1.TIME','D1.MEASURE','D1.SHAPE','D1.DATA'],
@@ -28,7 +29,7 @@ d3:['D3.N10000','D3.PV10000','D3.ADD10000','D3.SUB10000','D3.MUL','D3.DIV','D3.F
 d4:['D4.N100000','D4.PV100000','D4.ADD','D4.SUB','D4.MUL','D4.DIV','D4.FRAC','D4.DEC','D4.MONEY','D4.TIME','D4.MEASURE','D4.PERIM','D4.DATA'],
 d5:['D5.N1000000','D5.PV1000000','D5.MUL','D5.DIV','D5.FRAC','D5.DEC','D5.PERCENT','D5.MONEY','D5.TIME','D5.MEASURE','D5.AREA','D5.COORD','D5.DATA'],
 d6:['D6.NUMBERS','D6.OPS','D6.FRAC','D6.DEC','D6.PERCENT','D6.RATIO','D6.MONEY','D6.TIME','D6.MEASURE','D6.AREA','D6.COORD','D6.DATA']};
-let count=0,visual=0,reason=0,app=0,arch={};
+let count=0,visual=0,reason=0,app=0,arch={},interactionFamilies=new Set();
 for(const [bank,list] of Object.entries(ids)){
  for(const id of list){
   const seen=new Set();
@@ -39,6 +40,8 @@ for(const [bank,list] of Object.entries(ids)){
    assert(Array.isArray(q.wrong)&&q.wrong.length===3,`${id} wrong count`);
    const keys=[String(q.answer),...q.wrong.map(x=>String(x.v))];assert(new Set(keys).size===4,`${id} duplicate choices ${keys}`);
    assert(q.archetypeId?.startsWith('depth_')||String(q.prompt).startsWith('fallback'),`${id} no depth metadata`);
+   PAGameQuestionInteractions.prepare(q,{skillId:id,meta:{grade:Number(id[1])}});
+   assert.equal(q.responseType,'interactive',`${id} is not interactive`);assert(q.interaction?.type,`${id} interaction family missing`);interactionFamilies.add(q.interaction.type);
    if(q.archetypeId?.startsWith('depth_'))seen.add(q.archetypeId);
    if(/kssrDiagram|<bar>|<clock>|<shape>|<base10>|<money>/.test(q.prompt))visual++;
    if(q.demand==='reasoning')reason++;if(q.demand==='application')app++;
@@ -52,5 +55,6 @@ assert(PAKSSRDepth.contractStatus['D6.FRAC']==='depth-v3.22.0');
 assert.equal(Object.keys(PAKSSRDepth.contractStatus).length,102,'all current skill contracts must be accounted for');
 console.log(`PASS runtime samples=${count}, visual=${visual}, reasoning=${reason}, application=${app}`);
 console.log(`PASS explicit skills=${Object.values(ids).flat().length}; D2 contracts=${Object.keys(PAKSSRDepth.contractStatus).filter(x=>x.startsWith('D2.')).length}`);
+console.log(`PASS game-native interactions=${[...interactionFamilies].sort().join(',')}`);
 console.log('ARCHETYPES');
 for(const id of Object.values(ids).flat())console.log(id,arch[id]?.size||0,[...(arch[id]||[])].join(','));

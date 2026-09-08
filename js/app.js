@@ -145,7 +145,8 @@ function nextQ(){
  document.getElementById("question").innerHTML=q.prompt;document.getElementById("feedback").textContent="";
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.remove('needs-help','used');hintButton.disabled=false;hintButton.setAttribute('aria-label','Guna Petunjuk');}
  let e=document.getElementById("answers");e.innerHTML="";
- shuffle([{v:q.answer,tag:"correct",label:q.answer},...q.wrong]).forEach(o=>{let b=document.createElement("button");b.className="ans";b.textContent=o.label??o.v;b.dataset.v=String(o.v);b.dataset.questionToken=String(q.token);b.onclick=()=>respond(o,b,q);e.appendChild(b)})
+ const gameRendered=window.PAGameQuestionInteractions?.render?.(q,e,{respond,shuffle});
+ if(!gameRendered)shuffle([{v:q.answer,tag:"correct",label:q.answer},...q.wrong]).forEach(o=>{let b=document.createElement("button");b.className="ans";b.textContent=o.label??o.v;b.dataset.v=String(o.v);b.dataset.questionToken=String(q.token);b.onclick=()=>respond(o,b,q);e.appendChild(b)})
 }
 function log(t){db.logs.unshift({t:Date.now(),text:t});db.logs=db.logs.slice(0,180)}
 function setupBattleHud(){
