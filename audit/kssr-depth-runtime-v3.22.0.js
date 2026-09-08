@@ -21,7 +21,7 @@ global.PAQuestionBanks={};
 for(const k of ['d1','d2t1','d2t2','d2t3','d2t4','d2t5','d2t6','d2t7','d2t8','d3','d4','d5','d6'])PAQuestionBanks[k]=(id,s,shift)=>Q(`fallback ${id}`,1,[N(2,'x'),N(3,'x'),N(4,'x')],'fallback','fallback',false,false);
 
 vm.runInThisContext(fs.readFileSync('questions/kssr-assessment-depth-v3.22.0.js','utf8'),{filename:'depth.js'});
-vm.runInThisContext(fs.readFileSync('js/game-question-interactions-v3.62.1.js','utf8'),{filename:'game-question-interactions.js'});
+vm.runInThisContext(fs.readFileSync('js/game-question-interactions-v3.62.2.js','utf8'),{filename:'game-question-interactions.js'});
 
 const ids={
 d1:['D1.N20','D1.N100','D1.PV100','D1.CMP100','D1.ADD20','D1.SUB20','D1.ADD100','D1.SUB100','D1.FRAC','D1.MONEY','D1.TIME','D1.MEASURE','D1.SHAPE','D1.DATA'],

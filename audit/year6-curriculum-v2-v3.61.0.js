@@ -18,7 +18,7 @@ const load=[
  'questions/kssr-year6-v2-unit8-v3.61.0.js',
  'questions/kssr-year6-curriculum-v2-v3.61.0.js',
  'questions/kssr-year6-adaptive-v3.61.1.js',
- 'js/game-question-interactions-v3.62.1.js'
+ 'js/game-question-interactions-v3.62.2.js'
 ];
 const sources=load.map(p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8'));
 const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[R(0,a.length-1)],N=(v,tag)=>({v,label:v,tag});
