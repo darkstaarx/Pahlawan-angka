@@ -16,8 +16,14 @@ understood.
 
 ```bash
 node .claude/skills/sprite-sheet/sprite.mjs slice <sheet> <outDir> --cols 4
+node .claude/skills/sprite-sheet/sprite.mjs slice <frameDir> <outDir>
 node .claude/skills/sprite-sheet/sprite.mjs rank  <outDir>
 ```
+
+`slice` takes either one sheet to cut up or a directory of frames that are
+already separate — generators hand back both, and everything after finding the
+frames is identical. In directory mode files are ordered naturally (`f2` before
+`f10`) and each is measured on its own bounds; there is no grid to detect.
 
 `slice` writes `f1.webp…fN.webp`, a `contact.png`, and a `report.json`.
 `rank` prints the smoothest cyclic order for every frame count.
@@ -53,6 +59,16 @@ with whatever the character is holding, so centring on it makes the body
 swim sideways between frames. The slicer takes the horizontal midpoint of
 the bottom 6% of solid pixels and plants that on the same spot every frame.
 
+**The top of the body is found by width, not by height.** The obvious way —
+topmost solid pixel beside the body — assumes the prop stays up and to one
+side. Give it a frame where the sword swings upright into that column and it
+reports the blade tip as the head, inflates that frame's body height, and
+scales the whole frame down. On a five-frame set this made one frame 5%
+smaller than its neighbours. Going by width instead fixes it: a blade and a
+hair spike are thin, a head and torso are not, so the first row wide enough to
+be bulk (18% of the widest row) is the top of the body. Body-height spread on
+that set: 29px before, 8px after.
+
 **Frames are scaled on body height, not total height** (`--anchor body`, the
 default). Normalising to the same *total* height looks right until a frame is
 drawn with a shorter prop: that frame then gets stretched until its body is
@@ -74,8 +90,16 @@ behaviour; there is rarely a reason to use it.
 What body anchoring does *not* fix is the prop itself — a frame drawn with a
 shorter sword still shows a shorter sword. That is the art's own business and
 far less noticeable than a body that changes size. `report.json` carries
-`propRise` per frame and the slicer names any frame far below the median, so
-you can decide whether to regenerate it.
+`propRise` per frame — how much thin detail rises above the bulk — and the
+slicer names any frame well below the median. Treat that as a prompt to look
+at `contact.png`, not a verdict: it counts hair spikes as well as props.
+
+**Verify the scaling against something you did not optimise.** Body height is
+the thing being equalised, so its consistency proves nothing. Foot span and
+torso width are never used in the maths, so measuring those on the exported
+frames is a real check — they came out within 3% and 2.5% on the set above,
+and they were what confirmed the width-based head fix actually worked rather
+than just moving the number being measured.
 
 ## Ask what the order is before ranking anything
 

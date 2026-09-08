@@ -60,10 +60,10 @@ const arg = (flag, fallback) => {
 /* ---------------------------------------------------------------- slice */
 
 async function slice() {
-  const sheet = process.argv[3];
+  const input = process.argv[3];
   const outDir = process.argv[4];
-  if (!sheet || !outDir) {
-    console.error('usage: sprite.mjs slice <sheet> <outDir> [--cols N] [--height 340] [--pad .05] [--anchor body|full]');
+  if (!input || !outDir) {
+    console.error('usage: sprite.mjs slice <sheet|frameDir> <outDir> [--cols N] [--height 340] [--pad .05] [--anchor body|full]');
     process.exit(1);
   }
   const cols = arg('--cols') ? +arg('--cols') : null;
@@ -72,113 +72,159 @@ async function slice() {
   const anchor = arg('--anchor', 'body');
   if (anchor !== 'body' && anchor !== 'full') { console.error("--anchor must be 'body' or 'full'"); process.exit(1); }
 
-  const result = await withPage((page) =>
-    page.evaluate(async ({ uri, cols, height, pad, anchor }) => {
-      const img = new Image();
-      img.src = uri;
-      await img.decode();
-      const W = img.width, H = img.height;
-      const canvas = document.createElement('canvas');
-      canvas.width = W; canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      const D = ctx.getImageData(0, 0, W, H).data;
-      const alphaAt = (x, y) => D[(y * W + x) * 4 + 3];
+  /* One image is a sheet to be cut up; a directory is frames already separate.
+     Generators hand back either, and the alignment work is identical once the
+     frames are found, so accept both here rather than in two commands. */
+  const isDir = fs.statSync(input).isDirectory();
+  const sources = isDir
+    ? fs.readdirSync(input)
+        .filter((f) => MIME[path.extname(f).toLowerCase()])
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+        .map((f) => path.join(input, f))
+    : [input];
+  if (!sources.length) { console.error(`no images found in ${input}`); process.exit(1); }
 
-      /* Rows come free: a sheet always leaves fully transparent scanlines
-         between rows. Columns often do not — neighbouring frames overlap. */
-      const rowSum = [];
-      for (let y = 0; y < H; y++) { let s = 0; for (let x = 0; x < W; x++) s += alphaAt(x, y); rowSum.push(s / 255); }
-      const bands = [];
-      let open = null;
-      for (let y = 0; y < H; y++) {
-        if (rowSum[y] > 0.5) { if (!open) open = { y0: y }; open.y1 = y; }
-        else if (open) { bands.push(open); open = null; }
+  const result = await withPage((page) =>
+    page.evaluate(async ({ uris, cols, height, pad, anchor }) => {
+      const sheetMode = uris.length === 1;
+      const imgs = [], data = [];
+      for (const uri of uris) {
+        const img = new Image();
+        img.src = uri;
+        await img.decode();
+        const c = document.createElement('canvas');
+        c.width = img.width; c.height = img.height;
+        const g = c.getContext('2d');
+        g.drawImage(img, 0, 0);
+        imgs.push(img);
+        data.push(g.getImageData(0, 0, img.width, img.height).data);
       }
-      if (open) bands.push(open);
-      const rows = bands.filter((b) => b.y1 - b.y0 > H * 0.1);
+      const alphaAt = (s, x, y) => data[s][(y * imgs[s].width + x) * 4 + 3];
+
+      /* Everything downstream needs the same three measurements per frame, so
+         take them in one place whether the frame came from a cell of a sheet
+         or from its own file. */
+      function measure(src, x0, x1, y0, y1) {
+        let minX = Infinity, maxX = -1, minY = Infinity, maxY = -1;
+        for (let y = y0; y < y1; y++) {
+          for (let x = x0; x < x1; x++) {
+            if (alphaAt(src, x, y) > 24) {
+              if (x < minX) minX = x; if (x > maxX) maxX = x;
+              if (y < minY) minY = y; if (y > maxY) maxY = y;
+            }
+          }
+        }
+        if (maxX < 0) return null;
+
+        /* Anchor on the feet, not the bounding box: the box drifts with
+           whatever the character is holding. */
+        const footBand = Math.max(4, Math.round((maxY - minY) * 0.06));
+        let footL = Infinity, footR = -1;
+        for (let y = maxY - footBand; y <= maxY; y++) {
+          for (let x = minX; x <= maxX; x++) {
+            if (alphaAt(src, x, y) > 60) { if (x < footL) footL = x; if (x > footR) footR = x; }
+          }
+        }
+        const footC = (footL + footR) / 2;
+
+        /* Body height, measured without the raised prop, so a frame drawn
+           with a shorter prop cannot quietly scale the body up during
+           normalisation.
+
+           Finding the head by "topmost solid pixel beside the body" breaks the
+           moment the prop swings upright and enters that column — it then
+           reports the blade tip as the head and shrinks the whole frame. Go by
+           width instead: a blade and a hair spike are thin, the head and torso
+           are not. The first row wide enough to be bulk is the top of the
+           body. Measured across a five-frame set where one frame held the
+           sword upright, this cut the body-height spread from 29px to 8px. */
+        const rowWidth = [];
+        let widest = 0;
+        for (let y = minY; y <= maxY; y++) {
+          let n = 0;
+          for (let x = minX; x <= maxX; x++) if (alphaAt(src, x, y) > 170) n++;
+          rowWidth.push(n);
+          if (n > widest) widest = n;
+        }
+        let headY = minY;
+        for (let i = 0; i < rowWidth.length; i++) {
+          if (rowWidth[i] >= 0.18 * widest) { headY = minY + i; break; }
+        }
+
+        return {
+          src, minX, maxX, minY, maxY, footC,
+          fullH: maxY - minY + 1,
+          bodyH: maxY - headY + 1,
+          propRise: headY - minY,
+          footW: footR - footL + 1,
+        };
+      }
 
       const frames = [], notes = [];
-      for (const [rowIndex, band] of rows.entries()) {
-        const colSum = [];
-        for (let x = 0; x < W; x++) { let s = 0; for (let y = band.y0; y <= band.y1; y++) s += alphaAt(x, y); colSum.push(s / 255); }
+      let rowCount = 1;
 
-        /* How many frames across? Count the transparent gutters, but a gutter
-           only exists where neighbours do not overlap, so an explicit --cols
-           always wins. */
-        const gutters = [];
-        let run = null;
-        for (let x = 0; x < W; x++) {
-          if (colSum[x] < 0.5) { if (!run) run = { x0: x }; run.x1 = x; }
-          else if (run) { gutters.push(run); run = null; }
+      if (!sheetMode) {
+        for (let s = 0; s < imgs.length; s++) {
+          const f = measure(s, 0, imgs[s].width, 0, imgs[s].height);
+          if (f) frames.push({ ...f, row: 0, rowTop: 0 });
         }
-        if (run) gutters.push(run);
-        const inner = gutters.filter((g) => g.x0 > 0 && g.x1 < W - 1 && g.x1 - g.x0 >= 2);
-        const detected = inner.length + 1;
-        const n = cols || detected;
-        if (cols && detected !== cols) {
-          notes.push(`row y=${band.y0}-${band.y1}: ${detected} clean gutter(s) but --cols ${cols} given — frames overlap, boundaries taken at the alpha valleys`);
+      } else {
+        const W = imgs[0].width, H = imgs[0].height;
+
+        /* Rows come free: a sheet always leaves fully transparent scanlines
+           between rows. Columns often do not — neighbouring frames overlap. */
+        const rowSum = [];
+        for (let y = 0; y < H; y++) { let s = 0; for (let x = 0; x < W; x++) s += alphaAt(0, x, y); rowSum.push(s / 255); }
+        const bands = [];
+        let open = null;
+        for (let y = 0; y < H; y++) {
+          if (rowSum[y] > 0.5) { if (!open) open = { y0: y }; open.y1 = y; }
+          else if (open) { bands.push(open); open = null; }
         }
+        if (open) bands.push(open);
+        const rows = bands.filter((b) => b.y1 - b.y0 > H * 0.1);
+        rowCount = rows.length;
 
-        /* Cut at the LOWEST-alpha column near each nominal boundary, never at
-           the nominal boundary itself. Equal division clips whatever sticks
-           out past its share of the width. */
-        const cuts = [0];
-        for (let k = 1; k < n; k++) {
-          const guess = Math.round((W * k) / n);
-          const window = Math.round(W / n / 8);
-          let best = guess, bestVal = Infinity;
-          for (let x = Math.max(1, guess - window); x <= Math.min(W - 2, guess + window); x++) {
-            if (colSum[x] < bestVal) { bestVal = colSum[x]; best = x; }
+        for (const [rowIndex, band] of rows.entries()) {
+          const colSum = [];
+          for (let x = 0; x < W; x++) { let s = 0; for (let y = band.y0; y <= band.y1; y++) s += alphaAt(0, x, y); colSum.push(s / 255); }
+
+          /* How many frames across? Count the transparent gutters, but a
+             gutter only exists where neighbours do not overlap, so an explicit
+             --cols always wins. */
+          const gutters = [];
+          let run = null;
+          for (let x = 0; x < W; x++) {
+            if (colSum[x] < 0.5) { if (!run) run = { x0: x }; run.x1 = x; }
+            else if (run) { gutters.push(run); run = null; }
           }
-          cuts.push(best);
-        }
-        cuts.push(W);
+          if (run) gutters.push(run);
+          const inner = gutters.filter((g) => g.x0 > 0 && g.x1 < W - 1 && g.x1 - g.x0 >= 2);
+          const detected = inner.length + 1;
+          const n = cols || detected;
+          if (cols && detected !== cols) {
+            notes.push(`row y=${band.y0}-${band.y1}: ${detected} clean gutter(s) but --cols ${cols} given — frames overlap, boundaries taken at the alpha valleys`);
+          }
 
-        for (let k = 0; k < n; k++) {
-          const x0 = cuts[k], x1 = cuts[k + 1];
-          let minX = Infinity, maxX = -1, minY = Infinity, maxY = -1;
-          for (let y = band.y0; y <= band.y1; y++) {
-            for (let x = x0; x < x1; x++) {
-              if (alphaAt(x, y) > 24) {
-                if (x < minX) minX = x; if (x > maxX) maxX = x;
-                if (y < minY) minY = y; if (y > maxY) maxY = y;
-              }
+          /* Cut at the LOWEST-alpha column near each nominal boundary, never
+             at the nominal boundary itself. Equal division clips whatever
+             sticks out past its share of the width. */
+          const cuts = [0];
+          for (let k = 1; k < n; k++) {
+            const guess = Math.round((W * k) / n);
+            const window = Math.round(W / n / 8);
+            let best = guess, bestVal = Infinity;
+            for (let x = Math.max(1, guess - window); x <= Math.min(W - 2, guess + window); x++) {
+              if (colSum[x] < bestVal) { bestVal = colSum[x]; best = x; }
             }
+            cuts.push(best);
           }
-          if (maxX < 0) continue;
+          cuts.push(W);
 
-          /* Anchor on the feet, not the bounding box: the box drifts with
-             whatever the character is holding. */
-          const footBand = Math.max(4, Math.round((maxY - minY) * 0.06));
-          let footL = Infinity, footR = -1;
-          for (let y = maxY - footBand; y <= maxY; y++) {
-            for (let x = minX; x <= maxX; x++) {
-              if (alphaAt(x, y) > 60) { if (x < footL) footL = x; if (x > footR) footR = x; }
-            }
+          for (let k = 0; k < n; k++) {
+            const f = measure(0, cuts[k], cuts[k + 1], band.y0, band.y1 + 1);
+            if (f) frames.push({ ...f, row: rowIndex, rowTop: band.y0 });
           }
-          const footC = (footL + footR) / 2;
-
-          /* Body height, measured without the raised prop, so a frame drawn
-             with a shorter sword shows up instead of quietly scaling the
-             body up during normalisation. */
-          let headY = minY;
-          for (let y = minY; y <= maxY; y++) {
-            let hit = false;
-            for (let x = Math.round(footC - (maxX - minX) * 0.02); x <= maxX; x++) {
-              if (alphaAt(x, y) > 170) { hit = true; break; }
-            }
-            if (hit) { headY = y; break; }
-          }
-
-          frames.push({
-            row: rowIndex, rowTop: band.y0,
-            minX, maxX, minY, maxY, footC,
-            fullH: maxY - minY + 1,
-            bodyH: maxY - headY + 1,
-            propRise: headY - minY,
-            footW: footR - footL + 1,
-          });
         }
       }
 
@@ -194,6 +240,7 @@ async function slice() {
          headroom that the longest prop still fits inside the canvas. */
       const ratio = Math.max(...frames.map((f) => f.fullH / f.bodyH));
       const bodyTarget = (height * (1 - pad)) / ratio;
+
       /* Wrap the contact sheet at four across — a single strip of eight is
          too wide to actually look at, and looking at it is the point. */
       const gridCols = Math.min(4, frames.length);
@@ -212,7 +259,7 @@ async function slice() {
         g.imageSmoothingQuality = 'high';
         const scale = anchor === 'body' ? bodyTarget / f.bodyH : (height * (1 - pad)) / f.fullH;
         g.drawImage(
-          img, f.minX, f.minY, f.maxX - f.minX + 1, f.fullH,
+          imgs[f.src], f.minX, f.minY, f.maxX - f.minX + 1, f.fullH,
           outW / 2 - (f.footC - f.minX) * scale, height * (1 - pad / 2) - f.fullH * scale,
           (f.maxX - f.minX + 1) * scale, f.fullH * scale
         );
@@ -224,6 +271,7 @@ async function slice() {
         lum.push(+(sum / n).toFixed(1));
         drawn.push({ body: Math.round(f.bodyH * scale), full: Math.round(f.fullH * scale) });
         urls.push(cell.toDataURL('image/webp', 0.85));
+
         const gx = (i % gridCols) * outW, gy = Math.floor(i / gridCols) * height;
         cg.drawImage(cell, gx, gy);
         cg.strokeStyle = '#3d5f8d';
@@ -234,7 +282,7 @@ async function slice() {
       });
 
       return {
-        W, H, rows: rows.length, anchor,
+        W: imgs[0].width, H: imgs[0].height, rows: rowCount, anchor, sheetMode,
         frames: frames.map((f, i) => ({
           f: i + 1, row: f.row + 1, x: f.minX, y: f.minY, w: f.maxX - f.minX + 1,
           fullH: f.fullH, bodyH: f.bodyH, propRise: f.propRise,
@@ -243,7 +291,7 @@ async function slice() {
         })),
         notes, urls, contact: contact.toDataURL('image/png'),
       };
-    }, { uri: dataUri(sheet), cols, height, pad, anchor })
+    }, { uris: sources.map(dataUri), cols, height, pad, anchor })
   );
 
   fs.mkdirSync(outDir, { recursive: true });
@@ -251,11 +299,14 @@ async function slice() {
     fs.writeFileSync(path.join(outDir, `f${i + 1}.webp`), Buffer.from(u.split(',')[1], 'base64')));
   fs.writeFileSync(path.join(outDir, 'contact.png'), Buffer.from(result.contact.split(',')[1], 'base64'));
 
-  const report = { sheet, size: `${result.W}x${result.H}`, rows: result.rows, anchor: result.anchor, frames: result.frames, notes: result.notes };
+  const report = { input, mode: result.sheetMode ? 'sheet' : 'frames', size: `${result.W}x${result.H}`, rows: result.rows, anchor: result.anchor, frames: result.frames, notes: result.notes };
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));
 
-  console.log(`sheet ${result.W}x${result.H} — ${result.rows} row(s), ${result.frames.length} frame(s)`);
+  console.log(result.sheetMode
+    ? `sheet ${result.W}x${result.H} — ${result.rows} row(s), ${result.frames.length} frame(s)`
+    : `${sources.length} separate frames, first is ${result.W}x${result.H}`);
   console.table(result.frames);
+
   const spread = (list, k) => {
     const v = list.map((f) => f[k]);
     return +(Math.max(...v) - Math.min(...v)).toFixed(1);
@@ -266,6 +317,7 @@ async function slice() {
   const perRow = [...new Set(result.frames.map((f) => f.row))]
     .map((r) => spread(result.frames.filter((f) => f.row === r), 'baseline'));
   console.log(`spread — fullH ${spread(result.frames, 'fullH')}px · bodyH ${spread(result.frames, 'bodyH')}px · baseline ${Math.max(...perRow)}px (worst row) · luminance ${spread(result.frames, 'lum')}`);
+
   /* The number that decides whether the character pumps: how much the drawn
      body varies once every frame has been scaled. */
   const drawnSpread = spread(result.frames, 'drawnBody');
@@ -282,18 +334,16 @@ async function slice() {
     console.log(`row-to-row scale drift: ${drift.toFixed(1)}px mean height${drift > 4 ? ' — normalisation will paper over this, but a one-row sheet avoids it entirely' : ''}`);
   }
 
-  /* A frame whose prop is drawn shorter scales its body up once every frame
-     is normalised to the same height. Say so rather than let it through. */
   const rises = result.frames.map((f) => f.propRise).sort((a, b) => a - b);
   const median = rises[Math.floor(rises.length / 2)];
-  const odd = result.frames.filter((f) => median >= 6 && f.propRise < median * 0.4);
+  const odd = result.frames.filter((f) => median >= 6 && f.propRise < median * 0.6);
   for (const f of odd) {
     /* Under body anchoring this no longer distorts the body — it just means
        that frame's prop is drawn shorter, which is the art's own business. */
     const consequence = result.anchor === 'body'
-      ? 'its body is still the right size, but the prop will visibly shrink on that frame'
+      ? 'its body is still the right size, but the prop is probably drawn shorter'
       : 'its body will scale up when heights are normalised — rerun with --anchor body';
-    console.log(`note F${f.f}: prop rises ${f.propRise}px above the head, median is ${median}px — ${consequence}.`);
+    console.log(`note F${f.f}: only ${f.propRise}px of thin detail above the body, median is ${median}px — ${consequence}. Worth a look at contact.png; this is a hint, not a verdict.`);
   }
   result.notes.forEach((n) => console.log('note: ' + n));
   console.log(`\nwrote ${result.urls.length} frames + contact.png + report.json to ${outDir}`);
