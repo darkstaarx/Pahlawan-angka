@@ -130,7 +130,7 @@ function roleLabel(g){ if(!db) return 'Misi'; if(g<db.schoolGrade) return 'Misi 
 function qsv2LearnerTitle(meta,q){return window.PAD3Topic7LiveCutover?.isTargetQuestion?.(q)?window.PAD3Topic7LiveCutover.displayTitle(meta,q):questionLearningTitle(meta,q)}
 function nextQ(){
  if(sess.learningActive)return;
- let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
+ let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),questionStage=enemyStageForQuestion(id),q=generate(id,s,{battleTier:questionStage.tier,isBoss:questionStage.tier==='boss'});q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
  sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;if(q.qsv2Pilot)q.qsv2AttemptId=window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null;else if(q.qsv2Live)q.qsv2AttemptId=window.PAD3NonT7LiveIsolation?.newAttemptId?.(q,q.token)||null;
  window.PALearnerReview?.beginQuestion?.(q,{grade:db?.schoolGrade,mode:sess.mode,selectionReason:typeof coachReason==='function'?coachReason(id):'',demoMode:!!sess.demoMode,devMode:!!sess.devBankTest||!!(db&&typeof isDevMode==='function'&&isDevMode())});
  sess.recent.push(id);if(sess.recent.length>10)sess.recent.shift();
@@ -163,9 +163,9 @@ setupHeroPicker();
 setupBattleHud();
 screen('login');refreshLoginResume();
 
-function enemyStageForQuestion(){
+function enemyStageForQuestion(skillIdOverride){
   const answered=Number(sess?.missionAnswered||0);
-  const skillId=String(sess?.q?.skill||'');
+  const skillId=String(skillIdOverride||sess?.q?.skill||'');
   const skillMeta=typeof META!=='undefined'?(META[skillId]||{}):{};
   const divisionRound=/\bdiv\b|bahagi|division/i.test([skillId,skillMeta.title,skillMeta.domain,sess?.q?.title,sess?.q?.misconception].filter(Boolean).join(' '));
   const minionIndex=divisionRound?MINION_ENEMIES.findIndex(x=>x.specialty==='division'):-1;
