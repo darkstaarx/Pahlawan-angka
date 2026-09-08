@@ -68,7 +68,7 @@ const parserAdaptive=pwa.indexOf('if(!document.querySelector(`script[src^="quest
 assert(parserFinal>=0&&parserAdaptive>parserFinal,'parser-time adaptive script loaded before finalizer');
 assert(/year6Adaptive:Y6_ADAPTIVE_VERSION/.test(pwa),'release metadata missing');
 assert(sw.includes("'./questions/kssr-year6-adaptive-v3.61.1.js'"),'adaptive file absent from offline shell');
-assert(/PA_APP_VERSION='3\.62\.3'/.test(version),'release version stale');
-assert(/js\/version\.js\?v=3\.62\.3/.test(html)&&/js\/pwa\.js\?v=3\.62\.3/.test(html),'HTML cache bust stale');
+assert(/PA_APP_VERSION='3\.62\.4'/.test(version),'release version stale');
+assert(/js\/version\.js\?v=3\.62\.4/.test(html)&&/js\/pwa\.js\?v=3\.62\.4/.test(html),'HTML cache bust stale');
 
 console.log(JSON.stringify({status:'PASS',version:ctx.PAY6Adaptive.version,skills:ctx.PAY6CompetencyV2.activeSkills.length,uniqueStandards:ctx.PAY6CompetencyV2.uniqueStandardCount,recorded,gates:'all curriculum routes require clean SP evidence',loaderAndOfflineShell:'PASS'},null,2));
