@@ -46,10 +46,23 @@ Everything else stays pixel-identical: camera distance, crop, character
 height, feet position, stance, lighting and shadow direction, colours,
 coat and songket pattern, shield artwork, shield angle, face and eyes.
 
+Every frame has both eyes open. Do not draw a blink.
+
 Layout: all four frames the same size, feet resting on the same baseline
 in every frame, at least 40px of empty transparent space between frames
 and around all edges. No frame may overlap its neighbour. No background,
 no ground line, no drop shadow, no text, no frame numbers, no borders.
+```
+
+Decide about blinks **before** generating, and say so either way. A blink
+frame is worth having, but it has to be at a known position in a known
+sequence — otherwise the frames come back and nobody can tell whether the
+closed eyes are intentional or a mistake. Either ban them outright, as above,
+or ask for them explicitly:
+
+```
+Frame 3 is a blink: identical to frame 2 in every way except both eyes
+are closed. Every other frame has both eyes open.
 ```
 
 Ask for **one row**. A two-row sheet drifts in scale between the rows — the
@@ -91,6 +104,8 @@ trip.
 3. **Feet.** Do the back heels sit on the same line across frames?
 4. **Layout.** One row, with clear empty space between every frame?
 5. **Background.** Actually transparent, not white and not black.
+6. **Eyes.** Open in every frame — unless you asked for a blink, in which case
+   only the frame you asked for is closed. Write down which one it is.
 
 All five pass, run `slice` then `rank`. Any one fails, fix that frame first —
 the measurements will only tell you the same thing more slowly.

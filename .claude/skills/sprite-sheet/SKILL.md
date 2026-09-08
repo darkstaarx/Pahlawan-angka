@@ -63,6 +63,34 @@ after normalisation its body was visibly larger. `report.json` carries
 below the median. Regenerate that frame or drop it; it is a drawing problem,
 not an alignment problem, and no anchor choice fixes it.
 
+## Ask what the order is before ranking anything
+
+A sheet generated to a spec usually **already has an authored order** — frames
+laid out left to right, wrapping to the next row. Ask, or check whether the
+frames read as a sequence, before reaching for `rank`. `rank` exists to
+rescue a sheet whose frames are independent drawings in arbitrary order. It is
+not the default step, and running it on an ordered sheet throws away the
+intent.
+
+**The cost metric is blind to meaning.** It compares pixels; it does not know
+what a face is. On a sheet with two deliberate blink frames it picked exactly
+those two as the smoothest possible loop — they resembled each other more than
+anything else on the sheet, so the "best" animation was a hero standing with
+his eyes shut. Nothing in the numbers can catch that.
+
+So before trusting any winning cycle, crop the heads and look at them. Eyes,
+expression and gaze direction all matter and none of them are measurable here:
+
+```js
+// in a page.evaluate over the sliced frames — the head sits upper-right
+const sx = Math.round(img.width * 0.42), sy = Math.round(img.height * 0.10);
+ctx.drawImage(img, sx, sy, 190, 120, gx, gy, 190 * 2.4, 120 * 2.4);
+```
+
+Blink frames are an asset, not a defect. Keep them in the sequence at the
+position the artist put them, give them their own shorter hold, and use a
+faster transition into and out of them — a blink is a snap, not a dissolve.
+
 ## Reading the rank table
 
 Cost is the mean per-pixel colour and alpha difference over the union of two
