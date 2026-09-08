@@ -2,7 +2,7 @@
 (()=>{
   const APP_VERSION=globalThis.PA_APP_VERSION||'0.0.0';
   const INTEGRITY_VERSION='3.18.1';
-  const DEPTH_VERSION='3.22.0';
+  const DEPTH_VERSION='3.22.1';
   const D4_CURRICULUM_VERSION='3.58.0';
   const Y6_REPAIR_VERSION='3.23.0';
   const Y6_CURRICULUM_VERSION='3.60.3';

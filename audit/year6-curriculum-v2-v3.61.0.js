@@ -1,7 +1,7 @@
 // Regression audit — Year 6 KSSR Curriculum Bank v2 v3.61.0
 const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path');
 const load=[
- 'questions/kssr-assessment-depth-v3.22.0.js',
+ 'questions/kssr-assessment-depth-v3.22.1.js',
  'questions/kssr-year6-space-data-v3.23.0.js',
  'questions/kssr-year6-curriculum-v3.60.3.js',
  'questions/kssr-year6-experience-v3.60.4.js',
