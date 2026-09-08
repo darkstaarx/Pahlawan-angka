@@ -20,7 +20,7 @@
   const TARGET_ANCHOR_VERSION='3.21.5';
   const FINISHER_HOTSPOT_VERSION='3.21.6';
   const TYPED_UI_VERSION='3.21.8';
-  const GAME_QUESTION_VERSION='3.62.0';
+  const GAME_QUESTION_VERSION='3.62.1';
   const PROFILE_MANAGER_VERSION='3.24.2';
 
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}`;
