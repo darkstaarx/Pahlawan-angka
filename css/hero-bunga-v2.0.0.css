@@ -51,6 +51,30 @@ body.hero-bunga #game #enemy>.finisher-bloom{display:none!important}
 @keyframes bungaFinalImpact{0%{opacity:1;transform:translate(-50%,-50%) scale(.42)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
 @keyframes bungaFinalRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.18) rotate(28deg)}28%{opacity:.72}100%{opacity:.9;transform:translate(-50%,-50%) scale(1.18) rotate(-8deg)}}
 @keyframes bungaFinalRingCompress{0%{opacity:.9;transform:translate(-50%,-50%) scale(1.18) rotate(-8deg)}100%{opacity:1;transform:translate(-50%,-50%) scale(.38) rotate(-34deg);filter:brightness(2.1) drop-shadow(0 0 24px #fff2ad)}}
+/* Bunga's nature/light finisher gets the same arena-scale punch as Sidma,
+   using a white-hot green/gold core and a broad petal shockwave. */
+#game #battleArena .bunga-finisher-blast{
+  position:absolute;left:0;top:0;width:var(--bunga-blast-size,min(72vw,330px));aspect-ratio:1;
+  z-index:12;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.08);
+  border-radius:50%;mix-blend-mode:screen;
+  background:
+    radial-gradient(circle,rgba(255,255,255,1) 0 5%,rgba(255,248,190,.98) 10%,rgba(98,239,143,.9) 22%,rgba(20,160,91,.52) 36%,transparent 60%),
+    repeating-conic-gradient(from 8deg,rgba(255,255,255,.88) 0 2deg,transparent 2deg 13deg);
+  filter:drop-shadow(0 0 18px #fff) drop-shadow(0 0 44px #35e084);
+}
+#game #battleArena .bunga-finisher-blast.charge{animation:bunga-finisher-blast-charge 520ms ease-out both}
+#game #battleArena .bunga-finisher-blast.explode{animation:bunga-finisher-blast-explode 650ms cubic-bezier(.08,.72,.18,1) both}
+@keyframes bunga-finisher-blast-charge{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.08) rotate(-20deg)}
+  55%{opacity:.58;transform:translate(-50%,-50%) scale(.7) rotate(8deg)}
+  100%{opacity:.82;transform:translate(-50%,-50%) scale(.55) rotate(18deg)}
+}
+@keyframes bunga-finisher-blast-explode{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.28) rotate(18deg);filter:brightness(2.8) drop-shadow(0 0 28px #fff)}
+  16%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(5deg)}
+  48%{opacity:.9;transform:translate(-50%,-50%) scale(1.6) rotate(-8deg)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(2.25) rotate(-18deg)}
+}
 body.hero-bunga #game #battleArena.shake,body.hero-bunga #game #battleArena.finisher-shake{animation:none!important}
 
 @media(max-width:420px){#game #hero .bunga-v2-frame{height:calc(var(--pa-hero-h)*1.03)}#game #battleArena .bunga-v2-projectile{height:42px}.bunga-final-charge-aura{width:min(var(--aura-w,210px),50vw)}}
