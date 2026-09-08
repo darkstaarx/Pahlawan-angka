@@ -102,11 +102,17 @@ const D1_NAMES=['Aina','Kumar','Mei Ling','Hakim','Siti','Arun'];
 const d1Name=()=>pick(D1_NAMES);
 const d1Food=()=>pick(['karipap','kuih lapis','pau','roti canai']);
 const d1Fruit=()=>pick(['rambutan','pisang','jambu','mangga']);
+const d1ChooseMode=(id,s,foundation,stretch=[])=>{
+ const mastery=Number(s?.mastery||0),evidence=Number(s?.evidence||0);
+ if(!stretch.length||evidence<2||mastery<30)return rotate(id,foundation);
+ if(evidence>=5&&mastery>=60)return rotate(id,[...stretch,...foundation.slice(-2)]);
+ return rotate(id,[...foundation,...stretch]);
+};
 function d1(id,s,shift){
  let mode;
  if(id==='D1.N20'||id==='D1.N100'){
   const max=id==='D1.N20'?(Number(s?.evidence||0)<3?9:20):100;
-  mode=chooseMode(id,s,['count_visual','missing_line','compare','order','between_reason','one_more_reason']);
+  mode=d1ChooseMode(id,s,['count_visual','missing_line','compare','order'],['between_reason','one_more_reason']);
   if(mode==='count_visual'){
    const n=R(3,Math.min(max,18)),thing=pick(['guli','buah rambutan','pensel warna']);
    return depth(Q(`${fractionSet(n,n)}Di dalam bekas ada berapa <b>${thing}</b>?`,n,wrongNums(n,1,'count'),'Kira satu demi satu.','Tahun 1 · Bilangan',true,true),id,mode,'visual','concept',['count']);
@@ -132,7 +138,7 @@ function d1(id,s,shift){
   return depth(Q(`Pilih nombor yang ${ask}.<br><b>${vals.join(', ')}</b>`,ans,vals.filter(x=>x!==ans).slice(0,3).map(x=>N(x,'compare')),'Banding nilai satu demi satu.','Tahun 1 · Banding Nombor',true,shift),id,mode,'symbolic','concept',['compare']);
  }
  if(id==='D1.PV100'){
-   mode=chooseMode(id,s,['blocks','place','expanded','compose','missing_value','check_reason']);
+   mode=d1ChooseMode(id,s,['blocks','place','expanded','compose'],['missing_value','check_reason']);
    let n=R(10,99),t=Math.floor(n/10),o=n%10;
    if(mode==='blocks')return depth(Q(`${typeof base10Visual==='function'?base10Visual(n):''}Apakah nombor yang ditunjukkan?`,n,[N(t+o,'digit_value'),N(o*10+t,'place'),N(n+10,'place')],'Kira puluh dan sa.','Tahun 1 · Nilai Tempat',true,true),id,mode,'visual','concept',['place']);
    if(mode==='place'){const ask=Math.random()<.5?'puluh':'sa',ans=ask==='puluh'?t:o;return depth(Q(`Dalam <b>${n}</b>, digit pada tempat <b>${ask}</b> ialah?`,ans,[N(ask==='puluh'?o:t,'place'),N(ans*10,'digit_value'),N(n,'place')],'Lihat kedudukan digit.','Tahun 1 · Tempat Digit',true,true),id,mode,'symbolic','concept',['place']);}
@@ -146,7 +152,7 @@ function d1(id,s,shift){
  }
  if(id==='D1.CMP100'){
   let a=R(1,100),b=R(1,100);while(a===b)b=R(1,100);
-  mode=chooseMode(id,s,['word_compare','symbol','order','closer_reason']);
+  mode=d1ChooseMode(id,s,['word_compare','symbol','order'],['closer_reason']);
   if(mode==='symbol'){const ans=a>b?'>':'<';return depth(Q(`<b>${a}</b> ___ <b>${b}</b>`,ans,[N(ans==='>'?'<':'>','compare'),N('=','compare'),N('≠','compare')],'Banding puluh dahulu.','Tahun 1 · Simbol Banding',true,true),id,mode,'symbolic','concept',['compare']);}
   if(mode==='order'){let c=R(1,100);while(c===a||c===b)c=R(1,100);const xs=[a,b,c],asc=Math.random()<.5,ans=[...xs].sort((x,y)=>asc?x-y:y-x).join(', ');return depth(Q(`Susun <b>${xs.join(', ')}</b> secara ${asc?'menaik':'menurun'}.`,ans,[N([...xs].sort((x,y)=>asc?y-x:x-y).join(', '),'compare'),N(xs.join(', '),'compare'),N([xs[1],xs[0],xs[2]].join(', '),'compare')],'Banding puluh, kemudian sa.','Tahun 1 · Susun dan Banding',true,true),id,mode,'symbolic','procedure',['compare']);}
   if(mode==='closer_reason'){
@@ -160,7 +166,7 @@ function d1(id,s,shift){
  }
  if(['D1.ADD20','D1.ADD100','D1.SUB20','D1.SUB100'].includes(id)){
    const add=id.includes('ADD'),max=id.endsWith('20')?20:100;
-   mode=chooseMode(id,s,['visual','story','symbolic','missing_story','check_reason']);
+   mode=d1ChooseMode(id,s,['visual','story','symbolic'],['missing_story','check_reason']);
    let a,b;if(add){a=R(2,Math.floor(max*.65));b=R(1,max-a)}else{a=R(3,max);b=R(1,a-1)}const ans=add?a+b:a-b;
    if(mode==='visual'&&max<=20){
     const vis=fractionSet(a,a)+fractionSet(b,b);
@@ -187,7 +193,7 @@ function d1(id,s,shift){
    return depth(add?addQ(a,b,ans,'Tahun 1',shift):subQ(a,b,ans,'Tahun 1',shift),id,mode,'symbolic','procedure',['operation']);
  }
  if(id==='D1.FRAC'){
-  mode=chooseMode(id,s,['shade_name','word_match','sharing','remaining_reason']);
+  mode=d1ChooseMode(id,s,['shade_name','word_match','sharing'],['remaining_reason']);
   const pairs=[[1,2,'satu perdua'],[1,4,'satu perempat'],[2,4,'dua perempat'],[3,4,'tiga perempat']],p=pick(pairs),[n,d,word]=p;
   if(mode==='word_match')return depth(Q(`${fractionStrip(n,d)}Pilih nama pecahan yang betul.`,word,[N('satu perdua','fraction'),N('satu perempat','fraction'),N('dua perempat','fraction'),N('tiga perempat','fraction')].filter(x=>clean(x.v)!==word).slice(0,3),'Bahagian mesti sama besar.','Tahun 1 · Nama Pecahan',true,true),id,mode,'visual','concept',['fraction']);
   if(mode==='sharing'){
@@ -201,7 +207,7 @@ function d1(id,s,shift){
   return depth(Q(`${fractionStrip(n,d)}Bahagian berlorek mewakili?`,`${n}/${d}`,makeWrongFractions(`${n}/${d}`,n,d),'Kira semua bahagian sama besar dan bahagian berlorek.','Tahun 1 · Pecahan Visual',true,true),id,mode,'visual','concept',['fraction']);
  }
  if(id==='D1.MONEY'){
-  mode=chooseMode(id,s,['recognise','combine','compare','enough_reason','change_reason']);
+  mode=d1ChooseMode(id,s,['recognise','combine','compare'],['enough_reason','change_reason']);
   const cents=pick([10,20,50,100,200,500]);
   if(mode==='recognise')return depth(Q(`${typeof moneyVisual==='function'?moneyVisual(cents):''}Nilai wang ini ialah?`,typeof moneyFmt==='function'?moneyFmt(cents):`${cents} sen`,[N(cents<100?`${Math.max(5,cents-10)} sen`:`RM${cents/100+1}`,'money'),N(`${cents} RM`,'money'),N(cents,'money')],'Lihat nilai pada wang.','Tahun 1 · Kenal Wang Malaysia',true,true),id,mode,'visual','concept',['money']);
   if(mode==='enough_reason'){
@@ -217,7 +223,7 @@ function d1(id,s,shift){
   let c=pick([10,20,50,100]);while(c===a)c=pick([10,20,50,100]);return depth(Q(`Yang manakah lebih besar nilainya: ${typeof moneyFmt==='function'?moneyFmt(a):a} atau ${typeof moneyFmt==='function'?moneyFmt(c):c}?`,typeof moneyFmt==='function'?moneyFmt(Math.max(a,c)):Math.max(a,c),[N(typeof moneyFmt==='function'?moneyFmt(Math.min(a,c)):Math.min(a,c),'money'),N(typeof moneyFmt==='function'?moneyFmt(a+c):a+c,'money'),N('Sama nilai','money')],'Banding nilai wang.','Tahun 1 · Banding Wang',true,true),id,mode,'verbal','concept',['money']);
  }
  if(id==='D1.TIME'){
-  mode=chooseMode(id,s,['hour','half_hour','daily_order','school_reason']);
+  mode=d1ChooseMode(id,s,['hour','half_hour','daily_order'],['school_reason']);
   if(mode==='daily_order'){
    const q=pick([['sarapan','pagi'],['makan tengah hari','tengah hari'],['tidur','malam']]);
    return depth(Q(`Aktiviti <b>${q[0]}</b> biasanya berlaku pada waktu?`,q[1],[N('pagi','time'),N('tengah hari','time'),N('malam','time')].filter(x=>x.v!==q[1]),'Fikir rutin harian.','Tahun 1 · Waktu Harian',false,true),id,mode,'story','concept',['time']);
@@ -230,7 +236,7 @@ function d1(id,s,shift){
   return depth(Q(`${clockSvg(h,m)}Jam menunjukkan pukul?`,ans,[N(`${h}:00`,'time'),N(`${h}:30`,'time'),N(`${h%12+1}:${String(m).padStart(2,'0')}`,'time')].filter(x=>x.v!==ans).slice(0,3),'Jarum pendek menunjukkan jam; jarum panjang menunjukkan minit.','Tahun 1 · Baca Jam',true,true),id,mode,'visual','concept',['time']);
  }
  if(id==='D1.MEASURE'){
-  mode=chooseMode(id,s,['length_compare','mass_compare','capacity_compare','ruler_read','tool_reason']);
+  mode=d1ChooseMode(id,s,['length_compare','mass_compare','capacity_compare','ruler_read'],['tool_reason']);
   if(mode==='length_compare'){let a=R(70,130),b=R(40,65);return depth(Q(`<div class="kssrDiagram kd-bars"><i style="width:${a}px"></i><i style="width:${b}px"></i></div>Batang manakah lebih panjang?`,'batang atas',[N('batang bawah','unit'),N('sama panjang','unit'),N('tidak boleh ditentukan','unit')],'Banding hujung kedua-dua batang.','Tahun 1 · Panjang',true,true),id,mode,'visual','concept',['unit']);}
   if(mode==='mass_compare')return depth(Q(`Antara <b>sebiji tembikai</b> dan <b>sebiji rambutan</b>, yang manakah biasanya lebih berat?`,'tembikai',[N('rambutan','unit'),N('sama berat','unit'),N('tidak boleh dibandingkan','unit')],'Banding jisim objek yang biasa ditemui.','Tahun 1 · Jisim Harian',false,true),id,mode,'story','concept',['unit']);
   if(mode==='capacity_compare')return depth(Q(`Antara <b>baldi</b> dan <b>cawan</b>, yang manakah biasanya boleh mengisi lebih banyak air?`,'baldi',[N('cawan','unit'),N('sama banyak','unit'),N('sudu','unit')],'Banding kapasiti bekas.','Tahun 1 · Isi Padu Cecair',false,true),id,mode,'story','concept',['unit']);
@@ -238,7 +244,7 @@ function d1(id,s,shift){
   return depth(Q(`${d1Name()} mahu mengukur <b>panjang buku latihan</b>. Alat yang paling sesuai ialah?`,'pembaris',[N('penimbang','unit'),N('jam','unit'),N('cawan penyukat','unit')],'Pilih alat mengikut perkara yang hendak diukur.','Tahun 1 · Pilih Alat',true,true),id,mode,'story','reasoning',['unit']);
  }
  if(id==='D1.SHAPE'){
-  mode=chooseMode(id,s,['identify2d','property2d','identify3d','pattern_reason','odd_reason']);
+  mode=d1ChooseMode(id,s,['identify2d','property2d','identify3d'],['pattern_reason','odd_reason']);
   if(mode==='identify2d'){const sh=pick([['triangle','segi tiga'],['square','segi empat sama'],['circle','bulatan']]);return depth(Q(`${shapeSvg(sh[0])}Bentuk ini ialah?`,sh[1],[N('segi empat tepat','shape'),N('bulatan','shape'),N('segi tiga','shape')].filter(x=>x.v!==sh[1]).slice(0,3),'Perhatikan sisi dan bucu.','Tahun 1 · Bentuk 2D',true,true),id,mode,'visual','concept',['shape']);}
   if(mode==='property2d')return depth(Q(`${shapeSvg('triangle')}Berapakah bilangan sisi bentuk ini?`,3,[N(2,'shape'),N(4,'shape'),N(5,'shape')],'Kira sisi lurus.','Tahun 1 · Ciri Bentuk',true,true),id,mode,'visual','concept',['shape']);
   if(mode==='identify3d')return depth(Q(`Objek manakah berbentuk seperti <b>kubus</b>?`,'dadu',[N('bola','shape'),N('tin minuman','shape'),N('pinggan','shape')],'Kubus mempunyai muka segi empat sama.','Tahun 1 · Bentuk 3D',false,true),id,mode,'story','concept',['shape']);
@@ -246,7 +252,7 @@ function d1(id,s,shift){
   return depth(Q(`Antara <b>bola, tin minuman dan dadu</b>, objek manakah <b>tidak mempunyai permukaan melengkung</b>?`,'dadu',[N('bola','shape'),N('tin minuman','shape'),N('semua sama','shape')],'Perhatikan sama ada objek boleh bergolek pada permukaan melengkung.','Tahun 1 · Ciri Bentuk 3D',true,true),id,mode,'story','reasoning',['shape']);
  }
  if(id==='D1.DATA'){
-  mode=chooseMode(id,s,['most','count','difference','total_reason','missing_reason']);
+  mode=d1ChooseMode(id,s,['most','count','difference'],['total_reason','missing_reason']);
   const sets=[['Karipap','Kuih lapis','Pau'],['Rambutan','Pisang','Jambu'],['Bola','Buku','Botol air']],labels=pick(sets);
   let vals=[R(2,6),R(2,6),R(2,6)];while(new Set(vals).size<3)vals=[R(2,6),R(2,6),R(2,6)];const vis=pictograph(labels,vals);
   if(mode==='most'){const mx=Math.max(...vals),ans=labels[vals.indexOf(mx)];return depth(Q(`${vis}Yang manakah paling banyak?`,ans,labels.filter(x=>x!==ans).map(x=>N(x,'data')).concat([N('Sama banyak','data')]).slice(0,3),'Cari baris dengan simbol paling banyak.','Tahun 1 · Data Harian',true,true),id,mode,'visual','concept',['data']);}
