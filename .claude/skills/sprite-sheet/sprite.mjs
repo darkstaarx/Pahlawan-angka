@@ -63,15 +63,17 @@ async function slice() {
   const sheet = process.argv[3];
   const outDir = process.argv[4];
   if (!sheet || !outDir) {
-    console.error('usage: sprite.mjs slice <sheet> <outDir> [--cols N] [--height 340] [--pad .05]');
+    console.error('usage: sprite.mjs slice <sheet> <outDir> [--cols N] [--height 340] [--pad .05] [--anchor body|full]');
     process.exit(1);
   }
   const cols = arg('--cols') ? +arg('--cols') : null;
   const height = +arg('--height', 340);
   const pad = +arg('--pad', 0.05);
+  const anchor = arg('--anchor', 'body');
+  if (anchor !== 'body' && anchor !== 'full') { console.error("--anchor must be 'body' or 'full'"); process.exit(1); }
 
   const result = await withPage((page) =>
-    page.evaluate(async ({ uri, cols, height, pad }) => {
+    page.evaluate(async ({ uri, cols, height, pad, anchor }) => {
       const img = new Image();
       img.src = uri;
       await img.decode();
@@ -183,7 +185,15 @@ async function slice() {
       /* Normalise every frame to the same height and plant the feet on one
          line, then hand back WebP with the alpha intact. */
       const outW = Math.round(height * 1.02);
-      const urls = [], lum = [];
+      const urls = [], lum = [], drawn = [];
+
+      /* Scaling every frame to the same TOTAL height is wrong whenever the
+         prop changes length: a frame drawn with a shorter sword gets stretched
+         until its body is visibly bigger than the others, and the character
+         pumps once per loop. Scale on body height instead and reserve enough
+         headroom that the longest prop still fits inside the canvas. */
+      const ratio = Math.max(...frames.map((f) => f.fullH / f.bodyH));
+      const bodyTarget = (height * (1 - pad)) / ratio;
       /* Wrap the contact sheet at four across — a single strip of eight is
          too wide to actually look at, and looking at it is the point. */
       const gridCols = Math.min(4, frames.length);
@@ -200,7 +210,7 @@ async function slice() {
         cell.width = outW; cell.height = height;
         const g = cell.getContext('2d');
         g.imageSmoothingQuality = 'high';
-        const scale = (height * (1 - pad)) / f.fullH;
+        const scale = anchor === 'body' ? bodyTarget / f.bodyH : (height * (1 - pad)) / f.fullH;
         g.drawImage(
           img, f.minX, f.minY, f.maxX - f.minX + 1, f.fullH,
           outW / 2 - (f.footC - f.minX) * scale, height * (1 - pad / 2) - f.fullH * scale,
@@ -212,6 +222,7 @@ async function slice() {
           if (px[k + 3] > 200) { sum += 0.2126 * px[k] + 0.7152 * px[k + 1] + 0.0722 * px[k + 2]; n++; }
         }
         lum.push(+(sum / n).toFixed(1));
+        drawn.push({ body: Math.round(f.bodyH * scale), full: Math.round(f.fullH * scale) });
         urls.push(cell.toDataURL('image/webp', 0.85));
         const gx = (i % gridCols) * outW, gy = Math.floor(i / gridCols) * height;
         cg.drawImage(cell, gx, gy);
@@ -223,15 +234,16 @@ async function slice() {
       });
 
       return {
-        W, H, rows: rows.length,
+        W, H, rows: rows.length, anchor,
         frames: frames.map((f, i) => ({
           f: i + 1, row: f.row + 1, x: f.minX, y: f.minY, w: f.maxX - f.minX + 1,
           fullH: f.fullH, bodyH: f.bodyH, propRise: f.propRise,
           baseline: f.maxY - f.rowTop, footW: f.footW, lum: lum[i],
+          drawnBody: drawn[i].body, drawnFull: drawn[i].full,
         })),
         notes, urls, contact: contact.toDataURL('image/png'),
       };
-    }, { uri: dataUri(sheet), cols, height, pad })
+    }, { uri: dataUri(sheet), cols, height, pad, anchor })
   );
 
   fs.mkdirSync(outDir, { recursive: true });
@@ -239,7 +251,7 @@ async function slice() {
     fs.writeFileSync(path.join(outDir, `f${i + 1}.webp`), Buffer.from(u.split(',')[1], 'base64')));
   fs.writeFileSync(path.join(outDir, 'contact.png'), Buffer.from(result.contact.split(',')[1], 'base64'));
 
-  const report = { sheet, size: `${result.W}x${result.H}`, rows: result.rows, frames: result.frames, notes: result.notes };
+  const report = { sheet, size: `${result.W}x${result.H}`, rows: result.rows, anchor: result.anchor, frames: result.frames, notes: result.notes };
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));
 
   console.log(`sheet ${result.W}x${result.H} — ${result.rows} row(s), ${result.frames.length} frame(s)`);
@@ -254,6 +266,14 @@ async function slice() {
   const perRow = [...new Set(result.frames.map((f) => f.row))]
     .map((r) => spread(result.frames.filter((f) => f.row === r), 'baseline'));
   console.log(`spread — fullH ${spread(result.frames, 'fullH')}px · bodyH ${spread(result.frames, 'bodyH')}px · baseline ${Math.max(...perRow)}px (worst row) · luminance ${spread(result.frames, 'lum')}`);
+  /* The number that decides whether the character pumps: how much the drawn
+     body varies once every frame has been scaled. */
+  const drawnSpread = spread(result.frames, 'drawnBody');
+  const meanBody = result.frames.reduce((a, f) => a + f.drawnBody, 0) / result.frames.length;
+  console.log(`anchored on ${result.anchor} — drawn body varies ${drawnSpread}px of ${Math.round(meanBody)}px (${(drawnSpread / meanBody * 100).toFixed(1)}%)${result.anchor === 'full' ? ', and every prop-length difference lands on the body' : ''}`);
+  if (drawnSpread / meanBody > 0.03) {
+    console.log('WARNING: over 3% — the character will visibly grow and shrink through the loop.');
+  }
   if (result.rows > 1) {
     const byRow = [...new Set(result.frames.map((f) => f.row))]
       .map((r) => result.frames.filter((f) => f.row === r))
@@ -268,7 +288,12 @@ async function slice() {
   const median = rises[Math.floor(rises.length / 2)];
   const odd = result.frames.filter((f) => median >= 6 && f.propRise < median * 0.4);
   for (const f of odd) {
-    console.log(`WARNING F${f.f}: prop rises ${f.propRise}px above the head, median is ${median}px — its body will scale up when heights are normalised. Regenerate this frame or drop it.`);
+    /* Under body anchoring this no longer distorts the body — it just means
+       that frame's prop is drawn shorter, which is the art's own business. */
+    const consequence = result.anchor === 'body'
+      ? 'its body is still the right size, but the prop will visibly shrink on that frame'
+      : 'its body will scale up when heights are normalised — rerun with --anchor body';
+    console.log(`note F${f.f}: prop rises ${f.propRise}px above the head, median is ${median}px — ${consequence}.`);
   }
   result.notes.forEach((n) => console.log('note: ' + n));
   console.log(`\nwrote ${result.urls.length} frames + contact.png + report.json to ${outDir}`);

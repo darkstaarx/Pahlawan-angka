@@ -53,15 +53,29 @@ with whatever the character is holding, so centring on it makes the body
 swim sideways between frames. The slicer takes the horizontal midpoint of
 the bottom 6% of solid pixels and plants that on the same spot every frame.
 
-**Body height is measured separately from full height.** Normalising every
-frame to the same total height is right until a frame is drawn with a
-shorter prop — then that frame's *body* scales up to compensate and the
-character appears to pump. This is exactly what happened to F3 of the second
-sheet: its sword tip rose 1px above the head where the others rose 16px, so
-after normalisation its body was visibly larger. `report.json` carries
-`propRise` per frame and the slicer prints a WARNING when one frame is far
-below the median. Regenerate that frame or drop it; it is a drawing problem,
-not an alignment problem, and no anchor choice fixes it.
+**Frames are scaled on body height, not total height** (`--anchor body`, the
+default). Normalising to the same *total* height looks right until a frame is
+drawn with a shorter prop: that frame then gets stretched until its body is
+bigger than the others, and the character pumps once per loop. It is the most
+visible defect this pipeline can produce and it is entirely self-inflicted —
+a user spotted it as "kejap besar kejap kecil" before the numbers did.
+
+Measured on a real 8-frame sheet whose sword length varied (`propRise` 4 to
+20px): anchored on the full box the drawn body varied 12px of 315px (3.8%);
+anchored on the body it varied 0px. Verified again on the rendered page —
+body height, head top and foot centre all held to within 1px across the whole
+cycle.
+
+The slicer reserves headroom from the largest `fullH / bodyH` ratio on the
+sheet, so the longest prop still fits inside the canvas. It prints the drawn
+body spread every run and warns above 3%. `--anchor full` restores the old
+behaviour; there is rarely a reason to use it.
+
+What body anchoring does *not* fix is the prop itself — a frame drawn with a
+shorter sword still shows a shorter sword. That is the art's own business and
+far less noticeable than a body that changes size. `report.json` carries
+`propRise` per frame and the slicer names any frame far below the median, so
+you can decide whether to regenerate it.
 
 ## Ask what the order is before ranking anything
 
