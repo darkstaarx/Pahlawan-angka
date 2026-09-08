@@ -84,6 +84,10 @@ const app=fs.readFileSync('js/app.js','utf8'),dispatcher=fs.readFileSync('questi
 const pwa=fs.readFileSync('js/pwa.js','utf8'),sw=fs.readFileSync('sw.js','utf8'),html=fs.readFileSync('index.html','utf8'),version=fs.readFileSync('js/version.js','utf8'),css=fs.readFileSync('css/game-question-interactions-v3.62.3.css','utf8'),typed=fs.readFileSync('js/dev-experiments-v3.21.2.js','utf8');
 assert(/PAGameQuestionInteractions\?\.render/.test(app),'nextQ renderer hook missing');
 assert(/PAGameQuestionInteractions\?\.prepare/.test(dispatcher),'dispatcher prepare hook missing');
+assert(/function generate\(id,s,interactionContext=\{\}\)/.test(dispatcher)&&/\.\.\.interactionContext/.test(dispatcher),'battle-tier interaction context is not forwarded by dispatcher');
+assert(/questionStage=enemyStageForQuestion\(id\).*battleTier:questionStage\.tier.*isBoss:questionStage\.tier==='boss'/.test(app),'nextQ does not gate interaction style from the upcoming enemy tier');
+assert(/function enemyStageForQuestion\(skillIdOverride\)/.test(app),'enemy stage preview cannot resolve the upcoming skill');
+
 assert(/responseType:q\.responseType/.test(dispatcher)&&/interactionType:q\.interaction/.test(dispatcher),'question history interaction evidence missing');
 assert(/PAGameQuestionInteractions\?\.lock/.test(battle)&&/unlockRetry/.test(battle)&&/retryCopy/.test(battle),'battle lifecycle hooks incomplete');
 assert(/responseMode==='game'.*PAGameQuestionInteractions/.test(typed),'legacy boss typed renderer can still replace game-native controls');
