@@ -105,7 +105,7 @@ const d1Fruit=()=>pick(['rambutan','pisang','jambu','mangga']);
 const d1ChooseMode=(id,s,foundation,stretch=[])=>{
  const mastery=Number(s?.mastery||0),evidence=Number(s?.evidence||0);
  if(!stretch.length||evidence<2||mastery<30)return rotate(id,foundation);
- if(evidence>=5&&mastery>=60)return rotate(id,[...stretch,...foundation.slice(-2)]);
+ if(evidence>=5&&mastery>=60)return rotate(id,[...stretch,...foundation.slice(-3)]);
  return rotate(id,[...foundation,...stretch]);
 };
 function d1(id,s,shift){
