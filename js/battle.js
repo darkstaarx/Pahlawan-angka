@@ -279,7 +279,7 @@ function resolveAnswer(o,btn,question,ok){
  let responseMotion=null;
  let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):(qsv2NonT7Target?window.PAD3NonT7LiveIsolation?.captureLegacyState?.(question,s):null);
  window.PAEffortGuard?.retryResolved?.(question,ok);
- document.querySelectorAll(".ans").forEach(x=>x.disabled=true);
+ document.querySelectorAll(".ans").forEach(x=>x.disabled=true);window.PAGameQuestionInteractions?.lock?.();
  if(ok){
   btn.classList.add("ok");s.correct++;if(!sess.retryState)s.evidence++;if(!sess.retryState)sess.streak++;
   if(typeof playSfx==='function')playSfx('correct');
@@ -376,7 +376,9 @@ function resolveAnswer(o,btn,question,ok){
 function closeHintOverlay(){const overlay=document.getElementById('paHintOverlay');if(overlay){overlay.classList.remove('show');battleLater(()=>overlay.remove(),180)}}
 function showHintOverlay(help){
  let overlay=document.getElementById('paHintOverlay');if(!overlay){overlay=document.createElement('div');overlay.id='paHintOverlay';overlay.className='paHintOverlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','paHintTitle');document.body.appendChild(overlay)}
- overlay.innerHTML='<section class="paHintPanel"><div class="paHintMark" aria-hidden="true">✦</div><small>PETUNJUK CIKGU DIMENSI</small><h2 id="paHintTitle"></h2><p>Sekarang cuba pilih jawapan sekali lagi.</p><button type="button" onclick="closeHintOverlay()">Faham, saya cuba</button></section>';
+ const retryCopy=window.PAGameQuestionInteractions?.retryCopy?.(sess?.q)||'Sekarang cuba pilih jawapan sekali lagi.';
+ overlay.innerHTML='<section class="paHintPanel"><div class="paHintMark" aria-hidden="true">✦</div><small>PETUNJUK CIKGU DIMENSI</small><h2 id="paHintTitle"></h2><p></p><button type="button" onclick="closeHintOverlay()">Faham, saya cuba</button></section>';
+ overlay.querySelector('p').textContent=retryCopy;
  overlay.querySelector('h2').textContent=String(help||'Lihat semula maklumat penting dalam soalan.');requestAnimationFrame(()=>{overlay.classList.add('show');overlay.querySelector('button')?.focus()});
 }
 function hint(){
@@ -387,9 +389,11 @@ function hint(){
  if(!sess.hint){sess.hint=true;scoreState(sess.q.skill).hints++;}
  const button=document.querySelector('.hintBtn');if(button){button.classList.remove('needs-help');button.classList.add('used');button.setAttribute('aria-label','Petunjuk telah dibuka');}
  const help=(sess.guardianFocus&&typeof guardianHint==='function')?guardianHint(sess.q,sess.hintLevel):(sess.q.hintSteps?.[Math.min(sess.hintLevel-1,sess.q.hintSteps.length-1)]||sess.q.hint);
- document.getElementById('feedback').innerHTML=`<b>Cikgu Dimensi bantu:</b> ${help}<br><span class="retryPrompt">Sekarang pilih jawapan sekali lagi.</span>`;
+ const retryCopy=window.PAGameQuestionInteractions?.retryCopy?.(sess.q)||'Sekarang pilih jawapan sekali lagi.';
+ document.getElementById('feedback').innerHTML=`<b>Cikgu Dimensi bantu:</b> ${help}<br><span class="retryPrompt"></span>`;
+ document.querySelector('.retryPrompt').textContent=retryCopy;
  showHintOverlay(help);
- if(sess.retryState)document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});
+ if(sess.retryState){document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});window.PAGameQuestionInteractions?.unlockRetry?.();}
  save();
 }
 function battle(){const shown=battleDisplayedHp||sess;document.getElementById("heroHp").style.width=Math.max(0,shown.hp)/20*100+"%";let max=sess.enemyMaxHp||12;document.getElementById("enemyHp").style.width=Math.max(0,shown.ehp)/max*100+"%";window.PACombatMotion?.sync?.()}

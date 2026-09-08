@@ -17,7 +17,8 @@ const load=[
  'questions/kssr-year6-v2-unit7-v3.61.0.js',
  'questions/kssr-year6-v2-unit8-v3.61.0.js',
  'questions/kssr-year6-curriculum-v2-v3.61.0.js',
- 'questions/kssr-year6-adaptive-v3.61.1.js'
+ 'questions/kssr-year6-adaptive-v3.61.1.js',
+ 'js/game-question-interactions-v3.62.0.js'
 ];
 const sources=load.map(p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8'));
 const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[R(0,a.length-1)],N=(v,tag)=>({v,label:v,tag});
@@ -51,7 +52,7 @@ assert.equal(ctx.window.PAY6Adaptive?.version,'3.61.1','competency-level adaptiv
 for(const id of ids)assert.deepEqual(ctx.window.PAContentIntegrity.requirements[id],ctx.window.PAY6CompetencyV2.routes[id].map(node=>[node]),id+' integrity requirements do not match curriculum route');
 
 const states={fresh:{mastery:0,evidence:0,confidence:0,wrong:0},low:{mastery:15,evidence:2,confidence:20,wrong:1},core:{mastery:55,evidence:4,confidence:55,wrong:0},high:{mastery:90,evidence:10,confidence:85,wrong:0}};
-const allNodes=new Set(),stats={};let total=0;
+const allNodes=new Set(),interactionFamilies=new Set(),stats={};let total=0;
 for(const id of ids){
  stats[id]={};
  for(const [level,state] of Object.entries(states)){
@@ -68,6 +69,8 @@ for(const id of ids){
    assert.equal(q.curriculumUnit,node.unit,id+'/'+level+' incorrect curriculum unit '+q.archetypeId);
    if(level==='high'&&id!=='D6.MONEY')assert.equal(q.demand,'reasoning',id+' high item not reasoning '+q.archetypeId);
    if(id==='D6.MONEY')assert.equal(q.kssrMoneyRealVersion,'3.60.5','Money v3.60.5 delegation changed');
+   ctx.window.PAGameQuestionInteractions.prepare(q,{skillId:id,meta:{grade:6}});
+   assert.equal(q.responseType,'interactive',id+'/'+level+' did not receive interactive response');interactionFamilies.add(q.interaction.type);
    nodes.add(q.subcompetencyId);allNodes.add(q.subcompetencyId);arch.add(q.archetypeId);prompts.add(sem(q.prompt));total++;
    sess.questionHistory.push({skillId:id,competencyId:q.competencyId,archetypeId:q.archetypeId,source:q.source,representation:q.representation,demand:q.demand,difficultyBand:q.difficultyBand});
    if(sess.questionHistory.length>60)sess.questionHistory.shift();
@@ -139,4 +142,4 @@ assert(/New Delhi/.test(timeSrc)&&/Darwin/.test(timeSrc),'half-hour timezone cit
 assert(/jam.*minit/.test(timeSrc),'school-style hour/minute duration formatter missing');
 assert(!/Math\.abs\(c\.offset\/60\)\+'\s*jam'/.test(timeSrc),'decimal-hour UTC wording regressed');
 
-console.log(JSON.stringify({status:'PASS',version:'3.61.0',samples:total,uniqueStandards:allNodes.size,missing,stats,immediateRepeatEscape:'PASS',unit8VisualGuard:'PASS',halfHourTimeGuard:'PASS'},null,2));
+console.log(JSON.stringify({status:'PASS',version:'3.61.0',samples:total,uniqueStandards:allNodes.size,missing,interactionFamilies:[...interactionFamilies].sort(),stats,immediateRepeatEscape:'PASS',unit8VisualGuard:'PASS',halfHourTimeGuard:'PASS'},null,2));
