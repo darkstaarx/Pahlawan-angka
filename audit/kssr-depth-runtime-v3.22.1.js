@@ -56,7 +56,7 @@ assert.equal(Object.keys(PAKSSRDepth.contractStatus).length,102,'all current ski
 assert.equal(PAKSSRDepth.version,'3.22.1','depth version stale');
 for(const id of ids.d1){
  assert((arch[id]?.size||0)>=4,id+' needs at least 4 effective archetypes');
- assert((d1Reason[id]||0)>0,id+' has no reasoning ceiling at high mastery');
+ assert((d1Reason[id]||0)>=10,id+' reasoning ceiling is too rare at high mastery');
 }
 assert(d1Local>=20,'D1 Malaysian daily-life context did not surface enough');
 assert.equal(d1Sticker,0,'D1 still uses repetitive sticker context');
