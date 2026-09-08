@@ -56,13 +56,13 @@ assert(/PAGameQuestionInteractions\?\.prepare/.test(dispatcher),'dispatcher prep
 assert(/responseType:q\.responseType/.test(dispatcher)&&/interactionType:q\.interaction/.test(dispatcher),'question history interaction evidence missing');
 assert(/PAGameQuestionInteractions\?\.lock/.test(battle)&&/unlockRetry/.test(battle)&&/retryCopy/.test(battle),'battle lifecycle hooks incomplete');
 assert(/responseMode==='game'.*PAGameQuestionInteractions/.test(typed),'legacy boss typed renderer can still replace game-native controls');
-assert(/GAME_QUESTION_VERSION='3\.62\.0'/.test(pwa),'PWA version missing');
+assert(/GAME_QUESTION_VERSION='3\.62\.1'/.test(pwa),'PWA version missing');
 assert(pwa.indexOf('typed-answer-ui-v${TYPED_UI_VERSION}.js')<pwa.indexOf('game-question-interactions-v${GAME_QUESTION_VERSION}.js'),'parser load order wrong');
 assert(/loadTyped=.*loadGameQuestions/.test(pwa),'async typed -> game interaction order missing');
 assert(/gameQuestions:GAME_QUESTION_VERSION/.test(pwa),'release metadata missing');
 assert(sw.includes("'./js/game-question-interactions-v3.62.1.js'")&&sw.includes("'./css/game-question-interactions-v3.62.1.css'"),'offline shell assets missing');
-assert(/PA_APP_VERSION='3\.62\.0'/.test(version),'release version stale');
-assert(/js\/version\.js\?v=3\.62\.0/.test(html)&&/js\/pwa\.js\?v=3\.62\.0/.test(html),'HTML cache bust stale');
+assert(/PA_APP_VERSION='3\.62\.1'/.test(version),'release version stale');
+assert(/js\/version\.js\?v=3\.62\.1/.test(html)&&/js\/pwa\.js\?v=3\.62\.1/.test(html),'HTML cache bust stale');
 assert(!/upper-alpha|counter\(/i.test(css),'new interaction UI reintroduced A/B/C/D labels');
 
 console.log(JSON.stringify({status:'PASS',version:api.version,skills:skills.length,gradeCounts,interactionFamilies:[...new Set(cases.map(x=>x[2]).concat(angleCases.map(x=>x[1])))],assessment:{D1_D3:'KSSR_PBD',D4_D6:'KSSR_UASA_2025'},battleLifecycle:'PASS',offlineShell:'PASS'},null,2));
