@@ -16,7 +16,8 @@ const load=[
  'questions/kssr-year6-v2-unit6-space-v3.61.0.js',
  'questions/kssr-year6-v2-unit7-v3.61.0.js',
  'questions/kssr-year6-v2-unit8-v3.61.0.js',
- 'questions/kssr-year6-curriculum-v2-v3.61.0.js'
+ 'questions/kssr-year6-curriculum-v2-v3.61.0.js',
+ 'questions/kssr-year6-adaptive-v3.61.1.js'
 ];
 const sources=load.map(p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8'));
 const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[R(0,a.length-1)],N=(v,tag)=>({v,label:v,tag});
@@ -31,7 +32,14 @@ const Q=(prompt,answer,wrong,hint,kind,diagnostic,formatShift)=>{
 const ids=['D6.NUMBERS','D6.OPS','D6.FRAC','D6.DEC','D6.PERCENT','D6.MONEY','D6.TIME','D6.MEASURE','D6.ANGLE','D6.CIRCLE','D6.SPACE_PROBLEM','D6.COORD','D6.RATIO','D6.PIE','D6.PROB','D6.DATA_PROBLEM'];
 const META=Object.fromEntries(ids.map(id=>[id,{id,grade:6}]));
 const sess={questionHistory:[],questionFingerprints:[]};
-const ctx={console,Math,R,pick,N,Q,tidyNumber,moneyFmtUpper,META,sess,barChart:(l,v)=>'<div>'+l.map((x,i)=>x+':'+v[i]).join('|')+'</div>',document:{documentElement:{setAttribute(){}}},window:{PAQuestionBanks:{d6:(id)=>Q('legacy '+id,1,[N(2,'x'),N(3,'x'),N(4,'x')],'legacy','legacy')},sess}};
+const requirements={
+ 'D6.NUMBERS':[['large_sequence']], 'D6.OPS':[['combined_missing']],
+ 'D6.FRAC':[['fraction_operation']], 'D6.RATIO':[['ratio_simplify']],
+ 'D6.MONEY':[['budget_multistep']], 'D6.TIME':[['speed_time']]
+};
+const requirementStatus=(id,bucket)=>{const groups=requirements[id]||[],missing=groups.filter(group=>!group.some(mode=>Number(bucket?.[mode]?.clean||0)>0));return{ok:missing.length===0,missing}};
+const ctx={console,Math,R,pick,N,Q,tidyNumber,moneyFmtUpper,META,sess,barChart:(l,v)=>'<div>'+l.map((x,i)=>x+':'+v[i]).join('|')+'</div>',document:{documentElement:{setAttribute(){}}},window:{PAQuestionBanks:{d6:(id)=>Q('legacy '+id,1,[N(2,'x'),N(3,'x'),N(4,'x')],'legacy','legacy')},PAContentIntegrity:{requirements,requirementStatus},sess}};
+ctx.PAContentIntegrity=ctx.window.PAContentIntegrity;
 vm.createContext(ctx);sources.forEach((src,i)=>vm.runInContext(src,ctx,{filename:load[i]}));
 
 assert.equal(ctx.window.PAY6CompetencyV2?.uniqueStandardCount,38,'Year 6 competency map must have exactly 38 unique SP');
@@ -39,6 +47,8 @@ assert.equal(ctx.window.PAY6CompetencyV2?.nodes?.length,38,'Year 6 node list mus
 assert.equal(ctx.window.PAY6CompetencyV2?.activeSkills?.length,16,'outward D6 skill count changed');
 assert.equal(ctx.window.PAY6CurriculumV2?.generatorCount,33,'non-Money generator count must be 33');
 assert.equal(ctx.window.PAY6CurriculumV2?.version,'3.61.0','v2 finalizer inactive');
+assert.equal(ctx.window.PAY6Adaptive?.version,'3.61.1','competency-level adaptive patch inactive');
+for(const id of ids)assert.deepEqual(ctx.window.PAContentIntegrity.requirements[id],ctx.window.PAY6CompetencyV2.routes[id].map(node=>[node]),id+' integrity requirements do not match curriculum route');
 
 const states={fresh:{mastery:0,evidence:0,confidence:0,wrong:0},low:{mastery:15,evidence:2,confidence:20,wrong:1},core:{mastery:55,evidence:4,confidence:55,wrong:0},high:{mastery:90,evidence:10,confidence:85,wrong:0}};
 const allNodes=new Set(),stats={};let total=0;
@@ -78,6 +88,24 @@ assert(stats['D6.RATIO'].core.archetypes>=17,'D6.RATIO core breadth regressed');
 assert(stats['D6.PROB'].core.archetypes>=10,'D6.PROB core breadth regressed');
 assert(stats['D6.MONEY'].core.archetypes>=24,'D6.MONEY benchmark breadth regressed');
 
+// Persistent evidence, not just current-session history, must choose the one
+// curriculum node that still lacks clean proof. This is the core v3.61.1 fix.
+for(const id of ids){
+ const route=ctx.window.PAY6CompetencyV2.routes[id],target=route.at(-1);
+ const competencies=Object.fromEntries(route.slice(0,-1).map(node=>[node,{attempts:2,correct:2,clean:1}]));
+ const state={...states.core,competencies};sess.questionHistory=[];
+ const q=ctx.window.PAQuestionBanks.d6(id,state,false);
+ assert.equal(q.adaptiveTargetNode,target,id+' did not target the unproven curriculum node');
+ assert.equal(q.subcompetencyId,target,id+' generated the wrong targeted curriculum node');
+ assert.equal(q.adaptiveTargetMatched,true,id+' failed to match its persistent target');
+}
+for(const target of ctx.window.PAY6CompetencyV2.routes['D6.MONEY']){
+ const route=ctx.window.PAY6CompetencyV2.routes['D6.MONEY'];
+ const competencies=Object.fromEntries(route.filter(node=>node!==target).map(node=>[node,{attempts:2,correct:2,clean:1}]));
+ sess.questionHistory=[];const q=ctx.window.PAQuestionBanks.d6('D6.MONEY',{...states.low,competencies},false);
+ assert.equal(q.subcompetencyId,target,'low-stage Money could not calibrate missing '+target);
+}
+
 // Every skill must escape an immediate archetype repeat under dispatcher-like retries.
 for(const id of ids)for(const level of ['fresh','low','core','high']){
  const state=states[level];sess.questionHistory=[];let last=null;
@@ -106,7 +134,7 @@ assert(sawValuePie,'did not exercise value-display pie item');
 assert(sawFractionalRatio,'did not exercise fractional pie ratio item');
 
 // Unit 4 must retain authentic half-hour zones and school-style duration wording.
-const timeSrc=fs.readFileSync(path.join(__dirname,'..','questions/kssr-year6-v2-unit45-v3.61.0.js'),'utf8');
+const timeSrc=fs.readFileSync(path.join(__dirname,'..','questions/kssr-year6-v2-runtime-v3.61.0.js'),'utf8')+fs.readFileSync(path.join(__dirname,'..','questions/kssr-year6-v2-unit45-v3.61.0.js'),'utf8');
 assert(/New Delhi/.test(timeSrc)&&/Darwin/.test(timeSrc),'half-hour timezone cities missing');
 assert(/jam.*minit/.test(timeSrc),'school-style hour/minute duration formatter missing');
 assert(!/Math\.abs\(c\.offset\/60\)\+'\s*jam'/.test(timeSrc),'decimal-hour UTC wording regressed');
