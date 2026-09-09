@@ -2,11 +2,11 @@
 
 ## Scope
 
-Source of truth: **DSKP KSSR Semakan 2017 Matematik Tahun 2**. The Year 2 curriculum is treated as 8 units with **70 unique Standard Pembelajaran (SP)**. The existing game exposes 46 D2 skill IDs; those IDs remain unchanged for save/progression compatibility, while an internal SP layer now tracks the full curriculum.
+Source of truth: **DSKP KSSR Semakan 2017 Matematik Tahun 2**. The Year 2 curriculum is treated as 8 units with **70 unique Standard Pembelajaran (SP)**. The existing game exposes 37 D2 skill IDs; those IDs remain unchanged for save/progression compatibility, while an internal SP layer now tracks the full curriculum.
 
 ## Main gaps found in the legacy D2 bank
 
-1. **Curriculum evidence was too compressed.** The 46 visible skills did not independently prove all 70 SPs.
+1. **Curriculum evidence was too compressed.** The 37 visible skills did not independently prove all 70 SPs.
 2. **Unit 2 — Operasi:** `2.5.1` (mereka cerita masalah) was not independently tracked as its own learning evidence.
 3. **Unit 3 — Pecahan/Perpuluhan:** 13 SPs were compressed into four skills, especially separate requirements to name, represent, write, show and compare fractions/decimals.
 4. **Unit 5 — Masa:** the legacy `D2.5.2` generator included `minggu → hari`. The verified Year 2 `5.2.1` target is day↔hour and hour↔minute, so the new v2 bank removes week conversion from this competency.
@@ -82,7 +82,7 @@ Every new Year 2 v2 question is tagged with exact `standardRef`, `competencyId` 
 
 `audit/year2-curriculum-v2-v3.62.12.js` checks:
 - exact 70-SP list;
-- 46 existing D2 skill IDs preserved;
+- 37 existing D2 skill IDs preserved;
 - 70 generators;
 - exact SP metadata;
 - unique four-choice sets;
