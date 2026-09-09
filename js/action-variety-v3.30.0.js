@@ -7,6 +7,12 @@
       {id:'arc',label:'Lengkung Nombor',asset:'assets/heroes/wira/frames/attack-arc-v2.webp',bodyScale:1.42,footShiftX:28},
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
     ],
+    wirachibi:[
+      {id:'original',label:'Tebasan Ais Chibi',asset:'assets/heroes/wira-chibi/attack.webp',bodyScale:1.48,footShiftX:28},
+      {id:'dash',label:'Tikaman Pantas',asset:'assets/heroes/wira-chibi/frames/attack-dash-v2.webp',bodyScale:1.48,footShiftX:38},
+      {id:'arc',label:'Lengkung Nombor',asset:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',bodyScale:1.42,footShiftX:28},
+      {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira-chibi/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
+    ],
     bunga:[
       {id:'kelopak-pecahan',label:'Kelopak Pecahan',asset:'assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp',bodyScale:1.08,footShiftX:0},
       {id:'bulatan-harmoni',label:'Bulatan Harmoni',asset:'assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp',bodyScale:1.08,footShiftX:0}
@@ -17,7 +23,7 @@
   const preloadedFrames=Object.values(variants).flat().map(({asset})=>{
     const image=new Image();image.decoding='async';image.src=asset;return image;
   });
-  let last={wira:-1,bunga:-1};
+  let last={wira:-1,wirachibi:-1,bunga:-1};
   function strikeFrame(){
     let frame=document.getElementById('heroStrike');
     if(frame)return frame;
@@ -28,8 +34,9 @@
   }
   function pick(hero){
     const pool=variants[hero]||variants.wira;
-    let next=(last[hero]+1+Math.floor(Math.random()*(pool.length-1)))%pool.length;
-    if(next===last[hero])next=(next+1)%pool.length;
+    const previous=Number.isInteger(last[hero])?last[hero]:-1;
+    let next=(previous+1+Math.floor(Math.random()*(pool.length-1)))%pool.length;
+    if(next===previous)next=(next+1)%pool.length;
     last[hero]=next;return pool[next];
   }
   /* Gelombang Operasi plants the sword into the ground, so the hero has to be
@@ -66,7 +73,7 @@
     const button=document.createElement('button');button.id='devAttackLabBtn';button.className='btn ghost small';button.textContent='🎞 Attack Lab';button.onclick=window.openAttackLab;grid.appendChild(button);
   }
   function labMarkup(){
-    return '<div class="paAttackLabShade"></div><section class="paAttackLabPanel"><div class="paAttackLabHead"><div><small>DEV · FRAME INSPECTOR</small><h2>Attack Lab</h2></div><button type="button" onclick="closeAttackLab()" aria-label="Tutup">×</button></div><div class="paAttackLabControls"><button data-lab-hero="wira" onclick="attackLabHero(\'wira\')">Wira</button><button data-lab-hero="bunga" onclick="attackLabHero(\'bunga\')">Bunga</button><select id="paAttackLabVariant" onchange="attackLabVariant(this.value)"></select></div><div class="paAttackLabStage"><div class="paAttackLabGround"></div><img id="paAttackLabFrame" alt=""></div><div class="paAttackLabSteps"><button onclick="attackLabStep(\'stance\')"><b>1</b><span>Attack stance</span></button><button data-lab-step="movement" onclick="attackLabStep(\'movement\')"><b>2</b><span>Movement</span></button><button onclick="attackLabStep(\'strike\')"><b>3</b><span>Actual attack</span></button></div><button class="btn primary paAttackLabPlay" onclick="playAttackLab()">▶ Main sequence penuh</button><p id="paAttackLabStatus">Pilih frame untuk diperiksa.</p></section>';
+    return '<div class="paAttackLabShade"></div><section class="paAttackLabPanel"><div class="paAttackLabHead"><div><small>DEV · FRAME INSPECTOR</small><h2>Attack Lab</h2></div><button type="button" onclick="closeAttackLab()" aria-label="Tutup">×</button></div><div class="paAttackLabControls"><button data-lab-hero="wira" onclick="attackLabHero(\'wira\')">Wira</button><button data-lab-hero="wirachibi" onclick="attackLabHero('wirachibi')">Wira Chibi</button><button data-lab-hero="bunga" onclick="attackLabHero(\'bunga\')">Bunga</button><select id="paAttackLabVariant" onchange="attackLabVariant(this.value)"></select></div><div class="paAttackLabStage"><div class="paAttackLabGround"></div><img id="paAttackLabFrame" alt=""></div><div class="paAttackLabSteps"><button onclick="attackLabStep(\'stance\')"><b>1</b><span>Attack stance</span></button><button data-lab-step="movement" onclick="attackLabStep(\'movement\')"><b>2</b><span>Movement</span></button><button onclick="attackLabStep(\'strike\')"><b>3</b><span>Actual attack</span></button></div><button class="btn primary paAttackLabPlay" onclick="playAttackLab()">▶ Main sequence penuh</button><p id="paAttackLabStatus">Pilih frame untuk diperiksa.</p></section>';
   }
   const lab={hero:'wira',variant:'original',timer:[]};
   function labItem(){return (variants[lab.hero]||variants.wira).find(x=>x.id===lab.variant)||(variants[lab.hero]||variants.wira)[0]}

@@ -65,7 +65,7 @@ function triggerFinisherCinematic(){
   layer.style.setProperty('--hero-w',heroRect.width+'px');
   layer.style.setProperty('--hero-h',heroRect.height+'px');
   layer.style.setProperty('--hero-bottom',(arenaRect.bottom-heroRect.bottom)+'px');
-  const heroKey=db.hero||'wira',focusScale=heroKey==='wira'?1.18:(heroKey==='sidma'?1:1.12);
+  const heroKey=db.hero||'wira',focusScale=(heroKey==='wira'||heroKey==='wirachibi')?1.18:(heroKey==='sidma'?1:1.12);
   layer.style.setProperty('--cinematic-hero-h',(heroRect.height*focusScale)+'px');
   layer.style.setProperty('--hero-center-x',(heroRect.left-arenaRect.left+(heroRect.width/2))+'px');
   const auraWidth=heroRect.width*2.08;
@@ -86,12 +86,12 @@ function triggerFinisherCinematic(){
  layer.dataset.focusAsset='approved';
  layer.setAttribute('aria-label',db.hero==='sidma'?'Rumus Penamat':'Serangan terakhir '+h.name);
  layer.classList.remove('active','release');void layer.offsetWidth;layer.classList.add('active');
- if(!['wira','sidma','bunga'].includes(db.hero)&&typeof playSfx==='function')playSfx('auraCharge');
+ if(!['wira','wirachibi','sidma','bunga'].includes(db.hero)&&typeof playSfx==='function')playSfx('auraCharge');
  const sidmaFinisher=db.hero==='sidma';
  battleLater(()=>{
   layer.classList.add('release');
   if(sidmaFinisher&&h.frames?.release)hero.src=h.frames.release;
-  if(typeof playSfx==='function'&&db.hero!=='wira'&&db.hero!=='bunga'&&!sidmaFinisher)playSfx('attack');
+  if(typeof playSfx==='function'&&db.hero!=='wira'&&db.hero!=='wirachibi'&&db.hero!=='bunga'&&!sidmaFinisher)playSfx('attack');
  },sidmaFinisher?650:760);
  battleLater(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
 }
@@ -106,7 +106,7 @@ function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
  let attacker=document.getElementById(attackerId),target=document.getElementById(targetId),arena=document.getElementById("battleArena"),flash=document.getElementById("arenaFlash");
  if(!attacker||!target||!arena||!flash)return;
  const pet=attackerId==="hero"?document.getElementById("battlePet"):null;
- const wiraFinishing=attackerId==="hero"&&db?.hero==="wira"&&finisher;
+ const wiraFinishing=attackerId==="hero"&&(db?.hero==="wira"||db?.hero==="wirachibi")&&finisher;
  const sidmaFinishing=attackerId==="hero"&&db?.hero==="sidma"&&finisher;
  const bungaFinishing=attackerId==="hero"&&db?.hero==="bunga"&&finisher;
  // Final blows are the hero's solo climax. Pets still assist every regular
@@ -166,7 +166,7 @@ function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
    arena.classList.remove("shake","finisher-shake");if(shakeClass){void arena.offsetWidth;arena.classList.add(shakeClass);battleLater(()=>arena.classList.remove(shakeClass),hitDuration)}
    flash.classList.remove("pulse-red","pulse-ice","pulse-bloom");if(pulse){void flash.offsetWidth;flash.classList.add(pulse);battleLater(()=>flash.classList.remove(pulse),finisher?620:360)}
    if(targetId==='hero'&&db?.hero==='bunga')window.PABungaBattle?.showHurt?.();
-   if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&db?.hero==='wira'?'wiraSword':'hit');
+   if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&(db?.hero==='wira'||db?.hero==='wirachibi')?'wiraSword':'hit');
  },contactDelay)
  battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
  const requestedDamage=Number(damageAmount);const amount=attackerId==='hero'?(db?.devOneHit?Math.max(4,sess.ehp):(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4)):3;
@@ -287,7 +287,7 @@ function resolveAnswer(o,btn,question,ok){
   s.mastery=Math.min(100,s.mastery+gain);s.confidence=Math.min(100,s.confidence+(layerDelta>0?4.5:5.5)*ql);s.stability=Math.min(100,s.stability+4*ql);
   if(layerDelta>0&&!sess.retryState&&!sess.hint)s.probePass++;
   document.getElementById("feedback").innerHTML=(sess.guardianFocus&&typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?(sess.hint?'Bagus! Petunjuk membantu kamu menemui jawapan.':'Bagus! Kamu cuba semula dan menemui jawapan.'):(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
-  const devOneHit=!!(db&&isDevMode()&&db.devOneHit),storyPlan=window.PABattleStory?.plan?.(),storyDamage=storyPlan&&Number.isFinite(Number(storyPlan.damage))?Math.max(0,Number(storyPlan.damage)):4,damage=devOneHit?Math.max(4,sess.ehp):storyDamage;let willFinish=devOneHit||(storyPlan?(!!storyPlan.finisherEligible&&sess.ehp<=Math.max(1,damage)):sess.ehp<=4);usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(storyPlan?.action==='guard'){responseMotion=window.PABattleStory?.playGuard?.()||{completionDelay:820};sess.lastHeroImpact=responseMotion}else if(storyPlan?.action==='event'){responseMotion=window.PABattleStory?.playEventSuccess?.()||{completionDelay:720};sess.lastHeroImpact=responseMotion}else{if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish,damage);responseMotion=sess.lastHeroImpact;sess.ehp-=damage}window.PABattleStory?.afterAnswer?.(true)
+  const devOneHit=!!(db&&isDevMode()&&db.devOneHit),storyPlan=window.PABattleStory?.plan?.(),storyDamage=storyPlan&&Number.isFinite(Number(storyPlan.damage))?Math.max(0,Number(storyPlan.damage)):4,damage=devOneHit?Math.max(4,sess.ehp):storyDamage;let willFinish=devOneHit||(storyPlan?(!!storyPlan.finisherEligible&&sess.ehp<=Math.max(1,damage)):sess.ehp<=4);usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(storyPlan?.action==='guard'){responseMotion=window.PABattleStory?.playGuard?.()||{completionDelay:820};sess.lastHeroImpact=responseMotion}else if(storyPlan?.action==='event'){responseMotion=window.PABattleStory?.playEventSuccess?.()||{completionDelay:720};sess.lastHeroImpact=responseMotion}else{if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','wirachibi','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish,damage);responseMotion=sess.lastHeroImpact;sess.ehp-=damage}window.PABattleStory?.afterAnswer?.(true)
  }else{
   btn.classList.add("no");sess.streak=0;
   if(!sess.retryState){s.wrong++;s.evidence++;s.mastery=Math.max(0,s.mastery-(layerDelta>0?2.2:4.5));s.confidence=Math.max(0,s.confidence-(layerDelta>0?4:7.5));s.stability=Math.max(0,s.stability-5);s.mis[o.tag]=(s.mis[o.tag]||0)+1;if(layerDelta>0)s.probeFail++}

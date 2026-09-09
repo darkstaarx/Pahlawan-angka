@@ -58,9 +58,10 @@ function applyHeroToBattle(){
  const heroId=(db&&db.hero)||selectedHero||"wira";
  // Demo and direct mission entry do not pass through renderHub(). Apply the
  // hero's sizing rules here as well, before measuring the battle artwork.
+ document.body.classList.toggle('hero-wira',heroId==='wira'||heroId==='wirachibi');
  document.body.classList.toggle('hero-bunga',heroId==='bunga');
  document.body.classList.toggle('hero-sidma',heroId==='sidma');
- let h=HEROES[heroId];
+ let h=HEROES[heroId]||HEROES.wira;
  document.getElementById('heroName').textContent=h.name;
  document.getElementById('heroIdle').src=h.idle;
  document.getElementById('heroAnticipation').src=h.anticipation;
@@ -75,8 +76,9 @@ function applyHeroToBattle(){
 
 function setupHeroPicker(){
  refreshLoginResume();
- let w=document.getElementById('pickImgWira'),b=document.getElementById('pickImgBunga'),s=document.getElementById('pickImgSidma');
+ let w=document.getElementById('pickImgWira'),wc=document.getElementById('pickImgWiraChibi'),b=document.getElementById('pickImgBunga'),s=document.getElementById('pickImgSidma');
  if(w)w.src=HEROES.wira.idle;
+ if(wc&&HEROES.wirachibi)wc.src=HEROES.wirachibi.idle;
  if(b)b.src=HEROES.bunga.profile||HEROES.bunga.idle;
  if(s&&HEROES.sidma)s.src=HEROES.sidma.profile||HEROES.sidma.idle;
  chooseHero((db&&db.hero)||selectedHero||'wira');

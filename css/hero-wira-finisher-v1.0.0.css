@@ -1,6 +1,6 @@
 /* Wira final v2 — restrained ice-electric seal formed directly on the enemy. */
 .wira-final-charge-aura{position:absolute;left:var(--hero-center-x,72px);bottom:var(--aura-bottom,-12px);width:min(var(--aura-w,270px),58vw);height:auto;max-width:none;z-index:3;opacity:0;transform:translateX(-50%) scale(.52);transform-origin:50% 50%;pointer-events:none}
-.finisherCinematic.active[data-hero="wira"] .wira-final-charge-aura.active{animation:wiraChargeAura 1040ms ease-out both}
+.finisherCinematic.active[data-hero="wira"] .wira-final-charge-aura.active,.finisherCinematic.active[data-hero="wirachibi"] .wira-final-charge-aura.active{animation:wiraChargeAura 1040ms ease-out both}
 #game #battleArena .wira-frost-seal,#game #battleArena .wira-ice-burst,#game #battleArena .wira-ice-end{position:absolute;pointer-events:none;opacity:0;z-index:15;height:var(--wira-final-size,min(42vw,190px));width:auto;max-width:none;transform:translate(-50%,-50%);transform-origin:50% 50%}
 #game #battleArena .wira-frost-seal{filter:drop-shadow(0 0 10px #fff) drop-shadow(0 0 24px rgba(56,188,255,.86))}
 #game #battleArena .wira-frost-seal.form{animation:wiraSealForm 330ms ease-out both}

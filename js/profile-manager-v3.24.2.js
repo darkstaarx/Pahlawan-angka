@@ -6,6 +6,7 @@
 const VERSION='3.25.3';
 const HERO={
   wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/profile-happy-v1.webp'},
+  wirachibi:{id:'wirachibi',name:'Wira Chibi',power:'Kuasa Ais',src:'assets/heroes/wira-chibi/idle.webp'},
   bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'},
   sidma:{id:'sidma',name:'Sidma',power:'Rumus Sigma',src:'assets/heroes/sidma/profile-happy-v1.webp'}
 };
@@ -135,7 +136,7 @@ function ensureUi(){
           <label class="pmField"><span>Darjah</span><select id="pmChildGrade">${[1,2,3,4,5,6].map(g=>`<option value="${g}">Darjah ${g}</option>`).join('')}</select></label>
           <div class="pmHeroLabel"><span>Pilih pahlawan</span><small>Pilih pahlawan yang akan menemani pengembaraan.</small></div>
           <div class="pmHeroGrid">
-            ${heroChoice('wira')}${heroChoice('bunga')}${heroChoice('sidma')}
+            ${heroChoice('wira')}${heroChoice('wirachibi')}${heroChoice('bunga')}${heroChoice('sidma')}
           </div>
           <div id="pmEditorError" class="pmError" role="alert"></div>
           <button id="pmSaveProfile" class="pmPrimary" type="button" onclick="PAProfileManager.saveProfile()">Cipta Profil</button>
