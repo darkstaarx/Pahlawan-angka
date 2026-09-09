@@ -1,4 +1,4 @@
-// App shell v3.62.17 — finisher ground-plant frame now shows earlier and holds longer, clearly visible instead of a barely-there flash.
+// App shell v3.62.18 — Wira Chibi hub portrait can play a looping idle video (falls back to the static image if the device cannot decode it, and pauses when leaving the hub).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

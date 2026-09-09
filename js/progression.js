@@ -64,8 +64,24 @@ function renderHub(){
   document.body.classList.toggle('hero-wirachibi',(db.hero||'wira')==='wirachibi');
   document.body.classList.toggle('hero-bunga',(db.hero||'wira')==='bunga');
   document.body.classList.toggle('hero-sidma',(db.hero||'wira')==='sidma');
-  const heroId=db.hero||'wira',hubHero=document.getElementById('hubHeroImg'),hubFx=document.getElementById('hubMathFx');
+  const heroId=db.hero||'wira',hubHero=document.getElementById('hubHeroImg'),hubHeroVideo=document.getElementById('hubHeroVideo'),hubFx=document.getElementById('hubMathFx');
   hubHero.src=h.hub||h.idle; hubHero.alt=h.name;
+  if(hubHeroVideo){
+    if(h.hubVideo){
+      if(hubHeroVideo.dataset.src!==h.hubVideo){
+        hubHeroVideo.dataset.src=h.hubVideo;hubHeroVideo.src=h.hubVideo;
+        // A device that can't decode this file (wrong codec, corrupt asset)
+        // fires 'error' instead of ever reaching 'playing' — fall back to
+        // the static image rather than leave a blank box on screen.
+        hubHeroVideo.onerror=()=>{hubHeroVideo.classList.add('hidden');hubHero.classList.remove('hidden')};
+      }
+      hubHero.classList.add('hidden');hubHeroVideo.classList.remove('hidden');
+      hubHeroVideo.play?.().catch(()=>{});
+    }else{
+      hubHeroVideo.classList.add('hidden');hubHero.classList.remove('hidden');
+      hubHeroVideo.pause?.();
+    }
+  }
   if(hubFx){hubFx.src=h.hubFx||'';hubFx.classList.toggle('hidden',!h.hubFx);hubFx.dataset.hero=heroId}
   document.getElementById('hubName').textContent=db.name;
   document.getElementById('hubGrade').textContent=`Darjah ${db.schoolGrade}`;
@@ -223,3 +239,14 @@ function startDevSkill(id=null){
 function devRandomSkill(){
   if(!db)return; const grade=+(document.getElementById('devGrade')?.value||db.schoolGrade),arr=GRAPH.skills.filter(x=>x.grade===grade); if(!arr.length)return; startDevSkill(arr[Math.floor(Math.random()*arr.length)].id);
 }
+// The hub hero video keeps decoding in the background even while hidden by
+// another .screen, since nothing here destroys it on navigation. Pause it
+// the moment the player leaves the hub, and resume is handled by renderHub()
+// itself on the way back in.
+(()=>{
+  const pauseHubVideoIfAway=()=>{
+    if(document.body.dataset.screen==='hub')return;
+    document.getElementById('hubHeroVideo')?.pause?.();
+  };
+  new MutationObserver(pauseHubVideoIfAway).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
+})();
