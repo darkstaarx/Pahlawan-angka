@@ -20,3 +20,9 @@ window.PAQuestionBanks.d2t8 = function(id,s,shift){
  }
  return null;
 };
+
+// Year 2 v2 is loaded after every legacy D2 topic bank exists, so the new
+// SP-level finalizer can wrap all eight topic banks without changing their IDs.
+if(typeof document!=='undefined'&&document.readyState==='loading'&&!document.querySelector('script[src^="questions/kssr-year2-loader-v3.62.12.js"]')){
+ document.write('<script src="questions/kssr-year2-loader-v3.62.12.js?v=3.62.12"><\/script>');
+}
