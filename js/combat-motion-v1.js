@@ -4,7 +4,11 @@
  'use strict';
  const byId=id=>document.getElementById(id),cache=new Map();
  const paths={idle:'assets/heroes/wira/idle.webp',ready:'assets/heroes/wira/frames/anticipation-v1.webp',strike:'assets/heroes/wira/frames/attack-arc-v2.webp',follow:'assets/heroes/wira/frames/follow-through-v1.webp'};
- const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/frames/anticipation-v1.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
+ // The Chibi pack's anticipation-v1 frame is a mid-swing action shot, not a
+ // wind-up stance like the original Wira's — using it here reads as two
+ // swings per attack. Idle stands in for the ready pose until a true
+ // wind-up frame exists.
+ const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/idle.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
  const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
  const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
  // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the

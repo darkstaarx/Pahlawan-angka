@@ -1,4 +1,4 @@
-// App shell v3.62.11 — Wira Chibi slot map corrected; Wira runtime unchanged; high-DPI battle canvas.
+// App shell v3.62.12 — Wira Chibi ready pose swapped to idle; a mid-swing frame was standing in for the wind-up.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
