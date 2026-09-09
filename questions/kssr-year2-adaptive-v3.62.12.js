@@ -23,22 +23,26 @@ function applyIntegrity(){
  for(const id of C.activeSkills)integrity.requirements[id]=(C.routes[id]||[]).map(node=>[node]);
  integrity.year2CompetencyVersion=VERSION;return true;
 }
-if(!applyIntegrity()&&typeof document!=='undefined')document.addEventListener('DOMContentLoaded',applyIntegrity,{once:true});
 function stateEntry(id,node){
  try{
    if(typeof scoreState!=='function')return null;const state=scoreState(id);state.competencies=state.competencies||{};
    return state.competencies[node]||(state.competencies[node]={attempts:0,correct:0,clean:0});
  }catch(_){return null}
 }
-const priorRecord=window.recordFrontierResponse;
-if(typeof priorRecord==='function'&&!priorRecord.__paY2IndependentProof){
+function installRecordGuard(){
+ const priorRecord=window.recordFrontierResponse;
+ if(typeof priorRecord!=='function')return false;
+ if(priorRecord.__paY2IndependentProof)return true;
  const guarded=function(id,ok,sec,usedHint,question){
    const node=String(question?.subcompetencyId||question?.competencyId||''),isY2=String(id).startsWith('D2.'),entry=isY2&&node?stateEntry(id,node):null;
    const retried=!!window.sess?.retryState;
    if(entry){entry.attempts=Number(entry.attempts||0)+1;if(ok)entry.correct=Number(entry.correct||0)+1;if(ok&&!usedHint&&!retried)entry.clean=Number(entry.clean||0)+1;}
    return priorRecord.apply(this,arguments);
  };
- guarded.__paY2IndependentProof=true;window.recordFrontierResponse=guarded;
+ guarded.__paY2IndependentProof=true;window.recordFrontierResponse=guarded;return true;
+}
+if(typeof document!=='undefined'){
+ if(!applyIntegrity()||!installRecordGuard())document.addEventListener('DOMContentLoaded',()=>{applyIntegrity();installRecordGuard()},{once:true});
 }
 for(const key of keys){
  const prior=banks[key];if(typeof prior!=='function')continue;
@@ -47,6 +51,6 @@ for(const key of keys){
    const generator=RT.GEN[target];return tagTarget(generator?generator(id,state,shift):prior(id,state,shift),target);
  };
 }
-window.PAY2Adaptive={version:VERSION,choosePersistentNode,nodeStats,applyIntegrity};
+window.PAY2Adaptive={version:VERSION,choosePersistentNode,nodeStats,applyIntegrity,installRecordGuard};
 document.documentElement?.setAttribute('data-kssr-year2-adaptive',VERSION);
 })();
