@@ -110,8 +110,8 @@ assert(pwa.indexOf('typed-answer-ui-v${TYPED_UI_VERSION}.js')<pwa.indexOf('game-
 assert(/loadTyped=.*loadGameQuestions/.test(pwa),'async typed -> game interaction order missing');
 assert(/gameQuestions:GAME_QUESTION_VERSION/.test(pwa),'release metadata missing');
 assert(sw.includes("'./js/game-question-interactions-v3.62.4.js'")&&sw.includes("'./css/game-question-interactions-v3.62.4.css'"),'offline shell assets missing');
-assert(/PA_APP_VERSION='3\.62\.6'/.test(version),'release version stale');
-assert(/js\/version\.js\?v=3\.62\.6/.test(html)&&/js\/pwa\.js\?v=3\.62\.6/.test(html),'HTML cache bust stale');
+assert(/PA_APP_VERSION='3\.62\.7'/.test(version),'release version stale');
+assert(/js\/version\.js\?v=3\.62\.7/.test(html)&&/js\/pwa\.js\?v=3\.62\.7/.test(html),'HTML cache bust stale');
 assert(!/upper-alpha|counter\(/i.test(css),'new interaction UI reintroduced A/B/C/D labels');
 
 console.log(JSON.stringify({status:'PASS',version:api.version,skills:skills.length,gradeCounts,interactionFamilies:[...new Set(cases.map(x=>x[2]).concat(angleCases.map(x=>x[1]),circleCases.map(x=>x[1]),spaceCases.map(x=>x[1])))],assessment:{D1_D3:'KSSR_PBD',D4_D6:'KSSR_UASA_2025'},battleLifecycle:'PASS',offlineShell:'PASS'},null,2));
