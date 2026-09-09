@@ -13,7 +13,7 @@ function questionBankFor(id){
   const m=id.match(/^D2\.(\d+)\./);
   return m ? window.PAQuestionBanks["d2t"+m[1]] : null;
 }
-function generate(id,s){
+function generate(id,s,interactionContext={}){
   let shift = s.evidence>=2 && (s.confidence+15<s.mastery || s.correct>=3 && s.wrong===0) && Math.random()<.45;
   const bank=questionBankFor(id);
   let q=null,fp='';
@@ -38,10 +38,11 @@ function generate(id,s){
     }
   }
   q=q || Q("2 + 2 = ?",4,[N(3,"generic"),N(5,"generic"),N(6,"generic")],"Tambah kedua-dua nombor.","Fallback",false,false);
+  q=window.PAGameQuestionInteractions?.prepare?.(q,{skillId:id,state:s,meta:typeof META!=='undefined'?META[id]:null,...interactionContext})||q;
   fp=questionFingerprint(q);
   sess.questionFingerprints.push(fp);
   if(sess.questionFingerprints.length>40)sess.questionFingerprints.shift();
-  sess.questionHistory.push({skillId:id,competencyId:q.competencyId||null,templateId:q.templateId||null,source:q.source||'legacy',archetypeId:q.archetypeId||'legacy',representation:q.representation||'symbolic',demand:q.demand||'procedure',contextId:q.contextId||'general',difficultyBand:q.difficultyBand||2,fingerprint:fp});
+  sess.questionHistory.push({skillId:id,competencyId:q.competencyId||null,templateId:q.templateId||null,source:q.source||'legacy',archetypeId:q.archetypeId||'legacy',representation:q.representation||'symbolic',demand:q.demand||'procedure',contextId:q.contextId||'general',difficultyBand:q.difficultyBand||2,responseType:q.responseType||'mcq',interactionType:q.interaction?.type||null,battleTier:q.responseBattleTier||interactionContext.battleTier||null,fingerprint:fp});
   if(sess.questionHistory.length>60)sess.questionHistory.shift();
   return q;
 }

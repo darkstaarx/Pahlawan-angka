@@ -58,9 +58,10 @@ function applyHeroToBattle(){
  const heroId=(db&&db.hero)||selectedHero||"wira";
  // Demo and direct mission entry do not pass through renderHub(). Apply the
  // hero's sizing rules here as well, before measuring the battle artwork.
+ document.body.classList.toggle('hero-wira',heroId==='wira'||heroId==='wirachibi');
  document.body.classList.toggle('hero-bunga',heroId==='bunga');
  document.body.classList.toggle('hero-sidma',heroId==='sidma');
- let h=HEROES[heroId];
+ let h=HEROES[heroId]||HEROES.wira;
  document.getElementById('heroName').textContent=h.name;
  document.getElementById('heroIdle').src=h.idle;
  document.getElementById('heroAnticipation').src=h.anticipation;
@@ -75,8 +76,9 @@ function applyHeroToBattle(){
 
 function setupHeroPicker(){
  refreshLoginResume();
- let w=document.getElementById('pickImgWira'),b=document.getElementById('pickImgBunga'),s=document.getElementById('pickImgSidma');
+ let w=document.getElementById('pickImgWira'),wc=document.getElementById('pickImgWiraChibi'),b=document.getElementById('pickImgBunga'),s=document.getElementById('pickImgSidma');
  if(w)w.src=HEROES.wira.idle;
+ if(wc&&HEROES.wirachibi)wc.src=HEROES.wirachibi.idle;
  if(b)b.src=HEROES.bunga.profile||HEROES.bunga.idle;
  if(s&&HEROES.sidma)s.src=HEROES.sidma.profile||HEROES.sidma.idle;
  chooseHero((db&&db.hero)||selectedHero||'wira');
@@ -130,7 +132,7 @@ function roleLabel(g){ if(!db) return 'Misi'; if(g<db.schoolGrade) return 'Misi 
 function qsv2LearnerTitle(meta,q){return window.PAD3Topic7LiveCutover?.isTargetQuestion?.(q)?window.PAD3Topic7LiveCutover.displayTitle(meta,q):questionLearningTitle(meta,q)}
 function nextQ(){
  if(sess.learningActive)return;
- let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),q=generate(id,s);q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
+ let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),questionStage=enemyStageForQuestion(id),q=generate(id,s,{battleTier:questionStage.tier,isBoss:questionStage.tier==='boss'});q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
  sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;if(q.qsv2Pilot)q.qsv2AttemptId=window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null;else if(q.qsv2Live)q.qsv2AttemptId=window.PAD3NonT7LiveIsolation?.newAttemptId?.(q,q.token)||null;
  window.PALearnerReview?.beginQuestion?.(q,{grade:db?.schoolGrade,mode:sess.mode,selectionReason:typeof coachReason==='function'?coachReason(id):'',demoMode:!!sess.demoMode,devMode:!!sess.devBankTest||!!(db&&typeof isDevMode==='function'&&isDevMode())});
  sess.recent.push(id);if(sess.recent.length>10)sess.recent.shift();
@@ -145,7 +147,8 @@ function nextQ(){
  document.getElementById("question").innerHTML=q.prompt;document.getElementById("feedback").textContent="";
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.remove('needs-help','used');hintButton.disabled=false;hintButton.setAttribute('aria-label','Guna Petunjuk');}
  let e=document.getElementById("answers");e.innerHTML="";
- shuffle([{v:q.answer,tag:"correct",label:q.answer},...q.wrong]).forEach(o=>{let b=document.createElement("button");b.className="ans";b.textContent=o.label??o.v;b.dataset.v=String(o.v);b.dataset.questionToken=String(q.token);b.onclick=()=>respond(o,b,q);e.appendChild(b)})
+ const gameRendered=window.PAGameQuestionInteractions?.render?.(q,e,{respond,shuffle});
+ if(!gameRendered)shuffle([{v:q.answer,tag:"correct",label:q.answer},...q.wrong]).forEach(o=>{let b=document.createElement("button");b.className="ans";b.textContent=o.label??o.v;b.dataset.v=String(o.v);b.dataset.questionToken=String(q.token);b.onclick=()=>respond(o,b,q);e.appendChild(b)})
 }
 function log(t){db.logs.unshift({t:Date.now(),text:t});db.logs=db.logs.slice(0,180)}
 function setupBattleHud(){
@@ -162,9 +165,9 @@ setupHeroPicker();
 setupBattleHud();
 screen('login');refreshLoginResume();
 
-function enemyStageForQuestion(){
+function enemyStageForQuestion(skillIdOverride){
   const answered=Number(sess?.missionAnswered||0);
-  const skillId=String(sess?.q?.skill||'');
+  const skillId=String(skillIdOverride||sess?.q?.skill||'');
   const skillMeta=typeof META!=='undefined'?(META[skillId]||{}):{};
   const divisionRound=/\bdiv\b|bahagi|division/i.test([skillId,skillMeta.title,skillMeta.domain,sess?.q?.title,sess?.q?.misconception].filter(Boolean).join(' '));
   const minionIndex=divisionRound?MINION_ENEMIES.findIndex(x=>x.specialty==='division'):-1;

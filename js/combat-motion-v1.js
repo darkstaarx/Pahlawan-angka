@@ -4,14 +4,16 @@
  'use strict';
  const byId=id=>document.getElementById(id),cache=new Map();
  const paths={idle:'assets/heroes/wira/idle.webp',ready:'assets/heroes/wira/frames/anticipation-v1.webp',strike:'assets/heroes/wira/frames/attack-arc-v2.webp',follow:'assets/heroes/wira/frames/follow-through-v1.webp'};
- const art={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
+ const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/frames/anticipation-v1.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
+ const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
  const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
  // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the
  // projectile only, never the whole attack.
  const sidmaBoltPath='assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp';
  let sidmaBolt=null;
  const heroKey=()=>typeof db!=='undefined'?db?.hero:null;
- const heroArt=()=>heroKey()==='sidma'?sidmaArt:art;
+ const isWira=id=>id==='wira'||id==='wirachibi';
+ const heroArt=()=>heroKey()==='sidma'?sidmaArt:(heroKey()==='wirachibi'?chibiArt:art);
  const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>1-Math.pow(1-clamp(x),3),mix=(a,b,t)=>a+(b-a)*t;
  function load(src){
   if(!src)return null;if(cache.has(src))return cache.get(src);
@@ -26,15 +28,16 @@
   }).catch(()=>{record.failed=true});return record;
  }
  Object.entries(paths).forEach(([key,src])=>art[key]=load(src));
+ Object.entries(chibiPaths).forEach(([key,src])=>chibiArt[key]=load(src));
  Object.entries(sidmaPaths).forEach(([key,src])=>sidmaArt[key]=load(src));
  sidmaBolt=load(sidmaBoltPath);
  function ensure(){
   const arena=byId('battleArena');if(!arena)return null;
   if(!canvas){canvas=document.createElement('canvas');canvas.className='paCombatMotion';canvas.setAttribute('aria-hidden','true');arena.appendChild(canvas);ctx=canvas.getContext('2d');}
-  const rect=arena.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,2);
+  const rect=arena.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,3);
   const width=arena.clientWidth,height=arena.clientHeight;
   if(canvas.width!==Math.round(width*ratio)||canvas.height!==Math.round(height*ratio)){canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio)}
-  ctx.setTransform(ratio,0,0,ratio,0,0);
+  ctx.setTransform(ratio,0,0,ratio,0,0);ctx.imageSmoothingEnabled=true;if('imageSmoothingQuality' in ctx)ctx.imageSmoothingQuality='high';
   return {arena,rect,width,height};
  }
  function clear(){if(ctx)ctx.clearRect(0,0,canvas.width,canvas.height)}
@@ -79,7 +82,7 @@
  }
  function sync(){
   const arena=byId('battleArena');if(!arena)return;
-  const supported=['wira','sidma'].includes(heroKey());arena.classList.toggle('paGroundedCombat',supported);
+  const supported=['wira','wirachibi','sidma'].includes(heroKey());arena.classList.toggle('paGroundedCombat',supported);
   const enemy=byId('enemySprite');load(enemy?.currentSrc||enemy?.getAttribute('src'));['enemyAnticipation','enemyAttack','enemyFollowThrough'].forEach(id=>{const img=byId(id);load(img?.currentSrc||img?.getAttribute('src'))});
   if(active||!canvas&&document.body.dataset.screen!=='game')return;
   const scene=ensure();clear();if(!supported||!scene||document.body.dataset.screen!=='game')return;
@@ -115,9 +118,9 @@
   ctx.font=`bold ${Math.max(16,30*s)}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#102132';ctx.fillStyle='#fff';const y=py-target.h*.2-(min?0:ease(q)*22);ctx.strokeText('−'+damage,target.x,y);ctx.fillText('−'+damage,target.x,y);ctx.restore();
  }
  function begin(attackerId,targetId,finisher,damageAmount=null){
-  const key=heroKey(),set=heroArt();if(finisher||!['wira','sidma'].includes(key)||active)return null;
+  const key=heroKey(),set=heroArt();if(finisher||!['wira','wirachibi','sidma'].includes(key)||active)return null;
   const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet);
-  if(hasPet&&key==='wira')return null;
+  if(hasPet&&isWira(key))return null;
   sync();const scene=ensure(),enemyImg=byId('enemySprite'),enemyArt=load(enemyImg?.currentSrc||enemyImg?.getAttribute('src'));
   if(!scene||!Object.values(set).every(a=>a.ready)||!enemyArt?.ready)return null;
   const hero=heroGeometry(scene),enemy=geometry(enemyImg,enemyArt,scene);if(!hero||!enemy)return null;

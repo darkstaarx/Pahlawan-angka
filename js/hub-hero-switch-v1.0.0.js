@@ -3,9 +3,10 @@
    existing HEROES registry and db.hero/save() persistence model only;
    no new persistence or database layer. */
 (function(){
-  const ORDER=['wira','bunga','sidma'];
+  const ORDER=['wira','wirachibi','bunga','sidma'];
   const SWITCH_ART={
     wira:'assets/heroes/switch-cards/wira-v1.webp',
+    wirachibi:'assets/heroes/wira-chibi/idle.webp',
     bunga:'assets/heroes/switch-cards/bunga-v1.webp',
     sidma:'assets/heroes/switch-cards/sidma-v1.webp'
   };

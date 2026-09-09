@@ -69,6 +69,7 @@
     return n>=4&&n-last>=2;
   }
   function shouldTypedQuestion(question){
+    if(question?.responseMode==='game'&&window.PAGameQuestionInteractions)return false;
     if(!typedEligible(question))return false;
     if(devActive()&&db?.devForceTypedAnswer)return true;
     return normalBossTypedCandidate();

@@ -65,7 +65,7 @@ function triggerFinisherCinematic(){
   layer.style.setProperty('--hero-w',heroRect.width+'px');
   layer.style.setProperty('--hero-h',heroRect.height+'px');
   layer.style.setProperty('--hero-bottom',(arenaRect.bottom-heroRect.bottom)+'px');
-  const heroKey=db.hero||'wira',focusScale=heroKey==='wira'?1.18:(heroKey==='sidma'?1:1.12);
+  const heroKey=db.hero||'wira',focusScale=(heroKey==='wira'||heroKey==='wirachibi')?1.18:(heroKey==='sidma'?1:1.12);
   layer.style.setProperty('--cinematic-hero-h',(heroRect.height*focusScale)+'px');
   layer.style.setProperty('--hero-center-x',(heroRect.left-arenaRect.left+(heroRect.width/2))+'px');
   const auraWidth=heroRect.width*2.08;
@@ -86,12 +86,12 @@ function triggerFinisherCinematic(){
  layer.dataset.focusAsset='approved';
  layer.setAttribute('aria-label',db.hero==='sidma'?'Rumus Penamat':'Serangan terakhir '+h.name);
  layer.classList.remove('active','release');void layer.offsetWidth;layer.classList.add('active');
- if(!['wira','sidma','bunga'].includes(db.hero)&&typeof playSfx==='function')playSfx('auraCharge');
+ if(!['wira','wirachibi','sidma','bunga'].includes(db.hero)&&typeof playSfx==='function')playSfx('auraCharge');
  const sidmaFinisher=db.hero==='sidma';
  battleLater(()=>{
   layer.classList.add('release');
   if(sidmaFinisher&&h.frames?.release)hero.src=h.frames.release;
-  if(typeof playSfx==='function'&&db.hero!=='wira'&&db.hero!=='bunga'&&!sidmaFinisher)playSfx('attack');
+  if(typeof playSfx==='function'&&db.hero!=='wira'&&db.hero!=='wirachibi'&&db.hero!=='bunga'&&!sidmaFinisher)playSfx('attack');
  },sidmaFinisher?650:760);
  battleLater(()=>layer.classList.remove('active','release'),sidmaFinisher?930:1080);
 }
@@ -106,7 +106,7 @@ function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
  let attacker=document.getElementById(attackerId),target=document.getElementById(targetId),arena=document.getElementById("battleArena"),flash=document.getElementById("arenaFlash");
  if(!attacker||!target||!arena||!flash)return;
  const pet=attackerId==="hero"?document.getElementById("battlePet"):null;
- const wiraFinishing=attackerId==="hero"&&db?.hero==="wira"&&finisher;
+ const wiraFinishing=attackerId==="hero"&&(db?.hero==="wira"||db?.hero==="wirachibi")&&finisher;
  const sidmaFinishing=attackerId==="hero"&&db?.hero==="sidma"&&finisher;
  const bungaFinishing=attackerId==="hero"&&db?.hero==="bunga"&&finisher;
  // Final blows are the hero's solo climax. Pets still assist every regular
@@ -166,7 +166,7 @@ function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
    arena.classList.remove("shake","finisher-shake");if(shakeClass){void arena.offsetWidth;arena.classList.add(shakeClass);battleLater(()=>arena.classList.remove(shakeClass),hitDuration)}
    flash.classList.remove("pulse-red","pulse-ice","pulse-bloom");if(pulse){void flash.offsetWidth;flash.classList.add(pulse);battleLater(()=>flash.classList.remove(pulse),finisher?620:360)}
    if(targetId==='hero'&&db?.hero==='bunga')window.PABungaBattle?.showHurt?.();
-   if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&db?.hero==='wira'?'wiraSword':'hit');
+   if(typeof playSfx==='function'&&!(attackerId==='hero'&&(db?.hero==='sidma'||db?.hero==='bunga'||wiraFinishing)))playSfx(attackerId==='hero'&&(db?.hero==='wira'||db?.hero==='wirachibi')?'wiraSword':'hit');
  },contactDelay)
  battleDisplayedHp={hp:sess.hp,ehp:sess.ehp};
  const requestedDamage=Number(damageAmount);const amount=attackerId==='hero'?(db?.devOneHit?Math.max(4,sess.ehp):(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4)):3;
@@ -279,7 +279,7 @@ function resolveAnswer(o,btn,question,ok){
  let responseMotion=null;
  let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):(qsv2NonT7Target?window.PAD3NonT7LiveIsolation?.captureLegacyState?.(question,s):null);
  window.PAEffortGuard?.retryResolved?.(question,ok);
- document.querySelectorAll(".ans").forEach(x=>x.disabled=true);
+ document.querySelectorAll(".ans").forEach(x=>x.disabled=true);window.PAGameQuestionInteractions?.lock?.();
  if(ok){
   btn.classList.add("ok");s.correct++;if(!sess.retryState)s.evidence++;if(!sess.retryState)sess.streak++;
   if(typeof playSfx==='function')playSfx('correct');
@@ -287,7 +287,7 @@ function resolveAnswer(o,btn,question,ok){
   s.mastery=Math.min(100,s.mastery+gain);s.confidence=Math.min(100,s.confidence+(layerDelta>0?4.5:5.5)*ql);s.stability=Math.min(100,s.stability+4*ql);
   if(layerDelta>0&&!sess.retryState&&!sess.hint)s.probePass++;
   document.getElementById("feedback").innerHTML=(sess.guardianFocus&&typeof guardianCorrectFeedback==='function')?guardianCorrectFeedback(question,!!sess.retryState):(sess.retryState?(sess.hint?'Bagus! Petunjuk membantu kamu menemui jawapan.':'Bagus! Kamu cuba semula dan menemui jawapan.'):(sec<1.15?'Betul. Cikgu Dimensi akan semak dengan bentuk lain untuk pastikan kamu benar-benar faham.':'Betul. Teruskan cara fikir itu.'));
-  const devOneHit=!!(db&&isDevMode()&&db.devOneHit),storyPlan=window.PABattleStory?.plan?.(),storyDamage=storyPlan&&Number.isFinite(Number(storyPlan.damage))?Math.max(0,Number(storyPlan.damage)):4,damage=devOneHit?Math.max(4,sess.ehp):storyDamage;let willFinish=devOneHit||(storyPlan?(!!storyPlan.finisherEligible&&sess.ehp<=Math.max(1,damage)):sess.ehp<=4);usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(storyPlan?.action==='guard'){responseMotion=window.PABattleStory?.playGuard?.()||{completionDelay:820};sess.lastHeroImpact=responseMotion}else if(storyPlan?.action==='event'){responseMotion=window.PABattleStory?.playEventSuccess?.()||{completionDelay:720};sess.lastHeroImpact=responseMotion}else{if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish,damage);responseMotion=sess.lastHeroImpact;sess.ehp-=damage}window.PABattleStory?.afterAnswer?.(true)
+  const devOneHit=!!(db&&isDevMode()&&db.devOneHit),storyPlan=window.PABattleStory?.plan?.(),storyDamage=storyPlan&&Number.isFinite(Number(storyPlan.damage))?Math.max(0,Number(storyPlan.damage)):4,damage=devOneHit?Math.max(4,sess.ehp):storyDamage;let willFinish=devOneHit||(storyPlan?(!!storyPlan.finisherEligible&&sess.ehp<=Math.max(1,damage)):sess.ehp<=4);usedFinisher=willFinish;let heroTheme=(db&&db.hero&&HEROES[db.hero]?HEROES[db.hero].theme:"ice");if(storyPlan?.action==='guard'){responseMotion=window.PABattleStory?.playGuard?.()||{completionDelay:820};sess.lastHeroImpact=responseMotion}else if(storyPlan?.action==='event'){responseMotion=window.PABattleStory?.playEventSuccess?.()||{completionDelay:720};sess.lastHeroImpact=responseMotion}else{if(!willFinish&&typeof playSfx==='function'&&db&&!['wira','wirachibi','sidma','bunga'].includes(db.hero))playSfx('attack');sess.lastHeroImpact=triggerImpact("hero","enemy",heroTheme,willFinish,damage);responseMotion=sess.lastHeroImpact;sess.ehp-=damage}window.PABattleStory?.afterAnswer?.(true)
  }else{
   btn.classList.add("no");sess.streak=0;
   if(!sess.retryState){s.wrong++;s.evidence++;s.mastery=Math.max(0,s.mastery-(layerDelta>0?2.2:4.5));s.confidence=Math.max(0,s.confidence-(layerDelta>0?4:7.5));s.stability=Math.max(0,s.stability-5);s.mis[o.tag]=(s.mis[o.tag]||0)+1;if(layerDelta>0)s.probeFail++}
@@ -376,7 +376,9 @@ function resolveAnswer(o,btn,question,ok){
 function closeHintOverlay(){const overlay=document.getElementById('paHintOverlay');if(overlay){overlay.classList.remove('show');battleLater(()=>overlay.remove(),180)}}
 function showHintOverlay(help){
  let overlay=document.getElementById('paHintOverlay');if(!overlay){overlay=document.createElement('div');overlay.id='paHintOverlay';overlay.className='paHintOverlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','paHintTitle');document.body.appendChild(overlay)}
- overlay.innerHTML='<section class="paHintPanel"><div class="paHintMark" aria-hidden="true">✦</div><small>PETUNJUK CIKGU DIMENSI</small><h2 id="paHintTitle"></h2><p>Sekarang cuba pilih jawapan sekali lagi.</p><button type="button" onclick="closeHintOverlay()">Faham, saya cuba</button></section>';
+ const retryCopy=window.PAGameQuestionInteractions?.retryCopy?.(sess?.q)||'Sekarang cuba pilih jawapan sekali lagi.';
+ overlay.innerHTML='<section class="paHintPanel"><div class="paHintMark" aria-hidden="true">✦</div><small>PETUNJUK CIKGU DIMENSI</small><h2 id="paHintTitle"></h2><p></p><button type="button" onclick="closeHintOverlay()">Faham, saya cuba</button></section>';
+ overlay.querySelector('p').textContent=retryCopy;
  overlay.querySelector('h2').textContent=String(help||'Lihat semula maklumat penting dalam soalan.');requestAnimationFrame(()=>{overlay.classList.add('show');overlay.querySelector('button')?.focus()});
 }
 function hint(){
@@ -387,9 +389,11 @@ function hint(){
  if(!sess.hint){sess.hint=true;scoreState(sess.q.skill).hints++;}
  const button=document.querySelector('.hintBtn');if(button){button.classList.remove('needs-help');button.classList.add('used');button.setAttribute('aria-label','Petunjuk telah dibuka');}
  const help=(sess.guardianFocus&&typeof guardianHint==='function')?guardianHint(sess.q,sess.hintLevel):(sess.q.hintSteps?.[Math.min(sess.hintLevel-1,sess.q.hintSteps.length-1)]||sess.q.hint);
- document.getElementById('feedback').innerHTML=`<b>Cikgu Dimensi bantu:</b> ${help}<br><span class="retryPrompt">Sekarang pilih jawapan sekali lagi.</span>`;
+ const retryCopy=window.PAGameQuestionInteractions?.retryCopy?.(sess.q)||'Sekarang pilih jawapan sekali lagi.';
+ document.getElementById('feedback').innerHTML=`<b>Cikgu Dimensi bantu:</b> ${help}<br><span class="retryPrompt"></span>`;
+ document.querySelector('.retryPrompt').textContent=retryCopy;
  showHintOverlay(help);
- if(sess.retryState)document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});
+ if(sess.retryState){document.querySelectorAll('.ans').forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});window.PAGameQuestionInteractions?.unlockRetry?.();}
  save();
 }
 function battle(){const shown=battleDisplayedHp||sess;document.getElementById("heroHp").style.width=Math.max(0,shown.hp)/20*100+"%";let max=sess.enemyMaxHp||12;document.getElementById("enemyHp").style.width=Math.max(0,shown.ehp)/max*100+"%";window.PACombatMotion?.sync?.()}

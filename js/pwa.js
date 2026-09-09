@@ -2,7 +2,10 @@
 (()=>{
   const APP_VERSION=globalThis.PA_APP_VERSION||'0.0.0';
   const INTEGRITY_VERSION='3.18.1';
-  const DEPTH_VERSION='3.22.0';
+  const DEPTH_VERSION='3.22.1';
+  const Y1_COMPETENCY_V2_VERSION='2.0.0';
+  const Y1_CURRICULUM_V2_VERSION='3.62.6';
+  const Y1_ADAPTIVE_VERSION='3.62.6';
   const D4_CURRICULUM_VERSION='3.58.0';
   const Y6_REPAIR_VERSION='3.23.0';
   const Y6_CURRICULUM_VERSION='3.60.3';
@@ -10,6 +13,7 @@
   const Y6_MONEY_REAL_VERSION='3.60.5';
   const Y6_COMPETENCY_V2_VERSION='2.0.0';
   const Y6_CURRICULUM_V2_VERSION='3.61.0';
+  const Y6_ADAPTIVE_VERSION='3.61.1';
   const SENSORY_VERSION='3.19.0';
   const MANIPULATIVE_VERSION='3.19.1';
   const DAILY_REVIEW_VERSION='3.20.0';
@@ -19,11 +23,21 @@
   const TARGET_ANCHOR_VERSION='3.21.5';
   const FINISHER_HOTSPOT_VERSION='3.21.6';
   const TYPED_UI_VERSION='3.21.8';
+  const GAME_QUESTION_VERSION='3.62.4';
   const PROFILE_MANAGER_VERSION='3.24.2';
 
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;
   const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${APP_VERSION}`;
+  const y1CompetencyV2Js=`data/kssr/year1-competencies-v2.js?v=${APP_VERSION}`;
+  const y1V2RuntimeJs=`questions/kssr-year1-v2-runtime-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y1V2Unit1Js=`questions/kssr-year1-v2-unit1-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y1V2Unit2Js=`questions/kssr-year1-v2-unit2-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y1V2Unit34Js=`questions/kssr-year1-v2-unit34-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y1V2Unit56Js=`questions/kssr-year1-v2-unit56-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y1V2Unit78Js=`questions/kssr-year1-v2-unit78-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y1CurriculumV2Js=`questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y1AdaptiveJs=`questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js?v=${APP_VERSION}`;
   const d4CurriculumJs=`questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;
   const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}`;
@@ -41,6 +55,7 @@
   const y6V2Unit7Js=`questions/kssr-year6-v2-unit7-v${Y6_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y6V2Unit8Js=`questions/kssr-year6-v2-unit8-v${Y6_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y6CurriculumV2Js=`questions/kssr-year6-curriculum-v2-v${Y6_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
+  const y6AdaptiveJs=`questions/kssr-year6-adaptive-v${Y6_ADAPTIVE_VERSION}.js?v=${APP_VERSION}`;
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${APP_VERSION}`;
   const manipCss=`css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css?v=${MANIPULATIVE_VERSION}-time-lab-1`;
@@ -63,6 +78,8 @@
   const finisherJs=`js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js?v=${FINISHER_HOTSPOT_VERSION}`;
   const typedCss=`css/typed-answer-ui-v${TYPED_UI_VERSION}.css?v=${TYPED_UI_VERSION}`;
   const typedJs=`js/typed-answer-ui-v${TYPED_UI_VERSION}.js?v=${TYPED_UI_VERSION}`;
+  const gameQuestionCss=`css/game-question-interactions-v${GAME_QUESTION_VERSION}.css?v=${GAME_QUESTION_VERSION}`;
+  const gameQuestionJs=`js/game-question-interactions-v${GAME_QUESTION_VERSION}.js?v=${APP_VERSION}`;
   const profileCss=`css/profile-manager-v${PROFILE_MANAGER_VERSION}.css?v=${PROFILE_MANAGER_VERSION}`;
   const profileJs=`js/profile-manager-v${PROFILE_MANAGER_VERSION}.js?v=${APP_VERSION}`;
 
@@ -70,6 +87,15 @@
     if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);
     if(!document.querySelector(`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${depthCss}">`);
     if(!document.querySelector(`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`))document.write(`<script src="${depthJs}"><\/script>`);
+    if(!document.querySelector('script[src^="data/kssr/year1-competencies-v2.js"]'))document.write(`<script src="${y1CompetencyV2Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-v2-runtime-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1V2RuntimeJs}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-v2-unit1-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1V2Unit1Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-v2-unit2-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1V2Unit2Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-v2-unit34-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1V2Unit34Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-v2-unit56-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1V2Unit56Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-v2-unit78-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1V2Unit78Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1CurriculumV2Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js"]`))document.write(`<script src="${y1AdaptiveJs}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js"]`))document.write(`<script src="${d4CurriculumJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${y6Css}">`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`))document.write(`<script src="${y6Js}"><\/script>`);
@@ -87,6 +113,7 @@
     if(!document.querySelector(`script[src^="questions/kssr-year6-v2-unit7-v${Y6_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y6V2Unit7Js}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-v2-unit8-v${Y6_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y6V2Unit8Js}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-curriculum-v2-v${Y6_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y6CurriculumV2Js}"><\/script>`);
+    if(!document.querySelector(`script[src^="questions/kssr-year6-adaptive-v${Y6_ADAPTIVE_VERSION}.js"]`))document.write(`<script src="${y6AdaptiveJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${sensoryCss}">`);
     if(!document.querySelector(`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`))document.write(`<script src="${sensoryJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${manipCss}">`);
@@ -109,13 +136,16 @@
     if(!document.querySelector(`script[src^="js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js"]`))document.write(`<script src="${finisherJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/typed-answer-ui-v${TYPED_UI_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${typedCss}">`);
     if(!document.querySelector(`script[src^="js/typed-answer-ui-v${TYPED_UI_VERSION}.js"]`))document.write(`<script src="${typedJs}"><\/script>`);
+    if(!document.querySelector(`link[href^="css/game-question-interactions-v${GAME_QUESTION_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${gameQuestionCss}">`);
+    if(!document.querySelector(`script[src^="js/game-question-interactions-v${GAME_QUESTION_VERSION}.js"]`))document.write(`<script src="${gameQuestionJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/profile-manager-v${PROFILE_MANAGER_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${profileCss}">`);
     if(!document.querySelector(`script[src^="js/profile-manager-v${PROFILE_MANAGER_VERSION}.js"]`))document.write(`<script src="${profileJs}"><\/script>`);
   }else{
     const loadCss=(src,selector)=>{if(document.querySelector(selector))return;const l=document.createElement('link');l.rel='stylesheet';l.href=src;document.head.appendChild(l);};
     const loadScript=(src,selector,onload)=>{if(document.querySelector(selector)){onload?.();return}const s=document.createElement('script');s.src=src;s.async=false;if(onload)s.onload=onload;document.head.appendChild(s);};
     const loadProfile=()=>{loadCss(profileCss,`link[href^="css/profile-manager-v${PROFILE_MANAGER_VERSION}.css"]`);loadScript(profileJs,`script[src^="js/profile-manager-v${PROFILE_MANAGER_VERSION}.js"]`);};
-    const loadTyped=()=>{loadCss(typedCss,`link[href^="css/typed-answer-ui-v${TYPED_UI_VERSION}.css"]`);loadScript(typedJs,`script[src^="js/typed-answer-ui-v${TYPED_UI_VERSION}.js"]`,loadProfile);};
+    const loadGameQuestions=()=>{loadCss(gameQuestionCss,`link[href^="css/game-question-interactions-v${GAME_QUESTION_VERSION}.css"]`);loadScript(gameQuestionJs,`script[src^="js/game-question-interactions-v${GAME_QUESTION_VERSION}.js"]`,loadProfile);};
+    const loadTyped=()=>{loadCss(typedCss,`link[href^="css/typed-answer-ui-v${TYPED_UI_VERSION}.css"]`);loadScript(typedJs,`script[src^="js/typed-answer-ui-v${TYPED_UI_VERSION}.js"]`,loadGameQuestions);};
     const loadFinisher=()=>{loadCss(finisherCss,`link[href^="css/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.css"]`);loadScript(finisherJs,`script[src^="js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js"]`,loadTyped);};
     const loadTarget=()=>{loadCss(targetCss,`link[href^="css/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.css"]`);loadScript(targetJs,`script[src^="js/combat-target-anchor-v${TARGET_ANCHOR_VERSION}.js"]`,loadFinisher);};
     const loadBoss=()=>{loadCss(bossCss,`link[href^="css/boss-stage-dev-v${BOSS_LAB_VERSION}.css"]`);loadScript(bossJs,`script[src^="js/dev-boss-lab-v${BOSS_LAB_VERSION}.js"]`,loadTarget);};
@@ -126,7 +156,8 @@
     const loadGames=()=>{loadCss(gamesCss,'link[href^="css/cikgu-mini-games-v1.0.0.css"]');loadScript(fractionJs,'script[src^="js/fraction-lesson-v1.js"]',()=>loadScript(gamesJs,'script[src^="js/cikgu-mini-games-v1.0.0.js"]',loadDevGames));};
     const loadManip=()=>{loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadGames);};
     const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
-    const loadY6V2Final=()=>loadScript(y6CurriculumV2Js,`script[src^="questions/kssr-year6-curriculum-v2-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadSensory);
+    const loadY6Adaptive=()=>loadScript(y6AdaptiveJs,`script[src^="questions/kssr-year6-adaptive-v${Y6_ADAPTIVE_VERSION}.js"]`,loadSensory);
+    const loadY6V2Final=()=>loadScript(y6CurriculumV2Js,`script[src^="questions/kssr-year6-curriculum-v2-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadY6Adaptive);
     const loadY6V2Unit8=()=>loadScript(y6V2Unit8Js,`script[src^="questions/kssr-year6-v2-unit8-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadY6V2Final);
     const loadY6V2Unit7=()=>loadScript(y6V2Unit7Js,`script[src^="questions/kssr-year6-v2-unit7-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadY6V2Unit8);
     const loadY6V2Unit6Space=()=>loadScript(y6V2Unit6SpaceJs,`script[src^="questions/kssr-year6-v2-unit6-space-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadY6V2Unit7);
@@ -142,10 +173,19 @@
     const loadY6Curriculum=()=>loadScript(y6CurriculumJs,`script[src^="questions/kssr-year6-curriculum-v${Y6_CURRICULUM_VERSION}.js"]`,loadY6Experience);
     const loadY6Repair=()=>{loadCss(y6Css,`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`);loadScript(y6Js,`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`,loadY6Curriculum);};
     const loadD4Curriculum=()=>loadScript(d4CurriculumJs,`script[src^="questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js"]`,loadY6Repair);
-    const loadDepth=()=>{loadCss(depthCss,`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`);loadScript(depthJs,`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`,loadD4Curriculum);};
+    const loadY1Adaptive=()=>loadScript(y1AdaptiveJs,`script[src^="questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js"]`,loadD4Curriculum);
+    const loadY1V2Final=()=>loadScript(y1CurriculumV2Js,`script[src^="questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1Adaptive);
+    const loadY1V2Unit78=()=>loadScript(y1V2Unit78Js,`script[src^="questions/kssr-year1-v2-unit78-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1V2Final);
+    const loadY1V2Unit56=()=>loadScript(y1V2Unit56Js,`script[src^="questions/kssr-year1-v2-unit56-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1V2Unit78);
+    const loadY1V2Unit34=()=>loadScript(y1V2Unit34Js,`script[src^="questions/kssr-year1-v2-unit34-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1V2Unit56);
+    const loadY1V2Unit2=()=>loadScript(y1V2Unit2Js,`script[src^="questions/kssr-year1-v2-unit2-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1V2Unit34);
+    const loadY1V2Unit1=()=>loadScript(y1V2Unit1Js,`script[src^="questions/kssr-year1-v2-unit1-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1V2Unit2);
+    const loadY1V2Runtime=()=>loadScript(y1V2RuntimeJs,`script[src^="questions/kssr-year1-v2-runtime-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1V2Unit1);
+    const loadY1CompetencyV2=()=>loadScript(y1CompetencyV2Js,'script[src^="data/kssr/year1-competencies-v2.js"]',loadY1V2Runtime);
+    const loadDepth=()=>{loadCss(depthCss,`link[href^="css/kssr-assessment-depth-v${DEPTH_VERSION}.css"]`);loadScript(depthJs,`script[src^="questions/kssr-assessment-depth-v${DEPTH_VERSION}.js"]`,loadY1CompetencyV2);};
     loadScript(guard,`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`,loadDepth);
   }
-  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,kssrDepth:DEPTH_VERSION,year6SpaceData:Y6_REPAIR_VERSION,year6Curriculum:Y6_CURRICULUM_VERSION,year6Experience:Y6_EXPERIENCE_VERSION,year6MoneyReal:Y6_MONEY_REAL_VERSION,year6CompetencyV2:Y6_COMPETENCY_V2_VERSION,year6CurriculumV2:Y6_CURRICULUM_V2_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION,finisherHotspots:FINISHER_HOTSPOT_VERSION,typedAnswerUI:TYPED_UI_VERSION,profileManager:PROFILE_MANAGER_VERSION};
+  window.PARelease={version:APP_VERSION,integrity:INTEGRITY_VERSION,kssrDepth:DEPTH_VERSION,year1CompetencyV2:Y1_COMPETENCY_V2_VERSION,year1CurriculumV2:Y1_CURRICULUM_V2_VERSION,year1Adaptive:Y1_ADAPTIVE_VERSION,year6SpaceData:Y6_REPAIR_VERSION,year6Curriculum:Y6_CURRICULUM_VERSION,year6Experience:Y6_EXPERIENCE_VERSION,year6MoneyReal:Y6_MONEY_REAL_VERSION,year6CompetencyV2:Y6_COMPETENCY_V2_VERSION,year6CurriculumV2:Y6_CURRICULUM_V2_VERSION,year6Adaptive:Y6_ADAPTIVE_VERSION,sensory:SENSORY_VERSION,manipulatives:MANIPULATIVE_VERSION,dailyReview:DAILY_REVIEW_VERSION,devExperiments:DEV_EXPERIMENTS_VERSION,combatPolish:COMBAT_POLISH_VERSION,bossLab:BOSS_LAB_VERSION,targetAnchor:TARGET_ANCHOR_VERSION,finisherHotspots:FINISHER_HOTSPOT_VERSION,typedAnswerUI:TYPED_UI_VERSION,gameQuestions:GAME_QUESTION_VERSION,profileManager:PROFILE_MANAGER_VERSION};
 })();
 
 (()=>{
