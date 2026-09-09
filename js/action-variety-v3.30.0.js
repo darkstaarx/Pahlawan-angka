@@ -11,7 +11,7 @@
       {id:'original',label:'Tebasan Ais Chibi',asset:'assets/heroes/wira-chibi/attack.webp',bodyScale:1.48,footShiftX:28},
       {id:'dash',label:'Tikaman Pantas',asset:'assets/heroes/wira-chibi/frames/attack-dash-v2.webp',bodyScale:1.48,footShiftX:38},
       {id:'arc',label:'Lengkung Nombor',asset:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',bodyScale:1.42,footShiftX:28},
-      {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira-chibi/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
+      {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira-chibi/frames/aura-framing-v1.webp',bodyScale:1.72,footShiftX:40}
     ],
     bunga:[
       {id:'kelopak-pecahan',label:'Kelopak Pecahan',asset:'assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp',bodyScale:1.08,footShiftX:0},

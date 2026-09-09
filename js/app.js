@@ -59,6 +59,7 @@ function applyHeroToBattle(){
  // Demo and direct mission entry do not pass through renderHub(). Apply the
  // hero's sizing rules here as well, before measuring the battle artwork.
  document.body.classList.toggle('hero-wira',heroId==='wira'||heroId==='wirachibi');
+ document.body.classList.toggle('hero-wirachibi',heroId==='wirachibi');
  document.body.classList.toggle('hero-bunga',heroId==='bunga');
  document.body.classList.toggle('hero-sidma',heroId==='sidma');
  let h=HEROES[heroId]||HEROES.wira;

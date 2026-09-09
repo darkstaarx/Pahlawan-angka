@@ -1,4 +1,4 @@
-// App shell v3.62.12 — Wira Chibi ready pose swapped to idle; a mid-swing frame was standing in for the wind-up.
+// App shell v3.62.13 — Wira Chibi scaled down to match Wira's on-screen size; pulse variant now uses the aura-framing pose.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

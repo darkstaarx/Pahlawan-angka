@@ -61,6 +61,7 @@ function renderHub(){
   const h=HEROES[db.hero||'wira']||HEROES.wira;
   const levelNeed=xpForLevel(db.level),xpPct=Math.min(100,Math.round((db.levelXp||0)/levelNeed*100));
   document.body.classList.toggle('hero-wira',['wira','wirachibi'].includes(db.hero||'wira'));
+  document.body.classList.toggle('hero-wirachibi',(db.hero||'wira')==='wirachibi');
   document.body.classList.toggle('hero-bunga',(db.hero||'wira')==='bunga');
   document.body.classList.toggle('hero-sidma',(db.hero||'wira')==='sidma');
   const heroId=db.hero||'wira',hubHero=document.getElementById('hubHeroImg'),hubFx=document.getElementById('hubMathFx');
