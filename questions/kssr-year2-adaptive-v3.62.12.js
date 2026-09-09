@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const VERSION='3.62.12',banks=window.PAQuestionBanks=window.PAQuestionBanks||{};
-const RT=window.PAY2V2Runtime,C=window.PAY2CompetencyV2,integrity=window.PAContentIntegrity;
+const RT=window.PAY2V2Runtime,C=window.PAY2CompetencyV2;
 if(!RT||!C)return;
 const keys=['d2t1','d2t2','d2t3','d2t4','d2t5','d2t6','d2t7','d2t8'];
 function recentNodes(id){return (RT.recentFor?.(id)||[]).map(x=>x.subcompetencyId||x.competencyId||x.curriculumNode||String(x.standardRef||'').split('/')[0]).filter(Boolean)}
@@ -18,10 +18,12 @@ function choosePersistentNode(id,state){
 }
 function generatedNode(out){return String(out?.subcompetencyId||out?.competencyId||out?.standardRef||'').split('/')[0]}
 function tagTarget(out,target){if(!out)return out;out.adaptiveTargetNode=target;out.adaptiveTargetMatched=generatedNode(out)===target;out.kssrYear2AdaptiveVersion=VERSION;return out}
-if(integrity?.requirements){
+function applyIntegrity(){
+ const integrity=window.PAContentIntegrity;if(!integrity?.requirements)return false;
  for(const id of C.activeSkills)integrity.requirements[id]=(C.routes[id]||[]).map(node=>[node]);
- integrity.year2CompetencyVersion=VERSION;
+ integrity.year2CompetencyVersion=VERSION;return true;
 }
+if(!applyIntegrity()&&typeof document!=='undefined')document.addEventListener('DOMContentLoaded',applyIntegrity,{once:true});
 function stateEntry(id,node){
  try{
    if(typeof scoreState!=='function')return null;const state=scoreState(id);state.competencies=state.competencies||{};
@@ -45,6 +47,6 @@ for(const key of keys){
    const generator=RT.GEN[target];return tagTarget(generator?generator(id,state,shift):prior(id,state,shift),target);
  };
 }
-window.PAY2Adaptive={version:VERSION,choosePersistentNode,nodeStats};
+window.PAY2Adaptive={version:VERSION,choosePersistentNode,nodeStats,applyIntegrity};
 document.documentElement?.setAttribute('data-kssr-year2-adaptive',VERSION);
 })();
