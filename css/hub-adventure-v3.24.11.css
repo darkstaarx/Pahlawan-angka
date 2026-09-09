@@ -20,3 +20,6 @@ body.hero-sidma .hubMathFx{left:-16%!important;bottom:-8px!important;width:102%!
 .paCoinIcon{display:inline-block;width:1em;height:1em;vertical-align:-.12em;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.28))}
 #hubCoins .paCoinIcon{width:1.1em;height:1.1em;margin-right:.18em;vertical-align:-.16em}
 @media(prefers-reduced-motion:reduce){.hubHeroCharacter,.hubMathFx,.hubScenePet{animation:none!important}}
+
+/* Wira Chibi hub: keep the source raster crisp and let CSS provide the idle motion. */
+body.hero-wirachibi .hubHeroCharacter{height:172px!important;width:96%!important;object-fit:contain!important;object-position:center bottom!important;image-rendering:auto!important;filter:drop-shadow(0 6px 5px rgba(0,0,0,.42))!important;animation:hubAdventureBreathe 3.2s ease-in-out infinite!important;transform-origin:50% 100%!important}
