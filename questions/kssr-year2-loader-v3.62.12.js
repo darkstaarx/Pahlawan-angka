@@ -12,7 +12,8 @@ const files=[
  `questions/kssr-year2-v2-unit56-v${V}.js`,
  `questions/kssr-year2-v2-unit78-v${V}.js`,
  `questions/kssr-year2-curriculum-v2-v${V}.js`,
- `questions/kssr-year2-adaptive-v${V}.js`
+ `questions/kssr-year2-adaptive-v${V}.js`,
+ `questions/kssr-year2-smoke-v${V}.js`
 ];
 if(document.readyState==='loading'){
  for(const src of files){if(!document.querySelector(`script[src^="${src}"]`))document.write(`<script src="${src}?v=${V}"><\/script>`);}
