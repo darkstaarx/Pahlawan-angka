@@ -2,13 +2,11 @@
 (function(){
   const variants={
     wira:[
-      {id:'original',label:'Tebasan Ais Asal',asset:'assets/heroes/wira/attack.webp',bodyScale:1.48,footShiftX:28},
       {id:'dash',label:'Tikaman Pantas',asset:'assets/heroes/wira/frames/attack-dash-v2.webp',bodyScale:1.48,footShiftX:38},
       {id:'arc',label:'Lengkung Nombor',asset:'assets/heroes/wira/frames/attack-arc-v2.webp',bodyScale:1.42,footShiftX:28},
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
     ],
     wirachibi:[
-      {id:'original',label:'Tebasan Ais Chibi',asset:'assets/heroes/wira-chibi/attack.webp',bodyScale:1.48,footShiftX:28},
       {id:'dash',label:'Tikaman Pantas',asset:'assets/heroes/wira-chibi/frames/attack-dash-v2.webp',bodyScale:1.48,footShiftX:38},
       {id:'arc',label:'Lengkung Nombor',asset:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',bodyScale:1.42,footShiftX:28},
       {id:'pulse',label:'Gelombang Operasi',asset:'assets/heroes/wira-chibi/frames/attack-pulse-v2.webp',bodyScale:1.72,footShiftX:40}
@@ -73,9 +71,9 @@
     const button=document.createElement('button');button.id='devAttackLabBtn';button.className='btn ghost small';button.textContent='🎞 Attack Lab';button.onclick=window.openAttackLab;grid.appendChild(button);
   }
   function labMarkup(){
-    return '<div class="paAttackLabShade"></div><section class="paAttackLabPanel"><div class="paAttackLabHead"><div><small>DEV · FRAME INSPECTOR</small><h2>Attack Lab</h2></div><button type="button" onclick="closeAttackLab()" aria-label="Tutup">×</button></div><div class="paAttackLabControls"><button data-lab-hero="wira" onclick="attackLabHero(\'wira\')">Wira</button><button data-lab-hero="wirachibi" onclick="attackLabHero(\'wirachibi\')">Wira Chibi</button><button data-lab-hero="bunga" onclick="attackLabHero(\'bunga\')">Bunga</button><select id="paAttackLabVariant" onchange="attackLabVariant(this.value)"></select></div><div class="paAttackLabStage"><div class="paAttackLabGround"></div><img id="paAttackLabFrame" alt=""></div><div class="paAttackLabSteps"><button onclick="attackLabStep(\'stance\')"><b>1</b><span>Attack stance</span></button><button data-lab-step="movement" onclick="attackLabStep(\'movement\')"><b>2</b><span>Movement</span></button><button onclick="attackLabStep(\'strike\')"><b>3</b><span>Actual attack</span></button></div><button class="btn primary paAttackLabPlay" onclick="playAttackLab()">▶ Main sequence penuh</button><p id="paAttackLabStatus">Pilih frame untuk diperiksa.</p></section>';
+    return '<div class="paAttackLabShade"></div><section class="paAttackLabPanel"><div class="paAttackLabHead"><div><small>DEV · FRAME INSPECTOR</small><h2>Attack Lab</h2></div><button type="button" onclick="closeAttackLab()" aria-label="Tutup">×</button></div><div class="paAttackLabControls"><button data-lab-hero="wira" onclick="attackLabHero(\'wira\')">Wira</button><button data-lab-hero="wirachibi" onclick="attackLabHero(\'wirachibi\')">Wira Chibi</button><button data-lab-hero="bunga" onclick="attackLabHero(\'bunga\')">Bunga</button><select id="paAttackLabVariant" onchange="attackLabVariant(this.value)"></select></div><div class="paAttackLabStage"><div class="paAttackLabGround"></div><img id="paAttackLabFrame" alt=""></div><div class="paAttackLabSteps"><button onclick="attackLabStep(\'stance\')"><b>1</b><span>Anticipation</span></button><button data-lab-step="movement" onclick="attackLabStep(\'movement\')"><b>2</b><span>Attack / movement</span></button><button onclick="attackLabStep(\'strike\')"><b>3</b><span>Contact variant</span></button><button data-lab-step="follow" onclick="attackLabStep(\'follow\')"><b>4</b><span>Follow through</span></button></div><button class="btn primary paAttackLabPlay" onclick="playAttackLab()">▶ Main sequence penuh</button><p id="paAttackLabStatus">Pilih frame untuk diperiksa.</p></section>';
   }
-  const lab={hero:'wira',variant:'original',timer:[]};
+  const lab={hero:'wira',variant:'dash',timer:[]};
   function labItem(){return (variants[lab.hero]||variants.wira).find(x=>x.id===lab.variant)||(variants[lab.hero]||variants.wira)[0]}
   function clearTimers(){lab.timer.forEach(clearTimeout);lab.timer=[]}
   function renderLabControls(){
@@ -93,10 +91,10 @@
   window.attackLabVariant=function(id){lab.variant=id;window.attackLabStep('strike')};
   window.attackLabStep=function(step){
     clearTimers();if(lab.hero==='bunga'&&step==='movement')step='strike';const h=typeof HEROES!=='undefined'?(HEROES[lab.hero]||HEROES.wira):null,item=labItem(),img=document.getElementById('paAttackLabFrame'),status=document.getElementById('paAttackLabStatus');if(!h||!img)return;
-    const source=step==='stance'?h.anticipation:step==='movement'?h.followThrough:item.asset;
+    const source=step==='stance'?h.anticipation:step==='movement'?h.attack:step==='strike'?item.asset:h.followThrough;
     img.src=source;img.dataset.step=step;img.dataset.hero=lab.hero;
     img.style.setProperty('--pa-lab-contact-scale',step==='strike'?String(item.bodyScale):'1');
-    if(status)status.textContent=step==='stance'?'1 · Bersedia dan mengambil ancang-ancang':step==='movement'?'2 · Bergerak menuju sasaran':'3 · '+item.label+' mengenai sasaran';
+    if(status)status.textContent=step==='stance'?'1 · Anticipation':step==='movement'?'2 · Attack / movement':step==='strike'?'3 · '+item.label+' mengenai sasaran':'4 · Follow through';
   };
   window.playAttackLab=function(){
     clearTimers();window.attackLabStep('stance');
@@ -105,10 +103,11 @@
       lab.timer.push(setTimeout(()=>window.attackLabStep('stance'),1450));
       return;
     }
-    lab.timer.push(setTimeout(()=>window.attackLabStep('movement'),650));
-    lab.timer.push(setTimeout(()=>window.attackLabStep('strike'),1050));
-    lab.timer.push(setTimeout(()=>window.attackLabStep('stance'),1850));
+    lab.timer.push(setTimeout(()=>window.attackLabStep('movement'),420));
+    lab.timer.push(setTimeout(()=>window.attackLabStep('strike'),760));
+    lab.timer.push(setTimeout(()=>window.attackLabStep('follow'),1080));
+    lab.timer.push(setTimeout(()=>window.attackLabStep('stance'),1500));
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureAttackLab,{once:true});else ensureAttackLab();
-  window.PAActionVariety={variants,strikeFrame,preloadedFrames};
+  window.PAActionVariety={variants,strikeFrame,preloadedFrames,pick};
 })();

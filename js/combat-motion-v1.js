@@ -3,9 +3,13 @@
 (()=>{
  'use strict';
  const byId=id=>document.getElementById(id),cache=new Map();
- const paths={idle:'assets/heroes/wira/idle.webp',ready:'assets/heroes/wira/frames/anticipation-v1.webp',strike:'assets/heroes/wira/frames/attack-arc-v2.webp',follow:'assets/heroes/wira/frames/follow-through-v1.webp'};
- const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/frames/anticipation-v1.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
- const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
+ const paths={idle:'assets/heroes/wira/idle.webp',ready:'assets/heroes/wira/frames/anticipation-v1.webp',move:'assets/heroes/wira/attack.webp',follow:'assets/heroes/wira/frames/follow-through-v1.webp'};
+ const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/frames/anticipation-v1.webp',move:'assets/heroes/wira-chibi/attack.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
+ const contactPaths={
+  wira:{dash:'assets/heroes/wira/frames/attack-dash-v2.webp',arc:'assets/heroes/wira/frames/attack-arc-v2.webp',pulse:'assets/heroes/wira/frames/attack-pulse-v2.webp'},
+  wirachibi:{dash:'assets/heroes/wira-chibi/frames/attack-dash-v2.webp',arc:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',pulse:'assets/heroes/wira-chibi/frames/attack-pulse-v2.webp'}
+ };
+ const art={},chibiArt={},wiraContacts={},chibiContacts={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
  const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
  // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the
  // projectile only, never the whole attack.
@@ -29,6 +33,8 @@
  }
  Object.entries(paths).forEach(([key,src])=>art[key]=load(src));
  Object.entries(chibiPaths).forEach(([key,src])=>chibiArt[key]=load(src));
+ Object.entries(contactPaths.wira).forEach(([key,src])=>wiraContacts[key]=load(src));
+ Object.entries(contactPaths.wirachibi).forEach(([key,src])=>chibiContacts[key]=load(src));
  Object.entries(sidmaPaths).forEach(([key,src])=>sidmaArt[key]=load(src));
  sidmaBolt=load(sidmaBoltPath);
  function ensure(){
@@ -51,7 +57,7 @@
   return {x:left+asset.w*scale/2,y:top+asset.h*scale,h:asset.h*scale,w:asset.w*scale};
  }
  function shadow(x,y,w,h,opacity){ctx.save();ctx.globalAlpha=opacity;ctx.translate(x,y);ctx.scale(Math.max(1,w),Math.max(1,h));const g=ctx.createRadialGradient(0,0,0,0,0,1);g.addColorStop(0,'#020b12');g.addColorStop(.38,'#020b12b0');g.addColorStop(1,'#020b1200');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore()}
- const feet={idle:[[.19,.96],[.85,.99]],ready:[[.28,.99],[.71,.97]],strike:[[.16,.99],[.77,.98]],follow:[[.05,.99],[.47,.95]]};
+ const feet={idle:[[.19,.96],[.85,.99]],ready:[[.28,.99],[.71,.97]],move:[[.12,.98],[.68,.96]],strike:[[.16,.99],[.77,.98]],follow:[[.05,.99],[.47,.95]]};
  function grounded(a,p,pose){
   if(!a?.ready||!p)return;const w=p.h*a.w/a.h,s=p.h/290;
   shadow(p.x,p.y-3*s,w*.42,14*s,.3);
@@ -122,9 +128,13 @@
   const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet);
   if(hasPet&&isWira(key))return null;
   sync();const scene=ensure(),enemyImg=byId('enemySprite'),enemyArt=load(enemyImg?.currentSrc||enemyImg?.getAttribute('src'));
-  if(!scene||!Object.values(set).every(a=>a.ready)||!enemyArt?.ready)return null;
+  const contacts=key==='wirachibi'?chibiContacts:wiraContacts;
+  const baseReady=Object.values(set).every(a=>a.ready),contactsReady=!isWira(key)||Object.values(contacts).every(a=>a.ready);
+  if(!scene||!baseReady||!contactsReady||!enemyArt?.ready)return null;
   const hero=heroGeometry(scene),enemy=geometry(enemyImg,enemyArt,scene);if(!hero||!enemy)return null;
   const heroAttacks=attackerId==='hero'&&targetId==='enemy';if(!heroAttacks&&!(attackerId==='enemy'&&targetId==='hero'))return null;
+  const variant=heroAttacks&&isWira(key)?(window.PAActionVariety?.pick?.(key)||{id:'dash'}):null;
+  const renderSet=variant?{...set,strike:contacts[variant.id]||contacts.dash}:set;
   const enemyFrames=['enemyAnticipation','enemyAttack','enemyFollowThrough'].map(id=>{const img=byId(id);return load(img?.currentSrc||img?.getAttribute('src'))});
   const lead=heroAttacks&&hasPet?420:0;
   // Sidma alternates Rumus Sigma (stationary cast) and Jejak Sigma (dash).
@@ -134,7 +144,7 @@
   const contactDelay=(heroAttacks?(key==='sidma'?sidmaContact:470):390)+lead;
   const completionDelay=(heroAttacks?(ranged?1500:1400):1100)+lead;
   const min=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set,lead,ranged};
+  const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set:renderSet,lead,ranged,variant:variant?.id||null};
   if(heroAttacks&&key==='sidma')window.PASidmaBattle?.advanceNormalSkill?.();
   scene.arena.classList.add('paMotionActive');
   if(lead&&typeof triggerPetFollowUp==='function')triggerPetFollowUp(byId('enemy'),0);
@@ -175,14 +185,14 @@
    if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
    if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
   }else if(a.heroAttacks){
-   if(t<220){pose='ready';hero.x-=a.min?0:6*s*ease(t/220)}
-   else if(t<470){pose='ready';hero.x+=a.min?0:mix(-6*s,travel,ease((t-220)/250))}
-   else if(t<550){pose='strike';hero.x+=a.min?0:travel}
-   else if(t<850){pose='follow';hero.x+=a.min?0:travel}
-   else hero.x+=a.min?0:travel*(1-ease((t-850)/470));
-   // Squash-emphasis on the strike beat, ramped continuously across a window
-   // straddling the pose cut so the scale never jumps in lockstep with it.
-   const strikeT=clamp((t-420)/180),bump=Math.max(0,1-Math.pow(2*strikeT-1,2));
+   // Wira family uses the same four semantic beats. Wira Chibi only swaps art.
+   // #3 anticipation -> #2 attack/movement -> #5/#4/#6 contact -> #7 follow-through.
+   if(t<180){pose='ready';hero.x-=a.min?0:6*s*ease(t/180)}
+   else if(t<430){pose='move';hero.x+=a.min?0:mix(-6*s,travel,ease((t-180)/250))}
+   else if(t<620){pose='strike';hero.x+=a.min?0:travel}
+   else if(t<900){pose='follow';hero.x+=a.min?0:travel}
+   else{pose='follow';hero.x+=a.min?0:travel*(1-ease((t-900)/470))}
+   const strikeT=clamp((t-390)/220),bump=Math.max(0,1-Math.pow(2*strikeT-1,2));
    hero.h*=1+(20/290)*bump;
    if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
   }else{

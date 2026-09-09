@@ -1,4 +1,4 @@
-// App shell v3.62.9 — Wira Chibi shares Wira runtime; HQ art assets only.
+// App shell v3.62.10 — Wira family mapping restored: anticipation -> movement -> contact -> follow-through.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

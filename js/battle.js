@@ -119,7 +119,7 @@ function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
  const bungaAttacking=attackerId==="hero"&&db?.hero==="bunga"&&!finisher;
  const bungaSkill=bungaAttacking&&window.PABungaBattle?.getNextNormalSkill?.(),bungaSkill2=bungaSkill===2;
  const bungaContact=bungaSkill2?1050:(hasPet?390:500),bungaDuration=bungaSkill2?1420:(hasPet?690:880);
- let attackDuration=(finisher?(wiraFinishing?1780:(sidmaFinishing?1780:(bungaFinishing?1900:1450))):(sidmaAttacking?sidmaDuration:(bungaAttacking?bungaDuration:720)))+heroLead,contactDelay=(finisher?(sidmaFinishing?1430:finisherContact):(sidmaAttacking?sidmaContact:(bungaAttacking?bungaContact:390)))+heroLead,hitDuration=finisher?(wiraFinishing?340:(bungaFinishing?390:(tint==="bloom"?1080:(sidmaFinishing?360:900)))):520,shakeClass=(wiraFinishing||sidmaFinishing||bungaFinishing)?null:(finisher?"finisher-shake":"shake"),tintClass=(wiraFinishing||sidmaFinishing||bungaFinishing)?null:(tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice")),pulse=(wiraFinishing||sidmaFinishing||bungaFinishing)?null:(tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice"));
+ let attackDuration=(finisher?(wiraFinishing?1780:(sidmaFinishing?1780:(bungaFinishing?1900:1450))):(sidmaAttacking?sidmaDuration:(bungaAttacking?bungaDuration:800)))+heroLead,contactDelay=(finisher?(sidmaFinishing?1430:finisherContact):(sidmaAttacking?sidmaContact:(bungaAttacking?bungaContact:390)))+heroLead,hitDuration=finisher?(wiraFinishing?340:(bungaFinishing?390:(tint==="bloom"?1080:(sidmaFinishing?360:900)))):520,shakeClass=(wiraFinishing||sidmaFinishing||bungaFinishing)?null:(finisher?"finisher-shake":"shake"),tintClass=(wiraFinishing||sidmaFinishing||bungaFinishing)?null:(tint==="red"?"tint-red":(tint==="bloom"?"tint-bloom":"tint-ice")),pulse=(wiraFinishing||sidmaFinishing||bungaFinishing)?null:(tint==="red"?"pulse-red":(tint==="bloom"?"pulse-bloom":"pulse-ice"));
  if(attackerId==="hero"){
    if(pet&&!pet.classList.contains("hidden")){
      const petRect=pet.getBoundingClientRect(),targetRect=target.getBoundingClientRect();
@@ -147,11 +147,13 @@ function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
    }else{
     if(db?.hero==="bunga"){
      battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+260);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+620);
     }else{
      battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-movement")},heroLead+140);
      battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-contact")},heroLead+320);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-follow-through")},heroLead+550);
+     battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+710);
     }
-    battleLater(()=>{clearHeroPhases();attacker.classList.add("phase-recover")},heroLead+620);
    }
  }else if(attacker.dataset.enemyTier==="boss"){
    clearHeroPhases();attacker.classList.add("phase-anticipation");
