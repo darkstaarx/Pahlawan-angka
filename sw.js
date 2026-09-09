@@ -1,4 +1,4 @@
-// App shell v3.62.6 — game-native KSSR/PBD/UASA response engine.
+// App shell v3.62.7 — game-native KSSR/PBD/UASA response engine.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

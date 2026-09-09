@@ -43,21 +43,20 @@ function finishRecoveryCycle(){
 }
 
 
-const BOSS_STRETCH_D3_BY_CHAPTER={
- '1':['D3.N10000','D3.PV10000'],
- '2':['D3.ADD10000','D3.SUB10000','D3.MUL','D3.DIV'],
- '3':['D3.FRAC','D3.DEC','D3.PERCENT'],
- '4':['D3.MONEY'],
- '5':['D3.TIME'],
- '6':['D3.MEASURE'],
- '7':['D3.SHAPE','D3.POSITION'],
- '8':['D3.DATA']
-};
 function chooseBossStretchSkill(ch){
- const pool=(BOSS_STRETCH_D3_BY_CHAPTER[String(ch)]||[]).filter(id=>META[id]&&scoreState(id));
+ // A boss stretch probe must be exactly +1 school grade in the same chapter.
+ // The previous hard-coded D3 pool accidentally jumped Year 1 pupils straight to
+ // Year 3 content (for example ribu/ratus/puluh/sa place value) during boss Q5.
+ if(coreGrade()>=6)return null;
+ const targetGrade=stretchGrade(),chapter=String(ch);
+ const pool=GRAPH.skills
+   .filter(x=>x.grade===targetGrade&&String(x.chapter)===chapter)
+   .map(x=>x.id)
+   .filter(id=>META[id]&&scoreState(id));
  if(!pool.length)return null;
  const unseen=pool.filter(id=>scoreState(id).evidence===0);
- return (unseen.length?unseen:pool)[Math.floor(Math.random()*(unseen.length?unseen:pool).length)];
+ const candidates=unseen.length?unseen:pool;
+ return candidates[Math.floor(Math.random()*candidates.length)];
 }
 function inManualBossPhase(){
  return !!(sess&&sess.missionChapter&&!sess.coachAdaptive&&!sess.devBankTest&&(sess.missionAnswered||0)>=PROGRESSION.regularMissionQuestions&&!sess.bossDefeated);
@@ -65,7 +64,7 @@ function inManualBossPhase(){
 
 function chooseManualMissionSkill(){
  const chapter=String(sess.missionChapter||'');
- // Boss question #5 is one deliberate +1-grade probe. It is evidence of stretch, not a D2 prerequisite.
+ // Boss question #5 is one deliberate +1-grade probe. It is evidence of stretch, not a prerequisite for the pupil's current grade.
  if(inManualBossPhase()&&!sess.bossStretchAsked&&Number(sess.bossQuestionsAnswered||0)>=4){
    const stretch=chooseBossStretchSkill(chapter);
    if(stretch){sess.bossStretchAsked=true;sess.bossStretchCurrent=true;sess.mode='stretch';return stretch;}
