@@ -1,4 +1,4 @@
-// App shell v3.62.13 — Wira Chibi scaled down to match Wira's on-screen size; pulse variant now uses the aura-framing pose.
+// App shell v3.62.15 — Wira Chibi scale fixed at the container level (finisher portrait now matches); boss checkpoint is a real full-screen overlay; finisher portrait briefly shows the ground-plant pose at release.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
