@@ -13,11 +13,16 @@ input{width:100%;padding:11px;border-radius:12px;border:1px solid #3a4b70;backgr
 .ground{position:absolute;left:0;right:0;bottom:0;height:45px;background:#15243a}.unit{position:absolute;bottom:34px;width:126px;text-align:center;min-height:142px}.hero{left:4px}.enemy{right:4px}.sprite{position:relative;height:112px;font-size:72px;line-height:112px;filter:drop-shadow(0 7px 6px #0007);z-index:2;animation:idleBob 2.6s ease-in-out infinite}.hero .sprite{height:118px;line-height:118px;animation:idleBobHero 2.8s ease-in-out infinite}.nm{font-weight:900;font-size:12px}.hp{height:8px;border-radius:99px;background:#4e2734;overflow:hidden;margin:4px 10px}.hp span{display:block;height:100%;background:var(--good)}
 .hero-frame{position:absolute;left:50%;bottom:0;transform:translateX(-50%);height:118px;width:auto;max-width:none;object-fit:contain;opacity:0;transition:opacity .06s;pointer-events:none}.hero-frame-idle{opacity:1}.hero-frame-attack{height:122px;bottom:-2px;left:82%}.unit#hero.attacking .hero-frame-idle{opacity:0}.unit#hero.attacking .hero-frame-attack{opacity:1}
 /* The Chibi pack reads bigger than the base Wira art at the same --pa-hero-h,
-   crowding the arena. Scale it down; bottom:0 keeps feet grounded. The extra
-   .unit qualifier (already on #hero) matches battle-fix-v3.9.1.css's
-   per-pose height rules in specificity, which load after this file and would
-   otherwise win the tie and cancel this out. */
-body.hero-wirachibi #game #hero.unit .hero-frame{height:calc(var(--pa-hero-h)*.85)!important}
+   crowding the arena. Scaling the individual .hero-frame images (tried
+   first) left #heroVisual's own box at full size, which the finisher
+   cinematic measures via getBoundingClientRect() to size .cinematicHero —
+   so the finisher portrait rendered at full scale while everything else
+   was smaller. Scaling #hero itself instead shrinks the whole box (images,
+   canvas-read geometry, and anything measuring #heroVisual) consistently.
+   #hero itself never carries an animation (only its child .sprite does),
+   so this transform never gets clobbered by one; transform-origin keeps
+   feet grounded at #hero's own bottom edge. */
+body.hero-wirachibi #game #hero{transform:scale(.85);transform-origin:50% 100%}
 @keyframes idleBob{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-5px) rotate(2deg)}}
 @keyframes idleBobHero{0%,100%{transform:translateY(0) rotate(0deg) scaleX(1)}48%{transform:translateY(-6px) rotate(-1.5deg) scaleX(1.01)}}
 .unit#hero.attacking .sprite{animation:lungeRight .45s cubic-bezier(.3,0,.4,1)}.unit#enemy.attacking .sprite{animation:lungeLeft .45s cubic-bezier(.3,0,.4,1)}

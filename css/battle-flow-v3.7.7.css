@@ -13,7 +13,12 @@ body[data-screen="game"] .appHeader{display:none}
 .battle.boss-cleared::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(255,225,142,.12),rgba(94,214,175,.12));animation:clearedLight 2.4s ease-out both}
 .battle.boss-cleared .ground{filter:brightness(1.18) saturate(1.1)}
 @keyframes clearedLight{from{opacity:0}to{opacity:1}}
-.bossCheckpoint{position:absolute;inset:0;z-index:40;display:none;place-items:center;padding:10px;background:linear-gradient(180deg,rgba(8,14,26,.38),rgba(8,14,26,.84));backdrop-filter:blur(2px)}
+/* Nested inside #enemy (a small, absolutely-positioned unit box), inset:0
+   only ever covered the arena — the question card below kept showing.
+   position:fixed breaks it out to cover the real viewport regardless of
+   DOM nesting, and a near-opaque backdrop keeps the last question from
+   showing through underneath it. */
+.bossCheckpoint{position:fixed;inset:0;z-index:1200;display:none;place-items:center;padding:10px;background:linear-gradient(180deg,rgba(6,11,21,.96),rgba(6,11,21,.995));backdrop-filter:blur(2px)}
 .bossCheckpoint.show{display:grid;animation:checkpointIn .3s ease-out both}
 .checkpointGlow{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,223,105,.34),transparent 68%);animation:checkpointGlow 1.8s ease-in-out infinite}
 .checkpointCard{position:relative;width:min(94%,330px);padding:14px;border-radius:17px;text-align:center;color:#fff;background:linear-gradient(160deg,rgba(28,48,70,.97),rgba(13,25,43,.98));border:1px solid rgba(255,220,112,.75);box-shadow:0 14px 36px #0009,0 0 24px rgba(255,213,87,.2)}
