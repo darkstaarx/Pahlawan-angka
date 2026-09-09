@@ -17,5 +17,13 @@
 @keyframes wiraIceBurst{0%{opacity:1;transform:translate(-50%,-50%) scale(.24)}38%{opacity:1;transform:translate(-50%,-50%) scale(1.02)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.18)}}
 @keyframes wiraIceEnd{0%{opacity:.9;transform:translate(-50%,-50%) scale(.82)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.08)}}
 body.hero-wira #game #enemy.hit.finisher .finisher-ice,body.hero-wira #game #enemy.hit.finisher .impact-slash,body.hero-wira #game #enemy.hit.finisher .impact-burst{display:none!important}
+/* The finisher owns the whole beat through the blackout cinematic and the
+   ice-seal effects on the enemy — the arena's own hero sprite has no part
+   to play. Without this, battle.js's regular phase-contact/follow-through
+   classes (still applied under a finisher for shared timing bookkeeping)
+   make it cycle through the ordinary attack pose after the curtain closes,
+   reading as a second, unrelated attack. Same pattern as Bunga's finisher. */
+body.hero-wira #game #hero.charging-finisher .hero-frame:not(.hero-frame-idle){opacity:0!important;visibility:hidden!important}
+body.hero-wira #game #hero.charging-finisher .hero-frame-idle{opacity:1!important;visibility:visible!important}
 @media(max-width:420px){#game #battleArena .wira-frost-seal{width:min(44vw,176px)}}
 @media(prefers-reduced-motion:reduce){#game #battleArena .wira-frost-seal.form,#game #battleArena .wira-ice-burst.impact,#game #battleArena .wira-ice-end.active{animation-duration:1ms!important}}

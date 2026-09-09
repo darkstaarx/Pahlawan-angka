@@ -1,4 +1,4 @@
-// App shell v3.62.15 — Wira Chibi scale fixed at the container level (finisher portrait now matches); boss checkpoint is a real full-screen overlay; finisher portrait briefly shows the ground-plant pose at release.
+// App shell v3.62.16 — Wira/Wira Chibi finisher no longer shows the ordinary attack pose after the blackout curtain closes; idle stays on screen through the ice-seal effects, matching Bunga's finisher.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
