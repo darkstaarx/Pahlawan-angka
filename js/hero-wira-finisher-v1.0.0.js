@@ -1,12 +1,15 @@
 /* Wira final v2 — enemy-side ice-electric seal, isolated from normal attacks. */
 (function(){
-  const TIMING={release:760,form:1080,arc:1190,compress:1360,impact:1420,aftermath:1600,end:1750};
-  // Ground-plant pose ("cucuk tanah"), shown as a brief second frame on the
-  // cinematic portrait right as the finisher releases. battle.js hides the
-  // whole blackout curtain (and this portrait with it) at 1080ms — well
-  // before TIMING.impact, when the ice-seal effects in the arena itself
-  // take over — so this has to land inside the 0-1080ms blackout window to
-  // be seen at all. No revert needed: the curtain hides it at 1080ms, and
+  const TIMING={release:480,form:1080,arc:1190,compress:1360,impact:1420,aftermath:1600,end:1750};
+  // Ground-plant pose ("cucuk tanah"), shown as a second frame on the
+  // cinematic portrait once the charge-up settles. battle.js hides the
+  // whole blackout curtain (and this portrait with it) at 1080ms, and the
+  // portrait itself starts fading around ~900ms as its own reveal
+  // animation runs out — so the earlier release fired at 760ms only got
+  // ~150ms of clean, fully-opaque display before the fade, which read as
+  // barely-there. 480ms lands right after the portrait settles (opacity
+  // hits 1 by ~300ms) and gives it ~400-600ms of clean visible time before
+  // the same fade. No revert needed: the curtain hides it at 1080ms, and
   // the next finisher resets the portrait to auraFraming from scratch.
   // Preloaded here since neither hero's action-variety pool still
   // references it for wirachibi.

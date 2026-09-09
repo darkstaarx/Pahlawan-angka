@@ -1,4 +1,4 @@
-// App shell v3.62.16 — Wira/Wira Chibi finisher no longer shows the ordinary attack pose after the blackout curtain closes; idle stays on screen through the ice-seal effects, matching Bunga's finisher.
+// App shell v3.62.17 — finisher ground-plant frame now shows earlier and holds longer, clearly visible instead of a barely-there flash.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
