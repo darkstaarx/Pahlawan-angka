@@ -1,0 +1,115 @@
+name: Cikgu Phase 2 QA
+on:
+  push:
+    branches: [codex/cikgu-dimensi-phase2-qa]
+  workflow_dispatch:
+
+jobs:
+  node-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Focused Phase 2 checks
+        run: node audit/cikgu-dimensi-regrouping-phase2.js
+      - name: Syntax checks for modified runtime files
+        run: |
+          node --check js/dev-cikgu-dimensi-v3.24.10.js
+          node --check js/engine/dimensional-catalog.js
+          node --check js/engine/dimensional-memory.js
+          node --check js/engine/dimensional-view.js
+          node --check js/engine/representations/place-value.js
+          node --check js/version.js
+      - name: Relevant regression matrix
+        shell: bash
+        run: |
+          set +e
+          failures=0
+          tests=(
+            audit/adaptive-e2e-v3.12.1.js
+            audit/adaptive-learner-telemetry-v1.js
+            audit/prelaunch-adaptive-evidence-v3.57.1.js
+            audit/battle-runtime-blockers-v3.57.3.js
+            audit/battle-cache-wiring-v3.33.2.js
+            audit/pwa-noninterrupting-update-v3.55.2.js
+            audit/pwa-v3.8.29.js
+            audit/content-integrity-v3.18.1.js
+            audit/d3-fluency-balance-v3.51.0.js
+            audit/teacher-review-integrity-v3.56.5.js
+            audit/responsive-v3.8.2.js
+            audit/cikgu-manipulatives-runtime-v3.19.1.js
+            audit/guardian-focus-v3.8.30.js
+            audit/hint-dimensional-cutin-v3.28.1.js
+            audit/version-sync.js
+          )
+          for t in "${tests[@]}"; do
+            echo "===== RUN $t ====="
+            node "$t"
+            rc=$?
+            if [ $rc -eq 0 ]; then echo "===== PASS $t ====="; else echo "===== FAIL($rc) $t ====="; failures=$((failures+1)); fi
+          done
+          echo "REGRESSION_FAILURES=$failures"
+          exit $failures
+      - name: Locate runtime hooks for browser QA
+        if: always()
+        run: |
+          grep -R -n -E "function (isDevMode|startDevSkill|devChangeGrade)|beginHintRetry|PABattlePresentation|D3.SUB10000" js index.html | head -n 300 || true
+
+  browser-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium runner
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start static app
+        run: |
+          python3 -m http.server 4173 > /tmp/pa-server.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/pa-server.log
+          exit 1
+      - name: Chromium runtime smoke 390x844
+        run: |
+          cat > /tmp/pa-smoke.mjs <<'NODE'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+          const browser=await chromium.launch({headless:true});
+          const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'no-preference'});
+          const page=await context.newPage();
+          const errors=[]; const warnings=[];
+          page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); if(m.type()==='warning') warnings.push(m.text()); });
+          page.on('pageerror',e=>errors.push(`PAGEERROR: ${e.message}`));
+          await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
+          await page.waitForTimeout(1500);
+          const state=await page.evaluate(()=>({
+            version:window.PA_VERSION?.version||null,
+            dimensi:typeof window.PADimensionalView,
+            devDimensi:typeof window.PADevCikguDimensi,
+            dimensiVersion:window.PADimensionalView?.version||null,
+            viewport:[innerWidth,innerHeight],
+            bodyOverflowX:document.documentElement.scrollWidth>document.documentElement.clientWidth,
+            title:document.title
+          }));
+          console.log('SMOKE_STATE='+JSON.stringify(state));
+          console.log('CONSOLE_WARNINGS='+JSON.stringify(warnings));
+          console.log('CONSOLE_ERRORS='+JSON.stringify(errors));
+          await page.screenshot({path:'qa-home-390x844.png',fullPage:true});
+          fs.writeFileSync('qa-smoke.json',JSON.stringify({state,warnings,errors},null,2));
+          await browser.close();
+          if(state.version!=='3.62.22'||state.dimensi!=='object'||errors.length) process.exit(1);
+          NODE
+          node /tmp/pa-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase2-browser-smoke
+          path: |
+            qa-home-390x844.png
+            qa-smoke.json
