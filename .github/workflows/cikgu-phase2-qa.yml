@@ -61,8 +61,6 @@ jobs:
             [ $baserc -eq 0 ] && base_pass=$((base_pass+1))
             if [ $brc -ne 0 ] && [ $baserc -eq 0 ]; then state=NEW_REGRESSION; regressions=$((regressions+1)); else state=NO_NEW_REGRESSION; fi
             echo "MATRIX $t BRANCH_RC=$brc BASE_RC=$baserc $state"
-            if [ $brc -eq 0 ]; then tail -n 8 "/tmp/branch-$safe.log"; fi
-            if [ "$state" = NEW_REGRESSION ]; then echo "--- BRANCH FAILURE ---"; cat "/tmp/branch-$safe.log"; fi
           done
           echo "MATRIX_SUMMARY branch_pass=$branch_pass/${#tests[@]} base_pass=$base_pass/${#tests[@]} new_regressions=$regressions"
           exit $regressions
@@ -77,7 +75,7 @@ jobs:
             printf '%s base=' "$f"; git rev-parse e232ba16962312e4acf98b0efec2e6384435925c:"$f"
           done
 
-  browser-smoke:
+  browser-full:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,48 +93,10 @@ jobs:
           for i in {1..20}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
           cat /tmp/pa-server.log
           exit 1
-      - name: Chromium runtime smoke 390x844
-        run: |
-          cat > qa-smoke.cjs <<'NODE'
-          const { chromium } = require('playwright');
-          const fs=require('fs');
-          (async()=>{
-            const browser=await chromium.launch({headless:true});
-            const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'no-preference'});
-            const page=await context.newPage();
-            const errors=[]; const warnings=[];
-            page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); if(m.type()==='warning') warnings.push(m.text()); });
-            page.on('pageerror',e=>errors.push(`PAGEERROR: ${e.message}`));
-            await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
-            await page.waitForTimeout(1800);
-            const state=await page.evaluate(()=>({
-              version:window.PA_VERSION?.version||null,
-              dimensi:typeof window.PADimensionalView,
-              devDimensi:typeof window.PADevCikguDimensi,
-              dimensiVersion:window.PADimensionalView?.version||null,
-              dbType:typeof db,dbPresent:typeof db!=='undefined'&&!!db,
-              sessType:typeof sess,
-              startDevSkill:typeof startDevSkill,
-              currentScreen:document.body.dataset.screen||null,
-              viewport:[innerWidth,innerHeight],
-              scroll:[document.documentElement.scrollWidth,document.documentElement.clientWidth,document.documentElement.scrollHeight,document.documentElement.clientHeight],
-              bodyOverflowX:document.documentElement.scrollWidth>document.documentElement.clientWidth,
-              title:document.title
-            }));
-            console.log('SMOKE_STATE='+JSON.stringify(state));
-            console.log('CONSOLE_WARNINGS='+JSON.stringify(warnings));
-            console.log('CONSOLE_ERRORS='+JSON.stringify(errors));
-            await page.screenshot({path:'qa-home-390x844.png',fullPage:true});
-            fs.writeFileSync('qa-smoke.json',JSON.stringify({state,warnings,errors},null,2));
-            await browser.close();
-            if(state.version!=='3.62.22'||state.dimensi!=='object'||state.devDimensi!=='object'||errors.length) process.exit(1);
-          })();
-          NODE
-          node qa-smoke.cjs
+      - name: Full Chromium Phase 2 QA
+        run: node .github/qa/cikgu-phase2-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: phase2-browser-smoke
-          path: |
-            qa-home-390x844.png
-            qa-smoke.json
+          name: phase2-browser-evidence
+          path: qa-phase2/
