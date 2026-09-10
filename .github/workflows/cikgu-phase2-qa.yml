@@ -9,9 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install test browser dependency
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
       - name: Focused Phase 2 checks
         run: node audit/cikgu-dimensi-regrouping-phase2.js
       - name: Syntax checks for modified runtime files
@@ -22,11 +29,12 @@ jobs:
           node --check js/engine/dimensional-view.js
           node --check js/engine/representations/place-value.js
           node --check js/version.js
-      - name: Relevant regression matrix
+      - name: Compare relevant regressions against Phase 2 base
         shell: bash
         run: |
           set +e
-          failures=0
+          export NODE_PATH="$GITHUB_WORKSPACE/node_modules"
+          git worktree add --detach /tmp/pa-base e232ba16962312e4acf98b0efec2e6384435925c >/dev/null
           tests=(
             audit/adaptive-e2e-v3.12.1.js
             audit/adaptive-learner-telemetry-v1.js
@@ -44,18 +52,30 @@ jobs:
             audit/hint-dimensional-cutin-v3.28.1.js
             audit/version-sync.js
           )
+          regressions=0; branch_pass=0; base_pass=0
           for t in "${tests[@]}"; do
-            echo "===== RUN $t ====="
-            node "$t"
-            rc=$?
-            if [ $rc -eq 0 ]; then echo "===== PASS $t ====="; else echo "===== FAIL($rc) $t ====="; failures=$((failures+1)); fi
+            safe=$(echo "$t" | tr '/.' '__')
+            (node "$t") >"/tmp/branch-$safe.log" 2>&1; brc=$?
+            (cd /tmp/pa-base && node "$t") >"/tmp/base-$safe.log" 2>&1; baserc=$?
+            [ $brc -eq 0 ] && branch_pass=$((branch_pass+1))
+            [ $baserc -eq 0 ] && base_pass=$((base_pass+1))
+            if [ $brc -ne 0 ] && [ $baserc -eq 0 ]; then state=NEW_REGRESSION; regressions=$((regressions+1)); else state=NO_NEW_REGRESSION; fi
+            echo "MATRIX $t BRANCH_RC=$brc BASE_RC=$baserc $state"
+            if [ $brc -eq 0 ]; then tail -n 8 "/tmp/branch-$safe.log"; fi
+            if [ "$state" = NEW_REGRESSION ]; then echo "--- BRANCH FAILURE ---"; cat "/tmp/branch-$safe.log"; fi
           done
-          echo "REGRESSION_FAILURES=$failures"
-          exit $failures
-      - name: Locate runtime hooks for browser QA
+          echo "MATRIX_SUMMARY branch_pass=$branch_pass/${#tests[@]} base_pass=$base_pass/${#tests[@]} new_regressions=$regressions"
+          exit $regressions
+      - name: Protected tree status
         if: always()
         run: |
-          grep -R -n -E "function (isDevMode|startDevSkill|devChangeGrade)|beginHintRetry|PABattlePresentation|D3.SUB10000" js index.html | head -n 300 || true
+          echo "CHANGED FILES FROM ORIGINAL BASE:"
+          git diff --name-status e232ba16962312e4acf98b0efec2e6384435925c...HEAD
+          echo "PROTECTED FILE HASHES:"
+          for f in js/battle.js js/engine/adaptive.js js/engine/intervention.js js/learning.js js/cloud.js js/demo-mode-v3.56.0.js; do
+            printf '%s branch=' "$f"; git rev-parse HEAD:"$f"
+            printf '%s base=' "$f"; git rev-parse e232ba16962312e4acf98b0efec2e6384435925c:"$f"
+          done
 
   browser-smoke:
     runs-on: ubuntu-latest
@@ -77,35 +97,42 @@ jobs:
           exit 1
       - name: Chromium runtime smoke 390x844
         run: |
-          cat > /tmp/pa-smoke.mjs <<'NODE'
-          import { chromium } from 'playwright';
-          import fs from 'node:fs';
-          const browser=await chromium.launch({headless:true});
-          const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'no-preference'});
-          const page=await context.newPage();
-          const errors=[]; const warnings=[];
-          page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); if(m.type()==='warning') warnings.push(m.text()); });
-          page.on('pageerror',e=>errors.push(`PAGEERROR: ${e.message}`));
-          await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
-          await page.waitForTimeout(1500);
-          const state=await page.evaluate(()=>({
-            version:window.PA_VERSION?.version||null,
-            dimensi:typeof window.PADimensionalView,
-            devDimensi:typeof window.PADevCikguDimensi,
-            dimensiVersion:window.PADimensionalView?.version||null,
-            viewport:[innerWidth,innerHeight],
-            bodyOverflowX:document.documentElement.scrollWidth>document.documentElement.clientWidth,
-            title:document.title
-          }));
-          console.log('SMOKE_STATE='+JSON.stringify(state));
-          console.log('CONSOLE_WARNINGS='+JSON.stringify(warnings));
-          console.log('CONSOLE_ERRORS='+JSON.stringify(errors));
-          await page.screenshot({path:'qa-home-390x844.png',fullPage:true});
-          fs.writeFileSync('qa-smoke.json',JSON.stringify({state,warnings,errors},null,2));
-          await browser.close();
-          if(state.version!=='3.62.22'||state.dimensi!=='object'||errors.length) process.exit(1);
+          cat > qa-smoke.cjs <<'NODE'
+          const { chromium } = require('playwright');
+          const fs=require('fs');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'no-preference'});
+            const page=await context.newPage();
+            const errors=[]; const warnings=[];
+            page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); if(m.type()==='warning') warnings.push(m.text()); });
+            page.on('pageerror',e=>errors.push(`PAGEERROR: ${e.message}`));
+            await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
+            await page.waitForTimeout(1800);
+            const state=await page.evaluate(()=>({
+              version:window.PA_VERSION?.version||null,
+              dimensi:typeof window.PADimensionalView,
+              devDimensi:typeof window.PADevCikguDimensi,
+              dimensiVersion:window.PADimensionalView?.version||null,
+              dbType:typeof db,dbPresent:typeof db!=='undefined'&&!!db,
+              sessType:typeof sess,
+              startDevSkill:typeof startDevSkill,
+              currentScreen:document.body.dataset.screen||null,
+              viewport:[innerWidth,innerHeight],
+              scroll:[document.documentElement.scrollWidth,document.documentElement.clientWidth,document.documentElement.scrollHeight,document.documentElement.clientHeight],
+              bodyOverflowX:document.documentElement.scrollWidth>document.documentElement.clientWidth,
+              title:document.title
+            }));
+            console.log('SMOKE_STATE='+JSON.stringify(state));
+            console.log('CONSOLE_WARNINGS='+JSON.stringify(warnings));
+            console.log('CONSOLE_ERRORS='+JSON.stringify(errors));
+            await page.screenshot({path:'qa-home-390x844.png',fullPage:true});
+            fs.writeFileSync('qa-smoke.json',JSON.stringify({state,warnings,errors},null,2));
+            await browser.close();
+            if(state.version!=='3.62.22'||state.dimensi!=='object'||state.devDimensi!=='object'||errors.length) process.exit(1);
+          })();
           NODE
-          node /tmp/pa-smoke.mjs
+          node qa-smoke.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
