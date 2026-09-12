@@ -9,13 +9,13 @@
  // swings per attack. Idle stands in for the ready pose until a true
  // wind-up frame exists.
  const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/idle.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
- const chibiAttackSheetPath='assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v1.webp';
+ const chibiAttackSheetPath='assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp';
  const chibiAttackGrid={columns:5,rows:4,frames:17,frameMs:70};
  // Character-centre pivots measured per frame. The source sheet shifts Wira
  // inside each cell as the combo advances; anchoring the painted body instead
  // of the cell prevents a sideways pop against the live idle pose.
- const chibiAttackPivotX=[.498,.541,.563,.578,.607,.596,.596,.6,.604,.604,.604,.6,.6,.607,.6,.604,.602];
- const chibiAttackFootY=[.941,.941,.941,.941,.941,.93,.93,.93,.93,.93,.93,.93,.93,.93,.93,.949,.953];
+ const chibiAttackPivotX=[.455,.42,.449,.458,.472,.471,.444,.461,.476,.494,.458,.437,.465,.502,.54,.579,.583];
+ const chibiAttackFootY=[.996,.996,.996,.984,.988,.996,.996,.98,.984,.984,.996,.996,.996,.996,.977,.965,.965];
  const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
  const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
  // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the
@@ -86,11 +86,11 @@
   const column=frame%grid.columns,row=Math.floor(frame/grid.columns);
   const sx=Math.round(column*image.naturalWidth/grid.columns),ex=Math.round((column+1)*image.naturalWidth/grid.columns);
   const sy=Math.round(row*image.naturalHeight/grid.rows),ey=Math.round((row+1)*image.naturalHeight/grid.rows);
-  const sourceWidth=ex-sx,sourceHeight=ey-sy,height=p.h*1.85,width=height*sourceWidth/sourceHeight;
+  const sourceWidth=ex-sx,sourceHeight=ey-sy,height=p.h*1.25,width=height*sourceWidth/sourceHeight;
   // The cells have transparent padding under the feet. Use the measured foot
   // line rather than the cell edge so attack and idle share one ground plane.
   const left=p.x-width*chibiAttackPivotX[frame],top=p.y-height*chibiAttackFootY[frame];
-  ctx.save();ctx.filter='brightness(1.03) saturate(1.18)';ctx.drawImage(image,sx,sy,sourceWidth,sourceHeight,left,top,width,height);ctx.restore();
+  ctx.save();ctx.filter='brightness(1.01) saturate(1.06)';ctx.drawImage(image,sx,sy,sourceWidth,sourceHeight,left,top,width,height);ctx.restore();
   return true;
  }
  // Source-space foot pivots keep body scale independent of the painted Sigma
