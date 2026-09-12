@@ -1,4 +1,4 @@
-// App shell v3.62.22 — Wira Chibi uses the new seventeen-frame ice combo.
+// App shell v3.62.23 — Wira Chibi attack colour and ground pivots corrected.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
