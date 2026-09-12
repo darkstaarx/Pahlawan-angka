@@ -9,6 +9,8 @@
  // swings per attack. Idle stands in for the ready pose until a true
  // wind-up frame exists.
  const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/idle.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
+ const chibiAttackSheetPath='assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v1.webp';
+ const chibiAttackGrid={columns:5,rows:4,frames:17,frameMs:70};
  const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
  const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
  // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the
@@ -16,7 +18,6 @@
  const sidmaBoltPath='assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp';
  let sidmaBolt=null;
  const heroKey=()=>typeof db!=='undefined'?db?.hero:null;
- const isWira=id=>id==='wira'||id==='wirachibi';
  const heroArt=()=>heroKey()==='sidma'?sidmaArt:(heroKey()==='wirachibi'?chibiArt:art);
  const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>1-Math.pow(1-clamp(x),3),mix=(a,b,t)=>a+(b-a)*t;
  function load(src){
@@ -31,9 +32,19 @@
    Object.assign(record,{img,x,y,w:r-x+1,h:b-y+1,ready:true});sync();
   }).catch(()=>{record.failed=true});return record;
  }
+ function loadSheet(src){
+  if(!src)return null;if(cache.has(src))return cache.get(src);
+  const record={ready:false};cache.set(src,record);
+  const img=new Image();img.src=src;
+  img.decode().then(()=>{Object.assign(record,{img,ready:true});sync()}).catch(()=>{record.failed=true});
+  return record;
+ }
  Object.entries(paths).forEach(([key,src])=>art[key]=load(src));
  Object.entries(chibiPaths).forEach(([key,src])=>chibiArt[key]=load(src));
  Object.entries(sidmaPaths).forEach(([key,src])=>sidmaArt[key]=load(src));
+ // The sheet is already a uniform grid; skip the expensive full-image alpha
+ // scan used to normalise irregular standalone poses.
+ const chibiAttackSheet=loadSheet(chibiAttackSheetPath);
  sidmaBolt=load(sidmaBoltPath);
  function ensure(){
   const arena=byId('battleArena');if(!arena)return null;
@@ -63,6 +74,23 @@
   else shadow(p.x,p.y,w*.28,5*s,.7);
  }
  function sprite(a,p,flash=false){ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.96) saturate(.96)';const w=p.h*a.w/a.h;ctx.drawImage(a.img,a.x,a.y,a.w,a.h,p.x-w/2,p.y-p.h,w,p.h);ctx.restore()}
+ function drawChibiAttack(p,t,min=false){
+  if(!chibiAttackSheet?.ready)return false;
+  const image=chibiAttackSheet.img,grid=chibiAttackGrid;
+  const frame=min?(t<grid.frameMs?0:15):Math.min(grid.frames-1,Math.max(0,Math.floor(t/grid.frameMs)));
+  const column=frame%grid.columns,row=Math.floor(frame/grid.columns);
+  const sx=Math.round(column*image.naturalWidth/grid.columns),ex=Math.round((column+1)*image.naturalWidth/grid.columns);
+  const sy=Math.round(row*image.naturalHeight/grid.rows),ey=Math.round((row+1)*image.naturalHeight/grid.rows);
+  const sourceWidth=ex-sx,sourceHeight=ey-sy,height=p.h*1.85,width=height*sourceWidth/sourceHeight;
+  const anchorX=frame===0?.49:.57;
+  // The opening load is painted further left than the remaining frames.
+  // Anchor each pose's character centre to Wira's live foot position so the
+  // baked ice trail can extend forwards
+  // without moving the HUD or changing the arena layout.
+  const left=p.x-width*anchorX,top=p.y-height;
+  ctx.save();ctx.filter='brightness(.98) saturate(1.05)';ctx.drawImage(image,sx,sy,sourceWidth,sourceHeight,left,top,width,height);ctx.restore();
+  return true;
+ }
  // Source-space foot pivots keep body scale independent of the painted Sigma
  // ring and cape. The artwork is drawn unmodified, including its own trail.
  const sidmaPivots={idle:[632,670],ready:[632,670],dash:[780,660],strike:[700,690],follow:[632,670],cast:[632,670],release:[632,670]};
@@ -124,7 +152,9 @@
  function begin(attackerId,targetId,finisher,damageAmount=null){
   const key=heroKey(),set=heroArt();if(finisher||!['wira','wirachibi','sidma'].includes(key)||active)return null;
   const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet);
-  if(hasPet&&isWira(key))return null;
+  // Wira Chibi's new sheet is the canonical normal attack, including pet-first
+  // combinations. The original Wira keeps its established DOM pet sequence.
+  if(hasPet&&key==='wira')return null;
   sync();const scene=ensure(),enemyImg=byId('enemySprite'),enemyArt=load(enemyImg?.currentSrc||enemyImg?.getAttribute('src'));
   if(!scene||!Object.values(set).every(a=>a.ready)||!enemyArt?.ready)return null;
   const hero=heroGeometry(scene),enemy=geometry(enemyImg,enemyArt,scene);if(!hero||!enemy)return null;
@@ -134,9 +164,10 @@
   // Sidma alternates Rumus Sigma (stationary cast) and Jejak Sigma (dash).
   // The hero module owns the counter so the DOM fallback stays in step.
   const ranged=heroAttacks&&key==='sidma'&&window.PASidmaBattle?.getNextNormalSkill?.()===1;
-  const sidmaContact=ranged?900:650;
-  const contactDelay=(heroAttacks?(key==='sidma'?sidmaContact:470):390)+lead;
-  const completionDelay=(heroAttacks?(ranged?1500:1400):1100)+lead;
+  if(heroAttacks&&key==='wirachibi'&&!chibiAttackSheet?.ready)return null;
+  const sidmaContact=ranged?900:650,chibiContact=1050;
+  const contactDelay=(heroAttacks?(key==='sidma'?sidmaContact:(key==='wirachibi'?chibiContact:470)):390)+lead;
+  const completionDelay=(heroAttacks?(key==='wirachibi'?1320:(ranged?1500:1400)):1100)+lead;
   const min=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set,lead,ranged};
   if(heroAttacks&&key==='sidma')window.PASidmaBattle?.advanceNormalSkill?.();
@@ -178,6 +209,12 @@
    else if(t<1320)pose='follow';
    if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
    if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
+  }else if(a.heroAttacks&&a.key==='wirachibi'){
+   pose=t<0||t>=1190?'idle':'chibi-combo';
+   if(!a.min&&t>=350&&t<700)hero.x+=travel*ease((t-350)/350);
+   else if(!a.min&&t>=700&&t<1190)hero.x+=travel;
+   if(hit>=0&&!a.min)enemy.x+=14*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
+   if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
   }else if(a.heroAttacks){
    if(t<220){pose='ready';hero.x-=a.min?0:6*s*ease(t/220)}
    else if(t<470){pose='ready';hero.x+=a.min?0:mix(-6*s,travel,ease((t-220)/250))}
@@ -197,8 +234,13 @@
    if(hit>=0&&!a.min)hero.x-=10*s*Math.exp(-hit/180)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
   }
   if(a.pose!==pose){a.pose=pose;canvas.setAttribute('data-phase',pose)}
-  heroShadow(a.key,a.set,pose,hero);grounded(enemyArt,enemy);
-  sprite(enemyArt,enemy,a.heroAttacks&&hit>=0&&hit<80);drawHero(a.key,a.set,pose,hero,!a.heroAttacks&&hit>=0&&hit<80);
+  const chibiCombo=a.heroAttacks&&a.key==='wirachibi'&&t>=0&&t<1190;
+  if(chibiCombo)shadow(hero.x,hero.y-2,hero.h*.27,hero.h*.045,.72);
+  else heroShadow(a.key,a.set,pose,hero);
+  grounded(enemyArt,enemy);
+  sprite(enemyArt,enemy,a.heroAttacks&&hit>=0&&hit<80);
+  if(chibiCombo)drawChibiAttack(hero,t,a.min);
+  else drawHero(a.key,a.set,pose,hero,!a.heroAttacks&&hit>=0&&hit<80);
   if(a.ranged)bolt(hero,enemy,t,a.min);
   const target=a.heroAttacks?enemy:hero;fx(target,hit,a.heroAttacks?(a.key==='sidma'?'#ffb849':'#a6efff'):'#ffcb9a',a.damage,a.min);
   raf=requestAnimationFrame(render);

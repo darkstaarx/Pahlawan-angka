@@ -27,7 +27,7 @@ c.cancelBattlePresentationTimers();c.sess.hp=16;c.sess.ehp=6;c.battle();stale();
 assert.equal(h.ids.heroHp.style.width,'80%');assert.equal(h.ids.enemyHp.style.width,'50%');assert(h.resets()>0);assert.equal(c.PABattlePresentation.pending(),0);
 const release=fs.readFileSync('js/version.js','utf8').match(/PA_APP_VERSION='([^']+)'/)[1];
 const index=fs.readFileSync('index.html','utf8'),sw=fs.readFileSync('sw.js','utf8');
-for(const [file,version] of [['js/combat-motion-v1.js','3.60.1'],['css/combat-motion-v1.css','3.57.5'],['js/battle.js','3.60.0']])assert(index.includes(`${file}?v=${version}`),file+' motion cache-bust');
+for(const [file,version] of [['js/combat-motion-v1.js','3.62.22'],['css/combat-motion-v1.css','3.57.5'],['js/battle.js','3.62.11']])assert(index.includes(`${file}?v=${version}`),file+' motion cache-bust');
 for(const [file,version] of [['js/version.js',release],['js/pwa.js',release],['css/hero-sidma-v1.0.0.css','3.60.1']])assert(index.includes(`${file}?v=${version}`),file+' release cache-bust');
 for(const file of ['js/combat-motion-v1.js','css/combat-motion-v1.css'])assert(sw.includes(file));
 console.log('PASS: hero/enemy impact HP timing, model integrity, stale-journey cancellation, release wiring');
@@ -62,7 +62,7 @@ async function rendererChecks(){
  const motion=c.PACombatMotion;
  assert.equal(motion.begin('hero','enemy',true),null,'finisher must retain existing renderer');
  c.db.rewards.equippedPet='aurora';assert.equal(motion.begin('hero','enemy',false),null,'pet combo must retain existing renderer');c.db.rewards.equippedPet=null;
- for(const key of ['wira','sidma'])for(const from of ['hero','enemy'])for(const minimal of [false,true]){
+ for(const key of ['wira','wirachibi','sidma'])for(const from of ['hero','enemy'])for(const minimal of [false,true]){
   c.db.hero=key;
   reduced=minimal;const info=motion.begin(from,from==='hero'?'enemy':'hero',false);assert(info?.motion);
   const render=frames.get(id);for(const time of [0,250,470,530,650,740,900,1120,1300])render(time);
@@ -72,7 +72,11 @@ async function rendererChecks(){
  const combo=motion.begin('hero','enemy',false);assert.equal(combo.contactDelay,1070);assert.equal(combo.completionDelay,1820);assert.equal(petCalls,1);
  const comboRender=frames.get(id);for(const time of [0,360,420,600,1070,1200,1740])comboRender(time);motion.reset();
  assert.equal(motion.begin('hero','enemy',true),null,'Sidma finisher remains a solo cinematic');assert.equal(petCalls,1);
+ c.db.hero='wirachibi';const chibiCombo=motion.begin('hero','enemy',false);
+ assert.equal(chibiCombo.contactDelay,1470);assert.equal(chibiCombo.completionDelay,1740);assert.equal(petCalls,2);
+ const chibiRender=frames.get(id);for(const time of [0,420,490,910,1470,1610,1730])chibiRender(time);motion.reset();
+ assert.equal(motion.begin('hero','enemy',true),null,'Wira Chibi finisher remains the existing solo cinematic');
  c.db.hero='bunga';assert.equal(motion.begin('hero','enemy',false),null);
- console.log('PASS: Wira/Sidma phases, attack/counterattack, reduced motion, pet-first combo, reset, finisher/Bunga fallback');
+ console.log('PASS: Wira/Wira Chibi/Sidma phases, attack/counterattack, reduced motion, pet-first combo, reset, finisher/Bunga fallback');
 }
 rendererChecks().catch(error=>{console.error(error);process.exitCode=1});
