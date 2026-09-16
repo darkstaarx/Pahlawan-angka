@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.8.0 (fail: segel-demo-v1.8.0.js)
+/* Segel Tambah — demo pentas WebGL v1.9.0 (fail: segel-demo-v1.9.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -51,6 +51,8 @@
     heroHappy:[0,1,2,3].map(i=>`assets/heroes/wira-chibi/frames/happy-${i}-v1.webp`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v1.webp`),
+    iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
+    iceEnd:'assets/fx/wira/final-v2/fx-impact-end-v1.webp',
     coin:'assets/fx/reward/coin-v1.webp',
     trail:'assets/fx/reward/trail-v1.webp',
     flare:'assets/fx/reward/flare-v1.webp'
@@ -149,7 +151,7 @@
     });
 
     const [arenaTex, heroIdle, heroPrepare, heroSlash, petSad, petJoy, sealTex,
-           coinTex, trailTex, flareTex, heroHappy] = await Promise.all([
+           coinTex, trailTex, flareTex, heroHappy, iceBurstTex, iceEndTex] = await Promise.all([
       load(FRAMES.arena),
       Promise.all(FRAMES.heroIdle.map(load)),
       load(FRAMES.heroPrepare),
@@ -158,7 +160,8 @@
       Promise.all(FRAMES.petJoy.map(load)),
       Promise.all(FRAMES.seals.map(load)),
       load(FRAMES.coin), load(FRAMES.trail), load(FRAMES.flare),
-      Promise.all(FRAMES.heroHappy.map(load))
+      Promise.all(FRAMES.heroHappy.map(load)),
+      load(FRAMES.iceBurst), load(FRAMES.iceEnd)
     ]);
 
     /* latar: dimuatkan "cover" supaya tiada jalur kosong pada apa-apa bentuk skrin */
@@ -299,7 +302,7 @@
        perkara yang memang tidak boleh dibuat dengan CSS atau canvas 2D. */
     function sealMaterial(map){
       return new THREE.ShaderMaterial({
-        uniforms:{map:{value:map},uGrey:{value:0},uOpacity:{value:1}},
+        uniforms:{map:{value:map||null},uGrey:{value:0},uOpacity:{value:1}},
         transparent:true, depthWrite:false,
         vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
         fragmentShader:'uniform sampler2D map;uniform float uGrey;uniform float uOpacity;varying vec2 vUv;'+
@@ -322,6 +325,50 @@
     });
     pet.renderOrder=1;
     hero.renderOrder=4;
+
+    /* SERPIHAN SEGEL
+       Zarah titik terbaca sebagai debu, bukan kaca pecah. Setiap serpihan di
+       sini ialah kepingan kubah yang sebenar: quad yang mengambil satu petak
+       UV daripada tekstur kubah itu sendiri, jadi ia membawa garisan rune dan
+       warna tier yang betul. Ia bermula tepat di tempat kepingan itu berada
+       pada kubah, lalu terpelanting keluar, berpusing dan jatuh. */
+    const SHARDS=10;
+    const shards=[];
+    for(let i=0;i<SHARDS;i++){
+      const g=new THREE.PlaneGeometry(1,1);
+      const m=new THREE.Mesh(g, sealMaterial(null));
+      m.renderOrder=4; m.visible=false; scene.add(m);
+      shards.push({mesh:m, vx:0, vy:0, spin:0, life:0});
+    }
+    function shatter(seal){
+      const e=seal.front, tex=e.material.uniforms.map.value;
+      const pw=e.scale.x, ph=e.scale.y;
+      const cx=e.position.x, cy=e.position.y;
+      shards.forEach((s,i)=>{
+        // Petak UV dalam separuh atas kubah, di mana kubahnya paling pekat.
+        const a=(i/SHARDS)*Math.PI*2+Math.random()*.4;
+        const rad=.16+Math.random()*.20;
+        const u=.5+Math.cos(a)*rad, v=.52+Math.sin(a)*rad*.9;
+        const su=.16+Math.random()*.07, sv=su;
+        const uv=s.mesh.geometry.attributes.uv;
+        uv.setXY(0,u-su/2,v+sv/2); uv.setXY(1,u+su/2,v+sv/2);
+        uv.setXY(2,u-su/2,v-sv/2); uv.setXY(3,u+su/2,v-sv/2);
+        uv.needsUpdate=true;
+        s.mesh.material.uniforms.map.value=tex;
+        s.mesh.material.uniforms.uGrey.value=0;
+        s.mesh.material.uniforms.uOpacity.value=1;
+        s.mesh.material.needsUpdate=true;
+        s.mesh.scale.set(pw*su, ph*sv, 1);
+        // Mula pada kedudukan sebenar kepingan itu atas kubah.
+        s.mesh.position.set(cx+(u-.5)*pw, cy+(v-.5)*ph, .05);
+        s.mesh.rotation.z=0; s.mesh.visible=true;
+        const out=Math.atan2(s.mesh.position.y-cy, s.mesh.position.x-cx);
+        const sp=1.7+Math.random()*2.2;
+        s.vx=Math.cos(out)*sp; s.vy=Math.sin(out)*sp+1.5;
+        s.spin=(Math.random()-.5)*11;
+        s.life=.85+Math.random()*.35;
+      });
+    }
 
     /* Cahaya segel yang jatuh atas lantai. Tanpa ia kubah bersinar tetapi
        batu di bawahnya langsung tidak terkesan, dan kubah nampak macam
@@ -379,7 +426,7 @@
     // Kilat putih pendek pada detik segel pecah — ini yang bagi rasa "pop".
     const flashMat=new THREE.MeshBasicMaterial({map:glowTex,transparent:true,
       blending:THREE.AdditiveBlending,depthWrite:false,opacity:0});
-    const flash=new THREE.Mesh(new THREE.PlaneGeometry(3.4,3.4),flashMat);
+    const flash=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),flashMat);
     flash.position.set(SEAL_X,GROUND+.8,.28); scene.add(flash);
 
     /* JEJAK PEDANG
@@ -404,16 +451,30 @@
     trailGeo.setAttribute('aAlong',new THREE.BufferAttribute(tAlong,1));
     trailGeo.setAttribute('aAcross',new THREE.BufferAttribute(tAcross,1));
     trailGeo.setIndex(tIdx);
+    /* Kuasa Wira ialah AIS ELEKTRIK, jadi jalur ini bukan sekadar cahaya biru:
+       terasnya putih sejuk, pinggirnya sian, dan ada denyar elektrik berjalan
+       di sepanjangnya. Tepinya pula berkedut secara rawak setiap bingkai
+       (lihat buildTrail) supaya ia berderak, bukan licin. */
     const trailMat=new THREE.ShaderMaterial({
-      uniforms:{uColor:{value:new THREE.Color(0x9fe4ff)},uFade:{value:0}},
+      uniforms:{uEdge:{value:new THREE.Color(0x49b9ff)},
+                uCore:{value:new THREE.Color(0xeafaff)},
+                uFade:{value:0}, uTime:{value:0}},
       transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
       side:THREE.DoubleSide,
       vertexShader:'attribute float aAlong;attribute float aAcross;varying float vA;varying float vC;'+
         'void main(){vA=aAlong;vC=aAcross;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-      fragmentShader:'uniform vec3 uColor;uniform float uFade;varying float vA;varying float vC;'+
-        'void main(){float edge=1.0-abs(vC*2.0-1.0);'+
-        'float a=pow(vA,1.5)*pow(edge,.7)*uFade;'+
-        'gl_FragColor=vec4(uColor*(0.75+vA*1.5),a);}'
+      fragmentShader:
+        'uniform vec3 uEdge;uniform vec3 uCore;uniform float uFade;uniform float uTime;'+
+        'varying float vA;varying float vC;'+
+        'void main(){'+
+        ' float edge=1.0-abs(vC*2.0-1.0);'+
+        ' float core=pow(edge,3.5);'+                       // teras putih nipis
+        ' float spark=.5+.5*sin(vA*46.0-uTime*34.0);'+      // denyar berjalan
+        ' spark=pow(spark,3.0);'+
+        ' float a=pow(vA,1.4)*pow(edge,.65)*uFade;'+
+        ' a*= .72+.55*spark;'+
+        ' vec3 col=mix(uEdge,uCore,core+spark*.45);'+
+        ' gl_FragColor=vec4(col*(0.8+vA*1.6),a);}'
     });
     const trail=new THREE.Mesh(trailGeo,trailMat);
     trail.renderOrder=5; trail.frustumCulled=false; trail.visible=false;
@@ -439,7 +500,10 @@
         let dx=q[0]-o[0], dy=q[1]-o[1];
         const len=Math.hypot(dx,dy)||1; dx/=len; dy/=len;
         const along=n>1?(j/(n-1)):1;                // 0 ekor .. 1 kepala
-        const half=.035+.15*Math.pow(along,.8);     // tirus ke arah ekor
+        // Kedutan elektrik: lebar berubah sedikit di sepanjang jalur dan
+        // berganjak setiap bingkai, jadi pinggirnya berderak.
+        const crackle=1+.30*Math.sin(j*2.9+tAcc*46)*Math.pow(along,.5);
+        const half=(.035+.15*Math.pow(along,.8))*crackle;
         const nx=-dy*half, ny=dx*half;
         const k=i*2;
         tPos[k*3]=p[0]+nx; tPos[k*3+1]=p[1]+ny; tPos[k*3+2]=.06;
@@ -452,11 +516,28 @@
       trailGeo.attributes.aAcross.needsUpdate=true;
     }
 
+    /* Letusan ais elektrik pada detik pedang mengena — aset sebenar Wira
+       daripada repo, bukan kesan generik. */
+    function fxQuad(map,size,z){
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(size,size),
+        new THREE.MeshBasicMaterial({map,transparent:true,depthWrite:false,
+          blending:THREE.AdditiveBlending,opacity:0}));
+      m.position.z=z; m.visible=false; m.renderOrder=6; scene.add(m); return m;
+    }
+    const iceBurst=fxQuad(iceBurstTex,1.7,.08);
+    const iceEnd=fxQuad(iceEndTex,2.2,.07);
+    function iceHit(x,y){
+      iceBurst.position.set(x,y,.08); iceEnd.position.set(x,y,.07);
+      iceBurst.rotation.z=Math.random()*Math.PI*2;
+      iceEnd.rotation.z=Math.random()*Math.PI*2;
+      S.iceT=0;
+    }
+
     const PN=220;
     const pPos=new Float32Array(PN*3), pVel=new Float32Array(PN*3), pLife=new Float32Array(PN);
     const pGeo=new THREE.BufferGeometry();
     pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
-    const pMat=new THREE.PointsMaterial({color:0xffe4a8,size:.1,transparent:true,opacity:.95,
+    const pMat=new THREE.PointsMaterial({color:0xffe4a8,size:.1,transparent:true,opacity:.72,
       blending:THREE.AdditiveBlending,depthWrite:false});
     scene.add(new THREE.Points(pGeo,pMat));
     function burst(spread,color){
@@ -487,7 +568,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
-             shake:0,waveT:-1,flashT:-1,flareT:-1,trailT:-1,running:true,active:0,
+             shake:0,waveT:-1,flashT:-1,flareT:-1,trailT:-1,iceT:-1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
              heroLock:null,grey:0,coinT:-1};
@@ -632,6 +713,7 @@
             if(trailHist.length>TRAIL_MAX)trailHist.shift();
           }
           trailMat.uniforms.uFade.value=1;
+        trailMat.uniforms.uTime.value=tAcc;
         }else{
           trailHist.shift(); trailHist.shift();
           trailMat.uniforms.uFade.value=Math.min(1,trailHist.length/12);
@@ -640,10 +722,41 @@
         buildTrail();
       }
 
+      /* Letusan ais: hablur meletup dahulu, kemudian serpihan beku mereda. */
+      // Serpihan kaca: terbang, berpusing, jatuh, kemudian lenyap.
+      shards.forEach(s=>{
+        if(s.life<=0){ if(s.mesh.visible)s.mesh.visible=false; return }
+        s.life-=dt;
+        s.vy-=7.5*dt;
+        s.mesh.position.x+=s.vx*dt;
+        s.mesh.position.y+=s.vy*dt;
+        s.mesh.rotation.z+=s.spin*dt;
+        s.mesh.material.uniforms.uOpacity.value=Math.max(0,Math.min(1,s.life*1.6));
+        if(s.life<=0)s.mesh.visible=false;
+      });
+
+      if(S.iceT>=0){
+        S.iceT+=dt;
+        const k=S.iceT/.46;
+        if(k>=1){ S.iceT=-1; iceBurst.visible=iceEnd.visible=false }
+        else{
+          const kb=Math.min(1,k/.45);
+          iceBurst.visible=kb<1;
+          iceBurst.scale.setScalar(.55+kb*.8);
+          iceBurst.material.opacity=(1-kb)*.62;
+          iceBurst.rotation.z+=dt*.6;
+          const ke=Math.max(0,(k-.28)/.72);
+          iceEnd.visible=ke>0;
+          iceEnd.scale.setScalar(.7+ke*.9);
+          iceEnd.material.opacity=Math.sin(Math.PI*ke)*.45;
+          iceEnd.rotation.z-=dt*.4;
+        }
+      }
+
       if(S.flashT>=0){
         S.flashT+=dt; const k=S.flashT/.26;
         if(k>=1){ S.flashT=-1; flashMat.opacity=0 }
-        else { flash.scale.setScalar(.7+k*.9); flashMat.opacity=(1-k)*.85 }
+        else { flash.scale.setScalar(.7+k*.9); flashMat.opacity=(1-k)*.5 }
       }
 
       if(S.waveT>=0){
@@ -713,14 +826,16 @@
          hentaman masa sentuh — dua kesan berasingan, bukan satu. */
       async strike(){
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
-        if(reduceMotion){ sfx('hit'); burst(3,tier.color); S.waveT=0; return }
+        if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         sfx('swordSlash');
         S.heroLock=heroSlashE;  S.heroX=-0.30;
         if(!reduceMotion){ trailHist.length=0; S.trailT=0 }
         await wait(140);
         sfx('hit');
-        burst(5.5,tier.color); S.waveT=0; S.shake=.32;
+        iceHit(SEAL_X-.28, GROUND+.85);
+        burst(5.5,0xbfe9ff);                    // serpihan ais, bukan warna tier
+        S.waveT=0; S.shake=.32;
         await wait(210);
         S.heroLock=null; S.heroX=HERO_HOME;
       },
@@ -731,8 +846,9 @@
         S.grey=1;                      // kilas kelabu pada detik hentaman
         if(s.damage>=.999){
           s.broken=true; s.breakT=0;
+          if(!reduceMotion)shatter(s);
           popSound();
-          burst(6.5,0xffffff); S.waveT=0; S.flashT=0; S.shake=.46;
+          burst(6.5,s.tier.color); S.waveT=0; S.flashT=0; S.shake=.46;
           S.active=Math.min(TIERS.length,S.active+1);
           fitShell();
           return {broken:true, tier:s.tier};
@@ -752,7 +868,8 @@
         while(S.active<TIERS.length){
           const s=seals[S.active];
           s.damage=1; s.broken=true; s.breakT=0;
-          popSound(); burst(6,0xffffff); S.flashT=0; S.shake=.4;
+          if(!reduceMotion)shatter(s);
+          popSound(); burst(6,s.tier.color); S.flashT=0; S.shake=.4;
           S.active++;
           fitShell();
           await wait(320);
@@ -777,6 +894,8 @@
       reset(){
         S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
         S.trailT=-1; trailHist.length=0; trail.visible=false;
+        S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
+        shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND;
