@@ -71,7 +71,7 @@
     /* Teman berdiri di kanan tengah supaya lajur kiri kekal lapang untuk nama
        dan penerangannya — susunan yang sama dengan mockup. Pentas sihir tidak
        bergerak; hanya teman yang boleh diseret keluar daripadanya. */
-    const PET_HOME=.62;
+    const PET_HOME=.86;
 
     const glow=new THREE.Mesh(new THREE.PlaneGeometry(4.2,4.2),
       new THREE.MeshBasicMaterial({map:radialTex([[0,'rgba(120,205,255,.55)'],[.45,'rgba(80,150,255,.18)'],[1,'rgba(0,0,0,0)']]),
@@ -119,7 +119,7 @@
     /* Teman dilukis pada bingkai dengan kadar berbeza, jadi sauhnya ialah
        KAKI dan saiznya ialah tinggi watak yang kelihatan — bukan tinggi
        bingkai. Kalau tidak, satu teman keluar gergasi dan satu lagi kerdil. */
-    const PET_VISIBLE=1.72;
+    const PET_VISIBLE=1.95;
     async function setPet(url){
       const tex=await load(url);
       if(!tex||!tex.image){ pet.material.opacity=0; return }
@@ -297,26 +297,15 @@
   /* =================================================================
      PENYELARASAN DENGAN SKRIN KHAZANAH
      ================================================================= */
-  function paintProgress(){
-    const el=$('petProgress'); if(!el)return;
-    try{
-      const total=Object.keys(REWARD_PETS).length;
-      const owned=Object.keys(db?.rewards?.pets||{}).filter(id=>REWARD_PETS[id]).length;
-      el.querySelector('b').textContent=`${owned} daripada ${total} teman diselamatkan`;
-      el.querySelector('span span').style.width=Math.round(owned/total*100)+'%';
-    }catch(_){}
-  }
-
   async function refresh(){
     const host=$('petStage'); if(!host)return;
     const item=equippedPet();
-    paintProgress();
 
     host.classList.toggle('empty',!item);
     const name=$('petStageName'), desc=$('petStageDesc'), hint=$('petStageHint');
     if(item){
       if(name)name.textContent=item.name;
-      if(desc)desc.textContent=item.desc||'';
+      // penerangan dan permata milik khazanah-v2; ia melukisnya selepas ini
       if(hint)hint.textContent='Ketuk atau seret untuk bermain';
     }else{
       if(name)name.textContent='Belum ada teman';

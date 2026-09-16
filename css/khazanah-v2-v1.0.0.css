@@ -1,0 +1,218 @@
+/* Khazanah v2 — susun atur penuh skrin Koleksi. v1.0.0
+   Skrin lama ialah senarai kedai: kad rata, dua lajur, semuanya sama berat.
+   Versi ini memberi skrin satu hierarki — kepala, tab besar berkiraan,
+   panggung untuk teman aktif, kemudian panel berbingkai emas untuk koleksi. */
+
+:root{
+  --kz-ink:#f4f9ff;
+  --kz-mut:#9fbdd8;
+  --kz-panel:#0c2144;
+  --kz-panel-2:#0a1a33;
+  --kz-gold:#e9b949;
+  --kz-gold-soft:#f6dc9a;
+  --kz-blue:#2f8ef0;
+  --kz-blue-hi:#5cc3ff;
+}
+
+/* ---------- kepala ---------- */
+.kzHead{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 2px 12px
+}
+.kzBack{
+  width:42px;height:42px;flex:none;border:0;border-radius:14px;cursor:pointer;
+  display:grid;place-items:center;
+  background:linear-gradient(#173a66,#0d2244);color:var(--kz-ink);
+  box-shadow:inset 0 0 0 1.5px #ffffff2b, 0 4px 12px #0007
+}
+.kzBack svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.kzTitle{flex:1;min-width:0}
+.kzTitle h1{
+  margin:0;font-size:27px;font-weight:950;letter-spacing:-.3px;color:var(--kz-ink);
+  text-shadow:0 2px 10px #0008
+}
+.kzTitle p{margin:2px 0 0;font-size:11.5px;color:var(--kz-mut);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kzCrest{
+  width:52px;height:52px;flex:none;border-radius:50%;overflow:hidden;
+  background:#0d2244;
+  box-shadow:0 0 0 2.5px var(--kz-gold), 0 0 0 5px #0d224499, 0 4px 14px #0008
+}
+.kzCrest img{width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.kzCoins{
+  flex:none;display:flex;align-items:center;gap:5px;margin-left:auto;
+  padding:6px 11px;border-radius:20px;font-size:12px;font-weight:900;
+  color:#3a2a06;background:linear-gradient(#ffdc7a,#e3ab33);
+  box-shadow:inset 0 1px 0 #fff6d6, 0 4px 12px #0007
+}
+
+/* ---------- tab besar berkiraan ---------- */
+.kzTabs{display:flex;gap:9px;margin-bottom:13px}
+.kzTab{
+  flex:1;min-width:0;border:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 6px;border-radius:16px;font-size:13.5px;font-weight:900;
+  color:#13294a;background:linear-gradient(180deg,#fdf6e4,#ecdcbb);
+  box-shadow:inset 0 1px 0 #fff, inset 0 0 0 2px #dcc48f, 0 4px 0 #ab8f53, 0 8px 18px #0006
+}
+.kzTab svg{width:16px;height:16px;fill:currentColor;flex:none}
+.kzTab b{font-size:12px;font-weight:900;opacity:.72;font-variant-numeric:tabular-nums}
+.kzTab.active{
+  color:#fff;background:linear-gradient(180deg,#59c8ff,#1f7fe0);
+  box-shadow:inset 0 1px 0 #d8f1ff, inset 0 0 0 2px #93d8ff,
+             0 4px 0 #0f4f9c, 0 0 20px #3ca6ff66, 0 9px 20px #0007
+}
+.kzTab.active b{opacity:.9}
+.kzTab:active{transform:translateY(2px)}
+
+/* ---------- panggung teman aktif ---------- */
+.kzShow{
+  position:relative;height:250px;margin-bottom:14px;border-radius:22px;overflow:hidden;
+  /* Latar bergambar sebenar, bukan kecerunan rata: inilah beza antara panel
+     dan panggung. Arena kuil digunakan semula, jadi tiada aset baharu. */
+  background:#0b1c33 url("../assets/battlefields/forest-temple/arena-v1.webp") center 38%/cover no-repeat;
+  box-shadow:inset 0 0 0 2px #e9b94955, 0 14px 32px #00000066;
+  touch-action:none;cursor:grab
+}
+.kzShow.grabbing{cursor:grabbing}
+.kzShow.hidden{display:none}
+.kzShow canvas{position:absolute;inset:0;width:100%;height:100%}
+/* gelap di kiri supaya kad maklumat sentiasa terbaca atas latar berwarna */
+.kzShow::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg, #05111fe8 0%, #05111fb0 34%, #05111f18 62%, #05111f00 100%)
+}
+.kzShowCard{
+  position:absolute;left:13px;top:13px;width:47%;max-width:190px;
+  padding:11px 12px 12px;border-radius:16px;
+  background:linear-gradient(#0d2247e8,#081730ee);
+  box-shadow:inset 0 0 0 1.5px #e9b94955, 0 8px 22px #0008
+}
+.kzChip{
+  display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:1.1px;
+  color:#06301e;background:linear-gradient(#8ef0b8,#3ec489);
+  padding:3px 9px;border-radius:20px;margin-bottom:6px
+}
+.kzShow.empty .kzChip{background:linear-gradient(#c3d2e0,#93a8bd);color:#17273a}
+.kzShowCard b{display:block;font-size:19px;font-weight:950;line-height:1.1;color:var(--kz-ink)}
+.kzShowCard small{display:block;font-size:11px;color:var(--kz-mut);margin-top:2px;line-height:1.35}
+.kzGems{display:flex;gap:5px;margin:8px 0 9px}
+.kzGems i{
+  width:13px;height:13px;transform:rotate(45deg);border-radius:3px;
+  background:var(--gem,#5cc3ff);box-shadow:0 0 9px var(--gem,#5cc3ff)
+}
+.kzGems i.off{background:#ffffff1a;box-shadow:inset 0 0 0 1.5px #ffffff33}
+.kzCta{
+  width:100%;border:0;cursor:pointer;padding:9px 8px;border-radius:12px;
+  font-size:13px;font-weight:950;letter-spacing:.6px;color:#3a2a06;
+  background:linear-gradient(#ffdc7a,#e3ab33);
+  box-shadow:inset 0 1px 0 #fff6d6, 0 3px 0 #a87f1e, 0 7px 16px #0007
+}
+.kzCta:active{transform:translateY(2px);box-shadow:inset 0 1px 0 #fff6d6,0 1px 0 #a87f1e}
+.kzCta.ghost{
+  color:var(--kz-ink);background:linear-gradient(#1d3f6c,#12294b);
+  box-shadow:inset 0 0 0 1.5px #ffffff2e, 0 3px 0 #0a1a30
+}
+.petStageHint{
+  position:absolute;left:0;right:0;bottom:10px;text-align:center;pointer-events:none;
+  font-size:11.5px;font-weight:800;color:#bfe4ff;text-shadow:0 2px 8px #000c
+}
+.kzShow.noGl canvas{display:none}
+
+/* ---------- panel koleksi ---------- */
+.kzPanel{
+  padding:13px 12px 14px;border-radius:22px;
+  background:linear-gradient(#0c2144,#081730);
+  box-shadow:inset 0 0 0 2px #e9b94966, 0 12px 28px #00000055
+}
+.kzPanelHead{display:flex;align-items:center;gap:8px;margin-bottom:11px}
+.kzPanelHead h2{margin:0;font-size:15.5px;font-weight:950;color:var(--kz-ink);white-space:nowrap}
+.kzFilter{
+  margin-left:0;font-size:11px;font-weight:800;color:#d9e8f7;white-space:nowrap;
+  padding:6px 10px;border-radius:11px;background:#12294b;
+  box-shadow:inset 0 0 0 1.5px #ffffff26
+}
+
+.kzGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.kzGrid.hidden{display:none}
+
+.kzCard{
+  position:relative;display:flex;flex-direction:column;
+  border-radius:15px;overflow:hidden;background:#0a1d39;
+  box-shadow:inset 0 0 0 2px var(--gem,#3d5f8a), 0 6px 16px #00000055
+}
+.kzCard .kzGem{
+  position:absolute;left:50%;top:5px;transform:translateX(-50%) rotate(45deg);
+  width:13px;height:13px;border-radius:3px;z-index:2;
+  background:var(--gem,#5cc3ff);box-shadow:0 0 10px var(--gem,#5cc3ff)
+}
+.kzArt{
+  position:relative;aspect-ratio:1;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(85% 70% at 50% 40%, #1c3d68, #0a1d39)
+}
+.kzArt img{width:86%;height:86%;object-fit:contain}
+.kzCard.locked .kzArt img{filter:brightness(.12) saturate(0);opacity:.85}
+.kzLock{
+  position:absolute;inset:0;display:grid;place-items:center;gap:2px;align-content:center;
+  color:#cfe2f5
+}
+.kzLock span{font-size:26px;font-weight:950;color:var(--kz-gold);text-shadow:0 2px 8px #000}
+.kzLock svg{width:17px;height:17px;fill:none;stroke:#cfe2f5;stroke-width:2}
+.kzName{
+  padding:6px 5px;font-size:11px;font-weight:900;line-height:1.2;text-align:center;
+  color:#13294a;background:linear-gradient(#fdf6e4,#ecdcbb);min-height:32px;
+  display:grid;place-items:center
+}
+.kzCard.locked .kzName{color:#9fb6cd;background:linear-gradient(#16304f,#0e2340)}
+.kzFoot{padding:6px}
+.kzBtn{
+  width:100%;border:0;cursor:pointer;padding:7px 4px;border-radius:10px;
+  font-size:11px;font-weight:900;color:#3a2a06;
+  background:linear-gradient(#ffdc7a,#e3ab33);
+  box-shadow:inset 0 1px 0 #fff6d6, 0 2px 0 #a87f1e
+}
+.kzBtn.off{color:#dbe9f7;background:linear-gradient(#1d3f6c,#12294b);
+  box-shadow:inset 0 0 0 1.5px #ffffff2e, 0 2px 0 #0a1a30}
+.kzBtn.buy{color:#06243f;background:linear-gradient(#7fd4ff,#2f8ef0);
+  box-shadow:inset 0 1px 0 #d8f1ff, 0 2px 0 #14528f}
+.kzBtn:disabled{opacity:.55;cursor:default}
+.kzShort{display:block;margin-top:4px;font-size:9.5px;text-align:center;color:#8fa8c4}
+
+.kzCard.equipped{box-shadow:inset 0 0 0 2px #7ff0c0, 0 0 20px #3ec48955, 0 6px 16px #00000055}
+
+/* trofi guna kad sedia ada, cuma dipakaikan pakaian yang sama */
+#badgeCollection .badgeCard{
+  border-radius:15px;padding:11px 8px;text-align:center;background:#0a1d39;
+  box-shadow:inset 0 0 0 2px #3d5f8a, 0 6px 16px #00000055
+}
+#badgeCollection .badgeCard.owned{box-shadow:inset 0 0 0 2px #e9b949, 0 0 18px #e9b94933, 0 6px 16px #00000055}
+#badgeCollection .badgeMedal{font-size:30px;line-height:1.1;margin-bottom:5px}
+#badgeCollection .badgeCard b{display:block;font-size:11.5px;font-weight:900;color:var(--kz-ink)}
+#badgeCollection .badgeCard small{display:block;font-size:10px;color:var(--kz-mut);line-height:1.3;margin-top:3px}
+#badgeCollection .badgeCard.locked{opacity:.72}
+
+/* ---------- kemajuan ---------- */
+.kzProgress{margin-top:12px}
+.kzProgress.hidden{display:none}
+.kzProgress b{display:block;font-size:12.5px;font-weight:900;color:#dceaf7;margin-bottom:7px}
+.kzProgress>span{
+  display:block;height:9px;border-radius:20px;background:#061428;overflow:hidden;
+  box-shadow:inset 0 0 0 1px #ffffff17
+}
+.kzProgress>span span{
+  display:block;height:100%;width:0;border-radius:20px;
+  background:linear-gradient(90deg,var(--kz-blue-hi),var(--kz-blue));
+  box-shadow:0 0 14px #3ca6ff88;transition:width .5s ease-out
+}
+
+@media (max-width:360px){
+  .kzTitle h1{font-size:23px}
+  .kzShow{height:224px}
+  .kzTab{font-size:12px;padding:11px 4px}
+  .kzName{font-size:10px}
+}
+@media (min-width:640px){
+  .kzGrid{grid-template-columns:repeat(4,1fr)}
+  .kzShow{height:300px}
+}

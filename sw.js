@@ -1,9 +1,9 @@
-// App shell v3.73.0 — Khazanah gets a live WebGL stage for the equipped pet.
+// App shell v3.74.0 — Koleksi screen rebuilt: header, count tabs, showcase, gold panel.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
   './css/segel-demo-v2.0.0.css','./js/segel-demo-v2.0.0.js',
-  './css/pet-stage-v1.0.0.css','./js/pet-stage-v1.0.0.js',
+  './css/khazanah-v2-v1.0.0.css','./js/khazanah-v2-v1.0.0.js','./js/pet-stage-v1.0.0.js',
   // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
   // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
   './assets/heroes/wira-chibi/hub/idle-loop-v3.webp',
