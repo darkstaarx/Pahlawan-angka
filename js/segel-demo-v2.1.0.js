@@ -476,15 +476,34 @@
     const enSwirl=new Float32Array(EN);
     const enGeo=new THREE.BufferGeometry();
     enGeo.setAttribute('position',new THREE.BufferAttribute(enPos,3));
-    const enMat=new THREE.PointsMaterial({color:0x8fdcff,size:.085,transparent:true,
-      opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+    /* Zarah aditif tunggal terbakar menjadi putih di sini: tanah arena sudah
+       terang, jadi setiap saluran menepu. Penyelesaiannya dua lapis berkongsi
+       geometri yang sama — teras biru pekat dengan pengadunan biasa supaya
+       warnanya benar-benar terbaca, dan sepuh aditif lebih besar di bawahnya
+       untuk pendar. Digabung, ia bersinar tanpa hilang warna biru. */
+    const sparkTex=(function(){
+      const c=document.createElement('canvas'); c.width=c.height=64;
+      const g=c.getContext('2d');
+      const grad=g.createRadialGradient(32,32,0,32,32,32);
+      grad.addColorStop(0,'rgba(255,255,255,1)');
+      grad.addColorStop(.35,'rgba(255,255,255,.85)');
+      grad.addColorStop(1,'rgba(255,255,255,0)');
+      g.fillStyle=grad; g.fillRect(0,0,64,64);
+      return new THREE.CanvasTexture(c);
+    })();
+    const enMat=new THREE.PointsMaterial({map:sparkTex,color:0x1160d6,size:.155,
+      transparent:true,opacity:0,depthWrite:false});
+    const enHaloMat=new THREE.PointsMaterial({map:sparkTex,color:0x2f9bff,size:.30,
+      transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+    const enHalo=new THREE.Points(enGeo,enHaloMat);
     const enPoints=new THREE.Points(enGeo,enMat);
+    enHalo.renderOrder=4; enHalo.frustumCulled=false; enHalo.visible=false;
     enPoints.renderOrder=5; enPoints.frustumCulled=false; enPoints.visible=false;
-    scene.add(enPoints);
+    scene.add(enHalo); scene.add(enPoints);
 
     const enGlow=new THREE.Mesh(new THREE.PlaneGeometry(3.2,3.2),
-      new THREE.MeshBasicMaterial({map:glowTex,transparent:true,depthWrite:false,
-        blending:THREE.AdditiveBlending,opacity:0}));
+      new THREE.MeshBasicMaterial({map:glowTex,color:0x2f7fe0,transparent:true,
+        depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));
     enGlow.renderOrder=3; enGlow.visible=false; scene.add(enGlow);
 
     /* Sampel titik di dalam siluet sprite. Probe 96x96 sudah cukup: kita
@@ -606,6 +625,7 @@
         enGeo.attributes.position.needsUpdate=true;
         const prog=done/EN;
         enMat.opacity=Math.min(1,S.enterT*4)*(1-Math.max(0,(prog-.45)/.55));
+        enHaloMat.opacity=enMat.opacity*.28;
         S.heroFade=Math.max(0,(prog-.35)/.65);
         enGlow.visible=true;
         enGlow.position.set(cx,cy+.15,-.04);
@@ -613,7 +633,8 @@
         enGlow.scale.setScalar(.8+Math.min(1,S.enterT/1.15)*.5);
         if(prog>=1){
           S.enterT=-1; S.heroFade=1;
-          enPoints.visible=false; enGlow.visible=false; enMat.opacity=0;
+          enPoints.visible=enHalo.visible=false; enGlow.visible=false;
+          enMat.opacity=enHaloMat.opacity=0;
         }
       }
       heroShadow.position.x=S.heroFeet;
@@ -887,11 +908,17 @@
         S.coinT=0;
         await wait(520+COINS*120+560);
       },
-      /* Kemasukan portal: dipanggil sekali pada permulaan setiap pusingan. */
+      /* Kemasukan portal, dua langkah. `arm` menyembunyikan Wira serta-merta
+         supaya dia tidak sempat kelihatan sekejap sebelum larut; `enter`
+         barulah menjalankan perhimpunan zarah. Dipisahkan kerana sinematik
+         portal membina pentas di belakang tirai gelap — kalau perhimpunan itu
+         berjalan di situ, ia habis sebelum arena didedahkan. */
+      armEntry(){ if(!reduceMotion)S.heroFade=0 },
       enter(){
         if(reduceMotion||!prepareEntrance()){ S.heroFade=1; return }
         S.enterT=0; S.heroFade=0;
-        enPoints.visible=true; enMat.opacity=0;
+        enPoints.visible=enHalo.visible=true;
+        enMat.opacity=enHaloMat.opacity=0;
         sfx('auraCharge');
       },
       wrong(){ S.shake=.14 },
@@ -899,7 +926,8 @@
         S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1;
-        enPoints.visible=false; enGlow.visible=false; enMat.opacity=0;
+        enPoints.visible=enHalo.visible=false; enGlow.visible=false;
+        enMat.opacity=enHaloMat.opacity=0;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
@@ -1130,9 +1158,30 @@
                questionFingerprints:[],questionHistory:[],demoMode:true}};
     $('segelDone').hidden=true;
     stage.reset();
-    stage.enter();          // Wira turun sebagai zarah biru, sama seperti portal
+    stage.armEntry();
+    enterWhenRevealed();    // Wira turun sebagai zarah biru, sama seperti portal
     paintSeal();
     drawQuestion();
+  }
+
+  /* Sinematik portal (segel-entry-cinematic) memuatkan pentas di belakang
+     tirai gelap, kemudian mendedahkan arena. Perhimpunan zarah mesti bermula
+     pada detik pendedahan itu, bukan semasa tirai masih menutup. */
+  let entrySeq=0;
+  function enterWhenRevealed(){
+    // Token per-larian: kalau murid memulakan pusingan baharu, jaring
+    // keselamatan larian lama tidak boleh mencetuskan kemasukan pusingan ini.
+    const seq=++entrySeq;
+    let fired=false;
+    const fire=()=>{ if(fired||seq!==entrySeq)return; fired=true; try{ stage.enter() }catch(_){} };
+    const overlay=document.querySelector('.paSegelEntryCinematic');
+    if(!overlay||overlay.classList.contains('revealBattle'))return fire();
+    const obs=new MutationObserver(()=>{
+      if(overlay.classList.contains('revealBattle')||!overlay.isConnected){ obs.disconnect(); fire() }
+    });
+    obs.observe(overlay,{attributes:true,attributeFilter:['class']});
+    // jaring keselamatan: jangan sekali-kali tinggalkan Wira tidak kelihatan
+    setTimeout(()=>{ obs.disconnect(); fire() },7000);
   }
 
   // Butang speaker: ini sebabnya kad soalan mesti kekal DOM. Prompt ialah teks

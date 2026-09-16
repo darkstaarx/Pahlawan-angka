@@ -1,4 +1,4 @@
-// App shell v3.75.0 — Wira assembles from blue particles on the first question.
+// App shell v3.75.6 — Wira turun sebagai zarah biru tepat pada detik arena didedahkan.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

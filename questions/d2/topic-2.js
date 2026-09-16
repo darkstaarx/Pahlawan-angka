@@ -26,7 +26,7 @@ window.PAQuestionBanks.d2t2 = function(id,s,shift){
    const divisor=R(2,9),quot=R(1,9);
    if(mode==='remainder'){
      const rem=R(1,divisor-1),total=divisor*quot+rem,ans=`${quot} baki ${rem}`;
-     return Q(`<b>${total}</b> objek dibahagi kepada kumpulan <b>${divisor}</b>. Berapa kumpulan penuh dan berapa baki?`,ans,[N(quot,'division'),N(`${quot+1} baki ${rem}`,'division'),N(`${quot} baki ${Math.max(0,rem-1)}`,'division')],"Cari kumpulan penuh dahulu. Objek yang tinggal ialah baki.","D2 Application · Bahagi Berbaki",true,true);
+     return Q(`Ada <b>${total}</b> objek. Setiap kumpulan mesti ada <b>${divisor}</b> objek. Berapa kumpulan penuh dapat dibuat dan berapa objek yang tinggal?`,ans,[N(quot,'division'),N(`${quot+1} baki ${rem}`,'division'),N(`${quot} baki ${Math.max(0,rem-1)}`,'division')],"Cari kumpulan penuh dahulu. Objek yang tinggal ialah baki.","D2 Application · Bahagi Berbaki",true,true);
    }
    const total=divisor*quot;return Q(`${total} ÷ ${divisor} = ?`,quot,[N(divisor,'operation'),N(quot+1,'division'),N(Math.max(1,quot-1),'division')],"Gunakan hubungan songsang darab dan bahagi.","D2 Core · Fakta Asas Bahagi",true,shift);
  }
