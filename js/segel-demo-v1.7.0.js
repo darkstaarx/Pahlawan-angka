@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.6.0 (fail: segel-demo-v1.6.0.js)
+/* Segel Tambah — demo pentas WebGL v1.7.0 (fail: segel-demo-v1.7.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -25,9 +25,14 @@
      baca yang mana satu sedang diserang. Saiz menaik sedikit setiap tier
      supaya "lebih kuat" terbaca tanpa perlu satu baris teks pun. */
   const TIERS=[
-    {key:'gangsa', name:'GANGSA', hits:2, color:0xff6e29, period:3.4, height:2.56},
-    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, height:2.72},
-    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, height:2.88}
+    /* `visible` ialah tinggi kubah YANG KELIHATAN, bukan tinggi bingkai.
+       Ketiga-tiga PNG 768x768, tetapi lukisannya mengisi bingkai dengan kadar
+       berbeza: Gangsa 0.81, Perak 0.78, Emas 0.93. Menetapkan tinggi bingkai
+       bermakna Emas terjadi 30% lebih besar daripada Gangsa walaupun
+       nombornya hanya berbeza 12%. */
+    {key:'gangsa', name:'GANGSA', hits:2, color:0xff6e29, period:3.4, visible:2.05},
+    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, visible:2.20},
+    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, visible:2.35}
   ];
   const SEAL_HITS=TIERS.reduce((n,t)=>n+t.hits,0);  // 10 hentaman = 2+3+5
   /* Dua soalan lebih daripada jumlah hentaman. Tanpa ruang ini satu jawapan
@@ -201,15 +206,16 @@
           }
           solidRow[y]=solid; if(solid>maxSolid)maxSolid=solid;
         }
-        if(x1<0)return {foot:0,cx:0,ring:1};
+        if(x1<0)return {foot:0,cx:0,ring:1,boxH:1,boxW:1};
         /* Gelang tapak ialah jalur TERBAWAH yang masih pekat, bukan yang paling
            tebal. Emas mempunyai gelang dalam yang lebih tebal pada 0.73 dan
            gelang lantai sebenarnya pada 0.92 — memilih yang paling tebal
            menenggelamkan kubah emas sedalam 0.19 bingkai. */
         let ringRow=y1;
         for(let y=N-1;y>=0;y--){ if(solidRow[y]>maxSolid*.30){ ringRow=y; break } }
-        return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5, ring:ringRow/N};
-      }catch(_){ return {foot:0,cx:0,ring:1} }
+        return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5, ring:ringRow/N,
+                boxH:(y1-y0+1)/N, boxW:(x1-x0+1)/N};
+      }catch(_){ return {foot:0,cx:0,ring:1,boxH:1,boxW:1} }
     }
     function entry(tex,upp){
       const img=tex&&tex.image;
@@ -221,11 +227,14 @@
        jauh di bawah gelang tapak (Emas: alfa 0.94 tetapi gelang 0.73), jadi
        tapaknya terapung sehingga 0.6 unit atas lantai dan kaki Aurora
        terkeluar di bawahnya. Tambat pada gelang tapak. */
-    function sealEntry(tex,upp){
+    function sealEntry(tex,visibleH){
       const img=tex&&tex.image;
-      if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
-      const w=img.width*upp, h=img.height*upp, m=measure(img);
-      return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5)};
+      if(!img)return {tex,w:1,h:1,offX:0,offY:.5,visW:1};
+      const m=measure(img);
+      // Skala satah supaya KOTAK ALFA sepadan dengan tinggi yang dikehendaki.
+      const planeH=visibleH/Math.max(.2,m.boxH), upp=planeH/img.height;
+      const w=img.width*upp, h=img.height*upp;
+      return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5), visW:m.boxW*w};
     }
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
     const heroHappyE=heroHappy.map(t=>entry(t,HERO_UPP));
@@ -298,24 +307,30 @@
           'c.rgb=mix(c.rgb,vec3(l),uGrey);gl_FragColor=vec4(c.rgb,c.a*uOpacity);}'
       });
     }
-    /* Satu satah di hadapan Aurora hanya menjadikannya "di belakang kaca" —
-       dia tidak pernah kelihatan DI DALAM. Jadi setiap kubah dilukis dua kali,
-       satu di belakang Aurora dan satu di hadapannya, dan dia duduk di antara
-       keduanya. renderOrder ditetapkan supaya susunan itu tidak bergantung
-       pada pengisihan kedalaman bahan lutsinar. */
+    /* Kubah ialah PNG lut sinar, jadi ia dilukis DI HADAPAN Aurora: garisan
+       rune melintasi badannya dan dia kelihatan menembusi kaca. renderOrder
+       ditetapkan supaya susunan tidak bergantung pada pengisihan kedalaman
+       bahan lutsinar. */
     const seals=TIERS.map((tier,i)=>{
-      const e=sealEntry(sealTex[i], sealTex[i]&&sealTex[i].image ? tier.height/sealTex[i].image.height : tier.height/768);
-      const mk=(z,order)=>{
-        const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
-        m.scale.set(e.w,e.h,1);
-        m.position.set(SEAL_X+e.offX, GROUND+e.offY, z);
-        m.renderOrder=order; m.visible=(i===0); scene.add(m); return m;
-      };
-      return {tier, back:mk(-.62,0), front:mk(-.02,3),
-              base:{w:e.w,h:e.h}, damage:0, broken:false, breakT:-1};
+      const e=sealEntry(sealTex[i], tier.visible);
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
+      m.scale.set(e.w,e.h,1);
+      m.position.set(SEAL_X+e.offX, GROUND+e.offY, -.02);
+      m.renderOrder=3; m.visible=(i===0); scene.add(m);
+      return {tier, front:m, base:{w:e.w,h:e.h}, visW:e.visW,
+              damage:0, broken:false, breakT:-1};
     });
     pet.renderOrder=1;
     hero.renderOrder=4;
+
+    /* Cahaya segel yang jatuh atas lantai. Tanpa ia kubah bersinar tetapi
+       batu di bawahnya langsung tidak terkesan, dan kubah nampak macam
+       pelekat yang terapung. */
+    const floorGlow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
+      new THREE.MeshBasicMaterial({map:glowTex,transparent:true,depthWrite:false,
+        blending:THREE.AdditiveBlending,opacity:.5}));
+    floorGlow.renderOrder=0;
+    floorGlow.position.set(SEAL_X,GROUND+.03,-.34); scene.add(floorGlow);
 
     /* Cengkerang sfera sebenar mengelilingi Aurora — inilah yang menjadikan
        "terkurung" terbaca: tepinya menyala mengikut sudut pandang (fresnel),
@@ -336,11 +351,14 @@
       }));
     shell.renderOrder=2; scene.add(shell);
     function fitShell(){
-      const tier=TIERS[Math.min(S.active,TIERS.length-1)];
-      const r=tier.height*.33;
+      const i=Math.min(S.active,TIERS.length-1);
+      const tier=TIERS[i], r=tier.visible*.40;
       shell.scale.set(r,r*1.02,r);
       shell.position.set(SEAL_X, GROUND+r*.96, -.30);
       shellUni.uTint.value.setHex(tier.color);
+      const w=seals[i].visW||tier.visible;
+      floorGlow.scale.set(w*.92, w*.30, 1);
+      floorGlow.material.color.setHex(tier.color);
     }
 
     /* gelombang kejut bila segel retak */
@@ -442,42 +460,37 @@
       S.grey=damp(S.grey,0,3.4,dt);
       shellUni.uTime.value=tAcc;
       seals.forEach((s,i)=>{
-        const layers=[s.back,s.front];
+        const m=s.front, u=m.material.uniforms;
         if(s.breakT>=0){
           s.breakT+=dt;
           const k=Math.min(1,s.breakT/.42);
           // Kepit dulu (ketat), baru meletup keluar — itu yang buat mata baca
           // "pop" dan bukan "pudar".
           const grow=k<.22 ? 1-.10*(k/.22) : 1+.62*((k-.22)/.78);
-          const op=k<.22 ? 1 : 1-((k-.22)/.78);
-          layers.forEach((m,li)=>{
-            m.scale.set(s.base.w*grow, s.base.h*grow, 1);
-            m.material.uniforms.uOpacity.value=op*(li?1:.58);
-            m.material.uniforms.uGrey.value=1;
-          });
-          if(k>=1){ s.breakT=-1; layers.forEach(m=>m.visible=false) }
+          m.scale.set(s.base.w*grow, s.base.h*grow, 1);
+          u.uOpacity.value=k<.22 ? 1 : 1-((k-.22)/.78);
+          u.uGrey.value=1;
+          if(k>=1){ s.breakT=-1; m.visible=false }
           return;
         }
         const on=(i===S.active);
-        layers.forEach(m=>m.visible=on);
+        m.visible=on;
         if(!on)return;
         // Nafas: kubah mengembang dan mengecut perlahan, bukan sekadar pudar.
         const breath=reduceMotion?0:Math.sin(tAcc*Math.PI*2/s.tier.period);
         const grow=1+breath*.034;
-        const base=.92+(reduceMotion?.06:breath*.07);
         const grey=Math.min(1, Math.max(S.grey, s.damage*.55));
-        layers.forEach((m,li)=>{
-          m.scale.set(s.base.w*grow, s.base.h*grow, 1);
-          // Lapisan belakang lebih malap: ia dilihat menembusi Aurora.
-          m.material.uniforms.uOpacity.value=base*(li?1:.58);
-          m.material.uniforms.uGrey.value=grey;
-        });
+        m.scale.set(s.base.w*grow, s.base.h*grow, 1);
+        u.uOpacity.value=.92+(reduceMotion?.06:breath*.07);
+        u.uGrey.value=grey;
         shell.visible=true;
-        shell.scale.setScalar(s.tier.height*.33*grow);
+        shell.scale.setScalar(s.tier.visible*.40*grow);
         shellUni.uPower.value=(.85+breath*.12);
         shellUni.uGrey.value=grey;
+        floorGlow.visible=true;
+        floorGlow.material.opacity=(.42+(reduceMotion?0:breath*.12))*(1-grey*.6);
       });
-      if(S.active>=TIERS.length)shell.visible=false;
+      if(S.active>=TIERS.length){ shell.visible=false; floorGlow.visible=false }
 
       S.shake=damp(S.shake,0,6,dt);
       camera.position.x=(Math.random()-.5)*S.shake;
@@ -602,7 +615,7 @@
         const z=-.26, dist=camera.position.z-z;
         const visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
         const wx=SEAL_X-camera.position.x;
-        const wy=(GROUND+tier.height*.92)-camera.position.y;
+        const wy=(GROUND+tier.visible*.98)-camera.position.y;
         return {x:(wx/visW+.5)*100, y:(.5-wy/visH)*100};
       },
       /* Wira menyerang SEGEL, bukan Aurora. Bunyi: pedang masa tebasan,
@@ -675,11 +688,11 @@
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND;
         S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD;
         seals.forEach((s,i)=>{ s.damage=0; s.broken=false; s.breakT=-1;
-          [s.back,s.front].forEach(m=>{ m.visible=(i===0);
-            m.material.uniforms.uOpacity.value=1;
-            m.material.uniforms.uGrey.value=0;
-            m.scale.set(s.base.w,s.base.h,1) }) });
-        shell.visible=true; fitShell();
+          s.front.visible=(i===0);
+          s.front.material.uniforms.uOpacity.value=1;
+          s.front.material.uniforms.uGrey.value=0;
+          s.front.scale.set(s.base.w,s.base.h,1) });
+        shell.visible=true; floorGlow.visible=true; fitShell();
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
