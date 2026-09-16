@@ -1,8 +1,8 @@
-// App shell v3.66.0 — seal/pet share one floor, premium answers, one ending.
+// App shell v3.67.0 — seal anchored on its base ring, result sheet over arena.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
-  './css/segel-demo-v1.4.0.css','./js/segel-demo-v1.4.0.js',
+  './css/segel-demo-v1.5.0.css','./js/segel-demo-v1.5.0.js',
   // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
   // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
   './assets/heroes/wira-chibi/hub/idle-loop-v3.webp',

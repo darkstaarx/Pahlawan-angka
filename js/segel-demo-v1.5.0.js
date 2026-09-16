@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.4.0 (fail: segel-demo-v1.4.0.js)
+/* Segel Tambah — demo pentas WebGL v1.5.0 (fail: segel-demo-v1.5.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -190,19 +190,36 @@
       try{
         probeCtx.clearRect(0,0,N,N); probeCtx.drawImage(img,0,0,N,N);
         const d=probeCtx.getImageData(0,0,N,N).data;
-        let x0=N,y0=N,x1=-1,y1=-1;
-        for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-          if(d[(y*N+x)*4+3]>18){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y }
+        let x0=N,y0=N,x1=-1,y1=-1, ringRow=-1, ringCount=-1;
+        for(let y=0;y<N;y++){
+          let solid=0;
+          for(let x=0;x<N;x++){
+            const a=d[(y*N+x)*4+3];
+            if(a>18){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y }
+            if(a>150)solid++;
+          }
+          // Gelang tapak kubah ialah jalur paling tebal di bahagian bawah.
+          if(y>N*.55 && solid>ringCount){ ringCount=solid; ringRow=y }
         }
-        if(x1<0)return {foot:0,cx:0};
-        return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5};
-      }catch(_){ return {foot:0,cx:0} }
+        if(x1<0)return {foot:0,cx:0,ring:1};
+        return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5, ring:ringRow>=0?ringRow/N:1};
+      }catch(_){ return {foot:0,cx:0,ring:1} }
     }
     function entry(tex,upp){
       const img=tex&&tex.image;
       if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
       const w=img.width*upp, h=img.height*upp, m=measure(img);
       return {tex, w, h, offX:-m.cx*w, offY:h*(.5-m.foot)};
+    }
+    /* Kubah TIDAK boleh ditambat pada hujung alfa: cahaya luarnya terbentang
+       jauh di bawah gelang tapak (Emas: alfa 0.94 tetapi gelang 0.73), jadi
+       tapaknya terapung sehingga 0.6 unit atas lantai dan kaki Aurora
+       terkeluar di bawahnya. Tambat pada gelang tapak. */
+    function sealEntry(tex,upp){
+      const img=tex&&tex.image;
+      if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
+      const w=img.width*upp, h=img.height*upp, m=measure(img);
+      return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5)};
     }
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
     const heroHappyE=heroHappy.map(t=>entry(t,HERO_UPP));
@@ -276,7 +293,7 @@
       });
     }
     const seals=TIERS.map((tier,i)=>{
-      const e=entry(sealTex[i], sealTex[i]&&sealTex[i].image ? tier.height/sealTex[i].image.height : tier.height/768);
+      const e=sealEntry(sealTex[i], sealTex[i]&&sealTex[i].image ? tier.height/sealTex[i].image.height : tier.height/768);
       const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
       m.scale.set(e.w,e.h,1);
       m.position.set(SEAL_X+e.offX, GROUND+e.offY, -.26);
@@ -778,8 +795,6 @@
 
     $('segelDoneTitle').textContent='BERJAYA!';
     $('segelDoneText').textContent=note||'Aurora berjaya diselamatkan!';
-    $('segelResultHero').src=FRAMES.heroVictory;
-    $('segelResultPet').src=FRAMES.petHappy;
     $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
     $('segelStatAcc').textContent=acc+'%';
     $('segelHowOwn').textContent=t.own;
