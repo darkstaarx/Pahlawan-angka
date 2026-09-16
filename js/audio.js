@@ -7,6 +7,7 @@ const PA_AUDIO={
   auraCharge:'assets/audio/aura-charge.wav',
   wiraSword:'assets/audio/wira-heavy-metal-sword.wav',
   swordSlash:'assets/audio/sword-slash-v2.wav',
+  coinPickup:'assets/audio/coin-pickup.wav',
   enemyDown:'assets/audio/enemy-down.wav',
   ui:'assets/audio/ui.wav',
   correct:'assets/audio/correct.wav',

@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.2.0 (fail: segel-demo-v1.2.0.js)
+/* Segel Tambah — demo pentas WebGL v1.3.0 (fail: segel-demo-v1.3.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -20,10 +20,14 @@
   'use strict';
 
   /* Tier segel. hits/warna/denyut diambil terus dari kanun di atas. */
+  /* Satu segel kelihatan pada satu masa: Gangsa dahulu, kemudian Perak,
+     kemudian Emas. Tiga kubah sepusat serentak mengelirukan — mata tidak dapat
+     baca yang mana satu sedang diserang. Saiz menaik sedikit setiap tier
+     supaya "lebih kuat" terbaca tanpa perlu satu baris teks pun. */
   const TIERS=[
-    {key:'gangsa', name:'GANGSA', hits:2, color:0xff6e29, period:2.1, height:1.98},
-    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:2.4, height:2.34},
-    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.7, height:2.70}
+    {key:'gangsa', name:'GANGSA', hits:2, color:0xff6e29, period:3.4, height:2.34},
+    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, height:2.54},
+    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, height:2.76}
   ];
   const SEAL_HITS=TIERS.reduce((n,t)=>n+t.hits,0);  // 10 hentaman = 2+3+5
   /* Dua soalan lebih daripada jumlah hentaman. Tanpa ruang ini satu jawapan
@@ -40,14 +44,21 @@
     petJoy:[0,1].map(i=>`assets/pets/aurora/frames/joy-${i}-v1.webp`),
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
-    seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v1.webp`)
+    seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v1.webp`),
+    coin:'assets/fx/reward/coin-v1.webp',
+    trail:'assets/fx/reward/trail-v1.webp',
+    flare:'assets/fx/reward/flare-v1.webp'
   };
+  const COINS=6;   // sama dengan RescueRewardOrbs.cs
 
   /* Masa bingkai idle. Nafas Wira ialah 4 bingkai dengan bingkai ke-4 mata
      tertutup, jadi kelipan mesti pendek — kalau semua bingkai sama panjang,
      Wira nampak mengantuk dan gerakannya terlalu laju sekali gus. */
   const HERO_IDLE_HOLD=[0.40,0.40,0.40,0.11];    // satu kitaran 1.31s
-  const PET_IDLE_FPS=3.2;                         // 8 bingkai = 2.5s sekitaran
+  /* Aurora sedang sedih dan terkurung, jadi dia hampir tidak bergerak: setiap
+     pose bertahan ~2.6s. Bingkai 2 dan 7 ialah mata tertutup, jadi keduanya
+     ditahan pendek sahaja — kalau tidak dia nampak tertidur, bukan sayu. */
+  const PET_IDLE_HOLD=[2.6,2.6,0.16,2.6,2.6,2.6,2.6,0.16];
 
   let THREE=null, stage=null, booting=null, run=null, reduceMotion=false;
 
@@ -60,6 +71,21 @@
   /* Letupan segel: tiada fail wav yang sesuai dalam bank bunyi, jadi ia
      disintesis — nada menjunam (gelembung pecah) + desis pendek (serpihan
      cahaya). Guna AudioContext yang sama dengan audio.js, bukan yang baharu. */
+  /* Unity menaikkan pic setiap syiling supaya kutipan terasa mendaki.
+     playSfx() tiada kawalan pic, jadi mainkan sendiri di sini. */
+  function coinSfx(i){
+    try{
+      if(typeof paMuted!=='undefined'&&paMuted)return;
+      const src=(typeof PA_AUDIO!=='undefined')?PA_AUDIO.coinPickup:null;
+      if(!src)return;
+      const base=(typeof PA_AUDIO_CACHE!=='undefined')?PA_AUDIO_CACHE.coinPickup:null;
+      const a=base?base.cloneNode(true):new Audio(src);
+      a.playbackRate=1+Math.min(i,5)*.035;
+      a.volume=.55*((typeof PA_VOLUME_SCALE!=='undefined')?PA_VOLUME_SCALE:.8);
+      const pr=a.play(); if(pr&&pr.catch)pr.catch(()=>{});
+    }catch(_){}
+  }
+
   function popSound(){
     try{
       if(typeof paMuted!=='undefined'&&paMuted)return;
@@ -115,14 +141,16 @@
       loader.load(url, t=>{ t.colorSpace=THREE.SRGBColorSpace; res(t) }, undefined, ()=>res(null));
     });
 
-    const [arenaTex, heroIdle, heroPrepare, heroSlash, petSad, petJoy, sealTex] = await Promise.all([
+    const [arenaTex, heroIdle, heroPrepare, heroSlash, petSad, petJoy, sealTex,
+           coinTex, trailTex, flareTex] = await Promise.all([
       load(FRAMES.arena),
       Promise.all(FRAMES.heroIdle.map(load)),
       load(FRAMES.heroPrepare),
       load(FRAMES.heroSlash),
       Promise.all(FRAMES.petSad.map(load)),
       Promise.all(FRAMES.petJoy.map(load)),
-      Promise.all(FRAMES.seals.map(load))
+      Promise.all(FRAMES.seals.map(load)),
+      load(FRAMES.coin), load(FRAMES.trail), load(FRAMES.flare)
     ]);
 
     /* latar: dimuatkan "cover" supaya tiada jalur kosong pada apa-apa bentuk skrin */
@@ -228,12 +256,26 @@
 
     /* Tiga kubah segel dari prototaip Unity: Gangsa di dalam, Emas di luar.
        Susunan lukisan Unity ialah pet < segel < Wira, jadi z mengikutnya. */
+    /* Menggelapkan tekstur berwarna tidak menjadikannya kelabu, ia cuma
+       menjadikannya malap. Untuk "tukar warna kelabu" yang sebenar, kita
+       campurkan warna dengan luminannya sendiri di dalam shader. Ini antara
+       perkara yang memang tidak boleh dibuat dengan CSS atau canvas 2D. */
+    function sealMaterial(map){
+      return new THREE.ShaderMaterial({
+        uniforms:{map:{value:map},uGrey:{value:0},uOpacity:{value:1}},
+        transparent:true, depthWrite:false,
+        vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+        fragmentShader:'uniform sampler2D map;uniform float uGrey;uniform float uOpacity;varying vec2 vUv;'+
+          'void main(){vec4 c=texture2D(map,vUv);float l=dot(c.rgb,vec3(.299,.587,.114));'+
+          'c.rgb=mix(c.rgb,vec3(l),uGrey);gl_FragColor=vec4(c.rgb,c.a*uOpacity);}'
+      });
+    }
     const seals=TIERS.map((tier,i)=>{
       const e=entry(sealTex[i], sealTex[i]&&sealTex[i].image ? tier.height/sealTex[i].image.height : tier.height/768);
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
-        new THREE.MeshBasicMaterial({map:e.tex,transparent:true,depthWrite:false,opacity:1}));
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
       m.scale.set(e.w,e.h,1);
-      m.position.set(SEAL_X+e.offX, PET_FEET+e.offY, -.26+i*.03);
+      m.position.set(SEAL_X+e.offX, PET_FEET+e.offY, -.26);
+      m.visible=(i===0);
       scene.add(m);
       return {tier, mesh:m, base:{w:e.w,h:e.h}, damage:0, broken:false, breakT:-1};
     });
@@ -276,9 +318,27 @@
       }
     }
 
+    /* Syiling ganjaran — mengikut RescueRewardOrbs.cs: enam syiling terbit dari
+       segel yang pecah, merebak membentuk kipas, kemudian melengkung masuk ke
+       dada Wira satu demi satu. */
+    function quad(map,w,h,z,additive){
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+        new THREE.MeshBasicMaterial({map,transparent:true,depthWrite:false,opacity:0,
+          blending:additive?THREE.AdditiveBlending:THREE.NormalBlending}));
+      m.position.z=z; m.visible=false; scene.add(m); return m;
+    }
+    const coins=[];
+    for(let i=0;i<COINS;i++)coins.push({
+      coin:quad(coinTex,.42,.42,.36,false),
+      trail:quad(trailTex,.52,.13,.35,true),
+      picked:false
+    });
+    const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
+
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:PET_FEET+PET_HOVER,petFeet:PET_FEET+PET_HOVER,camY:0,
-             shake:0,waveT:-1,flashT:-1,running:true,active:0,
-             heroFrames:heroIdleE,petFrames:petSadE,petFps:PET_IDLE_FPS,heroLock:null};
+             shake:0,waveT:-1,flashT:-1,flareT:-1,running:true,active:0,
+             heroFrames:heroIdleE,petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
+             heroLock:null,grey:0,coinT:-1};
     let raf=0, last=performance.now(), tAcc=0;
 
     function swap(mesh,e){
@@ -294,7 +354,8 @@
       const dt=Math.min((now-last)/1000,.05); last=now; tAcc+=dt;
 
       swap(hero, S.heroLock || heldFrame(S.heroFrames,HERO_IDLE_HOLD,tAcc));
-      swap(pet,  S.petFrames[Math.floor(tAcc*S.petFps)%S.petFrames.length]);
+      swap(pet,  S.petHold ? heldFrame(S.petFrames,S.petHold,tAcc)
+                           : S.petFrames[Math.floor(tAcc*S.petFps)%S.petFrames.length]);
 
       // S.heroX dan S.petY ialah kedudukan KAKI, bukan pusat satah.
       S.heroFeet=damp(S.heroFeet,S.heroX,15,dt);
@@ -302,20 +363,21 @@
       hero.position.x=S.heroFeet+hero.userData.e.offX;
       hero.position.y=HERO_GROUND+hero.userData.e.offY;
       heroShadow.position.x=S.heroFeet;
-      const hover=reduceMotion?0:Math.sin(tAcc*1.25)*.045;
       pet.position.x=SEAL_X+pet.userData.e.offX;
-      pet.position.y=S.petFeet+pet.userData.e.offY+hover;
+      pet.position.y=S.petFeet+pet.userData.e.offY;
 
       // Bayang Aurora kekal di lantai dan mengecut bila dia naik.
       const rise=Math.max(0,(S.petFeet-PET_FEET))/.8;
       petShadow.scale.set(PET_SHADOW_W*(1-.3*rise), PET_SHADOW_W*.34*(1-.3*rise), 1);
       petShadow.material.opacity=1-.45*Math.min(1,rise);
 
-      // Segel: denyut hanya pada tier aktif, warna gelap mengikut kerosakan.
+      // Segel: satu tier kelihatan, bernafas perlahan, kelabu bila terkena.
       const activeTier=TIERS[Math.min(S.active,TIERS.length-1)];
       backGlow.material.color.setHex(activeTier.color);
       backGlow.material.opacity=S.active>=TIERS.length?0:.42+(reduceMotion?0:.1*Math.sin(tAcc*2));
+      S.grey=damp(S.grey,0,3.4,dt);
       seals.forEach((s,i)=>{
+        const u=s.mesh.material.uniforms;
         if(s.breakT>=0){
           s.breakT+=dt;
           const k=Math.min(1,s.breakT/.42);
@@ -323,19 +385,21 @@
           // "pop" dan bukan "pudar".
           const grow=k<.22 ? 1-.10*(k/.22) : 1+.62*((k-.22)/.78);
           s.mesh.scale.set(s.base.w*grow, s.base.h*grow, 1);
-          s.mesh.material.opacity=k<.22 ? 1 : 1-((k-.22)/.78);
+          u.uOpacity.value=k<.22 ? 1 : 1-((k-.22)/.78);
+          u.uGrey.value=1;
           if(k>=1){ s.breakT=-1; s.mesh.visible=false }
           return;
         }
-        if(s.broken){ s.mesh.visible=false; return }
-        const isActive=i===S.active;
-        const pulse=reduceMotion?0:.10*Math.sin(tAcc*Math.PI*2/s.tier.period);
-        // Hanya tier aktif yang terang. Lapisan luar yang belum giliran duduk
-        // jauh lebih malap supaya elips tapaknya tidak bertindan jadi kabur.
-        s.mesh.material.opacity=isActive?(1+pulse):.26;
-        // Unity BarrierDamageTint: putih -> kelabu .60 mengikut kerosakan.
-        const d=1-.40*s.damage;
-        s.mesh.material.color.setRGB(d,d,d);
+        s.mesh.visible=(i===S.active);
+        if(!s.mesh.visible)return;
+        // Nafas: kubah mengembang dan mengecut perlahan, bukan sekadar pudar.
+        const breath=reduceMotion?0:Math.sin(tAcc*Math.PI*2/s.tier.period);
+        const grow=1+breath*.034;
+        s.mesh.scale.set(s.base.w*grow, s.base.h*grow, 1);
+        u.uOpacity.value=.92+(reduceMotion?.06:breath*.07);
+        // Kelabu berkekalan mengikut kerosakan, ditambah kilas kelabu penuh
+        // pada detik hentaman.
+        u.uGrey.value=Math.min(1, Math.max(S.grey, s.damage*.55));
       });
 
       S.shake=damp(S.shake,0,6,dt);
@@ -343,6 +407,57 @@
       camera.position.y=S.camY+(Math.random()-.5)*S.shake;
       bg.position.x=-camera.position.x*.4;
       bg.position.y=S.camY;
+
+      /* Penerbangan syiling. Lengkung bezier yang sama dengan Unity: terbit,
+         merebak, kemudian melengkung ke dada Wira dengan jeda berperingkat. */
+      if(S.coinT>=0){
+        S.coinT+=dt;
+        const t=S.coinT;
+        const ox=SEAL_X, oy=PET_FEET+.72;
+        const ax=S.heroFeet+.18, ay=HERO_GROUND+1.18;
+        let live=0;
+        coins.forEach((c,i)=>{
+          if(c.picked)return;
+          live++;
+          const ang=(95+i*32)*Math.PI/180;
+          const sx=ox+Math.cos(ang)*.66, sy=oy+Math.sin(ang)*.68;
+          const release=Math.min(1,Math.max(0,(t-.10)/.32));
+          const travel=Math.min(1,Math.max(0,(t-.52-i*.12)/.55));
+          let x,y;
+          if(travel<=0){
+            const e=1-Math.pow(1-release,3);
+            x=ox+(sx-ox)*e; y=oy+(sy-oy)*e;
+          }else{
+            const u=travel*travel*(3-2*travel);
+            const cx=(sx+ax)/2, cy=(sy+ay)/2+.5+i*.07;
+            x=(1-u)*(1-u)*sx+2*(1-u)*u*cx+u*u*ax;
+            y=(1-u)*(1-u)*sy+2*(1-u)*u*cy+u*u*ay;
+          }
+          const px=c.coin.position.x, py=c.coin.position.y;
+          c.coin.visible=true; c.coin.material.opacity=Math.min(1,release*2);
+          c.coin.position.set(x,y,.36);
+          const vx=x-px, vy=y-py, speed=Math.hypot(vx,vy);
+          if(speed>.004&&travel>0){
+            c.trail.visible=true;
+            c.trail.material.opacity=Math.min(.75,speed*9);
+            c.trail.position.set(x-vx*2.2,y-vy*2.2,.35);
+            c.trail.rotation.z=Math.atan2(vy,vx);
+          }else c.trail.visible=false;
+          if(travel>=1){
+            c.picked=true; c.coin.visible=false; c.trail.visible=false;
+            coinSfx(i);
+            absorbFlare.position.set(ax,ay,.37);
+            S.flareT=0;
+          }
+        });
+        if(live===0){ S.coinT=-1 }
+      }
+      if(S.flareT>=0){
+        S.flareT+=dt; const k=S.flareT/.34;
+        if(k>=1){ S.flareT=-1; absorbFlare.visible=false; absorbFlare.material.opacity=0 }
+        else { absorbFlare.visible=true; absorbFlare.scale.setScalar(.6+k*.8);
+               absorbFlare.material.opacity=(1-k)*.9 }
+      }
 
       if(S.flashT>=0){
         S.flashT+=dt; const k=S.flashT/.26;
@@ -371,13 +486,17 @@
        kelihatan mengecil — watak nampak membesar dan terpotong di tepi.
        Jadi kita kunci LEBAR dunia dan kira fov menegak daripadanya, kemudian
        tambat kamera supaya lantai kekal pada kedudukan yang sama. */
-    const WORLD_W=6.0, FLOOR_MARGIN=.30;
+    /* WORLD_W mengunci lebar; MIN_H menghalang pentas yang lebar (tablet,
+       landskap) daripada memampatkan tinggi sehingga watak jadi kecil. Mana-mana
+       yang lebih besar yang menang, jadi satu kod melayan telefon menegak,
+       telefon melintang dan tablet. */
+    const WORLD_W=6.0, MIN_H=5.2, FLOOR_MARGIN=.30;
     function resize(){
       const w=host.clientWidth, h=host.clientHeight;
       if(!w||!h)return;
       renderer.setSize(w,h,false);
       camera.aspect=w/h;
-      const visH=WORLD_W/camera.aspect;
+      const visH=Math.max(WORLD_W/camera.aspect, MIN_H);
       camera.fov=2*Math.atan(visH/2/camera.position.z)*180/Math.PI;
       camera.updateProjectionMatrix();
       S.camY=HERO_GROUND+FLOOR_MARGIN*visH;
@@ -410,6 +529,7 @@
       hitSeal(){
         const s=seals[S.active]; if(!s)return {broken:false};
         s.damage=Math.min(1,s.damage+1/s.tier.hits);
+        S.grey=1;                      // kilas kelabu pada detik hentaman
         if(s.damage>=.999){
           s.broken=true; s.breakT=0;
           popSound();
@@ -428,15 +548,25 @@
       async rescue(){
         sfx('finisher');
         S.shake=.5; burst(7,0xffffff); S.waveT=0; S.flashT=0;
-        S.petFrames=petJoyE; S.petFps=4; S.petY=PET_FEET+.75;
+        S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=PET_FEET+.75;
         await wait(520); S.petY=PET_FEET;   // Aurora bebas: turun ke lantai
+      },
+      // Wira menyerap cahaya segel sebagai syiling sebelum skrin keputusan.
+      async absorbCoins(){
+        coins.forEach(c=>{ c.picked=false; c.coin.visible=false; c.trail.visible=false });
+        S.coinT=0;
+        await wait(520+COINS*120+560);
       },
       wrong(){ S.shake=.14 },
       reset(){
-        S.active=0; S.heroX=HERO_HOME; S.heroLock=null;
-        S.petFrames=petSadE; S.petFps=PET_IDLE_FPS; S.petY=PET_FEET+PET_HOVER;
-        seals.forEach(s=>{ s.damage=0; s.broken=false; s.breakT=-1;
-          s.mesh.visible=true; s.mesh.material.opacity=1;
+        S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
+        coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
+        absorbFlare.visible=false;
+        S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=PET_FEET+PET_HOVER;
+        seals.forEach((s,i)=>{ s.damage=0; s.broken=false; s.breakT=-1;
+          s.mesh.visible=(i===0);
+          s.mesh.material.uniforms.uOpacity.value=1;
+          s.mesh.material.uniforms.uGrey.value=0;
           s.mesh.scale.set(s.base.w,s.base.h,1) });
       },
       pause(){ S.running=false },
@@ -479,19 +609,20 @@
     finally{ if(original)sess=original }
   }
 
+  /* Bar kesihatan, bukan ayat. Bilangan ketul = bilangan hentaman tier itu
+     (Gangsa 2, Perak 3, Emas 5) dan warnanya sudah memberitahu tier mana. */
   function paintSeal(){
-    const tier=stage.activeTier(), left=stage.remaining();
-    const tag=$('segelTag');
+    const tag=$('segelTag'), bar=$('segelBar');
+    if(!tag||!bar)return;
     if(stage.allBroken()){ tag.style.opacity='0'; return }
+    const tier=stage.activeTier(), left=stage.remaining();
     tag.style.opacity='1';
     tag.dataset.tier=tier.key;
-    $('segelTagName').textContent='Segel '+tier.name.charAt(0)+tier.name.slice(1).toLowerCase();
-    $('segelTagLeft').textContent=left+' hentaman lagi';
-    document.querySelectorAll('#segelPips i').forEach((pip,i)=>{
-      pip.dataset.tier=TIERS[i].key;
-      pip.classList.toggle('gone',i<TIERS.indexOf(tier)||stage.allBroken());
-      pip.classList.toggle('active',TIERS[i]===tier);
-    });
+    if(bar.dataset.tier!==tier.key){
+      bar.dataset.tier=tier.key;
+      bar.innerHTML=Array.from({length:tier.hits},()=>'<i></i>').join('');
+    }
+    [...bar.children].forEach((seg,i)=>seg.classList.toggle('out',i>=left));
   }
 
   function drawQuestion(){
@@ -558,6 +689,7 @@
       if(stage.allBroken()){
         toast('AURORA BEBAS!');
         await stage.rescue();
+        await stage.absorbCoins();   // Wira serap cahaya segel dahulu
         return finishRun(true);
       }
     }else{

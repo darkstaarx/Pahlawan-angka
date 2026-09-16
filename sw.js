@@ -1,8 +1,8 @@
-// App shell v3.64.0 — Segel Tambah result screen, fixed stage band, seal pop.
+// App shell v3.65.0 — one seal at a time, breathing shader, coin absorb.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
-  './css/segel-demo-v1.2.0.css','./js/segel-demo-v1.2.0.js',
+  './css/segel-demo-v1.3.0.css','./js/segel-demo-v1.3.0.js',
   // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
   // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
   './assets/heroes/wira-chibi/hub/idle-loop-v3.webp',

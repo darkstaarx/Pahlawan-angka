@@ -1,0 +1,6 @@
+coin-pickup-original.wav
+
+Original asset created for this Unity prototype by procedural synthesis on 2026-09-13.
+No third-party recording, sample, or downloaded audio is included.
+Waveform: 0.22 s mono PCM WAV at 44.1 kHz, synthesized from sine oscillators at 987.77 Hz, 1567.98 Hz, and 1975.53 Hz with an original attack/decay envelope.
+License: project-owned original; may be used, modified, and redistributed with the Pahlawan Angka project.

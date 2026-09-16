@@ -1,4 +1,4 @@
-/* Segel Tambah demo v1.2.0 — pentas WebGL + UI DOM.
+/* Segel Tambah demo v1.3.0 — pentas WebGL + UI DOM.
    Kad soalan sengaja guna .qcard/.question/.answers/.ans yang sedia ada,
    supaya soalan sebenar dari bank kelihatan sama macam dalam battle. */
 
@@ -56,24 +56,20 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 [data-tier="perak"] {--tier:#bde0ff}
 [data-tier="emas"]  {--tier:#ffb838}
 
+/* Bar kesihatan segel: satu ketul = satu hentaman. Warna sudah memberitahu
+   tier mana, jadi tiada teks langsung di sini. */
 .segelTag{
-  position:absolute;right:10px;top:20%;text-align:center;padding:7px 12px;border-radius:11px;
-  background:#0b1d38ee;box-shadow:inset 0 0 0 1.5px #ffffff26;pointer-events:none;
+  position:absolute;right:10px;top:18%;padding:6px 8px;border-radius:10px;
+  background:#0b1d38dd;box-shadow:inset 0 0 0 1.5px #ffffff22;pointer-events:none;
   transition:opacity .35s
 }
-.segelTag b{display:block;font-size:12px;font-weight:900;color:var(--tier,#f7f2e4);letter-spacing:.3px}
-.segelTag small{display:block;font-size:10px;font-weight:700;color:#a9c4e0;margin-top:1px}
-.segelPips{display:flex;gap:6px;justify-content:center;margin-top:6px}
-.segelPips i{
-  width:12px;height:12px;transform:rotate(45deg);border-radius:3px;
-  background:#ffffff0f;
-  /* fallback dahulu: color-mix tiada pada WebView Android lama */
-  box-shadow:inset 0 0 0 1.5px #9fd8ff66;
-  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--tier) 55%,transparent);
-  transition:.35s
+.segelBar{display:flex;gap:4px}
+.segelBar i{
+  width:17px;height:9px;border-radius:3px;background:var(--tier,#9fd8ff);
+  box-shadow:0 0 9px color-mix(in srgb,var(--tier) 60%,transparent);
+  transition:background .3s,opacity .3s,box-shadow .3s
 }
-.segelPips i.active{background:var(--tier);box-shadow:0 0 12px var(--tier)}
-.segelPips i.gone{background:var(--tier);opacity:.42;box-shadow:none}
+.segelBar i.out{background:#ffffff1a;box-shadow:none;opacity:.7}
 
 .segelToast{
   position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.9);
@@ -226,4 +222,29 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 @media (max-width:360px){
   .segelBanner b{font-size:13.5px}
   .segelCard .question{font-size:20px}
+}
+
+
+/* ---------- skrin selain telefon menegak ---------- */
+/* Demo ini direka untuk telefon. Pada tablet dan desktop, lajur dipusatkan
+   supaya kad soalan tidak merentang selebar skrin dan arena tidak jadi jalur
+   panjang; kamera pentas pula sudah mengunci lebar dunia, jadi komposisi
+   kekal sama. */
+@media (min-width:760px){
+  #segelDemo.on{background:radial-gradient(circle at 50% 22%,#0e2745,#04101e)}
+  .segelStage,.segelPanel{width:100%;max-width:520px;margin-inline:auto}
+  .segelStage{border-radius:0 0 20px 20px}
+}
+
+/* Telefon melintang: pentas di kiri, soalan di kanan. Tanpa ini pentas 44%
+   tinggi tinggal sejalur dan kad soalan hilang di bawah skrin. */
+@media (orientation:landscape) and (max-height:560px){
+  #segelDemo.on{flex-direction:row}
+  .segelStage{flex:1 1 50%;max-width:none;min-height:0;max-height:none}
+  .segelPanel{flex:1 1 50%;min-width:0;max-width:none;
+    padding:calc(8px + env(safe-area-inset-top,0px)) 12px calc(8px + env(safe-area-inset-bottom,0px))}
+  .segelQHead{margin:0 0 7px}
+  .segelCard .question{font-size:19px}
+  .segelLock{display:none}
+  .segelTag{top:10%}
 }
