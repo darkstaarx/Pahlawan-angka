@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ms">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pahlawan Angka · Three.js Stage Preview</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#070d16;color:#eaf4fa;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:960px;margin:auto;padding:28px 18px 60px}
+.eyebrow{font-size:11px;letter-spacing:3px;color:#7fd7c5}
+h1{font-size:26px;margin:6px 0 4px;font-weight:650}
+h2{font-size:15px;margin:26px 0 8px;color:#b4f3d5}
+p.note{color:#8fa4b6;font-size:13px;margin:6px 0 18px}
+
+/* ---------- LAPISAN 1: pentas (Three.js canvas ATAU sprite DOM) ---------- */
+.stage{position:relative;border:1px solid #2b3c4e;border-radius:18px;overflow:hidden;
+       background:#0b1626;box-shadow:0 22px 60px #0008;aspect-ratio:16/10}
+.stage canvas{display:block;width:100%;height:100%}
+/* fallback DOM sprite layer - inilah cara index.html sekarang */
+.domStage{position:absolute;inset:0;display:none;background:center/cover no-repeat}
+.domStage.on{display:block}
+.domStage .unit{position:absolute;bottom:12%}
+.domStage .hero{width:24%}
+.domStage .enemy{width:21%}
+.domStage .unit img{width:100%;display:block;filter:drop-shadow(0 12px 18px #0009)}
+.domStage .hero{left:7%}
+.domStage .enemy{right:8%}
+.domStage .hero.attacking{animation:domLunge .62s cubic-bezier(.3,1.4,.4,1)}
+.domStage .enemy.hurt{animation:domHurt .38s ease-out}
+@keyframes domLunge{0%{transform:translateX(0)}22%{transform:translateX(-6%) scale(.97)}
+  46%{transform:translateX(58%) scale(1.04)}70%{transform:translateX(52%)}100%{transform:translateX(0)}}
+@keyframes domHurt{0%{transform:translateX(0);filter:none}
+  20%{transform:translateX(10%);filter:brightness(3)}100%{transform:translateX(0);filter:none}}
+
+/* ---------- LAPISAN 2: HUD DOM di atas pentas (nama/HP/rentak) ---------- */
+.hud{position:absolute;inset:14px 16px auto;display:flex;justify-content:space-between;
+     gap:12px;pointer-events:none}
+.unitCard{width:40%}
+.unitCard:last-child{text-align:right}
+.nm{font-weight:650;font-size:14px;text-shadow:0 2px 6px #000}
+.hp{height:7px;margin-top:6px;background:#0b111bcc;border-radius:10px;overflow:hidden}
+.hp span{display:block;height:100%;width:100%;background:#7ff0c0;transition:width .3s ease-out}
+.hp.foe span{background:#f0a86f}
+.streak{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+        font-size:12px;color:#ffd479;text-shadow:0 2px 6px #000;pointer-events:none}
+
+/* ---------- LAPISAN 3: kad soalan - DOM biasa, kekal macam sekarang ---------- */
+.qcard{margin-top:14px;background:#f6f2e6;color:#10243c;border-radius:16px;padding:16px}
+.qmeta{display:flex;justify-content:space-between;font-size:11px;color:#5d7285;letter-spacing:1px}
+.question{font-size:21px;font-weight:750;margin:10px 0 14px;text-align:center}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.answers button{font:inherit;font-weight:700;font-size:17px;padding:16px 8px;border-radius:12px;
+  border:2px solid #d7cdb4;background:#14304f;color:#fff;cursor:pointer}
+.answers button:hover{filter:brightness(1.15)}
+.answers button.right{background:#1c7a4f;border-color:#1c7a4f}
+.answers button.wrong{background:#8c2f3a;border-color:#8c2f3a}
+.feedback{min-height:22px;margin-top:10px;text-align:center;font-weight:650;font-size:14px}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.controls button,.controls select{font:inherit;color:#dae8ef;border:1px solid #33475a;
+  background:#132234;border-radius:10px;padding:10px 14px;cursor:pointer}
+.controls label{display:flex;gap:7px;align-items:center;font-size:13px;color:#9bb1c2}
+code{background:#11202f;padding:1px 5px;border-radius:5px;font-size:12px;color:#b4f3d5}
+.legend{display:grid;gap:8px;margin-top:20px;font-size:13px;color:#9bb1c2}
+.legend b{color:#eaf4fa}
+</style>
+
+<main>
+<div class="eyebrow">PAHLAWAN ANGKA / RENDER STUDY</div>
+<h1>Satu skrin, tiga lapisan</h1>
+<p class="note">
+  Pentas (arena) dilukis oleh <b>Three.js</b> dalam satu <code>&lt;canvas&gt;</code>.
+  HUD dan kad soalan kekal <b>DOM/HTML biasa</b> di atasnya - sama macam
+  <code>index.html</code> sekarang. Tukar <i>Mod render</i> untuk bandingkan dengan
+  sprite CSS yang digunakan hari ini.
+</p>
+
+<section class="stage" id="stage">
+  <canvas id="paStage"></canvas>
+
+  <!-- pentas DOM (cara semasa) untuk perbandingan -->
+  <div class="domStage" id="domStage">
+    <div class="unit hero" id="domHero"><img src="../assets/heroes/wira/idle.webp" alt="Wira"></div>
+    <div class="unit enemy" id="domEnemy"><img src="../assets/enemies/minions/askabus.webp" alt="Askabus"></div>
+  </div>
+
+  <!-- HUD DOM: teks sebenar, boleh dibaca screen reader, boleh pilih, murah -->
+  <div class="hud">
+    <div class="unitCard"><div class="nm">Wira</div><div class="hp"><span id="heroHp"></span></div></div>
+    <div class="unitCard"><div class="nm">Askabus</div><div class="hp foe"><span id="foeHp"></span></div></div>
+  </div>
+  <div class="streak" id="streak">0 rentak</div>
+</section>
+
+<!-- kad soalan: DOM. Jangan sekali-kali pindah teks soalan ke dalam canvas. -->
+<div class="qcard">
+  <div class="qmeta"><span id="qtag">Zon Masa</span><span id="qnum">Soalan 1</span></div>
+  <div class="question" id="question"></div>
+  <div class="answers" id="answers"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<div class="controls">
+  <label>Mod render
+    <select id="mode">
+      <option value="gl">Three.js (canvas WebGL)</option>
+      <option value="dom">Sprite DOM + CSS (cara sekarang)</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="reduce"> Gerakan minimum</label>
+  <button id="reset">↺ Reset</button>
+</div>
+
+<div class="legend">
+  <div><b>Lapisan 1 · Pentas</b> - Three.js: kedalaman, parallax, zarah, goncang kamera, kilat cahaya. 60fps atas GPU.</div>
+  <div><b>Lapisan 2 · HUD</b> - DOM: nama, bar HP, rentak. Teks sebenar, senang tukar, senang uji.</div>
+  <div><b>Lapisan 3 · Soalan</b> - DOM: soalan, jawapan, petunjuk, TTS, papan kekunci, aksesibiliti.</div>
+</div>
+</main>
+
+<!-- three.js di-vendor dalam repo (js/vendor/), BUKAN CDN.
+     Sebab: PWA ini mesti jalan offline dan sw.js kena boleh cache fail ini. -->
+<script type="importmap">
+{"imports":{"three":"../js/vendor/three.module.min.js"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* =======================================================================
+   PAStage - satu-satunya "bahasa" antara logik permainan dan pentas.
+   battle.js sedia ada cuma perlu panggil:
+       PAStage.heroAttack();  PAStage.hit(dmg);  PAStage.setHp(a,b);
+   Ia tak perlu tahu langsung sama ada di bawah itu Three.js, canvas 2D,
+   atau <img> + CSS. Itulah sebabnya tukar enjin nanti tak pecahkan game.
+   ======================================================================= */
+
+const canvas = document.getElementById('paStage');
+const stageEl = document.getElementById('stage');
+
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));   // penting untuk bateri Android
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 16/10, 0.1, 100);
+camera.position.set(0, 0, 10);
+
+const loader = new THREE.TextureLoader();
+function tex(url){ const t = loader.load(url); t.colorSpace = THREE.SRGBColorSpace; return t; }
+
+// helper: satu gambar = satu plane bertekstur, saiz ikut nisbah gambar asal
+function sprite(url, height, z){
+  const map = tex(url);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1,1),
+    new THREE.MeshBasicMaterial({map, transparent:true, depthWrite:false})
+  );
+  mesh.position.z = z;
+  map.image ? fit() : (map.onUpdate = fit);
+  function fit(){
+    const img = map.image; if(!img) return;
+    mesh.scale.set(height * (img.width/img.height), height, 1);
+  }
+  setTimeout(fit, 350); setTimeout(fit, 1200);   // jaga-jaga kalau decode lambat
+  scene.add(mesh);
+  return mesh;
+}
+
+// --- latar belakang jauh: dia yang bagi rasa "dalam" bila kamera bergerak ---
+const bg = sprite('../assets/battlefields/nusantara-temple/arena-v1.webp', 12, -7);
+// --- watak ---
+const hero = sprite('../assets/heroes/wira/idle.webp', 3.1, 0);
+const heroAtk = sprite('../assets/heroes/wira/attack.webp', 3.1, 0.01);
+const foe  = sprite('../assets/enemies/minions/askabus.webp', 2.5, -0.4);
+hero.position.set(-2.4, -0.6, 0);
+heroAtk.position.copy(hero.position); heroAtk.visible = false;
+foe.position.set(2.4, -0.8, -0.4);
+
+// --- bayang sentuh tanah: benda kecil yang buat watak nampak "berpijak" ---
+function shadow(x,y,w){
+  const m = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32),
+    new THREE.MeshBasicMaterial({color:0x000000, transparent:true, opacity:.34, depthWrite:false}));
+  m.position.set(x, y, -0.02); m.scale.set(w, w*0.22, 1); scene.add(m); return m;
+}
+const heroShadow = shadow(-2.4, -2.15, 2.0);
+const foeShadow  = shadow( 2.4, -2.05, 1.7);
+
+// --- zarah hentaman: 160 titik, additive. Ini yang DOM tak mampu buat murah ---
+const PCOUNT = 160;
+const pPos = new Float32Array(PCOUNT*3);
+const pVel = new Float32Array(PCOUNT*3);
+const pLife = new Float32Array(PCOUNT);
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({
+  color:0x9fe8ff, size:0.12, transparent:true, opacity:.95,
+  blending:THREE.AdditiveBlending, depthWrite:false
+}));
+scene.add(particles);
+
+function burst(x,y,z){
+  for(let i=0;i<PCOUNT;i++){
+    const a = Math.random()*Math.PI*2, s = 1.6 + Math.random()*5.5;
+    pPos[i*3]=x; pPos[i*3+1]=y; pPos[i*3+2]=z;
+    pVel[i*3]=Math.cos(a)*s; pVel[i*3+1]=Math.sin(a)*s*0.8 + 1.4; pVel[i*3+2]=(Math.random()-.5)*2;
+    pLife[i]=0.45 + Math.random()*0.35;
+  }
+}
+
+// --- keadaan animasi ---
+const S = {heroX:-2.4, foeX:2.4, shake:0, flash:0, reduce:false};
+const damp = (c,t,l,dt)=> c + (t-c)*(1-Math.exp(-l*dt));
+const wait = ms => new Promise(r=>setTimeout(r, ms));
+
+const clock = new THREE.Clock();
+function frame(){
+  const dt = Math.min(clock.getDelta(), 0.05);
+
+  hero.position.x = heroAtk.position.x = damp(hero.position.x, S.heroX, 16, dt);
+  foe.position.x  = damp(foe.position.x, S.foeX, 12, dt);
+  heroShadow.position.x = hero.position.x;
+  foeShadow.position.x  = foe.position.x;
+
+  // kilat putih pada musuh bila kena
+  S.flash = damp(S.flash, 0, 9, dt);
+  foe.material.color.setScalar(1 + S.flash*4);
+
+  // goncang kamera + parallax latar (latar bergerak lebih perlahan = kedalaman)
+  S.shake = damp(S.shake, 0, 6, dt);
+  camera.position.x = (Math.random()-.5)*S.shake;
+  camera.position.y = (Math.random()-.5)*S.shake;
+  bg.position.x = -camera.position.x*0.35;
+
+  // zarah
+  for(let i=0;i<PCOUNT;i++){
+    if(pLife[i] <= 0){ pPos[i*3+1] = 999; continue; }
+    pLife[i] -= dt;
+    pVel[i*3+1] -= 9.8*dt;                       // graviti
+    pPos[i*3]   += pVel[i*3]*dt;
+    pPos[i*3+1] += pVel[i*3+1]*dt;
+    pPos[i*3+2] += pVel[i*3+2]*dt;
+  }
+  pGeo.attributes.position.needsUpdate = true;
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+function resize(){
+  const w = stageEl.clientWidth, h = stageEl.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+/* ---------------- API yang battle.js panggil ---------------- */
+const PAStage = {
+  async heroAttack(){
+    if(S.reduce){ S.flash = 1; burst(foe.position.x-0.6, -0.4, 0); return; }
+    S.heroX = -2.7;                 await wait(150);   // bersedia (anticipation)
+    hero.visible = false; heroAtk.visible = true;
+    S.heroX = 1.1;                  await wait(130);   // mara
+    burst(foe.position.x-0.7, -0.3, 0);                // hentaman
+    S.flash = 1; S.shake = 0.42; S.foeX = 3.2;
+    await wait(220);
+    S.heroX = -2.4; S.foeX = 2.4;                      // kembali
+    hero.visible = true; heroAtk.visible = false;
+  },
+  enemyAttack(){ S.foeX = 1.4; S.shake = 0.3; setTimeout(()=>S.foeX = 2.4, 220); },
+  setReduce(v){ S.reduce = v; }
+};
+
+/* ============================================================
+   LOGIK PERMAINAN - tak sentuh Three.js langsung.
+   Sedia ada dalam repo anda: battle.js / learning.js / progression.js
+   ============================================================ */
+const QUESTIONS = [
+  {tag:'Zon Masa', q:'Tokyo ialah UTC+9 dan Dubai ialah UTC+4. Beza zon masa?',
+   opts:['13 jam','4 jam','6 jam','5 jam'], ans:3},
+  {tag:'Wang', q:'20 sen + 10 sen = ?', opts:['30 sen','40 sen','10 sen','20 sen'], ans:0},
+  {tag:'Masa', q:'Pukul 14:45 dalam sistem 12 jam?',
+   opts:['2:45 pagi','2:45 petang','4:45 petang','12:45 petang'], ans:1}
+];
+let qi = 0, streak = 0, heroHp = 100, foeHp = 100;
+
+const $ = id => document.getElementById(id);
+function render(){
+  const q = QUESTIONS[qi % QUESTIONS.length];
+  $('qtag').textContent = q.tag;
+  $('qnum').textContent = 'Soalan ' + (qi+1);
+  $('question').textContent = q.q;
+  $('feedback').textContent = '';
+  $('answers').innerHTML = '';
+  q.opts.forEach((o,i)=>{
+    const b = document.createElement('button');
+    b.textContent = o;
+    b.onclick = ()=> answer(i === q.ans, b);
+    $('answers').appendChild(b);
+  });
+  paint();
+}
+function paint(){
+  $('heroHp').style.width = heroHp + '%';
+  $('foeHp').style.width  = foeHp + '%';
+  $('streak').textContent = streak + ' rentak';
+}
+async function answer(correct, btn){
+  [...$('answers').children].forEach(b => b.disabled = true);
+  btn.classList.add(correct ? 'right' : 'wrong');
+  if(correct){
+    streak++; foeHp = Math.max(0, foeHp - 22);
+    $('feedback').textContent = 'Betul! Wira menyerang.';
+    domAttack('hero');  await PAStage.heroAttack();
+  }else{
+    streak = 0; heroHp = Math.max(0, heroHp - 15);
+    $('feedback').textContent = 'Belum tepat. Askabus membalas.';
+    domAttack('enemy'); PAStage.enemyAttack();
+    await wait(400);
+  }
+  paint();
+  await wait(450);
+  if(foeHp === 0 || heroHp === 0){ heroHp = foeHp = 100; streak = 0; }
+  qi++; render();
+}
+
+/* --------- pentas DOM (cara sekarang) supaya boleh banding terus --------- */
+function domAttack(who){
+  if($('mode').value !== 'dom') return;
+  const el = who === 'hero' ? $('domHero') : $('domEnemy');
+  const other = who === 'hero' ? $('domEnemy') : $('domHero');
+  el.classList.add(who === 'hero' ? 'attacking' : 'attacking');
+  other.classList.add('hurt');
+  setTimeout(()=>{ el.classList.remove('attacking'); other.classList.remove('hurt'); }, 650);
+}
+$('mode').onchange = e => {
+  const dom = e.target.value === 'dom';
+  $('domStage').classList.toggle('on', dom);
+  $('domStage').style.backgroundImage =
+    'url(../assets/battlefields/nusantara-temple/arena-v1.webp)';
+  canvas.style.visibility = dom ? 'hidden' : 'visible';
+};
+$('reduce').onchange = e => PAStage.setReduce(e.target.checked);
+
+// hormati tetapan sistem murid
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){
+  $('reduce').checked = true; PAStage.setReduce(true);
+}
+
+/* Android jimat memori boleh BUNUH konteks WebGL bila-bila masa.
+   Bila itu berlaku kita jatuh balik ke sprite DOM, bukan skrin kosong.
+   Inilah sebabnya pentas DOM tak boleh dibuang walaupun Three.js masuk. */
+canvas.addEventListener('webglcontextlost', ev => {
+  ev.preventDefault();
+  $('mode').value = 'dom';
+  $('mode').dispatchEvent(new Event('change'));
+  $('feedback').textContent = 'Konteks WebGL hilang - kembali ke sprite DOM.';
+});
+$('reset').onclick = ()=>{ heroHp = foeHp = 100; streak = 0; qi = 0; render(); };
+
+render();
+window.PAStage = PAStage;   // supaya boleh cuba PAStage.heroAttack() dari console
+</script>
+</html>
