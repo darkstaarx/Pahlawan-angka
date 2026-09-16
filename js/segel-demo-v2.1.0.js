@@ -469,13 +469,21 @@
        badannya. Titik sasaran disampel daripada saluran alfa sprite idle
        sendiri, jadi taburannya benar-benar berbentuk Wira, bukan awan rawak. */
     const EN=460;
-    /* Tirai sinematik pudar selama 480ms. Perhimpunan 1.15s dahulu bermakna
-       hampir separuhnya berlaku sebalik tirai yang masih gelap, jadi tetingkap
-       yang benar-benar jelas tinggal sekejap sahaja. Dipanjangkan supaya lebih
-       satu saat penuh kelihatan selepas tirai betul-betul hilang. */
-    const EN_TRAVEL=1.05;          // masa satu zarah dari atas ke sasarannya
-    const EN_SPREAD=.55;           // serakan permulaan antara zarah
+    /* Bentuk masa perhimpunan ditetapkan oleh tirai sinematik yang pudar
+       selama 480ms. Dua perkara mesti benar pada saat tirai habis: zarah sudah
+       DI DALAM bingkai, dan zarah sudah BERGERAK.
+
+       Serakan permulaan yang panjang melanggar kedua-duanya — dalam tempoh
+       serakan itu, kebanyakan zarah masih diam di titik mulanya. Kalau titik
+       mula pula tinggi di atas pentas, ia diam di luar skrin, dan murid nampak
+       arena kosong. Jadi serakan dipendekkan dan ketinggian mula diturunkan
+       supaya hampir semuanya sudah turun dalam bingkai sebelum tirai hilang. */
+    const EN_TRAVEL=1.15;          // masa satu zarah dari atas ke sasarannya
+    const EN_SPREAD=.30;           // serakan permulaan antara zarah
     const EN_SPAN=EN_TRAVEL+EN_SPREAD;
+    /* Had atas pentas kira-kira 2.65 unit; sasaran zarah berada antara -1.92
+       dan +0.68. Jatuh 1.1–2.1 unit memastikan titik mula kekal dalam bingkai. */
+    const EN_DROP=1.1, EN_DROP_VAR=1.0;
     const enPos=new Float32Array(EN*3);
     const enTarget=new Float32Array(EN*2);   // offset dunia dari pusat satah
     const enStart=new Float32Array(EN*2);
@@ -540,7 +548,7 @@
         enTarget[i*2+1]=(.5-v)*e.h;
         // Turun dari atas dengan sedikit serakan sisi — seperti keluar portal.
         enStart[i*2]=enTarget[i*2]+(Math.random()-.5)*1.7;
-        enStart[i*2+1]=enTarget[i*2+1]+2.3+Math.random()*1.5;
+        enStart[i*2+1]=enTarget[i*2+1]+EN_DROP+Math.random()*EN_DROP_VAR;
         enDelay[i]=Math.random()*EN_SPREAD;
         enSwirl[i]=(Math.random()-.5)*1.5;
       }
