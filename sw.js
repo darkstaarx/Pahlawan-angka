@@ -1,8 +1,8 @@
-// App shell v3.69.0 — seals sized by visible dome, floor glow under the seal.
+// App shell v3.70.0 — sword trail follows the real slash arc through world space.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
-  './css/segel-demo-v1.7.0.css','./js/segel-demo-v1.7.0.js',
+  './css/segel-demo-v1.8.0.css','./js/segel-demo-v1.8.0.js',
   // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
   // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
   './assets/heroes/wira-chibi/hub/idle-loop-v3.webp',

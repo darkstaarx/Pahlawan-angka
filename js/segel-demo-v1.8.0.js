@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.7.0 (fail: segel-demo-v1.7.0.js)
+/* Segel Tambah — demo pentas WebGL v1.8.0 (fail: segel-demo-v1.8.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -382,6 +382,76 @@
     const flash=new THREE.Mesh(new THREE.PlaneGeometry(3.4,3.4),flashMat);
     flash.position.set(SEAL_X,GROUND+.8,.28); scene.add(flash);
 
+    /* JEJAK PEDANG
+       Bingkai sprite sudah membawa pedang, tetapi jejaknya terkunci pada
+       lukisan: ia tidak tahu Wira sedang menerkam ke hadapan, jadi ayunan
+       terasa ringan. Di sini hujung pedang dijejak sebagai lengkok sebenar
+       dalam ruang dunia — pangsinya bergerak bersama Wira — dan satu jalur
+       dibina daripada laluan itu setiap bingkai. Inilah sebabnya ia terasa
+       ada berat: jejaknya benar-benar mengikut ke mana dia pergi. */
+    const TRAIL_MAX=30;
+    const trailHist=[];                 // [x,y] terbaharu di hujung
+    const tPos=new Float32Array(TRAIL_MAX*2*3);
+    const tAlong=new Float32Array(TRAIL_MAX*2);
+    const tAcross=new Float32Array(TRAIL_MAX*2);
+    const tIdx=[];
+    for(let i=0;i<TRAIL_MAX-1;i++){
+      const a=i*2,b=a+1,c=a+2,d=a+3;
+      tIdx.push(a,b,c, b,d,c);
+    }
+    const trailGeo=new THREE.BufferGeometry();
+    trailGeo.setAttribute('position',new THREE.BufferAttribute(tPos,3));
+    trailGeo.setAttribute('aAlong',new THREE.BufferAttribute(tAlong,1));
+    trailGeo.setAttribute('aAcross',new THREE.BufferAttribute(tAcross,1));
+    trailGeo.setIndex(tIdx);
+    const trailMat=new THREE.ShaderMaterial({
+      uniforms:{uColor:{value:new THREE.Color(0x9fe4ff)},uFade:{value:0}},
+      transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+      side:THREE.DoubleSide,
+      vertexShader:'attribute float aAlong;attribute float aAcross;varying float vA;varying float vC;'+
+        'void main(){vA=aAlong;vC=aAcross;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader:'uniform vec3 uColor;uniform float uFade;varying float vA;varying float vC;'+
+        'void main(){float edge=1.0-abs(vC*2.0-1.0);'+
+        'float a=pow(vA,1.5)*pow(edge,.7)*uFade;'+
+        'gl_FragColor=vec4(uColor*(0.75+vA*1.5),a);}'
+    });
+    const trail=new THREE.Mesh(trailGeo,trailMat);
+    trail.renderOrder=5; trail.frustumCulled=false; trail.visible=false;
+    scene.add(trail);
+
+    // Hujung pedang: lengkok mengelilingi tangan Wira, dan pangsi itu sendiri
+    // bergerak bersama terkamannya.
+    function swordTip(u){
+      const px=S.heroFeet+.18, py=GROUND+1.18;
+      const e=u*u*(3-2*u);                         // laju di tengah ayunan
+      const a=(128+(-32-128)*e)*Math.PI/180;
+      const r=1.02+.20*Math.sin(Math.PI*e);        // pedang terhulur di tengah
+      return [px+Math.cos(a)*r, py+Math.sin(a)*r];
+    }
+    function buildTrail(){
+      const n=trailHist.length;
+      if(n<3){ trail.visible=false; return }
+      trail.visible=true;
+      for(let i=0;i<TRAIL_MAX;i++){
+        const j=Math.min(i,n-1), p=trailHist[j];
+        // arah tempatan untuk mencari serenjang jalur
+        const q=trailHist[Math.min(j+1,n-1)], o=trailHist[Math.max(j-1,0)];
+        let dx=q[0]-o[0], dy=q[1]-o[1];
+        const len=Math.hypot(dx,dy)||1; dx/=len; dy/=len;
+        const along=n>1?(j/(n-1)):1;                // 0 ekor .. 1 kepala
+        const half=.035+.15*Math.pow(along,.8);     // tirus ke arah ekor
+        const nx=-dy*half, ny=dx*half;
+        const k=i*2;
+        tPos[k*3]=p[0]+nx; tPos[k*3+1]=p[1]+ny; tPos[k*3+2]=.06;
+        tPos[(k+1)*3]=p[0]-nx; tPos[(k+1)*3+1]=p[1]-ny; tPos[(k+1)*3+2]=.06;
+        tAlong[k]=tAlong[k+1]=along;
+        tAcross[k]=0; tAcross[k+1]=1;
+      }
+      trailGeo.attributes.position.needsUpdate=true;
+      trailGeo.attributes.aAlong.needsUpdate=true;
+      trailGeo.attributes.aAcross.needsUpdate=true;
+    }
+
     const PN=220;
     const pPos=new Float32Array(PN*3), pVel=new Float32Array(PN*3), pLife=new Float32Array(PN);
     const pGeo=new THREE.BufferGeometry();
@@ -417,7 +487,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
-             shake:0,waveT:-1,flashT:-1,flareT:-1,running:true,active:0,
+             shake:0,waveT:-1,flashT:-1,flareT:-1,trailT:-1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
              heroLock:null,grey:0,coinT:-1};
@@ -549,6 +619,27 @@
                absorbFlare.material.opacity=(1-k)*.9 }
       }
 
+      /* Jejak: semasa ayunan kita menolak hujung pedang ke dalam sejarah;
+         selepas itu ekor "mengering" dengan membuang sampel terlama, jadi
+         jalur itu menghilang seperti cambuk, bukan terpadam serentak. */
+      if(S.trailT>=0){
+        S.trailT+=dt;
+        const SWING=.26;
+        if(S.trailT<=SWING){
+          const u0=Math.max(0,(S.trailT-dt)/SWING), u1=S.trailT/SWING;
+          for(let k=1;k<=2;k++){
+            trailHist.push(swordTip(u0+(u1-u0)*(k/2)));
+            if(trailHist.length>TRAIL_MAX)trailHist.shift();
+          }
+          trailMat.uniforms.uFade.value=1;
+        }else{
+          trailHist.shift(); trailHist.shift();
+          trailMat.uniforms.uFade.value=Math.min(1,trailHist.length/12);
+          if(trailHist.length<3){ S.trailT=-1; trail.visible=false }
+        }
+        buildTrail();
+      }
+
       if(S.flashT>=0){
         S.flashT+=dt; const k=S.flashT/.26;
         if(k>=1){ S.flashT=-1; flashMat.opacity=0 }
@@ -625,7 +716,9 @@
         if(reduceMotion){ sfx('hit'); burst(3,tier.color); S.waveT=0; return }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         sfx('swordSlash');
-        S.heroLock=heroSlashE;  S.heroX=-0.30; await wait(140);
+        S.heroLock=heroSlashE;  S.heroX=-0.30;
+        if(!reduceMotion){ trailHist.length=0; S.trailT=0 }
+        await wait(140);
         sfx('hit');
         burst(5.5,tier.color); S.waveT=0; S.shake=.32;
         await wait(210);
@@ -683,6 +776,7 @@
       wrong(){ S.shake=.14 },
       reset(){
         S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
+        S.trailT=-1; trailHist.length=0; trail.visible=false;
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND;
