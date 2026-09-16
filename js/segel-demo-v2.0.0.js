@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.9.0 (fail: segel-demo-v1.9.0.js)
+/* Segel Tambah — demo pentas WebGL v2.0.0 (fail: segel-demo-v2.0.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -191,6 +191,7 @@
     const HERO_UPP=2.6/480, PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
     const SEAL_X=1.52, HERO_HOME=-1.62;
+    const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
     function measure(img){
@@ -300,14 +301,26 @@
        menjadikannya malap. Untuk "tukar warna kelabu" yang sebenar, kita
        campurkan warna dengan luminannya sendiri di dalam shader. Ini antara
        perkara yang memang tidak boleh dibuat dengan CSS atau canvas 2D. */
+    /* uClear ialah "tingkap" lembut dalam kubah: garisan rune dipudarkan di
+       kawasan muka Aurora supaya ia tidak melintasi mukanya, tetapi tidak
+       dibuang terus — kubah masih kelihatan nipis di situ, jadi dia kekal
+       terbaca sebagai berada DI DALAM. z=0 bermakna tiada tingkap (serpihan). */
     function sealMaterial(map){
       return new THREE.ShaderMaterial({
-        uniforms:{map:{value:map||null},uGrey:{value:0},uOpacity:{value:1}},
+        uniforms:{map:{value:map||null},uGrey:{value:0},uOpacity:{value:1},
+                  uClear:{value:new THREE.Vector3(.5,.5,0)}},
         transparent:true, depthWrite:false,
         vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-        fragmentShader:'uniform sampler2D map;uniform float uGrey;uniform float uOpacity;varying vec2 vUv;'+
-          'void main(){vec4 c=texture2D(map,vUv);float l=dot(c.rgb,vec3(.299,.587,.114));'+
-          'c.rgb=mix(c.rgb,vec3(l),uGrey);gl_FragColor=vec4(c.rgb,c.a*uOpacity);}'
+        fragmentShader:'uniform sampler2D map;uniform float uGrey;uniform float uOpacity;'+
+          'uniform vec3 uClear;varying vec2 vUv;'+
+          'void main(){vec4 c=texture2D(map,vUv);'+
+          'float l=dot(c.rgb,vec3(.299,.587,.114));c.rgb=mix(c.rgb,vec3(l),uGrey);'+
+          'float a=c.a*uOpacity;'+
+          'if(uClear.z>0.001){'+
+          '  float d=distance(vUv,uClear.xy);'+
+          '  a*=mix(0.20,1.0,smoothstep(uClear.z*0.5,uClear.z,d));'+
+          '}'+
+          'gl_FragColor=vec4(c.rgb,a);}'
       });
     }
     /* Kubah ialah PNG lut sinar, jadi ia dilukis DI HADAPAN Aurora: garisan
@@ -319,6 +332,9 @@
       const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
       m.scale.set(e.w,e.h,1);
       m.position.set(SEAL_X+e.offX, GROUND+e.offY, -.02);
+      // Tingkap dipusatkan pada muka Aurora, dikira dalam UV kubah ini sendiri.
+      const faceV=.5+((GROUND+PET_FACE_Y)-(GROUND+e.offY))/e.h;
+      m.material.uniforms.uClear.value.set(.5, faceV, .19);
       m.renderOrder=3; m.visible=(i===0); scene.add(m);
       return {tier, front:m, base:{w:e.w,h:e.h}, visW:e.visW,
               damage:0, broken:false, breakT:-1};
@@ -429,93 +445,6 @@
     const flash=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),flashMat);
     flash.position.set(SEAL_X,GROUND+.8,.28); scene.add(flash);
 
-    /* JEJAK PEDANG
-       Bingkai sprite sudah membawa pedang, tetapi jejaknya terkunci pada
-       lukisan: ia tidak tahu Wira sedang menerkam ke hadapan, jadi ayunan
-       terasa ringan. Di sini hujung pedang dijejak sebagai lengkok sebenar
-       dalam ruang dunia — pangsinya bergerak bersama Wira — dan satu jalur
-       dibina daripada laluan itu setiap bingkai. Inilah sebabnya ia terasa
-       ada berat: jejaknya benar-benar mengikut ke mana dia pergi. */
-    const TRAIL_MAX=30;
-    const trailHist=[];                 // [x,y] terbaharu di hujung
-    const tPos=new Float32Array(TRAIL_MAX*2*3);
-    const tAlong=new Float32Array(TRAIL_MAX*2);
-    const tAcross=new Float32Array(TRAIL_MAX*2);
-    const tIdx=[];
-    for(let i=0;i<TRAIL_MAX-1;i++){
-      const a=i*2,b=a+1,c=a+2,d=a+3;
-      tIdx.push(a,b,c, b,d,c);
-    }
-    const trailGeo=new THREE.BufferGeometry();
-    trailGeo.setAttribute('position',new THREE.BufferAttribute(tPos,3));
-    trailGeo.setAttribute('aAlong',new THREE.BufferAttribute(tAlong,1));
-    trailGeo.setAttribute('aAcross',new THREE.BufferAttribute(tAcross,1));
-    trailGeo.setIndex(tIdx);
-    /* Kuasa Wira ialah AIS ELEKTRIK, jadi jalur ini bukan sekadar cahaya biru:
-       terasnya putih sejuk, pinggirnya sian, dan ada denyar elektrik berjalan
-       di sepanjangnya. Tepinya pula berkedut secara rawak setiap bingkai
-       (lihat buildTrail) supaya ia berderak, bukan licin. */
-    const trailMat=new THREE.ShaderMaterial({
-      uniforms:{uEdge:{value:new THREE.Color(0x49b9ff)},
-                uCore:{value:new THREE.Color(0xeafaff)},
-                uFade:{value:0}, uTime:{value:0}},
-      transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
-      side:THREE.DoubleSide,
-      vertexShader:'attribute float aAlong;attribute float aAcross;varying float vA;varying float vC;'+
-        'void main(){vA=aAlong;vC=aAcross;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-      fragmentShader:
-        'uniform vec3 uEdge;uniform vec3 uCore;uniform float uFade;uniform float uTime;'+
-        'varying float vA;varying float vC;'+
-        'void main(){'+
-        ' float edge=1.0-abs(vC*2.0-1.0);'+
-        ' float core=pow(edge,3.5);'+                       // teras putih nipis
-        ' float spark=.5+.5*sin(vA*46.0-uTime*34.0);'+      // denyar berjalan
-        ' spark=pow(spark,3.0);'+
-        ' float a=pow(vA,1.4)*pow(edge,.65)*uFade;'+
-        ' a*= .72+.55*spark;'+
-        ' vec3 col=mix(uEdge,uCore,core+spark*.45);'+
-        ' gl_FragColor=vec4(col*(0.8+vA*1.6),a);}'
-    });
-    const trail=new THREE.Mesh(trailGeo,trailMat);
-    trail.renderOrder=5; trail.frustumCulled=false; trail.visible=false;
-    scene.add(trail);
-
-    // Hujung pedang: lengkok mengelilingi tangan Wira, dan pangsi itu sendiri
-    // bergerak bersama terkamannya.
-    function swordTip(u){
-      const px=S.heroFeet+.18, py=GROUND+1.18;
-      const e=u*u*(3-2*u);                         // laju di tengah ayunan
-      const a=(128+(-32-128)*e)*Math.PI/180;
-      const r=1.02+.20*Math.sin(Math.PI*e);        // pedang terhulur di tengah
-      return [px+Math.cos(a)*r, py+Math.sin(a)*r];
-    }
-    function buildTrail(){
-      const n=trailHist.length;
-      if(n<3){ trail.visible=false; return }
-      trail.visible=true;
-      for(let i=0;i<TRAIL_MAX;i++){
-        const j=Math.min(i,n-1), p=trailHist[j];
-        // arah tempatan untuk mencari serenjang jalur
-        const q=trailHist[Math.min(j+1,n-1)], o=trailHist[Math.max(j-1,0)];
-        let dx=q[0]-o[0], dy=q[1]-o[1];
-        const len=Math.hypot(dx,dy)||1; dx/=len; dy/=len;
-        const along=n>1?(j/(n-1)):1;                // 0 ekor .. 1 kepala
-        // Kedutan elektrik: lebar berubah sedikit di sepanjang jalur dan
-        // berganjak setiap bingkai, jadi pinggirnya berderak.
-        const crackle=1+.30*Math.sin(j*2.9+tAcc*46)*Math.pow(along,.5);
-        const half=(.035+.15*Math.pow(along,.8))*crackle;
-        const nx=-dy*half, ny=dx*half;
-        const k=i*2;
-        tPos[k*3]=p[0]+nx; tPos[k*3+1]=p[1]+ny; tPos[k*3+2]=.06;
-        tPos[(k+1)*3]=p[0]-nx; tPos[(k+1)*3+1]=p[1]-ny; tPos[(k+1)*3+2]=.06;
-        tAlong[k]=tAlong[k+1]=along;
-        tAcross[k]=0; tAcross[k+1]=1;
-      }
-      trailGeo.attributes.position.needsUpdate=true;
-      trailGeo.attributes.aAlong.needsUpdate=true;
-      trailGeo.attributes.aAcross.needsUpdate=true;
-    }
-
     /* Letusan ais elektrik pada detik pedang mengena — aset sebenar Wira
        daripada repo, bukan kesan generik. */
     function fxQuad(map,size,z){
@@ -568,7 +497,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
-             shake:0,waveT:-1,flashT:-1,flareT:-1,trailT:-1,iceT:-1,running:true,active:0,
+             shake:0,waveT:-1,flashT:-1,flareT:-1,iceT:-1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
              heroLock:null,grey:0,coinT:-1};
@@ -700,28 +629,6 @@
                absorbFlare.material.opacity=(1-k)*.9 }
       }
 
-      /* Jejak: semasa ayunan kita menolak hujung pedang ke dalam sejarah;
-         selepas itu ekor "mengering" dengan membuang sampel terlama, jadi
-         jalur itu menghilang seperti cambuk, bukan terpadam serentak. */
-      if(S.trailT>=0){
-        S.trailT+=dt;
-        const SWING=.26;
-        if(S.trailT<=SWING){
-          const u0=Math.max(0,(S.trailT-dt)/SWING), u1=S.trailT/SWING;
-          for(let k=1;k<=2;k++){
-            trailHist.push(swordTip(u0+(u1-u0)*(k/2)));
-            if(trailHist.length>TRAIL_MAX)trailHist.shift();
-          }
-          trailMat.uniforms.uFade.value=1;
-        trailMat.uniforms.uTime.value=tAcc;
-        }else{
-          trailHist.shift(); trailHist.shift();
-          trailMat.uniforms.uFade.value=Math.min(1,trailHist.length/12);
-          if(trailHist.length<3){ S.trailT=-1; trail.visible=false }
-        }
-        buildTrail();
-      }
-
       /* Letusan ais: hablur meletup dahulu, kemudian serpihan beku mereda. */
       // Serpihan kaca: terbang, berpusing, jatuh, kemudian lenyap.
       shards.forEach(s=>{
@@ -829,9 +736,7 @@
         if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         sfx('swordSlash');
-        S.heroLock=heroSlashE;  S.heroX=-0.30;
-        if(!reduceMotion){ trailHist.length=0; S.trailT=0 }
-        await wait(140);
+        S.heroLock=heroSlashE;  S.heroX=-0.30; await wait(140);
         sfx('hit');
         iceHit(SEAL_X-.28, GROUND+.85);
         burst(5.5,0xbfe9ff);                    // serpihan ais, bukan warna tier
@@ -893,7 +798,6 @@
       wrong(){ S.shake=.14 },
       reset(){
         S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
-        S.trailT=-1; trailHist.length=0; trail.visible=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
