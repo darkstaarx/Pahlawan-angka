@@ -124,9 +124,9 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
     <canvas id="gl"></canvas>
 
     <div class="domStage" id="domStage">
-      <div class="ch wira"><img data-src="assets/heroes/wira-chibi/idle.webp" alt="Wira Chibi"></div>
+      <div class="ch wira"><img data-src="assets/heroes/wira-chibi/frames/idle-loop-0-v1.webp" alt="Wira Chibi"></div>
       <div class="seal"></div>
-      <div class="ch pet"><img data-src="assets/pets/aurora/front.webp" alt="Aurora"></div>
+      <div class="ch pet"><img data-src="assets/pets/aurora/frames/sad-0-v1.webp" alt="Aurora"></div>
     </div>
 
     <div class="topbar">
@@ -181,6 +181,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
     <li><b>Dua cincin rune</b> berpusing arah bertentangan pada satah 3D, bukan bulatan rata.</li>
     <li><b>Pecah segel</b> = gelombang kejut + 220 zarah + goncang kamera, satu <i>draw call</i>.</li>
     <li><b>Kad soalan kekal DOM</b> — sebab tu butang speaker boleh baca soalan guna suara peranti.</li>
+    <li><b>Sprite dari prototaip Unity</b> — Wira bernafas 4 bingkai, Aurora sedih 8 bingkai dalam segel.</li>
+    <li>Versi penuh dalam repo (Hub › <b>Selamatkan Aurora</b>) menarik <b>soalan sebenar</b> dari bank.</li>
   </ul>
 </div>
 
@@ -198,7 +200,7 @@ const damp = (c,t,l,dt) => c + (t-c)*(1-Math.exp(-l*dt));
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));   // had DPR = jaga bateri Android
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(32, 1, .1, 100);
+const camera = new THREE.PerspectiveCamera(36, 1, .1, 100);
 camera.position.z = 10;
 
 const loader = new THREE.TextureLoader();
@@ -215,6 +217,14 @@ function sprite(url, h, z){
   [250,900,2000].forEach(t => setTimeout(fit, t));
   scene.add(m); return m;
 }
+// Bingkai animasi dari prototaip Unity: Wira bernafas 4 bingkai (kelip pada
+// bingkai ke-4), Aurora sedih 8 bingkai selagi terkurung dalam segel.
+const heroIdleFrames = [0,1,2,3].map(i => tex(`assets/heroes/wira-chibi/frames/idle-loop-${i}-v1.webp`));
+const petSadFrames   = [0,1,2,3,4,5,6,7].map(i => tex(`assets/pets/aurora/frames/sad-${i}-v1.webp`));
+const petJoyFrames   = [0,1].map(i => tex(`assets/pets/aurora/frames/joy-${i}-v1.webp`));
+const heroPrepareTex = tex('assets/heroes/wira-chibi/frames/rescue-prepare-v1.webp');
+const heroSlashTex   = tex('assets/heroes/wira-chibi/frames/rescue-slash-v1.webp');
+function swapMap(mesh, t){ if(t && mesh.material.map !== t){ mesh.material.map = t; mesh.material.needsUpdate = true } }
 
 /* ---- latar: arena Pasar Wang, dimuatkan "cover" ikut bentuk skrin ---- */
 const bgMap = tex('assets/battlefields/money-market/arena-v1.webp');
@@ -228,20 +238,20 @@ function fitBg(){
 }
 bgMap.onUpdate = fitBg; [250,900,2000].forEach(t => setTimeout(fitBg, t));
 
-const hero = sprite('assets/heroes/wira-chibi/idle.webp', 2.25, 0);
-const heroAtk = sprite('assets/heroes/wira-chibi/attack.webp', 2.25, .01);
-const pet = sprite('assets/pets/aurora/front.webp', 1.05, -.3);
-hero.position.set(-1.0, -.95, 0);
-heroAtk.position.copy(hero.position); heroAtk.visible = false;
-pet.position.set(1.05, -1.1, -.3);
+const hero = sprite('assets/heroes/wira-chibi/frames/idle-loop-0-v1.webp', 2.6, 0);
+const heroAtk = null;
+const pet = sprite('assets/pets/aurora/frames/sad-0-v1.webp', 1.25, -.3);
+hero.position.set(-1.5, -.72, 0);
+
+pet.position.set(1.45, -.95, -.3);
 
 function shadow(x,y,w,z){
   const m = new THREE.Mesh(new THREE.CircleGeometry(.5, 28),
     new THREE.MeshBasicMaterial({color:0, transparent:true, opacity:.3, depthWrite:false}));
   m.position.set(x,y,z); m.scale.set(w, w*.2, 1); scene.add(m); return m;
 }
-const heroSh = shadow(-1.0, -2.05, 1.35, -.01);
-const petSh  = shadow( 1.05, -1.6, .72, -.31);
+const heroSh = shadow(-1.5, -1.92, 1.5, -.01);
+const petSh  = shadow( 1.45, -1.72, 1.15, -.31);
 
 /* ---- SEGEL: gelembung fresnel. Inilah yang CSS tak mampu tiru ---- */
 const sealUniforms = {
@@ -266,7 +276,7 @@ const bubble = new THREE.Mesh(new THREE.SphereGeometry(.92, 48, 32),
         gl_FragColor = vec4(uTint*(a*2.4 + band*.09*uPower), a*.95);
       }`
   }));
-bubble.position.set(1.05, -.82, -.3); scene.add(bubble);
+bubble.position.set(1.45, -.6, -.3); scene.add(bubble);
 
 /* cincin rune: tekstur dilukis sekali atas canvas 2D, dipakai dua kali */
 function runeTex(glyphs){
@@ -289,17 +299,17 @@ function ring(size, glyphs, z){
   const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size),
     new THREE.MeshBasicMaterial({map:runeTex(glyphs), transparent:true,
       blending:THREE.AdditiveBlending, depthWrite:false}));
-  m.position.set(1.05, -.82, z); scene.add(m); return m;
+  m.position.set(1.45, -.6, z); scene.add(m); return m;
 }
-const ringA = ring(2.45, ['+','+','+','+','+','+'], -.55);
-const ringB = ring(1.95, ['1','2','5','10','20','50'], .05);
+const ringA = ring(2.7, ['+','+','+','+','+','+'], -.55);
+const ringB = ring(2.15, ['1','2','5','10','20','50'], .05);
 ringB.rotation.x = .9;   // condong — ini yang bagi rasa 3D
 
 /* gelombang kejut bila segel retak */
 const waveMat = new THREE.MeshBasicMaterial({map:runeTex([]), transparent:true,
   blending:THREE.AdditiveBlending, depthWrite:false, opacity:0});
 const wave = new THREE.Mesh(new THREE.PlaneGeometry(1,1), waveMat);
-wave.position.set(1.05,-.82,.3); scene.add(wave);
+wave.position.set(1.45,-.6,.3); scene.add(wave);
 
 /* zarah */
 const PN = 220;
@@ -319,14 +329,16 @@ function burst(x,y,z,spread){
 }
 
 /* ---- gelung render ---- */
-const S = {heroX:-1.0, petY:-1.1, shake:0, waveT:-1, reduce:false, sealPower:1};
+const S = {heroX:-1.5, petY:-.95, heroLock:null, petFrames:null, petFps:6, shake:0, waveT:-1, reduce:false, sealPower:1};
 const clock = new THREE.Clock();
 function frame(){
   const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
   sealUniforms.uTime.value = t;
   sealUniforms.uPower.value = damp(sealUniforms.uPower.value, S.sealPower, 5, dt);
 
-  hero.position.x = heroAtk.position.x = damp(hero.position.x, S.heroX, 15, dt);
+  swapMap(hero, S.heroLock || heroIdleFrames[Math.floor(t*7)%heroIdleFrames.length]);
+  swapMap(pet,  (S.petFrames||petSadFrames)[Math.floor(t*S.petFps)%(S.petFrames||petSadFrames).length]);
+  hero.position.x = damp(hero.position.x, S.heroX, 15, dt);
   heroSh.position.x = hero.position.x;
   pet.position.y = damp(pet.position.y, S.petY, 9, dt);
 
@@ -373,23 +385,23 @@ new ResizeObserver(resize).observe(stageEl); resize();
 /* ---- API pentas: inilah satu-satunya benda yang logik permainan panggil ---- */
 const PAStage = {
   async strike(){
-    if(S.reduce){ burst(1.05,-.82,0,3); S.waveT = 0; return; }
-    S.heroX = -1.3;  await wait(140);
-    hero.visible = false; heroAtk.visible = true;
-    S.heroX = -.05;  await wait(120);
-    burst(1.05,-.82,0,5.5); S.waveT = 0; S.shake = .34;
-    await wait(200);
-    S.heroX = -1.0; hero.visible = true; heroAtk.visible = false;
+    if(S.reduce){ burst(1.45,-.6,0,3); S.waveT = 0; return; }
+    S.heroLock = heroPrepareTex; S.heroX = -1.85; await wait(150);
+    S.heroLock = heroSlashTex;   S.heroX = -.25;  await wait(130);
+    burst(1.45,-.6,0,5.5); S.waveT = 0; S.shake = .34;
+    await wait(210);
+    S.heroLock = null; S.heroX = -1.5;
   },
   sealDown(left){ S.sealPower = left/2; },
   async breakSeal(){
-    S.sealPower = 0; S.shake = .5; burst(1.05,-.82,0,7); S.waveT = 0;
+    S.sealPower = 0; S.shake = .5; burst(1.45,-.6,0,7); S.waveT = 0;
     $('sealTag').style.opacity = '0';
     ringA.visible = ringB.visible = false;
-    S.petY = -.6; await wait(500); S.petY = -1.1;
+    S.petFrames = petJoyFrames; S.petFps = 4; S.petY = -.45; await wait(520); S.petY = -.8;
   },
   resetSeal(){
     S.sealPower = 1; ringA.visible = ringB.visible = true;
+    S.petFrames = petSadFrames; S.petFps = 6; S.petY = -.95; S.heroLock = null;
     $('sealTag').style.opacity = '1';
   },
   wrong(){ sealUniforms.uTint.value.setHex(0xff8a8a); S.shake = .16;
