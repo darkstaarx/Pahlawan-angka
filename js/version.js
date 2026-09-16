@@ -1,6 +1,6 @@
 /* Pahlawan Angka — single source of truth for release version.
    Future releases should bump ONLY this value. */
-globalThis.PA_APP_VERSION='3.75.3';
+globalThis.PA_APP_VERSION='3.75.4';
 
 (function syncVersionUi(){
   if(typeof document==='undefined')return;
@@ -28,14 +28,14 @@ globalThis.PA_APP_VERSION='3.75.3';
   document.head.appendChild(script);
 })();
 
-/* Demo v2 entry cinematic. The wrapper prepares the live Demo behind the
-   supplied portrait video, then fades the video away only when both the video
-   and Demo boot have completed. */
+/* Demo v2 entry cinematic. v1.1.0 uses a true two-stage transition:
+   video -> dark hold -> battle reveal, so the portal frame never cross-dissolves
+   directly into the live arena. */
 (function loadSegelEntryCinematic(){
   if(typeof document==='undefined')return;
   if(document.querySelector('script[data-segel-entry-cinematic]'))return;
   const script=document.createElement('script');
-  script.src=`js/segel-entry-cinematic-v1.0.0.js?v=${globalThis.PA_APP_VERSION}`;
+  script.src=`js/segel-entry-cinematic-v1.1.0.js?v=${globalThis.PA_APP_VERSION}`;
   script.async=false;
   script.dataset.segelEntryCinematic='1';
   document.head.appendChild(script);
