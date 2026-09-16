@@ -142,7 +142,10 @@
     await wait(DARK_HOLD_MS);
 
     // Only now reveal the already-painted battle screen from darkness.
+    // The Demo's particle entrance listens for this: Wira must come down as
+    // blue particles exactly as the arena fades up, not behind the curtain.
     overlay.classList.add('revealBattle');
+    try{ document.dispatchEvent(new CustomEvent('pa:battle-reveal')) }catch(_){}
     await wait(DARK_TO_BATTLE_MS+40);
     overlay.remove();
   }

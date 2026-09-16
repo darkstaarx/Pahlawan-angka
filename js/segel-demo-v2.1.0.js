@@ -469,6 +469,13 @@
        badannya. Titik sasaran disampel daripada saluran alfa sprite idle
        sendiri, jadi taburannya benar-benar berbentuk Wira, bukan awan rawak. */
     const EN=460;
+    /* Tirai sinematik pudar selama 480ms. Perhimpunan 1.15s dahulu bermakna
+       hampir separuhnya berlaku sebalik tirai yang masih gelap, jadi tetingkap
+       yang benar-benar jelas tinggal sekejap sahaja. Dipanjangkan supaya lebih
+       satu saat penuh kelihatan selepas tirai betul-betul hilang. */
+    const EN_TRAVEL=1.05;          // masa satu zarah dari atas ke sasarannya
+    const EN_SPREAD=.55;           // serakan permulaan antara zarah
+    const EN_SPAN=EN_TRAVEL+EN_SPREAD;
     const enPos=new Float32Array(EN*3);
     const enTarget=new Float32Array(EN*2);   // offset dunia dari pusat satah
     const enStart=new Float32Array(EN*2);
@@ -534,7 +541,7 @@
         // Turun dari atas dengan sedikit serakan sisi — seperti keluar portal.
         enStart[i*2]=enTarget[i*2]+(Math.random()-.5)*1.7;
         enStart[i*2+1]=enTarget[i*2+1]+2.3+Math.random()*1.5;
-        enDelay[i]=Math.random()*.36;
+        enDelay[i]=Math.random()*EN_SPREAD;
         enSwirl[i]=(Math.random()-.5)*1.5;
       }
       return true;
@@ -612,7 +619,7 @@
         const cx=hero.position.x, cy=hero.position.y;
         let done=0;
         for(let i=0;i<EN;i++){
-          const k=Math.min(1,Math.max(0,(S.enterT-enDelay[i])/.78));
+          const k=Math.min(1,Math.max(0,(S.enterT-enDelay[i])/EN_TRAVEL));
           const e=k*k*(3-2*k);
           if(k>=1)done++;
           const tx=cx+enTarget[i*2], ty=cy+enTarget[i*2+1];
@@ -626,11 +633,11 @@
         const prog=done/EN;
         enMat.opacity=Math.min(1,S.enterT*4)*(1-Math.max(0,(prog-.45)/.55));
         enHaloMat.opacity=enMat.opacity*.28;
-        S.heroFade=Math.max(0,(prog-.35)/.65);
+        S.heroFade=Math.max(0,(prog-.45)/.55);
         enGlow.visible=true;
         enGlow.position.set(cx,cy+.15,-.04);
-        enGlow.material.opacity=Math.sin(Math.min(1,S.enterT/1.15)*Math.PI)*.55;
-        enGlow.scale.setScalar(.8+Math.min(1,S.enterT/1.15)*.5);
+        enGlow.material.opacity=Math.sin(Math.min(1,S.enterT/EN_SPAN)*Math.PI)*.55;
+        enGlow.scale.setScalar(.8+Math.min(1,S.enterT/EN_SPAN)*.5);
         if(prog>=1){
           S.enterT=-1; S.heroFade=1;
           enPoints.visible=enHalo.visible=false; enGlow.visible=false;
@@ -1166,22 +1173,42 @@
 
   /* Sinematik portal (segel-entry-cinematic) memuatkan pentas di belakang
      tirai gelap, kemudian mendedahkan arena. Perhimpunan zarah mesti bermula
-     pada detik pendedahan itu, bukan semasa tirai masih menutup. */
+     pada detik pendedahan itu, bukan semasa tirai masih menutup.
+
+     Jaring keselamatan mesti LEBIH PANJANG daripada kes terburuk sinematik,
+     bukan sekadar "agak lama". Video portal 8s; tambah jam pengawas video 12s,
+     tunggu lukisan arena 3.5s dan peralihan ~0.9s, kes terburuknya lebih
+     kurang 16.5s. Jaring 7s dahulu tercetus SEBELUM video pun habis, jadi
+     zarah berhimpun habis di belakang tirai dan Wira nampak macam muncul
+     begitu sahaja. */
+  const ENTRY_FALLBACK_MS=20000;
   let entrySeq=0;
   function enterWhenRevealed(){
     // Token per-larian: kalau murid memulakan pusingan baharu, jaring
     // keselamatan larian lama tidak boleh mencetuskan kemasukan pusingan ini.
     const seq=++entrySeq;
     let fired=false;
-    const fire=()=>{ if(fired||seq!==entrySeq)return; fired=true; try{ stage.enter() }catch(_){} };
+    let obs=null, timer=0;
+    const fire=()=>{
+      if(obs){ obs.disconnect(); obs=null }
+      if(timer){ clearTimeout(timer); timer=0 }
+      document.removeEventListener('pa:battle-reveal',fire);
+      if(fired||seq!==entrySeq)return;
+      fired=true;
+      try{ stage.enter() }catch(_){}
+    };
     const overlay=document.querySelector('.paSegelEntryCinematic');
     if(!overlay||overlay.classList.contains('revealBattle'))return fire();
-    const obs=new MutationObserver(()=>{
-      if(overlay.classList.contains('revealBattle')||!overlay.isConnected){ obs.disconnect(); fire() }
+
+    // Isyarat utama: sinematik memberitahu kita sendiri bila arena didedahkan.
+    document.addEventListener('pa:battle-reveal',fire);
+    // Sandaran untuk sinematik lama yang belum menghantar acara itu.
+    obs=new MutationObserver(()=>{
+      if(overlay.classList.contains('revealBattle')||!overlay.isConnected)fire();
     });
     obs.observe(overlay,{attributes:true,attributeFilter:['class']});
-    // jaring keselamatan: jangan sekali-kali tinggalkan Wira tidak kelihatan
-    setTimeout(()=>{ obs.disconnect(); fire() },7000);
+    // Jaring terakhir: jangan sekali-kali tinggalkan Wira tidak kelihatan.
+    timer=setTimeout(fire,ENTRY_FALLBACK_MS);
   }
 
   // Butang speaker: ini sebabnya kad soalan mesti kekal DOM. Prompt ialah teks

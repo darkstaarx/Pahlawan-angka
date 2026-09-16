@@ -1,4 +1,4 @@
-// App shell v3.75.6 — Wira turun sebagai zarah biru tepat pada detik arena didedahkan.
+// App shell v3.75.7 — perhimpunan zarah dicetuskan oleh acara pendedahan sinematik, bukan pemasa.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
