@@ -1,9 +1,9 @@
-// App shell v3.76.1 — soalan mengalir sebagai ayat, dan pepijat bank Tahun 1 dibaiki.
+// App shell v3.76.2 — refresh aset Berjaya Unity dan pulse Segel yang lebih kecil.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
   './css/segel-demo-v2.1.0.css','./js/segel-demo-v2.1.0.js',
-  './assets/ui/star-earned-v1.webp','./assets/ui/star-empty-v1.webp','./assets/coach/cikgu-dimensi/hub-portrait-v1.webp',
+  './assets/ui/star-earned-v1.webp','./assets/ui/star-empty-v1.webp','./assets/ui/victory-result/star-earned.png','./assets/ui/victory-result/star-empty.png','./assets/ui/victory-result/crest-frame.png','./assets/ui/victory-result/crest-side-left.png','./assets/ui/victory-result/crest-side-right.png','./assets/ui/victory-result/summary-frame.png','./assets/ui/victory-result/button-navy-rest.png','./assets/ui/victory-result/button-gold-rest.png','./assets/coach/cikgu-dimensi/hub-portrait-v1.webp',
   './css/khazanah-v2-v1.0.0.css','./js/khazanah-v2-v1.0.0.js','./js/pet-stage-v1.0.0.js',
   // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
   // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
