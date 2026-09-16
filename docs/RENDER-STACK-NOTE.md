@@ -5,6 +5,11 @@ dan apa yang patut kekal HTML?**
 
 Demo hidup (buka melalui server tempatan, bukan `file://`, kerana ia guna ES module):
 
+- **Dalam app**: Hub > **Selamatkan Aurora**. Ini satu-satunya demo yang
+  menjalankan soalan sebenar dari bank (`generate()`) di atas pentas WebGL.
+  Ia meminjam `sess` sekejap dan memulangkannya, jadi progress murid tidak
+  tersentuh. Sprite Wira dan Aurora diambil daripada prototaip Unity.
+
 - `audit/battle-portrait-preview.html` - susun atur telefon sebenar: chrome atas,
   pentas Segel Tambah, kad soalan wang Tahun 1. Inilah rujukan utama.
 - `audit/threejs-stage-preview.html` - kajian ringkas Wira lawan Askabus.
