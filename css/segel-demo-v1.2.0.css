@@ -1,4 +1,4 @@
-/* Segel Tambah demo v1.0.0 — pentas WebGL + UI DOM.
+/* Segel Tambah demo v1.2.0 — pentas WebGL + UI DOM.
    Kad soalan sengaja guna .qcard/.question/.answers/.ans yang sedia ada,
    supaya soalan sebenar dari bank kelihatan sama macam dalam battle. */
 
@@ -10,7 +10,12 @@
 body[data-screen="segelDemo"] .appHeader{display:none}
 
 /* ---------- pentas ---------- */
-.segelStage{position:relative;flex:1 1 0;min-height:180px;overflow:hidden;background:#0d2136}
+/* Pentas mengambil bahagian skrin yang TETAP. Sebelum ini ia flex:1 dan panel
+   soalan bersaiz kandungan, jadi soalan pendek = pentas panjang dan soalan
+   panjang = pentas pendek; arena nampak melompat setiap soalan. Sekarang
+   arena tidak pernah bergerak dan soalan panjang menatal di dalam kadnya. */
+.segelStage{position:relative;flex:0 0 44%;min-height:186px;max-height:56vh;
+  overflow:hidden;background:#0d2136}
 /* canvas mutlak: kalau ia dalam aliran, tingginya disuap balik ke flex
    melalui ResizeObserver dan pentas membesar tanpa henti. */
 .segelStage canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -79,10 +84,11 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 
 /* ---------- panel soalan ---------- */
 .segelPanel{
-  flex:0 0 auto;padding:0 12px calc(10px + env(safe-area-inset-bottom,0px));
+  flex:1 1 0;min-height:0;display:flex;flex-direction:column;
+  padding:0 12px calc(10px + env(safe-area-inset-bottom,0px));
   background:linear-gradient(#0b1d38,#071729)
 }
-.segelQHead{display:flex;align-items:center;gap:9px;margin:-15px 0 9px;position:relative}
+.segelQHead{flex:0 0 auto;display:flex;align-items:center;gap:9px;margin:-15px 0 9px;position:relative}
 .segelQHead b{font-size:18px;font-weight:950;color:#f7f2e4;text-shadow:0 2px 6px #000a}
 .segelSpk{
   width:34px;height:34px;flex:none;border:0;border-radius:50%;display:grid;place-items:center;
@@ -92,9 +98,28 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 .segelSpk[aria-pressed="true"]{background:#5fcdf5;box-shadow:0 0 14px #5fcdf5aa}
 .segelSpk[aria-pressed="true"] svg{fill:#062033}
 
-.segelCard{box-shadow:inset 0 0 0 2px #e9b94955,0 10px 24px #0007}
-.segelCard .question{min-height:56px;font-size:23px}
-.segelCard .feedback{min-height:34px}
+.segelCard{
+  flex:1 1 0;min-height:0;display:flex;flex-direction:column;
+  box-shadow:inset 0 0 0 2px #e9b94955,0 10px 24px #0007
+}
+/* Soalan menatal di dalam kad; jawapan sentiasa kekal di tempatnya. */
+.segelCard .question{
+  flex:1 1 0;min-height:56px;font-size:23px;
+  overflow-y:auto;overscroll-behavior:contain
+}
+.segelCard .answers{flex:0 0 auto}
+.segelCard .feedback{flex:0 0 auto;min-height:32px}
+
+/* butang petunjuk, sepadan dengan .hintBtn dalam battle */
+.segelHint{
+  margin-left:auto;display:flex;align-items:center;gap:5px;border:0;cursor:pointer;
+  padding:7px 11px;border-radius:20px;font-size:12px;font-weight:800;color:#0b1d38;
+  background:#e9b949;box-shadow:0 3px 10px #0006
+}
+.segelHint svg{width:14px;height:14px;fill:none;stroke:#0b1d38;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.segelHint:disabled,.segelHint.used{background:#2a4166;color:#8fa8c4;cursor:default}
+.segelHint.used svg{stroke:#8fa8c4}
 
 .segelLock{
   display:flex;align-items:center;justify-content:center;gap:9px;margin-top:9px;
@@ -106,19 +131,78 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 }
 
 /* ---------- penamat ---------- */
+/* Skrin keputusan — susunan mengikut prototaip Unity RescuePayoff.cs:
+   watak > bintang > sepanduk > statistik > cara menjawab > cikgu > CTA. */
 .segelDone{
-  position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:22px;
-  background:#04101ee6;backdrop-filter:blur(3px)
+  position:absolute;inset:0;z-index:5;overflow-y:auto;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(16px + env(safe-area-inset-bottom,0px));
+  background:#04101eee;backdrop-filter:blur(3px)
 }
 .segelDone[hidden]{display:none}
-.segelDoneCard{
-  width:100%;max-width:330px;text-align:center;padding:22px 18px;border-radius:20px;
-  background:linear-gradient(#12294b,#0b1d38);box-shadow:inset 0 0 0 2px #e9b94966,0 18px 40px #000a
+.segelResult{width:100%;max-width:360px;margin:0 auto;text-align:center}
+
+.resultCast{display:flex;align-items:flex-end;justify-content:center;gap:2px;margin-bottom:-14px}
+/* Pose kemenangan Wira ada banyak ruang kosong dalam bingkainya, jadi ia perlu
+   lebih lebar daripada Aurora untuk kelihatan saiz yang sama. */
+.resultCast img{width:56%;max-width:196px;filter:drop-shadow(0 10px 18px #0009)}
+.resultCast img:last-child{width:34%;max-width:120px}
+
+.resultStars{display:flex;justify-content:center;gap:7px;position:relative;z-index:1}
+.resultStars i{
+  width:30px;height:30px;display:block;
+  background:#1b3256;
+  -webkit-mask:var(--star) center/contain no-repeat;mask:var(--star) center/contain no-repeat;
+  --star:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z'/></svg>")
 }
-.segelDoneCard img{width:120px;margin:0 auto 8px;display:block}
-.segelDoneCard h2{margin:0 0 6px;font-size:22px;font-weight:950;color:#f7f2e4}
-.segelDoneCard p{margin:0 0 16px;font-size:13.5px;color:#a9c4e0;line-height:1.6}
-.segelDoneCard .btn{width:100%;margin-bottom:8px}
+.resultStars i.on{background:linear-gradient(#ffe07a,#e9a92b);box-shadow:0 0 14px #ffc94d88}
+
+.resultBanner{
+  margin:6px 0 4px;padding:9px 18px;border-radius:14px;
+  background:linear-gradient(#123055,#0a1c33);
+  box-shadow:inset 0 0 0 2px #e9b94977,0 10px 24px #0008
+}
+.resultBanner b{font-size:30px;font-weight:950;letter-spacing:1px;color:#ffe5a7;
+  text-shadow:0 3px 10px #0008}
+.resultLead{margin:0 0 14px;font-size:15px;font-weight:800;color:#f7f2e4}
+
+.resultStats{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;
+  padding:12px;border-radius:16px;background:#0e2444;box-shadow:inset 0 0 0 1.5px #ffffff1a
+}
+.resultStats>div{display:flex;align-items:center;justify-content:center;gap:9px}
+.resultStats>div+div{border-left:1px solid #ffffff1a}
+.rsIcon{font-size:20px;color:#e9b949;line-height:1}
+.resultStats small{display:block;font-size:11px;color:#a9c4e0}
+.resultStats b{display:block;font-size:20px;font-weight:950;color:#f7f2e4;
+  font-variant-numeric:tabular-nums}
+
+.resultHow{padding:12px;border-radius:16px;background:#0e2444;
+  box-shadow:inset 0 0 0 1.5px #ffffff1a;margin-bottom:10px}
+.resultHow>small{display:block;font-size:12px;font-weight:800;color:#cfe0f0;margin-bottom:8px}
+.howRow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.howTile{padding:8px 4px;border-radius:11px;background:#12294b;box-shadow:inset 0 0 0 1.2px #ffffff14}
+.howTile b{display:block;font-size:18px;font-weight:950;color:#f7f2e4}
+.howTile small{display:block;font-size:10px;color:#9fb6cc;line-height:1.25}
+.howTile::before{content:"";display:block;width:9px;height:9px;border-radius:50%;margin:0 auto 4px}
+.howTile.own::before{background:#5fcdf5}
+.howTile.hint::before{background:#e9b949}
+.howTile.miss::before{background:#e2566c}
+
+.resultCoach{display:flex;gap:10px;align-items:flex-start;text-align:left;margin-bottom:12px;
+  padding:11px;border-radius:16px;background:#0e2444;box-shadow:inset 0 0 0 1.5px #ffffff1a}
+.resultCoach img{width:52px;height:52px;flex:none;border-radius:13px;object-fit:cover;
+  background:#12294b}
+.resultCoach b{display:block;font-size:12px;color:#e9b949;margin-bottom:3px}
+.resultCoach p{margin:0;font-size:13px;line-height:1.5;color:#e7eef6}
+
+.resultCta{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.resultCta .btn{width:100%}
+.resultFoot{margin-top:12px;font-size:12px;color:#8fa8c4}
+
+@media (max-height:680px){
+  .resultCast img{max-width:112px}
+  .resultBanner b{font-size:25px}
+}
 
 /* ---------- butang hub ---------- */
 .hubSegelDemo{
