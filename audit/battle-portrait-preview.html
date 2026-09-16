@@ -219,12 +219,54 @@ function sprite(url, h, z){
 }
 // Bingkai animasi dari prototaip Unity: Wira bernafas 4 bingkai (kelip pada
 // bingkai ke-4), Aurora sedih 8 bingkai selagi terkurung dalam segel.
-const heroIdleFrames = [0,1,2,3].map(i => tex(`assets/heroes/wira-chibi/frames/idle-loop-${i}-v1.webp`));
-const petSadFrames   = [0,1,2,3,4,5,6,7].map(i => tex(`assets/pets/aurora/frames/sad-${i}-v1.webp`));
-const petJoyFrames   = [0,1].map(i => tex(`assets/pets/aurora/frames/joy-${i}-v1.webp`));
-const heroPrepareTex = tex('assets/heroes/wira-chibi/frames/rescue-prepare-v1.webp');
-const heroSlashTex   = tex('assets/heroes/wira-chibi/frames/rescue-slash-v1.webp');
-function swapMap(mesh, t){ if(t && mesh.material.map !== t){ mesh.material.map = t; mesh.material.needsUpdate = true } }
+/* Bingkai dilukis pada saiz bingkai berbeza (idle 480px, tebasan 768px) dan
+   watak menduduki pecahan berbeza dalam setiap bingkai. Kalau tinggi satah
+   dikunci, Wira mengecut masa menyerang. Jadi: satu aktor = satu skala
+   piksel-per-unit tetap, dan setiap bingkai ditambat pada KAKI watak.
+   Kotak alfa diukur pada canvas 96x96 - pecahan bingkai tidak berubah bila
+   resolusi diturunkan, jadi ia tepat dan murah. */
+const HERO_UPP = 2.6/480, PET_UPP = 1.25/400, HERO_GROUND = -1.92;
+const probe = document.createElement('canvas'); probe.width = probe.height = 96;
+const probeCtx = probe.getContext('2d', {willReadFrequently:true});
+function measure(img){
+  const N = 96;
+  try{
+    probeCtx.clearRect(0,0,N,N); probeCtx.drawImage(img,0,0,N,N);
+    const d = probeCtx.getImageData(0,0,N,N).data;
+    let x0=N,y0=N,x1=-1,y1=-1;
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+      if(d[(y*N+x)*4+3]>18){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y }
+    }
+    if(x1<0)return {foot:0,cx:0};
+    return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5};
+  }catch(_){ return {foot:0,cx:0} }
+}
+function entry(url, upp){ return {tex:tex(url), upp, w:1, h:1, offX:0, offY:.5, ready:false} }
+function ensure(e){
+  if(e.ready)return e;
+  const img = e.tex && e.tex.image; if(!img)return e;
+  const m = measure(img);
+  e.w = img.width*e.upp; e.h = img.height*e.upp;
+  e.offX = -m.cx*e.w; e.offY = e.h*(.5-m.foot); e.ready = true;
+  return e;
+}
+function applyFrame(mesh, e){
+  ensure(e);
+  if(mesh.userData.e === e && mesh.userData.r === e.ready)return;
+  mesh.userData.e = e; mesh.userData.r = e.ready;
+  mesh.material.map = e.tex; mesh.material.needsUpdate = true;
+  mesh.scale.set(e.w, e.h, 1);
+}
+const heroIdleFrames = [0,1,2,3].map(i => entry(`assets/heroes/wira-chibi/frames/idle-loop-${i}-v1.webp`, HERO_UPP));
+const petSadFrames   = [0,1,2,3,4,5,6,7].map(i => entry(`assets/pets/aurora/frames/sad-${i}-v1.webp`, PET_UPP));
+const petJoyFrames   = [0,1].map(i => entry(`assets/pets/aurora/frames/joy-${i}-v1.webp`, PET_UPP));
+const heroPrepareE   = entry('assets/heroes/wira-chibi/frames/rescue-prepare-v1.webp', HERO_UPP);
+const heroSlashE     = entry('assets/heroes/wira-chibi/frames/rescue-slash-v1.webp', HERO_UPP);
+function actor(first, z){
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1,1),
+    new THREE.MeshBasicMaterial({map:first.tex, transparent:true, depthWrite:false}));
+  m.position.z = z; m.userData.e = null; scene.add(m); return m;
+}
 
 /* ---- latar: arena Pasar Wang, dimuatkan "cover" ikut bentuk skrin ---- */
 const bgMap = tex('assets/battlefields/money-market/arena-v1.webp');
@@ -238,12 +280,8 @@ function fitBg(){
 }
 bgMap.onUpdate = fitBg; [250,900,2000].forEach(t => setTimeout(fitBg, t));
 
-const hero = sprite('assets/heroes/wira-chibi/frames/idle-loop-0-v1.webp', 2.6, 0);
-const heroAtk = null;
-const pet = sprite('assets/pets/aurora/frames/sad-0-v1.webp', 1.25, -.3);
-hero.position.set(-1.5, -.72, 0);
-
-pet.position.set(1.45, -.95, -.3);
+const hero = actor(heroIdleFrames[0], 0);
+const pet  = actor(petSadFrames[0], -.3);
 
 function shadow(x,y,w,z){
   const m = new THREE.Mesh(new THREE.CircleGeometry(.5, 28),
@@ -301,8 +339,8 @@ function ring(size, glyphs, z){
       blending:THREE.AdditiveBlending, depthWrite:false}));
   m.position.set(1.45, -.6, z); scene.add(m); return m;
 }
-const ringA = ring(2.7, ['+','+','+','+','+','+'], -.55);
-const ringB = ring(2.15, ['1','2','5','10','20','50'], .05);
+const ringA = ring(2.5, ['+','+','+','+','+','+'], -.55);
+const ringB = ring(2.0, ['1','2','5','10','20','50'], .05);
 ringB.rotation.x = .9;   // condong — ini yang bagi rasa 3D
 
 /* gelombang kejut bila segel retak */
@@ -329,18 +367,24 @@ function burst(x,y,z,spread){
 }
 
 /* ---- gelung render ---- */
-const S = {heroX:-1.5, petY:-.95, heroLock:null, petFrames:null, petFps:6, shake:0, waveT:-1, reduce:false, sealPower:1};
+const PET_FEET = -1.49;
+const S = {heroX:-1.5, heroFeet:-1.5, petY:PET_FEET, petFeet:PET_FEET, camY:0,
+           heroLock:null, petFrames:null, petFps:6, shake:0, waveT:-1, reduce:false, sealPower:1};
 const clock = new THREE.Clock();
 function frame(){
   const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
   sealUniforms.uTime.value = t;
   sealUniforms.uPower.value = damp(sealUniforms.uPower.value, S.sealPower, 5, dt);
 
-  swapMap(hero, S.heroLock || heroIdleFrames[Math.floor(t*7)%heroIdleFrames.length]);
-  swapMap(pet,  (S.petFrames||petSadFrames)[Math.floor(t*S.petFps)%(S.petFrames||petSadFrames).length]);
-  hero.position.x = damp(hero.position.x, S.heroX, 15, dt);
-  heroSh.position.x = hero.position.x;
-  pet.position.y = damp(pet.position.y, S.petY, 9, dt);
+  applyFrame(hero, S.heroLock || heroIdleFrames[Math.floor(t*7)%heroIdleFrames.length]);
+  const pf = S.petFrames || petSadFrames;
+  applyFrame(pet, pf[Math.floor(t*S.petFps)%pf.length]);
+  // S.heroX dan S.petY ialah kedudukan KAKI, bukan pusat satah
+  S.heroFeet = damp(S.heroFeet, S.heroX, 15, dt);
+  S.petFeet  = damp(S.petFeet, S.petY, 9, dt);
+  hero.position.set(S.heroFeet + hero.userData.e.offX, HERO_GROUND + hero.userData.e.offY, 0);
+  heroSh.position.x = S.heroFeet;
+  pet.position.set(1.45 + pet.userData.e.offX, S.petFeet + pet.userData.e.offY, -.3);
 
   if(!S.reduce){
     ringA.rotation.z += dt*.35;
@@ -351,8 +395,9 @@ function frame(){
 
   S.shake = damp(S.shake, 0, 6, dt);
   camera.position.x = (Math.random()-.5)*S.shake;
-  camera.position.y = (Math.random()-.5)*S.shake;
+  camera.position.y = S.camY + (Math.random()-.5)*S.shake;
   bg.position.x = -camera.position.x*.4;
+  bg.position.y = S.camY;
 
   if(S.waveT >= 0){
     S.waveT += dt;
@@ -373,11 +418,19 @@ function frame(){
 }
 requestAnimationFrame(frame);
 
+/* Panel soalan berubah tinggi ikut panjang soalan, jadi nisbah pentas tidak
+   tetap. Dengan fov tetap, pentas tinggi = lebar dunia mengecil = watak nampak
+   membesar dan terpotong. Kunci LEBAR dunia, kira fov menegak daripadanya. */
+const WORLD_W = 5.4, FLOOR_MARGIN = .30;
 function resize(){
   const w = stageEl.clientWidth, h = stageEl.clientHeight;
   if(!w || !h) return;
   renderer.setSize(w, h, false);
-  camera.aspect = w/h; camera.updateProjectionMatrix();
+  camera.aspect = w/h;
+  const visH = WORLD_W/camera.aspect;
+  camera.fov = 2*Math.atan(visH/2/camera.position.z)*180/Math.PI;
+  camera.updateProjectionMatrix();
+  S.camY = HERO_GROUND + FLOOR_MARGIN*visH;
   fitBg();
 }
 new ResizeObserver(resize).observe(stageEl); resize();
@@ -386,8 +439,8 @@ new ResizeObserver(resize).observe(stageEl); resize();
 const PAStage = {
   async strike(){
     if(S.reduce){ burst(1.45,-.6,0,3); S.waveT = 0; return; }
-    S.heroLock = heroPrepareTex; S.heroX = -1.85; await wait(150);
-    S.heroLock = heroSlashTex;   S.heroX = -.25;  await wait(130);
+    S.heroLock = heroPrepareE; S.heroX = -1.85; await wait(150);
+    S.heroLock = heroSlashE;   S.heroX = -.25;  await wait(130);
     burst(1.45,-.6,0,5.5); S.waveT = 0; S.shake = .34;
     await wait(210);
     S.heroLock = null; S.heroX = -1.5;
@@ -397,11 +450,11 @@ const PAStage = {
     S.sealPower = 0; S.shake = .5; burst(1.45,-.6,0,7); S.waveT = 0;
     $('sealTag').style.opacity = '0';
     ringA.visible = ringB.visible = false;
-    S.petFrames = petJoyFrames; S.petFps = 4; S.petY = -.45; await wait(520); S.petY = -.8;
+    S.petFrames = petJoyFrames; S.petFps = 4; S.petY = PET_FEET+.5; await wait(520); S.petY = PET_FEET+.15;
   },
   resetSeal(){
     S.sealPower = 1; ringA.visible = ringB.visible = true;
-    S.petFrames = petSadFrames; S.petFps = 6; S.petY = -.95; S.heroLock = null;
+    S.petFrames = petSadFrames; S.petFps = 6; S.petY = PET_FEET; S.heroLock = null;
     $('sealTag').style.opacity = '1';
   },
   wrong(){ sealUniforms.uTint.value.setHex(0xff8a8a); S.shake = .16;

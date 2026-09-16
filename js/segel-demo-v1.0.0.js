@@ -65,16 +65,52 @@
       const img=arenaTex&&arenaTex.image; if(!img)return;
       const a=img.width/img.height, vh=worldH(-8), vw=vh*camera.aspect;
       const h=Math.max(vh, vw/a); bg.scale.set(h*a,h,1);
+      bg.position.y=S.camY;
     }
 
-    function plane(tex,h,x,y,z){
-      const img=tex&&tex.image, a=img?img.width/img.height:1;
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
-        new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));
-      m.scale.set(h*a,h,1); m.position.set(x,y,z); scene.add(m); return m;
+    /* Bingkai dilukis pada saiz bingkai berbeza (idle 480px, tebasan 768px) dan
+       watak menduduki pecahan berbeza dalam setiap bingkai. Kalau kita kunci
+       tinggi satah, Wira mengecut masa menyerang. Jadi:
+         - satu aktor = satu skala piksel-per-unit yang tetap
+         - setiap bingkai diukur (kotak alfa) dan ditambat pada KAKI watak
+       Pengukuran dibuat pada canvas 96x96: pecahan bingkai tidak berubah bila
+       diturunkan resolusi, jadi ia tepat dan murah walaupun pada telefon lama. */
+    const HERO_UPP=2.6/480, PET_UPP=1.25/400;
+    const HERO_GROUND=-1.92;
+    const probe=document.createElement('canvas'); probe.width=probe.height=96;
+    const probeCtx=probe.getContext('2d',{willReadFrequently:true});
+    function measure(img){
+      const N=96;
+      try{
+        probeCtx.clearRect(0,0,N,N); probeCtx.drawImage(img,0,0,N,N);
+        const d=probeCtx.getImageData(0,0,N,N).data;
+        let x0=N,y0=N,x1=-1,y1=-1;
+        for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+          if(d[(y*N+x)*4+3]>18){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y }
+        }
+        if(x1<0)return {foot:0,cx:0};
+        return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5};
+      }catch(_){ return {foot:0,cx:0} }
     }
-    const hero=plane(heroIdle[0],2.6,-1.5,-.72,0);
-    const pet =plane(petSad[0],1.25,1.45,-.95,-.3);
+    function entry(tex,upp){
+      const img=tex&&tex.image;
+      if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
+      const w=img.width*upp, h=img.height*upp, m=measure(img);
+      return {tex, w, h, offX:-m.cx*w, offY:h*(.5-m.foot)};
+    }
+    const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
+    const heroPrepareE=entry(heroPrepare,HERO_UPP);
+    const heroSlashE=entry(heroSlash,HERO_UPP);
+    const petSadE=petSad.map(t=>entry(t,PET_UPP));
+    const petJoyE=petJoy.map(t=>entry(t,PET_UPP));
+
+    function actor(first,z){
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
+        new THREE.MeshBasicMaterial({map:first.tex,transparent:true,depthWrite:false}));
+      m.position.z=z; m.userData.e=first; scene.add(m); return m;
+    }
+    const hero=actor(heroIdleE[0],0);
+    const pet =actor(petSadE[0],-.3);
 
     function shadow(x,y,w,z,opacity){
       const m=new THREE.Mesh(new THREE.CircleGeometry(.5,28),
@@ -114,8 +150,8 @@
           blending:THREE.AdditiveBlending,depthWrite:false}));
       m.position.set(1.45,-.6,z); scene.add(m); return m;
     }
-    const ringA=ring(2.7,['+','+','+','+','+','+'],-.55);
-    const ringB=ring(2.15,['1','2','5','10','20','50'],.05);
+    const ringA=ring(2.5,['+','+','+','+','+','+'],-.55);
+    const ringB=ring(2.0,['1','2','5','10','20','50'],.05);
     ringB.rotation.x=.9;  // condong sedikit: ini yang bagi rasa satah 3D
 
     const waveMat=new THREE.MeshBasicMaterial({map:runeTex([]),transparent:true,
@@ -138,11 +174,19 @@
       }
     }
 
-    const S={heroX:-1.5,petY:-.95,shake:0,waveT:-1,power:1,running:true,
-             heroFrames:heroIdle,heroFps:7,petFrames:petSad,petFps:6,heroLock:null};
+    const PET_FEET=-1.49;
+    const S={heroX:-1.5,heroFeet:-1.5,petY:PET_FEET,petFeet:PET_FEET,camY:0,
+             shake:0,waveT:-1,power:1,running:true,
+             heroFrames:heroIdleE,heroFps:7,petFrames:petSadE,petFps:6,heroLock:null};
     let raf=0, last=performance.now(), tAcc=0;
 
-    function swap(mesh,tex){ if(tex&&mesh.material.map!==tex){ mesh.material.map=tex; mesh.material.needsUpdate=true } }
+    // Tukar bingkai: peta, skala dan ofset tambatan sekali gus.
+    function swap(mesh,e){
+      if(!e||mesh.userData.e===e)return;
+      mesh.userData.e=e;
+      mesh.material.map=e.tex; mesh.material.needsUpdate=true;
+      mesh.scale.set(e.w,e.h,1);
+    }
 
     function frame(now){
       raf=requestAnimationFrame(frame);
@@ -154,9 +198,14 @@
       swap(hero, S.heroLock || S.heroFrames[Math.floor(tAcc*S.heroFps)%S.heroFrames.length]);
       swap(pet,  S.petFrames[Math.floor(tAcc*S.petFps)%S.petFrames.length]);
 
-      hero.position.x=damp(hero.position.x,S.heroX,15,dt);
-      heroShadow.position.x=hero.position.x;
-      pet.position.y=damp(pet.position.y,S.petY,9,dt);
+      // S.heroX dan S.petY ialah kedudukan KAKI, bukan pusat satah.
+      S.heroFeet=damp(S.heroFeet,S.heroX,15,dt);
+      S.petFeet=damp(S.petFeet,S.petY,9,dt);
+      hero.position.x=S.heroFeet+hero.userData.e.offX;
+      hero.position.y=HERO_GROUND+hero.userData.e.offY;
+      heroShadow.position.x=S.heroFeet;
+      pet.position.x=1.45+pet.userData.e.offX;
+      pet.position.y=S.petFeet+pet.userData.e.offY;
 
       if(!reduceMotion){
         ringA.rotation.z+=dt*.35; ringB.rotation.z-=dt*.55; bubble.rotation.y+=dt*.25;
@@ -164,8 +213,9 @@
 
       S.shake=damp(S.shake,0,6,dt);
       camera.position.x=(Math.random()-.5)*S.shake;
-      camera.position.y=(Math.random()-.5)*S.shake;
+      camera.position.y=S.camY+(Math.random()-.5)*S.shake;
       bg.position.x=-camera.position.x*.4;
+      bg.position.y=S.camY;
 
       if(S.waveT>=0){
         S.waveT+=dt; const k=S.waveT/.55;
@@ -183,11 +233,21 @@
       renderer.render(scene,camera);
     }
 
+    /* Panel soalan berubah tinggi ikut panjang soalan, jadi nisbah pentas tidak
+       tetap. Dengan fov tetap, pentas yang tinggi bermakna lebar dunia yang
+       kelihatan mengecil — watak nampak membesar dan terpotong di tepi.
+       Jadi kita kunci LEBAR dunia dan kira fov menegak daripadanya, kemudian
+       tambat kamera supaya lantai kekal pada kedudukan yang sama. */
+    const WORLD_W=5.4, FLOOR_MARGIN=.30;
     function resize(){
       const w=host.clientWidth, h=host.clientHeight;
       if(!w||!h)return;
       renderer.setSize(w,h,false);
-      camera.aspect=w/h; camera.updateProjectionMatrix();
+      camera.aspect=w/h;
+      const visH=WORLD_W/camera.aspect;
+      camera.fov=2*Math.atan(visH/2/camera.position.z)*180/Math.PI;
+      camera.updateProjectionMatrix();
+      S.camY=HERO_GROUND+FLOOR_MARGIN*visH;
       fitBg();
     }
     const ro=new ResizeObserver(resize); ro.observe(host);
@@ -202,8 +262,8 @@
       async strike(){
         sfx('hit');
         if(reduceMotion){ burst(3); S.waveT=0; return }
-        S.heroLock=heroPrepare; S.heroX=-1.85; await wait(160);
-        S.heroLock=heroSlash;   S.heroX=-0.25; await wait(130);
+        S.heroLock=heroPrepareE; S.heroX=-1.85; await wait(160);
+        S.heroLock=heroSlashE;  S.heroX=-0.25; await wait(130);
         burst(5.5); S.waveT=0; S.shake=.32;
         await wait(210);
         S.heroLock=null; S.heroX=-1.5;
@@ -212,8 +272,8 @@
       async rescue(){
         S.power=0; S.shake=.5; burst(7); S.waveT=0;
         ringA.visible=ringB.visible=false;
-        S.petFrames=petJoy; S.petFps=4; S.petY=-.45;
-        await wait(520); S.petY=-.8;
+        S.petFrames=petJoyE; S.petFps=4; S.petY=PET_FEET+.5;
+        await wait(520); S.petY=PET_FEET+.15;
       },
       wrong(){
         uni.uTint.value.setHex(0xff8a8a); S.shake=.15;
@@ -221,7 +281,7 @@
       },
       reset(){
         S.power=1; S.heroX=-1.5; S.heroLock=null;
-        S.petFrames=petSad; S.petFps=6; S.petY=-.95;
+        S.petFrames=petSadE; S.petFps=6; S.petY=PET_FEET;
         ringA.visible=ringB.visible=true;
       },
       pause(){ S.running=false },
