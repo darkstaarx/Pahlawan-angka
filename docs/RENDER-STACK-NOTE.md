@@ -5,14 +5,24 @@ dan apa yang patut kekal HTML?**
 
 Demo hidup (buka melalui server tempatan, bukan `file://`, kerana ia guna ES module):
 
-- **Dalam app**: Hub > **Selamatkan Aurora**. Ini satu-satunya demo yang
-  menjalankan soalan sebenar dari bank (`generate()`) di atas pentas WebGL.
-  Ia meminjam `sess` sekejap dan memulangkannya, jadi progress murid tidak
-  tersentuh. Sprite Wira dan Aurora diambil daripada prototaip Unity.
+- **Dalam app**: Hub > **Selamatkan Aurora**. Ini rujukan utama dan
+  satu-satunya demo yang menjalankan soalan sebenar dari bank (`generate()`)
+  di atas pentas WebGL. Ia meminjam `sess` sekejap dan memulangkannya, jadi
+  progress murid tidak tersentuh. Sprite Wira, Aurora dan ketiga-tiga kubah
+  segel diambil daripada prototaip Unity.
+
+  Segel mengikut kanun, bukan rekaan demo: **Gangsa 2 → Perak 3 → Emas 5**
+  hentaman (Brain `CURRENT_STATE.md:19`), warna dan perwatakan tier dari
+  `docs/WORLD-BIBLE-NEW-ERA-v1.md:219-243`, susunan dan kadar denyut dari
+  Unity `RescueLightSeals.cs`. Wira menyerang **segel**, tidak pernah
+  menyerang Aurora (keputusan D-2026-09-11).
+
+- `audit/battle-portrait-preview.html` ialah kajian awal yang dibekukan.
+  Ia mendahului kerja segel di atas — jangan jadikan ia rujukan reka bentuk.
 
 - `audit/battle-portrait-preview.html` - susun atur telefon sebenar: chrome atas,
   pentas Segel Tambah, kad soalan wang Tahun 1. Inilah rujukan utama.
-- `audit/threejs-stage-preview.html` - kajian ringkas Wira lawan Askabus.
+- `audit/threejs-stage-preview.html` - kajian ringkas, juga dibekukan.
 
 ---
 

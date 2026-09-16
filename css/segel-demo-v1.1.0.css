@@ -33,23 +33,42 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .segelBanner small{display:block;font-size:10.5px;color:#a9c4e0}
 .segelCount{
-  flex:none;padding:9px 12px;border-radius:12px;font-weight:900;font-size:14px;color:#f7f2e4;
+  flex:none;padding:9px 10px;border-radius:12px;font-weight:900;font-size:13.5px;color:#f7f2e4;
   font-variant-numeric:tabular-nums;background:linear-gradient(#17335c,#0d1f3a);
   box-shadow:inset 0 0 0 1.5px #ffffff2e,0 3px 10px #0006
 }
+/* Header app disembunyikan pada skrin ini, jadi butang bunyi mesti ada di sini. */
+.segelSound{
+  flex:none;width:36px;height:36px;border:0;border-radius:12px;font-size:16px;line-height:1;
+  background:linear-gradient(#17335c,#0d1f3a);color:#f7f2e4;cursor:pointer;
+  box-shadow:inset 0 0 0 1.5px #ffffff2e,0 3px 10px #0006
+}
+.segelSound[aria-pressed="true"]{opacity:.55}
+
+/* Warna tier ikut kanun: Gangsa -> Perak -> Emas.
+   Rujukan: docs/WORLD-BIBLE-NEW-ERA-v1.md:219-243, Unity RescueLightSeals.cs */
+[data-tier="gangsa"]{--tier:#ff6e29}
+[data-tier="perak"] {--tier:#bde0ff}
+[data-tier="emas"]  {--tier:#ffb838}
 
 .segelTag{
-  position:absolute;right:10px;top:22%;text-align:center;padding:6px 12px;border-radius:11px;
-  background:#0b1d38e8;box-shadow:inset 0 0 0 1.5px #ffffff26;pointer-events:none;
+  position:absolute;right:10px;top:20%;text-align:center;padding:7px 12px;border-radius:11px;
+  background:#0b1d38ee;box-shadow:inset 0 0 0 1.5px #ffffff26;pointer-events:none;
   transition:opacity .35s
 }
-.segelTag b{font-size:12px;font-weight:900;color:#f7f2e4;letter-spacing:.3px}
-.segelPips{display:flex;gap:6px;justify-content:center;margin-top:5px}
+.segelTag b{display:block;font-size:12px;font-weight:900;color:var(--tier,#f7f2e4);letter-spacing:.3px}
+.segelTag small{display:block;font-size:10px;font-weight:700;color:#a9c4e0;margin-top:1px}
+.segelPips{display:flex;gap:6px;justify-content:center;margin-top:6px}
 .segelPips i{
   width:12px;height:12px;transform:rotate(45deg);border-radius:3px;
-  background:#ffffff12;box-shadow:inset 0 0 0 1.5px #9fd8ff66;transition:.35s
+  background:#ffffff0f;
+  /* fallback dahulu: color-mix tiada pada WebView Android lama */
+  box-shadow:inset 0 0 0 1.5px #9fd8ff66;
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--tier) 55%,transparent);
+  transition:.35s
 }
-.segelPips i.gone{background:linear-gradient(140deg,#8ee6ff,#3ea7e0);box-shadow:0 0 12px #6fd0ff}
+.segelPips i.active{background:var(--tier);box-shadow:0 0 12px var(--tier)}
+.segelPips i.gone{background:var(--tier);opacity:.42;box-shadow:none}
 
 .segelToast{
   position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.9);
