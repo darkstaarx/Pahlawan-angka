@@ -265,8 +265,13 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   border:2px solid var(--rGold);
   font-family:inherit;font-size:14.5px;font-weight:800;line-height:1.25;letter-spacing:.2px
 }
-.rcBtn.navy{background:linear-gradient(#182e4d,#112340);color:#fff6df}
-.rcBtn.gold{background:var(--rGoldFill);color:#2a2410}
+/* Hanya warna teks di sini. Shorthand `background` dahulu menetapkan semula
+   background-size kepada `auto` dan background-repeat kepada `repeat`, dan
+   kerana `.rcBtn.navy` lebih khusus daripada `.rcBtn`, PNG 512x192 itu
+   dilukis pada saiz asalnya lalu berjubin di dalam kotak 175x65 — itulah
+   butang yang kelihatan rosak. Imej datang daripada blok aset di bawah. */
+.rcBtn.navy{color:#fff6df}
+.rcBtn.gold{color:#2a2410}
 .rcBtn:active{transform:translateY(1px)}
 
 .resultFoot{
@@ -312,10 +317,16 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 
 /* Kit aset result Unity: crest tajuk, crest sisi, summary-frame dan butang. */
 .segelResult{max-width:390px}
-.resultCrest{position:relative;width:calc(100% - 20px);aspect-ratio:4/1;margin:5px auto 2px;isolation:isolate}
+/* Bintang tengah menjulur kira-kira 24px di atas kotak crest. `.segelDone`
+   ialah bekas skrol, jadi apa-apa di atas tepinya DIKERAT — itu sebabnya
+   bintang tengah kelihatan terpotong. Margin atas ini memberi ruang itu. */
+.resultCrest{position:relative;width:calc(100% - 20px);aspect-ratio:4/1;margin:32px auto 2px;isolation:isolate}
 .resultCrestFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1}
-.resultCrestSide{position:absolute;top:15%;width:38%;height:auto;z-index:-2;pointer-events:none}
-.resultCrestSideLeft{right:76%}.resultCrestSideRight{left:76%}
+/* Sayap dahulu 38% lebar pada `top:15%`: hujungnya terkeluar 21px di kiri dan
+   kanan skrin, dan pusatnya 10px lebih rendah daripada sepanduk. Kini ia
+   dipusatkan pada paksi sepanduk (53.5% tinggi crest) dan ditarik masuk. */
+.resultCrestSide{position:absolute;top:53.5%;transform:translateY(-50%);width:34%;height:auto;z-index:-2;pointer-events:none}
+.resultCrestSideLeft{right:74%}.resultCrestSideRight{left:74%}
 .resultCrest .resultStars{position:absolute;left:50%;bottom:69%;transform:translateX(-50%);width:max-content;margin:0;padding:0;z-index:2}
 .resultCrest .resultStars i{width:38px;height:38px;background-image:url("../assets/ui/victory-result/star-empty.png")}.resultCrest .resultStars i:nth-child(2){width:50px;height:50px}
 .resultCrest .resultStars i.on{background-image:url("../assets/ui/victory-result/star-earned.png")}
@@ -325,13 +336,47 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 .resultSummaryFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
 .resultCardContent{position:relative;z-index:1;display:flex;min-height:235px;flex-direction:column;padding:38px 27px 25px}
 .resultStats{padding:2px 4px 13px}.resultStats small{color:#a8c3e2}.resultCoach{margin-top:auto}
-.resultCta{gap:9px}.rcBtn{min-height:0;aspect-ratio:512/192;padding:0 12px;display:grid;place-items:center;border:0;border-radius:0;background-color:transparent!important;background-size:100% 100%;background-position:center;box-shadow:none}
+.resultCta{gap:9px}.rcBtn{min-height:0;aspect-ratio:512/192;padding:0 12px;display:grid;place-items:center;border:0;border-radius:0;background-color:transparent!important;background-size:100% 100%;background-repeat:no-repeat;background-position:center;box-shadow:none}
 .rcBtn.navy{background-image:url("../assets/ui/victory-result/button-navy-rest.png")!important;color:#fff6df}
 .rcBtn.gold{background-image:url("../assets/ui/victory-result/button-gold-rest.png")!important;color:#2a2410}
 .rcBtn.navy:active{background-image:url("../assets/ui/victory-result/button-navy-press.png")!important}
 .rcBtn.gold:active{background-image:url("../assets/ui/victory-result/button-gold-press.png")!important}
-@media (max-height:680px){.resultCard{min-height:220px}.resultCardContent{min-height:220px;padding:34px 25px 22px}.resultCrest{width:calc(100% - 34px)}}
-@media (orientation:landscape) and (max-height:560px){.resultCrest{grid-column:1;grid-row:1/3;width:min(100%,310px);margin-inline:auto}.resultCrest .resultStars{grid-column:auto;grid-row:auto}.resultCrest .resultBanner{grid-column:auto;grid-row:auto}.resultCard{grid-column:2;grid-row:1/4;min-height:0}.resultCardContent{min-height:100%}}
+@media (max-height:680px){
+  .resultCard{min-height:186px}
+  .resultCardContent{min-height:186px;padding:26px 20px 16px}
+  /* Bintang tengah 44px menjulur kira-kira 19px, jadi 20px sudah melepasinya. */
+  .resultCrest{width:calc(100% - 34px);margin-top:20px}
+  .resultCrest .resultStars i{width:34px;height:34px}
+  .resultCrest .resultStars i:nth-child(2){width:44px;height:44px}
+  .resultStats{padding-bottom:9px}
+  .resultStats b{font-size:20px}
+  .resultCoach{padding-top:13px}
+  .resultCoach img{width:56px;height:56px}
+  .coachSay{padding:13px 10px 10px 20px}
+  .coachSay p{font-size:12.5px;line-height:1.45}
+  .resultLead{margin-bottom:7px}
+  .resultFoot{margin-top:8px}}
+/* Landskap ditulis semula untuk markup crest. Peraturan lama menetapkan baris
+   grid pada `.resultStars` dan `.resultBanner`, tetapi kedua-duanya kini berada
+   DI DALAM `.resultCrest`, jadi penempatan itu tidak lagi terpakai. Lebih
+   penting, `.segelResult{max-width:390px}` dalam blok aset datang selepas
+   pertanyaan landskap dan mempunyai kekhususan yang sama, jadi ia menang:
+   dua lajur dimampatkan ke dalam 390px dan kad menjadi turus tinggi yang
+   melimpah keluar skrin. Lebar dibuka semula di sini. */
+@media (orientation:landscape) and (max-height:560px){
+  .segelResult{
+    max-width:none;width:min(100%,700px);
+    display:grid;align-items:center;gap:0 18px;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)
+  }
+  .resultCrest{grid-column:1;grid-row:1;width:min(100%,330px);margin:26px auto 0}
+  .resultCrest .resultStars,.resultCrest .resultBanner{grid-column:auto;grid-row:auto}
+  .resultLead{grid-column:1;grid-row:2;margin:6px 0 0}
+  .resultCard{grid-column:2;grid-row:1/3;min-height:0;margin:0}
+  .resultCardContent{min-height:0;padding:30px 22px 20px}
+  .resultCta{grid-column:2;grid-row:3;margin-top:10px}
+  .resultFoot{grid-column:1/-1;grid-row:4;margin-top:8px}
+}
 
 /* ---------- butang hub ---------- */
 .hubSegelDemo{

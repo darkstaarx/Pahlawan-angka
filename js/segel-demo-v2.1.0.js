@@ -685,18 +685,21 @@
         m.visible=on;
         if(!on)return;
         // Nafas: kubah mengembang dan mengecut perlahan, bukan sekadar pudar.
+        /* Amplitud sengaja kecil. Pada +-3.4% jejari kubah berayun cukup luas
+           sampai kelihatan mengepam, bukan bernafas. Kekalkan denyut itu pada
+           cahaya, bukan pada saiz. */
         const breath=reduceMotion?0:Math.sin(tAcc*Math.PI*2/s.tier.period);
-        const grow=1+breath*.034;
+        const grow=1+breath*.011;
         const grey=Math.min(1, Math.max(S.grey, s.damage*.55));
         m.scale.set(s.base.w*grow, s.base.h*grow, 1);
-        u.uOpacity.value=.92+(reduceMotion?.06:breath*.07);
+        u.uOpacity.value=.93+(reduceMotion?.05:breath*.05);
         u.uGrey.value=grey;
         shell.visible=true;
         shell.scale.setScalar(s.tier.visible*.40*grow);
-        shellUni.uPower.value=(.85+breath*.12);
+        shellUni.uPower.value=(.88+breath*.08);
         shellUni.uGrey.value=grey;
         floorGlow.visible=true;
-        floorGlow.material.opacity=(.42+(reduceMotion?0:breath*.12))*(1-grey*.6);
+        floorGlow.material.opacity=(.44+(reduceMotion?0:breath*.08))*(1-grey*.6);
       });
       if(S.active>=TIERS.length){ shell.visible=false; floorGlow.visible=false }
 
