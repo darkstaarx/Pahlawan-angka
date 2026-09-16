@@ -1,0 +1,126 @@
+/* Segel Tambah demo v1.0.0 — pentas WebGL + UI DOM.
+   Kad soalan sengaja guna .qcard/.question/.answers/.ans yang sedia ada,
+   supaya soalan sebenar dari bank kelihatan sama macam dalam battle. */
+
+#segelDemo.on{
+  position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;
+  /* .screen membawa padding sendiri — demo ini mahu penuh sampai tepi */
+  margin:0;padding:0;background:#071729;overflow:hidden;
+}
+body[data-screen="segelDemo"] .appHeader{display:none}
+
+/* ---------- pentas ---------- */
+.segelStage{position:relative;flex:1 1 0;min-height:180px;overflow:hidden;background:#0d2136}
+/* canvas mutlak: kalau ia dalam aliran, tingginya disuap balik ke flex
+   melalui ResizeObserver dan pentas membesar tanpa henti. */
+.segelStage canvas{position:absolute;inset:0;width:100%;height:100%}
+.segelStage.loading::after{
+  content:"Memuatkan pentas…";position:absolute;inset:auto 0 44% 0;text-align:center;
+  font-size:13px;color:#9fc6e4;letter-spacing:.4px
+}
+
+.segelTop{
+  position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:8px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 10px 0;
+}
+.segelBanner{
+  flex:1;min-width:0;text-align:center;padding:7px 22px;
+  background:linear-gradient(#17335c,#0d1f3a);
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);
+  box-shadow:0 3px 10px #0006
+}
+.segelBanner b{display:block;font-size:15px;font-weight:900;line-height:1.15;color:#f7f2e4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.segelBanner small{display:block;font-size:10.5px;color:#a9c4e0}
+.segelCount{
+  flex:none;padding:9px 12px;border-radius:12px;font-weight:900;font-size:14px;color:#f7f2e4;
+  font-variant-numeric:tabular-nums;background:linear-gradient(#17335c,#0d1f3a);
+  box-shadow:inset 0 0 0 1.5px #ffffff2e,0 3px 10px #0006
+}
+
+.segelTag{
+  position:absolute;right:10px;top:22%;text-align:center;padding:6px 12px;border-radius:11px;
+  background:#0b1d38e8;box-shadow:inset 0 0 0 1.5px #ffffff26;pointer-events:none;
+  transition:opacity .35s
+}
+.segelTag b{font-size:12px;font-weight:900;color:#f7f2e4;letter-spacing:.3px}
+.segelPips{display:flex;gap:6px;justify-content:center;margin-top:5px}
+.segelPips i{
+  width:12px;height:12px;transform:rotate(45deg);border-radius:3px;
+  background:#ffffff12;box-shadow:inset 0 0 0 1.5px #9fd8ff66;transition:.35s
+}
+.segelPips i.gone{background:linear-gradient(140deg,#8ee6ff,#3ea7e0);box-shadow:0 0 12px #6fd0ff}
+
+.segelToast{
+  position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.9);
+  font-size:20px;font-weight:950;color:#ffe9b0;text-shadow:0 3px 12px #000c;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s
+}
+.segelToast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* ---------- panel soalan ---------- */
+.segelPanel{
+  flex:0 0 auto;padding:0 12px calc(10px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(#0b1d38,#071729)
+}
+.segelQHead{display:flex;align-items:center;gap:9px;margin:-15px 0 9px;position:relative}
+.segelQHead b{font-size:18px;font-weight:950;color:#f7f2e4;text-shadow:0 2px 6px #000a}
+.segelSpk{
+  width:34px;height:34px;flex:none;border:0;border-radius:50%;display:grid;place-items:center;
+  background:#12294b;box-shadow:inset 0 0 0 1.5px #ffffff2e;cursor:pointer
+}
+.segelSpk svg{width:15px;height:15px;fill:#f7f2e4}
+.segelSpk[aria-pressed="true"]{background:#5fcdf5;box-shadow:0 0 14px #5fcdf5aa}
+.segelSpk[aria-pressed="true"] svg{fill:#062033}
+
+.segelCard{box-shadow:inset 0 0 0 2px #e9b94955,0 10px 24px #0007}
+.segelCard .question{min-height:56px;font-size:23px}
+.segelCard .feedback{min-height:34px}
+
+.segelLock{
+  display:flex;align-items:center;justify-content:center;gap:9px;margin-top:9px;
+  font-size:12.5px;color:#c8b98e;font-weight:800
+}
+.segelLock::before,.segelLock::after{
+  content:"";height:1px;flex:1;max-width:58px;
+  background:linear-gradient(90deg,#0000,#c8b98e88,#0000)
+}
+
+/* ---------- penamat ---------- */
+.segelDone{
+  position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:22px;
+  background:#04101ee6;backdrop-filter:blur(3px)
+}
+.segelDone[hidden]{display:none}
+.segelDoneCard{
+  width:100%;max-width:330px;text-align:center;padding:22px 18px;border-radius:20px;
+  background:linear-gradient(#12294b,#0b1d38);box-shadow:inset 0 0 0 2px #e9b94966,0 18px 40px #000a
+}
+.segelDoneCard img{width:120px;margin:0 auto 8px;display:block}
+.segelDoneCard h2{margin:0 0 6px;font-size:22px;font-weight:950;color:#f7f2e4}
+.segelDoneCard p{margin:0 0 16px;font-size:13.5px;color:#a9c4e0;line-height:1.6}
+.segelDoneCard .btn{width:100%;margin-bottom:8px}
+
+/* ---------- butang hub ---------- */
+.hubSegelDemo{
+  display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:12px 14px;
+  border:0;border-radius:18px;cursor:pointer;color:#eaf4fa;
+  background:linear-gradient(120deg,#123a5e,#0d2444);
+  box-shadow:inset 0 0 0 1.5px #5fcdf540,0 6px 18px #0006
+}
+.hubSegelDemo .segelThumb{
+  width:46px;height:46px;flex:none;border-radius:14px;display:grid;place-items:center;
+  font-size:23px;background:radial-gradient(circle at 50% 40%,#ffe9b055,#0d244400)
+}
+.hubSegelDemo .segelCopy{flex:1;min-width:0}
+.hubSegelDemo b{display:block;font-size:15px;font-weight:900}
+.hubSegelDemo small{display:block;font-size:11.5px;color:#a9c4e0}
+.hubSegelDemo .segelNew{
+  flex:none;font-size:10px;font-weight:900;letter-spacing:1px;color:#062033;
+  background:#5fcdf5;border-radius:20px;padding:4px 9px
+}
+
+@media (max-width:360px){
+  .segelBanner b{font-size:13.5px}
+  .segelCard .question{font-size:20px}
+}

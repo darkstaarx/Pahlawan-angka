@@ -1,7 +1,10 @@
-// App shell v3.62.24 — Wira Chibi attack artwork redrawn at production quality.
+// App shell v3.63.0 — Segel Tambah WebGL stage demo (lazy three.js, runtime-cached).
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
+  './css/segel-demo-v1.0.0.css','./js/segel-demo-v1.0.0.js',
+  // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
+  // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
   './assets/heroes/wira-chibi/hub/idle-loop-v3.webp',
   './css/combat-motion-v1.css','./js/combat-motion-v1.js','./css/battle-story-v3.60.0.css','./js/battle-story-v3.60.0.js',
   './css/learner-review-v1.css','./js/engine/learner-review-v1.js',
