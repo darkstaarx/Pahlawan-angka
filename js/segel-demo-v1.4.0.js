@@ -773,6 +773,27 @@
     run.locked=true;
     const t=run.tally, correct=t.own+t.hint, asked=Math.max(1,run.asked);
     const acc=Math.round(correct/asked*100);
+
+    // Kegagalan teknikal (contohnya generator/bank tidak tersedia) bukan
+    // keputusan permainan. Jangan tunjuk BERJAYA, victory art atau bintang
+    // kerana Aurora belum melalui rescue payoff sebenar.
+    if(won===false){
+      $('segelDoneTitle').textContent='DEMO TERGENDALA';
+      $('segelDoneText').textContent=note||'Demo tidak dapat diteruskan.';
+      $('segelResultHero').src=FRAMES.heroIdle[0];
+      $('segelResultPet').src=FRAMES.petSad[0];
+      $('segelStatCorrect').textContent='—';
+      $('segelStatAcc').textContent='—';
+      $('segelHowOwn').textContent=t.own;
+      $('segelHowHint').textContent=t.hint;
+      $('segelHowMiss').textContent=t.miss;
+      document.querySelectorAll('#segelResultStars i').forEach(el=>el.classList.remove('on'));
+      $('segelCoachSay').textContent='Cuba semula. Progress murid tidak terjejas.';
+      $('segelDone').hidden=false;
+      $('segelDone').scrollTop=0;
+      return;
+    }
+
     // Bintang ikut Unity RescuePayoff.cs: satu bintang asas, +1 pada 80%, +1 pada 100%.
     const stars=correct===0?0:1+(acc>=80?1:0)+(acc===100?1:0);
 
