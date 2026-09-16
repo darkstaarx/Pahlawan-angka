@@ -797,7 +797,7 @@
       if(S.waveT>=0){
         S.waveT+=dt; const k=S.waveT/.55;
         if(k>=1){ S.waveT=-1; waveMat.opacity=0 }
-        else { const s=1+k*5.5; wave.scale.set(s,s,1); waveMat.opacity=(1-k)*.9 }
+        else { const s=1+k*1.35; wave.scale.set(s,s,1); waveMat.opacity=(1-k)*.9 }
       }
 
       for(let i=0;i<PN;i++){

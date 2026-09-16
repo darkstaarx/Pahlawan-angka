@@ -317,14 +317,15 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 .resultCrestSide{position:absolute;top:15%;width:38%;height:auto;z-index:-2;pointer-events:none}
 .resultCrestSideLeft{right:76%}.resultCrestSideRight{left:76%}
 .resultCrest .resultStars{position:absolute;left:50%;bottom:69%;transform:translateX(-50%);width:max-content;margin:0;padding:0;z-index:2}
-.resultCrest .resultStars i{width:38px;height:38px}.resultCrest .resultStars i:nth-child(2){width:50px;height:50px}
+.resultCrest .resultStars i{width:38px;height:38px;background-image:url("../assets/ui/victory-result/star-empty.png")}.resultCrest .resultStars i:nth-child(2){width:50px;height:50px}
+.resultCrest .resultStars i.on{background-image:url("../assets/ui/victory-result/star-earned.png")}
 .resultCrest .resultBanner{position:absolute;inset:15% 10% 8%;display:grid;place-items:center;margin:0;padding:0;border:0;background:none;box-shadow:none}
 .resultCrest .resultBanner b{font-size:clamp(28px,8.5vw,39px);color:#fff7da;text-shadow:0 3px 0 #71420a,0 6px 14px #000b}
 .resultCard{position:relative;min-height:235px;margin-bottom:14px;padding:0;border:0;background:none;box-shadow:none;overflow:hidden}
 .resultSummaryFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
 .resultCardContent{position:relative;z-index:1;display:flex;min-height:235px;flex-direction:column;padding:38px 27px 25px}
 .resultStats{padding:2px 4px 13px}.resultStats small{color:#a8c3e2}.resultCoach{margin-top:auto}
-.resultCta{gap:9px}.rcBtn{min-height:52px;border:0;border-radius:13px;background-color:transparent!important;background-size:100% 100%;background-position:center;box-shadow:none}
+.resultCta{gap:9px}.rcBtn{min-height:0;aspect-ratio:512/192;padding:0 12px;display:grid;place-items:center;border:0;border-radius:0;background-color:transparent!important;background-size:100% 100%;background-position:center;box-shadow:none}
 .rcBtn.navy{background-image:url("../assets/ui/victory-result/button-navy-rest.png")!important;color:#fff6df}
 .rcBtn.gold{background-image:url("../assets/ui/victory-result/button-gold-rest.png")!important;color:#2a2410}
 .rcBtn.navy:active{background-image:url("../assets/ui/victory-result/button-navy-press.png")!important}
