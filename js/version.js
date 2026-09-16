@@ -1,6 +1,6 @@
 /* Pahlawan Angka — single source of truth for release version.
    Future releases should bump ONLY this value. */
-globalThis.PA_APP_VERSION='3.75.8';
+globalThis.PA_APP_VERSION='3.76.0';
 
 (function syncVersionUi(){
   if(typeof document==='undefined')return;
@@ -28,14 +28,15 @@ globalThis.PA_APP_VERSION='3.75.8';
   document.head.appendChild(script);
 })();
 
-/* Demo v2 entry cinematic. v1.1.0 uses a true two-stage transition:
-   video -> dark hold -> battle reveal, so the portal frame never cross-dissolves
-   directly into the live arena. */
+/* Demo v2 entry cinematic. v1.2.0 keeps the two-stage transition
+   (video -> dark hold -> battle reveal) and adds a "Langkau" control that
+   seeks to the last two seconds of the portal video rather than cutting it,
+   so returning players still see Wira dissolve into particles. */
 (function loadSegelEntryCinematic(){
   if(typeof document==='undefined')return;
   if(document.querySelector('script[data-segel-entry-cinematic]'))return;
   const script=document.createElement('script');
-  script.src=`js/segel-entry-cinematic-v1.1.0.js?v=${globalThis.PA_APP_VERSION}`;
+  script.src=`js/segel-entry-cinematic-v1.2.0.js?v=${globalThis.PA_APP_VERSION}`;
   script.async=false;
   script.dataset.segelEntryCinematic='1';
   document.head.appendChild(script);

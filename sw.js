@@ -1,8 +1,9 @@
-// App shell v3.75.8 — zarah kemasukan bermula dalam bingkai, bukan di atas pentas.
+// App shell v3.76.0 — butang Langkau dan skrin Berjaya mengikut mockup Unity.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
   './css/segel-demo-v2.1.0.css','./js/segel-demo-v2.1.0.js',
+  './assets/ui/star-earned-v1.webp','./assets/ui/star-empty-v1.webp','./assets/coach/cikgu-dimensi/hub-portrait-v1.webp',
   './css/khazanah-v2-v1.0.0.css','./js/khazanah-v2-v1.0.0.js','./js/pet-stage-v1.0.0.js',
   // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
   // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.

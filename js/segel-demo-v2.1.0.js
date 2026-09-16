@@ -1118,6 +1118,19 @@
     return hint?`Belum tepat. ${hint}`:'Belum tepat. Cuba baca semula soalan.';
   }
 
+  /* Mockup Berjaya menggugurkan jadual "Faham sendiri / Dengan petunjuk /
+     Kurang pasti", dan BerjayaResultContract.cs memang melarangnya. Tetapi
+     Demo ini benar-benar menjejaki angka itu, jadi ia tidak dibuang begitu
+     sahaja — ia disebut sebagai ayat benar oleh Cikgu apabila memang ada
+     petunjuk digunakan. Tiada statistik direka. */
+  function coachLine(t,acc,asked){
+    if(acc===100)return `Hebat, Wira! Semua ${asked} soalan kamu jawab tepat. Teruskan usaha ini!`;
+    const say=[acc>=80?'Syabas! Aurora sudah selamat.':'Aurora sudah selamat.'];
+    if(t.hint>0)say.push(`${t.own} soalan kamu selesaikan sendiri, ${t.hint} dengan petunjuk.`);
+    say.push(acc>=80?'Sikit lagi untuk tiga bintang.':'Ulang sekali lagi untuk kumpul lebih bintang.');
+    return say.join(' ');
+  }
+
   function finishRun(won,note){
     run.locked=true;
     const t=run.tally, correct=t.own+t.hint, asked=Math.max(1,run.asked);
@@ -1133,9 +1146,6 @@
       // yang menunjukkan Wira dan Aurora, jadi tiada <img> untuk dikemas kini.
       $('segelStatCorrect').textContent='—';
       $('segelStatAcc').textContent='—';
-      $('segelHowOwn').textContent=t.own;
-      $('segelHowHint').textContent=t.hint;
-      $('segelHowMiss').textContent=t.miss;
       document.querySelectorAll('#segelResultStars i').forEach(el=>el.classList.remove('on'));
       $('segelCoachSay').textContent='Cuba semula. Progress murid tidak terjejas.';
       $('segelDone').hidden=false;
@@ -1150,15 +1160,8 @@
     $('segelDoneText').textContent=note||'Aurora berjaya diselamatkan!';
     $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
     $('segelStatAcc').textContent=acc+'%';
-    $('segelHowOwn').textContent=t.own;
-    $('segelHowHint').textContent=t.hint;
-    $('segelHowMiss').textContent=t.miss;
     document.querySelectorAll('#segelResultStars i').forEach((el,i)=>el.classList.toggle('on',i<stars));
-    $('segelCoachSay').textContent=acc===100
-      ? 'Hebat, Wira! Kamu menyelesaikan semua soalan dengan tepat. Teruskan usaha ini!'
-      : (acc>=80
-          ? 'Syabas! Aurora sudah selamat. Sikit lagi untuk tiga bintang.'
-          : 'Aurora sudah selamat. Ulang sekali lagi untuk kumpul lebih bintang.');
+    $('segelCoachSay').textContent=coachLine(t,acc,run.asked);
     $('segelDone').hidden=false;
     $('segelDone').scrollTop=0;
   }

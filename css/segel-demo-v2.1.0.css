@@ -172,70 +172,140 @@ body[data-screen="segelDemo"] .appHeader{display:none}
    terus bersorak di belakangnya, jadi tiada salinan watak di dalam kad. */
 .segelDone{
   position:absolute;left:0;right:0;bottom:0;top:34%;z-index:5;overflow-y:auto;
-  padding:0 14px calc(16px + env(safe-area-inset-bottom,0px));
+  padding:0 16px calc(16px + env(safe-area-inset-bottom,0px));
+  /* Legap penuh selepas peralihan pendek. Kecerunan lama berhenti pada .985,
+     cukup untuk teks kad soalan di belakang menembus sebagai bayang hantu. */
   background:linear-gradient(180deg,
-    rgba(4,16,30,0) 0%, rgba(4,16,30,.72) 7%, rgba(4,16,30,.95) 20%, rgba(4,16,30,.985) 100%)
+    rgba(7,18,34,0) 0%, rgba(7,18,34,.78) 6%, rgba(7,18,34,1) 16%, rgba(7,18,34,1) 100%)
 }
 .segelDone[hidden]{display:none}
-.segelResult{width:100%;max-width:360px;margin:0 auto;text-align:center}
 
-/* Bintang guna sprite peta Unity (map_star_earned/empty), sama seperti mockup. */
-.resultStars{display:flex;justify-content:center;gap:9px;padding-top:6px}
+/* Palet diambil terus daripada mockup Berjaya prototaip Unity
+   (Docs/Verification/BerjayaMockup/390x844-*.png): muka navy #162a47,
+   bingkai emas #b78b47, kotak krim #fff3d6, CTA emas #f2cd78. */
+.segelResult{
+  --rNavy:#162a47; --rNavyTop:#1b3354; --rGold:#b78b47;
+  --rCream:#fff3d6; --rGoldFill:#f2cd78; --rTitle:#ffe5a6;
+  width:100%;max-width:360px;margin:0 auto;text-align:center
+}
+
+/* Bintang guna sprite peta Unity (map_star_earned/empty). Bintang tengah lebih
+   besar dan barisan ini bertindih sedikit dengan sepanduk, sama seperti mockup. */
+.resultStars{
+  display:flex;justify-content:center;align-items:flex-end;gap:2px;
+  padding-top:2px;margin-bottom:-14px;position:relative;z-index:2
+}
 .resultStars i{
-  width:40px;height:40px;display:block;
+  width:42px;height:42px;display:block;
   background:url("../assets/ui/star-empty-v1.webp") center/contain no-repeat
 }
+.resultStars i:nth-child(2){width:56px;height:56px}
 .resultStars i.on{
   background-image:url("../assets/ui/star-earned-v1.webp");
-  filter:drop-shadow(0 0 10px rgba(255,201,77,.6))
+  filter:drop-shadow(0 2px 9px rgba(242,205,120,.55))
 }
 
 .resultBanner{
-  margin:10px 0 4px;padding:9px 18px;border-radius:14px;
-  background:linear-gradient(#123055,#0a1c33);
-  box-shadow:inset 0 0 0 2px #e9b94977,0 10px 24px #0008
+  margin:0 0 7px;padding:11px 18px;border-radius:14px;
+  background:linear-gradient(var(--rNavyTop),#132845);
+  border:2px solid var(--rGold);
+  box-shadow:inset 0 0 0 2px #ffffff14,0 10px 26px #0009
 }
-.resultBanner b{font-size:30px;font-weight:950;letter-spacing:1px;color:#ffe5a7;
-  text-shadow:0 3px 10px #0008}
-.resultLead{margin:0 0 14px;font-size:15px;font-weight:800;color:#f7f2e4}
-
-.resultStats{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;
-  padding:12px;border-radius:16px;background:#0e2444;box-shadow:inset 0 0 0 1.5px #ffffff1a
+.resultBanner b{
+  font-size:30px;font-weight:950;letter-spacing:1px;color:var(--rTitle);
+  text-shadow:0 3px 10px #000a
 }
-.resultStats>div{display:flex;align-items:center;justify-content:center;gap:9px}
-.resultStats>div+div{border-left:1px solid #ffffff1a}
-.rsIcon{font-size:20px;color:#e9b949;line-height:1}
-.resultStats small{display:block;font-size:11px;color:#a9c4e0}
-.resultStats b{display:block;font-size:20px;font-weight:950;color:#f7f2e4;
-  font-variant-numeric:tabular-nums}
+.resultLead{
+  margin:0 0 14px;font-size:13.5px;font-weight:800;color:#f2f6fb;
+  text-shadow:0 2px 7px #000b
+}
 
-.resultHow{padding:12px;border-radius:16px;background:#0e2444;
-  box-shadow:inset 0 0 0 1.5px #ffffff1a;margin-bottom:10px}
-.resultHow>small{display:block;font-size:12px;font-weight:800;color:#cfe0f0;margin-bottom:8px}
-.howRow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.howTile{padding:8px 4px;border-radius:11px;background:#12294b;box-shadow:inset 0 0 0 1.2px #ffffff14}
-.howTile b{display:block;font-size:18px;font-weight:950;color:#f7f2e4}
-.howTile small{display:block;font-size:10px;color:#9fb6cc;line-height:1.25}
-.howTile::before{content:"";display:block;width:9px;height:9px;border-radius:50%;margin:0 auto 4px}
-.howTile.own::before{background:#5fcdf5}
-.howTile.hint::before{background:#e9b949}
-.howTile.miss::before{background:#e2566c}
+/* Satu kad tunggal berbingkai emas — statistik di atas, Cikgu di bawah garis,
+   bukan tiga kad berasingan seperti versi lama. */
+.resultCard{
+  margin-bottom:14px;padding:14px 14px 16px;border-radius:16px;
+  background:linear-gradient(#182e4d,#132644);
+  border:2px solid var(--rGold);
+  box-shadow:0 12px 28px #0007,inset 0 0 0 1px #ffffff10
+}
+.resultStats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 2px 13px}
+.resultStats small{display:block;font-size:12px;font-weight:700;color:#a8c3e2;margin-bottom:3px}
+.resultStats b{
+  display:block;font-size:22px;font-weight:950;color:#fff6df;
+  font-variant-numeric:tabular-nums
+}
 
-.resultCoach{display:flex;gap:10px;align-items:flex-start;text-align:left;margin-bottom:12px;
-  padding:11px;border-radius:16px;background:#0e2444;box-shadow:inset 0 0 0 1.5px #ffffff1a}
-.resultCoach img{width:52px;height:52px;flex:none;border-radius:13px;object-fit:cover;
-  background:#12294b}
-.resultCoach b{display:block;font-size:12px;color:#e9b949;margin-bottom:3px}
-.resultCoach p{margin:0;font-size:13px;line-height:1.5;color:#e7eef6}
+.resultCoach{
+  display:flex;align-items:flex-start;text-align:left;
+  border-top:1px solid #b78b4755;padding-top:17px
+}
+.resultCoach img{
+  width:72px;height:72px;flex:none;object-fit:contain;
+  margin:4px -16px 0 -4px;position:relative;z-index:2;
+  filter:drop-shadow(0 4px 10px #0009)
+}
+.coachSay{
+  position:relative;flex:1;min-width:0;
+  padding:15px 12px 12px 24px;border-radius:12px;
+  background:var(--rCream);border:2px solid var(--rGold)
+}
+.coachChip{
+  position:absolute;top:-12px;left:20px;
+  padding:3px 11px;border-radius:9px;white-space:nowrap;
+  background:var(--rNavy);border:2px solid var(--rGold);
+  font-size:11px;font-weight:800;color:#fff6df
+}
+.coachSay p{margin:0;font-size:13px;line-height:1.5;font-weight:600;color:#2b2416}
 
-.resultCta{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.resultCta .btn{width:100%}
-.resultFoot{margin-top:12px;font-size:12px;color:#8fa8c4}
+/* Dua CTA sahaja, tinggi sentuh >=48px dan >=16px daripada tepi skrin,
+   mengikut BerjayaResultContract.cs. */
+.resultCta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rcBtn{
+  min-height:48px;padding:0 10px;border-radius:12px;cursor:pointer;
+  border:2px solid var(--rGold);
+  font-family:inherit;font-size:14.5px;font-weight:800;line-height:1.25;letter-spacing:.2px
+}
+.rcBtn.navy{background:linear-gradient(#182e4d,#112340);color:#fff6df}
+.rcBtn.gold{background:var(--rGoldFill);color:#2a2410}
+.rcBtn:active{transform:translateY(1px)}
+
+.resultFoot{
+  display:flex;align-items:center;gap:10px;margin-top:14px;
+  font-size:12px;color:#e2dbc6
+}
+.resultFoot::before,.resultFoot::after{content:"";flex:1;height:1px;background:#d5ad5a66}
+.resultFoot span{flex:none}
 
 @media (max-height:680px){
-  .resultCast img{max-width:112px}
+  .resultBanner{padding:9px 16px}
   .resultBanner b{font-size:25px}
+  .resultLead{margin-bottom:11px}
+  .resultStars i{width:36px;height:36px}
+  .resultStars i:nth-child(2){width:48px;height:48px}
+  .resultCard{padding:12px 12px 13px;margin-bottom:11px}
+  .resultStats{padding-bottom:10px}
+  .resultCoach{padding-top:14px}
+  .resultCoach img{width:62px;height:62px}
+  .resultFoot{margin-top:11px}
+}
+
+/* Landskap: tinggi yang tinggal terlalu pendek untuk satu lajur — CTA
+   "Main Semula" jatuh di bawah skrin dan murid terpaksa menykrol untuk
+   mencarinya. Sepanduk dan kad diletak bersebelahan supaya kedua-dua CTA
+   sentiasa kelihatan. */
+@media (orientation:landscape) and (max-height:560px){
+  .segelResult{
+    max-width:none;width:min(100%,680px);
+    display:grid;align-items:center;gap:0 16px;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.12fr)
+  }
+  .resultStars{grid-column:1;grid-row:1;margin-bottom:-12px}
+  .resultBanner{grid-column:1;grid-row:2}
+  .resultLead{grid-column:1;grid-row:3;margin-bottom:0}
+  .resultCard{grid-column:2;grid-row:1/4;margin-bottom:0;align-self:stretch}
+  .resultCta{grid-column:2;grid-row:4;margin-top:10px}
+  .resultFoot{grid-column:1/-1;grid-row:5;margin-top:10px}
+  .resultCoach{padding-top:13px}
 }
 
 /* ---------- butang hub ---------- */
@@ -287,5 +357,5 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .segelTag{top:10%}
   /* Melintang: tiada ruang untuk helaian separa, jadi ia menutup penuh. */
   .segelDone{top:0;padding-top:calc(12px + env(safe-area-inset-top,0px));
-    background:rgba(4,16,30,.96)}
+    background:rgb(7,18,34)}
 }
