@@ -310,6 +310,28 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 
 .segelPrompt{width:100%}
 
+/* Kit aset result Unity: crest tajuk, crest sisi, summary-frame dan butang. */
+.segelResult{max-width:390px}
+.resultCrest{position:relative;width:calc(100% - 20px);aspect-ratio:4/1;margin:5px auto 2px;isolation:isolate}
+.resultCrestFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1}
+.resultCrestSide{position:absolute;top:15%;width:38%;height:auto;z-index:-2;pointer-events:none}
+.resultCrestSideLeft{right:76%}.resultCrestSideRight{left:76%}
+.resultCrest .resultStars{position:absolute;left:50%;bottom:69%;transform:translateX(-50%);width:max-content;margin:0;padding:0;z-index:2}
+.resultCrest .resultStars i{width:38px;height:38px}.resultCrest .resultStars i:nth-child(2){width:50px;height:50px}
+.resultCrest .resultBanner{position:absolute;inset:15% 10% 8%;display:grid;place-items:center;margin:0;padding:0;border:0;background:none;box-shadow:none}
+.resultCrest .resultBanner b{font-size:clamp(28px,8.5vw,39px);color:#fff7da;text-shadow:0 3px 0 #71420a,0 6px 14px #000b}
+.resultCard{position:relative;min-height:235px;margin-bottom:14px;padding:0;border:0;background:none;box-shadow:none;overflow:hidden}
+.resultSummaryFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.resultCardContent{position:relative;z-index:1;display:flex;min-height:235px;flex-direction:column;padding:38px 27px 25px}
+.resultStats{padding:2px 4px 13px}.resultStats small{color:#a8c3e2}.resultCoach{margin-top:auto}
+.resultCta{gap:9px}.rcBtn{min-height:52px;border:0;border-radius:13px;background-color:transparent!important;background-size:100% 100%;background-position:center;box-shadow:none}
+.rcBtn.navy{background-image:url("../assets/ui/victory-result/button-navy-rest.png")!important;color:#fff6df}
+.rcBtn.gold{background-image:url("../assets/ui/victory-result/button-gold-rest.png")!important;color:#2a2410}
+.rcBtn.navy:active{background-image:url("../assets/ui/victory-result/button-navy-press.png")!important}
+.rcBtn.gold:active{background-image:url("../assets/ui/victory-result/button-gold-press.png")!important}
+@media (max-height:680px){.resultCard{min-height:220px}.resultCardContent{min-height:220px;padding:34px 25px 22px}.resultCrest{width:calc(100% - 34px)}}
+@media (orientation:landscape) and (max-height:560px){.resultCrest{grid-column:1;grid-row:1/3;width:min(100%,310px);margin-inline:auto}.resultCrest .resultStars{grid-column:auto;grid-row:auto}.resultCrest .resultBanner{grid-column:auto;grid-row:auto}.resultCard{grid-column:2;grid-row:1/4;min-height:0}.resultCardContent{min-height:100%}}
+
 /* ---------- butang hub ---------- */
 .hubSegelDemo{
   display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:12px 14px;
