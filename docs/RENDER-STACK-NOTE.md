@@ -3,8 +3,11 @@
 Nota ini menjawab satu soalan: **apa yang patut melukis pentas Pahlawan Angka,
 dan apa yang patut kekal HTML?**
 
-Demo hidup: `audit/threejs-stage-preview.html` (buka melalui server tempatan,
-bukan `file://`, kerana ia guna ES module).
+Demo hidup (buka melalui server tempatan, bukan `file://`, kerana ia guna ES module):
+
+- `audit/battle-portrait-preview.html` - susun atur telefon sebenar: chrome atas,
+  pentas Segel Tambah, kad soalan wang Tahun 1. Inilah rujukan utama.
+- `audit/threejs-stage-preview.html` - kajian ringkas Wira lawan Askabus.
 
 ---
 
