@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v2.0.0 (fail: segel-demo-v2.0.0.js)
+/* Segel Tambah — demo pentas WebGL v2.1.0 (fail: segel-demo-v2.1.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -462,6 +462,65 @@
       S.iceT=0;
     }
 
+    /* KEMASUKAN WIRA
+       Video portal dalam app meleraikan Wira menjadi zarah biru. Supaya
+       pertemuan itu sambung, dia TIDAK muncul begitu sahaja di sini: pada
+       soalan pertama dia turun sebagai zarah biru yang berkumpul membentuk
+       badannya. Titik sasaran disampel daripada saluran alfa sprite idle
+       sendiri, jadi taburannya benar-benar berbentuk Wira, bukan awan rawak. */
+    const EN=460;
+    const enPos=new Float32Array(EN*3);
+    const enTarget=new Float32Array(EN*2);   // offset dunia dari pusat satah
+    const enStart=new Float32Array(EN*2);
+    const enDelay=new Float32Array(EN);
+    const enSwirl=new Float32Array(EN);
+    const enGeo=new THREE.BufferGeometry();
+    enGeo.setAttribute('position',new THREE.BufferAttribute(enPos,3));
+    const enMat=new THREE.PointsMaterial({color:0x8fdcff,size:.085,transparent:true,
+      opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+    const enPoints=new THREE.Points(enGeo,enMat);
+    enPoints.renderOrder=5; enPoints.frustumCulled=false; enPoints.visible=false;
+    scene.add(enPoints);
+
+    const enGlow=new THREE.Mesh(new THREE.PlaneGeometry(3.2,3.2),
+      new THREE.MeshBasicMaterial({map:glowTex,transparent:true,depthWrite:false,
+        blending:THREE.AdditiveBlending,opacity:0}));
+    enGlow.renderOrder=3; enGlow.visible=false; scene.add(enGlow);
+
+    /* Sampel titik di dalam siluet sprite. Probe 96x96 sudah cukup: kita
+       memerlukan taburan berbentuk Wira, bukan ketepatan piksel. */
+    function sampleSilhouette(img,count){
+      const N=96, pts=[];
+      try{
+        probeCtx.clearRect(0,0,N,N); probeCtx.drawImage(img,0,0,N,N);
+        const d=probeCtx.getImageData(0,0,N,N).data;
+        for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+          if(d[(y*N+x)*4+3]>90)pts.push([(x+.5)/N,(y+.5)/N]);
+        }
+      }catch(_){}
+      if(!pts.length)return [];
+      const out=[];
+      for(let i=0;i<count;i++)out.push(pts[Math.floor(Math.random()*pts.length)]);
+      return out;
+    }
+
+    function prepareEntrance(){
+      const e=hero.userData.e;
+      const pts=sampleSilhouette(e.tex.image,EN);
+      if(!pts.length)return false;
+      for(let i=0;i<EN;i++){
+        const [u,v]=pts[i];
+        enTarget[i*2]=(u-.5)*e.w;
+        enTarget[i*2+1]=(.5-v)*e.h;
+        // Turun dari atas dengan sedikit serakan sisi — seperti keluar portal.
+        enStart[i*2]=enTarget[i*2]+(Math.random()-.5)*1.7;
+        enStart[i*2+1]=enTarget[i*2+1]+2.3+Math.random()*1.5;
+        enDelay[i]=Math.random()*.36;
+        enSwirl[i]=(Math.random()-.5)*1.5;
+      }
+      return true;
+    }
+
     const PN=220;
     const pPos=new Float32Array(PN*3), pVel=new Float32Array(PN*3), pLife=new Float32Array(PN);
     const pGeo=new THREE.BufferGeometry();
@@ -497,7 +556,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
-             shake:0,waveT:-1,flashT:-1,flareT:-1,iceT:-1,running:true,active:0,
+             shake:0,waveT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
              heroLock:null,grey:0,coinT:-1};
@@ -524,6 +583,39 @@
       S.petFeet=damp(S.petFeet,S.petY,9,dt);
       hero.position.x=S.heroFeet+hero.userData.e.offX;
       hero.position.y=GROUND+hero.userData.e.offY;
+      hero.material.opacity=S.heroFade;
+
+      /* Zarah berkumpul dari atas ke titik masing-masing; Wira hanya pudar
+         masuk selepas kebanyakan zarah sampai, jadi tiada detik dia dan
+         zarahnya kelihatan bertindih dua kali. */
+      if(S.enterT>=0){
+        S.enterT+=dt;
+        const cx=hero.position.x, cy=hero.position.y;
+        let done=0;
+        for(let i=0;i<EN;i++){
+          const k=Math.min(1,Math.max(0,(S.enterT-enDelay[i])/.78));
+          const e=k*k*(3-2*k);
+          if(k>=1)done++;
+          const tx=cx+enTarget[i*2], ty=cy+enTarget[i*2+1];
+          const sx=cx+enStart[i*2],  sy=cy+enStart[i*2+1];
+          const swirl=(1-e)*enSwirl[i]*Math.sin(e*Math.PI*1.6);
+          enPos[i*3]=sx+(tx-sx)*e+swirl;
+          enPos[i*3+1]=sy+(ty-sy)*e;
+          enPos[i*3+2]=.04;
+        }
+        enGeo.attributes.position.needsUpdate=true;
+        const prog=done/EN;
+        enMat.opacity=Math.min(1,S.enterT*4)*(1-Math.max(0,(prog-.45)/.55));
+        S.heroFade=Math.max(0,(prog-.35)/.65);
+        enGlow.visible=true;
+        enGlow.position.set(cx,cy+.15,-.04);
+        enGlow.material.opacity=Math.sin(Math.min(1,S.enterT/1.15)*Math.PI)*.55;
+        enGlow.scale.setScalar(.8+Math.min(1,S.enterT/1.15)*.5);
+        if(prog>=1){
+          S.enterT=-1; S.heroFade=1;
+          enPoints.visible=false; enGlow.visible=false; enMat.opacity=0;
+        }
+      }
       heroShadow.position.x=S.heroFeet;
       pet.position.x=SEAL_X+pet.userData.e.offX;
       pet.position.y=S.petFeet+pet.userData.e.offY;
@@ -795,10 +887,19 @@
         S.coinT=0;
         await wait(520+COINS*120+560);
       },
+      /* Kemasukan portal: dipanggil sekali pada permulaan setiap pusingan. */
+      enter(){
+        if(reduceMotion||!prepareEntrance()){ S.heroFade=1; return }
+        S.enterT=0; S.heroFade=0;
+        enPoints.visible=true; enMat.opacity=0;
+        sfx('auraCharge');
+      },
       wrong(){ S.shake=.14 },
       reset(){
         S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
+        S.enterT=-1; S.heroFade=1;
+        enPoints.visible=false; enGlow.visible=false; enMat.opacity=0;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
@@ -1029,6 +1130,7 @@
                questionFingerprints:[],questionHistory:[],demoMode:true}};
     $('segelDone').hidden=true;
     stage.reset();
+    stage.enter();          // Wira turun sebagai zarah biru, sama seperti portal
     paintSeal();
     drawQuestion();
   }
