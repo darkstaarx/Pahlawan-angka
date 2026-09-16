@@ -797,8 +797,8 @@
     if(won===false){
       $('segelDoneTitle').textContent='DEMO TERGENDALA';
       $('segelDoneText').textContent=note||'Demo tidak dapat diteruskan.';
-      $('segelResultHero').src=FRAMES.heroIdle[0];
-      $('segelResultPet').src=FRAMES.petSad[0];
+      // Kad keputusan tidak lagi membawa salinan watak — arena di belakangnya
+      // yang menunjukkan Wira dan Aurora, jadi tiada <img> untuk dikemas kini.
       $('segelStatCorrect').textContent='—';
       $('segelStatAcc').textContent='—';
       $('segelHowOwn').textContent=t.own;
