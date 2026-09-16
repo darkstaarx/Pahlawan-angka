@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.3.0 (fail: segel-demo-v1.3.0.js)
+/* Segel Tambah — demo pentas WebGL v1.4.0 (fail: segel-demo-v1.4.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -25,9 +25,9 @@
      baca yang mana satu sedang diserang. Saiz menaik sedikit setiap tier
      supaya "lebih kuat" terbaca tanpa perlu satu baris teks pun. */
   const TIERS=[
-    {key:'gangsa', name:'GANGSA', hits:2, color:0xff6e29, period:3.4, height:2.34},
-    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, height:2.54},
-    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, height:2.76}
+    {key:'gangsa', name:'GANGSA', hits:2, color:0xff6e29, period:3.4, height:2.56},
+    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, height:2.72},
+    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, height:2.88}
   ];
   const SEAL_HITS=TIERS.reduce((n,t)=>n+t.hits,0);  // 10 hentaman = 2+3+5
   /* Dua soalan lebih daripada jumlah hentaman. Tanpa ruang ini satu jawapan
@@ -43,6 +43,7 @@
     petSad:[0,1,2,3,4,5,6,7].map(i=>`assets/pets/aurora/frames/sad-${i}-v1.webp`),
     petJoy:[0,1].map(i=>`assets/pets/aurora/frames/joy-${i}-v1.webp`),
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
+    heroHappy:[0,1,2,3].map(i=>`assets/heroes/wira-chibi/frames/happy-${i}-v1.webp`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v1.webp`),
     coin:'assets/fx/reward/coin-v1.webp',
@@ -55,6 +56,7 @@
      tertutup, jadi kelipan mesti pendek — kalau semua bingkai sama panjang,
      Wira nampak mengantuk dan gerakannya terlalu laju sekali gus. */
   const HERO_IDLE_HOLD=[0.40,0.40,0.40,0.11];    // satu kitaran 1.31s
+  const HERO_CHEER_HOLD=[0.16,0.20,0.18,0.22];   // sorakan kemenangan, lebih pantas
   /* Aurora sedang sedih dan terkurung, jadi dia hampir tidak bergerak: setiap
      pose bertahan ~2.6s. Bingkai 2 dan 7 ialah mata tertutup, jadi keduanya
      ditahan pendek sahaja — kalau tidak dia nampak tertidur, bukan sayu. */
@@ -142,7 +144,7 @@
     });
 
     const [arenaTex, heroIdle, heroPrepare, heroSlash, petSad, petJoy, sealTex,
-           coinTex, trailTex, flareTex] = await Promise.all([
+           coinTex, trailTex, flareTex, heroHappy] = await Promise.all([
       load(FRAMES.arena),
       Promise.all(FRAMES.heroIdle.map(load)),
       load(FRAMES.heroPrepare),
@@ -150,7 +152,8 @@
       Promise.all(FRAMES.petSad.map(load)),
       Promise.all(FRAMES.petJoy.map(load)),
       Promise.all(FRAMES.seals.map(load)),
-      load(FRAMES.coin), load(FRAMES.trail), load(FRAMES.flare)
+      load(FRAMES.coin), load(FRAMES.trail), load(FRAMES.flare),
+      Promise.all(FRAMES.heroHappy.map(load))
     ]);
 
     /* latar: dimuatkan "cover" supaya tiada jalur kosong pada apa-apa bentuk skrin */
@@ -174,11 +177,12 @@
        lantainya, jadi kubah duduk atas lantai yang sama dengan Aurora.
        Pengukuran dibuat pada canvas 96x96: pecahan bingkai tidak berubah bila
        diturunkan resolusi, jadi ia tepat dan murah walaupun pada telefon lama. */
-    const HERO_UPP=2.6/480, PET_UPP=1.10/400;
-    const HERO_GROUND=-1.92, PET_FEET=-1.49, SEAL_X=1.45, HERO_HOME=-1.65;
-    // Aurora terperangkap, jadi dia terapung di tengah kubah, bukan duduk atas
-    // lantainya. Bayang kekal di lantai.
-    const PET_HOVER=.34;
+    /* Satu garisan lantai untuk semua: Wira, Aurora dan tapak kubah segel.
+       Sebelum ini Aurora terapung 0.43 unit di atas lantai Wira, jadi dia
+       nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
+    const HERO_UPP=2.6/480, PET_UPP=1.22/400;
+    const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
+    const SEAL_X=1.52, HERO_HOME=-1.62;
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
     function measure(img){
@@ -201,6 +205,7 @@
       return {tex, w, h, offX:-m.cx*w, offY:h*(.5-m.foot)};
     }
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
+    const heroHappyE=heroHappy.map(t=>entry(t,HERO_UPP));
     const heroPrepareE=entry(heroPrepare,HERO_UPP);
     const heroSlashE=entry(heroSlash,HERO_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
@@ -232,10 +237,10 @@
       m.scale.set(w,w*.34,1); m.position.z=z; scene.add(m); return m;
     }
     const heroShadow=shadow(2.0,-.01);
-    heroShadow.position.set(HERO_HOME,HERO_GROUND+.04,-.01);
-    const petShadow=shadow(1.15,-.33);
-    petShadow.position.set(SEAL_X,PET_FEET+.03,-.33);
-    const PET_SHADOW_W=1.15;
+    heroShadow.position.set(HERO_HOME,GROUND+.04,-.01);
+    const petShadow=shadow(1.12,-.33);
+    petShadow.position.set(SEAL_X,GROUND+.03,-.33);
+    const PET_SHADOW_W=1.12;
 
     /* Cahaya belakang di belakang Aurora — padanan "Seal back glow" Unity.
        Ia mengambil warna tier yang sedang aktif. */
@@ -252,7 +257,7 @@
     const backGlow=new THREE.Mesh(new THREE.PlaneGeometry(2.4,2.4),
       new THREE.MeshBasicMaterial({map:glowTex,transparent:true,depthWrite:false,
         blending:THREE.AdditiveBlending,opacity:.5}));
-    backGlow.position.set(SEAL_X,PET_FEET+.75,-.35); scene.add(backGlow);
+    backGlow.position.set(SEAL_X,GROUND+.78,-.35); scene.add(backGlow);
 
     /* Tiga kubah segel dari prototaip Unity: Gangsa di dalam, Emas di luar.
        Susunan lukisan Unity ialah pet < segel < Wira, jadi z mengikutnya. */
@@ -274,7 +279,7 @@
       const e=entry(sealTex[i], sealTex[i]&&sealTex[i].image ? tier.height/sealTex[i].image.height : tier.height/768);
       const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
       m.scale.set(e.w,e.h,1);
-      m.position.set(SEAL_X+e.offX, PET_FEET+e.offY, -.26);
+      m.position.set(SEAL_X+e.offX, GROUND+e.offY, -.26);
       m.visible=(i===0);
       scene.add(m);
       return {tier, mesh:m, base:{w:e.w,h:e.h}, damage:0, broken:false, breakT:-1};
@@ -293,13 +298,13 @@
     const waveMat=new THREE.MeshBasicMaterial({map:ringTex(),transparent:true,
       blending:THREE.AdditiveBlending,depthWrite:false,opacity:0});
     const wave=new THREE.Mesh(new THREE.PlaneGeometry(1,1),waveMat);
-    wave.position.set(SEAL_X,PET_FEET+.7,.3); scene.add(wave);
+    wave.position.set(SEAL_X,GROUND+.8,.3); scene.add(wave);
 
     // Kilat putih pendek pada detik segel pecah — ini yang bagi rasa "pop".
     const flashMat=new THREE.MeshBasicMaterial({map:glowTex,transparent:true,
       blending:THREE.AdditiveBlending,depthWrite:false,opacity:0});
     const flash=new THREE.Mesh(new THREE.PlaneGeometry(3.4,3.4),flashMat);
-    flash.position.set(SEAL_X,PET_FEET+.7,.28); scene.add(flash);
+    flash.position.set(SEAL_X,GROUND+.8,.28); scene.add(flash);
 
     const PN=220;
     const pPos=new Float32Array(PN*3), pVel=new Float32Array(PN*3), pLife=new Float32Array(PN);
@@ -312,7 +317,7 @@
       if(color!=null)pMat.color.setHex(color);
       for(let i=0;i<PN;i++){
         const a=Math.random()*Math.PI*2, s=1.2+Math.random()*spread;
-        pPos[i*3]=SEAL_X; pPos[i*3+1]=PET_FEET+.7; pPos[i*3+2]=0;
+        pPos[i*3]=SEAL_X; pPos[i*3+1]=GROUND+.8; pPos[i*3+2]=0;
         pVel[i*3]=Math.cos(a)*s; pVel[i*3+1]=Math.sin(a)*s*.85+1.2; pVel[i*3+2]=(Math.random()-.5)*2;
         pLife[i]=.5+Math.random()*.4;
       }
@@ -335,9 +340,10 @@
     });
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
-    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:PET_FEET+PET_HOVER,petFeet:PET_FEET+PET_HOVER,camY:0,
+    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
              shake:0,waveT:-1,flashT:-1,flareT:-1,running:true,active:0,
-             heroFrames:heroIdleE,petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
+             heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,
+             petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
              heroLock:null,grey:0,coinT:-1};
     let raf=0, last=performance.now(), tAcc=0;
 
@@ -353,7 +359,7 @@
       if(!S.running)return;
       const dt=Math.min((now-last)/1000,.05); last=now; tAcc+=dt;
 
-      swap(hero, S.heroLock || heldFrame(S.heroFrames,HERO_IDLE_HOLD,tAcc));
+      swap(hero, S.heroLock || heldFrame(S.heroFrames,S.heroHold,tAcc));
       swap(pet,  S.petHold ? heldFrame(S.petFrames,S.petHold,tAcc)
                            : S.petFrames[Math.floor(tAcc*S.petFps)%S.petFrames.length]);
 
@@ -361,13 +367,13 @@
       S.heroFeet=damp(S.heroFeet,S.heroX,15,dt);
       S.petFeet=damp(S.petFeet,S.petY,9,dt);
       hero.position.x=S.heroFeet+hero.userData.e.offX;
-      hero.position.y=HERO_GROUND+hero.userData.e.offY;
+      hero.position.y=GROUND+hero.userData.e.offY;
       heroShadow.position.x=S.heroFeet;
       pet.position.x=SEAL_X+pet.userData.e.offX;
       pet.position.y=S.petFeet+pet.userData.e.offY;
 
       // Bayang Aurora kekal di lantai dan mengecut bila dia naik.
-      const rise=Math.max(0,(S.petFeet-PET_FEET))/.8;
+      const rise=Math.max(0,(S.petFeet-GROUND))/.8;
       petShadow.scale.set(PET_SHADOW_W*(1-.3*rise), PET_SHADOW_W*.34*(1-.3*rise), 1);
       petShadow.material.opacity=1-.45*Math.min(1,rise);
 
@@ -413,8 +419,8 @@
       if(S.coinT>=0){
         S.coinT+=dt;
         const t=S.coinT;
-        const ox=SEAL_X, oy=PET_FEET+.72;
-        const ax=S.heroFeet+.18, ay=HERO_GROUND+1.18;
+        const ox=SEAL_X, oy=GROUND+.82;
+        const ax=S.heroFeet+.18, ay=GROUND+1.18;
         let live=0;
         coins.forEach((c,i)=>{
           if(c.picked)return;
@@ -499,7 +505,7 @@
       const visH=Math.max(WORLD_W/camera.aspect, MIN_H);
       camera.fov=2*Math.atan(visH/2/camera.position.z)*180/Math.PI;
       camera.updateProjectionMatrix();
-      S.camY=HERO_GROUND+FLOOR_MARGIN*visH;
+      S.camY=GROUND+FLOOR_MARGIN*visH;
       fitBg();
     }
     const ro=new ResizeObserver(resize); ro.observe(host);
@@ -512,6 +518,21 @@
 
     return {
       tiers:TIERS,
+      /* Tempat bar kesihatan sepatutnya duduk, dalam peratus saiz pentas.
+         Diunjur melalui kamera supaya ia kekal di atas kubah pada setiap
+         nisbah skrin, bukan diteka dengan nilai CSS tetap. */
+      sealAnchor(){
+        const tier=TIERS[Math.min(S.active,TIERS.length-1)];
+        // Dikira terus daripada fov dan jarak, bukan melalui matriks kamera:
+        // Vector3.project() bergantung pada matrixWorldInverse yang hanya
+        // disegarkan semasa render, jadi ia boleh memulangkan nilai liar bila
+        // dipanggil antara bingkai.
+        const z=-.26, dist=camera.position.z-z;
+        const visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
+        const wx=SEAL_X-camera.position.x;
+        const wy=(GROUND+tier.height*.92)-camera.position.y;
+        return {x:(wx/visW+.5)*100, y:(.5-wy/visH)*100};
+      },
       /* Wira menyerang SEGEL, bukan Aurora. Bunyi: pedang masa tebasan,
          hentaman masa sentuh — dua kesan berasingan, bukan satu. */
       async strike(){
@@ -545,11 +566,26 @@
       },
       activeTier(){ return TIERS[Math.min(S.active,TIERS.length-1)] },
       allBroken(){ return S.active>=TIERS.length },
+      /* Tiada pengembaraan yang gagal — Aurora sentiasa diselamatkan, cuma
+         bintang yang berbeza. Kalau soalan habis sebelum semua segel pecah,
+         Wira menghabiskan bakinya di sini. */
+      async forceBreakRest(){
+        while(S.active<TIERS.length){
+          const s=seals[S.active];
+          s.damage=1; s.broken=true; s.breakT=0;
+          popSound(); burst(6,0xffffff); S.flashT=0; S.shake=.4;
+          S.active++;
+          await wait(320);
+        }
+      },
       async rescue(){
         sfx('finisher');
         S.shake=.5; burst(7,0xffffff); S.waveT=0; S.flashT=0;
-        S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=PET_FEET+.75;
-        await wait(520); S.petY=PET_FEET;   // Aurora bebas: turun ke lantai
+        // Aurora bebas dan Wira bersorak — kedua-duanya bertukar sprite gembira.
+        S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7;
+        S.heroFrames=heroHappyE; S.heroHold=HERO_CHEER_HOLD; S.heroLock=null;
+        await wait(520); S.petY=GROUND;
+        await wait(420);
       },
       // Wira menyerap cahaya segel sebagai syiling sebelum skrin keputusan.
       async absorbCoins(){
@@ -562,7 +598,8 @@
         S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
-        S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=PET_FEET+PET_HOVER;
+        S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND;
+        S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD;
         seals.forEach((s,i)=>{ s.damage=0; s.broken=false; s.breakT=-1;
           s.mesh.visible=(i===0);
           s.mesh.material.uniforms.uOpacity.value=1;
@@ -623,6 +660,16 @@
       bar.innerHTML=Array.from({length:tier.hits},()=>'<i></i>').join('');
     }
     [...bar.children].forEach((seg,i)=>seg.classList.toggle('out',i>=left));
+    placeSealBar();
+  }
+
+  // Bar mesti berada betul-betul di atas kubah pada setiap bentuk skrin.
+  function placeSealBar(){
+    const tag=$('segelTag');
+    if(!tag||!stage||!stage.sealAnchor)return;
+    const a=stage.sealAnchor();
+    tag.style.left=a.x+'%';
+    tag.style.top=a.y+'%';
   }
 
   function drawQuestion(){
@@ -686,12 +733,7 @@
         ? `Segel ${outcome.tier.name} pecah!`
         : 'Betul! Segel retak.';
       paintSeal();
-      if(stage.allBroken()){
-        toast('AURORA BEBAS!');
-        await stage.rescue();
-        await stage.absorbCoins();   // Wira serap cahaya segel dahulu
-        return finishRun(true);
-      }
+      if(stage.allBroken())return celebrate();
     }else{
       sfx('wrong');
       run.tally.miss++;
@@ -700,10 +742,26 @@
       await wait(520);
     }
 
-    if(run.asked>=MAX_Q)return finishRun(false);
+    if(run.asked>=MAX_Q)return celebrate();
     await wait(420);
     run.locked=false;
     drawQuestion();
+  }
+
+  /* Satu penamat sahaja: Aurora diselamatkan. Kalau soalan habis sebelum
+     segel terakhir pecah, Wira menghabiskan bakinya. Yang membezakan
+     pencapaian ialah bintang pada skrin keputusan, bukan menang/kalah. */
+  async function celebrate(){
+    run.locked=true;
+    $('segelTag').style.opacity='0';
+    if(!stage.allBroken()){
+      toast('SATU TEBASAN LAGI!');
+      await stage.forceBreakRest();
+    }
+    toast('AURORA BEBAS!');
+    await stage.rescue();
+    await stage.absorbCoins();   // Wira serap cahaya segel dahulu
+    finishRun(true);
   }
 
   function q_hint(q){
@@ -718,23 +776,21 @@
     // Bintang ikut Unity RescuePayoff.cs: satu bintang asas, +1 pada 80%, +1 pada 100%.
     const stars=correct===0?0:1+(acc>=80?1:0)+(acc===100?1:0);
 
-    $('segelDoneTitle').textContent=won?'BERJAYA!':'BELUM LAGI';
-    $('segelDoneText').textContent=note || (won
-      ? 'Aurora berjaya diselamatkan!'
-      : `Segel ${stage.activeTier().name} masih bertahan.`);
-    $('segelResultHero').src=won?FRAMES.heroVictory:FRAMES.heroIdle[0];
-    $('segelResultPet').src=won?FRAMES.petHappy:FRAMES.petSad[0];
+    $('segelDoneTitle').textContent='BERJAYA!';
+    $('segelDoneText').textContent=note||'Aurora berjaya diselamatkan!';
+    $('segelResultHero').src=FRAMES.heroVictory;
+    $('segelResultPet').src=FRAMES.petHappy;
     $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
     $('segelStatAcc').textContent=acc+'%';
     $('segelHowOwn').textContent=t.own;
     $('segelHowHint').textContent=t.hint;
     $('segelHowMiss').textContent=t.miss;
     document.querySelectorAll('#segelResultStars i').forEach((el,i)=>el.classList.toggle('on',i<stars));
-    $('segelCoachSay').textContent=won
-      ? (acc===100
-          ? 'Hebat, Wira! Kamu menyelesaikan semua soalan dengan tepat. Teruskan usaha ini!'
-          : 'Syabas! Aurora sudah selamat. Teruskan berlatih.')
-      : 'Belum apa-apa. Cuba sekali lagi — setiap percubaan membina kefahaman.';
+    $('segelCoachSay').textContent=acc===100
+      ? 'Hebat, Wira! Kamu menyelesaikan semua soalan dengan tepat. Teruskan usaha ini!'
+      : (acc>=80
+          ? 'Syabas! Aurora sudah selamat. Sikit lagi untuk tiga bintang.'
+          : 'Aurora sudah selamat. Ulang sekali lagi untuk kumpul lebih bintang.');
     $('segelDone').hidden=false;
     $('segelDone').scrollTop=0;
   }
@@ -815,6 +871,10 @@
     try{ await boot() }
     catch(_){ $('segelFeedback').textContent='Pentas 3D tidak dapat dimuat pada peranti ini.'; return }
     bindSpeaker(); bindSound(); bindHint();
+    if(!window.__segelResizeBound){
+      window.__segelResizeBound=true;
+      window.addEventListener('resize',()=>{ try{ placeSealBar() }catch(_){} });
+    }
     stage.resume();
     startRun();
   };

@@ -1,4 +1,4 @@
-/* Segel Tambah demo v1.3.0 — pentas WebGL + UI DOM.
+/* Segel Tambah demo v1.4.0 — pentas WebGL + UI DOM.
    Kad soalan sengaja guna .qcard/.question/.answers/.ans yang sedia ada,
    supaya soalan sebenar dari bank kelihatan sama macam dalam battle. */
 
@@ -58,10 +58,13 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 
 /* Bar kesihatan segel: satu ketul = satu hentaman. Warna sudah memberitahu
    tier mana, jadi tiada teks langsung di sini. */
+/* left/top ditetapkan oleh JS daripada unjuran kamera, jadi bar sentiasa
+   berada betul-betul di atas kubah pada mana-mana nisbah skrin. */
 .segelTag{
-  position:absolute;right:10px;top:18%;padding:6px 8px;border-radius:10px;
+  position:absolute;left:50%;top:18%;transform:translate(-50%,-100%);
+  padding:6px 8px;border-radius:10px;
   background:#0b1d38dd;box-shadow:inset 0 0 0 1.5px #ffffff22;pointer-events:none;
-  transition:opacity .35s
+  transition:opacity .35s,left .25s,top .25s
 }
 .segelBar{display:flex;gap:4px}
 .segelBar i{
@@ -105,6 +108,36 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 }
 .segelCard .answers{flex:0 0 auto}
 .segelCard .feedback{flex:0 0 auto;min-height:32px}
+
+/* Butang jawapan gaya premium: ivori dengan bibir emas dan tepi tebal,
+   bukan kotak rata. Diskopkan kepada demo — .ans global masih dipakai oleh
+   skrin battle sedia ada dan tidak boleh diubah dari sini. */
+.segelCard .answers{gap:11px}
+.segelCard .ans{
+  border:0;border-radius:14px;padding:15px 8px;
+  font-size:19px;font-weight:950;color:#14314f;
+  background:linear-gradient(180deg,#fffef8 0%,#f8f0dc 55%,#eee1c0 100%);
+  box-shadow:inset 0 1px 0 #fff, inset 0 0 0 2px #dcc48f,
+             0 4px 0 #b59a5f, 0 9px 18px rgba(4,16,30,.42);
+  transition:transform .08s,box-shadow .08s,filter .15s
+}
+.segelCard .ans:active:not(:disabled){
+  transform:translateY(3px);
+  box-shadow:inset 0 1px 0 #fff, inset 0 0 0 2px #dcc48f,
+             0 1px 0 #b59a5f, 0 4px 10px rgba(4,16,30,.4)
+}
+.segelCard .ans:focus-visible{outline:3px solid #5fcdf5;outline-offset:3px}
+.segelCard .ans.ok{
+  color:#06301e;background:linear-gradient(180deg,#8bf0b8,#2fa26a);
+  box-shadow:inset 0 1px 0 #d8fded, inset 0 0 0 2px #b9f5d2,
+             0 4px 0 #176444, 0 9px 20px rgba(24,130,84,.45)
+}
+.segelCard .ans.no{
+  color:#3d0a14;background:linear-gradient(180deg,#f7aab4,#c2455a);
+  box-shadow:inset 0 1px 0 #ffd9de, inset 0 0 0 2px #f5b8c0,
+             0 4px 0 #8a2536, 0 9px 20px rgba(150,40,60,.4)
+}
+.segelCard .ans:disabled:not(.ok):not(.no){filter:brightness(.88) saturate(.8);opacity:.75}
 
 /* butang petunjuk, sepadan dengan .hintBtn dalam battle */
 .segelHint{
