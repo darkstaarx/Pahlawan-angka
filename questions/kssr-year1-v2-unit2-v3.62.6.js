@@ -86,7 +86,14 @@ GEN['2.3.2']=function(id,s){
 
 GEN['2.4.1']=function(id,s){
  const mode=chooseMode(id,'2.4.1',bandModes(s,['match_add_story'],['match_add_story','match_sub_story'],['match_add_story','match_sub_story','choose_best_story']));
- const add=Math.random()<.5,a=rand(10,40),b=rand(3,20),ans=add?a+b:a-b,eq=`${a} ${add?'+':'−'} ${b} = ${ans}`;
+ // Operasi mesti ikut mod: band pertama Tahun 1 hanya 'match_add_story'.
+ // Dahulu ia dipilih rawak, jadi murid band pertama boleh dapat soalan tolak.
+ const add=mode==='match_add_story'?true:(mode==='match_sub_story'?false:Math.random()<.5);
+ const a=rand(10,40);
+ // Tolak mesti kekal positif. Julat lama (a 10..40, b 3..20) membenarkan
+ // 10 − 19 = -9, iaitu nombor negatif dalam soalan Tahun 1.
+ const b=add?rand(3,20):rand(3,Math.min(20,a-1));
+ const ans=add?a+b:a-b,eq=`${a} ${add?'+':'−'} ${b} = ${ans}`;
  const correct=add?`Di pasar pagi ada ${a} mangga dan ${b} mangga lagi ditambah.`:`Di kantin ada ${a} pau dan ${b} pau dibeli.`;
  return mark(q(`Ayat matematik <b>${eq}</b>. Cerita manakah sepadan?`,correct,[Nq(add?`Ada ${a} mangga dan ${b} mangga dikeluarkan.`:`Ada ${a} pau dan ${b} pau lagi ditambah.`,'story_model'),Nq(`Ada ${ans} barang tanpa sebarang perubahan.`,'story_model'),Nq(`Ada ${b} barang sahaja.`,'story_model')],'Cerita mesti menggambarkan operasi dan nombor yang sama.','Tahun 1 · Mereka Cerita Masalah'),id,'2.4.1',mode,'verbal',stage(s)===3?'reasoning':'application',s,['story_model','operation']);
 };
@@ -95,7 +102,12 @@ GEN['2.4.2']=function(id,s){
  const mode=chooseMode(id,'2.4.2',bandModes(s,['one_step'],['one_step','choose_operation'],['missing_value','two_clue']));
  const add=Math.random()<.5,a=rand(15,60),b=rand(3,Math.min(20,add?100-a:a-1)),ans=add?a+b:a-b;
  if(mode==='one_step')return mark(q(add?`${name()} ada ${a} buku cerita dan meminjam ${b} lagi. Berapa semuanya?`:`Di kedai runcit ada ${a} botol air. ${b} botol terjual. Berapa tinggal?`,ans,[Nq(add?Math.abs(a-b):a+b,'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],add?'Tambah kuantiti baharu.':'Tolak kuantiti yang keluar.','Tahun 1 · Masalah Harian'),id,'2.4.2',mode,'story','application',s,['operation']);
- if(mode==='choose_operation')return mark(q(`Situasi: ada ${a} item, kemudian ${b} item ${add?'ditambah':'dikeluarkan'}. Operasi yang sesuai?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation'),Nq('darab','operation'),Nq('bahagi','operation')],'Tentukan sama ada kuantiti bertambah atau berkurang.','Tahun 1 · Pilih Strategi'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
+ /* Kemahiran ini ditanda 'reasoning': murid patut menaakul sama ada kuantiti
+    bertambah atau berkurang. Perkataan "ditambah" mengandungi jawapannya
+    sendiri, jadi situasi kini diterangkan tanpa menamakan operasi.
+    (2.1.1 sengaja dibiarkan memakai kata kunci — di sana mengenal perkataan
+    isyarat memang kemahiran yang diuji.) */
+ if(mode==='choose_operation')return mark(q(`Situasi: ada ${a} item, kemudian ${b} item lagi ${add?'diletak ke dalam':'diambil keluar'}. Operasi yang sesuai?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation'),Nq('darab','operation'),Nq('bahagi','operation')],'Tentukan sama ada kuantiti bertambah atau berkurang.','Tahun 1 · Pilih Strategi'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
  if(mode==='missing_value'){
   const start=add?a:ans,total=add?ans:a;
   return mark(q(add?`Jumlah ${total}. Sebelum menerima ${b} lagi, berapa yang ada?`:`Selepas ${b} dikeluarkan, tinggal ${start}. Berapa jumlah asal?`,add?a:a,[Nq(total,'operation'),Nq(b,'operation'),Nq(Math.max(0,a-1),'operation')],'Gunakan hubungan songsang tambah dan tolak.','Tahun 1 · Masalah Songsang'),id,'2.4.2',mode,'story','reasoning',s,['operation']);

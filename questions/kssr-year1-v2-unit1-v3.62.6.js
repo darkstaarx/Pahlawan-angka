@@ -34,7 +34,16 @@ GEN['1.2.2']=function(id,s){
  const mode=chooseMode(id,'1.2.2',bandModes(s,['match_value'],['match_value','compare_value','order_value'],['compare_value','order_value','between_value']));
  if(mode==='match_value'){const n=rand(5,20);return mark(q(`${dots(n)}Nombor manakah sepadan dengan kumpulan ini?`,n,wrongNums(n,1,'count'),'Padankan kuantiti dengan nombor.','Tahun 1 · Padanan Nilai'),id,'1.2.2',mode,'visual','concept',s,['count']);}
  if(mode==='compare_value'){let a=rand(10,99),b=rand(10,99);while(a===b)b=rand(10,99);const ans=Math.max(a,b);return mark(q(`Yang manakah lebih besar: <b>${a}</b> atau <b>${b}</b>?`,ans,[Nq(Math.min(a,b),'compare'),Nq(Math.abs(a-b),'operation'),Nq(Math.min(100,ans+1),'compare')],'Banding puluh dahulu, kemudian sa.','Tahun 1 · Banding Nilai'),id,'1.2.2',mode,'symbolic','concept',s,['compare','place']);}
- if(mode==='order_value'){let xs=[];while(xs.length<3){const n=rand(1,100);if(!xs.includes(n))xs.push(n)}const ans=[...xs].sort((a,b)=>a-b).join(', ');return mark(q(`Susun secara menaik: <b>${xs.join(', ')}</b>`,ans,[Nq([...xs].sort((a,b)=>b-a).join(', '),'compare'),Nq(xs.join(', '),'compare'),Nq([xs[1],xs[0],xs[2]].join(', '),'compare')],'Nombor paling kecil ditulis dahulu.','Tahun 1 · Susun Nilai'),id,'1.2.2',mode,'symbolic','procedure',s,['compare']);}
+ if(mode==='order_value'){
+  let xs=[];while(xs.length<3){const n=rand(1,100);if(!xs.includes(n))xs.push(n)}
+  /* Nombor dibina secara rawak, jadi kadangkala ia SUDAH menaik — soalan
+     kemudian memaparkan jawapannya sendiri, dan pengganggu `xs.join()`
+     menjadi salinan jawapan yang betul. Kocok sehingga paparan bukan
+     tertib menaik mahupun menurun. */
+  const asc=a=>a[0]<a[1]&&a[1]<a[2], desc=a=>a[0]>a[1]&&a[1]>a[2];
+  for(let g=0;g<24&&(asc(xs)||desc(xs));g++)xs=[xs[1],xs[2],xs[0]];
+  if(asc(xs)||desc(xs))xs=[xs[1],xs[0],xs[2]];
+  const ans=[...xs].sort((a,b)=>a-b).join(', ');return mark(q(`Susun secara menaik: <b>${xs.join(', ')}</b>`,ans,[Nq([...xs].sort((a,b)=>b-a).join(', '),'compare'),Nq(xs.join(', '),'compare'),Nq([xs[1],xs[0],xs[2]].join(', '),'compare')],'Nombor paling kecil ditulis dahulu.','Tahun 1 · Susun Nilai'),id,'1.2.2',mode,'symbolic','procedure',s,['compare']);}
  const lo=rand(5,95),ans=lo+1,hi=lo+2;return mark(q(`Nombor manakah berada di antara <b>${lo}</b> dan <b>${hi}</b>?`,ans,[Nq(lo,'compare'),Nq(hi,'compare'),Nq(Math.min(100,hi+1),'compare')],'Cari nombor selepas yang kecil dan sebelum yang besar.','Tahun 1 · Di Antara'),id,'1.2.2',mode,'symbolic','reasoning',s,['compare','pattern']);
 };
 

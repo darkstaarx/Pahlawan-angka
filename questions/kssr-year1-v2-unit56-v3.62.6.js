@@ -28,7 +28,12 @@ GEN['5.1.2']=function(id,s){
 GEN['5.1.3']=function(id,s){
  const mode=chooseMode(id,'5.1.3',bandModes(s,['name_day'],['name_day','next_day'],['next_day','yesterday_day','day_reason']));
  const i=rand(0,6),d=days[i];
- if(mode==='name_day')return mark(q(`Hari ini ialah <b>${d}</b>. Nama hari itu ialah?`,d,days.filter(x=>x!==d).slice(0,3).map(x=>Nq(x,'day')),'Kenal nama hari dalam seminggu.','Tahun 1 · Hari Seminggu'),id,'5.1.3',mode,'verbal','concept',s,['day']);
+ // Sama seperti 5.1.4: versi lama mencetak nama hari itu dalam soalan lalu
+ // meminta murid memilih nama yang sama. Kini ditanya melalui kedudukan hari.
+ if(mode==='name_day'){
+  const ord=['pertama','kedua','ketiga','keempat','kelima','keenam','ketujuh'][i];
+  return mark(q(`Hari <b>${ord}</b> dalam seminggu (bermula Isnin) ialah?`,d,[Nq(days[(i+6)%7],'day'),Nq(days[(i+1)%7],'day'),Nq(days[(i+3)%7],'day')],'Ingat urutan hari bermula Isnin.','Tahun 1 · Hari Seminggu'),id,'5.1.3',mode,'verbal','concept',s,['day']);
+ }
  if(mode==='next_day'){const ans=days[(i+1)%7];return mark(q(`Hari selepas <b>${d}</b> ialah?`,ans,[Nq(days[(i+6)%7],'day'),Nq(days[(i+2)%7],'day'),Nq(d,'day')],'Bergerak satu hari ke hadapan.','Tahun 1 · Esok'),id,'5.1.3',mode,'verbal','application',s,['day']);}
  if(mode==='yesterday_day'){const ans=days[(i+6)%7];return mark(q(`Jika hari ini <b>${d}</b>, semalam ialah?`,ans,[Nq(days[(i+1)%7],'day'),Nq(days[(i+5)%7],'day'),Nq(d,'day')],'Semalam ialah satu hari sebelum hari ini.','Tahun 1 · Semalam'),id,'5.1.3',mode,'verbal','reasoning',s,['day']);}
  const ans=days[(i+2)%7];return mark(q(`Jika hari ini ${d}, dua hari lagi ialah?`,ans,[Nq(days[(i+1)%7],'day'),Nq(days[(i+3)%7],'day'),Nq(days[(i+6)%7],'day')],'Gerak dua langkah dalam urutan hari.','Tahun 1 · Dua Hari Lagi'),id,'5.1.3',mode,'verbal','reasoning',s,['day']);
@@ -37,7 +42,13 @@ GEN['5.1.3']=function(id,s){
 GEN['5.1.4']=function(id,s){
  const mode=chooseMode(id,'5.1.4',bandModes(s,['name_month'],['name_month','next_month'],['next_month','before_month','month_reason']));
  const i=rand(0,11),m=months[i];
- if(mode==='name_month')return mark(q(`Bulan <b>${m}</b> ialah salah satu bulan dalam setahun. Pilih nama yang sama.`,m,months.filter(x=>x!==m).slice(0,3).map(x=>Nq(x,'month')),'Kenal nama bulan.','Tahun 1 · Bulan Setahun'),id,'5.1.4',mode,'verbal','concept',s,['month']);
+ // Soalan lama memaparkan nama bulan itu sendiri lalu meminta murid memilih
+ // nama yang sama — jawapannya tercetak dalam soalan, jadi ia tidak menguji
+ // apa-apa. Kini ia bertanya melalui kedudukan bulan dalam setahun.
+ if(mode==='name_month'){
+  const ord=['pertama','kedua','ketiga','keempat','kelima','keenam','ketujuh','kelapan','kesembilan','kesepuluh','kesebelas','kedua belas'][i];
+  return mark(q(`Bulan <b>${ord}</b> dalam setahun ialah?`,m,[Nq(months[(i+11)%12],'month'),Nq(months[(i+1)%12],'month'),Nq(months[(i+6)%12],'month')],'Ingat urutan bulan bermula Januari.','Tahun 1 · Bulan Setahun'),id,'5.1.4',mode,'verbal','concept',s,['month']);
+ }
  if(mode==='next_month'){const ans=months[(i+1)%12];return mark(q(`Bulan selepas <b>${m}</b> ialah?`,ans,[Nq(months[(i+11)%12],'month'),Nq(months[(i+2)%12],'month'),Nq(m,'month')],'Bergerak satu bulan ke hadapan.','Tahun 1 · Bulan Seterusnya'),id,'5.1.4',mode,'verbal','application',s,['month']);}
  if(mode==='before_month'){const ans=months[(i+11)%12];return mark(q(`Bulan sebelum <b>${m}</b> ialah?`,ans,[Nq(months[(i+1)%12],'month'),Nq(months[(i+10)%12],'month'),Nq(m,'month')],'Bergerak satu bulan ke belakang.','Tahun 1 · Bulan Sebelum'),id,'5.1.4',mode,'verbal','reasoning',s,['month']);}
  const ans=months[(i+2)%12];return mark(q(`Dua bulan selepas <b>${m}</b> ialah?`,ans,[Nq(months[(i+1)%12],'month'),Nq(months[(i+3)%12],'month'),Nq(months[(i+11)%12],'month')],'Bergerak dua langkah dalam urutan bulan.','Tahun 1 · Dua Bulan Lagi'),id,'5.1.4',mode,'verbal','reasoning',s,['month']);

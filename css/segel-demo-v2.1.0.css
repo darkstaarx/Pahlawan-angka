@@ -308,6 +308,8 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .resultCoach{padding-top:13px}
 }
 
+.segelPrompt{width:100%}
+
 /* ---------- butang hub ---------- */
 .hubSegelDemo{
   display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:12px 14px;

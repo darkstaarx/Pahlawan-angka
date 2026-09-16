@@ -1,4 +1,4 @@
-// App shell v3.76.0 — butang Langkau dan skrin Berjaya mengikut mockup Unity.
+// App shell v3.76.1 — soalan mengalir sebagai ayat, dan pepijat bank Tahun 1 dibaiki.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

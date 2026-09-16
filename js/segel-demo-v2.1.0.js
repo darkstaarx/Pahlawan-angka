@@ -1039,9 +1039,21 @@
     $('segelTitle').textContent=(typeof questionLearningTitle==='function')
       ? questionLearningTitle(meta,q) : (meta.title||'Kemahiran');
     $('segelSub').textContent=`Tahun ${grade} · ${meta.domain||'Matematik'}`;
-    $('segelCount').textContent=`${run.asked+1} / ${MAX_Q}`;
+    /* MAX_Q ialah HAD, bukan sasaran: pusingan tamat sebaik semua segel pecah,
+       iaitu 10 jawapan betul, jadi "10 / 12" di sini bercanggah dengan "10 / 10"
+       pada skrin keputusan walaupun kedua-duanya betul. Yang ditunjuk sekarang
+       ialah nombor soalan sahaja; bar segel di atas sudah menunjukkan matlamat
+       sebenar. */
+    $('segelCount').textContent=`Soalan ${run.asked+1}`;
     $('segelQLabel').textContent=`Soalan ${run.asked+1}`;
-    $('segelQuestion').innerHTML=q.prompt;
+    /* .question ialah grid (game.css) supaya kandungannya terpusat menegak.
+       Grid membloksifikasi SETIAP anak, jadi menyuap prompt terus ke situ
+       memecahkan setiap <b> dan setiap serpihan teks di antaranya ke baris
+       sendiri — itulah sebabnya "Ayat matematik <b>10 − 19</b>. Cerita..."
+       terpapar sebagai tiga baris dengan noktah terpisah. Satu pembalut
+       menjadikan grid itu berisi satu item, jadi teks mengalir seperti biasa. */
+    $('segelQuestion').innerHTML='<div class="segelPrompt"></div>';
+    $('segelQuestion').firstChild.innerHTML=q.prompt;
     $('segelFeedback').textContent='';
     run.usedHint=false;
     const hintBtn=$('segelHint');
