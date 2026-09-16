@@ -1,6 +1,6 @@
 /* Pahlawan Angka — single source of truth for release version.
    Future releases should bump ONLY this value. */
-globalThis.PA_APP_VERSION='3.75.2';
+globalThis.PA_APP_VERSION='3.75.3';
 
 (function syncVersionUi(){
   if(typeof document==='undefined')return;
@@ -25,5 +25,18 @@ globalThis.PA_APP_VERSION='3.75.2';
   script.src=`js/segel-interaction-bridge-v1.0.2.js?v=${globalThis.PA_APP_VERSION}`;
   script.async=false;
   script.dataset.segelInteractionBridge='1';
+  document.head.appendChild(script);
+})();
+
+/* Demo v2 entry cinematic. The wrapper prepares the live Demo behind the
+   supplied portrait video, then fades the video away only when both the video
+   and Demo boot have completed. */
+(function loadSegelEntryCinematic(){
+  if(typeof document==='undefined')return;
+  if(document.querySelector('script[data-segel-entry-cinematic]'))return;
+  const script=document.createElement('script');
+  script.src=`js/segel-entry-cinematic-v1.0.0.js?v=${globalThis.PA_APP_VERSION}`;
+  script.async=false;
+  script.dataset.segelEntryCinematic='1';
   document.head.appendChild(script);
 })();
