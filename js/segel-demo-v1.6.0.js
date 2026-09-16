@@ -1,4 +1,4 @@
-/* Segel Tambah — demo pentas WebGL v1.5.0 (fail: segel-demo-v1.5.0.js)
+/* Segel Tambah — demo pentas WebGL v1.6.0 (fail: segel-demo-v1.6.0.js)
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -190,7 +190,8 @@
       try{
         probeCtx.clearRect(0,0,N,N); probeCtx.drawImage(img,0,0,N,N);
         const d=probeCtx.getImageData(0,0,N,N).data;
-        let x0=N,y0=N,x1=-1,y1=-1, ringRow=-1, ringCount=-1;
+        let x0=N,y0=N,x1=-1,y1=-1, maxSolid=0;
+        const solidRow=new Array(N).fill(0);
         for(let y=0;y<N;y++){
           let solid=0;
           for(let x=0;x<N;x++){
@@ -198,11 +199,16 @@
             if(a>18){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y }
             if(a>150)solid++;
           }
-          // Gelang tapak kubah ialah jalur paling tebal di bahagian bawah.
-          if(y>N*.55 && solid>ringCount){ ringCount=solid; ringRow=y }
+          solidRow[y]=solid; if(solid>maxSolid)maxSolid=solid;
         }
         if(x1<0)return {foot:0,cx:0,ring:1};
-        return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5, ring:ringRow>=0?ringRow/N:1};
+        /* Gelang tapak ialah jalur TERBAWAH yang masih pekat, bukan yang paling
+           tebal. Emas mempunyai gelang dalam yang lebih tebal pada 0.73 dan
+           gelang lantai sebenarnya pada 0.92 — memilih yang paling tebal
+           menenggelamkan kubah emas sedalam 0.19 bingkai. */
+        let ringRow=y1;
+        for(let y=N-1;y>=0;y--){ if(solidRow[y]>maxSolid*.30){ ringRow=y; break } }
+        return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5, ring:ringRow/N};
       }catch(_){ return {foot:0,cx:0,ring:1} }
     }
     function entry(tex,upp){
@@ -292,15 +298,50 @@
           'c.rgb=mix(c.rgb,vec3(l),uGrey);gl_FragColor=vec4(c.rgb,c.a*uOpacity);}'
       });
     }
+    /* Satu satah di hadapan Aurora hanya menjadikannya "di belakang kaca" —
+       dia tidak pernah kelihatan DI DALAM. Jadi setiap kubah dilukis dua kali,
+       satu di belakang Aurora dan satu di hadapannya, dan dia duduk di antara
+       keduanya. renderOrder ditetapkan supaya susunan itu tidak bergantung
+       pada pengisihan kedalaman bahan lutsinar. */
     const seals=TIERS.map((tier,i)=>{
       const e=sealEntry(sealTex[i], sealTex[i]&&sealTex[i].image ? tier.height/sealTex[i].image.height : tier.height/768);
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
-      m.scale.set(e.w,e.h,1);
-      m.position.set(SEAL_X+e.offX, GROUND+e.offY, -.26);
-      m.visible=(i===0);
-      scene.add(m);
-      return {tier, mesh:m, base:{w:e.w,h:e.h}, damage:0, broken:false, breakT:-1};
+      const mk=(z,order)=>{
+        const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
+        m.scale.set(e.w,e.h,1);
+        m.position.set(SEAL_X+e.offX, GROUND+e.offY, z);
+        m.renderOrder=order; m.visible=(i===0); scene.add(m); return m;
+      };
+      return {tier, back:mk(-.62,0), front:mk(-.02,3),
+              base:{w:e.w,h:e.h}, damage:0, broken:false, breakT:-1};
     });
+    pet.renderOrder=1;
+    hero.renderOrder=4;
+
+    /* Cengkerang sfera sebenar mengelilingi Aurora — inilah yang menjadikan
+       "terkurung" terbaca: tepinya menyala mengikut sudut pandang (fresnel),
+       sesuatu yang tidak mungkin dibuat dengan sprite rata. */
+    const shellUni={uTime:{value:0},uPower:{value:1},uGrey:{value:0},
+                    uTint:{value:new THREE.Color(TIERS[0].color)}};
+    const shell=new THREE.Mesh(new THREE.SphereGeometry(1,40,28),
+      new THREE.ShaderMaterial({
+        uniforms:shellUni, transparent:true, depthWrite:false,
+        blending:THREE.AdditiveBlending, side:THREE.DoubleSide,
+        vertexShader:'varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.);vP=mv.xyz;gl_Position=projectionMatrix*mv;}',
+        fragmentShader:'uniform float uTime;uniform float uPower;uniform float uGrey;uniform vec3 uTint;varying vec3 vN;varying vec3 vP;'+
+          'void main(){vec3 V=normalize(-vP);float f=pow(1.0-abs(dot(vN,V)),2.6);'+
+          'float band=.5+.5*sin(vP.y*9.0-uTime*1.4);'+
+          'vec3 col=mix(uTint,vec3(dot(uTint,vec3(.299,.587,.114))),uGrey);'+
+          'float a=f*uPower*(.62+.38*band);'+
+          'gl_FragColor=vec4(col*(a*1.9),a*.9);}'
+      }));
+    shell.renderOrder=2; scene.add(shell);
+    function fitShell(){
+      const tier=TIERS[Math.min(S.active,TIERS.length-1)];
+      const r=tier.height*.33;
+      shell.scale.set(r,r*1.02,r);
+      shell.position.set(SEAL_X, GROUND+r*.96, -.30);
+      shellUni.uTint.value.setHex(tier.color);
+    }
 
     /* gelombang kejut bila segel retak */
     function ringTex(){
@@ -399,31 +440,44 @@
       backGlow.material.color.setHex(activeTier.color);
       backGlow.material.opacity=S.active>=TIERS.length?0:.42+(reduceMotion?0:.1*Math.sin(tAcc*2));
       S.grey=damp(S.grey,0,3.4,dt);
+      shellUni.uTime.value=tAcc;
       seals.forEach((s,i)=>{
-        const u=s.mesh.material.uniforms;
+        const layers=[s.back,s.front];
         if(s.breakT>=0){
           s.breakT+=dt;
           const k=Math.min(1,s.breakT/.42);
           // Kepit dulu (ketat), baru meletup keluar — itu yang buat mata baca
           // "pop" dan bukan "pudar".
           const grow=k<.22 ? 1-.10*(k/.22) : 1+.62*((k-.22)/.78);
-          s.mesh.scale.set(s.base.w*grow, s.base.h*grow, 1);
-          u.uOpacity.value=k<.22 ? 1 : 1-((k-.22)/.78);
-          u.uGrey.value=1;
-          if(k>=1){ s.breakT=-1; s.mesh.visible=false }
+          const op=k<.22 ? 1 : 1-((k-.22)/.78);
+          layers.forEach((m,li)=>{
+            m.scale.set(s.base.w*grow, s.base.h*grow, 1);
+            m.material.uniforms.uOpacity.value=op*(li?1:.58);
+            m.material.uniforms.uGrey.value=1;
+          });
+          if(k>=1){ s.breakT=-1; layers.forEach(m=>m.visible=false) }
           return;
         }
-        s.mesh.visible=(i===S.active);
-        if(!s.mesh.visible)return;
+        const on=(i===S.active);
+        layers.forEach(m=>m.visible=on);
+        if(!on)return;
         // Nafas: kubah mengembang dan mengecut perlahan, bukan sekadar pudar.
         const breath=reduceMotion?0:Math.sin(tAcc*Math.PI*2/s.tier.period);
         const grow=1+breath*.034;
-        s.mesh.scale.set(s.base.w*grow, s.base.h*grow, 1);
-        u.uOpacity.value=.92+(reduceMotion?.06:breath*.07);
-        // Kelabu berkekalan mengikut kerosakan, ditambah kilas kelabu penuh
-        // pada detik hentaman.
-        u.uGrey.value=Math.min(1, Math.max(S.grey, s.damage*.55));
+        const base=.92+(reduceMotion?.06:breath*.07);
+        const grey=Math.min(1, Math.max(S.grey, s.damage*.55));
+        layers.forEach((m,li)=>{
+          m.scale.set(s.base.w*grow, s.base.h*grow, 1);
+          // Lapisan belakang lebih malap: ia dilihat menembusi Aurora.
+          m.material.uniforms.uOpacity.value=base*(li?1:.58);
+          m.material.uniforms.uGrey.value=grey;
+        });
+        shell.visible=true;
+        shell.scale.setScalar(s.tier.height*.33*grow);
+        shellUni.uPower.value=(.85+breath*.12);
+        shellUni.uGrey.value=grey;
       });
+      if(S.active>=TIERS.length)shell.visible=false;
 
       S.shake=damp(S.shake,0,6,dt);
       camera.position.x=(Math.random()-.5)*S.shake;
@@ -525,6 +579,7 @@
       S.camY=GROUND+FLOOR_MARGIN*visH;
       fitBg();
     }
+    fitShell();
     const ro=new ResizeObserver(resize); ro.observe(host);
     resize(); raf=requestAnimationFrame(frame);
 
@@ -573,6 +628,7 @@
           popSound();
           burst(6.5,0xffffff); S.waveT=0; S.flashT=0; S.shake=.46;
           S.active=Math.min(TIERS.length,S.active+1);
+          fitShell();
           return {broken:true, tier:s.tier};
         }
         return {broken:false, tier:s.tier};
@@ -592,6 +648,7 @@
           s.damage=1; s.broken=true; s.breakT=0;
           popSound(); burst(6,0xffffff); S.flashT=0; S.shake=.4;
           S.active++;
+          fitShell();
           await wait(320);
         }
       },
@@ -618,10 +675,11 @@
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND;
         S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD;
         seals.forEach((s,i)=>{ s.damage=0; s.broken=false; s.breakT=-1;
-          s.mesh.visible=(i===0);
-          s.mesh.material.uniforms.uOpacity.value=1;
-          s.mesh.material.uniforms.uGrey.value=0;
-          s.mesh.scale.set(s.base.w,s.base.h,1) });
+          [s.back,s.front].forEach(m=>{ m.visible=(i===0);
+            m.material.uniforms.uOpacity.value=1;
+            m.material.uniforms.uGrey.value=0;
+            m.scale.set(s.base.w,s.base.h,1) }) });
+        shell.visible=true; fitShell();
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },

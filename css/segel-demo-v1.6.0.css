@@ -1,4 +1,4 @@
-/* Segel Tambah demo v1.5.0 — pentas WebGL + UI DOM.
+/* Segel Tambah demo v1.6.0 — pentas WebGL + UI DOM.
    Kad soalan sengaja guna .qcard/.question/.answers/.ans yang sedia ada,
    supaya soalan sebenar dari bank kelihatan sama macam dalam battle. */
 
@@ -127,12 +127,15 @@ body[data-screen="segelDemo"] .appHeader{display:none}
              0 1px 0 #b59a5f, 0 4px 10px rgba(4,16,30,.4)
 }
 .segelCard .ans:focus-visible{outline:3px solid #5fcdf5;outline-offset:3px}
-/* Betul = biru tema app (bukan hijau), salah = merah. */
+/* Betul = biru tema app (bukan hijau), salah = merah.
+   Biru mockup jauh lebih terang daripada biru chrome app, jadi ia dinaikkan
+   tepu dan cerahnya dan diberi cahaya luar supaya betul-betul menyala. */
 .segelCard .ans.ok{
-  color:#fff;background:linear-gradient(180deg,#5cb7f7,#1f6fd0);
-  text-shadow:0 2px 6px rgba(6,26,52,.55);
-  box-shadow:inset 0 1px 0 #bfe6ff, inset 0 0 0 2px #9ad4ff,
-             0 4px 0 #15498c, 0 9px 22px rgba(38,124,214,.5)
+  color:#fff;background:linear-gradient(180deg,#59c8ff 0%,#1f93f5 48%,#0b6fe0 100%);
+  text-shadow:0 2px 7px rgba(3,24,58,.6);
+  box-shadow:inset 0 1px 0 #dff2ff, inset 0 0 0 2px #8fd8ff,
+             0 4px 0 #0a4fa5, 0 0 22px rgba(60,170,255,.55),
+             0 10px 26px rgba(20,110,210,.55)
 }
 .segelCard .ans.no{
   color:#fff;background:linear-gradient(180deg,#f47f8e,#c2314a);
