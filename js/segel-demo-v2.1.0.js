@@ -1,4 +1,9 @@
-/* Segel Tambah — demo pentas WebGL v2.1.0 (fail: segel-demo-v2.1.0.js)
+/* Gembok Tambah — demo pentas WebGL v2.1.0 (fail: segel-demo-v2.1.0.js)
+ *
+ * NOTA ISTILAH: yang murid baca ialah "Gembok"; "segel" dalam nama fail,
+ * pengecam, kelas CSS dan laluan aset sengaja DIKEKALKAN. Menamakan semula
+ * semuanya ialah refactor besar tanpa sebarang faedah kepada murid. Kalau
+ * anda menambah teks baharu yang dilihat murid, tulis "gembok".
  *
  * Kenapa demo ini wujud: ia menjalankan soalan SEBENAR dari bank (generate())
  * di atas pentas Three.js, supaya kita boleh nilai rasa pentas baharu tanpa
@@ -1112,10 +1117,10 @@
       run.tally[run.usedHint?'hint':'own']++;
       await stage.strike();
       const outcome=stage.hitSeal();
-      if(outcome.broken)toast('SEGEL '+outcome.tier.name+' PECAH!');
+      if(outcome.broken)toast('GEMBOK '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken
-        ? `Segel ${outcome.tier.name} pecah!`
-        : 'Betul! Segel retak.';
+        ? `Gembok ${outcome.tier.name} pecah!`
+        : 'Betul! Gembok retak.';
       paintSeal();
       if(stage.allBroken())return celebrate();
     }else{

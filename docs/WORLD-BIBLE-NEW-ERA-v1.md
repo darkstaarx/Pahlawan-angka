@@ -15,7 +15,7 @@ Cahaya yang rosak tidak hilang begitu sahaja. Ia tercemar lalu berubah menjadi t
 
 # **Kabut Lalai**
 
-Kabut Lalai ialah tenaga yang lahir daripada ilmu yang ditinggalkan dan disalahgunakan. Ia mencari makhluk-makhluk mistik yang membawa serpihan Cahaya Ilmu, memerangkap mereka dengan **Segel Ilmu**, dan menyedut cahaya mereka untuk terus hidup.
+Kabut Lalai ialah tenaga yang lahir daripada ilmu yang ditinggalkan dan disalahgunakan. Ia mencari makhluk-makhluk mistik yang membawa serpihan Cahaya Ilmu, memerangkap mereka dengan **Gembok Ilmu**, dan menyedut cahaya mereka untuk terus hidup.
 
 Semakin banyak makhluk ditangkap:
 - semakin kuat Kabut Lalai,
@@ -61,12 +61,12 @@ Permainan boleh membuka misteri secara berperingkat:
 
 ## 3. The Three Disciples
 
-Cikgu Dimensi mempunyai tiga anak didik utama yang menjelajah dunia untuk memecahkan Segel Matematik dan membebaskan makhluk Cahaya.
+Cikgu Dimensi mempunyai tiga anak didik utama yang menjelajah dunia untuk memecahkan Gembok Matematik dan membebaskan makhluk Cahaya.
 
 ### Wira
 Tema: **Keberanian + Tindakan**
 
-Wira berada di barisan hadapan. Apabila masalah matematik diselesaikan, Wira menggunakan pedang dan tenaga matematik untuk memecahkan struktur Segel Ilmu.
+Wira berada di barisan hadapan. Apabila masalah matematik diselesaikan, Wira menggunakan pedang dan tenaga matematik untuk memecahkan struktur Gembok Ilmu.
 
 Wira tidak menyerang makhluk yang terperangkap.
 
@@ -90,19 +90,19 @@ Matematik bukan sekadar soalan yang diletakkan di atas gameplay.
 
 Dalam lore dunia ini:
 
-# **Matematik ialah kunci sebenar kepada Segel Matematik.**
+# **Matematik ialah kunci sebenar kepada Gembok Matematik.**
 
-Segel tidak boleh dihancurkan semata-mata dengan kekuatan fizikal.
+Gembok tidak boleh dihancurkan semata-mata dengan kekuatan fizikal.
 
 Apabila pemain menyelesaikan matematik dengan betul:
-1. struktur segel menjadi terdedah,
+1. struktur gembok menjadi terdedah,
 2. hero boleh menyerang atau menyahaktifkan titik matematiknya,
-3. satu bahagian segel terbuka,
+3. satu bahagian gembok terbuka,
 4. makhluk semakin hampir dibebaskan.
 
 Ini mewujudkan fantasy utama:
 
-> **Jawab → Faham → Pecahkan Segel → Selamatkan Makhluk.**
+> **Jawab → Faham → Pecahkan Gembok → Selamatkan Makhluk.**
 
 ---
 
@@ -124,7 +124,7 @@ Visual direction:
 - tiada gore,
 - tiada horror body imagery.
 
-Apabila segel terakhir pecah:
+Apabila gembok terakhir pecah:
 - tenaga tercemar boleh keluar daripada sangkar,
 - cuba bertahan seketika,
 - kemudian dissolve/hilang,
@@ -204,15 +204,15 @@ Darjat Makhluk menentukan perkara seperti:
 - jumlah rescue/trust yang diperlukan,
 - presentation/reward significance.
 
-Darjat Makhluk **tidak semestinya sama** dengan kekuatan segel.
+Darjat Makhluk **tidak semestinya sama** dengan kekuatan gembok.
 
-Makhluk jarang boleh muncul dengan beberapa jenis segel mengikut stage.
+Makhluk jarang boleh muncul dengan beberapa jenis gembok mengikut stage.
 
 ---
 
 ## 9. Seal Difficulty Tier
 
-Segel mempunyai tier sendiri yang berasingan daripada Darjat Makhluk.
+Gembok mempunyai tier sendiri yang berasingan daripada Darjat Makhluk.
 
 Current visual progression:
 
@@ -449,7 +449,7 @@ Avoid generic magic that has no mathematical meaning.
 2. Creatures are never enemies.
 3. Players do not buy pets.
 4. Companions are earned through rescue and trust.
-5. Mathematics is the canonical mechanism that opens Segel Ilmu.
+5. Mathematics is the canonical mechanism that opens Gembok Ilmu.
 6. Cikgu Dimensi is one of the Seven Masters and remains the mathematics teacher/mentor.
 7. Wira, Sidma and Bunga are Cikgu Dimensi's three principal disciples.
 8. Kabut Lalai traps and drains creatures; it does not require horror presentation.
@@ -485,11 +485,11 @@ Do not build the complete creature collection system, Seven Masters campaign, or
 |---|---|
 | Knowledge energy | Cahaya Ilmu |
 | Corrupted energy | Kabut Lalai |
-| Magical prison/lock | Segel Ilmu / Segel Matematik |
+| Magical prison/lock | Gembok Ilmu / Gembok Matematik |
 | Mathematics Master | Cikgu Dimensi |
 | Ancient guardians | Tujuh Master Ilmu |
 | Creature rarity/prestige | Darjat Makhluk |
-| Rescue difficulty | Tier Segel |
+| Rescue difficulty | Tier Gembok |
 | Early tier | Gangsa |
 | Mid tier | Perak |
 | Advanced tier | Emas |

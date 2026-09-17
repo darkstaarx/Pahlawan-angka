@@ -1,4 +1,4 @@
-// App shell v3.76.4 — segel melantun bila kena, sayap crest lebih terserlah.
+// App shell v3.77.0 — istilah murid: Segel menjadi Gembok.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
