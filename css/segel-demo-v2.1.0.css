@@ -320,13 +320,16 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 /* Bintang tengah menjulur kira-kira 24px di atas kotak crest. `.segelDone`
    ialah bekas skrol, jadi apa-apa di atas tepinya DIKERAT — itu sebabnya
    bintang tengah kelihatan terpotong. Margin atas ini memberi ruang itu. */
-.resultCrest{position:relative;width:calc(100% - 20px);aspect-ratio:4/1;margin:32px auto 2px;isolation:isolate}
+.resultCrest{position:relative;width:calc(100% - 56px);aspect-ratio:4/1;margin:32px auto 2px;isolation:isolate}
 .resultCrestFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1}
 /* Sayap dahulu 38% lebar pada `top:15%`: hujungnya terkeluar 21px di kiri dan
    kanan skrin, dan pusatnya 10px lebih rendah daripada sepanduk. Kini ia
    dipusatkan pada paksi sepanduk (53.5% tinggi crest) dan ditarik masuk. */
-.resultCrestSide{position:absolute;top:53.5%;transform:translateY(-50%);width:34%;height:auto;z-index:-2;pointer-events:none}
-.resultCrestSideLeft{right:74%}.resultCrestSideRight{left:74%}
+/* Sayap perlu ruang di luar crest untuk kelihatan. Sebab itu crest sendiri
+   dikecilkan (100% - 56px): lebar yang dilepaskan itu menjadi ruang julur
+   sayap, tanpa mana-mana bahagiannya terkeluar skrin. */
+.resultCrestSide{position:absolute;top:53.5%;transform:translateY(-50%);width:40%;height:auto;z-index:-2;pointer-events:none}
+.resultCrestSideLeft{right:76%}.resultCrestSideRight{left:76%}
 .resultCrest .resultStars{position:absolute;left:50%;bottom:69%;transform:translateX(-50%);width:max-content;margin:0;padding:0;z-index:2}
 .resultCrest .resultStars i{width:38px;height:38px;background-image:url("../assets/ui/victory-result/star-empty.png")}.resultCrest .resultStars i:nth-child(2){width:50px;height:50px}
 .resultCrest .resultStars i.on{background-image:url("../assets/ui/victory-result/star-earned.png")}
@@ -345,7 +348,7 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .resultCard{min-height:186px}
   .resultCardContent{min-height:186px;padding:26px 20px 16px}
   /* Bintang tengah 44px menjulur kira-kira 19px, jadi 20px sudah melepasinya. */
-  .resultCrest{width:calc(100% - 34px);margin-top:20px}
+  .resultCrest{width:calc(100% - 60px);margin-top:20px}
   .resultCrest .resultStars i{width:34px;height:34px}
   .resultCrest .resultStars i:nth-child(2){width:44px;height:44px}
   .resultStats{padding-bottom:9px}
@@ -423,6 +426,11 @@ body[data-screen="segelDemo"] .appHeader{display:none}
     padding:calc(8px + env(safe-area-inset-top,0px)) 12px calc(8px + env(safe-area-inset-bottom,0px))}
   .segelQHead{margin:0 0 7px}
   .segelCard .question{font-size:19px}
+  /* Melintang mengecilkan soalan tetapi tidak butang jawapan, jadi soalan
+     berpilihan panjang (corak bentuk, padanan cerita) menolak baris bawah
+     ke luar skrin. Butang dikecilkan juga di sini; potret tidak berubah. */
+  .segelCard .answers{gap:8px}
+  .segelCard .ans{font-size:16px;padding:11px 7px;border-radius:12px}
   .segelLock{display:none}
   .segelTag{top:10%}
   /* Melintang: tiada ruang untuk helaian separa, jadi ia menutup penuh. */

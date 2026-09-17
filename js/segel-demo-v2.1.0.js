@@ -590,7 +590,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
-             shake:0,waveT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
+             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
              heroLock:null,grey:0,coinT:-1};
@@ -661,6 +661,18 @@
       petShadow.scale.set(PET_SHADOW_W*(1-.3*rise), PET_SHADOW_W*.34*(1-.3*rise), 1);
       petShadow.material.opacity=1-.45*Math.min(1,rise);
 
+      /* Lantunan hentaman. Nafas sahaja tidak cukup untuk membaca sebagai
+         "kena pukul" kerana ia berterusan dan perlahan. Ini pula fana: satu
+         ayunan terredam yang menekan kubah ke dalam, terlajak keluar sedikit,
+         kemudian reda. Cahayanya yang paling kuat berdenyut; saiznya bergerak
+         cukup untuk mata tahu ia melantun, bukan sekadar berkelip. */
+      let recoil=0;
+      if(S.hitT>=0){
+        S.hitT+=dt;
+        const k=S.hitT/HIT_REBOUND;
+        if(k>=1)S.hitT=-1;
+        else recoil=Math.sin(k*Math.PI*2.2)*Math.exp(-k*4.2);
+      }
       // Segel: satu tier kelihatan, bernafas perlahan, kelabu bila terkena.
       const activeTier=TIERS[Math.min(S.active,TIERS.length-1)];
       backGlow.material.color.setHex(activeTier.color);
@@ -689,14 +701,15 @@
            sampai kelihatan mengepam, bukan bernafas. Kekalkan denyut itu pada
            cahaya, bukan pada saiz. */
         const breath=reduceMotion?0:Math.sin(tAcc*Math.PI*2/s.tier.period);
-        const grow=1+breath*.011;
+        const grow=1+breath*.011+recoil*.05;
+        const flare=Math.abs(recoil);
         const grey=Math.min(1, Math.max(S.grey, s.damage*.55));
         m.scale.set(s.base.w*grow, s.base.h*grow, 1);
-        u.uOpacity.value=.93+(reduceMotion?.05:breath*.05);
+        u.uOpacity.value=Math.min(1,.93+(reduceMotion?.05:breath*.05)+flare*.07);
         u.uGrey.value=grey;
         shell.visible=true;
         shell.scale.setScalar(s.tier.visible*.40*grow);
-        shellUni.uPower.value=(.88+breath*.08);
+        shellUni.uPower.value=(.88+breath*.08+flare*1.15);
         shellUni.uGrey.value=grey;
         floorGlow.visible=true;
         floorGlow.material.opacity=(.44+(reduceMotion?0:breath*.08))*(1-grey*.6);
@@ -800,7 +813,7 @@
       if(S.waveT>=0){
         S.waveT+=dt; const k=S.waveT/.55;
         if(k>=1){ S.waveT=-1; waveMat.opacity=0 }
-        else { const s=1+k*1.35; wave.scale.set(s,s,1); waveMat.opacity=(1-k)*.9 }
+        else { const s=1+k*S.waveScale; wave.scale.set(s,s,1); waveMat.opacity=(1-k)*.9 }
       }
 
       for(let i=0;i<PN;i++){
@@ -823,6 +836,7 @@
        yang lebih besar yang menang, jadi satu kod melayan telefon menegak,
        telefon melintang dan tablet. */
     const WORLD_W=6.0, MIN_H=5.2, FLOOR_MARGIN=.30;
+    const HIT_REBOUND=.42;         // tempoh lantunan hentaman, saat
     function resize(){
       const w=host.clientWidth, h=host.clientHeight;
       if(!w||!h)return;
@@ -880,15 +894,21 @@
         const s=seals[S.active]; if(!s)return {broken:false};
         s.damage=Math.min(1,s.damage+1/s.tier.hits);
         S.grey=1;                      // kilas kelabu pada detik hentaman
+        if(!reduceMotion)S.hitT=0;     // kubah melantun
         if(s.damage>=.999){
           s.broken=true; s.breakT=0;
           if(!reduceMotion)shatter(s);
           popSound();
-          burst(6.5,s.tier.color); S.waveT=0; S.flashT=0; S.shake=.46;
+          burst(6.5,s.tier.color);
+          waveMat.color.setHex(s.tier.color); S.waveScale=1.35; S.waveT=0;
+          S.flashT=0; S.shake=.46; S.hitT=-1;
           S.active=Math.min(TIERS.length,S.active+1);
           fitShell();
           return {broken:true, tier:s.tier};
         }
+        // Cincin kejutan kecil berwarna tier — inilah yang menjadikan hentaman
+        // terbaca sebagai tenaga diserap perisai, bukan sekadar kelipan.
+        if(!reduceMotion){ waveMat.color.setHex(s.tier.color); S.waveScale=.62; S.waveT=0 }
         return {broken:false, tier:s.tier};
       },
       remaining(){

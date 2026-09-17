@@ -1,4 +1,4 @@
-// App shell v3.76.3 — crest dijajarkan, butang aset dipulihkan, nafas segel dikecilkan.
+// App shell v3.76.4 — segel melantun bila kena, sayap crest lebih terserlah.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
