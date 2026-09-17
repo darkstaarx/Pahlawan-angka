@@ -1,0 +1,212 @@
+/* Menu V2 — laman utama alternatif. v1.0.0
+   Setiap nombor pada skrin ini datang daripada profil sebenar; tiada statistik
+   direka. Satu-satunya nilai yang belum dijejaki ialah ikatan pet, dan ia
+   ditunjuk sebagai 0% dengan nota yang jujur, bukan angka rekaan. */
+/* Menu V2 membawa kepalanya sendiri, jadi bar aplikasi disembunyikan —
+   sama seperti yang dilakukan skrin Demo. */
+body[data-screen="menuV2"] .appHeader{display:none}
+body[data-screen="menuV2"] #appBottomNav{display:none}
+.mv2Screen{position:relative;padding:0;overflow:hidden}
+.mv2Screen.on{display:flex;flex-direction:column;height:100dvh;max-height:100dvh}
+
+.mv2Sky{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(120% 60% at 50% 0%, #bfe4ff 0%, #8ec7f2 38%, #5ea3d8 62%, #2f6ea8 100%);
+}
+.mv2Sky::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(7,18,34,0) 42%,rgba(7,18,34,.55) 78%,rgba(7,18,34,.9) 100%)
+}
+
+.mv2Scroll{
+  position:relative;z-index:1;flex:1 1 auto;min-height:0;overflow-y:auto;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;
+  -webkit-overflow-scrolling:touch
+}
+
+/* ---------- kepala ---------- */
+.mv2Head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.mv2Crest{
+  flex:1 1 auto;min-width:0;text-align:center;
+  padding:8px 10px;border-radius:16px;
+  background:linear-gradient(#1b3354,#122744);
+  border:2px solid #b78b47;box-shadow:0 8px 20px #0007
+}
+.mv2Crest b{display:block;font-size:clamp(15px,4.6vw,20px);font-weight:950;color:#ffe5a6;
+  letter-spacing:.2px;white-space:nowrap;text-shadow:0 2px 6px #0008}
+.mv2Crest small{display:block;font-size:10.5px;color:#cfe0f0;margin-top:1px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.mv2Coins,.mv2Gear{
+  flex:none;height:42px;display:grid;place-items:center;
+  border-radius:14px;border:2px solid #b78b47;
+  background:linear-gradient(#1b3354,#122744);color:#ffe5a6;
+  font-weight:950;font-size:14px;box-shadow:0 6px 16px #0007
+}
+.mv2Coins{grid-auto-flow:column;gap:5px;padding:0 10px;white-space:nowrap}
+.mv2Coins img{width:19px;height:19px}
+.mv2Gear{width:42px;cursor:pointer;padding:0}
+.mv2Gear svg{width:22px;height:22px;fill:none;stroke:#ffe5a6;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- pentas hero ---------- */
+.mv2Stage{
+  position:relative;display:flex;align-items:flex-end;justify-content:center;gap:2%;
+  height:clamp(126px,19vh,184px);margin:0 0 2px
+}
+.mv2Hero{height:100%;width:auto;object-fit:contain;filter:drop-shadow(0 10px 18px #0005)}
+.mv2Pet{height:52%;width:auto;object-fit:contain;filter:drop-shadow(0 8px 14px #0005)}
+.mv2Pet.hidden,.mv2PetFace.hidden{display:none}
+
+/* ---------- pengalaman ---------- */
+.mv2Xp{
+  display:flex;align-items:center;gap:9px;margin:0 2px 10px;
+  padding:7px 11px;border-radius:13px;
+  background:rgba(8,22,40,.62);border:1px solid #ffffff2e;
+  backdrop-filter:blur(3px)
+}
+.mv2Lv{flex:none;font-size:12px;font-weight:950;color:#ffe5a6}
+.mv2XpBar{flex:1 1 auto;height:9px;border-radius:99px;background:#0b1d33;overflow:hidden;
+  box-shadow:inset 0 0 0 1px #ffffff1f}
+.mv2XpBar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#59c8ff,#0b6fe0);transition:width .5s ease}
+.mv2Xp small{flex:none;font-size:11px;font-weight:800;color:#d6e6f5;font-variant-numeric:tabular-nums}
+
+/* ---------- kad utama ---------- */
+.mv2Card{
+  position:relative;display:flex;align-items:center;gap:12px;width:100%;
+  margin-bottom:10px;padding:12px;border:0;border-radius:20px;cursor:pointer;
+  text-align:left;overflow:hidden;font-family:inherit;
+  box-shadow:0 10px 24px #0006
+}
+.mv2CardBody{flex:1 1 auto;min-width:0;display:block}
+.mv2CardBody b{display:block;font-size:clamp(16px,4.7vw,19px);font-weight:950;line-height:1.15;color:#14335c}
+.mv2CardBody small{display:block;margin-top:3px;font-size:12.5px;line-height:1.35;color:#3d5c82}
+.mv2Chev{flex:none;width:20px;height:20px;fill:none;stroke:#3d5c82;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+
+.mv2Quest{background:linear-gradient(#fffdf4,#f6ecd4)}
+.mv2QuestArt{flex:none;width:94px;height:auto;object-fit:contain;
+  filter:drop-shadow(0 4px 8px #0002)}
+.mv2QuestBar{display:block;height:7px;margin:7px 0 8px;border-radius:99px;
+  background:#e2d5b4;overflow:hidden}
+.mv2QuestBar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#f2cd78,#d9a531);transition:width .5s ease}
+
+.mv2Learn{background:#dff0ff}
+.mv2LearnArt{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:left center;pointer-events:none}
+.mv2LearnCikgu{position:relative;z-index:1;flex:none;width:86px;height:86px;
+  object-fit:contain;filter:drop-shadow(0 4px 9px #0003)}
+.mv2Learn .mv2CardBody,.mv2Learn .mv2Chev{position:relative;z-index:1}
+
+.mv2Cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  min-height:44px;padding:0 16px;border-radius:13px;white-space:nowrap;
+  font-size:clamp(13px,3.7vw,15px);font-weight:950;border:2px solid #b78b47
+}
+.mv2Cta svg{width:17px;height:17px;fill:none;stroke-width:2.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.mv2Cta.gold{background:#f2cd78;color:#3a2f10}
+.mv2Cta.gold svg{stroke:#3a2f10}
+.mv2Cta.navy{background:linear-gradient(#1b3354,#122744);color:#fff6df;margin-top:9px}
+.mv2Cta.navy svg{stroke:#f2cd78}
+.mv2Card:active{transform:translateY(1px)}
+
+/* ---------- dua kad statistik ---------- */
+.mv2Stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.mv2Stat{
+  padding:10px;border-radius:17px;background:#fffdf4;
+  box-shadow:0 8px 18px #0005,inset 0 0 0 1.5px #e7d9b7
+}
+.mv2Stat h3{
+  display:flex;align-items:center;gap:6px;margin:0 0 7px;
+  font-size:13px;font-weight:950;color:#14335c
+}
+.mv2Stat h3 svg{width:17px;height:17px;flex:none;fill:none;stroke:#2f6ea8;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.mv2StatTop{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:6px}
+.mv2StatTop span{font-size:12.5px;font-weight:800;color:#3d5c82;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mv2StatTop b{flex:none;font-size:19px;font-weight:950;color:#14335c;font-variant-numeric:tabular-nums}
+.mv2Bar{display:block;height:8px;border-radius:99px;background:#e2e8f0;overflow:hidden}
+.mv2Bar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#59c8ff,#0b6fe0);transition:width .5s ease}
+.mv2Bar.pet i{background:linear-gradient(90deg,#ff8fb1,#e2566c)}
+.mv2Stat p{margin:7px 0 0;font-size:11px;line-height:1.35;color:#5b74a0}
+
+.mv2PetRow{display:flex;align-items:flex-start;gap:7px;min-width:0}
+.mv2PetFace{flex:none;width:40px;height:40px;border-radius:50%;object-fit:cover;
+  background:#e8f2fb;box-shadow:0 0 0 2px #e7d9b7}
+.mv2PetCopy{flex:1 1 auto;min-width:0}
+.mv2PetCopy b{display:block;font-size:12.5px;font-weight:950;color:#14335c;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mv2PetTags{display:flex;align-items:center;gap:5px;margin:3px 0 6px;min-width:0}
+.mv2Chip{flex:none;padding:2px 6px;border-radius:8px;background:#eef3f9;
+  font-size:10px;font-weight:900;color:#3d5c82}
+.mv2PetTags small{font-size:10.5px;font-weight:800;color:#3d5c82;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- pautan ---------- */
+.mv2Links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mv2Link{
+  display:flex;align-items:center;gap:6px;min-height:52px;padding:0 9px;
+  border-radius:15px;cursor:pointer;font-family:inherit;text-align:left;
+  font-size:12.5px;line-height:1.2;font-weight:900;color:#fff6df;
+  background:linear-gradient(#1b3354,#122744);border:2px solid #b78b47;
+  box-shadow:0 8px 18px #0006
+}
+.mv2Link>svg:first-child{flex:none;width:18px;height:18px;fill:none;stroke:#f2cd78;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.mv2Link .mv2Chev{margin-left:auto;stroke:#f2cd78;width:15px;height:15px;flex:none}
+.mv2Link:active{transform:translateY(1px)}
+
+/* ---------- navigasi bawah ---------- */
+.mv2Nav{
+  position:relative;z-index:2;flex:none;display:grid;grid-template-columns:repeat(3,1fr);
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(#12294b,#0b1d33);border-top:2px solid #b78b47
+}
+.mv2NavItem{
+  display:grid;justify-items:center;gap:3px;padding:7px 4px;
+  border:0;background:none;cursor:pointer;font-family:inherit;
+  font-size:11.5px;font-weight:900;color:#8fa8c4
+}
+.mv2NavItem svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.mv2NavItem.active{color:#ffe5a6}
+
+/* ---------- pemilih menu ---------- */
+.mv2Pick{
+  position:fixed;inset:0;z-index:2147483200;display:grid;place-items:center;
+  padding:20px;background:rgba(5,14,26,.86)
+}
+.mv2Pick[hidden]{display:none}
+.mv2PickCard{
+  width:min(100%,340px);padding:20px;border-radius:20px;text-align:center;
+  background:linear-gradient(#1b3354,#122744);border:2px solid #b78b47;
+  box-shadow:0 18px 40px #000a
+}
+.mv2PickCard b{display:block;font-size:19px;font-weight:950;color:#ffe5a6}
+.mv2PickCard p{margin:7px 0 16px;font-size:13px;line-height:1.45;color:#cfe0f0}
+.mv2PickBtns{display:grid;gap:10px}
+.mv2PickBtns button{
+  min-height:50px;border-radius:14px;cursor:pointer;font-family:inherit;
+  font-size:15px;font-weight:950;border:2px solid #b78b47
+}
+.mv2PickBtns .v2{background:#f2cd78;color:#3a2f10}
+.mv2PickBtns .asal{background:linear-gradient(#17325c,#0e2142);color:#fff6df}
+
+/* ---------- skrin lebar ---------- */
+@media (min-width:720px){
+  .mv2Scroll{width:min(100%,560px);margin:0 auto}
+  .mv2Nav{max-width:560px;margin:0 auto;width:100%}
+}
+@media (max-height:680px){
+  .mv2Stage{height:clamp(140px,24vh,190px)}
+  .mv2Crest b{font-size:18px}
+  .mv2CardBody b{font-size:17px}
+}
+@media (prefers-reduced-motion:reduce){
+  .mv2XpBar i,.mv2Bar i,.mv2QuestBar i{transition:none}
+}
