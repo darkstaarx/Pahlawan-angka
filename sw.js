@@ -1,4 +1,4 @@
-// App shell v3.77.0 — istilah murid: Segel menjadi Gembok.
+// App shell v3.77.1 — kubah Emas berkadar betul, bintang berjaya timbul berperingkat.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

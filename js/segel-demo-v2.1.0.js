@@ -34,10 +34,22 @@
        Ketiga-tiga PNG 768x768, tetapi lukisannya mengisi bingkai dengan kadar
        berbeza: Gangsa 0.81, Perak 0.78, Emas 0.93. Menetapkan tinggi bingkai
        bermakna Emas terjadi 30% lebih besar daripada Gangsa walaupun
-       nombornya hanya berbeza 12%. */
+       nombornya hanya berbeza 12%.
+
+       Menambat pada tinggi SAHAJA pun tidak memadai, kerana nisbah bentuk
+       ketiga-tiga lukisan berbeza (Gangsa 1.100, Perak 1.137, Emas 1.049).
+       Dengan tinggi 2.05/2.20/2.35 dahulu, lebarnya menjadi 2.25/2.50/2.47 —
+       iaitu Emas lebih SEMPIT daripada Perak. Kubah bertukar bentuk, bukan
+       sekadar membesar, dan itulah yang terbaca sebagai "lari".
+
+       Jadi nombor di bawah diterbitkan daripada saiz TANGGAPAN, iaitu min
+       geometri sqrt(lebar*tinggi), yang dinaikkan sama rata kira-kira 8%
+       setiap tier: 2.150 -> 2.325 -> 2.509. Tinggi setiap tier kemudian
+       dikira daripada nisbah bentuknya sendiri, jadi kedua-dua lebar dan
+       tinggi kini menaik secara monotoni. */
     {key:'gangsa', name:'GANGSA', hits:2, color:0xff6e29, period:3.4, visible:2.05},
-    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, visible:2.20},
-    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, visible:2.35}
+    {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, visible:2.18},
+    {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, visible:2.45}
   ];
   const SEAL_HITS=TIERS.reduce((n,t)=>n+t.hits,0);  // 10 hentaman = 2+3+5
   /* Dua soalan lebih daripada jumlah hentaman. Tanpa ruang ini satu jawapan
@@ -1163,6 +1175,26 @@
      Demo ini benar-benar menjejaki angka itu, jadi ia tidak dibuang begitu
      sahaja — ia disebut sebagai ayat benar oleh Cikgu apabila memang ada
      petunjuk digunakan. Tiada statistik direka. */
+  /* Bintang timbul satu demi satu supaya murid membacanya sebagai kiraan,
+     bukan sekadar tiga imej yang muncul serentak. Hanya bintang yang DIPEROLEH
+     beranimasi; yang kosong kekal statik supaya bezanya jelas.
+
+     Kelas `pop` dibuang dahulu dan reflow dipaksa: tanpa itu, bintang yang
+     sudah `on` daripada pusingan sebelumnya tidak akan memainkan semula
+     animasinya apabila murid menekan Main Semula. */
+  function popStars(stars){
+    const box=$('segelResultStars');
+    if(!box)return;
+    const all=[...box.querySelectorAll('i')];
+    all.forEach((el,i)=>{ el.classList.toggle('on',i<stars); el.classList.remove('pop') });
+    void box.offsetWidth;
+    if(reduceMotion)return;
+    all.filter(el=>el.classList.contains('on')).forEach((el,i)=>{
+      el.style.setProperty('--popDelay',(i*150)+'ms');
+      el.classList.add('pop');
+    });
+  }
+
   function coachLine(t,acc,asked){
     if(acc===100)return `Hebat, Wira! Semua ${asked} soalan kamu jawab tepat. Teruskan usaha ini!`;
     const say=[acc>=80?'Syabas! Aurora sudah selamat.':'Aurora sudah selamat.'];
@@ -1186,7 +1218,7 @@
       // yang menunjukkan Wira dan Aurora, jadi tiada <img> untuk dikemas kini.
       $('segelStatCorrect').textContent='—';
       $('segelStatAcc').textContent='—';
-      document.querySelectorAll('#segelResultStars i').forEach(el=>el.classList.remove('on'));
+      popStars(0);   // tiada bintang, dan `pop` turut dibersihkan
       $('segelCoachSay').textContent='Cuba semula. Progress murid tidak terjejas.';
       $('segelDone').hidden=false;
       $('segelDone').scrollTop=0;
@@ -1200,7 +1232,7 @@
     $('segelDoneText').textContent=note||'Aurora berjaya diselamatkan!';
     $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
     $('segelStatAcc').textContent=acc+'%';
-    document.querySelectorAll('#segelResultStars i').forEach((el,i)=>el.classList.toggle('on',i<stars));
+    popStars(stars);
     $('segelCoachSay').textContent=coachLine(t,acc,run.asked);
     $('segelDone').hidden=false;
     $('segelDone').scrollTop=0;

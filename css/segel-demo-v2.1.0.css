@@ -313,6 +313,22 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .resultCoach{padding-top:13px}
 }
 
+/* Bintang berjaya: timbul besar, terlajak, kemudian duduk. Hanya pada
+   bintang yang diperoleh — lihat popStars() dalam modul demo. */
+@keyframes paStarPop{
+  0%  {transform:scale(.25);opacity:0}
+  55% {transform:scale(1.30);opacity:1}
+  78% {transform:scale(.93)}
+  100%{transform:scale(1);opacity:1}
+}
+.resultCrest .resultStars i.on.pop{
+  animation:paStarPop .48s cubic-bezier(.22,.9,.28,1) both;
+  animation-delay:var(--popDelay,0ms)
+}
+@media (prefers-reduced-motion:reduce){
+  .resultCrest .resultStars i.on.pop{animation:none}
+}
+
 .segelPrompt{width:100%}
 
 /* Kit aset result Unity: crest tajuk, crest sisi, summary-frame dan butang. */
