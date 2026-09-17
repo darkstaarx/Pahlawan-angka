@@ -1,4 +1,4 @@
-// App shell v3.79.0 — pentas Menu V2 berlatar istana, footer ikut yang asal.
+// App shell v3.79.1 — pentas Menu V2 dibingkai semula, kad Cikgu satu lapisan.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

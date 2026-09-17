@@ -15,8 +15,8 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Screen{background:#0b1d33}
 .mv2Sky{
   position:absolute;left:0;right:0;top:0;z-index:0;pointer-events:none;
-  height:clamp(320px,49vh,455px);
-  background:url("../assets/ui/menu-v2/hero-stage-v1.webp") center 78% / cover no-repeat;
+  height:clamp(340px,52vh,490px);
+  background:url("../assets/ui/menu-v2/hero-stage-v1.webp") center 44% / cover no-repeat;
 }
 /* Pudar hanya pada hujung jalur supaya ia bercantum dengan warna halaman. */
 .mv2Sky::after{
@@ -58,7 +58,7 @@ body[data-screen="menuV2"] .appHeader{display:none}
 /* ---------- pentas hero ---------- */
 .mv2Stage{
   position:relative;display:flex;align-items:flex-end;justify-content:center;gap:2%;
-  height:clamp(150px,23vh,214px);margin:0 0 2px
+  height:clamp(190px,30vh,290px);margin:0 0 2px
 }
 .mv2Hero{height:100%;width:auto;object-fit:contain;filter:drop-shadow(0 10px 18px #0005)}
 .mv2Pet{height:58%;width:auto;object-fit:contain;filter:drop-shadow(0 8px 14px #0005)}
@@ -86,24 +86,28 @@ body[data-screen="menuV2"] .appHeader{display:none}
   box-shadow:0 10px 24px #0006
 }
 .mv2CardBody{flex:1 1 auto;min-width:0;display:block}
-.mv2CardBody b{display:block;font-size:clamp(16px,4.7vw,19px);font-weight:950;line-height:1.15;color:#14335c}
+.mv2CardBody b{display:block;font-size:clamp(15px,4.3vw,19px);font-weight:950;line-height:1.14;color:#14335c}
 .mv2CardBody small{display:block;margin-top:3px;font-size:12.5px;line-height:1.35;color:#3d5c82}
 .mv2Chev{flex:none;width:20px;height:20px;fill:none;stroke:#3d5c82;stroke-width:2.4;
   stroke-linecap:round;stroke-linejoin:round}
 
 .mv2Quest{background:linear-gradient(#fffdf4,#f6ecd4)}
-.mv2QuestArt{flex:none;width:94px;height:auto;object-fit:contain;
+.mv2QuestArt{flex:none;width:min(36%,142px);height:auto;object-fit:contain;
   filter:drop-shadow(0 4px 8px #0002)}
 .mv2QuestBar{display:block;height:7px;margin:7px 0 8px;border-radius:99px;
   background:#e2d5b4;overflow:hidden}
 .mv2QuestBar i{display:block;height:100%;width:0;border-radius:99px;
   background:linear-gradient(90deg,#f2cd78,#d9a531);transition:width .5s ease}
 
-.mv2Learn{background:#dff0ff}
-.mv2LearnArt{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  object-position:left center;pointer-events:none}
-.mv2LearnCikgu{position:relative;z-index:1;flex:none;width:66px;height:66px;
-  align-self:flex-start;object-fit:contain;filter:drop-shadow(0 4px 9px #0003)}
+.mv2Learn{
+  /* Asetnya sudah membawa bingkai bulat dan sinarnya sendiri. Memberi kad ini
+     latar, jejari dan bayang sendiri menghasilkan bingkai kedua — itulah rupa
+     "berganda" itu. Jadi kad ini kosong dan aset itulah kadnya. */
+  background:url("../assets/ui/menu-v2/cikgu-card-v1.webp") center / 100% 100% no-repeat;
+  border-radius:0;box-shadow:none;padding:14px 20px 14px 10px;gap:8px
+}
+.mv2LearnCikgu{position:relative;z-index:1;flex:none;width:min(31%,116px);height:auto;
+  align-self:center;object-fit:contain;filter:drop-shadow(0 5px 11px #0003)}
 .mv2Learn .mv2CardBody,.mv2Learn .mv2Chev{position:relative;z-index:1}
 
 .mv2Cta{
@@ -156,20 +160,6 @@ body[data-screen="menuV2"] .appHeader{display:none}
   font-size:10px;font-weight:900;color:#3d5c82}
 .mv2PetTags small{font-size:10.5px;font-weight:800;color:#3d5c82;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* ---------- pautan ---------- */
-.mv2Links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mv2Link{
-  display:flex;align-items:center;gap:6px;min-height:52px;padding:0 9px;
-  border-radius:15px;cursor:pointer;font-family:inherit;text-align:left;
-  font-size:12.5px;line-height:1.2;font-weight:900;color:#fff6df;
-  background:linear-gradient(#1b3354,#122744);border:2px solid #b78b47;
-  box-shadow:0 8px 18px #0006
-}
-.mv2Link>svg:first-child{flex:none;width:18px;height:18px;fill:none;stroke:#f2cd78;
-  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.mv2Link .mv2Chev{margin-left:auto;stroke:#f2cd78;width:15px;height:15px;flex:none}
-.mv2Link:active{transform:translateY(1px)}
 
 /* ---------- pemilih menu ---------- */
 .mv2Pick{
