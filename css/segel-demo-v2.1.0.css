@@ -329,6 +329,11 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .resultCrest .resultStars i.on.pop{animation:none}
 }
 
+/* Borang taip gembok emas: `#segelAnswers` ialah grid dua lajur untuk butang
+   MCQ, jadi borang ini menjadi satu item dan hanya dapat separuh lebar.
+   Ia mesti merentang kedua-dua lajur. */
+.segelCard .answers > .paTypedAnswer{grid-column:1 / -1}
+
 .segelPrompt{width:100%}
 
 /* Kit aset result Unity: crest tajuk, crest sisi, summary-frame dan butang. */

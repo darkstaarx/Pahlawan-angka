@@ -1035,6 +1035,57 @@
     finally{ if(original)sess=original }
   }
 
+  /* Konsep boss permainan asal: apabila murid sampai ke pertahanan terakhir,
+     cara menjawab berubah — tiada lagi empat pilihan, dia menaip jawapannya
+     sendiri. Gembok EMAS ialah pertahanan terakhir di sini, jadi ia memakai
+     konsep yang sama.
+
+     Kelayakan dan padanan SENGAJA dipinjam daripada PADevExperiments, modul
+     yang sama dipakai boss sebenar. Menyalin logiknya ke sini bermakna dua
+     salinan peraturan yang akan terpesong; di sini hanya susun aturnya milik
+     demo. Jawapan yang tidak boleh ditaip dengan selamat — "puluh", "Januari",
+     nama bentuk — gagal typedEligible() dan kekal empat pilihan, jadi tahap
+     emas menjadi kebanyakannya taip, bukan semuanya. */
+  function renderTypedAnswer(q,box){
+    const api=window.PADevExperiments;
+    if(!api||typeof api.typedEligible!=='function'||typeof api.typedMatch!=='function')return false;
+    let tier=null;
+    try{ tier=stage&&stage.activeTier() }catch(_){}
+    if(!tier||tier.key!=='emas')return false;
+    if(!api.typedEligible(q))return false;
+
+    const form=document.createElement('form');
+    form.className='paTypedAnswer'; form.autocomplete='off';
+    const label=document.createElement('label');
+    label.className='paTypedLabel';
+    label.innerHTML='<span>GEMBOK EMAS</span><b>Taip jawapan sendiri</b>';
+    const row=document.createElement('div'); row.className='paTypedRow';
+    const input=document.createElement('input');
+    input.className='paTypedInput'; input.type='text'; input.inputMode='decimal';
+    input.autocapitalize='off'; input.autocomplete='off'; input.spellcheck=false;
+    input.placeholder='Taip jawapan';
+    input.setAttribute('aria-label','Taip jawapan sendiri');
+    const button=document.createElement('button');
+    button.className='paTypedSubmit'; button.type='submit'; button.textContent='Jawab';
+    const note=document.createElement('small');
+    note.className='paTypedNote';
+    note.textContent='Tiada pilihan jawapan · tunjuk apa yang kamu benar-benar tahu';
+    row.append(input,button); form.append(label,row,note); box.appendChild(form);
+
+    form.onsubmit=e=>{
+      e.preventDefault();
+      if(run.locked||input.disabled)return;
+      const raw=input.value.trim();
+      if(!raw){ input.classList.add('needsValue'); input.focus(); return }
+      input.classList.remove('needsValue');
+      input.disabled=true; button.disabled=true;
+      const ok=api.typedMatch(q,raw);
+      respond(ok?{v:q.answer,tag:'correct',label:q.answer}
+                :{v:raw,tag:(q.wrong&&q.wrong[0]&&q.wrong[0].tag)||'generated',label:raw}, button);
+    };
+    return true;
+  }
+
   /* Bar kesihatan, bukan ayat. Bilangan ketul = bilangan hentaman tier itu
      (Gangsa 2, Perak 3, Emas 5) dan warnanya sudah memberitahu tier mana. */
   function paintSeal(){
@@ -1061,14 +1112,40 @@
     tag.style.top=a.y+'%';
   }
 
-  function drawQuestion(){
-    const id=run.pool[run.asked%run.pool.length];
-    const q=withDemoSess(()=>{
+  function makeQuestion(id){
+    return withDemoSess(()=>{
       const s=(typeof scoreState==='function')?scoreState(id):{mastery:40,confidence:40,evidence:0,correct:0,wrong:0};
       const out=generate(id,s,{battleTier:'minion',isBoss:false});
       if(out)out.skill=id;
       return out;
     });
+  }
+
+  /* Hanya 44% jawapan Tahun 1 boleh ditaip dengan selamat — pecahan, waktu dan
+     nama bentuk tidak boleh. Kalau kemahiran dipilih sepenuhnya mengikut giliran,
+     tahap emas hanya menjadi kira-kira dua taip daripada lima, bukan
+     "kebanyakannya taip". Jadi semasa emas sahaja kita cuba beberapa kemahiran
+     seterusnya dahulu dan ambil yang pertama menghasilkan jawapan boleh taip.
+     Ini keutamaan, bukan jaminan: kalau tiada calon yang layak, soalan biasa
+     tetap keluar dengan empat pilihan. Demo tidak merekod kemajuan, jadi
+     kecenderungan ini tidak menjejaskan bukti pembelajaran murid. */
+  const GOLD_TRIES=5;
+  function drawQuestion(){
+    const base=run.asked%run.pool.length;
+    let id=run.pool[base], q=null;
+    let goldTier=false;
+    try{ goldTier=!!(stage&&stage.activeTier()&&stage.activeTier().key==='emas') }catch(_){}
+    const api=window.PADevExperiments;
+    if(goldTier&&api&&typeof api.typedEligible==='function'){
+      for(let t=0;t<GOLD_TRIES;t++){
+        const candidateId=run.pool[(base+t)%run.pool.length];
+        const candidate=makeQuestion(candidateId);
+        if(!candidate)continue;
+        if(!q){ q=candidate; id=candidateId }          // simpan yang pertama sebagai sandaran
+        if(api.typedEligible(candidate)){ q=candidate; id=candidateId; break }
+      }
+    }
+    if(!q)q=makeQuestion(id);
     if(!q){ finishRun(false,'Bank soalan tidak dapat dimuat.'); return }
     run.q=q;
 
@@ -1102,12 +1179,14 @@
     paintSeal();
 
     const box=$('segelAnswers'); box.innerHTML='';
-    mix([{v:q.answer,tag:'correct',label:q.answer},...(q.wrong||[])]).forEach(o=>{
-      const b=document.createElement('button');
-      b.className='ans'; b.type='button'; b.textContent=o.label??o.v;
-      b.onclick=()=>respond(o,b);
-      box.appendChild(b);
-    });
+    if(!renderTypedAnswer(q,box)){
+      mix([{v:q.answer,tag:'correct',label:q.answer},...(q.wrong||[])]).forEach(o=>{
+        const b=document.createElement('button');
+        b.className='ans'; b.type='button'; b.textContent=o.label??o.v;
+        b.onclick=()=>respond(o,b);
+        box.appendChild(b);
+      });
+    }
   }
 
   function toast(text){
