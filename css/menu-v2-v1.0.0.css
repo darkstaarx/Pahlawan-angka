@@ -179,7 +179,9 @@ body[data-screen="menuV2"] #appBottomNav{display:none}
 /* ---------- pemilih menu ---------- */
 .mv2Pick{
   position:fixed;inset:0;z-index:2147483200;display:grid;place-items:center;
-  padding:20px;background:rgba(5,14,26,.86)
+  /* Pembungkus renderHub menahan lukisan sehingga murid memilih, jadi skrin
+     di belakang mungkin masih skrin log masuk — tutup penuh. */
+  padding:20px;background:#050e1a
 }
 .mv2Pick[hidden]{display:none}
 .mv2PickCard{

@@ -14,6 +14,11 @@
   const $ = id => document.getElementById(id);
   const has = fn => typeof window[fn]==='function';
 
+  let askedFor=null;
+  function profileKey(){
+    try{ return [db.cloudChildId||'',db.name||'',db.created||0].join('|') }catch(_){ return '' }
+  }
+
   /* ---------------- pemilih menu ---------------- */
   function pickerEl(){
     let el=$('mv2Pick');
@@ -198,27 +203,22 @@
     const original=window.renderHub;
     const wrapped=function(){
       if(typeof db==='undefined'||!db)return original.apply(this,arguments);
+      /* Soalan mesti berada DI SINI, bukan pada startNew/resumeGame. Profil
+         sebenar dipilih melalui profile-manager (`selectProfile`), log masuk
+         awan (cloud.js) dan laluan peranan login — ketiga-tiganya memanggil
+         renderHub() terus dan tidak pernah menyentuh startNew. renderHub
+         ialah satu-satunya pintu yang semuanya lalui.
+
+         Kunci profil memastikan ia ditanya sekali bagi setiap profil: menukar
+         anak bertanya semula, tetapi kembali ke Utama dari dalam permainan
+         tidak. */
+      const key=profileKey();
+      if(askedFor!==key){ askedFor=key; askMenuStyle(); return }
       if(db.menuStyle==='v2')return openMenuV2();
       return original.apply(this,arguments);
     };
     wrapped.__mv2original=original;
     window.renderHub=wrapped;
-
-    // Soalan ditanya sekali selepas profil dipilih, bukan setiap kali hub
-    // dibuka dari dalam permainan.
-    ['startNew','resumeGame'].forEach(name=>{
-      const fn=window[name];
-      if(typeof fn!=='function'||fn.__mv2)return;
-      const w=function(){
-        const out=fn.apply(this,arguments);
-        // Ditanya setiap kali profil dipilih, seperti diminta — pilihan lama
-        // hanya menjadi laluan lalai kalau soalan ini entah bagaimana dilangkau.
-        try{ if(db)askMenuStyle(); }catch(_){}
-        return out;
-      };
-      w.__mv2=true;
-      window[name]=w;
-    });
 
     window.openMenuV2=openMenuV2;
     window.openMenuV2Trophies=openMenuV2Trophies;

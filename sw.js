@@ -1,4 +1,4 @@
-// App shell v3.78.0 — Menu V2 sebagai laman utama alternatif.
+// App shell v3.78.1 — pemilih Menu V2 kini pada renderHub, laluan profil sebenar.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
