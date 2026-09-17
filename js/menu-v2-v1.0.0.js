@@ -14,6 +14,10 @@
   const $ = id => document.getElementById(id);
   const has = fn => typeof window[fn]==='function';
 
+  /* Pentas mockup, dikunci. Kedua-duanya aset yang sama dipakai Demo v2. */
+  const STAGE_HERO='assets/heroes/wira-chibi/frames/happy-2-v1.webp';
+  const STAGE_PET ='assets/pets/aurora/frames/happy-v1.webp';
+
   let askedFor=null;
   function profileKey(){
     try{ return [db.cloudChildId||'',db.name||'',db.created||0].join('|') }catch(_){ return '' }
@@ -116,15 +120,17 @@
     if($('mv2XpText'))$('mv2XpText').textContent=`${cur} / ${need} XP`;
     if($('mv2XpFill'))$('mv2XpFill').style.width=pct+'%';
 
-    // hero dan pet daripada profil
-    try{
-      const h=HEROES[db.hero||'wira']||HEROES.wira;
-      const hero=$('mv2Hero'); if(hero){ hero.src=h.hub||h.idle||''; hero.alt=h.name||'' }
-    }catch(_){}
+    /* Pentas dikunci kepada mockup buat masa ini: Wira chibi gembira dengan
+       Aurora. Ia SENGAJA tidak mengikut hero atau pet profil — pemilik mahu
+       satu susunan tetap dahulu. Kad "Pet Aktif" di bawah masih membaca pet
+       sebenar yang dilengkapi, jadi data itu tidak hilang. */
+    const hero=$('mv2Hero');
+    if(hero){ hero.src=STAGE_HERO; hero.alt='Wira' }
+    const petImg=$('mv2Pet');
+    if(petImg){ petImg.src=STAGE_PET; petImg.alt='Aurora'; petImg.classList.remove('hidden') }
+
     let pet=null;
     try{ pet=REWARD_PETS[db.rewards&&db.rewards.equippedPet]||null }catch(_){}
-    const petImg=$('mv2Pet');
-    if(petImg)setPetArt(petImg,pet);
 
     // Jejak Pet Hari Ini — sasaran harian sebenar
     const target=(typeof PROGRESSION!=='undefined'&&PROGRESSION.dailyTarget)||15;
@@ -178,12 +184,6 @@
     bindCards();
     if(has('screen'))screen('menuV2');
   }
-  function openMenuV2Trophies(){
-    // "Pencapaian" ialah tab Trofi yang memang wujud dalam Koleksi.
-    if(has('openTreasure'))openTreasure();
-    setTimeout(()=>{ if(has('treasureTab'))try{treasureTab('badges')}catch(_){} },0);
-  }
-
   /* Dua kad utama. `Jejak Pet` meneruskan misi bab semasa, sama seperti
      butang teruskan pada menu asal. `Pilih Topik` membuka senarai topik
      (skrin Misi) — di situlah Cikgu Dimensi mengajar murid melalui bab yang
@@ -221,7 +221,6 @@
     window.renderHub=wrapped;
 
     window.openMenuV2=openMenuV2;
-    window.openMenuV2Trophies=openMenuV2Trophies;
     window.askMenuStyle=askMenuStyle;
     window.PAMenuV2={version:'1.0.0',paint,ask:askMenuStyle,open:openMenuV2};
   }

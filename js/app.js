@@ -105,10 +105,10 @@ function screen(id){
 }
 function updateBottomNav(id){
   const nav=document.getElementById("appBottomNav"); if(!nav)return;
-  const visible=["hub","missions","treasure","parent"].includes(id);
+  const visible=["hub","menuV2","missions","treasure","parent"].includes(id);
   nav.classList.toggle("show",visible);
   nav.querySelectorAll(".navItem").forEach(b=>b.classList.remove("active"));
-  const key=id==="treasure"?"treasure":id==="parent"?"parent":id==="missions"?"mission":id==="hub"?"hub":"";
+  const key=id==="treasure"?"treasure":id==="parent"?"parent":id==="missions"?"mission":(id==="hub"||id==="menuV2")?"hub":"";
   const active=key&&nav.querySelector(`[data-nav="${key}"]`); if(active)active.classList.add("active");
 }
 function navHome(){ if(!db)return goLogin(); renderHub(); }

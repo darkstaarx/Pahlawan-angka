@@ -5,9 +5,9 @@
   window.updateDevQuickButton=function(){const b=document.getElementById('devQuickBtn');if(!b)return;b.classList.toggle('hidden',!(db&&isDevMode()));};
   window.updateBottomNav=function(id){
     const nav=document.getElementById('appBottomNav'); if(!nav)return;
-    nav.classList.toggle('show',['hub','missions','treasure','parent'].includes(id));
+    nav.classList.toggle('show',['hub','menuV2','missions','treasure','parent'].includes(id));
     nav.querySelectorAll('.navItem').forEach(b=>b.classList.remove('active'));
-    const key=id==='treasure'?'treasure':id==='parent'?'parent':id==='missions'?'mission':id==='hub'?'hub':'';
+    const key=id==='treasure'?'treasure':id==='parent'?'parent':id==='missions'?'mission':(id==='hub'||id==='menuV2')?'hub':'';
     const active=key&&nav.querySelector(`[data-nav="${key}"]`); if(active)active.classList.add('active');
   };
   window.screen=function(id){baseScreen(id);updateBottomNav(id);updateDevQuickButton();};
