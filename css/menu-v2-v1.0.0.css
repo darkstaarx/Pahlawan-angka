@@ -15,7 +15,7 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Screen{background:#0b1d33}
 .mv2Sky{
   position:absolute;left:0;right:0;top:0;z-index:0;pointer-events:none;
-  height:clamp(340px,52vh,490px);
+  height:clamp(330px,50vh,470px);
   background:url("../assets/ui/menu-v2/hero-stage-v1.webp") center 44% / cover no-repeat;
 }
 /* Pudar hanya pada hujung jalur supaya ia bercantum dengan warna halaman. */
@@ -33,35 +33,43 @@ body[data-screen="menuV2"] .appHeader{display:none}
 
 /* ---------- kepala ---------- */
 .mv2Head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+/* Bingkai crest yang sama dipakai skrin Berjaya. Pil navy rata sebelum ini
+   duduk berat atas latar yang sibuk; plat berhias ini menyatu dengannya dan
+   sepadan dengan sepanduk pada mockup. Asetnya membawa bingkainya sendiri,
+   jadi elemen ini tiada border, jejari mahupun bayang. */
 .mv2Crest{
   flex:1 1 auto;min-width:0;text-align:center;
-  padding:8px 10px;border-radius:16px;
-  background:linear-gradient(#1b3354,#122744);
-  border:2px solid #b78b47;box-shadow:0 8px 20px #0007
+  display:grid;align-content:center;
+  padding:11px 20px;min-height:58px;
+  background:url("../assets/ui/victory-result/crest-frame.png") center / 100% 100% no-repeat;
+  border:0;border-radius:0;box-shadow:none;
+  filter:drop-shadow(0 6px 14px #0007)
 }
 .mv2Crest b{display:block;font-size:clamp(15px,4.6vw,20px);font-weight:950;color:#ffe5a6;
   letter-spacing:.2px;white-space:nowrap;text-shadow:0 2px 6px #0008}
 .mv2Crest small{display:block;font-size:10.5px;color:#cfe0f0;margin-top:1px;white-space:nowrap;
   overflow:hidden;text-overflow:ellipsis}
 .mv2Coins,.mv2Gear{
-  flex:none;height:42px;display:grid;place-items:center;
-  border-radius:14px;border:2px solid #b78b47;
+  flex:none;height:40px;display:grid;place-items:center;
+  border-radius:13px;border:2px solid #b78b47;
   background:linear-gradient(#1b3354,#122744);color:#ffe5a6;
-  font-weight:950;font-size:14px;box-shadow:0 6px 16px #0007
+  font-weight:950;font-size:13.5px;box-shadow:0 5px 14px #0008
 }
 .mv2Coins{grid-auto-flow:column;gap:5px;padding:0 10px;white-space:nowrap}
 .mv2Coins img{width:19px;height:19px}
-.mv2Gear{width:42px;cursor:pointer;padding:0}
+.mv2Gear{width:40px;cursor:pointer;padding:0}
 .mv2Gear svg{width:22px;height:22px;fill:none;stroke:#ffe5a6;stroke-width:1.7;
   stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- pentas hero ---------- */
 .mv2Stage{
-  position:relative;display:flex;align-items:flex-end;justify-content:center;gap:2%;
-  height:clamp(190px,30vh,290px);margin:0 0 2px
+  position:relative;display:flex;align-items:flex-end;justify-content:center;gap:3%;
+  height:clamp(172px,26vh,252px);margin:0 0 4px
 }
-.mv2Hero{height:100%;width:auto;object-fit:contain;filter:drop-shadow(0 10px 18px #0005)}
-.mv2Pet{height:58%;width:auto;object-fit:contain;filter:drop-shadow(0 8px 14px #0005)}
+.mv2Hero{height:100%;width:auto;max-width:50%;object-fit:contain;
+  filter:drop-shadow(0 12px 16px rgba(6,20,38,.45))}
+.mv2Pet{height:64%;width:auto;max-width:34%;object-fit:contain;
+  filter:drop-shadow(0 10px 14px rgba(6,20,38,.45))}
 .mv2Pet.hidden,.mv2PetFace.hidden{display:none}
 
 /* ---------- pengalaman ---------- */
@@ -103,8 +111,8 @@ body[data-screen="menuV2"] .appHeader{display:none}
   /* Asetnya sudah membawa bingkai bulat dan sinarnya sendiri. Memberi kad ini
      latar, jejari dan bayang sendiri menghasilkan bingkai kedua — itulah rupa
      "berganda" itu. Jadi kad ini kosong dan aset itulah kadnya. */
-  background:url("../assets/ui/menu-v2/cikgu-card-v1.webp") center / 100% 100% no-repeat;
-  border-radius:0;box-shadow:none;padding:14px 20px 14px 10px;gap:8px
+  background:url("../assets/ui/menu-v2/cikgu-card-v2.webp") center / 100% 100% no-repeat;
+  border-radius:0;box-shadow:none;padding:13px 18px 13px 10px;gap:9px
 }
 .mv2LearnCikgu{position:relative;z-index:1;flex:none;width:min(31%,116px);height:auto;
   align-self:center;object-fit:contain;filter:drop-shadow(0 5px 11px #0003)}

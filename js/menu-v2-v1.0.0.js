@@ -14,9 +14,12 @@
   const $ = id => document.getElementById(id);
   const has = fn => typeof window[fn]==='function';
 
-  /* Pentas mockup, dikunci. Kedua-duanya aset yang sama dipakai Demo v2. */
-  const STAGE_HERO='assets/heroes/wira-chibi/frames/happy-2-v1.webp';
-  const STAGE_PET ='assets/pets/aurora/frames/happy-v1.webp';
+  /* Pentas mockup, dikunci. Kedua-duanya bingkai Demo v2 yang SAMA, cuma sudah
+     dipotong kepada sempadan alfa wataknya. Sprite asal ialah kanvas 768x768
+     yang wataknya hanya mengisi 46% lebar dan 54% tinggi, jadi mengukur dengan
+     kotak bingkai menjadikan hero kelihatan kecil walaupun kotaknya besar. */
+  const STAGE_HERO='assets/ui/menu-v2/stage-wira-v1.webp';
+  const STAGE_PET ='assets/ui/menu-v2/stage-aurora-v1.webp';
 
   let askedFor=null;
   function profileKey(){
