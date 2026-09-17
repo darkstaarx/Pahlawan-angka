@@ -1,4 +1,4 @@
-// App shell v3.79.2 — sprite pentas dipotong, kepala guna bingkai crest.
+// App shell v3.80.0 — kad Jejak Pet membuka Demo v2.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

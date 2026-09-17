@@ -135,12 +135,11 @@
     let pet=null;
     try{ pet=REWARD_PETS[db.rewards&&db.rewards.equippedPet]||null }catch(_){}
 
-    // Jejak Pet Hari Ini — sasaran harian sebenar
-    const target=(typeof PROGRESSION!=='undefined'&&PROGRESSION.dailyTarget)||15;
-    const done=Math.min(target,Number(db.daily&&db.daily.correct||0));
-    if($('mv2QuestSub'))$('mv2QuestSub').textContent=
-      `${done}/${target} jawapan betul hari ini.`;
-    if($('mv2QuestFill'))$('mv2QuestFill').style.width=Math.round(done/target*100)+'%';
+    /* Kad ini membuka Demo v2, dan Demo v2 SENGAJA tidak menulis apa-apa
+       kepada kemajuan murid — tiada db.daily, db.xp, db.coins mahupun db.logs.
+       Jadi kiraan harian tidak boleh dipapar di sini: murid akan bermain habis
+       satu pusingan dan melihat nombor itu langsung tidak bergerak. Ayat ini
+       menerangkan apa yang benar-benar berlaku. */
 
     // Kemahiran Fokus
     const fid=focusSkillId();
@@ -194,7 +193,8 @@
   function bindCards(){
     const quest=$('mv2QuestCard');
     if(quest&&!quest.dataset.bound){ quest.dataset.bound='1';
-      quest.onclick=()=>{ if(has('continueHubMission'))continueHubMission() } }
+      quest.onclick=()=>{ if(has('openSegelDemo'))openSegelDemo();
+                          else if(has('continueHubMission'))continueHubMission() } }
     const learn=$('mv2LearnCard');
     if(learn&&!learn.dataset.bound){ learn.dataset.bound='1';
       learn.onclick=()=>{ if(has('navMission'))navMission() } }

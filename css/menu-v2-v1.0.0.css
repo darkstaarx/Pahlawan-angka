@@ -102,10 +102,6 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Quest{background:linear-gradient(#fffdf4,#f6ecd4)}
 .mv2QuestArt{flex:none;width:min(36%,142px);height:auto;object-fit:contain;
   filter:drop-shadow(0 4px 8px #0002)}
-.mv2QuestBar{display:block;height:7px;margin:7px 0 8px;border-radius:99px;
-  background:#e2d5b4;overflow:hidden}
-.mv2QuestBar i{display:block;height:100%;width:0;border-radius:99px;
-  background:linear-gradient(90deg,#f2cd78,#d9a531);transition:width .5s ease}
 
 .mv2Learn{
   /* Asetnya sudah membawa bingkai bulat dan sinarnya sendiri. Memberi kad ini
@@ -125,7 +121,7 @@ body[data-screen="menuV2"] .appHeader{display:none}
 }
 .mv2Cta svg{width:17px;height:17px;fill:none;stroke-width:2.6;
   stroke-linecap:round;stroke-linejoin:round}
-.mv2Cta.gold{background:#f2cd78;color:#3a2f10}
+.mv2Cta.gold{background:#f2cd78;color:#3a2f10;margin-top:9px}
 .mv2Cta.gold svg{stroke:#3a2f10}
 .mv2Cta.navy{background:linear-gradient(#1b3354,#122744);color:#fff6df;margin-top:9px}
 /* Tajuk kad tidak boleh jatuh ke baris ketiga; itu yang menolak CTA sampai
@@ -202,5 +198,5 @@ body[data-screen="menuV2"] .appHeader{display:none}
   .mv2CardBody b{font-size:17px}
 }
 @media (prefers-reduced-motion:reduce){
-  .mv2XpBar i,.mv2Bar i,.mv2QuestBar i{transition:none}
+  .mv2XpBar i,.mv2Bar i{transition:none}
 }
