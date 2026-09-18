@@ -216,8 +216,9 @@ body[data-screen="menuV2"] .appHeader{display:none}
 }
 .mv2LearnCikgu{
   grid-column:1;justify-self:center;align-self:center;position:relative;z-index:3;
-  display:block;width:104px;height:auto;max-height:86px;object-fit:contain;image-rendering:auto;
-  filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))
+  display:block;width:132px;height:108px;max-height:none;object-fit:contain;object-position:center;
+  transform:scale(1.18);transform-origin:center;image-rendering:auto;
+  filter:drop-shadow(0 7px 11px rgba(0,0,0,.28))
 }
 .mv2Learn .mv2CardBody{position:relative;z-index:2}
 
