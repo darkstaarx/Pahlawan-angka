@@ -1,4 +1,4 @@
-// App shell v3.82.2 — exact Kembara Dimensi book art from approved asset.
+// App shell v3.82.3 — HQ Kembara Dimensi book asset.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
