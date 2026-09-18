@@ -1,4 +1,4 @@
-// App shell v3.81.0 — gembok emas memakai jawapan bertaip, konsep boss asal.
+// App shell v3.82.0 — Menu V2 pentas Siap Siaga & penambahbaikan bahasa.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

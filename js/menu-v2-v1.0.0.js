@@ -14,12 +14,119 @@
   const $ = id => document.getElementById(id);
   const has = fn => typeof window[fn]==='function';
 
-  /* Pentas mockup, dikunci. Kedua-duanya bingkai Demo v2 yang SAMA, cuma sudah
-     dipotong kepada sempadan alfa wataknya. Sprite asal ialah kanvas 768x768
-     yang wataknya hanya mengisi 46% lebar dan 54% tinggi, jadi mengukur dengan
-     kotak bingkai menjadikan hero kelihatan kecil walaupun kotaknya besar. */
-  const STAGE_HERO='assets/ui/menu-v2/stage-wira-v1.webp';
-  const STAGE_PET ='assets/ui/menu-v2/stage-aurora-v1.webp';
+  /* =========================================================
+     ENJIN ANIMASI SPRITE SEBENAR (FRAME-BY-FRAME SEQUENCING)
+     Untuk Wira Chibi & Pet Aurora di Pentas Menu V2
+     ========================================================= */
+  const HERO_FRAMES = [
+    'assets/heroes/wira-chibi/frames/idle-loop-0-v1.webp',
+    'assets/heroes/wira-chibi/frames/idle-loop-1-v1.webp',
+    'assets/heroes/wira-chibi/frames/idle-loop-2-v1.webp',
+    'assets/heroes/wira-chibi/frames/idle-loop-3-v1.webp'
+  ];
+  const HERO_FPS = 4.5; // ~220ms satu bingkai
+  const HERO_QUOTES = [
+    '⚔️ Kuasa Ais Sedia!',
+    '❄️ Mari pertahankan nombor!',
+    '🛡️ Perisai matematik teguh!',
+    '💪 Bersedia untuk mengembara!'
+  ];
+
+  const PET_FRAMES = [
+    'assets/pets/aurora/frames/joy-0-v1.webp',
+    'assets/pets/aurora/frames/joy-1-v1.webp'
+  ];
+  const PET_FPS = 2.8; // ~350ms satu bingkai
+  const PET_QUOTES = [
+    '🐾 Pui-pui! Ekor goyang!',
+    '❄️ Dingin dan ceria!',
+    '✨ Teman setia Wira!',
+    '💖 Pui-pui sayang Wira!'
+  ];
+
+  const spriteCache = {};
+  function preloadSprites() {
+    [...HERO_FRAMES, ...PET_FRAMES].forEach(u => {
+      if (!spriteCache[u]) {
+        const img = new Image();
+        img.src = u;
+        spriteCache[u] = img;
+      }
+    });
+  }
+
+  let heroFrameIdx = 0;
+  let petFrameIdx = 0;
+  let heroTimer = null;
+  let petTimer = null;
+
+  function renderHeroFrame() {
+    if (!HERO_FRAMES.length) return;
+    heroFrameIdx = (heroFrameIdx + 1) % HERO_FRAMES.length;
+    const hero = $('mv2Hero');
+    if (hero) hero.src = HERO_FRAMES[heroFrameIdx];
+  }
+
+  function renderPetFrame() {
+    if (!PET_FRAMES.length) return;
+    petFrameIdx = (petFrameIdx + 1) % PET_FRAMES.length;
+    const pet = $('mv2Pet');
+    if (pet) {
+      pet.src = PET_FRAMES[petFrameIdx];
+      pet.classList.remove('hidden');
+    }
+  }
+
+  function startSpriteEngine() {
+    if (heroTimer) clearInterval(heroTimer);
+    if (petTimer) clearInterval(petTimer);
+
+    heroTimer = setInterval(renderHeroFrame, 1000 / HERO_FPS);
+    petTimer = setInterval(renderPetFrame, 1000 / PET_FPS);
+
+    renderHeroFrame();
+    renderPetFrame();
+  }
+
+  function stopSpriteEngine() {
+    if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+    if (petTimer) { clearInterval(petTimer); petTimer = null; }
+  }
+
+  let speechTimeouts = {};
+  function triggerSpeech(bubbleId, text) {
+    const el = $(bubbleId);
+    if (!el) return;
+    el.textContent = text;
+    el.classList.add('show');
+    if (speechTimeouts[bubbleId]) clearTimeout(speechTimeouts[bubbleId]);
+    speechTimeouts[bubbleId] = setTimeout(() => {
+      el.classList.remove('show');
+    }, 2400);
+  }
+
+  function interactActor(actorType) {
+    if (actorType === 'wira') {
+      const q = HERO_QUOTES[Math.floor(Math.random() * HERO_QUOTES.length)];
+      triggerSpeech('wiraBubble', q);
+      const wiraSlot = $('wiraSlot');
+      if (wiraSlot) {
+        wiraSlot.classList.remove('actorHop');
+        void wiraSlot.offsetWidth;
+        wiraSlot.classList.add('actorHop');
+      }
+    } else if (actorType === 'pet') {
+      const q = PET_QUOTES[Math.floor(Math.random() * PET_QUOTES.length)];
+      triggerSpeech('petBubble', q);
+      const petSlot = $('petSlot');
+      if (petSlot) {
+        petSlot.classList.remove('actorHop');
+        void petSlot.offsetWidth;
+        petSlot.classList.add('actorHop');
+      }
+    }
+    if (has('playSfx')) try { playSfx('ui'); } catch(_) {}
+  }
 
   let askedFor=null;
   function profileKey(){
@@ -94,14 +201,14 @@
      perlu 2 bukti dan 2 percubaan sebelum kuasa boleh dibaca langsung. */
   function focusNote(id){
     const s=(has('scoreState')&&scoreState(id))||null;
-    if(!s)return 'Belum ada bukti daripada latihan.';
+    if(!s)return 'Sedia untuk diteroka dalam misi.';
     const attempts=Number(s.correct||0)+Number(s.wrong||0);
     const need=Math.max(2-Number(s.evidence||0), 2-attempts, 0);
-    if(need>0)return `${need} lagi bukti untuk baca kuasa.`;
+    if(need>0)return `${need} lagi cabaran untuk buka tahap kuasa.`;
     const lvl=has('powerLevel')?powerLevel(s):0;
     if(lvl>=3)return 'Kuasa sudah kukuh.';
     const acc=attempts?Math.round(Number(s.correct||0)/attempts*100):0;
-    return `Ketepatan ${acc}% · terus berlatih untuk kukuh.`;
+    return `Ketepatan ${acc}% · teruskan untuk kukuhkan kuasa!`;
   }
 
   function paint(){
@@ -109,6 +216,14 @@
     if(has('ensureProgression'))ensureProgression();
     if(has('updateFrontier'))updateFrontier();
     if(has('ensureRewards'))ensureRewards();
+
+    // profil murid / avatar HUD
+    const pname = $('mv2PlayerName');
+    if (pname) pname.textContent = db.child || 'Aiman';
+    const pbadge = $('mv2AvatarBadge');
+    if (pbadge) pbadge.textContent = `Lv. ${db.level || 1}`;
+    const pimg = $('mv2AvatarImg');
+    if (pimg) pimg.src = 'assets/ui/menu-v2/stage-wira-v1.webp';
 
     // syiling: permainan ini tiada mata wang permata, jadi kita papar syiling
     // sebenar dengan ikonnya sendiri dan bukan nombor hiasan.
@@ -123,14 +238,9 @@
     if($('mv2XpText'))$('mv2XpText').textContent=`${cur} / ${need} XP`;
     if($('mv2XpFill'))$('mv2XpFill').style.width=pct+'%';
 
-    /* Pentas dikunci kepada mockup buat masa ini: Wira chibi gembira dengan
-       Aurora. Ia SENGAJA tidak mengikut hero atau pet profil — pemilik mahu
-       satu susunan tetap dahulu. Kad "Pet Aktif" di bawah masih membaca pet
-       sebenar yang dilengkapi, jadi data itu tidak hilang. */
-    const hero=$('mv2Hero');
-    if(hero){ hero.src=STAGE_HERO; hero.alt='Wira' }
-    const petImg=$('mv2Pet');
-    if(petImg){ petImg.src=STAGE_PET; petImg.alt='Aurora'; petImg.classList.remove('hidden') }
+    /* Pentas Hero & Pet digerakkan oleh Enjin Animasi Sprite frame-by-frame.
+       Kad "Pet Aktif" di bawah masih membaca pet sebenar yang dilengkapi. */
+    startSpriteEngine();
 
     let pet=null;
     try{ pet=REWARD_PETS[db.rewards&&db.rewards.equippedPet]||null }catch(_){}
@@ -156,7 +266,7 @@
       if(fname)fname.textContent='Belum ditetapkan';
       if(fpct)fpct.textContent='—';
       if(ffill)ffill.style.width='0%';
-      if(fnote)fnote.textContent='Mula satu misi untuk membina bukti.';
+      if(fnote)fnote.textContent='Mula satu misi untuk menguji kuasa kamu.';
     }
 
     // Pet Aktif. Tahap dan ikatan belum dijejaki dalam `db`, jadi ia 0% dan
@@ -182,7 +292,9 @@
   function openMenuV2(){
     if(typeof db==='undefined'||!db)return has('goLogin')?goLogin():null;
     if(has('enforceRestuLock')&&enforceRestuLock())return;
+    preloadSprites();
     paint();
+    startSpriteEngine();
     bindCards();
     if(has('screen'))screen('menuV2');
   }
@@ -225,7 +337,15 @@
 
     window.openMenuV2=openMenuV2;
     window.askMenuStyle=askMenuStyle;
-    window.PAMenuV2={version:'1.0.0',paint,ask:askMenuStyle,open:openMenuV2};
+    window.PAMenuV2={
+      version:'1.0.0',
+      paint,
+      ask:askMenuStyle,
+      open:openMenuV2,
+      interact:interactActor,
+      startEngine:startSpriteEngine,
+      stopEngine:stopSpriteEngine
+    };
   }
 
   (function boot(){

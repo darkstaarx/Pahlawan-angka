@@ -1058,7 +1058,7 @@
     form.className='paTypedAnswer'; form.autocomplete='off';
     const label=document.createElement('label');
     label.className='paTypedLabel';
-    label.innerHTML='<span>GEMBOK EMAS</span><b>Taip jawapan sendiri</b>';
+    label.innerHTML='<span>KUNCI EMAS</span><b>Taip jawapan sendiri</b>';
     const row=document.createElement('div'); row.className='paTypedRow';
     const input=document.createElement('input');
     input.className='paTypedInput'; input.type='text'; input.inputMode='decimal';
@@ -1208,10 +1208,10 @@
       run.tally[run.usedHint?'hint':'own']++;
       await stage.strike();
       const outcome=stage.hitSeal();
-      if(outcome.broken)toast('GEMBOK '+outcome.tier.name+' PECAH!');
+      if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken
-        ? `Gembok ${outcome.tier.name} pecah!`
-        : 'Betul! Gembok retak.';
+        ? `Kunci ${outcome.tier.name} pecah!`
+        : 'Betul! Kunci retak.';
       paintSeal();
       if(stage.allBroken())return celebrate();
     }else{

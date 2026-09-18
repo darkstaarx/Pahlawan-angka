@@ -8,133 +8,244 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Screen{position:relative;padding:0;overflow:hidden}
 .mv2Screen.on{display:flex;flex-direction:column;height:100dvh;max-height:100dvh}
 
-/* Latar ialah JALUR di belakang kepala dan hero sahaja, bukan seluruh skrin.
-   Meregangkannya penuh skrin menolak lantai plaza jauh ke bawah dan hero
-   kelihatan terapung di langit. Tingginya dikunci pada kawasan pentas, dan
-   imej dipaut supaya lantai plaza duduk betul-betul di bawah kaki hero. */
-.mv2Screen{background:#0b1d33}
-.mv2Sky{
-  position:absolute;left:0;right:0;top:0;z-index:0;pointer-events:none;
-  height:clamp(330px,50vh,470px);
-  background:url("../assets/ui/menu-v2/hero-stage-v1.webp") center 44% / cover no-repeat;
+/* ---------- pentas hero terkunci (pinned hero stage) ---------- */
+.mv2TopStage{
+  position:relative;flex:none;width:100%;
+  padding:calc(12px + env(safe-area-inset-top,0px)) 14px 4px;
+  overflow:hidden;z-index:10
 }
-/* Pudar hanya pada hujung jalur supaya ia bercantum dengan warna halaman. */
+.mv2Sky{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:url("../assets/ui/menu-v2/hero-stage-v1.webp") center 58% / cover no-repeat
+}
 .mv2Sky::after{
   content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(11,29,51,0) 62%,rgba(11,29,51,.55) 82%,#0b1d33 100%)
+  background:linear-gradient(180deg,rgba(11,29,51,0) 58%,rgba(11,29,51,.65) 80%,#0b1d33 100%)
 }
 
 .mv2Scroll{
   position:relative;z-index:1;flex:1 1 auto;min-height:0;overflow-y:auto;
-  /* Ruang bawah untuk navigasi asal, yang melayang di atas skrin. */
-  padding:calc(10px + env(safe-area-inset-top,0px)) 14px 96px;
+  padding:6px 14px calc(80px + env(safe-area-inset-bottom,0px));
   -webkit-overflow-scrolling:touch
 }
 
-/* ---------- kepala ---------- */
-.mv2Head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-/* Bingkai crest yang sama dipakai skrin Berjaya. Pil navy rata sebelum ini
-   duduk berat atas latar yang sibuk; plat berhias ini menyatu dengannya dan
-   sepadan dengan sepanduk pada mockup. Asetnya membawa bingkainya sendiri,
-   jadi elemen ini tiada border, jejari mahupun bayang. */
-.mv2Crest{
-  flex:1 1 auto;min-width:0;text-align:center;
-  display:grid;align-content:center;
-  padding:11px 20px;min-height:58px;
-  background:url("../assets/ui/victory-result/crest-frame.png") center / 100% 100% no-repeat;
-  border:0;border-radius:0;box-shadow:none;
-  filter:drop-shadow(0 6px 14px #0007)
-}
-.mv2Crest b{display:block;font-size:clamp(15px,4.6vw,20px);font-weight:950;color:#ffe5a6;
-  letter-spacing:.2px;white-space:nowrap;text-shadow:0 2px 6px #0008}
-.mv2Crest small{display:block;font-size:10.5px;color:#cfe0f0;margin-top:1px;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis}
-.mv2Coins,.mv2Gear{
-  flex:none;height:40px;display:grid;place-items:center;
-  border-radius:13px;border:2px solid #b78b47;
-  background:linear-gradient(#1b3354,#122744);color:#ffe5a6;
-  font-weight:950;font-size:13.5px;box-shadow:0 5px 14px #0008
-}
-.mv2Coins{grid-auto-flow:column;gap:5px;padding:0 10px;white-space:nowrap}
-.mv2Coins img{width:19px;height:19px}
-.mv2Gear{width:40px;cursor:pointer;padding:0}
-.mv2Gear svg{width:22px;height:22px;fill:none;stroke:#ffe5a6;stroke-width:1.7;
-  stroke-linecap:round;stroke-linejoin:round}
+/* ---------- kepala: pro mobile game hud (pilihan 1) ---------- */
+.mv2Head{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;padding:0 2px}
 
-/* ---------- pentas hero ---------- */
-.mv2Stage{
-  position:relative;display:flex;align-items:flex-end;justify-content:center;gap:3%;
-  height:clamp(172px,26vh,252px);margin:0 0 4px
+.mv2ProfileCapsule{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(11,29,51,.85);border:1.5px solid rgba(255,208,54,.45);
+  border-radius:999px;padding:4px 14px 4px 5px;
+  box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.15);
+  backdrop-filter:blur(8px);cursor:pointer;
+  transition:transform .1s ease,border-color .2s ease
 }
-.mv2Hero{height:100%;width:auto;max-width:50%;object-fit:contain;
-  filter:drop-shadow(0 12px 16px rgba(6,20,38,.45))}
-.mv2Pet{height:64%;width:auto;max-width:34%;object-fit:contain;
-  filter:drop-shadow(0 10px 14px rgba(6,20,38,.45))}
+.mv2ProfileCapsule:active{transform:scale(.97);border-color:#ffd036}
+.mv2AvatarBox{position:relative;width:40px;height:40px;flex:none}
+.mv2AvatarRing{
+  width:40px;height:40px;border-radius:50%;border:2px solid #ffd036;
+  background:#0f243d;box-shadow:0 3px 8px rgba(0,0,0,.5);
+  overflow:hidden;display:flex;align-items:center;justify-content:center
+}
+.mv2AvatarImg{
+  width:100%;height:100%;object-fit:cover;object-position:48% 39%;
+  transform:scale(2.05);display:block
+}
+.mv2AvatarBadge{
+  position:absolute;bottom:-3px;right:-4px;
+  background:linear-gradient(180deg,#ffde6a 0%,#e09f1a 100%);
+  border:1.5px solid #081424;color:#3b2803;font-size:9px;font-weight:950;
+  border-radius:999px;padding:0 5px;line-height:13px;box-shadow:0 2px 4px rgba(0,0,0,.4)
+}
+.mv2PlayerName{
+  font-size:14px;font-weight:950;color:#fff;line-height:1;
+  padding-right:4px;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.6)
+}
+
+.mv2HeadRight{display:flex;align-items:center;gap:8px;flex:none}
+.mv2Coins{
+  height:40px;display:inline-flex;align-items:center;gap:6px;
+  padding:0 12px 0 8px;border-radius:999px;
+  background:rgba(11,29,51,.85);border:1.5px solid rgba(255,208,54,.45);
+  color:#ffe5a6;font-weight:950;font-size:13.5px;
+  box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter:blur(8px);font-variant-numeric:tabular-nums
+}
+.mv2Coins img{width:22px;height:22px;filter:drop-shadow(0 2px 4px rgba(255,200,50,.4))}
+.mv2Gear{
+  width:40px;height:40px;flex:none;border-radius:50%;
+  border:1.5px solid rgba(255,229,166,.4);background:rgba(11,29,51,.85);
+  display:grid;place-items:center;cursor:pointer;padding:0;
+  box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.15);
+  backdrop-filter:blur(8px);transition:transform .12s ease,border-color .2s ease
+}
+.mv2Gear:active{transform:rotate(30deg) scale(.95);border-color:#ffd036}
+.mv2Gear svg{width:20px;height:20px;fill:none;stroke:#ffe5a6;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- pentas hero & pet (enjin animasi sprite sebenar) ---------- */
+.mv2Stage{
+  position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;gap:12px;
+  height:clamp(165px,24vh,210px);margin:0 0 2px;padding-bottom:2px
+}
+.mv2Actor{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent
+}
+.mv2Actor:active{transform:scale(.96)}
+.mv2HeroSlot{height:100%;width:175px;max-width:52%}
+.mv2PetSlot{height:78px;width:90px;max-width:28%;margin-bottom:4px}
+
+/* bayang-bayang tanah menambat watak ke lantai */
+.mv2ActorShadow{
+  position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+  width:65%;height:12px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(3,10,22,.75) 0%,rgba(3,10,22,0) 72%);
+  pointer-events:none;z-index:1;filter:blur(1.5px)
+}
+.petShadow{bottom:1px;width:72%;height:9px}
+
+/* bingkai sprite frame-by-frame */
+.mv2HeroSprite{
+  position:relative;z-index:2;width:100%;height:100%;object-fit:contain;object-position:bottom center;
+  filter:drop-shadow(0 10px 15px rgba(6,20,38,.55));pointer-events:none
+}
+.mv2PetSprite{
+  position:relative;z-index:2;width:100%;height:100%;object-fit:contain;object-position:bottom center;
+  filter:drop-shadow(0 7px 11px rgba(6,20,38,.48));pointer-events:none
+}
 .mv2Pet.hidden,.mv2PetFace.hidden{display:none}
 
-/* ---------- pengalaman ---------- */
-.mv2Xp{
-  display:flex;align-items:center;gap:9px;margin:0 2px 10px;
-  padding:7px 11px;border-radius:13px;
-  background:rgba(8,22,40,.62);border:1px solid #ffffff2e;
-  backdrop-filter:blur(3px)
+/* gelembung dialog interaktif */
+.mv2SpeechBubble{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%) translateY(-6px) scale(.9);
+  background:rgba(13,33,58,.95);border:1.5px solid #ffd036;color:#fff;
+  font-size:11px;font-weight:850;padding:4px 10px;border-radius:999px;white-space:nowrap;
+  box-shadow:0 6px 16px rgba(0,0,0,.5),0 0 10px rgba(255,208,54,.25);
+  opacity:0;pointer-events:none;transition:all .22s cubic-bezier(.34,1.56,.64,1);z-index:20
 }
-.mv2Lv{flex:none;font-size:12px;font-weight:950;color:#ffe5a6}
-.mv2XpBar{flex:1 1 auto;height:9px;border-radius:99px;background:#0b1d33;overflow:hidden;
-  box-shadow:inset 0 0 0 1px #ffffff1f}
-.mv2XpBar i{display:block;height:100%;width:0;border-radius:99px;
-  background:linear-gradient(90deg,#59c8ff,#0b6fe0);transition:width .5s ease}
+.mv2SpeechBubble::after{
+  content:"";position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
+  border-width:5px 5px 0;border-style:solid;border-color:#ffd036 transparent transparent
+}
+.mv2SpeechBubble.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
+.petBubble{top:-16px;border-color:#5fcdf5;color:#e0f2fe}
+.petBubble::after{border-color:#5fcdf5 transparent transparent}
+
+/* animasi reaksi hop & pop */
+.actorHop{animation:actorHopAnim .45s ease}
+@keyframes actorHopAnim{
+  0%{transform:translateY(0)}
+  35%{transform:translateY(-14px) scale(1.04)}
+  65%{transform:translateY(-3px) scale(.98)}
+  100%{transform:translateY(0) scale(1)}
+}
+.posePop{animation:posePopAnim .35s ease}
+@keyframes posePopAnim{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.025)}
+  100%{transform:scale(1)}
+}
+
+/* ---------- pengalaman (pulse animation) ---------- */
+.mv2Xp{
+  position:relative;z-index:2;display:flex;align-items:center;gap:10px;margin:2px 4px 6px;
+  padding:7px 14px;border-radius:999px;
+  background:rgba(11,29,51,.85);border:1.5px solid rgba(255,229,166,.4);
+  box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.15);
+  backdrop-filter:blur(8px)
+}
+.mv2Lv{flex:none;font-size:12.5px;font-weight:950;color:#ffe5a6}
+.mv2XpBar{flex:1 1 auto;height:10px;border-radius:99px;background:#050f1c;overflow:hidden;
+  position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.mv2XpBar i{
+  display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#38bdf8,#0ea5e9,#60a5fa,#38bdf8);
+  background-size:200% 100%;position:relative;overflow:hidden;
+  box-shadow:0 0 10px rgba(56,189,248,.7);
+  animation:xpFillPulse 2.4s ease-in-out infinite,xpGradSweep 3s linear infinite;
+  transition:width .5s ease
+}
+.mv2XpBar i::after{
+  content:"";position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);
+  animation:xpShimmer 2.4s ease-in-out infinite
+}
+@keyframes xpFillPulse{
+  0%,100%{filter:brightness(1) drop-shadow(0 0 3px rgba(56,189,248,.5))}
+  50%{filter:brightness(1.3) drop-shadow(0 0 8px rgba(56,189,248,.95))}
+}
+@keyframes xpGradSweep{
+  0%{background-position:100% 0}
+  100%{background-position:-100% 0}
+}
+@keyframes xpShimmer{
+  0%{left:-80%}
+  55%,100%{left:140%}
+}
 .mv2Xp small{flex:none;font-size:11px;font-weight:800;color:#d6e6f5;font-variant-numeric:tabular-nums}
 
-/* ---------- kad utama ---------- */
+/* ---------- kad utama (aligned text boxes - Gaya A) ---------- */
 .mv2Card{
-  position:relative;display:flex;align-items:center;gap:12px;width:100%;
-  margin-bottom:10px;padding:12px;border:0;border-radius:20px;cursor:pointer;
+  position:relative;display:grid;grid-template-columns:136px minmax(0,1fr) 20px;align-items:center;gap:12px;width:100%;
+  margin-bottom:12px;padding:12px 14px;min-height:136px;border-radius:22px;cursor:pointer;
   text-align:left;overflow:hidden;font-family:inherit;
-  box-shadow:0 10px 24px #0006
+  box-shadow:0 10px 24px rgba(0,0,0,.5);transition:transform .12s ease
 }
-.mv2CardBody{flex:1 1 auto;min-width:0;display:block}
-.mv2CardBody b{display:block;font-size:clamp(15px,4.3vw,19px);font-weight:950;line-height:1.14;color:#14335c}
-.mv2CardBody small{display:block;margin-top:3px;font-size:12.5px;line-height:1.35;color:#3d5c82}
-.mv2Chev{flex:none;width:20px;height:20px;fill:none;stroke:#3d5c82;stroke-width:2.4;
-  stroke-linecap:round;stroke-linejoin:round}
+.mv2Card:active{transform:translateY(2px)}
+.mv2Chev{
+  grid-column:3;justify-self:end;align-self:center;width:18px;height:18px;fill:none;
+  stroke:#2b4970;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;
+  position:relative;z-index:2
+}
+.mv2Learn .mv2Chev{stroke:#1b4b7e}
 
-.mv2Quest{background:linear-gradient(#fffdf4,#f6ecd4)}
-.mv2QuestArt{flex:none;width:min(36%,142px);height:auto;object-fit:contain;
-  filter:drop-shadow(0 4px 8px #0002)}
+.mv2Quest{
+  background:linear-gradient(160deg,#fffcf0 0%,#f6ecd2 60%,#eedeb5 100%);
+  border:2px solid #caa055;
+  box-shadow:0 10px 24px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.9),inset 0 -2px 0 rgba(160,110,25,.25)
+}
+.mv2QuestArt{
+  grid-column:1;justify-self:center;align-self:center;
+  width:min(100%,132px);max-height:102px;object-fit:contain;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.22))
+}
 
 .mv2Learn{
-  /* Asetnya sudah membawa bingkai bulat dan sinarnya sendiri. Memberi kad ini
-     latar, jejari dan bayang sendiri menghasilkan bingkai kedua — itulah rupa
-     "berganda" itu. Jadi kad ini kosong dan aset itulah kadnya. */
   background:url("../assets/ui/menu-v2/cikgu-card-v2.webp") center / 100% 100% no-repeat;
-  border-radius:0;box-shadow:none;padding:13px 18px 13px 10px;gap:9px
+  border:0;box-shadow:0 10px 26px rgba(0,0,0,.5);padding:12px 14px
 }
-.mv2LearnCikgu{position:relative;z-index:1;flex:none;width:min(31%,116px);height:auto;
-  align-self:center;object-fit:contain;filter:drop-shadow(0 5px 11px #0003)}
-.mv2Learn .mv2CardBody,.mv2Learn .mv2Chev{position:relative;z-index:1}
+.mv2LearnCikgu{
+  grid-column:1;justify-self:center;align-self:center;position:relative;z-index:1;
+  width:min(100%,116px);max-height:102px;object-fit:contain;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))
+}
+.mv2Learn .mv2CardBody{position:relative;z-index:2}
+
+.mv2CardBody{grid-column:2;min-width:0;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.mv2CardBody b{display:block;font-size:clamp(15px,4.1vw,17.5px);font-weight:950;line-height:1.18;color:#123158;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv2CardBody small{display:block;margin-top:3px;font-size:11.5px;line-height:1.35;color:#38567c;min-height:31px}
 
 .mv2Cta{
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  min-height:44px;padding:0 16px;border-radius:13px;white-space:nowrap;
-  font-size:clamp(13px,3.7vw,15px);font-weight:950;border:2px solid #b78b47
+  align-self:flex-start;min-height:38px;padding:0 16px;border-radius:12px;
+  white-space:nowrap;font-size:13.5px;font-weight:950;transition:all .1s ease
 }
-.mv2Cta svg{width:17px;height:17px;fill:none;stroke-width:2.6;
-  stroke-linecap:round;stroke-linejoin:round}
-.mv2Cta.gold{background:#f2cd78;color:#3a2f10;margin-top:9px}
-.mv2Cta.gold svg{stroke:#3a2f10}
-.mv2Cta.navy{background:linear-gradient(#1b3354,#122744);color:#fff6df;margin-top:9px}
-/* Tajuk kad tidak boleh jatuh ke baris ketiga; itu yang menolak CTA sampai
-   bertindih dengan potret Cikgu pada skrin sempit. */
-.mv2Learn .mv2CardBody b{font-size:clamp(15px,4.3vw,18px);line-height:1.12}
-.mv2Learn .mv2CardBody small{font-size:12px}
-.mv2Cta.navy svg{stroke:#f2cd78}
-.mv2Card:active{transform:translateY(1px)}
+.mv2Cta svg{width:15px;height:15px;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.mv2Cta.gold{background:linear-gradient(180deg,#f7d57f 0%,#ebb644 100%);border:2px solid #bf8a25;color:#3b2b07;box-shadow:0 3px 0 #9c6c13,0 5px 10px rgba(0,0,0,.18)}
+.mv2Cta.gold svg{stroke:#3b2b07}
+.mv2Cta.navy{
+  background:linear-gradient(180deg,#24578f 0%,#133863 100%);
+  border:2px solid #59c8ff;color:#ffffff;
+  box-shadow:0 3px 0 #09274c,0 5px 12px rgba(9,111,224,.3);
+  text-shadow:0 1px 2px rgba(0,0,0,.4);
+  margin-top:16px
+}
+.mv2Cta.navy svg{stroke:#59c8ff}
 
 /* ---------- dua kad statistik ---------- */
 .mv2Stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .mv2Stat{
-  padding:10px;border-radius:17px;background:#fffdf4;
+  padding:12px 13px;border-radius:18px;background:#fffdf4;
   box-shadow:0 8px 18px #0005,inset 0 0 0 1.5px #e7d9b7
 }
 .mv2Stat h3{
@@ -144,9 +255,9 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Stat h3 svg{width:17px;height:17px;flex:none;fill:none;stroke:#2f6ea8;stroke-width:1.9;
   stroke-linecap:round;stroke-linejoin:round}
 .mv2StatTop{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:6px}
-.mv2StatTop span{font-size:12.5px;font-weight:800;color:#3d5c82;min-width:0;
+.mv2StatTop span{font-size:12px;font-weight:800;color:#3d5c82;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mv2StatTop b{flex:none;font-size:19px;font-weight:950;color:#14335c;font-variant-numeric:tabular-nums}
+.mv2StatTop b{flex:none;font-size:18px;font-weight:950;color:#14335c;font-variant-numeric:tabular-nums}
 .mv2Bar{display:block;height:8px;border-radius:99px;background:#e2e8f0;overflow:hidden}
 .mv2Bar i{display:block;height:100%;width:0;border-radius:99px;
   background:linear-gradient(90deg,#59c8ff,#0b6fe0);transition:width .5s ease}
