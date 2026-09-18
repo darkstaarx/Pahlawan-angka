@@ -1,12 +1,29 @@
-/* Menu V2 — laman utama alternatif. v1.0.0
+/* Menu V2 — laman utama PRODUKSI. v1.0.0
  *
- * Setiap kali murid memilih profil, dia ditanya: Menu V2 atau menu asal.
- * Pilihan disimpan pada profil (`db.menuStyle`) supaya butang Utama di dalam
- * permainan kembali ke menu yang sama sepanjang sesi itu.
+ * Keputusan pemilik (produksi): Menu V2 ialah menu tunggal untuk murid
+ * biasa. Tiada lagi soalan "Menu V2 atau menu asal": renderHub() sentiasa
+ * membuka Menu V2 untuk profil sebenar. Nilai lama `db.menuStyle` diabaikan
+ * dengan sengaja supaya profil lama tidak tersangkut pada Hub lama.
+ *
+ * Hub lama, skrin Misi lama dan skrin battle lama TIDAK dibuang — ia kekal
+ * dalam index.html sebagai laluan dev/sandaran (PAMenuV2.legacyHub(),
+ * PAMenuV2.legacyMissions(), panel DEV). Ia tidak lagi boleh dicapai daripada
+ * laluan produksi normal.
+ *
+ * Dua kad produksi:
+ *   1. Selamatkan Pet   — Map V2 (pilih Darjah/Topik sendiri) -> Gembok V2
+ *   2. Kembara Dimensi  — laluan Cikgu/adaptif (pemilih kemahiran sebenar)
+ *                         -> Gembok V2
  *
  * ATURAN DATA: setiap nombor di skrin ini mesti datang daripada profil
  * sebenar. Satu sahaja yang belum wujud dalam `db` — ikatan pet — dan ia
  * dipaparkan sebagai 0% dengan nota jujur, bukan angka rekaan.
+ *
+ * HAD YANG DIKETAHUI (jangan dakwa lebih daripada ini):
+ *   - Gembok V2 menjalankan soalan sebenar daripada bank, tetapi ia TIDAK
+ *     menulis bukti pembelajaran (mastery/evidence/XP) kepada profil. Jadi
+ *     kedua-dua kad membuka pengalaman sebenar tanpa integrasi pembelajaran
+ *     penuh. Integrasi itu kerja berasingan yang masih belum siap.
  */
 (function(){
   'use strict';
@@ -132,34 +149,12 @@
   function profileKey(){
     try{ return [db.cloudChildId||'',db.name||'',db.created||0].join('|') }catch(_){ return '' }
   }
-
-  /* ---------------- pemilih menu ---------------- */
-  function pickerEl(){
-    let el=$('mv2Pick');
-    if(el)return el;
-    el=document.createElement('div');
-    el.id='mv2Pick'; el.className='mv2Pick'; el.hidden=true;
-    el.innerHTML=`
-      <div class="mv2PickCard" role="dialog" aria-modal="true" aria-labelledby="mv2PickTitle">
-        <b id="mv2PickTitle">Pilih paparan menu</b>
-        <p>Kedua-duanya membawa kamu ke pengembaraan yang sama.</p>
-        <div class="mv2PickBtns">
-          <button type="button" class="v2">Menu V2</button>
-          <button type="button" class="asal">Menu Asal</button>
-        </div>
-      </div>`;
-    el.querySelector('.v2').onclick=()=>choose('v2');
-    el.querySelector('.asal').onclick=()=>choose('asal');
-    document.body.appendChild(el);
-    return el;
+  /* Pemilih "Menu V2 atau Menu Asal" telah DIBUANG untuk produksi. Kalau
+     dialog lama masih ada dalam DOM daripada sesi terdahulu, tutup ia. */
+  function killPicker(){
+    const el=$('mv2Pick');
+    if(el){ el.hidden=true; el.remove() }
   }
-  function choose(style){
-    pickerEl().hidden=true;
-    if(typeof db!=='undefined'&&db){ db.menuStyle=style; if(has('save'))save() }
-    if(has('playSfx'))try{playSfx('ui')}catch(_){}
-    style==='v2' ? openMenuV2() : originalHub();
-  }
-  function askMenuStyle(){ pickerEl().hidden=false }
 
   /* ---------------- pembacaan data sebenar ---------------- */
 
@@ -218,8 +213,13 @@
     if(has('ensureRewards'))ensureRewards();
 
     // profil murid / avatar HUD
+    /* `db.child` tidak pernah wujud: app.js startNew() menyimpan nama pada
+       `db.name` (id input HTML sahaja yang bernama "child"). Jadi menu ini
+       dahulunya sentiasa memaparkan nama lalai "Aiman" walaupun untuk profil
+       lain — nombor/nama rekaan, bertentangan dengan ATURAN DATA di atas.
+       Sekarang Menu V2 ialah menu produksi, jadi ini mesti nama sebenar. */
     const pname = $('mv2PlayerName');
-    if (pname) pname.textContent = db.child || 'Aiman';
+    if (pname) pname.textContent = db.name || db.child || '';
     const pbadge = $('mv2AvatarBadge');
     if (pbadge) pbadge.textContent = `Lv. ${db.level || 1}`;
     const pimg = $('mv2AvatarImg');
@@ -280,8 +280,6 @@
     if($('mv2PetNote'))$('mv2PetNote').textContent=pet
       ? 'Ikatan pet belum dijejaki lagi.'
       : 'Pilih teman dalam Koleksi Pet.';
-
-    if(has('save'))save();
   }
 
   /* ---------------- masuk / keluar ---------------- */
@@ -292,24 +290,151 @@
   function openMenuV2(){
     if(typeof db==='undefined'||!db)return has('goLogin')?goLogin():null;
     if(has('enforceRestuLock')&&enforceRestuLock())return;
+    killPicker();
     preloadSprites();
     paint();
     startSpriteEngine();
     bindCards();
     if(has('screen'))screen('menuV2');
   }
-  /* Dua kad utama. `Jejak Pet` meneruskan misi bab semasa, sama seperti
-     butang teruskan pada menu asal. `Pilih Topik` membuka senarai topik
-     (skrin Misi) — di situlah Cikgu Dimensi mengajar murid melalui bab yang
-     dipilih. Tiada pemilih topik khusus untuk mod belajar lagi. */
+
+  /* =========================================================
+     MAP V2 — pilih topik sendiri (semantik misi manual)
+     =========================================================
+     Map V2 memakai semula skrin `#missions` yang sudah ada, termasuk kad
+     `.missionCard` dan gaya visualnya, jadi tiada CSS baharu diperlukan dan
+     bahasa visual pemilik terpelihara. Yang berubah hanya:
+       - nod dibina daripada GRAPH/profil sebenar (topik Darjah murid, kunci
+         mengikut db.coreFrontier) — bukan nod rekaan,
+       - ketikan topik mengekalkan semantik misi manual sedia ada
+         (db.activeMissionChapter = topik itu, sama seperti startMission)
+         kemudian membuka Gembok V2 pada topik itu,
+       - pintu masuk lama pada skrin itu (kad "Cikgu Pilihkan" dan pembayang
+         "Atau pilih topik sendiri") disembunyikan daripada laluan normal.
+         Ia tidak dibuang: renderMissions() lama masih memaparkannya untuk dev. */
+  let legacyMissionChrome=null;
+  function missionChrome(){
+    const section=document.getElementById('missions');
+    if(!section)return null;
+    const coach=section.querySelector('.autoCoachCard');
+    const hint=section.querySelector('.coachChoiceHint');
+    const eyebrow=section.querySelector('.topNav .eyebrow');
+    const title=eyebrow&&eyebrow.parentElement?eyebrow.parentElement.querySelector('b'):null;
+    if(!legacyMissionChrome){
+      legacyMissionChrome={
+        eyebrow:eyebrow?eyebrow.textContent:'',
+        title:title?title.textContent:''
+      };
+    }
+    return {section,coach,hint,eyebrow,title};
+  }
+  function setMapChrome(on){
+    const c=missionChrome();
+    if(!c)return;
+    if(c.coach)c.coach.hidden=!!on;
+    if(c.hint)c.hint.hidden=!!on;
+    if(on){
+      if(c.eyebrow)c.eyebrow.textContent='PETA TOPIK';
+      if(c.title)c.title.textContent=`Darjah ${db.schoolGrade} · Pilih Topik`;
+    }else if(legacyMissionChrome){
+      if(c.eyebrow)c.eyebrow.textContent=legacyMissionChrome.eyebrow;
+      if(c.title)c.title.textContent=legacyMissionChrome.title;
+    }
+    if(c.section)c.section.dataset.mv2Map=on?'1':'';
+  }
+
+  /* Satu nod = satu topik KSSR yang benar-benar ada untuk Darjah murid.
+     Semua nombor (peratus, bintang, kunci) dibaca daripada fungsi progression
+     sedia ada. Tiada tag atau topik direka di sini. */
+  function mapChapters(){
+    try{
+      return [...new Set(GRAPH.skills.filter(x=>x.grade===db.schoolGrade).map(x=>String(x.chapter)))]
+        .sort((a,b)=>+a-+b);
+    }catch(_){ return [] }
+  }
+  function openTopic(ch){
+    if(typeof db==='undefined'||!db)return;
+    if(has('enforceRestuLock')&&enforceRestuLock())return;
+    if(has('ensureProgression'))ensureProgression();
+    /* Semantik misi manual sedia ada: topik yang dipilih menjadi topik aktif
+       profil, sama seperti startMission(ch) lakukan. */
+    db.activeMissionChapter=String(ch);
+    if(has('save'))save();
+    if(has('playSfx'))try{playSfx('ui')}catch(_){}
+    /* Gembok V2 pada topik itu. Adapter `chapter` hidup dalam
+       segel-demo-v2.1.0.js dan menapis KEMAHIRAN SEBENAR topik itu. */
+    if(has('openSegelDemo'))return openSegelDemo({chapter:String(ch)});
+    if(has('startMission'))return startMission(String(ch));
+  }
+  function openMapV2(){
+    if(typeof db==='undefined'||!db)return has('goLogin')?goLogin():null;
+    if(has('enforceRestuLock')&&enforceRestuLock())return;
+    if(has('ensureProgression'))ensureProgression();
+    if(has('updateFrontier'))updateFrontier();
+    const wrap=document.getElementById('missionGrid');
+    if(!wrap)return;
+    wrap.innerHTML='';
+    setMapChrome(true);
+    const dev=has('isDevMode')&&isDevMode();
+    mapChapters().forEach(ch=>{
+      const locked=!dev&&+ch>db.coreFrontier;
+      let mastery=0,stars=0,title=`Topik ${ch}`,kicker=`Topik ${ch}`,icon='⭐';
+      try{ mastery=chapterMasteryPct(ch) }catch(_){}
+      try{ stars=db.chapterStars&&db.chapterStars[ch]||0 }catch(_){}
+      try{ title=chapterTitle(ch) }catch(_){}
+      try{ icon=chapterIcon(ch) }catch(_){}
+      try{
+        const ref=chapterSkills(ch)[0];
+        kicker=ref&&ref.textbookUnit?`KSSR Unit ${ref.textbookUnit}`:`Topik ${ch}`;
+      }catch(_){}
+      const card=document.createElement('button');
+      card.type='button';
+      card.className='missionCard '+(locked?'locked':(+ch===db.coreFrontier?'current':''))+(dev?' devUnlocked':'');
+      card.disabled=locked;
+      card.dataset.mv2Topic=String(ch);
+      const starsText=has('starString')?starString(stars):'';
+      const lockedText=has('lockedMissionCopy')?lockedMissionCopy(ch):`Buka selepas Topik ${Math.max(1,+ch-1)}`;
+      card.innerHTML=`<div class="missionIcon">${locked?'🔒':icon}</div><div class="missionBody"><div class="missionKicker">${kicker}</div><b>${title}</b><div class="missionStars">${starsText}</div><div class="missionMeter"><span style="width:${mastery}%"></span></div><small>${locked?lockedText:mastery+'% kemajuan'}</small></div><div class="missionArrow">›</div>`;
+      if(!locked)card.onclick=()=>openTopic(ch);
+      wrap.appendChild(card);
+    });
+    if(has('screen'))screen('missions');
+  }
+
+  /* =========================================================
+     KEMBARA DIMENSI — laluan Cikgu/adaptif
+     =========================================================
+     Ini BUKAN pemilih topik manual. Ia meminta Gembok V2 memilih setiap
+     kemahiran melalui pemilih adaptif produksi (chooseModeAndSkill ->
+     chooseCoachFrontierSkill), yang membaca keadaan pembelajaran sebenar
+     (db.skills melalui scoreState).
+
+     HAD JUJUR: pemilihan adalah adaptif sebenar, tetapi Gembok V2 tidak
+     memanggil recordFrontierResponse()/recordMissionAnswer(), jadi jawapan di
+     sini tidak menambah bukti frontier. Jangan dakwa pariti adaptif penuh. */
+  function openKembaraDimensi(){
+    if(typeof db==='undefined'||!db)return has('goLogin')?goLogin():null;
+    if(has('enforceRestuLock')&&enforceRestuLock())return;
+    if(has('ensureProgression'))ensureProgression();
+    if(has('updateFrontier'))updateFrontier();
+    if(typeof chooseModeAndSkill!=='function'){
+      // Tiada pemilih adaptif = jangan jatuh senyap kepada pilihan manual.
+      if(has('showRewardToast'))showRewardToast('Laluan Cikgu belum tersedia.');
+      return;
+    }
+    if(has('playSfx'))try{playSfx('ui')}catch(_){}
+    if(has('openSegelDemo'))return openSegelDemo({adaptive:true});
+    if(has('startMission'))return startMission(null);
+  }
+
+  /* Dua kad produksi. */
   function bindCards(){
     const quest=$('mv2QuestCard');
-    if(quest&&!quest.dataset.bound){ quest.dataset.bound='1';
-      quest.onclick=()=>{ if(has('openSegelDemo'))openSegelDemo();
-                          else if(has('continueHubMission'))continueHubMission() } }
+    if(quest&&!quest.dataset.boundV2){ quest.dataset.boundV2='1';
+      quest.onclick=()=>openMapV2() }
     const learn=$('mv2LearnCard');
-    if(learn&&!learn.dataset.bound){ learn.dataset.bound='1';
-      learn.onclick=()=>{ if(has('navMission'))navMission() } }
+    if(learn&&!learn.dataset.boundV2){ learn.dataset.boundV2='1';
+      learn.onclick=()=>openKembaraDimensi() }
   }
 
   /* ---------------- pemasangan ---------------- */
@@ -318,30 +443,72 @@
     const original=window.renderHub;
     const wrapped=function(){
       if(typeof db==='undefined'||!db)return original.apply(this,arguments);
-      /* Soalan mesti berada DI SINI, bukan pada startNew/resumeGame. Profil
-         sebenar dipilih melalui profile-manager (`selectProfile`), log masuk
-         awan (cloud.js) dan laluan peranan login — ketiga-tiganya memanggil
-         renderHub() terus dan tidak pernah menyentuh startNew. renderHub
-         ialah satu-satunya pintu yang semuanya lalui.
+      /* renderHub ialah satu-satunya pintu yang dilalui oleh semua laluan
+         profil sebenar (profile-manager `selectProfile`, log masuk awan
+         cloud.js, laluan peranan login). Jadi di sini Menu V2 menjadi menu
+         produksi: tiada soalan, tiada Hub lama.
 
-         Kunci profil memastikan ia ditanya sekali bagi setiap profil: menukar
-         anak bertanya semula, tetapi kembali ke Utama dari dalam permainan
-         tidak. */
-      const key=profileKey();
-      if(askedFor!==key){ askedFor=key; askMenuStyle(); return }
-      if(db.menuStyle==='v2')return openMenuV2();
-      return original.apply(this,arguments);
+         `db.menuStyle` lama (termasuk 'asal') sengaja TIDAK dibaca lagi. */
+
+      /* Gerbang yang renderHub() asal jalankan SEBELUM melukis hub mesti
+         kekal berjalan, kalau tidak murid awan boleh melepasi onboarding
+         penjaga. Syaratnya disalin daripada js/progression.js:57-59 dengan
+         sengaja: memanggil renderHub asal di sini akan melukis Hub lama. */
+      try{
+        const cloudState=window.PACloud&&window.PACloud.state;
+        const activeProfile=cloudState&&cloudState.profiles&&cloudState.profiles.find
+          ? cloudState.profiles.find(p=>p.id===cloudState.childId) : null;
+        if(cloudState&&cloudState.user&&!(db.onboarding&&db.onboarding.completed)
+           &&activeProfile&&window.PAOnboarding&&window.PAOnboarding.beginExisting){
+          return window.PAOnboarding.beginExisting(activeProfile);
+        }
+      }catch(_){}
+      if(has('enforceRestuLock')&&enforceRestuLock())return;
+
+      askedFor=profileKey();
+      return openMenuV2();
     };
     wrapped.__mv2original=original;
     window.renderHub=wrapped;
 
+    /* Skrin Misi lama masih wujud untuk dev. Laluan normal (nav bawah "Misi",
+       navMission()) mesti mendarat pada Map V2, bukan pada skrin lama dengan
+       kad "Cikgu Pilihkan" yang membuka battle lama. */
+    const legacyMissions=window.navMission;
+    if(typeof legacyMissions==='function'&&!legacyMissions.__mv2wrapped){
+      const wrappedNav=function(){
+        if(typeof db==='undefined'||!db)return legacyMissions.apply(this,arguments);
+        return openMapV2();
+      };
+      wrappedNav.__mv2wrapped=true;
+      wrappedNav.__mv2original=legacyMissions;
+      window.navMission=wrappedNav;
+    }
+    /* renderMissions() lama (dev) mesti memulihkan chrome asalnya. */
+    const legacyRender=window.renderMissions;
+    if(typeof legacyRender==='function'&&!legacyRender.__mv2wrapped){
+      const wrappedRender=function(){
+        setMapChrome(false);
+        return legacyRender.apply(this,arguments);
+      };
+      wrappedRender.__mv2wrapped=true;
+      wrappedRender.__mv2original=legacyRender;
+      window.renderMissions=wrappedRender;
+    }
+
     window.openMenuV2=openMenuV2;
-    window.askMenuStyle=askMenuStyle;
+    window.openMapV2=openMapV2;
     window.PAMenuV2={
       version:'1.0.0',
       paint,
-      ask:askMenuStyle,
       open:openMenuV2,
+      map:openMapV2,
+      topic:openTopic,
+      kembara:openKembaraDimensi,
+      /* Laluan dev/sandaran sahaja — bukan untuk murid. */
+      legacyHub:originalHub,
+      legacyMissions:()=>{ const f=window.renderMissions&&window.renderMissions.__mv2original;
+                           setMapChrome(false); return f?f.call(window):null },
       interact:interactActor,
       startEngine:startSpriteEngine,
       stopEngine:stopSpriteEngine

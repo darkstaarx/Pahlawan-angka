@@ -1018,12 +1018,83 @@
   /* =================================================================
      SOALAN — datang dari bank sebenar, bukan senarai tetap
      ================================================================= */
+  /* ADAPTER PRODUKSI (Menu/Map V2)
+     ------------------------------
+     Gembok V2 asalnya hanya ada satu mod: kolam kemahiran teras Darjah murid
+     dalam susunan rawak. Menu V2 produksi memerlukan DUA laluan, jadi
+     openSegelDemo() kini menerima satu `mode`:
+
+       {chapter:'3'}   Selamatkan Pet — TOPIK yang murid pilih sendiri dalam
+                       Map V2. Kolam ditapis kepada kemahiran SEBENAR topik itu
+                       daripada GRAPH (bukan tag rekaan). Kalau topik itu tiada
+                       kemahiran, kita jatuh kembali kepada kolam Darjah dan
+                       ini dicatat ke konsol.
+
+       {adaptive:true} Kembara Dimensi — setiap soalan memilih kemahiran
+                       melalui chooseModeAndSkill() PRODUKSI, yang untuk
+                       sesi coachAdaptive menyerahkan kepada
+                       chooseCoachFrontierSkill() (frontier.js) dan membaca
+                       keadaan pembelajaran sebenar melalui scoreState(db.skills).
+
+     HAD YANG DIKETAHUI (sengaja tidak ditampal di sini):
+       - Gembok V2 tidak memanggil recordMissionAnswer() atau
+         recordFrontierResponse(), jadi jawapan TIDAK menulis bukti/mastery/XP.
+         Pemilihan adaptif membaca keadaan sebenar tetapi tidak menambahnya.
+         Menutup jurang itu bermakna mengubah enjin pemarkahan/persistence,
+         yang berada di luar tugasan ini.
+       - Tiada logik pemilih atau pemarkahan disalin ke dalam fail ini; kita
+         hanya MEMANGGIL fungsi produksi yang sudah ada.
+  */
+  let entryMode=null;   // {chapter} | {adaptive:true} | null
+
+  function chapterSkillPool(chapter){
+    const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;
+    let pool=[];
+    try{
+      pool=GRAPH.skills
+        .filter(x=>x.grade===grade&&String(x.chapter)===String(chapter))
+        .map(x=>x.id);
+    }catch(_){}
+    if(!pool.length)console.warn('[segel-demo] topik tiada kemahiran, guna kolam darjah:',chapter);
+    return pool;
+  }
   function skillPool(){
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;
+    if(entryMode&&entryMode.chapter){
+      const scoped=chapterSkillPool(entryMode.chapter);
+      if(scoped.length)return mix(scoped);
+    }
     let pool=[];
     try{ pool=GRAPH.skills.filter(x=>x.grade===grade&&x.role==='core').map(x=>x.id) }catch(_){}
     if(!pool.length)pool=['D1.MONEY'];
     return mix(pool);
+  }
+
+  /* Pemilih adaptif produksi. Dipanggil dalam `withDemoSess` supaya semua
+     keadaan sesi yang ditulisnya (mode, recent, coach, recoveryFor) mendarat
+     pada sesi Gembok dan bukan pada sesi battle murid.
+
+     KENAPA chooseCoachFrontierSkill() DAN BUKAN chooseModeAndSkill():
+     chooseModeAndSkill() bermula dengan `if(sess?.demoMode&&window.PADemo)
+     return PADemo.chooseSkill()`. Sesi Gembok mesti kekal demoMode supaya
+     save() tidak menulis progress, jadi memanggil chooseModeAndSkill() di sini
+     akan dialihkan ke kolam demo tetamu, bukan kepada Cikgu. Jadi kita
+     memanggil terus fungsi yang SAMA yang digunakan oleh laluan Cikgu
+     produksi (startMission(null) -> sess.coachAdaptive -> chooseModeAndSkill
+     -> chooseCoachFrontierSkill dalam js/engine/frontier.js). Tiada logik
+     pemilih disalin ke sini.
+
+     Beza yang diketahui berbanding laluan Cikgu penuh: gerbang
+     confirmationSkill() (intervention.js) yang berjalan SEBELUM cabang
+     coachAdaptive tidak dipanggil di sini, dan jawapan Gembok tidak
+     dimasukkan semula melalui recordFrontierResponse(). Jadi ini pemilihan
+     adaptif sebenar, bukan pariti adaptif penuh. */
+  function adaptiveSkillId(){
+    if(typeof chooseCoachFrontierSkill!=='function')return null;
+    return withDemoSess(()=>{
+      const id=chooseCoachFrontierSkill();
+      return (id&&typeof META!=='undefined'&&META[id])?id:null;
+    });
   }
 
   // generate() menulis ke `sess` (anti-ulang, sejarah soalan). Kita pinjamkan
@@ -1131,12 +1202,13 @@
      kecenderungan ini tidak menjejaskan bukti pembelajaran murid. */
   const GOLD_TRIES=5;
   function drawQuestion(){
+    const adaptiveId=(entryMode&&entryMode.adaptive)?adaptiveSkillId():null;
     const base=run.asked%run.pool.length;
-    let id=run.pool[base], q=null;
+    let id=adaptiveId||run.pool[base], q=null;
     let goldTier=false;
     try{ goldTier=!!(stage&&stage.activeTier()&&stage.activeTier().key==='emas') }catch(_){}
     const api=window.PADevExperiments;
-    if(goldTier&&api&&typeof api.typedEligible==='function'){
+    if(goldTier&&!adaptiveId&&api&&typeof api.typedEligible==='function'){
       for(let t=0;t<GOLD_TRIES;t++){
         const candidateId=run.pool[(base+t)%run.pool.length];
         const candidate=makeQuestion(candidateId);
@@ -1323,8 +1395,14 @@
   function startRun(){
     run={pool:skillPool(),asked:0,locked:false,q:null,usedHint:false,
          tally:{own:0,hint:0,miss:0},
+         /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
+            ensureCoachSession()/chooseCoachFrontierSkill() berjalan. `demoMode`
+            kekal supaya save() tidak sekali-kali menulis progress dari sini. */
          sess:{mode:'practice',hint:false,hintLevel:0,recent:[],
-               questionFingerprints:[],questionHistory:[],demoMode:true}};
+               questionFingerprints:[],questionHistory:[],demoMode:true,
+               coachAdaptive:!!(entryMode&&entryMode.adaptive),
+               missionChapter:(entryMode&&entryMode.chapter)?String(entryMode.chapter):null,
+               missionAnswered:0,coach:null,recoveryFor:null,stretchFor:null}};
     $('segelDone').hidden=true;
     stage.reset();
     stage.armEntry();
@@ -1428,8 +1506,20 @@
     paint();
   }
 
-  window.openSegelDemo=async function(){
+  /* `mode` ialah adapter produksi Menu V2:
+       openSegelDemo()                   — kelakuan asal (kolam teras darjah)
+       openSegelDemo({chapter:'3'})      — Selamatkan Pet: topik yang dipilih
+       openSegelDemo({adaptive:true})    — Kembara Dimensi: laluan Cikgu
+     Sinematik masuk (segel-entry-cinematic) menghantar semula argumen ini
+     tanpa diubah, jadi tiada perubahan diperlukan di sana. */
+  window.openSegelDemo=async function(mode){
     if(typeof db==='undefined'||!db)return;
+    entryMode=(mode&&typeof mode==='object')?mode:null;
+    if(entryMode&&entryMode.adaptive&&typeof chooseCoachFrontierSkill!=='function'){
+      console.warn('[segel-demo] laluan adaptif diminta tetapi chooseCoachFrontierSkill tiada');
+      entryMode=null;
+      return;
+    }
     reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(typeof screen==='function')screen('segelDemo');
     try{ await boot() }
@@ -1446,17 +1536,24 @@
   window.closeSegelDemo=function(){
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
+    /* renderHub() kini membuka Menu V2 produksi (menu-v2-v1.0.0.js membalutnya),
+       jadi murid tidak pernah mendarat pada Hub lama dari sini. */
     if(typeof renderHub==='function')renderHub();
+    else if(typeof openMenuV2==='function')openMenuV2();
     else if(typeof screen==='function')screen('hub');
   };
 
   window.restartSegelDemo=function(){ if(stage)startRun() };
+
+  // Dibaca oleh bukti/QA: laluan mana yang membuka pusingan ini.
+  window.segelEntryMode=()=>entryMode;
 
   // Permukaan dev, sama corak dengan modul lain dalam repo ini.
   window.PASegelDemo={
     open:()=>window.openSegelDemo(),
     close:()=>window.closeSegelDemo(),
     restart:()=>window.restartSegelDemo(),
+    mode:()=>entryMode,
     tiers:TIERS,
     state:()=>run
   };
