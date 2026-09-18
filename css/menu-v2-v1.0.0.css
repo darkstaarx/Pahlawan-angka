@@ -216,7 +216,7 @@ body[data-screen="menuV2"] .appHeader{display:none}
 }
 .mv2LearnCikgu{
   grid-column:1;justify-self:center;align-self:center;position:relative;z-index:3;
-  display:block;width:min(100%,112px);height:auto;max-height:96px;object-fit:contain;image-rendering:auto;
+  display:block;width:104px;height:auto;max-height:86px;object-fit:contain;image-rendering:auto;
   filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))
 }
 .mv2Learn .mv2CardBody{position:relative;z-index:2}
