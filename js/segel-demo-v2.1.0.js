@@ -1157,6 +1157,20 @@
     return true;
   }
 
+  function setTypedRetryEnabled(clearValue=false){
+    const form=$('segelAnswers')?.querySelector('.paTypedAnswer');
+    const input=form?.querySelector('.paTypedInput'),button=form?.querySelector('.paTypedSubmit');
+    if(!input||!button)return;
+    if(clearValue)input.value='';
+    input.disabled=false;button.disabled=false;input.focus();
+  }
+
+  function productionCurrent(hostRun,q){
+    return run&&run.production&&run.productionRun===hostRun&&run.q===q
+      && window.PAProductionJourney?.isCurrent?.(hostRun)
+      && hostRun.session.generation===run.generation;
+  }
+
   /* Bar kesihatan, bukan ayat. Bilangan ketul = bilangan hentaman tier itu
      (Gangsa 2, Perak 3, Emas 5) dan warnanya sudah memberitahu tier mana. */
   function paintSeal(){
@@ -1202,6 +1216,12 @@
      kecenderungan ini tidak menjejaskan bukti pembelajaran murid. */
   const GOLD_TRIES=5;
   function drawQuestion(){
+    if(run&&run.production){
+      const q=window.PAProductionJourney?.nextQuestion?.(run.productionRun);
+      if(!q){finishRun(false,'Soalan Gembok tidak dapat dimuat.');return;}
+      run.q=q;
+      return paintQuestion(q,q.skill);
+    }
     const adaptiveId=(entryMode&&entryMode.adaptive)?adaptiveSkillId():null;
     const base=run.asked%run.pool.length;
     let id=adaptiveId||run.pool[base], q=null;
@@ -1220,7 +1240,10 @@
     if(!q)q=makeQuestion(id);
     if(!q){ finishRun(false,'Bank soalan tidak dapat dimuat.'); return }
     run.q=q;
+    paintQuestion(q,id);
+  }
 
+  function paintQuestion(q,id){
     const meta=(typeof META!=='undefined'&&META[id])||{};
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||meta.grade||1;
     // helper yang sama dengan battle: buang awalan "Tahun N · " supaya tajuk
@@ -1268,36 +1291,57 @@
   }
 
   async function respond(option,button){
+    if(run&&run.production)return respondProduction(option,button);
     if(run.locked)return;
     run.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
     button.classList.add(correct?'ok':'no');
     run.asked++;
-
     if(correct){
-      sfx('correct');
-      run.tally[run.usedHint?'hint':'own']++;
-      await stage.strike();
-      const outcome=stage.hitSeal();
-      if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
-      $('segelFeedback').textContent=outcome.broken
-        ? `Kunci ${outcome.tier.name} pecah!`
-        : 'Betul! Kunci retak.';
-      paintSeal();
-      if(stage.allBroken())return celebrate();
-    }else{
-      sfx('wrong');
-      run.tally.miss++;
-      $('segelFeedback').textContent=q_hint(run.q);
-      stage.wrong();
-      await wait(520);
-    }
-
+      sfx('correct');run.tally[run.usedHint?'hint':'own']++;await stage.strike();
+      const outcome=stage.hitSeal();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
+      $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
+      paintSeal();if(stage.allBroken())return celebrate();
+    }else{sfx('wrong');run.tally.miss++;$('segelFeedback').textContent=q_hint(run.q);stage.wrong();await wait(520);}
     if(run.asked>=MAX_Q)return celebrate();
-    await wait(420);
-    run.locked=false;
-    drawQuestion();
+    await wait(420);run.locked=false;drawQuestion();
+  }
+
+  async function respondProduction(option,button){
+    if(run.locked)return;
+    const q=run.q,hostRun=run.productionRun;if(!q||!productionCurrent(hostRun,q))return;
+    run.locked=true;
+    const correct=option.tag==='correct'&&String(option.v)===String(q.answer);
+    if(!correct&&!run.retryOpen){
+      const result=window.PAProductionJourney?.firstWrong?.(q,option);
+      if(!productionCurrent(hostRun,q))return;
+      button.classList.add('no');button.disabled=true;run.retryOpen=true;
+      $('segelFeedback').textContent=result?.hint?`Belum tepat. ${result.hint}`:'Belum tepat. Cuba sekali lagi.';
+      $('segelHint')?.classList.add('needs-help');run.locked=false;setTypedRetryEnabled();return;
+    }
+    if(!correct&&String(option.v)===String(hostRun.session.retryState?.wrongValue)){
+      $('segelFeedback').textContent='Jawapan itu sudah dicuba. Cuba nilai yang lain.';
+      run.locked=false;setTypedRetryEnabled(true);return;
+    }
+    [...$('segelAnswers').children].forEach(b=>b.disabled=true);
+    button.classList.add(correct?'ok':'no');
+    const result=window.PAProductionJourney?.resolve?.(q,option,correct);
+    if(!productionCurrent(hostRun,q))return;
+    run.asked++;
+    if(correct){
+      run.tally[run.usedHint?'hint':'own']++;await stage.strike();
+      if(!productionCurrent(hostRun,q))return;
+      const outcome=stage.hitSeal();$('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';paintSeal();
+      if(stage.allBroken()){window.PAProductionJourney?.complete?.();if(!productionCurrent(hostRun,q))return;return celebrateProduction(hostRun,q);}
+    }else{run.tally.miss++;stage.wrong();$('segelFeedback').textContent=`Belum tepat. ${q_hint(q)}`;}
+    if(result?.intervention){window.PAProductionJourney?.pauseForLearning?.(result.intervention);return;}
+    await wait(420);if(!productionCurrent(hostRun,q))return;run.retryOpen=false;run.locked=false;drawQuestion();
+  }
+
+  async function celebrateProduction(hostRun,q){
+    if(!productionCurrent(hostRun,q))return;
+    run.locked=true;$('segelTag').style.opacity='0';toast('AURORA BEBAS!');await stage.rescue();if(!productionCurrent(hostRun,q))return;finishRun(true);
   }
 
   /* Satu penamat sahaja: Aurora diselamatkan. Kalau soalan habis sebelum
@@ -1411,6 +1455,12 @@
     drawQuestion();
   }
 
+  function startProductionRun(productionRun){
+    if(!window.PAProductionJourney?.isCurrent?.(productionRun))return;
+    run={production:true,productionRun,generation:productionRun.session.generation,asked:0,locked:false,retryOpen:false,q:null,usedHint:false,tally:{own:0,hint:0,miss:0}};
+    $('segelDone').hidden=true;stage.reset();stage.armEntry();enterWhenRevealed();paintSeal();drawQuestion();
+  }
+
   /* Sinematik portal (segel-entry-cinematic) memuatkan pentas di belakang
      tirai gelap, kemudian mendedahkan arena. Perhimpunan zarah mesti bermula
      pada detik pendedahan itu, bukan semasa tirai masih menutup.
@@ -1480,6 +1530,11 @@
     btn.dataset.bound='1';
     btn.onclick=()=>{
       if(!run||!run.q||run.locked)return;
+      if(run.production){
+        run.usedHint=true;btn.disabled=true;btn.classList.add('used');
+        $('segelFeedback').textContent=window.PAProductionJourney?.hint?.()||'Baca semula soalan perlahan-lahan.';
+        [...$('segelAnswers').children].forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});setTypedRetryEnabled();return;
+      }
       run.usedHint=true;
       btn.disabled=true; btn.classList.add('used');
       $('segelFeedback').textContent=run.q.hint||'Baca semula soalan perlahan-lahan.';
@@ -1533,9 +1588,23 @@
     startRun();
   };
 
+  window.PASegelHost={
+    openProduction:async productionRun=>{
+      const generation=productionRun?.session?.generation;
+      entryMode=null;reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(typeof screen==='function')screen('segelDemo');
+      try{await boot()}catch(_){$('segelFeedback').textContent='Pentas Gembok tidak dapat dimuat pada peranti ini.';return;}
+      if(!window.PAProductionJourney?.isCurrent?.(productionRun)||productionRun.session.generation!==generation)return;
+      bindSpeaker();bindSound();bindHint();stage.resume();startProductionRun(productionRun);
+    },
+    resumeProduction:productionRun=>{if(!run||!run.production||run.productionRun!==productionRun||!window.PAProductionJourney?.isCurrent?.(productionRun))return;if(typeof screen==='function')screen('segelDemo');stage.resume();run.locked=false;run.retryOpen=false;drawQuestion();},
+    pause:()=>stage&&stage.pause()
+  };
+
   window.closeSegelDemo=function(){
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
+    if(window.PAProductionJourney?.isActive?.()){window.PAProductionJourney.close();return;}
     /* renderHub() kini membuka Menu V2 produksi (menu-v2-v1.0.0.js membalutnya),
        jadi murid tidak pernah mendarat pada Hub lama dari sini. */
     if(typeof renderHub==='function')renderHub();
@@ -1543,7 +1612,7 @@
     else if(typeof screen==='function')screen('hub');
   };
 
-  window.restartSegelDemo=function(){ if(stage)startRun() };
+  window.restartSegelDemo=function(){ if(run?.production)return window.PAProductionJourney?.restart?.(run.productionRun);if(stage)startRun() };
 
   // Dibaca oleh bukti/QA: laluan mana yang membuka pusingan ini.
   window.segelEntryMode=()=>entryMode;

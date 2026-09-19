@@ -264,7 +264,7 @@ function refreshLoginResume(){
   if(db){ el.innerHTML=`<button class="btn secondary heroStart" onclick="loginRoute('student')"><img class="resumeIcon" src="assets/ui/login/menu-arrow.svg" alt="">Sambung ${db.name||'permainan'} · Darjah ${db.schoolGrade||2}</button>`; }
   else el.innerHTML='';
 }
-function returnFromLearning(){ if(confirm('Keluar dari Kem Latihan dan kembali ke hub?')){learningState=null;sess.learningActive=false;sess.questionToken=(sess.questionToken||0)+1;goHub()} }
+function returnFromLearning(){ if(confirm('Keluar dari Kem Latihan dan kembali ke hub?')){learningState=null;sess.learningActive=false;sess.questionToken=(sess.questionToken||0)+1;if(window.PAProductionJourney?.isActive?.())window.PAProductionJourney.close();else goHub()} }
 
 function openParentPin(){
   if(!db){setLoginError('Belum ada profil murid. Cipta profil murid dahulu.');return;}

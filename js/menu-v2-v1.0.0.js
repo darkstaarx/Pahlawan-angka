@@ -361,10 +361,7 @@
     db.activeMissionChapter=String(ch);
     if(has('save'))save();
     if(has('playSfx'))try{playSfx('ui')}catch(_){}
-    /* Gembok V2 pada topik itu. Adapter `chapter` hidup dalam
-       segel-demo-v2.1.0.js dan menapis KEMAHIRAN SEBENAR topik itu. */
-    if(has('openSegelDemo'))return openSegelDemo({chapter:String(ch)});
-    if(has('startMission'))return startMission(String(ch));
+    if(has('openGembok'))return openGembok({chapter:String(ch)});
   }
   function openMapV2(){
     if(typeof db==='undefined'||!db)return has('goLogin')?goLogin():null;
@@ -422,9 +419,9 @@
       if(has('showRewardToast'))showRewardToast('Laluan Cikgu belum tersedia.');
       return;
     }
-    if(has('playSfx'))try{playSfx('ui')}catch(_){}
-    if(has('openSegelDemo'))return openSegelDemo({adaptive:true});
-    if(has('startMission'))return startMission(null);
+    const confirmed=()=>{if(has('playSfx'))try{playSfx('ui')}catch(_){}if(has('openGembok'))openGembok({adaptive:true});};
+    const accepted=window.confirm('Cikgu Dimensi akan pilih latihan yang sesuai untuk kamu. Mulakan sekarang?');
+    if(accepted)confirmed();
   }
 
   /* Dua kad produksi. */

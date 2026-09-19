@@ -359,6 +359,10 @@ function clearRestuLock(reason){
   log(`Restu Parent dibuka${skillId?' untuk '+skillId:''}: ${reason}.`);save();
   if(restuTimerHandle){clearInterval(restuTimerHandle);restuTimerHandle=null;}
   if(skillId){sess.confirmSkill=skillId;sess.confirmRemaining=1;}
+  if(window.PAProductionJourney?.isActive?.()){
+    window.PAProductionJourney.resumeFromLearning();
+    return;
+  }
   if(sess && (sess.coachAdaptive||sess.missionChapter||sess.devBankTest)){nextQ();screen('game');}
   else renderHub();
 }
@@ -392,11 +396,15 @@ function learningComplete(){
   if(!fromDev)window.PAEffortGuard?.coachFinished?.(origin);
   db.restuLearningFailures=db.restuLearningFailures||{};db.restuLearningFailures[origin]=0;
   ensureCoachMemory();db.coachMemory.recovered[id]=(db.coachMemory.recovered[id]||0)+1;recordCoachStrategyResult(id,learningState.strategy,true);setInterventionCooldown(id);
-  if(!fromDev){addCoins(10);addXp(15);sess.hp=Math.min(20,(sess.hp||12)+4);showRewardToast('Konsep dikuasai semula! +10 🪙 · +15 XP · +HP');}
+  if(!fromDev&&!window.PAProductionJourney?.isActive?.()){addCoins(10);addXp(15);sess.hp=Math.min(20,(sess.hp||12)+4);showRewardToast('Konsep dikuasai semula! +10 🪙 · +15 XP · +HP');}
   log(`Learning Camp selesai: ${id}. Strategi ${learningState.strategy}; dua checkpoint diluluskan.`);save();
   const original=sess?.q?.skill;
   learningState=null;
   sess.learningActive=false;
+  if(window.PAProductionJourney?.isActive?.()){
+    window.PAProductionJourney.resumeFromLearning();
+    return;
+  }
   if(fromDev){renderHub();return}
   if(original){sess.confirmSkill=original;sess.confirmRemaining=1;}
   battle();
