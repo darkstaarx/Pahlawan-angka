@@ -419,9 +419,8 @@
       if(has('showRewardToast'))showRewardToast('Laluan Cikgu belum tersedia.');
       return;
     }
-    const confirmed=()=>{if(has('playSfx'))try{playSfx('ui')}catch(_){}if(has('openGembok'))openGembok({adaptive:true});};
-    const accepted=window.confirm('Cikgu Dimensi akan pilih latihan yang sesuai untuk kamu. Mulakan sekarang?');
-    if(accepted)confirmed();
+    if(has('playSfx'))try{playSfx('ui')}catch(_){}
+    if(has('openGembok'))openGembok({adaptive:true});
   }
 
   /* Dua kad produksi. */
