@@ -38,7 +38,7 @@
     }
     if(active)close(false);
     const id=`gembok-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-    active={id,route:options.adaptive?'adaptive':'manual',chapter,pool,previousSession:sess,session:makeSession(options),
+    active={id,gembok:true,route:options.adaptive?'adaptive':'manual',chapter,pool,previousSession:sess,session:makeSession(options),
       questionNumber:0,correct:0,completed:false,paused:false,startedAt:Date.now()};
     activateSession(active.session);
     window.PASegelHost.openProduction(active);
@@ -127,7 +127,10 @@
   }
 
   function complete(){
-    const run=active;if(!run||run.completed)return;
+    const run=active;if(!run||run.completed||run.paused)return;
+    /* The Segel host reaches this only after Gangsa 2 -> Perak 3 -> Emas 5.
+       Retain that production boundary even if a caller invokes complete(). */
+    if(run.correct<10)return;
     run.completed=true;
     db.gembok=db.gembok||{completions:{}};db.gembok.completions=db.gembok.completions||{};
     if(!db.gembok.completions[run.id]){
@@ -136,6 +139,8 @@
       db.coins=(db.coins||0)+coins;
       realSave();
     }
+    /* Cosmetic only; PetCollection owns its own per-run idempotency record. */
+    window.PetCollection?.awardGembokCompletion?.(db,run);
   }
 
   function pauseForLearning(intervention){

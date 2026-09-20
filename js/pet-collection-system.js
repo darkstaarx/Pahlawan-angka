@@ -36,27 +36,21 @@
  }
  function persist(data){if(typeof db!=='undefined'&&data===db&&typeof save==='function')save();}
  function equip(data,id){ensure(data);if(!catalog[id]||data.petCollection[id]?.state!=='tamed')return false;data.expedition.activePetId=id;data.rewards.equippedPet=id;persist(data);return true;}
- function eligible(data,s){return !!(data&&s&&s.missionChapter&&!data.demoMode&&!data.devMode&&!s.demoMode&&!s.devBankTest&&!s.devMode&&!s.coachAdaptive&&!s.guardianFocus&&!s.learningActive&&!s.guided&&!s.fromDev);}
- function begin(data,s){
-  if(!eligible(data,s))return false;ensure(data);data.expedition.nextSession=addCount(data.expedition.nextSession,1);
-  const configured=typeof PROGRESSION!=='undefined'?PROGRESSION.missionQuestions:14;
-  s.petExpedition={sequence:data.expedition.nextSession,petId:data.expedition.activePetId,requiredAnswers:Math.max(1,count(configured)||14),independentAnswers:0};persist(data);return true;
- }
- function recordAnswer(data,s){if(eligible(data,s)&&s.petExpedition)s.petExpedition.independentAnswers++;}
  function random(rng){const n=Number(rng());return Number.isFinite(n)?Math.max(0,Math.min(1-Number.EPSILON,n)):1-Number.EPSILON;}
  function rollPet(rank,rng){const zone=zoneFor(rank),entries=Object.entries(catalog).filter(([,p])=>zone.rarities.includes(p.rarity)),total=entries.reduce((n,[,p])=>n+rarities[p.rarity].weight,0);let r=random(rng)*total;for(const [id,p] of entries){r-=rarities[p.rarity].weight;if(r<0)return id;}return entries[entries.length-1][0];}
- function complete(data,s,options={}){
+ /* This is the only award entry point. PAProductionJourney.complete() calls it
+    only after the real 2 -> 3 -> 5 Gembok sequence is complete. */
+ function awardGembokCompletion(data,run,options={}){
   const deny=reason=>({awarded:false,reason});
-  if(!eligible(data,s))return deny('not-independent');
-  const token=s.petExpedition,required=Math.max(1,count(token?.requiredAnswers)||14);
-  if(!token||!s.missionFinished||!s.bossDefeated||count(s.missionAnswered)<required||count(token.independentAnswers)<required)return deny('incomplete');
-  ensure(data);const e=data.expedition,sequence=count(token.sequence);
-  if(!sequence||sequence<=e.claimedThrough||sequence!==e.nextSession)return deny('already-claimed');
-  const rng=options.rng||Math.random,now=options.now??Date.now();
-  if(data.petCollection[token.petId]?.state!=='tamed')return deny('invalid-companion');
-  e.claimedThrough=sequence;e.xp=addCount(e.xp,25);e.rank=1+Math.floor(e.xp/100);
-  const active=data.petCollection[token.petId];active.bondXp=addCount(active.bondXp,20);active.level=level(active.bondXp);active.evolutionStage=stage(active.level);
-  const result={awarded:true,rankXp:25,bondXp:20,petId:token.petId,encounter:null};
+  if(!data||!run||!run.gembok||run.demoMode||run.cancelled||!run.completed)return deny('not-completed-gembok');
+  ensure(data);data.gembokPetAwards=object(data.gembokPetAwards);
+  if(data.gembokPetAwards[run.id])return deny('already-awarded');
+  const rng=options.rng||Math.random,now=options.now??Date.now(),e=data.expedition,petId=e.activePetId;
+  if(data.petCollection[petId]?.state!=='tamed')return deny('invalid-companion');
+  data.gembokPetAwards[run.id]={at:now,route:run.route};
+  e.xp=addCount(e.xp,25);e.rank=1+Math.floor(e.xp/100);
+  const active=data.petCollection[petId];active.bondXp=addCount(active.bondXp,20);active.level=level(active.bondXp);active.evolutionStage=stage(active.level);
+  const result={awarded:true,rankXp:25,bondXp:20,petId,encounter:null};
   if(e.encounterPity<3&&random(rng)>=.65+.1*e.encounterPity){e.encounterPity=addCount(e.encounterPity,1);persist(data);return result;}
   e.encounterPity=0;
   const id=rollPet(e.rank,rng),pet=data.petCollection[id],rule=rarities[pet.rarity];pet.encounters=addCount(pet.encounters,1);
@@ -68,6 +62,6 @@
   }
   persist(data);return result;
  }
- const api={ensure,snapshot,equip,begin,recordAnswer,complete,catalog,rarities,zones,zoneFor,levelForXp:level,evolutionForLevel:stage};
+ const api={ensure,snapshot,equip,awardGembokCompletion,catalog,rarities,zones,zoneFor,levelForXp:level,evolutionForLevel:stage};
  root.PetCollection=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
