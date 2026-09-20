@@ -311,31 +311,3 @@ body[data-screen="menuV2"] .appHeader{display:none}
 @media (prefers-reduced-motion:reduce){
   .mv2XpBar i,.mv2Bar i{transition:none}
 }
-
-
-/* ---------- Jejak Pet premium frame live trial ---------- */
-.mv2Quest{
-  grid-template-columns:112px minmax(0,1fr) 14px;
-  gap:8px;
-  min-height:124px;
-  padding:12px 18px 12px 28px;
-  background:url("../assets/ui/menu-v2/jejak-pet-frame-v1.webp") center / 100% 100% no-repeat;
-  border:0;
-  border-radius:0;
-  box-shadow:0 12px 26px rgba(0,0,0,.48);
-}
-.mv2QuestArt{
-  width:min(100%,108px);
-  max-height:90px;
-  transform:translateX(-2px);
-}
-.mv2Quest .mv2CardBody b{
-  font-size:clamp(15px,4vw,17px);
-}
-.mv2Quest .mv2CardBody small{
-  min-height:28px;
-}
-.mv2Quest .mv2Cta.gold{
-  min-height:36px;
-  padding:0 14px;
-}
