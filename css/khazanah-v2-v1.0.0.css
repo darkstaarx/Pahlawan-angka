@@ -180,6 +180,10 @@
 .kzShort{display:block;margin-top:4px;font-size:9.5px;text-align:center;color:#8fa8c4}
 
 .kzCard.equipped{box-shadow:inset 0 0 0 2px #7ff0c0, 0 0 20px #3ec48955, 0 6px 16px #00000055}
+.kzPetMeta{display:grid;gap:2px;padding:6px 5px 1px;text-align:center;background:#102846;color:#cfe2f5}
+.kzPetMeta b{font-size:10px;color:#7ff0c0}.kzCard.locked .kzPetMeta b{color:#c7d6e5}
+.kzPetMeta span{font-size:10px;font-weight:900;color:var(--kz-gold-soft)}
+.kzPetMeta small{font-size:9.5px;color:#a9c4dc}
 
 /* trofi guna kad sedia ada, cuma dipakaikan pakaian yang sama */
 #badgeCollection .badgeCard{

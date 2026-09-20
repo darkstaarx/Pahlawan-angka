@@ -31,6 +31,7 @@
     badges:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M9 20h6M12 14v6"/></svg>',
     lock:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
   };
+  const PET_NAMES={aurora:'Aurora Ekor Angka',ketupatKura:'Kura-Kura Ketupat',kumbangManggis:'Kumbang Manggis',harimauBunga:'Harimau Bunga',arnabKekLapis:'Arnab Kek Lapis',durianKerbau:'Kerbau Durian'};
 
   /* ---------------- rangka skrin ---------------- */
   function buildShell(){
@@ -109,10 +110,34 @@
     </article>`;
   }
 
+  function companionCard(pet){
+    const tamed=pet.state==='tamed', encountered=pet.state==='encountered';
+    const name=PET_NAMES[pet.id]||pet.name||pet.id;
+    const status=tamed?(pet.active?'Sedang ikut kamu':'Sudah jinak'):(encountered?'Pernah ditemui':'Belum ditemui');
+    const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
+    return `<article class="kzCard companionCard ${tamed?'owned':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
+      <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?name:'Belum ditemui'}">
+      ${tamed||encountered?'':`<div class="kzLock"><span>?</span>${ICONS.lock}</div>`}</div>
+      <div class="kzName">${tamed||encountered?name:'Belum ditemui'}</div>
+      <div class="kzPetMeta"><b>${status}</b><span>${pet.rarity}</span>${tamed?`<small>Ikatan ${pet.bondXp} XP · Tahap ${pet.level}</small>`:''}</div>${action?`<div class="kzFoot">${action}</div>`:''}
+    </article>`;
+  }
+
+  window.equipCollectionPet=function(id){
+    if(!window.PetCollection?.equip?.(db,id))return;
+    if(typeof renderTreasure==='function')renderTreasure();
+    if(typeof renderBattlePet==='function')renderBattlePet();
+  };
+  function paintCompanions(){
+    if(typeof db==='undefined'||!db||!window.PetCollection)return;
+    const pets=$('petCollection');if(pets)pets.innerHTML=window.PetCollection.snapshot(db).pets.map(companionCard).join('');
+  }
+
   /* ---------------- kemas kini kepala, tab dan kemajuan ---------------- */
   function counts(){
-    const petTotal=Object.keys(REWARD_PETS).length;
-    const petOwn=Object.keys(db?.rewards?.pets||{}).filter(id=>REWARD_PETS[id]).length;
+    const collection=window.PetCollection?.snapshot?.(db);
+    const petTotal=collection?.pets.length||Object.keys(REWARD_PETS).length;
+    const petOwn=collection?.pets.filter(p=>p.state==='tamed').length||Object.keys(db?.rewards?.pets||{}).filter(id=>REWARD_PETS[id]).length;
     const auraTotal=Object.keys(REWARD_AURAS).length;
     const auraOwn=Object.keys(db?.rewards?.auras||{}).filter(id=>REWARD_AURAS[id]).length;
     const badgeTotal=Object.keys(REWARD_BADGES).length;
@@ -145,7 +170,7 @@
     }
 
     const tab=activeTab();
-    set('kzPanelTitle', tab==='pets'?'Teman Diselamatkan':tab==='auras'?'Aura Kuasa':'Trofi Pengembaraan');
+    set('kzPanelTitle', tab==='pets'?'Teman Dimensi':tab==='auras'?'Aura Kuasa':'Trofi Pengembaraan');
     const filter=$('kzFilter');
     if(filter)filter.textContent = tab==='badges' ? `${c.badgeOwn} diperoleh` : 'Semua';
 
@@ -153,7 +178,7 @@
     if(prog){
       const own = tab==='pets'?c.petOwn:tab==='auras'?c.auraOwn:c.badgeOwn;
       const total = tab==='pets'?c.petTotal:tab==='auras'?c.auraTotal:c.badgeTotal;
-      const noun = tab==='pets'?'teman diselamatkan':tab==='auras'?'aura dibuka':'trofi diperoleh';
+      const noun = tab==='pets'?'teman dijinakkan':tab==='auras'?'aura dibuka':'trofi diperoleh';
       prog.querySelector('b').textContent=`${own} daripada ${total} ${noun}`;
       prog.querySelector('span span').style.width=Math.round(own/Math.max(1,total)*100)+'%';
     }
@@ -164,7 +189,7 @@
     const chip=$('kzShowChip'), gems=$('kzShowGems'), cta=$('kzShowCta');
     if(!chip||!gems||!cta)return;
     let item=null;
-    try{ item=REWARD_PETS[db?.rewards?.equippedPet]||null }catch(_){}
+    try{ item=window.PetCollection?.snapshot?.(db).pets.find(p=>p.active)||REWARD_PETS[db?.rewards?.equippedPet]||null }catch(_){}
 
     if(!item){
       chip.textContent='BELUM DIPILIH';
@@ -174,15 +199,13 @@
       cta.onclick=()=>{ $('petCollection')?.scrollIntoView({behavior:'smooth',block:'start'}) };
       return;
     }
-    const r=rarityOf(item);
     chip.textContent='TEMAN AKTIF';
-    gems.innerHTML=[0,1,2,3].map(i=>
-      `<i class="${i<r.pips?'':'off'}" style="--gem:${r.gem}"></i>`).join('');
+    gems.innerHTML='<i style="--gem:#5cc3ff"></i>';
     const desc=$('petStageDesc');
-    if(desc)desc.textContent=`${r.label} · ${item.desc||''}`;
-    cta.textContent='Tanggalkan';
+    if(desc)desc.textContent=`${item.rarity||rarityOf(item).label} · Ikatan ${item.bondXp||0} XP · Tahap ${item.level||1}`;
+    cta.textContent='Sedang ikut kamu';
     cta.className='kzCta ghost';
-    cta.onclick=()=>{ if(typeof unequipPet==='function')unequipPet() };
+    cta.onclick=null;
   }
 
   /* ---------------- pemasangan ---------------- */
@@ -202,7 +225,7 @@
       if(typeof original!=='function'||original.__kz)return;
       const wrapped=function(){
         const out=original.apply(this,arguments);
-        try{ paintChrome(); paintShowcase() }catch(e){ console.error('[khazanah-v2]',e) }
+        try{ paintCompanions(); paintChrome(); paintShowcase() }catch(e){ console.error('[khazanah-v2]',e) }
         return out;
       };
       wrapped.__kz=true;
