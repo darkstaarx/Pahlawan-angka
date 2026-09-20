@@ -1,67 +1,95 @@
-/* Cosmetic companions only. No mastery, answer, combat or timer modifiers. */
+/* Cosmetic companions only. No mastery, answer, combat, timer or Gembok reward modifiers. */
 (function(root){
  'use strict';
- const rarities={Common:{weight:50,tame:.85,pity:3},Uncommon:{weight:28,tame:.65,pity:4},Rare:{weight:14,tame:.45,pity:5},Epic:{weight:6,tame:.28,pity:6},Legendary:{weight:2,tame:.12,pity:8}};
  const catalog={aurora:{rarity:'Starter',folder:null},ketupatKura:{rarity:'Common',folder:'ketupat-kura'},kumbangManggis:{rarity:'Uncommon',folder:'kumbang-manggis'},harimauBunga:{rarity:'Rare',folder:'harimau-bunga'},arnabKekLapis:{rarity:'Epic',folder:'arnab-kek-lapis'},durianKerbau:{rarity:'Legendary',folder:'durian-kerbau'}};
- const zones=[{id:'rimba',name:'Rimba Permulaan',rank:1,rarities:['Common','Uncommon','Rare']},{id:'mekar',name:'Lembah Mekar',rank:3,rarities:['Common','Uncommon','Rare','Epic']},{id:'bintang',name:'Puncak Bintang',rank:5,rarities:Object.keys(rarities)}];
- const MAX_COUNT=Number.MAX_SAFE_INTEGER;
+ /* The early five entries preview every rescue pet. The following entries apply
+    the configured Common:Uncommon:Rare:Epic:Legendary 5:3:2:1:1 ratio. */
+ const rescueCycle=['ketupatKura','kumbangManggis','harimauBunga','arnabKekLapis','durianKerbau','ketupatKura','ketupatKura','ketupatKura','ketupatKura','kumbangManggis','kumbangManggis','harimauBunga'];
+ const rescueMultipliers={Common:.70,Uncommon:1, Rare:1.4,Epic:1.8,Legendary:2.4};
+ const MIGRATION_VERSION=2,MAX_COUNT=Number.MAX_SAFE_INTEGER;
  const count=x=>Number.isFinite(Number(x))?Math.max(0,Math.min(MAX_COUNT,Math.floor(Number(x)))):0;
  const addCount=(a,b)=>Math.min(MAX_COUNT,count(a)+count(b));
  const level=x=>Math.min(60,1+Math.floor(count(x)/100));
  const stage=x=>x>=45?3:x>=25?2:x>=10?1:0;
  const object=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
+ const gradeFromSkill=id=>{const match=String(id||'').match(/^D(\d+)\./);return match?Number(match[1]):null;};
+ function graphSkillCount(grade){
+  const skills=root.GRAPH?.skills;
+  if(!Array.isArray(skills)||!Number.isFinite(grade))return 0;
+  return new Set(skills.filter(skill=>Number(skill.grade)===grade||gradeFromSkill(skill.id)===grade).map(skill=>skill.id)).size;
+ }
+ /* Rescue requirement is ceil(unique grade skills × rarity multiplier):
+    Common 70%, Uncommon 100%, Rare 140%, Epic 180%, Legendary 240%. */
+ function rescueThreshold(id,grade){
+  const total=graphSkillCount(grade),multiplier=rescueMultipliers[catalog[id]?.rarity];
+  return total&&multiplier?Math.ceil(total*multiplier):null;
+ }
+ function migrateIncorrectAwards(data){
+  if(count(data.petCollectionMigrationVersion)>=MIGRATION_VERSION)return;
+  data.rewards.pets=object(data.rewards.pets);
+  Object.keys(catalog).filter(id=>id!=='aurora').forEach(id=>delete data.rewards.pets[id]);
+  data.petCollection=object(data.petCollection);
+  Object.keys(catalog).filter(id=>id!=='aurora').forEach(id=>delete data.petCollection[id]);
+  data.expedition={};
+  data.rewards.equippedPet='aurora';
+  data.petCollectionMigrationVersion=MIGRATION_VERSION;
+ }
  function ensure(data,now=Date.now()){
   if(!data)return null;
-  data.rewards=object(data.rewards);data.rewards.pets=object(data.rewards.pets);data.petCollection=object(data.petCollection);
+  data.rewards=object(data.rewards);migrateIncorrectAwards(data);data.rewards.pets=object(data.rewards.pets);data.petCollection=object(data.petCollection);
   Object.entries(catalog).forEach(([id,meta])=>{
-   const old=object(data.petCollection[id]),legacy=data.rewards.pets[id];
-   const owned=id==='aurora'||old.state==='tamed'||!!legacy;
+   const old=object(data.petCollection[id]),owned=id==='aurora'||old.state==='tamed';
    const xp=count(old.bondXp),lv=level(xp);
-   data.petCollection[id]={...old,state:owned?'tamed':old.state==='encountered'?'encountered':'unseen',rarity:meta.rarity,encounters:count(old.encounters),tameProgress:count(old.tameProgress),petTrace:count(old.petTrace),bondXp:xp,level:lv,evolutionStage:stage(lv),unlockedAt:owned?(count(old.unlockedAt)||count(legacy?.unlockedAt)||now):null};
-   if(owned&&!legacy)data.rewards.pets[id]={unlockedAt:data.petCollection[id].unlockedAt,collection:true};
+   data.petCollection[id]={...old,state:owned?'tamed':old.state==='encountered'?'encountered':'unseen',rarity:meta.rarity,encounters:count(old.encounters),tameProgress:count(old.tameProgress),petTrace:count(old.petTrace),rescues:count(old.rescues),bondXp:xp,level:lv,evolutionStage:stage(lv),unlockedAt:owned?(count(old.unlockedAt)||now):null};
+   if(owned&&!data.rewards.pets[id])data.rewards.pets[id]={unlockedAt:data.petCollection[id].unlockedAt,collection:true};
   });
-  const e=object(data.expedition),xp=count(e.xp),requested=e.activePetId||data.rewards.equippedPet;
-  data.expedition={...e,version:1,xp,rank:1+Math.floor(xp/100),activePetId:data.petCollection[requested]?.state==='tamed'?requested:'aurora',encounterPity:Math.min(3,count(e.encounterPity)),nextSession:count(e.nextSession),claimedThrough:count(e.claimedThrough)};
+  const e=object(data.expedition),requested=e.activePetId||data.rewards.equippedPet;
+  data.expedition={...e,version:2,xp:count(e.xp),rank:1+Math.floor(count(e.xp)/100),activePetId:data.petCollection[requested]?.state==='tamed'?requested:'aurora'};
   data.rewards.equippedPet=data.expedition.activePetId;
+  data.petRescueRotation=object(data.petRescueRotation);
   return data;
  }
- function zoneFor(rank){return zones.filter(z=>rank>=z.rank).slice(-1)[0]||zones[0];}
  function snapshot(data){
-  ensure(data);if(!data)return {pets:[],expedition:null,zone:zones[0]};
+  ensure(data);if(!data)return {pets:[],expedition:null};
   return {pets:Object.entries(catalog).map(([id,meta])=>{
    const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:id};
    const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`}:{happy:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp'};
-   return {...item,...data.petCollection[id],id,assets,active:data.expedition.activePetId===id};
-  }),expedition:{...data.expedition},zone:zoneFor(data.expedition.rank)};
+   const grade=Number(data.petCollection[id].rescueGrade)||null;
+   return {...item,...data.petCollection[id],id,assets,active:data.expedition.activePetId===id,rescueGrade:grade,rescueThreshold:grade?rescueThreshold(id,grade):null};
+  }),expedition:{...data.expedition}};
  }
  function persist(data){if(typeof db!=='undefined'&&data===db&&typeof save==='function')save();}
  function equip(data,id){ensure(data);if(!catalog[id]||data.petCollection[id]?.state!=='tamed')return false;data.expedition.activePetId=id;data.rewards.equippedPet=id;persist(data);return true;}
- function random(rng){const n=Number(rng());return Number.isFinite(n)?Math.max(0,Math.min(1-Number.EPSILON,n)):1-Number.EPSILON;}
- function rollPet(rank,rng){const zone=zoneFor(rank),entries=Object.entries(catalog).filter(([,p])=>zone.rarities.includes(p.rarity)),total=entries.reduce((n,[,p])=>n+rarities[p.rarity].weight,0);let r=random(rng)*total;for(const [id,p] of entries){r-=rarities[p.rarity].weight;if(r<0)return id;}return entries[entries.length-1][0];}
- /* This is the only award entry point. PAProductionJourney.complete() calls it
-    only after the real 2 -> 3 -> 5 Gembok sequence is complete. */
+ function assignGembokRescue(data,run,skillId){
+  if(!data||!run||!run.gembok||run.demoMode||run.cancelled||!skillId)return null;
+  ensure(data);if(run.rescuePetId)return {petId:run.rescuePetId,grade:run.rescueGrade,threshold:run.rescueThreshold};
+  const grade=gradeFromSkill(skillId);if(!grade)return null;
+  const rotation=count(data.petRescueRotation[grade]);
+  /* The selected skill establishes the grade; its id is recorded on the run.
+     Rotation then gives the learner a stable, non-random rescue sequence. */
+  const petId=rescueCycle[rotation%rescueCycle.length],threshold=rescueThreshold(petId,grade);
+  if(!threshold)return null;
+  data.petRescueRotation[grade]=addCount(rotation,1);
+  run.rescuePetId=petId;run.rescueGrade=grade;run.rescueSkillId=skillId;run.rescueThreshold=threshold;
+  const pet=data.petCollection[petId];pet.rescueGrade=grade;pet.state=pet.state==='tamed'?'tamed':'encountered';
+  persist(data);return {petId,grade,threshold};
+ }
+ /* Called only after a real completed 2 -> 3 -> 5 Gembok route. This changes
+    only the pre-assigned pet's rescue counter; no encounter RNG is involved. */
  function awardGembokCompletion(data,run,options={}){
   const deny=reason=>({awarded:false,reason});
   if(!data||!run||!run.gembok||run.demoMode||run.cancelled||!run.completed)return deny('not-completed-gembok');
   ensure(data);data.gembokPetAwards=object(data.gembokPetAwards);
   if(data.gembokPetAwards[run.id])return deny('already-awarded');
-  const rng=options.rng||Math.random,now=options.now??Date.now(),e=data.expedition,petId=e.activePetId;
-  if(data.petCollection[petId]?.state!=='tamed')return deny('invalid-companion');
-  data.gembokPetAwards[run.id]={at:now,route:run.route};
-  e.xp=addCount(e.xp,25);e.rank=1+Math.floor(e.xp/100);
-  const active=data.petCollection[petId];active.bondXp=addCount(active.bondXp,20);active.level=level(active.bondXp);active.evolutionStage=stage(active.level);
-  const result={awarded:true,rankXp:25,bondXp:20,petId,encounter:null};
-  if(e.encounterPity<3&&random(rng)>=.65+.1*e.encounterPity){e.encounterPity=addCount(e.encounterPity,1);persist(data);return result;}
-  e.encounterPity=0;
-  const id=rollPet(e.rank,rng),pet=data.petCollection[id],rule=rarities[pet.rarity];pet.encounters=addCount(pet.encounters,1);
-  if(pet.state==='tamed'){pet.petTrace=addCount(pet.petTrace,1);result.encounter={petId:id,outcome:'duplicate',trace:1};}
-  else{
-   pet.state='encountered';const chance=pet.encounters>=rule.pity?1:Math.min(.95,rule.tame+.1*pet.tameProgress);
-   if(random(rng)<chance){pet.state='tamed';pet.unlockedAt=now;data.rewards.pets[id]={unlockedAt:now,collection:true};result.encounter={petId:id,outcome:'tamed',chance};}
-   else{pet.tameProgress=addCount(pet.tameProgress,1);pet.petTrace=addCount(pet.petTrace,1);result.encounter={petId:id,outcome:'fled',chance,trace:1};}
-  }
-  persist(data);return result;
+  const petId=run.rescuePetId,grade=Number(run.rescueGrade),threshold=rescueThreshold(petId,grade);
+  if(!catalog[petId]||petId==='aurora'||!threshold)return deny('no-assigned-rescue');
+  const pet=data.petCollection[petId],now=options.now??Date.now();
+  pet.state=pet.state==='tamed'?'tamed':'encountered';pet.rescueGrade=grade;pet.rescues=addCount(pet.rescues,1);
+  const newlyTamed=pet.state!=='tamed'&&pet.rescues>=threshold;
+  if(newlyTamed){pet.state='tamed';pet.unlockedAt=now;data.rewards.pets[petId]={unlockedAt:now,collection:true};}
+  data.gembokPetAwards[run.id]={at:now,route:run.route,petId,grade,skillId:run.rescueSkillId,rescues:pet.rescues,threshold};
+  persist(data);return {awarded:true,petId,grade,rescues:pet.rescues,threshold,newlyTamed};
  }
- const api={ensure,snapshot,equip,awardGembokCompletion,catalog,rarities,zones,zoneFor,levelForXp:level,evolutionForLevel:stage};
+ const api={ensure,snapshot,equip,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:stage};
  root.PetCollection=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

@@ -113,13 +113,14 @@
   function companionCard(pet){
     const tamed=pet.state==='tamed', encountered=pet.state==='encountered';
     const name=PET_NAMES[pet.id]||pet.name||pet.id;
-    const status=tamed?(pet.active?'Sedang ikut kamu':'Sudah jinak'):(encountered?'Pernah ditemui':'Belum ditemui');
+    const status=tamed?(pet.active?'Sedang ikut kamu':'Sudah jinak'):(encountered?'Sedang diselamatkan':'Belum ditemui');
+    const rescue=pet.id==='aurora'?'':(pet.rescueThreshold?`<small>Diselamatkan ${pet.rescues||0}/${pet.rescueThreshold} kali</small>`:'<small>Selesaikan misi Gembok untuk menyelamatkan teman ini</small>');
     const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
     return `<article class="kzCard companionCard ${tamed?'owned':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
       <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?name:'Belum ditemui'}">
       ${tamed||encountered?'':`<div class="kzLock"><span>?</span>${ICONS.lock}</div>`}</div>
       <div class="kzName">${tamed||encountered?name:'Belum ditemui'}</div>
-      <div class="kzPetMeta"><b>${status}</b><span>${pet.rarity}</span>${tamed?`<small>Ikatan ${pet.bondXp} XP · Tahap ${pet.level}</small>`:''}</div>${action?`<div class="kzFoot">${action}</div>`:''}
+      <div class="kzPetMeta"><b>${status}</b><span>${pet.rarity}</span>${rescue}${tamed?`<small>Ikatan ${pet.bondXp} XP · Tahap ${pet.level}</small>`:''}</div>${action?`<div class="kzFoot">${action}</div>`:''}
     </article>`;
   }
 

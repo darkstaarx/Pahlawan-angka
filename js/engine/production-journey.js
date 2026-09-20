@@ -63,6 +63,8 @@
       q.skill=id;q.token=++s.questionToken;
       s.q=q;s.start=now();s.hint=false;s.hintLevel=0;s.retryState=null;
       s.recent.push(id);if(s.recent.length>10)s.recent.shift();
+      /* Assignment waits for the actual selected skill, including adaptive runs. */
+      window.PetCollection?.assignGembokRescue?.(db,run,id);
       run.questionNumber++;
       window.PALearnerReview?.beginQuestion?.(q,{grade:db.schoolGrade,mode:'gembok',selectionReason:run.route, demoMode:false});
       return q;
