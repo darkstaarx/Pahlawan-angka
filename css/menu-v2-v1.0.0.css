@@ -324,3 +324,48 @@ body[data-screen="menuV2"] .appHeader{display:none}
   background:url("../assets/ui/menu-v2/jejak-pet-frame-v2.webp") center / 100% 100% no-repeat;
 }
 .mv2Quest > *{position:relative;z-index:1}
+
+
+/* ---------- Jejak Pet overlay refinement v2 ---------- */
+.mv2Quest{
+  grid-template-columns:120px minmax(0,1fr) 16px;
+  gap:10px;
+  padding:12px 22px 12px 24px;
+  min-height:132px;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  overflow:visible;
+}
+.mv2Quest::after{
+  content:"";
+  position:absolute;
+  inset:8px 10px 7px;
+  z-index:0;
+  pointer-events:none;
+  border-radius:18px;
+  background:linear-gradient(160deg,#fffcf0 0%,#f6ecd2 60%,#eedeb5 100%);
+  box-shadow:0 10px 24px rgba(0,0,0,.44);
+}
+.mv2Quest::before{
+  inset:0;
+  z-index:1;
+  background-size:100% 100%;
+}
+.mv2Quest > *{z-index:2}
+.mv2QuestArt{
+  width:min(100%,116px);
+  max-height:94px;
+  transform:translateX(4px);
+}
+.mv2Quest .mv2CardBody b{
+  font-size:clamp(15px,4vw,17px);
+}
+.mv2Quest .mv2CardBody small{
+  min-height:28px;
+}
+.mv2Quest .mv2Cta.gold{
+  min-height:36px;
+  padding:0 14px;
+}
