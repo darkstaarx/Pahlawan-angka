@@ -419,3 +419,97 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Learn .mv2Cta.navy{
   margin-top:13px;
 }
+
+
+/* ---------- Header HUD refinement v1 ---------- */
+.mv2Head{
+  margin:0 0 8px;
+  padding:6px 8px;
+  gap:8px;
+  min-height:54px;
+  border:1px solid rgba(240,196,87,.48);
+  border-radius:18px;
+  background:
+    linear-gradient(180deg,rgba(14,35,61,.94),rgba(7,20,38,.92));
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(218,164,54,.16);
+  backdrop-filter:blur(10px);
+}
+.mv2ProfileCapsule{
+  gap:8px;
+  min-width:0;
+  padding:0 6px 0 0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.mv2AvatarBox{
+  width:42px;
+  height:42px;
+}
+.mv2AvatarRing{
+  width:42px;
+  height:42px;
+  border:2px solid #e8bb4d;
+  box-shadow:
+    0 0 0 2px rgba(5,18,34,.75),
+    0 3px 8px rgba(0,0,0,.36);
+}
+.mv2AvatarBadge{
+  bottom:-2px;
+  right:-5px;
+  line-height:13px;
+  padding:0 5px;
+  font-size:9px;
+  border:1px solid #081424;
+}
+.mv2PlayerName{
+  max-width:92px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:15px;
+  letter-spacing:.1px;
+  padding-right:2px;
+}
+.mv2HeadRight{
+  gap:7px;
+}
+.mv2Coins{
+  height:38px;
+  min-width:88px;
+  padding:0 11px 0 7px;
+  border:1px solid rgba(232,187,77,.66);
+  background:linear-gradient(180deg,rgba(24,51,82,.96),rgba(9,28,50,.96));
+  color:#ffe7a4;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 3px 8px rgba(0,0,0,.22);
+}
+.mv2Coins img{
+  width:21px;
+  height:21px;
+}
+.mv2Gear{
+  width:38px;
+  height:38px;
+  border:1px solid rgba(232,187,77,.58);
+  background:linear-gradient(180deg,rgba(24,51,82,.96),rgba(9,28,50,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 3px 8px rgba(0,0,0,.22);
+  backdrop-filter:none;
+}
+.mv2Gear svg{
+  width:19px;
+  height:19px;
+  stroke:#f7dda0;
+}
+@media (max-width:360px){
+  .mv2Head{padding-inline:6px}
+  .mv2PlayerName{max-width:72px;font-size:14px}
+  .mv2Coins{min-width:80px;padding-right:9px;font-size:13px}
+  .mv2HeadRight{gap:5px}
+}
