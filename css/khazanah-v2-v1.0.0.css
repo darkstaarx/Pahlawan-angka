@@ -152,7 +152,7 @@
   background:radial-gradient(85% 70% at 50% 40%, #1c3d68, #0a1d39)
 }
 .kzArt img{width:86%;height:86%;object-fit:contain}
-.kzCard.locked .kzArt img{filter:brightness(.12) saturate(0);opacity:.85}
+.kzCard.locked:not(.companionCard) .kzArt img{filter:brightness(.12) saturate(0);opacity:.85}
 .kzLock{
   position:absolute;inset:0;display:grid;place-items:center;gap:2px;align-content:center;
   color:#cfe2f5

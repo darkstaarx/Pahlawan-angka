@@ -111,14 +111,14 @@
   function companionCard(pet){
     const tamed=pet.state==='tamed', encountered=pet.state==='encountered';
     const name=PET_NAMES[pet.id]||pet.name||pet.id;
-    const status=tamed?(pet.active?'Sedang ikut kamu':'Sudah jinak'):(encountered?'Sedang diselamatkan':'Belum ditemui');
-    const rescue=pet.id==='aurora'?'':(pet.rescueThreshold?`<small>Diselamatkan ${pet.rescues||0}/${pet.rescueThreshold} kali</small>`:'');
+    const status=tamed?(pet.active?'Sedang ikut kamu':'Sudah jinak'):(pet.eligible?(encountered?'Sedang diselamatkan':'Sedia diselamatkan'):`Terbuka pada Tahap Wira ${pet.levelGate}`);
+    const rescue=pet.id==='aurora'||!pet.eligible?'':(pet.rescueThreshold?`<small>Diselamatkan ${pet.rescues||0}/${pet.rescueThreshold} kali</small>`:'');
+    const progression=`<small>Tahap ${pet.level} · ${pet.evolutionState}</small>${pet.nextEvolution?`<small>Evolusi seterusnya: Tahap ${pet.nextEvolution}</small>`:'<small>Evolusi maksimum</small>'}`;
     const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
     return `<article class="kzCard companionCard ${tamed?'owned':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
-      <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?name:'Belum ditemui'}">
-      ${tamed||encountered?'':`<div class="kzLock"><span>?</span>${ICONS.lock}</div>`}</div>
-      <div class="kzName">${tamed||encountered?name:'Belum ditemui'}</div>
-      <div class="kzPetMeta"><b>${status}</b><span>${pet.rarity}</span>${rescue}${tamed?`<small>Ikatan ${pet.bondXp} XP · Tahap ${pet.level}</small>`:''}</div>${action?`<div class="kzFoot">${action}</div>`:''}
+      <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${name}"></div>
+      <div class="kzName">${name}</div>
+      <div class="kzPetMeta"><b>${status}</b><span>${pet.rarity}</span>${rescue}${tamed?`<small>Ikatan ${pet.bondXp} XP</small>`:''}${progression}</div>${action?`<div class="kzFoot">${action}</div>`:''}
     </article>`;
   }
 
@@ -201,7 +201,7 @@
     chip.textContent='TEMAN AKTIF';
     gems.innerHTML='<i style="--gem:#5cc3ff"></i>';
     const desc=$('petStageDesc');
-    if(desc)desc.textContent=`${item.rarity||rarityOf(item).label} · Ikatan ${item.bondXp||0} XP · Tahap ${item.level||1}`;
+    if(desc)desc.textContent=`${item.rarity||rarityOf(item).label} · Ikatan ${item.bondXp||0} XP · Tahap ${item.level||1} · ${item.evolutionState||'Bentuk Asas'}`;
     cta.textContent='Sedang ikut kamu';
     cta.className='kzCta ghost';
     cta.onclick=null;
