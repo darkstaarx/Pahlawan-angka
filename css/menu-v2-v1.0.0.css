@@ -311,3 +311,16 @@ body[data-screen="menuV2"] .appHeader{display:none}
 @media (prefers-reduced-motion:reduce){
   .mv2XpBar i,.mv2Bar i{transition:none}
 }
+
+
+/* ---------- Jejak Pet safe frame overlay trial ---------- */
+.mv2Quest{position:relative;isolation:isolate}
+.mv2Quest::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  z-index:0;
+  pointer-events:none;
+  background:url("../assets/ui/menu-v2/jejak-pet-frame-v2.webp") center / 100% 100% no-repeat;
+}
+.mv2Quest > *{position:relative;z-index:1}
