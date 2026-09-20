@@ -31,6 +31,8 @@
 
   let installed=false;
   let playing=false;
+  let activeGate=null;
+  let cancelActiveGate=null;
 
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
@@ -204,6 +206,7 @@
   }
 
   async function bridgeToBattle(overlay,video){
+    if(!overlay?.isConnected)return;
     try{video.pause()}catch(_){}
 
     // First close the cinematic into darkness. The arena remains fully hidden.
@@ -224,37 +227,68 @@
 
   function install(){
     if(installed)return;
-    const original=window.openSegelDemo;
-    if(typeof original!=='function'){
+    const demoOpen=window.openSegelDemo;
+    const productionOpen=window.openGembok;
+    if(typeof demoOpen!=='function'||typeof productionOpen!=='function'){
       setTimeout(install,60);
       return;
     }
     installed=true;
 
-    window.openSegelDemo=async function(...args){
-      if(playing)return;
+    const gate=function(original,context,args){
+      if(activeGate)return activeGate;
       playing=true;
       const {overlay,video,skip}=makeOverlay();
+      let closed=false;
+      let finishCancel;
+      const cancelled=new Promise(resolve=>{finishCancel=resolve});
+      cancelActiveGate=()=>{
+        if(closed)return;
+        closed=true;
+        try{video.pause()}catch(_){}
+        overlay.remove();
+        finishCancel();
+      };
 
-      // Boot the live stage underneath while the cinematic occupies the screen.
-      const demoBoot=Promise.resolve()
-        .then(()=>original.apply(this,args))
-        .catch(err=>{console.error('[segel-entry-cinematic] Demo open failed',err)});
+      // Boot the chosen route underneath while the cinematic occupies the screen.
+      const routeBoot=Promise.resolve()
+        .then(()=>original.apply(context,args))
+        .catch(err=>{console.error('[segel-entry-cinematic] Route open failed',err);throw err});
 
-      try{
-        await Promise.all([waitForVideo(video,skip),demoBoot]);
-        await waitForBattlePaint();
-      }finally{
-        await bridgeToBattle(overlay,video);
-        playing=false;
-      }
+      activeGate=(async()=>{
+        try{
+          const settled=await Promise.race([Promise.all([waitForVideo(video,skip),routeBoot]),cancelled]);
+          if(closed)return;
+          await waitForBattlePaint();
+          if(closed)return;
+          await bridgeToBattle(overlay,video);
+          return settled[1];
+        }finally{
+          cancelActiveGate?.();
+          cancelActiveGate=null;
+          activeGate=null;
+          playing=false;
+        }
+      })();
+      return activeGate;
     };
+
+    window.openSegelDemo=function(...args){ return gate(demoOpen,this,args); };
+    window.openGembok=function(...args){ return gate(productionOpen,this,args); };
+    const closeDemo=window.closeSegelDemo;
+    if(typeof closeDemo==='function'){
+      window.closeSegelDemo=function(...args){
+        cancelActiveGate?.();
+        return closeDemo.apply(this,args);
+      };
+    }
 
     window.PASegelEntryCinematic={
       version:VERSION,
       video:VIDEO_SRC,
       skipTail:SKIP_TAIL_S,
-      playing:()=>playing
+      playing:()=>playing,
+      close:()=>cancelActiveGate?.()
     };
   }
 
