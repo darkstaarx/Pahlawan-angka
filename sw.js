@@ -1,4 +1,4 @@
-// App shell v3.83.2 — HQ transparent Kembara Dimensi book asset.
+// App shell v3.83.3 — Wira cheer clip: steady anchor, one sword raise.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

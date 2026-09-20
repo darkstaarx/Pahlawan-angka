@@ -76,11 +76,25 @@
   };
   const COINS=6;   // sama dengan RescueRewardOrbs.cs
 
-  /* Masa bingkai idle. Nafas Wira ialah 4 bingkai dengan bingkai ke-4 mata
-     tertutup, jadi kelipan mesti pendek — kalau semua bingkai sama panjang,
-     Wira nampak mengantuk dan gerakannya terlalu laju sekali gus. */
-  const HERO_IDLE_HOLD=[0.40,0.40,0.40,0.11];    // satu kitaran 1.31s
-  const HERO_CHEER_HOLD=[0.16,0.20,0.18,0.22];   // sorakan kemenangan, lebih pantas
+  /* Satu klip Wira ialah urutan LANGKAH, bukan senarai bingkai. `seq` memilih
+     bingkai bagi setiap langkah dan `loop` menandakan langkah tempat kitaran
+     berulang, jadi satu klip boleh mempunyai mukadimah yang dimainkan sekali
+     sahaja sebelum ekornya berulang.
+
+     Nafas tidak memerlukan mukadimah itu — ia memang gelung penuh. Ia 4 bingkai
+     dengan bingkai ke-4 mata tertutup, jadi kelipan mesti pendek: kalau semua
+     bingkai sama panjang, Wira nampak mengantuk dan gerakannya terlalu laju
+     sekali gus. */
+  const HERO_IDLE_CLIP={seq:[0,1,2,3],hold:[0.40,0.40,0.40,0.11],loop:0}; // kitaran 1.31s
+  /* Sorakan BUKAN gelung. Empat bingkai itu satu angkatan pedang yang menaik:
+     bingkai 0 pedang rendah dengan perisai di kiri badan, bingkai 3 pedang
+     paling tinggi dengan kilauan. Memutarnya 0→1→2→3→0 menjatuhkan pedang dan
+     melontar perisai merentas badan dalam satu bingkai — itulah sentakan yang
+     berulang setiap 0.76s dan terbaca sebagai "tersekat". Jadi Wira mengangkat
+     pedang sekali sahaja, kemudian dua bingkai puncak berbuai. Tempohnya juga
+     dilonggarkan: sorakan pada ~5 bingkai sesaat terbaca sebagai gementar,
+     bukan gembira. */
+  const HERO_CHEER_CLIP={seq:[0,1,2,3,2,3],hold:[0.20,0.17,0.15,0.46,0.34,0.46],loop:3};
   /* Aurora sedang sedih dan terkurung, jadi dia hampir tidak bergerak: setiap
      pose bertahan ~2.6s. Bingkai 2 dan 7 ialah mata tertutup, jadi keduanya
      ditahan pendek sahaja — kalau tidak dia nampak tertidur, bukan sayu. */
@@ -149,6 +163,19 @@
     let x=t%cycle;
     for(let i=0;i<frames.length;i++){ if(x<holds[i])return frames[i]; x-=holds[i] }
     return frames[frames.length-1];
+  }
+
+  /* Sama seperti `heldFrame`, cuma langkah sebelum `clip.loop` dimainkan sekali
+     sahaja; selepas itu hanya ekornya berulang. `t` ialah masa KLIP, bukan jam
+     pentas — lihat `playHero`. */
+  function clipFrame(frames, clip, t){
+    const seq=clip.seq, hold=clip.hold, loop=clip.loop|0;
+    let x=Math.max(0,t);
+    for(let i=0;i<loop;i++){ if(x<hold[i])return frames[seq[i]]; x-=hold[i] }
+    let cycle=0; for(let i=loop;i<seq.length;i++)cycle+=hold[i];
+    if(cycle>0)x%=cycle;
+    for(let i=loop;i<seq.length;i++){ if(x<hold[i])return frames[seq[i]]; x-=hold[i] }
+    return frames[seq[seq.length-1]];
   }
 
   /* =================================================================
@@ -257,8 +284,23 @@
       const w=img.width*upp, h=img.height*upp;
       return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5), visW:m.boxW*w};
     }
-    const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
-    const heroHappyE=heroHappy.map(t=>entry(t,HERO_UPP));
+    /* Semua bingkai dalam satu klip mesti berkongsi SATU tambatan mendatar.
+       `entry()` mengukur kotak alfa setiap bingkai secara berasingan, jadi
+       pedang yang terangkat melebarkan kotak itu dan menarik BADAN Wira ke
+       tepi. Diukur dalam pelayar: offX sorakan ialah -0.130, -0.065, -0.108,
+       -0.043 — badan Wira berulang-alik kiri-kanan 0.087 unit setiap ~0.2s,
+       hampir 5% tinggi badannya, dan itulah goyangan yang kelihatan. Nafas
+       terlepas daripada cacat ini hanya kerana keempat-empat bingkainya
+       berkotak alfa hampir sama (julat 0.014 sahaja). Tambatan menegak memang
+       sudah sama bagi semua bingkai; ia dipuratakan sekali supaya klip bingkai
+       campuran pada masa depan tidak terdedah kepada cacat yang sama. */
+    function clipEntries(texs,upp){
+      const es=texs.map(t=>entry(t,upp)), n=es.length||1;
+      const offX=es.reduce((a,e)=>a+e.offX,0)/n, offY=es.reduce((a,e)=>a+e.offY,0)/n;
+      return es.map(e=>({...e,offX,offY}));
+    }
+    const heroIdleE=clipEntries(heroIdle,HERO_UPP);
+    const heroHappyE=clipEntries(heroHappy,HERO_UPP);
     const heroPrepareE=entry(heroPrepare,HERO_UPP);
     const heroSlashE=entry(heroSlash,HERO_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
@@ -608,7 +650,7 @@
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
              shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
-             heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,
+             heroFrames:heroIdleE,heroClip:HERO_IDLE_CLIP,heroClipT:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,
              heroLock:null,grey:0,coinT:-1};
     let raf=0, last=performance.now(), tAcc=0;
@@ -620,12 +662,18 @@
       mesh.scale.set(e.w,e.h,1);
     }
 
+    /* Tukar klip dan mulakan semula jamnya. Tanpa ini sorakan membaca jam
+       pentas yang sama dengan nafas, jadi ia bermula pada fasa rawak — selalunya
+       Wira terus melompat ke pedang terangkat dan angkatan itu tidak kelihatan
+       langsung. */
+    function playHero(frames,clip){ S.heroFrames=frames; S.heroClip=clip; S.heroClipT=0 }
+
     function frame(now){
       raf=requestAnimationFrame(frame);
       if(!S.running)return;
-      const dt=Math.min((now-last)/1000,.05); last=now; tAcc+=dt;
+      const dt=Math.min((now-last)/1000,.05); last=now; tAcc+=dt; S.heroClipT+=dt;
 
-      swap(hero, S.heroLock || heldFrame(S.heroFrames,S.heroHold,tAcc));
+      swap(hero, S.heroLock || clipFrame(S.heroFrames,S.heroClip,S.heroClipT));
       swap(pet,  S.petHold ? heldFrame(S.petFrames,S.petHold,tAcc)
                            : S.petFrames[Math.floor(tAcc*S.petFps)%S.petFrames.length]);
 
@@ -953,7 +1001,7 @@
         S.shake=.5; burst(7,0xffffff); S.waveT=0; S.flashT=0;
         // Aurora bebas dan Wira bersorak — kedua-duanya bertukar sprite gembira.
         S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7;
-        S.heroFrames=heroHappyE; S.heroHold=HERO_CHEER_HOLD; S.heroLock=null;
+        playHero(heroHappyE,HERO_CHEER_CLIP); S.heroLock=null;
         await wait(520); S.petY=GROUND;
         await wait(420);
       },
@@ -987,7 +1035,7 @@
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND;
-        S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD;
+        playHero(heroIdleE,HERO_IDLE_CLIP);
         seals.forEach((s,i)=>{ s.damage=0; s.broken=false; s.breakT=-1;
           s.front.visible=(i===0);
           s.front.material.uniforms.uOpacity.value=1;
