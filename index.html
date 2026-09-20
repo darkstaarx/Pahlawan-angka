@@ -94,19 +94,19 @@
     <button class="mv2Card mv2Quest" type="button" id="mv2QuestCard">
       <img class="mv2QuestArt" src="assets/ui/menu-v2/jejak-map-v1.webp" alt="">
       <span class="mv2CardBody">
-        <b>Jejak Pet Hari Ini</b>
-        <small id="mv2QuestSub">Selamatkan pet sambil berlatih.</small>
-        <span class="mv2Cta gold">Pergi Selamatkan <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+        <b>Jejak Pet</b>
+        <small id="mv2QuestSub">Pilih topik untuk selamatkan pet.</small>
+        <span class="mv2Cta gold">Pilih Topik <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
       </span>
       <svg class="mv2Chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
     </button>
 
     <button class="mv2Card mv2Learn" type="button" id="mv2LearnCard">
-      <img class="mv2LearnCikgu" src="assets/ui/menu-v2/cikgu-dimensi-book-v1.webp?v=3.83.4" alt="">
+      <img class="mv2LearnCikgu" src="assets/ui/menu-v2/cikgu-dimensi-book-v4.webp" onerror="if(this.dataset.bookFallback==='fixed'){this.onerror=null;this.src='assets/ui/menu-v2/cikgu-dimensi-book-hq-v1.webp';}else{this.dataset.bookFallback='fixed';this.src='assets/ui/menu-v2/cikgu-dimensi-book-fixed-v1.webp';}" alt="Cikgu Dimensi dengan buku ajaib terbuka">
       <span class="mv2CardBody">
         <b>Kembara Dimensi</b>
-        <small>Belajar konsep baharu langkah demi langkah.</small>
-        <span class="mv2Cta navy">Pilih Topik <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+        <small>Cikgu Dimensi pilih latihan ikut tahap kamu.</small>
+        <span class="mv2Cta navy">Mula Kembara <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
       </span>
       <svg class="mv2Chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
     </button>
@@ -296,7 +296,7 @@
 <section id="timeLock" class="screen"><div class="timeLockCard card"><div class="timeLockIcon">🌙</div><div class="eyebrow">MASA REHAT</div><h1>Misi hari ini selesai</h1><p id="timeLockMessage">Had masa bermain sudah dicapai. Rehatkan mata dan sambung semula kemudian.</p><button class="btn secondary heroStart" onclick="openParentPin()">Minta Ibu Bapa</button></div></section>
 <nav id="appBottomNav" class="appBottomNav" aria-label="Navigasi utama">
   <button class="navItem" data-nav="hub" onclick="navHome()" aria-label="Utama"><svg viewBox="0 0 24 24"><path d="M3 11.5L12 4l9 7.5V21h-6v-6H9v6H3z"/></svg><span>Utama</span></button>
-  <button class="navItem" data-nav="mission" onclick="navMission()" aria-label="Misi"><svg viewBox="0 0 24 24"><path d="M5 4h11l3 4-3 4H8v8H5z"/><path d="M8 7h7"/></svg><span>Misi</span></button>
+
   <button class="navItem" data-nav="treasure" onclick="openTreasure()" aria-label="Khazanah"><svg viewBox="0 0 24 24"><path d="M4 8h16v11H4z"/><path d="M7 8V6a5 5 0 0 1 10 0v2"/><path d="M9 13h6M12 11v4"/></svg><span>Khazanah</span></button>
   <button class="navItem" data-nav="parent" onclick="openParent()" aria-label="Ibu Bapa"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M3.5 20c.5-4 2.6-6 5.5-6s5 2 5.5 6M14 15c3.7 0 5.5 1.7 6 5"/></svg><span>Ibu Bapa</span></button>
 </nav>
