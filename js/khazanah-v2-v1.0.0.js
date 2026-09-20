@@ -51,8 +51,6 @@
 <div class="kzTabs">
   <button class="kzTab active" id="treasurePetTab" type="button" onclick="treasureTab('pets')">
     ${ICONS.pets}Teman <b id="kzCountPets">0/0</b></button>
-  <button class="kzTab" id="treasureAuraTab" type="button" onclick="treasureTab('auras')">
-    ${ICONS.auras}Aura <b id="kzCountAuras">0/0</b></button>
   <button class="kzTab" id="treasureBadgeTab" type="button" onclick="treasureTab('badges')">
     ${ICONS.badges}Trofi <b id="kzCountBadges">0/0</b></button>
 </div>
@@ -114,7 +112,7 @@
     const tamed=pet.state==='tamed', encountered=pet.state==='encountered';
     const name=PET_NAMES[pet.id]||pet.name||pet.id;
     const status=tamed?(pet.active?'Sedang ikut kamu':'Sudah jinak'):(encountered?'Sedang diselamatkan':'Belum ditemui');
-    const rescue=pet.id==='aurora'?'':(pet.rescueThreshold?`<small>Diselamatkan ${pet.rescues||0}/${pet.rescueThreshold} kali</small>`:'<small>Selesaikan misi Gembok untuk menyelamatkan teman ini</small>');
+    const rescue=pet.id==='aurora'?'':(pet.rescueThreshold?`<small>Diselamatkan ${pet.rescues||0}/${pet.rescueThreshold} kali</small>`:'');
     const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
     return `<article class="kzCard companionCard ${tamed?'owned':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
       <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?name:'Belum ditemui'}">
