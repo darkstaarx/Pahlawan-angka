@@ -271,36 +271,32 @@
        itulah kesilapan cubaan sebelum ini pada set 4-bingkai lama).
 
        SAIZ Wira ditentukur terus berbanding Aurora (~1.5x tinggi dia,
-       bingkai berdiri kedua-dua watak) — bukan angka tetap warisan lama
-       (2.6/480) yang menjadikan Wira jauh lebih besar daripada Aurora
-       walaupun pada idle biasa (skrin permainan sebenar tunjuk ini: Wira
-       hampir menutup seluruh gelanggang berbanding kubah segel/Aurora).
-       idle (480px), sorakan (642x1024) dan tebasan/hunus (768px) tiga
-       kanvas BERBEZA saiz, jadi ketiga-tiganya perlu upp berasingan —
-       kalau satu upp dikongsi merentasi saiz kanvas berlainan, satah jadi
-       tidak seimbang (bab sorakan v2 di atas ialah contoh bug family
-       yang sama). idle jadi rujukan utama (upp ditentukur terus
-       daripadanya); sorakan dan tebasan/hunus dipadankan tinggi satah
-       yang sama dengan idle supaya Wira kekal SATU saiz merentasi
-       seluruh pengalaman Jejak Pet.
+       bingkai berdiri/rujukan setiap set) — bukan angka tetap warisan
+       lama (2.6/480) yang menjadikan Wira jauh lebih besar daripada
+       Aurora walaupun pada idle biasa (skrin permainan sebenar tunjuk
+       ini: Wira hampir menutup seluruh gelanggang berbanding kubah
+       segel/Aurora).
 
-       JANGKAR sorakan: cubaan pertama cuba KIRA baris kepala per-bingkai
-       (measure()'s 1-foot-boxH) dan jangkar setiap bingkai berasingan.
-       Itu masih tidak stabil — probe measure() menyusut setiap bingkai
-       ke kanvas probe 96x96, dan hujung pedang/hujung rambut yang nipis
-       kadangkala HILANG selepas disusutkan (bingkai lain kekal), jadi
-       "baris kepala" yang dikira masih melompat-lompat bergantung
-       bingkai. Padanan sekali sahaja daripada bingkai 0 (pose berdiri)
-       dan KEKALKAN offY yang SAMA untuk kesemua 24 bingkai — bukan
-       dikira semula setiap bingkai — punya kepala terjamin statik
-       langsung, tidak bergantung sama ada probe itu boleh dipercayai
-       untuk bingkai lain. Kaki bebas naik-turun sendiri ikut pose. */
-    const heroIdleRefM=measure(heroIdle[0].image), petJoyRefM=measure(petJoy[0].image);
+       idle (480px persegi), sorakan (642x1024) dan tebasan/hunus (768px
+       persegi) tiga kanvas BERBEZA saiz DAN kotak alfa mengisi kanvas
+       masing-masing pada nisbah yang jauh berbeza — tebasan/hunus (pose
+       lunjur tangan lebar) hanya isi ~44-47% tinggi kanvasnya, idle isi
+       ~85%. Percubaan pertama padankan TINGGI SATAH tebasan/hunus dengan
+       idle (bukan padankan WATAK), jadi Wira nampak lebih kurang SEPARUH
+       saiz sebenar semasa menyerang — bug keluarga yang sama seperti
+       kesilapan pertama pada sorakan v2 di atas, kali ini pada
+       tebasan/hunus. Setiap set kini ditentukur BERASINGAN terus
+       berbanding Aurora (bukan berbanding satu sama lain), jadi ia kebal
+       terhadap berapa banyak kanvas masing-masing diisi. */
+    function heroCalibratedUpp(tex,targetCharH){
+      const m=measure(tex.image);
+      return targetCharH/(tex.image.height*m.boxH);
+    }
+    const petJoyRefM=measure(petJoy[0].image);
     const HERO_CHAR_H=1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH;
-    const HERO_UPP=HERO_CHAR_H/(heroIdle[0].image.height*heroIdleRefM.boxH);
-    const heroPlaneH=heroIdle[0].image.height*HERO_UPP;
-    const HERO_HAPPY_UPP=heroPlaneH/heroHappy[0].image.height;
-    const HERO_STRIKE_UPP=heroPlaneH/heroPrepare.image.height;
+    const HERO_UPP=heroCalibratedUpp(heroIdle[0],HERO_CHAR_H);
+    const HERO_HAPPY_UPP=heroCalibratedUpp(heroHappy[0],HERO_CHAR_H);
+    const HERO_STRIKE_UPP=heroCalibratedUpp(heroPrepare,HERO_CHAR_H);
     const heroHappyOffY=entry(heroHappy[0],HERO_HAPPY_UPP).offY;
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
     const heroHappyE=heroHappy.map(t=>{

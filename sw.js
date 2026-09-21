@@ -1,4 +1,4 @@
-// App shell v3.84.3 — Wira sized consistently vs Aurora across idle/strike/cheer.
+// App shell v3.84.4 — fix Wira shrinking ~50% during the strike/attack pose.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
