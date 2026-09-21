@@ -216,11 +216,24 @@
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
-    function measure(img){
-      const N=96;
+    /* N=96 sudah cukup tepat untuk offX/offY (jangkar kaki/tengah) kerana
+       kesilapan seposisi kecil di situ tidak kelihatan. Ia TIDAK cukup
+       tepat untuk boxH bila dipakai untuk KIRA SAIZ (heroCalibratedUpp
+       di bawah): hujung pedang tegak Wira ialah satu-dua piksel lebar
+       pada kanvas sumbernya, dan bila disusutkan terus ke 96x96, hujung
+       nipis itu kadangkala hilang terus selepas antialiasing — diukur
+       terus di Python terhadap bingkai sebenar, happy-00 catat boxH 0.70
+       pada N=96 tetapi 0.88 pada N=256+ (dan idle/prepare/petJoy stabil
+       merentasi resolusi kerana siluet mereka lebih pejal di hujung).
+       Itulah sebab sorakan sentiasa tersilap saiz walaupun jangkar kepala
+       sudah betul — pengiraan SAIZ masih memanggil measure() yang sama.
+       measureAt() bagi resolusi boleh dipilih: N=96 untuk kegunaan
+       kerap/panas (jangkar setiap bingkai), N besar (measureHiRes)
+       khusus untuk pengiraan saiz sekali sahaja di heroCalibratedUpp. */
+    function measureAt(img,N,ctx){
       try{
-        probeCtx.clearRect(0,0,N,N); probeCtx.drawImage(img,0,0,N,N);
-        const d=probeCtx.getImageData(0,0,N,N).data;
+        ctx.clearRect(0,0,N,N); ctx.drawImage(img,0,0,N,N);
+        const d=ctx.getImageData(0,0,N,N).data;
         let x0=N,y0=N,x1=-1,y1=-1, maxSolid=0;
         const solidRow=new Array(N).fill(0);
         for(let y=0;y<N;y++){
@@ -242,6 +255,11 @@
         return {foot:(N-1-y1)/N, cx:((x0+x1)/2)/N-.5, ring:ringRow/N,
                 boxH:(y1-y0+1)/N, boxW:(x1-x0+1)/N};
       }catch(_){ return {foot:0,cx:0,ring:1,boxH:1,boxW:1} }
+    }
+    function measure(img){ return measureAt(img,96,probeCtx) }
+    function measureHiRes(img){
+      const N=512, c=document.createElement('canvas'); c.width=c.height=N;
+      return measureAt(img,N,c.getContext('2d',{willReadFrequently:true}));
     }
     function entry(tex,upp){
       const img=tex&&tex.image;
@@ -289,10 +307,10 @@
        berbanding Aurora (bukan berbanding satu sama lain), jadi ia kebal
        terhadap berapa banyak kanvas masing-masing diisi. */
     function heroCalibratedUpp(tex,targetCharH){
-      const m=measure(tex.image);
+      const m=measureHiRes(tex.image);
       return targetCharH/(tex.image.height*m.boxH);
     }
-    const petJoyRefM=measure(petJoy[0].image);
+    const petJoyRefM=measureHiRes(petJoy[0].image);
     const HERO_CHAR_H=1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH;
     const HERO_UPP=heroCalibratedUpp(heroIdle[0],HERO_CHAR_H);
     const HERO_HAPPY_UPP=heroCalibratedUpp(heroHappy[0],HERO_CHAR_H);
