@@ -273,27 +273,25 @@
        Dua kelainan daripada set lama:
        1) SAIZ ditentukur terus berbanding Aurora (~1.5x tinggi dia pada
           pose berdiri, bingkai 0), bukan diwarisi daripada idle lagi.
-       2) JANGKAR ikut KEPALA, bukan kaki. Baris piksel kepala (measure()'s
-          1-foot-boxH) kekal SAMA merentasi kesemua 24 bingkai walaupun
-          kaki naik ~0.15 unit semasa berlutut — menjangkar ikut kaki
-          (macam entry() biasa) menyeret SELURUH badan turun setiap kali
-          berlutut, jadi kepala nampak tenggelam. Menjangkar ikut kepala
-          bermakna kepala kekal statik dan kaki naik-turun sendiri ikut
-          pose, sama macam lutut sebenar bertekuk. */
+       2) JANGKAR: cubaan pertama cuba KIRA baris kepala per-bingkai
+          (measure()'s 1-foot-boxH) dan jangkar setiap bingkai berasingan.
+          Itu masih tidak stabil — probe measure() menyusut setiap bingkai
+          ke kanvas probe 96x96, dan hujung pedang/hujung rambut yang nipis
+          kadangkala HILANG selepas disusutkan (bingkai lain kekal), jadi
+          "baris kepala" yang dikira masih melompat-lompat bergantung
+          bingkai. Padanan sekali sahaja daripada bingkai 0 (pose berdiri)
+          dan KEKALKAN offY yang SAMA untuk kesemua 24 bingkai — bukan
+          dikira semula setiap bingkai — punya kepala terjamin statik
+          langsung, tidak bergantung sama ada probe itu boleh dipercayai
+          untuk bingkai lain. Kaki bebas naik-turun sendiri ikut pose. */
     const heroHappyRefM=measure(heroHappy[0].image), petJoyRefM=measure(petJoy[0].image);
     const HERO_HAPPY_UPP=(1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH)
                          /(heroHappy[0].image.height*heroHappyRefM.boxH);
-    const heroHappyH=heroHappy[0].image.height*HERO_HAPPY_UPP;
-    const heroHappyHeadY=GROUND+heroHappyH*heroHappyRefM.boxH;
-    function entryHeadAnchored(tex,upp,headWorldY){
-      const img=tex&&tex.image;
-      if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
-      const w=img.width*upp, h=img.height*upp, m=measure(img);
-      const headFrac=1-m.foot-m.boxH;
-      return {tex, w, h, offX:-m.cx*w, offY:(headWorldY-GROUND)-h*(.5-headFrac)};
-    }
+    const heroHappyOffY=entry(heroHappy[0],HERO_HAPPY_UPP).offY;
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
-    const heroHappyE=heroHappy.map(t=>entryHeadAnchored(t,HERO_HAPPY_UPP,heroHappyHeadY));
+    const heroHappyE=heroHappy.map(t=>{
+      const e=entry(t,HERO_HAPPY_UPP); e.offY=heroHappyOffY; return e;
+    });
     const heroPrepareE=entry(heroPrepare,HERO_UPP);
     const heroSlashE=entry(heroSlash,HERO_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
