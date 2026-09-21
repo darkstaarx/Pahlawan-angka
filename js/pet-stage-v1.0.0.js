@@ -311,7 +311,7 @@
       if(hint)hint.textContent='Ketuk atau seret untuk bermain';
     }else{
       if(name)name.textContent='Belum ada teman';
-      if(desc)desc.textContent='Lengkapi satu teman di bawah untuk membawanya ke sini.';
+      if(desc)desc.textContent='';
       if(hint)hint.textContent='';
       if(stage)stage.pause();
       return;
