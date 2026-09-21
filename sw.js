@@ -1,4 +1,4 @@
-// App shell v3.83.4 — fix Wira's cheer-pose size pumping on pet rescue.
+// App shell v3.83.5 — correct Wira's cheer-pose canvas scale vs idle.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

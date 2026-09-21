@@ -257,28 +257,24 @@
       const w=img.width*upp, h=img.height*upp;
       return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5), visW:m.boxW*w};
     }
-    /* entry() menskalakan satah ikut piksel KANVAS mentah, jadi ia hanya
-       kekal konsisten kalau setiap bingkai mengisi kanvasnya pada nisbah
-       yang sama. Empat bingkai happy-N tidak — kotak alfanya merangkumi
-       47.5% hingga 54.4% tinggi kanvas 768x768 yang sama, jadi Wira nampak
-       "kecik besar" mengembang setiap kitaran sorakan sebelum terjun balik
-       bila ia gelung ke bingkai pertama. sealEntry() di atas sudah
-       menyelesaikan masalah keluarga sama ini untuk kubah segel; poseEntry()
-       buat perkara sama untuk watak — skalakan supaya KOTAK ALFA (bukan
-       kanvas) sepadan dengan satu tinggi tetap. */
-    function poseEntry(tex,targetBoxH){
-      const img=tex&&tex.image;
-      if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
-      const m=measure(img);
-      const h=targetBoxH/Math.max(.05,m.boxH), w=h*(img.width/img.height);
-      return {tex, w, h, offX:-m.cx*w, offY:h*(.5-m.foot)};
-    }
+    /* Percubaan pertama menyalahkan kotak alfa: ia merangkumi 47.5%-54.4%
+       tinggi kanvas merentasi empat bingkai happy-N, jadi disangka itu punca
+       Wira "kecik besar". Salah sangka — kotak kepala (crop tetap 330-560 x
+       370-560 pada setiap bingkai) kekal SAMA saiz merentasi kesemua empat,
+       membuktikan badan/kepala dilukis pada skala mutlak yang konsisten;
+       kotak alfa berbeza kerana pedang diangkat pada sudut lain setiap
+       bingkai (kaedah normalisasi ikut kotak alfa itu sendiri yang
+       membesarkan bingkai muka serius, bukan membetulkannya — dibuang).
+       Punca sebenar: entry() skalakan ikut piksel KANVAS MENTAH, dan
+       kanvas idle (480px) berbeza daripada kanvas happy-N (768px). Guna
+       HERO_UPP (ditentukur untuk 480px) terus pada kanvas 768px menjadikan
+       satah happy-N 1.6x lebih besar daripada satah idle — lompatan saiz
+       sekali sahaja pada detik sorakan bermula, bukan denyutan per-bingkai
+       (kesemua empat happy-N berkongsi kanvas 768px yang sama, jadi mereka
+       sudah konsisten sesama sendiri di bawah entry() biasa). */
+    const HERO_HAPPY_UPP=HERO_UPP*(480/768);
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
-    // Sasarkan tinggi kotak alfa idle sendiri supaya sorakan tidak melompat
-    // saiz pada detik ia bermula, dan setiap bingkai happy-N sepadan sesama
-    // sendiri sepanjang gelung.
-    const heroCharBoxH=heroIdleE[0].h*measure(heroIdle[0].image).boxH;
-    const heroHappyE=heroHappy.map(t=>poseEntry(t,heroCharBoxH));
+    const heroHappyE=heroHappy.map(t=>entry(t,HERO_HAPPY_UPP));
     const heroPrepareE=entry(heroPrepare,HERO_UPP);
     const heroSlashE=entry(heroSlash,HERO_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
