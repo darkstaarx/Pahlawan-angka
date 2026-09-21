@@ -257,8 +257,28 @@
       const w=img.width*upp, h=img.height*upp;
       return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5), visW:m.boxW*w};
     }
+    /* entry() menskalakan satah ikut piksel KANVAS mentah, jadi ia hanya
+       kekal konsisten kalau setiap bingkai mengisi kanvasnya pada nisbah
+       yang sama. Empat bingkai happy-N tidak — kotak alfanya merangkumi
+       47.5% hingga 54.4% tinggi kanvas 768x768 yang sama, jadi Wira nampak
+       "kecik besar" mengembang setiap kitaran sorakan sebelum terjun balik
+       bila ia gelung ke bingkai pertama. sealEntry() di atas sudah
+       menyelesaikan masalah keluarga sama ini untuk kubah segel; poseEntry()
+       buat perkara sama untuk watak — skalakan supaya KOTAK ALFA (bukan
+       kanvas) sepadan dengan satu tinggi tetap. */
+    function poseEntry(tex,targetBoxH){
+      const img=tex&&tex.image;
+      if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
+      const m=measure(img);
+      const h=targetBoxH/Math.max(.05,m.boxH), w=h*(img.width/img.height);
+      return {tex, w, h, offX:-m.cx*w, offY:h*(.5-m.foot)};
+    }
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
-    const heroHappyE=heroHappy.map(t=>entry(t,HERO_UPP));
+    // Sasarkan tinggi kotak alfa idle sendiri supaya sorakan tidak melompat
+    // saiz pada detik ia bermula, dan setiap bingkai happy-N sepadan sesama
+    // sendiri sepanjang gelung.
+    const heroCharBoxH=heroIdleE[0].h*measure(heroIdle[0].image).boxH;
+    const heroHappyE=heroHappy.map(t=>poseEntry(t,heroCharBoxH));
     const heroPrepareE=entry(heroPrepare,HERO_UPP);
     const heroSlashE=entry(heroSlash,HERO_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
