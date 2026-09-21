@@ -65,7 +65,10 @@
     petSad:[0,1,2,3,4,5,6,7].map(i=>`assets/pets/aurora/frames/sad-${i}-v1.webp`),
     petJoy:[0,1].map(i=>`assets/pets/aurora/frames/joy-${i}-v1.webp`),
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
-    heroHappy:[0,1,2,3].map(i=>`assets/heroes/wira-chibi/frames/happy-${i}-v1.webp`),
+    // v2: 24-frame sorakan penuh (angkat, denyar, letusan ais, pulih, angkat
+    // semula) menggantikan gelung 4-bingkai lama supaya gerakannya lebih
+    // licin dan tidak lagi bergantung pada penormalan saiz per-bingkai.
+    heroHappy:Array.from({length:24},(_,i)=>`assets/heroes/wira-chibi/frames/happy-${String(i).padStart(2,'0')}-v2.webp`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v1.webp`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
@@ -80,7 +83,9 @@
      tertutup, jadi kelipan mesti pendek — kalau semua bingkai sama panjang,
      Wira nampak mengantuk dan gerakannya terlalu laju sekali gus. */
   const HERO_IDLE_HOLD=[0.40,0.40,0.40,0.11];    // satu kitaran 1.31s
-  const HERO_CHEER_HOLD=[0.16,0.20,0.18,0.22];   // sorakan kemenangan, lebih pantas
+  // Sorakan v2 ada 24 bingkai untuk satu jujukan penuh (bukan gelung idle
+  // pendek), jadi ia main pada fps tetap dan bukan senarai heldFrame.
+  const HERO_CHEER_FPS=12;                       // satu kitaran 2.0s
   /* Aurora sedang sedih dan terkurung, jadi dia hampir tidak bergerak: setiap
      pose bertahan ~2.6s. Bingkai 2 dan 7 ialah mata tertutup, jadi keduanya
      ditahan pendek sahaja — kalau tidak dia nampak tertidur, bukan sayu. */
@@ -257,22 +262,14 @@
       const w=img.width*upp, h=img.height*upp;
       return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5), visW:m.boxW*w};
     }
-    /* Percubaan pertama menyalahkan kotak alfa: ia merangkumi 47.5%-54.4%
-       tinggi kanvas merentasi empat bingkai happy-N, jadi disangka itu punca
-       Wira "kecik besar". Salah sangka — kotak kepala (crop tetap 330-560 x
-       370-560 pada setiap bingkai) kekal SAMA saiz merentasi kesemua empat,
-       membuktikan badan/kepala dilukis pada skala mutlak yang konsisten;
-       kotak alfa berbeza kerana pedang diangkat pada sudut lain setiap
-       bingkai (kaedah normalisasi ikut kotak alfa itu sendiri yang
-       membesarkan bingkai muka serius, bukan membetulkannya — dibuang).
-       Punca sebenar: entry() skalakan ikut piksel KANVAS MENTAH, dan
-       kanvas idle (480px) berbeza daripada kanvas happy-N (768px). Guna
-       HERO_UPP (ditentukur untuk 480px) terus pada kanvas 768px menjadikan
-       satah happy-N 1.6x lebih besar daripada satah idle — lompatan saiz
-       sekali sahaja pada detik sorakan bermula, bukan denyutan per-bingkai
-       (kesemua empat happy-N berkongsi kanvas 768px yang sama, jadi mereka
-       sudah konsisten sesama sendiri di bawah entry() biasa). */
-    const HERO_HAPPY_UPP=HERO_UPP*(480/768);
+    /* entry() skalakan ikut piksel KANVAS MENTAH, jadi ia tepat asalkan
+       semua bingkai satu jujukan berkongsi SATU saiz kanvas (barulah upp
+       tetap bermakna sama untuk semua) — kanvas happy-N v2 ialah 642x1024
+       untuk kesemua 24 bingkai, jadi syarat itu dipenuhi. Ia hanya perlu
+       diskala ke tinggi yang sama dengan idle (480px), bukan HERO_UPP terus
+       (yang ditentukur untuk kanvas 480px), supaya tiada lompatan saiz pada
+       detik sorakan bermula. */
+    const HERO_HAPPY_UPP=HERO_UPP*(480/1024);
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
     const heroHappyE=heroHappy.map(t=>entry(t,HERO_HAPPY_UPP));
     const heroPrepareE=entry(heroPrepare,HERO_UPP);
@@ -624,7 +621,7 @@
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
              shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
-             heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFrameT0:0,
+             heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
              heroLock:null,grey:0,coinT:-1};
     let raf=0, last=performance.now(), tAcc=0;
@@ -649,7 +646,8 @@
       // wrong pose before the sequence "restarts" a moment later, which is
       // far more visible on Wira's 4 distinct cheer poses than on the pet's
       // two near-identical joy frames.
-      swap(hero, S.heroLock || heldFrame(S.heroFrames,S.heroHold,tAcc-S.heroFrameT0));
+      swap(hero, S.heroLock || (S.heroHold ? heldFrame(S.heroFrames,S.heroHold,tAcc-S.heroFrameT0)
+                           : S.heroFrames[Math.floor((tAcc-S.heroFrameT0)*S.heroFps)%S.heroFrames.length]));
       swap(pet,  S.petHold ? heldFrame(S.petFrames,S.petHold,tAcc-S.petFrameT0)
                            : S.petFrames[Math.floor((tAcc-S.petFrameT0)*S.petFps)%S.petFrames.length]);
 
@@ -977,7 +975,7 @@
         S.shake=.5; burst(7,0xffffff); S.waveT=0; S.flashT=0;
         // Aurora bebas dan Wira bersorak — kedua-duanya bertukar sprite gembira.
         S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7; S.petFrameT0=tAcc;
-        S.heroFrames=heroHappyE; S.heroHold=HERO_CHEER_HOLD; S.heroLock=null; S.heroFrameT0=tAcc;
+        S.heroFrames=heroHappyE; S.heroHold=null; S.heroFps=HERO_CHEER_FPS; S.heroLock=null; S.heroFrameT0=tAcc;
         await wait(520); S.petY=GROUND;
         await wait(420);
       },

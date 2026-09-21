@@ -1,4 +1,4 @@
-// App shell v3.83.5 — correct Wira's cheer-pose canvas scale vs idle.
+// App shell v3.84.0 — 24-frame Wira rescue-cheer animation.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
