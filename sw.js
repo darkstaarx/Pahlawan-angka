@@ -1,4 +1,4 @@
-// App shell v3.84.2 — fix Wira's cheer head-anchor for real (was still per-frame).
+// App shell v3.84.3 — Wira sized consistently vs Aurora across idle/strike/cheer.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[

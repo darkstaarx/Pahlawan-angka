@@ -210,7 +210,7 @@
     /* Satu garisan lantai untuk semua: Wira, Aurora dan tapak kubah segel.
        Sebelum ini Aurora terapung 0.43 unit di atas lantai Wira, jadi dia
        nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
-    const HERO_UPP=2.6/480, PET_UPP=1.22/400;
+    const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
     const SEAL_X=1.52, HERO_HOME=-1.62;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
@@ -270,30 +270,44 @@
        bukan skala berlainan, jadi ia BUKAN dinormalkan ikut kotak alfa —
        itulah kesilapan cubaan sebelum ini pada set 4-bingkai lama).
 
-       Dua kelainan daripada set lama:
-       1) SAIZ ditentukur terus berbanding Aurora (~1.5x tinggi dia pada
-          pose berdiri, bingkai 0), bukan diwarisi daripada idle lagi.
-       2) JANGKAR: cubaan pertama cuba KIRA baris kepala per-bingkai
-          (measure()'s 1-foot-boxH) dan jangkar setiap bingkai berasingan.
-          Itu masih tidak stabil — probe measure() menyusut setiap bingkai
-          ke kanvas probe 96x96, dan hujung pedang/hujung rambut yang nipis
-          kadangkala HILANG selepas disusutkan (bingkai lain kekal), jadi
-          "baris kepala" yang dikira masih melompat-lompat bergantung
-          bingkai. Padanan sekali sahaja daripada bingkai 0 (pose berdiri)
-          dan KEKALKAN offY yang SAMA untuk kesemua 24 bingkai — bukan
-          dikira semula setiap bingkai — punya kepala terjamin statik
-          langsung, tidak bergantung sama ada probe itu boleh dipercayai
-          untuk bingkai lain. Kaki bebas naik-turun sendiri ikut pose. */
-    const heroHappyRefM=measure(heroHappy[0].image), petJoyRefM=measure(petJoy[0].image);
-    const HERO_HAPPY_UPP=(1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH)
-                         /(heroHappy[0].image.height*heroHappyRefM.boxH);
+       SAIZ Wira ditentukur terus berbanding Aurora (~1.5x tinggi dia,
+       bingkai berdiri kedua-dua watak) — bukan angka tetap warisan lama
+       (2.6/480) yang menjadikan Wira jauh lebih besar daripada Aurora
+       walaupun pada idle biasa (skrin permainan sebenar tunjuk ini: Wira
+       hampir menutup seluruh gelanggang berbanding kubah segel/Aurora).
+       idle (480px), sorakan (642x1024) dan tebasan/hunus (768px) tiga
+       kanvas BERBEZA saiz, jadi ketiga-tiganya perlu upp berasingan —
+       kalau satu upp dikongsi merentasi saiz kanvas berlainan, satah jadi
+       tidak seimbang (bab sorakan v2 di atas ialah contoh bug family
+       yang sama). idle jadi rujukan utama (upp ditentukur terus
+       daripadanya); sorakan dan tebasan/hunus dipadankan tinggi satah
+       yang sama dengan idle supaya Wira kekal SATU saiz merentasi
+       seluruh pengalaman Jejak Pet.
+
+       JANGKAR sorakan: cubaan pertama cuba KIRA baris kepala per-bingkai
+       (measure()'s 1-foot-boxH) dan jangkar setiap bingkai berasingan.
+       Itu masih tidak stabil — probe measure() menyusut setiap bingkai
+       ke kanvas probe 96x96, dan hujung pedang/hujung rambut yang nipis
+       kadangkala HILANG selepas disusutkan (bingkai lain kekal), jadi
+       "baris kepala" yang dikira masih melompat-lompat bergantung
+       bingkai. Padanan sekali sahaja daripada bingkai 0 (pose berdiri)
+       dan KEKALKAN offY yang SAMA untuk kesemua 24 bingkai — bukan
+       dikira semula setiap bingkai — punya kepala terjamin statik
+       langsung, tidak bergantung sama ada probe itu boleh dipercayai
+       untuk bingkai lain. Kaki bebas naik-turun sendiri ikut pose. */
+    const heroIdleRefM=measure(heroIdle[0].image), petJoyRefM=measure(petJoy[0].image);
+    const HERO_CHAR_H=1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH;
+    const HERO_UPP=HERO_CHAR_H/(heroIdle[0].image.height*heroIdleRefM.boxH);
+    const heroPlaneH=heroIdle[0].image.height*HERO_UPP;
+    const HERO_HAPPY_UPP=heroPlaneH/heroHappy[0].image.height;
+    const HERO_STRIKE_UPP=heroPlaneH/heroPrepare.image.height;
     const heroHappyOffY=entry(heroHappy[0],HERO_HAPPY_UPP).offY;
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
     const heroHappyE=heroHappy.map(t=>{
       const e=entry(t,HERO_HAPPY_UPP); e.offY=heroHappyOffY; return e;
     });
-    const heroPrepareE=entry(heroPrepare,HERO_UPP);
-    const heroSlashE=entry(heroSlash,HERO_UPP);
+    const heroPrepareE=entry(heroPrepare,HERO_STRIKE_UPP);
+    const heroSlashE=entry(heroSlash,HERO_STRIKE_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
     const petJoyE=petJoy.map(t=>entry(t,PET_UPP));
 
