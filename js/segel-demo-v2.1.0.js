@@ -321,22 +321,58 @@
     const HERO_UPP=heroCalibratedUpp(heroIdle[0],HERO_CHAR_H);
     const HERO_HAPPY_UPP=heroCalibratedUpp(heroHappy[0],HERO_CHAR_H*HERO_HAPPY_SCALE);
     const HERO_STRIKE_UPP=heroCalibratedUpp(heroPrepare,HERO_CHAR_H);
-    const heroHappyOffY=entry(heroHappy[0],HERO_HAPPY_UPP).offY;
+    const heroHappyReference=entry(heroHappy[0],HERO_HAPPY_UPP);
+    const heroHappyOffY=heroHappyReference.offY;
+    /* Pusat muka diukur daripada komponen tona kulit terbesar setiap frame.
+       Ini menambat BADAN Wira, bukan kotak alfa pedang/ais yang berubah-ubah. */
+    const heroHappyFaceX=[330.7,330.4,330.4,330.8,330.8,317.2,317.2,315.7,315.7,344.4,344.4,340.3,340.3,341.5,341.5,341.9,341.9,340.1,340.1,338.1,338.1,330.6,330.6,330.6];
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
-    const heroHappyE=heroHappy.map(t=>{
-      const e=entry(t,HERO_HAPPY_UPP); e.offY=heroHappyOffY; return e;
+    const heroHappyE=heroHappy.map((t,i)=>{
+      const e=entry(t,HERO_HAPPY_UPP);
+      /* Efek pedang/ais mengubah kotak alfa setiap frame. Jangan biarkan
+         pusat efek itu mengheret badan Wira ke kiri dan kanan. */
+      e.offX=(.5-heroHappyFaceX[i]/t.image.width)*e.w;
+      e.offY=heroHappyOffY;
+      e.cleanMatte=true;
+      return e;
     });
     const heroPrepareE=entry(heroPrepare,HERO_STRIKE_UPP);
     const heroSlashE=entry(heroSlash,HERO_STRIKE_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
     const petJoyE=petJoy.map(t=>entry(t,PET_UPP));
 
-    function actor(first,z){
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
-        new THREE.MeshBasicMaterial({map:first.tex,transparent:true,depthWrite:false}));
+    function actor(first,z,cleanHeroMatte=false){
+      const material=new THREE.MeshBasicMaterial({map:first.tex,transparent:true,depthWrite:false});
+      if(cleanHeroMatte){
+        /* Frame sorakan membawa matte hitam legap di luar badan (terutamanya
+           belakang pedang dan cabang letusan ais). Bersihkan di GPU supaya
+           24 tekstur asal tidak perlu digandakan ke canvas semasa runtime.
+           Zon perlindungan mengekalkan rambut, jubah dan perisai yang
+           memang gelap; hanya piksel gelap di luar siluet badan dipudarkan. */
+        material.userData.cleanMatte={value:first.cleanMatte?1:0};
+        material.onBeforeCompile=shader=>{
+          shader.uniforms.paCleanMatte=material.userData.cleanMatte;
+          shader.fragmentShader=shader.fragmentShader
+            .replace('void main() {','uniform float paCleanMatte;\nvoid main() {')
+            .replace('#include <map_fragment>',`#include <map_fragment>
+#ifdef USE_MAP
+  vec2 paHead=(vMapUv-vec2(0.52,0.51))/vec2(0.20,0.14);
+  vec2 paTorso=(vMapUv-vec2(0.51,0.39))/vec2(0.18,0.17);
+  vec2 paShield=(vMapUv-vec2(0.72,0.35))/vec2(0.14,0.21);
+  bool paProtected=dot(paHead,paHead)<1.0||dot(paTorso,paTorso)<1.0||dot(paShield,paShield)<1.0;
+  if(paCleanMatte>0.5&&!paProtected){
+    float paLight=max(diffuseColor.r,max(diffuseColor.g,diffuseColor.b));
+    diffuseColor.a*=smoothstep(0.08,0.45,paLight);
+    if(diffuseColor.a<0.025)discard;
+  }
+#endif`);
+        };
+        material.customProgramCacheKey=()=> 'wira-clean-matte-v2';
+      }
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),material);
       m.position.z=z; m.userData.e=first; scene.add(m); return m;
     }
-    const hero=actor(heroIdleE[0],0);
+    const hero=actor(heroIdleE[0],0,true);
     const pet =actor(petSadE[0],-.3);
 
     /* Bayang lembut. Bulatan hitam bertepi tajam nampak macam tampalan;
@@ -684,6 +720,7 @@
       if(!e||mesh.userData.e===e)return;
       mesh.userData.e=e;
       mesh.material.map=e.tex; mesh.material.needsUpdate=true;
+      if(mesh.material.userData.cleanMatte)mesh.material.userData.cleanMatte.value=e.cleanMatte?1:0;
       mesh.scale.set(e.w,e.h,1);
     }
 

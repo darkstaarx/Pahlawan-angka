@@ -1,6 +1,6 @@
-// App shell v3.84.7 — calibrate Wira's victory pose by visible body size.
+// App shell v3.84.8 — clean Wira victory matte and lock body anchoring.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wira-victory-scale-2`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wira-victory-clean-1`;
 const APP_SHELL=[
   './css/segel-demo-v2.1.0.css','./js/segel-demo-v2.1.0.js',
   './assets/ui/star-earned-v1.webp','./assets/ui/star-empty-v1.webp','./assets/ui/victory-result/star-earned.png','./assets/ui/victory-result/star-empty.png','./assets/ui/victory-result/crest-frame.png','./assets/ui/victory-result/crest-side-left.png','./assets/ui/victory-result/crest-side-right.png','./assets/ui/victory-result/summary-frame.png','./assets/ui/victory-result/button-navy-rest.png','./assets/ui/victory-result/button-gold-rest.png','./assets/ui/victory-result/button-navy-press.png','./assets/ui/victory-result/button-gold-press.png','./assets/coach/cikgu-dimensi/hub-portrait-v1.webp',
