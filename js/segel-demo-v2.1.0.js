@@ -312,8 +312,14 @@
     }
     const petJoyRefM=measureHiRes(petJoy[0].image);
     const HERO_CHAR_H=1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH;
+    /* Bingkai sorakan memasukkan pedang tegak dan kesan ais dalam kotak alfa.
+       Jika ia dinormalkan kepada tinggi alfa idle yang sama, badan Wira jadi
+       terlalu kecil pada skrin BERJAYA walaupun ketinggian keseluruhan sprite
+       nampak betul. Besarkan jujukan kemenangan sahaja; idle dan serangan
+       kekal pada skala asal, dan jangkar kaki di bawah masih digunakan. */
+    const HERO_HAPPY_SCALE=2.15;
     const HERO_UPP=heroCalibratedUpp(heroIdle[0],HERO_CHAR_H);
-    const HERO_HAPPY_UPP=heroCalibratedUpp(heroHappy[0],HERO_CHAR_H);
+    const HERO_HAPPY_UPP=heroCalibratedUpp(heroHappy[0],HERO_CHAR_H*HERO_HAPPY_SCALE);
     const HERO_STRIKE_UPP=heroCalibratedUpp(heroPrepare,HERO_CHAR_H);
     const heroHappyOffY=entry(heroHappy[0],HERO_HAPPY_UPP).offY;
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
