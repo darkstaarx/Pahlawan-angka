@@ -263,15 +263,37 @@
       return {tex, w, h, offX:-m.cx*w, offY:h*(m.ring-.5), visW:m.boxW*w};
     }
     /* entry() skalakan ikut piksel KANVAS MENTAH, jadi ia tepat asalkan
-       semua bingkai satu jujukan berkongsi SATU saiz kanvas (barulah upp
-       tetap bermakna sama untuk semua) — kanvas happy-N v2 ialah 642x1024
-       untuk kesemua 24 bingkai, jadi syarat itu dipenuhi. Ia hanya perlu
-       diskala ke tinggi yang sama dengan idle (480px), bukan HERO_UPP terus
-       (yang ditentukur untuk kanvas 480px), supaya tiada lompatan saiz pada
-       detik sorakan bermula. */
-    const HERO_HAPPY_UPP=HERO_UPP*(480/1024);
+       semua bingkai satu jujukan berkongsi SATU saiz kanvas — kanvas
+       happy-N v2 ialah 642x1024 untuk kesemua 24 bingkai, jadi satu upp
+       tetap sudah konsisten (lebar kotak alfa kekal ~500px merentasi
+       kesemua 24; tinggi berbeza sebab lutut bertekuk semasa berehat,
+       bukan skala berlainan, jadi ia BUKAN dinormalkan ikut kotak alfa —
+       itulah kesilapan cubaan sebelum ini pada set 4-bingkai lama).
+
+       Dua kelainan daripada set lama:
+       1) SAIZ ditentukur terus berbanding Aurora (~1.5x tinggi dia pada
+          pose berdiri, bingkai 0), bukan diwarisi daripada idle lagi.
+       2) JANGKAR ikut KEPALA, bukan kaki. Baris piksel kepala (measure()'s
+          1-foot-boxH) kekal SAMA merentasi kesemua 24 bingkai walaupun
+          kaki naik ~0.15 unit semasa berlutut — menjangkar ikut kaki
+          (macam entry() biasa) menyeret SELURUH badan turun setiap kali
+          berlutut, jadi kepala nampak tenggelam. Menjangkar ikut kepala
+          bermakna kepala kekal statik dan kaki naik-turun sendiri ikut
+          pose, sama macam lutut sebenar bertekuk. */
+    const heroHappyRefM=measure(heroHappy[0].image), petJoyRefM=measure(petJoy[0].image);
+    const HERO_HAPPY_UPP=(1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH)
+                         /(heroHappy[0].image.height*heroHappyRefM.boxH);
+    const heroHappyH=heroHappy[0].image.height*HERO_HAPPY_UPP;
+    const heroHappyHeadY=GROUND+heroHappyH*heroHappyRefM.boxH;
+    function entryHeadAnchored(tex,upp,headWorldY){
+      const img=tex&&tex.image;
+      if(!img)return {tex,w:1,h:1,offX:0,offY:.5};
+      const w=img.width*upp, h=img.height*upp, m=measure(img);
+      const headFrac=1-m.foot-m.boxH;
+      return {tex, w, h, offX:-m.cx*w, offY:(headWorldY-GROUND)-h*(.5-headFrac)};
+    }
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
-    const heroHappyE=heroHappy.map(t=>entry(t,HERO_HAPPY_UPP));
+    const heroHappyE=heroHappy.map(t=>entryHeadAnchored(t,HERO_HAPPY_UPP,heroHappyHeadY));
     const heroPrepareE=entry(heroPrepare,HERO_UPP);
     const heroSlashE=entry(heroSlash,HERO_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));

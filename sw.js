@@ -1,4 +1,4 @@
-// App shell v3.84.0 — 24-frame Wira rescue-cheer animation.
+// App shell v3.84.1 — anchor Wira's cheer by head, size vs Aurora 1.5x.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-coach-games-2`;
 const APP_SHELL=[
