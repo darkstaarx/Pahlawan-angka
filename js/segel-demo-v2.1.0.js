@@ -1457,7 +1457,7 @@
        terpapar sebagai tiga baris dengan noktah terpisah. Satu pembalut
        menjadikan grid itu berisi satu item, jadi teks mengalir seperti biasa. */
     $('segelQuestion').innerHTML='<div class="segelPrompt"></div>';
-    $('segelQuestion').firstChild.innerHTML=q.prompt;
+    $('segelQuestion').firstChild.innerHTML=window.PAWrittenArithmetic?.render?.(q,run)||q.prompt;
     $('segelFeedback').textContent='';
     run.usedHint=false;
     const hintBtn=$('segelHint');

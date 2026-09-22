@@ -145,7 +145,7 @@ function nextQ(){
  document.getElementById("kind").textContent=sess.bossStretchCurrent?`Cabaran Boss · ${m.title}`:qsv2LearnerTitle(m,q);
  document.getElementById("evidence").textContent=sess.guardianFocus?`Soalan ${(sess.missionAnswered||0)+1}/${sess.focusTarget}`:(sess.devBankTest?`${id} · Test ${(sess.missionAnswered||0)+1}`:(sess.coachAdaptive?`Cabaran Cikgu ${(sess.missionAnswered||0)+1}`:(sess.bossStretchCurrent?'Cabaran Boss +1 Darjah':`Soalan ${(sess.missionAnswered||0)+1}`))); updateMissionHud();
  applyEnemyVariant();
- document.getElementById("question").innerHTML=q.prompt;document.getElementById("feedback").textContent="";
+ document.getElementById("question").innerHTML=window.PAWrittenArithmetic?.render?.(q,sess)||q.prompt;document.getElementById("feedback").textContent="";
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.remove('needs-help','used');hintButton.disabled=false;hintButton.setAttribute('aria-label','Guna Petunjuk');}
  let e=document.getElementById("answers");e.innerHTML="";
  const gameRendered=window.PAGameQuestionInteractions?.render?.(q,e,{respond,shuffle});

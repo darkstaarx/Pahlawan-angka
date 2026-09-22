@@ -1,4 +1,4 @@
-// App shell v3.84.9 — clean Arnab and Harimau happy sprite sheets.
+// App shell v3.84.13 — written arithmetic presentation for direct operations.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
@@ -29,7 +29,7 @@ const APP_SHELL=[
   './assets/coach/time-lab/sidma-push-v1.png',
   './','./index.html','./manifest.webmanifest','./js/version.js',
   './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js','./css/demo-mode-v3.56.0.css','./js/demo-mode-v3.56.0.js','./css/hero-wira-finisher-v1.0.0.css','./js/hero-wira-finisher-v1.0.0.js','./css/hero-bunga-v2.0.0.css','./js/hero-bunga-v2.0.0.js',
-  './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js','./css/question-card-theme-v1.0.0.css',
+  './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js','./css/question-card-theme-v1.0.0.css','./css/written-arithmetic-v1.0.0.css','./js/written-arithmetic-v1.0.0.js',
   './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp','./assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp','./assets/heroes/sidma/frames/skill2-dash-v1.webp','./assets/heroes/sidma/frames/skill2-impact-v1.webp',
   './assets/heroes/sidma/hub/adventure-v1.webp','./assets/ui/coin-gold.svg','./assets/heroes/sidma/profile-happy-v1.webp','./assets/fx/hub/sidma-math-sigma-v1.webp',
   './assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
