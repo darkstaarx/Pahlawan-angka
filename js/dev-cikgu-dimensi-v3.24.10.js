@@ -1,6 +1,7 @@
 // Pahlawan Angka v3.24.10 — Cikgu Dimensi DEV preview launcher only.
 (()=>{
   'use strict';
+  if(window.PA_CIKGU_DIMENSI_ENABLED!==true)return;
   const VERSION='3.24.10';
   const PILOT='Y3-PV-A2';
 

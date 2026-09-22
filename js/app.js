@@ -48,7 +48,7 @@ if(db && !db.schoolGrade) db.schoolGrade=2;
 let selectedHero='wira';
 let sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:"calibrate",recoveryFor:null,stretchFor:null};
 function swapDemoState(nextDb,nextSess){const previous={db,sess};db=nextDb;sess=nextSess;return previous}
-function save(){if(sess?.demoMode||db?.demoMode)return;localStorage.setItem("pa_coach_v6_full",JSON.stringify(db))}
+function save(){if(sess?.demoMode||sess?.devBattlefield||db?.demoMode)return;localStorage.setItem("pa_coach_v6_full",JSON.stringify(db))}
 function initSkill(id){
  if(!db.skills[id]) db.skills[id]={mastery:(META[id].grade===db.schoolGrade?18:0),confidence:8,evidence:0,correct:0,wrong:0,hints:0,mis:{},lastSeen:0,stability:0,probePass:0,probeFail:0};
 }
@@ -133,6 +133,7 @@ function roleLabel(g){ if(!db) return 'Misi'; if(g<db.schoolGrade) return 'Misi 
 function qsv2LearnerTitle(meta,q){return window.PAD3Topic7LiveCutover?.isTargetQuestion?.(q)?window.PAD3Topic7LiveCutover.displayTitle(meta,q):questionLearningTitle(meta,q)}
 function nextQ(){
  if(sess.learningActive)return;
+ window.PABattlefieldDev?.setFrame?.('sad');
  let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),questionStage=enemyStageForQuestion(id),q=generate(id,s,{battleTier:questionStage.tier,isBoss:questionStage.tier==='boss'});q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
  sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;if(q.qsv2Pilot)q.qsv2AttemptId=window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null;else if(q.qsv2Live)q.qsv2AttemptId=window.PAD3NonT7LiveIsolation?.newAttemptId?.(q,q.token)||null;
  window.PALearnerReview?.beginQuestion?.(q,{grade:db?.schoolGrade,mode:sess.mode,selectionReason:typeof coachReason==='function'?coachReason(id):'',demoMode:!!sess.demoMode,devMode:!!sess.devBankTest||!!(db&&typeof isDevMode==='function'&&isDevMode())});

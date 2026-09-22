@@ -103,6 +103,7 @@
   // Cikgu Dimensi v0.2.1 loader. Additive only: legacy adaptive/intervention,
   // telemetry and spaced-review systems remain authoritative.
   (function loadDimensionalView(){
+    if(window.PA_CIKGU_DIMENSI_ENABLED!==true)return;
     if(document.querySelector('script[data-pa-dimensional-view="0.2.4"]'))return;
     const styles=[
       ['css/cikgu-dimensi-place-value-v0.1.css?v=0.2.1','place-value'],

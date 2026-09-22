@@ -148,6 +148,7 @@ function updateMissionHud(){
 function recordMissionAnswer(ok,skillId,usedHint){
   ensureProgression();
   sess.missionAnswered=(sess.missionAnswered||0)+1;
+  if(sess.devBattlefield){if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;if(usedHint)sess.missionHints=(sess.missionHints||0)+1;sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok?1:-1);updateMissionHud();return;}
   if(sess.demoMode){if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;if(usedHint)sess.missionHints=(sess.missionHints||0)+1;sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok&&!sess.retryState&&!usedHint?1:-1);window.PADemo?.record?.(skillId,ok,usedHint);updateMissionHud();return;}
   if(sess.devBankTest){
     if(ok)sess.missionCorrect=(sess.missionCorrect||0)+1;
@@ -207,7 +208,7 @@ function finishCoachSession(){
 }
 
 function replayMission(){startMission(sess.missionChapter||null)}
-function goHub(){renderHub()}
+function goHub(){if(window.PABattlefieldDev?.active?.()){window.PABattlefieldDev.exit();return;}renderHub()}
 
 
 function renderDevPanel(){
@@ -231,6 +232,7 @@ function devChangeGrade(v){
   if(!db)return; db.schoolGrade=+v; db.coreFrontier=1; initAll(); save(); populateDevSkills(); renderHub();
 }
 function startDevSkill(id=null){
+  if(window.PABattlefieldDev?.active?.())window.PABattlefieldDev.exit();
   ensureProgression(); const sel=document.getElementById('devSkill'); id=id||sel?.value; if(!id||!META[id])return;
   db.schoolGrade=META[id].grade; initAll(); save();
   sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:'dev',recoveryFor:null,stretchFor:null,missionChapter:String(META[id].chapter||''),missionAnswered:0,missionCorrect:0,missionHints:0,missionSkills:{},missionFinished:false,devBankTest:true,devSkill:id,questionFingerprints:[],bossActive:false,bossDefeated:false,bossQuestionsAnswered:0,bossStretchAsked:false,bossStretchCurrent:false};
