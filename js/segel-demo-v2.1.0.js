@@ -90,6 +90,17 @@
      pose bertahan ~2.6s. Bingkai 2 dan 7 ialah mata tertutup, jadi keduanya
      ditahan pendek sahaja — kalau tidak dia nampak tertidur, bukan sayu. */
   const PET_IDLE_HOLD=[2.6,2.6,0.16,2.6,2.6,2.6,2.6,0.16];
+  // Empat petak sprite sheet untuk pet dev. Tempoh yang sama memastikan
+  // setiap muka sedih dibaca satu demi satu, bukan berhenti lama di bingkai
+  // terakhir (PET_IDLE_HOLD Aurora mempunyai lapan nilai).
+  const PET_SHEET_HOLD=[.55,.55,.55,.55];
+
+  function devPetConfig(){
+    return entryMode&&entryMode.devBattlefield&&entryMode.pet&&typeof entryMode.pet==='object'
+      ? entryMode.pet : null;
+  }
+  function devPetName(){ return devPetConfig()?.name||'Aurora' }
+  function devSubject(text){ return devPetConfig()?String(text).replace(/Aurora/g,devPetName()):text }
 
   let THREE=null, stage=null, booting=null, run=null, reduceMotion=false;
 
@@ -340,6 +351,32 @@
     const heroSlashE=entry(heroSlash,HERO_STRIKE_UPP);
     const petSadE=petSad.map(t=>entry(t,PET_UPP));
     const petJoyE=petJoy.map(t=>entry(t,PET_UPP));
+    const petRef=petSad[0]?.image;
+    const petCharH=petRef?PET_UPP*petRef.height*measureHiRes(petRef).boxH:1;
+    const petEntries=frames=>frames.filter(Boolean).map(t=>{
+      const img=t.image, m=measureHiRes(img), upp=petCharH/(img.height*Math.max(.15,m.boxH));
+      return entry(t,upp);
+    });
+    async function sheetFrames(url){
+      if(!url)return [];
+      const sheet=await load(url), img=sheet&&sheet.image;
+      if(!img||img.width<2||img.height<2)return [];
+      const out=[];
+      for(let y=0;y<2;y++)for(let x=0;x<2;x++){
+        const c=document.createElement('canvas'); c.width=Math.floor(img.width/2); c.height=Math.floor(img.height/2);
+        const ctx=c.getContext('2d');
+        try{ctx.drawImage(img,x*c.width,y*c.height,c.width,c.height,0,0,c.width,c.height);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;out.push(tex)}catch(_){return []}
+      }
+      return out;
+    }
+    async function customPetFrames(config,phase,fallback){
+      if(!config)return {frames:fallback,custom:false};
+      const sheet=await sheetFrames(config[phase+'Sheet']);
+      if(sheet.length===4)return {frames:sheet,custom:true};
+      const loaded=(await Promise.all((config[phase]||[]).map(load))).filter(Boolean);
+      return {frames:loaded.length?loaded:fallback,custom:false};
+    }
+    let activePetConfig=devPetConfig(), petVisualGeneration=0;
 
     function actor(first,z,cleanHeroMatte=false){
       const material=new THREE.MeshBasicMaterial({map:first.tex,transparent:true,depthWrite:false});
@@ -709,7 +746,7 @@
     });
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
-    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,
+    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,rescued:false,lifecycle:0,
              shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
@@ -722,6 +759,21 @@
       mesh.material.map=e.tex; mesh.material.needsUpdate=true;
       if(mesh.material.userData.cleanMatte)mesh.material.userData.cleanMatte.value=e.cleanMatte?1:0;
       mesh.scale.set(e.w,e.h,1);
+    }
+    async function setPetVisual(config){
+      const generation=++petVisualGeneration;
+      activePetConfig=config&&typeof config==='object'?config:null;
+      const sad=await customPetFrames(activePetConfig,'sad',petSad);
+      const joy=await customPetFrames(activePetConfig,'happy',petJoy);
+      // Tekan Swap Pet beberapa kali semasa texture masih dimuat tidak boleh
+      // menyebabkan permintaan lama menimpa pilihan yang paling baharu.
+      if(generation!==petVisualGeneration)return;
+      const sadE=sad.custom?petEntries(sad.frames):sad.frames.map(t=>entry(t,PET_UPP));
+      const joyE=joy.custom?petEntries(joy.frames):joy.frames.map(t=>entry(t,PET_UPP));
+      S.petFrames=S.rescued?joyE:sadE;
+      S.petHold=S.rescued?null:(sad.custom?PET_SHEET_HOLD:PET_IDLE_HOLD);
+      S.petFps=4; S.petFrameT0=tAcc;
+      if(S.petFrames[0])swap(pet,S.petFrames[0]);
     }
 
     function frame(now){
@@ -987,6 +1039,7 @@
       host.classList.add('loading');
     });
 
+    if(activePetConfig)setPetVisual(activePetConfig);
     return {
       tiers:TIERS,
       /* Tempat bar kesihatan sepatutnya duduk, dalam peratus saiz pentas.
@@ -1007,16 +1060,20 @@
       /* Wira menyerang SEGEL, bukan Aurora. Bunyi: pedang masa tebasan,
          hentaman masa sentuh — dua kesan berasingan, bukan satu. */
       async strike(){
+        const lifecycle=S.lifecycle;
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
+        if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
         S.heroLock=heroSlashE;  S.heroX=-0.30; await wait(140);
+        if(lifecycle!==S.lifecycle)return;
         sfx('hit');
         iceHit(SEAL_X-.28, GROUND+.85);
         burst(5.5,0xbfe9ff);                    // serpihan ais, bukan warna tier
         S.waveT=0; S.shake=.32;
         await wait(210);
+        if(lifecycle!==S.lifecycle)return;
         S.heroLock=null; S.heroX=HERO_HOME;
       },
       // Satu jawapan betul = satu hentaman pada segel aktif.
@@ -1051,7 +1108,9 @@
          bintang yang berbeza. Kalau soalan habis sebelum semua segel pecah,
          Wira menghabiskan bakinya di sini. */
       async forceBreakRest(){
+        const lifecycle=S.lifecycle;
         while(S.active<TIERS.length){
+          if(lifecycle!==S.lifecycle)return false;
           const s=seals[S.active];
           s.damage=1; s.broken=true; s.breakT=0;
           if(!reduceMotion)shatter(s);
@@ -1059,16 +1118,20 @@
           S.active++;
           fitShell();
           await wait(320);
+          if(lifecycle!==S.lifecycle)return false;
         }
+        return true;
       },
       async rescue(){
+        const lifecycle=S.lifecycle;
         sfx('finisher');
         S.shake=.5; burst(7,0xffffff); S.waveT=0; S.flashT=0;
         // Aurora bebas dan Wira bersorak — kedua-duanya bertukar sprite gembira.
-        S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7; S.petFrameT0=tAcc;
+        S.rescued=true; S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7; S.petFrameT0=tAcc;
+        if(activePetConfig){ await setPetVisual(activePetConfig); S.petY=GROUND+.7; }
         S.heroFrames=heroHappyE; S.heroHold=null; S.heroFps=HERO_CHEER_FPS; S.heroLock=null; S.heroFrameT0=tAcc;
-        await wait(520); S.petY=GROUND;
-        await wait(420);
+        await wait(520); if(lifecycle!==S.lifecycle)return false; S.petY=GROUND;
+        await wait(420); return lifecycle===S.lifecycle;
       },
       // Wira menyerap cahaya segel sebagai syiling sebelum skrin keputusan.
       async absorbCoins(){
@@ -1091,7 +1154,7 @@
       },
       wrong(){ S.shake=.14 },
       reset(){
-        S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1;
+        ++S.lifecycle;S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1;
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
@@ -1100,6 +1163,7 @@
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND; S.petFrameT0=tAcc;
+        if(activePetConfig)setPetVisual(activePetConfig);
         S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD; S.heroFrameT0=tAcc;
         seals.forEach((s,i)=>{ s.damage=0; s.broken=false; s.breakT=-1;
           s.front.visible=(i===0);
@@ -1110,6 +1174,8 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
+      cancel(){ ++S.lifecycle; },
+      setPet(config){ return setPetVisual(config); },
       dispose(){ S.running=false; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
   }
@@ -1158,7 +1224,9 @@
        - Tiada logik pemilih atau pemarkahan disalin ke dalam fail ini; kita
          hanya MEMANGGIL fungsi produksi yang sudah ada.
   */
-  let entryMode=null;   // {chapter} | {adaptive:true} | null
+  let entryMode=null, demoOpenGeneration=0, runGeneration=0;
+  // {chapter} | {adaptive:true} | {devBattlefield:true,pet} | null
+  const currentRun=probe=>!!probe&&run===probe&&probe.generation===runGeneration;
 
   function chapterSkillPool(chapter){
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;
@@ -1281,7 +1349,7 @@
   function productionCurrent(hostRun,q){
     return run&&run.production&&run.productionRun===hostRun&&run.q===q
       && window.PAProductionJourney?.isCurrent?.(hostRun)
-      && hostRun.session.generation===run.generation;
+      && hostRun.session.generation===run.productionGeneration;
   }
 
   /* Bar kesihatan, bukan ayat. Bilangan ketul = bilangan hentaman tier itu
@@ -1405,20 +1473,22 @@
 
   async function respond(option,button){
     if(run&&run.production)return respondProduction(option,button);
-    if(run.locked)return;
-    run.locked=true;
+    const activeRun=run;
+    if(!activeRun||activeRun.locked)return;
+    activeRun.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
     button.classList.add(correct?'ok':'no');
-    run.asked++;
+    activeRun.asked++;
     if(correct){
-      sfx('correct');run.tally[run.usedHint?'hint':'own']++;await stage.strike();
+      sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike();
+      if(!currentRun(activeRun))return;
       const outcome=stage.hitSeal();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
-      paintSeal();if(stage.allBroken())return celebrate();
-    }else{sfx('wrong');run.tally.miss++;$('segelFeedback').textContent=q_hint(run.q);stage.wrong();await wait(520);}
-    if(run.asked>=MAX_Q)return celebrate();
-    await wait(420);run.locked=false;drawQuestion();
+      paintSeal();if(stage.allBroken())return celebrate(activeRun);
+    }else{sfx('wrong');activeRun.tally.miss++;$('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();await wait(520);if(!currentRun(activeRun))return;}
+    if(activeRun.asked>=MAX_Q)return celebrate(activeRun);
+    await wait(420);if(!currentRun(activeRun))return;activeRun.locked=false;drawQuestion();
   }
 
   async function respondProduction(option,button){
@@ -1460,16 +1530,20 @@
   /* Satu penamat sahaja: Aurora diselamatkan. Kalau soalan habis sebelum
      segel terakhir pecah, Wira menghabiskan bakinya. Yang membezakan
      pencapaian ialah bintang pada skrin keputusan, bukan menang/kalah. */
-  async function celebrate(){
-    run.locked=true;
+  async function celebrate(activeRun=run){
+    if(!currentRun(activeRun))return;
+    activeRun.locked=true;
     $('segelTag').style.opacity='0';
     if(!stage.allBroken()){
       toast('SATU TEBASAN LAGI!');
       await stage.forceBreakRest();
+      if(!currentRun(activeRun))return;
     }
-    toast('AURORA BEBAS!');
+    toast(`${devPetName().toUpperCase()} BEBAS!`);
     await stage.rescue();
+    if(!currentRun(activeRun))return;
     await stage.absorbCoins();   // Wira serap cahaya segel dahulu
+    if(!currentRun(activeRun))return;
     finishRun(true);
   }
 
@@ -1537,11 +1611,11 @@
     const stars=correct===0?0:1+(acc>=80?1:0)+(acc===100?1:0);
 
     $('segelDoneTitle').textContent='BERJAYA!';
-    $('segelDoneText').textContent=note||'Aurora berjaya diselamatkan!';
+    $('segelDoneText').textContent=devSubject(note||`${devPetName()} berjaya diselamatkan!`);
     $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
     $('segelStatAcc').textContent=acc+'%';
     popStars(stars);
-    $('segelCoachSay').textContent=coachLine(t,acc,run.asked);
+    $('segelCoachSay').textContent=devSubject(coachLine(t,acc,run.asked));
     $('segelDone').hidden=false;
     $('segelDone').scrollTop=0;
   }
@@ -1550,14 +1624,14 @@
      MASUK / KELUAR
      ================================================================= */
   function startRun(){
-    run={pool:skillPool(),asked:0,locked:false,q:null,usedHint:false,
+    run={generation:++runGeneration,pool:skillPool(),asked:0,locked:false,q:null,usedHint:false,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
             ensureCoachSession()/chooseCoachFrontierSkill() berjalan. `demoMode`
             kekal supaya save() tidak sekali-kali menulis progress dari sini. */
          sess:{mode:'practice',hint:false,hintLevel:0,recent:[],
                questionFingerprints:[],questionHistory:[],demoMode:true,
-               coachAdaptive:!!(entryMode&&entryMode.adaptive),
+               coachAdaptive:!!(entryMode&&entryMode.adaptive&&!entryMode.devBattlefield),
                missionChapter:(entryMode&&entryMode.chapter)?String(entryMode.chapter):null,
                missionAnswered:0,coach:null,recoveryFor:null,stretchFor:null}};
     $('segelDone').hidden=true;
@@ -1570,7 +1644,7 @@
 
   function startProductionRun(productionRun){
     if(!window.PAProductionJourney?.isCurrent?.(productionRun))return;
-    run={production:true,productionRun,generation:productionRun.session.generation,asked:0,locked:false,retryOpen:false,q:null,usedHint:false,tally:{own:0,hint:0,miss:0}};
+    run={production:true,productionRun,generation:++runGeneration,productionGeneration:productionRun.session.generation,asked:0,locked:false,retryOpen:false,q:null,usedHint:false,tally:{own:0,hint:0,miss:0}};
     $('segelDone').hidden=true;stage.reset();stage.armEntry();enterWhenRevealed();paintSeal();drawQuestion();
   }
 
@@ -1682,6 +1756,7 @@
      tanpa diubah, jadi tiada perubahan diperlukan di sana. */
   window.openSegelDemo=async function(mode){
     if(typeof db==='undefined'||!db)return;
+    const opening=++demoOpenGeneration;
     entryMode=(mode&&typeof mode==='object')?mode:null;
     if(entryMode&&entryMode.adaptive&&typeof chooseCoachFrontierSkill!=='function'){
       console.warn('[segel-demo] laluan adaptif diminta tetapi chooseCoachFrontierSkill tiada');
@@ -1692,21 +1767,30 @@
     if(typeof screen==='function')screen('segelDemo');
     try{ await boot() }
     catch(_){ $('segelFeedback').textContent='Pentas 3D tidak dapat dimuat pada peranti ini.'; return }
+    if(opening!==demoOpenGeneration)return;
+    // Satu stage WebGL dikongsi antara pembukaan. Tetapkan semula kepada
+    // Aurora untuk demo biasa supaya pilihan pet Battlefield Dev tidak bocor
+    // ke sesi murid yang seterusnya.
+    await stage.setPet?.(devPetConfig());
+    if(opening!==demoOpenGeneration)return;
     bindSpeaker(); bindSound(); bindHint();
     if(!window.__segelResizeBound){
       window.__segelResizeBound=true;
       window.addEventListener('resize',()=>{ try{ placeSealBar() }catch(_){} });
     }
     stage.resume();
+    $('segelDevControls')?.classList.toggle('hidden',!entryMode?.devBattlefield);
     startRun();
   };
 
   window.PASegelHost={
     openProduction:async productionRun=>{
       const generation=productionRun?.session?.generation;
-      entryMode=null;reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      ++demoOpenGeneration;entryMode=null;reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(typeof screen==='function')screen('segelDemo');
       try{await boot()}catch(_){$('segelFeedback').textContent='Pentas Gembok tidak dapat dimuat pada peranti ini.';return;}
+      if(!window.PAProductionJourney?.isCurrent?.(productionRun)||productionRun.session.generation!==generation)return;
+      await stage.setPet?.(null);
       if(!window.PAProductionJourney?.isCurrent?.(productionRun)||productionRun.session.generation!==generation)return;
       bindSpeaker();bindSound();bindHint();stage.resume();startProductionRun(productionRun);
     },
@@ -1717,6 +1801,7 @@
   window.closeSegelDemo=function(){
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
+    if(entryMode?.devBattlefield){ window.PABattlefieldDev?.exit?.({fromSegel:true}); return; }
     if(window.PAProductionJourney?.isActive?.()){window.PAProductionJourney.close();return;}
     /* renderHub() kini membuka Menu V2 produksi (menu-v2-v1.0.0.js membalutnya),
        jadi murid tidak pernah mendarat pada Hub lama dari sini. */
@@ -1736,6 +1821,9 @@
     close:()=>window.closeSegelDemo(),
     restart:()=>window.restartSegelDemo(),
     mode:()=>entryMode,
+    setPet:pet=>{ if(entryMode?.devBattlefield){entryMode.pet=pet;stage?.setPet?.(pet)} },
+    pause:()=>stage?.pause?.(),
+    clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
     tiers:TIERS,
     state:()=>run
   };

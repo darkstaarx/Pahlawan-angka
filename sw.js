@@ -1,6 +1,6 @@
-// App shell v3.84.6 — Battlefield Dev and six-pet mood preview.
+// App shell v3.84.7 — Battlefield Dev uses the Segel rescue arena.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-pet-battlefield-dev-1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
   './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js',
   './assets/pets/aurora/standby-v2.webp','./assets/pets/aurora/frames/sad-0-v1.webp','./assets/pets/aurora/frames/sad-1-v1.webp','./assets/pets/aurora/frames/sad-2-v1.webp','./assets/pets/aurora/frames/sad-3-v1.webp','./assets/pets/aurora/frames/sad-4-v1.webp','./assets/pets/aurora/frames/sad-5-v1.webp','./assets/pets/aurora/frames/sad-6-v1.webp','./assets/pets/aurora/frames/sad-7-v1.webp','./assets/pets/aurora/frames/joy-0-v1.webp','./assets/pets/aurora/frames/joy-1-v1.webp',

@@ -111,7 +111,7 @@ function triggerImpact(attackerId,targetId,tint,finisher,damageAmount=null){
  const bungaFinishing=attackerId==="hero"&&db?.hero==="bunga"&&finisher;
  // Final blows are the hero's solo climax. Pets still assist every regular
  // attack, but never add a separate hit or delay to any hero finisher.
- const hasPet=!!(!finisher&&pet&&!pet.classList.contains("hidden")&&(window.PABattlefieldDev?.active?.()?window.PABattlefieldDev.pet?.():db?.rewards?.equippedPet));
+ const hasPet=!!(!finisher&&pet&&!pet.classList.contains("hidden")&&db?.rewards?.equippedPet);
  const heroLead=hasPet?420:0,finisherContact=wiraFinishing?1420:(sidmaFinishing?1430:(bungaFinishing?1550:820));
  const sidmaAttacking=attackerId==="hero"&&db?.hero==="sidma"&&!finisher;
  const sidmaSkill=sidmaAttacking&&window.PASidmaBattle?.getNextNormalSkill?.(),sidmaSkill2=sidmaSkill===2;
@@ -183,7 +183,7 @@ function triggerPetFollowUp(target,delay){
  },delay);
 }
 function triggerPetImpactFx(target){
- const id=window.PABattlefieldDev?.active?.()?window.PABattlefieldDev.pet?.()?.id:db?.rewards?.equippedPet,item=typeof REWARD_PETS!=='undefined'&&REWARD_PETS[id];if(!item?.fx||!target)return;
+ const id=db?.rewards?.equippedPet,item=typeof REWARD_PETS!=='undefined'&&REWARD_PETS[id];if(!item?.fx||!target)return;
  const arena=document.getElementById('battleArena');if(!arena)return;let fx=document.getElementById('petImpactFx');if(!fx){fx=document.createElement('img');fx.id='petImpactFx';fx.className='petImpactFx';fx.alt='';fx.setAttribute('aria-hidden','true');arena.appendChild(fx);}
  const arenaBox=arena.getBoundingClientRect(),box=target.getBoundingClientRect();fx.src=item.fx;fx.style.left=(box.left-arenaBox.left+box.width/2)+'px';fx.style.top=(box.top-arenaBox.top+box.height/2)+'px';fx.dataset.pet=id;fx.classList.remove('active');void fx.offsetWidth;fx.classList.add('active');battleLater(()=>fx.classList.remove('active'),720);
 }
@@ -335,7 +335,6 @@ function resolveAnswer(o,btn,question,ok){
  if(sess.hp<=0){sess.hp=12;log("HP habis: tiada progress dipadam. Coach kekalkan mode pembelajaran.");}
  battle();
  if(enemyDefeated){
-  window.PABattlefieldDev?.victory?.();
   // Let the finisher reach contact before the defeated sprite cracks. The old
   // 260ms timer shattered the enemy underneath the 1.58s cinematic and then
   // replaced it before the player could appreciate the defeat animation.

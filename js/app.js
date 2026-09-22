@@ -133,7 +133,6 @@ function roleLabel(g){ if(!db) return 'Misi'; if(g<db.schoolGrade) return 'Misi 
 function qsv2LearnerTitle(meta,q){return window.PAD3Topic7LiveCutover?.isTargetQuestion?.(q)?window.PAD3Topic7LiveCutover.displayTitle(meta,q):questionLearningTitle(meta,q)}
 function nextQ(){
  if(sess.learningActive)return;
- window.PABattlefieldDev?.setFrame?.('sad');
  let id=chooseModeAndSkill(),m=META[id],s=scoreState(id),questionStage=enemyStageForQuestion(id),q=generate(id,s,{battleTier:questionStage.tier,isBoss:questionStage.tier==='boss'});q.skill=id;sess.q=q;sess.start=performance.now();sess.hint=false;sess.hintLevel=0;sess.retryState=null;
  sess.questionToken=(sess.questionToken||0)+1;q.token=sess.questionToken;if(q.qsv2Pilot)q.qsv2AttemptId=window.PAD3Topic7LiveCutover?.newAttemptId?.(q,q.token)||null;else if(q.qsv2Live)q.qsv2AttemptId=window.PAD3NonT7LiveIsolation?.newAttemptId?.(q,q.token)||null;
  window.PALearnerReview?.beginQuestion?.(q,{grade:db?.schoolGrade,mode:sess.mode,selectionReason:typeof coachReason==='function'?coachReason(id):'',demoMode:!!sess.demoMode,devMode:!!sess.devBankTest||!!(db&&typeof isDevMode==='function'&&isDevMode())});

@@ -65,7 +65,6 @@ function showPurchaseCelebration(type,item){
 }
 function closePurchaseCelebration(){document.getElementById('purchaseOverlay')?.classList.add('hidden');renderTreasure()}
 function renderBattlePet(){
- if(window.PABattlefieldDev?.active?.()){window.PABattlefieldDev.render();return;}
  const wrap=document.getElementById('battlePet'),idle=document.getElementById('battlePetIdle'),anticipation=document.getElementById('battlePetAnticipation'),attack=document.getElementById('battlePetAttack'),follow=document.getElementById('battlePetFollowThrough'); if(!wrap||!idle||!anticipation||!attack||!follow||!db)return;ensureRewards(); const id=db.rewards.equippedPet,item=REWARD_PETS[id];
  if(!item){wrap.classList.add('hidden');wrap.removeAttribute('data-pet');return;} wrap.dataset.pet=id;wrap.style.setProperty('--pet-art-scale',String(item.battleScale||1));idle.src=item.front;idle.alt=`${item.name} bersedia`;anticipation.src=item.anticipation;anticipation.alt=`${item.name} mengambil ancang-ancang`;attack.src=item.battle;attack.alt=`${item.name} menyerang`;follow.src=item.followThrough;follow.alt=`${item.name} selepas serangan`;wrap.classList.remove('hidden');
 }
