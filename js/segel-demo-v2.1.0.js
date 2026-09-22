@@ -93,7 +93,9 @@
   // Empat petak sprite sheet untuk pet dev. Tempoh yang sama memastikan
   // setiap muka sedih dibaca satu demi satu, bukan berhenti lama di bingkai
   // terakhir (PET_IDLE_HOLD Aurora mempunyai lapan nilai).
-  const PET_SHEET_HOLD=[.55,.55,.55,.55];
+  // Ikut rentak Aurora: satu pose sayu ditahan lama supaya murid sempat
+  // membaca ekspresi pet, bukan melihat ia berkelip seperti GIF laju.
+  const PET_SHEET_HOLD=[2.6,2.6,2.6,2.6];
 
   function devPetConfig(){
     return entryMode&&entryMode.devBattlefield&&entryMode.pet&&typeof entryMode.pet==='object'
@@ -353,10 +355,16 @@
     const petJoyE=petJoy.map(t=>entry(t,PET_UPP));
     const petRef=petSad[0]?.image;
     const petCharH=petRef?PET_UPP*petRef.height*measureHiRes(petRef).boxH:1;
-    const petEntries=frames=>frames.filter(Boolean).map(t=>{
-      const img=t.image, m=measureHiRes(img), upp=petCharH/(img.height*Math.max(.15,m.boxH));
-      return entry(t,upp);
-    });
+    function petUpp(frames){
+      const ref=frames.find(Boolean), img=ref&&ref.image;
+      if(!img)return PET_UPP;
+      const m=measureHiRes(img);
+      return petCharH/(img.height*Math.max(.15,m.boxH));
+    }
+    // Satu skala dikunci bagi SEMUA frame pet yang sama. Sebelum ini setiap
+    // frame dinormalisasi sendiri, lalu siluet nampak mengecut/membesar bila
+    // ekspresi berubah. Saiz rujukan kekal tinggi visual Aurora.
+    const petEntries=(frames,upp=petUpp(frames))=>frames.filter(Boolean).map(t=>entry(t,upp));
     async function sheetFrames(url){
       if(!url)return [];
       const sheet=await load(url), img=sheet&&sheet.image;
@@ -768,8 +776,11 @@
       // Tekan Swap Pet beberapa kali semasa texture masih dimuat tidak boleh
       // menyebabkan permintaan lama menimpa pilihan yang paling baharu.
       if(generation!==petVisualGeneration)return;
-      const sadE=sad.custom?petEntries(sad.frames):sad.frames.map(t=>entry(t,PET_UPP));
-      const joyE=joy.custom?petEntries(joy.frames):joy.frames.map(t=>entry(t,PET_UPP));
+      const customUpp=sad.custom?petUpp(sad.frames):PET_UPP;
+      const sadE=sad.custom?petEntries(sad.frames,customUpp):sad.frames.map(t=>entry(t,PET_UPP));
+      // Happy guna skala yang sama dengan sad; perubahan emosi tidak patut
+      // mengubah besar badan pet ketika segel pecah.
+      const joyE=joy.custom?petEntries(joy.frames,customUpp):joy.frames.map(t=>entry(t,PET_UPP));
       S.petFrames=S.rescued?joyE:sadE;
       S.petHold=S.rescued?null:(sad.custom?PET_SHEET_HOLD:PET_IDLE_HOLD);
       S.petFps=4; S.petFrameT0=tAcc;

@@ -1,4 +1,4 @@
-// App shell v3.84.7 — Battlefield Dev uses the Segel rescue arena.
+// App shell v3.84.8 — normalize and slow six-pet Segel animation.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
