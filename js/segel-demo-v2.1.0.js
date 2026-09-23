@@ -1444,9 +1444,9 @@
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||meta.grade||1;
     // helper yang sama dengan battle: buang awalan "Tahun N · " supaya tajuk
     // tidak mengulang baris kecil di bawahnya.
-    $('segelTitle').textContent=(typeof questionLearningTitle==='function')
-      ? questionLearningTitle(meta,q) : (meta.title||'Kemahiran');
-    $('segelSub').textContent=`Tahun ${grade} · ${meta.domain||'Matematik'}`;
+    $('segelTitle').textContent=q?.writtenArithmeticPreview?q.title:((typeof questionLearningTitle==='function')
+      ? questionLearningTitle(meta,q) : (meta.title||'Kemahiran'));
+    $('segelSub').textContent=q?.writtenArithmeticPreview?`Darjah ${grade} · Pratonton DEV`:`Tahun ${grade} · ${meta.domain||'Matematik'}`;
     /* MAX_Q ialah HAD, bukan sasaran: pusingan tamat sebaik semua segel pecah,
        iaitu 10 jawapan betul, jadi "10 / 12" di sini bercanggah dengan "10 / 10"
        pada skrin keputusan walaupun kedua-duanya betul. Yang ditunjuk sekarang
