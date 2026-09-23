@@ -1,4 +1,4 @@
-// App shell v3.84.13 — written arithmetic presentation for direct operations.
+// App shell v3.84.14 — 1-second cinematic skip tail.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[

@@ -25,7 +25,7 @@
 
   /* Ekor yang dikekalkan bila murid menekan Langkau: cukup untuk menangkap
      Wira larut menjadi zarah, tidak cukup untuk terasa menunggu. */
-  const SKIP_TAIL_S=2;
+  const SKIP_TAIL_S=1;
   const SKIP_SHOW_MS=600;       // jeda sebelum butang muncul, elak tersentuh
   const SKIP_GIVE_UP_MS=3500;   // kalau pencarian gagal, tamatkan juga
 

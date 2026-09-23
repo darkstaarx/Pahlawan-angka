@@ -1,6 +1,6 @@
 /* Pahlawan Angka — single source of truth for release version.
    Future releases should bump ONLY this value. */
-globalThis.PA_APP_VERSION='3.84.13';
+globalThis.PA_APP_VERSION='3.84.14';
 
 (function syncVersionUi(){
   if(typeof document==='undefined')return;
@@ -30,7 +30,7 @@ globalThis.PA_APP_VERSION='3.84.13';
 
 /* Demo v2 entry cinematic. v1.2.0 keeps the two-stage transition
    (video -> dark hold -> battle reveal) and adds a "Langkau" control that
-   seeks to the last two seconds of the portal video rather than cutting it,
+   seeks to the last second of the portal video rather than cutting it,
    so returning players still see Wira dissolve into particles. */
 (function loadSegelEntryCinematic(){
   if(typeof document==='undefined')return;
