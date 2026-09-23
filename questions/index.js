@@ -38,6 +38,7 @@ function generate(id,s,interactionContext={}){
     }
   }
   q=q || Q("2 + 2 = ?",4,[N(3,"generic"),N(5,"generic"),N(6,"generic")],"Tambah kedua-dua nombor.","Fallback",false,false);
+  q=window.PAWrittenArithmetic?.inject?.(q,id,sess)||q;
   q=window.PAGameQuestionInteractions?.prepare?.(q,{skillId:id,state:s,meta:typeof META!=='undefined'?META[id]:null,...interactionContext})||q;
   fp=questionFingerprint(q);
   sess.questionFingerprints.push(fp);

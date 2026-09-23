@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY6V2Runtime;if(!RT)return;
-const {GEN,Nq,choose,rand,q,mark,chooseMode,bandModes,stage}=RT;
+const {GEN,Nq,choose,rand,q,mark,chooseMode,bandModes,stage,recentFor}=RT;
 
 const numberPairs=[
  [1250000,'satu juta dua ratus lima puluh ribu'],
@@ -65,7 +65,16 @@ GEN['1.1.5']=function(id,s){
 };
 
 GEN['1.2.1']=function(id,s){
- const mode=chooseMode(id,'1.2.1',bandModes(s,['order','brackets'],['order','brackets','unknown','story'],['unknown','story','method','error','estimate']));
+ const history=recentFor(id),slot=history.length%5;
+ const mode=(slot===0||slot===3)?(slot===0?'written_add':'written_div'):chooseMode(id,'1.2.1',bandModes(s,['order','brackets'],['order','brackets','unknown','story'],['unknown','story','method','error','estimate']));
+ if(mode==='written_add'){
+  const a=rand(12000,65000),b=rand(1000,Math.min(24000,a-1)),ans=a+b,out=mark(q(a+' + '+b+' = ?',ans,[Nq(a-b,'operation'),Nq(ans+1000,'place'),Nq(ans-1000,'place')],'Selarikan nilai tempat sebelum menambah.','Tahun 6 · Bentuk Lazim Tambah'),id,'1.2.1','written_add','symbolic','procedure',s,['operation']);
+  out.writtenArithmeticMode='required';return out;
+ }
+ if(mode==='written_div'){
+  const divisor=choose([12,15,20,25]),quotient=rand(12,40),dividend=divisor*quotient,out=mark(q(dividend+' ÷ '+divisor+' = ?',quotient,[Nq(divisor,'division'),Nq(quotient+5,'division'),Nq(Math.max(1,quotient-5),'division')],'Gunakan bahagi panjang dan semak dengan darab.','Tahun 6 · Bentuk Lazim Bahagi'),id,'1.2.1','written_div','symbolic','procedure',s,['division']);
+  out.writtenArithmeticMode='required';return out;
+ }
  if(mode==='order'){const a=rand(40,90),b=rand(10,25),c=rand(2,9),ans=a+b*c;return mark(q(a+' + '+b+' × '+c+' = ?',ans,[Nq((a+b)*c,'operation'),Nq(a+b+c,'operation'),Nq(a*c+b,'operation')],'Darab dahulu.','Tahun 6 · Tertib Operasi'),id,'1.2.1',mode,'symbolic',stage(s)===1?'procedure':'application',s,['operation']);}
  if(mode==='brackets'){const a=rand(20,60),b=rand(5,15),c=rand(2,8),ans=(a+b)*c;return mark(q('('+a+' + '+b+') × '+c+' = ?',ans,[Nq(a+b*c,'operation'),Nq(a+b+c,'operation'),Nq(a+b+c+10,'operation')],'Selesaikan kurungan dahulu.','Tahun 6 · Operasi dengan Kurungan'),id,'1.2.1',mode,'symbolic',stage(s)===1?'procedure':'application',s,['operation','brackets']);}
  if(mode==='unknown'){const x=choose([12,18,24]),b=choose([3,4,5]),c=choose([20,35]),total=x*b+c;return mark(q('□ × '+b+' + '+c+' = '+total+'. Nilai □?',x,[Nq(total-c,'operation'),Nq(Math.round(total/b),'operation'),Nq(x+5,'operation')],'Tolak '+c+', kemudian bahagi '+b+'.','Tahun 6 · Nilai Tidak Diketahui'),id,'1.2.1',mode,'symbolic',stage(s)===3?'reasoning':'application',s,['operation','inverse']);}

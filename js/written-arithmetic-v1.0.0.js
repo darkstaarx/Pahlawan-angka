@@ -5,6 +5,7 @@
   'use strict';
 
   const sessionPlans=new WeakMap();
+  const operationPlans=new WeakMap();
   const CYCLE_LENGTH=5;
   const DISPLAY_SLOTS=new Set([0,3]);
 
@@ -61,6 +62,79 @@
     return decision;
   }
 
+  function operationFor(skillId){
+    const id=String(skillId||'');
+    if(/^D2\.2\.[1-4]$/.test(id))return ['add','sub','mul','div'][Number(id.at(-1))-1];
+    if(/^D3\.(?:ADD10000|SUB10000|MUL|DIV)$/.test(id))return id.includes('ADD')?'add':id.includes('SUB')?'sub':id.includes('MUL')?'mul':'div';
+    if(/^D4\.(?:ADD|SUB|MUL|DIV)$/.test(id))return id.slice(3).toLowerCase();
+    if(/^D5\.(?:ADD|SUB|MUL|DIV)$/.test(id))return id.slice(3).toLowerCase();
+    return null;
+  }
+
+  function maximumFor(skillId){
+    const id=String(skillId||'');
+    if(id.includes('20'))return 20;
+    if(id.startsWith('D1.'))return 100;
+    if(id.startsWith('D2.'))return 1000;
+    if(id.startsWith('D3.'))return 10000;
+    if(id.startsWith('D4.'))return 100000;
+    return 1000000;
+  }
+
+  function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+
+  function operationSlotFor(skillId,session){
+    if(!operationFor(skillId))return false;
+    if(!session||typeof session!=='object')return true;
+    let plan=operationPlans.get(session);
+    if(!plan){plan={counts:Object.create(null)};operationPlans.set(session,plan)}
+    const index=plan.counts[skillId]||0;
+    plan.counts[skillId]=index+1;
+    return DISPLAY_SLOTS.has(index%CYCLE_LENGTH);
+  }
+
+  function operationQuestion(skillId,baseQuestion){
+    const op=operationFor(skillId),maximum=maximumFor(skillId);
+    if(!op||typeof root.Q!=='function'||typeof root.N!=='function')return null;
+    let left,right,answer,symbol;
+    if(op==='add'){
+      left=randomInt(Math.max(1,Math.floor(maximum*.12)),Math.floor(maximum*.6));
+      right=randomInt(1,Math.max(1,maximum-left));answer=left+right;symbol='+';
+    }else if(op==='sub'){
+      left=randomInt(Math.max(2,Math.floor(maximum*.35)),maximum);
+      right=randomInt(1,left-1);answer=left-right;symbol='−';
+    }else if(op==='mul'){
+      if(String(skillId).startsWith('D2.')){left=randomInt(2,9);right=randomInt(2,9)}
+      else if(String(skillId).startsWith('D3.')){left=randomInt(2,12);right=randomInt(2,12)}
+      else if(String(skillId).startsWith('D4.')){left=randomInt(12,99);right=randomInt(3,9)}
+      else{left=randomInt(20,99);right=randomInt(11,25)}
+      answer=left*right;symbol='×';
+    }else{
+      if(String(skillId).startsWith('D2.')){right=randomInt(2,9);answer=randomInt(2,9)}
+      else if(String(skillId).startsWith('D3.')){right=randomInt(2,12);answer=randomInt(2,12)}
+      else if(String(skillId).startsWith('D4.')){right=[3,4,5,6,8,9][randomInt(0,5)];answer=randomInt(12,60)}
+      else{right=[12,15,20,25][randomInt(0,3)];answer=randomInt(12,40)}
+      left=right*answer;symbol='÷';
+    }
+    const delta=Math.max(1,op==='mul'||op==='div'?right:Math.pow(10,Math.max(0,String(Math.floor(answer)).length-2)));
+    const question=root.Q(`${left} ${symbol} ${right} = ?`,answer,[
+      root.N(op==='add'?Math.max(0,left-right):op==='sub'?left+right:op==='mul'?left+right:right,'operation'),
+      root.N(answer+delta,op==='div'?'division':'place'),root.N(Math.max(0,answer-delta),op==='mul'?'fact':'place')
+    ],'Gunakan bentuk lazim dan semak nilai tempat.','Bentuk lazim · operasi',true,true);
+    return Object.assign({},baseQuestion,question,{
+      competencyId:baseQuestion?.competencyId||skillId,standardRef:baseQuestion?.standardRef||skillId,
+      archetypeId:`${baseQuestion?.archetypeId||skillId}_written`,representation:'symbolic',demand:'procedure',contextId:'written-arithmetic',
+      writtenArithmeticMode:'required',writtenArithmeticSkill:skillId
+    });
+  }
+
+  function inject(question,skillId,session){
+    if(!operationFor(skillId)||!question)return question;
+    if(question.qsv2Live||question.subcompetencyId||(question.competencyId&&question.competencyId!==skillId))return question;
+    if(!operationSlotFor(skillId,session))return Object.assign({},question,{writtenArithmeticMode:'operation-flow'});
+    return operationQuestion(skillId,question)||question;
+  }
+
   function metrics(terms){
     const split=value=>String(value).split('.');
     const values=terms.map(split);
@@ -115,6 +189,12 @@
   }
 
   function render(question,session){
+    if(question?.writtenArithmeticMode==='operation-flow')return null;
+    if(question?.writtenArithmeticMode==='required'){
+      const arithmetic=directArithmetic(question.prompt);
+      if(!arithmetic)return null;
+      return arithmetic.operator==='÷'?divisionMarkup(arithmetic):stackedMarkup(arithmetic);
+    }
     const decision=planFor(question,session);
     if(!decision||!decision.show)return null;
     return decision.arithmetic.operator==='÷'
@@ -122,7 +202,7 @@
       : stackedMarkup(decision.arithmetic);
   }
 
-  const api={CYCLE_LENGTH,DISPLAY_SLOTS,directArithmetic,planFor,render};
+  const api={CYCLE_LENGTH,DISPLAY_SLOTS,directArithmetic,planFor,operationFor,operationSlotFor,operationQuestion,inject,render};
   root.PAWrittenArithmetic=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
