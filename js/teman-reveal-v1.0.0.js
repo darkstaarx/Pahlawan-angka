@@ -20,7 +20,8 @@
       <div class="temanRevealStage" aria-live="polite">
         <div class="temanRevealSeal" aria-hidden="true"><i>+</i><i>−</i><i>×</i><i>÷</i><b>?</b></div>
         <img class="temanRevealArt temanRevealSilhouette" alt="Siluet Teman baharu">
-        <img class="temanRevealArt temanRevealHappy" alt="">
+        <div class="temanRevealStars" aria-hidden="true"><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""></div>
+        <div class="temanRevealHappySprite" role="img" hidden></div><img class="temanRevealArt temanRevealHappy" alt="">
         <span class="temanRevealBurst" aria-hidden="true"></span>
       </div>
       <div class="temanRevealCopy"><p class="temanRevealFound">TEMAN BAHARU DITEMUI!</p><h3 class="temanRevealName"></h3><p class="temanRevealRarity"></p></div>
@@ -52,7 +53,9 @@
     root.querySelector('.temanRevealName').innerHTML=name;
     root.querySelector('.temanRevealRarity').textContent=`Kejarangan · ${rarity}`;
     root.querySelector('.temanRevealSilhouette').src=art;
-    const happy=root.querySelector('.temanRevealHappy');happy.src=art;happy.alt=item.name||'Teman baharu';
+    const happy=root.querySelector('.temanRevealHappy'),sprite=root.querySelector('.temanRevealHappySprite'),label=item.name||'Teman baharu';
+    if(item.assets.happySprite){sprite.style.backgroundImage=`url("${item.assets.happySprite}")`;sprite.setAttribute('aria-label',label);sprite.hidden=false;happy.hidden=true;}
+    else{happy.src=art;happy.alt=label;happy.hidden=false;sprite.hidden=true;sprite.style.backgroundImage='';}
     const gridArt=root.querySelector('.temanRevealNewSlot img');gridArt.src=art;gridArt.alt=item.name||'Kad Teman baharu';
     void root.offsetWidth;root.classList.add('isOpen');
     later(()=>root.classList.add('isRevealed'),680);

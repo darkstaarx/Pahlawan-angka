@@ -71,7 +71,7 @@
   ensure(data);if(!data)return {pets:[],expedition:null};
   return {pets:Object.entries(catalog).map(([id,meta])=>{
    const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:meta.name};
-   const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`}:{happy:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp'};
+   const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp',happySprite:null};
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=playerLevel(data)>=meta.levelGate;
    return {...item,...data.petCollection[id],id,name:item?.name||meta.name,assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};

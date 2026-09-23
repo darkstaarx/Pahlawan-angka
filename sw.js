@@ -1,8 +1,8 @@
-// App shell v3.84.15 — Teman discovery reveal and pupil-facing terminology.
+// App shell v3.84.16 — Teman happy sprite and crest-star reveal.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
-  './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js','./css/teman-reveal-v1.0.0.css','./js/teman-reveal-v1.0.0.js',
+  './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js','./css/teman-reveal-v1.0.0.css','./css/teman-reveal-stars-v1.0.0.css','./js/teman-reveal-v1.0.0.js',
   './assets/pets/aurora/standby-v2.webp','./assets/pets/aurora/frames/sad-0-v1.webp','./assets/pets/aurora/frames/sad-1-v1.webp','./assets/pets/aurora/frames/sad-2-v1.webp','./assets/pets/aurora/frames/sad-3-v1.webp','./assets/pets/aurora/frames/sad-4-v1.webp','./assets/pets/aurora/frames/sad-5-v1.webp','./assets/pets/aurora/frames/sad-6-v1.webp','./assets/pets/aurora/frames/sad-7-v1.webp','./assets/pets/aurora/frames/joy-0-v1.webp','./assets/pets/aurora/frames/joy-1-v1.webp',
   './assets/pets/collection/ketupat-kura/idle.png','./assets/pets/collection/ketupat-kura/sad.png','./assets/pets/collection/ketupat-kura/happy.png',
   './assets/pets/collection/kumbang-manggis/idle.png','./assets/pets/collection/kumbang-manggis/sad.png','./assets/pets/collection/kumbang-manggis/happy.png',
