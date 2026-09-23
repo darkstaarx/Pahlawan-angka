@@ -1802,10 +1802,24 @@
   window.openWrittenArithmeticPreview=function(operation){
     if(typeof db==='undefined'||!db||typeof isDevMode==='function'&&!isDevMode())return;
     const grade=Number(document.getElementById('devGrade')?.value||db.schoolGrade||1);
+    if(grade===1&&['mul','div'].includes(operation)){
+      showRewardToast?.('Darjah 1: pratonton bentuk lazim hanya untuk tambah dan tolak.');
+      return;
+    }
     const preview=window.PAWrittenArithmetic?.previewQuestion?.(grade,operation);
     if(!preview)return;
     closeDevPanel?.();
     window.openSegelDemo({writtenArithmeticPreview:preview});
+  };
+
+  window.syncWrittenArithmeticPreviewButtons=function(){
+    const grade=Number(document.getElementById('devGrade')?.value||db?.schoolGrade||1);
+    document.querySelectorAll('[data-written-preview]').forEach(button=>{
+      const unavailable=grade===1&&['mul','div'].includes(button.dataset.writtenPreview);
+      button.disabled=unavailable;
+      button.title=unavailable?'Darab dan bahagi bermula pada Darjah 2.':'';
+      button.setAttribute('aria-disabled',unavailable?'true':'false');
+    });
   };
 
   window.PASegelHost={

@@ -215,7 +215,7 @@ function renderDevPanel(){
   const panel=document.getElementById('devPanel'); if(!panel||!db)return;
   panel.classList.toggle('hidden',!isDevMode());
   const g=document.getElementById('devGrade'); if(g)g.value=String(db.schoolGrade||2);
-  populateDevSkills();
+  populateDevSkills();syncWrittenArithmeticPreviewButtons?.();
   renderDevOneHit();
 }
 function renderDevOneHit(){
@@ -229,7 +229,7 @@ function populateDevSkills(){
   sel.innerHTML=items.map(x=>`<option value="${x.id}">${x.id} · ${x.title}</option>`).join('');
 }
 function devChangeGrade(v){
-  if(!db)return; db.schoolGrade=+v; db.coreFrontier=1; initAll(); save(); populateDevSkills(); renderHub();
+  if(!db)return; db.schoolGrade=+v; db.coreFrontier=1; initAll(); save(); populateDevSkills(); syncWrittenArithmeticPreviewButtons?.(); renderHub();
 }
 function startDevSkill(id=null){
   ensureProgression(); const sel=document.getElementById('devSkill'); id=id||sel?.value; if(!id||!META[id])return;

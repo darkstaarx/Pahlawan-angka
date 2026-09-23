@@ -16,6 +16,7 @@ assert.deepEqual(written.directArithmetic('<b>7 × 10</b> = ?'),{left:'7',operat
 assert.deepEqual(written.directArithmetic('<b>80 ÷ 10</b> = ?'),{left:'80',operator:'÷',right:'10'});
 assert.deepEqual(written.directArithmetic('356 + 143 + 21 = ?'),{left:'356',operator:'+',right:'143',terms:['356','143','21']});
 assert.equal(written.directArithmetic('15.6 ÷ 3 = ?'),null,'decimal long division stays in its existing representation');
+assert.equal(written.directArithmetic('47 ÷ 26 = ?'),null,'non-exact division is not misrepresented as a whole-number long division');
 assert.equal(written.directArithmetic('120 ÷ 3 ÷ 2 = ?'),null,'chained division is not a long-division question');
 assert.equal(written.directArithmetic('120 ÷ 3 ÷ 0.5 = ?'),null,'chained decimal division is not a long-division question');
 assert.equal(written.directArithmetic('Ali ada 12 guli.'),null,'word problems are untouched');
@@ -37,6 +38,7 @@ const byGrade=[
   ['Darjah 4','78 × 6 = ?'],['Darjah 5','1,200 ÷ 15 = ?'],['Darjah 6','3.45 + 0.55 = ?']
 ];
 byGrade.forEach(([grade,prompt])=>assert.match(written.render({prompt},null),/paWrittenArithmetic/,`${grade} direct operation renders in written form`));
+assert.equal(written.previewQuestion(1,'div'),null,'Darjah 1 preview does not expose division before its curriculum level');
 const operationSession={};
 const operationSlots=[];
 for(let index=0;index<5;index+=1)operationSlots.push(written.inject({prompt:'soalan asal'},'D6.OPS',operationSession).writtenArithmeticMode);

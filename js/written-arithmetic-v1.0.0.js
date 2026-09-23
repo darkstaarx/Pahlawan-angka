@@ -41,7 +41,13 @@
     // A long-division bracket with a decimal divisor is not an appropriate
     // written form for this first pass. Other decimal operations still align
     // their decimal places correctly in the column layout.
-    if(operator==='÷'&&(terms.length!==2||terms.some(term=>term.includes('.'))))return null;
+    if(operator==='÷'){
+      if(terms.length!==2||terms.some(term=>term.includes('.')))return null;
+      /* Bentuk bahagi panjang dalam tahap sekolah rendah ini hanya dipaparkan
+         untuk bahagi tepat. Soalan baki/perpuluhan kekal dalam format asalnya,
+         bukannya memberi gambaran salah bahawa jawapan mesti nombor bulat. */
+      if(Number(left)%Number(right)!==0)return null;
+    }
     const arithmetic={left,operator,right};
     if(terms.length===3)arithmetic.terms=terms;
     return arithmetic;
@@ -133,6 +139,7 @@
      paparan; ia tidak dihantar kepada enjin bukti pembelajaran. */
   function previewQuestion(grade,operation){
     const g=Math.min(6,Math.max(1,Number(grade)||1));
+    if(g===1&&['mul','div'].includes(operation))return null;
     const examples={
       1:{add:[47,26],sub:[83,41]},
       2:{add:[368,247],sub:[704,286],mul:[7,8],div:[72,8]},
