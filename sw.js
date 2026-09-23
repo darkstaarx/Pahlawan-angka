@@ -1,4 +1,4 @@
-// App shell v3.84.16 — Teman happy sprite and crest-star reveal.
+// App shell v3.84.17 — all-grade written arithmetic coverage.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[

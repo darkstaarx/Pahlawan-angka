@@ -14,6 +14,11 @@
     })[char]);
   }
 
+  function normaliseOperand(value){
+    const compact=String(value).replace(/,/g,'');
+    return /^\d+(?:\.\d+)?$/.test(compact)?compact:null;
+  }
+
   function directArithmetic(prompt){
     if(typeof prompt!=='string')return null;
     // QSv2 may add an instructional SVG before its text prompt. The final
@@ -23,17 +28,22 @@
     let sentence=wrapped?wrapped[1]:prompt.trim();
     // A few legacy direct-operation banks bold only the equation. Accept that
     // exact, closed form, but do not strip markup from a broader question.
-    const boldEquation=sentence.match(/^<b>\s*(\d+(?:\.\d+)?\s*[+−×÷]\s*\d+(?:\.\d+)?)\s*<\/b>\s*=\s*\?\s*$/i);
+    const boldEquation=sentence.match(/^<b>\s*(.+?)\s*<\/b>\s*=\s*\?\s*$/i);
     if(boldEquation)sentence=`${boldEquation[1]} = ?`;
     if(/<\/?[a-z][^>]*>/i.test(sentence))return null;
-    const match=sentence.match(/^(\d+(?:\.\d+)?)\s*([+−×÷])\s*(\d+(?:\.\d+)?)\s*=\s*\?\s*$/);
+    const match=sentence.match(/^([\d,]+(?:\.\d+)?)\s*([+−×÷])\s*([\d,]+(?:\.\d+)?)(?:\s*\2\s*([\d,]+(?:\.\d+)?))?\s*=\s*\?\s*$/);
     if(!match)return null;
-    const [,left,operator,right]=match;
+    const [,rawLeft,operator,rawRight,rawThird]=match;
+    const terms=[rawLeft,rawRight,rawThird].filter(Boolean).map(normaliseOperand);
+    if(terms.some(term=>term===null))return null;
+    const [left,right]=terms;
     // A long-division bracket with a decimal divisor is not an appropriate
     // written form for this first pass. Other decimal operations still align
     // their decimal places correctly in the column layout.
-    if(operator==='÷'&&(left.includes('.')||right.includes('.')))return null;
-    return {left,operator,right};
+    if(operator==='÷'&&(terms.length!==2||terms.some(term=>term.includes('.'))))return null;
+    const arithmetic={left,operator,right};
+    if(terms.length===3)arithmetic.terms=terms;
+    return arithmetic;
   }
 
   function planFor(question,session){
@@ -51,13 +61,12 @@
     return decision;
   }
 
-  function metrics(left,right){
+  function metrics(terms){
     const split=value=>String(value).split('.');
-    const [leftWhole,leftDecimal='']=split(left);
-    const [rightWhole,rightDecimal='']=split(right);
+    const values=terms.map(split);
     return {
-      whole:Math.max(leftWhole.length,rightWhole.length),
-      decimal:Math.max(leftDecimal.length,rightDecimal.length)
+      whole:Math.max(...values.map(([whole])=>whole.length)),
+      decimal:Math.max(...values.map(([,decimal=''])=>decimal.length))
     };
   }
 
@@ -79,16 +88,15 @@
   }
 
   function stackedMarkup(arithmetic){
-    const layout=metrics(arithmetic.left,arithmetic.right);
+    const terms=arithmetic.terms||[arithmetic.left,arithmetic.right];
+    const layout=metrics(terms);
     const cellCount=layout.whole+layout.decimal+(layout.decimal?1:0);
     const label={'+':'Tambah','−':'Tolak','×':'Darab'}[arithmetic.operator]||'Pengiraan';
-    return `<section class="paWrittenArithmetic paWrittenArithmetic--stack" aria-label="${label}: ${escapeHtml(arithmetic.left)} ${escapeHtml(arithmetic.operator)} ${escapeHtml(arithmetic.right)}">
+    const expression=terms.join(` ${arithmetic.operator} `);
+    return `<section class="paWrittenArithmetic paWrittenArithmetic--stack" aria-label="${label}: ${escapeHtml(expression)}">
       <div class="paWaKicker">Bentuk lazim · pilih jawapan yang betul</div>
       <div class="paWaStack" style="--pa-wa-cells:${cellCount}">
-        <span class="paWaOperator" aria-hidden="true"></span>
-        <span class="paWaNumber">${cells(arithmetic.left,layout)}</span>
-        <span class="paWaOperator" aria-hidden="true">${escapeHtml(arithmetic.operator)}</span>
-        <span class="paWaNumber">${cells(arithmetic.right,layout)}</span>
+        ${terms.map((term,index)=>`<span class="paWaOperator" aria-hidden="true">${index ? escapeHtml(arithmetic.operator) : ''}</span><span class="paWaNumber">${cells(term,layout)}</span>`).join('')}
         <span class="paWaRule" aria-hidden="true"></span>
         <span class="paWaAnswer">${answerCells(layout)}</span>
       </div>
