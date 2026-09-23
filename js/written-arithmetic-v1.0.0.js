@@ -128,6 +128,46 @@
     });
   }
 
+  /* Pratonton DEV mesti boleh membuka satu bentuk lazim terus, tanpa bergantung
+     pada giliran adaptive atau kemajuan murid. Contoh ini hanya untuk memeriksa
+     paparan; ia tidak dihantar kepada enjin bukti pembelajaran. */
+  function previewQuestion(grade,operation){
+    const g=Math.min(6,Math.max(1,Number(grade)||1));
+    const examples={
+      1:{add:[47,26],sub:[83,41]},
+      2:{add:[368,247],sub:[704,286],mul:[7,8],div:[72,8]},
+      3:{add:[4729,1568],sub:[8304,2679],mul:[36,7],div:[864,9]},
+      4:{add:[47829,23017],sub:[80426,37158],mul:[48,6],div:[432,8]},
+      5:{add:[247829,130176],sub:[604321,278954],mul:[36,24],div:[720,15]},
+      6:{add:[247829,130176],sub:[604321,278954],mul:[48,25],div:[960,24]}
+    };
+    const op=['add','sub','mul','div'].includes(operation)?operation:'add';
+    const values=examples[g][op]||examples[g].add;
+    const symbols={add:'+',sub:'−',mul:'×',div:'÷'};
+    const answer=op==='add'?values[0]+values[1]:op==='sub'?values[0]-values[1]:op==='mul'?values[0]*values[1]:values[0]/values[1];
+    const skillByOperation={
+      1:{add:'D1.ADD100',sub:'D1.SUB100'},
+      2:{add:'D2.2.1',sub:'D2.2.2',mul:'D2.2.3',div:'D2.2.4'},
+      3:{add:'D3.ADD10000',sub:'D3.SUB10000',mul:'D3.MUL',div:'D3.DIV'},
+      4:{add:'D4.ADD',sub:'D4.SUB',mul:'D4.MUL',div:'D4.DIV'},
+      5:{add:'D5.ADD',sub:'D5.SUB',mul:'D5.MUL',div:'D5.DIV'},
+      6:{add:'D6.OPS',sub:'D6.OPS',mul:'D6.OPS',div:'D6.OPS'}
+    };
+    const delta=Math.max(1,Math.pow(10,Math.max(0,String(answer).length-2)));
+    return {
+      prompt:`${values[0]} ${symbols[op]} ${values[1]} = ?`,answer,
+      wrong:[
+        {v:answer+delta,label:answer+delta,tag:'place'},
+        {v:Math.max(0,answer-delta),label:Math.max(0,answer-delta),tag:'place'},
+        {v:op==='add'?Math.abs(values[0]-values[1]):op==='sub'?values[0]+values[1]:values[1],label:op==='add'?Math.abs(values[0]-values[1]):op==='sub'?values[0]+values[1]:values[1],tag:'operation'}
+      ],
+      hint:'Ini pratonton paparan sahaja. Semak penjajaran nilai tempat.',
+      title:`Pratonton Bentuk Lazim ${({add:'Tambah',sub:'Tolak',mul:'Darab',div:'Bahagi'})[op]}`,
+      skill:skillByOperation[g][op]||skillByOperation[g].add,
+      writtenArithmeticMode:'required',writtenArithmeticPreview:true
+    };
+  }
+
   function inject(question,skillId,session){
     if(!operationFor(skillId)||!question)return question;
     if(question.qsv2Live||question.subcompetencyId||(question.competencyId&&question.competencyId!==skillId))return question;
@@ -202,7 +242,7 @@
       : stackedMarkup(decision.arithmetic);
   }
 
-  const api={CYCLE_LENGTH,DISPLAY_SLOTS,directArithmetic,planFor,operationFor,operationSlotFor,operationQuestion,inject,render};
+  const api={CYCLE_LENGTH,DISPLAY_SLOTS,directArithmetic,planFor,operationFor,operationSlotFor,operationQuestion,previewQuestion,inject,render};
   root.PAWrittenArithmetic=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

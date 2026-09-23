@@ -89,6 +89,14 @@ const boss=RT.GEN['2.2.2']('D1.ADD100',{mastery:80,evidence:8,confidence:70},fal
 PAGameQuestionInteractions.prepare(boss,{skillId:'D1.ADD100',meta:{grade:1},battleTier:'boss',isBoss:true});
 assert.equal(boss.interaction.type,'rune_entry','boss D1 numeric battle must use constructed response');
 
+for(const [node,skill] of [['2.2.1','D1.ADD20'],['2.2.2','D1.ADD100'],['2.3.1','D1.SUB20'],['2.3.2','D1.SUB100']]){
+  for(let slot=0;slot<5;slot++){
+    global.sess={questionHistory:[{skillId:'D1.N20',archetypeId:'y1v2_1_1_1_prior'},...Array.from({length:slot},()=>({skillId:skill,archetypeId:`y1v2_${node.replaceAll('.','_')}_prior`}))]};
+    const q=RT.GEN[node](skill,{mastery:80,evidence:8,confidence:70},false);
+    assert.equal(q.writtenArithmeticMode==='required',[0,3].includes(slot),`${node} slot ${slot} written-form schedule drift`);
+  }
+}
+
 console.log(`PASS Year1 curriculum v2 standards=${C.uniqueStandardCount}, generators=${Object.keys(RT.GEN).length}, samples=${samples}, localContexts=${local}`);
 console.log('PASS routes='+C.activeSkills.length+', reasoningUnits='+Object.keys(reasoningByUnit).length+', stickers='+stickers);
 console.log('PASS mob numeric=quick-choice; boss numeric=constructed response');

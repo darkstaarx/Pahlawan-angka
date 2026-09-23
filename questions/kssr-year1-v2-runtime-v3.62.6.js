@@ -30,6 +30,10 @@ function chooseNode(id){
  return (pool.length?pool:route).sort((a,b)=>counts[a]-counts[b]||Math.random()-.5)[0];
 }
 function chooseMode(id,node,modes){
+ const writtenModes={'2.2.1':'fact_direct','2.2.2':'add_two','2.3.1':'fact_direct','2.3.2':'sub_two'};
+ const sessionHistory=sessRef()?.questionHistory||[];
+ const history=recentFor(id).filter(item=>String(item.subcompetencyId||'')===node||String(item.archetypeId||'').startsWith('y1v2_'+node.replaceAll('.','_')+'_'));
+ if(writtenModes[node]&&sessionHistory.length&&[0,3].includes(history.length%5))return writtenModes[node];
  const prefix='y1v2_'+node.replaceAll('.','_')+'_',full=modes.map(m=>prefix+m);
  const recent=recentFor(id).map(x=>String(x.archetypeId||'')),last=recent.at(-1),counts=Object.fromEntries(full.map(m=>[m,recent.filter(x=>x===m).length]));
  const pool=full.filter(m=>m!==last),chosen=(pool.length?pool:full).sort((a,b)=>counts[a]-counts[b]||Math.random()-.5)[0];
@@ -41,6 +45,7 @@ function mark(out,id,node,mode,rep,demand,s,targets=[]){
  out.source='kssr-year1-curriculum-v2-v3.62.6';out.standardRef=node;out.competencyId=node;out.subcompetencyId=node;out.curriculumNode=node;
  out.curriculumUnit=meta?.unit;out.curriculumUnitTitle=meta?.unitTitle;out.competencyTitle=meta?.title;
  out.archetypeId='y1v2_'+node.replaceAll('.','_')+'_'+mode;out.representation=rep;out.demand=demand;
+ if(['fact_direct','add_two','sub_two'].includes(mode)&&['2.2.1','2.2.2','2.3.1','2.3.2'].includes(node))out.writtenArithmeticMode='required';
  out.difficultyBand=stage(s)===3?4:stage(s)===2?3:1;out.misconceptionTargets=targets;out.kssrYear1V2Version=VERSION;
  return out;
 }

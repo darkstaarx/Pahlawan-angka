@@ -1408,6 +1408,10 @@
      kecenderungan ini tidak menjejaskan bukti pembelajaran murid. */
   const GOLD_TRIES=5;
   function drawQuestion(){
+    if(run&&run.writtenArithmeticPreview){
+      run.q=run.writtenArithmeticPreview;
+      return paintQuestion(run.q,run.q.skill);
+    }
     if(run&&run.production){
       const q=window.PAProductionJourney?.nextQuestion?.(run.productionRun);
       if(!q){finishRun(false,'Soalan Gembok tidak dapat dimuat.');return;}
@@ -1636,6 +1640,7 @@
      ================================================================= */
   function startRun(){
     run={generation:++runGeneration,pool:skillPool(),asked:0,locked:false,q:null,usedHint:false,
+         writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
             ensureCoachSession()/chooseCoachFrontierSkill() berjalan. `demoMode`
@@ -1792,6 +1797,15 @@
     stage.resume();
     $('segelDevControls')?.classList.toggle('hidden',!entryMode?.devBattlefield);
     startRun();
+  };
+
+  window.openWrittenArithmeticPreview=function(operation){
+    if(typeof db==='undefined'||!db||typeof isDevMode==='function'&&!isDevMode())return;
+    const grade=Number(document.getElementById('devGrade')?.value||db.schoolGrade||1);
+    const preview=window.PAWrittenArithmetic?.previewQuestion?.(grade,operation);
+    if(!preview)return;
+    closeDevPanel?.();
+    window.openSegelDemo({writtenArithmeticPreview:preview});
   };
 
   window.PASegelHost={
