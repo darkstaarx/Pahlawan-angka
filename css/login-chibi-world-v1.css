@@ -1,0 +1,79 @@
+/* Login v3.84.22 — Dunia Matematik chibi-RPG. */
+body[data-screen="login"] .app{
+  min-height:100dvh;
+  background:
+    linear-gradient(180deg,rgba(5,21,48,.12) 0%,rgba(5,19,42,.06) 46%,rgba(3,13,31,.78) 100%),
+    url('../assets/branding/login-chibi-math-world-v1.webp') center top/cover fixed;
+}
+body[data-screen="login"] .appHeader{display:none}
+body[data-screen="login"] #login{
+  min-height:100dvh;
+  display:flex;
+  padding:max(18px,env(safe-area-inset-top)) 14px max(22px,env(safe-area-inset-bottom));
+}
+body[data-screen="login"] .loginShell{
+  width:min(100%,430px);
+  min-height:calc(100dvh - max(18px,env(safe-area-inset-top)) - max(22px,env(safe-area-inset-bottom)));
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+.loginWorldBrand{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  margin:2px auto 24px;
+  color:#fff9df;
+  text-align:center;
+  text-shadow:0 3px 0 #081a3c,0 6px 18px #020916d9;
+}
+.loginWorldBrand img{
+  width:clamp(66px,18vw,84px);
+  height:clamp(66px,18vw,84px);
+  object-fit:contain;
+  filter:drop-shadow(0 5px 9px #020916b3);
+}
+.loginWorldBrand b{
+  font-size:clamp(24px,6.8vw,31px);
+  line-height:1;
+  letter-spacing:-.045em;
+  font-weight:1000;
+}
+.loginWorldBrand small{
+  color:#d8f6ff;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+body[data-screen="login"] .cloudLoginCard{
+  width:100%;
+  margin-top:auto;
+  padding:17px!important;
+  border:1px solid #e3bc4f;
+  border-radius:22px;
+  background:linear-gradient(155deg,rgba(16,47,89,.96),rgba(5,19,43,.97));
+  box-shadow:0 14px 40px #020915b8,0 0 0 3px #122c5559 inset;
+}
+body[data-screen="login"] .cloudLoginHead{gap:10px}
+body[data-screen="login"] .cloudLoginHead .loginCrest{width:43px!important;height:43px!important;flex-basis:43px!important}
+body[data-screen="login"] .cloudLoginHead b{font-size:17px}
+body[data-screen="login"] .cloudLoginHead small{color:#c3d9ef}
+body[data-screen="login"] .googleAuthButton{
+  border:1px solid #e7bc4d;
+  background:linear-gradient(135deg,#2b7bed,#164aa8);
+  box-shadow:0 4px 0 #071f57,0 8px 18px #0007;
+}
+body[data-screen="login"] .googleAuthPublic>p{color:#c3d9ef}
+body[data-screen="login"] .adminAuth{border-color:#47658c}
+body[data-screen="login"] .adminAuth summary{color:#b8cae4}
+@media(min-width:601px){
+  body[data-screen="login"] #login{padding:28px}
+  .loginWorldBrand{margin-top:4px;margin-bottom:36px}
+  body[data-screen="login"] .cloudLoginCard{padding:20px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  body[data-screen="login"] .app{background-attachment:scroll}
+}
