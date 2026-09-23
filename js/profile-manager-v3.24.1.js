@@ -5,7 +5,7 @@
 'use strict';
 const VERSION='3.24.1';
 const HERO={
-  wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/profile-happy-v1.webp'},
+  wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/frames/aura-framing-v1.webp'},
   bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'}
 };
 let rendering=false, statsLoading=false, editorHero='wira', editorProfileId=null, deleteProfileId=null, emptyPrompted=false;
