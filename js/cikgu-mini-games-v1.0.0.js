@@ -6,9 +6,9 @@
   'use strict';
   const VERSION='1.0.0';
   const DEFINITIONS={
-    cake:{hero:'wira',title:'Dapur Wira',goal:'Kongsi satu kek kepada 4 pet, sama besar.',idea:'Pecahan memerlukan bahagian sama besar daripada keseluruhan yang sama.',challenge:'Satu kek dibahagi kepada 8 bahagian sama besar. Dua bahagian ialah pecahan yang sama dengan…',choices:['1/8','1/4','1/2'],answer:'1/4'},
+    cake:{hero:'wira',title:'Dapur Wira',goal:'Kongsi satu kek kepada 4 Teman, sama besar.',idea:'Pecahan memerlukan bahagian sama besar daripada keseluruhan yang sama.',challenge:'Satu kek dibahagi kepada 8 bahagian sama besar. Dua bahagian ialah pecahan yang sama dengan…',choices:['1/8','1/4','1/2'],answer:'1/4'},
     bridge:{hero:'wira',title:'Jambatan Sepuluh',goal:'Ada 8 papan. Gunakan bekalan 5 papan untuk cukupkan 10 dahulu.',idea:'Pecahkan 5 kepada 2 dan 3: 8 + 5 = 10 + 3.',challenge:'Untuk 9 + 4, berapa daripada 4 perlu dipindahkan supaya 9 menjadi 10?',choices:['3','2','1'],answer:'1'},
-    supply:{hero:'sidma',title:'Kem Bekalan Sidma',goal:'Agihkan 12 bekalan kepada 3 pet, sama banyak.',idea:'Bezakan bilangan kumpulan daripada bilangan dalam setiap kumpulan.',challenge:'Ada 15 bekalan. Setiap pet mendapat 3. Berapa pet boleh menerima bekalan?',choices:['5 pet','3 pet','12 pet'],answer:'5 pet'},
+    supply:{hero:'sidma',title:'Kem Bekalan Sidma',goal:'Agihkan 12 bekalan kepada 3 Teman, sama banyak.',idea:'Bezakan bilangan kumpulan daripada bilangan dalam setiap kumpulan.',challenge:'Ada 15 bekalan. Setiap Teman mendapat 3. Berapa Teman boleh menerima bekalan?',choices:['5 Teman','3 Teman','12 Teman'],answer:'5 Teman'},
     garden:{hero:'bunga',title:'Kebun Susunan Bunga',goal:'Bina 4 baris dengan 6 pokok dalam setiap baris.',idea:'4 × 6 = (4 × 5) + (4 × 1). Jumlah pokok tidak berubah apabila susunan diputar.',challenge:'Untuk 3 × 7, pecahkan 7 kepada 5 + 2. Yang manakah sama nilainya?',choices:['3 × 5 + 2','3 × 5 + 3 × 2','3 + 5 + 2'],answer:'3 × 5 + 3 × 2'},
     market:{hero:'sidma',title:'Pasar Baki Sidma',goal:'Harga RM7. Pelanggan bayar RM10. Lengkapkan wang dari RM7 ke RM10.',idea:'Mengira naik mencari beza: RM7 + RM3 = RM10, jadi baki RM3.',challenge:'Harga RM8, bayar RM12. Berapakah baki?',choices:['RM20','RM3','RM4'],answer:'RM4'},
     symmetry:{hero:'bunga',title:'Gerbang Simetri',goal:'Cari garis lipatan yang membuat dua bahagian segi empat tepat bertindih.',idea:'Paksi simetri membahagi bentuk kepada dua bahagian yang bertindih tepat apabila dilipat.',challenge:'Segi empat tepat ini bukan segi empat sama. Berapa paksi simetrinya, walaupun diputar?',choices:['1','2','4'],answer:'2'}
@@ -43,8 +43,8 @@
         if(action==='check'&&s.phase===0){
           if(!s.cut)s.feedback='Pilih potongan kek dahulu.';
           else if(!s.equal)s.feedback='Empat potongan belum tentu sama besar. Bandingkan lebarnya, kemudian potong semula.';
-          else if(!s.plates.every(n=>n===1))s.feedback='Setiap pet perlu satu daripada empat bahagian sama besar. Cuba agih semula.';
-          else{s.phase=1;s.feedback='Setiap pet mendapat 1/4. Sekarang belah setiap suku kepada dua.'}
+          else if(!s.plates.every(n=>n===1))s.feedback='Setiap Teman perlu satu daripada empat bahagian sama besar. Cuba agih semula.';
+          else{s.phase=1;s.feedback='Setiap Teman mendapat 1/4. Sekarang belah setiap suku kepada dua.'}
         }
         if(action==='halve'&&s.phase===1){s.phase=2;s.done=true;s.feedback='Lihat kawasan berwarna: 1/4 = 2/8. Saiz kek asal tidak berubah.'}
         break;
@@ -57,9 +57,9 @@
         if(action==='group'&&s.phase===1&&s.moved<4)s.moved++;
         if(action==='undo'&&s.phase===1&&s.moved>0)s.moved--;
         if(action==='check'&&s.phase===0){
-          if(s.boxes.every(n=>n===4)){s.phase=1;s.feedback='3 pet mendapat 4 setiap pet. Kini ubah misi: setiap pet mendapat 3 bekalan.'}
+          if(s.boxes.every(n=>n===4)){s.phase=1;s.feedback='3 Teman mendapat 4 setiap Teman. Kini ubah misi: setiap Teman mendapat 3 bekalan.'}
           else s.feedback='Agihkan semua 12 bekalan sama banyak. Kamu boleh mula semula.';
-        }else if(action==='check'&&s.phase===1){s.done=s.moved===4;s.feedback=s.done?'Kini 4 pet mendapat 3 setiap pet. 12 ÷ 3 = 4, tetapi 4 kini mengira pet.':'Masih ada bekalan. Bina kumpulan 3 sehingga semua 12 digunakan.'}
+        }else if(action==='check'&&s.phase===1){s.done=s.moved===4;s.feedback=s.done?'Kini 4 Teman mendapat 3 setiap Teman. 12 ÷ 3 = 4, tetapi 4 kini mengira Teman.':'Masih ada bekalan. Bina kumpulan 3 sehingga semua 12 digunakan.'}
         break;
       case 'garden':
         if(s.phase===0&&action==='rows'&&[-1,1].includes(value))s.rows=Math.max(1,Math.min(5,s.rows+value));
@@ -87,9 +87,9 @@
   function controls(s){
     if(s.done)return '<button type="button" data-cg-next>Jawab tanpa model →</button>';
     let c='';
-    if(s.kind==='cake')c=s.phase===0?button('Potong sama besar','cut','equal')+button('Cuba potongan tak sama','cut','unequal')+(s.cut?`<div class="cg-controls">${s.plates.map((n,i)=>button(`Beri pet ${i+1}`,'serve',i,s.plates.reduce((a,b)=>a+b,0)>=4)).join('')}</div>`:''):button('Belah setiap suku kepada dua','halve');
+    if(s.kind==='cake')c=s.phase===0?button('Potong sama besar','cut','equal')+button('Cuba potongan tak sama','cut','unequal')+(s.cut?`<div class="cg-controls">${s.plates.map((n,i)=>button(`Beri Teman ${i+1}`,'serve',i,s.plates.reduce((a,b)=>a+b,0)>=4)).join('')}</div>`:''):button('Belah setiap suku kepada dua','halve');
     if(s.kind==='bridge')c=button('Undur 1 papan','move',-1,s.moved===0)+button('Pindah 1 papan','move',1,s.moved===5);
-    if(s.kind==='supply')c=s.phase===0?s.boxes.map((n,i)=>button(`Beri pet ${i+1}`,'serve',i,s.boxes.reduce((a,b)=>a+b,0)>=12)).join(''):button('Bina kumpulan 3','group',undefined,s.moved===4)+button('Undur kumpulan','undo',undefined,s.moved===0);
+    if(s.kind==='supply')c=s.phase===0?s.boxes.map((n,i)=>button(`Beri Teman ${i+1}`,'serve',i,s.boxes.reduce((a,b)=>a+b,0)>=12)).join(''):button('Bina kumpulan 3','group',undefined,s.moved===4)+button('Undur kumpulan','undo',undefined,s.moved===0);
     if(s.kind==='garden')c=s.phase===0?button('− baris','rows',-1,s.rows===1)+button('+ baris','rows',1,s.rows===5)+button('− lajur','cols',-1,s.cols===1)+button('+ lajur','cols',1,s.cols===7):!s.split?button('Pisahkan 5 + 1 lajur','split'):button('Putar susunan','rotate');
     if(s.kind==='market')c=button('Tambah RM1','coin',1,s.moved>=5)+button('Tambah RM2','coin',2,s.moved>=4)+button('Undur wang','undo',undefined,!s.jumps.length);
     if(s.kind==='symmetry')c=button('Garis menegak','axis','vertical')+button('Garis mendatar','axis','horizontal')+button('Garis pepenjuru','axis','diagonal')+button('Lipat gerbang','fold')+button('Putar bentuk','rotate');
@@ -99,12 +99,12 @@
   function diagram(s){
     if(s.kind==='cake'){
       const widths=s.equal?[60,60,60,60]:[30,50,70,90];let x=20;
-      return `<svg viewBox="0 0 280 150" role="img" aria-label="Kek segi empat, ${s.cut?s.equal?'empat bahagian sama besar':'empat bahagian tidak sama besar':'belum dipotong'}">${(s.cut?widths:[240]).map((w,i)=>{const r=`<rect x="${x}" y="25" width="${w}" height="88" rx="3" fill="${i===0?'#ffd96a':'#f2b5a1'}" stroke="#603a3e" stroke-width="3"/>`;x+=w;return r}).join('')}${s.phase===2?[50,110,170,230].map(x=>`<path d="M${x} 25v88" stroke="#603a3e" stroke-width="2"/>`).join(''):''}<text x="140" y="139" text-anchor="middle" fill="white">${s.phase===2?'1/4 = 2/8 · kawasan kuning sama':'Satu kek yang sama'}</text></svg><div class="cg-plates">${s.plates.map((n,i)=>`<span>Pet ${i+1}<b>${n} potongan</b></span>`).join('')}</div>`;
+      return `<svg viewBox="0 0 280 150" role="img" aria-label="Kek segi empat, ${s.cut?s.equal?'empat bahagian sama besar':'empat bahagian tidak sama besar':'belum dipotong'}">${(s.cut?widths:[240]).map((w,i)=>{const r=`<rect x="${x}" y="25" width="${w}" height="88" rx="3" fill="${i===0?'#ffd96a':'#f2b5a1'}" stroke="#603a3e" stroke-width="3"/>`;x+=w;return r}).join('')}${s.phase===2?[50,110,170,230].map(x=>`<path d="M${x} 25v88" stroke="#603a3e" stroke-width="2"/>`).join(''):''}<text x="140" y="139" text-anchor="middle" fill="white">${s.phase===2?'1/4 = 2/8 · kawasan kuning sama':'Satu kek yang sama'}</text></svg><div class="cg-plates">${s.plates.map((n,i)=>`<span>Teman ${i+1}<b>${n} potongan</b></span>`).join('')}</div>`;
     }
     if(s.kind==='bridge')return `<div class="cg-bridge" role="img" aria-label="${8+s.moved} papan di jambatan, ${5-s.moved} berbaki">${Array.from({length:10},(_,i)=>`<i class="${i<8?'built':i<8+s.moved?'added':''}"></i>`).join('')}</div><p>${8+s.moved} di jambatan${s.moved>2?' — melebihi sasaran 10':''}</p><div class="cg-stock">${dots(5-s.moved)}<span>Bekalan: ${5-s.moved}</span></div>${s.moved>2?`<p>${s.moved-2} papan terlebih di tebing.</p>`:''}${s.done?'<strong>8 + 5 = 10 + 3 = 13</strong>':''}`;
     if(s.kind==='supply'){
       const boxes=s.phase===0?s.boxes:Array.from({length:s.moved},()=>3),used=boxes.reduce((a,b)=>a+b,0);
-      return `<p>${s.phase===0?'Misi A: 3 pet, cari bekalan setiap pet':'Misi B: 3 setiap pet, cari bilangan pet'}</p><div class="cg-crates">${boxes.map((n,i)=>`<div><b>Pet ${i+1}</b><div>${dots(n)}</div><small>${n} bekalan</small></div>`).join('')}</div><p>Belum diagih: ${12-used} / 12</p>`;
+      return `<p>${s.phase===0?'Misi A: 3 Teman, cari bekalan setiap Teman':'Misi B: 3 setiap Teman, cari bilangan Teman'}</p><div class="cg-crates">${boxes.map((n,i)=>`<div><b>Teman ${i+1}</b><div>${dots(n)}</div><small>${n} bekalan</small></div>`).join('')}</div><p>Belum diagih: ${12-used} / 12</p>`;
     }
     if(s.kind==='garden'){
       const rows=s.rotated?s.cols:s.rows,cols=s.rotated?s.rows:s.cols;
@@ -141,7 +141,7 @@
     if(s.kind==='cake'&&stage===0)return '<section class="cg-copy"><h2>Dapur Wira</h2><p>Jom belajar separuh, suku dan satu kek penuh bersama Cikgu Dimensi.</p><button type="button" data-cg-next>Jom belajar</button></section>';
     if(stage===0)return `<section class="cg-copy"><small>CONTOH LATIHAN · ${esc(d.hero.toUpperCase())}</small><h2>${d.title}</h2><p>${d.goal}</p><p>${d.idea}</p><button type="button" data-cg-next>Bantu ${esc(d.hero)} →</button></section>`;
     if(stage===2)return `<section class="cg-copy"><small>TANPA MODEL · SEMAK FAHAM</small><h2>${d.title}</h2><p>${d.challenge}</p><div class="cg-controls">${d.choices.map((v,i)=>`<button type="button" data-cg-answer="${i}" ${s.recalled?'disabled':''}>${esc(v)}</button>`).join('')}</div><p role="status">${esc(s.recallFeedback||'')}</p>${s.recalled?'<button type="button" data-cg-next>Cuba soalan seterusnya →</button>':''}</section>`;
-    return `<section class="cg-copy"><small>CONTOH LATIHAN · KAMU KAWAL</small><h2>${d.title}</h2><p>${s.kind==='supply'&&s.phase===1?'Setiap pet memerlukan 3 bekalan. Gunakan semua 12.':d.goal}</p><p class="cg-feedback" role="status">${esc(s.feedback||'Cuba satu tindakan. Kamu boleh ubah atau mula semula.')}</p>${controls(s)}</section>`;
+    return `<section class="cg-copy"><small>CONTOH LATIHAN · KAMU KAWAL</small><h2>${d.title}</h2><p>${s.kind==='supply'&&s.phase===1?'Setiap Teman memerlukan 3 bekalan. Gunakan semua 12.':d.goal}</p><p class="cg-feedback" role="status">${esc(s.feedback||'Cuba satu tindakan. Kamu boleh ubah atau mula semula.')}</p>${controls(s)}</section>`;
   }
   function paintArena(stage){
     const a=document.getElementById('visualCoachArena'),b=document.getElementById('visualCoachBoard');if(!a||!b)return;

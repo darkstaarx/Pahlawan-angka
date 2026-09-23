@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="css/pet-battlefield-dev-v1.0.0.css?v=1.0.1">
 <link rel="stylesheet" href="css/learner-review-v1.css?v=3.57.0">
 <link rel="stylesheet" href="css/written-arithmetic-v1.0.0.css?v=3.84.13">
+<link rel="stylesheet" href="css/teman-reveal-v1.0.0.css?v=3.84.15">
 <meta name="description" content="RPG Matematik KSSR yang menyesuaikan latihan mengikut perkembangan murid sekolah rendah Malaysia.">
 <meta name="application-name" content="Pahlawan Angka">
 <script>window.PA_CIKGU_DIMENSI_ENABLED=false;</script>
@@ -96,8 +97,8 @@
     <button class="mv2Card mv2Quest" type="button" id="mv2QuestCard">
       <img class="mv2QuestArt" src="assets/ui/menu-v2/jejak-map-v1.webp" alt="">
       <span class="mv2CardBody">
-        <b>Jejak Pet</b>
-        <small id="mv2QuestSub">Pilih topik untuk selamatkan pet.</small>
+        <b>Jejak Teman</b>
+        <small id="mv2QuestSub">Pilih topik untuk selamatkan teman.</small>
         <span class="mv2Cta gold">Pilih Topik <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
       </span>
       <svg class="mv2Chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
@@ -121,14 +122,14 @@
         <p id="mv2FocusNote">Mula satu misi untuk lihat kemahiran kamu.</p>
       </section>
       <section class="mv2Stat">
-        <h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="7" r="2"/><circle cx="17" cy="9" r="2"/><path d="M7 16c0-3 2.3-5 5-5s5 2 5 5c0 2-1.6 3-3.2 2.1A3.6 3.6 0 0 0 12 17.5a3.6 3.6 0 0 0-1.8.6C8.6 19 7 18 7 16z"/></svg>Pet Aktif</h3>
+        <h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="7" r="2"/><circle cx="17" cy="9" r="2"/><path d="M7 16c0-3 2.3-5 5-5s5 2 5 5c0 2-1.6 3-3.2 2.1A3.6 3.6 0 0 0 12 17.5a3.6 3.6 0 0 0-1.8.6C8.6 19 7 18 7 16z"/></svg>Teman Aktif</h3>
         <div class="mv2PetRow">
           <img id="mv2PetFace" class="mv2PetFace hidden" alt="">
           <div class="mv2PetCopy">
             <b id="mv2PetName">Belum ada teman</b>
             <div class="mv2PetTags"><span class="mv2Chip" id="mv2PetLv">Lv. 1</span><small id="mv2PetBondLabel">Sahabat</small></div>
             <span class="mv2Bar pet"><i id="mv2PetFill"></i></span>
-            <p id="mv2PetNote">Ikatan pet belum dijejaki lagi.</p>
+            <p id="mv2PetNote">Ikatan teman belum dijejaki lagi.</p>
           </div>
         </div>
       </section>
@@ -165,7 +166,7 @@
       <label><span>Skill / subtopik</span><select id="devSkill"></select></label>
     </div>
     <div class="row"><button class="btn devPrimary" onclick="startDevSkill()">🧪 Test Skill</button><button class="btn ghost small" onclick="devRandomSkill()">Random Skill</button></div>
-    <div class="devScenario"><b>Segel Pet Test</b><p class="mut devMiniCopy">Buka pentas Segel untuk uji enam pet yang terkunci, mood sedih dan rescue gembira. Tiada EXP atau progress direkodkan.</p><button id="devOneHitBtn" class="btn ghost small devToggle" onclick="devToggleOneHit()" aria-pressed="false">⚔ 1-Hit Kill: OFF</button><button id="devBattlefieldBtn" class="btn devPrimary small" type="button" onclick="startBattlefieldDev()">✨ Segel Pet Test</button></div>
+    <div class="devScenario"><b>Segel Teman Test</b><p class="mut devMiniCopy">Buka pentas Segel untuk uji enam Teman yang terkunci, mood sedih dan rescue gembira. Tiada EXP atau progress direkodkan.</p><button id="devOneHitBtn" class="btn ghost small devToggle" onclick="devToggleOneHit()" aria-pressed="false">⚔ 1-Hit Kill: OFF</button><button id="devBattlefieldBtn" class="btn devPrimary small" type="button" onclick="startBattlefieldDev()">✨ Segel Teman Test</button><button class="btn ghost small" type="button" onclick="previewTemanBaharu()">🔍 Preview Teman Baharu</button></div>
     <div class="devScenario"><b>Terrain Preview</b><p class="mut devMiniCopy">Buka battle terus dengan dunia topik yang dipilih.</p><div class="devTerrainGrid"><button onclick="devPreviewTerrain('number')">Nombor</button><button onclick="devPreviewTerrain('operation')">Operasi</button><button onclick="devPreviewTerrain('fraction')">Pecahan</button><button onclick="devPreviewTerrain('money')">Wang</button><button onclick="devPreviewTerrain('time')">Masa</button><button onclick="devPreviewTerrain('measure')">Ukuran</button><button onclick="devPreviewTerrain('shape')">Ruang</button><button onclick="devPreviewTerrain('data')">Data</button></div></div>
     <div class="devScenario"><b>Khazanah / Reward Test</b><p class="mut devMiniCopy">Tak perlu kalahkan boss. Buka semua reward atau equip terus untuk semak placement dalam battle.</p><div class="devRewardGrid"><button class="btn devPrimary small" onclick="devUnlockAllRewards()">Buka Semua Khazanah</button><button class="btn ghost small" onclick="devOpenTreasure('pets')">Buka Haiwan Teman</button><button class="btn ghost small" onclick="devOpenTreasure('auras')">Buka Aura</button><button class="btn ghost small" onclick="devOpenTreasure('badges')">Buka Lencana</button><button class="btn ghost small" onclick="devEquipPet('aurora')">Equip Aurora</button><button class="btn ghost small" onclick="devEquipAura('numbers')">Equip Aura Nombor</button><button class="btn dangerGhost small" onclick="devResetRewards()">Reset Khazanah</button></div></div>
   </div>
@@ -208,7 +209,7 @@
   <div class="segelTop">
     <button class="iconBtn" type="button" onclick="closeSegelDemo()" aria-label="Kembali ke hub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
     <div class="segelBanner"><b id="segelTitle">Kunci Tambah</b><small id="segelSub">Memuatkan…</small></div>
-    <button class="segelSound" id="segelSound" type="button" aria-pressed="false" aria-label="Senyapkan bunyi">🔊</button><div id="segelDevControls" class="segelDevControls hidden"><button class="btn ghost small" type="button" onclick="swapBattlefieldPet()">↻ Swap Pet</button><button class="btn ghost small" type="button" onclick="exitBattlefieldDev()">Keluar Dev</button></div><div class="segelCount" id="segelCount">1 / 12</div>
+    <button class="segelSound" id="segelSound" type="button" aria-pressed="false" aria-label="Senyapkan bunyi">🔊</button><div id="segelDevControls" class="segelDevControls hidden"><button class="btn ghost small" type="button" onclick="swapBattlefieldPet()">↻ Tukar Teman</button><button class="btn ghost small" type="button" onclick="exitBattlefieldDev()">Keluar Dev</button></div><div class="segelCount" id="segelCount">1 / 12</div>
   </div>
   <div class="segelTag" id="segelTag" data-tier="gangsa" aria-hidden="true"><div class="segelBar" id="segelBar"></div></div>
   <div class="segelToast" id="segelToast" role="status" aria-live="polite"></div>
@@ -290,7 +291,7 @@
   <button class="navItem" data-nav="treasure" onclick="openTreasure()" aria-label="Khazanah"><svg viewBox="0 0 24 24"><path d="M4 8h16v11H4z"/><path d="M7 8V6a5 5 0 0 1 10 0v2"/><path d="M9 13h6M12 11v4"/></svg><span>Khazanah</span></button>
   <button class="navItem" data-nav="parent" onclick="openParent()" aria-label="Ibu Bapa"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M3.5 20c.5-4 2.6-6 5.5-6s5 2 5.5 6M14 15c3.7 0 5.5 1.7 6 5"/></svg><span>Ibu Bapa</span></button>
 </nav>
-<script src="js/engine/learner-review-v1.js?v=3.57.2"></script><script src="js/written-arithmetic-v1.0.0.js?v=3.84.13"></script><script src="js/segel-demo-v2.1.0.js?v=3.84.10"></script><script src="js/engine/production-journey.js?v=4.0.0"></script><script src="js/pet-collection-system.js?v=4.0.0"></script>
+<script src="js/engine/learner-review-v1.js?v=3.57.2"></script><script src="js/written-arithmetic-v1.0.0.js?v=3.84.13"></script><script src="js/segel-demo-v2.1.0.js?v=3.84.10"></script><script src="js/engine/production-journey.js?v=4.0.0"></script><script src="js/pet-collection-system.js?v=4.0.0"></script><script src="js/teman-reveal-v1.0.0.js?v=3.84.15"></script>
 <div id="rewardToast" class="rewardToast"></div>
 <div id="guardianFocusOverlay" class="guardianFocusOverlay hidden" role="dialog" aria-modal="true" aria-labelledby="guardianFocusTitle"><div class="guardianFocusCard"><div class="eyebrow">LATIHAN FOKUS PENJAGA</div><h2 id="guardianFocusTitle">Kemahiran</h2><p id="guardianFocusEvidence"></p><p class="guardianFocusNote">Soalan dikunci pada kemahiran ini. Cikgu Dimensi akan beri petunjuk bertingkat dan turun kepada contoh lebih mudah apabila perlu.</p><div class="focusCount" aria-label="Bilangan soalan"><button type="button" data-focus-count="5" onclick="chooseGuardianCount(5)">5 soalan</button><button type="button" data-focus-count="10" onclick="chooseGuardianCount(10)">10 soalan</button><button type="button" data-focus-count="15" onclick="chooseGuardianCount(15)">15 soalan</button></div><div class="guardianFocusActions"><button class="btn primary" onclick="startGuardianFocus()">Mulakan latihan</button><button class="btn ghost" onclick="closeGuardianFocus()">Batal</button></div></div></div>
 </div>

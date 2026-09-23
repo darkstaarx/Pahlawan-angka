@@ -278,8 +278,8 @@
     if($('mv2PetLv'))$('mv2PetLv').textContent='Lv. 1';
     if($('mv2PetBondLabel'))$('mv2PetBondLabel').textContent=pet?'Sahabat':'—';
     if($('mv2PetNote'))$('mv2PetNote').textContent=pet
-      ? 'Ikatan pet belum dijejaki lagi.'
-      : 'Pilih teman dalam Koleksi Pet.';
+      ? 'Ikatan teman belum dijejaki lagi.'
+      : 'Pilih teman dalam Koleksi Teman.';
   }
 
   /* ---------------- masuk / keluar ---------------- */

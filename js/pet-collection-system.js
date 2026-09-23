@@ -2,12 +2,12 @@
 (function(root){
  'use strict';
  const catalog={
-  aurora:{rarity:'Starter',folder:null,levelGate:1,evolutionRarity:'Common'},
-  ketupatKura:{rarity:'Common',folder:'ketupat-kura',levelGate:3},
-  kumbangManggis:{rarity:'Uncommon',folder:'kumbang-manggis',levelGate:7},
-  harimauBunga:{rarity:'Rare',folder:'harimau-bunga',levelGate:12},
-  arnabKekLapis:{rarity:'Epic',folder:'arnab-kek-lapis',levelGate:18},
-  durianKerbau:{rarity:'Legendary',folder:'durian-kerbau',levelGate:25}
+  aurora:{name:'Aurora Ekor Angka',rarity:'Starter',folder:null,levelGate:1,evolutionRarity:'Common'},
+  ketupatKura:{name:'Kura-Kura Ketupat',rarity:'Common',folder:'ketupat-kura',levelGate:3},
+  kumbangManggis:{name:'Kumbang Manggis',rarity:'Uncommon',folder:'kumbang-manggis',levelGate:7},
+  harimauBunga:{name:'Harimau Bunga',rarity:'Rare',folder:'harimau-bunga',levelGate:12},
+  arnabKekLapis:{name:'Arnab Kek Lapis',rarity:'Epic',folder:'arnab-kek-lapis',levelGate:18},
+  durianKerbau:{name:'Kerbau Durian',rarity:'Legendary',folder:'durian-kerbau',levelGate:25}
  };
  /* The early five entries preview every rescue pet. The following entries apply
     the configured Common:Uncommon:Rare:Epic:Legendary 5:3:2:1:1 ratio. */
@@ -70,11 +70,11 @@
  function snapshot(data){
   ensure(data);if(!data)return {pets:[],expedition:null};
   return {pets:Object.entries(catalog).map(([id,meta])=>{
-   const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:id};
+   const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:meta.name};
    const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`}:{happy:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp'};
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=playerLevel(data)>=meta.levelGate;
-   return {...item,...data.petCollection[id],id,assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
+   return {...item,...data.petCollection[id],id,name:item?.name||meta.name,assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
   }),expedition:{...data.expedition}};
  }
  function persist(data){if(typeof db!=='undefined'&&data===db&&typeof save==='function')save();}

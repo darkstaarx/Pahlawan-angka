@@ -142,7 +142,8 @@
       realSave();
     }
     /* Cosmetic only; PetCollection owns its own per-run idempotency record. */
-    window.PetCollection?.awardGembokCompletion?.(db,run);
+    const petAward=window.PetCollection?.awardGembokCompletion?.(db,run);
+    if(petAward?.newlyTamed)run.temanRevealAward=petAward;
   }
 
   function pauseForLearning(intervention){

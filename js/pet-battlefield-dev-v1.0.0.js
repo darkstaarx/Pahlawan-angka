@@ -13,7 +13,7 @@
   const pet = () => PETS[Number(sess?.devBattlefieldPetIndex||0)%PETS.length];
   function paintControls(){
     const button=document.querySelector('#segelDevControls button');
-    if(button)button.textContent=`↻ Swap Pet · ${pet().name}`;
+    if(button)button.textContent=`↻ Tukar Teman · ${pet().name}`;
   }
   function swap() { if(!active())return; sess.devBattlefieldPetIndex=(Number(sess.devBattlefieldPetIndex||0)+1)%PETS.length; const item=pet(); window.PASegelDemo?.setPet?.(item); paintControls(); }
   function start() {

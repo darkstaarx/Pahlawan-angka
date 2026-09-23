@@ -33,7 +33,7 @@
     }
     let body='';
     if(stage===0)body=`<p>${esc(d.goal)}</p><p>${esc(d.idea)}</p><button type="button" data-cg-next>Mula aktiviti →</button>`;
-    if(stage===1)body=`<p>${esc(model.kind==='supply'&&model.phase===1?'Setiap pet memerlukan 3 bekalan. Gunakan semua 12.':d.goal)}</p><p role="status" class="cg-feedback">${esc(model.feedback||'Kamu kawal tindakan. Boleh cuba, undur atau mula semula.')}</p>${api().controls(model)}`;
+    if(stage===1)body=`<p>${esc(model.kind==='supply'&&model.phase===1?'Setiap Teman memerlukan 3 bekalan. Gunakan semua 12.':d.goal)}</p><p role="status" class="cg-feedback">${esc(model.feedback||'Kamu kawal tindakan. Boleh cuba, undur atau mula semula.')}</p>${api().controls(model)}`;
     if(stage===2)body=`<p>${esc(d.challenge)}</p><div class="cg-controls">${d.choices.map((v,i)=>`<button type="button" data-preview-answer="${i}"${recall?' disabled':''}>${esc(v)}</button>`).join('')}</div><p role="status">${esc(feedback)}</p>${recall?'<button type="button" data-cg-next>Selesai preview →</button>':''}`;
     if(stage===3)body='<h3>Preview selesai</h3><p>Ini ujian aktiviti sahaja. Tiada XP, syiling atau kemajuan disimpan.</p><button type="button" data-preview-replay>Ulang aktiviti</button>';
     dialog.querySelector('[data-preview-content]').innerHTML=`<h2 id="cgDevTitle">${esc(d.title)}</h2><p class="cg-dev-step">${['Faham','Bina','Semak tanpa model','Selesai'][stage]} · PREVIEW DEV</p>${stage<2?`<div class="cg-dev-scene">${api().scene(model)}</div>`:'<p class="cg-hidden-model">Model disimpan.</p>'}<section class="cg-copy">${body}</section>`;

@@ -23,6 +23,7 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  const data=fresh();data.level=1;const preview=pets.snapshot(data).pets;
  assert.equal(preview.length,6);assert.equal(preview.find(p=>p.id==='durianKerbau').eligible,false);
  assert.equal(preview.find(p=>p.id==='aurora').eligible,true);
+ assert.equal(preview.find(p=>p.id==='ketupatKura').name,'Kura-Kura Ketupat');
 });
 
 test('skill based per-grade rotation previews multiple pets without RNG',()=>{
@@ -125,7 +126,8 @@ test('real manual and adaptive production routes assign from their selected skil
 
 test('production boundary awards Bond XP only after ten correct seals',()=>{
  const h=journeyHarness();h.context.openGembok({chapter:'1'});const run=h.context.PAProductionJourney.state();
+ h.context.PAProductionJourney.nextQuestion(run);h.db.petCollection[run.rescuePetId].rescues=run.rescueThreshold-1;
  h.context.PAProductionJourney.complete();assert.equal(h.award(),null);
- run.correct=10;h.context.PAProductionJourney.complete();assert.equal(h.award().result.bondXpAwarded,true);assert.equal(h.db.petCollection.aurora.bondXp,20);
- h.context.PAProductionJourney.complete();assert.equal(h.db.petCollection.aurora.bondXp,20);
+ run.correct=10;h.context.PAProductionJourney.complete();assert.equal(h.award().result.bondXpAwarded,true);assert.equal(h.db.petCollection.aurora.bondXp,20);assert.equal(run.temanRevealAward.newlyTamed,true);
+ h.context.PAProductionJourney.complete();assert.equal(h.db.petCollection.aurora.bondXp,20);assert.equal(run.temanRevealAward.newlyTamed,true);
 });
