@@ -1,9 +1,9 @@
-/* Login v3.84.22 — Dunia Matematik chibi-RPG. */
+/* Login v3.84.24 — satu dunia: akademi matematik chibi. */
 body[data-screen="login"] .app{
   min-height:100dvh;
   background:
-    linear-gradient(180deg,rgba(5,21,48,.12) 0%,rgba(5,19,42,.06) 46%,rgba(3,13,31,.78) 100%),
-    url('../assets/branding/login-chibi-math-world-v1.webp') center top/cover fixed;
+    linear-gradient(180deg,rgba(4,18,38,.48) 0%,rgba(7,26,49,.16) 31%,rgba(7,26,49,.54) 66%,rgba(4,17,36,.90) 100%),
+    url('../assets/branding/login-chibi-math-world-v1.webp') center top/cover scroll;
 }
 body[data-screen="login"] .appHeader{display:none}
 body[data-screen="login"] #login{
@@ -19,62 +19,120 @@ body[data-screen="login"] .loginShell{
   flex-direction:column;
   align-items:stretch;
 }
+
+/* Brand remains heroic, but uses the same restrained palette as the login card. */
 .loginWorldBrand{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:7px;
-  margin:10px auto 30px;
-  color:#fff8d1;
+  gap:5px;
+  margin:8px auto 26px;
+  color:#eef9f8;
   text-align:center;
-  text-shadow:0 3px 0 #09214a,0 7px 18px #020916d9;
+  text-shadow:0 2px 8px rgba(3,13,28,.88);
 }
 .loginWorldBrand img{
-  width:clamp(128px,32vw,164px);
-  height:clamp(128px,32vw,164px);
+  width:clamp(108px,29vw,136px);
+  height:clamp(108px,29vw,136px);
   object-fit:contain;
-  filter:drop-shadow(0 7px 12px #020916c9);
+  filter:drop-shadow(0 8px 12px rgba(3,13,28,.66));
 }
 .loginWorldBrand b{
-  font-size:clamp(38px,9.2vw,48px);
-  line-height:.95;
-  letter-spacing:-.055em;
+  font-size:clamp(34px,8.5vw,42px);
+  line-height:1;
+  letter-spacing:-.045em;
   font-weight:1000;
-  color:#f8cc56;
-  -webkit-text-stroke:1px #12335f;
+  color:#f2c64d;
+  -webkit-text-stroke:1px #0b294a;
   paint-order:stroke fill;
 }
 .loginWorldBrand small{
-  color:#d7f1ff;
-  font-size:12px;
+  color:#c8eced;
+  font-size:10px;
   font-weight:950;
   letter-spacing:.16em;
   text-transform:uppercase;
 }
+
+/* A quiet, matte academy panel lets the illustrated world stay visible. */
 body[data-screen="login"] .cloudLoginCard{
   width:100%;
   margin-top:auto;
   padding:17px!important;
-  border:1px solid #e3bc4f;
+  border:1px solid rgba(112,216,226,.48);
   border-radius:22px;
-  background:linear-gradient(155deg,rgba(16,47,89,.96),rgba(5,19,43,.97));
-  box-shadow:0 14px 40px #020915b8,0 0 0 3px #122c5559 inset;
+  background:rgba(7,26,49,.91);
+  box-shadow:0 16px 38px rgba(2,10,24,.58),inset 0 1px 0 rgba(234,250,248,.10);
+  backdrop-filter:blur(12px);
 }
-body[data-screen="login"] .cloudLoginHead{gap:10px}
-body[data-screen="login"] .cloudLoginHead .loginCrest{width:43px!important;height:43px!important;flex-basis:43px!important}
+body[data-screen="login"] .cloudLoginHead{gap:10px;color:#f2faf9}
+body[data-screen="login"] .cloudLoginHead .loginCrest{
+  width:42px!important;
+  height:42px!important;
+  flex-basis:42px!important;
+}
 body[data-screen="login"] .cloudLoginHead b{font-size:17px}
-body[data-screen="login"] .cloudLoginHead small{color:#c3d9ef}
+body[data-screen="login"] .cloudLoginHead small{color:#b5d3da}
+
+/* Google stays recognisable and trustworthy instead of looking like a game CTA. */
 body[data-screen="login"] .googleAuthButton{
-  border:1px solid #e7bc4d;
-  background:linear-gradient(135deg,#2b7bed,#164aa8);
-  box-shadow:0 4px 0 #071f57,0 8px 18px #0007;
+  min-height:50px;
+  border:1px solid #d8e4e5;
+  border-radius:14px;
+  background:#f6faf9;
+  color:#09223d;
+  box-shadow:0 4px 12px rgba(1,11,25,.26);
 }
-body[data-screen="login"] .googleAuthPublic>p{color:#c3d9ef}
-body[data-screen="login"] .adminAuth{border-color:#47658c}
-body[data-screen="login"] .adminAuth summary{color:#b8cae4}
+body[data-screen="login"] .googleAuthButton:hover{background:#fff}
+body[data-screen="login"] .googleAuthPublic>p{color:#b5d3da}
+body[data-screen="login"] .paConsentRow{color:#c4dce0}
+body[data-screen="login"] .paConsentRow input{accent-color:#f2c64d}
+body[data-screen="login"] .paConsentRow a,
+body[data-screen="login"] .paTrustLinks button{color:#f2c64d}
+body[data-screen="login"] .paTrustLinks{color:#8fb0ba}
+
+body[data-screen="login"] .adminAuth{border-color:rgba(112,216,226,.30)}
+body[data-screen="login"] .adminAuth summary{color:#b5d3da}
+body[data-screen="login"] .adminAuth[open] summary{color:#f2c64d}
+body[data-screen="login"] .authForm label{color:#c4dce0}
+body[data-screen="login"] .authForm input{
+  border-color:rgba(112,216,226,.36);
+  background:rgba(3,15,31,.62);
+}
+body[data-screen="login"] .authPrivacy{color:#9bbbc3}
+body[data-screen="login"] .loginDivider{color:#8fb0ba}
+body[data-screen="login"] .loginDivider:before,
+body[data-screen="login"] .loginDivider:after{background:rgba(112,216,226,.30)}
+body[data-screen="login"] .paDemoButton{
+  min-height:58px;
+  margin:14px 0 4px;
+  border:1px solid rgba(112,216,226,.46);
+  border-radius:14px;
+  background:#123f68;
+  color:#f2faf9;
+  box-shadow:none;
+}
+body[data-screen="login"] .paDemoButton:hover{background:#18517d}
+body[data-screen="login"] :is(button,input,summary):focus-visible{
+  outline:2px solid #f2c64d;
+  outline-offset:2px;
+}
+
+@media(max-width:380px){
+  body[data-screen="login"] #login{padding-inline:10px}
+  .loginWorldBrand{margin-top:4px;margin-bottom:18px}
+  .loginWorldBrand img{width:104px;height:104px}
+  .loginWorldBrand b{font-size:33px}
+  body[data-screen="login"] .cloudLoginCard{padding:14px!important;border-radius:19px}
+}
+@media(max-height:720px){
+  .loginWorldBrand{margin-top:0;margin-bottom:16px}
+  .loginWorldBrand img{width:96px;height:96px}
+  .loginWorldBrand b{font-size:32px}
+}
 @media(min-width:601px){
   body[data-screen="login"] #login{padding:28px}
-  .loginWorldBrand{margin-top:12px;margin-bottom:42px}
+  .loginWorldBrand{margin-top:12px;margin-bottom:38px}
   body[data-screen="login"] .cloudLoginCard{padding:20px!important}
 }
 @media(prefers-reduced-motion:reduce){
