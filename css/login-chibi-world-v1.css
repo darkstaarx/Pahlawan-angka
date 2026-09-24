@@ -1,140 +1,34 @@
-/* Login v3.84.24 — satu dunia: akademi matematik chibi. */
-body[data-screen="login"] .app{
-  min-height:100dvh;
-  background:
-    linear-gradient(180deg,rgba(4,18,38,.48) 0%,rgba(7,26,49,.16) 31%,rgba(7,26,49,.54) 66%,rgba(4,17,36,.90) 100%),
-    url('../assets/branding/login-chibi-math-world-v1.webp') center top/cover scroll;
-}
+/* Login v3.84.25 — premium storybook academy over the illustrated math world. */
+body[data-screen="login"] .app{min-height:100dvh;background:linear-gradient(180deg,rgba(4,18,38,.42) 0%,rgba(7,26,49,.08) 31%,rgba(7,26,49,.42) 66%,rgba(4,17,36,.78) 100%),url('../assets/branding/login-chibi-math-world-v1.webp') center top/cover scroll}
 body[data-screen="login"] .appHeader{display:none}
-body[data-screen="login"] #login{
-  min-height:100dvh;
-  display:flex;
-  padding:max(18px,env(safe-area-inset-top)) 14px max(22px,env(safe-area-inset-bottom));
-}
-body[data-screen="login"] .loginShell{
-  width:min(100%,430px);
-  min-height:calc(100dvh - max(18px,env(safe-area-inset-top)) - max(22px,env(safe-area-inset-bottom)));
-  margin:0 auto;
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
-}
-
-/* Brand remains heroic, but uses the same restrained palette as the login card. */
-.loginWorldBrand{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:5px;
-  margin:8px auto 26px;
-  color:#eef9f8;
-  text-align:center;
-  text-shadow:0 2px 8px rgba(3,13,28,.88);
-}
-.loginWorldBrand img{
-  width:clamp(108px,29vw,136px);
-  height:clamp(108px,29vw,136px);
-  object-fit:contain;
-  filter:drop-shadow(0 8px 12px rgba(3,13,28,.66));
-}
-.loginWorldBrand b{
-  font-size:clamp(34px,8.5vw,42px);
-  line-height:1;
-  letter-spacing:-.045em;
-  font-weight:1000;
-  color:#f2c64d;
-  -webkit-text-stroke:1px #0b294a;
-  paint-order:stroke fill;
-}
-.loginWorldBrand small{
-  color:#c8eced;
-  font-size:10px;
-  font-weight:950;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-}
-
-/* A quiet, matte academy panel lets the illustrated world stay visible. */
-body[data-screen="login"] .cloudLoginCard{
-  width:100%;
-  margin-top:auto;
-  padding:17px!important;
-  border:1px solid rgba(112,216,226,.48);
-  border-radius:22px;
-  background:rgba(7,26,49,.91);
-  box-shadow:0 16px 38px rgba(2,10,24,.58),inset 0 1px 0 rgba(234,250,248,.10);
-  backdrop-filter:blur(12px);
-}
-body[data-screen="login"] .cloudLoginHead{gap:10px;color:#f2faf9}
-body[data-screen="login"] .cloudLoginHead .loginCrest{
-  width:42px!important;
-  height:42px!important;
-  flex-basis:42px!important;
-}
+body[data-screen="login"] #login{min-height:100dvh;display:flex;padding:max(18px,env(safe-area-inset-top)) 14px max(22px,env(safe-area-inset-bottom))}
+body[data-screen="login"] .loginShell{width:min(100%,430px);min-height:calc(100dvh - max(18px,env(safe-area-inset-top)) - max(22px,env(safe-area-inset-bottom)));margin:0 auto;display:flex;flex-direction:column;align-items:stretch}
+.loginWorldBrand{display:flex;flex-direction:column;align-items:center;gap:5px;margin:8px auto 24px;color:#fffaf0;text-align:center;text-shadow:0 2px 8px rgba(3,13,28,.88)}
+.loginWorldBrand img{width:clamp(104px,27vw,132px);height:clamp(104px,27vw,132px);object-fit:contain;filter:drop-shadow(0 8px 12px rgba(3,13,28,.66))}
+.loginWorldBrand b{font-size:clamp(32px,8.2vw,42px);line-height:1;letter-spacing:-.045em;font-weight:1000;color:#f4ca55;-webkit-text-stroke:1px #0b294a;paint-order:stroke fill}
+.loginWorldBrand small{color:#f8e9bd;font-size:10px;font-weight:950;letter-spacing:.16em;text-transform:uppercase}
+body[data-screen="login"] .cloudLoginCard{width:100%;margin-top:auto;padding:18px!important;border:2px solid #173b63;border-radius:22px;background:#f7f0df;box-shadow:0 14px 28px rgba(2,10,24,.34),inset 0 1px 0 rgba(255,255,255,.82);color:#102d50}
+body[data-screen="login"] .cloudLoginHead{gap:10px;color:#102d50}
+body[data-screen="login"] .cloudLoginHead .loginCrest{width:42px!important;height:42px!important;flex-basis:42px!important}
 body[data-screen="login"] .cloudLoginHead b{font-size:17px}
-body[data-screen="login"] .cloudLoginHead small{color:#b5d3da}
-
-/* Google stays recognisable and trustworthy instead of looking like a game CTA. */
-body[data-screen="login"] .googleAuthButton{
-  min-height:50px;
-  border:1px solid #d8e4e5;
-  border-radius:14px;
-  background:#f6faf9;
-  color:#09223d;
-  box-shadow:0 4px 12px rgba(1,11,25,.26);
-}
+body[data-screen="login"] .cloudLoginHead small{color:#5f6f7e}
+body[data-screen="login"] .googleAuthButton{min-height:50px;border:1px solid #c8d1d4;border-radius:13px;background:#fffdf8;color:#102d50;box-shadow:0 3px 9px rgba(16,45,80,.12)}
 body[data-screen="login"] .googleAuthButton:hover{background:#fff}
-body[data-screen="login"] .googleAuthPublic>p{color:#b5d3da}
-body[data-screen="login"] .paConsentRow{color:#c4dce0}
-body[data-screen="login"] .paConsentRow input{accent-color:#f2c64d}
-body[data-screen="login"] .paConsentRow a,
-body[data-screen="login"] .paTrustLinks button{color:#f2c64d}
-body[data-screen="login"] .paTrustLinks{color:#8fb0ba}
-
-body[data-screen="login"] .adminAuth{border-color:rgba(112,216,226,.30)}
-body[data-screen="login"] .adminAuth summary{color:#b5d3da}
-body[data-screen="login"] .adminAuth[open] summary{color:#f2c64d}
-body[data-screen="login"] .authForm label{color:#c4dce0}
-body[data-screen="login"] .authForm input{
-  border-color:rgba(112,216,226,.36);
-  background:rgba(3,15,31,.62);
-}
-body[data-screen="login"] .authPrivacy{color:#9bbbc3}
-body[data-screen="login"] .loginDivider{color:#8fb0ba}
-body[data-screen="login"] .loginDivider:before,
-body[data-screen="login"] .loginDivider:after{background:rgba(112,216,226,.30)}
-body[data-screen="login"] .paDemoButton{
-  min-height:58px;
-  margin:14px 0 4px;
-  border:1px solid rgba(112,216,226,.46);
-  border-radius:14px;
-  background:#123f68;
-  color:#f2faf9;
-  box-shadow:none;
-}
-body[data-screen="login"] .paDemoButton:hover{background:#18517d}
-body[data-screen="login"] :is(button,input,summary):focus-visible{
-  outline:2px solid #f2c64d;
-  outline-offset:2px;
-}
-
-@media(max-width:380px){
-  body[data-screen="login"] #login{padding-inline:10px}
-  .loginWorldBrand{margin-top:4px;margin-bottom:18px}
-  .loginWorldBrand img{width:104px;height:104px}
-  .loginWorldBrand b{font-size:33px}
-  body[data-screen="login"] .cloudLoginCard{padding:14px!important;border-radius:19px}
-}
-@media(max-height:720px){
-  .loginWorldBrand{margin-top:0;margin-bottom:16px}
-  .loginWorldBrand img{width:96px;height:96px}
-  .loginWorldBrand b{font-size:32px}
-}
-@media(min-width:601px){
-  body[data-screen="login"] #login{padding:28px}
-  .loginWorldBrand{margin-top:12px;margin-bottom:38px}
-  body[data-screen="login"] .cloudLoginCard{padding:20px!important}
-}
-@media(prefers-reduced-motion:reduce){
-  body[data-screen="login"] .app{background-attachment:scroll}
-}
+body[data-screen="login"] .googleAuthPublic>p{color:#69737d}
+body[data-screen="login"] .paConsentRow{color:#46586b}
+body[data-screen="login"] .paConsentRow input{accent-color:#c99a2e}
+body[data-screen="login"] .paConsentRow a,body[data-screen="login"] .paTrustLinks button{color:#8a651a}
+body[data-screen="login"] .paTrustLinks{color:#7c858c}
+body[data-screen="login"] #adminAuth{display:none!important}
+body[data-screen="login"] .authPrivacy{display:none}
+body[data-screen="login"] .loginError{color:#8b2f2f}
+body[data-screen="login"] .paDemoMount{margin-top:12px}
+body[data-screen="login"] .paDemoButton{width:100%;min-height:54px;margin:0;border:1px solid #b6841f;border-radius:13px;background:#173b63;color:#fff8e5;box-shadow:0 4px 10px rgba(16,45,80,.18)}
+body[data-screen="login"] .paDemoButton:hover{background:#214e7d}
+body[data-screen="login"] .loginFooter{margin:14px auto 0;color:#f8e9bd;font-size:12px;font-weight:850;letter-spacing:.12em;text-align:center;text-shadow:0 2px 6px rgba(3,13,28,.75)}
+body[data-screen="login"] .loginVersion{color:#dce7e8}
+body[data-screen="login"] :is(button,input,summary):focus-visible{outline:2px solid #d6aa3a;outline-offset:2px}
+@media(max-width:380px){body[data-screen="login"] #login{padding-inline:10px}.loginWorldBrand{margin-top:4px;margin-bottom:16px}.loginWorldBrand img{width:98px;height:98px}.loginWorldBrand b{font-size:32px}body[data-screen="login"] .cloudLoginCard{padding:14px!important;border-radius:19px}}
+@media(max-height:720px){.loginWorldBrand{margin-top:0;margin-bottom:14px}.loginWorldBrand img{width:90px;height:90px}.loginWorldBrand b{font-size:30px}}
+@media(min-width:601px){body[data-screen="login"] #login{padding:28px}.loginWorldBrand{margin-top:12px;margin-bottom:34px}body[data-screen="login"] .cloudLoginCard{padding:20px!important}}
+@media(prefers-reduced-motion:reduce){body[data-screen="login"] .app{background-attachment:scroll}}

@@ -1,4 +1,4 @@
-// App shell v3.84.24 — unified storybook academy login.
+// App shell v3.84.25 — ivory mobile login based on approved mockup.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
