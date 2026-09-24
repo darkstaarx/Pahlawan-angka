@@ -23,29 +23,32 @@ body[data-screen="login"] .loginShell{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:5px;
-  margin:2px auto 24px;
-  color:#fff9df;
+  gap:7px;
+  margin:10px auto 30px;
+  color:#fff8d1;
   text-align:center;
-  text-shadow:0 3px 0 #081a3c,0 6px 18px #020916d9;
+  text-shadow:0 3px 0 #09214a,0 7px 18px #020916d9;
 }
 .loginWorldBrand img{
-  width:clamp(66px,18vw,84px);
-  height:clamp(66px,18vw,84px);
+  width:clamp(128px,32vw,164px);
+  height:clamp(128px,32vw,164px);
   object-fit:contain;
-  filter:drop-shadow(0 5px 9px #020916b3);
+  filter:drop-shadow(0 7px 12px #020916c9);
 }
 .loginWorldBrand b{
-  font-size:clamp(24px,6.8vw,31px);
-  line-height:1;
-  letter-spacing:-.045em;
+  font-size:clamp(38px,9.2vw,48px);
+  line-height:.95;
+  letter-spacing:-.055em;
   font-weight:1000;
+  color:#f8cc56;
+  -webkit-text-stroke:1px #12335f;
+  paint-order:stroke fill;
 }
 .loginWorldBrand small{
-  color:#d8f6ff;
-  font-size:10px;
+  color:#d7f1ff;
+  font-size:12px;
   font-weight:950;
-  letter-spacing:.13em;
+  letter-spacing:.16em;
   text-transform:uppercase;
 }
 body[data-screen="login"] .cloudLoginCard{
@@ -71,7 +74,7 @@ body[data-screen="login"] .adminAuth{border-color:#47658c}
 body[data-screen="login"] .adminAuth summary{color:#b8cae4}
 @media(min-width:601px){
   body[data-screen="login"] #login{padding:28px}
-  .loginWorldBrand{margin-top:4px;margin-bottom:36px}
+  .loginWorldBrand{margin-top:12px;margin-bottom:42px}
   body[data-screen="login"] .cloudLoginCard{padding:20px!important}
 }
 @media(prefers-reduced-motion:reduce){
