@@ -1768,6 +1768,7 @@
        openSegelDemo()                   — kelakuan asal (kolam teras darjah)
        openSegelDemo({chapter:'3'})      — Selamatkan Pet: topik yang dipilih
        openSegelDemo({adaptive:true})    — Kembara Dimensi: laluan Cikgu
+       openSegelDemo({guestDemo:true})   — Demo tanpa profil dari skrin log masuk
      Sinematik masuk (segel-entry-cinematic) menghantar semula argumen ini
      tanpa diubah, jadi tiada perubahan diperlukan di sana. */
   window.openSegelDemo=async function(mode){
@@ -1782,7 +1783,11 @@
     reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(typeof screen==='function')screen('segelDemo');
     try{ await boot() }
-    catch(_){ $('segelFeedback').textContent='Pentas 3D tidak dapat dimuat pada peranti ini.'; return }
+    catch(_){
+      $('segelFeedback').textContent='Pentas 3D tidak dapat dimuat pada peranti ini.';
+      if(entryMode?.guestDemo){entryMode=null;window.PADemo?.restoreGuest?.();if(typeof goLogin==='function')goLogin();else if(typeof screen==='function')screen('login')}
+      return;
+    }
     if(opening!==demoOpenGeneration)return;
     // Satu stage WebGL dikongsi antara pembukaan. Tetapkan semula kepada
     // Aurora untuk demo biasa supaya pilihan pet Battlefield Dev tidak bocor
@@ -1840,6 +1845,13 @@
   window.closeSegelDemo=function(){
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
+    if(entryMode?.guestDemo){
+      ++demoOpenGeneration;++runGeneration;run=null;entryMode=null;
+      window.PADemo?.restoreGuest?.();
+      if(typeof goLogin==='function')goLogin();
+      else if(typeof screen==='function')screen('login');
+      return;
+    }
     if(entryMode?.devBattlefield){ window.PABattlefieldDev?.exit?.({fromSegel:true}); return; }
     if(window.PAProductionJourney?.isActive?.()){window.PAProductionJourney.close();return;}
     /* renderHub() kini membuka Menu V2 produksi (menu-v2-v1.0.0.js membalutnya),

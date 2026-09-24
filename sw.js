@@ -1,4 +1,4 @@
-// App shell v3.84.26 — standalone login, stale assets removed.
+// App shell v3.84.27 — grade-only guest entry to the Segel battlefield.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
