@@ -1,4 +1,4 @@
-// App shell v3.84.25 — ivory mobile login based on approved mockup.
+// App shell v3.84.26 — standalone login, stale assets removed.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
@@ -42,7 +42,7 @@ const APP_SHELL=[
   './assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp',
   './assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/hurt-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/defeat-v1.webp',
   './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
-  './assets/branding/login-scene-v2.webp','./assets/branding/login-chibi-math-world-v1.webp','./assets/ui/login/pahlawan-angka-star-crest-v1.webp','./assets/ui/login/student-crest.svg','./assets/ui/login/guardian-crest.svg',
+  './assets/branding/login-chibi-math-world-v1.webp','./assets/ui/login/pahlawan-angka-star-crest-v1.webp','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
   './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
   './assets/enemies/minions/askabus.webp','./assets/enemies/minions/syilinggit.webp','./assets/enemies/minions/pigiramid.webp',
@@ -53,7 +53,7 @@ const APP_SHELL=[
   './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg','./assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp',
   './css/game.css','./css/login-chibi-world-v1.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/parent-pin-recovery-v3.27.3.css','./css/google-auth-v3.25.2.css','./css/parent-dashboard-v3.25.4.css','./css/theme-controls-v3.25.5.css','./css/custom-picker-v3.25.6.css','./css/parent-learning-tools-v3.26.0.css','./css/hint-overlay-v3.28.1.css','./css/beta-trust-v3.29.0.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
   './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
-  './css/login-buttons-v3.7.1.css','./css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
+  './css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
   './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',
   './css/battle-flow-v3.7.7.css','./css/boss-motion-v3.7.9.css','./css/coach-mascot-v3.8.1.css',
   './css/responsive-modes-v3.8.2.css','./css/pet-sizing-v3.8.21.css','./css/battle-polish-v3.8.22.css',
