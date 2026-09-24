@@ -1250,11 +1250,40 @@
     if(!pool.length)console.warn('[segel-demo] topik tiada kemahiran, guna kolam darjah:',chapter);
     return pool;
   }
+  /* Demo tetamu ialah peta ringkas silibus, bukan cabaran 10 soalan rawak.
+     Satu `domain` pada GRAPH ialah topik yang dibaca murid di HUD. Susun satu
+     pusingan semua topik dahulu, kemudian pusingan kedua; dengan itu setiap
+     topik hadir sekurang-kurangnya dua kali dan Darjah 6 memang mempunyai
+     laluan lebih luas daripada Darjah 1. Jika sebuah topik hanya mempunyai
+     satu kemahiran teras, generator menghasilkan dua variasi soalan daripada
+     kemahiran itu — masih dua peluang bebas, bukan satu soalan diulang. */
+  function guestTopicPlan(grade){
+    let skills=[];
+    try{ skills=GRAPH.skills.filter(x=>x.grade===grade&&x.role==='core') }catch(_){}
+    if(!skills.length)return [];
+    const groups=new Map();
+    skills.forEach(skill=>{
+      const topic=skill.domain||`Bab ${skill.chapter||'lain'}`;
+      if(!groups.has(topic))groups.set(topic,[]);
+      groups.get(topic).push(skill.id);
+    });
+    const first=[],second=[];
+    mix([...groups.keys()]).forEach(topic=>{
+      const choices=mix([...groups.get(topic)]);
+      first.push(choices[0]);
+      second.push(choices[1]||choices[0]);
+    });
+    return [...first,...second];
+  }
   function skillPool(){
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;
     if(entryMode&&entryMode.chapter){
       const scoped=chapterSkillPool(entryMode.chapter);
       if(scoped.length)return mix(scoped);
+    }
+    if(entryMode?.guestDemo){
+      const plan=guestTopicPlan(grade);
+      if(plan.length)return plan;
     }
     let pool=[];
     try{ pool=GRAPH.skills.filter(x=>x.grade===grade&&x.role==='core').map(x=>x.id) }catch(_){}
@@ -1452,8 +1481,11 @@
        pada skrin keputusan walaupun kedua-duanya betul. Yang ditunjuk sekarang
        ialah nombor soalan sahaja; bar segel di atas sudah menunjukkan matlamat
        sebenar. */
-    $('segelCount').textContent=`Soalan ${run.asked+1}`;
-    $('segelQLabel').textContent=`Soalan ${run.asked+1}`;
+    const count=entryMode?.guestDemo
+      ? `Soalan ${run.asked+1} / ${run.questionTarget}`
+      : `Soalan ${run.asked+1}`;
+    $('segelCount').textContent=count;
+    $('segelQLabel').textContent=count;
     /* .question ialah grid (game.css) supaya kandungannya terpusat menegak.
        Grid membloksifikasi SETIAP anak, jadi menyuap prompt terus ke situ
        memecahkan setiap <b> dan setiap serpihan teks di antaranya ke baris
@@ -1495,14 +1527,21 @@
     const correct=option.tag==='correct';
     button.classList.add(correct?'ok':'no');
     activeRun.asked++;
+    const reachedTarget=activeRun.asked>=activeRun.questionTarget;
     if(correct){
       sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike();
       if(!currentRun(activeRun))return;
       const outcome=stage.hitSeal();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
-      paintSeal();if(stage.allBroken())return celebrate(activeRun);
+      paintSeal();
+      if(reachedTarget)return celebrate(activeRun);
+      if(stage.allBroken()&&entryMode?.guestDemo){
+        stage.reset();paintSeal();
+        toast('GEMBOK SETERUSNYA MUNCUL!');
+        $('segelFeedback').textContent='Bagus! Teruskan ke topik seterusnya.';
+      }else if(stage.allBroken())return celebrate(activeRun);
     }else{sfx('wrong');activeRun.tally.miss++;$('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();await wait(520);if(!currentRun(activeRun))return;}
-    if(activeRun.asked>=MAX_Q)return celebrate(activeRun);
+    if(reachedTarget)return celebrate(activeRun);
     await wait(420);if(!currentRun(activeRun))return;activeRun.locked=false;drawQuestion();
   }
 
@@ -1639,7 +1678,8 @@
      MASUK / KELUAR
      ================================================================= */
   function startRun(){
-    run={generation:++runGeneration,pool:skillPool(),asked:0,locked:false,q:null,usedHint:false,
+    const pool=skillPool();
+    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,q:null,usedHint:false,
          writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan

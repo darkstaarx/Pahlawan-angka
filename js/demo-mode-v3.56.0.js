@@ -3,6 +3,14 @@
 const st={grade:2,active:false,db:null,sess:null};
 const grades=[1,2,3,4,5,6];
 
+function demoScope(grade){
+  try{
+    const skills=GRAPH.skills.filter(skill=>skill.grade===grade&&skill.role==='core');
+    const topics=new Set(skills.map(skill=>skill.domain||`Bab ${skill.chapter||'lain'}`));
+    return `${topics.size} topik · ${topics.size*2} soalan`;
+  }catch(_){return 'Latihan teras'}
+}
+
 function mount(){
   const host=document.getElementById('paDemoMount');
   if(!host||document.getElementById('paDemoButton'))return;
@@ -10,7 +18,7 @@ function mount(){
   button.id='paDemoButton';button.className='btn secondary paDemoButton';button.type='button';
   button.innerHTML='<b>⚔ Cuba Demo</b><small>Pilih darjah · terus ke battlefield</small>';
   button.onclick=open;host.appendChild(button);
-  document.body.insertAdjacentHTML('beforeend',`<div id="paDemoOverlay" class="paDemoOverlay hidden" role="dialog" aria-modal="true" aria-labelledby="paDemoTitle"><section class="paDemoCard"><button class="paDemoClose" type="button" onclick="PADemo.close()" aria-label="Tutup">×</button><div class="eyebrow">DEMO BATTLEFIELD</div><h2 id="paDemoTitle">Pilih Darjah</h2><p>Soalan akan disesuaikan dengan darjah pilihan. Tiada akaun atau progres diperlukan.</p><div class="paDemoGrades" role="radiogroup" aria-label="Pilih darjah">${grades.map(grade=>`<button class="paDemoGrade${grade===2?' active':''}" type="button" role="radio" aria-checked="${grade===2?'true':'false'}" data-demo-grade="${grade}" onclick="PADemo.selectGrade(${grade})"><b>Darjah ${grade}</b><small>${grade===1?'Asas nombor':'Latihan teras'}</small></button>`).join('')}</div><button id="paDemoStart" class="btn primary paDemoStart" type="button" onclick="PADemo.start()">Masuk ke Battlefield</button><small class="paDemoNote">Wira dan Aurora akan menanti di pentas Segel.</small></section></div>`);
+  document.body.insertAdjacentHTML('beforeend',`<div id="paDemoOverlay" class="paDemoOverlay hidden" role="dialog" aria-modal="true" aria-labelledby="paDemoTitle"><section class="paDemoCard"><button class="paDemoClose" type="button" onclick="PADemo.close()" aria-label="Tutup">×</button><div class="eyebrow">DEMO BATTLEFIELD</div><h2 id="paDemoTitle">Pilih Darjah</h2><p>Setiap topik teras muncul sekurang-kurangnya dua kali. Tiada akaun atau progres diperlukan.</p><div class="paDemoGrades" role="radiogroup" aria-label="Pilih darjah">${grades.map(grade=>`<button class="paDemoGrade${grade===2?' active':''}" type="button" role="radio" aria-checked="${grade===2?'true':'false'}" data-demo-grade="${grade}" onclick="PADemo.selectGrade(${grade})"><b>Darjah ${grade}</b><small>${demoScope(grade)}</small></button>`).join('')}</div><button id="paDemoStart" class="btn primary paDemoStart" type="button" onclick="PADemo.start()">Masuk ke Battlefield</button><small class="paDemoNote">Wira dan Aurora akan menanti di pentas Segel.</small></section></div>`);
 }
 
 function open(){document.getElementById('paDemoOverlay')?.classList.remove('hidden')}
