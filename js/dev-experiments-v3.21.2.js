@@ -110,6 +110,7 @@
     if(typeof showRewardToast==='function')showRewardToast(`DEV Force Typed ${db.devForceTypedAnswer?'ON':'OFF'}`);
   }
   function ensureDevExperimentControls(){
+    if(window.PA_FOCUSED_DEV_MODE)return;
     const panel=document.getElementById('devPanel');if(!panel||panel.querySelector(`[data-dev-experiments="${VERSION}"]`))return;
     // Remove stale v3.21.1 experiment box if a hot-reload kept it in the DOM.
     panel.querySelectorAll('.paDevExperiment').forEach(x=>x.remove());

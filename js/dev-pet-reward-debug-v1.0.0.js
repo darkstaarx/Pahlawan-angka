@@ -56,6 +56,7 @@
  }
 
  const state={grade:null,level:null,rotation:0,nearUnlock:false};
+ let runtimeWaits=0;
  function readState(){
   const data=root.db;
   if(state.grade===null)state.grade=integer(data?.schoolGrade,1,1,6);
@@ -87,6 +88,9 @@
  function mount(){
   const host=root.document?.getElementById('devPetRewardDebug');
   if(!host)return;
+  host.parentElement?.querySelectorAll('[data-pa-qsv2-dev],[data-pa-qsv2-live],[data-pa-dimensi-dev],[data-dev-experiments],[data-dev-boss-lab],[data-coach-games-dev]').forEach(node=>node.remove());
+  if(!root.PetCollection&&runtimeWaits<100){runtimeWaits+=1;setTimeout(mount,50);return}
+  runtimeWaits=0;
   const report=readState();
   host.innerHTML=markup(report);
   host.querySelectorAll('[data-pet-debug]').forEach(control=>control.addEventListener('change',event=>{

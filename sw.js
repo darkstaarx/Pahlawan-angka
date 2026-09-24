@@ -1,4 +1,4 @@
-// App shell v3.84.30 — safe pet reward debugger and cleaner developer tools.
+// App shell v3.84.31 — focused DEV panel waits for the pet runtime.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[

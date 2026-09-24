@@ -44,6 +44,7 @@
   }
   function resetSession(){const b=bridge();if(b&&typeof b.resetShadowMetrics==='function')b.resetShadowMetrics();refresh()}
   function ensureControls(){
+    if(window.PA_FOCUSED_DEV_MODE)return;
     const panel=document.getElementById('devPanel');
     if(!panel||panel.querySelector('[data-pa-qsv2-dev="3.36.0"]')){refresh();return}
     const box=document.createElement('div');

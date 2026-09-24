@@ -1,7 +1,8 @@
 // Pahlawan Angka v3.42.0 — DEV inspection controls for controlled + beta LIVE rollout.
 (()=>{
- 'use strict';
- const VERSION='3.42.0';
+'use strict';
+ if(window.PA_FOCUSED_DEV_MODE)return;
+const VERSION='3.42.0';
  function devActive(){try{return !!(db&&typeof isDevMode==='function'&&isDevMode())}catch(_){return false}}
  function toast(m){if(typeof showRewardToast==='function')showRewardToast(m);else console.info('[QS v2 LIVE]',m)}
  function cutover(){return window.PAD3Topic7LiveCutover||null}

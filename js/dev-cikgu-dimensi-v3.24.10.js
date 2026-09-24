@@ -121,6 +121,7 @@
   }
 
   function ensureControls(){
+    if(window.PA_FOCUSED_DEV_MODE)return;
     const panel=document.getElementById('devPanel');
     if(!panel||panel.querySelector('[data-pa-dimensi-dev="3.24.10"]')){updateStatus();return}
 

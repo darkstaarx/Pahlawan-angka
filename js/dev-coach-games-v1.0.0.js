@@ -68,6 +68,7 @@
     return true;
   }
   function mount(){
+    if(window.PA_FOCUSED_DEV_MODE)return;
     const panel=document.getElementById('devPanel');if(!panel||panel.querySelector('[data-coach-games-dev]')||!allowed()||!api())return;
     const box=document.createElement('section');box.className='devScenario';box.setAttribute('data-coach-games-dev','1');
     box.innerHTML='<b>Mini-game Cikgu Dimensi</b><p class="mut devMiniCopy">Enam aktiviti interaktif. Preview tidak mengubah kemajuan murid.</p><div class="devLabGrid"></div>';

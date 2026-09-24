@@ -22,6 +22,7 @@
   }
 
   function ensureBossLab(){
+    if(window.PA_FOCUSED_DEV_MODE)return;
     const panel=document.getElementById('devPanel');
     if(!panel||!devActive())return;
     let box=panel.querySelector(`[data-dev-boss-lab="${VERSION}"]`);
