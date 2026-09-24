@@ -622,12 +622,7 @@ body[data-screen="hub"] #hub,body[data-screen="treasure"] #treasure,body[data-sc
 #enemy.pet-hit .sprite{animation:petFollowUpReaction .33s ease-out both}
 @keyframes petFollowUpReaction{0%,100%{transform:translateX(0)}22%{transform:translateX(7px) rotate(2deg);filter:brightness(1.7)}55%{transform:translateX(-3px) rotate(-1deg)}}
 
-/* Phase 3.6.2 — compact DEV reward tools */
-.devRewardGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.devRewardGrid .btn{min-height:40px;padding:9px 10px;font-size:11px;white-space:normal;line-height:1.2}
 .devMiniCopy{font-size:11px;line-height:1.45;margin:0 0 9px}
-.dangerGhost{border:1px solid rgba(255,100,120,.45)!important;color:#ff9aaa!important;background:rgba(255,70,90,.08)!important}
-@media(max-width:430px){.devRewardGrid{grid-template-columns:1fr 1fr}.devRewardGrid .btn{font-size:10px}}
 
 /* Phase 3.6.3: dedicated Misi screen + fixed DEV control */
 .devQuickBtn{border:1px solid #f3c84b;background:#2b2410;color:#ffd95a;font:900 11px/1 system-ui;border-radius:10px;padding:8px 9px;margin-right:7px;letter-spacing:.08em;box-shadow:0 0 0 1px #0005 inset}.devQuickBtn.hidden{display:none}

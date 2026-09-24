@@ -3,6 +3,7 @@
 <meta name="theme-color" content="#08101d">
 <link rel="stylesheet" href="css/demo-result-child-v3.56.6.css?v=3.56.6">
 <link rel="stylesheet" href="css/pet-battlefield-dev-v1.0.0.css?v=1.0.1">
+<link rel="stylesheet" href="css/dev-pet-reward-debug-v1.0.0.css?v=1.0.0">
 <link rel="stylesheet" href="css/learner-review-v1.css?v=3.57.0">
 <link rel="stylesheet" href="css/written-arithmetic-v1.0.0.css?v=3.84.21">
 <link rel="stylesheet" href="css/teman-reveal-v1.0.0.css?v=3.84.16"><link rel="stylesheet" href="css/teman-reveal-stars-v1.0.0.css?v=3.84.16">
@@ -10,6 +11,7 @@
 <meta name="application-name" content="Pahlawan Angka">
 <script>window.PA_CIKGU_DIMENSI_ENABLED=false;</script>
 <script src="js/pet-battlefield-dev-v1.0.0.js?v=1.0.1"></script>
+<script defer src="js/dev-pet-reward-debug-v1.0.0.js?v=1.0.0"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Pahlawan Angka"><link rel="manifest" href="manifest.webmanifest?v=3.10.0"><link rel="icon" type="image/png" sizes="32x32" href="assets/icons/pa-32.png?v=3.10.0"><link rel="icon" type="image/png" sizes="64x64" href="assets/icons/pa-64.png?v=3.10.0"><link rel="apple-touch-icon" sizes="180x180" href="assets/icons/pa-180.png?v=3.10.0">
@@ -173,10 +175,8 @@
       <label><span>Skill / subtopik</span><select id="devSkill"></select></label>
     </div>
     <div class="row"><button class="btn devPrimary" onclick="startDevSkill()">🧪 Test Skill</button><button class="btn ghost small" onclick="devRandomSkill()">Random Skill</button></div>
-    <div class="devScenario"><b>Pratonton Bentuk Lazim</b><p class="mut devMiniCopy">Terus buka satu contoh atas pentas Segel. Tiada EXP atau progress direkodkan.</p><div class="devTerrainGrid"><button type="button" data-written-preview="add" onclick="openWrittenArithmeticPreview('add')">Tambah</button><button type="button" data-written-preview="sub" onclick="openWrittenArithmeticPreview('sub')">Tolak</button><button type="button" data-written-preview="mul" onclick="openWrittenArithmeticPreview('mul')">Darab</button><button type="button" data-written-preview="div" onclick="openWrittenArithmeticPreview('div')">Bahagi</button></div></div>
-    <div class="devScenario"><b>Segel Teman Test</b><p class="mut devMiniCopy">Buka pentas Segel untuk uji enam Teman yang terkunci, mood sedih dan rescue gembira. Tiada EXP atau progress direkodkan.</p><button id="devOneHitBtn" class="btn ghost small devToggle" onclick="devToggleOneHit()" aria-pressed="false">⚔ 1-Hit Kill: OFF</button><button id="devBattlefieldBtn" class="btn devPrimary small" type="button" onclick="startBattlefieldDev()">✨ Segel Teman Test</button><button class="btn ghost small" type="button" onclick="previewTemanBaharu()">🔍 Preview Teman Baharu</button></div>
-    <div class="devScenario"><b>Terrain Preview</b><p class="mut devMiniCopy">Buka battle terus dengan dunia topik yang dipilih.</p><div class="devTerrainGrid"><button onclick="devPreviewTerrain('number')">Nombor</button><button onclick="devPreviewTerrain('operation')">Operasi</button><button onclick="devPreviewTerrain('fraction')">Pecahan</button><button onclick="devPreviewTerrain('money')">Wang</button><button onclick="devPreviewTerrain('time')">Masa</button><button onclick="devPreviewTerrain('measure')">Ukuran</button><button onclick="devPreviewTerrain('shape')">Ruang</button><button onclick="devPreviewTerrain('data')">Data</button></div></div>
-    <div class="devScenario"><b>Khazanah / Reward Test</b><p class="mut devMiniCopy">Tak perlu kalahkan boss. Buka semua reward atau equip terus untuk semak placement dalam battle.</p><div class="devRewardGrid"><button class="btn devPrimary small" onclick="devUnlockAllRewards()">Buka Semua Khazanah</button><button class="btn ghost small" onclick="devOpenTreasure('pets')">Buka Haiwan Teman</button><button class="btn ghost small" onclick="devOpenTreasure('auras')">Buka Aura</button><button class="btn ghost small" onclick="devOpenTreasure('badges')">Buka Lencana</button><button class="btn ghost small" onclick="devEquipPet('aurora')">Equip Aurora</button><button class="btn ghost small" onclick="devEquipAura('numbers')">Equip Aura Nombor</button><button class="btn dangerGhost small" onclick="devResetRewards()">Reset Khazanah</button></div></div>
+    <div class="devScenario"><b>Segel Teman Visual</b><p class="mut devMiniCopy">Uji enam Teman, mood rescue dan paparan baharu dalam sesi sementara. Tiada EXP atau progress direkodkan.</p><button id="devBattlefieldBtn" class="btn devPrimary small" type="button" onclick="startBattlefieldDev()">✨ Uji Pentas Teman</button><button class="btn ghost small" type="button" onclick="previewTemanBaharu()">🔍 Preview Teman Baharu</button><div id="devVisualTools" class="devVisualTools"></div></div>
+    <div id="devPetRewardDebug"></div>
   </div>
   </div>
 </div>

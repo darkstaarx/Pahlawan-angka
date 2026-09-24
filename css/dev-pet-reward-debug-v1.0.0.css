@@ -1,0 +1,23 @@
+.devVisualTools{display:inline-flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+.petRewardDebug{border-color:#315d86;background:linear-gradient(145deg,#0b2038,#071426);overflow:hidden}
+.petRewardDebugHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.petRewardDebugHead b{display:block;font-size:17px;color:#f8e8b2;margin-top:2px}
+.petRewardKicker{display:block;color:#80d9f8;font-size:9px;font-weight:900;letter-spacing:.09em}
+.petRewardBadge{border:1px solid #dcb95c;border-radius:999px;padding:4px 8px;color:#ffe6a1;background:#392c12;font-size:10px;font-weight:800}
+.petRewardControls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.petRewardControls label{display:grid;gap:4px;color:#b9d7ef;font-size:10px;font-weight:800}
+.petRewardControls select,.petRewardControls input{min-width:0;border:1px solid #527aa1;border-radius:9px;background:#081425;color:#f7fbff;padding:9px;font:inherit}
+.petRewardPet{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 12px;border:1px solid #456d93;border-radius:12px;background:#102b48}
+.petRewardPet small,.petRewardPet span{display:block;color:#a9c8e2;font-size:10px}
+.petRewardPet strong{display:block;color:#ffdc7f;font-size:16px;margin:2px 0}
+.petRewardStep{display:flex;gap:5px}
+.petRewardStep button{width:32px;height:32px;border:1px solid #6b95b9;border-radius:8px;background:#173a5d;color:#fff;font-weight:900}
+.petRewardProgress{margin:12px 0}
+.petRewardProgress>div{display:flex;justify-content:space-between;color:#dceafb;font-size:11px}
+.petRewardProgress i{display:block;height:8px;border-radius:999px;background:#06101d;overflow:hidden;margin-top:5px}
+.petRewardProgress em{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#3bc2ed,#ffe078)}
+.petRewardFacts{display:grid;gap:7px}
+.petRewardFacts span{padding:8px 9px;border-radius:8px;background:rgba(0,0,0,.19);color:#d3e6f6;font-size:10px}
+.petRewardFacts b{display:inline-block;min-width:128px;color:#81d9f7}
+.petRewardActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+@media(max-width:420px){.petRewardFacts b{display:block;margin-bottom:2px}.petRewardControls{grid-template-columns:1fr}.petRewardDebugHead b{font-size:16px}}

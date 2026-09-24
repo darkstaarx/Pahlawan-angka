@@ -24,7 +24,6 @@ const REWARD_AURAS={
 };
 function ensureRewards(){
  if(!db)return; db.rewards=db.rewards||{}; db.rewards.pets=db.rewards.pets||{}; db.rewards.auras=db.rewards.auras||{}; db.rewards.badges=db.rewards.badges||{};
- const devGrid=document.querySelector('.devRewardGrid');if(devGrid&&!document.getElementById('devShopCoinsBtn')){const b=document.createElement('button');b.id='devShopCoinsBtn';b.className='btn ghost small';b.textContent='+500 Syiling Kedai';b.onclick=devAddShopCoins;devGrid.insertBefore(b,devGrid.children[1]||null);}
  if(!db.rewards.auraMigrationV386){const now=Date.now(),earned={1:'numbers',2:'operations',3:'fractions',8:'data'};Object.entries(earned).forEach(([ch,id])=>{if((db.chapterStars&&Number(db.chapterStars[ch])>0)||(db.completedMissions&&Number(db.completedMissions[ch])>0))db.rewards.auras[id]=db.rewards.auras[id]||{unlockedAt:now,migrated:true}});db.rewards.auraMigrationV386=true;}
  db.rewards.equippedPet=db.rewards.equippedPet||null; db.rewards.equippedAura=(db.rewards.equippedAura&&db.rewards.auras[db.rewards.equippedAura])?db.rewards.equippedAura:null; db.rewards.firstMissionDone=!!db.rewards.firstMissionDone; db.rewards.firstBossDone=!!db.rewards.firstBossDone; db.rewards.bossStretchWin=!!db.rewards.bossStretchWin;
  if(!db.shopWelcomeV1){db.coins=(db.coins||0)+50;db.shopWelcomeV1=true;save();}
@@ -77,38 +76,6 @@ function renderTreasure(){
  const badges=document.getElementById('badgeCollection'); if(badges)badges.innerHTML=Object.values(REWARD_BADGES).map(b=>{const record=db.rewards.badges[b.id],owned=!!record,current=Math.min(b.target,Number(b.metric?.()||0)),pct=Math.round(current/b.target*100),date=record?.unlockedAt?new Date(record.unlockedAt).toLocaleDateString('ms-MY',{day:'numeric',month:'short',year:'numeric'}):'';return `<article class="badgeCard ${owned?'owned':'locked'}"><div class="badgeMedal">${owned?b.icon:'?'}</div><b>${b.name}</b><small>${b.desc}</small><div class="badgeProgress" aria-label="${current} daripada ${b.target}"><i style="width:${pct}%"></i></div><span>${owned?`✓ Diperoleh · ${date}`:`${current}/${b.target} kemajuan`}</span></article>`}).join('');
 }
 function shopCard(type,item){const store=type==='pet'?db.rewards.pets:db.rewards.auras,owned=!!store[item.id],eq=type==='pet'?db.rewards.equippedPet===item.id:db.rewards.equippedAura===item.id,img=type==='pet'?item.front:item.image,short=Math.max(0,item.price-(db.coins||0)),action=type==='pet'?`equipPet('${item.id}')`:`equipAura('${item.id}')`,remove=type==='pet'?'unequipPet()':'unequipAura()';return `<div class="petCard ${type==='aura'?'auraCard':''} ${owned?'owned':'shopItem'}"><div class="petArtWrap ${type==='aura'?'auraArtWrap':''}"><img src="${img}" alt="${item.name}"></div><div class="petInfo"><div class="petStatus">${eq?'Dilengkapi':owned?'Dimiliki':'Kedai'}</div><h3>${item.name}</h3><p>${item.desc}</p>${owned?`<button class="btn ${eq?'secondary':'primary'} small" onclick="${eq?remove:action}">${eq?'Tanggalkan':'Lengkapi'}</button>`:`<button class="btn primary small shopBuy" onclick="buyReward('${type}','${item.id}')">🪙 ${item.price}</button><small class="coinShort">${short?`Lagi ${short} syiling`:'Boleh dibeli sekarang'}</small>`}</div></div>`}
-function devAddShopCoins(){if(typeof isDevMode==='function'&&!isDevMode())return;db.coins=(db.coins||0)+500;save();renderTreasure();if(typeof renderHub==='function')renderHub();showRewardToast('DEV: +500 Syiling Kedai')}
-function devUnlockAllRewards(){
- if(typeof isDevMode==='function'&&!isDevMode())return;
- ensureRewards();
- const now=Date.now();
- Object.keys(REWARD_PETS).forEach(id=>{db.rewards.pets[id]=db.rewards.pets[id]||{unlockedAt:now,dev:true}});
- Object.keys(REWARD_AURAS).forEach(id=>{db.rewards.auras[id]=db.rewards.auras[id]||{unlockedAt:now,dev:true}});
- Object.keys(REWARD_BADGES).forEach(id=>{db.rewards.badges[id]=db.rewards.badges[id]||{unlockedAt:now,dev:true}});
- db.rewards.firstMissionDone=true; db.rewards.firstBossDone=true; db.rewards.bossStretchWin=true;
- save(); renderTreasure(); if(typeof renderHub==='function')renderHub();
- showRewardToast('DEV: Semua Khazanah dibuka');
-}
-function devResetRewards(){
- if(typeof isDevMode==='function'&&!isDevMode())return;
- if(!db)return; db.rewards={pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,auraMigrationV386:true,firstMissionDone:false,firstBossDone:false,bossStretchWin:false};
- save(); renderBattlePet(); renderTreasure(); if(typeof renderHub==='function')renderHub();
- showRewardToast('DEV: Khazanah direset');
-}
-function devEquipPet(id){
- if(typeof isDevMode==='function'&&!isDevMode())return;
- ensureRewards();
- if(REWARD_PETS[id]){db.rewards.pets[id]=db.rewards.pets[id]||{unlockedAt:Date.now(),dev:true};db.rewards.equippedPet=id;save();renderBattlePet();renderTreasure();showRewardToast(`DEV: ${REWARD_PETS[id].name} dilengkapi`)}
-}
-function devEquipAura(id){
- if(typeof isDevMode==='function'&&!isDevMode())return;ensureRewards();
- if(REWARD_AURAS[id]){db.rewards.auras[id]=db.rewards.auras[id]||{unlockedAt:Date.now(),dev:true};db.rewards.equippedAura=id;save();renderTreasure();showRewardToast(`DEV: ${REWARD_AURAS[id].name} dilengkapi`)}
-}
-function devOpenTreasure(tab='pets'){
- if(typeof isDevMode==='function'&&!isDevMode())return;
- ensureRewards(); renderTreasure(); treasureTab(tab); screen('treasure');
-}
-
 function processMissionRewards(){
  ensureRewards(); if(!db.rewards.firstMissionDone){db.rewards.firstMissionDone=true;queueUnlock('badge','pemula')}
  if(sess?.bossDefeated){db.rewards.firstBossDone=true;const ch=String(sess.missionChapter||'');if(ch==='1')queueUnlock('badge','nombor');if(ch==='2')queueUnlock('badge','operasi');if(ch==='3')queueUnlock('badge','pecahan');}

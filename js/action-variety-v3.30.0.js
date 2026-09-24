@@ -69,7 +69,7 @@
     const arena=document.getElementById('battleArena');if(arena){delete arena.dataset.heroAttack;delete arena.dataset.heroKind}
   };
   function ensureAttackLab(){
-    const grid=document.querySelector('.devRewardGrid'),panel=document.getElementById('devPanel');if(!grid||!panel||document.getElementById('devAttackLabBtn'))return;
+    const grid=document.getElementById('devVisualTools'),panel=document.getElementById('devPanel');if(!grid||!panel||document.getElementById('devAttackLabBtn'))return;
     const button=document.createElement('button');button.id='devAttackLabBtn';button.className='btn ghost small';button.textContent='🎞 Attack Lab';button.onclick=window.openAttackLab;grid.appendChild(button);
   }
   function labMarkup(){
