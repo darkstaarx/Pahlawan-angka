@@ -234,6 +234,11 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   display:block;font-size:22px;font-weight:950;color:#fff6df;
   font-variant-numeric:tabular-nums
 }
+.segelDemoSummary{
+  margin:0 2px 13px;padding:9px 10px;border-radius:10px;
+  background:#0d2039;border:1px solid #b78b4766;
+  font-size:11px;line-height:1.4;font-weight:700;color:#d9e5f3;text-align:left
+}
 
 .resultCoach{
   display:flex;align-items:flex-start;text-align:left;

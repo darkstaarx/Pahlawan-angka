@@ -1,4 +1,4 @@
-// App shell v3.84.28 — two questions per topic in the guest Segel demo.
+// App shell v3.84.29 — concise grade demo with topic summary.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[

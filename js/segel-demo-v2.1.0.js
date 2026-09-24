@@ -1250,30 +1250,46 @@
     if(!pool.length)console.warn('[segel-demo] topik tiada kemahiran, guna kolam darjah:',chapter);
     return pool;
   }
-  /* Demo tetamu ialah peta ringkas silibus, bukan cabaran 10 soalan rawak.
-     Satu `domain` pada GRAPH ialah topik yang dibaca murid di HUD. Susun satu
-     pusingan semua topik dahulu, kemudian pusingan kedua; dengan itu setiap
-     topik hadir sekurang-kurangnya dua kali dan Darjah 6 memang mempunyai
-     laluan lebih luas daripada Darjah 1. Jika sebuah topik hanya mempunyai
-     satu kemahiran teras, generator menghasilkan dua variasi soalan daripada
-     kemahiran itu — masih dua peluang bebas, bukan satu soalan diulang. */
-  function guestTopicPlan(grade){
+  /* Demo tetamu ialah peta ringkas silibus, bukan cabaran panjang atau
+     ujian penuh. Satu `domain` pada GRAPH ialah topik yang murid baca di HUD.
+     Darjah 1 dan 2 masih berlatih operasi asas; mulai Darjah 3, tambah/tolak
+     tidak muncul sebagai topik berdiri sendiri kerana ia sudah menjadi alat
+     di dalam soalan pecahan, wang, masa, ukuran dan aplikasi yang lain. */
+  const GUEST_DEMO_LIMITS={1:12,2:14,3:15,4:15,5:15,6:15};
+  const EARLY_REPEAT_TOPICS=['Nombor','Operasi','Wang','Masa','Ukuran','Data','Pecahan','Ruang','Perpuluhan'];
+  const UPPER_REPEAT_TOPICS=['Pecahan','Perpuluhan','Peratus','Nisbah','Kadaran','Data','Wang','Masa','Ukuran','Ruang','Nombor'];
+  function guestTopicGroups(grade){
     let skills=[];
     try{ skills=GRAPH.skills.filter(x=>x.grade===grade&&x.role==='core') }catch(_){}
-    if(!skills.length)return [];
     const groups=new Map();
     skills.forEach(skill=>{
       const topic=skill.domain||`Bab ${skill.chapter||'lain'}`;
+      if(grade>=3&&topic==='Operasi')return;
       if(!groups.has(topic))groups.set(topic,[]);
       groups.get(topic).push(skill.id);
     });
-    const first=[],second=[];
+    return groups;
+  }
+  function guestTopicScope(grade){
+    const groups=guestTopicGroups(grade), limit=GUEST_DEMO_LIMITS[grade]||15;
+    return {topics:groups.size,questions:Math.min(limit,groups.size*2)};
+  }
+  function guestTopicPlan(grade){
+    const groups=guestTopicGroups(grade), scope=guestTopicScope(grade);
+    if(!groups.size)return [];
+    const first=[],followUp=[],primaryByTopic=new Map();
     mix([...groups.keys()]).forEach(topic=>{
       const choices=mix([...groups.get(topic)]);
+      primaryByTopic.set(topic,choices[0]);
       first.push(choices[0]);
-      second.push(choices[1]||choices[0]);
     });
-    return [...first,...second];
+    const priority=grade<=2?EARLY_REPEAT_TOPICS:UPPER_REPEAT_TOPICS;
+    [...new Set([...priority,...groups.keys()])].forEach(topic=>{
+      if(followUp.length>=scope.questions-first.length||!groups.has(topic))return;
+      const choices=mix([...groups.get(topic)]);
+      followUp.push(choices.find(id=>id!==primaryByTopic.get(topic))||choices[0]);
+    });
+    return [...first,...followUp];
   }
   function skillPool(){
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;
@@ -1481,6 +1497,10 @@
        pada skrin keputusan walaupun kedua-duanya betul. Yang ditunjuk sekarang
        ialah nombor soalan sahaja; bar segel di atas sudah menunjukkan matlamat
        sebenar. */
+    if(entryMode?.guestDemo){
+      const topic=meta.domain||`Bab ${meta.chapter||'lain'}`;
+      if(!run.coveredTopics.includes(topic))run.coveredTopics.push(topic);
+    }
     const count=entryMode?.guestDemo
       ? `Soalan ${run.asked+1} / ${run.questionTarget}`
       : `Soalan ${run.asked+1}`;
@@ -1656,6 +1676,7 @@
       $('segelStatAcc').textContent='—';
       popStars(0);   // tiada bintang, dan `pop` turut dibersihkan
       $('segelCoachSay').textContent='Cuba semula. Progress murid tidak terjejas.';
+      $('segelDemoSummary').hidden=true;
       $('segelDone').hidden=false;
       $('segelDone').scrollTop=0;
       return;
@@ -1670,6 +1691,12 @@
     $('segelStatAcc').textContent=acc+'%';
     popStars(stars);
     $('segelCoachSay').textContent=devSubject(coachLine(t,acc,run.asked));
+    const summary=$('segelDemoSummary');
+    if(entryMode?.guestDemo&&summary){
+      const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;
+      summary.textContent=`Demo Darjah ${grade} · ${run.asked}/${run.questionTarget} soalan · ${run.coveredTopics.length} topik diteroka. Keputusan ini tidak disimpan.`;
+      summary.hidden=false;
+    }else if(summary)summary.hidden=true;
     $('segelDone').hidden=false;
     $('segelDone').scrollTop=0;
   }
@@ -1679,7 +1706,7 @@
      ================================================================= */
   function startRun(){
     const pool=skillPool();
-    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,q:null,usedHint:false,
+    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,q:null,usedHint:false,coveredTopics:[],
          writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
@@ -1916,6 +1943,7 @@
     pause:()=>stage?.pause?.(),
     clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
     tiers:TIERS,
+    guestScope:grade=>guestTopicScope(Number(grade)||1),
     state:()=>run
   };
 })();
