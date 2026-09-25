@@ -117,13 +117,52 @@ function parentActivityList(){
  return `<div class="parentTimeline">${rows.map(x=>`<article><time>${new Date(x.t).toLocaleString('ms-MY',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</time><span></span><p>${parentSafe(parentLogText(x.text))}</p></article>`).join('')}</div>`;
 }
 
+function parentRestuFocus(core,summary){
+ return summary?.mission||summary?.priority?.[0]||core?.[0]||null;
+}
+function parentRestuState(){
+ const value=db.restuCheckin||{};
+ const today=new Date().toLocaleDateString('ms-MY'),last=value.lastAt?new Date(value.lastAt).toLocaleDateString('ms-MY'):'';
+ return {...value,acknowledgedToday:today===last,snoozed:Number(value.snoozedUntil||0)>Date.now()};
+}
+function parentRestuAction(action,skillId){
+ const now=Date.now(),state=db.restuCheckin||{};
+ if(action==='snooze'){
+  db.restuCheckin={...state,snoozedUntil:now+7*24*60*60*1000};
+  log('Restu Ibu Bapa ditangguhkan untuk seminggu.');
+  save();window.PACloud?.syncSaveNow?.();
+  if(typeof showRewardToast==='function')showRewardToast('Baik, kita semak semula lain kali.');
+ }else{
+  db.restuCheckin={...state,lastAt:now,lastSkillId:skillId||state.lastSkillId||null,snoozedUntil:0};
+  log('Restu Ibu Bapa: ibu bapa berbual sebentar bersama anak.');
+  save();window.PACloud?.syncSaveNow?.();
+  if(typeof showRewardToast==='function')showRewardToast('Restu dicatat · terima kasih menemani.');
+ }
+ renderParent();tab('restu');
+}
+function parentRestuOpenFocus(skillId){
+ if(skillId&&typeof openGuardianFocus==='function')openGuardianFocus(skillId);
+}
+function renderParentRestu(focus){
+ const state=parentRestuState(),name=parentSafe(db.name||'anak'),title=parentSafe(focus?.title||'kemahiran semasa');
+ const acknowledgeLabel=state.acknowledgedToday?'':state.snoozed?'Semak sekarang':'Dah berbual';
+ const status=state.snoozed
+  ? `<div class="restuStatus quiet"><span>◷</span><b>Tiada apa yang perlu dibuat sekarang.</b><small>Kita semak semula apabila keluarga sudah lapang.</small></div>`
+  : state.acknowledgedToday
+   ? `<div class="restuStatus done"><span>✓</span><b>Sudah direkod untuk hari ini.</b><small>Terima kasih kerana memberi ruang dan sokongan kepada ${name}.</small></div>`
+   : '';
+ return `<section class="card restuParentHero"><div class="restuParentIcon" aria-hidden="true">🤝</div><div><div class="eyebrow">RESTU IBU BAPA</div><h2>Sokongan kecil, bukan tugasan tambahan</h2><p>Tak perlu semak setiap sesi. Bila ada masa, luangkan kira-kira dua minit untuk dengar cara ${name} berfikir.</p></div></section>
+ <section class="card restuCheckinCard"><div class="eyebrow">CHECK-IN 2 MINIT</div><h3>Satu soalan untuk dibualkan</h3><p class="restuPrompt">“${focus?`Boleh terangkan bagaimana kamu dapat jawapan untuk ${title}?`:'Apa yang paling mudah atau menarik dalam misi hari ini?'}”</p><p class="restuPromptHint">Dengar cara anak menerangkan. Tak perlu betulkan semua perkara — cukup tunjukkan bahawa usaha mereka diperhatikan.</p>${status}<div class="restuParentActions">${acknowledgeLabel?`<button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">${acknowledgeLabel}</button>`:''}<button class="btn ghost small" type="button" onclick="parentRestuAction('snooze','${parentSafe(focus?.id||'')}')">Lain kali</button></div></section>
+ <section class="card restuFocusCard"><div><div class="eyebrow">FOKUS ANAK SEKARANG</div><h3>${title}</h3><p>Ini cuma cadangan untuk perbualan. Cikgu akan teruskan latihan pendek dan beri ruang untuk anak mencuba sendiri. Jika mahu, parent boleh lihat latihan bersama.</p></div>${focus?.id&&typeof openGuardianFocus==='function'?`<button class="btn secondary small" type="button" onclick="parentRestuOpenFocus('${parentSafe(focus.id)}')">Lihat latihan pilihan</button>`:''}</section>`;
+}
+
 function renderParent(){
  updateFrontier();
  const g=coreGrade(),prev=Math.max(1,g-1),next=Math.min(6,g+1),core=GRAPH.skills.filter(x=>x.grade===g);
  const clean=learnerDisplayStats(),legacyAttempts=core.reduce((z,m)=>z+skillAttempts(scoreState(m.id)),0),legacyCorrect=core.reduce((z,m)=>z+Number(scoreState(m.id).correct||0),0),attempts=clean?.attempts||legacyAttempts,accuracy=clean?.independentRate??(legacyAttempts?Math.round(legacyCorrect/legacyAttempts*100):0);
  const recovering=GRAPH.skills.filter(x=>x.grade===prev&&scoreState(x.id).evidence>0),stretching=GRAPH.skills.filter(x=>x.grade===next&&scoreState(x.id).evidence>0),summary=parentPowerSummary(core,attempts),missionCopy=nextMissionCopy(summary.mission,summary.mission?scoreState(summary.mission.id):null);
  const strongCount=clean&&window.PALearnerReview?.skillReviews?window.PALearnerReview.skillReviews(learnerRows(),META).filter(x=>x.state==='strong').length:summary.strong.length;
- const strongLead=summary.strong[0]||null,priorityLead=summary.priority[0]||summary.mission||null;
+ const strongLead=summary.strong[0]||null,priorityLead=summary.priority[0]||summary.mission||null,restuFocus=parentRestuFocus(core,summary);
  document.getElementById("summaryTab").innerHTML=`
   <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">RINGKASAN ${parentSafe(db.name).toUpperCase()} · DARJAH ${g}</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p></div><img src="assets/coach/cikgu-wajar/parent-adviser.webp" alt="Cikgu Dimensi menerangkan kemajuan anak"></section>
   <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>${clean?'Soalan sebenar':'Cubaan direkod'}</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>${clean?'Betul sendiri':'Jawapan betul'}</small></div><div><span>✓</span><b>${strongCount}</b><small>Kemahiran mantap</small></div></div>
@@ -135,6 +174,7 @@ function renderParent(){
  document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat bukti latihan mengikut topik. Pilih “Latih” hanya jika mahu memberi tumpuan tambahan.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;
  document.getElementById("levelsTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">JULAT PEMBELAJARAN</div><h2>Asas dan cabaran</h2><p>Cikgu Dimensi boleh turun kepada asas atau naik kepada cabaran apabila bukti pembelajaran memerlukannya.</p></section><div class="parentLevelGrid"><div class="card"><h3>Pengukuhan asas</h3><small>${gradeLabel(prev)}</small>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Tiada pengukuhan tambahan diperlukan sekarang.</p>"}</div><div class="card"><h3>Cabaran lanjutan</h3><small>${gradeLabel(next)}</small>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div></div>`;
  document.getElementById("engineTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">AKTIVITI TERKINI</div><h2>Apa yang berlaku semasa latihan</h2><p>Hanya peristiwa pembelajaran penting dipaparkan di sini.</p></section><section class="card parentActivityCard">${parentActivityList()}</section>`;
+ document.getElementById("restuTab").innerHTML=renderParentRestu(restuFocus);
  tab("summary");
 }
 
@@ -145,7 +185,7 @@ function skillHTML(m,allowFocus){
  return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${evidence}${support}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
 }
 function tab(n){
- ["summary","core","levels","engine","settings"].forEach(x=>document.getElementById(x+"Tab").classList.toggle("hidden",x!==n));
+ ["summary","core","levels","engine","restu","settings"].forEach(x=>document.getElementById(x+"Tab").classList.toggle("hidden",x!==n));
  document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(b=>b.classList.toggle('active',b.dataset.parentTab===n));
 }
 function exportCSV(){let rows=[["Skill","Grade","Role","Title","Mastery","Confidence","Evidence","Correct","Wrong","Misconception"],...GRAPH.skills.map(m=>{let s=scoreState(m.id);return[m.id,m.grade,m.role,m.title,Math.round(s.mastery),Math.round(s.confidence),s.evidence,s.correct,s.wrong,topMis(s)]})];let csv=rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n"),blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pahlawan-angka-kemajuan.csv";a.click();URL.revokeObjectURL(a.href)}

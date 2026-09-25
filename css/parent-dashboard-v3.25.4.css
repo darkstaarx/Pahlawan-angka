@@ -36,3 +36,31 @@
  .parentSettingsIntro{align-items:flex-start;flex-direction:column}.parentSettingsIntro button{width:100%}
 }
 @media(min-width:760px){.parentLevelGrid{grid-template-columns:1fr 1fr}}
+
+#parent .restuParentHero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:14px;margin-bottom:10px;padding:18px;background:radial-gradient(circle at 90% 18%,#315b78 0,transparent 42%),linear-gradient(145deg,#173453,#0d1b30)}
+#parent .restuParentIcon{display:grid;place-items:center;width:54px;height:54px;border:1px solid #d5aa3d;border-radius:18px;background:#293d5a;font-size:28px;box-shadow:0 8px 18px #050d1c55}
+#parent .restuParentHero h2{margin:3px 0 5px;font-size:21px;line-height:1.18}
+#parent .restuParentHero p,#parent .restuFocusCard p{margin:0;color:var(--parent-muted);font-size:11px;line-height:1.5}
+#parent .restuCheckinCard{padding:17px;margin-bottom:10px;border-color:#435e7c;background:linear-gradient(145deg,#172c48,#0f1d32)}
+#parent .restuCheckinCard h3{margin:3px 0 8px;font-size:17px}
+#parent .restuPrompt{margin:0;padding:13px 14px;border-left:3px solid #f3c847;border-radius:0 13px 13px 0;background:#0a192e;color:#fff3bd;font-size:15px;font-weight:900;line-height:1.4}
+#parent .restuPromptHint{margin:9px 0 0;color:var(--parent-muted);font-size:10px;line-height:1.45}
+#parent .restuParentActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+#parent .restuParentActions .btn{min-width:118px}
+#parent .restuStatus{display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center;margin-top:14px;padding:10px 12px;border-radius:13px;background:#123b31;color:#b7f3d2}
+#parent .restuStatus.quiet{background:#263149;color:#d9e1ef}
+#parent .restuStatus>span{grid-row:span 2;display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:#1b6048;color:#fff;font-weight:950}
+#parent .restuStatus.quiet>span{background:#40516d}
+#parent .restuStatus b{font-size:11px}
+#parent .restuStatus small{margin-top:2px;color:#a6d9c1;font-size:9px;line-height:1.35}
+#parent .restuStatus.quiet small{color:#afbdd2}
+#parent .restuFocusCard{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px;margin-bottom:10px;background:linear-gradient(145deg,#142843,#0f1b2f)}
+#parent .restuFocusCard h3{margin:3px 0 4px;font-size:15px}
+#parent .restuFocusCard .btn{flex:0 0 auto}
+@media(max-width:430px){
+ #parent .restuParentHero{grid-template-columns:1fr;padding:15px}
+ #parent .restuParentIcon{width:44px;height:44px;font-size:23px;border-radius:14px}
+ #parent .restuParentHero h2{font-size:19px}
+ #parent .restuFocusCard{align-items:flex-start;flex-direction:column}
+ #parent .restuFocusCard .btn{width:100%}
+}
