@@ -58,6 +58,12 @@ function Q(prompt,answer,wrong,hint,kind="Adaptive",diagnostic=false,formatShift
  if(w.length!==3)throw new Error(`Pilihan unik tidak dapat dijana untuk jawapan: ${answer}`);
  return{prompt,answer,wrong:w.slice(0,3),hint,kind,diagnostic,formatShift}
 }
+function attachFractionShade(q,numerator,denominator,answerMode='fraction'){
+ q.shadeSpec={kind:'fraction',numerator,denominator,answerMode};
+ q.representation='fraction_area';
+ q.archetypeId=q.archetypeId||'fraction_shade_choice';
+ return q;
+}
 function N(v,tag){return{v,tag,label:v}}
 function R(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function pick(arr){return arr[R(0,arr.length-1)]}

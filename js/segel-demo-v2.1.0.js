@@ -1598,7 +1598,7 @@
 
   async function celebrateProduction(hostRun,q){
     if(!productionCurrent(hostRun,q))return;
-    run.locked=true;$('segelTag').style.opacity='0';toast('AURORA BEBAS!');await stage.rescue();if(!productionCurrent(hostRun,q))return;finishRun(true);window.PATemanReveal?.show?.(hostRun.temanRevealAward);hostRun.temanRevealAward=null;
+    run.locked=true;$('segelTag').style.opacity='0';toast('AURORA BEBAS!');await stage.rescue();if(!productionCurrent(hostRun,q))return;await stage.absorbCoins();if(!productionCurrent(hostRun,q))return;finishRun(true);window.PATemanReveal?.show?.(hostRun.temanRevealAward);hostRun.temanRevealAward=null;
   }
 
   /* Satu penamat sahaja: Aurora diselamatkan. Kalau soalan habis sebelum

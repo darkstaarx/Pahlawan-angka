@@ -22,6 +22,7 @@
 
  function answerSpec(q,id,ctx={}){
   const raw=text(q?.answer),compact=raw.replace(/\s+/g,''),grade=skillGrade(id);
+  if(q?.shadeSpec?.kind==='fraction')return{kind:'shade_choice',numerator:Number(q.shadeSpec.numerator),denominator:Number(q.shadeSpec.denominator),answerMode:q.shadeSpec.answerMode||'fraction'};
   const boss=(ctx?.isBoss===undefined&&ctx?.battleTier===undefined)?true:(ctx?.isBoss===true||ctx?.battleTier==='boss');
   const gated=spec=>boss?spec:{kind:'sigil_select',grade,gatedFrom:spec.kind,bossOnly:true};
   let m;
@@ -166,6 +167,25 @@
   forge.appendChild(chipGroup('Penyebut',componentCandidates(q,3,spec.denominator),v=>state.denominator=v));
   const submit=submitButton(q,'Tempa jawapan');submit.onclick=()=>{if(state.numerator===null||state.denominator===null||(spec.mixed&&state.whole===null)){forge.classList.add('needsValue');return}const got=`${spec.mixed?state.whole+' ':''}${state.numerator}/${state.denominator}`;deliver(q,submit,got,ctx,got===text(q.answer))};forge.appendChild(submit);root.appendChild(forge);
  }
+ function shadeCount(value,spec){
+  const raw=text(value),fraction=raw.match(/^(?:\d+\s+)?(\d+)\/(\d+)$/);
+  if(fraction)return Math.max(0,Math.min(spec.denominator,Math.round(Number(fraction[1])*spec.denominator/Number(fraction[2]))));
+  const decimal=Number(raw.replace(',','.'));
+  return Number.isFinite(decimal)?Math.max(0,Math.min(spec.denominator,Math.round(decimal*spec.denominator))):0;
+ }
+ function renderShadeChoice(q,root,ctx,spec){
+  const wrap=document.createElement('div');wrap.className='paShadeChoice';
+  const note=document.createElement('p');note.className='paShadeNote';note.textContent='Pilih jawapan. Petak akan diwarnakan seperti arahan soalan.';
+  const figure=document.createElement('div');figure.className='paShadeFigure';figure.setAttribute('role','img');figure.setAttribute('aria-label',`Rajah dibahagi kepada ${spec.denominator} bahagian sama besar`);figure.style.gridTemplateColumns=`repeat(${Math.min(spec.denominator,5)},minmax(0,1fr))`;
+  const cells=[];for(let i=0;i<spec.denominator;i++){const cell=document.createElement('span');cell.className='paShadeCell';cell.setAttribute('aria-hidden','true');figure.appendChild(cell);cells.push(cell)}
+  const status=document.createElement('output');status.className='paShadeStatus';status.setAttribute('aria-live','polite');status.textContent='Belum ada lorekan.';
+  const options=document.createElement('div');options.className='paShadeOptions';let selected=null;
+  const refresh=()=>{const count=selected===null?0:shadeCount(selected,spec);cells.forEach((cell,index)=>cell.classList.toggle('filled',index<count));status.textContent=selected===null?'Belum ada lorekan.':`Lorek ${selected}: ${count} daripada ${spec.denominator} petak.`};
+  const submit=submitButton(q,'Lorek & kunci jawapan');submit.disabled=true;
+  optionValues(q).forEach(o=>{const choice=button(o.label??o.v,'paShadeChoiceButton');choice.dataset.v=String(o.v);choice.dataset.questionToken=String(q.token);choice.onclick=()=>{selected=String(o.v);options.querySelectorAll('button').forEach(x=>x.classList.remove('selected'));choice.classList.add('selected');submit.disabled=false;refresh()};options.appendChild(choice)});
+  submit.onclick=()=>{if(selected===null){wrap.classList.add('needsValue');return}wrap.classList.remove('needsValue');deliver(q,submit,selected,ctx,text(selected)===text(q.answer))};
+  wrap.append(note,figure,status,options,submit);root.appendChild(wrap);refresh();
+ }
  function renderTime(q,root,ctx,spec){
   const values=optionValues(q).map(x=>text(x.v)).map(v=>v.match(/^(\d{1,2}):(\d{2})$/)).filter(Boolean),hours=unique([spec.hour,...values.map(m=>Number(m[1]))]).sort((a,b)=>a-b),minutes=unique([spec.minute,...values.map(m=>Number(m[2])),0,15,30,45]).filter(x=>x<60).sort((a,b)=>a-b),state={hour:null,minute:null};
   const dial=document.createElement('div');dial.className='paTimeDial';dial.append(chipGroup('Jam',hours,v=>state.hour=v),chipGroup('Minit',minutes.map(v=>String(v).padStart(2,'0')),v=>state.minute=Number(v)));
@@ -234,12 +254,12 @@
  }
  function render(q,answers,ctx){
   if(!q||!answers||!ctx?.respond)return false;if(!q.interaction)prepare(q,{skillId:q.skill,meta:typeof META!=='undefined'?META[q.skill]:null});
-  const spec=q.interaction.spec,labels={rune_entry:'Rune nombor',fraction_build:'Tempa pecahan',time_dial:'Dail masa',coordinate_plot:'Peta koordinat',sequence_build:'Rantai urutan',angle_build:'Protraktor kuasa',circle_build:'Jangka bulatan',circle_compare:'Banding jangka',circle_claim:'Semak pembinaan',space_tool_setup:'Panel alat ruang',claim_reason:'Bina hujah',tool_select:'Rak alat',step_sequence:'Susun prosedur',judgement_gate:'Gerbang keputusan',sigil_select:'Pilih sigil tepat'},root=rootFor(q,answers,labels[spec.kind]||'Cabaran interaktif');
-  if(spec.kind==='rune_entry')renderRune(q,root,ctx,spec);else if(spec.kind==='fraction_build')renderFraction(q,root,ctx,spec);else if(spec.kind==='time_dial')renderTime(q,root,ctx,spec);else if(spec.kind==='coordinate_plot')renderCoordinate(q,root,ctx,spec);else if(spec.kind==='sequence_build')renderSequence(q,root,ctx,spec);else if(spec.kind==='angle_build')renderAngle(q,root,ctx,spec);else if(spec.kind==='circle_build')renderCircle(q,root,ctx,spec);else if(spec.kind==='circle_compare')renderCircleCompare(q,root,ctx,spec);else if(spec.kind==='circle_claim')renderCircleClaim(q,root,ctx,spec);else if(spec.kind==='space_tool_setup')renderSpaceToolSetup(q,root,ctx,spec);else if(spec.kind==='claim_reason')renderClaimReason(q,root,ctx,spec);else if(spec.kind==='tool_select')renderToolSelect(q,root,ctx,spec);else if(spec.kind==='step_sequence')renderStepSequence(q,root,ctx,spec);else if(spec.kind==='judgement_gate')renderJudgement(q,root,ctx,spec);else renderSigils(q,root,ctx);return true;
+  const spec=q.interaction.spec,labels={rune_entry:'Rune nombor',fraction_build:'Tempa pecahan',shade_choice:'Lorek rajah',time_dial:'Dail masa',coordinate_plot:'Peta koordinat',sequence_build:'Rantai urutan',angle_build:'Protraktor kuasa',circle_build:'Jangka bulatan',circle_compare:'Banding jangka',circle_claim:'Semak pembinaan',space_tool_setup:'Panel alat ruang',claim_reason:'Bina hujah',tool_select:'Rak alat',step_sequence:'Susun prosedur',judgement_gate:'Gerbang keputusan',sigil_select:'Pilih sigil tepat'},root=rootFor(q,answers,labels[spec.kind]||'Cabaran interaktif');
+  if(spec.kind==='rune_entry')renderRune(q,root,ctx,spec);else if(spec.kind==='fraction_build')renderFraction(q,root,ctx,spec);else if(spec.kind==='shade_choice')renderShadeChoice(q,root,ctx,spec);else if(spec.kind==='time_dial')renderTime(q,root,ctx,spec);else if(spec.kind==='coordinate_plot')renderCoordinate(q,root,ctx,spec);else if(spec.kind==='sequence_build')renderSequence(q,root,ctx,spec);else if(spec.kind==='angle_build')renderAngle(q,root,ctx,spec);else if(spec.kind==='circle_build')renderCircle(q,root,ctx,spec);else if(spec.kind==='circle_compare')renderCircleCompare(q,root,ctx,spec);else if(spec.kind==='circle_claim')renderCircleClaim(q,root,ctx,spec);else if(spec.kind==='space_tool_setup')renderSpaceToolSetup(q,root,ctx,spec);else if(spec.kind==='claim_reason')renderClaimReason(q,root,ctx,spec);else if(spec.kind==='tool_select')renderToolSelect(q,root,ctx,spec);else if(spec.kind==='step_sequence')renderStepSequence(q,root,ctx,spec);else if(spec.kind==='judgement_gate')renderJudgement(q,root,ctx,spec);else renderSigils(q,root,ctx);return true;
  }
  function lock(){document.querySelectorAll('.paInteraction button,.paInteraction input').forEach(x=>x.disabled=true);document.querySelector('.paInteraction')?.classList.add('locked')}
  function unlockRetry(){const root=document.querySelector('.paInteraction');if(!root)return;root.classList.remove('locked');root.querySelectorAll('button:not(.no),input').forEach(x=>x.disabled=false)}
- function retryCopy(q){const type=q?.interaction?.type;return type==='sigil_select'?'Cuba sigil yang lain.':type==='coordinate_plot'?'Tandakan titik yang baharu.':type==='sequence_build'?'Susun semula rantai nombor.':type==='angle_build'?'Laraskan bukaan sudut semula.':type==='circle_build'?'Laraskan bukaan jangka semula.':type==='circle_compare'?'Banding semula bukaan jangka A dan B.':type==='circle_claim'?'Nilai dakwaan dan betulkan bukaan jangka.':type==='space_tool_setup'?'Semak semula bukaan jangka dan sudut pada panel alat.':type==='claim_reason'?'Padankan keputusan dengan sebab yang lebih tepat.':type==='tool_select'?'Pilih alat yang paling sesuai.':type==='step_sequence'?'Susun semula langkah mengikut prosedur yang betul.':type==='judgement_gate'?'Nilai semula dakwaan sebelum memilih Betul atau Salah.':'Bina jawapan sekali lagi.'}
+ function retryCopy(q){const type=q?.interaction?.type;return type==='shade_choice'?'Pilih pecahan lain dan lihat semula bilangan petak yang berwarna.':type==='sigil_select'?'Cuba sigil yang lain.':type==='coordinate_plot'?'Tandakan titik yang baharu.':type==='sequence_build'?'Susun semula rantai nombor.':type==='angle_build'?'Laraskan bukaan sudut semula.':type==='circle_build'?'Laraskan bukaan jangka semula.':type==='circle_compare'?'Banding semula bukaan jangka A dan B.':type==='circle_claim'?'Nilai dakwaan dan betulkan bukaan jangka.':type==='space_tool_setup'?'Semak semula bukaan jangka dan sudut pada panel alat.':type==='claim_reason'?'Padankan keputusan dengan sebab yang lebih tepat.':type==='tool_select'?'Pilih alat yang paling sesuai.':type==='step_sequence'?'Susun semula langkah mengikut prosedur yang betul.':type==='judgement_gate'?'Nilai semula dakwaan sebelum memilih Betul atau Salah.':'Bina jawapan sekali lagi.'}
  window.PAGameQuestionInteractions={version:VERSION,profiles:PROFILES,answerSpec,prepare,render,lock,unlockRetry,retryCopy,diagnoseWrongTag:wrongTag};
  document.documentElement?.setAttribute('data-game-question-interactions',VERSION);
 })();

@@ -1,3 +1,10 @@
+// Keep the game-native response layer available before the first battle render.
+// pwa.js also lazy-loads it, but the demo/QA path can start before that chain
+// finishes; the selector guard makes this safe when pwa.js reaches it later.
+if(!window.PAGameQuestionInteractions){
+ document.write('<link rel="stylesheet" href="css/game-question-interactions-v3.62.4.css?v=3.62.5">');
+ document.write('<script src="js/game-question-interactions-v3.62.4.js?v=3.62.25"><\/script>');
+}
 let db=JSON.parse(localStorage.getItem("pa_coach_v6_full")||localStorage.getItem("pa_coach_v5")||"null");
 let uiSession=JSON.parse(localStorage.getItem('pa_dummy_login')||'null');
 const MINION_ENEMIES=[

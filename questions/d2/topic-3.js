@@ -3,7 +3,7 @@ window.PAQuestionBanks = window.PAQuestionBanks || {};
 window.PAQuestionBanks.d2t3 = function(id,s,shift){
  if(id==="D2.3.1"){
    const den=pick([2,3,4,5,6,8,10]),num=R(1,den-1),mode=pick(['visual','name','compare']);
-   if(mode==='visual'){const ans=`${num}/${den}`;return Q(`${fractionVisual(num,den)}Bahagian berwarna mewakili pecahan apa?`,ans,fractionWrongChoices(num,den),"Pengangka ialah bahagian berwarna; penyebut ialah jumlah bahagian sama besar.","D2 Core · Pecahan",true,true)}
+   if(mode==='visual'){const ans=`${num}/${den}`,q=Q(`Pilih pecahan yang sepadan dengan <b>${num}</b> daripada <b>${den}</b> bahagian sama besar.`,ans,fractionWrongChoices(num,den),"Pengangka ialah bahagian berwarna; penyebut ialah jumlah bahagian sama besar.","D2 Core · Pecahan",true,true);return attachFractionShade(q,num,den)}
    if(mode==='name'){const ans=`${num}/${den}`;return Q(`${num} daripada ${den} bahagian sama besar dipilih. Pecahannya ialah?`,ans,fractionWrongChoices(num,den),"Pengangka di atas, penyebut di bawah.","D2 Core · Pecahan",true,shift)}
    const n2=R(1,den-1);if(n2===num)return window.PAQuestionBanks.d2t3(id,s,shift);const f1=`${num}/${den}`,f2=`${n2}/${den}`,ask=Math.random()<.5?'lebih besar':'lebih kecil',ans=ask==='lebih besar'?(num>n2?f1:f2):(num<n2?f1:f2);
    return Q(`<div style="display:flex;justify-content:center;gap:12px">${fractionVisual(num,den)}${fractionVisual(n2,den)}</div>Antara <b>${f1}</b> dan <b>${f2}</b>, pecahan manakah ${ask}?`,ans,[N(ans===f1?f2:f1,'fraction'),N(`${den}/${num}`,'fraction'),N('Sama','fraction')],"Penyebut sama: banding bilangan bahagian berwarna.","D2 Application · Banding Pecahan",true,true);

@@ -204,7 +204,8 @@ function d1(id,s,shift){
    const taken=1,remain=d-taken;
    return depth(Q(`Sekeping roti canai dibahagi kepada <b>${d}</b> bahagian sama besar. Satu bahagian dimakan. Pecahan yang masih tinggal?`,`${remain}/${d}`,makeWrongFractions(`${remain}/${d}`,remain,d),'Bahagian tinggal = semua bahagian − bahagian yang dimakan.','Tahun 1 · Pecahan Tinggal',true,true),id,mode,'story','reasoning',['fraction']);
   }
-  return depth(Q(`${fractionStrip(n,d)}Bahagian berlorek mewakili?`,`${n}/${d}`,makeWrongFractions(`${n}/${d}`,n,d),'Kira semua bahagian sama besar dan bahagian berlorek.','Tahun 1 · Pecahan Visual',true,true),id,mode,'visual','concept',['fraction']);
+  const visualQuestion=depth(Q(`Pilih pecahan yang sepadan dengan <b>${n}</b> daripada <b>${d}</b> bahagian sama besar.`,`${n}/${d}`,makeWrongFractions(`${n}/${d}`,n,d),'Pengangka ialah bahagian yang dilorek; penyebut ialah jumlah bahagian sama besar.','Tahun 1 · Pecahan Visual',true,true),id,mode,'visual','concept',['fraction']);
+  return attachFractionShade(visualQuestion,n,d);
  }
  if(id==='D1.MONEY'){
   mode=d1ChooseMode(id,s,['recognise','combine','compare'],['enough_reason','change_reason']);
