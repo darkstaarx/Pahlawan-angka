@@ -1,0 +1,65 @@
+/*
+ * Global responsive layout layer: owns shell sizing, safe areas, and overflow
+ * hygiene only. Battle geometry, menu scrolling, and mission-map presentation
+ * remain owned by their existing stylesheets; mission-map-live-v1.css follows.
+ */
+:root {
+  --pa-app-max-width: 520px;
+  --pa-screen-inline: clamp(12px, 3vw, 24px);
+  --pa-shell-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  min-width: 280px;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  min-width: 280px;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.app {
+  width: min(100%, var(--pa-app-max-width));
+  min-height: 100dvh;
+  margin-inline: auto;
+  box-sizing: border-box;
+  padding: 0 env(safe-area-inset-right, 0px) var(--pa-shell-safe-bottom) env(safe-area-inset-left, 0px);
+}
+
+.appHeader,
+.screen:not(.mv2Screen) {
+  min-width: 0;
+  padding-inline: var(--pa-screen-inline);
+}
+
+.screen > *,
+.screen .card,
+.screen .topNav,
+.screen .row,
+.screen [class$="Body"],
+.screen [class$="Content"] {
+  min-width: 0;
+}
+
+#appBottomNav {
+  width: min(100%, var(--pa-app-max-width));
+  box-sizing: border-box;
+  padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px));
+}
+
+@media (min-width: 601px) {
+  :root {
+    --pa-app-max-width: 820px;
+    --pa-screen-inline: clamp(18px, 3vw, 28px);
+  }
+}
+
+@media (min-width: 1025px) {
+  :root {
+    --pa-app-max-width: 980px;
+    --pa-screen-inline: clamp(24px, 3vw, 32px);
+  }
+}
