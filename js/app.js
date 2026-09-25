@@ -173,6 +173,14 @@ setupHeroPicker();
 setupBattleHud();
 screen('login');refreshLoginResume();
 
+function openRestuPreview(){
+ const local=location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.hostname==='[::1]';
+ if(!local||!new URLSearchParams(location.search).has('restu-preview'))return;
+ db={name:'Aiman',schoolGrade:2,hero:'wira',skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false},restuCheckin:{}};
+ initAll();ensureProgression();renderParent();screen('parent');tab('restu');
+}
+if(location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.hostname==='[::1]')requestAnimationFrame(openRestuPreview);
+
 function enemyStageForQuestion(skillIdOverride){
   const answered=Number(sess?.missionAnswered||0);
   const skillId=String(skillIdOverride||sess?.q?.skill||'');
