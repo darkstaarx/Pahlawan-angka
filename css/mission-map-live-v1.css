@@ -1,0 +1,53 @@
+/* Production Misi map only. Every selector is scoped to the live missions screen. */
+body[data-screen="missions"] #missions[data-mv2-map="1"]{background-image:linear-gradient(180deg,#07172dcc 0%,#0b2341c7 42%,#061326f5 100%),url('../assets/ui/menu-v2/hero-stage-v1.webp');background-position:center top;background-size:cover;color:#123158}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .topNav{color:#fff;text-shadow:0 1px 3px #061326aa}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .topNav .eyebrow{color:#ffe5a6}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .topNav b{color:#fff}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard{position:relative;min-height:112px;padding:10px;gap:12px;border:2px solid #caa055;border-radius:22px;background:linear-gradient(180deg,#fffcf0 0%,#f6ecd2 52%,#eedeb5 100%);box-shadow:0 10px 22px #06152c66,inset 0 1px 0 #fff9;overflow:hidden}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard.current{border-color:#caa055;box-shadow:0 0 0 2px #59c8ff66,0 10px 22px #06152c80,inset 0 1px 0 #fff9}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard.locked{opacity:.84;filter:saturate(.72)}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArt{position:relative;flex:0 0 78px;width:78px;height:90px;display:grid;place-items:center;border:1px solid #59c8ff99;border-radius:17px;background:#bde9f7;overflow:hidden}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArt:after{content:"";position:absolute;inset:auto 10px 8px;height:9px;border-radius:50%;background:#12315844;filter:blur(4px)}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArt img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArtFallback{position:absolute;z-index:0;font-size:29px;line-height:1;color:#123158}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArt:not(.isFallback) .missionArtFallback{opacity:0}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody>b{font-size:17px;line-height:1.1;color:#123158}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody p{margin:0;color:#315174;font-size:11px;line-height:1.3}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionStatus{display:flex;align-items:center;gap:7px;color:#0b6fe0;font-size:10px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionStars{margin:0;color:#caa055;font-size:10px;letter-spacing:1px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionMeter{width:100%;height:5px;margin:1px 0 0;background:#c5d6df;border-radius:99px;overflow:hidden}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionMeter span{background:#0b6fe0;border-radius:99px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody small{font-size:10px;color:#315174;line-height:1.2}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArrow{margin-left:auto;color:#123158}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:focus-visible{outline:3px solid #59c8ff;outline-offset:3px}
+@media(max-width:760px){body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid{grid-template-columns:1fr;gap:10px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard{min-height:100px;padding:9px;gap:8px;border-radius:22px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArt{flex-basis:64px;width:64px;height:76px;border-radius:14px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionStatus{flex-wrap:wrap;gap:4px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody>b{font-size:15px}}
+@media(max-width:380px){body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid{gap:8px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionArt{flex-basis:58px;width:58px;height:70px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody>b{font-size:14px}}
+
+/* Route treatment: the cards remain Hub-matched, while the shared path and nodes make the map legible. */
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummary{margin:4px 0 14px;padding:12px 14px;border:1px solid #d4b36e;border-radius:18px;background:linear-gradient(135deg,#fff9e9ee,#f1dfb8e8);box-shadow:0 8px 18px #06152c55}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryHead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;color:#123158}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryHead>div{display:grid;gap:3px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryRoute{font-size:11px;font-weight:900;letter-spacing:.12em;color:#0b6fe0}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryHead b{font-size:15px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryCount{font-size:12px;font-weight:900;white-space:nowrap;color:#315174}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryProgress{height:7px;margin:10px 0 4px;background:#c5d6df;border-radius:99px;overflow:hidden}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryProgress span{display:block;height:100%;background:linear-gradient(90deg,#0b6fe0,#49c4d8);border-radius:99px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummary small{font-size:11px;color:#315174}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid{position:relative;padding:8px 0;gap:22px 14px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid:before{content:"";position:absolute;z-index:0;top:18px;bottom:18px;left:50%;border-left:2px dashed #f1d58a99;filter:drop-shadow(0 1px 1px #06152c66)}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard{z-index:1;padding-left:50px;overflow:visible}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd){transform:translateY(-7px)}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even){transform:translateY(7px)}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd):after,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even):after{content:"";position:absolute;z-index:-1;top:50%;width:8px;border-top:2px dashed #f1d58a99}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd):after{right:-9px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even):after{left:-9px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionNode{position:absolute;z-index:3;left:12px;top:50%;display:grid;place-items:center;width:30px;height:30px;transform:translateY(-50%);border:3px solid #fff7da;border-radius:50%;background:#0b6fe0;color:#fff;font-size:13px;font-weight:950;box-shadow:0 0 0 3px #caa055,0 4px 10px #06152c66}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard[data-state="complete"] .missionNode{background:#2f9b68}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard[data-state="locked"] .missionNode{background:#68758a;color:#eef2f5}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard.current{border-color:#59c8ff;box-shadow:0 0 0 3px #59c8ff66,0 10px 22px #06152c80,inset 0 1px 0 #fff9}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard.current .missionNode{box-shadow:0 0 0 4px #ffd66e,0 0 0 8px #59c8ff55,0 4px 10px #06152c66}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody p{font-size:12px}
+body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody small{font-size:11px}
+@media(max-width:760px){body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryHead{align-items:flex-start;flex-direction:column;gap:7px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid{grid-template-columns:1fr;gap:10px;padding:8px 0 8px 8px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid:before{top:8px;bottom:8px;left:23px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd),body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even){min-height:100px;padding:9px 9px 9px 52px;transform:none}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:after,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd):after,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even):after{top:auto;bottom:-11px;left:22px;width:2px;height:11px;border-top:0;border-left:2px dashed #f1d58a99}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:last-child:after{display:none}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionNode{left:8px}}

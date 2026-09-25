@@ -302,7 +302,8 @@
      MAP V2 — pilih topik sendiri (semantik misi manual)
      =========================================================
      Map V2 memakai semula skrin `#missions` yang sudah ada, termasuk kad
-     `.missionCard` dan gaya visualnya, jadi tiada CSS baharu diperlukan dan
+     `.missionCard` dan gaya visualnya; kemasan baharu diasingkan dalam
+     stylesheet Misi scoped supaya skrin lain tidak terjejas.
      bahasa visual pemilik terpelihara. Yang berubah hanya:
        - nod dibina daripada GRAPH/profil sebenar (topik Darjah murid, kunci
          mengikut db.coreFrontier) — bukan nod rekaan,
@@ -331,6 +332,8 @@
   function setMapChrome(on){
     const c=missionChrome();
     if(!c)return;
+    const summary=c.section.querySelector('.mv2MapSummary');
+    if(!on&&summary)summary.remove();
     if(c.coach)c.coach.hidden=!!on;
     if(c.hint)c.hint.hidden=!!on;
     if(on){
@@ -343,6 +346,16 @@
     if(c.section)c.section.dataset.mv2Map=on?'1':'';
   }
 
+  function renderMapSummary(section,chapters,availableCount,overallMastery){
+    const old=section.querySelector('.mv2MapSummary');
+    if(old)old.remove();
+    const summary=document.createElement('div');
+    summary.className='mv2MapSummary';
+    summary.setAttribute('aria-label','Ringkasan laluan topik');
+    summary.innerHTML=`<div class="mv2MapSummaryHead"><div><span class="mv2MapSummaryRoute">LALUAN TOPIK</span><b>Jejak pembelajaran Darjah ${db.schoolGrade}</b></div><span class="mv2MapSummaryCount">${availableCount} daripada ${chapters.length} topik tersedia</span></div><div class="mv2MapSummaryProgress"><span style="width:${overallMastery}%"></span></div><small>Penguasaan keseluruhan ${overallMastery}%</small>`;
+    section.insertBefore(summary,document.getElementById('missionGrid'));
+  }
+
   /* Satu nod = satu topik KSSR yang benar-benar ada untuk Darjah murid.
      Semua nombor (peratus, bintang, kunci) dibaca daripada fungsi progression
      sedia ada. Tiada tag atau topik direka di sini. */
@@ -352,6 +365,16 @@
         .sort((a,b)=>+a-+b);
     }catch(_){ return [] }
   }
+  const missionTopicMeta={
+    '1':{title:'Kiraan',subtitle:'Nilai tempat, pola dan operasi asas',slug:'kiraan'},
+    '2':{title:'Tambah Tolak',subtitle:'Gabung, beza dan operasi harian',slug:'tambah-tolak'},
+    '3':{title:'Pecahan',subtitle:'Bahagian sama dan perbandingan',slug:'pecahan'},
+    '4':{title:'Wang',subtitle:'Nilai, jumlah dan baki harian',slug:'wang'},
+    '5':{title:'Masa',subtitle:'Waktu, tempoh dan jadual',slug:'masa'},
+    '6':{title:'Ukuran',subtitle:'Panjang, jisim dan sukatan',slug:'ukuran'},
+    '7':{title:'Ruang',subtitle:'Bentuk, kedudukan dan hubungan',slug:'ruang'},
+    '8':{title:'Data',subtitle:'Jadual, carta dan maklumat',slug:'data'}
+  };
   function openTopic(ch){
     if(typeof db==='undefined'||!db)return;
     if(has('enforceRestuLock')&&enforceRestuLock())return;
@@ -373,9 +396,11 @@
     wrap.innerHTML='';
     setMapChrome(true);
     const dev=has('isDevMode')&&isDevMode();
-    mapChapters().forEach(ch=>{
+    const chapters=mapChapters();
+    const chapterData=chapters.map(ch=>{
       const locked=!dev&&+ch>db.coreFrontier;
       let mastery=0,stars=0,title=`Topik ${ch}`,kicker=`Topik ${ch}`,icon='⭐';
+      const meta=missionTopicMeta[String(ch)]||null;
       try{ mastery=chapterMasteryPct(ch) }catch(_){}
       try{ stars=db.chapterStars&&db.chapterStars[ch]||0 }catch(_){}
       try{ title=chapterTitle(ch) }catch(_){}
@@ -384,14 +409,37 @@
         const ref=chapterSkills(ch)[0];
         kicker=ref&&ref.textbookUnit?`KSSR Unit ${ref.textbookUnit}`:`Topik ${ch}`;
       }catch(_){}
+      const state=locked?'locked':(mastery>=100?'complete':(+ch===db.coreFrontier?'current':'available'));
+      return {ch,locked,mastery,stars,title,kicker,icon,meta,state};
+    });
+    const availableCount=chapterData.filter(x=>!x.locked).length;
+    const overallMastery=chapterData.length
+      ?Math.round(chapterData.reduce((sum,x)=>sum+x.mastery,0)/chapterData.length)
+      :0;
+    const section=document.getElementById('missions');
+    if(section)renderMapSummary(section,chapters,availableCount,overallMastery);
+    chapterData.forEach(({ch,locked,mastery,stars,title,kicker,icon,meta,state})=>{
       const card=document.createElement('button');
       card.type='button';
       card.className='missionCard '+(locked?'locked':(+ch===db.coreFrontier?'current':''))+(dev?' devUnlocked':'');
       card.disabled=locked;
       card.dataset.mv2Topic=String(ch);
+      card.dataset.chapter=String(ch);
+      card.dataset.state=state;
+      if(+ch===db.coreFrontier)card.setAttribute('aria-current','step');
       const starsText=has('starString')?starString(stars):'';
-      const lockedText=has('lockedMissionCopy')?lockedMissionCopy(ch):`Buka selepas Topik ${Math.max(1,+ch-1)}`;
-      card.innerHTML=`<div class="missionIcon">${locked?'🔒':icon}</div><div class="missionBody"><div class="missionKicker">${kicker}</div><b>${title}</b><div class="missionStars">${starsText}</div><div class="missionMeter"><span style="width:${mastery}%"></span></div><small>${locked?lockedText:mastery+'% kemajuan'}</small></div><div class="missionArrow">›</div>`;
+      const displayTitle=title!==`Topik ${ch}`?title:(meta?meta.title:title);
+      const subtitle=meta?meta.subtitle:(kicker||`Topik ${ch}`);
+      const asset=meta?`assets/missions/v2/${meta.slug}.webp`:'';
+      const status=locked?'Terkunci':(+ch===db.coreFrontier?'Sedang dibuka':'Tersedia');
+      const progress=locked
+        ?(typeof lockedMissionCopy==='function'
+          ?lockedMissionCopy(ch)
+          :`Buka selepas Topik ${Math.max(1,+ch-1)}`)
+        :`Kemajuan ${mastery}%`;
+      const imageMarkup=asset?`<img src="${asset}" alt="" loading="lazy" onerror="this.hidden=true;this.parentElement.classList.add('isFallback')">`:'';
+      const node=state==='complete'?'✓':(state==='locked'?'🔒':String(ch));
+      card.innerHTML=`<span class="missionNode" aria-hidden="true">${node}</span><div class="missionArt">${imageMarkup}<span class="missionArtFallback" aria-hidden="true">${locked?'🔒':icon}</span></div><div class="missionBody"><b>${displayTitle}</b><p>${subtitle}</p><div class="missionStatus">${status}<span class="missionStars" aria-label="${stars} bintang">${starsText}</span></div><div class="missionMeter" aria-hidden="true"><span style="width:${mastery}%"></span></div><small>${progress}</small></div><div class="missionArrow" aria-hidden="true">›</div>`;
       if(!locked)card.onclick=()=>openTopic(ch);
       wrap.appendChild(card);
     });
