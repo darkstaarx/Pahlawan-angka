@@ -102,7 +102,10 @@
     window.PATelemetry?.response?.(q.skill,ok,option.tag,seconds,g.hint,q,g.retryState?'gembok-retry':'gembok');
     window.PALearnerReview?.resolve?.(q,{correct:ok,tag:option.tag,seconds,usedHint:!!g.hint,hintLevel:g.hintLevel||0},db);
     updateFrontier();realSave();
-    return evaluateIntervention(q.skill);
+    // Cikgu Dimensi is globally paused for the current release. Keep the
+    // production journey in sync with the legacy battle path and only return
+    // an intervention when the feature flag is explicitly enabled.
+    return window.PA_CIKGU_DIMENSI_ENABLED===true?evaluateIntervention(q.skill):null;
   }
 
   function firstWrong(q,option){
