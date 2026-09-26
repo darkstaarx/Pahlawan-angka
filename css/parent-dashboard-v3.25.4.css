@@ -1,43 +1,93 @@
-#parent{--parent-line:#304868;--parent-muted:#9dafc8;--parent-gold:#ffd34d}
-#parent .parentTop{margin-bottom:14px}
-#parent .parentTop h2{font-size:24px}
+/* Pahlawan Angka v3.25.4 — parent command deck / battlefield report styling. */
+#parent{
+  --parent-ink:#f5f8ff;--parent-muted:#9fb2cc;--parent-dim:#7186a4;--parent-line:#2a4566;
+  --parent-panel:#101e34;--parent-panel-deep:#0a172a;--parent-gold:#ffd34d;--parent-teal:#65d9d7;--parent-green:#66dda8;
+  color:var(--parent-ink);
+}
+#parent .parentTop{margin-bottom:12px}
+#parent .parentTop h2{font-size:24px;line-height:1.05;letter-spacing:-.02em}
+#parent .parentTop .iconBtn{border-color:#3e5d7f;background:#0b1a30;color:#dceaff}
 #parent .parentTabs{display:flex;gap:7px;overflow-x:auto;padding:4px 1px 10px;margin:0 0 10px;scrollbar-width:none}
 #parent .parentTabs::-webkit-scrollbar{display:none}
-#parent .parentTabs button{flex:0 0 auto;border-radius:999px;padding:9px 14px;background:#111f35;border-color:#304766;color:#9eafc7}
-#parent .parentTabs button.active{background:#f2c94c;color:#162036;border-color:#ffe17a;box-shadow:0 5px 16px #eab42b30}
-#parent .parentJourney{min-height:198px;padding:20px 42% 20px 17px;border-radius:21px;background:radial-gradient(circle at 84% 42%,#25617d 0,#183b5a 24%,transparent 54%),linear-gradient(135deg,#17304f,#0c192d)}
-#parent .parentJourney h2{font-size:22px;line-height:1.16}
-#parent .parentJourney p{font-size:12px;line-height:1.55}
-#parent .parentStats{gap:8px;margin:10px 0}
-#parent .parentStats>div{border-radius:16px;padding:12px 9px;background:linear-gradient(145deg,#172b48,#101d32)}
-#parent .parentStats span{background:#243d60}
-#parent .parentStats small{line-height:1.2}
-.parentInsights{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px;margin-bottom:10px}
-.parentInsightColumn{min-width:0}.parentInsightColumn>.eyebrow{margin:0 0 8px}
-.parentInsightItem{display:flex;align-items:center;gap:9px;min-height:62px;padding:10px;border:1px solid #334b6c;border-radius:14px;background:#101e33}
-.parentInsightItem>span{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:10px;font-weight:950}
-.parentInsightItem.strong>span{background:#123d32;color:#6be0ac}.parentInsightItem.priority>span{background:#47341c;color:#ffd071}
-.parentInsightItem div{min-width:0}.parentInsightItem b,.parentInsightItem small{display:block}.parentInsightItem b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.parentInsightItem small{margin-top:4px;color:var(--parent-muted);font-size:9px;line-height:1.3}
-.parentInsightEmpty{min-height:62px;padding:12px;border:1px dashed #334861;border-radius:14px;color:#879ab5;font-size:10px;line-height:1.45}
-#parent .nextMission{margin-bottom:10px;border-radius:19px}
-.parentReportHead{margin-bottom:10px;padding:17px;background:linear-gradient(145deg,#172b47,#101c30)}
-.parentReportHead h2{margin:3px 0 6px;font-size:21px}.parentReportHead p{margin:0;color:var(--parent-muted);font-size:11px;line-height:1.5}
-.parentSkillReport{padding:15px}.parentSkillReport>h3{margin:18px 0 8px;padding-bottom:7px;border-bottom:1px solid #2e4462;font-size:14px}.parentSkillReport>h3:first-child{margin-top:0}
-.parentLevelGrid{display:grid;gap:10px}.parentLevelGrid>.card{padding:15px}.parentLevelGrid h3{margin:0}.parentLevelGrid>.card>small{display:block;margin:3px 0 12px;color:#f0c955;font-weight:850}
-.parentActivityCard{padding:8px 15px}.parentTimeline article{display:grid;grid-template-columns:68px 12px 1fr;gap:8px;align-items:start;padding:11px 0;border-bottom:1px solid #263b58}.parentTimeline article:last-child{border-bottom:0}.parentTimeline time{color:#8396b2;font-size:9px;line-height:1.4}.parentTimeline article>span{position:relative;width:8px;height:8px;margin-top:2px;border-radius:50%;background:#f0c64a;box-shadow:0 0 0 4px #f0c64a20}.parentTimeline p{margin:0;color:#c1cde0;font-size:11px;line-height:1.45}
-.parentSettingsIntro{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;margin-bottom:10px}.parentSettingsIntro h3{margin:2px 0 4px}.parentSettingsIntro p{margin:0;color:var(--parent-muted);font-size:10px}.parentSettingsIntro button{flex:0 0 auto}
-#settingsTab .paPlanCard,#settingsTab .cloudControls{margin-bottom:10px}
-@media(max-width:430px){
- #parent .parentJourney{min-height:188px;padding:17px 39% 17px 14px}
- #parent .parentJourney h2{font-size:19px}
- #parent .parentJourney p{font-size:10px}
- #parent .parentStats>div{padding:10px 4px}
- .parentInsights{grid-template-columns:1fr;gap:10px}
- .parentSettingsIntro{align-items:flex-start;flex-direction:column}.parentSettingsIntro button{width:100%}
-}
-@media(min-width:760px){.parentLevelGrid{grid-template-columns:1fr 1fr}}
+#parent .parentTabs button{flex:0 0 auto;min-height:36px;border:1px solid #304b6d;border-radius:999px;padding:8px 13px;background:#0d1b30;color:#aabbd2;box-shadow:inset 0 1px #ffffff0a;font-size:11px;font-weight:900}
+#parent .parentTabs button:hover{border-color:#4d7297;color:#f0f6ff}
+#parent .parentTabs button.active{border-color:#ffe68a;background:linear-gradient(180deg,#ffda62,#eeb82d);color:#172033;box-shadow:0 5px 17px #eab42b38,0 0 0 2px #ffd34d18}
 
-#parent .restuParentHero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:14px;margin-bottom:10px;padding:18px;background:radial-gradient(circle at 90% 18%,#315b78 0,transparent 42%),linear-gradient(145deg,#173453,#0d1b30)}
+/* Shared parent card language: layered navy surfaces with a quiet inner edge. */
+#parent .card,#parent .parentInsights,#parent .parentReportHead,#parent .parentSkillReport,#parent .parentActivityCard,#parent .parentSettingsIntro{
+  border:1px solid var(--parent-line);border-radius:18px;background:linear-gradient(145deg,var(--parent-panel),var(--parent-panel-deep));
+  box-shadow:0 12px 28px #020a161f,inset 0 1px #ffffff08;
+}
+#parent .eyebrow{color:#83c9d4;letter-spacing:.13em;font-size:9px}
+#parent .parentJourney{position:relative;min-height:202px;overflow:hidden;padding:21px 42% 20px 18px;border-radius:21px;border-color:#36749a;background:radial-gradient(circle at 84% 42%,#2a738c 0,#1a425f 22%,transparent 55%),linear-gradient(135deg,#173553,#0a172b);box-shadow:0 14px 28px #020a162b,inset 0 1px #ffffff0b}
+#parent .parentJourney:after{content:"";position:absolute;inset:auto -8% -58% 24%;height:185px;background:radial-gradient(ellipse,#5ed7d633,transparent 67%);pointer-events:none}
+#parent .parentJourneyCopy{position:relative;z-index:2}
+#parent .parentJourney h2{font-size:23px;line-height:1.1;margin:5px 0 9px;color:#fff}
+#parent .parentJourney p{font-size:12px;line-height:1.55;color:#c3d4e9}
+#parent .parentJourney>img{position:absolute;z-index:1;right:-2%;bottom:-12%;width:47%;height:116%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 14px 16px #0008)}
+#parent .parentStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+#parent .parentStats>div{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:12px 10px;border:1px solid #304b6d;border-radius:16px;background:linear-gradient(145deg,#172d4c,#0d1b30)}
+#parent .parentStats span{grid-row:1/3;width:31px;height:31px;border-radius:10px;display:grid;place-items:center;background:#24466a;color:#ffe17a;box-shadow:inset 0 0 0 1px #6b9cbe2b}
+#parent .parentStats b{font-size:17px;line-height:1}
+#parent .parentStats small{font-size:9px;line-height:1.2;color:#9fb0c9;margin-top:3px}
+
+#parent .parentInsights{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px;margin-bottom:10px}
+#parent .parentInsightColumn{min-width:0}
+#parent .parentInsightColumn>.eyebrow{margin:0 0 8px}
+#parent .parentInsightItem{display:flex;align-items:center;gap:9px;min-height:62px;padding:10px;border:1px solid #334f70;border-radius:14px;background:#0c1b30;box-shadow:inset 0 1px #ffffff05}
+#parent .parentInsightItem>span{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:10px;font-weight:950}
+#parent .parentInsightItem.strong>span{background:#123d32;color:#6be0ac}
+#parent .parentInsightItem.priority>span{background:#47341c;color:#ffd071}
+#parent .parentInsightItem div{min-width:0}
+#parent .parentInsightItem b,#parent .parentInsightItem small{display:block}
+#parent .parentInsightItem b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#parent .parentInsightItem small{margin-top:4px;color:var(--parent-muted);font-size:9px;line-height:1.3}
+#parent .parentInsightEmpty{min-height:62px;padding:12px;border:1px dashed #334861;border-radius:14px;color:#879ab5;font-size:10px;line-height:1.45}
+
+#parent .nextMission{position:relative;margin-bottom:10px;border:1px solid #80672b;border-radius:19px;background:linear-gradient(135deg,#302a18,#151c2c 58%);box-shadow:0 12px 25px #020a1626,inset 0 1px #ffffff08}
+#parent .nextMission:before{content:"";position:absolute;right:17px;top:0;width:110px;height:100%;background:radial-gradient(circle at 50% 0,#ffd45c18,transparent 70%);pointer-events:none}
+#parent .missionRune{background:radial-gradient(circle,#ffe074,#ad6715);box-shadow:0 0 20px #e9aa3740}
+#parent .nextMission h3{color:#fff1bd}
+#parent .nextMission p{color:#c9c0a7}
+#parent .nextMissionCopy,.parentSkillCopy{min-width:0}
+#parent .coachAction{background:#0c1929c9;border:1px solid #2c4664}
+#parent .coachAction b{color:#78d9df}
+
+#parent .parentReportHead{margin-bottom:10px;padding:17px;background:radial-gradient(circle at 92% 0,#275c6d55,transparent 42%),linear-gradient(145deg,#172e4c,#0b192d)}
+#parent .parentReportHead h2{margin:3px 0 6px;font-size:21px}
+#parent .parentReportHead p{margin:0;color:var(--parent-muted);font-size:11px;line-height:1.5}
+#parent .parentSkillReport{padding:15px}
+#parent .parentSkillReport>h3{margin:18px 0 8px;padding-bottom:7px;border-bottom:1px solid #2e4a6b;font-size:14px;color:#f2f6ff}
+#parent .parentSkillReport>h3:first-child{margin-top:0}
+#parent .parentLevelGrid{display:grid;gap:10px}
+#parent .parentLevelGrid>.card{padding:15px;border-color:#355476;background:linear-gradient(145deg,#142b49,#0c1b30)}
+#parent .parentLevelGrid h3{margin:0}
+#parent .parentLevelGrid>.card>small{display:block;margin:3px 0 12px;color:#f0c955;font-weight:850}
+#parent .powerCard{border-color:#2e496a;background:#0e1d32}
+#parent .powerCopy>small{color:#6fd8b2}
+#parent .powerCard.level-1 .powerCopy>small{color:#ffb984}
+#parent .powerCard.level-0 .powerCopy>small{color:#8899b2}
+
+#parent .parentActivityCard{padding:8px 15px}
+#parent .parentTimeline article{display:grid;grid-template-columns:68px 12px 1fr;gap:8px;align-items:start;padding:11px 0;border-bottom:1px solid #263f5f}
+#parent .parentTimeline article:last-child{border-bottom:0}
+#parent .parentTimeline time{color:#8396b2;font-size:9px;line-height:1.4}
+#parent .parentTimeline article>span{position:relative;width:8px;height:8px;margin-top:2px;border-radius:50%;background:var(--parent-gold);box-shadow:0 0 0 4px #f0c64a20}
+#parent .parentTimeline p{margin:0;color:#c1cde0;font-size:11px;line-height:1.45}
+
+#parent .learnerReviewCard{gap:14px}
+#parent .learnerReviewGroup{background:#0c1b30;border-color:#355273}
+#parent .learnerReviewGroup li{color:#c9d6e8}
+#parent .learnerStyle,#parent .learnerScoreMeaning{background:#ffd34d0d;border-left-color:var(--parent-gold)}
+#parent .learnerScoreMeaning{border-left-color:#69b9ff;background:#69b9ff0d}
+#parent .parentSettingsIntro{align-items:center;justify-content:space-between;gap:12px;padding:16px;margin-bottom:10px}
+#parent .parentSettingsIntro h3{margin:2px 0 4px}
+#parent .parentSettingsIntro p{margin:0;color:var(--parent-muted);font-size:10px}
+#parent .parentSettingsIntro button{flex:0 0 auto}
+#settingsTab .paPlanCard,#settingsTab .cloudControls{margin-bottom:10px}
+
+/* Restu is the reflection tab: warmer gold prompt, calmer teal status. */
+#parent .restuParentHero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:14px;margin-bottom:10px;padding:18px;border-color:#3b6178;background:radial-gradient(circle at 90% 18%,#315b78 0,transparent 42%),linear-gradient(145deg,#173453,#0d1b30)}
 #parent .restuParentIcon{display:grid;place-items:center;width:54px;height:54px;border:1px solid #d5aa3d;border-radius:18px;background:#293d5a;font-size:28px;box-shadow:0 8px 18px #050d1c55}
 #parent .restuParentHero h2{margin:3px 0 5px;font-size:21px;line-height:1.18}
 #parent .restuParentHero p,#parent .restuFocusCard p{margin:0;color:var(--parent-muted);font-size:11px;line-height:1.5}
@@ -57,10 +107,154 @@
 #parent .restuFocusCard{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px;margin-bottom:10px;background:linear-gradient(145deg,#142843,#0f1b2f)}
 #parent .restuFocusCard h3{margin:3px 0 4px;font-size:15px}
 #parent .restuFocusCard .btn{flex:0 0 auto}
+
 @media(max-width:430px){
- #parent .restuParentHero{grid-template-columns:1fr;padding:15px}
- #parent .restuParentIcon{width:44px;height:44px;font-size:23px;border-radius:14px}
- #parent .restuParentHero h2{font-size:19px}
- #parent .restuFocusCard{align-items:flex-start;flex-direction:column}
- #parent .restuFocusCard .btn{width:100%}
+  #parent .parentTop h2{font-size:21px}
+  #parent .parentJourney{min-height:188px;padding:17px 39% 17px 14px}
+  #parent .parentJourney h2{font-size:19px}
+  #parent .parentJourney p{font-size:10px}
+  #parent .parentJourney>img{right:-8%;width:52%;height:108%}
+  #parent .parentStats>div{grid-template-columns:1fr;text-align:center;padding:10px 4px}
+  #parent .parentStats span{display:none}
+  #parent .parentStats b{font-size:15px}
+  #parent .parentInsights{grid-template-columns:1fr;gap:10px;padding:12px}
+  #parent .parentSettingsIntro{align-items:flex-start;flex-direction:column}
+  #parent .parentSettingsIntro button{width:100%}
+  #parent .restuParentHero{grid-template-columns:1fr;padding:15px}
+  #parent .restuParentIcon{width:44px;height:44px;font-size:23px;border-radius:14px}
+  #parent .restuParentHero h2{font-size:19px}
+  #parent .restuFocusCard{align-items:flex-start;flex-direction:column}
+  #parent .restuFocusCard .btn{width:100%}
+  #parent .parentTimeline article{grid-template-columns:54px 12px 1fr;gap:6px}
 }
+@media(min-width:760px){
+  #parent .parentLevelGrid{grid-template-columns:1fr 1fr}
+  #parent .parentJourney{min-height:225px;padding-right:38%}
+  #parent .parentJourney>img{width:38%;right:3%}
+}
+@media(prefers-reduced-motion:reduce){#parent *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Cream-and-gold surfaces mirror the current Hub cards; the dark mission card
+   stays as the visual anchor so the page still belongs to the battlefield. */
+#parent .parentJourneySignal{display:flex;align-items:center;gap:7px;margin-top:13px;max-width:260px;padding:7px 9px;border:1px solid #5f9ca7;border-radius:10px;background:#07182aa8;color:#c9f4ee}
+#parent .parentJourneySignal span{color:#ffd45e;font-size:13px;line-height:1}
+#parent .parentJourneySignal small{font-size:9px;line-height:1.3}
+#parent .parentStats>div{border-color:#caa14b;background:linear-gradient(145deg,#fff8e8,#ead9b0);color:#172b47;box-shadow:0 8px 18px #050b151f,inset 0 1px #fff}
+#parent .parentStats span{background:#f5d77c;color:#243a5a;box-shadow:inset 0 0 0 1px #fff3b2}
+#parent .parentStats small{color:#6c6474}
+#parent .parentInsights{border-color:#caa34f;background:linear-gradient(145deg,#fff8e8,#eadbb8);box-shadow:0 10px 22px #050b151f,inset 0 1px #fff}
+#parent .parentInsights .eyebrow{color:#6e7890}
+#parent .parentInsightItem{border-color:#dbc27f;background:#fffaf0;color:#172b47;box-shadow:inset 0 1px #fff}
+#parent .parentInsightItem b{color:#172b47}
+#parent .parentInsightItem small{color:#70697a}
+#parent .parentInsightEmpty{border-color:#d9c588;background:#fffaf0;color:#7b6f67}
+#parent .learnerReviewCard{border-color:#caa34f;background:linear-gradient(145deg,#fff8e8,#eadbb8);color:#172b47}
+#parent .learnerReviewCard .eyebrow{color:#6e7890}
+#parent .learnerReviewCard h3{color:#172b47}
+#parent .learnerReviewCard>p,#parent .learnerReviewCard>small{color:#5f6070}
+#parent .learnerReviewGroup{border-color:#dcc78d;background:#fffaf0}
+#parent .learnerReviewGroup>b,#parent .learnerReviewGroup li{color:#263b55}
+#parent .learnerStyle,#parent .learnerScoreMeaning{background:#f7e9c8;border-left-color:#bd8a2d}
+#parent .learnerScoreMeaning{border-left-color:#478bbb;background:#e7f1f3}
+
+/* Parent pages share the Hub's cream/gold learning-card language. Keep only
+   the journey and mission surfaces dark so the tabs read as one product. */
+#parent .parentReportHead,
+#parent .parentSkillReport,
+#parent .parentLevelGrid>.card,
+#parent .parentActivityCard,
+#parent .parentSettingsIntro,
+#parent .restuParentHero,
+#parent .restuCheckinCard,
+#parent .restuFocusCard{
+  border-color:#caa055;
+  background:linear-gradient(160deg,#fffcf0 0%,#f6ecd2 60%,#eedeb5 100%);
+  color:#123158;
+  box-shadow:0 10px 22px #050b151f,inset 0 1px #fff;
+}
+#parent .parentReportHead h2,
+#parent .parentReportHead p,
+#parent .parentSkillReport>h3,
+#parent .parentLevelGrid h3,
+#parent .parentActivityCard h3,
+#parent .parentSettingsIntro h3,
+#parent .restuParentHero h2,
+#parent .restuCheckinCard h3,
+#parent .restuFocusCard h3{color:#123158}
+#parent .parentReportHead p,
+#parent .parentSettingsIntro p,
+#parent .restuParentHero p,
+#parent .restuFocusCard p{color:#38567c}
+#parent .parentReportHead .eyebrow,
+#parent .parentSkillReport .eyebrow,
+#parent .parentLevelGrid .eyebrow,
+#parent .parentActivityCard .eyebrow,
+#parent .parentSettingsIntro .eyebrow,
+#parent .restuParentHero .eyebrow,
+#parent .restuCheckinCard .eyebrow,
+#parent .restuFocusCard .eyebrow{color:#94701f}
+#parent .parentSkillReport>h3{border-bottom-color:#d7bd78}
+#parent .parentLevelGrid>.card>small{color:#94701f}
+#parent .parentTimeline article{border-bottom-color:#dbc990}
+#parent .parentTimeline time,#parent .parentTimeline p{color:#38567c}
+#parent .parentSkillReport .skill{border-bottom-color:#dbc990}
+#parent .parentSkillReport .skill .mut{color:#5d6d80}
+#parent .parentSkillReport .meter{background:#ded2ad}
+#parent .parentSkillReport .meter span{background:linear-gradient(90deg,#2b9bd3,#efbd3e)}
+#parent .parentLevelGrid>.card .powerCard{border-color:#dbc990;background:#fffaf0}
+#parent .parentLevelGrid>.card .powerCopy>small{color:#2f8a64}
+#parent .restuParentIcon{border-color:#caa055;background:linear-gradient(145deg,#24578f,#133863);color:#ffe07b}
+#parent .restuCheckinCard{margin-bottom:10px}
+#parent .restuPrompt{background:#123158;color:#fff3bd;border-left-color:#eab936}
+#parent .restuPromptHint{color:#38567c}
+#parent .restuStatus{background:#dff2e7;color:#18553d}
+#parent .restuStatus.quiet{background:#e4edf4;color:#294968}
+#parent .restuStatus small,#parent .restuStatus.quiet small{color:#38567c}
+#parent .restuStatus>span{background:#2b8a68}
+#parent .restuStatus.quiet>span{background:#527797}
+#parent #paParentTools .paExportCard,
+#parent #paParentTools .paWorksheetCard{border-color:#caa055;background:linear-gradient(160deg,#fffcf0 0%,#f6ecd2 60%,#eedeb5 100%);color:#123158;box-shadow:0 10px 22px #050b151f,inset 0 1px #fff}
+#parent #paParentTools .paToolHead h3,
+#parent #paParentTools .paToolCopy,
+#parent #paParentTools .paWorksheetOptions label{color:#123158}
+#parent #paParentTools .paToolHead small,#parent #paParentTools .paProPill{color:#94701f}
+#parent #paParentTools .paToolIcon{border-color:#caa055;background:linear-gradient(145deg,#24578f,#133863);color:#ffe07b}
+#parent #paParentTools .paToolCopy{color:#38567c}
+#parent #paParentTools .paToolBtn,
+#parent #paParentTools .paWorksheetMode,
+#parent #paParentTools .paCountPicker button{border-color:#b9a36c;background:#fffaf0;color:#123158}
+#parent #paParentTools .paToolBtn.primary,
+#parent #paParentTools .paCountPicker button.active{border-color:#c28f24;background:linear-gradient(180deg,#ffda5b,#efb92e);color:#172033}
+#parent #paParentTools .paSkillSnapshot div,
+#parent #paParentTools .paExportPreview{border-color:#dbc990;background:#fffaf0;color:#123158}
+#parent #paParentTools .paSkillSnapshot b,
+#parent #paParentTools .paExportPreviewHead b{color:#123158}
+#parent #paParentTools .paSkillSnapshot small,
+#parent #paParentTools .paExportPreviewHead span{color:#38567c}
+#parent #paParentTools .paWorksheetMode.active{border-color:#caa055;background:#f7e9c8}
+#parent #paParentTools .paWorksheetMode.active b{color:#94701f}
+#parent #paParentTools .paWorksheetHint{border-color:#9dc8c8;background:#e6f3f1;color:#38567c}
+#parent #paParentTools .paWorksheetHint b{color:#123158}
+#parent .parentEmpty{display:grid;place-items:center;gap:6px;min-height:132px;padding:22px;text-align:center;color:#38567c}
+#parent .parentEmpty>span{font-size:25px;color:#c59b36}
+#parent .parentEmpty>b{color:#123158;font-size:14px}
+#parent .parentEmpty>p{margin:0;color:#38567c;font-size:10px;line-height:1.45}
+#settingsTab .paPlanCard,
+#settingsTab .cloudControls,
+#settingsTab .paTrustCard{border:1px solid #caa055;border-radius:17px;background:linear-gradient(160deg,#fffcf0 0%,#f6ecd2 60%,#eedeb5 100%);color:#123158;box-shadow:0 10px 22px #050b151f,inset 0 1px #fff}
+#settingsTab .paPlanCard small,
+#settingsTab .cloudControls .eyebrow,
+#settingsTab .paTrustCard h3{color:#94701f}
+#settingsTab .paPlanCard h3,
+#settingsTab .cloudControls h3,
+#settingsTab .paTrustCard h3{color:#123158}
+#settingsTab .paPlanCard p,
+#settingsTab .cloudControls label,
+#settingsTab .paTrustCard p{color:#38567c}
+#settingsTab .paPlanCard button{border-color:#c28f24;background:linear-gradient(180deg,#ffda5b,#efb92e);color:#172033}
+#settingsTab .cloudSync{color:#2f8a64}
+#settingsTab .limitGrid input{border-color:#b9a36c;background:#fffaf0;color:#123158}
+#settingsTab .todayPlayTotal{border-color:#dbc990;background:#fffaf0;color:#123158}
+#settingsTab .todayPlayTotal small{color:#38567c}
+#settingsTab .todayPlayTotal b{color:#94701f}
+#settingsTab .paTrustActions button{border-color:#b9a36c;background:#fffaf0;color:#123158}
