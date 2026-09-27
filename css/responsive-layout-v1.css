@@ -19,6 +19,7 @@ body {
   min-width: 280px;
   min-height: 100dvh;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app {
@@ -42,6 +43,25 @@ body {
 .screen [class$="Body"],
 .screen [class$="Content"] {
   min-width: 0;
+}
+
+/* Reliable touch scroll ownership for long mobile/PWA screens. */
+body[data-screen="login"] #login {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  align-items: flex-start;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+body[data-screen="missions"] #missions {
+  min-height: 100dvh;
+  height: auto;
+  overflow: visible;
+  overscroll-behavior-y: auto;
 }
 
 #appBottomNav {
