@@ -289,7 +289,10 @@
 <div id="purchaseOverlay" class="purchaseOverlay hidden" role="dialog" aria-modal="true" aria-labelledby="purchaseTitle"><div class="purchaseCard"><div class="purchaseRays" aria-hidden="true"></div><div class="purchaseCheck">✓</div><div class="eyebrow">PEMBELIAN BERJAYA</div><div class="purchaseArt"><img id="purchaseImage" alt=""></div><h2 id="purchaseTitle"></h2><p id="purchaseText"></p><div class="purchaseEquipped">✓ Terus dilengkapi</div><button class="btn primary" onclick="closePurchaseCelebration()">Teruskan di Khazanah</button></div></div>
 <div id="appLoading" class="appLoading hidden" role="status" aria-live="polite" aria-busy="false">
   <div class="appLoadingCard">
-    <div class="appLoadingPet"><img src="assets/pets/aurora/frames/joy-0-v1.webp" alt="Aurora sedang bersiap"></div>
+    <div class="appLoadingPet">
+      <canvas id="appLoadingCanvas" class="appLoadingCanvas" aria-hidden="true"></canvas>
+      <img id="appLoadingAurora" src="assets/pets/aurora/frames/joy-0-v1.webp" alt="Aurora sedang bersiap">
+    </div>
     <div class="eyebrow">SEKETIKA</div>
     <h2>Aurora sedang bersiap…</h2>
     <p id="appLoadingText">Kami sedang menyediakan pengembaraan kamu.</p>

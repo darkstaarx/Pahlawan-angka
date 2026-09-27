@@ -6,11 +6,50 @@
   const IDLE_AFTER_MS=120000;
   const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
+  const loader={canvas:null,context:null,image:null,frame:0,running:false,failed:false,started:false,particles:[],symbols:['+','−','×','÷'],motionQuery:null};
+  function reducedMotion(){return !!loader.motionQuery?.matches}
+  function handleMotionPreference(){
+    if(reducedMotion()){stopLoaderCanvas();drawLoaderFrame(performance.now())}
+    else if($('appLoading')&&!$('appLoading').classList.contains('hidden'))startLoaderCanvas()
+  }
+  function setupLoaderCanvas(){
+    if(loader.started)return;
+    loader.started=true;loader.canvas=$('appLoadingCanvas');loader.image=$('appLoadingAurora');
+    if(!loader.canvas||!loader.image)return;
+    try{loader.context=loader.canvas.getContext('2d');}catch(_){loader.context=null;}
+    if(!loader.context){loader.failed=true;return;}
+    const fail=()=>{loader.failed=true;stopLoaderCanvas();$('appLoading')?.classList.remove('canvas-ready');};
+    loader.image.addEventListener('error',fail,{once:true});
+    loader.image.addEventListener('load',()=>{$('appLoading')?.classList.add('canvas-ready');drawLoaderFrame(performance.now());},{once:true});
+    loader.motionQuery=window.matchMedia?.('(prefers-reduced-motion: reduce)')||null;
+    loader.motionQuery?.addEventListener?.('change',handleMotionPreference);
+    if(loader.image.complete&&loader.image.naturalWidth) $('appLoading')?.classList.add('canvas-ready');
+    else if(loader.image.complete)fail();
+    for(let i=0;i<18;i++)loader.particles.push({angle:Math.random()*Math.PI*2,radius:42+Math.random()*48,speed:(.08+Math.random()*.13)*(i%2?-1:1),size:1.2+Math.random()*2.2,alpha:.25+Math.random()*.55,phase:Math.random()*Math.PI*2});
+  }
+  function resizeLoaderCanvas(){
+    if(!loader.canvas||!loader.context)return;
+    const ratio=Math.min(2,window.devicePixelRatio||1),width=Math.max(1,loader.canvas.clientWidth),height=Math.max(1,loader.canvas.clientHeight);
+    if(loader.canvas.width!==Math.round(width*ratio)||loader.canvas.height!==Math.round(height*ratio)){loader.canvas.width=Math.round(width*ratio);loader.canvas.height=Math.round(height*ratio);loader.context.setTransform(ratio,0,0,ratio,0,0);}
+  }
+  function drawLoaderFrame(now){
+    if(!loader.context||loader.failed)return;
+    resizeLoaderCanvas();const ctx=loader.context,w=Math.max(1,loader.canvas.clientWidth),h=Math.max(1,loader.canvas.clientHeight),cx=w/2,cy=h/2;
+    ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(cx,cy);
+    ctx.strokeStyle='rgba(255,208,54,.22)';ctx.lineWidth=1;ctx.setLineDash([2,7]);ctx.beginPath();ctx.arc(0,0,47+Math.sin(now*.001)*2,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    for(const particle of loader.particles){const angle=particle.angle+now*.001*particle.speed,x=Math.cos(angle)*particle.radius,y=Math.sin(angle)*particle.radius*.7,twinkle=.55+.45*Math.sin(now*.002+particle.phase);ctx.fillStyle=`rgba(255,226,132,${particle.alpha*twinkle})`;ctx.beginPath();ctx.arc(x,y,particle.size,0,Math.PI*2);ctx.fill();}
+    loader.symbols.forEach((symbol,index)=>{const angle=now*.00045*(index%2?-1:1)+index*Math.PI/2,x=Math.cos(angle)*58,y=Math.sin(angle)*42;ctx.font='700 17px system-ui, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(255,208,54,.8)';ctx.shadowBlur=9;ctx.fillStyle=index%2?'#ffe5a6':'#ffd036';ctx.fillText(symbol,x,y);});
+    ctx.restore();
+  }
+  function animateLoader(now){if(!loader.running)return;drawLoaderFrame(now);loader.frame=requestAnimationFrame(animateLoader);}
+  function startLoaderCanvas(){setupLoaderCanvas();if(loader.failed)return;if(reducedMotion()){drawLoaderFrame(performance.now());return}if(loader.running)return;loader.running=true;loader.frame=requestAnimationFrame(animateLoader);}
+  function stopLoaderCanvas(){if(loader.frame)cancelAnimationFrame(loader.frame);loader.frame=0;loader.running=false;}
   function setAppLoading(on,text){
-    const el=$('appLoading');if(!el)return;
+    const el=$('appLoading');if(!el)return;setupLoaderCanvas();
     el.classList.toggle('hidden',!on);el.setAttribute('aria-busy',on?'true':'false');
     if(text&&$('appLoadingText'))$('appLoadingText').textContent=text;
     document.body.classList.toggle('app-loading-active',!!on);
+    if(on)startLoaderCanvas();else stopLoaderCanvas();
   }
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
