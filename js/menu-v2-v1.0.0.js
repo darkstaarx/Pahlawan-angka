@@ -16,8 +16,8 @@
  *                         -> Gembok V2
  *
  * ATURAN DATA: setiap nombor di skrin ini mesti datang daripada profil
- * sebenar. Satu sahaja yang belum wujud dalam `db` — ikatan pet — dan ia
- * dipaparkan sebagai 0% dengan nota jujur, bukan angka rekaan.
+ * sebenar. Kad Teman Aktif membaca snapshot PetCollection supaya tahap dan
+ * Bond XP tidak terpisah daripada data yang dipaparkan dalam Khazanah.
  *
  * HAD YANG DIKETAHUI (jangan dakwa lebih daripada ini):
  *   - Gembok V2 menjalankan soalan sebenar daripada bank, tetapi ia TIDAK
@@ -243,7 +243,13 @@
     startSpriteEngine();
 
     let pet=null;
-    try{ pet=REWARD_PETS[db.rewards&&db.rewards.equippedPet]||null }catch(_){}
+    try{
+      const active=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.active);
+      if(active)pet={...active,front:active.front||active.assets?.happy,hub:active.hub||active.assets?.happy};
+    }catch(_){}
+    if(!pet){
+      try{ pet=REWARD_PETS[db.rewards&&db.rewards.equippedPet]||null }catch(_){}
+    }
 
     /* Kad ini membuka Demo v2, dan Demo v2 SENGAJA tidak menulis apa-apa
        kepada kemajuan murid — tiada db.daily, db.xp, db.coins mahupun db.logs.
@@ -269,16 +275,19 @@
       if(fnote)fnote.textContent='Mula satu misi untuk menguji kuasa kamu.';
     }
 
-    // Pet Aktif. Tahap dan ikatan belum dijejaki dalam `db`, jadi ia 0% dan
-    // notanya berkata begitu. Jangan gantikan dengan nombor yang comel.
+    // Pet Aktif. Data tahap dan ikatan datang daripada koleksi teman canonical.
     if($('mv2PetName'))$('mv2PetName').textContent=pet?pet.name:'Belum ada teman';
     const face=$('mv2PetFace');
     if(face)setPetArt(face,pet);
-    if($('mv2PetFill'))$('mv2PetFill').style.width='0%';
-    if($('mv2PetLv'))$('mv2PetLv').textContent='Lv. 1';
+    const bondXp=pet?Math.max(0,Number(pet.bondXp)||0):0;
+    const petLevel=pet?Math.max(1,Math.min(60,Number(pet.level)||1)):1;
+    const petMaxed=!!pet&&petLevel>=60;
+    const petProgress=pet?(petMaxed?100:Math.max(0,Math.min(100,bondXp%100))):0;
+    if($('mv2PetFill'))$('mv2PetFill').style.width=petProgress+'%';
+    if($('mv2PetLv'))$('mv2PetLv').textContent=pet?`Lv. ${petLevel}`:'Lv. 1';
     if($('mv2PetBondLabel'))$('mv2PetBondLabel').textContent=pet?'Sahabat':'—';
     if($('mv2PetNote'))$('mv2PetNote').textContent=pet
-      ? 'Ikatan teman belum dijejaki lagi.'
+      ? (petMaxed?`${bondXp} Bond XP · Tahap maksimum.`:`${bondXp} Bond XP · ${petProgress}/100 XP ke tahap seterusnya.`)
       : 'Pilih teman dalam Koleksi Teman.';
   }
 
