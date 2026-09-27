@@ -22,7 +22,7 @@
     try{
       if(typeof db==='undefined'||!db||!db.rewards)return null;
       const companion=window.PetCollection?.snapshot?.(db).pets.find(p=>p.active);
-      if(companion)return {...companion,name:companion.name==='aurora'?'Aurora Ekor Angka':companion.name,front:companion.assets.happy,hub:companion.assets.happy};
+      if(companion)return {...companion,name:companion.name==='aurora'?'Aurora':companion.name,front:companion.assets.happy,hub:companion.assets.happy};
       const id=db.rewards.equippedPet;
       if(!id||typeof REWARD_PETS==='undefined')return null;
       return REWARD_PETS[id]||null;

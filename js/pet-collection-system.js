@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const catalog={
-  aurora:{name:'Aurora Ekor Angka',rarity:'Starter',folder:null,levelGate:1,evolutionRarity:'Common'},
+  aurora:{name:'Aurora',species:'Musang Ekor Angka',rarity:'Starter',folder:null,levelGate:1,evolutionRarity:'Common'},
   ketupatKura:{name:'Kura-Kura Ketupat',rarity:'Common',folder:'ketupat-kura',levelGate:3},
   kumbangManggis:{name:'Kumbang Manggis',rarity:'Uncommon',folder:'kumbang-manggis',levelGate:7},
   harimauBunga:{name:'Harimau Bunga',rarity:'Rare',folder:'harimau-bunga',levelGate:12},
@@ -58,7 +58,7 @@
    const old=object(data.petCollection[id]),owned=id==='aurora'||old.state==='tamed';
    const xp=count(old.bondXp),lv=level(xp);
    const evolutionStage=stage(id,lv),milestones=milestonesFor(id),nextEvolution=milestones.find(milestone=>milestone>lv)||null;
-   data.petCollection[id]={...old,state:owned?'tamed':old.state==='encountered'?'encountered':'unseen',rarity:meta.rarity,levelGate:meta.levelGate,encounters:count(old.encounters),tameProgress:count(old.tameProgress),petTrace:count(old.petTrace),rescues:count(old.rescues),bondXp:xp,level:lv,evolutionStage,evolutionState:evolutionName(evolutionStage),nextEvolution,unlockedAt:owned?(count(old.unlockedAt)||now):null};
+   data.petCollection[id]={...old,state:owned?'tamed':old.state==='encountered'?'encountered':'unseen',rarity:meta.rarity,species:meta.species||old.species||'',levelGate:meta.levelGate,encounters:count(old.encounters),tameProgress:count(old.tameProgress),petTrace:count(old.petTrace),rescues:count(old.rescues),bondXp:xp,level:lv,evolutionStage,evolutionState:evolutionName(evolutionStage),nextEvolution,unlockedAt:owned?(count(old.unlockedAt)||now):null};
    if(owned&&!data.rewards.pets[id])data.rewards.pets[id]={unlockedAt:data.petCollection[id].unlockedAt,collection:true};
   });
   const e=object(data.expedition),requested=e.activePetId||data.rewards.equippedPet;
@@ -74,7 +74,7 @@
    const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp',happySprite:null};
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=playerLevel(data)>=meta.levelGate;
-   return {...item,...data.petCollection[id],id,name:item?.name||meta.name,assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
+   return {...item,...data.petCollection[id],id,name:meta.name,species:meta.species||'',assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
   }),expedition:{...data.expedition}};
  }
  function persist(data){if(typeof db!=='undefined'&&data===db&&typeof save==='function')save();}

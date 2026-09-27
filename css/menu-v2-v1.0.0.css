@@ -1,12 +1,40 @@
 /* Menu V2 — laman utama alternatif. v1.0.0
    Setiap nombor pada skrin ini datang daripada profil sebenar; tiada statistik
-   direka. Satu-satunya nilai yang belum dijejaki ialah ikatan pet, dan ia
-   ditunjuk sebagai 0% dengan nota yang jujur, bukan angka rekaan. */
+   direka. Ikatan pet menggunakan kemajuan Bond XP sebenar dalam koleksi teman. */
 /* Menu V2 membawa kepalanya sendiri, jadi bar aplikasi disembunyikan —
    sama seperti yang dilakukan skrin Demo. */
 body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Screen{position:relative;padding:0;overflow:hidden}
 .mv2Screen.on{display:flex;flex-direction:column;height:100dvh;max-height:100dvh}
+
+/* ---------- loading cloud -> hub ---------- */
+.appLoading{
+  position:fixed;inset:0;z-index:2000;display:grid;place-items:center;padding:24px;
+  background:radial-gradient(circle at 50% 32%,rgba(40,91,145,.55),transparent 42%),#08172b;
+  color:#f5f8ff;overflow:hidden
+}
+.appLoading.hidden{display:none}
+body.app-loading-active{overflow:hidden}
+.appLoadingCard{
+  width:min(100%,340px);padding:24px 22px 22px;border:1px solid rgba(255,208,54,.62);
+  border-radius:26px;text-align:center;background:linear-gradient(160deg,#173a62,#0d223e 72%);
+  box-shadow:0 18px 42px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.16)
+}
+.appLoadingPet{
+  width:112px;height:112px;margin:-8px auto 2px;display:grid;place-items:center;
+  border-radius:50%;background:radial-gradient(circle,#3c9ed6 0%,#1a4c7b 64%,#102b4a 65%);
+  box-shadow:0 0 0 5px rgba(255,208,54,.2),0 0 28px rgba(89,200,255,.35);
+  animation:appLoadingBob 1.35s ease-in-out infinite
+}
+.appLoadingPet img{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}
+.appLoadingCard .eyebrow{color:#ffe5a6;letter-spacing:.16em}
+.appLoadingCard h2{margin:7px 0 6px;color:#fff;font-size:21px;line-height:1.15}
+.appLoadingCard p{margin:0;color:#c8d8ea;font-size:13px;line-height:1.45}
+.appLoadingDots{display:flex;justify-content:center;gap:6px;margin-top:16px}
+.appLoadingDots i{width:7px;height:7px;border-radius:50%;background:#ffd036;animation:appLoadingDot 1s ease-in-out infinite}
+.appLoadingDots i:nth-child(2){animation-delay:.14s}.appLoadingDots i:nth-child(3){animation-delay:.28s}
+@keyframes appLoadingBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@keyframes appLoadingDot{0%,70%,100%{transform:translateY(0);opacity:.45}35%{transform:translateY(-5px);opacity:1}}
 
 /* ---------- pentas hero terkunci (pinned hero stage) ---------- */
 .mv2TopStage{
@@ -243,8 +271,9 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Cta.navy svg{stroke:#59c8ff}
 
 /* ---------- dua kad statistik ---------- */
-.mv2Stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.mv2Stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:10px;width:auto;margin:0 10px 10px;box-sizing:border-box}
 .mv2Stat{
+  min-width:0;height:100%;box-sizing:border-box;display:flex;flex-direction:column;
   padding:12px 13px;border-radius:18px;background:#fffdf4;
   box-shadow:0 8px 18px #0005,inset 0 0 0 1.5px #e7d9b7
 }
@@ -375,6 +404,14 @@ body[data-screen="menuV2"] .appHeader{display:none}
 .mv2Learn{
   position:relative;
   isolation:isolate;
+  grid-template-columns:120px minmax(0,1fr) 16px;
+  gap:10px;
+  width:calc(100% - 20px);
+  margin-left:10px;
+  margin-right:10px;
+  box-sizing:border-box;
+  padding:12px 22px 12px 24px;
+  min-height:132px;
   border:0;
   border-radius:22px;
   overflow:hidden;
@@ -414,10 +451,22 @@ body[data-screen="menuV2"] .appHeader{display:none}
   transform:translateX(2px);
 }
 .mv2Learn .mv2CardBody{
-  padding-right:2px;
+  padding-right:0;
 }
 .mv2Learn .mv2Cta.navy{
   margin-top:13px;
+  min-width:0;
+  max-width:100%;
+  width:100%;
+  box-sizing:border-box;
+  padding-inline:8px;
+  gap:4px;
+}
+
+@media (max-width:360px){
+  .mv2Learn{grid-template-columns:72px minmax(0,1fr) 16px;gap:6px;padding:10px 12px;min-height:112px}
+  .mv2LearnCikgu{width:72px;height:82px}
+  .mv2Learn .mv2Cta.navy{font-size:11.5px;padding-inline:4px;gap:3px}
 }
 
 

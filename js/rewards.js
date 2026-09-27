@@ -1,5 +1,5 @@
 const REWARD_PETS={
- aurora:{id:'aurora',name:'Aurora Ekor Angka',desc:'Makhluk fantasi berekor angka dan kristal. Teman pertama pengembara.',front:'assets/pets/aurora/front.webp',battle:'assets/pets/aurora/battle.webp',unlock:'Kalahkan boss pertama'},
+ aurora:{id:'aurora',name:'Aurora',species:'Musang Ekor Angka',desc:'Makhluk fantasi berekor angka dan kristal. Teman pertama pengembara.',front:'assets/pets/aurora/front.webp',battle:'assets/pets/aurora/battle.webp',unlock:'Kalahkan boss pertama'},
  pembaris:{id:'pembaris',name:'Kucing Pembaris Ais',desc:'Pahlawan kecil dengan pedang pembaris ais.',front:'assets/pets/kucing-pembaris/front.webp',battle:'assets/pets/kucing-pembaris/battle.webp',unlock:'Berjaya jawab Cabaran Boss Darjah +1'}
 };
 const REWARD_BADGES={

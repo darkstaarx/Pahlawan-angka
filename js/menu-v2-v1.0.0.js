@@ -285,9 +285,8 @@
     const petProgress=pet?(petMaxed?100:Math.max(0,Math.min(100,bondXp%100))):0;
     if($('mv2PetFill'))$('mv2PetFill').style.width=petProgress+'%';
     if($('mv2PetLv'))$('mv2PetLv').textContent=pet?`Lv. ${petLevel}`:'Lv. 1';
-    if($('mv2PetBondLabel'))$('mv2PetBondLabel').textContent=pet?'Sahabat':'—';
     if($('mv2PetNote'))$('mv2PetNote').textContent=pet
-      ? (petMaxed?`${bondXp} Bond XP · Tahap maksimum.`:`${bondXp} Bond XP · ${petProgress}/100 XP ke tahap seterusnya.`)
+      ? `${petProgress} / 100 XP${petMaxed?' · Tahap maksimum':''}`
       : 'Pilih teman dalam Koleksi Teman.';
   }
 
@@ -305,6 +304,7 @@
     startSpriteEngine();
     bindCards();
     if(has('screen'))screen('menuV2');
+    window.PACloud?.setLoading?.(false);
   }
 
   /* =========================================================

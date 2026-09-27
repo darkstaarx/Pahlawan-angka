@@ -23,6 +23,8 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  const data=fresh();data.level=1;const preview=pets.snapshot(data).pets;
  assert.equal(preview.length,6);assert.equal(preview.find(p=>p.id==='durianKerbau').eligible,false);
  assert.equal(preview.find(p=>p.id==='aurora').eligible,true);
+ assert.equal(preview.find(p=>p.id==='aurora').name,'Aurora');
+ assert.equal(preview.find(p=>p.id==='aurora').species,'Musang Ekor Angka');
  assert.equal(preview.find(p=>p.id==='ketupatKura').name,'Kura-Kura Ketupat');
 });
 

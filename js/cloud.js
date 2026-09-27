@@ -6,6 +6,12 @@
   const IDLE_AFTER_MS=120000;
   const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
+  function setAppLoading(on,text){
+    const el=$('appLoading');if(!el)return;
+    el.classList.toggle('hidden',!on);el.setAttribute('aria-busy',on?'true':'false');
+    if(text&&$('appLoadingText'))$('appLoadingText').textContent=text;
+    document.body.classList.toggle('app-loading-active',!!on);
+  }
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const validAvatarId=value=>/^avatar-0[1-8]$/.test(String(value||''))?String(value):null;
@@ -72,7 +78,12 @@
     await resumeAfterConsent();
   }
 
-  async function resumeAfterConsent(){if(!state.user)return;message('');await window.PACommercial?.refresh?.();await loadProfiles();renderAccount()}
+  async function resumeAfterConsent(){
+    if(!state.user)return;message('');setAppLoading(true,'Menyambung profil dan kemajuan kamu…');
+    try{await window.PACommercial?.refresh?.();await loadProfiles();renderAccount()}
+    catch(error){setAppLoading(false);throw error}
+    setAppLoading(false)
+  }
 
   async function loadProfiles(){
     let result=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,avatar_id,updated_at').eq('is_active',true).order('created_at');
@@ -97,7 +108,7 @@
       const _avatarSource=profileAvatar?'profile':(saveAvatar?'save':undefined);
       return {...p,avatar_id,...(_avatarSource?{_avatarSource}:{})};
     });
-    if(!state.profiles.length){state.childId=null;state.needsOnboarding=true;renderAccount();screen('setup');return;}
+    if(!state.profiles.length){state.childId=null;state.needsOnboarding=true;setAppLoading(false);renderAccount();screen('setup');return;}
     const remembered=localStorage.getItem('pa_active_child_id');
     const profile=state.profiles.find(p=>p.id===remembered)||state.profiles[0];
     await selectChild(profile.id,false);
@@ -105,6 +116,11 @@
   }
 
   async function selectChild(childId,navigate=true){
+    setAppLoading(true,'Memuatkan profil kamu…');
+    try{return await selectChildCore(childId,navigate)}finally{setAppLoading(false)}
+  }
+
+  async function selectChildCore(childId,navigate=true){
     await endPlaySession('user_exit');state.childId=childId;state.locked=false;localStorage.setItem('pa_active_child_id',childId);
     const profile=state.profiles.find(p=>p.id===childId);
     const [{data:saveRow,error:saveError},{data:control,error:controlError}]=await Promise.all([
@@ -280,6 +296,6 @@
     setInterval(tick,1000);document.addEventListener('pointerdown',markInteraction,{passive:true,capture:true});document.addEventListener('keydown',markInteraction,{passive:true,capture:true});document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else{state.lastTick=performance.now();markInteraction()}});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
-  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,resumeAfterConsent,state};
-  init().catch(error=>{console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
+  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,resumeAfterConsent,setLoading:setAppLoading,state};
+  init().catch(error=>{setAppLoading(false);console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
 })();

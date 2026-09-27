@@ -31,7 +31,7 @@
     badges:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M9 20h6M12 14v6"/></svg>',
     lock:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
   };
-  const PET_NAMES={aurora:'Aurora Ekor Angka',ketupatKura:'Kura-Kura Ketupat',kumbangManggis:'Kumbang Manggis',harimauBunga:'Harimau Bunga',arnabKekLapis:'Arnab Kek Lapis',durianKerbau:'Kerbau Durian'};
+  const PET_NAMES={aurora:'Aurora',ketupatKura:'Kura-Kura Ketupat',kumbangManggis:'Kumbang Manggis',harimauBunga:'Harimau Bunga',arnabKekLapis:'Arnab Kek Lapis',durianKerbau:'Kerbau Durian'};
 
   /* ---------------- rangka skrin ---------------- */
   function buildShell(){
