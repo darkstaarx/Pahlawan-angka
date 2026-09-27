@@ -1,4 +1,4 @@
-// App shell v3.84.31 — focused DEV panel waits for the pet runtime.
+// App shell v3.84.33 — focused DEV panel waits for the pet runtime.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[
@@ -41,8 +41,8 @@ const APP_SHELL=[
   './assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/quick-ready-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/staff-aim-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-projectile-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-impact-v1.webp',
   './assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp',
   './assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/hurt-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/defeat-v1.webp',
-  './assets/icons/pa-192.png','./assets/icons/pa-512.png','./assets/icons/pa-maskable-512.png',
-  './assets/branding/login-chibi-math-world-v1.webp','./assets/ui/login/pahlawan-angka-star-crest-v1.webp','./assets/ui/login/guardian-crest.svg',
+  './assets/icons/pahlawan-angka-app-32.png','./assets/icons/pahlawan-angka-app-64.png','./assets/icons/pahlawan-angka-app-180.png','./assets/icons/pahlawan-angka-app-192.png','./assets/icons/pahlawan-angka-app-512.png','./assets/icons/pahlawan-angka-app-maskable-512.png','./assets/icons/pahlawan-angka-crest-192.png',
+  './assets/branding/login-chibi-math-world-v1.webp','./assets/branding/pahlawan-angka-full-logo-v1.png','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
   './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
   './assets/enemies/minions/askabus.webp','./assets/enemies/minions/syilinggit.webp','./assets/enemies/minions/pigiramid.webp',

@@ -45,7 +45,7 @@ function status(text,error=false){const el=$('paWorksheetStatus');if(el){el.text
 let logoPromise=null;
 function loadLogo(){
  if(logoPromise)return logoPromise;
- logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/icons/pa-192.png'});return logoPromise;
+ logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/icons/pahlawan-angka-crest-192.png'});return logoPromise;
 }
 function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
 function wrap(ctx,text,maxWidth){
