@@ -1,4 +1,4 @@
-// App shell v3.84.41 — Hub pet Bond XP display.
+// App shell v3.84.42 — Profile avatar recovery from cloud saves.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-1`;
 const APP_SHELL=[

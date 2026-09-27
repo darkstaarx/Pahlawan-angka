@@ -4,10 +4,11 @@
   const KEY='sb_publishable_xVRVgrb4EP6RnFv_p6WI_g_u67xGW6C';
   const ACTIVE_SCREENS=new Set(['hub','missions','treasure','game','learning','result']);
   const IDLE_AFTER_MS=120000;
-  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,authMode:'login',locked:false,ready:false,needsOnboarding:false};
+  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const validAvatarId=value=>/^avatar-0[1-8]$/.test(String(value||''))?String(value):null;
   const avatarId=value=>/^avatar-0[1-8]$/.test(String(value||''))?String(value):'avatar-01';
   const avatarSrc=value=>`assets/avatars/pupils/${avatarId(value)}.png`;
   const schemaMismatch=error=>{const code=String(error?.code||''),msg=String(error?.message||'').toLowerCase();return ['PGRST202','PGRST204','42703','42883'].includes(code)||/avatar_id.*(column|schema cache)|column.*avatar_id|create_initial_child.*(function|schema cache|not found)/.test(msg)};
@@ -78,7 +79,24 @@
     if(result.error&&!schemaMismatch(result.error))throw result.error;
     if(result.error)result=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,updated_at').eq('is_active',true).order('created_at');
     if(result.error)throw result.error;
-    state.profiles=(result.data||[]).map(p=>({...p,avatar_id:p.avatar_id?avatarId(p.avatar_id):null}));
+    const profiles=result.data||[];
+    let saves=[];
+    if(profiles.length){
+      const saveResult=await state.client.from('game_saves').select('child_id,avatar_id:state->>avatar_id').in('child_id',profiles.map(p=>p.id));
+      if(saveResult.error)console.warn('Cloud profile avatars unavailable',saveResult.error);
+      else saves=saveResult.data||[];
+    }
+    const saveById=Object.fromEntries(saves.map(save=>[save.child_id,validAvatarId(save.avatar_id)]));
+    state.profiles=profiles.map(p=>{
+      const profileAvatar=validAvatarId(p.avatar_id);
+      const profileHasAvatarField=Object.prototype.hasOwnProperty.call(p,'avatar_id');
+      // Preserve a valid profile value, including an explicit avatar-01. Recover
+      // from the mirrored save only when the field/value is clearly missing.
+      const saveAvatar=saveById[p.id]||null;
+      const avatar_id=profileAvatar||(profileHasAvatarField&&p.avatar_id?null:saveAvatar);
+      const _avatarSource=profileAvatar?'profile':(saveAvatar?'save':undefined);
+      return {...p,avatar_id,...(_avatarSource?{_avatarSource}:{})};
+    });
     if(!state.profiles.length){state.childId=null;state.needsOnboarding=true;renderAccount();screen('setup');return;}
     const remembered=localStorage.getItem('pa_active_child_id');
     const profile=state.profiles.find(p=>p.id===remembered)||state.profiles[0];
@@ -102,7 +120,12 @@
     const keepNewerLocal=!!(cloudState&&localMatches&&localUpdated>cloudUpdated);
     if(cloudState&&!keepNewerLocal){db=cloudState;}
     else if(!localMatches){db=null;}
-    if(db){db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;db.avatar_id=avatarId(profile.avatar_id??db.avatar_id);localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));}
+    if(db){
+      db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;
+      const explicitProfileAvatar=profile?._avatarSource==='profile'&&validAvatarId(profile.avatar_id);
+      if(!keepNewerLocal||explicitProfileAvatar)db.avatar_id=avatarId(profile.avatar_id??db.avatar_id);
+      localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+    }
     else{await createBlankLocal(profile);}
     await loadTodaySeconds();await window.PAQSV2BetaRollout?.refresh?.(db);renderAccount();updateTimer();
     if(keepNewerLocal)await syncSaveNow();
@@ -130,17 +153,27 @@
     db.lastSavedAt=Date.now();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
     if(!state.user||!state.childId)return;state.saveTimer=setTimeout(syncSaveNow,900);
   }
+  function settleSaveWaiters(result){
+    const waiters=state.saveWaiters.splice(0);waiters.forEach(resolve=>resolve(result));
+  }
   async function syncSaveNow(){
-    if(!state.user||!state.childId||!db||sess?.demoMode||sess?.devBattlefield||db?.demoMode)return false;
-    if(state.saveInFlight){state.savePending=true;return false;}
+    if(!state.user||!state.childId||!db||sess?.demoMode||sess?.devBattlefield||db?.demoMode){settleSaveWaiters(false);return false;}
+    if(state.saveInFlight){state.savePending=true;return new Promise(resolve=>state.saveWaiters.push(resolve));}
     state.saveInFlight=true;clearTimeout(state.saveTimer);
-    if(!db.lastSavedAt)db.lastSavedAt=Date.now();db.cloudChildId=state.childId;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
-    const snapshot=JSON.parse(JSON.stringify(db)),savedAt=Number(snapshot.lastSavedAt);
-    const {error}=await state.client.from('game_saves').upsert({child_id:state.childId,schema_version:1,state:snapshot,xp:Number(snapshot.xp||0),coins:Number(snapshot.coins||0),level:Number(snapshot.level||1),active_mission_chapter:snapshot.activeMissionChapter==null?null:String(snapshot.activeMissionChapter),client_updated_at:new Date(savedAt).toISOString()},{onConflict:'child_id'});
+    let snapshot,savedAt;
+    let error;
+    try{
+      if(!db.lastSavedAt)db.lastSavedAt=Date.now();db.cloudChildId=state.childId;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+      snapshot=JSON.parse(JSON.stringify(db));
+      delete snapshot._avatarSource;
+      savedAt=Number(snapshot.lastSavedAt);
+      ({error}=await state.client.from('game_saves').upsert({child_id:state.childId,schema_version:1,state:snapshot,xp:Number(snapshot.xp||0),coins:Number(snapshot.coins||0),level:Number(snapshot.level||1),active_mission_chapter:snapshot.activeMissionChapter==null?null:String(snapshot.activeMissionChapter),client_updated_at:new Date(savedAt).toISOString()},{onConflict:'child_id'}));
+    }catch(saveError){error=saveError;}
     state.saveInFlight=false;
-    if(error){console.warn('Cloud save failed',error);state.savePending=true;state.saveTimer=setTimeout(syncSaveNow,3000);return false;}
+    if(error){console.warn('Cloud save failed',error);state.savePending=true;state.saveTimer=setTimeout(()=>{void syncSaveNow().catch(retryError=>console.warn('Cloud save retry failed',retryError));},3000);settleSaveWaiters(false);return false;}
     const changed=Number(db?.lastSavedAt||0)>savedAt,pending=state.savePending;state.savePending=false;
-    if(changed||pending)state.saveTimer=setTimeout(syncSaveNow,0);
+    if(changed||pending)state.saveTimer=setTimeout(()=>{void syncSaveNow().catch(retryError=>console.warn('Cloud save follow-up failed',retryError));},0);
+    else settleSaveWaiters(true);
     return true;
   }
 

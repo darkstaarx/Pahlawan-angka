@@ -13,6 +13,7 @@ const st=()=>cloud()?.state||null;
 const signed=()=>!!st()?.user;
 const profileById=id=>(st()?.profiles||[]).find(p=>p.id===id)||null;
 const avatarFor=id=>AVATAR_IDS.includes(id)?id:DEFAULT_AVATAR;
+const validAvatar=id=>AVATAR_IDS.includes(id)?id:null;
 const avatarSrc=id=>`assets/avatars/pupils/${avatarFor(id)}.png`;
 const schemaMismatch=error=>{const code=String(error?.code||''),msg=String(error?.message||'').toLowerCase();return ['PGRST202','PGRST204','42703','42883'].includes(code)||/avatar_id.*(column|schema cache)|column.*avatar_id|create_initial_child.*(function|schema cache|not found)/.test(msg)};
 const nowIso=()=>new Date().toISOString();
@@ -45,10 +46,21 @@ async function hydrateStats(){
   statsLoading=true;
   try{
     const ids=profiles.map(p=>p.id);
-    const {data,error}=await state.client.from('game_saves').select('child_id,level,coins,xp,client_updated_at').in('child_id',ids);
+    const {data,error}=await state.client.from('game_saves').select('child_id,level,coins,xp,client_updated_at,avatar_id:state->>avatar_id').in('child_id',ids);
     if(error)throw error;
     const byId=Object.fromEntries((data||[]).map(x=>[x.child_id,x]));
-    state.profiles=profiles.map(p=>({...p,...(byId[p.id]||{})}));
+    state.profiles=profiles.map(p=>{
+      const save=byId[p.id];
+      const profileAvatar=validAvatar(p.avatar_id);
+      const profileHasAvatarField=Object.prototype.hasOwnProperty.call(p,'avatar_id');
+      const explicitProfileAvatar=p._avatarSource==='profile'||(p._avatarSource==null&&profileHasAvatarField&&profileAvatar);
+      // Preserve a valid profile value, including an explicit avatar-01. Use
+      // the mirrored save only when the field/value is clearly missing.
+      const saveAvatar=validAvatar(save?.avatar_id);
+      const avatar_id=explicitProfileAvatar?profileAvatar:(saveAvatar||null);
+      const _avatarSource=explicitProfileAvatar?'profile':(saveAvatar?'save':undefined);
+      return {...p,...(save||{}),avatar_id,...(_avatarSource?{_avatarSource}:{})};
+    });
     return state.profiles;
   }catch(error){
     console.warn('Profile stats unavailable',error);
@@ -66,7 +78,13 @@ async function refreshProfiles(){
     .select('id,display_name,grade,hero_id,updated_at,created_at')
     .eq('is_active',true).order('created_at');
   if(result.error)throw result.error;
-  state.profiles=(result.data||[]).map(p=>({...p,avatar_id:p.avatar_id?avatarFor(p.avatar_id):null}));
+  state.profiles=(result.data||[]).map(p=>{
+    // Keep the distinction between a real avatar_id column and the schema
+    // fallback response, which omits that field entirely.
+    if(!Object.prototype.hasOwnProperty.call(p,'avatar_id'))return {...p};
+    const avatar_id=p.avatar_id?avatarFor(p.avatar_id):null;
+    return {...p,avatar_id,...(avatar_id?{_avatarSource:'profile'}:{})};
+  });
   await hydrateStats();
   return state.profiles;
 }
@@ -215,25 +233,28 @@ function transitionGrade(snapshot,newGrade){
 }
 
 async function mirrorProfileIntoSave(id,{name,grade,hero,avatar_id},oldGrade){
-  const state=st();if(!state?.client)return;
+  const state=st();if(!state?.client)return true;
   if(id===state.childId&&typeof db!=='undefined'&&db){
     const old=Number(db.schoolGrade||oldGrade||grade);
     db.name=name;db.hero=hero;db.avatar_id=avatarFor(avatar_id);
     if(old!==grade)transitionGrade(db,grade); else db.schoolGrade=grade;
     db.lastSavedAt=Date.now();
     if(typeof save==='function')save();
-    cloud()?.scheduleSave?.();
-    return;
+    // Complete the mirror before refreshing fallback profiles; otherwise the
+    // next hydrate can briefly restore the previous save avatar.
+    if(await cloud()?.syncSaveNow?.()===false)return false;
+    return true;
   }
   const {data,error}=await state.client.from('game_saves').select('state').eq('child_id',id).maybeSingle();
-  if(error){console.warn('Profile save mirror read failed',error);return}
-  if(!data?.state)return;
+  if(error){console.warn('Profile save mirror read failed',error);return false}
+  if(!data?.state)return true;
   const snap={...data.state,name,hero,avatar_id:avatarFor(avatar_id),lastSavedAt:Date.now()};
   const prior=Number(snap.schoolGrade||oldGrade||grade);
   if(prior!==grade)transitionGrade(snap,grade);else snap.schoolGrade=grade;
   const {error:updateError}=await state.client.from('game_saves')
     .update({state:snap,client_updated_at:nowIso()}).eq('child_id',id);
-  if(updateError)console.warn('Profile save mirror update failed',updateError);
+  if(updateError){console.warn('Profile save mirror update failed',updateError);return false}
+  return true;
 }
 
 async function saveProfile(){
@@ -257,7 +278,10 @@ async function saveProfile(){
         .update({display_name:name,grade,hero_id:hero,updated_at:nowIso()}).eq('id',targetId);
       const {error}=result;
       if(error)throw error;
-      await mirrorProfileIntoSave(targetId,{name,grade,hero,avatar_id},oldGrade);
+      if(!await mirrorProfileIntoSave(targetId,{name,grade,hero,avatar_id},oldGrade)){
+        errorBox.textContent='Profil belum dapat disimpan. Semak sambungan dan cuba semula.';
+        return;
+      }
       await refreshProfiles();closeEditor();await renderManager();
       if(typeof showRewardToast==='function')showRewardToast('Profil dikemas kini ✓');
     }else{
