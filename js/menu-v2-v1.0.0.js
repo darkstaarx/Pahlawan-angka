@@ -223,7 +223,7 @@
     const pbadge = $('mv2AvatarBadge');
     if (pbadge) pbadge.textContent = `Lv. ${db.level || 1}`;
     const pimg = $('mv2AvatarImg');
-    if (pimg) pimg.src = 'assets/ui/menu-v2/stage-wira-v1.webp';
+    if (pimg) { const avatar=window.PAAvatar?.normalize?.(db.avatar_id)||'avatar-01'; pimg.src=`assets/avatars/pupils/${avatar}.png`; pimg.alt='Avatar profil'; }
 
     // syiling: permainan ini tiada mata wang permata, jadi kita papar syiling
     // sebenar dengan ikonnya sendiri dan bukan nombor hiasan.

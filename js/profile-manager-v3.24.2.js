@@ -4,20 +4,17 @@
 (()=>{
 'use strict';
 const VERSION='3.25.3';
-const HERO={
-  wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/frames/aura-framing-v1.webp'},
-  wirachibi:{id:'wirachibi',name:'Wira Chibi',power:'Kuasa Ais',src:'assets/heroes/wira-chibi/idle.webp'},
-  bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'},
-  sidma:{id:'sidma',name:'Sidma',power:'Rumus Sigma',src:'assets/heroes/sidma/profile-happy-v1.webp'}
-};
 let rendering=false, statsLoading=false, editorHero='wira', editorProfileId=null, deleteProfileId=null, emptyPrompted=false, profileSelectPromise=null;
+const AVATAR_IDS=Array.from({length:8},(_,i)=>`avatar-${String(i+1).padStart(2,'0')}`),DEFAULT_AVATAR='avatar-01';
 const $=id=>document.getElementById(id);
 const safe=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const cloud=()=>window.PACloud||null;
 const st=()=>cloud()?.state||null;
 const signed=()=>!!st()?.user;
 const profileById=id=>(st()?.profiles||[]).find(p=>p.id===id)||null;
-const heroFor=id=>HERO[id]||HERO.wira;
+const avatarFor=id=>AVATAR_IDS.includes(id)?id:DEFAULT_AVATAR;
+const avatarSrc=id=>`assets/avatars/pupils/${avatarFor(id)}.png`;
+const schemaMismatch=error=>{const code=String(error?.code||''),msg=String(error?.message||'').toLowerCase();return ['PGRST202','PGRST204','42703','42883'].includes(code)||/avatar_id.*(column|schema cache)|column.*avatar_id|create_initial_child.*(function|schema cache|not found)/.test(msg)};
 const nowIso=()=>new Date().toISOString();
 
 function levelOf(p){return Math.max(1,Number(p.level||1))}
@@ -61,27 +58,30 @@ async function hydrateStats(){
 
 async function refreshProfiles(){
   const state=st();if(!state?.client||!state.user)return [];
-  const {data,error}=await state.client.from('child_profiles')
+  let result=await state.client.from('child_profiles')
+    .select('id,display_name,grade,hero_id,avatar_id,updated_at,created_at')
+    .eq('is_active',true).order('created_at');
+  if(result.error&&!schemaMismatch(result.error))throw result.error;
+  if(result.error)result=await state.client.from('child_profiles')
     .select('id,display_name,grade,hero_id,updated_at,created_at')
     .eq('is_active',true).order('created_at');
-  if(error)throw error;
-  state.profiles=data||[];
+  if(result.error)throw result.error;
+  state.profiles=(result.data||[]).map(p=>({...p,avatar_id:p.avatar_id?avatarFor(p.avatar_id):null}));
   await hydrateStats();
   return state.profiles;
 }
 
 function portrait(p,size='row'){
-  const h=heroFor(p.hero_id);
-  return `<span class="pmPortrait pm-${safe(h.id)} pm-${size}" aria-hidden="true"><img src="${h.src}" alt=""></span>`;
+  return `<span class="pmPortrait pm-${size}" aria-hidden="true"><img src="${avatarSrc(p.avatar_id)}" alt=""></span>`;
 }
 function profileCard(p){
-  const active=p.id===st()?.childId,h=heroFor(p.hero_id),level=levelOf(p),coins=coinsOf(p),xp=xpOf(p),need=xpNeed(level),progress=pct(xp%need,need);
+  const active=p.id===st()?.childId,level=levelOf(p),coins=coinsOf(p),xp=xpOf(p),need=xpNeed(level),progress=pct(xp%need,need);
   return `<article class="pmProfileCard ${active?'active':''}">
     <button class="pmProfileOpen" type="button" onclick="PAProfileManager.select('${p.id}')" aria-label="Buka profil ${safe(p.display_name)}">
       ${portrait(p)}
       <span class="pmProfileCopy">
         <span class="pmProfileTitle"><b>${safe(p.display_name)}</b>${active?'<em>Aktif</em>':''}</span>
-        <small>Darjah ${Number(p.grade)||1} · ${safe(h.name)}</small>
+        <small>Darjah ${Number(p.grade)||1} · Teman Aurora</small>
         <span class="pmProfileStats"><i>Lv. ${level}</i><i>🪙 ${coins}</i></span>
         <span class="pmMiniXp" aria-hidden="true"><span style="width:${progress}%"></span></span>
       </span>
@@ -99,17 +99,17 @@ async function renderManager({refreshStats=false}={}){
     const profiles=state.profiles||[];
     const body=profiles.length?profiles.map(profileCard).join(''):`<div class="pmEmpty">
       <span class="pmEmptyRune">✦</span><b>Belum ada profil anak</b>
-      <p>Cipta profil pertama dan pilih pahlawan untuk memulakan pengembaraan.</p>
+      <p>Cipta profil pertama dan pilih avatar untuk memulakan pengembaraan.</p>
     </div>`;
     box.innerHTML=`<div class="pmManager" data-profile-manager="${VERSION}">
       <div class="pmAccountLine">
         <span class="pmCloud">☁</span><span><b>Akaun tersambung</b><small>${safe(state.user.email||'')}</small></span>
         <button class="pmLogoutMini" type="button" onclick="PACloud.logout()">Keluar</button>
       </div>
-      <div class="pmSectionHead"><span><small>PROFIL ANAK</small><b>Pilih pahlawan untuk sambung</b></span><em>${profiles.length} profil</em></div>
+      <div class="pmSectionHead"><span><small>PROFIL ANAK</small><b>Pilih profil untuk sambung</b></span><em>${profiles.length} profil</em></div>
       <div class="pmProfiles">${body}</div>
       <button class="pmAddProfile" type="button" onclick="PAProfileManager.create()">＋ Profil anak</button>
-      <p class="pmGuardianNote">Akaun adalah untuk penjaga. Anak bermain melalui profil tanpa e-mel sendiri.</p>
+      <p class="pmGuardianNote">Akaun adalah untuk penjaga. Anak bermain melalui avatar sendiri tanpa e-mel tambahan.</p>
     </div>`;
     if(document.body.dataset.screen==='setup'&&signed())screen('login');
     syncSignedShell();
@@ -134,10 +134,7 @@ function ensureUi(){
           <div class="pmModalHead"><span class="pmRune">✦</span><span><small>PROFIL ANAK</small><h2 id="pmEditorTitle">Cipta Profil Anak</h2></span></div>
           <label class="pmField"><span>Nama anak</span><input id="pmChildName" maxlength="40" autocomplete="off" placeholder="Nama anak"></label>
           <label class="pmField"><span>Darjah</span><select id="pmChildGrade">${[1,2,3,4,5,6].map(g=>`<option value="${g}">Darjah ${g}</option>`).join('')}</select></label>
-          <div class="pmHeroLabel"><span>Pilih pahlawan</span><small>Pilih pahlawan yang akan menemani pengembaraan.</small></div>
-          <div class="pmHeroGrid">
-            ${heroChoice('wira')}${heroChoice('wirachibi')}${heroChoice('bunga')}${heroChoice('sidma')}
-          </div>
+          <div class="pmHeroLabel"><span>Pilih avatar</span><small>Avatar profil anak.</small></div><div id="pmAvatarGrid" class="pmAvatarGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
           <div id="pmEditorError" class="pmError" role="alert"></div>
           <button id="pmSaveProfile" class="pmPrimary" type="button" onclick="PAProfileManager.saveProfile()">Cipta Profil</button>
         </div>
@@ -146,7 +143,7 @@ function ensureUi(){
         <div class="pmModal pmActionModal">
           <button class="pmClose" type="button" onclick="PAProfileManager.closeActions()" aria-label="Tutup">×</button>
           <div class="pmModalHead"><span class="pmRune">⚔</span><span><small>URUS PROFIL</small><h2 id="pmActionTitle">Profil</h2></span></div>
-          <button class="pmActionBtn" id="pmEditAction" type="button">✎ <span><b>Edit profil</b><small>Nama, darjah atau pahlawan</small></span></button>
+        <button class="pmActionBtn" id="pmEditAction" type="button">✎ <span><b>Edit profil</b><small>Nama, darjah atau avatar</small></span></button>
           <button class="pmActionBtn danger" id="pmDeleteAction" type="button">⌫ <span><b>Padam profil</b><small>Keluarkan profil daripada akaun</small></span></button>
         </div>
       </div>
@@ -164,23 +161,11 @@ function ensureUi(){
   installHubSwitch();
 }
 
-function heroChoice(id){
-  const h=HERO[id];
-  return `<button id="pmHero-${id}" class="pmHeroChoice ${id==='wira'?'selected':''}" type="button" onclick="PAProfileManager.chooseHero('${id}')" aria-pressed="${id==='wira'?'true':'false'}">
-    <span class="pmHeroStage pmHeroStage-${id}"><span class="pmHeroAvatar"><img src="${h.src}" alt="${h.name}"></span></span>
-    <span class="pmHeroChoiceCopy"><b>${h.name}</b><small>${h.power}</small><em>${id==='wira'?'✓ Dipilih':'Pilih'}</em></span>
-    <i class="pmInvite">Jom!</i>
-  </button>`;
+function chooseAvatar(id){
+  const selected=avatarFor(id),grid=$('pmAvatarGrid');if(!grid)return;
+  grid.querySelectorAll('button').forEach(b=>{const active=b.dataset.avatarId===selected;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',active?'true':'false')});
 }
-
-function chooseHero(id){
-  editorHero=HERO[id]?id:'wira';
-  Object.keys(HERO).forEach(k=>{
-    const b=$(`pmHero-${k}`),active=k===editorHero;
-    if(b){b.classList.toggle('selected',active);b.setAttribute('aria-pressed',active?'true':'false');const em=b.querySelector('em');if(em)em.textContent=active?'✓ Dipilih':'Pilih';}
-  });
-}
-
+function renderAvatarGrid(){const grid=$('pmAvatarGrid');if(!grid)return;grid.innerHTML=AVATAR_IDS.map(id=>`<button type="button" data-avatar-id="${id}" onclick="PAProfileManager.chooseAvatar('${id}')" aria-label="Avatar ${id.slice(-2)}" style="border:2px solid #365174;border-radius:12px;background:#0b1c34;padding:4px"><img src="${avatarSrc(id)}" alt="" style="width:100%;display:block"></button>`).join('')}
 function openEditor(id=null){
   ensureUi();if(!signed())return screen('login');
   const p=id?profileById(id):null;
@@ -192,7 +177,7 @@ function openEditor(id=null){
   gradeSelect.dispatchEvent(new Event('change',{bubbles:true}));
   $('pmSaveProfile').textContent=p?'Simpan Perubahan':'Cipta Profil';
   $('pmEditorError').textContent='';
-  chooseHero(editorHero);
+  renderAvatarGrid();chooseAvatar(p?.avatar_id||DEFAULT_AVATAR);
   $('pmEditorOverlay').classList.remove('hidden');
   document.body.classList.add('pmModalOpen');
   setTimeout(()=>$('pmChildName')?.focus(),60);
@@ -229,11 +214,11 @@ function transitionGrade(snapshot,newGrade){
   return snapshot;
 }
 
-async function mirrorProfileIntoSave(id,{name,grade,hero},oldGrade){
+async function mirrorProfileIntoSave(id,{name,grade,hero,avatar_id},oldGrade){
   const state=st();if(!state?.client)return;
   if(id===state.childId&&typeof db!=='undefined'&&db){
     const old=Number(db.schoolGrade||oldGrade||grade);
-    db.name=name;db.hero=hero;
+    db.name=name;db.hero=hero;db.avatar_id=avatarFor(avatar_id);
     if(old!==grade)transitionGrade(db,grade); else db.schoolGrade=grade;
     db.lastSavedAt=Date.now();
     if(typeof save==='function')save();
@@ -243,7 +228,7 @@ async function mirrorProfileIntoSave(id,{name,grade,hero},oldGrade){
   const {data,error}=await state.client.from('game_saves').select('state').eq('child_id',id).maybeSingle();
   if(error){console.warn('Profile save mirror read failed',error);return}
   if(!data?.state)return;
-  const snap={...data.state,name,hero,lastSavedAt:Date.now()};
+  const snap={...data.state,name,hero,avatar_id:avatarFor(avatar_id),lastSavedAt:Date.now()};
   const prior=Number(snap.schoolGrade||oldGrade||grade);
   if(prior!==grade)transitionGrade(snap,grade);else snap.schoolGrade=grade;
   const {error:updateError}=await state.client.from('game_saves')
@@ -253,34 +238,44 @@ async function mirrorProfileIntoSave(id,{name,grade,hero},oldGrade){
 
 async function saveProfile(){
   const state=st();if(!state?.client||!state.user)return;
-  const name=($('pmChildName')?.value||'').trim(),grade=Number($('pmChildGrade')?.value||0),hero=editorHero;
+  const name=($('pmChildName')?.value||'').trim(),grade=Number($('pmChildGrade')?.value||0),hero=editorHero,avatar_id=avatarFor($('pmAvatarGrid')?.querySelector('button.selected')?.dataset.avatarId);
   const errorBox=$('pmEditorError'),button=$('pmSaveProfile');
   if(!name||name.length>40){errorBox.textContent='Masukkan nama anak antara 1 hingga 40 aksara.';return}
   if(grade<1||grade>6){errorBox.textContent='Pilih Darjah 1 hingga Darjah 6.';return}
-  if(!HERO[hero]){errorBox.textContent='Pilih pahlawan.';return}
   if(!editorProfileId&&!(state.profiles||[]).length&&window.PAOnboarding?.beginProfile){
-    closeEditor();window.PAOnboarding.beginProfile({name,grade,hero});return;
+    closeEditor();window.PAOnboarding.beginProfile({name,grade,hero,avatar_id});return;
   }
   button.disabled=true;button.textContent='Menyimpan…';errorBox.textContent='';
   try{
     let targetId=editorProfileId;
     if(targetId){
       const current=profileById(targetId),oldGrade=Number(current?.grade||grade);
-      const {error}=await state.client.from('child_profiles')
+      let result=await state.client.from('child_profiles')
+        .update({display_name:name,grade,hero_id:hero,avatar_id,updated_at:nowIso()}).eq('id',targetId);
+      if(result.error&&!schemaMismatch(result.error))throw result.error;
+      if(result.error)result=await state.client.from('child_profiles')
         .update({display_name:name,grade,hero_id:hero,updated_at:nowIso()}).eq('id',targetId);
+      const {error}=result;
       if(error)throw error;
-      await mirrorProfileIntoSave(targetId,{name,grade,hero},oldGrade);
+      await mirrorProfileIntoSave(targetId,{name,grade,hero,avatar_id},oldGrade);
       await refreshProfiles();closeEditor();await renderManager();
       if(typeof showRewardToast==='function')showRewardToast('Profil dikemas kini ✓');
     }else{
       const {data:family,error:familyError}=await state.client.from('families').select('id').eq('owner_user_id',state.user.id).maybeSingle();
       if(familyError)throw familyError;if(!family?.id)throw new Error('Family profile not found');
-      const {data:newProfile,error}=await state.client.from('child_profiles')
+      let result=await state.client.from('child_profiles')
+        .insert({family_id:family.id,display_name:name,grade,hero_id:hero,avatar_id,is_active:true})
+        .select('id,display_name,grade,hero_id,avatar_id,updated_at,created_at').single();
+      if(result.error&&!schemaMismatch(result.error))throw result.error;
+      if(result.error)result=await state.client.from('child_profiles')
         .insert({family_id:family.id,display_name:name,grade,hero_id:hero,is_active:true})
         .select('id,display_name,grade,hero_id,updated_at,created_at').single();
+      const {data:newProfile,error}=result;
       if(error)throw error;
       targetId=newProfile.id;
-      await refreshProfiles();closeEditor();
+      await refreshProfiles();
+      const created=profileById(targetId);if(created&&!created.avatar_id)created.avatar_id=avatar_id;
+      closeEditor();
       await cloud().selectChild(targetId,true);
       if(typeof showRewardToast==='function')showRewardToast(`Selamat datang, ${name}!`);
     }
@@ -400,9 +395,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 window.PAProfileManager={
   version:VERSION,open:openManager,refresh:()=>renderManager({refreshStats:true}),select:selectProfile,
-  create:()=>openEditor(),edit:openEditor,openEditor,closeEditor,chooseHero,saveProfile,
+  create:()=>openEditor(),edit:openEditor,openEditor,closeEditor,chooseAvatar,saveProfile,
   actions,closeActions,openDelete,closeDelete,confirmDelete,transitionGrade,
-  assetMode:'approved-happy-profile-v1-avatar-frame'
+  assetMode:'pupil-avatar-v1'
 };
 document.documentElement.dataset.profileManager=VERSION;
 })();

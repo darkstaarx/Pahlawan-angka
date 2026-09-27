@@ -52,6 +52,7 @@ function setBattleTerrain(meta){
  arena.dataset.terrain=theme;arena.style.setProperty('--battle-terrain',value);
 }
 if(db && !db.schoolGrade) db.schoolGrade=2;
+if(db && !/^avatar-0[1-8]$/.test(String(db.avatar_id||''))) db.avatar_id='avatar-01';
 let selectedHero='wira';
 let sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:"calibrate",recoveryFor:null,stretchFor:null};
 function swapDemoState(nextDb,nextSess){const previous={db,sess};db=nextDb;sess=nextSess;return previous}
@@ -60,7 +61,7 @@ function initSkill(id){
  if(!db.skills[id]) db.skills[id]={mastery:(META[id].grade===db.schoolGrade?18:0),confidence:8,evidence:0,correct:0,wrong:0,hints:0,mis:{},lastSeen:0,stability:0,probePass:0,probeFail:0};
 }
 function initAll(){GRAPH.skills.forEach(x=>initSkill(x.id));window.PAD3Topic7Evidence?.ensure?.(db)}
-function chooseHero(id){selectedHero=id;document.querySelectorAll('.heroPick').forEach(x=>{const active=x.id==='pick-'+id;x.classList.toggle('active',active);x.setAttribute('aria-pressed',active?'true':'false')})}
+function chooseHero(id){selectedHero=(typeof HEROES!=='undefined'&&HEROES[id])?id:'wira'}
 function applyHeroToBattle(){
  const heroId=(db&&db.hero)||selectedHero||"wira";
  // Demo and direct mission entry do not pass through renderHub(). Apply the
@@ -82,21 +83,33 @@ function applyHeroToBattle(){
  if(typeof renderBattlePet==='function')renderBattlePet();
 }
 
+const PA_AVATAR_IDS=Array.from({length:8},(_,i)=>`avatar-${String(i+1).padStart(2,'0')}`);
+const PA_DEFAULT_AVATAR='avatar-01';
+function normalizeAvatarId(id){return PA_AVATAR_IDS.includes(id)?id:PA_DEFAULT_AVATAR}
+function avatarSrc(id){return `assets/avatars/pupils/${normalizeAvatarId(id)}.png`}
+window.PAAvatar={ids:PA_AVATAR_IDS,defaultId:PA_DEFAULT_AVATAR,normalize:normalizeAvatarId,src:avatarSrc,currentId:PA_DEFAULT_AVATAR};
+let selectedAvatar=PA_DEFAULT_AVATAR;
+function chooseAvatar(id){
+ selectedAvatar=normalizeAvatarId(id);window.PAAvatar.currentId=selectedAvatar;
+ document.querySelectorAll('#avatarPicker [data-avatar-id]').forEach(b=>{const active=b.dataset.avatarId===selectedAvatar;b.classList.toggle('active',active);b.style.border=active?'2px solid #f4c43e':'2px solid #365174';b.style.borderRadius='12px';b.style.background='#0b1c34';b.style.padding='4px';b.setAttribute('aria-pressed',active?'true':'false')});
+}
+function setupAvatarPicker(){
+ let picker=document.getElementById('avatarPicker');
+ if(!picker){const anchor=document.getElementById('gradeSelect')?.closest('.row');if(!anchor)return;anchor.insertAdjacentHTML('afterend','<div class="mut label" style="margin-top:12px">Pilih avatar</div><div id="avatarPicker" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 12px"></div>');picker=document.getElementById('avatarPicker')}
+ if(!picker.children.length)picker.innerHTML=PA_AVATAR_IDS.map(id=>`<button type="button" data-avatar-id="${id}" onclick="chooseAvatar('${id}')" aria-label="Avatar ${id.slice(-2)}"><img src="${avatarSrc(id)}" alt=""></button>`).join('');
+ chooseAvatar((db&&db.avatar_id)||selectedAvatar);
+}
 function setupHeroPicker(){
  refreshLoginResume();
- let w=document.getElementById('pickImgWira'),wc=document.getElementById('pickImgWiraChibi'),b=document.getElementById('pickImgBunga'),s=document.getElementById('pickImgSidma');
- if(w)w.src=HEROES.wira.idle;
- if(wc&&HEROES.wirachibi)wc.src=HEROES.wirachibi.idle;
- if(b)b.src=HEROES.bunga.profile||HEROES.bunga.idle;
- if(s&&HEROES.sidma)s.src=HEROES.sidma.profile||HEROES.sidma.idle;
- chooseHero((db&&db.hero)||selectedHero||'wira');
- if(db){document.getElementById('resume').innerHTML=`<button class=\"btn secondary\" onclick=\"resumeGame()\">Sambung ${db.name} · Darjah ${db.schoolGrade} · ${HEROES[db.hero||'wira'].name}</button>`} refreshLoginResume();
+ selectedHero=(db&&db.hero)||selectedHero||'wira';
+ setupAvatarPicker();
+ if(db){document.getElementById('resume').innerHTML=`<button class=\"btn secondary\" onclick=\"resumeGame()\">Sambung ${db.name} · Darjah ${db.schoolGrade}</button>`} refreshLoginResume();
 }
 function currentCoreSkills(){ return GRAPH.skills.filter(x=>x.grade===db.schoolGrade) }
 function chapterCountForGrade(g){ return [...new Set(GRAPH.skills.filter(x=>x.grade===g).map(x=>String(x.chapter)))].length || 1 }
 function startNew(){
  let g=+document.getElementById('gradeSelect').value||2;
- db={name:document.getElementById("child").value.trim()||"Anak",schoolGrade:g,hero:selectedHero||"wira",skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};
+ db={name:document.getElementById("child").value.trim()||"Anak",schoolGrade:g,hero:selectedHero||"wira",avatar_id:normalizeAvatarId(selectedAvatar),skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};
  initAll();ensureProgression();save();renderHub()
 }
 function resumeGame(){if(db&&db.hero)selectedHero=db.hero;initAll();ensureProgression();if(playSfx)playSfx('ui');renderHub()}
@@ -249,7 +262,7 @@ function applyEnemyVariant(forceReset=false){
 }
 function nextEnemy(){ sess.enemy=(sess.enemy||1)+1;applyEnemyVariant(true); }
 function goLogin(){ screen('login'); refreshLoginResume(); if(typeof updateSoundButtons==='function')updateSoundButtons(); }
-function goSetup(){ if(db){ const child=document.getElementById('child'), grade=document.getElementById('gradeSelect'); if(child) child.value=db.name||''; if(grade) grade.value=String(db.schoolGrade||2); chooseHero(db.hero||selectedHero||'wira'); } screen('setup') }
+function goSetup(){ if(db){ const child=document.getElementById('child'), grade=document.getElementById('gradeSelect'); if(child) child.value=db.name||''; if(grade) grade.value=String(db.schoolGrade||2); selectedHero=db.hero||selectedHero||'wira'; chooseAvatar(db.avatar_id||PA_DEFAULT_AVATAR); } setupAvatarPicker(); screen('setup') }
 function goSetupAsGuest(){ if(typeof playSfx==='function')playSfx('ui'); screen('setup') }
 function setLoginError(msg=''){ const e=document.getElementById('loginError'); if(e){e.textContent=msg;e.classList.toggle('show',!!msg)} }
 function loginRoute(role){

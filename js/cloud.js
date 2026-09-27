@@ -8,6 +8,9 @@
   const $=id=>document.getElementById(id);
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const avatarId=value=>/^avatar-0[1-8]$/.test(String(value||''))?String(value):'avatar-01';
+  const avatarSrc=value=>`assets/avatars/pupils/${avatarId(value)}.png`;
+  const schemaMismatch=error=>{const code=String(error?.code||''),msg=String(error?.message||'').toLowerCase();return ['PGRST202','PGRST204','42703','42883'].includes(code)||/avatar_id.*(column|schema cache)|column.*avatar_id|create_initial_child.*(function|schema cache|not found)/.test(msg)};
   const currentScreen=()=>document.body.dataset.screen||'';
   const playing=()=>ACTIVE_SCREENS.has(currentScreen())&&!document.hidden&&!state.locked&&(Date.now()-state.lastInteractionAt<IDLE_AFTER_MS);
   const markInteraction=()=>{const wasIdle=Date.now()-state.lastInteractionAt>=IDLE_AFTER_MS;state.lastInteractionAt=Date.now();if(wasIdle)state.lastTick=performance.now()};
@@ -71,9 +74,11 @@
   async function resumeAfterConsent(){if(!state.user)return;message('');await window.PACommercial?.refresh?.();await loadProfiles();renderAccount()}
 
   async function loadProfiles(){
-    const {data,error}=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,updated_at').eq('is_active',true).order('created_at');
-    if(error)throw error;
-    state.profiles=data||[];
+    let result=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,avatar_id,updated_at').eq('is_active',true).order('created_at');
+    if(result.error&&!schemaMismatch(result.error))throw result.error;
+    if(result.error)result=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,updated_at').eq('is_active',true).order('created_at');
+    if(result.error)throw result.error;
+    state.profiles=(result.data||[]).map(p=>({...p,avatar_id:p.avatar_id?avatarId(p.avatar_id):null}));
     if(!state.profiles.length){state.childId=null;state.needsOnboarding=true;renderAccount();screen('setup');return;}
     const remembered=localStorage.getItem('pa_active_child_id');
     const profile=state.profiles.find(p=>p.id===remembered)||state.profiles[0];
@@ -97,7 +102,7 @@
     const keepNewerLocal=!!(cloudState&&localMatches&&localUpdated>cloudUpdated);
     if(cloudState&&!keepNewerLocal){db=cloudState;}
     else if(!localMatches){db=null;}
-    if(db){db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));}
+    if(db){db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;db.avatar_id=avatarId(profile.avatar_id??db.avatar_id);localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));}
     else{await createBlankLocal(profile);}
     await loadTodaySeconds();await window.PAQSV2BetaRollout?.refresh?.(db);renderAccount();updateTimer();
     if(keepNewerLocal)await syncSaveNow();
@@ -105,13 +110,16 @@
   }
 
   async function createBlankLocal(profile){
-    db={name:profile.display_name,schoolGrade:profile.grade,hero:profile.hero_id,cloudChildId:profile.id,skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};initAll();ensureProgression();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));await syncSaveNow();
+    db={name:profile.display_name,schoolGrade:profile.grade,hero:profile.hero_id,avatar_id:avatarId(profile.avatar_id),cloudChildId:profile.id,skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};initAll();ensureProgression();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));await syncSaveNow();
   }
 
   async function attachNewChild(){
     if(!state.user||!db)return;
     try{
-      const {data,error}=await state.client.rpc('create_initial_child',{child_display_name:db.name,child_grade:db.schoolGrade,child_hero_id:db.hero||'wira'});
+      let result=await state.client.rpc('create_initial_child',{child_display_name:db.name,child_grade:db.schoolGrade,child_hero_id:db.hero||'wira',child_avatar_id:avatarId(db.avatar_id)});
+      if(result.error&&!schemaMismatch(result.error))throw result.error;
+      if(result.error)result=await state.client.rpc('create_initial_child',{child_display_name:db.name,child_grade:db.schoolGrade,child_hero_id:db.hero||'wira'});
+      const {data,error}=result;
       if(error)throw error;state.childId=data;db.cloudChildId=data;localStorage.setItem('pa_active_child_id',data);localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
       await loadProfiles();state.needsOnboarding=false;await syncSaveNow();if(playing())ensurePlaySession();showRewardToast('Progress kini disimpan ke awan ✓');
     }catch(error){console.warn('Cloud profile creation failed',error);showRewardToast('Progress disimpan pada peranti · sync akan dicuba lagi');}
@@ -192,7 +200,7 @@
     const signed=!!state.user;form?.classList.toggle('hidden',signed);tabs?.classList.toggle('hidden',signed);admin?.classList.toggle('hidden',signed);box.classList.toggle('hidden',!signed);
     if(resume)resume.classList.toggle('hidden',!signed&&!!db?.cloudChildId);
     if(!signed){box.innerHTML='';return;}
-    const profiles=(state.profiles||[]).map(p=>`<button class="cloudProfile ${p.id===state.childId?'active':''}" onclick="PACloud.selectChild('${p.id}')"><span class="cloudProfileIcon">⚔</span><span><b>${safe(p.display_name)}</b><small>Darjah ${p.grade}</small></span><em>${p.id===state.childId?'Aktif':'Pilih'}</em></button>`).join('');
+    const profiles=(state.profiles||[]).map(p=>`<button class="cloudProfile ${p.id===state.childId?'active':''}" onclick="PACloud.selectChild('${p.id}')"><img class="cloudProfileIcon" src="${avatarSrc(p.avatar_id)}" alt=""><span><b>${safe(p.display_name)}</b><small>Darjah ${p.grade}</small></span><em>${p.id===state.childId?'Aktif':'Pilih'}</em></button>`).join('');
     box.innerHTML=`<div class="cloudAccountHead"><span>☁</span><span><b>Akaun tersambung</b><small>${safe(state.user.email||'')}</small></span></div><div class="cloudProfiles">${profiles||'<small>Belum ada profil anak.</small>'}</div><div class="cloudAccountActions"><button class="btn secondary small" onclick="PACloud.addChild()">+ Profil anak</button><button class="btn ghost small" onclick="PACloud.logout()">Log keluar</button></div>`;
   }
 
