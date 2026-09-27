@@ -178,16 +178,36 @@
 .kzPetMeta span{font-size:10px;font-weight:900;color:var(--kz-gold-soft)}
 .kzPetMeta small{font-size:9.5px;color:#a9c4dc}
 
-/* trofi guna kad sedia ada, cuma dipakaikan pakaian yang sama */
+/* Trofi menggunakan crest raster sebenar yang sekeluarga dengan logo PA. */
 #badgeCollection .badgeCard{
   border-radius:15px;padding:11px 8px;text-align:center;background:#0a1d39;
   box-shadow:inset 0 0 0 2px #3d5f8a, 0 6px 16px #00000055
 }
 #badgeCollection .badgeCard.owned{box-shadow:inset 0 0 0 2px #e9b949, 0 0 18px #e9b94933, 0 6px 16px #00000055}
-#badgeCollection .badgeMedal{font-size:30px;line-height:1.1;margin-bottom:5px}
+#badgeCollection .badgeMedal{width:78px;height:84px;display:block;object-fit:contain;margin:0 auto 5px;background:transparent;border:0;border-radius:0;box-shadow:none;clip-path:none;animation:none;transform:none;filter:drop-shadow(0 5px 5px #0007)}
+#badgeCollection .badgeCard.locked .badgeMedal{filter:grayscale(1) brightness(.46) drop-shadow(0 4px 4px #0007);opacity:.78}
+#badgeCollection .badgeCard.owned .badgeMedal{filter:drop-shadow(0 0 8px #e9b94988) drop-shadow(0 5px 5px #0008);animation:none;box-shadow:none}
 #badgeCollection .badgeCard b{display:block;font-size:11.5px;font-weight:900;color:var(--kz-ink)}
 #badgeCollection .badgeCard small{display:block;font-size:10px;color:var(--kz-mut);line-height:1.3;margin-top:3px}
 #badgeCollection .badgeCard.locked{opacity:.72}
+
+/* Satu crest keluarga, tiga material kemajuan: Gangsa / Perak / Emas.
+   Crest dibiarkan floating; warna tier ditunjukkan melalui kad, label dan glow. */
+#badgeCollection .badgeCard.tier-bronze{--trophy-accent:#b86c3b;--trophy-hi:#f2bd7d;--trophy-deep:#71351e;--trophy-glow:#c9793c66;border-color:#b86c3b}
+#badgeCollection .badgeCard.tier-silver{--trophy-accent:#9db9cc;--trophy-hi:#f2fbff;--trophy-deep:#476a83;--trophy-glow:#b9e6ff66;border-color:#9db9cc}
+#badgeCollection .badgeCard.tier-gold{--trophy-accent:#e4ae25;--trophy-hi:#fff1a0;--trophy-deep:#9c5d08;--trophy-glow:#ffd84e77;border-color:#e4ae25}
+#badgeCollection .badgeCard[class*="tier-"] .badgeTier{
+  display:inline-flex;align-items:center;justify-content:center;margin:0 0 4px;padding:2px 7px;
+  border:1px solid var(--trophy-accent,#c9a24d);border-radius:999px;color:var(--trophy-deep,#75440c);
+  background:linear-gradient(180deg,var(--trophy-hi,#fff3a8),var(--trophy-accent,#c9a24d));
+  font-size:9px;font-style:normal;font-weight:1000;letter-spacing:.04em;text-transform:uppercase;
+}
+#badgeCollection .badgeCard.tier-bronze .badgeTier{color:#fff1d5}
+#badgeCollection .badgeCard.tier-silver .badgeTier{color:#173652}
+#badgeCollection .badgeCard.tier-gold .badgeTier{color:#4f3000}
+#badgeCollection .badgeCard.tier-bronze .badgeMedal{filter:drop-shadow(0 0 10px #c9793c88) drop-shadow(0 5px 5px #0008)}
+#badgeCollection .badgeCard.tier-silver .badgeMedal{filter:drop-shadow(0 0 10px #b9e6ff99) drop-shadow(0 5px 5px #0008)}
+#badgeCollection .badgeCard.tier-gold .badgeMedal{filter:drop-shadow(0 0 12px #ffd84eaa) drop-shadow(0 5px 5px #0008)}
 
 /* ---------- kemajuan ---------- */
 .kzProgress{margin-top:12px}

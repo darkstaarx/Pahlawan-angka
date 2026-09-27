@@ -166,7 +166,7 @@ function recordMissionAnswer(ok,skillId,usedHint){
   db.totalQuestions=(db.totalQuestions||0)+1;
   if(typeof evaluateMilestoneBadges==='function')evaluateMilestoneBadges();
   sess.missionSkills[skillId]=(sess.missionSkills[skillId]||0)+(ok?1:-1);
-  if(db.daily.correct>=PROGRESSION.dailyTarget&&!db.daily.claimed){db.daily.claimed=true;addCoins(25);showRewardToast('Daily Quest selesai! +25 🪙')}
+  if(db.daily.correct>=PROGRESSION.dailyTarget&&!db.daily.claimed){db.daily.claimed=true;addCoins(25);showRewardToast('Daily Quest selesai! +25 🪙');if(typeof evaluateMilestoneBadges==='function')evaluateMilestoneBadges()}
   updateMissionHud();save();
 }
 function showRewardToast(text){
