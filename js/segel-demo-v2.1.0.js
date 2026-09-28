@@ -1070,10 +1070,32 @@
       },
       /* Wira menyerang SEGEL, bukan Aurora. Bunyi: pedang masa tebasan,
          hentaman masa sentuh — dua kesan berasingan, bukan satu. */
-      async strike(){
+      isFinalHit(){
+        const s=seals[S.active], tier=TIERS[Math.min(S.active,TIERS.length-1)];
+        return Boolean(s && S.active===TIERS.length-1 && s.damage+1/tier.hits>=.999);
+      },
+      async strike({finisher=false}={}){
         const lifecycle=S.lifecycle;
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
+        if(finisher){
+          host.classList.add('finisher');
+          // Blackout first, then ice catches Wira's eye before the live strike resumes.
+          S.heroLock=null; S.heroX=HERO_HOME; S.heroFrameT0=performance.now()/1000; await wait(260);
+          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
+          host.classList.add('finisher-eye'); await wait(360);
+          if(lifecycle!==S.lifecycle){host.classList.remove('finisher','finisher-eye');return}
+          host.classList.remove('finisher-eye'); await wait(180);
+          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
+          S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.22; await wait(260);
+          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
+          sfx('swordSlash'); S.heroLock=heroSlashE; S.heroX=SEAL_X-.42; await wait(180);
+          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
+          sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(10.5,0xbfe9ff); S.waveT=0; S.shake=.62; S.flashT=0;
+          await wait(260);
+          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
+          S.heroLock=null; S.heroX=HERO_HOME; host.classList.remove('finisher'); return;
+        }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
@@ -1185,7 +1207,7 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; },
+      cancel(){ ++S.lifecycle; host.classList.remove('finisher','finisher-eye'); },
       setPet(config){ return setPetVisual(config); },
       dispose(){ S.running=false; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
@@ -1549,7 +1571,7 @@
     activeRun.asked++;
     const reachedTarget=activeRun.asked>=activeRun.questionTarget;
     if(correct){
-      sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike();
+      sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike({finisher:stage.isFinalHit()});
       if(!currentRun(activeRun))return;
       const outcome=stage.hitSeal();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
@@ -1587,7 +1609,7 @@
     if(!productionCurrent(hostRun,q))return;
     run.asked++;
     if(correct){
-      run.tally[run.usedHint?'hint':'own']++;await stage.strike();
+      run.tally[run.usedHint?'hint':'own']++;await stage.strike({finisher:stage.isFinalHit()});
       if(!productionCurrent(hostRun,q))return;
       const outcome=stage.hitSeal();$('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';paintSeal();
       if(stage.allBroken()){window.PAProductionJourney?.complete?.();if(!productionCurrent(hostRun,q))return;return celebrateProduction(hostRun,q);}
