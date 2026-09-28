@@ -1190,6 +1190,13 @@
         if(!reduceMotion&&document.querySelector('.paSegelEntryCinematic'))S.heroFade=0;
       },
       enter(){
+        // Production replay has no portal overlay. In that case the reveal
+        // callback may arrive after reset; never fade Wira to zero waiting for
+        // a cinematic that is not mounted.
+        if(!document.querySelector('.paSegelEntryCinematic')){
+          S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME; swap(hero,heroIdleE[0]);
+          return;
+        }
         if(reduceMotion||!prepareEntrance()){ S.heroFade=1; return }
         S.enterT=0; S.heroFade=0;
         enPoints.visible=enHalo.visible=true;
