@@ -1177,7 +1177,11 @@
          barulah menjalankan perhimpunan zarah. Dipisahkan kerana sinematik
          portal membina pentas di belakang tirai gelap — kalau perhimpunan itu
          berjalan di situ, ia habis sebelum arena didedahkan. */
-      armEntry(){ if(!reduceMotion)S.heroFade=0 },
+      armEntry(){
+        // Replay skips the portal overlay; never leave Wira hidden waiting for
+        // a reveal event that cannot fire on a second run.
+        if(!reduceMotion&&document.querySelector('.paSegelEntryCinematic'))S.heroFade=0;
+      },
       enter(){
         if(reduceMotion||!prepareEntrance()){ S.heroFade=1; return }
         S.enterT=0; S.heroFade=0;
@@ -1189,7 +1193,7 @@
       reset(){
         ++S.lifecycle;S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
-        S.enterT=-1; S.heroFade=1;
+        S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME;
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
         enMat.opacity=enHaloMat.opacity=0;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
@@ -1198,6 +1202,10 @@
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND; S.petFrameT0=tAcc;
         if(activePetConfig)setPetVisual(activePetConfig);
         S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD; S.heroFrameT0=tAcc;
+        swap(hero,heroIdleE[0]);
+        hero.position.x=HERO_HOME+hero.userData.e.offX;
+        hero.position.y=GROUND+hero.userData.e.offY;
+        hero.material.opacity=1;
         seals.forEach((s,i)=>{ s.damage=0; s.broken=false; s.breakT=-1;
           s.front.visible=(i===0);
           s.front.material.uniforms.uOpacity.value=1;
