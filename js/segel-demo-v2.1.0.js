@@ -1081,11 +1081,11 @@
         if(finisher){
           host.classList.add('finisher');
           // Blackout first, then ice catches Wira's eye before the live strike resumes.
-          S.heroLock=null; S.heroX=HERO_HOME; S.heroFrameT0=performance.now()/1000; await wait(260);
+          S.heroLock=null; S.heroX=HERO_HOME; S.heroFrameT0=performance.now()/1000; await wait(420);
           if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
-          host.classList.add('finisher-eye'); await wait(360);
+          host.classList.add('finisher-eye'); await wait(1050);
           if(lifecycle!==S.lifecycle){host.classList.remove('finisher','finisher-eye');return}
-          host.classList.remove('finisher-eye'); await wait(180);
+          host.classList.remove('finisher-eye'); await wait(320);
           if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
           S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.22; await wait(260);
           if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
