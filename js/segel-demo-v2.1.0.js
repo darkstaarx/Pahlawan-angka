@@ -174,6 +174,10 @@
      ================================================================= */
   async function buildStage(){
     const canvas=$('segelCanvas'), host=$('segelStage');
+    const finisherCutIn=host.querySelector('.segelCutIn');
+    const finisherCutInHero=host.querySelector('.cutInHero');
+    const finisherAttack=host.querySelector('.segelFinisherAttack');
+    const finisherImpact=host.querySelector('.segelFinisherImpact');
     const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); // had DPR: jaga bateri
     const scene=new THREE.Scene();
@@ -1079,22 +1083,25 @@
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
         if(finisher){
-          host.classList.add('finisher');
-          // Blackout first, then ice catches Wira's eye before the live strike resumes.
-          S.heroLock=null; S.heroX=HERO_HOME; S.heroFrameT0=performance.now()/1000; await wait(420);
-          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
-          host.classList.add('finisher-eye'); await wait(1050);
-          if(lifecycle!==S.lifecycle){host.classList.remove('finisher','finisher-eye');return}
-          host.classList.remove('finisher-eye'); await wait(320);
-          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
-          S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.22; await wait(260);
-          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
-          sfx('swordSlash'); S.heroLock=heroSlashE; S.heroX=SEAL_X-.42; await wait(180);
-          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
+          const clearFinisher=()=>host.classList.remove('finisher-cutin','finisher-dash','finisher-impact');
+          const setCutInFrame=src=>{if(finisherCutInHero)finisherCutInHero.src=src};
+          clearFinisher();
+          S.heroLock=null; S.heroX=HERO_HOME; S.heroFade=0;
+          setCutInFrame(FRAMES.heroIdle[0]);
+          host.classList.add('finisher-cutin'); await wait(560);
+          if(lifecycle!==S.lifecycle){clearFinisher();return}
+          setCutInFrame('assets/segel-fight/wira-sealbreak-charge-v1.png'); await wait(340);
+          if(lifecycle!==S.lifecycle){clearFinisher();return}
+          setCutInFrame('assets/segel-fight/wira-sealbreak-slash-v1.png'); await wait(220);
+          if(lifecycle!==S.lifecycle){clearFinisher();return}
+          host.classList.remove('finisher-cutin'); host.classList.add('finisher-dash');
+          sfx('swordSlash'); await wait(480);
+          if(lifecycle!==S.lifecycle){clearFinisher();return}
+          host.classList.remove('finisher-dash'); host.classList.add('finisher-impact');
           sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(10.5,0xbfe9ff); S.waveT=0; S.shake=.62; S.flashT=0;
-          await wait(260);
-          if(lifecycle!==S.lifecycle){host.classList.remove('finisher');return}
-          S.heroLock=null; S.heroX=HERO_HOME; host.classList.remove('finisher'); return;
+          await wait(650);
+          if(lifecycle!==S.lifecycle){clearFinisher();return}
+          S.heroFade=1; S.heroLock=null; S.heroX=HERO_HOME; clearFinisher(); return;
         }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
@@ -1215,7 +1222,7 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; host.classList.remove('finisher','finisher-eye'); },
+      cancel(){ ++S.lifecycle; host.classList.remove('finisher-cutin','finisher-dash','finisher-impact'); S.heroFade=1; },
       setPet(config){ return setPetVisual(config); },
       dispose(){ S.running=false; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
