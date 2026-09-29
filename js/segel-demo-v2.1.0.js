@@ -57,8 +57,18 @@
      2/3/5 itu jadi hukuman, bukan cabaran. */
   const MAX_Q=SEAL_HITS+2;
 
+  const ARENA_BY_THEME={
+    number:'assets/battlefields/forest-temple/arena-v1.webp',
+    operation:'assets/battlefields/operations-forge/arena-v1.webp',
+    fraction:'assets/battlefields/cave-temple/arena-depth-v2.webp',
+    money:'assets/battlefields/money-market/arena-v1.webp',
+    time:'assets/battlefields/time-tower/arena-v1.webp',
+    measure:'assets/battlefields/measurement-court/arena-v1.webp',
+    shape:'assets/battlefields/nusantara-temple/arena-v1.webp',
+    data:'assets/battlefields/data-observatory/arena-v1.webp'
+  };
   const FRAMES={
-    arena:'assets/battlefields/money-market/arena-v1.webp',
+    arena:ARENA_BY_THEME.number,
     heroIdle:[0,1,2,3].map(i=>`assets/heroes/wira-chibi/frames/idle-loop-${i}-v1.webp`),
     heroPrepare:'assets/heroes/wira-chibi/frames/rescue-prepare-v1.webp',
     heroSlash:'assets/heroes/wira-chibi/frames/rescue-slash-v1.webp',
@@ -77,6 +87,22 @@
     trail:'assets/fx/reward/trail-v1.webp',
     flare:'assets/fx/reward/flare-v1.webp'
   };
+  function arenaThemeFor(meta){
+    if(typeof terrainThemeFor==='function')return terrainThemeFor(meta)||'number';
+    const domain=String(meta?.domain||'').toLowerCase(), chapter=Number(meta?.chapter||0);
+    if(/wang|money/.test(domain)||chapter===4)return'money';
+    if(/masa|time/.test(domain)||chapter===5)return'time';
+    if(/ukuran|panjang|jisim|isipadu|measure/.test(domain)||chapter===6)return'measure';
+    if(/ruang|bentuk|koordinat|kedudukan|shape/.test(domain)||chapter===7)return'shape';
+    if(/data|kebolehjadian/.test(domain)||chapter===8)return'data';
+    if(/pecahan|perpuluhan|peratus|nisbah|kadaran|fraction/.test(domain)||chapter===3)return'fraction';
+    if(/operasi|tambah|tolak|darab|bahagi|operation/.test(domain)||chapter===2)return'operation';
+    return'number';
+  }
+  function arenaForMeta(meta){
+    const theme=arenaThemeFor(meta);
+    return ARENA_BY_THEME[theme]||ARENA_BY_THEME.number;
+  }
   const COINS=6;   // sama dengan RescueRewardOrbs.cs
 
   /* Masa bingkai idle. Nafas Wira ialah 4 bingkai dengan bingkai ke-4 mata
@@ -189,7 +215,7 @@
       loader.load(url, t=>{ t.colorSpace=THREE.SRGBColorSpace; res(t) }, undefined, ()=>res(null));
     });
 
-    const [arenaTex, heroIdle, heroPrepare, heroSlash, petSad, petJoy, sealTex,
+    let [arenaTex, heroIdle, heroPrepare, heroSlash, petSad, petJoy, sealTex,
            coinTex, trailTex, flareTex, heroHappy, iceBurstTex, iceEndTex] = await Promise.all([
       load(FRAMES.arena),
       Promise.all(FRAMES.heroIdle.map(load)),
@@ -207,12 +233,44 @@
     const bg=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
       new THREE.MeshBasicMaterial({map:arenaTex,depthWrite:false}));
     bg.position.z=-8; scene.add(bg);
+    /* Semua arena ada lantai yang berbeza. Lapisan ini menambah satu "tapak"
+       visual yang konsisten di foreground supaya kaki Wira dan Teman tidak
+       nampak terapung apabila crop atau perspektif aset bertukar. Ia sengaja
+       berada di depan texture latar tetapi di belakang semua aktor. */
+    const groundCanvas=document.createElement('canvas');
+    groundCanvas.width=1024; groundCanvas.height=512;
+    const groundCtx=groundCanvas.getContext('2d');
+    const groundGradient=groundCtx.createLinearGradient(0,180,0,512);
+    groundGradient.addColorStop(0,'rgba(5,15,24,0)');
+    groundGradient.addColorStop(.52,'rgba(5,15,24,.04)');
+    groundGradient.addColorStop(1,'rgba(3,10,17,.42)');
+    groundCtx.fillStyle=groundGradient; groundCtx.fillRect(0,0,1024,512);
+    const groundGlow=groundCtx.createRadialGradient(512,350,20,512,350,430);
+    groundGlow.addColorStop(0,'rgba(255,221,132,.15)');
+    groundGlow.addColorStop(.48,'rgba(126,205,214,.06)');
+    groundGlow.addColorStop(1,'rgba(0,0,0,0)');
+    groundCtx.fillStyle=groundGlow; groundCtx.fillRect(0,180,1024,332);
+    const groundTex=new THREE.CanvasTexture(groundCanvas);
+    groundTex.colorSpace=THREE.SRGBColorSpace;
+    const groundOverlay=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
+      new THREE.MeshBasicMaterial({map:groundTex,transparent:true,depthWrite:false}));
+    groundOverlay.position.z=-7.45; scene.add(groundOverlay);
     const worldH = z => 2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-z);
     function fitBg(){
       const img=arenaTex&&arenaTex.image; if(!img)return;
       const a=img.width/img.height, vh=worldH(-8), vw=vh*camera.aspect;
       const h=Math.max(vh, vw/a); bg.scale.set(h*a,h,1);
+      groundOverlay.scale.set(h*a,h,1);
       bg.position.y=S.camY;
+      groundOverlay.position.y=S.camY;
+    }
+    let arenaUrl=FRAMES.arena, arenaSwap=0;
+    async function setArena(url){
+      if(!url||url===arenaUrl)return;
+      const swap=++arenaSwap, next=await load(url);
+      if(!next||swap!==arenaSwap)return;
+      arenaTex=next; arenaUrl=url;
+      bg.material.map=arenaTex; bg.material.needsUpdate=true; fitBg();
     }
 
     /* Bingkai dilukis pada saiz bingkai berbeza (idle 480px, tebasan 768px) dan
@@ -1057,6 +1115,7 @@
     if(activePetConfig)setPetVisual(activePetConfig);
     return {
       tiers:TIERS,
+      setArena,
       /* Tempat bar kesihatan sepatutnya duduk, dalam peratus saiz pentas.
          Diunjur melalui kamera supaya ia kekal di atas kubah pada setiap
          nisbah skrin, bukan diteka dengan nilai CSS tetap. */
@@ -1531,6 +1590,9 @@
   function paintQuestion(q,id){
     const meta=(typeof META!=='undefined'&&META[id])||{};
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||meta.grade||1;
+    /* Gembok berkongsi pentas yang sama sepanjang sesi, jadi backdrop perlu
+       ditukar apabila bank membawa kita ke topik baharu. */
+    stage?.setArena?.(arenaForMeta(meta));
     // helper yang sama dengan battle: buang awalan "Tahun N · " supaya tajuk
     // tidak mengulang baris kecil di bawahnya.
     $('segelTitle').textContent=q?.writtenArithmeticPreview?q.title:((typeof questionLearningTitle==='function')
