@@ -109,7 +109,7 @@ test('v2 migration removes only erroneous pre-v2 non-Aurora awards and never rep
 test('v3 progression migration preserves legitimate post-ratio pets, Bond XP and Gembok history',()=>{
  const data={level:25,coins:91,skills:{x:{mastery:71}},rewards:{pets:{aurora:{unlockedAt:1},harimauBunga:{unlockedAt:123}},equippedPet:'harimauBunga'},petCollectionMigrationVersion:2,petCollection:{aurora:{state:'tamed',bondXp:2400},harimauBunga:{state:'tamed',rescues:20,bondXp:1100,unlockedAt:123}},gembok:{completions:{real:{at:9}}}};
  pets.ensure(data,999);
- assert.equal(data.petProgressionVersion,3);assert.equal(data.petCollection.harimauBunga.state,'tamed');assert.equal(data.petCollection.harimauBunga.rescues,20);assert.equal(data.petCollection.harimauBunga.bondXp,1100);assert.equal(data.petCollection.harimauBunga.level,12);assert.equal(data.gembok.completions.real.at,9);assert.equal(data.coins,91);assert.equal(data.skills.x.mastery,71);
+  assert.equal(data.petProgressionVersion,4);assert.equal(data.petCollection.harimauBunga.state,'tamed');assert.equal(data.petCollection.harimauBunga.rescues,20);assert.equal(data.petCollection.harimauBunga.bondXp,1100);assert.equal(data.petCollection.harimauBunga.level,12);assert.equal(data.gembok.completions.real.at,9);assert.equal(data.coins,91);assert.equal(data.skills.x.mastery,71);
 });
 
 function journeyHarness(){

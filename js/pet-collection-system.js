@@ -13,7 +13,7 @@
     the configured Common:Uncommon:Rare:Epic:Legendary 5:3:2:1:1 ratio. */
  const rescueCycle=['ketupatKura','kumbangManggis','harimauBunga','arnabKekLapis','durianKerbau','ketupatKura','ketupatKura','ketupatKura','ketupatKura','kumbangManggis','kumbangManggis','harimauBunga'];
  const rescueMultipliers={Common:.70,Uncommon:1, Rare:1.4,Epic:1.8,Legendary:2.4};
- const MIGRATION_VERSION=2,PROGRESSION_VERSION=3,MAX_COUNT=Number.MAX_SAFE_INTEGER;
+  const MIGRATION_VERSION=2,PROGRESSION_VERSION=4,MAX_COUNT=Number.MAX_SAFE_INTEGER;
  const evolutionMilestones={Common:[10,25,45],Uncommon:[12,30,50],Rare:[15,35,55],Epic:[18,40,60],Legendary:[20,45,60]};
  const count=x=>Number.isFinite(Number(x))?Math.max(0,Math.min(MAX_COUNT,Math.floor(Number(x)))):0;
  const addCount=(a,b)=>Math.min(MAX_COUNT,count(a)+count(b));
@@ -47,11 +47,15 @@
   data.rewards.equippedPet='aurora';
   data.petCollectionMigrationVersion=MIGRATION_VERSION;
  }
- function migrateProgressionFields(data){
-  if(count(data.petProgressionVersion)>=PROGRESSION_VERSION)return;
+  function migrateProgressionFields(data){
+   if(count(data.petProgressionVersion)>=PROGRESSION_VERSION)return;
   /* This migration is deliberately additive. The v2 rescue-ratio correction
      remains the only migration allowed to remove historical bad awards. */
-  data.petProgressionVersion=PROGRESSION_VERSION;
+   Object.keys(catalog).filter(id=>id!=='aurora').forEach(id=>{
+    const pet=object(data.petCollection?.[id]);
+    if(pet.state==='encountered'&&count(pet.rescues)===0){pet.state='unseen';delete pet.rescueGrade;data.petCollection[id]=pet;}
+   });
+   data.petProgressionVersion=PROGRESSION_VERSION;
  }
  function ensure(data,now=Date.now()){
   if(!data)return null;
