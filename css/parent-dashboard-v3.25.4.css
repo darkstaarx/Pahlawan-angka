@@ -125,6 +125,9 @@
   #parent .restuParentHero h2{font-size:19px}
   #parent .restuFocusCard{align-items:flex-start;flex-direction:column}
   #parent .restuFocusCard .btn{width:100%}
+  #parent .parentCheckinCompact{align-items:flex-start;flex-direction:column}
+  #parent .parentCheckinActions{width:100%}
+  #parent .parentCheckinActions .btn{flex:1}
   #parent .parentTimeline article{grid-template-columns:54px 12px 1fr;gap:6px}
 }
 @media(min-width:760px){
@@ -199,6 +202,27 @@
 #parent .parentTimeline time,#parent .parentTimeline p{color:#38567c}
 #parent .parentSkillReport .skill{border-bottom-color:#dbc990}
 #parent .parentSkillReport .skill .mut{color:#5d6d80}
+#parent .parentSkillReport .skill,
+#parent .parentLevelGrid .skill{border:1px solid #dbc990;border-radius:14px;background:#fffaf0;color:#123158;padding:11px 12px;margin:8px 0}
+#parent .parentSkillReport .skill .row,
+#parent .parentLevelGrid .skill .row{min-height:28px}
+#parent .parentSkillReport .skill b,
+#parent .parentLevelGrid .skill b{color:#123158}
+#parent .parentSkillReport .skill .powerStars,
+#parent .parentLevelGrid .skill .powerStars{color:#c6b27c}
+#parent .parentSkillReport .skill .powerStars .lit,
+#parent .parentLevelGrid .skill .powerStars .lit{color:#d59f20}
+#parent .parentSkillReport .skill .btn.ghost,
+#parent .parentLevelGrid .skill .btn.ghost,
+#parent .parentSettingsIntro .btn.secondary,
+#parent #cloudParentControls .btn.secondary,
+#parent #cloudParentControls .btn.ghost{border-color:#b9a36c;background:#fffaf0;color:#123158}
+#parent .parentCheckinCompact{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:10px 0;padding:15px;border:1px solid #9dc8c8;background:linear-gradient(145deg,#e8f5f1,#f8f0d9);color:#123158}
+#parent .parentCheckinCompact h3{margin:3px 0 5px;color:#123158;font-size:16px}
+#parent .parentCheckinCompact p{margin:0;color:#38567c;font-size:11px;line-height:1.45}
+#parent .parentCheckinActions{display:flex;flex:0 0 auto;gap:7px}
+#parent .parentCheckinActions .btn{white-space:nowrap}
+#parent .embeddedLevelsHead{margin-top:14px}
 #parent .parentSkillReport .meter{background:#ded2ad}
 #parent .parentSkillReport .meter span{background:linear-gradient(90deg,#2b9bd3,#efbd3e)}
 #parent .parentLevelGrid>.card .powerCard{border-color:#dbc990;background:#fffaf0}

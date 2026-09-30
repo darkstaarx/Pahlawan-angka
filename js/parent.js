@@ -138,7 +138,7 @@ function parentRestuAction(action,skillId){
   save();window.PACloud?.syncSaveNow?.();
   if(typeof showRewardToast==='function')showRewardToast('Restu dicatat · terima kasih menemani.');
  }
- renderParent();tab('restu');
+ renderParent();tab('summary');
 }
 function parentRestuOpenFocus(skillId){
  if(skillId&&typeof openGuardianFocus==='function')openGuardianFocus(skillId);
@@ -156,6 +156,12 @@ function renderParentRestu(focus){
  <section class="card restuFocusCard"><div><div class="eyebrow">FOKUS ANAK SEKARANG</div><h3>${title}</h3><p>Ini cuma cadangan untuk perbualan. Cikgu akan teruskan latihan pendek dan beri ruang untuk anak mencuba sendiri. Jika mahu, parent boleh lihat latihan bersama.</p></div>${focus?.id&&typeof openGuardianFocus==='function'?`<button class="btn secondary small" type="button" onclick="parentRestuOpenFocus('${parentSafe(focus.id)}')">Lihat latihan pilihan</button>`:''}</section>`;
 }
 
+function renderParentRestuCompact(focus){
+ const state=parentRestuState(),name=parentSafe(db.name||'anak'),title=parentSafe(focus?.title||'kemahiran semasa');
+ const acknowledged=state.acknowledgedToday, snoozed=state.snoozed;
+ return `<section class="parentCheckinCompact card"><div><div class="eyebrow">BERBUAL BERSAMA ANAK</div><h3>${acknowledged?'Sokongan hari ini sudah direkod':snoozed?'Semak semula bila keluarga lapang':'Dua minit yang membantu'}</h3><p>${acknowledged?`Terima kasih kerana menemani ${name}.`:snoozed?'Tiada tugasan tambahan buat masa ini.':`Tanya ${name}: “Boleh terangkan bagaimana kamu dapat jawapan untuk ${title}?”`}</p></div>${acknowledged||snoozed?'':`<div class="parentCheckinActions"><button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">Dah berbual</button><button class="btn ghost small" type="button" onclick="parentRestuAction('snooze','${parentSafe(focus?.id||'')}')">Lain kali</button></div>`}</section>`;
+}
+
 function renderParent(){
  updateFrontier();
  const g=coreGrade(),prev=Math.max(1,g-1),next=Math.min(6,g+1),core=GRAPH.skills.filter(x=>x.grade===g);
@@ -168,11 +174,12 @@ function renderParent(){
   <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>${clean?'Soalan sebenar':'Cubaan direkod'}</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>${clean?'Betul sendiri':'Jawapan betul'}</small></div><div><span>✓</span><b>${strongCount}</b><small>Kemahiran mantap</small></div></div>
   ${clean?'<p class="parentEvidenceNote">Ringkasan cara belajar menggunakan rekod baharu sejak kemas kini.</p>':''}
   <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">FOKUS SETERUSNYA</div>${parentInsightItem(priorityLead,'priority')}</div></section>
-  ${learnerReviewCard()}
+  ${renderParentRestuCompact(restuFocus)}
   <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-dimensi/hub-portrait-v1.webp" alt="Cikgu Dimensi"><span><b>Langkah Cikgu Dimensi</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
  let byCh={};core.forEach(m=>(byCh[m.chapter]??=[]).push(m));
- document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat bukti latihan mengikut topik. Pilih “Latih” hanya jika mahu memberi tumpuan tambahan.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>`;
- document.getElementById("levelsTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">JULAT PEMBELAJARAN</div><h2>Asas dan cabaran</h2><p>Cikgu Dimensi boleh turun kepada asas atau naik kepada cabaran apabila bukti pembelajaran memerlukannya.</p></section><div class="parentLevelGrid"><div class="card"><h3>Pengukuhan asas</h3><small>${gradeLabel(prev)}</small>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Tiada pengukuhan tambahan diperlukan sekarang.</p>"}</div><div class="card"><h3>Cabaran lanjutan</h3><small>${gradeLabel(next)}</small>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div></div>`;
+ const levelMarkup=`<section class="card parentReportHead embeddedLevelsHead"><div class="eyebrow">JULAT PEMBELAJARAN</div><h2>Asas dan cabaran</h2><p>Cikgu Dimensi turun kepada asas atau naik kepada cabaran apabila bukti pembelajaran memerlukannya.</p></section><div class="parentLevelGrid"><div class="card"><h3>Pengukuhan asas</h3><small>${gradeLabel(prev)}</small>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Tiada pengukuhan tambahan diperlukan sekarang.</p>"}</div><div class="card"><h3>Cabaran lanjutan</h3><small>${gradeLabel(next)}</small>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div></div>`;
+ document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat kemahiran, bukti dan julat latihan anak dalam satu tempat.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>${levelMarkup}`;
+ document.getElementById("levelsTab").innerHTML=levelMarkup;
  document.getElementById("engineTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">AKTIVITI TERKINI</div><h2>Apa yang berlaku semasa latihan</h2><p>Hanya peristiwa pembelajaran penting dipaparkan di sini.</p></section><section class="card parentActivityCard">${parentActivityList()}</section>`;
  document.getElementById("restuTab").innerHTML=renderParentRestu(restuFocus);
  tab("summary");
