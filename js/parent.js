@@ -159,7 +159,8 @@ function renderParentRestu(focus){
 function renderParentRestuCompact(focus){
  const state=parentRestuState(),name=parentSafe(db.name||'anak'),title=parentSafe(focus?.title||'kemahiran semasa');
  const acknowledged=state.acknowledgedToday, snoozed=state.snoozed;
- return `<section class="parentCheckinCompact card"><div><div class="eyebrow">BERBUAL BERSAMA ANAK</div><h3>${acknowledged?'Sokongan hari ini sudah direkod':snoozed?'Semak semula bila keluarga lapang':'Dua minit yang membantu'}</h3><p>${acknowledged?`Terima kasih kerana menemani ${name}.`:snoozed?'Tiada tugasan tambahan buat masa ini.':`Tanya ${name}: “Boleh terangkan bagaimana kamu dapat jawapan untuk ${title}?”`}</p></div>${acknowledged||snoozed?'':`<div class="parentCheckinActions"><button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">Dah berbual</button><button class="btn ghost small" type="button" onclick="parentRestuAction('snooze','${parentSafe(focus?.id||'')}')">Lain kali</button></div>`}</section>`;
+ const actions=acknowledged?'':snoozed?`<div class="parentCheckinActions"><button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">Semak sekarang</button></div>`:`<div class="parentCheckinActions"><button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">Dah berbual</button><button class="btn ghost small" type="button" onclick="parentRestuAction('snooze','${parentSafe(focus?.id||'')}')">Lain kali</button></div>`;
+ return `<section class="parentCheckinCompact card"><div><div class="eyebrow">BERBUAL BERSAMA ANAK</div><h3>${acknowledged?'Sokongan hari ini sudah direkod':snoozed?'Semak semula bila keluarga lapang':'Dua minit yang membantu'}</h3><p>${acknowledged?`Terima kasih kerana menemani ${name}.`:snoozed?'Tiada tugasan tambahan buat masa ini.':`Tanya ${name}: “Boleh terangkan bagaimana kamu dapat jawapan untuk ${title}?”`}</p></div>${actions}</section>`;
 }
 
 function renderParent(){
@@ -192,7 +193,8 @@ function skillHTML(m,allowFocus){
  return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${evidence}${support}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
 }
 function tab(n){
- ["summary","core","levels","engine","restu","settings"].forEach(x=>document.getElementById(x+"Tab").classList.toggle("hidden",x!==n));
- document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(b=>b.classList.toggle('active',b.dataset.parentTab===n));
+ const normalized=n==='restu'?'summary':n==='levels'?'core':['summary','core','engine','settings'].includes(n)?n:'summary';
+ ["summary","core","levels","engine","restu","settings"].forEach(x=>document.getElementById(x+"Tab")?.classList.toggle("hidden",x!==normalized));
+ document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(b=>b.classList.toggle('active',b.dataset.parentTab===normalized));
 }
 function exportCSV(){let rows=[["Skill","Grade","Role","Title","Mastery","Confidence","Evidence","Correct","Wrong","Misconception"],...GRAPH.skills.map(m=>{let s=scoreState(m.id);return[m.id,m.grade,m.role,m.title,Math.round(s.mastery),Math.round(s.confidence),s.evidence,s.correct,s.wrong,topMis(s)]})];let csv=rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n"),blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pahlawan-angka-kemajuan.csv";a.click();URL.revokeObjectURL(a.href)}

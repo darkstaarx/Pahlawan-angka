@@ -201,17 +201,17 @@
 #parent .parentTimeline article{border-bottom-color:#dbc990}
 #parent .parentTimeline time,#parent .parentTimeline p{color:#38567c}
 #parent .parentSkillReport .skill{border-bottom-color:#dbc990}
-#parent .parentSkillReport .skill .mut{color:#5d6d80}
+#parent .parentSkillReport .skill .mut,#parent .parentLevelGrid .skill .mut{color:#5d6d80}
 #parent .parentSkillReport .skill,
 #parent .parentLevelGrid .skill{border:1px solid #dbc990;border-radius:14px;background:#fffaf0;color:#123158;padding:11px 12px;margin:8px 0}
 #parent .parentSkillReport .skill .row,
 #parent .parentLevelGrid .skill .row{min-height:28px}
 #parent .parentSkillReport .skill b,
 #parent .parentLevelGrid .skill b{color:#123158}
-#parent .parentSkillReport .skill .powerStars,
-#parent .parentLevelGrid .skill .powerStars{color:#c6b27c}
-#parent .parentSkillReport .skill .powerStars .lit,
-#parent .parentLevelGrid .skill .powerStars .lit{color:#d59f20}
+#parent .parentSkillReport .skill .powerStars i,
+#parent .parentLevelGrid .skill .powerStars i{color:#c6b27c}
+#parent .parentSkillReport .skill .powerStars i.lit,
+#parent .parentLevelGrid .skill .powerStars i.lit{color:#d59f20}
 #parent .parentSkillReport .skill .btn.ghost,
 #parent .parentLevelGrid .skill .btn.ghost,
 #parent .parentSettingsIntro .btn.secondary,

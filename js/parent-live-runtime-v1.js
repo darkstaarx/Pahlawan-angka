@@ -29,8 +29,9 @@
 
   function installTabBridge(){
     window.tab=function(name){
-      parentTabs.forEach(id=>document.getElementById(id+'Tab')?.classList.toggle('hidden',id!==name));
-      document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(button=>button.classList.toggle('active',button.dataset.parentTab===name));
+      const normalized=name==='restu'?'summary':name==='levels'?'core':parentTabs.includes(name)?name:'summary';
+      [...parentTabs,'levels','restu'].forEach(id=>document.getElementById(id+'Tab')?.classList.toggle('hidden',id!==normalized));
+      document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(button=>button.classList.toggle('active',button.dataset.parentTab===normalized));
       patchParentSurface();
     };
   }
