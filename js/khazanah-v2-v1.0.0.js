@@ -182,6 +182,16 @@
     }
 
     const tab=activeTab();
+
+    // Only the Teman tab owns the interactive pet stage. Keeping the stage
+    // mounted above Trofi/Aura wastes vertical space and can interfere with
+    // touch scrolling on mobile.
+    const petOnly=tab==='pets';
+    const stage=$('petStage');
+    const tracker=$('petHuntTracker');
+    if(stage)stage.classList.toggle('hidden',!petOnly);
+    if(tracker)tracker.classList.toggle('hidden',!petOnly);
+
     set('kzPanelTitle', tab==='pets'?'Teman Dimensi':tab==='auras'?'Aura Kuasa':'Trofi Pengembaraan');
     const filter=$('kzFilter');
     if(filter)filter.textContent = tab==='badges' ? `${c.badgeOwn} diperoleh` : 'Semua';
