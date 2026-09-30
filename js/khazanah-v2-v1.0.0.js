@@ -105,7 +105,7 @@
     const name=pet.name||PET_NAMES[pet.id]||pet.id;
     const status=tamed?(pet.active?'Sedang ikut kamu':'Lengkapi'):'Belum ditemui';
     const rarity=`<span>${pet.rarity}</span>`;
-    const rescue=encountered&&pet.rescueThreshold?`<small>Diselamatkan ${pet.rescues||0}/${pet.rescueThreshold} kali</small>`:'';
+    const rescue=encountered&&pet.rescueThreshold?`<small>Jejak ditemui · ${pet.rescues||0}/${pet.rescueThreshold} rescue</small>`:'';
     const progression=tamed?`<small>Tahap ${pet.level}</small><small>${pet.evolutionState}</small>`:'';
     const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
     const rename=tamed?`<button class="kzBtn" type="button" onclick="renameCollectionPet('${pet.id}')">Tukar nama</button>`:'';
@@ -124,8 +124,21 @@
   window.renameCollectionPet=function(id){
     const pet=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.id===id);
     if(!pet)return;
-    const name=window.prompt(`Nama baharu untuk ${pet.defaultName||pet.name}:`,pet.name);
-    if(name!==null&&window.PetCollection.rename(db,id,name)){renderTreasure();if(typeof renderBattlePet==='function')renderBattlePet();if(typeof showRewardToast==='function')showRewardToast(`${name.trim()} kini teman aktif dalam koleksi`)}
+    let overlay=$('petRenameOverlay');
+    if(!overlay){
+      overlay=document.createElement('div');overlay.id='petRenameOverlay';overlay.className='purchaseOverlay';
+      overlay.innerHTML='<div class="purchaseCard petRenameCard"><div class="eyebrow">NAMA TEMAN</div><h2 id="petRenameTitle">Namakan teman</h2><p class="mut">Nama ini akan digunakan dalam Khazanah dan battle.</p><input id="petRenameInput" class="textInput" maxlength="24" autocomplete="off"><div class="purchaseActions"><button type="button" class="btn ghost" data-rename-cancel>Batal</button><button type="button" class="btn primary" data-rename-save>Simpan nama</button></div></div>';
+      document.body.appendChild(overlay);
+      overlay.querySelector('[data-rename-cancel]').onclick=()=>{overlay.classList.add('hidden');overlay.hidden=true};
+    }
+    const input=overlay.querySelector('#petRenameInput');
+    overlay.querySelector('#petRenameTitle').textContent=`Namakan ${pet.defaultName||pet.name}`;
+    input.value=pet.name;overlay.hidden=false;overlay.classList.remove('hidden');input.focus();input.select();
+    overlay.querySelector('[data-rename-save]').onclick=()=>{
+      const name=input.value.trim();
+      if(!window.PetCollection.rename(db,id,name)){input.focus();return}
+      overlay.classList.add('hidden');overlay.hidden=true;renderTreasure();if(typeof renderBattlePet==='function')renderBattlePet();if(typeof showRewardToast==='function')showRewardToast(`${name} sudah dinamakan`);
+    };
   };
   function paintCompanions(){
     if(typeof db==='undefined'||!db||!window.PetCollection)return;
@@ -232,6 +245,7 @@
 
   /* ---------------- pemasangan ---------------- */
   function install(){
+    if(!$('petRenameStyle')){const style=document.createElement('style');style.id='petRenameStyle';style.textContent='.kzFoot{display:grid;gap:6px}.petRenameCard .textInput{position:relative;width:100%;box-sizing:border-box;margin:8px 0 14px;padding:11px 13px;border:1px solid #7ca5d6;border-radius:12px;background:#07172d;color:#fff;font:inherit;text-align:center}.petRenameCard .purchaseActions{position:relative;display:grid;gap:8px}';document.head.appendChild(style)}
     buildShell();
 
     // Kad premium menggantikan shopCard; renderTreasure memanggilnya melalui

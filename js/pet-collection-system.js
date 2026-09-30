@@ -99,8 +99,8 @@
   if(!threshold)return null;
   data.petRescueRotation[grade]=addCount(rotation,1);
   run.rescuePetId=petId;run.rescueGrade=grade;run.rescueSkillId=skillId;run.rescueThreshold=threshold;
-  const pet=data.petCollection[petId];
-  if(playerLevel(data)>=catalog[petId].levelGate){pet.rescueGrade=grade;pet.state=pet.state==='tamed'?'tamed':'encountered';}
+   /* Reserve the pet for this run only. It becomes encountered after the
+      Gembok is actually completed, so abandoned runs never create 0/x cards. */
   persist(data);return {petId,grade,threshold};
  }
  /* Called only after a real completed 2 -> 3 -> 5 Gembok route. Rescue credit
