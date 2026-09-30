@@ -83,3 +83,36 @@ body[data-screen="missions"] #missions {
     --pa-screen-inline: clamp(24px, 3vw, 32px);
   }
 }
+
+
+/* Khazanah / Trofi: own the vertical scroll inside the viewport.
+   Android/PWA + fixed bottom nav can otherwise leave <body> as an unreliable
+   scroll owner, while the interactive pet stage used to swallow touch pans. */
+body[data-screen="treasure"] {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+body[data-screen="treasure"] .app {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+body[data-screen="treasure"] #treasure {
+  height: calc(100dvh - 58px);
+  min-height: 0;
+  max-height: calc(100dvh - 58px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  padding-bottom: calc(var(--nav-h, 72px) + env(safe-area-inset-bottom, 0px) + 26px);
+}
+
+/* Keep horizontal pet dragging possible without blocking a vertical page swipe. */
+body[data-screen="treasure"] .kzShow {
+  touch-action: pan-y;
+}
