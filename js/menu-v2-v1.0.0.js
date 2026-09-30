@@ -488,6 +488,33 @@
     const learn=$('mv2LearnCard');
     if(learn&&!learn.dataset.boundV2){ learn.dataset.boundV2='1';
       learn.onclick=()=>openKembaraDimensi() }
+
+    const focus=$('mv2FocusCard');
+    if(focus&&!focus.dataset.boundV2){
+      focus.dataset.boundV2='1';
+      const openFocus=()=>{
+        const id=focusSkillId();
+        if(!id){
+          if(has('showRewardToast'))showRewardToast('Kemahiran fokus belum tersedia.');
+          return;
+        }
+        if(typeof openGuardianFocus==='function')openGuardianFocus(id);
+      };
+      focus.onclick=openFocus;
+      focus.onkeydown=(event)=>{
+        if(event.key==='Enter'||event.key===' '){event.preventDefault();openFocus();}
+      };
+    }
+
+    const pet=$('mv2PetCard');
+    if(pet&&!pet.dataset.boundV2){
+      pet.dataset.boundV2='1';
+      const openPets=()=>{if(typeof openTreasure==='function')openTreasure();};
+      pet.onclick=openPets;
+      pet.onkeydown=(event)=>{
+        if(event.key==='Enter'||event.key===' '){event.preventDefault();openPets();}
+      };
+    }
   }
 
   /* ---------------- pemasangan ---------------- */

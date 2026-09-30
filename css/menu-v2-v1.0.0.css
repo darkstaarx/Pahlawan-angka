@@ -282,6 +282,10 @@ body.app-loading-active{overflow:hidden}
   padding:12px 13px;border-radius:18px;background:#fffdf4;
   box-shadow:0 8px 18px #0005,inset 0 0 0 1.5px #e7d9b7
 }
+.mv2ActionCard{cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,inset .16s ease}
+.mv2ActionCard:hover{transform:translateY(-2px);box-shadow:0 10px 22px #0006,inset 0 0 0 2px #2f8fd0}
+.mv2ActionCard:focus-visible{outline:3px solid #59c8ff;outline-offset:3px}
+.mv2ActionCard:active{transform:translateY(0)}
 .mv2Stat h3{
   display:flex;align-items:center;gap:6px;margin:0 0 7px;
   font-size:13px;font-weight:950;color:#14335c
