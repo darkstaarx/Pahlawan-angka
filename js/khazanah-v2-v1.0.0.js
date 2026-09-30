@@ -62,6 +62,8 @@
   </div>
 </section>
 
+<section class="kzTracker" id="petHuntTracker" aria-live="polite"></section>
+
 <section class="kzPanel">
   <div id="petCollection" class="kzGrid"></div>
   <div id="auraCollection" class="kzGrid hidden"></div>
@@ -189,6 +191,37 @@
     desc.textContent=`Tahap ${item.level||1} · Ikatan ${item.bondXp||0} XP`;
   }
 
+  function paintTracker(){
+    const root=$('petHuntTracker');
+    if(!root||typeof db==='undefined'||!db||!window.PetCollection)return;
+    const collection=window.PetCollection.snapshot(db),pets=collection.pets||[];
+    const owned=pets.filter(p=>p.state==='tamed').length;
+    const total=pets.length;
+    const next=pets.find(p=>p.id!=='aurora'&&p.state!=='tamed');
+    const playerLevel=Math.max(1,Number(db.level)||1);
+    const rank=Number(collection.expedition?.rank)||1;
+    const levelGate=next?Math.max(1,Number(next.levelGate)||1):null;
+    const eligible=next?.eligible===true;
+    const rescues=next?Math.max(0,Number(next.rescues)||0):0;
+    const threshold=next?.rescueThreshold==null?null:Math.max(1,Number(next.rescueThreshold));
+    const rescuePercent=threshold?Math.max(0,Math.min(100,Math.round(rescues/threshold*100))):0;
+    let detail='Semua teman telah ditemui.';
+    let progress='100%';
+    if(next){
+      if(next.state==='encountered'&&threshold){
+        detail=`Jejak ${next.name} · ${rescues}/${threshold} rescue Gembok`;
+        progress=`${rescuePercent}%`;
+      }else if(!eligible){
+        detail=`Buka pada Tahap ${levelGate} · Tahap kamu ${playerLevel}`;
+        progress=`${Math.max(0,Math.min(100,Math.round(playerLevel/Math.max(1,levelGate)*100)))}%`;
+      }else{
+        detail=`Lengkapkan misi Gembok untuk jejak ${next.name}`;
+        progress='0%';
+      }
+    }
+    root.innerHTML=`<div class="kzTrackerHead"><div><span class="kzTrackerEyebrow">JEJAK TEMAN</span><b>${next?`Seterusnya: ${next.name}`:'Koleksi lengkap'}</b></div><strong>${owned}/${total}</strong></div><div class="kzTrackerBar" role="progressbar" aria-label="Kemajuan mencari teman seterusnya" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress.replace('%','')}"><i style="width:${progress}"></i></div><div class="kzTrackerMeta"><span>${detail}</span><span>Rank ${rank}</span></div>`;
+  }
+
   /* ---------------- pemasangan ---------------- */
   function install(){
     buildShell();
@@ -206,7 +239,7 @@
       if(typeof original!=='function'||original.__kz)return;
       const wrapped=function(){
         const out=original.apply(this,arguments);
-        try{ paintCompanions(); paintChrome(); paintShowcase() }catch(e){ console.error('[khazanah-v2]',e) }
+        try{ paintCompanions(); paintChrome(); paintShowcase(); paintTracker() }catch(e){ console.error('[khazanah-v2]',e) }
         return out;
       };
       wrapped.__kz=true;
@@ -218,5 +251,5 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
   else install();
 
-  window.PAKhazanah={rarityOf, paint:()=>{paintChrome();paintShowcase()}};
+  window.PAKhazanah={rarityOf, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
 })();

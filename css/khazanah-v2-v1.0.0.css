@@ -114,6 +114,21 @@
 }
 .kzShow.noGl canvas{display:none}
 
+/* ---------- tracker jejak teman ---------- */
+.kzTracker{
+  display:grid;gap:8px;margin:0 0 12px;padding:11px 13px;border-radius:15px;
+  background:linear-gradient(100deg,#102b50,#0c2144);box-shadow:inset 0 0 0 1px #5cc3ff55,0 7px 18px #0005
+}
+.kzTrackerHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.kzTrackerHead>div{display:grid;gap:2px;min-width:0}
+.kzTrackerEyebrow{font-size:9px;font-weight:950;letter-spacing:.12em;color:#5cc3ff}
+.kzTrackerHead b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--kz-ink)}
+.kzTrackerHead strong{flex:none;font-size:14px;color:var(--kz-gold-soft)}
+.kzTrackerBar{height:7px;overflow:hidden;border-radius:99px;background:#061428;box-shadow:inset 0 0 0 1px #ffffff17}
+.kzTrackerBar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--kz-blue-hi),var(--kz-gold));box-shadow:0 0 12px #3ca6ff88;transition:width .35s ease}
+.kzTrackerMeta{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:var(--kz-mut)}
+.kzTrackerMeta span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* ---------- panel koleksi ---------- */
 .kzPanel{
   padding:0;background:transparent;box-shadow:none
