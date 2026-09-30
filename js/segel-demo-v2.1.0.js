@@ -433,9 +433,10 @@
       if(!url)return [];
       const sheet=await load(url), img=sheet&&sheet.image;
       if(!img||img.width<2||img.height<2)return [];
+      const cols=2, rows=img.width/img.height>1.35?1:2;
       const out=[];
-      for(let y=0;y<2;y++)for(let x=0;x<2;x++){
-        const c=document.createElement('canvas'); c.width=Math.floor(img.width/2); c.height=Math.floor(img.height/2);
+      for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+        const c=document.createElement('canvas'); c.width=Math.floor(img.width/cols); c.height=Math.floor(img.height/rows);
         const ctx=c.getContext('2d');
         try{ctx.drawImage(img,x*c.width,y*c.height,c.width,c.height,0,0,c.width,c.height);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;out.push(tex)}catch(_){return []}
       }
@@ -830,7 +831,7 @@
     });
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
-    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,camY:0,rescued:false,lifecycle:0,
+    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,camY:0,rescued:false,lifecycle:0,
              shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
@@ -849,20 +850,22 @@
       const generation=++petVisualGeneration;
       activePetConfig=config&&typeof config==='object'?config:null;
       const joy=await customPetFrames(activePetConfig,'happy',petJoy);
+      const idle=await customPetFrames(activePetConfig,'idle',[]);
       // Tekan Swap Pet beberapa kali semasa texture masih dimuat tidak boleh
       // menyebabkan permintaan lama menimpa pilihan yang paling baharu.
       if(generation!==petVisualGeneration)return;
       const customUpp=joy.custom?petUpp(joy.frames):PET_UPP;
       const joyE=joy.custom?petEntries(joy.frames,customUpp):joy.frames.map(t=>entry(t,PET_UPP));
-      const idleTex=await customPetIdle(activePetConfig,null);
-      const idleE=idleTex?[entry(idleTex,petUpp([idleTex]))]:[];
-      // Follow uses a grounded happy/idle animation. Aurora's two joy frames
-      // are the current blink/idle loop; collection pets use their happy
-      // sprite sheet. A lone idle frame is only the final fallback.
-      const animated=joyE.length>1?joyE:(petJoyE.length>1?petJoyE:[]);
+      const idleUpp=idle.custom?petUpp(idle.frames):PET_UPP;
+      const idleE=idle.custom?petEntries(idle.frames,idleUpp):idle.frames.map(t=>entry(t,PET_UPP));
+      // Every tamed pet gets the same grounded, right-facing companion loop.
+      // Happy/joy art remains the fallback for legacy or future pets without
+      // the dedicated companion idle sheet.
+      const animated=idleE.length>1?idleE:(joyE.length>1?joyE:(petJoyE.length>1?petJoyE:[]));
+      S.companionMirror=!idle.custom;
       S.companionFrames=animated.length?animated:(idleE.length?idleE:petJoyE);
-      S.companionHold=animated.length&&joy.custom?PET_SHEET_HOLD:null;
-      S.companionFps=animated.length?2:1; S.companionFrameT0=tAcc;
+      S.companionHold=idle.custom&&idleE.length===4?PET_SHEET_HOLD:null;
+      S.companionFps=animated.length>1?2:1; S.companionFrameT0=tAcc;
       companion.visible=!!activePetConfig&&S.companionFrames.length>0;
       if(S.companionFrames[0]){
         swapCompanion(S.companionFrames[0]);
@@ -873,7 +876,7 @@
       swap(companion,e);
       // Existing happy/joy art is authored facing left. A TEMAN faces right
       // toward Wira; mirror only this mesh so rescue/lock art stays untouched.
-      companion.scale.set(-Math.abs(e.w)*COMPANION_SCALE,e.h*COMPANION_SCALE,1);
+      companion.scale.set((S.companionMirror?-1:1)*Math.abs(e.w)*COMPANION_SCALE,e.h*COMPANION_SCALE,1);
     }
 
     function frame(now){
@@ -942,7 +945,7 @@
       pet.position.x=SEAL_X+pet.userData.e.offX;
       pet.position.y=S.petFeet+pet.userData.e.offY;
       S.companionFeet=damp(S.companionFeet,COMPANION_HOME,8,dt);
-      companion.position.x=S.companionFeet-companion.userData.e.offX*COMPANION_SCALE;
+      companion.position.x=S.companionFeet+(S.companionMirror?-1:1)*companion.userData.e.offX*COMPANION_SCALE;
       companion.position.y=GROUND+companion.userData.e.offY*COMPANION_SCALE;
 
       // Bayang Aurora kekal di lantai dan mengecut bila dia naik.
