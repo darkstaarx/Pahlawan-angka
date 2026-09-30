@@ -1,6 +1,6 @@
-// App shell v3.84.60 — Canvas cloud loading state.
+// App shell v3.84.62 — mobile long-screen scroll ownership refresh.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-scrollfix-1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-segel-pet-battlefield-dev-scrollfix-2`;
 const APP_SHELL=[
   './assets/avatars/pupils/avatar-01.png','./assets/avatars/pupils/avatar-02.png','./assets/avatars/pupils/avatar-03.png','./assets/avatars/pupils/avatar-04.png','./assets/avatars/pupils/avatar-05.png','./assets/avatars/pupils/avatar-06.png','./assets/avatars/pupils/avatar-07.png','./assets/avatars/pupils/avatar-08.png',
   './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js','./css/dev-pet-reward-debug-v1.0.0.css','./js/dev-pet-reward-debug-v1.0.0.js','./css/teman-reveal-v1.0.0.css','./css/teman-reveal-stars-v1.0.0.css','./js/teman-reveal-v1.0.0.js',
@@ -58,7 +58,7 @@ const APP_SHELL=[
   './css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
   './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',
   './css/battle-flow-v3.7.7.css','./css/boss-motion-v3.7.9.css','./css/coach-mascot-v3.8.1.css',
-  './css/responsive-modes-v3.8.2.css','./css/pet-sizing-v3.8.21.css','./css/battle-polish-v3.8.22.css',
+  './css/responsive-modes-v3.8.2.css','./css/responsive-layout-v1.css','./css/pet-sizing-v3.8.21.css','./css/battle-polish-v3.8.22.css',
   './css/battle-scene-v3.8.25.css','./css/coach-teaching-v3.8.26.css','./css/battle-scene-v3.8.27.css',
   './css/battle-scene-v3.8.28.css','./css/pwa-v3.8.29.css','./css/guardian-focus-v3.8.30.css','./css/hero-pose-normalization-v3.8.31.css','./css/battle-fix-v3.9.1.css','./css/battle-fix-v3.11.css','./css/pet-staging-v3.14.3.css',
   './css/sensory-learning-v3.19.0.css','./css/cikgu-manipulatives-v3.19.1.css','./css/daily-spaced-review-v3.20.0.css',
