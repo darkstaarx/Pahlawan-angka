@@ -287,7 +287,7 @@
        nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
     const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
-    const SEAL_X=1.05, HERO_HOME=-1.62;
+    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME-.42;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
@@ -828,7 +828,7 @@
     });
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
-    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:GROUND,camY:0,rescued:false,lifecycle:0,
+    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,camY:0,rescued:false,lifecycle:0,
              shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
@@ -936,9 +936,9 @@
       heroShadow.position.x=S.heroFeet;
       pet.position.x=SEAL_X+pet.userData.e.offX;
       pet.position.y=S.petFeet+pet.userData.e.offY;
-      S.companionFeet=damp(S.companionFeet,HERO_HOME+.55,8,dt);
-      companion.position.x=S.companionFeet+companion.userData.e.offX;
-      companion.position.y=GROUND+companion.userData.e.offY;
+      S.companionFeet=damp(S.companionFeet,COMPANION_HOME,8,dt);
+      companion.position.x=S.companionFeet+companion.userData.e.offX*COMPANION_SCALE;
+      companion.position.y=GROUND+companion.userData.e.offY*COMPANION_SCALE;
 
       // Bayang Aurora kekal di lantai dan mengecut bila dia naik.
       const rise=Math.max(0,(S.petFeet-GROUND))/.8;
@@ -1302,7 +1302,7 @@
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND; S.petFrameT0=tAcc;
-        S.companionFrameT0=tAcc;S.companionFeet=HERO_HOME+.55;companion.visible=!!activePetConfig;
+        S.companionFrameT0=tAcc;S.companionFeet=COMPANION_HOME;companion.visible=!!activePetConfig;
         if(activePetConfig)setPetVisual(activePetConfig);
         S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD; S.heroFrameT0=tAcc;
         swap(hero,heroIdleE[0]);
