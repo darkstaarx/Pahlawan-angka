@@ -445,8 +445,11 @@
     async function customPetFrames(config,phase,fallback){
       if(!config)return {frames:fallback,custom:false};
       const sheet=await sheetFrames(config[phase+'Sheet']);
-      if(sheet.length===4)return {frames:sheet,custom:true};
-      const loaded=(await Promise.all((config[phase]||[]).map(load))).filter(Boolean);
+      // Companion idle sheets are intentionally compact 2-frame blink loops;
+      // rescue/happy sheets may still use the older 4-frame format.
+      if(sheet.length>=2)return {frames:sheet,custom:true};
+      const legacy=config[phase]==null?[]:(Array.isArray(config[phase])?config[phase]:[config[phase]]);
+      const loaded=(await Promise.all(legacy.map(load))).filter(Boolean);
       return {frames:loaded.length?loaded:fallback,custom:false};
     }
     async function customPetIdle(config,fallback){
