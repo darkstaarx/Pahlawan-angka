@@ -13,7 +13,8 @@
     }
     return new Promise(resolve=>{
       const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=4.0.6';script.async=false;
-      script.addEventListener('load',resolve,{once:true});script.addEventListener('error',resolve,{once:true});document.head.appendChild(script);
+      const done=()=>{window.__PA_LIVE_ASSET_REFRESHED=true;resolve()};
+      script.addEventListener('load',done,{once:true});script.addEventListener('error',done,{once:true});document.head.appendChild(script);
     });
   })();
 
@@ -54,8 +55,8 @@
     return {id:pet.id,name:pet.name,sad:pet.assets?.sad?[pet.assets.sad]:[],happy:pet.assets?.happy?[pet.assets.happy]:[],happySheet:pet.assets?.happySprite||null};
   }
 
-  async function open(options={}){
-    await liveAssetRefresh;
+  function open(options={}){
+    if(typeof document!=='undefined'&&!window.__PA_LIVE_ASSET_REFRESHED){liveAssetRefresh.then(()=>open(options));return;}
     if(!db||!window.PASegelHost)return;
     const chapter=options.chapter?String(options.chapter):null;
     const pool=skillPool(chapter);
