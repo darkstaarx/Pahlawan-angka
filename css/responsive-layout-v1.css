@@ -96,20 +96,27 @@ body[data-screen="treasure"] {
 
 body[data-screen="treasure"] .app {
   height: 100dvh;
-  min-height: 100dvh;
+  min-height: 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-screen="treasure"] .appHeader {
+  flex: 0 0 58px;
 }
 
 body[data-screen="treasure"] #treasure {
-  height: calc(100dvh - 58px);
+  flex: 1 1 auto;
+  height: auto;
   min-height: 0;
-  max-height: calc(100dvh - 58px);
+  max-height: none;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   touch-action: pan-y;
-  padding-bottom: calc(var(--nav-h, 72px) + env(safe-area-inset-bottom, 0px) + 26px);
+  padding-bottom: calc(var(--nav-h, 72px) + env(safe-area-inset-bottom, 0px) + 34px);
 }
 
 /* Keep horizontal pet dragging possible without blocking a vertical page swipe. */
