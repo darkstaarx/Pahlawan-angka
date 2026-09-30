@@ -1704,7 +1704,28 @@
 
   async function celebrateProduction(hostRun,q){
     if(!productionCurrent(hostRun,q))return;
-    run.locked=true;$('segelTag').style.opacity='0';toast('AURORA BEBAS!');await stage.rescue();if(!productionCurrent(hostRun,q))return;await stage.absorbCoins();if(!productionCurrent(hostRun,q))return;finishRun(true);window.PATemanReveal?.show?.(hostRun.temanRevealAward);hostRun.temanRevealAward=null;
+    run.locked=true;$('segelTag').style.opacity='0';
+    const award=hostRun.petAward;
+    const petName=petNameForAward(award);
+    toast(`${petName.toUpperCase()} DITEMUI!`);
+    await stage.rescue();if(!productionCurrent(hostRun,q))return;await stage.absorbCoins();if(!productionCurrent(hostRun,q))return;
+    finishRun(true,petCompletionNote(award));
+    window.PATemanReveal?.show?.(hostRun.temanRevealAward);hostRun.temanRevealAward=null;
+  }
+
+  function petNameForAward(award){
+    const id=award?.petId;
+    return window.PetCollection?.catalog?.[id]?.name
+      || (typeof REWARD_PETS!=='undefined'&&REWARD_PETS[id]?.name)
+      || 'Teman baharu';
+  }
+
+  function petCompletionNote(award){
+    if(!award?.petId)return 'Misi selesai! Teruskan Gembok untuk mencari jejak teman baharu.';
+    const name=petNameForAward(award);
+    if(award.newlyTamed)return `${name} berjaya dijinakkan!`;
+    if(award.rescueAwarded)return `Jejak ${name} ditemui · Rescue ${award.rescues}/${award.threshold}`;
+    return `Misi selesai! Teruskan Gembok untuk mengumpul jejak ${name}.`;
   }
 
   /* Satu penamat sahaja: Aurora diselamatkan. Kalau soalan habis sebelum

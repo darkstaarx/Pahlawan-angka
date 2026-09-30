@@ -5,7 +5,13 @@
 
   let active=null;
   const now=()=>performance.now();
-  const realSave=()=>{ if(typeof save==='function')save(); };
+  const realSave=()=>{
+    if(typeof save!=='function')return;
+    const profile=active?.profileDb;
+    if(!profile){ save(); return; }
+    const previous=swapDemoState(profile,active.session);
+    try{save()}finally{swapDemoState(previous.db,previous.sess)}
+  };
   const realScore=id=>typeof scoreState==='function'?scoreState(id):db?.skills?.[id];
   const realSession=()=>active&&active.session;
   function withSession(session,fn){
@@ -38,7 +44,7 @@
     }
     if(active)close(false);
     const id=`gembok-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-    active={id,gembok:true,route:options.adaptive?'adaptive':'manual',chapter,pool,previousSession:sess,session:makeSession(options),
+    active={id,gembok:true,route:options.adaptive?'adaptive':'manual',chapter,pool,profileDb:db,previousSession:sess,session:makeSession(options),
       questionNumber:0,correct:0,completed:false,paused:false,startedAt:Date.now()};
     activateSession(active.session);
     window.PASegelHost.openProduction(active);
@@ -64,7 +70,9 @@
       s.q=q;s.start=now();s.hint=false;s.hintLevel=0;s.retryState=null;
       s.recent.push(id);if(s.recent.length>10)s.recent.shift();
       /* Assignment waits for the actual selected skill, including adaptive runs. */
-      window.PetCollection?.assignGembokRescue?.(db,run,id);
+      /* `db` is temporarily the Gembok session here. Pet ownership belongs
+         to the real profile, so never assign rescue state to the session copy. */
+      window.PetCollection?.assignGembokRescue?.(run.profileDb,run,id);
       run.questionNumber++;
       window.PALearnerReview?.beginQuestion?.(q,{grade:db.schoolGrade,mode:'gembok',selectionReason:run.route, demoMode:false});
       return q;
@@ -137,15 +145,18 @@
        Retain that production boundary even if a caller invokes complete(). */
     if(run.correct<10)return;
     run.completed=true;
-    db.gembok=db.gembok||{completions:{}};db.gembok.completions=db.gembok.completions||{};
-    if(!db.gembok.completions[run.id]){
+    const profileDb=run.profileDb||db;
+    profileDb.gembok=profileDb.gembok||{completions:{}};profileDb.gembok.completions=profileDb.gembok.completions||{};
+    if(!profileDb.gembok.completions[run.id]){
       const coins=run.route==='adaptive'?10:15;
-      db.gembok.completions[run.id]={route:run.route,coins,at:Date.now(),correct:run.correct};
-      db.coins=(db.coins||0)+coins;
+      profileDb.gembok.completions[run.id]={route:run.route,coins,at:Date.now(),correct:run.correct};
+      profileDb.coins=(profileDb.coins||0)+coins;
       realSave();
     }
     /* Cosmetic only; PetCollection owns its own per-run idempotency record. */
-    const petAward=window.PetCollection?.awardGembokCompletion?.(db,run);
+    const petAward=window.PetCollection?.awardGembokCompletion?.(profileDb,run);
+    run.petAward=petAward||null;
+    realSave();
     if(petAward?.newlyTamed)run.temanRevealAward=petAward;
   }
 
