@@ -287,7 +287,7 @@
        nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
     const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
-    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME-.42;
+    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME+.86;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
@@ -489,9 +489,9 @@
     // happy/Khazanah sprites are authored menghadap kanan atau ke depan.
     // Companion dan pet lock mesti kekal sebagai dua mesh yang berasingan.
     const pet =actor(petSadE[0],-.3); // pet terkunci: sedih, kiri
-    const companion=actor(petJoyE[0]||petSadE[0],-.28); // aktif: happy, kanan/depan
+    const companion=actor(petJoyE[0]||petSadE[0],.1); // aktif: happy, kanan/depan
     companion.visible=false;
-    const COMPANION_SCALE=.52;
+    const COMPANION_SCALE=.58;
 
     /* Bayang lembut. Bulatan hitam bertepi tajam nampak macam tampalan;
        kecerunan jejarian pada tekstur kecil sudah cukup dan murah. */
@@ -578,7 +578,7 @@
               damage:0, broken:false, breakT:-1};
     });
     pet.renderOrder=1;
-    companion.renderOrder=2;
+    companion.renderOrder=5;
     hero.renderOrder=4;
 
     /* SERPIHAN SEGEL
@@ -854,11 +854,13 @@
       const joyE=joy.custom?petEntries(joy.frames,customUpp):joy.frames.map(t=>entry(t,PET_UPP));
       const idleTex=await customPetIdle(activePetConfig,null);
       const idleE=idleTex?[entry(idleTex,petUpp([idleTex]))]:[];
-      // Follow uses a grounded idle sprite, never the rescue/joy pose. If a
-      // future pet has no idle asset, fall back to its happy sprite sequence.
-      S.companionFrames=idleE.length?idleE:(joyE.length?joyE:petJoyE);
-      S.companionHold=idleE.length?null:(joy.custom?PET_SHEET_HOLD:null);
-      S.companionFps=idleE.length?1:2; S.companionFrameT0=tAcc;
+      // Follow uses a grounded happy/idle animation. Aurora's two joy frames
+      // are the current blink/idle loop; collection pets use their happy
+      // sprite sheet. A lone idle frame is only the final fallback.
+      const animated=joyE.length>1?joyE:(petJoyE.length>1?petJoyE:[]);
+      S.companionFrames=animated.length?animated:(idleE.length?idleE:petJoyE);
+      S.companionHold=animated.length&&joy.custom?PET_SHEET_HOLD:null;
+      S.companionFps=animated.length?2:1; S.companionFrameT0=tAcc;
       companion.visible=!!activePetConfig&&S.companionFrames.length>0;
       if(S.companionFrames[0]){
         swap(companion,S.companionFrames[0]);
