@@ -3,6 +3,20 @@
 (function(){
   'use strict';
 
+  // The legacy index contains a cached Segel URL. Load the current production
+  // stage explicitly so a Pages deploy cannot silently keep the old pet mesh.
+  const liveAssetRefresh=(()=>{
+    if(typeof document==='undefined')return Promise.resolve();
+    const css='css/mission-map-live-v1.css?v=1.0.1';
+    if(!document.querySelector(`link[href="${css}"]`)){
+      const link=document.createElement('link');link.rel='stylesheet';link.href=css;document.head.appendChild(link);
+    }
+    return new Promise(resolve=>{
+      const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=4.0.6';script.async=false;
+      script.addEventListener('load',resolve,{once:true});script.addEventListener('error',resolve,{once:true});document.head.appendChild(script);
+    });
+  })();
+
   let active=null;
   const now=()=>performance.now();
   const realSave=()=>{
@@ -40,7 +54,8 @@
     return {id:pet.id,name:pet.name,sad:pet.assets?.sad?[pet.assets.sad]:[],happy:pet.assets?.happy?[pet.assets.happy]:[],happySheet:pet.assets?.happySprite||null};
   }
 
-  function open(options={}){
+  async function open(options={}){
+    await liveAssetRefresh;
     if(!db||!window.PASegelHost)return;
     const chapter=options.chapter?String(options.chapter):null;
     const pool=skillPool(chapter);
