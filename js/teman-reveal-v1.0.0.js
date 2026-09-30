@@ -28,10 +28,18 @@
       <div class="temanRevealCollection" aria-label="Kad masuk ke Khazanah">
         <span class="temanRevealTrail">Khazanah</span><div class="temanRevealGrid"><i></i><i></i><i class="temanRevealNewSlot"><img alt=""></i><i></i><i></i><i></i></div>
       </div>
-      <div class="temanRevealActions"><button class="btn ghost small" type="button" data-teman-action="continue">Teruskan Misi</button><button class="btn primary small" type="button" data-teman-action="treasure">Lihat Khazanah</button></div>
+      <div class="temanRevealActions"><button class="btn ghost small" type="button" data-teman-action="rename">Namakan Teman</button><button class="btn ghost small" type="button" data-teman-action="continue">Teruskan Misi</button><button class="btn primary small" type="button" data-teman-action="treasure">Lihat Khazanah</button></div>
     </div>`;
     document.body.appendChild(root);
     root.querySelector('[data-teman-action="continue"]').onclick=close;
+    root.querySelector('[data-teman-action="rename"]').onclick=()=>{
+      const current=root.dataset.petName||'';
+      const next=window.prompt('Nama untuk teman baharu:',current);
+      if(next===null||!window.PetCollection?.rename?.(db,root.dataset.petId,next))return;
+      const item=itemFor({petId:root.dataset.petId});
+      root.dataset.petName=item?.name||next.trim();
+      root.querySelector('.temanRevealName').textContent=root.dataset.petName;
+    };
     root.querySelector('[data-teman-action="treasure"]').onclick=()=>{
       close();window.openTreasure?.();window.treasureTab?.('pets');
     };
@@ -48,6 +56,7 @@
     if(typeof document==='undefined')return false;
     const item=itemFor(award);if(!item?.assets?.happy)return false;
     const root=ensure(),art=item.assets.happy,name=esc(item.name||'Teman Baharu'),rarity=esc(item.rarity||'Istimewa');
+    root.dataset.petId=String(item.id);root.dataset.petName=String(item.name||'Teman Baharu');
     clearTimers();root.hidden=false;root.className='temanReveal';
     root.querySelector('.temanRevealEyebrow').textContent=preview?'PRATONTON DEV · KHAZANAH':'KHAZANAH PAHLAWAN ANGKA';
     root.querySelector('.temanRevealName').innerHTML=name;

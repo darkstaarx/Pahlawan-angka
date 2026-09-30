@@ -76,11 +76,18 @@
    const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp',happySprite:null};
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=playerLevel(data)>=meta.levelGate;
-   return {...item,...data.petCollection[id],id,name:meta.name,species:meta.species||'',assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
+    const customName=String(data.petCollection[id].customName||'').trim();
+    return {...item,...data.petCollection[id],id,name:customName||meta.name,defaultName:meta.name,species:meta.species||'',assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
   }),expedition:{...data.expedition}};
  }
  function persist(data){if(typeof db!=='undefined'&&data===db&&typeof save==='function')save();}
- function equip(data,id){ensure(data);if(!catalog[id]||data.petCollection[id]?.state!=='tamed')return false;data.expedition.activePetId=id;data.rewards.equippedPet=id;persist(data);return true;}
+  function equip(data,id){ensure(data);if(!catalog[id]||data.petCollection[id]?.state!=='tamed')return false;data.expedition.activePetId=id;data.rewards.equippedPet=id;persist(data);return true;}
+  function rename(data,id,name){
+   ensure(data);if(!catalog[id]||data.petCollection[id]?.state!=='tamed')return false;
+   const next=String(name||'').trim().replace(/\s+/g,' ').slice(0,24);
+   if(!next||next.length<2)return false;
+   data.petCollection[id].customName=next;persist(data);return true;
+  }
  function assignGembokRescue(data,run,skillId){
   if(!data||!run||!run.gembok||run.demoMode||run.cancelled||!skillId)return null;
   ensure(data);if(run.rescuePetId)return {petId:run.rescuePetId,grade:run.rescueGrade,threshold:run.rescueThreshold};
@@ -116,6 +123,6 @@
   data.gembokPetAwards[run.id]={at:now,route:run.route,petId,grade,skillId:run.rescueSkillId,rescues,threshold,rescueAwarded,bondXpAwarded,equippedPetId:bondXpAwarded?data.expedition.activePetId:null};
   persist(data);return {awarded:rescueAwarded||bondXpAwarded,petId,grade,rescues,threshold,newlyTamed,rescueAwarded,bondXpAwarded};
  }
- const api={ensure,snapshot,equip,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:(id,petLevel)=>stage(id,petLevel),evolutionMilestones,milestonesFor,playerLevel};
+  const api={ensure,snapshot,equip,rename,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:(id,petLevel)=>stage(id,petLevel),evolutionMilestones,milestonesFor,playerLevel};
  root.PetCollection=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

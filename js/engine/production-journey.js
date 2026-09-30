@@ -34,6 +34,12 @@
     return session;
   }
 
+  function activePetConfig(profile){
+    const pet=window.PetCollection?.snapshot?.(profile)?.pets?.find(item=>item.active&&item.state==='tamed');
+    if(!pet)return null;
+    return {id:pet.id,name:pet.name,sad:pet.assets?.sad?[pet.assets.sad]:[],happy:pet.assets?.happy?[pet.assets.happy]:[],happySheet:pet.assets?.happySprite||null};
+  }
+
   function open(options={}){
     if(!db||!window.PASegelHost)return;
     const chapter=options.chapter?String(options.chapter):null;
@@ -44,7 +50,7 @@
     }
     if(active)close(false);
     const id=`gembok-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-    active={id,gembok:true,route:options.adaptive?'adaptive':'manual',chapter,pool,profileDb:db,previousSession:sess,session:makeSession(options),
+    active={id,gembok:true,route:options.adaptive?'adaptive':'manual',chapter,pool,profileDb:db,petConfig:activePetConfig(db),previousSession:sess,session:makeSession(options),
       questionNumber:0,correct:0,completed:false,paused:false,startedAt:Date.now()};
     activateSession(active.session);
     window.PASegelHost.openProduction(active);

@@ -828,7 +828,7 @@
       mesh.userData.e=e;
       mesh.material.map=e.tex; mesh.material.needsUpdate=true;
       if(mesh.material.userData.cleanMatte)mesh.material.userData.cleanMatte.value=e.cleanMatte?1:0;
-      mesh.scale.set(e.w,e.h,1);
+        mesh.scale.set(mesh===pet?-Math.abs(e.w):e.w,e.h,1);
     }
     async function setPetVisual(config){
       const generation=++petVisualGeneration;
@@ -846,7 +846,8 @@
       S.petFrames=S.rescued?joyE:sadE;
       S.petHold=S.rescued?null:(sad.custom?PET_SHEET_HOLD:PET_IDLE_HOLD);
       S.petFps=4; S.petFrameT0=tAcc;
-      if(S.petFrames[0])swap(pet,S.petFrames[0]);
+        if(S.petFrames[0])swap(pet,S.petFrames[0]);
+        pet.scale.x=-Math.abs(pet.userData.e.w);
     }
 
     function frame(now){
@@ -2028,7 +2029,7 @@
       if(typeof screen==='function')screen('segelDemo');
       try{await boot()}catch(_){$('segelFeedback').textContent='Pentas Gembok tidak dapat dimuat pada peranti ini.';return;}
       if(!window.PAProductionJourney?.isCurrent?.(productionRun)||productionRun.session.generation!==generation)return;
-      await stage.setPet?.(null);
+      await stage.setPet?.(productionRun.petConfig||null);
       if(!window.PAProductionJourney?.isCurrent?.(productionRun)||productionRun.session.generation!==generation)return;
       bindSpeaker();bindSound();bindHint();stage.resume();startProductionRun(productionRun);
     },

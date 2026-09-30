@@ -13,6 +13,7 @@
   'use strict';
 
   const $ = id => document.getElementById(id);
+  const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[char]));
 
   /* Tiada data kelangkaan dalam repo, jadi ia diterbitkan daripada harga —
      satu-satunya isyarat nilai yang memang sudah wujud. Tiada statistik
@@ -101,16 +102,17 @@
 
   function companionCard(pet){
     const tamed=pet.state==='tamed', encountered=pet.state==='encountered';
-    const name=PET_NAMES[pet.id]||pet.name||pet.id;
+    const name=pet.name||PET_NAMES[pet.id]||pet.id;
     const status=tamed?(pet.active?'Sedang ikut kamu':'Lengkapi'):'Belum ditemui';
     const rarity=`<span>${pet.rarity}</span>`;
     const rescue=encountered&&pet.rescueThreshold?`<small>Diselamatkan ${pet.rescues||0}/${pet.rescueThreshold} kali</small>`:'';
     const progression=tamed?`<small>Tahap ${pet.level}</small><small>${pet.evolutionState}</small>`:'';
     const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
+    const rename=tamed?`<button class="kzBtn" type="button" onclick="renameCollectionPet('${pet.id}')">Tukar nama</button>`:'';
     return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
-      <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?name:'Belum ditemui'}"></div>
-      ${tamed?`<div class="kzName">${name}</div>`:''}
-      <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${action?`<div class="kzFoot">${action}</div>`:''}
+      <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?esc(name):'Belum ditemui'}"></div>
+      ${tamed?`<div class="kzName">${esc(name)}</div>`:''}
+      <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${tamed?`<div class="kzFoot">${action}${rename}</div>`:''}
     </article>`;
   }
 
@@ -118,6 +120,12 @@
     if(!window.PetCollection?.equip?.(db,id))return;
     if(typeof renderTreasure==='function')renderTreasure();
     if(typeof renderBattlePet==='function')renderBattlePet();
+  };
+  window.renameCollectionPet=function(id){
+    const pet=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.id===id);
+    if(!pet)return;
+    const name=window.prompt(`Nama baharu untuk ${pet.defaultName||pet.name}:`,pet.name);
+    if(name!==null&&window.PetCollection.rename(db,id,name)){renderTreasure();if(typeof renderBattlePet==='function')renderBattlePet();if(typeof showRewardToast==='function')showRewardToast(`${name.trim()} kini teman aktif dalam koleksi`)}
   };
   function paintCompanions(){
     if(typeof db==='undefined'||!db||!window.PetCollection)return;
