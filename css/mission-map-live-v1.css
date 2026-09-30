@@ -51,3 +51,11 @@ body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard.current .m
 body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody p{font-size:12px}
 body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody small{font-size:11px}
 @media(max-width:760px){body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryHead{align-items:flex-start;flex-direction:column;gap:7px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid{grid-template-columns:1fr;gap:10px;padding:8px 0 8px 8px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid:before{top:8px;bottom:8px;left:23px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd),body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even){min-height:100px;padding:9px 9px 9px 52px;transform:none}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:after,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd):after,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even):after{top:auto;bottom:-11px;left:22px;width:2px;height:11px;border-top:0;border-left:2px dashed #f1d58a99}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:last-child:after{display:none}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionNode{left:8px}}
+
+/* Misi is a document-length map on phones. Keep it out of the immersive
+   full-screen scroll traps and leave room for the fixed bottom navigation. */
+@media(max-width:600px){
+  html:has(body[data-screen="missions"]),body[data-screen="missions"]{height:auto!important;min-height:100%;overflow-y:auto!important;overflow-x:hidden!important;touch-action:pan-y}
+  body[data-screen="missions"] .app{height:auto!important;min-height:100dvh}
+  body[data-screen="missions"] #missions{min-height:calc(100dvh - 58px);padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 40px)!important;touch-action:pan-y}
+}

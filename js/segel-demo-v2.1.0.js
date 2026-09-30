@@ -480,7 +480,13 @@
       m.position.z=z; m.userData.e=first; scene.add(m); return m;
     }
     const hero=actor(heroIdleE[0],0,true);
-    const pet =actor(petSadE[0],-.3);
+    // Asset contract: sad rescue sprites are authored menghadap kiri;
+    // happy/Khazanah sprites are authored menghadap kanan atau ke depan.
+    // Companion dan pet lock mesti kekal sebagai dua mesh yang berasingan.
+    const pet =actor(petSadE[0],-.3); // pet terkunci: sedih, kiri
+    const companion=actor(petJoyE[0]||petSadE[0],-.28); // aktif: happy, kanan/depan
+    companion.visible=false;
+    const COMPANION_SCALE=.52;
 
     /* Bayang lembut. Bulatan hitam bertepi tajam nampak macam tampalan;
        kecerunan jejarian pada tekstur kecil sudah cukup dan murah. */
@@ -567,6 +573,7 @@
               damage:0, broken:false, breakT:-1};
     });
     pet.renderOrder=1;
+    companion.renderOrder=2;
     hero.renderOrder=4;
 
     /* SERPIHAN SEGEL
@@ -816,10 +823,11 @@
     });
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
-    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,camY:0,rescued:false,lifecycle:0,
+    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:GROUND,camY:0,rescued:false,lifecycle:0,
              shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
+             companionFrames:petJoyE,companionHold:null,companionFps:2,companionFrameT0:0,
              heroLock:null,grey:0,coinT:-1};
     let raf=0, last=performance.now(), tAcc=0;
 
@@ -828,26 +836,30 @@
       mesh.userData.e=e;
       mesh.material.map=e.tex; mesh.material.needsUpdate=true;
       if(mesh.material.userData.cleanMatte)mesh.material.userData.cleanMatte.value=e.cleanMatte?1:0;
-        mesh.scale.set(mesh===pet?-Math.abs(e.w):e.w,e.h,1);
+      mesh.scale.set(e.w,e.h,1);
     }
     async function setPetVisual(config){
       const generation=++petVisualGeneration;
       activePetConfig=config&&typeof config==='object'?config:null;
-      const sad=await customPetFrames(activePetConfig,'sad',petSad);
       const joy=await customPetFrames(activePetConfig,'happy',petJoy);
       // Tekan Swap Pet beberapa kali semasa texture masih dimuat tidak boleh
       // menyebabkan permintaan lama menimpa pilihan yang paling baharu.
       if(generation!==petVisualGeneration)return;
-      const customUpp=sad.custom?petUpp(sad.frames):PET_UPP;
-      const sadE=sad.custom?petEntries(sad.frames,customUpp):sad.frames.map(t=>entry(t,PET_UPP));
-      // Happy guna skala yang sama dengan sad; perubahan emosi tidak patut
-      // mengubah besar badan pet ketika segel pecah.
+      const customUpp=joy.custom?petUpp(joy.frames):PET_UPP;
       const joyE=joy.custom?petEntries(joy.frames,customUpp):joy.frames.map(t=>entry(t,PET_UPP));
-      S.petFrames=S.rescued?joyE:sadE;
-      S.petHold=S.rescued?null:(sad.custom?PET_SHEET_HOLD:PET_IDLE_HOLD);
-      S.petFps=4; S.petFrameT0=tAcc;
-        if(S.petFrames[0])swap(pet,S.petFrames[0]);
-        pet.scale.x=-Math.abs(pet.userData.e.w);
+      S.companionFrames=joyE.length?joyE:petJoyE;
+      S.companionHold=joy.custom?PET_SHEET_HOLD:null;
+      S.companionFps=2; S.companionFrameT0=tAcc;
+      companion.visible=!!activePetConfig&&S.companionFrames.length>0;
+      if(S.companionFrames[0]){
+        swap(companion,S.companionFrames[0]);
+        companion.scale.set(Math.abs(companion.userData.e.w)*COMPANION_SCALE,companion.userData.e.h*COMPANION_SCALE,1);
+      }
+    }
+    function swapCompanion(e){
+      if(!e)return;
+      swap(companion,e);
+      companion.scale.set(Math.abs(e.w)*COMPANION_SCALE,e.h*COMPANION_SCALE,1);
     }
 
     function frame(now){
@@ -867,6 +879,10 @@
                            : S.heroFrames[Math.floor((tAcc-S.heroFrameT0)*S.heroFps)%S.heroFrames.length]));
       swap(pet,  S.petHold ? heldFrame(S.petFrames,S.petHold,tAcc-S.petFrameT0)
                            : S.petFrames[Math.floor((tAcc-S.petFrameT0)*S.petFps)%S.petFrames.length]);
+      if(companion.visible&&S.companionFrames.length){
+        swapCompanion(S.companionHold ? heldFrame(S.companionFrames,S.companionHold,tAcc-S.companionFrameT0)
+          : S.companionFrames[Math.floor((tAcc-S.companionFrameT0)*S.companionFps)%S.companionFrames.length]);
+      }
 
       // S.heroX dan S.petY ialah kedudukan KAKI, bukan pusat satah.
       S.heroFeet=damp(S.heroFeet,S.heroX,15,dt);
@@ -911,6 +927,9 @@
       heroShadow.position.x=S.heroFeet;
       pet.position.x=SEAL_X+pet.userData.e.offX;
       pet.position.y=S.petFeet+pet.userData.e.offY;
+      S.companionFeet=damp(S.companionFeet,HERO_HOME+.55,8,dt);
+      companion.position.x=S.companionFeet+companion.userData.e.offX;
+      companion.position.y=GROUND+companion.userData.e.offY;
 
       // Bayang Aurora kekal di lantai dan mengecut bila dia naik.
       const rise=Math.max(0,(S.petFeet-GROUND))/.8;
@@ -1274,6 +1293,7 @@
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
         S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND; S.petFrameT0=tAcc;
+        S.companionFrameT0=tAcc;S.companionFeet=HERO_HOME+.55;companion.visible=!!activePetConfig;
         if(activePetConfig)setPetVisual(activePetConfig);
         S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD; S.heroFrameT0=tAcc;
         swap(hero,heroIdleE[0]);
