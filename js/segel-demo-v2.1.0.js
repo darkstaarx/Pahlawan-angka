@@ -863,14 +863,15 @@
       S.companionFps=animated.length?2:1; S.companionFrameT0=tAcc;
       companion.visible=!!activePetConfig&&S.companionFrames.length>0;
       if(S.companionFrames[0]){
-        swap(companion,S.companionFrames[0]);
-        companion.scale.set(Math.abs(companion.userData.e.w)*COMPANION_SCALE,companion.userData.e.h*COMPANION_SCALE,1);
+        swapCompanion(S.companionFrames[0]);
       }
     }
     function swapCompanion(e){
       if(!e)return;
       swap(companion,e);
-      companion.scale.set(Math.abs(e.w)*COMPANION_SCALE,e.h*COMPANION_SCALE,1);
+      // Existing happy/joy art is authored facing left. A TEMAN faces right
+      // toward Wira; mirror only this mesh so rescue/lock art stays untouched.
+      companion.scale.set(-Math.abs(e.w)*COMPANION_SCALE,e.h*COMPANION_SCALE,1);
     }
 
     function frame(now){
@@ -939,7 +940,7 @@
       pet.position.x=SEAL_X+pet.userData.e.offX;
       pet.position.y=S.petFeet+pet.userData.e.offY;
       S.companionFeet=damp(S.companionFeet,COMPANION_HOME,8,dt);
-      companion.position.x=S.companionFeet+companion.userData.e.offX*COMPANION_SCALE;
+      companion.position.x=S.companionFeet-companion.userData.e.offX*COMPANION_SCALE;
       companion.position.y=GROUND+companion.userData.e.offY*COMPANION_SCALE;
 
       // Bayang Aurora kekal di lantai dan mengecut bila dia naik.
