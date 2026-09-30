@@ -287,7 +287,7 @@
        nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
     const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
-    const SEAL_X=1.52, HERO_HOME=-1.62;
+    const SEAL_X=1.05, HERO_HOME=-1.62;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
