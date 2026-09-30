@@ -34,8 +34,10 @@
     try{return fn();}finally{swapDemoState(previous.db,previous.sess);}
   }
   function activateSession(session){swapDemoState(db,session);}
-  const skillPool=chapter=>GRAPH.skills
-    .filter(x=>x.grade===db.schoolGrade&&(!chapter||String(x.chapter)===String(chapter)))
+  const skillPool=(chapter,focusSkill)=>GRAPH.skills
+    .filter(x=>x.grade===db.schoolGrade
+      &&(!chapter||String(x.chapter)===String(chapter))
+      &&(!focusSkill||x.id===focusSkill))
     .map(x=>x.id);
 
   function makeSession(options){
@@ -44,6 +46,7 @@
       hintLevel:0, retryState:null, recent:[], responseHistory:[],
       interventionCooldown:{}, confirmSkill:null, confirmRemaining:0,
       coachAdaptive:!!options.adaptive, missionChapter:options.chapter||null,
+      focusSkill:options.focusSkill||null, focusTarget:options.focusTarget||null,
       questionToken:0, generation:0, learningActive:false, coach:null
     };
     return session;
@@ -59,14 +62,15 @@
     if(typeof document!=='undefined'&&!window.__PA_LIVE_ASSET_REFRESHED){liveAssetRefresh.then(()=>open(options));return;}
     if(!db||!window.PASegelHost)return;
     const chapter=options.chapter?String(options.chapter):null;
-    const pool=skillPool(chapter);
+    const focusSkill=options.focusSkill?String(options.focusSkill):null;
+    const pool=skillPool(chapter,focusSkill);
     if(!pool.length){
       console.error('[gembok] no real skill pool for production route',options);
       return;
     }
     if(active)close(false);
     const id=`gembok-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-    active={id,gembok:true,route:options.adaptive?'adaptive':'manual',chapter,pool,profileDb:db,petConfig:activePetConfig(db),previousSession:sess,session:makeSession(options),
+    active={id,gembok:true,route:focusSkill?'focus':(options.adaptive?'adaptive':'manual'),chapter,focusSkill,pool,profileDb:db,petConfig:activePetConfig(db),previousSession:sess,session:makeSession(options),
       questionNumber:0,correct:0,completed:false,paused:false,startedAt:Date.now()};
     activateSession(active.session);
     window.PASegelHost.openProduction(active);
@@ -75,6 +79,7 @@
   function selectSkill(run){
     const s=run.session;
     return withSession(s,()=>{
+      if(run.route==='focus')return run.focusSkill;
       if(run.route==='adaptive')return chooseModeAndSkill();
       const unseen=run.pool.filter(id=>!s.recent.slice(-Math.min(3,run.pool.length)).includes(id));
       return (unseen.length?unseen:run.pool)[run.questionNumber%(unseen.length||run.pool.length)];
@@ -196,7 +201,7 @@
   }
   function restart(run){
     if(!active||active!==run)return;
-    open({chapter:run.chapter,adaptive:run.route==='adaptive'});
+    open({chapter:run.chapter,adaptive:run.route==='adaptive',focusSkill:run.route==='focus'?run.focusSkill:null,focusTarget:run.session.focusTarget});
   }
   function close(renderMenu=true){
     if(!active)return;

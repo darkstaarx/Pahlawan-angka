@@ -126,6 +126,12 @@ test('real manual and adaptive production routes assign from their selected skil
  }
 });
 
+test('focus production route uses the live Segel host and stays on one skill',()=>{
+ const h=journeyHarness();h.context.openGembok({focusSkill:'D1.N20',focusTarget:10});
+ const run=h.context.PAProductionJourney.state(),question=h.context.PAProductionJourney.nextQuestion(run);
+ assert.equal(run.route,'focus');assert.equal(run.focusSkill,'D1.N20');assert.equal(question.skill,'D1.N20');
+});
+
 test('production boundary awards Bond XP only after ten correct seals',()=>{
  const h=journeyHarness();h.context.openGembok({chapter:'1'});const run=h.context.PAProductionJourney.state();
  h.context.PAProductionJourney.nextQuestion(run);h.db.petCollection[run.rescuePetId].rescues=run.rescueThreshold-1;
