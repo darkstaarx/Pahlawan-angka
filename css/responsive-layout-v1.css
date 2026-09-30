@@ -85,16 +85,20 @@ body[data-screen="missions"] #missions {
 }
 
 
-/* Khazanah / Trofi: own the vertical scroll inside the viewport.
-   Android/PWA + fixed bottom nav can otherwise leave <body> as an unreliable
-   scroll owner, while the interactive pet stage used to swallow touch pans. */
-body[data-screen="treasure"] {
+/* Long destinations own their vertical scroll inside the viewport.
+   Android/PWA + the fixed bottom nav can otherwise leave <body> as an
+   unreliable scroll owner. That shows up as a page which only starts moving
+   when the swipe begins near the footer. Keep one explicit scroll owner for
+   both Khazanah/Trofi and the Ibu Bapa dashboard. */
+body[data-screen="treasure"],
+body[data-screen="parent"] {
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
 }
 
-body[data-screen="treasure"] .app {
+body[data-screen="treasure"] .app,
+body[data-screen="parent"] .app {
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
@@ -102,11 +106,13 @@ body[data-screen="treasure"] .app {
   flex-direction: column;
 }
 
-body[data-screen="treasure"] .appHeader {
+body[data-screen="treasure"] .appHeader,
+body[data-screen="parent"] .appHeader {
   flex: 0 0 58px;
 }
 
-body[data-screen="treasure"] #treasure {
+body[data-screen="treasure"] #treasure,
+body[data-screen="parent"] #parent {
   flex: 1 1 auto;
   height: auto;
   min-height: 0;
@@ -115,11 +121,25 @@ body[data-screen="treasure"] #treasure {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  touch-action: pan-y;
+  scrollbar-gutter: stable both-edges;
   padding-bottom: calc(var(--nav-h, 72px) + env(safe-area-inset-bottom, 0px) + 34px);
 }
 
-/* Keep horizontal pet dragging possible without blocking a vertical page swipe. */
-body[data-screen="treasure"] .kzShow {
+/* Vertical swipes may begin on any Khazanah card/stage, not only the footer. */
+body[data-screen="treasure"] #treasure,
+body[data-screen="treasure"] .kzShow,
+body[data-screen="treasure"] .kzGrid,
+body[data-screen="treasure"] .kzCard,
+body[data-screen="treasure"] .badgeCard {
   touch-action: pan-y;
+}
+
+/* Parent tabs still need horizontal swiping, while the page must accept
+   vertical swipes from cards and report panels. */
+body[data-screen="parent"] #parent {
+  touch-action: pan-x pan-y;
+}
+
+body[data-screen="parent"] .parentTabs {
+  touch-action: pan-x pan-y;
 }
