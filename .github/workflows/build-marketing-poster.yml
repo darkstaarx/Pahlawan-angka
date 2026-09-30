@@ -29,7 +29,7 @@ jobs:
       - run: python marketing/build_poster.py
       - name: Commit rendered poster
         run: |
-          if git diff --quiet -- marketing/pahlawan-angka-poster-final.jpg; then
+          if [ -z "$(git status --porcelain -- marketing/pahlawan-angka-poster-final.jpg)" ]; then
             echo "Poster unchanged"
             exit 0
           fi
