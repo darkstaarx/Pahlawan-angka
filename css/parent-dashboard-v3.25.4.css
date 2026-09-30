@@ -128,6 +128,8 @@
   #parent .parentCheckinCompact{align-items:flex-start;flex-direction:column}
   #parent .parentCheckinActions{width:100%}
   #parent .parentCheckinActions .btn{flex:1}
+  #parent .parentRestuEntry{align-items:flex-start;flex-direction:column}
+  #parent .parentRestuEntry .btn{width:100%}
   #parent .parentTimeline article{grid-template-columns:54px 12px 1fr;gap:6px}
 }
 @media(min-width:760px){
@@ -222,6 +224,14 @@
 #parent .parentCheckinCompact p{margin:0;color:#38567c;font-size:11px;line-height:1.45}
 #parent .parentCheckinActions{display:flex;flex:0 0 auto;gap:7px}
 #parent .parentCheckinActions .btn{white-space:nowrap}
+#parent .parentRestuEntry{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:10px 0;padding:14px 15px;border-color:#d9ad45;background:linear-gradient(145deg,#fff8df,#f1dfaa);color:#123158}
+#parent .parentRestuEntry h3{margin:3px 0 5px;color:#123158;font-size:16px}
+#parent .parentRestuEntry p{margin:0;color:#38567c;font-size:11px;line-height:1.45}
+#parent .parentRestuEntry p b{color:#8a651e}
+#parent .parentRestuEntry .btn{flex:0 0 auto}
+#parent .parentRestuBack{margin:0 0 10px;border-color:#b9a36c;background:#fffaf0;color:#123158}
+#parent.restuOpen .parentTabs{display:none}
+#parent.restuOpen .parentTop h2{font-size:21px}
 #parent .embeddedLevelsHead{margin-top:14px}
 #parent .parentSkillReport .meter{background:#ded2ad}
 #parent .parentSkillReport .meter span{background:linear-gradient(90deg,#2b9bd3,#efbd3e)}

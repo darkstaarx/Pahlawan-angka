@@ -143,6 +143,14 @@ function parentRestuAction(action,skillId){
 function parentRestuOpenFocus(skillId){
  if(skillId&&typeof openGuardianFocus==='function')openGuardianFocus(skillId);
 }
+function parentRestuNeeded(){return !!(db?.restuLock?.active)}
+function openParentRestu(){
+ const core=GRAPH.skills.filter(x=>x.grade===coreGrade()),summary=parentPowerSummary(core,0),focus=core.find(x=>x.id===db?.restuLock?.skillId)||parentRestuFocus(core,summary),restu=document.getElementById('restuTab');
+ if(restu)restu.innerHTML=renderParentRestu(focus);
+ document.getElementById('parent')?.classList.add('restuOpen');
+ tab('restu');
+}
+function closeParentRestu(){document.getElementById('parent')?.classList.remove('restuOpen');tab('summary')}
 function renderParentRestu(focus){
  const state=parentRestuState(),name=parentSafe(db.name||'anak'),title=parentSafe(focus?.title||'kemahiran semasa');
  const acknowledgeLabel=state.acknowledgedToday?'':state.snoozed?'Semak sekarang':'Dah berbual';
@@ -151,16 +159,15 @@ function renderParentRestu(focus){
   : state.acknowledgedToday
    ? `<div class="restuStatus done"><span>✓</span><b>Sudah direkod untuk hari ini.</b><small>Terima kasih kerana memberi ruang dan sokongan kepada ${name}.</small></div>`
    : '';
- return `<section class="card restuParentHero"><div class="restuParentIcon" aria-hidden="true">🤝</div><div><div class="eyebrow">RESTU IBU BAPA</div><h2>Sokongan kecil, bukan tugasan tambahan</h2><p>Tak perlu semak setiap sesi. Bila ada masa, luangkan kira-kira dua minit untuk dengar cara ${name} berfikir.</p></div></section>
+ return `<button class="btn ghost small parentRestuBack" type="button" onclick="closeParentRestu()">← Kembali ke Ringkasan</button><section class="card restuParentHero"><div class="restuParentIcon" aria-hidden="true">🤝</div><div><div class="eyebrow">RESTU IBU BAPA</div><h2>Sokongan kecil, bukan tugasan tambahan</h2><p>Tak perlu semak setiap sesi. Bila ada masa, luangkan kira-kira dua minit untuk dengar cara ${name} berfikir.</p></div></section>
  <section class="card restuCheckinCard"><div class="eyebrow">CHECK-IN 2 MINIT</div><h3>Satu soalan untuk dibualkan</h3><p class="restuPrompt">“${focus?`Boleh terangkan bagaimana kamu dapat jawapan untuk ${title}?`:'Apa yang paling mudah atau menarik dalam misi hari ini?'}”</p><p class="restuPromptHint">Dengar cara anak menerangkan. Tak perlu betulkan semua perkara — cukup tunjukkan bahawa usaha mereka diperhatikan.</p>${status}<div class="restuParentActions">${acknowledgeLabel?`<button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">${acknowledgeLabel}</button>`:''}<button class="btn ghost small" type="button" onclick="parentRestuAction('snooze','${parentSafe(focus?.id||'')}')">Lain kali</button></div></section>
  <section class="card restuFocusCard"><div><div class="eyebrow">FOKUS ANAK SEKARANG</div><h3>${title}</h3><p>Ini cuma cadangan untuk perbualan. Cikgu akan teruskan latihan pendek dan beri ruang untuk anak mencuba sendiri. Jika mahu, parent boleh lihat latihan bersama.</p></div>${focus?.id&&typeof openGuardianFocus==='function'?`<button class="btn secondary small" type="button" onclick="parentRestuOpenFocus('${parentSafe(focus.id)}')">Lihat latihan pilihan</button>`:''}</section>`;
 }
 
-function renderParentRestuCompact(focus){
- const state=parentRestuState(),name=parentSafe(db.name||'anak'),title=parentSafe(focus?.title||'kemahiran semasa');
- const acknowledged=state.acknowledgedToday, snoozed=state.snoozed;
- const actions=acknowledged?'':snoozed?`<div class="parentCheckinActions"><button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">Semak sekarang</button></div>`:`<div class="parentCheckinActions"><button class="btn primary small" type="button" onclick="parentRestuAction('ack','${parentSafe(focus?.id||'')}')">Dah berbual</button><button class="btn ghost small" type="button" onclick="parentRestuAction('snooze','${parentSafe(focus?.id||'')}')">Lain kali</button></div>`;
- return `<section class="parentCheckinCompact card"><div><div class="eyebrow">BERBUAL BERSAMA ANAK</div><h3>${acknowledged?'Sokongan hari ini sudah direkod':snoozed?'Semak semula bila keluarga lapang':'Dua minit yang membantu'}</h3><p>${acknowledged?`Terima kasih kerana menemani ${name}.`:snoozed?'Tiada tugasan tambahan buat masa ini.':`Tanya ${name}: “Boleh terangkan bagaimana kamu dapat jawapan untuk ${title}?”`}</p></div>${actions}</section>`;
+function renderParentRestuEntry(focus){
+ if(!parentRestuNeeded())return '';
+ const name=parentSafe(db.name||'anak'),title=parentSafe(focus?.title||'kemahiran semasa');
+ return `<section class="parentRestuEntry card"><div><div class="eyebrow">BIMBINGAN DIPERLUKAN</div><h3>${name} perlukan semakan ibu bapa</h3><p>Cikgu Dimensi menghentikan misi pada <b>${title}</b>. Buka Restu untuk lihat arahan ringkas sebelum anak sambung.</p></div><button class="btn primary small" type="button" onclick="openParentRestu()">Buka Restu</button></section>`;
 }
 
 function renderParent(){
@@ -175,7 +182,7 @@ function renderParent(){
   <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>${clean?'Soalan sebenar':'Cubaan direkod'}</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>${clean?'Betul sendiri':'Jawapan betul'}</small></div><div><span>✓</span><b>${strongCount}</b><small>Kemahiran mantap</small></div></div>
   ${clean?'<p class="parentEvidenceNote">Ringkasan cara belajar menggunakan rekod baharu sejak kemas kini.</p>':''}
   <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">FOKUS SETERUSNYA</div>${parentInsightItem(priorityLead,'priority')}</div></section>
-  ${renderParentRestuCompact(restuFocus)}
+  ${renderParentRestuEntry(restuFocus)}
   <section class="nextMission card"><div class="missionRune">✦</div><div class="nextMissionCopy"><div class="eyebrow">MISI SETERUSNYA</div><h3>${parentSafe(missionCopy.title)}</h3><p>${parentSafe(missionCopy.text)}</p><div class="coachAction"><img src="assets/coach/cikgu-dimensi/hub-portrait-v1.webp" alt="Cikgu Dimensi"><span><b>Langkah Cikgu Dimensi</b>${parentSafe(missionCopy.action)}</span></div></div>${summary.mission?`<button class="btn primary small focusLaunch" onclick="openGuardianFocus('${summary.mission.id}')">Latih topik ini</button>`:''}</section>`;
  let byCh={};core.forEach(m=>(byCh[m.chapter]??=[]).push(m));
  const levelMarkup=`<section class="card parentReportHead embeddedLevelsHead"><div class="eyebrow">JULAT PEMBELAJARAN</div><h2>Asas dan cabaran</h2><p>Cikgu Dimensi turun kepada asas atau naik kepada cabaran apabila bukti pembelajaran memerlukannya.</p></section><div class="parentLevelGrid"><div class="card"><h3>Pengukuhan asas</h3><small>${gradeLabel(prev)}</small>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Tiada pengukuhan tambahan diperlukan sekarang.</p>"}</div><div class="card"><h3>Cabaran lanjutan</h3><small>${gradeLabel(next)}</small>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div></div>`;
@@ -193,8 +200,9 @@ function skillHTML(m,allowFocus){
  return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${evidence}${support}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
 }
 function tab(n){
- const normalized=n==='restu'?'summary':n==='levels'?'core':['summary','core','engine','settings'].includes(n)?n:'summary';
+ const normalized=n==='levels'?'core':n==='restu'?'restu':['summary','core','engine','settings'].includes(n)?n:'summary';
  ["summary","core","levels","engine","restu","settings"].forEach(x=>document.getElementById(x+"Tab")?.classList.toggle("hidden",x!==normalized));
  document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(b=>b.classList.toggle('active',b.dataset.parentTab===normalized));
+ document.getElementById('parent')?.classList.toggle('restuOpen',normalized==='restu');
 }
 function exportCSV(){let rows=[["Skill","Grade","Role","Title","Mastery","Confidence","Evidence","Correct","Wrong","Misconception"],...GRAPH.skills.map(m=>{let s=scoreState(m.id);return[m.id,m.grade,m.role,m.title,Math.round(s.mastery),Math.round(s.confidence),s.evidence,s.correct,s.wrong,topMis(s)]})];let csv=rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n"),blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pahlawan-angka-kemajuan.csv";a.click();URL.revokeObjectURL(a.href)}
