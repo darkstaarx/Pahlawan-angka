@@ -52,10 +52,29 @@ body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody p{font-siz
 body[data-screen="missions"] #missions[data-mv2-map="1"] .missionBody small{font-size:11px}
 @media(max-width:760px){body[data-screen="missions"] #missions[data-mv2-map="1"] .mv2MapSummaryHead{align-items:flex-start;flex-direction:column;gap:7px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid{grid-template-columns:1fr;gap:10px;padding:8px 0 8px 8px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionGrid:before{top:8px;bottom:8px;left:23px}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd),body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even){min-height:100px;padding:9px 9px 9px 52px;transform:none}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:after,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(odd):after,body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:nth-child(even):after{top:auto;bottom:-11px;left:22px;width:2px;height:11px;border-top:0;border-left:2px dashed #f1d58a99}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionCard:last-child:after{display:none}body[data-screen="missions"] #missions[data-mv2-map="1"] .missionNode{left:8px}}
 
-/* Misi is a document-length map on phones. Keep it out of the immersive
-   full-screen scroll traps and leave room for the fixed bottom navigation. */
+/* Mobile Misi owns its own vertical scroll.
+   Do not delegate scrolling to <body>: standalone/PWA shell rules and the
+   fixed bottom nav can otherwise leave the screen with no active scroll owner. */
 @media(max-width:600px){
-  html:has(body[data-screen="missions"]),body[data-screen="missions"]{height:auto!important;min-height:100%;overflow-y:auto!important;overflow-x:hidden!important;touch-action:pan-y}
-  body[data-screen="missions"] .app{height:auto!important;min-height:100dvh}
-  body[data-screen="missions"] #missions{min-height:calc(100dvh - 58px);padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 40px)!important;touch-action:pan-y}
+  body[data-screen="missions"]{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  body[data-screen="missions"] .app{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  body[data-screen="missions"] #missions{
+    height:calc(100dvh - 58px)!important;
+    min-height:0!important;
+    max-height:calc(100dvh - 58px)!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    touch-action:pan-y;
+    padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 48px)!important;
+  }
 }
