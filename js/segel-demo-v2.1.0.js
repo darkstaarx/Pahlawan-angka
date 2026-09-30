@@ -22,6 +22,12 @@
  *   (decisions/2026-09-11-rescue-not-enemy-combat.md).
  */
 (function(){
+  // Index lama masih memanggil bundle ini beberapa kali. Selepas bundle live
+  // masuk, jangan benarkan salinan legacy overwrite host dan stage semula.
+  const src=String(document.currentScript?.src||'');
+  const canonical=/[?&]v=4\.0\.8(?:[&#]|$)/.test(src);
+  if(window.__PA_SEGEL_CANONICAL__&&!canonical)return;
+  if(canonical)window.__PA_SEGEL_CANONICAL__=true;
   'use strict';
 
   /* Tier segel. hits/warna/denyut diambil terus dari kanun di atas. */
