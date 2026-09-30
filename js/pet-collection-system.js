@@ -25,7 +25,9 @@
  const object=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
  const gradeFromSkill=id=>{const match=String(id||'').match(/^D(\d+)\./);return match?Number(match[1]):null;};
  function graphSkillCount(grade){
-  const skills=root.GRAPH?.skills;
+  /* knowledge-graph.js declares GRAPH as a classic-script lexical global,
+     not as window.GRAPH. Support both shapes so rescue thresholds work live. */
+  const skills=(typeof GRAPH!=='undefined'?GRAPH:null)?.skills||root.GRAPH?.skills;
   if(!Array.isArray(skills)||!Number.isFinite(grade))return 0;
   return new Set(skills.filter(skill=>Number(skill.grade)===grade||gradeFromSkill(skill.id)===grade).map(skill=>skill.id)).size;
  }
