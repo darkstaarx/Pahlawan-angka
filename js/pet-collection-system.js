@@ -77,7 +77,7 @@
   ensure(data);if(!data)return {pets:[],expedition:null};
   return {pets:Object.entries(catalog).map(([id,meta])=>{
    const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:meta.name};
-   const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp',happySprite:null};
+   const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',sad:'assets/pets/aurora/standby-v2.webp',happySprite:null};
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=playerLevel(data)>=meta.levelGate;
     const customName=String(data.petCollection[id].customName||'').trim();

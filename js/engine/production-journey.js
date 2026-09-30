@@ -52,7 +52,7 @@
   function activePetConfig(profile){
     const pet=window.PetCollection?.snapshot?.(profile)?.pets?.find(item=>item.active&&item.state==='tamed');
     if(!pet)return null;
-    return {id:pet.id,name:pet.name,sad:pet.assets?.sad?[pet.assets.sad]:[],happy:pet.assets?.happy?[pet.assets.happy]:[],happySheet:pet.assets?.happySprite||null};
+    return {id:pet.id,name:pet.name,sad:pet.assets?.sad?[pet.assets.sad]:[],happy:pet.assets?.happy?[pet.assets.happy]:[],idle:pet.assets?.idle||null,happySheet:pet.assets?.happySprite||null};
   }
 
   function open(options={}){

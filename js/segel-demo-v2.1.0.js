@@ -446,6 +446,11 @@
       const loaded=(await Promise.all((config[phase]||[]).map(load))).filter(Boolean);
       return {frames:loaded.length?loaded:fallback,custom:false};
     }
+    async function customPetIdle(config,fallback){
+      if(!config?.idle)return fallback;
+      const loaded=await load(config.idle);
+      return loaded||fallback;
+    }
     let activePetConfig=devPetConfig(), petVisualGeneration=0;
 
     function actor(first,z,cleanHeroMatte=false){
@@ -847,9 +852,13 @@
       if(generation!==petVisualGeneration)return;
       const customUpp=joy.custom?petUpp(joy.frames):PET_UPP;
       const joyE=joy.custom?petEntries(joy.frames,customUpp):joy.frames.map(t=>entry(t,PET_UPP));
-      S.companionFrames=joyE.length?joyE:petJoyE;
-      S.companionHold=joy.custom?PET_SHEET_HOLD:null;
-      S.companionFps=2; S.companionFrameT0=tAcc;
+      const idleTex=await customPetIdle(activePetConfig,null);
+      const idleE=idleTex?[entry(idleTex,petUpp([idleTex]))]:[];
+      // Follow uses a grounded idle sprite, never the rescue/joy pose. If a
+      // future pet has no idle asset, fall back to its happy sprite sequence.
+      S.companionFrames=idleE.length?idleE:(joyE.length?joyE:petJoyE);
+      S.companionHold=idleE.length?null:(joy.custom?PET_SHEET_HOLD:null);
+      S.companionFps=idleE.length?1:2; S.companionFrameT0=tAcc;
       companion.visible=!!activePetConfig&&S.companionFrames.length>0;
       if(S.companionFrames[0]){
         swap(companion,S.companionFrames[0]);
