@@ -287,7 +287,9 @@
        nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
     const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
-    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME+1.18;
+    // Companion sits just behind Wira spatially, but renders in front so the
+    // small pet remains readable instead of disappearing inside the hero.
+    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME+.52;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
