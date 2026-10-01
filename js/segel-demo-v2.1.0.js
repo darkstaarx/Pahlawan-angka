@@ -1175,31 +1175,10 @@
         const s=seals[S.active], tier=TIERS[Math.min(S.active,TIERS.length-1)];
         return Boolean(s && S.active===TIERS.length-1 && s.damage+1/tier.hits>=.999);
       },
-      async strike({finisher=false}={}){
+      async strike(){
         const lifecycle=S.lifecycle;
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
-        if(finisher){
-          const clearFinisher=()=>host.classList.remove('finisher-cutin','finisher-dash','finisher-impact');
-          const setCutInFrame=src=>{if(finisherCutInHero)finisherCutInHero.src=src};
-          clearFinisher();
-          S.heroLock=null; S.heroX=HERO_HOME; S.heroFade=0;
-          setCutInFrame(FRAMES.heroIdle[0]);
-          host.classList.add('finisher-cutin'); await wait(560);
-          if(lifecycle!==S.lifecycle){clearFinisher();return}
-          setCutInFrame('assets/segel-fight/wira-sealbreak-charge-v1.png'); await wait(340);
-          if(lifecycle!==S.lifecycle){clearFinisher();return}
-          setCutInFrame('assets/segel-fight/wira-sealbreak-slash-v1.png'); await wait(220);
-          if(lifecycle!==S.lifecycle){clearFinisher();return}
-          host.classList.remove('finisher-cutin'); host.classList.add('finisher-dash');
-          sfx('swordSlash'); await wait(480);
-          if(lifecycle!==S.lifecycle){clearFinisher();return}
-          host.classList.remove('finisher-dash'); host.classList.add('finisher-impact');
-          sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(10.5,0xbfe9ff); S.waveT=0; S.shake=.62; S.flashT=0;
-          await wait(650);
-          if(lifecycle!==S.lifecycle){clearFinisher();return}
-          S.heroFade=1; S.heroLock=null; S.heroX=HERO_HOME; clearFinisher(); return;
-        }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
@@ -1703,7 +1682,7 @@
     activeRun.asked++;
     const reachedTarget=activeRun.asked>=activeRun.questionTarget;
     if(correct){
-      sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike({finisher:stage.isFinalHit()});
+      sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike();
       if(!currentRun(activeRun))return;
       const outcome=stage.hitSeal();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
@@ -1741,7 +1720,7 @@
     if(!productionCurrent(hostRun,q))return;
     run.asked++;
     if(correct){
-      run.tally[run.usedHint?'hint':'own']++;await stage.strike({finisher:stage.isFinalHit()});
+      run.tally[run.usedHint?'hint':'own']++;await stage.strike();
       if(!productionCurrent(hostRun,q))return;
       const outcome=stage.hitSeal();$('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';paintSeal();
       if(stage.allBroken()){window.PAProductionJourney?.complete?.();if(!productionCurrent(hostRun,q))return;return celebrateProduction(hostRun,q);}
