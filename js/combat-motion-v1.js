@@ -9,13 +9,13 @@
  // swings per attack. Idle stands in for the ready pose until a true
  // wind-up frame exists.
  const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/idle.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
- const chibiAttackSheetPath='assets/heroes/wira-chibi/frames/ice-sword-attack-v1/contact-sheet-v1.png';
- const chibiAttackGrid={columns:5,rows:5,frames:24,frameMs:82};
+ const chibiAttackSheetPath='assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp';
+ const chibiAttackGrid={columns:5,rows:4,frames:17,frameMs:70};
  // Character-centre pivots measured per frame. The source sheet shifts Wira
  // inside each cell as the combo advances; anchoring the painted body instead
  // of the cell prevents a sideways pop against the live idle pose.
- const chibiAttackPivotX=[.43,.43,.44,.44,.45,.45,.45,.45,.46,.46,.46,.46,.46,.47,.47,.47,.47,.47,.46,.45,.45,.45,.45,.45];
- const chibiAttackFootY=[.972,.972,.972,.972,.972,.972,.972,.978,.978,.978,.986,.986,.986,.986,.986,.986,.986,.986,.986,.986,.986,.986,.986,.986];
+ const chibiAttackPivotX=[.455,.42,.449,.458,.472,.471,.444,.461,.476,.494,.458,.437,.465,.502,.54,.579,.583];
+ const chibiAttackFootY=[.996,.996,.996,.984,.988,.996,.996,.98,.984,.984,.996,.996,.996,.996,.977,.965,.965];
  const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
  const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
  // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the
@@ -168,8 +168,8 @@
   const ranged=heroAttacks&&key==='sidma'&&window.PASidmaBattle?.getNextNormalSkill?.()===1;
   if(heroAttacks&&key==='wirachibi'&&!chibiAttackSheet?.ready)return null;
   const sidmaContact=ranged?900:650,chibiContact=1050;
-  const contactDelay=(heroAttacks?(key==='sidma'?sidmaContact:(key==='wirachibi'?1050:470)):390)+lead;
-  const completionDelay=(heroAttacks?(key==='wirachibi'?2200:(ranged?1500:1400)):1100)+lead;
+  const contactDelay=(heroAttacks?(key==='sidma'?sidmaContact:(key==='wirachibi'?chibiContact:470)):390)+lead;
+  const completionDelay=(heroAttacks?(key==='wirachibi'?1320:(ranged?1500:1400)):1100)+lead;
   const min=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set,lead,ranged};
   if(heroAttacks&&key==='sidma')window.PASidmaBattle?.advanceNormalSkill?.();
@@ -212,9 +212,9 @@
    if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
    if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
   }else if(a.heroAttacks&&a.key==='wirachibi'){
-   pose=t<0||t>=2100?'idle':'chibi-combo';
+   pose=t<0||t>=1190?'idle':'chibi-combo';
    if(!a.min&&t>=350&&t<700)hero.x+=travel*ease((t-350)/350);
-   else if(!a.min&&t>=700&&t<2100)hero.x+=travel;
+   else if(!a.min&&t>=700&&t<1190)hero.x+=travel;
    if(hit>=0&&!a.min)enemy.x+=14*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
    if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
   }else if(a.heroAttacks){
@@ -236,7 +236,7 @@
    if(hit>=0&&!a.min)hero.x-=10*s*Math.exp(-hit/180)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
   }
   if(a.pose!==pose){a.pose=pose;canvas.setAttribute('data-phase',pose)}
-  const chibiCombo=a.heroAttacks&&a.key==='wirachibi'&&t>=0&&t<2100;
+  const chibiCombo=a.heroAttacks&&a.key==='wirachibi'&&t>=0&&t<1190;
   if(chibiCombo)shadow(hero.x,hero.y-2,hero.h*.27,hero.h*.045,.72);
   else heroShadow(a.key,a.set,pose,hero);
   grounded(enemyArt,enemy);
