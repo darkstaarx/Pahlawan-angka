@@ -11,6 +11,18 @@
   ];
   const active = () => !!(typeof sess !== 'undefined' && sess?.devBattlefield);
   const pet = () => PETS[Number(sess?.devBattlefieldPetIndex||0)%PETS.length];
+  /* DEV Battlefield is still allowed to cycle pets deliberately, but it must
+     open with the same companion shown as “Sedang ikut kamu” in Khazanah.
+     Previously it always started from a separate visual index, so the stage
+     could show Keurapat while the profile correctly had Aurora equipped. */
+  function activePetIndex(){
+    const activeId=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.active&&item.state==='tamed')?.id
+      || db?.expedition?.activePetId
+      || db?.rewards?.equippedPet
+      || 'aurora';
+    const index=PETS.findIndex(item=>item.id===activeId);
+    return index>=0?index:0;
+  }
   function paintControls(){
     const button=document.querySelector('#segelDevControls button');
     if(button)button.textContent=`↻ Tukar Teman · ${pet().name}`;
@@ -20,7 +32,7 @@
     if(!db||typeof isDevMode!=='function'||!isDevMode())return;
     if(active())return;
     const profileSnapshot=JSON.stringify(db);
-    sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:'calibrate',recoveryFor:null,stretchFor:null,missionChapter:null,missionAnswered:0,missionCorrect:0,missionHints:0,missionSkills:{},missionFinished:false,devBankTest:true,devBattlefield:true,devBattlefieldDbSnapshot:profileSnapshot,devBattlefieldPetIndex:0,devBattlefieldVictory:false,questionFingerprints:[],bossActive:false,bossDefeated:false,bossQuestionsAnswered:0,bossStretchAsked:false,bossStretchCurrent:false,coachAdaptive:false,learningActive:false};
+    sess={hp:20,ehp:12,streak:0,q:null,start:0,hint:false,enemy:1,recent:[],mode:'calibrate',recoveryFor:null,stretchFor:null,missionChapter:null,missionAnswered:0,missionCorrect:0,missionHints:0,missionSkills:{},missionFinished:false,devBankTest:true,devBattlefield:true,devBattlefieldDbSnapshot:profileSnapshot,devBattlefieldPetIndex:activePetIndex(),devBattlefieldVictory:false,questionFingerprints:[],bossActive:false,bossDefeated:false,bossQuestionsAnswered:0,bossStretchAsked:false,bossStretchCurrent:false,coachAdaptive:false,learningActive:false};
     closeDevPanel?.();resetBattlePresentation?.();document.body.classList.add('dev-battlefield');paintControls();
     if(typeof window.openSegelDemo==='function')window.openSegelDemo({devBattlefield:true,pet:pet()});
     else exit({fromSegel:true});
