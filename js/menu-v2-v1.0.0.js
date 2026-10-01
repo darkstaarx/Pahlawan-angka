@@ -47,6 +47,12 @@
     '🛡️ Perisai matematik teguh!',
     '💪 Bersedia untuk mengembara!'
   ];
+  const HERO_AUTO_DIALOGUES = [
+    'Hai! Jom sambung pengembaraan kita.',
+    'Aurora dah bersedia. Kita boleh buat!',
+    'Satu langkah kecil, satu kuasa baru.',
+    'Jom kukuhkan kemahiran hari ini!'
+  ];
 
   const PET_FRAMES = [
     'assets/pets/aurora/frames/joy-0-v1.webp',
@@ -74,6 +80,7 @@
   let heroFrameIdx = 0;
   let heroHoldIdx = 0;
   let heroHolding = false;
+  let heroDialogueIdx = 0;
   let petFrameIdx = 0;
   let heroTimer = null;
   let petTimer = null;
@@ -83,6 +90,7 @@
     const hero = $('mv2Hero');
     const frame = heroHolding ? HERO_HOLD_SEQUENCE[heroHoldIdx] : heroFrameIdx;
     if (hero) hero.src = HERO_FRAMES[frame];
+    if (heroHolding && heroHoldIdx === 13) showAutoHeroDialogue();
     if (heroHolding) {
       heroHoldIdx++;
       if (heroHoldIdx >= HERO_HOLD_SEQUENCE.length) {
@@ -96,6 +104,14 @@
       heroFrameIdx++;
     }
     heroTimer = setTimeout(renderHeroFrame, HERO_FRAME_MS);
+  }
+
+  function showAutoHeroDialogue() {
+    const name = typeof db!=='undefined' && db?.name ? db.name : '';
+    const line = HERO_AUTO_DIALOGUES[heroDialogueIdx % HERO_AUTO_DIALOGUES.length]
+      .replace('kita',name ? `${name}, kita` : 'kita');
+    heroDialogueIdx++;
+    triggerSpeech('wiraBubble', line);
   }
 
   function renderPetFrame() {
@@ -115,6 +131,7 @@
     heroFrameIdx = 0;
     heroHoldIdx = 0;
     heroHolding = false;
+    heroDialogueIdx = 0;
     petTimer = setInterval(renderPetFrame, 1000 / PET_FPS);
 
     renderHeroFrame();
