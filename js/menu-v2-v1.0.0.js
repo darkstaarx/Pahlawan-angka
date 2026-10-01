@@ -48,7 +48,7 @@
     '💪 Bersedia untuk mengembara!'
   ];
   const HERO_AUTO_DIALOGUES = [
-    'Hai! Jom sambung pengembaraan kita.',
+    'Hai {name}! Jom sambung pengembaraan kita.',
     'Aurora dah bersedia. Kita boleh buat!',
     'Satu langkah kecil, satu kuasa baru.',
     'Jom kukuhkan kemahiran hari ini!'
@@ -109,7 +109,7 @@
   function showAutoHeroDialogue() {
     const name = typeof db!=='undefined' && db?.name ? db.name : '';
     const line = HERO_AUTO_DIALOGUES[heroDialogueIdx % HERO_AUTO_DIALOGUES.length]
-      .replace('kita',name ? `${name}, kita` : 'kita');
+      .replace('{name}',name||'wira');
     heroDialogueIdx++;
     triggerSpeech('wiraBubble', line);
   }
