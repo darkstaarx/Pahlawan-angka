@@ -114,9 +114,9 @@
      tertutup, jadi kelipan mesti pendek — kalau semua bingkai sama panjang,
      Wira nampak mengantuk dan gerakannya terlalu laju sekali gus. */
   const HERO_IDLE_HOLD=[0.40,0.40,0.40,0.11];    // satu kitaran 1.31s
-  // Sorakan v2 ada 24 bingkai untuk satu jujukan penuh (bukan gelung idle
-  // pendek), jadi ia main pada fps tetap dan bukan senarai heldFrame.
-  const HERO_CHEER_FPS=12;                       // satu kitaran 2.0s
+  // Rescue-happy v4 ada 12 bingkai, jadi ia main perlahan supaya gesture
+  // thumbs-up dan senyuman boleh dibaca, bukan berkelip laju.
+  const HERO_CHEER_FPS=8;                        // satu kitaran 1.5s
   /* Aurora sedang sedih dan terkurung, jadi dia hampir tidak bergerak: setiap
      pose bertahan ~2.6s. Bingkai 2 dan 7 ialah mata tertutup, jadi keduanya
      ditahan pendek sahaja — kalau tidak dia nampak tertidur, bukan sayu. */
@@ -394,23 +394,21 @@
     }
     const petJoyRefM=measureHiRes(petJoy[0].image);
     const HERO_CHAR_H=1.5*PET_UPP*petJoy[0].image.height*petJoyRefM.boxH;
-    /* Bingkai sorakan memasukkan pedang tegak dan kesan ais dalam kotak alfa.
-       Jika ia dinormalkan kepada tinggi alfa idle yang sama, badan Wira jadi
-       terlalu kecil pada skrin BERJAYA walaupun ketinggian keseluruhan sprite
-       nampak betul. Besarkan jujukan kemenangan sahaja; idle dan serangan
-       kekal pada skala asal, dan jangkar kaki di bawah masih digunakan. */
-    const HERO_HAPPY_SCALE=2.15;
+    /* Atlas rescue-happy v4 sudah dinormalisasi kepada 512x512 dengan margin
+       transparent. Ia tidak lagi memerlukan scale 2.15 warisan sprite lama;
+       angka itu yang menjadikan Wira terlalu besar dalam skrin berjaya. */
+    const HERO_HAPPY_SCALE=1.08;
     const HERO_UPP=heroCalibratedUpp(heroIdle[0],HERO_CHAR_H);
     const HERO_HAPPY_UPP=heroCalibratedUpp(heroHappy[0],HERO_CHAR_H*HERO_HAPPY_SCALE);
     const HERO_STRIKE_UPP=heroCalibratedUpp(heroPrepare,HERO_CHAR_H);
-    const heroHappyReference=entry(heroHappy[0],HERO_HAPPY_UPP);
-    const heroHappyOffY=heroHappyReference.offY;
-    /* Pusat muka diukur daripada komponen tona kulit terbesar setiap frame.
-       Ini menambat BADAN Wira, bukan kotak alfa pedang/ais yang berubah-ubah. */
+    const heroHappyAnchor=entry(heroHappy[0],HERO_HAPPY_UPP);
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
     const heroHappyE=heroHappy.map(t=>{
       const e=entry(t,HERO_HAPPY_UPP);
-      e.offY=heroHappyOffY;
+      // Keep one fixed body anchor. Per-frame alpha-centres include the sword,
+      // cape and shield, which otherwise make Wira slide left/right.
+      e.offX=heroHappyAnchor.offX;
+      // Keep each frame's own foot anchor so boots stay on one floor.
       return e;
     });
     const heroPrepareE=entry(heroPrepare,HERO_STRIKE_UPP);
@@ -1331,6 +1329,11 @@
       resume(){ S.running=true; last=performance.now(); resize() },
       cancel(){ ++S.lifecycle; host.classList.remove('finisher-cutin','finisher-dash','finisher-impact'); S.heroFade=1; },
       setPet(config){ return setPetVisual(config); },
+      previewRescueHappy:async()=>{
+        if(!entryMode?.devBattlefield)return false;
+        await stage.forceBreakRest();
+        return stage.rescue();
+      },
       dispose(){ S.running=false; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
   }
