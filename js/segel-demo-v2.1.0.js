@@ -81,9 +81,11 @@
     petSad:[0,1,2,3,4,5,6,7].map(i=>`assets/pets/aurora/frames/sad-${i}-v1.webp`),
     petJoy:[0,1].map(i=>`assets/pets/aurora/frames/joy-${i}-v1.webp`),
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
-    // v4: 12 frame rescue-happy yang telah dinormalisasi daripada atlas 4x3.
-    // Setiap PNG ialah canvas 512x512 dengan margin transparent; tiada crop.
-    heroHappy:Array.from({length:12},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-${String(i).padStart(2,'0')}-v4.png`),
+    /* Lima pose sahaja untuk kemenangan. Set 12-frame asal terlalu halus
+       perbezaannya apabila dilihat di belakang panel Berjaya, lalu Wira
+       kelihatan statik walaupun sebenarnya bertukar tekstur. Susunan ini
+       sengaja memasukkan pose wink/blink (06) di tengah loop. */
+    heroHappy:[0,3,6,8,10].map(i=>`assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-${String(i).padStart(2,'0')}-v4.png`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
@@ -114,9 +116,10 @@
      tertutup, jadi kelipan mesti pendek — kalau semua bingkai sama panjang,
      Wira nampak mengantuk dan gerakannya terlalu laju sekali gus. */
   const HERO_IDLE_HOLD=[0.40,0.40,0.40,0.11];    // satu kitaran 1.31s
-  // Rescue-happy v4 ada 12 bingkai, jadi ia main perlahan supaya gesture
-  // thumbs-up dan senyuman boleh dibaca, bukan berkelip laju.
-  const HERO_CHEER_FPS=8;                        // satu kitaran 1.5s
+  /* Loop kemenangan bukan GIF laju. Dua pose buka ditahan, blink/wink hanya
+     sekejap, kemudian Wira kembali kepada senyuman asal. Ia kekal terbaca
+     di belakang overlay Berjaya tanpa menarik fokus daripada keputusan. */
+  const HERO_CHEER_HOLD=[.74,.16,.11,.22,.61];   // satu kitaran 1.84s
   /* Aurora sedang sedih dan terkurung, jadi dia hampir tidak bergerak: setiap
      pose bertahan ~2.6s. Bingkai 2 dan 7 ialah mata tertutup, jadi keduanya
      ditahan pendek sahaja — kalau tidak dia nampak tertidur, bukan sayu. */
@@ -1266,7 +1269,7 @@
         // Aurora bebas dan Wira bersorak — kedua-duanya bertukar sprite gembira.
         S.rescued=true; S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7; S.petFrameT0=tAcc;
         if(activePetConfig){ await setPetVisual(activePetConfig); S.petY=GROUND+.7; }
-        S.heroFrames=heroHappyE; S.heroHold=null; S.heroFps=HERO_CHEER_FPS; S.heroLock=null; S.heroFrameT0=tAcc;
+        S.heroFrames=heroHappyE; S.heroHold=HERO_CHEER_HOLD; S.heroFps=0; S.heroLock=null; S.heroFrameT0=tAcc;
         await wait(520); if(lifecycle!==S.lifecycle)return false; S.petY=GROUND;
         await wait(420); return lifecycle===S.lifecycle;
       },
