@@ -53,7 +53,9 @@
   }
 
   function activePetConfig(profile){
-    const pet=window.PetCollection?.snapshot?.(profile)?.pets?.find(item=>item.active&&item.state==='tamed');
+    /* Use the exact Khazanah selection helper. This keeps the 3D Gembok stage
+       and the classic battle shell on the same companion. */
+    const pet=window.PetCollection?.active?.(profile);
     if(!pet)return null;
     return {id:pet.id,name:pet.name,sad:pet.assets?.sad?[pet.assets.sad]:[],happy:pet.assets?.happy?[pet.assets.happy]:[],idle:pet.assets?.idle?[pet.assets.idle]:[],idleSheet:pet.assets?.idleSprite||null,happySheet:pet.assets?.happySprite||null};
   }
