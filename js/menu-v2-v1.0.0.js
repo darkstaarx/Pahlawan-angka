@@ -157,7 +157,7 @@
       cursor++;
       el.textContent = text.slice(0,cursor);
       if (cursor < text.length) {
-        speechWriters[bubbleId] = setTimeout(write, 34);
+        speechWriters[bubbleId] = setTimeout(write, 65);
       } else {
         speechWriters[bubbleId] = null;
         speechTimeouts[bubbleId] = setTimeout(() => el.classList.remove('show'), 2400);

@@ -157,7 +157,7 @@ body.app-loading-active{overflow:hidden}
   opacity:0;pointer-events:none;transition:all .22s cubic-bezier(.34,1.56,.64,1);z-index:20
 }
 .mv2SpeechBubble::after{
-  content:"";position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
+  content:"";position:absolute;bottom:-5px;left:12%;transform:translateX(-50%);
   border-width:5px 5px 0;border-style:solid;border-color:#ffd036 transparent transparent
 }
 .mv2SpeechBubble.show{opacity:1;transform:translateY(0) scale(1)}
