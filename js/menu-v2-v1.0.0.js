@@ -39,6 +39,7 @@
     `assets/heroes/wira-chibi/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.png`
   );
   const HERO_FRAME_MS = 105;
+  const HERO_HEAD_FRAME_MS = 240;
   // Selepas persembahan penuh, hanya kepala bergerak berulang tanpa restart.
   const HERO_HEAD_LOOP = [20,21,22,23,22,21];
   const HERO_QUOTES = [
@@ -105,7 +106,7 @@
     } else {
       heroHeadIdx = (heroHeadIdx + 1) % HERO_HEAD_LOOP.length;
     }
-    heroTimer = setTimeout(renderHeroFrame, HERO_FRAME_MS);
+    heroTimer = setTimeout(renderHeroFrame, heroMode === 'main' ? HERO_FRAME_MS : HERO_HEAD_FRAME_MS);
   }
 
   function showAutoHeroDialogue() {

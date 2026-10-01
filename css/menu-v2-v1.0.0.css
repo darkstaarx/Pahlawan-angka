@@ -136,6 +136,7 @@ body.app-loading-active{overflow:hidden}
   pointer-events:none;z-index:1;filter:blur(1.5px)
 }
 .petShadow{bottom:1px;width:72%;height:9px}
+#wiraSlot .mv2ActorShadow{left:36%;width:58%}
 
 /* bingkai sprite frame-by-frame */
 .mv2HeroSprite{
