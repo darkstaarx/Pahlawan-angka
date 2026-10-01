@@ -39,8 +39,8 @@
     `assets/heroes/wira-chibi/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.png`
   );
   const HERO_FRAME_MS = 105;
-  // Rehat 3s tanpa membekukan pose: weight-shift kecil, kemudian satu blink.
-  const HERO_HOLD_SEQUENCE = [23,22,21,20,21,22,23,22,21,20,21,22,23,6,7,8,7,6,20,21,22,23,22,21,20,21,22,23];
+  // Selepas persembahan penuh, hanya kepala bergerak berulang tanpa restart.
+  const HERO_HEAD_LOOP = [20,21,22,23,22,21];
   const HERO_QUOTES = [
     '⚔️ Kuasa Ais Sedia!',
     '❄️ Mari pertahankan nombor!',
@@ -48,7 +48,10 @@
     '💪 Bersedia untuk mengembara!'
   ];
   const HERO_AUTO_DIALOGUES = [
-    'Hai {name}!'
+    '{name}, jom kembara digit!',
+    'Jom pilih misi kita!',
+    'Kita kuatkan kemahiran!',
+    'Aurora dah bersedia!'
   ];
 
   const PET_FRAMES = [
@@ -75,8 +78,8 @@
   }
 
   let heroFrameIdx = 0;
-  let heroHoldIdx = 0;
-  let heroHolding = false;
+  let heroHeadIdx = 0;
+  let heroMode = 'main';
   let heroDialogueIdx = 0;
   let heroDialogueShown = false;
   let petFrameIdx = 0;
@@ -86,23 +89,21 @@
   function renderHeroFrame() {
     if (!HERO_FRAMES.length) return;
     const hero = $('mv2Hero');
-    const frame = heroHolding ? HERO_HOLD_SEQUENCE[heroHoldIdx] : heroFrameIdx;
+    const frame = heroMode === 'main' ? heroFrameIdx : HERO_HEAD_LOOP[heroHeadIdx];
     if (hero) hero.src = HERO_FRAMES[frame];
-    if (heroHolding && heroHoldIdx === 13 && !heroDialogueShown) {
+    if (heroMode === 'main' && heroFrameIdx === HERO_FRAMES.length - 1 && !heroDialogueShown) {
       showAutoHeroDialogue();
       heroDialogueShown = true;
     }
-    if (heroHolding) {
-      heroHoldIdx++;
-      if (heroHoldIdx >= HERO_HOLD_SEQUENCE.length) {
-        heroHolding = false;
-        heroFrameIdx = 0;
+    if (heroMode === 'main') {
+      if (heroFrameIdx === HERO_FRAMES.length - 1) {
+        heroMode = 'head';
+        heroHeadIdx = 0;
+      } else {
+        heroFrameIdx++;
       }
-    } else if (heroFrameIdx === HERO_FRAMES.length - 1) {
-      heroHolding = true;
-      heroHoldIdx = 0;
     } else {
-      heroFrameIdx++;
+      heroHeadIdx = (heroHeadIdx + 1) % HERO_HEAD_LOOP.length;
     }
     heroTimer = setTimeout(renderHeroFrame, HERO_FRAME_MS);
   }
@@ -130,8 +131,8 @@
     if (petTimer) clearInterval(petTimer);
 
     heroFrameIdx = 0;
-    heroHoldIdx = 0;
-    heroHolding = false;
+    heroHeadIdx = 0;
+    heroMode = 'main';
     heroDialogueIdx = 0;
     heroDialogueShown = false;
     petTimer = setInterval(renderPetFrame, 1000 / PET_FPS);
@@ -168,10 +169,21 @@
     write();
   }
 
+  function startHeroPerformance() {
+    if (heroTimer) clearTimeout(heroTimer);
+    heroFrameIdx = 0;
+    heroHeadIdx = 0;
+    heroMode = 'main';
+    heroDialogueShown = false;
+    const bubble = $('wiraBubble');
+    if (bubble) bubble.classList.remove('show');
+    renderHeroFrame();
+  }
+
   function interactActor(actorType) {
     if (actorType === 'wira') {
-      const q = HERO_QUOTES[Math.floor(Math.random() * HERO_QUOTES.length)];
-      triggerSpeech('wiraBubble', q);
+      heroDialogueIdx = Math.max(1,heroDialogueIdx);
+      startHeroPerformance();
       const wiraSlot = $('wiraSlot');
       if (wiraSlot) {
         wiraSlot.classList.remove('actorHop');
