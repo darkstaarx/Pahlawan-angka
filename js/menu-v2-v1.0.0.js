@@ -48,10 +48,7 @@
     '💪 Bersedia untuk mengembara!'
   ];
   const HERO_AUTO_DIALOGUES = [
-    'Hai {name}! Jom sambung pengembaraan kita.',
-    'Aurora dah bersedia. Kita boleh buat!',
-    'Satu langkah kecil, satu kuasa baru.',
-    'Jom kukuhkan kemahiran hari ini!'
+    'Hai {name}!'
   ];
 
   const PET_FRAMES = [
@@ -81,6 +78,7 @@
   let heroHoldIdx = 0;
   let heroHolding = false;
   let heroDialogueIdx = 0;
+  let heroDialogueShown = false;
   let petFrameIdx = 0;
   let heroTimer = null;
   let petTimer = null;
@@ -90,7 +88,10 @@
     const hero = $('mv2Hero');
     const frame = heroHolding ? HERO_HOLD_SEQUENCE[heroHoldIdx] : heroFrameIdx;
     if (hero) hero.src = HERO_FRAMES[frame];
-    if (heroHolding && heroHoldIdx === 13) showAutoHeroDialogue();
+    if (heroHolding && heroHoldIdx === 13 && !heroDialogueShown) {
+      showAutoHeroDialogue();
+      heroDialogueShown = true;
+    }
     if (heroHolding) {
       heroHoldIdx++;
       if (heroHoldIdx >= HERO_HOLD_SEQUENCE.length) {
@@ -132,6 +133,7 @@
     heroHoldIdx = 0;
     heroHolding = false;
     heroDialogueIdx = 0;
+    heroDialogueShown = false;
     petTimer = setInterval(renderPetFrame, 1000 / PET_FPS);
 
     renderHeroFrame();
@@ -157,7 +159,7 @@
       cursor++;
       el.textContent = text.slice(0,cursor);
       if (cursor < text.length) {
-        speechWriters[bubbleId] = setTimeout(write, 65);
+        speechWriters[bubbleId] = setTimeout(write, 90);
       } else {
         speechWriters[bubbleId] = null;
         speechTimeouts[bubbleId] = setTimeout(() => el.classList.remove('show'), 2400);
