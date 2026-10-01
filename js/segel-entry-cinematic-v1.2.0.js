@@ -237,11 +237,11 @@
 
     const gate=function(original,context,args){
       if(activeGate)return activeGate;
-      // The guest/demo route is a quick product preview. Keep the learning
-      // battlefield visible immediately; production missions still use the
-      // portal cinematic below.
+      // Dev battlefield is a test harness: open the stage immediately so
+      // repeated Pentas/Teman checks do not require the entry cinematic.
+      // Guest Demo and production missions keep the cinematic experience.
       const route=args?.[0];
-      if(route&&typeof route==='object'&&route.guestDemo)return original.apply(context,args);
+      if(route&&typeof route==='object'&&route.devBattlefield)return original.apply(context,args);
       playing=true;
       const {overlay,video,skip}=makeOverlay();
       let closed=false;
