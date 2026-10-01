@@ -1,6 +1,6 @@
-// App shell v3.84.62 — mobile long-screen scroll ownership refresh.
+// App shell v3.84.64 — mobile long-screen scroll ownership refresh.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-companion-sync-1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-companion-sync-2`;
 const APP_SHELL=[
   './assets/avatars/pupils/avatar-01.png','./assets/avatars/pupils/avatar-02.png','./assets/avatars/pupils/avatar-03.png','./assets/avatars/pupils/avatar-04.png','./assets/avatars/pupils/avatar-05.png','./assets/avatars/pupils/avatar-06.png','./assets/avatars/pupils/avatar-07.png','./assets/avatars/pupils/avatar-08.png',
   './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js','./css/dev-pet-reward-debug-v1.0.0.css','./js/dev-pet-reward-debug-v1.0.0.js','./css/teman-reveal-v1.0.0.css','./css/teman-reveal-stars-v1.0.0.css','./js/teman-reveal-v1.0.0.js',
