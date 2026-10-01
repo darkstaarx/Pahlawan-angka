@@ -35,13 +35,11 @@
      ENJIN ANIMASI SPRITE SEBENAR (FRAME-BY-FRAME SEQUENCING)
      Untuk Wira Chibi & Pet Aurora di Pentas Menu V2
      ========================================================= */
-  const HERO_FRAMES = [
-    'assets/heroes/wira-chibi/frames/idle-loop-0-v1.webp',
-    'assets/heroes/wira-chibi/frames/idle-loop-1-v1.webp',
-    'assets/heroes/wira-chibi/frames/idle-loop-2-v1.webp',
-    'assets/heroes/wira-chibi/frames/idle-loop-3-v1.webp'
-  ];
-  const HERO_FPS = 4.5; // ~220ms satu bingkai
+  const HERO_FRAMES = Array.from({length:24},(_,i)=>
+    `assets/heroes/wira-chibi/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.png`
+  );
+  const HERO_FRAME_MS = 105;
+  const HERO_END_HOLD_MS = 3000;
   const HERO_QUOTES = [
     '⚔️ Kuasa Ais Sedia!',
     '❄️ Mari pertahankan nombor!',
@@ -79,9 +77,11 @@
 
   function renderHeroFrame() {
     if (!HERO_FRAMES.length) return;
-    heroFrameIdx = (heroFrameIdx + 1) % HERO_FRAMES.length;
     const hero = $('mv2Hero');
     if (hero) hero.src = HERO_FRAMES[heroFrameIdx];
+    const isLast = heroFrameIdx === HERO_FRAMES.length - 1;
+    heroFrameIdx = (heroFrameIdx + 1) % HERO_FRAMES.length;
+    heroTimer = setTimeout(renderHeroFrame, isLast ? HERO_END_HOLD_MS : HERO_FRAME_MS);
   }
 
   function renderPetFrame() {
@@ -95,10 +95,9 @@
   }
 
   function startSpriteEngine() {
-    if (heroTimer) clearInterval(heroTimer);
+    if (heroTimer) clearTimeout(heroTimer);
     if (petTimer) clearInterval(petTimer);
 
-    heroTimer = setInterval(renderHeroFrame, 1000 / HERO_FPS);
     petTimer = setInterval(renderPetFrame, 1000 / PET_FPS);
 
     renderHeroFrame();
@@ -106,7 +105,7 @@
   }
 
   function stopSpriteEngine() {
-    if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+    if (heroTimer) { clearTimeout(heroTimer); heroTimer = null; }
     if (petTimer) { clearInterval(petTimer); petTimer = null; }
   }
 

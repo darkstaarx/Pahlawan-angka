@@ -1,15 +1,6 @@
 /* Pahlawan Angka — single source of truth for release version.
    Future releases should bump ONLY this value. */
-globalThis.PA_APP_VERSION='3.84.73';
-
-(function loadHubHappyHeroLoop(){
-  if(typeof document==='undefined'||document.querySelector('script[data-hub-happy-hero-loop]'))return;
-  const script=document.createElement('script');
-  script.src=`js/hub-wira-happy-loop-v1.0.0.js?v=${globalThis.PA_APP_VERSION}`;
-  script.async=false;
-  script.dataset.hubHappyHeroLoop='1';
-  document.head.appendChild(script);
-})();
+globalThis.PA_APP_VERSION='3.84.74';
 
 (function syncVersionUi(){
   if(typeof document==='undefined')return;
