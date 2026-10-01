@@ -85,7 +85,7 @@
     // Setiap PNG ialah canvas 512x512 dengan margin transparent; tiada crop.
     heroHappy:Array.from({length:12},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-${String(i).padStart(2,'0')}-v4.png`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
-    seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v1.webp`),
+    seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
     iceEnd:'assets/fx/wira/final-v2/fx-impact-end-v1.webp',
     coin:'assets/fx/reward/coin-v1.webp',
@@ -1332,7 +1332,11 @@
       previewRescueHappy:async()=>{
         if(!entryMode?.devBattlefield)return false;
         await stage.forceBreakRest();
-        return stage.rescue();
+        const result=await stage.rescue();
+        // Hold a full, slower loop in the dev preview so the pose changes are
+        // clearly visible instead of being hidden by the short rescue beat.
+        await wait(900);
+        return result;
       },
       dispose(){ S.running=false; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
