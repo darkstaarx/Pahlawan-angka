@@ -150,9 +150,9 @@ body.app-loading-active{overflow:hidden}
 
 /* gelembung dialog interaktif */
 .mv2SpeechBubble{
-  position:absolute;top:-28px;left:50%;transform:translateX(-50%) translateY(-6px) scale(.9);
+  position:absolute;top:auto;bottom:58px;left:calc(100% + 10px);transform:translateY(6px) scale(.94);
   background:rgba(13,33,58,.95);border:1.5px solid #ffd036;color:#fff;
-  font-size:11px;font-weight:850;padding:7px 10px;border-radius:14px;width:min(190px,70vw);line-height:1.2;text-align:center;white-space:normal;
+  font-size:11px;font-weight:850;padding:7px 10px;border-radius:14px;width:min(190px,70vw);min-height:2.4em;display:grid;place-items:center;line-height:1.2;text-align:center;white-space:normal;
   box-shadow:0 6px 16px rgba(0,0,0,.5),0 0 10px rgba(255,208,54,.25);
   opacity:0;pointer-events:none;transition:all .22s cubic-bezier(.34,1.56,.64,1);z-index:20
 }
@@ -160,9 +160,10 @@ body.app-loading-active{overflow:hidden}
   content:"";position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
   border-width:5px 5px 0;border-style:solid;border-color:#ffd036 transparent transparent
 }
-.mv2SpeechBubble.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
-.petBubble{top:-16px;border-color:#5fcdf5;color:#e0f2fe}
+.mv2SpeechBubble.show{opacity:1;transform:translateY(0) scale(1)}
+.petBubble{top:-16px;bottom:auto;left:50%;transform:translateX(-50%) translateY(-6px) scale(.9);border-color:#5fcdf5;color:#e0f2fe}
 .petBubble::after{border-color:#5fcdf5 transparent transparent}
+.petBubble.show{transform:translateX(-50%) translateY(0) scale(1)}
 
 /* animasi reaksi hop & pop */
 .actorHop{animation:actorHopAnim .45s ease}

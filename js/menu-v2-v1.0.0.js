@@ -144,15 +144,26 @@
   }
 
   let speechTimeouts = {};
+  let speechWriters = {};
   function triggerSpeech(bubbleId, text) {
     const el = $(bubbleId);
     if (!el) return;
-    el.textContent = text;
-    el.classList.add('show');
+    if (speechWriters[bubbleId]) clearTimeout(speechWriters[bubbleId]);
     if (speechTimeouts[bubbleId]) clearTimeout(speechTimeouts[bubbleId]);
-    speechTimeouts[bubbleId] = setTimeout(() => {
-      el.classList.remove('show');
-    }, 2400);
+    el.textContent = '';
+    el.classList.add('show');
+    let cursor = 0;
+    const write = () => {
+      cursor++;
+      el.textContent = text.slice(0,cursor);
+      if (cursor < text.length) {
+        speechWriters[bubbleId] = setTimeout(write, 34);
+      } else {
+        speechWriters[bubbleId] = null;
+        speechTimeouts[bubbleId] = setTimeout(() => el.classList.remove('show'), 2400);
+      }
+    };
+    write();
   }
 
   function interactActor(actorType) {
