@@ -39,7 +39,8 @@
     `assets/heroes/wira-chibi/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.png`
   );
   const HERO_FRAME_MS = 105;
-  const HERO_END_HOLD_MS = 3000;
+  // Rehat 3s tanpa membekukan pose: weight-shift kecil, kemudian satu blink.
+  const HERO_HOLD_SEQUENCE = [23,22,21,20,21,22,23,22,21,20,21,22,23,6,7,8,7,6,20,21,22,23,22,21,20,21,22,23];
   const HERO_QUOTES = [
     '⚔️ Kuasa Ais Sedia!',
     '❄️ Mari pertahankan nombor!',
@@ -71,6 +72,8 @@
   }
 
   let heroFrameIdx = 0;
+  let heroHoldIdx = 0;
+  let heroHolding = false;
   let petFrameIdx = 0;
   let heroTimer = null;
   let petTimer = null;
@@ -78,10 +81,21 @@
   function renderHeroFrame() {
     if (!HERO_FRAMES.length) return;
     const hero = $('mv2Hero');
-    if (hero) hero.src = HERO_FRAMES[heroFrameIdx];
-    const isLast = heroFrameIdx === HERO_FRAMES.length - 1;
-    heroFrameIdx = (heroFrameIdx + 1) % HERO_FRAMES.length;
-    heroTimer = setTimeout(renderHeroFrame, isLast ? HERO_END_HOLD_MS : HERO_FRAME_MS);
+    const frame = heroHolding ? HERO_HOLD_SEQUENCE[heroHoldIdx] : heroFrameIdx;
+    if (hero) hero.src = HERO_FRAMES[frame];
+    if (heroHolding) {
+      heroHoldIdx++;
+      if (heroHoldIdx >= HERO_HOLD_SEQUENCE.length) {
+        heroHolding = false;
+        heroFrameIdx = 0;
+      }
+    } else if (heroFrameIdx === HERO_FRAMES.length - 1) {
+      heroHolding = true;
+      heroHoldIdx = 0;
+    } else {
+      heroFrameIdx++;
+    }
+    heroTimer = setTimeout(renderHeroFrame, HERO_FRAME_MS);
   }
 
   function renderPetFrame() {
@@ -98,6 +112,9 @@
     if (heroTimer) clearTimeout(heroTimer);
     if (petTimer) clearInterval(petTimer);
 
+    heroFrameIdx = 0;
+    heroHoldIdx = 0;
+    heroHolding = false;
     petTimer = setInterval(renderPetFrame, 1000 / PET_FPS);
 
     renderHeroFrame();
