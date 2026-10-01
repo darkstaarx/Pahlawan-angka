@@ -150,7 +150,7 @@ body.app-loading-active{overflow:hidden}
 
 /* gelembung dialog interaktif */
 .mv2SpeechBubble{
-  position:absolute;top:auto;bottom:58px;left:calc(100% + 10px);transform:translateY(6px) scale(.94);
+  position:absolute;top:auto;bottom:100px;left:calc(100% - 32px);transform:translateY(6px) scale(.94);
   background:rgba(13,33,58,.95);border:1.5px solid #ffd036;color:#fff;
   font-size:11px;font-weight:850;padding:7px 10px;border-radius:14px;width:min(190px,70vw);min-height:2.4em;display:grid;place-items:center;line-height:1.2;text-align:center;white-space:normal;
   box-shadow:0 6px 16px rgba(0,0,0,.5),0 0 10px rgba(255,208,54,.25);
