@@ -81,10 +81,9 @@
     petSad:[0,1,2,3,4,5,6,7].map(i=>`assets/pets/aurora/frames/sad-${i}-v1.webp`),
     petJoy:[0,1].map(i=>`assets/pets/aurora/frames/joy-${i}-v1.webp`),
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
-    // v2: 24-frame sorakan penuh (angkat, denyar, letusan ais, pulih, angkat
-    // semula) menggantikan gelung 4-bingkai lama supaya gerakannya lebih
-    // licin dan tidak lagi bergantung pada penormalan saiz per-bingkai.
-    heroHappy:Array.from({length:24},(_,i)=>`assets/heroes/wira-chibi/frames/happy-${String(i).padStart(2,'0')}-v2.webp`),
+    // v4: 12 frame rescue-happy yang telah dinormalisasi daripada atlas 4x3.
+    // Setiap PNG ialah canvas 512x512 dengan margin transparent; tiada crop.
+    heroHappy:Array.from({length:12},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-${String(i).padStart(2,'0')}-v4.png`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v1.webp`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
@@ -408,15 +407,10 @@
     const heroHappyOffY=heroHappyReference.offY;
     /* Pusat muka diukur daripada komponen tona kulit terbesar setiap frame.
        Ini menambat BADAN Wira, bukan kotak alfa pedang/ais yang berubah-ubah. */
-    const heroHappyFaceX=[330.7,330.4,330.4,330.8,330.8,317.2,317.2,315.7,315.7,344.4,344.4,340.3,340.3,341.5,341.5,341.9,341.9,340.1,340.1,338.1,338.1,330.6,330.6,330.6];
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
-    const heroHappyE=heroHappy.map((t,i)=>{
+    const heroHappyE=heroHappy.map(t=>{
       const e=entry(t,HERO_HAPPY_UPP);
-      /* Efek pedang/ais mengubah kotak alfa setiap frame. Jangan biarkan
-         pusat efek itu mengheret badan Wira ke kiri dan kanan. */
-      e.offX=(.5-heroHappyFaceX[i]/t.image.width)*e.w;
       e.offY=heroHappyOffY;
-      e.cleanMatte=true;
       return e;
     });
     const heroPrepareE=entry(heroPrepare,HERO_STRIKE_UPP);
