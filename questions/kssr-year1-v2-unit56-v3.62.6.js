@@ -63,9 +63,10 @@ GEN['5.2.1']=function(id,s){
 
 GEN['5.2.2']=function(id,s){
  const mode=chooseMode(id,'5.2.2',bandModes(s,['half'],['half','quarter'],['quarter','three_quarter','compare_fraction']));
- const map={half:[30,'setengah'],quarter:[15,'satu perempat'],three_quarter:[45,'tiga perempat']},x=map[mode]||map.quarter;
- if(mode==='compare_fraction')return mark(q('Pada muka jam, jarum minit bergerak dari 12 ke 6. Bahagian pusingan itu ialah?','setengah',[Nq('satu perempat','clock_fraction'),Nq('tiga perempat','clock_fraction'),Nq('satu pusingan penuh','clock_fraction')],'12 ke 6 meliputi separuh muka jam.','Tahun 1 · Pecahan Muka Jam'),id,'5.2.2',mode,'verbal','reasoning',s,['clock_fraction']);
- return mark(q(`${clock(2,x[0])}Kedudukan jarum minit mewakili?`,x[1],[Nq('setengah','clock_fraction'),Nq('satu perempat','clock_fraction'),Nq('tiga perempat','clock_fraction')].filter(o=>o.v!==x[1]).concat([Nq('satu penuh','clock_fraction')]).slice(0,3),'Banding kedudukan jarum minit dengan satu pusingan penuh.','Tahun 1 · Pecahan Jam'),id,'5.2.2',mode,'visual',mode==='three_quarter'?'application':'concept',s,['clock_fraction']);
+ const map={half:[30,'setengah jam'],quarter:[15,'suku jam'],three_quarter:[45,'tiga suku jam']},x=map[mode]||map.quarter;
+ if(mode==='compare_fraction')return mark(q('Pada muka jam, jarum minit bergerak dari 12 ke 6. Ini menunjukkan berapa bahagian daripada satu jam?','setengah jam',[Nq('suku jam','clock_fraction'),Nq('tiga suku jam','clock_fraction'),Nq('satu jam','clock_fraction')],'Dari 12 ke 6 ialah setengah pusingan, iaitu setengah jam.','Tahun 1 · Suku Jam dan Setengah Jam'),id,'5.2.2',mode,'verbal','reasoning',s,['clock_fraction']);
+ const number=x[0]===30?6:x[0]===15?3:9;
+ return mark(q(`${clock(2,x[0])}Jarum minit menunjuk nombor ${number}. Ini menunjukkan berapa bahagian daripada satu jam?`,x[1],[Nq('setengah jam','clock_fraction'),Nq('suku jam','clock_fraction'),Nq('tiga suku jam','clock_fraction')].filter(o=>o.v!==x[1]).concat([Nq('satu jam','clock_fraction')]).slice(0,3),'Jarum minit pada 3 menunjukkan suku jam, pada 6 setengah jam dan pada 9 tiga suku jam.','Tahun 1 · Suku Jam dan Setengah Jam'),id,'5.2.2',mode,'visual',mode==='three_quarter'?'application':'concept',s,['clock_fraction']);
 };
 
 GEN['5.2.3']=function(id,s){
@@ -81,7 +82,7 @@ GEN['5.3.1']=function(id,s){
   const h=rand(7,10),ans=`${h}:30`;return mark(q(`Aktiviti bermula pukul <b>${h}:00</b> dan berlangsung setengah jam. Bilakah tamat?`,ans,[Nq(`${h}:15`,'time'),Nq(`${h+1}:00`,'time'),Nq(`${h+1}:30`,'time')],'Setengah jam selepas pukul tepat ialah :30.','Tahun 1 · Setengah Jam Kemudian'),id,'5.3.1',mode,'story','reasoning',s,['time']);
  }
  if(mode==='quarter_hour_later'){
-  const h=rand(7,10),ans=`${h}:15`;return mark(q(`Membaca bermula pukul <b>${h}:00</b> selama satu perempat jam. Waktu tamat?`,ans,[Nq(`${h}:30`,'time'),Nq(`${h+1}:00`,'time'),Nq(`${h}:45`,'time')],'Satu perempat jam pada muka jam ialah 15 minit.','Tahun 1 · Suku Jam Kemudian'),id,'5.3.1',mode,'story','reasoning',s,['time']);
+  const h=rand(7,10),ans=`${h}:15`;return mark(q(`Membaca bermula pukul <b>${h}:00</b> selama suku jam. Waktu tamat?`,ans,[Nq(`${h}:30`,'time'),Nq(`${h+1}:00`,'time'),Nq(`${h}:45`,'time')],'Suku jam pada muka jam ialah 15 minit.','Tahun 1 · Suku Jam Kemudian'),id,'5.3.1',mode,'story','reasoning',s,['time']);
  }
  return mark(q('Aktiviti A pada 8:00, B pada 8:30 dan C pada 9:00. Susunan betul?','A → B → C',[Nq('B → A → C','time'),Nq('C → B → A','time'),Nq('A → C → B','time')],'Susun waktu daripada paling awal ke paling lewat.','Tahun 1 · Susun Waktu'),id,'5.3.1',mode,'verbal','reasoning',s,['time']);
 };
