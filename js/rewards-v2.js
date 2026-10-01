@@ -101,14 +101,14 @@ function showPurchaseCelebration(type,item){
 }
 function closePurchaseCelebration(){document.getElementById('purchaseOverlay')?.classList.add('hidden');renderTreasure()}
 function activeBattlePet(){
- /* Khazanah is the source of truth for the companion. The older battle shell
-    used rewards.equippedPet directly, which can be stale after the collection
-    migration and render a different pet beside Wira. */
- const selected=window.PetCollection?.snapshot?.(db)?.pets?.find(p=>p.active&&p.state==='tamed');
- const id=selected?.id||db.rewards?.equippedPet;
+ /* Khazanah owns selection through expedition.activePetId. Battle deliberately
+    has no rewards.equippedPet fallback: a stale legacy value must never place
+    a different companion beside Wira. */
+ const selected=window.PetCollection?.active?.(db);
+ if(!selected)return {id:null,item:null};
+ const id=selected.id;
  const legacy=REWARD_PETS[id];
  if(legacy)return {id,item:legacy};
- if(!selected)return {id,item:null};
  const idle=selected.assets?.idle||selected.assets?.happy||'';
  const happy=selected.assets?.happy||idle;
  return {id,item:{id,name:selected.name,battleScale:1,front:idle,anticipation:happy,battle:happy,followThrough:idle}};
