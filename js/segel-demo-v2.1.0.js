@@ -81,9 +81,9 @@
     petSad:[0,1,2,3,4,5,6,7].map(i=>`assets/pets/aurora/frames/sad-${i}-v1.webp`),
     petJoy:[0,1].map(i=>`assets/pets/aurora/frames/joy-${i}-v1.webp`),
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
-    /* Winning sheet v5 dibaca kiri-kanan, kemudian turun ke baris seterusnya:
-       5 kolum x 4 baris = 20 frame. */
-    heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v5/rescue-happy-${String(i).padStart(2,'0')}-v5.png`),
+    /* Winning sheet v6 dibaca kiri-kanan, kemudian turun ke baris seterusnya.
+       Semua frame telah di-anchor pada boot kanan yang sama. */
+    heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.png`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
