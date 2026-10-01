@@ -58,7 +58,8 @@ GEN['5.2.1']=function(id,s){
  const mode=chooseMode(id,'5.2.1',bandModes(s,['hand_name'],['hand_name','hand_function'],['hand_function','hand_reason']));
  if(mode==='hand_name')return mark(q(`${clock(3,0)}Jarum yang pendek pada muka jam dipanggil?`,'jarum jam',[Nq('jarum minit','clock_hand'),Nq('jarum saat','clock_hand'),Nq('garis nombor','clock_hand')],'Jarum pendek menunjukkan jam.','Tahun 1 · Jarum Jam'),id,'5.2.1',mode,'visual','concept',s,['clock_hand']);
  if(mode==='hand_function')return mark(q(`${clock(6,30)}Jarum panjang membantu menunjukkan?`,'minit',[Nq('bulan','clock_hand'),Nq('hari','clock_hand'),Nq('tahun','clock_hand')],'Jarum panjang menunjukkan bahagian minit pada muka jam.','Tahun 1 · Fungsi Jarum'),id,'5.2.1',mode,'visual','application',s,['clock_hand']);
- return mark(q('Pada pukul tepat, jarum panjang menunjuk 12. Jarum pendek menunjukkan apa?','nombor jam semasa',[Nq('nombor bulan','clock_hand'),Nq('bilangan hari','clock_hand'),Nq('sentiasa nombor 6','clock_hand')],'Jarum pendek berubah mengikut jam semasa.','Tahun 1 · Penaakulan Muka Jam'),id,'5.2.1',mode,'verbal','reasoning',s,['clock_hand']);
+ const h=rand(1,11),ans=`${h}:00`;
+ return mark(q(`${clock(h,0)}Jarum panjang menunjuk 12 dan jarum pendek menunjuk ${h}. Pukul berapakah sekarang?`,ans,[Nq(`${h}:30`,'time'),Nq(`${(h%12)+1}:00`,'time'),Nq(`${h}:15`,'time')],'Jarum panjang di 12 bermaksud minit 00. Jarum pendek menunjukkan jam.','Tahun 1 · Waktu Tepat'),id,'5.2.1',mode,'visual','reasoning',s,['clock_hand','time']);
 };
 
 GEN['5.2.2']=function(id,s){
