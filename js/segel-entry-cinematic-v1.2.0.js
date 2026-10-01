@@ -237,6 +237,11 @@
 
     const gate=function(original,context,args){
       if(activeGate)return activeGate;
+      // The guest/demo route is a quick product preview. Keep the learning
+      // battlefield visible immediately; production missions still use the
+      // portal cinematic below.
+      const route=args?.[0];
+      if(route&&typeof route==='object'&&route.guestDemo)return original.apply(context,args);
       playing=true;
       const {overlay,video,skip}=makeOverlay();
       let closed=false;
