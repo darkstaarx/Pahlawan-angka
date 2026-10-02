@@ -18,7 +18,7 @@ const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
-const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic.mpeg','assets/audio/bgmusic2.mpeg'],mode:'off'};
+const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic.mp3','assets/audio/bgmusic2.mp3'],mode:'off'};
 
 function ensureBattleAudio(){
   if(PA_BATTLE_AUDIO.ctx)return PA_BATTLE_AUDIO.ctx;
