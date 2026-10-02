@@ -83,6 +83,7 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 
 .segelCutIn{position:absolute;inset:0;z-index:6;display:grid;grid-template-columns:52% 48%;align-items:center;visibility:hidden;opacity:0;background:linear-gradient(108deg,rgba(1,7,15,.98) 0 45%,rgba(43,160,203,.9) 45.5% 46.2%,rgba(3,13,27,.97) 46.8% 100%);clip-path:polygon(0 0,100% 0,92% 100%,0 100%);pointer-events:none}
 .segelCutIn .cutInHero{width:72%;height:82%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 0 20px rgba(64,215,255,.7));transform:translateX(10%)}
+.segelCutIn{display:none!important}
 .cutInCopy{display:grid;gap:5px;align-content:center;padding:0 8% 0 0}.cutInCopy small{color:#49d9ff;font-size:10px;font-weight:900;letter-spacing:.24em}.cutInCopy b{font-size:clamp(26px,5vw,62px);letter-spacing:.08em;color:#fff;text-shadow:0 0 18px rgba(87,220,255,.8)}.cutInCopy span{font-size:11px;letter-spacing:.16em;color:#d8eaff}.cutInLine{position:absolute;left:44%;top:0;bottom:0;width:3px;background:#ffd36a;box-shadow:0 0 15px #49d9ff;transform:skewX(-5deg)}
 #segelStage.finisher-cutin .segelCutIn{visibility:visible;opacity:1;animation:liveCutInEnter 880ms cubic-bezier(.18,.8,.18,1) both}
 #segelStage.finisher-dash .segelCutIn{visibility:visible;animation:liveCutInExit 360ms ease-in both}
