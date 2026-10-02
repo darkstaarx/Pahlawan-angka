@@ -2138,6 +2138,7 @@
     mode:()=>entryMode,
     setPet:pet=>{ if(entryMode?.devBattlefield){entryMode.pet=pet;stage?.setPet?.(pet)} },
     pause:()=>stage?.pause?.(),
+    previewFinalBlow:()=>stage?.previewFinalBlow?.(),
     clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
     tiers:TIERS,
     guestScope:grade=>guestTopicScope(Number(grade)||1),
