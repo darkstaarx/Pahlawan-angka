@@ -1345,14 +1345,15 @@
         if(finalHit){
           const videoPlayed=await playFinisherVideo(lifecycle);
           if(lifecycle!==S.lifecycle)return;
-          if(videoPlayed){ S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME; return; }
-          if(reduceMotion){
+          if(videoPlayed){ S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME; }
+          else if(reduceMotion){
             // Video ialah kandungan penamat yang diminta pengguna, jadi ia
             // masih dicuba walaupun sistem mengurangkan animasi. Jika browser
             // langsung gagal memainkan video, barulah guna hentaman minimum.
             sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return;
           }
-          // Jika video gagal dimuat atau autoplay disekat, jatuh balik ke
+          else {
+          // Jika finisher gagal dimuat atau autoplay disekat, jatuh balik ke
           // finisher ilustrasi sedia ada supaya hentaman terakhir tidak hilang.
           host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
           void host.offsetWidth;
@@ -1376,6 +1377,7 @@
           await wait(520); if(lifecycle!==S.lifecycle)return;
           host.classList.remove('finisher-impact'); S.heroLock=null; S.heroX=HERO_HOME;
           return;
+          }
         }
         if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);

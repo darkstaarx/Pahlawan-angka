@@ -44,8 +44,9 @@ function ensureBattleMusic(){
 }
 function playNextBattleMusic(){
   const music=ensureBattleMusic();if(!music||paMuted||PA_BATTLE_AUDIO.mode==='off')return;
+  if(music.src&&!music.paused&&!music.ended)return;
   const tracks=PA_BATTLE_AUDIO.musicTracks;PA_BATTLE_AUDIO.musicIndex=(PA_BATTLE_AUDIO.musicIndex+1)%tracks.length;
-  music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.currentTime=0;music.volume=.28*PA_VOLUME_SCALE;
+  music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.load();music.currentTime=0;music.volume=.28*PA_VOLUME_SCALE;
   const p=music.play();if(p&&p.catch)p.catch(()=>{});
 }
 function stopBattleMusic(){
@@ -65,7 +66,7 @@ function setBattleAudioMode(mode='off'){
   /* Battle biasa ialah ambience sahaja: daun, angin dan hidupan hutan jauh.
      Muzik/synth hanya masuk secara terkawal semasa boss. */
   const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=(activeMode==='off'?0:.32)*PA_VOLUME_SCALE;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
-  if(activeMode==='off'){stopBattleMusic()}else if(previous==='off'||!PA_BATTLE_AUDIO.music?.src){playNextBattleMusic()}
+  if(activeMode==='off'){stopBattleMusic()}else if(previous==='off'||!PA_BATTLE_AUDIO.music?.src||PA_BATTLE_AUDIO.music?.paused){playNextBattleMusic()}
   fadeForestAmbience(0);
   PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime((activeMode==='boss'?.09:0)*PA_VOLUME_SCALE,now,fade/3);
   if(activeMode==='boss'){bossDrum();PA_BATTLE_AUDIO.bossTimer=setInterval(bossDrum,1600)}
