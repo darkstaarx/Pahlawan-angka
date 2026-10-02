@@ -32,6 +32,10 @@
     if(!active())return;
     await window.PASegelDemo?.previewRescueHappy?.();
   }
+  async function previewFinalBlow() {
+    if(!active())return;
+    await window.PASegelDemo?.previewFinalBlow?.();
+  }
   function start() {
     if(!db||typeof isDevMode!=='function'||!isDevMode())return;
     if(active())return;
@@ -52,7 +56,7 @@
     sess.devBattlefield=false;if(snapshot)db=JSON.parse(snapshot);
     document.body.classList.remove('dev-battlefield');renderHub();
   }
-  window.startBattlefieldDev=start; window.swapBattlefieldPet=swap; window.previewBattlefieldVictory=previewVictory; window.exitBattlefieldDev=exit;
+  window.startBattlefieldDev=start; window.swapBattlefieldPet=swap; window.previewBattlefieldVictory=previewVictory; window.previewBattlefieldFinalBlow=previewFinalBlow; window.exitBattlefieldDev=exit;
   window.PABattlefieldDev={active,pet,exit,items:PETS,
     setPet:item=>window.PASegelDemo?.setPet?.(item)};
   window.setTimeout(()=>{const original=window.learningStart;if(typeof original==='function'&&!original.__battlefieldSafe){const guarded=function(...args){if(active())return;return original.apply(this,args);};guarded.__battlefieldSafe=true;window.learningStart=guarded;}},0);
