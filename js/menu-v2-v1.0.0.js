@@ -92,7 +92,7 @@
     const hero = $('mv2Hero');
     const frame = heroMode === 'main' ? heroFrameIdx : HERO_HEAD_LOOP[heroHeadIdx];
     if (hero) hero.src = HERO_FRAMES[frame];
-    if (heroMode === 'main' && heroFrameIdx === HERO_FRAMES.length - 1 && !heroDialogueShown) {
+    if (heroMode === 'main' && heroFrameIdx === 0 && !heroDialogueShown) {
       showAutoHeroDialogue();
       heroDialogueShown = true;
     }

@@ -241,6 +241,7 @@
       return finisherVideo;
     }
     function stopFinisherVideo(){
+      if(typeof stopChargeup==='function')stopChargeup();
       const video=finisherVideo||document.querySelector('#segelFinisherVideoLayer video');
       const layer=finisherVideoLayer||document.getElementById('segelFinisherVideoLayer');
       if(video){
@@ -256,8 +257,10 @@
       void host.offsetWidth;
       /* Final blow now starts with the eye cut-in only: no aura-farming beat. */
       S.heroFade=0;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;host.classList.add('finisher-focus');
+      if(typeof startChargeup==='function')startChargeup();
       await wait(920);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      if(typeof stopChargeup==='function')stopChargeup();
       /* Reveal the authored attack sheet, then send the icy-math FX upward
          from the floor into the final seal. */
       host.classList.remove('finisher-focus');

@@ -5,6 +5,7 @@ const PA_AUDIO={
   hit:'assets/audio/hit.wav',
   finisher:'assets/audio/finisher.wav',
   auraCharge:'assets/audio/aura-charge.wav',
+  chargeup:'assets/audio/chargeup.mp3',
   wiraSword:'assets/audio/wira-heavy-metal-sword.wav',
   swordSlash:'assets/audio/sword-slash-v2.wav',
   coinPickup:'assets/audio/coin-pickup.wav',
@@ -17,7 +18,7 @@ const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
-const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,mode:'off'};
+const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic.mpeg','assets/audio/bgmusic2.mpeg'],mode:'off'};
 
 function ensureBattleAudio(){
   if(PA_BATTLE_AUDIO.ctx)return PA_BATTLE_AUDIO.ctx;
@@ -36,11 +37,27 @@ function fadeForestAmbience(target){
   if(target>0){const p=forest.play();if(p&&p.catch)p.catch(()=>{})}
   const from=Number(forest.volume||0),steps=12;let step=0;PA_BATTLE_AUDIO.forestFade=setInterval(()=>{step++;forest.volume=Math.max(0,Math.min(1,from+(target-from)*(step/steps)));if(step>=steps){clearInterval(PA_BATTLE_AUDIO.forestFade);PA_BATTLE_AUDIO.forestFade=null;if(target===0){forest.pause();forest.currentTime=0}}},50);
 }
+function ensureBattleMusic(){
+  if(PA_BATTLE_AUDIO.music)return PA_BATTLE_AUDIO.music;
+  const music=new Audio();music.preload='auto';music.volume=.28*PA_VOLUME_SCALE;music.addEventListener('ended',playNextBattleMusic);
+  PA_BATTLE_AUDIO.music=music;return music;
+}
+function playNextBattleMusic(){
+  const music=ensureBattleMusic();if(!music||paMuted||PA_BATTLE_AUDIO.mode==='off')return;
+  const tracks=PA_BATTLE_AUDIO.musicTracks;PA_BATTLE_AUDIO.musicIndex=(PA_BATTLE_AUDIO.musicIndex+1)%tracks.length;
+  music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.currentTime=0;music.volume=.28*PA_VOLUME_SCALE;
+  const p=music.play();if(p&&p.catch)p.catch(()=>{});
+}
+function stopBattleMusic(){
+  const music=PA_BATTLE_AUDIO.music;if(!music)return;
+  music.pause();music.currentTime=0;
+}
 function bossDrum(){
   const {ctx,bossGain}=PA_BATTLE_AUDIO;if(!ctx||!bossGain||PA_BATTLE_AUDIO.mode!=='boss'||paMuted||ctx.state!=='running')return;
   [0,.42].forEach((offset,index)=>{const at=ctx.currentTime+offset,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.setValueAtTime(index?96:124,at);osc.frequency.exponentialRampToValueAtTime(58,at+.18);gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(index?.13:.18,at+.012);gain.gain.exponentialRampToValueAtTime(.0001,at+.24);osc.connect(gain).connect(bossGain);osc.start(at);osc.stop(at+.26)});
 }
 function setBattleAudioMode(mode='off'){
+  const previous=PA_BATTLE_AUDIO.mode;
   PA_BATTLE_AUDIO.mode=mode;
   clearInterval(PA_BATTLE_AUDIO.bossTimer);PA_BATTLE_AUDIO.bossTimer=null;
   if(!paAudioUnlocked)return;
@@ -48,6 +65,7 @@ function setBattleAudioMode(mode='off'){
   /* Battle biasa ialah ambience sahaja: daun, angin dan hidupan hutan jauh.
      Muzik/synth hanya masuk secara terkawal semasa boss. */
   const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=(activeMode==='off'?0:.32)*PA_VOLUME_SCALE;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
+  if(activeMode==='off'){stopBattleMusic()}else if(previous==='off'||!PA_BATTLE_AUDIO.music?.src){playNextBattleMusic()}
   fadeForestAmbience(0);
   PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime((activeMode==='boss'?.09:0)*PA_VOLUME_SCALE,now,fade/3);
   if(activeMode==='boss'){bossDrum();PA_BATTLE_AUDIO.bossTimer=setInterval(bossDrum,1600)}
@@ -90,6 +108,15 @@ function playSfx(name){
     a.preload='auto';
     const p=a.play(); if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
+}
+function startChargeup(){
+  if(paMuted)return;
+  const a=PA_AUDIO_CACHE.chargeup;if(!a)return;
+  try{a.currentTime=0;a.volume=.72*PA_VOLUME_SCALE;const p=a.play();if(p&&p.catch)p.catch(()=>{})}catch(_){ }
+}
+function stopChargeup(){
+  const a=PA_AUDIO_CACHE.chargeup;if(!a)return;
+  try{a.pause();a.currentTime=0}catch(_){ }
 }
 function playSidmaSfx(cue){
   if(paMuted)return;
