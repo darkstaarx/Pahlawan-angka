@@ -13,21 +13,15 @@
     .toolbar strong{margin-right:auto;color:#8bdcff;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
     button{border:1px solid #5abaff;border-radius:9px;background:#173b62;color:#fff;padding:8px 12px;font-weight:800;cursor:pointer}button:hover{background:#225889}
     label{font-size:12px;color:#b7d8ed}input{accent-color:#5fd6ff;vertical-align:middle}
-    .stage{position:relative;overflow:hidden;isolation:isolate;aspect-ratio:16/9;border:2px solid #407da5;border-radius:18px;background:#10243b;box-shadow:0 22px 50px #000b}
-    .stage:before{content:"";position:absolute;inset:0;background:url('../assets/battlefields/forest-temple/arena-v1.webp') center/cover no-repeat;z-index:-3;filter:saturate(.88) brightness(.76)}
-    .stage:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 34% 76%,#1c5f9166,transparent 30%),linear-gradient(180deg,#03101a22,#02071099);z-index:-2;pointer-events:none}
-    .scene-title{position:absolute;left:18px;top:14px;z-index:10;padding:8px 13px;border:1px solid #72d9ff88;border-radius:9px;background:#07172acc;font-weight:900;letter-spacing:.08em;font-size:clamp(11px,1.6vw,16px)}
-    .floor{position:absolute;left:0;right:0;bottom:8%;height:20%;background:radial-gradient(ellipse,#8ddfff3b,transparent 65%);filter:blur(5px);z-index:0}
-    .aura{position:absolute;left:4%;bottom:9%;width:43%;height:42%;z-index:2;background:url('../assets/fx/math-auras-approved/numbers-normalized.webp') center/contain no-repeat;opacity:var(--glow);mix-blend-mode:screen;filter:saturate(1.08) brightness(1.02) drop-shadow(0 0 15px #4ad6ffcc);transform:scale(var(--scale));transform-origin:50% 75%;animation:auraBreath 2.7s ease-in-out infinite}
-    .aura::after{content:"";position:absolute;inset:19% 8% 21%;border-radius:50%;background:radial-gradient(ellipse,#63dfff33,transparent 68%);filter:blur(13px)}
-    .hero{position:absolute;left:13%;bottom:8%;width:28%;z-index:4;filter:drop-shadow(0 13px 7px #03111dcc);animation:heroBreath 2.7s ease-in-out infinite}
-    .pet-seal{position:absolute;right:9%;bottom:9%;width:31%;height:57%;z-index:3;border-radius:50%;background:radial-gradient(ellipse,#ffb33818,transparent 62%),url('../assets/fx/segel/emas-v2.png') center/contain no-repeat;filter:drop-shadow(0 0 13px #ffc14d66)}
-    .pet{position:absolute;right:16%;bottom:15%;width:20%;z-index:5;filter:drop-shadow(0 10px 5px #03111dcc);animation:petFloat 2.2s ease-in-out infinite}
-    .charge-label{position:absolute;left:34%;bottom:8%;z-index:7;color:#bdf5ff;font-weight:900;letter-spacing:.16em;font-size:clamp(10px,1.4vw,14px);text-shadow:0 0 13px #1fbfff;opacity:.86}
+    .stage{position:relative;overflow:hidden;isolation:isolate;aspect-ratio:16/9;border:2px solid #152d48;border-radius:18px;background:#000;box-shadow:0 22px 50px #000b}
+    .aura{position:absolute;left:29%;bottom:5%;width:42%;height:78%;z-index:2;overflow:hidden;opacity:calc(var(--glow) * .42);mix-blend-mode:screen;filter:saturate(1.08) brightness(1.02) drop-shadow(0 0 15px #4ad6ff99);-webkit-mask-image:radial-gradient(ellipse at center,#000 42%,transparent 76%);mask-image:radial-gradient(ellipse at center,#000 42%,transparent 76%);transform:scale(var(--scale));transform-origin:50% 75%}
+    .aura .sheet{width:400%;height:100%;background:url('aura-farming-assets/icy-math-aura-sheet-v2.png') 0 0/100% 100% no-repeat;animation:auraSheet 2.4s steps(4,end) infinite}
+    .hero-sprite{position:absolute;left:29%;bottom:7%;width:42%;height:78%;z-index:4;overflow:hidden;filter:drop-shadow(0 13px 7px #03111dcc);animation:heroBreath 1.8s ease-in-out infinite}
+    .hero-sprite .sheet{width:400%;height:100%;background:url('aura-farming-assets/wira-charge-sheet-v3.png') 0 0/100% 100% no-repeat;animation:heroSheet 1.8s steps(4,end) infinite}
     .readout{margin-top:10px;color:#a9cce1;font-size:12px;line-height:1.4}
-    @keyframes auraBreath{0%,100%{opacity:calc(var(--glow)*.72);transform:scale(calc(var(--scale)*.96)) translateY(3px) rotate(-1deg)}50%{opacity:var(--glow);transform:scale(var(--scale)) translateY(-3px) rotate(1deg)}}
-    @keyframes heroBreath{0%,100%{transform:translateY(2px) scale(.99)}50%{transform:translateY(-2px) scale(1)}}
-    @keyframes petFloat{0%,100%{transform:translateY(2px)}50%{transform:translateY(-5px)}}
+    @keyframes auraSheet{0%,100%{transform:translateX(0)}25%{transform:translateX(-25%)}50%{transform:translateX(-50%)}75%{transform:translateX(-75%)}}
+    @keyframes heroSheet{0%,100%{transform:translateX(0)}25%{transform:translateX(-25%)}50%{transform:translateX(-50%)}75%{transform:translateX(-75%)}}
+    @keyframes heroBreath{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.012)}}
   </style>
 </head>
 <body>
@@ -40,13 +34,8 @@
       <label>Cahaya <input id="glow" type="range" min=".35" max="1" step=".01" value=".82"></label>
     </div>
     <section class="stage" id="stage" aria-label="Battle scene audit">
-      <div class="scene-title">AURA FARMING · 01</div>
-      <div class="floor"></div>
-      <div class="aura" id="aura"></div>
-      <img class="hero" src="../assets/heroes/wira-chibi/frames/aura-framing-v1.webp" alt="Wira charge dengan pedang ais elektrik">
-      <div class="pet-seal"></div>
-      <img class="pet" src="../assets/pets/aurora/battle.webp" alt="Aurora di dalam segel">
-      <div class="charge-label">KIRAAN SEDANG DIKUMPUL</div>
+      <div class="aura" id="aura"><div class="sheet"></div></div>
+      <div class="hero-sprite" role="img" aria-label="Wira berdiri dengan mata tertutup, mengangkat pedang ais elektrik"><div class="sheet"></div></div>
     </section>
     <div class="readout">Prototype terasing: hanya battle scene dan aura. Laras saiz/cahaya di atas; tiada logic soalan atau cutscene utama disentuh.</div>
   </main>
