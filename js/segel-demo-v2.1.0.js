@@ -1298,6 +1298,20 @@
         fitShell();
         return this.strike();
       },
+      async previewAuraFarming(){
+        if(!entryMode?.devBattlefield)return false;
+        const lastIndex=TIERS.length-1;
+        ++S.lifecycle; S.active=lastIndex; S.heroX=HERO_HOME-.12; S.heroLock=heroPrepareE;
+        seals.forEach((seal,i)=>{
+          seal.damage=i===lastIndex?Math.max(0,1-1/seal.tier.hits):1;
+          seal.broken=i<lastIndex; seal.breakT=-1; seal.front.visible=i===lastIndex;
+          seal.front.material.uniforms.uOpacity.value=1; seal.front.material.uniforms.uGrey.value=0;
+        });
+        host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
+        void host.offsetWidth; host.classList.add('finisher-charge'); sfx('auraCharge');
+        fitShell();
+        return true;
+      },
       // Wira menyerap cahaya segel sebagai syiling sebelum skrin keputusan.
       async absorbCoins(){
         coins.forEach(c=>{ c.picked=false; c.coin.visible=false; c.trail.visible=false });
@@ -2145,6 +2159,7 @@
     mode:()=>entryMode,
     setPet:pet=>{ if(entryMode?.devBattlefield){entryMode.pet=pet;stage?.setPet?.(pet)} },
     pause:()=>stage?.pause?.(),
+    previewAuraFarming:()=>stage?.previewAuraFarming?.(),
     previewFinalBlow:()=>stage?.previewFinalBlow?.(),
     clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
     tiers:TIERS,
