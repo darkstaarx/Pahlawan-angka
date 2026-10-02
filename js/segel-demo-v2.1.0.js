@@ -86,7 +86,7 @@
     heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.png`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     finalmove:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
-    finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4?v=3.84.86',
+    finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4?v=3.84.87',
     finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.png',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
