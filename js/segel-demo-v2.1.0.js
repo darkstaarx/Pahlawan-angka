@@ -1192,14 +1192,21 @@
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         const finalHit=S.active===TIERS.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
         if(finalHit&&!reduceMotion){
-          host.classList.remove('finisher-dash','finisher-impact');
+          host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
           void host.offsetWidth;
+          S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.12;
+          host.classList.add('finisher-charge');
+          sfx('auraCharge');
+          await wait(1180); if(lifecycle!==S.lifecycle)return;
+          host.classList.remove('finisher-charge');
           S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME;
           host.classList.add('finisher-focus');
           await wait(720); if(lifecycle!==S.lifecycle)return;
           host.classList.remove('finisher-focus'); host.classList.add('finisher-math');
           await wait(680); if(lifecycle!==S.lifecycle)return;
-          host.classList.remove('finisher-math'); host.classList.add('finisher-dash');
+          host.classList.remove('finisher-math'); host.classList.add('finisher-release');
+          await wait(420); if(lifecycle!==S.lifecycle)return;
+          host.classList.remove('finisher-release'); host.classList.add('finisher-dash');
           sfx('swordSlash');
           await wait(1800); if(lifecycle!==S.lifecycle)return;
           host.classList.remove('finisher-dash'); host.classList.add('finisher-impact');
@@ -1324,7 +1331,7 @@
       wrong(){ S.shake=.14 },
       reset(){
         ++S.lifecycle;S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
-        host.classList.remove('finisher-focus','finisher-math','finisher-dash','finisher-impact');
+        host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME;
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
@@ -1349,7 +1356,7 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; host.classList.remove('finisher-cutin','finisher-focus','finisher-math','finisher-dash','finisher-impact'); S.heroFade=1; },
+      cancel(){ ++S.lifecycle; host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact'); S.heroFade=1; },
       setPet(config){ return setPetVisual(config); },
       previewRescueHappy:async()=>{
         if(!entryMode?.devBattlefield)return false;
