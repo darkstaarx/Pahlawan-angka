@@ -250,6 +250,21 @@
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
+      /* Live Wira review flow: do not open the old full-screen video. */
+      stopFinisherVideo();
+      host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
+      void host.offsetWidth;
+      S.heroLock=heroPrepareE;S.heroX=HERO_HOME-.12;host.classList.add('finisher-charge');
+      try{waveMat.color.setHex(0xbfe9ff);S.waveScale=.82;S.waveT=0;S.shake=.08;S.flashT=0}catch(_){ }
+      sfx('auraCharge');
+      await wait(2400);
+      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      host.classList.remove('finisher-charge');S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;host.classList.add('finisher-focus');
+      await wait(1550);
+      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      host.classList.remove('finisher-focus');
+      return true;
+      /* Legacy video implementation retained below for rollback reference. */
       const video=ensureFinisherVideo(), layer=finisherVideoLayer;
       if(!video||!layer)return false;
       try{
@@ -337,7 +352,7 @@
         return false;
       }
     }
-    const preloadedFinisherVideo=ensureFinisherVideo();
+    const preloadedFinisherVideo=null;
     try{preloadedFinisherVideo?.load?.()}catch(_){}
     const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
     if(finisherAttack)finisherAttack.style.backgroundImage=`url("${FRAMES.finalmove}")`;
