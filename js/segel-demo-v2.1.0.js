@@ -254,15 +254,22 @@
       stopFinisherVideo();
       host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
       void host.offsetWidth;
-      S.heroFade=0;S.heroLock=heroPrepareE;S.heroX=HERO_HOME-.12;host.classList.add('finisher-charge');
-      try{waveMat.color.setHex(0xbfe9ff);S.waveScale=.82;S.waveT=0;S.shake=.08;S.flashT=0}catch(_){ }
-      sfx('auraCharge');
-      await wait(2400);
+      /* Final blow now starts with the eye cut-in only: no aura-farming beat. */
+      S.heroFade=0;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;host.classList.add('finisher-focus');
+      await wait(920);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
-      host.classList.remove('finisher-charge');S.heroFade=1;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;host.classList.add('finisher-focus');
-      await wait(1550);
-      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      /* Reveal the authored attack sheet, then send the icy-math FX upward
+         from the floor into the final seal. */
       host.classList.remove('finisher-focus');
+      S.heroFade=0;S.heroLock=heroSlashE;S.heroX=HERO_HOME-.18;host.classList.add('finisher-dash');
+      sfx('swordSlash');
+      await wait(1800);
+      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      host.classList.remove('finisher-dash');host.classList.add('finisher-math','finisher-impact');
+      sfx('hit');iceHit(SEAL_X-.28,GROUND+.22);burst(7,0xbfe9ff);S.waveT=0;S.waveScale=1.35;S.shake=.5;
+      await wait(720);
+      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      host.classList.remove('finisher-math','finisher-impact');S.heroFade=1;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;
       return true;
       /* Legacy video implementation retained below for rollback reference. */
       const video=ensureFinisherVideo(), layer=finisherVideoLayer;
