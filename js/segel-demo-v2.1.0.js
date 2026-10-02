@@ -25,7 +25,7 @@
   // Index lama masih memanggil bundle ini beberapa kali. Selepas bundle live
   // masuk, jangan benarkan salinan legacy overwrite host dan stage semula.
   const src=String(document.currentScript?.src||'');
-  const canonical=/[?&]v=4\.0\.16(?:[&#]|$)/.test(src);
+  const canonical=/[?&]v=4\.0\.17(?:[&#]|$)/.test(src);
   if(window.__PA_SEGEL_CANONICAL__&&!canonical)return;
   if(canonical)window.__PA_SEGEL_CANONICAL__=true;
   'use strict';
@@ -246,7 +246,7 @@
       if(video){
         try{video.pause();video.currentTime=0}catch(_){}
       }
-      host.classList.remove('finisher-video-prep');
+      host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge');
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
@@ -263,17 +263,29 @@
         // menjadi frame pertama video. Ini mengekalkan satu gerakan yang sama.
         layer.classList.remove('playing','flash-in','flash-out');
         layer.classList.add('active','preparing');
-        host.classList.add('finisher-video-prep');
+
+        // Beat sebelum video: Wira masuk pose prepare, aura charge dibina dan
+        // callout Jurus Penamat sempat dibaca. Bukan delay kosong — murid nampak
+        // bahawa hit terakhir sedang berubah menjadi serangan khas.
+        host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
+        S.heroLock=heroPrepareE;
+        S.heroX=HERO_HOME-.12;
+        host.classList.add('finisher-video-prep','finisher-charge','finisher-video-cue');
         try{
           waveMat.color.setHex(0xbfe9ff);
           S.waveScale=.82; S.waveT=0; S.shake=.08; S.flashT=0;
         }catch(_){}
         sfx('auraCharge');
-        await wait(340);
+
+        // 0.95s buildup: cukup lama untuk anticipation, tapi tidak terasa
+        // seperti loading. Kemudian satu flash pendek menjadi match-cut video.
+        await wait(950);
         if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+        host.classList.remove('finisher-video-cue');
+        S.shake=.16;
 
         layer.classList.add('flash-in');
-        await wait(115);
+        await wait(150);
         if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
 
         let ended=false;
@@ -295,7 +307,9 @@
 
         layer.classList.add('playing');
         layer.classList.remove('preparing');
-        host.classList.remove('finisher-video-prep');
+        host.classList.remove('finisher-video-prep','finisher-charge');
+        S.heroLock=heroIdleE[0];
+        S.heroX=HERO_HOME;
         await wait(170);
         layer.classList.remove('flash-in');
 
