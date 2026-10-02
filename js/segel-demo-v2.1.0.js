@@ -25,7 +25,7 @@
   // Index lama masih memanggil bundle ini beberapa kali. Selepas bundle live
   // masuk, jangan benarkan salinan legacy overwrite host dan stage semula.
   const src=String(document.currentScript?.src||'');
-  const canonical=/[?&]v=4\.0\.15(?:[&#]|$)/.test(src);
+  const canonical=/[?&]v=4\.0\.16(?:[&#]|$)/.test(src);
   if(window.__PA_SEGEL_CANONICAL__&&!canonical)return;
   if(canonical)window.__PA_SEGEL_CANONICAL__=true;
   'use strict';
@@ -246,7 +246,8 @@
       if(video){
         try{video.pause();video.currentTime=0}catch(_){}
       }
-      layer?.classList.remove('active');
+      host.classList.remove('finisher-video-prep');
+      layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
       const video=ensureFinisherVideo(), layer=finisherVideoLayer;
@@ -256,7 +257,25 @@
         video.currentTime=0;
         video.muted=typeof paMuted!=='undefined'&&paMuted;
         video.volume=Math.max(0,Math.min(1,typeof PA_VOLUME_SCALE==='number'?PA_VOLUME_SCALE:.8));
-        layer.classList.add('active');
+
+        // Jambatan masuk: jangan potong terus dari soalan ke video. Arena
+        // "menahan nafas" sekejap, Gembok Emas memancar, kemudian flash biru
+        // menjadi frame pertama video. Ini mengekalkan satu gerakan yang sama.
+        layer.classList.remove('playing','flash-in','flash-out');
+        layer.classList.add('active','preparing');
+        host.classList.add('finisher-video-prep');
+        try{
+          waveMat.color.setHex(0xbfe9ff);
+          S.waveScale=.82; S.waveT=0; S.shake=.08; S.flashT=0;
+        }catch(_){}
+        sfx('auraCharge');
+        await wait(340);
+        if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+
+        layer.classList.add('flash-in');
+        await wait(115);
+        if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+
         let ended=false;
         const onEnded=()=>{ended=true};
         const onError=()=>{ended=true};
@@ -273,14 +292,32 @@
           const retry=video.play();
           if(retry&&typeof retry.then==='function')await retry;
         }
+
+        layer.classList.add('playing');
+        layer.classList.remove('preparing');
+        host.classList.remove('finisher-video-prep');
+        await wait(170);
+        layer.classList.remove('flash-in');
+
         const deadline=performance.now()+5200;
         while(!ended&&performance.now()<deadline&&lifecycle===S.lifecycle)await wait(40);
         video.removeEventListener('ended',onEnded);
         video.removeEventListener('error',onError);
+        if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+
+        // Jambatan keluar: flash pada hujung video memegang skrin sewaktu
+        // strike() pulang. hitSeal() berjalan terus selepas itu dan memecahkan
+        // Gembok di belakang flash; flash kemudian surut dan mendedahkan
+        // serpihan, jadi "video -> pecah" terasa seperti satu hentaman.
+        layer.classList.add('flash-out');
+        await wait(95);
         video.pause();
-        layer.classList.remove('active');
-        await wait(90);
-        return lifecycle===S.lifecycle;
+        layer.classList.remove('playing');
+        setTimeout(()=>{
+          if(lifecycle!==S.lifecycle)return;
+          layer.classList.remove('flash-out','active');
+        },250);
+        return true;
       }catch(_){
         stopFinisherVideo();
         return false;
