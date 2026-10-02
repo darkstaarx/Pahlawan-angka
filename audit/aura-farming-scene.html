@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audit — Aura Farming</title>
+  <style>
+    :root{color-scheme:dark;--scale:1;--glow:.82}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#07101e;font-family:system-ui,sans-serif;color:#eef7ff}
+    body{display:grid;place-items:center;padding:20px}
+    .audit{width:min(100%,980px)}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding:10px 12px;border:1px solid #2b557c;border-radius:14px;background:#0c1c31;box-shadow:0 10px 26px #0006}
+    .toolbar strong{margin-right:auto;color:#8bdcff;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+    button{border:1px solid #5abaff;border-radius:9px;background:#173b62;color:#fff;padding:8px 12px;font-weight:800;cursor:pointer}button:hover{background:#225889}
+    label{font-size:12px;color:#b7d8ed}input{accent-color:#5fd6ff;vertical-align:middle}
+    .stage{position:relative;overflow:hidden;isolation:isolate;aspect-ratio:16/9;border:2px solid #407da5;border-radius:18px;background:#10243b;box-shadow:0 22px 50px #000b}
+    .stage:before{content:"";position:absolute;inset:0;background:url('../assets/battlefields/forest-temple/arena-v1.webp') center/cover no-repeat;z-index:-3;filter:saturate(.88) brightness(.76)}
+    .stage:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 34% 76%,#1c5f9166,transparent 30%),linear-gradient(180deg,#03101a22,#02071099);z-index:-2;pointer-events:none}
+    .scene-title{position:absolute;left:18px;top:14px;z-index:10;padding:8px 13px;border:1px solid #72d9ff88;border-radius:9px;background:#07172acc;font-weight:900;letter-spacing:.08em;font-size:clamp(11px,1.6vw,16px)}
+    .floor{position:absolute;left:0;right:0;bottom:8%;height:20%;background:radial-gradient(ellipse,#8ddfff3b,transparent 65%);filter:blur(5px);z-index:0}
+    .aura{position:absolute;left:4%;bottom:9%;width:43%;height:42%;z-index:2;background:url('../assets/fx/math-auras-approved/numbers-normalized.webp') center/contain no-repeat;opacity:var(--glow);mix-blend-mode:screen;filter:saturate(1.08) brightness(1.02) drop-shadow(0 0 15px #4ad6ffcc);transform:scale(var(--scale));transform-origin:50% 75%;animation:auraBreath 2.7s ease-in-out infinite}
+    .aura::after{content:"";position:absolute;inset:19% 8% 21%;border-radius:50%;background:radial-gradient(ellipse,#63dfff33,transparent 68%);filter:blur(13px)}
+    .hero{position:absolute;left:13%;bottom:8%;width:28%;z-index:4;filter:drop-shadow(0 13px 7px #03111dcc);animation:heroBreath 2.7s ease-in-out infinite}
+    .pet-seal{position:absolute;right:9%;bottom:9%;width:31%;height:57%;z-index:3;border-radius:50%;background:radial-gradient(ellipse,#ffb33818,transparent 62%),url('../assets/fx/segel/emas-v2.png') center/contain no-repeat;filter:drop-shadow(0 0 13px #ffc14d66)}
+    .pet{position:absolute;right:16%;bottom:15%;width:20%;z-index:5;filter:drop-shadow(0 10px 5px #03111dcc);animation:petFloat 2.2s ease-in-out infinite}
+    .charge-label{position:absolute;left:34%;bottom:8%;z-index:7;color:#bdf5ff;font-weight:900;letter-spacing:.16em;font-size:clamp(10px,1.4vw,14px);text-shadow:0 0 13px #1fbfff;opacity:.86}
+    .readout{margin-top:10px;color:#a9cce1;font-size:12px;line-height:1.4}
+    @keyframes auraBreath{0%,100%{opacity:calc(var(--glow)*.72);transform:scale(calc(var(--scale)*.96)) translateY(3px) rotate(-1deg)}50%{opacity:var(--glow);transform:scale(var(--scale)) translateY(-3px) rotate(1deg)}}
+    @keyframes heroBreath{0%,100%{transform:translateY(2px) scale(.99)}50%{transform:translateY(-2px) scale(1)}}
+    @keyframes petFloat{0%,100%{transform:translateY(2px)}50%{transform:translateY(-5px)}}
+  </style>
+</head>
+<body>
+  <main class="audit">
+    <div class="toolbar">
+      <strong>Audit · Aura Farming</strong>
+      <button id="toggle" type="button">Pause</button>
+      <button id="reset" type="button">Reset</button>
+      <label>Saiz <input id="scale" type="range" min=".82" max="1.14" step=".01" value="1"></label>
+      <label>Cahaya <input id="glow" type="range" min=".35" max="1" step=".01" value=".82"></label>
+    </div>
+    <section class="stage" id="stage" aria-label="Battle scene audit">
+      <div class="scene-title">AURA FARMING · 01</div>
+      <div class="floor"></div>
+      <div class="aura" id="aura"></div>
+      <img class="hero" src="../assets/heroes/wira-chibi/frames/aura-framing-v1.webp" alt="Wira charge dengan pedang ais elektrik">
+      <div class="pet-seal"></div>
+      <img class="pet" src="../assets/pets/aurora/battle.webp" alt="Aurora di dalam segel">
+      <div class="charge-label">KIRAAN SEDANG DIKUMPUL</div>
+    </section>
+    <div class="readout">Prototype terasing: hanya battle scene dan aura. Laras saiz/cahaya di atas; tiada logic soalan atau cutscene utama disentuh.</div>
+  </main>
+  <script>
+    const root=document.documentElement,stage=document.querySelector('#stage'),toggle=document.querySelector('#toggle'),scale=document.querySelector('#scale'),glow=document.querySelector('#glow');
+    scale.addEventListener('input',()=>root.style.setProperty('--scale',scale.value));
+    glow.addEventListener('input',()=>root.style.setProperty('--glow',glow.value));
+    toggle.addEventListener('click',()=>{stage.classList.toggle('paused');const paused=stage.classList.contains('paused');stage.style.setProperty('--play',paused?'paused':'running');document.querySelectorAll('.stage *').forEach(e=>e.style.animationPlayState=paused?'paused':'running');toggle.textContent=paused?'Play':'Pause'});
+    document.querySelector('#reset').addEventListener('click',()=>{scale.value='1';glow.value='.82';root.style.setProperty('--scale','1');root.style.setProperty('--glow','.82');stage.classList.remove('paused');document.querySelectorAll('.stage *').forEach(e=>e.style.animationPlayState='running');toggle.textContent='Pause'});
+  </script>
+</body>
+</html>
