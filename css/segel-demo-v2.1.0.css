@@ -82,15 +82,57 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 .segelToast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
 /* Finisher Wira ialah klip menegak 9:16 penuh. Ia dimainkan selepas
-   jawapan terakhir diterima tetapi SEBELUM hitSeal() memecahkan Gembok Emas,
-   supaya video terbaca sebagai jurus yang menyebabkan pecahan itu. */
+   jawapan terakhir diterima tetapi SEBELUM hitSeal() memecahkan Gembok Emas.
+   Jambatan visual di bawah mengelakkan hard-cut "game -> video -> game":
+   arena charge -> flash -> video -> flash -> seal shatter. */
+#segelStage.finisher-video-prep::before{
+  content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:
+    radial-gradient(circle at 70% 58%,rgba(183,239,255,.68) 0 4%,rgba(55,190,255,.34) 12%,transparent 31%),
+    radial-gradient(circle at 28% 69%,rgba(65,213,255,.24),transparent 29%),
+    linear-gradient(rgba(2,10,23,.08),rgba(2,10,23,.38));
+  animation:segelVideoPrep 340ms cubic-bezier(.18,.72,.2,1) both
+}
 .segelFinisherVideoLayer{
   position:fixed;inset:0;z-index:2147483647;display:block;
-  background:#000;opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity 90ms linear
+  background:transparent;opacity:0;visibility:hidden;pointer-events:none;
 }
 .segelFinisherVideoLayer.active{opacity:1;visibility:visible}
-.segelFinisherVideo{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.segelFinisherVideo{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;background:#000;opacity:0;transform:scale(1.012);
+  transition:opacity 70ms linear,transform 220ms ease-out
+}
+.segelFinisherVideoLayer.playing .segelFinisherVideo{opacity:1;transform:scale(1)}
+.segelFinisherVideoLayer::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(circle at 52% 48%,#fff 0 12%,rgba(213,248,255,.98) 26%,rgba(76,203,255,.76) 48%,rgba(15,91,155,.24) 72%,transparent 100%);
+  mix-blend-mode:screen
+}
+.segelFinisherVideoLayer.flash-in::after{
+  animation:segelVideoFlashIn 300ms cubic-bezier(.12,.72,.18,1) both
+}
+.segelFinisherVideoLayer.flash-out::after{
+  animation:segelVideoFlashOut 345ms cubic-bezier(.12,.74,.2,1) both
+}
+@keyframes segelVideoPrep{
+  0%{opacity:0}
+  45%{opacity:.72}
+  100%{opacity:1}
+}
+@keyframes segelVideoFlashIn{
+  0%{opacity:0;transform:scale(.82)}
+  42%{opacity:1;transform:scale(1.04)}
+  63%{opacity:.98}
+  100%{opacity:0;transform:scale(1.12)}
+}
+@keyframes segelVideoFlashOut{
+  0%{opacity:0;transform:scale(.9)}
+  28%{opacity:1;transform:scale(1.02)}
+  55%{opacity:1}
+  100%{opacity:0;transform:scale(1.14)}
+}
 @media (orientation:landscape){
   .segelFinisherVideo{object-fit:contain}
 }
