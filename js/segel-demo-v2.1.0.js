@@ -25,7 +25,7 @@
   // Index lama masih memanggil bundle ini beberapa kali. Selepas bundle live
   // masuk, jangan benarkan salinan legacy overwrite host dan stage semula.
   const src=String(document.currentScript?.src||'');
-  const canonical=/[?&]v=4\.0\.13(?:[&#]|$)/.test(src);
+  const canonical=/[?&]v=4\.0\.14(?:[&#]|$)/.test(src);
   if(window.__PA_SEGEL_CANONICAL__&&!canonical)return;
   if(canonical)window.__PA_SEGEL_CANONICAL__=true;
   'use strict';
@@ -86,6 +86,7 @@
     heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.png`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     finalmove:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
+    finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4',
     finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.png',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
@@ -213,6 +214,71 @@
     const mathBurst=host.querySelector('.segelMathBurst');
     const finisherAttack=host.querySelector('.segelFinisherAttack');
     const finisherImpact=host.querySelector('.segelFinisherImpact');
+    let finisherVideoLayer=null, finisherVideo=null;
+    function ensureFinisherVideo(){
+      if(finisherVideo&&finisherVideo.isConnected)return finisherVideo;
+      const mount=$('segelDemo')||document.body;
+      finisherVideoLayer=document.getElementById('segelFinisherVideoLayer');
+      if(finisherVideoLayer){
+        finisherVideo=finisherVideoLayer.querySelector('video');
+      }else{
+        finisherVideoLayer=document.createElement('div');
+        finisherVideoLayer.id='segelFinisherVideoLayer';
+        finisherVideoLayer.className='segelFinisherVideoLayer';
+        finisherVideoLayer.setAttribute('aria-hidden','true');
+        finisherVideo=document.createElement('video');
+        finisherVideo.className='segelFinisherVideo';
+        finisherVideo.src=FRAMES.finisherVideo;
+        finisherVideo.preload='auto';
+        finisherVideo.playsInline=true;
+        finisherVideo.controls=false;
+        finisherVideo.disablePictureInPicture=true;
+        finisherVideo.setAttribute('playsinline','');
+        finisherVideo.setAttribute('webkit-playsinline','');
+        finisherVideoLayer.appendChild(finisherVideo);
+        mount.appendChild(finisherVideoLayer);
+      }
+      return finisherVideo;
+    }
+    function stopFinisherVideo(){
+      const video=finisherVideo||document.querySelector('#segelFinisherVideoLayer video');
+      const layer=finisherVideoLayer||document.getElementById('segelFinisherVideoLayer');
+      if(video){
+        try{video.pause();video.currentTime=0}catch(_){}
+      }
+      layer?.classList.remove('active');
+    }
+    async function playFinisherVideo(lifecycle){
+      const video=ensureFinisherVideo(), layer=finisherVideoLayer;
+      if(!video||!layer)return false;
+      try{
+        video.pause();
+        video.currentTime=0;
+        video.muted=typeof paMuted!=='undefined'&&paMuted;
+        video.volume=Math.max(0,Math.min(1,typeof PA_VOLUME_SCALE==='number'?PA_VOLUME_SCALE:.8));
+        layer.classList.add('active');
+        let ended=false;
+        const onEnded=()=>{ended=true};
+        const onError=()=>{ended=true};
+        video.addEventListener('ended',onEnded,{once:true});
+        video.addEventListener('error',onError,{once:true});
+        const promise=video.play();
+        if(promise&&typeof promise.then==='function')await promise;
+        const deadline=performance.now()+5200;
+        while(!ended&&performance.now()<deadline&&lifecycle===S.lifecycle)await wait(40);
+        video.removeEventListener('ended',onEnded);
+        video.removeEventListener('error',onError);
+        video.pause();
+        layer.classList.remove('active');
+        await wait(90);
+        return lifecycle===S.lifecycle;
+      }catch(_){
+        stopFinisherVideo();
+        return false;
+      }
+    }
+    const preloadedFinisherVideo=ensureFinisherVideo();
+    try{preloadedFinisherVideo?.load?.()}catch(_){}
     const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
     if(finisherAttack)finisherAttack.style.backgroundImage=`url("${FRAMES.finalmove}")`;
     if(mathBurst){
@@ -1192,6 +1258,11 @@
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         const finalHit=S.active===TIERS.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
         if(finalHit&&!reduceMotion){
+          const videoPlayed=await playFinisherVideo(lifecycle);
+          if(lifecycle!==S.lifecycle)return;
+          if(videoPlayed){ S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME; return; }
+          // Jika video gagal dimuat atau autoplay disekat, jatuh balik ke
+          // finisher ilustrasi sedia ada supaya hentaman terakhir tidak hilang.
           host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
           void host.offsetWidth;
           S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.12;
@@ -1344,7 +1415,7 @@
       },
       wrong(){ S.shake=.14 },
       reset(){
-        ++S.lifecycle;S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
+        ++S.lifecycle;stopFinisherVideo();S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
         host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME;
@@ -1370,7 +1441,7 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact'); S.heroFade=1; },
+      cancel(){ ++S.lifecycle; stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact'); S.heroFade=1; },
       setPet(config){ return setPetVisual(config); },
       previewRescueHappy:async()=>{
         if(!entryMode?.devBattlefield)return false;
@@ -1381,7 +1452,7 @@
         await wait(900);
         return result;
       },
-      dispose(){ S.running=false; cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
+      dispose(){ S.running=false; stopFinisherVideo(); finisherVideoLayer?.remove(); cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
   }
 
