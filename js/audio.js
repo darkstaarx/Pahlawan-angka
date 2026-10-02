@@ -98,6 +98,12 @@ function unlockSfx(){
   if(a&&!paMuted){
     try{a.volume=0.001;const p=a.play();if(p&&p.then)p.then(()=>{a.pause();a.currentTime=0;a.volume=.65*PA_VOLUME_SCALE;}).catch(()=>{a.volume=.65*PA_VOLUME_SCALE;});}catch(e){}
   }
+  /* Prime the delayed finisher cue inside the first user gesture. Some mobile
+     browsers reject a later play() after the eye cut-in's await sequence. */
+  const charge=PA_AUDIO_CACHE.chargeup;
+  if(charge&&!paMuted){
+    try{charge.volume=0.001;const p=charge.play();if(p&&p.then)p.then(()=>{charge.pause();charge.currentTime=0;charge.volume=.72*PA_VOLUME_SCALE;}).catch(()=>{charge.volume=.72*PA_VOLUME_SCALE;});}catch(e){}
+  }
 }
 function playSfx(name){
   if(paMuted)return;
