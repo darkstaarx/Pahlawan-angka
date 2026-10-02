@@ -86,7 +86,7 @@
     heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.png`),
     heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
     finalmove:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
-    finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4',
+    finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4?v=3.84.86',
     finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.png',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
@@ -217,7 +217,7 @@
     let finisherVideoLayer=null, finisherVideo=null;
     function ensureFinisherVideo(){
       if(finisherVideo&&finisherVideo.isConnected)return finisherVideo;
-      const mount=$('segelDemo')||document.body;
+      const mount=document.body;
       finisherVideoLayer=document.getElementById('segelFinisherVideoLayer');
       if(finisherVideoLayer){
         finisherVideo=finisherVideoLayer.querySelector('video');
@@ -262,8 +262,17 @@
         const onError=()=>{ended=true};
         video.addEventListener('ended',onEnded,{once:true});
         video.addEventListener('error',onError,{once:true});
-        const promise=video.play();
-        if(promise&&typeof promise.then==='function')await promise;
+        try{
+          const promise=video.play();
+          if(promise&&typeof promise.then==='function')await promise;
+        }catch(firstError){
+          // Sesetengah browser Android menolak playback bersuara selepas
+          // aliran jawapan async. Cuba semula muted supaya visual finisher
+          // tetap wajib muncul; bunyi game akan terus mengiringi flow.
+          video.muted=true;
+          const retry=video.play();
+          if(retry&&typeof retry.then==='function')await retry;
+        }
         const deadline=performance.now()+5200;
         while(!ended&&performance.now()<deadline&&lifecycle===S.lifecycle)await wait(40);
         video.removeEventListener('ended',onEnded);
@@ -1257,10 +1266,16 @@
         const lifecycle=S.lifecycle;
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         const finalHit=S.active===TIERS.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
-        if(finalHit&&!reduceMotion){
+        if(finalHit){
           const videoPlayed=await playFinisherVideo(lifecycle);
           if(lifecycle!==S.lifecycle)return;
           if(videoPlayed){ S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME; return; }
+          if(reduceMotion){
+            // Video ialah kandungan penamat yang diminta pengguna, jadi ia
+            // masih dicuba walaupun sistem mengurangkan animasi. Jika browser
+            // langsung gagal memainkan video, barulah guna hentaman minimum.
+            sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return;
+          }
           // Jika video gagal dimuat atau autoplay disekat, jatuh balik ke
           // finisher ilustrasi sedia ada supaya hentaman terakhir tidak hilang.
           host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
