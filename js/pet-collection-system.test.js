@@ -30,8 +30,8 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  assert.match(preview.find(p=>p.id==='ketupatKura').assets.sadSprite,/sad-v1\.png$/);
 });
 
-test('skill based per-grade rotation previews multiple pets without RNG',()=>{
- const data=fresh(),seen=[];
+test('skill based per-grade rotation previews multiple eligible pets without RNG',()=>{
+ const data=fresh(),seen=[];data.level=25;
  for(let i=0;i<5;i++)seen.push(pets.assignGembokRescue(data,{id:`a${i}`,gembok:true},'D1.N20').petId);
  assert.equal(new Set(seen).size,5);
  assert.equal(data.petRescueRotation[1],5);
