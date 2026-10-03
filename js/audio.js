@@ -16,7 +16,8 @@ const PA_AUDIO={
 };
 const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
-const PA_BATTLE_MUSIC_VOLUME=.0975; // 25% lower than prior mix; keeps BGM behind SFX/voice
+const PA_BATTLE_MUSIC_VOLUME=.08; // softer background mix
+const PA_BATTLE_MUSIC_RATE=.90; // ~10% slower tempo while keeping pitch stable when supported
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
 const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic.mp3','assets/audio/bgmusic2.mp3'],mode:'off'};
@@ -40,14 +41,22 @@ function fadeForestAmbience(target){
 }
 function ensureBattleMusic(){
   if(PA_BATTLE_AUDIO.music)return PA_BATTLE_AUDIO.music;
-  const music=new Audio();music.preload='auto';music.volume=PA_BATTLE_MUSIC_VOLUME*PA_VOLUME_SCALE;music.addEventListener('ended',playNextBattleMusic);
+  const music=new Audio();
+  music.preload='auto';
+  music.volume=PA_BATTLE_MUSIC_VOLUME*PA_VOLUME_SCALE;
+  music.playbackRate=PA_BATTLE_MUSIC_RATE;
+  if('preservesPitch' in music)music.preservesPitch=true;
+  if('webkitPreservesPitch' in music)music.webkitPreservesPitch=true;
+  music.addEventListener('ended',playNextBattleMusic);
   PA_BATTLE_AUDIO.music=music;return music;
 }
 function playNextBattleMusic(){
   const music=ensureBattleMusic();if(!music||paMuted||PA_BATTLE_AUDIO.mode==='off')return;
   if(music.src&&!music.paused&&!music.ended)return;
   const tracks=PA_BATTLE_AUDIO.musicTracks;PA_BATTLE_AUDIO.musicIndex=(PA_BATTLE_AUDIO.musicIndex+1)%tracks.length;
-  music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.load();music.currentTime=0;music.volume=PA_BATTLE_MUSIC_VOLUME*PA_VOLUME_SCALE;
+  music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.load();music.currentTime=0;
+  music.volume=PA_BATTLE_MUSIC_VOLUME*PA_VOLUME_SCALE;
+  music.playbackRate=PA_BATTLE_MUSIC_RATE;
   const p=music.play();if(p&&p.catch)p.catch(()=>{});
 }
 function stopBattleMusic(){
