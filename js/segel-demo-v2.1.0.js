@@ -25,8 +25,8 @@
   // Index lama masih memanggil bundle ini beberapa kali. Selepas bundle live
   // masuk, jangan benarkan salinan legacy overwrite host dan stage semula.
   const src=String(document.currentScript?.src||'');
-  const canonical=/[?&]v=4\.0\.17(?:[&#]|$)/.test(src);
-  if(window.__PA_SEGEL_CANONICAL__&&!canonical)return;
+  const canonical=/[?&]v=4\.0\.21(?:[&#]|$)/.test(src);
+  if(window.__PA_SEGEL_CANONICAL__)return;
   if(canonical)window.__PA_SEGEL_CANONICAL__=true;
   'use strict';
 
@@ -619,6 +619,8 @@
       return loaded||fallback;
     }
     let activePetConfig=devPetConfig(), petVisualGeneration=0;
+    let rescuePetConfig=devPetConfig(), rescuePetVisualGeneration=0;
+    let rescueSadE=petSadE, rescueHappyE=petJoyE, rescueSadHold=PET_IDLE_HOLD;
 
     function actor(first,z,cleanHeroMatte=false){
       const material=new THREE.MeshBasicMaterial({map:first.tex,transparent:true,depthWrite:false});
@@ -1035,6 +1037,30 @@
         swapCompanion(S.companionFrames[0]);
       }
     }
+
+    async function setRescuePetVisual(config){
+      const generation=++rescuePetVisualGeneration;
+      rescuePetConfig=config&&typeof config==='object'?config:null;
+      // Hide the trapped mesh while the target textures load so an old target
+      // from the previous run can never flash for one frame.
+      pet.visible=false;
+      const sad=await customPetFrames(rescuePetConfig,'sad',petSad);
+      const happy=await customPetFrames(rescuePetConfig,'happy',petJoy);
+      if(generation!==rescuePetVisualGeneration)return;
+      const sadUpp=sad.custom?petUpp(sad.frames):PET_UPP;
+      const happyUpp=happy.custom?petUpp(happy.frames):PET_UPP;
+      rescueSadE=sad.custom?petEntries(sad.frames,sadUpp):sad.frames.map(t=>entry(t,PET_UPP));
+      rescueHappyE=happy.custom?petEntries(happy.frames,happyUpp):happy.frames.map(t=>entry(t,PET_UPP));
+      if(!rescueSadE.length)rescueSadE=petSadE;
+      if(!rescueHappyE.length)rescueHappyE=petJoyE;
+      rescueSadHold=sad.custom&&rescueSadE.length===4?PET_SHEET_HOLD:(rescueSadE.length===8?PET_IDLE_HOLD:null);
+      S.petFrames=S.rescued?rescueHappyE:rescueSadE;
+      S.petHold=S.rescued?null:rescueSadHold;
+      S.petFps=S.rescued?4:(rescueSadHold?4:2);
+      S.petFrameT0=tAcc;
+      pet.visible=true;
+      if(S.petFrames[0])swap(pet,S.petFrames[0]);
+    }
     function swapCompanion(e){
       if(!e)return;
       swap(companion,e);
@@ -1443,9 +1469,9 @@
         const lifecycle=S.lifecycle;
         sfx('finisher');
         S.shake=.5; burst(7,0xffffff); S.waveT=0; S.flashT=0;
-        // Aurora bebas dan Wira bersorak — kedua-duanya bertukar sprite gembira.
-        S.rescued=true; S.petFrames=petJoyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7; S.petFrameT0=tAcc;
-        if(activePetConfig){ await setPetVisual(activePetConfig); S.petY=GROUND+.7; }
+        // Pet yang TERKUNCI bebas; Teman aktif kekal di luar Segel sebagai companion.
+        S.rescued=true; S.petFrames=rescueHappyE; S.petHold=null; S.petFps=4; S.petY=GROUND+.7; S.petFrameT0=tAcc;
+        if(S.petFrames[0])swap(pet,S.petFrames[0]);
         S.heroFrames=heroHappyE; S.heroHold=null; S.heroFps=HERO_CHEER_FPS; S.heroLock=null; S.heroFrameT0=tAcc;
         await wait(520); if(lifecycle!==S.lifecycle)return false; S.petY=GROUND;
         await wait(420); return lifecycle===S.lifecycle;
@@ -1517,7 +1543,8 @@
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
         coins.forEach(c=>{ c.picked=true; c.coin.visible=false; c.trail.visible=false });
         absorbFlare.visible=false;
-        S.petFrames=petSadE; S.petHold=PET_IDLE_HOLD; S.petY=GROUND; S.petFrameT0=tAcc;
+        S.petFrames=rescueSadE; S.petHold=rescueSadHold; S.petFps=rescueSadHold?4:2; S.petY=GROUND; S.petFrameT0=tAcc;
+        pet.visible=true;if(S.petFrames[0])swap(pet,S.petFrames[0]);
         S.companionFrameT0=tAcc;S.companionFeet=COMPANION_HOME;companion.visible=!!activePetConfig;
         if(activePetConfig)setPetVisual(activePetConfig);
         S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD; S.heroFrameT0=tAcc;
@@ -1535,7 +1562,9 @@
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
       cancel(){ ++S.lifecycle; stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact'); S.heroFade=1; },
-      setPet(config){ return setPetVisual(config); },
+      setCompanion(config){ return setPetVisual(config); },
+      setRescuePet(config){ return setRescuePetVisual(config); },
+      setPet(config){ return Promise.all([setPetVisual(config),setRescuePetVisual(config)]); },
       previewRescueHappy:async()=>{
         if(!entryMode?.devBattlefield)return false;
         await stage.forceBreakRest();
@@ -1819,6 +1848,7 @@
       const q=window.PAProductionJourney?.nextQuestion?.(run.productionRun);
       if(!q){finishRun(false,'Soalan Gembok tidak dapat dimuat.');return;}
       run.q=q;
+      if(run.productionRun.rescuePetConfig)stage?.setRescuePet?.(run.productionRun.rescuePetConfig);
       return paintQuestion(q,q.skill);
     }
     const adaptiveId=(entryMode&&entryMode.adaptive)?adaptiveSkillId():null;
@@ -2283,7 +2313,8 @@
       if(typeof screen==='function')screen('segelDemo');
       try{await boot()}catch(_){$('segelFeedback').textContent='Pentas Gembok tidak dapat dimuat pada peranti ini.';return;}
       if(!window.PAProductionJourney?.isCurrent?.(productionRun)||productionRun.session.generation!==generation)return;
-      await stage.setPet?.(productionRun.petConfig||null);
+      await stage.setCompanion?.(productionRun.petConfig||null);
+      await stage.setRescuePet?.(null);
       if(!window.PAProductionJourney?.isCurrent?.(productionRun)||productionRun.session.generation!==generation)return;
       bindSpeaker();bindSound();bindHint();stage.resume();startProductionRun(productionRun);
     },
