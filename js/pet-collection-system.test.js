@@ -27,6 +27,7 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  assert.equal(preview.find(p=>p.id==='aurora').species,'Musang Ekor Angka');
  assert.equal(preview.find(p=>p.id==='aurora').assets.idleSprite,null);
  assert.equal(preview.find(p=>p.id==='ketupatKura').name,'Kura-Kura Ketupat');
+ assert.match(preview.find(p=>p.id==='ketupatKura').assets.sadSprite,/sad-v1\.png$/);
 });
 
 test('skill based per-grade rotation previews multiple pets without RNG',()=>{
@@ -59,12 +60,20 @@ test('threshold plus gate tames exactly once and completion replay is idempotent
  assert.equal(data.petCollection.ketupatKura.rescues,10);
 });
 
-test('an assigned pet above the Wira gate receives neither rescues nor taming',()=>{
- const data=fresh();data.level=1;data.petRescueRotation={1:4};
- const run=assigned(data,'gate');assert.equal(run.rescuePetId,'durianKerbau');
+test('assignment skips locked pet gates instead of promising an impossible rescue',()=>{
+ const tooLow=fresh();tooLow.level=1;tooLow.petRescueRotation={1:0};
+ assert.equal(pets.assignGembokRescue(tooLow,{id:'locked',gembok:true},'D1.N20'),null);
+
+ const data=fresh();data.level=3;data.petRescueRotation={1:1};
+ const run={id:'skip-gates',gembok:true,route:'manual'};
+ const assignment=pets.assignGembokRescue(data,run,'D1.N20');
+ assert.equal(assignment.petId,'ketupatKura');
+ assert.equal(data.petRescueRotation[1],6);
+ run.completed=true;
  const result=pets.awardGembokCompletion(data,run,{now:100});
- assert.equal(result.rescueAwarded,false);assert.equal(result.newlyTamed,false);
- assert.equal(data.petCollection.durianKerbau.rescues,0);assert.equal(data.petCollection.durianKerbau.state,'unseen');
+ assert.equal(result.rescueAwarded,true);
+ assert.equal(data.petCollection.ketupatKura.rescues,1);
+ assert.equal(data.petCollection.kumbangManggis.rescues,0);
 });
 
 test('real manual and adaptive completions award exactly 20 Bond XP once to the equipped tamed pet',()=>{
@@ -124,6 +133,7 @@ test('real manual and adaptive production routes assign from their selected skil
   const run=h.context.PAProductionJourney.state(),question=h.context.PAProductionJourney.nextQuestion(run);
   assert.equal(question.skill,'D1.N20');assert.ok(run.rescuePetId);assert.equal(run.rescueGrade,1);
   assert.equal(run.rescueSkillId,question.skill);assert.equal(run.rescueThreshold,pets.rescueThreshold(run.rescuePetId,1));
+  assert.equal(run.rescuePetConfig.id,run.rescuePetId);assert.ok(run.rescuePetConfig.sadSheet);
  }
 });
 
