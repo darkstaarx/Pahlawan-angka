@@ -8,10 +8,14 @@ const coinChoices=[5,10,20,50,100],ringgitChoices=[100,500,1000];
 
 GEN['3.1.1']=function(id,s){
  const mode=chooseMode(id,'3.1.1',bandModes(s,['identify'],['identify','word_match'],['word_match','equivalent_name','non_example']));
- const cases=[[1,2,'satu perdua'],[1,4,'satu perempat'],[2,4,'dua perempat'],[3,4,'tiga perempat']],x=choose(cases),[n,d,word]=x;
+ /* Darjah 1 kekal pada separuh dan perempat mengikut skop KSSR, tetapi
+    bank mesti membezakan bentuk, bahasa dan keseluruhan. 4/4 sengaja hadir
+    sebagai satu keseluruhan supaya murid tidak menghafal hanya 1/4–3/4. */
+ const cases=[[1,2,'satu perdua'],[1,4,'satu perempat'],[2,4,'dua perempat'],[3,4,'tiga perempat'],[4,4,'empat perempat']],x=choose(cases),[n,d,word]=x;
  if(mode==='identify')return mark(q(`${fractionStrip(n,d)}Bahagian berlorek ialah?`,`${n}/${d}`,[Nq(`${d-n}/${d}`,'fraction'),Nq(`${d}/${n}`,'fraction'),Nq(`${n}/${Math.max(2,d+1)}`,'fraction')],'Penyebut ialah semua bahagian sama besar.','Tahun 1 · Kenal Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='word_match')return mark(q(`${fractionStrip(n,d)}Nama pecahan yang betul?`,word,[Nq('satu perdua','fraction'),Nq('satu perempat','fraction'),Nq('dua perempat','fraction'),Nq('tiga perempat','fraction')].filter(o=>o.v!==word).slice(0,3),'Padankan bilangan bahagian berlorek dengan nama pecahan.','Tahun 1 · Nama Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='equivalent_name'){
+  if(n===4){return mark(q(`${fractionStrip(4,4)}Empat perempat menunjukkan?`,'satu keseluruhan',[Nq('satu perempat','fraction'),Nq('satu perdua','fraction'),Nq('tiada bahagian','fraction')],'Semua 4 daripada 4 bahagian dipilih, jadi satu keseluruhan lengkap.','Tahun 1 · Pecahan sebagai Keseluruhan'),id,'3.1.1',mode,'visual','reasoning',s,['fraction']);}
   const ans='satu perdua';return mark(q(`${fractionStrip(2,4)}Dua perempat memenuhi bahagian yang sama seperti?`,ans,[Nq('satu perempat','fraction'),Nq('tiga perempat','fraction'),Nq('satu keseluruhan','fraction')],'Dua daripada empat bahagian sama besar ialah separuh keseluruhan.','Tahun 1 · Hubungan Pecahan'),id,'3.1.1',mode,'visual','reasoning',s,['fraction']);
  }
  return mark(q('Yang manakah <b>bukan</b> menunjukkan satu perempat?','bahagian yang tidak sama besar',[Nq('1 daripada 4 bahagian sama besar','fraction'),Nq('suku daripada satu objek','fraction'),Nq('satu perempat daripada kek','fraction')],'Pecahan memerlukan bahagian yang sama besar.','Tahun 1 · Bukan Contoh Pecahan'),id,'3.1.1',mode,'verbal','reasoning',s,['fraction']);

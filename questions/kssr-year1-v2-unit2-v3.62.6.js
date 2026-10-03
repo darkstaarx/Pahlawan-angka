@@ -129,13 +129,14 @@ GEN['2.5.1']=function(id,s){
 };
 
 GEN['2.6.2']=function(id,s){
- const step=choose([2,4,5,10]),times=rand(2,4),start=step*times,arr=[start],parts=[];let x=start;
+ const step=choose([2,4,5,10]),times=rand(2,4),extra=choose([1,2]),start=step*(times+extra),remaining=start-step*times,arr=[start],parts=[];let x=start;
  for(let i=0;i<times;i++){parts.push(step);x-=step;arr.push(x)}
- const expr=arr[0]+' − '+parts.map(()=>step).join(' − ')+' = 0';
- const mode=chooseMode(id,'2.6.2',bandModes(s,['write_repeat_sub'],['write_repeat_sub','match_remove'],['match_remove','missing_sub']));
- if(mode==='write_repeat_sub')return mark(q(`Ada <b>${start}</b> objek. Keluarkan <b>${step}</b> setiap kali hingga habis. Ayat tolak berturut-turut?`,expr,[Nq(`${start} − ${times} = ${start-times}`,'repeated_sub'),Nq(`${step} + ${step} = ${step*2}`,'operation'),Nq(`${start} − ${step} = ${start-step}`,'repeated_sub')],'Tolak kuantiti yang sama berulang kali hingga habis.','Tahun 1 · Tolak Berturut-turut'),id,'2.6.2',mode,'story','procedure',s,['repeated_sub']);
- if(mode==='match_remove')return mark(q(`<b>${expr}</b> bermaksud?`,`keluarkan ${step} sebanyak ${times} kali`,[Nq(`tambah ${step} sebanyak ${times} kali`,'repeated_sub'),Nq(`keluarkan ${times} sekali sahaja`,'repeated_sub'),Nq(`bahagi kepada ${start} kumpulan`,'repeated_sub')],'Setiap tanda tolak menunjukkan satu pengeluaran.','Tahun 1 · Makna Tolak Berturut-turut'),id,'2.6.2',mode,'verbal','application',s,['repeated_sub']);
- return mark(q(`${start} − ${step} − ___ = ${Math.max(0,start-step*2)}`,step,[Nq(times,'repeated_sub'),Nq(start-step,'operation'),Nq(step*2,'operation')],'Nilai yang ditolak berulang adalah sama.','Tahun 1 · Tolak Berulang Hilang'),id,'2.6.2',mode,'symbolic','reasoning',s,['repeated_sub']);
+ const expr=arr[0]+' − '+parts.map(()=>step).join(' − ')+' = '+remaining;
+ const mode=chooseMode(id,'2.6.2',bandModes(s,['write_repeat_sub'],['write_repeat_sub','match_remove','remaining'],['match_remove','remaining','missing_sub']));
+ if(mode==='write_repeat_sub')return mark(q(`Ada <b>${start}</b> objek. Keluarkan <b>${step}</b> sebanyak <b>${times}</b> kali. Ayat tolak berturut-turut yang betul?`,expr,[Nq(`${start} − ${times} = ${remaining}`,'repeated_sub'),Nq(`${step} + ${step} = ${step*2}`,'operation'),Nq(`${start} − ${step} = ${start-step}`,'repeated_sub')],'Tolak nilai yang sama setiap kali, kemudian semak baki yang tinggal.','Tahun 1 · Tolak Berturut-turut'),id,'2.6.2',mode,'story','procedure',s,['repeated_sub']);
+ if(mode==='match_remove')return mark(q(`<b>${expr}</b> bermaksud?`,`keluarkan ${step} sebanyak ${times} kali dan tinggal ${remaining}`,[Nq(`tambah ${step} sebanyak ${times} kali`,'repeated_sub'),Nq(`keluarkan ${times} sekali sahaja`,'repeated_sub'),Nq(`bahagi kepada ${start} kumpulan`,'repeated_sub')],'Setiap tanda tolak menunjukkan satu pengeluaran; jawapan akhir ialah baki.','Tahun 1 · Makna Tolak Berturut-turut'),id,'2.6.2',mode,'verbal','application',s,['repeated_sub']);
+ if(mode==='remaining')return mark(q(`Ada <b>${start}</b> objek. Keluarkan <b>${step}</b>, kemudian <b>${step}</b> lagi. Berapa objek yang tinggal?`,start-step*2,[Nq(start-step,'repeated_sub'),Nq(start-step*3,'repeated_sub'),Nq(step*2,'operation')],'Tolak satu kumpulan pada satu masa dan lihat baki selepas dua langkah.','Tahun 1 · Baki Selepas Tolak Berulang'),id,'2.6.2',mode,'story','application',s,['repeated_sub','operation']);
+ return mark(q(`${start} − ${step} − ___ = ${remaining}`,step,[Nq(times,'repeated_sub'),Nq(start-step,'operation'),Nq(step*2,'operation')],'Nilai yang ditolak berulang adalah sama.','Tahun 1 · Tolak Berulang Hilang'),id,'2.6.2',mode,'symbolic','reasoning',s,['repeated_sub']);
 };
 
 document.documentElement?.setAttribute('data-y1-v2-unit2','3.62.6');
