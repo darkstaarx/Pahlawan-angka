@@ -22,7 +22,10 @@ GEN['3.1.1']=function(id,s){
 };
 
 GEN['3.2.1']=function(id,s){
- const mode=chooseMode(id,'3.2.1',bandModes(s,['share'],['share','remaining'],['remaining','compare_story']));
+ /* Darjah 1 menekankan satu keseluruhan, bahagian sama besar dan perkongsian
+    mudah. Perbandingan 1/4 lawan 2/4 dikeluarkan daripada laluan biasa;
+    ia lebih sesuai sebagai pengayaan selepas asas benar-benar kukuh. */
+ const mode=chooseMode(id,'3.2.1',bandModes(s,['share'],['share','remaining'],['remaining','whole_story']));
  if(mode==='share'){
   const d=choose([2,4]),n=rand(1,d-1),ans=`${n}/${d}`,item=choose(['roti canai','kuih bakar','buah tembikai']);
   return mark(q(`${item} dibahagi sama rata kepada <b>${d}</b> bahagian. ${name()} mengambil <b>${n}</b> bahagian. Pecahan yang diambil?`,ans,[Nq(`${d}/${n}`,'fraction'),Nq(`${d-n}/${d}`,'fraction'),Nq(`${n}/${d+1}`,'fraction')],'Jumlah bahagian sama besar menjadi penyebut.','Tahun 1 · Pecahan dalam Kehidupan'),id,'3.2.1',mode,'story','application',s,['fraction']);
@@ -31,7 +34,7 @@ GEN['3.2.1']=function(id,s){
   const d=4,taken=choose([1,2,3]),left=d-taken,ans=`${left}/4`;
   return mark(q(`Sebiji kuih dibahagi kepada <b>4</b> bahagian sama besar. <b>${taken}</b> bahagian dimakan. Pecahan yang tinggal?`,ans,[Nq(`${taken}/4`,'fraction'),Nq(`4/${left}`,'fraction'),Nq(`${left}/2`,'fraction')],'Bahagian tinggal = semua bahagian − bahagian dimakan.','Tahun 1 · Pecahan Tinggal'),id,'3.2.1',mode,'story','application',s,['fraction','operation']);
  }
- return mark(q('Aina makan satu perempat roti canai, Kumar makan dua perempat daripada roti yang sama saiz. Siapa makan bahagian lebih besar?','Kumar',[Nq('Aina','fraction'),Nq('sama banyak','fraction'),Nq('tidak boleh dibanding','fraction')],'Penyebut sama: banding bilangan bahagian yang diambil.','Tahun 1 · Banding Pecahan Harian'),id,'3.2.1',mode,'story','reasoning',s,['fraction','compare']);
+ return mark(q(`Sebiji roti dibahagi kepada <b>4 bahagian sama besar</b>. Semua 4 bahagian dipilih. Apakah maksudnya?`,'satu keseluruhan',[Nq('satu perempat','fraction'),Nq('satu perdua','fraction'),Nq('tiada bahagian','fraction')],'Jika semua bahagian sama besar dipilih, kita mempunyai satu keseluruhan.','Tahun 1 · Satu Keseluruhan'),id,'3.2.1',mode,'story','concept',s,['fraction','whole']);
 };
 
 GEN['4.1.1']=function(id,s){
