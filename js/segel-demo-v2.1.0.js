@@ -297,7 +297,7 @@
       if(video){
         try{video.pause();video.currentTime=0}catch(_){}
       }
-      host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge');
+      host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
@@ -305,7 +305,7 @@
          payoff surface. The selected profile hero only changes presentation;
          seal damage and scoring remain exactly one final hit. */
       stopFinisherVideo();
-      host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end','finisher-impact-end');
+      host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
       const heroId=liveFinisherHero(),cfg=applyLiveFinisherAssets(heroId);
       void host.offsetWidth;
 
