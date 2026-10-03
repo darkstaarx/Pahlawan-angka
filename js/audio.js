@@ -16,6 +16,7 @@ const PA_AUDIO={
 };
 const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
+const PA_BATTLE_MUSIC_VOLUME=.13; // background level: sits below SFX/voice instead of competing with them
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
 const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic.mp3','assets/audio/bgmusic2.mp3'],mode:'off'};
@@ -39,14 +40,14 @@ function fadeForestAmbience(target){
 }
 function ensureBattleMusic(){
   if(PA_BATTLE_AUDIO.music)return PA_BATTLE_AUDIO.music;
-  const music=new Audio();music.preload='auto';music.volume=.28*PA_VOLUME_SCALE;music.addEventListener('ended',playNextBattleMusic);
+  const music=new Audio();music.preload='auto';music.volume=PA_BATTLE_MUSIC_VOLUME*PA_VOLUME_SCALE;music.addEventListener('ended',playNextBattleMusic);
   PA_BATTLE_AUDIO.music=music;return music;
 }
 function playNextBattleMusic(){
   const music=ensureBattleMusic();if(!music||paMuted||PA_BATTLE_AUDIO.mode==='off')return;
   if(music.src&&!music.paused&&!music.ended)return;
   const tracks=PA_BATTLE_AUDIO.musicTracks;PA_BATTLE_AUDIO.musicIndex=(PA_BATTLE_AUDIO.musicIndex+1)%tracks.length;
-  music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.load();music.currentTime=0;music.volume=.28*PA_VOLUME_SCALE;
+  music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.load();music.currentTime=0;music.volume=PA_BATTLE_MUSIC_VOLUME*PA_VOLUME_SCALE;
   const p=music.play();if(p&&p.catch)p.catch(()=>{});
 }
 function stopBattleMusic(){
