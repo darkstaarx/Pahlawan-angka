@@ -10,8 +10,9 @@
   #segelStage.finisher-dash .segelFinisherAttack.segelFinisherAttack{display:block!important;opacity:1!important;visibility:visible!important;z-index:31!important}
   #segelStage.finisher-math .segelMathBurst{z-index:32}
 #segelStage.finisher-impact .segelFinisherImpact{display:block!important;opacity:1!important;visibility:visible!important;z-index:33!important}
-#segelStage.finisher-impact .segelFinisherImpact{background-image:url('../audit/aura-farming-assets/glacier-math-strike-v1.png');background-repeat:no-repeat;background-size:300% 100%;background-position:0 50%;animation:glacierMathStrike 720ms steps(1,end) both!important;object-fit:fill}
-@keyframes glacierMathStrike{0%,24.99%{background-position:0 50%}25%,49.99%{background-position:50% 50%}50%,100%{background-position:100% 50%}}
+#segelStage.finisher-impact .segelFinisherImpact{left:66%;top:auto;bottom:7%;width:min(45vw,420px);height:min(60vw,560px);background-image:url('../assets/fx/wira/final-v3/glacier-ice-math-v1.png');background-repeat:no-repeat;background-size:contain;background-position:center bottom;transform:translate(-50%,12%) scale(.42);transform-origin:center bottom;animation:glacierMathRiseV2 720ms cubic-bezier(.16,.84,.28,1) both!important;object-fit:contain}
+@keyframes glacierMathRiseV2{0%{opacity:0;transform:translate(-50%,18%) scale(.34)}18%{opacity:.82;transform:translate(-50%,7%) scale(.58)}52%{opacity:1;transform:translate(-50%,0) scale(1.02)}74%{transform:translate(-50%,1%) scale(.97)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
+@media(max-width:520px){#segelStage.finisher-impact .segelFinisherImpact{left:66%;bottom:6%;width:min(54vw,330px);height:min(72vw,440px)}}
 
 /* Main battle charge: use the authored Wira charge sheet, not the old generic aura. */
 .segelChargeHero{position:absolute;left:4%;bottom:2%;width:32%;height:78%;z-index:11;opacity:0;visibility:hidden;pointer-events:none;background:url('../assets/fx/wira/final-v2/wira-charge-sheet-v3.png') 0 0/400% 100% no-repeat;filter:drop-shadow(0 10px 8px rgba(0,0,0,.58)) drop-shadow(0 0 13px rgba(71,211,255,.5))}
