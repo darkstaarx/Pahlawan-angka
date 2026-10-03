@@ -1,0 +1,186 @@
+/* Live Segel hero finishers — aura-farming charge -> focus -> release -> target impact.
+   Presentation only. Seal scoring/damage remains owned by segel-demo-v2.1.0.js. */
+
+/* Wira keeps the authored four-frame charge sheet, but the live sequence now
+   actually holds this phase before the eye cut-in. */
+#segelStage[data-finisher-hero="wira"].finisher-charge .segelChargeHero{
+  animation:wiraChargeSheet 1600ms steps(1,end) 1 forwards!important;
+}
+
+/* ---------------------------------------------------------------
+   BUNGA — TEOREM MEKAR
+   Planted meditation -> green/gold aura -> remote release -> thorn bloom.
+   --------------------------------------------------------------- */
+#segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeAura{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  left:1%;bottom:-4%;width:47%;height:88%;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  mix-blend-mode:screen;filter:drop-shadow(0 0 15px rgba(100,245,158,.86)) drop-shadow(0 0 30px rgba(246,216,96,.38));
+  animation:liveBungaAuraFarm 1500ms ease-in-out both!important;
+}
+#segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeHero{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  left:3%;bottom:1%;width:39%;height:88%;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  filter:drop-shadow(0 10px 9px rgba(0,0,0,.52)) drop-shadow(0 0 17px rgba(88,234,148,.55));
+  animation:liveBungaFocusFarm 1500ms ease-in-out both!important;
+}
+@keyframes liveBungaAuraFarm{
+  0%{opacity:0!important;transform:scale(.58) rotate(-9deg);filter:brightness(.72) drop-shadow(0 0 5px rgba(84,231,144,.3))}
+  30%{opacity:.68!important;transform:scale(.82) rotate(-3deg)}
+  68%{opacity:.94!important;transform:scale(1.01) rotate(2deg);filter:brightness(1.2) drop-shadow(0 0 22px rgba(102,244,157,.9))}
+  100%{opacity:1!important;transform:scale(1.08) rotate(4deg);filter:brightness(1.36) drop-shadow(0 0 30px rgba(255,229,123,.78))}
+}
+@keyframes liveBungaFocusFarm{
+  0%,100%{transform:translateY(0) scale(1)}
+  48%{transform:translateY(-4px) scale(1.025)}
+}
+#segelStage[data-finisher-hero="bunga"].finisher-focus .finalEyePortrait{
+  left:9%!important;top:5%!important;width:82%!important;height:82%!important;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  filter:drop-shadow(0 0 16px rgba(255,255,255,.45)) drop-shadow(0 0 34px rgba(65,229,135,.62))!important;
+  animation:liveBungaBlackFocus 700ms ease-out both!important;
+}
+#segelStage[data-finisher-hero="bunga"].finisher-focus .segelFinalFocus:after{
+  content:"";position:absolute;left:50%;top:57%;width:52%;aspect-ratio:1;transform:translate(-50%,-50%);
+  border:2px solid rgba(126,242,166,.34);border-radius:50%;
+  box-shadow:0 0 28px rgba(91,235,146,.44),inset 0 0 34px rgba(250,222,105,.14);
+  animation:liveBungaFocusRing 700ms ease-out both;
+}
+@keyframes liveBungaBlackFocus{0%{opacity:0;transform:scale(.94)}30%{opacity:1}100%{opacity:1;transform:scale(1.02)}}
+@keyframes liveBungaFocusRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.45)}100%{opacity:.9;transform:translate(-50%,-50%) scale(1)}}
+#segelStage[data-finisher-hero="bunga"].finisher-dash .segelFinisherAttack{
+  left:5%!important;bottom:2%!important;width:42%!important;height:86%!important;aspect-ratio:auto!important;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  animation:liveBungaRelease 520ms cubic-bezier(.18,.78,.2,1) both!important;
+}
+@keyframes liveBungaRelease{
+  0%{opacity:0;transform:translateX(-10px) scale(.94)}
+  26%{opacity:1;transform:translateX(0) scale(1.02)}
+  72%{opacity:1;transform:translateX(2px) scale(1)}
+  100%{opacity:0;transform:translateX(7px) scale(.98)}
+}
+#segelStage[data-finisher-hero="bunga"] .segelMathBurst{display:none!important}
+#segelStage[data-finisher-hero="bunga"].finisher-impact .segelFinisherImpact{
+  left:66%!important;top:auto!important;bottom:-7%!important;width:min(52vw,450px)!important;height:min(78vw,620px)!important;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  transform-origin:50% 100%!important;
+  animation:liveBungaThornRise 620ms cubic-bezier(.14,.82,.2,1) both!important;
+  filter:drop-shadow(0 0 18px rgba(117,242,151,.86)) drop-shadow(0 0 34px rgba(255,213,90,.44))!important;
+}
+#segelStage[data-finisher-hero="bunga"].finisher-impact.finisher-impact-end .segelFinisherImpact{
+  animation:liveBungaImpactEnd 280ms ease-out both!important;
+}
+@keyframes liveBungaThornRise{
+  0%{opacity:0;transform:translate(-50%,16%) scale(.28)}
+  20%{opacity:.74;transform:translate(-50%,5%) scale(.58)}
+  58%{opacity:1;transform:translate(-50%,0) scale(1.06)}
+  100%{opacity:1;transform:translate(-50%,0) scale(1)}
+}
+@keyframes liveBungaImpactEnd{
+  0%{opacity:1;transform:translate(-50%,0) scale(.78);filter:brightness(2.1)}
+  45%{opacity:1;transform:translate(-50%,-2%) scale(1.2);filter:brightness(2.7)}
+  100%{opacity:0;transform:translate(-50%,-5%) scale(1.45);filter:brightness(1.2)}
+}
+
+/* ---------------------------------------------------------------
+   SIDMA — RUMUS PENAMAT
+   Eyes closed -> Sigma charge -> remote release -> expand/compress/explode.
+   --------------------------------------------------------------- */
+#segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeAura{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  left:1%;bottom:-3%;width:47%;height:88%;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  mix-blend-mode:screen;filter:drop-shadow(0 0 14px rgba(255,255,255,.72)) drop-shadow(0 0 30px rgba(216,31,45,.78));
+  animation:liveSidmaAuraFarm 1500ms ease-in-out both!important;
+}
+#segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeHero{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  left:3%;bottom:1%;width:39%;height:88%;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  filter:drop-shadow(0 10px 9px rgba(0,0,0,.54)) drop-shadow(0 0 18px rgba(210,31,43,.52));
+  animation:liveSidmaFocusFarm 1500ms ease-in-out both!important;
+}
+@keyframes liveSidmaAuraFarm{
+  0%{opacity:0!important;transform:scale(.5) rotate(-16deg);filter:brightness(.6)}
+  30%{opacity:.62!important;transform:scale(.76) rotate(-6deg)}
+  66%{opacity:.92!important;transform:scale(1) rotate(7deg);filter:brightness(1.2)}
+  100%{opacity:1!important;transform:scale(1.12) rotate(14deg);filter:brightness(1.55) drop-shadow(0 0 34px rgba(242,181,50,.76))}
+}
+@keyframes liveSidmaFocusFarm{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-3px) scale(1.018)}
+}
+#segelStage[data-finisher-hero="sidma"].finisher-focus .finalEyePortrait{
+  left:10%!important;top:5%!important;width:80%!important;height:82%!important;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  filter:drop-shadow(0 0 14px rgba(255,255,255,.54)) drop-shadow(0 0 30px rgba(214,28,43,.62))!important;
+  animation:liveSidmaBlackFocus 700ms ease-out both!important;
+}
+#segelStage[data-finisher-hero="sidma"].finisher-focus .segelFinalFocus:after{
+  content:"Σ";position:absolute;left:67%;top:47%;font:900 clamp(70px,20vw,150px)/1 Georgia,serif;
+  color:rgba(246,190,58,.9);text-shadow:0 0 10px #fff,0 0 28px rgba(218,28,43,.95);
+  transform:translate(-50%,-50%) scale(.45) rotate(-18deg);
+  animation:liveSidmaSigmaFocus 700ms cubic-bezier(.18,.78,.2,1) both;
+}
+@keyframes liveSidmaBlackFocus{0%{opacity:0;transform:scale(.95)}35%{opacity:1}100%{opacity:1;transform:scale(1.015)}}
+@keyframes liveSidmaSigmaFocus{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.28) rotate(-28deg)}
+  50%{opacity:.88;transform:translate(-50%,-50%) scale(1.08) rotate(5deg)}
+  100%{opacity:.72;transform:translate(-50%,-50%) scale(.88) rotate(14deg)}
+}
+#segelStage[data-finisher-hero="sidma"].finisher-dash .segelFinisherAttack{
+  left:5%!important;bottom:2%!important;width:42%!important;height:86%!important;aspect-ratio:auto!important;
+  background-size:contain!important;background-position:center bottom!important;background-repeat:no-repeat!important;
+  animation:liveSidmaRelease 500ms cubic-bezier(.16,.8,.2,1) both!important;
+  filter:drop-shadow(0 0 12px rgba(255,255,255,.5)) drop-shadow(0 0 20px rgba(212,25,39,.56))!important;
+}
+@keyframes liveSidmaRelease{
+  0%{opacity:0;transform:scale(.96)}
+  24%{opacity:1;transform:scale(1.025)}
+  72%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(.985)}
+}
+#segelStage[data-finisher-hero="sidma"] .segelMathBurst{display:none!important}
+#segelStage[data-finisher-hero="sidma"].finisher-impact .segelFinisherImpact{
+  left:66%!important;top:48%!important;bottom:auto!important;width:min(52vw,420px)!important;height:min(52vw,420px)!important;
+  background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;
+  transform-origin:50% 50%!important;
+  animation:liveSidmaSigmaImpact 620ms cubic-bezier(.12,.8,.18,1) both!important;
+  filter:drop-shadow(0 0 14px #fff) drop-shadow(0 0 34px rgba(220,27,42,.94)) drop-shadow(0 0 52px rgba(245,186,50,.62))!important;
+}
+#segelStage[data-finisher-hero="sidma"].finisher-impact.finisher-impact-end .segelFinisherImpact{
+  animation:liveSidmaSigmaEnd 300ms cubic-bezier(.1,.82,.18,1) both!important;
+}
+@keyframes liveSidmaSigmaImpact{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.18) rotate(-16deg)}
+  28%{opacity:.9;transform:translate(-50%,-50%) scale(.82) rotate(4deg)}
+  62%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(8deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(.48) rotate(14deg);filter:brightness(2.2) drop-shadow(0 0 22px #fff) drop-shadow(0 0 48px #e21b2e)}
+}
+@keyframes liveSidmaSigmaEnd{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.45);filter:brightness(3)}
+  24%{opacity:1;transform:translate(-50%,-50%) scale(1.24);filter:brightness(3.4)}
+  58%{opacity:.92;transform:translate(-50%,-50%) scale(1.62)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(2.05);filter:brightness(1)}
+}
+
+@media(max-width:520px){
+  #segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeHero,
+  #segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeHero{width:46%;left:0}
+  #segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeAura,
+  #segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeAura{width:53%;left:-3%}
+  #segelStage[data-finisher-hero="bunga"].finisher-impact .segelFinisherImpact{left:68%!important;width:min(66vw,360px)!important;height:min(92vw,500px)!important}
+  #segelStage[data-finisher-hero="sidma"].finisher-impact .segelFinisherImpact{left:68%!important;width:min(68vw,340px)!important;height:min(68vw,340px)!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #segelStage[data-finisher-hero="bunga"] .segelChargeHero,
+  #segelStage[data-finisher-hero="bunga"] .segelChargeAura,
+  #segelStage[data-finisher-hero="sidma"] .segelChargeHero,
+  #segelStage[data-finisher-hero="sidma"] .segelChargeAura,
+  #segelStage[data-finisher-hero="bunga"] .segelFinisherAttack,
+  #segelStage[data-finisher-hero="sidma"] .segelFinisherAttack,
+  #segelStage[data-finisher-hero="bunga"] .segelFinisherImpact,
+  #segelStage[data-finisher-hero="sidma"] .segelFinisherImpact{animation-duration:1ms!important}
+}
