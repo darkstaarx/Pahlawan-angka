@@ -17,10 +17,10 @@ const PA_AUDIO={
 const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
 const PA_BATTLE_MUSIC_VOLUME=.024; // 70% lower than prior mix
-const PA_BATTLE_MUSIC_RATE=1; // tempo already baked offline at 50%; no browser time-stretch
+const PA_BATTLE_MUSIC_RATE=1; // PAMusic already authored at the intended slower tempo
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
-const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic-slow-v1.mp3','assets/audio/bgmusic2-slow-v1.mp3'],mode:'off'};
+const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/PAMusic.mp3'],mode:'off'};
 
 function ensureBattleAudio(){
   if(PA_BATTLE_AUDIO.ctx)return PA_BATTLE_AUDIO.ctx;
