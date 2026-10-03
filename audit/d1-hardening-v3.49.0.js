@@ -146,7 +146,8 @@ function sample(ctx,id,n){
   for(const q of qs){
     const m=String(q.answer).match(/^(\d+)\/(\d+)$/);
     const nameAnswer=['satu perdua','satu perempat','dua perempat','tiga perempat'].includes(String(q.answer));
-    ok(m||nameAnswer,'D1.FRAC answer is a verified fraction or its Year 1 Malay name');
+    const visualAnswer=String(q.answer)==='A'&&String(q.archetypeId||'')==='visual_choice';
+    ok(m||nameAnswer||visualAnswer,'D1.FRAC answer is a verified fraction, Malay name or visual choice');
     if(m){
       const den=Number(m[2]);
       ok(den===2||den===4,`D1.FRAC denominator stays within verified halves/quarters scope (got ${den})`);
