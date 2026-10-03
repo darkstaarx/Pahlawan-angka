@@ -1371,7 +1371,15 @@
         if(finalHit){
           const videoPlayed=await playFinisherVideo(lifecycle);
           if(lifecycle!==S.lifecycle)return;
-          if(videoPlayed){ S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME; }
+          if(videoPlayed){
+            /* Finisher already owns the complete final attack. Do not fall
+               through into the ordinary slash path: that caused a second
+               attack to overlay the cinematic and made the seal break look
+               disconnected from the impact. The caller applies exactly one
+               hitSeal() after this resolves. */
+            S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME;
+            return;
+          }
           else if(reduceMotion){
             // Video ialah kandungan penamat yang diminta pengguna, jadi ia
             // masih dicuba walaupun sistem mengurangkan animasi. Jika browser
