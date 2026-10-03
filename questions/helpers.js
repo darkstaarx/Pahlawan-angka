@@ -338,8 +338,21 @@ function barChart(labels,vals){
 }
 function uniqueValues(n,min=2,max=10){const a=[];while(a.length<n){const v=R(min,max);if(!a.includes(v))a.push(v)}return a}
 function fractionVisual(num,den){
+ const label=`Satu keseluruhan dibahagi kepada ${den} bahagian sama besar; ${num} bahagian berlorek`;
+ /* Gaya rajah dipelbagaikan seperti lembaran sekolah: jalur, bulatan dan
+    petak. Semua bentuk masih mengekalkan bilangan bahagian yang sama besar. */
+ const forms=den===2?['bar','circle']:den===4?['bar','circle','square']:['bar'];
+ const form=forms[Math.floor(Math.random()*forms.length)];
+ if(form==='circle'){
+  const deg=Math.round(num/den*360);
+  return `<div class="fractionVisual" role="img" aria-label="${label}" style="width:92px;height:92px;border:3px solid #516684;border-radius:50%;margin:2px auto 12px;background:conic-gradient(#62c991 0deg ${deg}deg,#edf2ff ${deg}deg 360deg);box-shadow:0 2px 0 #d3daea"></div>`;
+ }
+ if(form==='square'){
+  let cells='';for(let i=0;i<4;i++)cells+=`<div style="background:${i<num?'#62c991':'#edf2ff'};border:1px solid #516684"></div>`;
+  return `<div class="fractionVisual" role="img" aria-label="${label}" style="width:92px;height:92px;display:grid;grid-template-columns:repeat(2,1fr);margin:2px auto 12px;border:3px solid #516684;box-shadow:0 2px 0 #d3daea">${cells}</div>`;
+ }
  let cells='';for(let i=0;i<den;i++)cells+=`<div style="flex:1;height:34px;border-left:${i?'2px':'0'} solid #516684;background:${i<num?'#62c991':'#edf2ff'}"></div>`;
- return `<div class="fractionVisual" role="img" aria-label="Satu keseluruhan dibahagi kepada ${den} bahagian sama besar; ${num} bahagian berlorek" style="width:min(280px,94%);display:flex;border:3px solid #516684;border-radius:10px;overflow:hidden;margin:2px auto 12px;box-shadow:0 2px 0 #d3daea">${cells}</div>`;
+ return `<div class="fractionVisual" role="img" aria-label="${label}" style="width:min(280px,94%);display:flex;border:3px solid #516684;border-radius:10px;overflow:hidden;margin:2px auto 12px;box-shadow:0 2px 0 #d3daea">${cells}</div>`;
 }
 function rectangleMeasureSvg(length,width){
  return `<svg class="geometryVisual" viewBox="0 0 260 130" width="min(290px,94%)" role="img" aria-label="Segi empat tepat berukuran ${length} sentimeter kali ${width} sentimeter" style="display:block;margin:0 auto 10px"><rect x="45" y="25" width="170" height="78" rx="3" fill="#dceaff" stroke="#405072" stroke-width="4"/><text x="130" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#405072">${length} cm</text><text x="228" y="68" text-anchor="middle" font-size="15" font-weight="900" fill="#405072" transform="rotate(90 228 68)">${width} cm</text></svg>`;
