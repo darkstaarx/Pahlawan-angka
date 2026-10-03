@@ -16,8 +16,8 @@ const PA_AUDIO={
 };
 const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
-const PA_BATTLE_MUSIC_VOLUME=.08; // softer background mix
-const PA_BATTLE_MUSIC_RATE=.90; // ~10% slower tempo while keeping pitch stable when supported
+const PA_BATTLE_MUSIC_VOLUME=.024; // 70% lower than prior mix
+const PA_BATTLE_MUSIC_RATE=.50; // 50% slower tempo; preserve pitch when supported
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
 const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic.mp3','assets/audio/bgmusic2.mp3'],mode:'off'};
