@@ -12,7 +12,7 @@
       const link=document.createElement('link');link.rel='stylesheet';link.href=css;document.head.appendChild(link);
     }
     return new Promise(resolve=>{
-      const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=4.0.8';script.async=false;
+      const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=4.0.21';script.async=false;
       const done=()=>{window.__PA_LIVE_ASSET_REFRESHED=true;resolve()};
       script.addEventListener('load',done,{once:true});script.addEventListener('error',done,{once:true});document.head.appendChild(script);
     });
@@ -52,12 +52,23 @@
     return session;
   }
 
-  function activePetConfig(profile){
-    /* Use the exact Khazanah selection helper. This keeps the 3D Gembok stage
-       and the classic battle shell on the same companion. */
-    const pet=window.PetCollection?.active?.(profile);
+  function petConfig(profile,id){
+    const pets=window.PetCollection?.snapshot?.(profile)?.pets||[];
+    const pet=id?pets.find(item=>item.id===id):pets.find(item=>item.active&&item.state==='tamed');
     if(!pet)return null;
-    return {id:pet.id,name:pet.name,sad:pet.assets?.sad?[pet.assets.sad]:[],happy:pet.assets?.happy?[pet.assets.happy]:[],idle:pet.assets?.idle?[pet.assets.idle]:[],idleSheet:pet.assets?.idleSprite||null,happySheet:pet.assets?.happySprite||null};
+    return {
+      id:pet.id,name:pet.name,
+      sad:pet.assets?.sad?[pet.assets.sad]:[],
+      happy:pet.assets?.happy?[pet.assets.happy]:[],
+      idle:pet.assets?.idle?[pet.assets.idle]:[],
+      sadSheet:pet.assets?.sadSprite||null,
+      idleSheet:pet.assets?.idleSprite||null,
+      happySheet:pet.assets?.happySprite||null
+    };
+  }
+  function activePetConfig(profile){
+    /* Companion outside the Segel comes only from Khazanah's equipped pet. */
+    return petConfig(profile,null);
   }
 
   function open(options={}){
@@ -101,7 +112,8 @@
       /* Assignment waits for the actual selected skill, including adaptive runs. */
       /* `db` is temporarily the Gembok session here. Pet ownership belongs
          to the real profile, so never assign rescue state to the session copy. */
-      window.PetCollection?.assignGembokRescue?.(run.profileDb,run,id);
+      const rescue=window.PetCollection?.assignGembokRescue?.(run.profileDb,run,id);
+      if(rescue&&!run.rescuePetConfig)run.rescuePetConfig=petConfig(run.profileDb,rescue.petId);
       run.questionNumber++;
       window.PALearnerReview?.beginQuestion?.(q,{grade:db.schoolGrade,mode:'gembok',selectionReason:run.route, demoMode:false});
       return q;
