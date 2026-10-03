@@ -305,7 +305,7 @@
          payoff surface. The selected profile hero only changes presentation;
          seal damage and scoring remain exactly one final hit. */
       stopFinisherVideo();
-      host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
+      host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end','finisher-impact-end');
       const heroId=liveFinisherHero(),cfg=applyLiveFinisherAssets(heroId);
       void host.offsetWidth;
 
@@ -372,7 +372,7 @@
         // Beat sebelum video: Wira masuk pose prepare, aura charge dibina dan
         // callout Jurus Penamat sempat dibaca. Bukan delay kosong — murid nampak
         // bahawa hit terakhir sedang berubah menjadi serangan khas.
-        host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
+        host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
         S.heroLock=heroPrepareE;
         S.heroX=HERO_HOME-.12;
         host.classList.add('finisher-video-prep','finisher-charge','finisher-video-cue');
@@ -1469,7 +1469,7 @@
           else {
           // Jika finisher gagal dimuat atau autoplay disekat, jatuh balik ke
           // finisher ilustrasi sedia ada supaya hentaman terakhir tidak hilang.
-          host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
+          host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
           void host.offsetWidth;
           S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.12;
           host.classList.add('finisher-charge');
@@ -1585,7 +1585,7 @@
           seal.broken=i<lastIndex; seal.breakT=-1; seal.front.visible=i===lastIndex;
           seal.front.material.uniforms.uOpacity.value=1; seal.front.material.uniforms.uGrey.value=0;
         });
-        host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
+        host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
         void host.offsetWidth; host.classList.add('finisher-charge'); sfx('auraCharge');
         fitShell();
         return true;
@@ -1623,7 +1623,7 @@
       wrong(){ S.shake=.14 },
       reset(){
         ++S.lifecycle;stopFinisherVideo();S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
-        host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact');
+        host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME;
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
@@ -1649,7 +1649,7 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact'); S.heroFade=1; },
+      cancel(){ ++S.lifecycle; stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
       setCompanion(config){ return setPetVisual(config); },
       setRescuePet(config){ return setRescuePetVisual(config); },
       setPet(config){ return Promise.all([setPetVisual(config),setRescuePetVisual(config)]); },
