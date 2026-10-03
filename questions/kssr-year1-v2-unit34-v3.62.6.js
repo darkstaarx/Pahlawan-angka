@@ -5,6 +5,7 @@ const RT=window.PAY1V2Runtime;if(!RT)return;
 const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,fractionStrip,moneyVis,table,name,food}=RT;
 const fmt=c=>c<100?c+' sen':(c%100===0?'RM'+c/100:'RM'+Math.floor(c/100)+'.'+String(c%100).padStart(2,'0'));
 const coinChoices=[5,10,20,50,100],ringgitChoices=[100,500,1000];
+let fracVisualCounter=0;
 function fractionChoiceBoard(num,den){
  const mini=(n,d,invalid=false)=>{
   const label=invalid?'bahagian tidak sama besar':`${n}/${d}`;
@@ -18,7 +19,8 @@ function fractionChoiceBoard(num,den){
 }
 
 GEN['3.1.1']=function(id,s){
- const mode=chooseMode(id,'3.1.1',bandModes(s,['identify'],['identify','word_match','visual_choice'],['word_match','equivalent_name','visual_choice','non_example']));
+ const visualQuota=[0,2,4].includes(fracVisualCounter++%5);
+ const mode=visualQuota?'visual_choice':chooseMode(id,'3.1.1',bandModes(s,['identify'],['identify','word_match'],['word_match','equivalent_name','non_example']));
  /* Skop sasaran KSSR Tahun 1 ialah 1/2, 1/4, 2/4 dan 3/4.
     Keseluruhan boleh diterangkan dalam konteks, tetapi 4/4 bukan sasaran
     pecahan utama dan tidak dijana sebagai pilihan rutin. */
