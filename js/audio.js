@@ -72,6 +72,10 @@ function setBattleAudioMode(mode='off'){
   if(activeMode==='boss'){bossDrum();PA_BATTLE_AUDIO.bossTimer=setInterval(bossDrum,1600)}
 }
 function syncBattleAudio(screenId=document.body?.dataset?.screen){
+  // Battlefield rescue (Segel/Gembok) ialah battle sebenar juga. Sebelum ini
+  // hanya skrin legacy "game" dibenarkan memainkan BGM, jadi screen('segelDemo')
+  // terus memanggil setBattleAudioMode('off') dan muzik senyap.
+  if(screenId==='segelDemo')return setBattleAudioMode('ambient');
   if(screenId!=='game')return setBattleAudioMode('off');
   setBattleAudioMode(sess?.enemyTier==='boss'&&!sess?.bossDefeated?'boss':'ambient');
 }
