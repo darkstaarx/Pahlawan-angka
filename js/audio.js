@@ -16,7 +16,7 @@ const PA_AUDIO={
 };
 const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
-const PA_BATTLE_MUSIC_VOLUME=.13; // background level: sits below SFX/voice instead of competing with them
+const PA_BATTLE_MUSIC_VOLUME=.0975; // 25% lower than prior mix; keeps BGM behind SFX/voice
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
 const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/bgmusic.mp3','assets/audio/bgmusic2.mp3'],mode:'off'};
