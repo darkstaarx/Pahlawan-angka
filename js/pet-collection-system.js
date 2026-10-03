@@ -77,7 +77,7 @@
   ensure(data);if(!data)return {pets:[],expedition:null};
   return {pets:Object.entries(catalog).map(([id,meta])=>{
    const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:meta.name};
-   const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,idleSprite:`assets/pets/collection/${meta.folder}/companion-idle-v1.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',idleSprite:null,sad:'assets/pets/aurora/standby-v2.webp',happySprite:null};
+   const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,idleSprite:`assets/pets/collection/${meta.folder}/companion-idle-v1.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,sadSprite:`assets/pets/collection/${meta.folder}/sprite-sheets/sad-v1.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',idleSprite:null,sad:'assets/pets/aurora/standby-v2.webp',sadSprite:null,happySprite:null};
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=playerLevel(data)>=meta.levelGate;
     const customName=String(data.petCollection[id].customName||'').trim();
@@ -104,10 +104,18 @@
   const grade=gradeFromSkill(skillId);if(!grade)return null;
   const rotation=count(data.petRescueRotation[grade]);
   /* The selected skill establishes the grade; its id is recorded on the run.
-     Rotation then gives the learner a stable, non-random rescue sequence. */
-  const petId=rescueCycle[rotation%rescueCycle.length],threshold=rescueThreshold(petId,grade);
-  if(!threshold)return null;
-  data.petRescueRotation[grade]=addCount(rotation,1);
+     Rotation gives a stable, non-random rescue sequence. Skip pets whose
+     player-level gate is still locked so the Segel never advertises a rescue
+     that cannot receive credit at completion. */
+  const levelNow=playerLevel(data);
+  let petId=null,advance=0;
+  for(let offset=0;offset<rescueCycle.length;offset++){
+   const candidate=rescueCycle[(rotation+offset)%rescueCycle.length];
+   if(levelNow>=count(catalog[candidate]?.levelGate)){petId=candidate;advance=offset+1;break;}
+  }
+  if(!petId)return null;
+  const threshold=rescueThreshold(petId,grade);if(!threshold)return null;
+  data.petRescueRotation[grade]=addCount(rotation,advance);
   run.rescuePetId=petId;run.rescueGrade=grade;run.rescueSkillId=skillId;run.rescueThreshold=threshold;
    /* Reserve the pet for this run only. It becomes encountered after the
       Gembok is actually completed, so abandoned runs never create 0/x cards. */
