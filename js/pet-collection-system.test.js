@@ -25,6 +25,7 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  assert.equal(preview.find(p=>p.id==='aurora').eligible,true);
  assert.equal(preview.find(p=>p.id==='aurora').name,'Aurora');
  assert.equal(preview.find(p=>p.id==='aurora').species,'Musang Ekor Angka');
+ assert.equal(preview.find(p=>p.id==='aurora').assets.idleSprite,null);
  assert.equal(preview.find(p=>p.id==='ketupatKura').name,'Kura-Kura Ketupat');
 });
 
