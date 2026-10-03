@@ -5,15 +5,27 @@ const RT=window.PAY1V2Runtime;if(!RT)return;
 const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,fractionStrip,moneyVis,table,name,food}=RT;
 const fmt=c=>c<100?c+' sen':(c%100===0?'RM'+c/100:'RM'+Math.floor(c/100)+'.'+String(c%100).padStart(2,'0'));
 const coinChoices=[5,10,20,50,100],ringgitChoices=[100,500,1000];
+function fractionChoiceBoard(num,den){
+ const mini=(n,d,invalid=false)=>{
+  const label=invalid?'bahagian tidak sama besar':`${n}/${d}`;
+  if(invalid)return `<div role="img" aria-label="${label}" style="width:74px;height:42px;display:grid;grid-template-columns:1fr 1.7fr;border:2px solid #516684"><i style="background:#62c991;border-right:1px solid #516684"></i><i style="background:#edf2ff"></i></div>`;
+  let cells='';for(let i=0;i<d;i++)cells+=`<i style="background:${i<n?'#62c991':'#edf2ff'};border-left:${i?'1px solid #516684':'0'}"></i>`;
+  return `<div role="img" aria-label="${label}" style="width:74px;height:42px;display:grid;grid-template-columns:repeat(${d},1fr);border:2px solid #516684">${cells}</div>`;
+ };
+ const wrongD=den===2?4:den,wrongN=den===2?1:(num===den-1?num-1:num+1),otherD=den===2?4:2,otherN=Math.min(otherD-1,Math.max(1,num));
+ const choices=[mini(num,den),mini(wrongN,wrongD),mini(1,den,true),mini(otherN,otherD)];
+ return `<div role="group" aria-label="Pilihan rajah pecahan" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:230px;margin:0 auto 12px">${choices.map((v,i)=>`<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border:2px solid #c7d2e5;border-radius:10px;background:#f8fbff"><b>${String.fromCharCode(65+i)}</b>${v}</div>`).join('')}</div>`;
+}
 
 GEN['3.1.1']=function(id,s){
- const mode=chooseMode(id,'3.1.1',bandModes(s,['identify'],['identify','word_match'],['word_match','equivalent_name','non_example']));
+ const mode=chooseMode(id,'3.1.1',bandModes(s,['identify'],['identify','word_match','visual_choice'],['word_match','equivalent_name','visual_choice','non_example']));
  /* Skop sasaran KSSR Tahun 1 ialah 1/2, 1/4, 2/4 dan 3/4.
     Keseluruhan boleh diterangkan dalam konteks, tetapi 4/4 bukan sasaran
     pecahan utama dan tidak dijana sebagai pilihan rutin. */
  const cases=[[1,2,'satu perdua'],[1,4,'satu perempat'],[2,4,'dua perempat'],[3,4,'tiga perempat']],x=choose(cases),[n,d,word]=x;
  if(mode==='identify')return mark(q(`${fractionStrip(n,d)}Bahagian berlorek ialah?`,`${n}/${d}`,[Nq(`${d-n}/${d}`,'fraction'),Nq(`${d}/${n}`,'fraction'),Nq(`${n}/${Math.max(2,d+1)}`,'fraction')],'Penyebut ialah semua bahagian sama besar.','Tahun 1 · Kenal Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='word_match')return mark(q(`${fractionStrip(n,d)}Nama pecahan yang betul?`,word,[Nq('satu perdua','fraction'),Nq('satu perempat','fraction'),Nq('dua perempat','fraction'),Nq('tiga perempat','fraction')].filter(o=>o.v!==word).slice(0,3),'Padankan bilangan bahagian berlorek dengan nama pecahan.','Tahun 1 · Nama Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
+ if(mode==='visual_choice')return mark(q(`${fractionChoiceBoard(n,d)}Rajah manakah menunjukkan <b>${n}/${d}</b>?`,'A',[Nq('B','fraction_visual'),Nq('C','fraction_visual'),Nq('D','fraction_visual')],'Bahagian mesti sama besar dan bilangan bahagian berlorek mesti tepat.','Tahun 1 · Pilih Rajah Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='equivalent_name'){
   const ans='satu perdua';return mark(q(`${fractionStrip(2,4)}Dua perempat memenuhi bahagian yang sama seperti?`,ans,[Nq('satu perempat','fraction'),Nq('tiga perempat','fraction'),Nq('satu keseluruhan','fraction')],'Dua daripada empat bahagian sama besar ialah separuh keseluruhan.','Tahun 1 · Hubungan Pecahan'),id,'3.1.1',mode,'visual','reasoning',s,['fraction']);
  }
