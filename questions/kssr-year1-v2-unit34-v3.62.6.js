@@ -8,14 +8,13 @@ const coinChoices=[5,10,20,50,100],ringgitChoices=[100,500,1000];
 
 GEN['3.1.1']=function(id,s){
  const mode=chooseMode(id,'3.1.1',bandModes(s,['identify'],['identify','word_match'],['word_match','equivalent_name','non_example']));
- /* Darjah 1 kekal pada separuh dan perempat mengikut skop KSSR, tetapi
-    bank mesti membezakan bentuk, bahasa dan keseluruhan. 4/4 sengaja hadir
-    sebagai satu keseluruhan supaya murid tidak menghafal hanya 1/4–3/4. */
- const cases=[[1,2,'satu perdua'],[1,4,'satu perempat'],[2,4,'dua perempat'],[3,4,'tiga perempat'],[4,4,'empat perempat']],x=choose(cases),[n,d,word]=x;
+ /* Skop sasaran KSSR Tahun 1 ialah 1/2, 1/4, 2/4 dan 3/4.
+    Keseluruhan boleh diterangkan dalam konteks, tetapi 4/4 bukan sasaran
+    pecahan utama dan tidak dijana sebagai pilihan rutin. */
+ const cases=[[1,2,'satu perdua'],[1,4,'satu perempat'],[2,4,'dua perempat'],[3,4,'tiga perempat']],x=choose(cases),[n,d,word]=x;
  if(mode==='identify')return mark(q(`${fractionStrip(n,d)}Bahagian berlorek ialah?`,`${n}/${d}`,[Nq(`${d-n}/${d}`,'fraction'),Nq(`${d}/${n}`,'fraction'),Nq(`${n}/${Math.max(2,d+1)}`,'fraction')],'Penyebut ialah semua bahagian sama besar.','Tahun 1 · Kenal Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='word_match')return mark(q(`${fractionStrip(n,d)}Nama pecahan yang betul?`,word,[Nq('satu perdua','fraction'),Nq('satu perempat','fraction'),Nq('dua perempat','fraction'),Nq('tiga perempat','fraction')].filter(o=>o.v!==word).slice(0,3),'Padankan bilangan bahagian berlorek dengan nama pecahan.','Tahun 1 · Nama Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='equivalent_name'){
-  if(n===4){return mark(q(`${fractionStrip(4,4)}Empat perempat menunjukkan?`,'satu keseluruhan',[Nq('satu perempat','fraction'),Nq('satu perdua','fraction'),Nq('tiada bahagian','fraction')],'Semua 4 daripada 4 bahagian dipilih, jadi satu keseluruhan lengkap.','Tahun 1 · Pecahan sebagai Keseluruhan'),id,'3.1.1',mode,'visual','reasoning',s,['fraction']);}
   const ans='satu perdua';return mark(q(`${fractionStrip(2,4)}Dua perempat memenuhi bahagian yang sama seperti?`,ans,[Nq('satu perempat','fraction'),Nq('tiga perempat','fraction'),Nq('satu keseluruhan','fraction')],'Dua daripada empat bahagian sama besar ialah separuh keseluruhan.','Tahun 1 · Hubungan Pecahan'),id,'3.1.1',mode,'visual','reasoning',s,['fraction']);
  }
  return mark(q('Yang manakah <b>bukan</b> menunjukkan satu perempat?','bahagian yang tidak sama besar',[Nq('1 daripada 4 bahagian sama besar','fraction'),Nq('suku daripada satu objek','fraction'),Nq('satu perempat daripada kek','fraction')],'Pecahan memerlukan bahagian yang sama besar.','Tahun 1 · Bukan Contoh Pecahan'),id,'3.1.1',mode,'verbal','reasoning',s,['fraction']);
@@ -27,12 +26,19 @@ GEN['3.2.1']=function(id,s){
     ia lebih sesuai sebagai pengayaan selepas asas benar-benar kukuh. */
  const mode=chooseMode(id,'3.2.1',bandModes(s,['share'],['share','remaining'],['remaining','whole_story']));
  if(mode==='share'){
-  const d=choose([2,4]),n=rand(1,d-1),ans=`${n}/${d}`,item=choose(['roti canai','kuih bakar','buah tembikai']);
-  return mark(q(`${item} dibahagi sama rata kepada <b>${d}</b> bahagian. ${name()} mengambil <b>${n}</b> bahagian. Pecahan yang diambil?`,ans,[Nq(`${d}/${n}`,'fraction'),Nq(`${d-n}/${d}`,'fraction'),Nq(`${n}/${d+1}`,'fraction')],'Jumlah bahagian sama besar menjadi penyebut.','Tahun 1 · Pecahan dalam Kehidupan'),id,'3.2.1',mode,'story','application',s,['fraction']);
+  const d=choose([2,4]),n=rand(1,d-1),ans=`${n}/${d}`;
+  const scenarios=[
+   [`${name()} membahagi sebiji ${choose(['roti canai','kek','tembikai'])} kepada <b>${d}</b> bahagian sama besar dan memilih <b>${n}</b> bahagian.`, 'Bahagian yang dipilih ialah?'],
+   [`Ada <b>${d}</b> keping ${choose(['biskut','buah','kad'])} yang sama besar. ${name()} mengambil <b>${n}</b> keping.`, 'Bahagian daripada semua keping yang diambil ialah?'],
+   [`Satu jalur kertas dibahagi kepada <b>${d}</b> bahagian sama besar. <b>${n}</b> bahagian diwarnakan.`, 'Pecahan bahagian berwarna ialah?']
+  ];
+  const [story,ask]=choose(scenarios);
+  return mark(q(`${story} ${ask}`,ans,[Nq(`${d}/${n}`,'fraction'),Nq(`${d-n}/${d}`,'fraction'),Nq(`${n}/${d+1}`,'fraction')],'Penyebut ialah jumlah bahagian sama besar; pengangka ialah bahagian yang dipilih.','Tahun 1 · Pecahan dalam Kehidupan'),id,'3.2.1',mode,'story','application',s,['fraction']);
  }
  if(mode==='remaining'){
   const d=4,taken=choose([1,2,3]),left=d-taken,ans=`${left}/4`;
-  return mark(q(`Sebiji kuih dibahagi kepada <b>4</b> bahagian sama besar. <b>${taken}</b> bahagian dimakan. Pecahan yang tinggal?`,ans,[Nq(`${taken}/4`,'fraction'),Nq(`4/${left}`,'fraction'),Nq(`${left}/2`,'fraction')],'Bahagian tinggal = semua bahagian − bahagian dimakan.','Tahun 1 · Pecahan Tinggal'),id,'3.2.1',mode,'story','application',s,['fraction','operation']);
+  const item=choose(['kuih','pizza','jalur kertas']),verb=item==='jalur kertas'?'diwarnakan':'dimakan';
+  return mark(q(`Satu ${item} dibahagi kepada <b>4</b> bahagian sama besar. <b>${taken}</b> bahagian ${verb}. Pecahan yang masih belum dipilih?`,ans,[Nq(`${taken}/4`,'fraction'),Nq(`4/${left}`,'fraction'),Nq(`${left}/2`,'fraction')],'Bahagian tinggal = semua bahagian − bahagian yang dipilih.','Tahun 1 · Pecahan Tinggal'),id,'3.2.1',mode,'story','application',s,['fraction','operation']);
  }
  return mark(q(`Sebiji roti dibahagi kepada <b>4 bahagian sama besar</b>. Semua 4 bahagian dipilih. Apakah maksudnya?`,'satu keseluruhan',[Nq('satu perempat','fraction'),Nq('satu perdua','fraction'),Nq('tiada bahagian','fraction')],'Jika semua bahagian sama besar dipilih, kita mempunyai satu keseluruhan.','Tahun 1 · Satu Keseluruhan'),id,'3.2.1',mode,'story','concept',s,['fraction','whole']);
 };
