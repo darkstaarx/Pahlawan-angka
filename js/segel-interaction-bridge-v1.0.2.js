@@ -60,6 +60,20 @@
     if(labels.length!==4)return null;
     return {kind:'visual_choice',choices:labels.map((label,index)=>{const m=label.match(/^(\d+)\/(\d+)$/);return{letter:String.fromCharCode(65+index),n:m?Number(m[1]):1,d:m?Number(m[2]):4,kind:'bar',invalid:!m}}),answerMode:'letter'};
   }
+  function renderLegacyFractionDom(box){
+    const question=document.getElementById('segelQuestion');
+    const group=question?.querySelector('[aria-label="Pilihan rajah pecahan"]');
+    if(!group||group.dataset.touchReady==='1')return false;
+    const cards=[...group.children],answers=[...box.querySelectorAll('button.ans')];
+    if(cards.length!==4||answers.length<4)return false;
+    const grid=document.createElement('div');grid.className='paVisualChoiceGrid paLegacyVisualChoice';grid.setAttribute('role','radiogroup');grid.setAttribute('aria-label','Pilihan rajah pecahan — sentuh satu rajah');
+    cards.forEach((card,index)=>{
+      const b=document.createElement('button');b.type='button';b.className='paVisualChoiceCard';b.innerHTML=card.innerHTML;b.setAttribute('role','radio');b.setAttribute('aria-label',`Pilihan ${String.fromCharCode(65+index)}`);
+      b.onclick=()=>{grid.querySelectorAll('button').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-checked','false')});b.classList.add('selected');b.setAttribute('aria-checked','true');const letter=String.fromCharCode(65+index),target=answers.find(x=>plain(x.textContent)===letter);target?.click()};
+      grid.appendChild(b);
+    });
+    group.dataset.touchReady='1';group.replaceWith(grid);box.classList.add('paLegacyAnswersHidden');return true;
+  }
 
   function armDemoSession(root,run){
     let armed=false,previousSession=null,previousRetry;
@@ -120,6 +134,7 @@
     const run=state();
     const q=run?.q;
     if(!box||!run?.sess||!q)return;
+    if(renderLegacyFractionDom(box))return;
 
     const spec=explicitSpec(q,engine)||legacyFractionVisualSpec(q);
     if(!spec){
