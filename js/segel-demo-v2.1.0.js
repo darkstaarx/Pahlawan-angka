@@ -267,7 +267,13 @@
       // The old static impact panel is opaque and covers the Three.js glacier.
       // The live finisher now renders the aligned glacier sprite through
       // `iceHit()`; keep the legacy DOM panel out of the stack entirely.
-      if(finisherImpact){finisherImpact.style.backgroundImage='none';finisherImpact.style.display='none';}
+      if(finisherImpact){
+        finisherImpact.style.backgroundImage=`url("${FRAMES.iceBurst}")`;
+        finisherImpact.style.backgroundSize='400% 300%';
+        finisherImpact.style.backgroundRepeat='no-repeat';
+        finisherImpact.style.backgroundPosition='0% 0%';
+        finisherImpact.style.display='block';
+      }
       return cfg;
     }
     let finisherVideoLayer=null, finisherVideo=null;
@@ -305,6 +311,7 @@
       }
       host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
       if(mathBurst)mathBurst.style.display='';
+      if(finisherImpact)finisherImpact.style.display='none';
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
@@ -1375,6 +1382,10 @@
           const frame=Math.min(10,Math.floor(kb*11));
           const col=frame%4, row=Math.floor(frame/4);
           iceBurstTex.offset.set(col*.25,1-(row+1)/3);
+          if(finisherImpact){
+            finisherImpact.style.backgroundPosition=`${col*33.333333}% ${row*50}%`;
+            finisherImpact.style.opacity='1';
+          }
           iceBurst.visible=kb<1;
           iceBurst.scale.setScalar(.55+kb*.8);
           iceBurst.material.opacity=.88;
