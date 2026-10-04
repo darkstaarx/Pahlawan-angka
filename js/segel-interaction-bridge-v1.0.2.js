@@ -185,6 +185,8 @@
     demoAnswerClass=box.className||'answers';
     box.dataset.segelBridgeObserver='1';
     new MutationObserver(schedule).observe(box,{childList:true});
+    const question=document.getElementById('segelQuestion');
+    if(question)new MutationObserver(schedule).observe(question,{childList:true,subtree:true});
     schedule();
   }
 
