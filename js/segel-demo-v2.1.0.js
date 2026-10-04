@@ -226,10 +226,9 @@
     const LIVE_FINISHER={
       chargeHero:'assets/fx/wira/final-v2/wira-charge-sheet-v3.png',
       chargeAura:null,
-      focus:'assets/fx/wira/final-v2/wira-eye-cutin-v2.png',
-      release:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
+      focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png',
       impact:'assets/fx/wira/final-v3/glacier-ice-math-v1.png',
-      color:0xbfe9ff,chargeMs:2400,focusMs:920,releaseMs:1800,impactMs:720
+      color:0xbfe9ff,chargeMs:2400,focusMs:980,impactMs:720
     };
     function applyLiveFinisherAssets(){
       const cfg=LIVE_FINISHER;
@@ -238,7 +237,7 @@
       if(finisherChargeHero)finisherChargeHero.style.backgroundImage=`url("${cfg.chargeHero}")`;
       if(finisherChargeAura)finisherChargeAura.style.backgroundImage='';
       if(finisherFocusPortrait)finisherFocusPortrait.style.backgroundImage=`url("${cfg.focus}")`;
-      if(finisherAttack)finisherAttack.style.backgroundImage=`url("${cfg.release}")`;
+      if(finisherAttack)finisherAttack.style.backgroundImage='';
       if(finisherImpact)finisherImpact.style.backgroundImage=`url("${cfg.impact}")`;
       return cfg;
     }
@@ -294,27 +293,23 @@
       await wait(cfg.chargeMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
 
-      // 2) Wira Chibi eye-focus beat.
+      // 2) Anime-style eye cut-in: the black charge screen collapses into
+      // Wira's new icy-electric stare. No ordinary attack pose appears here.
       host.classList.remove('finisher-charge');host.classList.add('finisher-focus');
       await wait(cfg.focusMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
       if(typeof stopChargeup==='function')stopChargeup();
 
-      // 3) Release. No second ordinary slash may overlay this authored beat.
-      host.classList.remove('finisher-focus');host.classList.add('finisher-dash');
-      sfx('swordSlash');
-      await wait(cfg.releaseMs);
-      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
-
-      // 4) Target-locked impact: glacier / thorn bloom / Sigma compression blast.
-      host.classList.remove('finisher-dash');
-      host.classList.add('finisher-math');
-      host.classList.add('finisher-impact');
+      // 3) Sudden payoff: cut straight from the eyes back to the arena and
+      // spawn the final glacier/math FX on the last Segel.
+      host.classList.remove('finisher-focus');
+      host.classList.add('finisher-math','finisher-impact');
+      S.flashT=0;
       sfx('hit');
       iceHit(SEAL_X-.28,GROUND+.22);
-      burst(7,cfg.color);
+      burst(8,cfg.color);
       try{waveMat.color.setHex(cfg.color)}catch(_){}
-      S.waveT=0;S.waveScale=1.35;S.shake=.52;
+      S.waveT=0;S.waveScale=1.5;S.shake=.62;
 
       await wait(cfg.impactMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
