@@ -10,11 +10,10 @@
 body[data-screen="segelDemo"] .appHeader{display:none}
 
 /* ---------- pentas ---------- */
-/* Pentas mengambil bahagian skrin yang TETAP. Sebelum ini ia flex:1 dan panel
-   soalan bersaiz kandungan, jadi soalan pendek = pentas panjang dan soalan
-   panjang = pentas pendek; arena nampak melompat setiap soalan. Sekarang
-   arena tidak pernah bergerak dan soalan panjang menatal di dalam kadnya. */
-.segelStage{position:relative;flex:0 0 44%;min-height:186px;max-height:56vh;
+/* Pentas mengambil bahagian skrin yang TETAP. Portrait diketatkan sedikit
+   kepada 40% supaya rajah/soalan visual Tahun 1 mempunyai ruang lebih besar,
+   tanpa mengubah komposisi landscape. Arena kekal stabil antara soalan. */
+.segelStage{position:relative;flex:0 0 40%;min-height:174px;max-height:50vh;
   overflow:hidden;background:#0d2136}
 /* canvas mutlak: kalau ia dalam aliran, tingginya disuap balik ke flex
    melalui ResizeObserver dan pentas membesar tanpa henti. */
