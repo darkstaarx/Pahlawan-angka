@@ -229,7 +229,7 @@
       focus:'assets/fx/wira/final-v2/wira-eye-cutin-v2.png',
       release:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
       impact:'assets/fx/wira/final-v3/glacier-ice-math-v1.png',
-      color:0xbfe9ff,chargeMs:1600,focusMs:920,releaseMs:1180,impactMs:720
+      color:0xbfe9ff,chargeMs:2400,focusMs:920,releaseMs:1800,impactMs:720
     };
     function applyLiveFinisherAssets(){
       const cfg=LIVE_FINISHER;
