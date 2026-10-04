@@ -94,7 +94,9 @@
     finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4?v=3.84.87',
     finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.png',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
-    iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
+    // v3 is the aligned 4x3 glacier sheet. The last cell is intentionally
+    // blank; frames 0..10 are advanced in the render loop below.
+    iceBurst:'assets/fx/wira/final-v3/fx-glacier-burst-v3.png',
     iceEnd:'assets/fx/wira/final-v2/fx-impact-end-v1.webp',
     coin:'assets/fx/reward/coin-v1.webp',
     trail:'assets/fx/reward/trail-v1.webp',
@@ -928,7 +930,18 @@
           blending:THREE.AdditiveBlending,opacity:0}));
       m.position.z=z; m.visible=false; m.renderOrder=6; scene.add(m); return m;
     }
-    const iceBurst=fxQuad(iceBurstTex,1.7,.08);
+    // The source cells are 280x341, so keep the visible glacier proportions
+    // instead of stretching a full sheet into one square texture.
+    iceBurstTex.wrapS=THREE.ClampToEdgeWrapping;
+    iceBurstTex.wrapT=THREE.ClampToEdgeWrapping;
+    iceBurstTex.repeat.set(.25,1/3);
+    iceBurstTex.offset.set(0,2/3);
+    const iceBurst=(()=>{
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(1.7*.82,1.7),
+        new THREE.MeshBasicMaterial({map:iceBurstTex,transparent:true,depthWrite:false,
+          blending:THREE.AdditiveBlending,opacity:0}));
+      m.position.z=.08; m.visible=false; m.renderOrder=6; scene.add(m); return m;
+    })();
     const iceEnd=fxQuad(iceEndTex,2.2,.07);
     function iceHit(x,y){
       iceBurst.position.set(x,y,.08); iceEnd.position.set(x,y,.07);
@@ -1342,11 +1355,14 @@
       });
 
       if(S.iceT>=0){
-        S.iceT+=dt;
+        S.iceT+=dt; 
         const k=S.iceT/.46;
         if(k>=1){ S.iceT=-1; iceBurst.visible=iceEnd.visible=false }
         else{
           const kb=Math.min(1,k/.45);
+          const frame=Math.min(10,Math.floor(kb*11));
+          const col=frame%4, row=Math.floor(frame/4);
+          iceBurstTex.offset.set(col*.25,1-(row+1)/3);
           iceBurst.visible=kb<1;
           iceBurst.scale.setScalar(.55+kb*.8);
           iceBurst.material.opacity=(1-kb)*.62;
