@@ -960,6 +960,9 @@
       iceEnd.rotation.z=Math.random()*Math.PI*2;
       S.iceT=0;
     }
+    function clearNormalIceFx(){
+      S.iceT=-1; iceBurst.visible=false; iceEnd.visible=false;
+    }
 
     /* KEMASUKAN WIRA
        Video portal dalam app meleraikan Wira menjadi zarah biru. Supaya
@@ -1492,7 +1495,7 @@
             // Video ialah kandungan penamat yang diminta pengguna, jadi ia
             // masih dicuba walaupun sistem mengurangkan animasi. Jika browser
             // langsung gagal memainkan video, barulah guna hentaman minimum.
-            sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return;
+            sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; return;
           }
           else {
           // Jika finisher gagal dimuat atau autoplay disekat, jatuh balik ke
@@ -1515,20 +1518,20 @@
           sfx('swordSlash');
           await wait(1800); if(lifecycle!==S.lifecycle)return;
           host.classList.remove('finisher-dash'); host.classList.add('finisher-impact');
-          sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(7,0xbfe9ff); S.waveT=0; S.shake=.5;
+          sfx('hit'); clearNormalIceFx(); burst(7,0xbfe9ff); S.waveT=0; S.shake=.5;
           await wait(520); if(lifecycle!==S.lifecycle)return;
           host.classList.remove('finisher-impact'); S.heroLock=null; S.heroX=HERO_HOME;
           return;
           }
         }
-        if(reduceMotion){ sfx('hit'); iceHit(SEAL_X-.28,GROUND+.85); burst(3,0xbfe9ff); S.waveT=0; return }
+        if(reduceMotion){ sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; return }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
         S.heroLock=heroSlashE;  S.heroX=-0.30; await wait(140);
         if(lifecycle!==S.lifecycle)return;
         sfx('hit');
-        iceHit(SEAL_X-.28, GROUND+.85);
+        clearNormalIceFx();
         burst(5.5,0xbfe9ff);                    // serpihan ais, bukan warna tier
         S.waveT=0; S.shake=.32;
         await wait(210);
