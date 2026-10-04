@@ -53,6 +53,13 @@
     const spec=engine.answerSpec(q,q.skill||'',{});
     return spec?.kind&&spec.kind!=='sigil_select'?spec:null;
   }
+  function legacyFractionVisualSpec(q){
+    const raw=String(q?.prompt||'');
+    if(!/Pilihan rajah pecahan|Rajah manakah menunjukkan/i.test(raw)||!['A','B','C','D'].includes(String(q?.answer)))return null;
+    const labels=[...raw.matchAll(/aria-label="([^"]+)"/g)].map(m=>m[1]).filter(v=>/^\d+\/\d+$|bahagian tidak sama besar/i.test(v)).slice(0,4);
+    if(labels.length!==4)return null;
+    return {kind:'visual_choice',choices:labels.map((label,index)=>{const m=label.match(/^(\d+)\/(\d+)$/);return{letter:String.fromCharCode(65+index),n:m?Number(m[1]):1,d:m?Number(m[2]):4,kind:'bar',invalid:!m}}),answerMode:'letter'};
+  }
 
   function armDemoSession(root,run){
     let armed=false,previousSession=null,previousRetry;
@@ -114,7 +121,7 @@
     const q=run?.q;
     if(!box||!run?.sess||!q)return;
 
-    const spec=explicitSpec(q,engine);
+    const spec=explicitSpec(q,engine)||legacyFractionVisualSpec(q);
     if(!spec){
       restoreDemoVisual(box,q);
       return;

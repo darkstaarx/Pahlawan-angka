@@ -1,7 +1,7 @@
 // Refresh the fraction bank before any battle/demo question is generated.
 // index.html keeps legacy script URLs for older cached clients; this synchronous
 // loader makes the visual-choice adapter available on those clients too.
-document.write('<script src="questions/helpers.js?v=3.85.06"><\/script><script src="questions/d1/core.js?v=3.85.06"><\/script><script src="questions/kssr-content-v3.11.js?v=3.85.06"><\/script>');
+document.write('<script src="questions/helpers.js?v=3.85.06"><\/script><script src="questions/d1/core.js?v=3.85.06"><\/script><script src="questions/kssr-content-v3.11.js?v=3.85.06"><\/script><script src="js/segel-interaction-bridge-v1.0.2.js?v=3.85.06"><\/script>');
 // Keep the game-native response layer available before the first battle render.
 // pwa.js also lazy-loads it, but the demo/QA path can start before that chain
 // finishes; the selector guard makes this safe when pwa.js reaches it later.
