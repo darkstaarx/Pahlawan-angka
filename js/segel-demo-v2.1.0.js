@@ -1934,7 +1934,7 @@
       const button=document.createElement('button');
       button.type='button';button.className='paVisualChoiceCard';button.innerHTML=card.innerHTML;
       button.setAttribute('role','radio');button.setAttribute('aria-label',`Pilihan ${String.fromCharCode(65+index)}`);
-      button.onclick=()=>{grid.querySelectorAll('button').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-checked','false')});button.classList.add('selected');button.setAttribute('aria-checked','true');answers[index]?.click()};
+      button.onclick=()=>{grid.querySelectorAll('button').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-checked','false')});button.classList.add('selected');button.setAttribute('aria-checked','true');const letter=String.fromCharCode(65+index);answers.find(x=>String(x.textContent).trim()===letter)?.click()};
       grid.appendChild(button);
     });
     group.dataset.touchReady='1';group.replaceWith(grid);box.classList.add('paLegacyAnswersHidden');
