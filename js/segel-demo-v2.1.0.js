@@ -2044,7 +2044,12 @@
     const award=hostRun.petAward;
     const petName=petNameForAward(award);
     toast(`${petName.toUpperCase()} DITEMUI!`);
-    await stage.rescue();if(!productionCurrent(hostRun,q))return;await stage.absorbCoins();if(!productionCurrent(hostRun,q))return;
+    await stage.rescue();if(!productionCurrent(hostRun,q))return;
+    await stage.absorbCoins();if(!productionCurrent(hostRun,q))return;
+    // Coin pickup owns the foreground first. Only after the final coin cue has
+    // cleared do we fade PAMusic and let the victory stinger take over.
+    if(typeof playBattleVictoryStinger==='function')await playBattleVictoryStinger();
+    if(!productionCurrent(hostRun,q))return;
     finishRun(true,petCompletionNote(award));
     window.PATemanReveal?.show?.(hostRun.temanRevealAward);hostRun.temanRevealAward=null;
   }
@@ -2080,6 +2085,8 @@
     await stage.rescue();
     if(!currentRun(activeRun))return;
     await stage.absorbCoins();   // Wira serap cahaya segel dahulu
+    if(!currentRun(activeRun))return;
+    if(typeof playBattleVictoryStinger==='function')await playBattleVictoryStinger();
     if(!currentRun(activeRun))return;
     finishRun(true);
   }
@@ -2168,6 +2175,7 @@
      MASUK / KELUAR
      ================================================================= */
   function startRun(){
+    if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     const pool=skillPool();
     run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,q:null,usedHint:false,coveredTopics:[],
          writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
@@ -2190,6 +2198,7 @@
 
   function startProductionRun(productionRun){
     if(!window.PAProductionJourney?.isCurrent?.(productionRun))return;
+    if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     run={production:true,productionRun,generation:++runGeneration,productionGeneration:productionRun.session.generation,asked:0,locked:false,retryOpen:false,q:null,usedHint:false,tally:{own:0,hint:0,miss:0}};
     $('segelDone').hidden=true;stage.reset();stage.armEntry();enterWhenRevealed();paintSeal();drawQuestion();
   }
