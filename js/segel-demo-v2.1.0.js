@@ -73,6 +73,11 @@
     shape:'assets/battlefields/nusantara-temple/arena-v1.webp',
     data:'assets/battlefields/data-observatory/arena-v1.webp'
   };
+  /* LIVE SEGEL HERO CONTRACT
+     Only the current Wira Chibi production hero is valid here.
+     Legacy normal-size Wira/Bunga/Sidma assets and hero modules are archive-only
+     and must never be selected from db.hero/profile hero values in this renderer. */
+  const LIVE_SEGEL_HERO='wirachibi';
   const FRAMES={
     arena:ARENA_BY_THEME.number,
     heroIdle:[0,1,2,3].map(i=>`assets/heroes/wira-chibi/frames/idle-loop-${i}-v1.webp`),
@@ -226,7 +231,7 @@
         release:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
         impact:'assets/fx/wira/final-v3/glacier-ice-math-v1.png',
         impactEnd:null,
-        color:0xbfe9ff,chargeMs:2100,focusMs:920,releaseMs:1180,impactMs:720
+        color:0xbfe9ff,chargeMs:1600,focusMs:920,releaseMs:1180,impactMs:720
       },
       bunga:{
         chargeHero:'assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp',
@@ -235,7 +240,7 @@
         release:'assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp',
         impact:'assets/fx/bunga/finisher-thorn-bloom-v2.png',
         impactEnd:'assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp',
-        color:0x8ce6a8,chargeMs:2000,focusMs:700,releaseMs:520,impactMs:900
+        color:0x8ce6a8,chargeMs:1500,focusMs:700,releaseMs:520,impactMs:900
       },
       sidma:{
         chargeHero:'assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp',
@@ -244,15 +249,11 @@
         release:'assets/heroes/sidma/frames/release-v1.webp',
         impact:'assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp',
         impactEnd:'assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
-        color:0xf2b633,chargeMs:2000,focusMs:700,releaseMs:500,impactMs:920
+        color:0xf2b633,chargeMs:1500,focusMs:700,releaseMs:500,impactMs:920
       }
     };
     function liveFinisherHero(){
-      /* Prefer the real production profile. During adaptive question work the
-         global db can temporarily point at the Segel session, which must never
-         decide the hero presentation. */
-      const profileHero=run?.productionRun?.profileDb?.hero;
-      const id=String(profileHero||((typeof db!=='undefined'&&db?.hero)||'wira')).toLowerCase();
+      const id=String((typeof db!=='undefined'&&db?.hero)||'wira').toLowerCase();
       return id==='bunga'||id==='sidma'?id:'wira';
     }
     function applyLiveFinisherAssets(heroId){
@@ -1590,7 +1591,6 @@
           seal.front.material.uniforms.uOpacity.value=1; seal.front.material.uniforms.uGrey.value=0;
         });
         host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
-        applyLiveFinisherAssets(liveFinisherHero());
         void host.offsetWidth; host.classList.add('finisher-charge'); sfx('auraCharge');
         fitShell();
         return true;
