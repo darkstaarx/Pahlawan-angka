@@ -94,9 +94,10 @@
     finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4?v=3.84.87',
     finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.png',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
-    // v3 is the aligned 4x3 glacier sheet. The last cell is intentionally
-    // blank; frames 0..10 are advanced in the render loop below.
-    iceBurst:'assets/fx/wira/final-v3/fx-glacier-burst-v3.png',
+    // Normal attacks keep their original small ice hit. The glacier sheet is
+    // reserved for the final-blow DOM layer below.
+    iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
+    glacierSheet:'assets/fx/wira/final-v3/fx-glacier-burst-v3.png',
     iceEnd:'assets/fx/wira/final-v2/fx-impact-end-v1.webp',
     coin:'assets/fx/reward/coin-v1.webp',
     trail:'assets/fx/reward/trail-v1.webp',
@@ -268,15 +269,16 @@
       // The live finisher now renders the aligned glacier sprite through
       // `iceHit()`; keep the legacy DOM panel out of the stack entirely.
       if(finisherImpact){
-        finisherImpact.style.backgroundImage=`url("${FRAMES.iceBurst}")`;
+        finisherImpact.style.backgroundImage=`url("${FRAMES.glacierSheet}")`;
         finisherImpact.style.backgroundSize='400% 300%';
         finisherImpact.style.backgroundRepeat='no-repeat';
         finisherImpact.style.backgroundPosition='0% 0%';
-        finisherImpact.style.display='block';
+        finisherImpact.style.display='none';
       }
       return cfg;
     }
     let finisherVideoLayer=null, finisherVideo=null;
+    let finalImpactActive=false;
     function ensureFinisherVideo(){
       if(finisherVideo&&finisherVideo.isConnected)return finisherVideo;
       const mount=document.body;
@@ -311,6 +313,7 @@
       }
       host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
       if(mathBurst)mathBurst.style.display='';
+      finalImpactActive=false;
       if(finisherImpact)finisherImpact.style.display='none';
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
@@ -344,6 +347,8 @@
       // the 11-frame glacier sheet is playing so the new FX reads clearly.
       if(mathBurst)mathBurst.style.display='none';
       host.classList.add('finisher-math','finisher-impact');
+      finalImpactActive=true;
+      if(finisherImpact)finisherImpact.style.display='block';
       S.flashT=0;
       sfx('hit');
       iceHit(SEAL_X-.28,GROUND+.22);
@@ -355,6 +360,9 @@
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
 
       host.classList.remove('finisher-math','finisher-impact','finisher-impact-end');
+      finalImpactActive=false;
+      if(finisherImpact)finisherImpact.style.display='none';
+      S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
       S.heroFade=1;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;
       return true;
       /* Legacy video implementation retained below for rollback reference. */
@@ -944,18 +952,7 @@
           blending:THREE.AdditiveBlending,opacity:0}));
       m.position.z=z; m.visible=false; m.renderOrder=6; scene.add(m); return m;
     }
-    // The source cells are 280x341, so keep the visible glacier proportions
-    // instead of stretching a full sheet into one square texture.
-    iceBurstTex.wrapS=THREE.ClampToEdgeWrapping;
-    iceBurstTex.wrapT=THREE.ClampToEdgeWrapping;
-    iceBurstTex.repeat.set(.25,1/3);
-    iceBurstTex.offset.set(0,2/3);
-    const iceBurst=(()=>{
-      const m=new THREE.Mesh(new THREE.PlaneGeometry(1.7*.82,1.7),
-        new THREE.MeshBasicMaterial({map:iceBurstTex,transparent:true,depthWrite:false,
-          blending:THREE.AdditiveBlending,opacity:0}));
-      m.position.z=.08; m.visible=false; m.renderOrder=6; scene.add(m); return m;
-    })();
+    const iceBurst=fxQuad(iceBurstTex,1.7,.08);
     const iceEnd=fxQuad(iceEndTex,2.2,.07);
     function iceHit(x,y){
       iceBurst.position.set(x,y,.08); iceEnd.position.set(x,y,.07);
@@ -1381,8 +1378,7 @@
           const kb=Math.min(1,S.iceT/1.10);
           const frame=Math.min(10,Math.floor(kb*11));
           const col=frame%4, row=Math.floor(frame/4);
-          iceBurstTex.offset.set(col*.25,1-(row+1)/3);
-          if(finisherImpact){
+          if(finalImpactActive&&finisherImpact){
             finisherImpact.style.backgroundPosition=`${col*33.333333}% ${row*50}%`;
             finisherImpact.style.opacity='1';
           }
