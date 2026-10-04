@@ -171,7 +171,11 @@
     return null;
   }
   function d2Repair(id,s,shift){
-    if(id==='D2.1.5')return d2Estimate(id);
+      if(id==='D2.3.2'){
+        const n=R(1,9),dec=(n/10).toFixed(1),wrong=[N(`0.${Math.max(0,n-1)}`,'decimal'),N(`${n}.0`,'decimal'),N(`0.${Math.min(9,n+1)}`,'decimal')];
+        return mark(Q(`${numberLineSvg(0,1,0.1,n/10)}Titik merah menunjukkan ${n} persepuluh daripada satu keseluruhan. Apakah nilai perpuluhannya?`,dec,wrong,'Garis nombor ini dibahagi kepada 10 bahagian sama besar; setiap bahagian bernilai 0.1.','Tahun 2 · Garis Perpuluhan',true,true),id,'number_line','visual','application',['decimal']);
+      }
+      if(id==='D2.1.5')return d2Estimate(id);
     const op=d2Operation(id,s,shift);if(op)return op;
     const money=d2Money(id,s,shift);if(money)return money;
     const time=d2Time(id,s,shift);if(time)return time;
