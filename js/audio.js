@@ -9,6 +9,7 @@ const PA_AUDIO={
   wiraSword:'assets/audio/wira-heavy-metal-sword.wav',
   swordSlash:'assets/audio/sword-slash-v2.wav',
   coinPickup:'assets/audio/coin-pickup.wav',
+  victoryStinger:'assets/audio/StingerPA.mp3',
   enemyDown:'assets/audio/enemy-down.wav',
   ui:'assets/audio/ui.wav',
   correct:'assets/audio/correct.wav',
@@ -18,9 +19,12 @@ const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
 const PA_BATTLE_MUSIC_VOLUME=.024; // 70% lower than prior mix
 const PA_BATTLE_MUSIC_RATE=1; // PAMusic already authored at the intended slower tempo
+const PA_VICTORY_STINGER_VOLUME=.82;
+const PA_VICTORY_MUSIC_FADE_MS=1200;
+const PA_VICTORY_STINGER_DELAY_MS=850;
 let paMuted=localStorage.getItem('pa_muted')==='1';
 let paAudioUnlocked=false;
-const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicIndex:-1,musicTracks:['assets/audio/PAMusic.mp3'],mode:'off'};
+const PA_BATTLE_AUDIO={ctx:null,master:null,bossGain:null,bossTimer:null,forest:null,forestFade:null,music:null,musicFade:null,musicIndex:-1,musicTracks:['assets/audio/PAMusic.mp3'],victoryStinger:null,victoryActive:false,mode:'off'};
 
 function ensureBattleAudio(){
   if(PA_BATTLE_AUDIO.ctx)return PA_BATTLE_AUDIO.ctx;
@@ -51,7 +55,7 @@ function ensureBattleMusic(){
   PA_BATTLE_AUDIO.music=music;return music;
 }
 function playNextBattleMusic(){
-  const music=ensureBattleMusic();if(!music||paMuted||PA_BATTLE_AUDIO.mode==='off')return;
+  const music=ensureBattleMusic();if(!music||paMuted||PA_BATTLE_AUDIO.mode==='off'||PA_BATTLE_AUDIO.victoryActive)return;
   if(music.src&&!music.paused&&!music.ended)return;
   const tracks=PA_BATTLE_AUDIO.musicTracks;PA_BATTLE_AUDIO.musicIndex=(PA_BATTLE_AUDIO.musicIndex+1)%tracks.length;
   music.src=tracks[PA_BATTLE_AUDIO.musicIndex];music.load();music.currentTime=0;
@@ -62,6 +66,54 @@ function playNextBattleMusic(){
 function stopBattleMusic(){
   const music=PA_BATTLE_AUDIO.music;if(!music)return;
   music.pause();music.currentTime=0;
+}
+
+function clearBattleMusicFade(){
+  if(PA_BATTLE_AUDIO.musicFade){clearInterval(PA_BATTLE_AUDIO.musicFade);PA_BATTLE_AUDIO.musicFade=null}
+}
+function fadeBattleMusicVolume(target=0,duration=PA_VICTORY_MUSIC_FADE_MS){
+  const music=ensureBattleMusic();if(!music)return Promise.resolve(false);
+  clearBattleMusicFade();
+  const from=Number(music.volume||0),to=Math.max(0,Math.min(1,Number(target)||0)),ms=Math.max(0,Number(duration)||0);
+  if(ms===0){music.volume=to;return Promise.resolve(true)}
+  return new Promise(resolve=>{
+    const started=performance.now();
+    PA_BATTLE_AUDIO.musicFade=setInterval(()=>{
+      const k=Math.min(1,(performance.now()-started)/ms);
+      music.volume=from+(to-from)*k;
+      if(k>=1){clearBattleMusicFade();resolve(true)}
+    },40);
+  });
+}
+function stopBattleVictoryStinger(){
+  const a=PA_BATTLE_AUDIO.victoryStinger;if(!a)return;
+  try{a.pause();a.currentTime=0}catch(_){}
+  PA_BATTLE_AUDIO.victoryStinger=null;
+}
+async function playBattleVictoryStinger(){
+  if(paMuted)return false;
+  PA_BATTLE_AUDIO.victoryActive=true;
+  const fade=fadeBattleMusicVolume(0,PA_VICTORY_MUSIC_FADE_MS);
+  await new Promise(resolve=>setTimeout(resolve,PA_VICTORY_STINGER_DELAY_MS));
+  if(paMuted||!PA_BATTLE_AUDIO.victoryActive)return false;
+  try{
+    stopBattleVictoryStinger();
+    const base=PA_AUDIO_CACHE.victoryStinger;
+    const stinger=base?base.cloneNode(true):new Audio(PA_AUDIO.victoryStinger);
+    PA_BATTLE_AUDIO.victoryStinger=stinger;
+    stinger.preload='auto';stinger.currentTime=0;stinger.volume=PA_VICTORY_STINGER_VOLUME*PA_VOLUME_SCALE;
+    stinger.addEventListener('ended',()=>{if(PA_BATTLE_AUDIO.victoryStinger===stinger)PA_BATTLE_AUDIO.victoryStinger=null},{once:true});
+    const p=stinger.play();if(p&&typeof p.catch==='function')p.catch(()=>{});
+    fade.catch(()=>{});
+    return true;
+  }catch(_){return false}
+}
+function resetBattleVictoryAudio(){
+  PA_BATTLE_AUDIO.victoryActive=false;
+  clearBattleMusicFade();stopBattleVictoryStinger();
+  const music=PA_BATTLE_AUDIO.music;
+  if(music)music.volume=PA_BATTLE_MUSIC_VOLUME*PA_VOLUME_SCALE;
+  if(!paMuted&&PA_BATTLE_AUDIO.mode!=='off'&&(!music||music.paused||music.ended))playNextBattleMusic();
 }
 function bossDrum(){
   const {ctx,bossGain}=PA_BATTLE_AUDIO;if(!ctx||!bossGain||PA_BATTLE_AUDIO.mode!=='boss'||paMuted||ctx.state!=='running')return;
@@ -76,7 +128,7 @@ function setBattleAudioMode(mode='off'){
   /* Battle biasa ialah ambience sahaja: daun, angin dan hidupan hutan jauh.
      Muzik/synth hanya masuk secara terkawal semasa boss. */
   const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=(activeMode==='off'?0:.32)*PA_VOLUME_SCALE;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
-  if(activeMode==='off'){stopBattleMusic()}else if(previous==='off'||!PA_BATTLE_AUDIO.music?.src||PA_BATTLE_AUDIO.music?.paused){playNextBattleMusic()}
+  if(activeMode==='off'){clearBattleMusicFade();stopBattleVictoryStinger();stopBattleMusic()}else if(!PA_BATTLE_AUDIO.victoryActive&&(previous==='off'||!PA_BATTLE_AUDIO.music?.src||PA_BATTLE_AUDIO.music?.paused)){playNextBattleMusic()}
   fadeForestAmbience(0);
   PA_BATTLE_AUDIO.bossGain.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.bossGain.gain.setTargetAtTime((activeMode==='boss'?.09:0)*PA_VOLUME_SCALE,now,fade/3);
   if(activeMode==='boss'){bossDrum();PA_BATTLE_AUDIO.bossTimer=setInterval(bossDrum,1600)}
@@ -96,7 +148,7 @@ function preloadSfx(){
       const a=new Audio();
       a.preload='auto';
       a.src=src;
-      a.volume=(name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65)))*PA_VOLUME_SCALE;
+      a.volume=(name==='victoryStinger'?PA_VICTORY_STINGER_VOLUME:(name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65))))*PA_VOLUME_SCALE;
       a.load();
       PA_AUDIO_CACHE[name]=a;
     }catch(e){}
@@ -125,7 +177,7 @@ function playSfx(name){
   try{
     const base=PA_AUDIO_CACHE[name];
     const a=base?base.cloneNode(true):new Audio(src);
-    a.volume=(name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65)))*PA_VOLUME_SCALE;
+    a.volume=(name==='victoryStinger'?PA_VICTORY_STINGER_VOLUME:(name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65))))*PA_VOLUME_SCALE;
     a.preload='auto';
     const p=a.play(); if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
