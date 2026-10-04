@@ -1,0 +1,32 @@
+name: Import Victory Stinger
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-victory-stinger.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download victory stinger
+        run: |
+          set -euo pipefail
+          curl -fL "https://d2ol7oe51mr4n9.cloudfront.net/user_3J3MaX5TB1aHVAPINCF19CYRIcd/5a22a1c4-9109-4e8a-9e82-603508c86b0f.mp3" -o assets/audio/StingerPA.mp3
+          test -s assets/audio/StingerPA.mp3
+          ls -lh assets/audio/StingerPA.mp3
+      - name: Commit victory stinger
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/audio/StingerPA.mp3
+          git commit -m "audio: add battle victory stinger"
+          git push origin HEAD:main
