@@ -304,6 +304,7 @@
         try{video.pause();video.currentTime=0}catch(_){}
       }
       host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
+      if(mathBurst)mathBurst.style.display='';
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
@@ -332,6 +333,9 @@
       // 3) Sudden payoff: cut straight from the eyes back to the arena and
       // spawn the final glacier/math FX on the last Segel.
       host.classList.remove('finisher-focus');
+      // The legacy DOM math glyphs are not the final impact. Hide them while
+      // the 11-frame glacier sheet is playing so the new FX reads clearly.
+      if(mathBurst)mathBurst.style.display='none';
       host.classList.add('finisher-math','finisher-impact');
       S.flashT=0;
       sfx('hit');
