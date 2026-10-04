@@ -1084,9 +1084,9 @@
     async function setRescuePetVisual(config){
       const generation=++rescuePetVisualGeneration;
       rescuePetConfig=config&&typeof config==='object'?config:null;
-      // Hide the trapped mesh while the target textures load so an old target
-      // from the previous run can never flash for one frame.
-      pet.visible=false;
+      // Keep the current trapped pet visible while the next pet's textures
+      // load. Hiding it here created a one-frame disappearance after a seal
+      // hit, especially when a custom sheet loads later than Aurora.
       const sad=await customPetFrames(rescuePetConfig,'sad',petSad);
       const happy=await customPetFrames(rescuePetConfig,'happy',petJoy);
       if(generation!==rescuePetVisualGeneration)return;
@@ -1140,6 +1140,9 @@
       hero.position.x=S.heroFeet+hero.userData.e.offX;
       hero.position.y=GROUND+hero.userData.e.offY;
       hero.material.opacity=S.heroFade;
+      // The fade is authoritative. This prevents the hit-rebound path from
+      // resurrecting the WebGL Wira underneath the DOM attack sheet.
+      hero.visible=S.heroFade>.001;
 
       /* Zarah berkumpul dari atas ke titik masing-masing; Wira hanya pudar
          masuk selepas kebanyakan zarah sampai, jadi tiada detik dia dan
@@ -1177,6 +1180,9 @@
       heroShadow.position.x=S.heroFeet;
       pet.position.x=SEAL_X+pet.userData.e.offX;
       pet.position.y=S.petFeet+pet.userData.e.offY;
+      // The trapped pet remains present through recoil, shatter and impact;
+      // only its frame/state changes. Never blink the mesh during a hit.
+      pet.visible=!!S.petFrames.length;
       S.companionFeet=damp(S.companionFeet,COMPANION_HOME,8,dt);
       companion.position.x=S.companionFeet+(S.companionMirror?-1:1)*companion.userData.e.offX*COMPANION_SCALE;
       companion.position.y=GROUND+companion.userData.e.offY*COMPANION_SCALE;
