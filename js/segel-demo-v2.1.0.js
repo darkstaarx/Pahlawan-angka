@@ -1920,6 +1920,25 @@
      tetap keluar dengan empat pilihan. Demo tidak merekod kemajuan, jadi
      kecenderungan ini tidak menjejaskan bukti pembelajaran murid. */
   const GOLD_TRIES=5;
+  function wireLegacyFractionTouch(box){
+    const prompt=document.querySelector('#segelQuestion .segelPrompt');
+    const group=prompt?.querySelector('[aria-label="Pilihan rajah pecahan"]');
+    if(!group||group.dataset.touchReady==='1')return;
+    const cards=[...group.children],answers=[...box.querySelectorAll('button.ans')];
+    if(cards.length!==4||answers.length<4)return;
+    const grid=document.createElement('div');
+    grid.className='paVisualChoiceGrid paLegacyVisualChoice';
+    grid.setAttribute('role','radiogroup');
+    grid.setAttribute('aria-label','Pilihan rajah pecahan — sentuh satu rajah');
+    cards.forEach((card,index)=>{
+      const button=document.createElement('button');
+      button.type='button';button.className='paVisualChoiceCard';button.innerHTML=card.innerHTML;
+      button.setAttribute('role','radio');button.setAttribute('aria-label',`Pilihan ${String.fromCharCode(65+index)}`);
+      button.onclick=()=>{grid.querySelectorAll('button').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-checked','false')});button.classList.add('selected');button.setAttribute('aria-checked','true');answers[index]?.click()};
+      grid.appendChild(button);
+    });
+    group.dataset.touchReady='1';group.replaceWith(grid);box.classList.add('paLegacyAnswersHidden');
+  }
   function drawQuestion(){
     if(run&&run.writtenArithmeticPreview){
       run.q=run.writtenArithmeticPreview;
@@ -2002,6 +2021,7 @@
         box.appendChild(b);
       });
     }
+    wireLegacyFractionTouch(box);
     // Give the touch-choice bridge a deterministic hook after both the legacy
     // visual prompt and its answer buttons exist. This also covers cached
     // question-bank paths that do not trigger the answer observer in order.
