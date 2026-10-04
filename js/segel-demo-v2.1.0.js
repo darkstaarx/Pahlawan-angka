@@ -2002,6 +2002,10 @@
         box.appendChild(b);
       });
     }
+    // Give the touch-choice bridge a deterministic hook after both the legacy
+    // visual prompt and its answer buttons exist. This also covers cached
+    // question-bank paths that do not trigger the answer observer in order.
+    queueMicrotask(()=>window.PASegelInteractionBridge?.sync?.());
   }
 
   function toast(text){
