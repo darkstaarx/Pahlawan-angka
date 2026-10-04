@@ -340,26 +340,10 @@
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
       if(typeof stopChargeup==='function')stopChargeup();
 
-      // 3) Sudden payoff: cut straight from the eyes back to the arena and
-      // spawn the final glacier/math FX on the last Segel.
+      // 3) Return cleanly to the arena. The actual hit remains ordinary.
       host.classList.remove('finisher-focus');
-      // The legacy DOM math glyphs are not the final impact. Hide them while
-      // the 11-frame glacier sheet is playing so the new FX reads clearly.
-      if(mathBurst)mathBurst.style.display='none';
-      host.classList.add('finisher-math','finisher-impact');
-      finalImpactActive=true;
-      if(finisherImpact)finisherImpact.style.display='block';
-      S.flashT=0;
-      sfx('hit');
-      iceHit(SEAL_X-.28,GROUND+.22);
-      burst(8,cfg.color);
-      try{waveMat.color.setHex(cfg.color)}catch(_){}
-      S.waveT=0;S.waveScale=1.5;S.shake=.62;
-
-      await wait(cfg.impactMs);
-      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
-
-      host.classList.remove('finisher-math','finisher-impact','finisher-impact-end');
+      if(mathBurst)mathBurst.style.display='';
+      
       finalImpactActive=false;
       if(finisherImpact)finisherImpact.style.display='none';
       S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
@@ -1480,49 +1464,21 @@
         const tier=TIERS[Math.min(S.active,TIERS.length-1)];
         const finalHit=S.active===TIERS.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
         if(finalHit){
-          const videoPlayed=await playFinisherVideo(lifecycle);
+          await playFinisherVideo(lifecycle);
           if(lifecycle!==S.lifecycle)return;
-          if(videoPlayed){
-            /* Finisher already owns the complete final attack. Do not fall
-               through into the ordinary slash path: that caused a second
-               attack to overlay the cinematic and made the seal break look
-               disconnected from the impact. The caller applies exactly one
-               hitSeal() after this resolves. */
-            S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME;
-            return;
-          }
-          else if(reduceMotion){
-            // Video ialah kandungan penamat yang diminta pengguna, jadi ia
-            // masih dicuba walaupun sistem mengurangkan animasi. Jika browser
-            // langsung gagal memainkan video, barulah guna hentaman minimum.
-            sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; return;
-          }
-          else {
-          // Jika finisher gagal dimuat atau autoplay disekat, jatuh balik ke
-          // finisher ilustrasi sedia ada supaya hentaman terakhir tidak hilang.
-          host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
-          void host.offsetWidth;
-          S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.12;
-          host.classList.add('finisher-charge');
-          sfx('auraCharge');
-          await wait(1180); if(lifecycle!==S.lifecycle)return;
-          host.classList.remove('finisher-charge');
-          S.heroLock=heroIdleE[0]; S.heroX=HERO_HOME;
-          host.classList.add('finisher-focus');
-          await wait(720); if(lifecycle!==S.lifecycle)return;
-          host.classList.remove('finisher-focus'); host.classList.add('finisher-math');
-          await wait(680); if(lifecycle!==S.lifecycle)return;
-          host.classList.remove('finisher-math'); host.classList.add('finisher-release');
-          await wait(420); if(lifecycle!==S.lifecycle)return;
-          host.classList.remove('finisher-release'); host.classList.add('finisher-dash');
+          // After the aura and eye cutscene, use the same ordinary attack.
+          if(reduceMotion){ sfx('hit'); clearNormalIceFx(); S.waveT=0; return }
+          S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
+          if(lifecycle!==S.lifecycle)return;
           sfx('swordSlash');
-          await wait(1800); if(lifecycle!==S.lifecycle)return;
-          host.classList.remove('finisher-dash'); host.classList.add('finisher-impact');
-          sfx('hit'); clearNormalIceFx(); burst(7,0xbfe9ff); S.waveT=0; S.shake=.5;
-          await wait(520); if(lifecycle!==S.lifecycle)return;
-          host.classList.remove('finisher-impact'); S.heroLock=null; S.heroX=HERO_HOME;
+          S.heroLock=heroSlashE; S.heroX=-0.30; await wait(140);
+          if(lifecycle!==S.lifecycle)return;
+          sfx('hit'); clearNormalIceFx();
+          S.waveT=0; S.shake=.32;
+          await wait(210);
+          if(lifecycle!==S.lifecycle)return;
+          S.heroLock=null; S.heroX=HERO_HOME;
           return;
-          }
         }
         if(reduceMotion){ sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; return }
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
