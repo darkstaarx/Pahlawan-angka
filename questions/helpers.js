@@ -301,8 +301,8 @@ function base10Visual(n){
 function numberLineSvg(min,max,step,point=null){
  const vals=[];for(let v=min;v<=max;v+=step)vals.push(v);
  const W=320,H=74,left=22,right=298,y=34,span=Math.max(1,max-min);
- const ticks=vals.map(v=>{const x=left+(v-min)/span*(right-left);return `<line x1="${x}" y1="28" x2="${x}" y2="42" stroke="#405072" stroke-width="2"/><text x="${x}" y="59" text-anchor="middle" font-size="10" fill="#405072">${v}</text>`}).join('');
- let marker=''; if(point!=null){const x=left+(point-min)/span*(right-left);marker=`<circle cx="${x}" cy="${y}" r="6" fill="#ef6f6c"/><path d="M${x} 8 L${x} 24" stroke="#ef6f6c" stroke-width="3"/><text x="${x}" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="#9c3e3b">${point}</text>`}
+ const ticks=vals.map(v=>{const x=Number((left+(v-min)/span*(right-left)).toFixed(2));return `<line x1="${x}" y1="28" x2="${x}" y2="42" stroke="#405072" stroke-width="2"/><text x="${x}" y="59" text-anchor="middle" font-size="10" fill="#405072">${tidyDisplay(v)}</text>`}).join('');
+ let marker=''; if(point!=null){const x=Number((left+(point-min)/span*(right-left)).toFixed(2));marker=`<circle cx="${x}" cy="${y}" r="6" fill="#ef6f6c"/><path d="M${x} 8 L${x} 24" stroke="#ef6f6c" stroke-width="3"/><text x="${x}" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="#9c3e3b">${tidyDisplay(point)}</text>`}
  return `<svg viewBox="0 0 ${W} ${H}" width="min(330px,98%)" style="display:block;margin:0 auto 10px"><line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#405072" stroke-width="3"/>${ticks}${marker}</svg>`;
 }
 function dotsEstimateVisual(count){
