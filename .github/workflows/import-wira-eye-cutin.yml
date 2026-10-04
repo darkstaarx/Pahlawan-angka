@@ -1,0 +1,33 @@
+name: Import Wira Eye Cutin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-wira-eye-cutin.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download Wira eye cut-in
+        run: |
+          set -euo pipefail
+          mkdir -p assets/fx/wira/final-v4
+          curl -fL "https://d2ol7oe51mr4n9.cloudfront.net/user_3J3MaX5TB1aHVAPINCF19CYRIcd/6a956da2-cb47-45f5-88ac-da5d369230ec.png" -o assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png
+          test -s assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png
+          ls -lh assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png
+      - name: Commit Wira eye cut-in
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png
+          git commit -m "asset: add Wira icy electric eye cutin"
+          git push origin HEAD:main
