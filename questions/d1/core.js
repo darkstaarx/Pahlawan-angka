@@ -20,8 +20,19 @@ function d1FracEveryday(num,den){
 }
 function d1FracTargets(){return [[1,2],[1,4],[2,4],[3,4]]}
 function d1FracDistractors(num,den,words=false){
- const targets=d1FracTargets().filter(([n,d])=>!(n===num&&d===den));
- return shuffle(targets).slice(0,3).map(([n,d])=>N(words?d1FracFormal(n,d):d1FracKey(n,d),'fraction'))
+ if(words){
+  const pool=(num===2&&den===4)
+   ?['satu perempat','tiga perempat','keseluruhan']
+   :(num===1&&den===2)
+    ?['satu perempat','tiga perempat','keseluruhan']
+    :d1FracTargets().filter(([n,d])=>!(n===num&&d===den)).map(([n,d])=>d1FracFormal(n,d));
+  return shuffle([...new Set(pool)]).slice(0,3).map(v=>N(v,'fraction'))
+ }
+ const symbolPool=(num===1&&den===2)?['1/4','3/4','4/4']
+  :(num===1&&den===4)?['2/4','3/4','4/4']
+  :(num===2&&den===4)?['1/4','3/4','4/4']
+  :['1/4','2/4','4/4'];
+ return shuffle(symbolPool).map(v=>N(v,'fraction'))
 }
 function d1FracMini(num,den,kind='bar',invalid=false){
  const fill='#62c991',empty='#edf2ff',stroke='#516684';
@@ -96,7 +107,8 @@ function d1FractionQuestion(s,shift){
  if(mode===4){
    const target=pick([2,3]),shown=R(0,target-1),need=target-shown;
    const shownHtml=fractionVisual(shown,4);
-   const q=Q(shownHtml+'Rajah perlu menjadi <b>'+d1FracFormal(target,4)+'</b>. Berapa lagi bahagian perlu dilorek?',need,[N(Math.max(0,need-1),'fraction'),N(Math.min(4,need+1),'fraction'),N(4-shown,'fraction')],'Kira bahagian yang masih perlu ditambah sehingga cukup pecahan sasaran.','Darjah 1 · Pecahan',true,shift);
+   const nums=[0,1,2,3,4].filter(v=>v!==need),wrongNums=shuffle(nums).slice(0,3);
+   const q=Q(shownHtml+'Rajah perlu menjadi <b>'+d1FracFormal(target,4)+'</b>. Berapa lagi bahagian perlu dilorek?',need,wrongNums.map(v=>N(v,'fraction')),'Kira bahagian yang masih perlu ditambah sehingga cukup pecahan sasaran.','Darjah 1 · Pecahan',true,shift);
    return d1FinalizeFrac(q,'d1_frac_complete_shading','D1.FRAC.3.1.1','shade')
  }
  if(mode===5){
@@ -108,7 +120,10 @@ function d1FractionQuestion(s,shift){
  if(mode===6){
    const objects=den===2?['sebiji epal','sebiji sandwic','sekeping roti']:['sebiji piza','sebiji kek','sebatang coklat'];
    const object=pick(objects),ans=d1FracEveryday(num,den);
-   const wrong=d1FracTargets().filter(([n,d])=>!(n===num&&d===den)).map(([n,d])=>N(d1FracEveryday(n,d),'fraction')).slice(0,3);
+   const wrongWords=(num===2&&den===4)|| (num===1&&den===2)
+    ?['suku','tiga suku','keseluruhan']
+    :d1FracTargets().filter(([n,d])=>!(n===num&&d===den)).map(([n,d])=>d1FracEveryday(n,d));
+   const wrong=shuffle([...new Set(wrongWords)]).slice(0,3).map(v=>N(v,'fraction'));
    const q=Q('<b>'+object+'</b> dibahagi kepada <b>'+den+' bahagian sama besar</b>. '+num+' bahagian digunakan. Berapa bahagian daripada keseluruhan itu?',ans,wrong,'Bayangkan objek itu sebagai satu keseluruhan sebelum dibahagi.','Darjah 1 · Pecahan',true,shift);
    return d1FinalizeFrac(q,'d1_frac_daily_story','D1.FRAC.3.2.1','daily')
  }
