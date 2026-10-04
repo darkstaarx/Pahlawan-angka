@@ -440,12 +440,22 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   78% {transform:scale(.93)}
   100%{transform:scale(1);opacity:1}
 }
+.resultCrest .resultStars.stars-pending i:not(.on){opacity:0;transform:scale(.55)}
+.resultCrest .resultStars.stars-pending i.on.pop{animation:paGoldStarReveal .72s cubic-bezier(.16,.9,.24,1) both;animation-delay:var(--popDelay,0ms)}
+@keyframes paGoldStarReveal{
+  0%{opacity:0;transform:scale(1.85) rotate(-9deg);filter:drop-shadow(0 0 22px rgba(255,231,135,1))}
+  28%{opacity:1;transform:scale(1.36) rotate(4deg);filter:drop-shadow(0 0 18px rgba(255,218,91,.95))}
+  64%{transform:scale(1.08) rotate(-2deg)}
+  100%{opacity:1;transform:scale(1) rotate(0);filter:drop-shadow(0 2px 9px rgba(242,205,120,.55))}
+}
+.resultCrest .resultStars.stars-ready i:not(.on){animation:paStarPlaceholderIn .24s ease-out both}
+@keyframes paStarPlaceholderIn{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
 .resultCrest .resultStars i.on.pop{
   animation:paStarPop .48s cubic-bezier(.22,.9,.28,1) both;
   animation-delay:var(--popDelay,0ms)
 }
 @media (prefers-reduced-motion:reduce){
-  .resultCrest .resultStars i.on.pop{animation:none}
+.resultCrest .resultStars i.on.pop{animation:none}
 }
 
 /* Borang taip gembok emas: `#segelAnswers` ialah grid dua lajur untuk butang

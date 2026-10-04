@@ -200,6 +200,30 @@
     }catch(_){}
   }
 
+  /* Bintang emas: bunyi pendek berlapis supaya kemunculannya terasa seperti
+     ganjaran, bukan sekadar tukar background image. */
+  function goldStarSfx(i){
+    try{
+      if(typeof paMuted!=='undefined'&&paMuted)return;
+      const ctx=(typeof ensureBattleAudio==='function')?ensureBattleAudio():null;
+      if(!ctx)return;
+      if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+      const now=ctx.currentTime+(i||0)*.012;
+      const out=ctx.createGain(); out.gain.value=.26*((typeof PA_VOLUME_SCALE!=='undefined')?PA_VOLUME_SCALE:.8); out.connect(ctx.destination);
+      [0,1].forEach((step)=>{
+        const osc=ctx.createOscillator(), gain=ctx.createGain();
+        osc.type=step?'sine':'triangle';
+        osc.frequency.setValueAtTime((step?1320:880)+Math.min(i||0,2)*90,now+step*.055);
+        osc.frequency.exponentialRampToValueAtTime((step?1760:1175)+Math.min(i||0,2)*90,now+.16+step*.055);
+        gain.gain.setValueAtTime(.0001,now+step*.055);
+        gain.gain.exponentialRampToValueAtTime(step?.22:.28,now+.012+step*.055);
+        gain.gain.exponentialRampToValueAtTime(.0001,now+.19+step*.055);
+        osc.connect(gain).connect(out); osc.start(now+step*.055); osc.stop(now+.22+step*.055);
+      });
+      setTimeout(()=>{try{out.disconnect()}catch(_){}},700);
+    }catch(_){ }
+  }
+
   // Bingkai idle dengan tempoh berbeza setiap satu.
   function heldFrame(frames, holds, t){
     const cycle=holds.reduce((a,b)=>a+b,0);
@@ -227,7 +251,7 @@
       chargeHero:'assets/fx/wira/final-v2/wira-charge-sheet-v3.png',
       chargeAura:null,
       focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png',
-      impact:'assets/fx/wira/final-v3/glacier-ice-math-v1.png',
+      impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.png',
       color:0xbfe9ff,chargeMs:2400,focusMs:980,impactMs:720
     };
     function applyLiveFinisherAssets(){
@@ -2114,17 +2138,28 @@
      Kelas `pop` dibuang dahulu dan reflow dipaksa: tanpa itu, bintang yang
      sudah `on` daripada pusingan sebelumnya tidak akan memainkan semula
      animasinya apabila murid menekan Main Semula. */
+  let starRevealTimer=0;
   function popStars(stars){
     const box=$('segelResultStars');
     if(!box)return;
+    if(starRevealTimer)clearTimeout(starRevealTimer);
     const all=[...box.querySelectorAll('i')];
+    box.classList.remove('stars-pending','stars-ready');
     all.forEach((el,i)=>{ el.classList.toggle('on',i<stars); el.classList.remove('pop') });
     void box.offsetWidth;
-    if(reduceMotion)return;
+    if(reduceMotion){ box.classList.add('stars-ready'); return; }
+    box.classList.add('stars-pending');
     all.filter(el=>el.classList.contains('on')).forEach((el,i)=>{
-      el.style.setProperty('--popDelay',(i*150)+'ms');
+      const delay=i*180;
+      el.style.setProperty('--popDelay',delay+'ms');
       el.classList.add('pop');
+      setTimeout(()=>goldStarSfx(i),delay+70);
     });
+    // Earned gold stars settle first; only then reveal the empty placeholders.
+    starRevealTimer=setTimeout(()=>{
+      box.classList.remove('stars-pending');
+      box.classList.add('stars-ready');
+    },Math.max(0,stars)*180+760);
   }
 
   function coachLine(t,acc,asked){

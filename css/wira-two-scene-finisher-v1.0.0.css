@@ -8,7 +8,7 @@
   background-size:cover;background-position:center 48%;background-repeat:no-repeat;
   border-top:2px solid rgba(120,235,255,.72);border-bottom:2px solid rgba(120,205,255,.5);
   box-shadow:0 0 46px rgba(65,208,255,.34),inset 0 0 28px rgba(75,218,255,.22);
-  filter:saturate(1.18) contrast(1.08) brightness(.88) drop-shadow(0 0 18px rgba(78,210,255,.86));
+  filter:saturate(1.08) contrast(1.04) brightness(.98) drop-shadow(0 0 15px rgba(78,210,255,.72));
   transform:translateX(-115%) skewX(-4deg);opacity:0;
   animation:wiraIcyEyeCutin 980ms cubic-bezier(.18,.85,.3,1) forwards!important
 }
@@ -43,8 +43,16 @@
   #segelStage.finisher-dash .segelFinisherAttack.segelFinisherAttack{display:block!important;opacity:1!important;visibility:visible!important;z-index:31!important}
   #segelStage.finisher-math .segelMathBurst{z-index:32}
 #segelStage.finisher-impact .segelFinisherImpact{display:block!important;opacity:1!important;visibility:visible!important;z-index:33!important}
-#segelStage.finisher-impact .segelFinisherImpact{left:66%;top:auto;bottom:7%;width:min(45vw,420px);height:min(60vw,560px);background-image:url('../assets/fx/wira/final-v3/glacier-ice-math-v1.png');background-repeat:no-repeat;background-size:contain;background-position:center bottom;transform:translate(-50%,12%) scale(.42);transform-origin:center bottom;animation:glacierMathRiseV2 720ms cubic-bezier(.16,.84,.28,1) both!important;object-fit:contain}
-@keyframes glacierMathRiseV2{0%{opacity:0;transform:translate(-50%,18%) scale(.34)}18%{opacity:.82;transform:translate(-50%,7%) scale(.58)}52%{opacity:1;transform:translate(-50%,0) scale(1.02)}74%{transform:translate(-50%,1%) scale(.97)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
+#segelStage.finisher-impact .segelFinisherImpact{left:66%;top:auto;bottom:7%;width:min(45vw,420px);height:min(60vw,560px);background-image:url('../assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.png');background-repeat:no-repeat;background-size:400% 100%;background-position:0 0;transform:translate(-50%,18%) scale(.58) rotate(-7deg);transform-origin:center bottom;animation:glacierSwivelStrike 760ms steps(1,end) both!important;object-fit:contain}
+@keyframes glacierSwivelStrike{
+  0%{opacity:0;background-position:0 0;transform:translate(-50%,18%) scale(.58) rotate(-7deg)}
+  14%{opacity:.7;background-position:0 0;transform:translate(-50%,12%) scale(.70) rotate(-7deg)}
+  30%{opacity:1;background-position:33.333% 0;transform:translate(-50%,6%) scale(.84) rotate(-4deg)}
+  52%{opacity:1;background-position:66.666% 0;transform:translate(-50%,0) scale(1) rotate(0)}
+  72%{opacity:1;background-position:100% 0;transform:translate(-50%,1%) scale(.96) rotate(7deg)}
+  88%{opacity:.92;background-position:100% 0;transform:translate(-50%,0) scale(.99) rotate(3deg)}
+  100%{opacity:0;background-position:100% 0;transform:translate(-50%,-2%) scale(1.03) rotate(0)}
+}
 @media(max-width:520px){#segelStage.finisher-impact .segelFinisherImpact{left:66%;bottom:6%;width:min(54vw,330px);height:min(72vw,440px)}}
 
 /* Main battle charge: use the authored Wira charge sheet, not the old generic aura. */
