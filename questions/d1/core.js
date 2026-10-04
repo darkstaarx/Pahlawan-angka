@@ -58,7 +58,7 @@ function d1FracChoiceBoard(num,den){
  const letters=['A','B','C','D'];
  const answer=letters[choices.findIndex(x=>x.ok)];
  const html='<div role="group" aria-label="Pilihan rajah pecahan" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:250px;margin:8px auto 12px">'+choices.map((x,i)=>'<div style="display:flex;align-items:center;justify-content:center;gap:7px;padding:8px;border:2px solid #c7d2e5;border-radius:10px;background:#f8fbff"><b>'+letters[i]+'</b>'+d1FracMini(x.n,x.d,x.kind,x.invalid)+'</div>').join('')+'</div>';
- return {html,answer}
+ return {html,answer,choices}
 }
 function d1EqualPartsBoard(den){
  const correct=d1FracMini(1,den,pick(den===4?['bar','square']:['bar']),false);
@@ -81,7 +81,7 @@ function d1ChocolateHalfBoard(){
  ]);
  const letters=['A','B','C','D'],answer=letters[options.findIndex(x=>x.ok)];
  const html='<div style="margin:6px auto 4px;text-align:center;font-size:12px;color:#5b6474">Bahagian gelap ialah bahagian yang dipilih.</div><div role="group" aria-label="Empat pilihan coklat" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-width:270px;margin:6px auto 12px">'+options.map((x,i)=>'<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;border:2px solid #c7d2e5;border-radius:12px;background:#fffaf3"><b>'+letters[i]+'</b>'+d1ChocolateBar(x.n,x.d)+'</div>').join('')+'</div>';
- return {html,answer}
+ return {html,answer,options}
 }
 function d1FractionSynonymQuestion(shift){
  const half=Math.random()<.7;
@@ -128,8 +128,8 @@ function d1FractionQuestion(s,shift){
  if(mode===2){
    const board=d1FracChoiceBoard(num,den),target=d1FracFormal(num,den);
    const letters=['A','B','C','D'];
-   const q=Q('Rajah manakah menunjukkan <b>'+target+'</b>?'+board.html,board.answer,letters.filter(x=>x!==board.answer).map(x=>N(x,'fraction')),'Bahagian pecahan mesti sama besar.','Darjah 1 · Pecahan',true,shift);
-   return d1FinalizeFrac(q,'d1_frac_choose_picture')
+   const q=Q('Rajah manakah menunjukkan <b>'+target+'</b>?',board.answer,letters.filter(x=>x!==board.answer).map(x=>N(x,'fraction')),'Bahagian pecahan mesti sama besar.','Darjah 1 · Pecahan',true,shift);
+   return attachFractionVisualChoice(d1FinalizeFrac(q,'d1_frac_choose_picture'),board.choices)
  }
  if(mode===3){
    const d=pick([2,4]),board=d1EqualPartsBoard(d),letters=['A','B'];
@@ -170,8 +170,8 @@ function d1FractionQuestion(s,shift){
  }
  if(mode===8){
    const board=d1ChocolateHalfBoard(),letters=['A','B','C','D'];
-   const q=Q('Empat coklat di bawah dipotong dengan cara berbeza. <b>Yang manakah menunjukkan setengah?</b>'+board.html,board.answer,letters.filter(x=>x!==board.answer).map(x=>N(x,'fraction')),'Setengah bermaksud satu daripada dua bahagian sama besar.','Darjah 1 · Pecahan',true,shift);
-   return d1FinalizeFrac(q,'d1_frac_chocolate_half','D1.FRAC.3.2.1','chocolate')
+   const q=Q('Empat coklat di bawah dipotong dengan cara berbeza. <b>Yang manakah menunjukkan setengah?</b>',board.answer,letters.filter(x=>x!==board.answer).map(x=>N(x,'fraction')),'Setengah bermaksud satu daripada dua bahagian sama besar.','Darjah 1 · Pecahan',true,shift);
+   return attachFractionVisualChoice(d1FinalizeFrac(q,'d1_frac_chocolate_half','D1.FRAC.3.2.1','chocolate'),board.options)
  }
  if(mode===9)return d1FractionSynonymQuestion(shift)
  return d1FractionOddOneOut(shift)

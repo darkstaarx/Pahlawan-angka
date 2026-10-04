@@ -64,6 +64,14 @@ function attachFractionShade(q,numerator,denominator,answerMode='fraction'){
  q.archetypeId=q.archetypeId||'fraction_shade_choice';
  return q;
 }
+function attachFractionVisualChoice(q,choices,answerMode='letter'){
+ q.visualChoiceSpec={kind:'fraction',choices:(choices||[]).map((choice,index)=>({...choice,letter:String.fromCharCode(65+index)})),answerMode};
+ q.representation='fraction_area_choice';
+ q.responseType='visual_choice';
+ q.interactionAuthored=true;
+ q.archetypeId=q.archetypeId||'fraction_visual_choice';
+ return q;
+}
 function N(v,tag){return{v,tag,label:v}}
 function R(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function pick(arr){return arr[R(0,arr.length-1)]}
@@ -369,6 +377,13 @@ function fractionChoiceBoard(num,den){
  const otherD=den===2?4:2,otherN=Math.min(otherD-1,Math.max(1,num));
  const choices=[mini('bar',num,den),mini('circle',wrongN,wrongD),mini('bar',1,den,true),mini('bar',otherN,otherD)];
  return `<div role="group" aria-label="Pilihan rajah pecahan" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:230px;margin:0 auto 12px">${choices.map((v,i)=>`<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border:2px solid #c7d2e5;border-radius:10px;background:#f8fbff"><b>${String.fromCharCode(65+i)}</b>${v}</div>`).join('')}</div>`;
+}
+function fractionVisualChoiceSpec(num,den){
+ const correct={n:num,d:den,kind:den===4?pick(['bar','circle','square']):pick(['bar','circle']),ok:true};
+ const pool=[[1,2],[1,4],[2,4],[3,4]].filter(([n,d])=>n!==num||d!==den);
+ const wrong=shuffle(pool).slice(0,2).map(([n,d])=>({n,d,kind:d===4?pick(['bar','circle','square']):pick(['bar','circle']),ok:false}));
+ wrong.push({n:num,d:den,kind:'bar',invalid:true,ok:false});
+ return shuffle([correct,...wrong]);
 }
 function rectangleMeasureSvg(length,width){
  return `<svg class="geometryVisual" viewBox="0 0 260 130" width="min(290px,94%)" role="img" aria-label="Segi empat tepat berukuran ${length} sentimeter kali ${width} sentimeter" style="display:block;margin:0 auto 10px"><rect x="45" y="25" width="170" height="78" rx="3" fill="#dceaff" stroke="#405072" stroke-width="4"/><text x="130" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#405072">${length} cm</text><text x="228" y="68" text-anchor="middle" font-size="15" font-weight="900" fill="#405072" transform="rotate(90 228 68)">${width} cm</text></svg>`;

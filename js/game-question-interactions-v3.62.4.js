@@ -22,6 +22,7 @@
 
  function answerSpec(q,id,ctx={}){
   const raw=text(q?.answer),compact=raw.replace(/\s+/g,''),grade=skillGrade(id);
+  if(q?.visualChoiceSpec?.kind==='fraction')return{kind:'visual_choice',choices:q.visualChoiceSpec.choices||[],answerMode:q.visualChoiceSpec.answerMode||'letter'};
   if(q?.shadeSpec?.kind==='fraction')return{kind:'shade_choice',numerator:Number(q.shadeSpec.numerator),denominator:Number(q.shadeSpec.denominator),answerMode:q.shadeSpec.answerMode||'fraction'};
   const boss=(ctx?.isBoss===undefined&&ctx?.battleTier===undefined)?true:(ctx?.isBoss===true||ctx?.battleTier==='boss');
   const gated=spec=>boss?spec:{kind:'sigil_select',grade,gatedFrom:spec.kind,bossOnly:true};
@@ -186,6 +187,29 @@
   submit.onclick=()=>{if(selected===null){wrap.classList.add('needsValue');return}wrap.classList.remove('needsValue');deliver(q,submit,selected,ctx,text(selected)===text(q.answer))};
   wrap.append(note,figure,status,options,submit);root.appendChild(wrap);refresh();
  }
+ function visualFractionMarkup(choice){
+  const n=Math.max(0,Number(choice.n)||0),d=Math.max(1,Number(choice.d)||1),fill='#62c991',empty='#edf2ff',stroke='#516684';
+  if(choice.invalid)return `<div class="paVisualFraction paVisualInvalid" aria-label="Bahagian tidak sama besar"><i style="flex:1;background:${fill}"></i><i style="flex:1.8;background:${empty}"></i></div>`;
+  if(choice.kind==='circle'){
+   const deg=Math.round(n/d*360);
+   return `<div class="paVisualFraction paVisualCircle" aria-label="${n} daripada ${d} bahagian" style="background:conic-gradient(${fill} 0deg ${deg}deg,${empty} ${deg}deg 360deg)"></div>`;
+  }
+  if(choice.kind==='square'&&d===4)return `<div class="paVisualFraction paVisualSquare" aria-label="${n} daripada ${d} bahagian">${Array.from({length:4},(_,i)=>`<i style="background:${i<n?fill:empty}"></i>`).join('')}</div>`;
+  return `<div class="paVisualFraction paVisualBar" aria-label="${n} daripada ${d} bahagian" style="grid-template-columns:repeat(${d},1fr)">${Array.from({length:d},(_,i)=>`<i style="background:${i<n?fill:empty}"></i>`).join('')}</div>`;
+ }
+ function renderVisualChoice(q,root,ctx,spec){
+  const wrap=document.createElement('div');wrap.className='paVisualChoice';
+  const note=document.createElement('p');note.className='paShadeNote';note.textContent='Sentuh satu rajah untuk memilih. Perhatikan bahagian yang sama besar dan lorekan.';
+  const grid=document.createElement('div');grid.className='paVisualChoiceGrid';grid.setAttribute('role','radiogroup');grid.setAttribute('aria-label','Pilihan rajah pecahan');
+  let selected=null;
+  (spec.choices||[]).forEach(choice=>{
+   const b=button('', 'paVisualChoiceCard');b.dataset.v=choice.letter;b.dataset.questionToken=String(q.token);b.setAttribute('role','radio');b.setAttribute('aria-label',`Pilihan ${choice.letter}`);b.innerHTML=`<span class="paVisualChoiceLetter">${choice.letter}</span>${visualFractionMarkup(choice)}<span class="paVisualChoiceTick" aria-hidden="true">✓</span>`;
+   b.onclick=()=>{selected=choice.letter;grid.querySelectorAll('button').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-checked','false')});b.classList.add('selected');b.setAttribute('aria-checked','true');submit.disabled=false};grid.appendChild(b);
+  });
+  const status=document.createElement('output');status.className='paShadeStatus';status.textContent='Belum pilih rajah.';
+  const submit=submitButton(q,'Pilih rajah');submit.disabled=true;submit.onclick=()=>{if(!selected){wrap.classList.add('needsValue');return}wrap.classList.remove('needsValue');deliver(q,submit,selected,ctx,selected===String(q.answer))};
+  wrap.append(note,grid,status,submit);root.appendChild(wrap);
+ }
  function renderTime(q,root,ctx,spec){
   const values=optionValues(q).map(x=>text(x.v)).map(v=>v.match(/^(\d{1,2}):(\d{2})$/)).filter(Boolean),hours=unique([spec.hour,...values.map(m=>Number(m[1]))]).sort((a,b)=>a-b),minutes=unique([spec.minute,...values.map(m=>Number(m[2])),0,15,30,45]).filter(x=>x<60).sort((a,b)=>a-b),state={hour:null,minute:null};
   const dial=document.createElement('div');dial.className='paTimeDial';dial.append(chipGroup('Jam',hours,v=>state.hour=v),chipGroup('Minit',minutes.map(v=>String(v).padStart(2,'0')),v=>state.minute=Number(v)));
@@ -254,8 +278,8 @@
  }
  function render(q,answers,ctx){
   if(!q||!answers||!ctx?.respond)return false;if(!q.interaction)prepare(q,{skillId:q.skill,meta:typeof META!=='undefined'?META[q.skill]:null});
-  const spec=q.interaction.spec,labels={rune_entry:'Rune nombor',fraction_build:'Tempa pecahan',shade_choice:'Lorek rajah',time_dial:'Dail masa',coordinate_plot:'Peta koordinat',sequence_build:'Rantai urutan',angle_build:'Protraktor kuasa',circle_build:'Jangka bulatan',circle_compare:'Banding jangka',circle_claim:'Semak pembinaan',space_tool_setup:'Panel alat ruang',claim_reason:'Bina hujah',tool_select:'Rak alat',step_sequence:'Susun prosedur',judgement_gate:'Gerbang keputusan',sigil_select:'Pilih sigil tepat'},root=rootFor(q,answers,labels[spec.kind]||'Cabaran interaktif');
-  if(spec.kind==='rune_entry')renderRune(q,root,ctx,spec);else if(spec.kind==='fraction_build')renderFraction(q,root,ctx,spec);else if(spec.kind==='shade_choice')renderShadeChoice(q,root,ctx,spec);else if(spec.kind==='time_dial')renderTime(q,root,ctx,spec);else if(spec.kind==='coordinate_plot')renderCoordinate(q,root,ctx,spec);else if(spec.kind==='sequence_build')renderSequence(q,root,ctx,spec);else if(spec.kind==='angle_build')renderAngle(q,root,ctx,spec);else if(spec.kind==='circle_build')renderCircle(q,root,ctx,spec);else if(spec.kind==='circle_compare')renderCircleCompare(q,root,ctx,spec);else if(spec.kind==='circle_claim')renderCircleClaim(q,root,ctx,spec);else if(spec.kind==='space_tool_setup')renderSpaceToolSetup(q,root,ctx,spec);else if(spec.kind==='claim_reason')renderClaimReason(q,root,ctx,spec);else if(spec.kind==='tool_select')renderToolSelect(q,root,ctx,spec);else if(spec.kind==='step_sequence')renderStepSequence(q,root,ctx,spec);else if(spec.kind==='judgement_gate')renderJudgement(q,root,ctx,spec);else renderSigils(q,root,ctx);return true;
+  const spec=q.interaction.spec,labels={rune_entry:'Rune nombor',fraction_build:'Tempa pecahan',shade_choice:'Lorek rajah',visual_choice:'Pilih rajah',time_dial:'Dail masa',coordinate_plot:'Peta koordinat',sequence_build:'Rantai urutan',angle_build:'Protraktor kuasa',circle_build:'Jangka bulatan',circle_compare:'Banding jangka',circle_claim:'Semak pembinaan',space_tool_setup:'Panel alat ruang',claim_reason:'Bina hujah',tool_select:'Rak alat',step_sequence:'Susun prosedur',judgement_gate:'Gerbang keputusan',sigil_select:'Pilih sigil tepat'},root=rootFor(q,answers,labels[spec.kind]||'Cabaran interaktif');
+  if(spec.kind==='rune_entry')renderRune(q,root,ctx,spec);else if(spec.kind==='fraction_build')renderFraction(q,root,ctx,spec);else if(spec.kind==='shade_choice')renderShadeChoice(q,root,ctx,spec);else if(spec.kind==='visual_choice')renderVisualChoice(q,root,ctx,spec);else if(spec.kind==='time_dial')renderTime(q,root,ctx,spec);else if(spec.kind==='coordinate_plot')renderCoordinate(q,root,ctx,spec);else if(spec.kind==='sequence_build')renderSequence(q,root,ctx,spec);else if(spec.kind==='angle_build')renderAngle(q,root,ctx,spec);else if(spec.kind==='circle_build')renderCircle(q,root,ctx,spec);else if(spec.kind==='circle_compare')renderCircleCompare(q,root,ctx,spec);else if(spec.kind==='circle_claim')renderCircleClaim(q,root,ctx,spec);else if(spec.kind==='space_tool_setup')renderSpaceToolSetup(q,root,ctx,spec);else if(spec.kind==='claim_reason')renderClaimReason(q,root,ctx,spec);else if(spec.kind==='tool_select')renderToolSelect(q,root,ctx,spec);else if(spec.kind==='step_sequence')renderStepSequence(q,root,ctx,spec);else if(spec.kind==='judgement_gate')renderJudgement(q,root,ctx,spec);else renderSigils(q,root,ctx);return true;
  }
  function lock(){document.querySelectorAll('.paInteraction button,.paInteraction input').forEach(x=>x.disabled=true);document.querySelector('.paInteraction')?.classList.add('locked')}
  function unlockRetry(){const root=document.querySelector('.paInteraction');if(!root)return;root.classList.remove('locked');root.querySelectorAll('button:not(.no),input').forEach(x=>x.disabled=false)}
