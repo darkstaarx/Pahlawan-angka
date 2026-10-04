@@ -254,7 +254,7 @@
       chargeAura:null,
       focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png',
       impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.png',
-      color:0xbfe9ff,chargeMs:2400,focusMs:980,impactMs:1200
+      color:0xbfe9ff,chargeMs:2400,focusMs:980,impactMs:2400
     };
     function applyLiveFinisherAssets(){
       const cfg=LIVE_FINISHER;
@@ -1366,16 +1366,18 @@
         // Keep the 11-frame glacier readable in the live battlefield. The
         // previous 460ms burst was too brief; it looked like only the math
         // glyph layer fired while the glacier frames were skipped visually.
-        const k=S.iceT/1.10;
+        const k=S.iceT/2.40;
         if(k>=1){ S.iceT=-1; iceBurst.visible=iceEnd.visible=false }
         else{
-          const kb=Math.min(1,k/.95);
+          // Animate the sheet for 1.1s, then hold its final glacier frame
+          // until the impact beat ends so the attack reads clearly.
+          const kb=Math.min(1,S.iceT/1.10);
           const frame=Math.min(10,Math.floor(kb*11));
           const col=frame%4, row=Math.floor(frame/4);
           iceBurstTex.offset.set(col*.25,1-(row+1)/3);
           iceBurst.visible=kb<1;
           iceBurst.scale.setScalar(.55+kb*.8);
-          iceBurst.material.opacity=(1-kb)*.62;
+          iceBurst.material.opacity=.88;
           iceBurst.rotation.z+=dt*.6;
           const ke=Math.max(0,(k-.28)/.72);
           iceEnd.visible=ke>0;
