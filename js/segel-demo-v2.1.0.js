@@ -264,7 +264,10 @@
       if(finisherChargeAura)finisherChargeAura.style.backgroundImage='';
       if(finisherFocusPortrait)finisherFocusPortrait.style.backgroundImage=`url("${cfg.focus}")`;
       if(finisherAttack)finisherAttack.style.backgroundImage='';
-      if(finisherImpact)finisherImpact.style.backgroundImage=`url("${cfg.impact}")`;
+      // The old static impact panel is opaque and covers the Three.js glacier.
+      // The live finisher now renders the aligned glacier sprite through
+      // `iceHit()`; keep the legacy DOM panel out of the stack entirely.
+      if(finisherImpact){finisherImpact.style.backgroundImage='none';finisherImpact.style.display='none';}
       return cfg;
     }
     let finisherVideoLayer=null, finisherVideo=null;
