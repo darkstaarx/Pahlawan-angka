@@ -67,6 +67,40 @@ function d1EqualPartsBoard(den){
  const a=correctFirst?correct:invalid,b=correctFirst?invalid:correct;
  return {answer,html:'<div style="display:flex;justify-content:center;gap:14px;margin:8px auto 12px"><div><b>A</b>'+a+'</div><div><b>B</b>'+b+'</div></div>'}
 }
+
+function d1ChocolateBar(num,den){
+ const selected='#704126',empty='#ead8c7',line='#4e2b18';
+ return '<div role="img" aria-label="'+d1FracFormal(num,den)+' daripada coklat dipilih" style="width:88px;height:54px;display:grid;grid-template-columns:repeat('+den+',1fr);border:3px solid '+line+';border-radius:7px;overflow:hidden;box-shadow:inset 0 0 0 2px #b77a4b,0 3px 0 #cfb39b">'+Array.from({length:den},(_,i)=>'<i style="background:'+(i<num?selected:empty)+';border-left:'+(i?'2px':'0')+' solid '+line+';box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)"></i>').join('')+'</div>'
+}
+function d1ChocolateHalfBoard(){
+ const options=shuffle([
+  {n:1,d:4,label:'satu perempat'},
+  {n:4,d:4,label:'keseluruhan'},
+  {n:1,d:2,label:'setengah',ok:true},
+  {n:3,d:4,label:'tiga perempat'}
+ ]);
+ const letters=['A','B','C','D'],answer=letters[options.findIndex(x=>x.ok)];
+ const html='<div style="margin:6px auto 4px;text-align:center;font-size:12px;color:#5b6474">Bahagian gelap ialah bahagian yang dipilih.</div><div role="group" aria-label="Empat pilihan coklat" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;max-width:270px;margin:6px auto 12px">'+options.map((x,i)=>'<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;border:2px solid #c7d2e5;border-radius:12px;background:#fffaf3"><b>'+letters[i]+'</b>'+d1ChocolateBar(x.n,x.d)+'</div>').join('')+'</div>';
+ return {html,answer}
+}
+function d1FractionSynonymQuestion(shift){
+ const half=Math.random()<.7;
+ if(half){
+  const q=Q(fractionVisual(1,2)+'Rajah di atas mewakili <b>separuh</b>. Apakah perkataan lain yang sama maksud?','setengah',[N('suku','fraction'),N('seluruh','fraction'),N('selari','fraction')],'Separuh dan setengah membawa maksud pecahan yang sama.','Darjah 1 · Pecahan',true,shift);
+  return d1FinalizeFrac(q,'d1_frac_synonym_word','D1.FRAC.3.1.1','language')
+ }
+ const q=Q(fractionVisual(1,4)+'Rajah di atas mewakili <b>satu perempat</b>. Apakah perkataan lain yang sama maksud?','suku',[N('setengah','fraction'),N('seluruh','fraction'),N('selari','fraction')],'Satu perempat juga disebut suku.','Darjah 1 · Pecahan',true,shift);
+ return d1FinalizeFrac(q,'d1_frac_synonym_word','D1.FRAC.3.1.1','language')
+}
+function d1FractionOddOneOut(shift){
+ const half=Math.random()<.7;
+ if(half){
+  const q=Q(fractionVisual(1,2)+'Rajah ini mewakili satu jenis pecahan. <b>Pilih yang salah.</b>','suku',[N('separuh','fraction'),N('setengah','fraction'),N('1/2','fraction')],'Separuh, setengah dan 1/2 semuanya sama nilai.','Darjah 1 · Pecahan',true,shift);
+  return d1FinalizeFrac(q,'d1_frac_odd_one_out','D1.FRAC.3.1.1','equivalence')
+ }
+ const q=Q(fractionVisual(1,4)+'Rajah ini mewakili satu jenis pecahan. <b>Pilih yang salah.</b>','setengah',[N('suku','fraction'),N('satu perempat','fraction'),N('1/4','fraction')],'Suku, satu perempat dan 1/4 semuanya sama nilai.','Darjah 1 · Pecahan',true,shift);
+ return d1FinalizeFrac(q,'d1_frac_odd_one_out','D1.FRAC.3.1.1','equivalence')
+}
 function d1FinalizeFrac(q,archetype,competency='D1.FRAC.3.1.1',context='visual'){
  q.archetypeId=archetype;
  q.competencyId=competency;
@@ -78,7 +112,7 @@ function d1FinalizeFrac(q,archetype,competency='D1.FRAC.3.1.1',context='visual')
  return q
 }
 function d1FractionQuestion(s,shift){
- const [num,den]=pick(d1FracTargets()),mode=R(0,7);
+ const [num,den]=pick(d1FracTargets()),mode=R(0,10);
  const visual=()=>fractionVisual(num,den);
 
  if(mode===0){
@@ -128,10 +162,19 @@ function d1FractionQuestion(s,shift){
    return d1FinalizeFrac(q,'d1_frac_daily_story','D1.FRAC.3.2.1','daily')
  }
 
- const names=[['satu perdua',1,2],['satu perempat',1,4],['dua perempat',2,4],['tiga perempat',3,4]];
- const target=pick(names),ans=d1FracKey(target[1],target[2]);
- const q=Q('Cikgu menyebut <b>'+target[0]+'</b>. Simbol pecahan yang betul ialah?',ans,d1FracDistractors(target[1],target[2],false),'Padankan nama pecahan dengan bilangan bahagian daripada satu keseluruhan.','Darjah 1 · Pecahan',false,shift);
- return d1FinalizeFrac(q,'d1_frac_words_to_symbol')
+ if(mode===7){
+   const names=[['satu perdua',1,2],['satu perempat',1,4],['dua perempat',2,4],['tiga perempat',3,4]];
+   const target=pick(names),ans=d1FracKey(target[1],target[2]);
+   const q=Q('Cikgu menyebut <b>'+target[0]+'</b>. Simbol pecahan yang betul ialah?',ans,d1FracDistractors(target[1],target[2],false),'Padankan nama pecahan dengan bilangan bahagian daripada satu keseluruhan.','Darjah 1 · Pecahan',false,shift);
+   return d1FinalizeFrac(q,'d1_frac_words_to_symbol')
+ }
+ if(mode===8){
+   const board=d1ChocolateHalfBoard(),letters=['A','B','C','D'];
+   const q=Q('Empat coklat di bawah dipotong dengan cara berbeza. <b>Yang manakah menunjukkan setengah?</b>'+board.html,board.answer,letters.filter(x=>x!==board.answer).map(x=>N(x,'fraction')),'Setengah bermaksud satu daripada dua bahagian sama besar.','Darjah 1 · Pecahan',true,shift);
+   return d1FinalizeFrac(q,'d1_frac_chocolate_half','D1.FRAC.3.2.1','chocolate')
+ }
+ if(mode===9)return d1FractionSynonymQuestion(shift)
+ return d1FractionOddOneOut(shift)
 }
 window.PAQuestionBanks.d1 = function(id,s,shift){
  if(id==="D1.N20"||id==="D1.N100"){
