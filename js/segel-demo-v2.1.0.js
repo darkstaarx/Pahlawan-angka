@@ -223,47 +223,20 @@
     const finisherChargeAura=host.querySelector('.segelChargeAura');
     const finisherFocusPortrait=host.querySelector('.finalEyePortrait');
 
-    const LIVE_FINISHERS={
-      wira:{
-        chargeHero:'assets/fx/wira/final-v2/wira-charge-sheet-v3.png',
-        chargeAura:null,
-        focus:'assets/fx/wira/final-v2/wira-eye-cutin-v2.png',
-        release:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
-        impact:'assets/fx/wira/final-v3/glacier-ice-math-v1.png',
-        impactEnd:null,
-        color:0xbfe9ff,chargeMs:1600,focusMs:920,releaseMs:1180,impactMs:720
-      },
-      bunga:{
-        chargeHero:'assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp',
-        chargeAura:'assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp',
-        focus:'assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp',
-        release:'assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp',
-        impact:'assets/fx/bunga/finisher-thorn-bloom-v2.png',
-        impactEnd:'assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp',
-        color:0x8ce6a8,chargeMs:1500,focusMs:700,releaseMs:520,impactMs:900
-      },
-      sidma:{
-        chargeHero:'assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp',
-        chargeAura:'assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp',
-        focus:'assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp',
-        release:'assets/heroes/sidma/frames/release-v1.webp',
-        impact:'assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp',
-        impactEnd:'assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
-        color:0xf2b633,chargeMs:1500,focusMs:700,releaseMs:500,impactMs:920
-      }
+    const LIVE_FINISHER={
+      chargeHero:'assets/fx/wira/final-v2/wira-charge-sheet-v3.png',
+      chargeAura:null,
+      focus:'assets/fx/wira/final-v2/wira-eye-cutin-v2.png',
+      release:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
+      impact:'assets/fx/wira/final-v3/glacier-ice-math-v1.png',
+      color:0xbfe9ff,chargeMs:1600,focusMs:920,releaseMs:1180,impactMs:720
     };
-    function liveFinisherHero(){
-      const id=String((typeof db!=='undefined'&&db?.hero)||'wira').toLowerCase();
-      return id==='bunga'||id==='sidma'?id:'wira';
-    }
-    function applyLiveFinisherAssets(heroId){
-      const cfg=LIVE_FINISHERS[heroId]||LIVE_FINISHERS.wira;
-      host.dataset.finisherHero=heroId;
+    function applyLiveFinisherAssets(){
+      const cfg=LIVE_FINISHER;
+      host.dataset.finisherHero='wirachibi';
       host.classList.remove('finisher-impact-end');
       if(finisherChargeHero)finisherChargeHero.style.backgroundImage=`url("${cfg.chargeHero}")`;
-      if(finisherChargeAura){
-        finisherChargeAura.style.backgroundImage=cfg.chargeAura?`url("${cfg.chargeAura}")`:'';
-      }
+      if(finisherChargeAura)finisherChargeAura.style.backgroundImage='';
       if(finisherFocusPortrait)finisherFocusPortrait.style.backgroundImage=`url("${cfg.focus}")`;
       if(finisherAttack)finisherAttack.style.backgroundImage=`url("${cfg.release}")`;
       if(finisherImpact)finisherImpact.style.backgroundImage=`url("${cfg.impact}")`;
@@ -306,12 +279,11 @@
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
-      /* Live Segel finisher is hero-specific and keeps the battlefield as the
-         payoff surface. The selected profile hero only changes presentation;
-         seal damage and scoring remain exactly one final hit. */
+      /* Live Segel is Wira Chibi only. Legacy profile hero ids are ignored
+         here by design; they belong to the retired battle renderer. */
       stopFinisherVideo();
       host.classList.remove('finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
-      const heroId=liveFinisherHero(),cfg=applyLiveFinisherAssets(heroId);
+      const cfg=applyLiveFinisherAssets();
       void host.offsetWidth;
 
       // 1) Aura farming: planted focus, energy visibly accumulates before any hit.
@@ -322,7 +294,7 @@
       await wait(cfg.chargeMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
 
-      // 2) Black focus beat: Wira eyes / Bunga meditation / Sidma Sigma focus.
+      // 2) Wira Chibi eye-focus beat.
       host.classList.remove('finisher-charge');host.classList.add('finisher-focus');
       await wait(cfg.focusMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
@@ -330,30 +302,21 @@
 
       // 3) Release. No second ordinary slash may overlay this authored beat.
       host.classList.remove('finisher-focus');host.classList.add('finisher-dash');
-      if(heroId==='wira')sfx('swordSlash'); else sfx('auraCharge');
+      sfx('swordSlash');
       await wait(cfg.releaseMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
 
       // 4) Target-locked impact: glacier / thorn bloom / Sigma compression blast.
       host.classList.remove('finisher-dash');
-      if(heroId==='wira')host.classList.add('finisher-math');
+      host.classList.add('finisher-math');
       host.classList.add('finisher-impact');
       sfx('hit');
-      if(heroId==='wira')iceHit(SEAL_X-.28,GROUND+.22);
-      burst(heroId==='wira'?7:9,cfg.color);
+      iceHit(SEAL_X-.28,GROUND+.22);
+      burst(7,cfg.color);
       try{waveMat.color.setHex(cfg.color)}catch(_){}
-      S.waveT=0;S.waveScale=heroId==='sidma'?1.55:1.35;S.shake=heroId==='sidma'?.62:.52;
+      S.waveT=0;S.waveScale=1.35;S.shake=.52;
 
-      if(cfg.impactEnd){
-        const first=Math.min(620,cfg.impactMs);
-        await wait(first);
-        if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
-        if(finisherImpact)finisherImpact.style.backgroundImage=`url("${cfg.impactEnd}")`;
-        host.classList.add('finisher-impact-end');
-        await wait(Math.max(0,cfg.impactMs-first));
-      }else{
-        await wait(cfg.impactMs);
-      }
+      await wait(cfg.impactMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
 
       host.classList.remove('finisher-math','finisher-impact','finisher-impact-end');
