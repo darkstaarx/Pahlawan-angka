@@ -1,12 +1,12 @@
 // Refresh the fraction bank before any battle/demo question is generated.
 // index.html keeps legacy script URLs for older cached clients; this synchronous
 // loader makes the visual-choice adapter available on those clients too.
-document.write('<script src="questions/helpers.js?v=3.85.11"><\/script><script src="questions/d1/core.js?v=3.85.11"><\/script><script src="questions/kssr-content-v3.11.js?v=3.85.11"><\/script><script src="js/segel-interaction-bridge-v1.0.2.js?v=3.85.11"><\/script>');
+document.write('<script src="questions/helpers.js?v=3.85.12"><\/script><script src="questions/d1/core.js?v=3.85.12"><\/script><script src="questions/kssr-content-v3.11.js?v=3.85.12"><\/script><script src="js/segel-interaction-bridge-v1.0.2.js?v=3.85.12"><\/script>');
 // Keep the game-native response layer available before the first battle render.
 // pwa.js also lazy-loads it, but the demo/QA path can start before that chain
 // finishes; the selector guard makes this safe when pwa.js reaches it later.
 if(!window.PAGameQuestionInteractions){
- document.write('<link rel="stylesheet" href="css/game-question-interactions-v3.62.4.css?v=3.85.11">');
+ document.write('<link rel="stylesheet" href="css/game-question-interactions-v3.62.4.css?v=3.85.12">');
  document.write('<script src="js/game-question-interactions-v3.62.4.js?v=3.62.26"><\/script>');
 }
 let db=JSON.parse(localStorage.getItem("pa_coach_v6_full")||localStorage.getItem("pa_coach_v5")||"null");

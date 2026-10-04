@@ -2012,7 +2012,7 @@
     $('segelQuestion').scrollTop=0;
     paintSeal();
 
-    const box=$('segelAnswers'); box.innerHTML='';
+    const box=$('segelAnswers'); box.innerHTML=''; box.classList.remove('paLegacyAnswersHidden');
     if(!renderTypedAnswer(q,box)){
       mix([{v:q.answer,tag:'correct',label:q.answer},...(q.wrong||[])]).forEach(o=>{
         const b=document.createElement('button');
