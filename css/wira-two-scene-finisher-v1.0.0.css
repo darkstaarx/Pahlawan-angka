@@ -1,22 +1,242 @@
-/* Wira finisher preview: keep the battlefield visible, then focus only the eyes. */
-#segelStage.finisher-focus .segelFinalFocus{inset:0!important;left:0!important;top:0!important;width:100%!important;height:100%!important;border:0;border-radius:0;background:#000!important;box-shadow:none;overflow:hidden;transform:none;z-index:30!important;visibility:visible!important;opacity:1!important}
-#segelStage.finisher-focus .finalEyePortrait{left:25%;top:18%;width:50%;height:48%;background-image:url('../assets/fx/wira/final-v2/wira-eye-cutin-v2.png');background-size:400% 100%;background-position:0 0;background-repeat:no-repeat;filter:saturate(1.08) brightness(.96) drop-shadow(0 0 16px rgba(78,210,255,.7));animation:wiraEyeSheet 920ms steps(1,end) forwards!important}
-#segelStage.finisher-focus .finalEyePortrait:after{background:linear-gradient(180deg,rgba(0,0,0,.12),transparent 26%,rgba(0,0,0,.28))}
-#segelStage.finisher-focus .finalFocusGlint,#segelStage.finisher-focus .segelFinisherCallout{display:none}
-@keyframes wiraEyeSheet{0%,24.99%{background-position:0 0}25%,49.99%{background-position:33.333% 0}50%,74.99%{background-position:66.666% 0}75%,100%{background-position:100% 0}}
-@media(max-width:520px){#segelStage.finisher-focus .finalEyePortrait{left:12%;top:22%;width:76%;height:42%}}
+/* Live Segel final blows — hero-specific aura-farming choreography.
+   JS supplies the selected hero assets; this file owns only presentation. */
 
-/* Attack sprite must be visible after the eye cut-in; the legacy rule hid it. */
-  #segelStage.finisher-dash .segelFinisherAttack.segelFinisherAttack{display:block!important;opacity:1!important;visibility:visible!important;z-index:31!important}
-  #segelStage.finisher-math .segelMathBurst{z-index:32}
-#segelStage.finisher-impact .segelFinisherImpact{display:block!important;opacity:1!important;visibility:visible!important;z-index:33!important}
-#segelStage.finisher-impact .segelFinisherImpact{left:66%;top:auto;bottom:7%;width:min(45vw,420px);height:min(60vw,560px);background-image:url('../assets/fx/wira/final-v3/glacier-ice-math-v1.png');background-repeat:no-repeat;background-size:contain;background-position:center bottom;transform:translate(-50%,12%) scale(.42);transform-origin:center bottom;animation:glacierMathRiseV2 720ms cubic-bezier(.16,.84,.28,1) both!important;object-fit:contain}
-@keyframes glacierMathRiseV2{0%{opacity:0;transform:translate(-50%,18%) scale(.34)}18%{opacity:.82;transform:translate(-50%,7%) scale(.58)}52%{opacity:1;transform:translate(-50%,0) scale(1.02)}74%{transform:translate(-50%,1%) scale(.97)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
-@media(max-width:520px){#segelStage.finisher-impact .segelFinisherImpact{left:66%;bottom:6%;width:min(54vw,330px);height:min(72vw,440px)}}
+#segelStage.finisher-focus .segelFinalFocus{
+  inset:0!important;left:0!important;top:0!important;width:100%!important;height:100%!important;
+  border:0;border-radius:0;background:#000!important;box-shadow:none;overflow:hidden;transform:none;
+  z-index:30!important;visibility:visible!important;opacity:1!important
+}
+#segelStage.finisher-focus .finalFocusGlint,
+#segelStage.finisher-focus .segelFinisherCallout{display:none}
 
-/* Main battle charge: use the authored Wira charge sheet, not the old generic aura. */
-.segelChargeHero{position:absolute;left:4%;bottom:2%;width:32%;height:78%;z-index:11;opacity:0;visibility:hidden;pointer-events:none;background:url('../assets/fx/wira/final-v2/wira-charge-sheet-v3.png') 0 0/400% 100% no-repeat;filter:drop-shadow(0 10px 8px rgba(0,0,0,.58)) drop-shadow(0 0 13px rgba(71,211,255,.5))}
-#segelStage.finisher-charge .segelChargeAura{display:none!important}
-#segelStage.finisher-charge .segelChargeHero{visibility:visible;opacity:1;animation:wiraChargeSheet 2400ms steps(1,end) 1 forwards}
-@keyframes wiraChargeSheet{0%,24.99%{background-position:0 0}25%,49.99%{background-position:33.333% 0}50%,74.99%{background-position:66.666% 0}75%,100%{background-position:100% 0}}
-@media(max-width:520px){.segelChargeHero{left:3%;bottom:3%;width:38%;height:76%}}
+/* ---------- charge / aura farming ---------- */
+.segelChargeHero{
+  position:absolute;left:4%;bottom:2%;width:32%;height:78%;z-index:11;
+  opacity:0;visibility:hidden;pointer-events:none;background-repeat:no-repeat;
+  filter:drop-shadow(0 10px 8px rgba(0,0,0,.58))
+}
+#segelStage.finisher-charge .segelChargeHero{visibility:visible;opacity:1}
+#segelStage.finisher-charge .segelChargeAura{
+  display:block!important;visibility:visible!important;opacity:1;
+  background-repeat:no-repeat;background-position:center;background-size:contain
+}
+
+/* Wira — four-frame icy charge sheet. */
+#segelStage[data-finisher-hero="wira"].finisher-charge .segelChargeAura{display:none!important}
+#segelStage[data-finisher-hero="wira"].finisher-charge .segelChargeHero{
+  background-size:400% 100%;background-position:0 0;
+  filter:drop-shadow(0 10px 8px rgba(0,0,0,.58)) drop-shadow(0 0 13px rgba(71,211,255,.5));
+  animation:wiraChargeSheet 2100ms steps(1,end) both!important
+}
+@keyframes wiraChargeSheet{
+  0%,24.99%{background-position:0 0;filter:brightness(.82) drop-shadow(0 0 5px rgba(71,211,255,.25))}
+  25%,49.99%{background-position:33.333% 0;filter:brightness(.94) drop-shadow(0 0 10px rgba(71,211,255,.45))}
+  50%,74.99%{background-position:66.666% 0;filter:brightness(1.08) drop-shadow(0 0 17px rgba(71,211,255,.72))}
+  75%,100%{background-position:100% 0;filter:brightness(1.22) drop-shadow(0 0 24px rgba(180,240,255,.95))}
+}
+
+/* Bunga — planted meditation, green/gold aura grows around the staff/body. */
+#segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeHero{
+  left:5%;bottom:2%;width:34%;height:78%;background-size:contain;background-position:center bottom;
+  filter:drop-shadow(0 8px 7px rgba(0,0,0,.5)) drop-shadow(0 0 13px rgba(99,233,145,.5));
+  animation:bungaAuraFarmHero 2000ms ease-out both!important
+}
+#segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeAura{
+  left:0%;bottom:-3%;width:47%;height:78%;
+  mix-blend-mode:screen;filter:saturate(1.15) brightness(1.08) drop-shadow(0 0 18px rgba(103,236,149,.76));
+  animation:bungaAuraFarm 2000ms ease-in-out both!important
+}
+@keyframes bungaAuraFarmHero{
+  0%{opacity:.72;transform:translateY(5px) scale(.96);filter:brightness(.8)}
+  46%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1.04) drop-shadow(0 0 14px rgba(103,236,149,.55))}
+  100%{opacity:1;transform:translateY(-2px) scale(1.025);filter:brightness(1.15) drop-shadow(0 0 24px rgba(255,226,112,.68))}
+}
+@keyframes bungaAuraFarm{
+  0%{opacity:0;transform:scale(.42) rotate(-18deg)}
+  28%{opacity:.55;transform:scale(.72) rotate(-8deg)}
+  66%{opacity:.9;transform:scale(.98) rotate(2deg)}
+  100%{opacity:1;transform:scale(1.12) rotate(8deg);filter:brightness(1.28) saturate(1.2) drop-shadow(0 0 28px rgba(255,226,112,.86))}
+}
+
+/* Sidma — still focus with red/white/gold Sigma energy accumulating. */
+#segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeHero{
+  left:5%;bottom:2%;width:34%;height:78%;background-size:contain;background-position:center bottom;
+  filter:drop-shadow(0 8px 7px rgba(0,0,0,.52)) drop-shadow(0 0 14px rgba(211,31,45,.55));
+  animation:sidmaAuraFarmHero 2000ms ease-out both!important
+}
+#segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeAura{
+  left:-1%;bottom:-2%;width:49%;height:80%;
+  mix-blend-mode:screen;filter:saturate(1.22) brightness(1.05) drop-shadow(0 0 18px rgba(226,35,48,.78));
+  animation:sidmaAuraFarm 2000ms ease-in-out both!important
+}
+@keyframes sidmaAuraFarmHero{
+  0%{opacity:.72;transform:translateY(4px) scale(.96);filter:brightness(.78)}
+  48%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1.04) drop-shadow(0 0 15px rgba(226,35,48,.55))}
+  100%{opacity:1;transform:translateY(-2px) scale(1.02);filter:brightness(1.18) drop-shadow(0 0 25px rgba(246,190,56,.78))}
+}
+@keyframes sidmaAuraFarm{
+  0%{opacity:0;transform:scale(.38) rotate(-20deg)}
+  30%{opacity:.58;transform:scale(.7) rotate(-9deg)}
+  68%{opacity:.92;transform:scale(1) rotate(5deg)}
+  100%{opacity:1;transform:scale(1.12) rotate(14deg);filter:brightness(1.3) saturate(1.28) drop-shadow(0 0 30px rgba(246,190,56,.88))}
+}
+
+/* ---------- black focus beat ---------- */
+#segelStage.finisher-focus .finalEyePortrait{
+  background-repeat:no-repeat;opacity:1!important
+}
+#segelStage[data-finisher-hero="wira"].finisher-focus .finalEyePortrait{
+  left:25%;top:18%;width:50%;height:48%;background-size:400% 100%;background-position:0 0;
+  filter:saturate(1.08) brightness(.96) drop-shadow(0 0 16px rgba(78,210,255,.7));
+  animation:wiraEyeSheet 920ms steps(1,end) forwards!important
+}
+#segelStage[data-finisher-hero="wira"].finisher-focus .finalEyePortrait:after{
+  background:linear-gradient(180deg,rgba(0,0,0,.12),transparent 26%,rgba(0,0,0,.28))
+}
+@keyframes wiraEyeSheet{
+  0%,24.99%{background-position:0 0}
+  25%,49.99%{background-position:33.333% 0}
+  50%,74.99%{background-position:66.666% 0}
+  75%,100%{background-position:100% 0}
+}
+#segelStage[data-finisher-hero="bunga"].finisher-focus .segelFinalFocus{
+  background:radial-gradient(ellipse at 28% 56%,rgba(30,91,54,.28),#020806 62%,#000 100%)!important
+}
+#segelStage[data-finisher-hero="bunga"].finisher-focus .finalEyePortrait{
+  left:5%;top:6%;width:46%;height:88%;background-size:contain;background-position:center bottom;
+  filter:brightness(.92) saturate(1.08) drop-shadow(0 0 20px rgba(100,232,148,.55));
+  animation:bungaFocusHold 700ms ease-out both!important
+}
+#segelStage[data-finisher-hero="sidma"].finisher-focus .segelFinalFocus{
+  background:radial-gradient(ellipse at 28% 55%,rgba(114,15,25,.3),#090202 62%,#000 100%)!important
+}
+#segelStage[data-finisher-hero="sidma"].finisher-focus .finalEyePortrait{
+  left:5%;top:6%;width:46%;height:88%;background-size:contain;background-position:center bottom;
+  filter:brightness(.94) saturate(1.12) drop-shadow(0 0 20px rgba(222,34,48,.58));
+  animation:sidmaFocusHold 700ms ease-out both!important
+}
+@keyframes bungaFocusHold{
+  0%{opacity:0;transform:scale(.94);filter:brightness(.58)}
+  35%{opacity:1;transform:scale(1);filter:brightness(.86) drop-shadow(0 0 12px rgba(100,232,148,.42))}
+  100%{opacity:1;transform:scale(1.025);filter:brightness(1.04) drop-shadow(0 0 23px rgba(255,221,111,.55))}
+}
+@keyframes sidmaFocusHold{
+  0%{opacity:0;transform:scale(.94);filter:brightness(.58)}
+  35%{opacity:1;transform:scale(1);filter:brightness(.9) drop-shadow(0 0 13px rgba(222,34,48,.48))}
+  100%{opacity:1;transform:scale(1.025);filter:brightness(1.08) drop-shadow(0 0 24px rgba(245,188,54,.62))}
+}
+
+/* ---------- authored release ---------- */
+#segelStage.finisher-dash .segelFinisherAttack.segelFinisherAttack{
+  display:block!important;opacity:1!important;visibility:visible!important;z-index:31!important
+}
+#segelStage[data-finisher-hero="bunga"].finisher-dash .segelFinisherAttack{
+  left:6%;bottom:4%;width:38%;height:76%;aspect-ratio:auto;background-size:contain;background-position:center bottom;
+  animation:bungaSegelRelease 520ms cubic-bezier(.16,.78,.2,1) both!important
+}
+#segelStage[data-finisher-hero="sidma"].finisher-dash .segelFinisherAttack{
+  left:6%;bottom:4%;width:38%;height:76%;aspect-ratio:auto;background-size:contain;background-position:center bottom;
+  animation:sidmaSegelRelease 500ms cubic-bezier(.16,.78,.2,1) both!important
+}
+@keyframes bungaSegelRelease{
+  0%{opacity:0;transform:translateX(-8px) scale(.96);filter:brightness(.88)}
+  30%{opacity:1;transform:translateX(0) scale(1.02);filter:brightness(1.12) drop-shadow(0 0 16px rgba(98,233,144,.58))}
+  100%{opacity:.96;transform:translateX(4px) scale(1);filter:brightness(1.05)}
+}
+@keyframes sidmaSegelRelease{
+  0%{opacity:0;transform:translateX(-7px) scale(.96);filter:brightness(.86)}
+  30%{opacity:1;transform:translateX(0) scale(1.02);filter:brightness(1.14) drop-shadow(0 0 17px rgba(226,35,48,.62))}
+  100%{opacity:.96;transform:translateX(4px) scale(1);filter:brightness(1.06)}
+}
+
+/* ---------- target-locked final impact ---------- */
+#segelStage.finisher-math .segelMathBurst{z-index:32}
+#segelStage.finisher-impact .segelFinisherImpact{
+  display:block!important;opacity:1!important;visibility:visible!important;z-index:33!important;
+  background-repeat:no-repeat
+}
+
+/* Wira — icy/electric mathematical glacier rises under the seal. */
+#segelStage[data-finisher-hero="wira"].finisher-impact .segelFinisherImpact{
+  left:66%;top:auto;bottom:7%;width:min(45vw,420px);height:min(60vw,560px);
+  background-size:contain;background-position:center bottom;
+  transform:translate(-50%,12%) scale(.42);transform-origin:center bottom;
+  animation:glacierMathRiseV2 720ms cubic-bezier(.16,.84,.28,1) both!important;object-fit:contain
+}
+@keyframes glacierMathRiseV2{
+  0%{opacity:0;transform:translate(-50%,18%) scale(.34)}
+  18%{opacity:.82;transform:translate(-50%,7%) scale(.58)}
+  52%{opacity:1;transform:translate(-50%,0) scale(1.02)}
+  74%{transform:translate(-50%,1%) scale(.97)}
+  100%{opacity:1;transform:translate(-50%,0) scale(1)}
+}
+
+/* Bunga — thorn/bloom grows from the ground, twists upward, then flashes out. */
+#segelStage[data-finisher-hero="bunga"].finisher-impact .segelFinisherImpact{
+  left:66%;top:auto;bottom:3%;width:min(50vw,440px);height:min(72vw,590px);
+  background-size:contain;background-position:center bottom;transform-origin:center bottom;
+  animation:bungaThornRise 620ms cubic-bezier(.12,.82,.18,1) both!important
+}
+#segelStage[data-finisher-hero="bunga"].finisher-impact.finisher-impact-end .segelFinisherImpact{
+  width:min(48vw,410px);height:min(58vw,470px);bottom:9%;
+  animation:bungaBloomEnd 280ms ease-out both!important
+}
+@keyframes bungaThornRise{
+  0%{opacity:0;transform:translate(-50%,18%) scale(.28) rotate(-7deg)}
+  20%{opacity:.76;transform:translate(-50%,8%) scale(.52) rotate(-4deg)}
+  58%{opacity:1;transform:translate(-50%,0) scale(1.04) rotate(2deg)}
+  78%{transform:translate(-50%,0) scale(.98) rotate(-1deg)}
+  100%{opacity:1;transform:translate(-50%,0) scale(1) rotate(0)}
+}
+@keyframes bungaBloomEnd{
+  0%{opacity:1;transform:translate(-50%,0) scale(.66);filter:brightness(2) drop-shadow(0 0 18px #fff)}
+  45%{opacity:1;transform:translate(-50%,-2%) scale(1.06);filter:brightness(1.35) drop-shadow(0 0 28px rgba(102,235,148,.86))}
+  100%{opacity:0;transform:translate(-50%,-4%) scale(1.2)}
+}
+
+/* Sidma — Sigma forms around the target, expands, compresses, then explodes. */
+#segelStage[data-finisher-hero="sidma"].finisher-impact .segelFinisherImpact{
+  left:66%;top:48%;bottom:auto;width:min(47vw,420px);height:min(47vw,420px);
+  background-size:contain;background-position:center;transform-origin:center;
+  filter:drop-shadow(0 0 10px #fff) drop-shadow(0 0 25px rgba(218,28,43,.85)) drop-shadow(0 0 36px rgba(244,184,48,.65));
+  animation:sidmaSigmaTarget 620ms cubic-bezier(.16,.78,.22,1) both!important
+}
+#segelStage[data-finisher-hero="sidma"].finisher-impact.finisher-impact-end .segelFinisherImpact{
+  width:min(58vw,510px);height:min(58vw,510px);
+  animation:sidmaSigmaExplosion 300ms cubic-bezier(.08,.78,.16,1) both!important
+}
+@keyframes sidmaSigmaTarget{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.18) rotate(-18deg)}
+  26%{opacity:.9;transform:translate(-50%,-50%) scale(.68) rotate(-6deg)}
+  58%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(4deg)}
+  80%{opacity:1;transform:translate(-50%,-50%) scale(.74) rotate(9deg);filter:brightness(1.35)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(.46) rotate(12deg);filter:brightness(2.1) drop-shadow(0 0 22px #fff)}
+}
+@keyframes sidmaSigmaExplosion{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.42);filter:brightness(2.8) drop-shadow(0 0 24px #fff)}
+  28%{opacity:1;transform:translate(-50%,-50%) scale(1.08);filter:brightness(2.4) drop-shadow(0 0 44px rgba(230,33,48,.95))}
+  62%{opacity:.95;transform:translate(-50%,-50%) scale(1.42);filter:brightness(1.45) drop-shadow(0 0 38px rgba(245,187,51,.88))}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.82);filter:brightness(1)}
+}
+
+@media(max-width:520px){
+  #segelStage[data-finisher-hero="wira"].finisher-focus .finalEyePortrait{left:12%;top:22%;width:76%;height:42%}
+  #segelStage[data-finisher-hero="bunga"].finisher-focus .finalEyePortrait,
+  #segelStage[data-finisher-hero="sidma"].finisher-focus .finalEyePortrait{left:1%;top:8%;width:58%;height:84%}
+  .segelChargeHero{left:3%;bottom:3%;width:38%;height:76%}
+  #segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeHero,
+  #segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeHero{left:2%;width:41%}
+  #segelStage[data-finisher-hero="bunga"].finisher-charge .segelChargeAura,
+  #segelStage[data-finisher-hero="sidma"].finisher-charge .segelChargeAura{left:-4%;width:58%;height:80%}
+  #segelStage[data-finisher-hero="wira"].finisher-impact .segelFinisherImpact{left:66%;bottom:6%;width:min(54vw,330px);height:min(72vw,440px)}
+  #segelStage[data-finisher-hero="bunga"].finisher-impact .segelFinisherImpact{left:68%;width:min(62vw,360px);height:min(84vw,500px)}
+  #segelStage[data-finisher-hero="sidma"].finisher-impact .segelFinisherImpact{left:69%;width:min(60vw,350px);height:min(60vw,350px)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  #segelStage.finisher-charge .segelChargeHero,
+  #segelStage.finisher-charge .segelChargeAura,
+  #segelStage.finisher-focus .finalEyePortrait,
+  #segelStage.finisher-dash .segelFinisherAttack,
+  #segelStage.finisher-impact .segelFinisherImpact{animation-duration:1ms!important}
+}
