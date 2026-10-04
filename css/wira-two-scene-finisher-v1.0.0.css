@@ -2,11 +2,42 @@
    Legacy normal-size Wira/Bunga/Sidma finisher styles are intentionally excluded. */
 /* Wira finisher preview: keep the battlefield visible, then focus only the eyes. */
 #segelStage.finisher-focus .segelFinalFocus{inset:0!important;left:0!important;top:0!important;width:100%!important;height:100%!important;border:0;border-radius:0;background:#000!important;box-shadow:none;overflow:hidden;transform:none;z-index:30!important;visibility:visible!important;opacity:1!important}
-#segelStage.finisher-focus .finalEyePortrait{left:25%;top:18%;width:50%;height:48%;background-image:url('../assets/fx/wira/final-v2/wira-eye-cutin-v2.png');background-size:400% 100%;background-position:0 0;background-repeat:no-repeat;filter:saturate(1.08) brightness(.96) drop-shadow(0 0 16px rgba(78,210,255,.7));animation:wiraEyeSheet 920ms steps(1,end) forwards!important}
-#segelStage.finisher-focus .finalEyePortrait:after{background:linear-gradient(180deg,rgba(0,0,0,.12),transparent 26%,rgba(0,0,0,.28))}
+#segelStage.finisher-focus .finalEyePortrait{
+  left:-7%;top:30%;width:114%;height:40%;
+  background-image:url('../assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png');
+  background-size:cover;background-position:center 48%;background-repeat:no-repeat;
+  border-top:2px solid rgba(120,235,255,.72);border-bottom:2px solid rgba(120,205,255,.5);
+  box-shadow:0 0 46px rgba(65,208,255,.34),inset 0 0 28px rgba(75,218,255,.22);
+  filter:saturate(1.18) contrast(1.08) brightness(.88) drop-shadow(0 0 18px rgba(78,210,255,.86));
+  transform:translateX(-115%) skewX(-4deg);opacity:0;
+  animation:wiraIcyEyeCutin 980ms cubic-bezier(.18,.85,.3,1) forwards!important
+}
+#segelStage.finisher-focus .finalEyePortrait:after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 50% 49%,rgba(195,251,255,.18),transparent 24%),
+    linear-gradient(90deg,rgba(0,0,0,.9) 0,transparent 14% 86%,rgba(0,0,0,.9) 100%);
+  mix-blend-mode:screen;animation:wiraEyeElectricPulse 980ms ease-out both
+}
 #segelStage.finisher-focus .finalFocusGlint,#segelStage.finisher-focus .segelFinisherCallout{display:none}
-@keyframes wiraEyeSheet{0%,24.99%{background-position:0 0}25%,49.99%{background-position:33.333% 0}50%,74.99%{background-position:66.666% 0}75%,100%{background-position:100% 0}}
-@media(max-width:520px){#segelStage.finisher-focus .finalEyePortrait{left:12%;top:22%;width:76%;height:42%}}
+@keyframes wiraIcyEyeCutin{
+  0%{opacity:0;transform:translateX(-115%) skewX(-4deg) scale(1.04);filter:brightness(.45) saturate(.7)}
+  24%{opacity:1;transform:translateX(0) skewX(-4deg) scale(1.04);filter:brightness(.7) saturate(.95) drop-shadow(0 0 10px rgba(78,210,255,.5))}
+  58%{opacity:1;transform:translateX(0) skewX(-4deg) scale(1.075);filter:brightness(1.08) saturate(1.28) drop-shadow(0 0 30px rgba(125,235,255,1))}
+  82%{opacity:1;transform:translateX(0) skewX(-4deg) scale(1.09);filter:brightness(1.26) saturate(1.38) drop-shadow(0 0 42px rgba(190,248,255,1))}
+  100%{opacity:1;transform:translateX(10%) skewX(-4deg) scale(1.1);filter:brightness(1.05) saturate(1.25) drop-shadow(0 0 28px rgba(95,224,255,.92))}
+}
+@keyframes wiraEyeElectricPulse{
+  0%,20%{opacity:0}
+  48%{opacity:.35}
+  68%{opacity:1}
+  78%{opacity:.42}
+  88%{opacity:1}
+  100%{opacity:.5}
+}
+@media(max-width:520px){
+  #segelStage.finisher-focus .finalEyePortrait{left:-12%;top:31%;width:124%;height:38%;background-position:center 48%}
+}
 
 /* Attack sprite must be visible after the eye cut-in; the legacy rule hid it. */
   #segelStage.finisher-dash .segelFinisherAttack.segelFinisherAttack{display:block!important;opacity:1!important;visibility:visible!important;z-index:31!important}
@@ -22,3 +53,13 @@
 #segelStage.finisher-charge .segelChargeHero{visibility:visible;opacity:1;animation:wiraChargeSheet 2400ms steps(1,end) 1 forwards}
 @keyframes wiraChargeSheet{0%,24.99%{background-position:0 0}25%,49.99%{background-position:33.333% 0}50%,74.99%{background-position:66.666% 0}75%,100%{background-position:100% 0}}
 @media(max-width:520px){.segelChargeHero{left:3%;bottom:3%;width:38%;height:76%}}
+
+/* Aura farming begins on pure black; the live arena is deliberately hidden
+   until the eye cut-in finishes and the final FX snaps back onto the Segel. */
+#segelStage.finisher-charge:after{
+  background:#000!important;opacity:1!important;z-index:10!important;
+  animation:none!important
+}
+#segelStage.finisher-charge .segelChargeHero{z-index:12!important}
+#segelStage.finisher-charge canvas,
+#segelStage.finisher-charge .segelShellHud{filter:brightness(0)!important}
