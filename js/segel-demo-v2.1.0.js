@@ -2007,7 +2007,12 @@
     paintSeal();
 
     const box=$('segelAnswers'); box.innerHTML=''; box.classList.remove('paLegacyAnswersHidden');
-    if(!renderTypedAnswer(q,box)){
+    // Fraction tasks own their visual answer surface.  The Segel demo used to
+    // skip this shared renderer and always painted four generic buttons, which
+    // made "Warnakan ..." impossible to answer and left its picture prompt
+    // without the intended A/B/C/D-compatible selection bridge.
+    const fractionRendered=window.PAFractionAnswers?.render?.(box,q,(option,button)=>respond(option,button));
+    if(!fractionRendered&&!renderTypedAnswer(q,box)){
       mix([{v:q.answer,tag:'correct',label:q.answer},...(q.wrong||[])]).forEach(o=>{
         const b=document.createElement('button');
         b.className='ans'; b.type='button'; b.textContent=o.label??o.v;
