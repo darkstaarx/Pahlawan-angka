@@ -265,14 +265,14 @@
       if(finisherChargeAura)finisherChargeAura.style.backgroundImage='';
       if(finisherFocusPortrait)finisherFocusPortrait.style.backgroundImage=`url("${cfg.focus}")`;
       if(finisherAttack)finisherAttack.style.backgroundImage='';
-      // The old static impact panel is opaque and covers the Three.js glacier.
-      // The live finisher now renders the aligned glacier sprite through
-      // `iceHit()`; keep the legacy DOM panel out of the stack entirely.
+      // The final blow uses the authored 11-frame glacier sheet. Keep it
+      // hidden until the sword's impact beat; normal attacks never touch it.
       if(finisherImpact){
         finisherImpact.style.backgroundImage=`url("${FRAMES.glacierSheet}")`;
         finisherImpact.style.backgroundSize='400% 300%';
         finisherImpact.style.backgroundRepeat='no-repeat';
         finisherImpact.style.backgroundPosition='0% 0%';
+        finisherImpact.style.opacity='0';
         finisherImpact.style.display='none';
       }
       return cfg;
@@ -314,7 +314,7 @@
       host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
       if(mathBurst)mathBurst.style.display='';
       finalImpactActive=false;
-      if(finisherImpact)finisherImpact.style.display='none';
+      if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
@@ -340,7 +340,8 @@
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
       if(typeof stopChargeup==='function')stopChargeup();
 
-      // 3) Return cleanly to the arena. The actual hit remains ordinary.
+      // 3) Return cleanly to the arena. The actual hit remains the normal
+      // Wira attack; the glacier is attached only at its impact frame.
       host.classList.remove('finisher-focus');
       if(mathBurst)mathBurst.style.display='';
       
@@ -940,8 +941,10 @@
     const iceEnd=fxQuad(iceEndTex,2.2,.07);
     function iceHit(x,y){
       iceBurst.position.set(x,y,.08); iceEnd.position.set(x,y,.07);
-      iceBurst.rotation.z=Math.random()*Math.PI*2;
-      iceEnd.rotation.z=Math.random()*Math.PI*2;
+      // The authored glacier replaces the old generic Three.js burst for the
+      // finisher. Keep those fallback meshes hidden so no second FX leaks into
+      // the normal attack or victory screen.
+      iceBurst.visible=false; iceEnd.visible=false;
       S.iceT=0;
     }
     function clearNormalIceFx(){
@@ -1357,27 +1360,23 @@
         // Keep the 11-frame glacier readable in the live battlefield. The
         // previous 460ms burst was too brief; it looked like only the math
         // glyph layer fired while the glacier frames were skipped visually.
-        const k=S.iceT/2.40;
-        if(k>=1){ S.iceT=-1; iceBurst.visible=iceEnd.visible=false }
+        const k=S.iceT/1.70;
+        if(k>=1){
+          S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
+          if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
+          finalImpactActive=false;
+        }
         else{
-          // Animate the sheet for 1.1s, then hold its final glacier frame
-          // until the impact beat ends so the attack reads clearly.
-          const kb=Math.min(1,S.iceT/1.10);
+          // Play all 11 frames at a readable pace, then give the last burst a
+          // short hold/fade so it lands before the victory layer takes over.
+          const kb=Math.min(1,S.iceT/1.32);
           const frame=Math.min(10,Math.floor(kb*11));
           const col=frame%4, row=Math.floor(frame/4);
           if(finalImpactActive&&finisherImpact){
             finisherImpact.style.backgroundPosition=`${col*33.333333}% ${row*50}%`;
-            finisherImpact.style.opacity='1';
+            finisherImpact.style.opacity=String(Math.min(1,Math.max(.2,(1-k)*1.9)));
+            finisherImpact.style.display='block';
           }
-          iceBurst.visible=kb<1;
-          iceBurst.scale.setScalar(.55+kb*.8);
-          iceBurst.material.opacity=.88;
-          iceBurst.rotation.z+=dt*.6;
-          const ke=Math.max(0,(k-.28)/.72);
-          iceEnd.visible=ke>0;
-          iceEnd.scale.setScalar(.7+ke*.9);
-          iceEnd.material.opacity=Math.sin(Math.PI*ke)*.45;
-          iceEnd.rotation.z-=dt*.4;
         }
       }
 
@@ -1474,9 +1473,20 @@
           S.heroLock=heroSlashE; S.heroX=-0.30; await wait(140);
           if(lifecycle!==S.lifecycle)return;
           sfx('hit'); clearNormalIceFx();
+          finalImpactActive=true;
+          if(finisherImpact){
+            finisherImpact.style.display='block';
+            finisherImpact.style.opacity='1';
+            finisherImpact.style.backgroundPosition='0% 0%';
+          }
+          // The 11 authored glacier frames start exactly when the sword lands.
+          iceHit(SEAL_X,GROUND+.78);
           S.waveT=0; S.shake=.32;
-          await wait(210);
+          await wait(1740);
           if(lifecycle!==S.lifecycle)return;
+          finalImpactActive=false;
+          if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
+          clearNormalIceFx();
           S.heroLock=null; S.heroX=HERO_HOME;
           return;
         }
