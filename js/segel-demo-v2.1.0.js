@@ -278,7 +278,23 @@
       return cfg;
     }
     let finisherVideoLayer=null, finisherVideo=null;
-    let finalImpactActive=false, finalImpactPending=false;
+    let finalImpactActive=false, finalImpactPending=false, finalImpactTarget=null;
+    // Keep the struck tier after hitSeal advances S.active. Project the same
+    // ground point as the WebGL seal, including camera shake and resize.
+    function placeFinalImpact(){
+      if(!finisherImpact||!finalImpactTarget)return;
+      const target=finalImpactTarget;
+      const viewH=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-target.z);
+      const pixels=host.clientHeight/viewH;
+      const height=target.height*1.22*pixels;
+      const width=height*(1116/4)/(1280/3);
+      const x=host.clientWidth/2+(target.x-camera.position.x)*pixels;
+      const ground=host.clientHeight/2-(target.y-camera.position.y)*pixels;
+      finisherImpact.style.left=(x-width*.5)+'px';
+      finisherImpact.style.top=(ground-height*.99)+'px';
+      finisherImpact.style.width=width+'px';
+      finisherImpact.style.height=height+'px';
+    }
     function ensureFinisherVideo(){
       if(finisherVideo&&finisherVideo.isConnected)return finisherVideo;
       const mount=document.body;
@@ -1375,6 +1391,7 @@
           const frame=Math.min(10,Math.floor(kb*11));
           const col=frame%4, row=Math.floor(frame/4);
           if(finalImpactActive&&finisherImpact){
+            placeFinalImpact();
             finisherImpact.style.backgroundPosition=`${col*33.333333}% ${row*50}%`;
             finisherImpact.style.opacity=String(Math.min(1,Math.max(.2,(1-k)*1.9)));
             finisherImpact.style.display='block';
@@ -1476,6 +1493,8 @@
           if(lifecycle!==S.lifecycle)return;
           sfx('hit'); clearNormalIceFx();
           finalImpactActive=true; finalImpactPending=true;
+          finalImpactTarget={x:SEAL_X,y:GROUND,z:seals[S.active].front.position.z,height:tier.visible};
+          placeFinalImpact();
           if(finisherImpact){
             finisherImpact.style.display='block';
             finisherImpact.style.opacity='1';

@@ -46,8 +46,7 @@
 /* The 11-frame glacier is advanced by the live render loop. CSS must not
    animate or swap it independently, otherwise the last frame can overlap the
    victory panel or jump to the wrong row. */
-#segelStage .segelFinisherImpact{left:66%;top:auto;bottom:7%;width:min(45vw,420px);height:min(60vw,560px);background-image:url('../assets/fx/wira/final-v3/fx-glacier-burst-v3.png');background-repeat:no-repeat;background-size:400% 300%;background-position:0 0;transform:translate(-50%,18%) scale(.78);transform-origin:center bottom;animation:none!important;object-fit:contain}
-@media(max-width:520px){#segelStage .segelFinisherImpact{left:66%;bottom:6%;width:min(54vw,330px);height:min(72vw,440px)}}
+#segelStage .segelFinisherImpact{left:0;top:0;bottom:auto;width:0;height:0;background-image:url('../assets/fx/wira/final-v3/fx-glacier-burst-v3.png');background-repeat:no-repeat;background-size:400% 300%;background-position:0 0;transform:none;transform-origin:center bottom;animation:none!important;object-fit:contain}
 
 /* Main battle charge: use the authored Wira charge sheet, not the old generic aura. */
 .segelChargeHero{position:absolute;left:5%;bottom:4%;width:auto;height:66%;aspect-ratio:543/724;z-index:11;opacity:0;visibility:hidden;pointer-events:none;background:url('../assets/fx/wira/final-v2/wira-charge-sheet-v3.png') 0 0/400% 100% no-repeat;filter:drop-shadow(0 10px 8px rgba(0,0,0,.58)) drop-shadow(0 0 13px rgba(71,211,255,.5))}
