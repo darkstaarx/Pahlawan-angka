@@ -31,3 +31,12 @@
 #segelQuestion .fraction-texture-grid{width:100%;max-width:100%;min-width:0}
 #segelQuestion.hasFractionVisual{overflow:hidden}
 #segelQuestion.hasFractionVisual .segelPrompt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+
+/* Lorek questions repeat the instruction inside the touch panel. Reclaim the
+   question slot so the picture, equal parts, status and Semak stay visible on
+   short phones instead of creating a second scroll area. */
+.segelCard:has(#segelAnswers .d1-fraction-answer) .question{display:none}
+.segelCard:has(#segelAnswers .d1-fraction-answer) .answers{min-height:0;overflow:hidden;display:block}
+.segelCard:has(#segelAnswers .d1-fraction-answer) .d1-fraction-answer{max-width:100%;padding:0 4px}
+.segelCard:has(#segelAnswers .d1-fraction-answer) .d1-fraction-answer .fraction-art-interactive{width:min(100%,210px);height:clamp(112px,26vw,150px)}
+.segelCard:has(#segelQuestion.hasFractionVisual) .question{flex:0 0 auto;min-height:54px;max-height:150px;overflow:hidden}
