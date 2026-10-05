@@ -55,8 +55,11 @@
  }
  function materialise(item){
    const hint=item.mode==='half_synonyms'?'Separuh, setengah dan satu perdua ialah nama bagi bahagian yang sama. Suku ialah satu perempat.':item.mode==='quarter_synonyms'?'Suku dan satu perempat ialah nama bagi bahagian yang sama. Separuh ialah satu perdua.':['picture_unused','unmarked_symbol'].includes(item.mode)?'Lihat bahagian yang tidak ditanda. Kira bahagian itu.':item.model.steps?'Ikut setiap tindakan dalam cerita. Kira bahagian yang diminta, kemudian bandingkan dengan semua bahagian asal.':'Kira semua bahagian sama besar. Kemudian kira bahagian yang dipilih.';
-   const q=Q(item.prompt,item.answer,item.choices.map(x=>N(x,'fraction')),hint,'Tahun 1 · Pecahan',true,true);
-   return Object.assign(q,{templateId:item.id,source:'d1-fractions-audit-v1',standardRef:item.standardRef,performanceRef:item.performanceRef,competencyId:'D1.FRAC',subcompetencyId:item.group,archetypeId:item.mode,representation:item.interaction?'interactive':item.prompt.includes('<img')?'visual':'verbal',demand:item.group==='harian'?'application':'concept',contextId:item.model.style,difficultyBand:1,misconceptionTargets:['fraction_equal_parts','fraction_part_whole'],fractionTask:item.interaction?{type:item.interaction,...item.model}:null});
+   const visualModes=new Set(['model_symbol','model_name','unmarked_symbol','selected_fraction','picture_unused','picture_used_name']);
+   const visual=visualModes.has(item.mode)?image(item.model.n,item.model.d,item.model.style,item.model.layout):'';
+   const prompt=visualModes.has(item.mode)&&!item.prompt.includes('fraction-art')?`${visual}${item.prompt}`:item.prompt;
+   const q=Q(prompt,item.answer,item.choices.map(x=>N(x,'fraction')),hint,'Tahun 1 · Pecahan',true,true);
+   return Object.assign(q,{templateId:item.id,source:'d1-fractions-audit-v1',standardRef:item.standardRef,performanceRef:item.performanceRef,competencyId:'D1.FRAC',subcompetencyId:item.group,archetypeId:item.mode,representation:item.interaction?'interactive':prompt.includes('fraction-art')?'visual':'verbal',demand:item.group==='harian'?'application':'concept',contextId:item.model.style,difficultyBand:1,misconceptionTargets:['fraction_equal_parts','fraction_part_whole'],fractionTask:item.interaction?{type:item.interaction,...item.model}:null});
  }
  const previous=window.PAQuestionBanks.d1;
  function shuffled(items){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
