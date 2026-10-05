@@ -44,11 +44,11 @@
    else if(kind===1){mode='give_remaining';answerN=d-n;prompt=`${intro} ${name} memberi ${n} bahagian kepada ${other}. Apakah pecahan yang masih ada pada ${name}?`;}
    else if(kind===2){mode='save_name';asName=true;prompt=`${intro} ${name} menyimpan ${n} bahagian. Apakah nama pecahan yang disimpan?`;}
    else if(kind===3){mode='picture_unused';answerN=d-n;prompt=`${image(n,d,style,layout)}Bahagian bertanda telah digunakan oleh ${name}. Apakah pecahan ${style} yang belum digunakan?`;}
-   else if(kind===4){mode='two_people_eat';const a=1,b=i%2?2:1;answerN=4-a-b;m.steps=[a,b];prompt=`${image(0,4,style,layout)}${intro} ${name} makan ${a} bahagian dan ${other} makan ${b} bahagian. Apakah pecahan kek yang tinggal?`;}
-   else if(kind===5){mode='eat_then_give';const a=1,b=i%2?1:2;answerN=4-a-b;m.steps=[a,b];prompt=`${image(0,4,style,layout)}${intro} ${name} makan ${a} bahagian dan memberi ${b} bahagian kepada ${other}. Apakah pecahan coklat yang masih ada pada ${name}?`;}
-   else if(kind===6){mode='two_people_receive';const a=1,b=i%2?1:2;answerN=a+b;m.steps=[a,b];prompt=`${image(0,4,style,layout)}${intro} ${name} mendapat ${a} bahagian. ${other} mendapat ${b} bahagian. Apakah pecahan yang mereka terima semuanya?`;}
-   else if(kind===7){mode='put_back';const taken=i%2?3:2,returned=1;answerN=taken-returned;m.steps=[taken,returned];prompt=`${image(0,4,style,layout)}${intro} ${name} mengambil ${taken} bahagian. Dia meletakkan ${returned} bahagian semula. Apakah pecahan yang masih dipegangnya?`;}
-   else if(kind===8){mode='separate_saved_given';const saved=i%2?1:2,given=1;answerN=4-saved-given;m.steps=[saved,given];prompt=`${image(0,4,style,layout)}${intro} ${name} menyimpan ${saved} bahagian dalam kotak dan memberi ${given} bahagian kepada ${other}. Apakah pecahan yang belum disimpan atau diberi?`;}
+   else if(kind===4){mode='two_people_eat';const a=1,b=i%2?2:1;answerN=4-a-b;m.steps=[a,b];prompt=`${intro} ${name} makan ${a} bahagian dan ${other} makan ${b} bahagian. Apakah pecahan kek yang tinggal?`;}
+   else if(kind===5){mode='eat_then_give';const a=1,b=i%2?1:2;answerN=4-a-b;m.steps=[a,b];prompt=`${intro} ${name} makan ${a} bahagian dan memberi ${b} bahagian kepada ${other}. Apakah pecahan coklat yang masih ada pada ${name}?`;}
+   else if(kind===6){mode='two_people_receive';const a=1,b=i%2?1:2;answerN=a+b;m.steps=[a,b];prompt=`${intro} ${name} mendapat ${a} bahagian. ${other} mendapat ${b} bahagian. Apakah pecahan yang mereka terima semuanya?`;}
+   else if(kind===7){mode='put_back';const taken=i%2?3:2,returned=1;answerN=taken-returned;m.steps=[taken,returned];prompt=`${intro} ${name} mengambil ${taken} bahagian. Dia meletakkan ${returned} bahagian semula. Apakah pecahan yang masih dipegangnya?`;}
+   else if(kind===8){mode='separate_saved_given';const saved=i%2?1:2,given=1;answerN=4-saved-given;m.steps=[saved,given];prompt=`${intro} ${name} menyimpan ${saved} bahagian dalam kotak dan memberi ${given} bahagian kepada ${other}. Apakah pecahan yang belum disimpan atau diberi?`;}
    else {mode='picture_used_name';asName=true;prompt=`${image(n,d,style,layout)}${name} menggunakan bahagian ${style} yang bertanda. Apakah nama pecahan yang digunakan?`;}
    m.answerNumerator=answerN;
    add('harian',mode,prompt,asName?words[F(answerN,d)]:F(answerN,d),asName?nameChoices(answerN,d):choices(answerN,d),m);
