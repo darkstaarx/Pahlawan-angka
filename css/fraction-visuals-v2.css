@@ -1,0 +1,15 @@
+.fraction-art{width:min(100%,420px);margin:10px auto;display:grid;place-items:center;overflow:visible}
+.fraction-art-turn{width:100%;display:grid;place-items:center;transform-origin:center}
+.fraction-texture-grid{position:relative;width:min(100%,360px);aspect-ratio:2/1;display:grid;gap:4px;overflow:visible}
+.fraction-texture-cell{position:relative;display:block;min-width:0;min-height:0;overflow:hidden;border-radius:12px;background:#f8f4e8;box-shadow:inset 0 0 0 2px rgba(26,44,75,.22)}
+.fraction-texture-cell img{position:absolute;max-width:none;display:block;pointer-events:none;user-select:none}
+.fraction-piece-layer{position:absolute;inset:0;display:grid;gap:4px;padding:0;pointer-events:none}
+.fraction-piece-marker{position:relative;min-width:0;min-height:0;border:2px solid rgba(31,64,101,.35);border-radius:10px;background:transparent;pointer-events:auto;cursor:pointer;color:#0b2749}
+.fraction-piece-marker.selected{background:rgba(72,201,240,.28);border-color:#24bfe9;box-shadow:inset 0 0 0 3px rgba(255,255,255,.45)}
+.fraction-piece-tick{position:absolute;right:6px;top:4px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#0b77b4;color:#fff;font-weight:800}
+.fraction-art-interactive{position:relative;width:min(100%,420px);min-height:180px}
+.fraction-art-interactive .fraction-texture-grid{width:min(100%,360px)}
+.d1-fraction-answer{color:#173456}
+.d1-fraction-answer p{margin:7px auto;line-height:1.35}
+.d1-fraction-answer .ans{min-height:44px;padding:9px 18px;border:2px solid #e5b943;border-radius:12px;background:#fff8e8;color:#173456;font-weight:800;cursor:pointer}
+@media (max-width:520px){.fraction-texture-grid{width:min(100%,310px)}.fraction-piece-tick{width:20px;height:20px;font-size:13px;right:3px;top:3px}}
