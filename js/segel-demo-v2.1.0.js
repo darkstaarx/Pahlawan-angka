@@ -278,7 +278,7 @@
       return cfg;
     }
     let finisherVideoLayer=null, finisherVideo=null;
-    let finalImpactActive=false;
+    let finalImpactActive=false, finalImpactPending=false;
     function ensureFinisherVideo(){
       if(finisherVideo&&finisherVideo.isConnected)return finisherVideo;
       const mount=document.body;
@@ -314,6 +314,7 @@
       host.classList.remove('finisher-video-prep','finisher-video-cue','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
       if(mathBurst)mathBurst.style.display='';
       finalImpactActive=false;
+      finalImpactPending=false;
       if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
@@ -346,6 +347,7 @@
       if(mathBurst)mathBurst.style.display='';
       
       finalImpactActive=false;
+      finalImpactPending=false;
       if(finisherImpact)finisherImpact.style.display='none';
       S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
       S.heroFade=1;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;
@@ -1473,7 +1475,7 @@
           S.heroLock=heroSlashE; S.heroX=-0.30; await wait(140);
           if(lifecycle!==S.lifecycle)return;
           sfx('hit'); clearNormalIceFx();
-          finalImpactActive=true;
+          finalImpactActive=true; finalImpactPending=true;
           if(finisherImpact){
             finisherImpact.style.display='block';
             finisherImpact.style.opacity='1';
@@ -1482,12 +1484,11 @@
           // The 11 authored glacier frames start exactly when the sword lands.
           iceHit(SEAL_X,GROUND+.78);
           S.waveT=0; S.shake=.32;
-          await wait(1740);
+          // Return while the glacier is still visible. `respond()` then
+          // breaks the seal at the contact beat, and waits for the remaining
+          // burst before it can enter the victory layer.
+          await wait(260);
           if(lifecycle!==S.lifecycle)return;
-          finalImpactActive=false;
-          if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
-          clearNormalIceFx();
-          S.heroLock=null; S.heroX=HERO_HOME;
           return;
         }
         if(reduceMotion){ sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; return }
@@ -1525,6 +1526,14 @@
         // terbaca sebagai tenaga diserap perisai, bukan sekadar kelipan.
         if(!reduceMotion){ waveMat.color.setHex(s.tier.color); S.waveScale=.62; S.waveT=0 }
         return {broken:false, tier:s.tier};
+      },
+      async waitFinalImpact(){
+        if(!finalImpactPending)return;
+        await wait(1450);
+        finalImpactPending=false; finalImpactActive=false;
+        if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
+        clearNormalIceFx();
+        S.heroLock=null; S.heroX=HERO_HOME;
       },
       remaining(){
         const s=seals[S.active];
@@ -1621,6 +1630,7 @@
       reset(){
         ++S.lifecycle;stopFinisherVideo();S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
         host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
+        finalImpactPending=false; finalImpactActive=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME;
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
@@ -2057,7 +2067,7 @@
     if(correct){
       sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike();
       if(!currentRun(activeRun))return;
-      const outcome=stage.hitSeal();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
+      const outcome=stage.hitSeal();await stage.waitFinalImpact?.();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
       paintSeal();
       if(reachedTarget)return celebrate(activeRun);
@@ -2095,7 +2105,7 @@
     if(correct){
       run.tally[run.usedHint?'hint':'own']++;await stage.strike();
       if(!productionCurrent(hostRun,q))return;
-      const outcome=stage.hitSeal();$('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';paintSeal();
+      const outcome=stage.hitSeal();await stage.waitFinalImpact?.();$('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';paintSeal();
       if(stage.allBroken()){window.PAProductionJourney?.complete?.();if(!productionCurrent(hostRun,q))return;return celebrateProduction(hostRun,q);}
     }else{run.tally.miss++;stage.wrong();$('segelFeedback').textContent=`Belum tepat. ${q_hint(q)}`;}
     if(result?.intervention){window.PAProductionJourney?.pauseForLearning?.(result.intervention);return;}
