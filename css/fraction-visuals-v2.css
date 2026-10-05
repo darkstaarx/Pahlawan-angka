@@ -9,12 +9,17 @@
 .fraction-piece-tick{position:absolute;right:6px;top:4px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#0b77b4;color:#fff;font-weight:800}
 .fraction-art-interactive{position:relative;width:min(100%,420px);max-width:100%;min-height:180px;overflow:hidden}
 .fraction-art-interactive .fraction-texture-grid{width:min(100%,360px)}
-.fraction-art[data-layout="v"] .fraction-texture-grid,.fraction-art[data-layout="v"] .fraction-piece-layer{grid-template-columns:1fr!important;grid-template-rows:repeat(2,1fr)!important}
+.fraction-art[data-layout="v"] .fraction-texture-grid,.fraction-art[data-layout="v"] .fraction-piece-layer{grid-template-columns:repeat(var(--fraction-cols),1fr)!important;grid-template-rows:repeat(var(--fraction-rows),1fr)!important}
 .fraction-art[data-layout="v"] .fraction-texture-grid{aspect-ratio:1/1}
 .fraction-art[data-layout="grid"] .fraction-texture-grid,.fraction-art[data-layout="grid"] .fraction-piece-layer{grid-template-columns:repeat(2,1fr)!important;grid-template-rows:repeat(2,1fr)!important}
 .question .fraction-art{max-height:190px}
 .d1-fraction-answer{color:#173456}
 .d1-fraction-answer p{margin:7px auto;line-height:1.35}
+.d1-fraction-answer>p:first-child{font-size:12px;margin:2px auto 5px}
+.d1-fraction-answer .fraction-art-interactive{min-height:0;height:clamp(108px,24vw,146px);margin:2px auto 4px}
+.d1-fraction-answer .fraction-art-interactive .fraction-art-turn,.d1-fraction-answer .fraction-art-interactive .fraction-texture-grid{height:100%;aspect-ratio:auto}
+.d1-fraction-answer .fraction-piece-marker{min-height:0}
+.d1-fraction-answer>p[aria-live]{font-size:12px;margin:3px auto}
 .d1-fraction-answer .ans{min-height:44px;padding:9px 18px;border:2px solid #e5b943;border-radius:12px;background:#fff8e8;color:#173456;font-weight:800;cursor:pointer}
 @media (max-width:520px){.fraction-texture-grid{width:min(100%,310px)}.fraction-piece-tick{width:20px;height:20px;font-size:13px;right:3px;top:3px}}
 
@@ -24,3 +29,5 @@
 #segelQuestion .fraction-art{width:min(180px,calc(100vw - 56px));max-width:100%;max-height:150px;margin:6px auto}
 #segelQuestion .fraction-art-turn{max-width:100%;max-height:150px}
 #segelQuestion .fraction-texture-grid{width:100%;max-width:100%;min-width:0}
+#segelQuestion.hasFractionVisual{overflow:hidden}
+#segelQuestion.hasFractionVisual .segelPrompt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}

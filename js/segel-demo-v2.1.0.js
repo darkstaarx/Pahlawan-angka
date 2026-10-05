@@ -1999,6 +1999,7 @@
        menjadikan grid itu berisi satu item, jadi teks mengalir seperti biasa. */
     $('segelQuestion').innerHTML='<div class="segelPrompt"></div>';
     $('segelQuestion').firstChild.innerHTML=window.PAWrittenArithmetic?.render?.(q,run)||q.prompt;
+    $('segelQuestion').classList.toggle('hasFractionVisual',!!$('segelQuestion').querySelector('.fraction-art'));
     $('segelFeedback').textContent='';
     run.usedHint=false;
     const hintBtn=$('segelHint');

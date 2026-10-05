@@ -12,16 +12,21 @@
    return `<div class="fraction-texture-grid" style="grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(${d===4?2:1},1fr)">${boxes.map(([x,y,x2,y2])=>`<span class="fraction-texture-cell"><img src="${folder}/${style}-sprite.png" alt="" style="width:${1792/(x2-x)*100}%;height:${896/(y2-y)*100}%;left:${-x/(x2-x)*100}%;top:${-y/(y2-y)*100}%"></span>`).join('')}</div>`;
  }
  function markup(n,d,style,layout='h'){
-   const angle=angles[layout]||0,cols=2,rows=d===4?2:1;
+   const angle=angles[layout]||0,cols=layout==='v'&&d===4?2:layout==='v'?1:2,rows=layout==='v'?(d===4?2:d):(d===4?2:1);
    const marks=Array.from({length:d},(_,i)=>`<span class="fraction-piece-marker${i<n?' selected':''}" aria-hidden="true">${i<n?'<span class="fraction-piece-tick">✓</span>':''}</span>`).join('');
-   return `<div class="fraction-art" role="img" aria-label="Satu ${style} dibahagi kepada ${d} bahagian sama besar. ${n} bahagian ditanda." data-layout="${layout}"><div class="fraction-art-turn" style="transform:rotate(${angle}deg)">${textures(d,style)}<div class="fraction-piece-layer ${style==='epal'||style==='kek'?'round':''}" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)">${marks}</div></div></div>`;
+   return `<div class="fraction-art" role="img" aria-label="Satu ${style} dibahagi kepada ${d} bahagian sama besar. ${n} bahagian ditanda." data-layout="${layout}" style="--fraction-pieces:${d};--fraction-cols:${cols};--fraction-rows:${rows}"><div class="fraction-art-turn" style="transform:rotate(${angle}deg)">${textures(d,style)}<div class="fraction-piece-layer ${style==='epal'||style==='kek'?'round':''}" style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr)">${marks}</div></div></div>`;
  }
  function scene(task){
    const outer=document.createElement('div');outer.className='fraction-art fraction-art-interactive';outer.dataset.layout=task.layout;
+   const cols=task.layout==='v'&&task.d===4?2:task.layout==='v'?1:2;
+   const rows=task.layout==='v'?(task.d===4?2:task.d):(task.d===4?2:1);
+   outer.style.setProperty('--fraction-pieces',task.d);
+   outer.style.setProperty('--fraction-cols',cols);
+   outer.style.setProperty('--fraction-rows',rows);
    const turn=document.createElement('div');turn.className='fraction-art-turn';turn.style.transform=`rotate(${angles[task.layout]||0}deg)`;
    turn.innerHTML=textures(task.d,task.style);
    const row=document.createElement('div');row.className='fraction-piece-layer';if(task.style==='epal'||task.style==='kek')row.classList.add('round');
-   row.style.gridTemplateColumns='repeat(2,1fr)';row.style.gridTemplateRows=`repeat(${task.d===4?2:1},1fr)`;row.setAttribute('role','group');row.setAttribute('aria-label','Pilih bahagian untuk dilorek');
+   row.style.gridTemplateColumns=`repeat(${cols},1fr)`;row.style.gridTemplateRows=`repeat(${rows},1fr)`;row.setAttribute('role','group');row.setAttribute('aria-label','Pilih bahagian untuk dilorek');
    turn.append(row);outer.append(turn);return{outer,row};
  }
  window.PAFractionVisuals={markup,scene,frames};
