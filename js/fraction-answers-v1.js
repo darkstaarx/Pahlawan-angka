@@ -10,7 +10,12 @@
    const check=document.createElement('button');check.type='button';check.className='ans';check.textContent='Semak';check.dataset.questionToken=String(q.token||'');
    let selected=new Set(),top,bottom,cells=[];
    if(task.type==='shade'){
-     const instruction=document.createElement('p');instruction.textContent='Tekan bahagian untuk melorek. Tekan sekali lagi untuk memadam.';panel.append(instruction);
+     const instruction=document.createElement('p');
+     const target=document.createElement('strong');
+     target.textContent=(q.prompt||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+     instruction.append(target);
+     const helper=document.createElement('small');helper.textContent='Tekan bahagian untuk melorek. Tekan sekali lagi untuk memadam.';
+     panel.append(instruction,helper);
      const scene=window.PAFractionVisuals.scene(task),picture=scene.outer,row=scene.row;
      for(let i=0;i<task.d;i++){
        const cell=document.createElement('button');cell.type='button';cell.setAttribute('aria-label',`Bahagian ${i+1}`);cell.setAttribute('aria-pressed','false');
