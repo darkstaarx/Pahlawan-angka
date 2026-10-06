@@ -30,11 +30,17 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  assert.match(preview.find(p=>p.id==='ketupatKura').assets.sadSprite,/sad-v1\.png$/);
 });
 
-test('skill based per-grade rotation previews multiple eligible pets without RNG',()=>{
+test('weighted per-grade rotation includes all eligible pets without RNG',()=>{
  const data=fresh(),seen=[];data.level=25;
- for(let i=0;i<5;i++)seen.push(pets.assignGembokRescue(data,{id:`a${i}`,gembok:true},'D1.N20').petId);
- assert.equal(new Set(seen).size,5);
- assert.equal(data.petRescueRotation[1],5);
+ for(let i=0;i<120;i++)seen.push(pets.assignGembokRescue(data,{id:`a${i}`,gembok:true},'D1.N20').petId);
+ assert.equal(new Set(seen).size,6);
+ assert.equal(data.petRescueRotation[1],120);
+ const frequency=id=>seen.filter(x=>x===id).length;
+ assert(frequency('kumbangManggis')>frequency('ketupatKura'));
+ assert(frequency('harimauBunga')>frequency('arnabKekLapis'));
+ assert(frequency('arnabKekLapis')>frequency('durianKerbau'));
+ const restored=JSON.parse(JSON.stringify(data));
+ for(let i=0;i<30;i++)assert.equal(pets.assignGembokRescue(data,{id:`b${i}`,gembok:true},'D1.N20').petId,pets.assignGembokRescue(restored,{id:`b${i}`,gembok:true},'D1.N20').petId);
 });
 
 test('one completed run increments only its assigned pet and never tames Kura',()=>{
@@ -62,18 +68,58 @@ test('threshold plus gate tames exactly once and completion replay is idempotent
 
 test('assignment skips locked pet gates instead of promising an impossible rescue',()=>{
  const tooLow=fresh();tooLow.level=1;tooLow.petRescueRotation={1:0};
- assert.equal(pets.assignGembokRescue(tooLow,{id:'locked',gembok:true},'D1.N20'),null);
+ assert.equal(pets.assignGembokRescue(tooLow,{id:'locked',gembok:true},'D1.N20').petId,'aurora');
 
  const data=fresh();data.level=3;data.petRescueRotation={1:1};
  const run={id:'skip-gates',gembok:true,route:'manual'};
  const assignment=pets.assignGembokRescue(data,run,'D1.N20');
  assert.equal(assignment.petId,'ketupatKura');
- assert.equal(data.petRescueRotation[1],6);
+ assert.equal(data.petRescueRotation[1],2);
  run.completed=true;
  const result=pets.awardGembokCompletion(data,run,{now:100});
  assert.equal(result.rescueAwarded,true);
  assert.equal(data.petCollection.ketupatKura.rescues,1);
  assert.equal(data.petCollection.kumbangManggis.rescues,0);
+});
+
+test('owned Aurora and Kura remain repeat rescues with one award per run',()=>{
+ const data=fresh();pets.ensure(data);data.petCollection.ketupatKura.state='tamed';
+ const seen=[];
+ for(let i=0;i<20;i++){
+  const run=assigned(data,`repeat-${i}`);seen.push(run.rescuePetId);
+  const result=pets.awardGembokCompletion(data,run);
+  assert.equal(result.alreadyTamed,true);assert.equal(result.newlyTamed,false);
+  assert.equal(pets.awardGembokCompletion(data,run).reason,'already-awarded');
+ }
+ assert(seen.includes('aurora'));assert(seen.includes('ketupatKura'));
+ assert.equal(data.petCollection.aurora.bondXp,400);
+});
+
+test('strong independent answers unlock at most two tiers early and keep access',()=>{
+ const data=fresh();pets.ensure(data);
+ data.gembok={completions:{one:{at:1,firstAttemptQuestions:10,independentCorrect:9}}};
+ assert.equal(pets.rescueAccess(data,1).tier,2);
+ data.gembok.completions.two={at:2,firstAttemptQuestions:10,independentCorrect:10};
+ assert.equal(pets.rescueAccess(data,1).tier,3);
+ let run;
+ for(let i=0;i<40;i++){const candidate=assigned(data,`early-${i}`);if(candidate.rescuePetId==='harimauBunga'){run=candidate;break;}}
+ assert(run);assert.equal(run.rescueEligibility.boost,2);
+ data.gembok.completions={};
+ assert.equal(pets.awardGembokCompletion(data,run).rescueAwarded,true);
+ assert.equal(pets.snapshot(data).pets.find(p=>p.id==='harimauBunga').eligible,true);
+ assert.equal(pets.rescueAccess(data,1).tier,3);
+ assert.equal(data.petCollection.harimauBunga.state,'encountered');
+});
+
+test('effort unlock uses completed tasks, never abandoned runs or historical accuracy guesses',()=>{
+ const data=fresh();data.completedMissions={1:7};pets.ensure(data);
+ for(let i=0;i<50;i++)pets.assignGembokRescue(data,{id:`abandon-${i}`,gembok:true},'D1.N20');
+ assert.equal(pets.rescueAccess(data,1).boost,0);
+ data.completedMissions[1]=8;assert.equal(pets.rescueAccess(data,1).boost,1);
+ data.completedMissions[1]=20;assert.equal(pets.rescueAccess(data,1).boost,2);
+ assert.equal(pets.rescueAccess(data,1).tier,3);
+ const legacy=fresh();legacy.gembok={completions:{old:{correct:10,at:1},small:{firstAttemptQuestions:1,independentCorrect:1,at:2}}};
+ assert.equal(pets.rescueAccess(legacy,1).boost,0);
 });
 
 test('real manual and adaptive completions award exactly 20 Bond XP once to the equipped tamed pet',()=>{
@@ -150,4 +196,24 @@ test('production boundary awards Bond XP only after ten correct seals',()=>{
  run.correct=10;h.context.PAProductionJourney.complete();assert.equal(h.award().result.bondXpAwarded,true);assert.equal(h.db.petCollection.aurora.bondXp,20);assert.equal(run.temanRevealAward.newlyTamed,true);
  assert.equal(h.db.petCollection.ketupatKura.state,'tamed');
  h.context.PAProductionJourney.complete();assert.equal(h.db.petCollection.aurora.bondXp,20);assert.equal(run.temanRevealAward.newlyTamed,true);
+});
+
+test('production strength counts each first question once, with hints and retries excluded from clean correct',()=>{
+ const h=journeyHarness();h.context.openGembok({focusSkill:'D1.N20'});const api=h.context.PAProductionJourney,run=api.state();
+ let q=api.nextQuestion(run);api.hint();api.resolve(q,{tag:'correct',v:q.answer},true);
+ assert.equal(run.firstAttemptQuestions,1);assert.equal(run.independentCorrect||0,0);
+ q=api.nextQuestion(run);api.firstWrong(q,{tag:'wrong',v:'5'});api.resolve(q,{tag:'correct',v:q.answer},true);
+ assert.equal(run.firstAttemptQuestions,2);assert.equal(run.independentCorrect||0,0);
+ q=api.nextQuestion(run);api.resolve(q,{tag:'correct',v:q.answer},true);
+ assert.equal(run.firstAttemptQuestions,3);assert.equal(run.independentCorrect,1);
+ run.correct=10;api.complete();
+ assert.equal(h.db.gembok.completions[run.id].firstAttemptQuestions,3);
+ assert.equal(h.db.gembok.completions[run.id].independentCorrect,1);
+});
+
+test('later global access cannot turn a different locked pet into an old run award',()=>{
+ const data=fresh(),run=assigned(data,'reserved');data.petRescueAccess[1]=5;
+ run.rescuePetId='durianKerbau';
+ assert.equal(pets.awardGembokCompletion(data,run).rescueAwarded,false);
+ assert.equal(data.petCollection.durianKerbau.rescues,0);
 });

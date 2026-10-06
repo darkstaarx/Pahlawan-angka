@@ -112,7 +112,7 @@ function renderMissions(){
   const wrap=document.getElementById('missionGrid'); if(!wrap)return; wrap.innerHTML='';
   const chapters=[...new Set(GRAPH.skills.filter(x=>x.grade===db.schoolGrade).map(x=>String(x.chapter)))].sort((a,b)=>+a-+b);
   chapters.forEach(ch=>{
-    const locked=!isDevMode() && +ch>db.coreFrontier;
+    const locked=false; // All chapters in the profile's school grade are available.
     const mastery=chapterMasteryPct(ch),stars=db.chapterStars[ch]||0;
     const card=document.createElement('button');
     card.className='missionCard '+(locked?'locked':(+ch===db.coreFrontier?'current':''))+(isDevMode()?' devUnlocked':'');

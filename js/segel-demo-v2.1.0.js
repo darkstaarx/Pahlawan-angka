@@ -1400,11 +1400,13 @@
           if(finalImpactActive&&finisherImpact){
             glacierLayers.forEach(layer=>{
               const side=Number(layer.dataset.glacierSide)||0;
-              const elapsed=S.iceT-(side<0 ? .12 : side>0 ? .24 : 0);
-              const f=Math.min(10,Math.floor(Math.max(0,elapsed)/1.08*11));
+              const elapsed=S.iceT-(side ? .12 : 0);
+              const duration=side ? .78 : 1.08;
+              const f=Math.min(10,Math.floor(Math.max(0,elapsed)/duration*11));
               layer.dataset.glacierFrame=String(f);
               layer.style.backgroundPosition=`${f%4*33.333333}% ${Math.floor(f/4)*50}%`;
-              layer.style.opacity=String(Math.min(1,Math.max(0,(1-k)*2.3)));
+              const fade=side ? 1-Math.max(0,elapsed)/1.30 : 1-k;
+              layer.style.opacity=String(Math.min(1,Math.max(0,fade*2.3)));
               layer.style.display=elapsed>=0?'block':'none';
             });
             placeFinalImpact();
@@ -2021,9 +2023,10 @@
   function paintQuestion(q,id){
     const meta=(typeof META!=='undefined'&&META[id])||{};
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||meta.grade||1;
-    /* Gembok berkongsi pentas yang sama sepanjang sesi, jadi backdrop perlu
-       ditukar apabila bank membawa kita ke topik baharu. */
-    stage?.setArena?.(arenaForMeta(meta));
+    // Kembara keeps the first selected subtopic's world for the whole mission.
+    const terrainMeta=run?.production&&run.productionRun.route==='adaptive'
+      ? (run.productionRun.firstArenaMeta ||= meta) : meta;
+    stage?.setArena?.(arenaForMeta(terrainMeta));
     // helper yang sama dengan battle: buang awalan "Tahun N · " supaya tajuk
     // tidak mengulang baris kecil di bawahnya.
     $('segelTitle').textContent=q?.writtenArithmeticPreview?q.title:((typeof questionLearningTitle==='function')
@@ -2171,6 +2174,7 @@
     if(!award?.petId)return 'Misi selesai! Teruskan Gembok untuk mencari jejak teman baharu.';
     const name=petNameForAward(award);
     if(award.newlyTamed)return `${name} berjaya dijinakkan!`;
+    if(award.alreadyTamed)return `${name} berjaya diselamatkan lagi!`;
     if(award.rescueAwarded)return `Jejak ${name} ditemui · Rescue ${award.rescues}/${award.threshold}`;
     return `Misi selesai! Teruskan Gembok untuk mengumpul jejak ${name}.`;
   }

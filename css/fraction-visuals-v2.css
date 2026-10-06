@@ -43,3 +43,6 @@
 .segelCard:has(#segelAnswers .d1-fraction-answer) .d1-fraction-answer{max-width:100%;padding:0 4px}
 .segelCard:has(#segelAnswers .d1-fraction-answer) .d1-fraction-answer .fraction-art-interactive{width:min(100%,210px);height:clamp(112px,26vw,150px)}
 .segelCard:has(#segelQuestion.hasFractionVisual) .question{flex:1 1 0;min-height:0;max-height:none;overflow-y:auto}
+@media(max-height:680px){
+  .segelCard:has(#segelQuestion.hasFractionVisual) .question{flex:1 0 auto;min-height:96px;overflow-y:visible}
+}

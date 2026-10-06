@@ -9,8 +9,7 @@
   arnabKekLapis:{name:'Arnab Kek Lapis',rarity:'Epic',folder:'arnab-kek-lapis',levelGate:18},
   durianKerbau:{name:'Kerbau Durian',rarity:'Legendary',folder:'durian-kerbau',levelGate:25}
  };
- /* The early five entries preview every rescue pet. The following entries apply
-    the configured Common:Uncommon:Rare:Epic:Legendary 5:3:2:1:1 ratio. */
+ /* Legacy cycle retained for saved clients; new missions use weighted rotation. */
  const rescueCycle=['ketupatKura','kumbangManggis','harimauBunga','arnabKekLapis','durianKerbau','ketupatKura','ketupatKura','ketupatKura','ketupatKura','kumbangManggis','kumbangManggis','harimauBunga'];
  const rescueMultipliers={Common:.70,Uncommon:1, Rare:1.4,Epic:1.8,Legendary:2.4};
   const MIGRATION_VERSION=2,PROGRESSION_VERSION=4,MAX_COUNT=Number.MAX_SAFE_INTEGER;
@@ -19,6 +18,20 @@
  const addCount=(a,b)=>Math.min(MAX_COUNT,count(a)+count(b));
  const level=x=>Math.min(60,1+Math.floor(count(x)/100));
  const playerLevel=data=>Math.max(1,count(data?.level)||1);
+ const rescueOrder=Object.keys(catalog),rescueWeights=[2,8,5,3,2,1];
+ function rescueAccess(data,grade){
+  const normalTier=rescueOrder.reduce((tier,id,i)=>playerLevel(data)>=catalog[id].levelGate||data.petCollection?.[id]?.state==='tamed'?Math.max(tier,i):tier,0);
+  const completions=Object.values(object(data.gembok?.completions));
+  const history=completions.filter(x=>Number.isFinite(x?.firstAttemptQuestions)&&Number.isFinite(x?.independentCorrect))
+    .sort((a,b)=>count(b.at)-count(a.at)).slice(0,8);
+  const questions=history.reduce((sum,x)=>sum+count(x.firstAttemptQuestions),0);
+  const correct=history.reduce((sum,x)=>sum+Math.min(count(x.independentCorrect),count(x.firstAttemptQuestions)),0);
+  const accuracy=questions?correct/questions:0;
+  const tasks=completions.length+Object.values(object(data.completedMissions)).reduce((sum,x)=>sum+count(x),0);
+  const boost=(questions>=20&&accuracy>=.95)||tasks>=20?2:(questions>=10&&accuracy>=.85)||tasks>=8?1:0;
+  const tier=Math.min(rescueOrder.length-1,Math.max(normalTier+boost,count(data.petRescueAccess?.[grade])));
+  return {normalTier,tier,boost,questions,accuracy,tasks};
+ }
  const milestonesFor=id=>evolutionMilestones[catalog[id]?.evolutionRarity||catalog[id]?.rarity]||evolutionMilestones.Common;
  const stage=(id,petLevel)=>milestonesFor(id).filter(milestone=>petLevel>=milestone).length;
  const evolutionName=stage=>stage?`Evolusi ${stage}`:'Bentuk Asas';
@@ -34,7 +47,7 @@
  /* Rescue requirement is ceil(unique grade skills × rarity multiplier):
     Common 70%, Uncommon 100%, Rare 140%, Epic 180%, Legendary 240%. */
  function rescueThreshold(id,grade){
-  const total=graphSkillCount(grade),multiplier=rescueMultipliers[catalog[id]?.rarity];
+  const total=graphSkillCount(grade),multiplier=rescueMultipliers[catalog[id]?.evolutionRarity||catalog[id]?.rarity];
   return total&&multiplier?Math.ceil(total*multiplier):null;
  }
  function migrateIncorrectAwards(data){
@@ -71,15 +84,18 @@
   data.expedition={...e,version:2,xp:count(e.xp),rank:1+Math.floor(count(e.xp)/100),activePetId:data.petCollection[requested]?.state==='tamed'?requested:'aurora'};
   data.rewards.equippedPet=data.expedition.activePetId;
   data.petRescueRotation=object(data.petRescueRotation);
+  data.petRescueAccess=object(data.petRescueAccess);
+  data.petRescueSchedule=object(data.petRescueSchedule);
   return data;
  }
  function snapshot(data){
   ensure(data);if(!data)return {pets:[],expedition:null};
+  const access=rescueAccess(data,Number(data.schoolGrade)||1);
   return {pets:Object.entries(catalog).map(([id,meta])=>{
    const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:meta.name};
    const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,idleSprite:`assets/pets/collection/${meta.folder}/companion-idle-v1.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,sadSprite:`assets/pets/collection/${meta.folder}/sprite-sheets/sad-v1.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',idleSprite:null,sad:'assets/pets/aurora/standby-v2.webp',sadSprite:null,happySprite:null};
    const grade=Number(data.petCollection[id].rescueGrade)||null;
-   const eligible=playerLevel(data)>=meta.levelGate;
+   const eligible=data.petCollection[id].state==='tamed'||rescueOrder.indexOf(id)<=access.tier;
     const customName=String(data.petCollection[id].customName||'').trim();
     return {...item,...data.petCollection[id],id,name:customName||meta.name,defaultName:meta.name,species:meta.species||'',assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
   }),expedition:{...data.expedition}};
@@ -102,21 +118,27 @@
   if(!data||!run||!run.gembok||run.demoMode||run.cancelled||!skillId)return null;
   ensure(data);if(run.rescuePetId)return {petId:run.rescuePetId,grade:run.rescueGrade,threshold:run.rescueThreshold};
   const grade=gradeFromSkill(skillId);if(!grade)return null;
-  const rotation=count(data.petRescueRotation[grade]);
-  /* The selected skill establishes the grade; its id is recorded on the run.
-     Rotation gives a stable, non-random rescue sequence. Skip pets whose
-     player-level gate is still locked so the Segel never advertises a rescue
-     that cannot receive credit at completion. */
-  const levelNow=playerLevel(data);
-  let petId=null,advance=0;
-  for(let offset=0;offset<rescueCycle.length;offset++){
-   const candidate=rescueCycle[(rotation+offset)%rescueCycle.length];
-   if(levelNow>=count(catalog[candidate]?.levelGate)){petId=candidate;advance=offset+1;break;}
-  }
-  if(!petId)return null;
+  const access=rescueAccess(data,grade);
+  // Earned early access persists, so a pet's rescue progress cannot become locked.
+  data.petRescueAccess[grade]=access.tier;
+  const previous=object(data.petRescueSchedule[grade]);
+  const scores=previous.version===1?object(previous.scores):{};
+  let petId=null,best=-Infinity,total=0;
+  rescueOrder.forEach((id,i)=>{
+   if(i>access.tier){scores[id]=0;return;}
+   let weight=rescueWeights[i];
+   if(access.normalTier>=2&&i<2)weight*=.28;
+   if(i>access.normalTier)weight*=i-access.normalTier===1 ? .5 : .25;
+   total+=weight;
+   scores[id]=Math.max(-100,Math.min(100,Number(scores[id])||0))+weight;
+   if(scores[id]>best){best=scores[id];petId=id;}
+  });
+  scores[petId]-=total;
+  data.petRescueSchedule[grade]={version:1,scores};
+  data.petRescueRotation[grade]=addCount(data.petRescueRotation[grade],1);
   const threshold=rescueThreshold(petId,grade);if(!threshold)return null;
-  data.petRescueRotation[grade]=addCount(rotation,advance);
   run.rescuePetId=petId;run.rescueGrade=grade;run.rescueSkillId=skillId;run.rescueThreshold=threshold;
+  run.rescueEligibility={...access};
    /* Reserve the pet for this run only. It becomes encountered after the
       Gembok is actually completed, so abandoned runs never create 0/x cards. */
   persist(data);return {petId,grade,threshold};
@@ -129,9 +151,14 @@
   ensure(data);data.gembokPetAwards=object(data.gembokPetAwards);
   if(data.gembokPetAwards[run.id])return deny('already-awarded');
   const now=options.now??Date.now(),petId=run.rescuePetId,grade=Number(run.rescueGrade),threshold=rescueThreshold(petId,grade);
-  let rescueAwarded=false,newlyTamed=false,rescues=null;
-  if(catalog[petId]&&petId!=='aurora'&&threshold&&playerLevel(data)>=catalog[petId].levelGate){
+  let rescueAwarded=false,newlyTamed=false,rescues=null,alreadyTamed=false;
+  const petTier=rescueOrder.indexOf(petId),assignedAccess=run.rescueEligibility;
+  const eligible=catalog[petId]&&(assignedAccess
+    ? petTier<=count(assignedAccess.tier)&&petTier<=count(data.petRescueAccess[grade])
+    : playerLevel(data)>=catalog[petId].levelGate||data.petCollection[petId]?.state==='tamed');
+  if(eligible&&threshold){
    const pet=data.petCollection[petId];
+   alreadyTamed=pet.state==='tamed';
    pet.state=pet.state==='tamed'?'tamed':'encountered';pet.rescueGrade=grade;pet.rescues=addCount(pet.rescues,1);rescues=pet.rescues;rescueAwarded=true;
    newlyTamed=pet.state!=='tamed'&&pet.rescues>=threshold;
    if(newlyTamed){pet.state='tamed';pet.unlockedAt=now;data.rewards.pets[petId]={unlockedAt:now,collection:true};}
@@ -139,8 +166,8 @@
   const activePet=data.petCollection[data.expedition.activePetId];let bondXpAwarded=false;
   if(activePet?.state==='tamed'){activePet.bondXp=addCount(activePet.bondXp,20);activePet.level=level(activePet.bondXp);activePet.evolutionStage=stage(data.expedition.activePetId,activePet.level);activePet.evolutionState=evolutionName(activePet.evolutionStage);activePet.nextEvolution=milestonesFor(data.expedition.activePetId).find(milestone=>milestone>activePet.level)||null;bondXpAwarded=true;}
   data.gembokPetAwards[run.id]={at:now,route:run.route,petId,grade,skillId:run.rescueSkillId,rescues,threshold,rescueAwarded,bondXpAwarded,equippedPetId:bondXpAwarded?data.expedition.activePetId:null};
-  persist(data);return {awarded:rescueAwarded||bondXpAwarded,petId,grade,rescues,threshold,newlyTamed,rescueAwarded,bondXpAwarded};
+  persist(data);return {awarded:rescueAwarded||bondXpAwarded,petId,grade,rescues,threshold,newlyTamed,alreadyTamed,rescueAwarded,bondXpAwarded};
  }
-  const api={ensure,snapshot,active,equip,rename,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:(id,petLevel)=>stage(id,petLevel),evolutionMilestones,milestonesFor,playerLevel};
+  const api={ensure,snapshot,active,equip,rename,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueAccess,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:(id,petLevel)=>stage(id,petLevel),evolutionMilestones,milestonesFor,playerLevel};
  root.PetCollection=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

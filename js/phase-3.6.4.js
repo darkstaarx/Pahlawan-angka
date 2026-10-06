@@ -19,7 +19,7 @@
     const wrap=document.getElementById('missionGrid');if(!wrap)return;wrap.innerHTML='';
     const chapters=[...new Set(GRAPH.skills.filter(x=>x.grade===db.schoolGrade).map(x=>String(x.chapter)))].sort((a,b)=>+a-+b);
     chapters.forEach(ch=>{
-      const locked=!isDevMode()&&+ch>db.coreFrontier, mastery=chapterMasteryPct(ch), stars=db.chapterStars[ch]||0;
+      const locked=false, mastery=chapterMasteryPct(ch), stars=db.chapterStars[ch]||0;
       const card=document.createElement('button');
       card.className='missionCard '+(locked?'locked':(+ch===db.coreFrontier?'current':''))+(isDevMode()?' devUnlocked':'');card.disabled=locked;
       card.innerHTML=`<div class="missionIcon">${locked?'🔒':chapterIcon(ch)}</div><div class="missionBody"><div class="missionKicker">Topik ${ch}</div><b>${chapterTitle(ch)}</b><div class="missionStars">${starString(stars)}</div><div class="missionMeter"><span style="width:${mastery}%"></span></div><small>${locked?lockedMissionCopy(ch):mastery+'% kemajuan'}</small></div><div class="missionArrow">›</div>`;

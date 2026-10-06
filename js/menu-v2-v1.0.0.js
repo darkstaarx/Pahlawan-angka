@@ -466,7 +466,7 @@
     const dev=has('isDevMode')&&isDevMode();
     const chapters=mapChapters();
     const chapterData=chapters.map(ch=>{
-      const locked=!dev&&+ch>db.coreFrontier;
+      const locked=false; // mapChapters already limits the map to this school grade.
       let mastery=0,stars=0,title=`Topik ${ch}`,kicker=`Topik ${ch}`,icon='⭐';
       const meta=missionTopicMeta[String(ch)]||null;
       try{ mastery=chapterMasteryPct(ch) }catch(_){}
@@ -499,7 +499,7 @@
       const displayTitle=title!==`Topik ${ch}`?title:(meta?meta.title:title);
       const subtitle=meta?meta.subtitle:(kicker||`Topik ${ch}`);
       const asset=meta?`assets/missions/v2/${meta.slug}.webp`:'';
-      const status=locked?'Terkunci':(+ch===db.coreFrontier?'Sedang dibuka':'Tersedia');
+      const status=+ch===db.coreFrontier?'Cadangan':'Tersedia';
       const progress=locked
         ?(typeof lockedMissionCopy==='function'
           ?lockedMissionCopy(ch)

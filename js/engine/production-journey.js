@@ -12,7 +12,7 @@
       const link=document.createElement('link');link.rel='stylesheet';link.href=css;document.head.appendChild(link);
     }
     return new Promise(resolve=>{
-      const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=4.0.21';script.async=false;
+      const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=3.85.18';script.async=false;
       const done=()=>{window.__PA_LIVE_ASSET_REFRESHED=true;resolve()};
       script.addEventListener('load',done,{once:true});script.addEventListener('error',done,{once:true});document.head.appendChild(script);
     });
@@ -122,6 +122,7 @@
 
   function mutateFirstWrong(q,option,seconds){
     const s=realScore(q.skill),delta=META[q.skill].grade-coreGrade();
+    recordIndependentAnswer(q,false);
     s.wrong++;s.evidence++;s.mis[option.tag]=(s.mis[option.tag]||0)+1;
     s.mastery=Math.max(0,s.mastery-(delta>0?1.2:2.2));
     s.confidence=Math.max(0,s.confidence-(delta>0?2:4));
@@ -134,6 +135,7 @@
 
   function recordResolved(q,option,ok,seconds){
     const run=active,s=realScore(q.skill),g=run.session,delta=META[q.skill].grade-coreGrade();
+    recordIndependentAnswer(q,ok&&!g.hint&&!g.retryState);
     if(ok){
       s.correct++;
       if(!g.retryState)s.evidence++;
@@ -155,6 +157,15 @@
     // production journey in sync with the legacy battle path and only return
     // an intervention when the feature flag is explicitly enabled.
     return window.PA_CIKGU_DIMENSI_ENABLED===true?evaluateIntervention(q.skill):null;
+  }
+
+  function recordIndependentAnswer(q,correct){
+    const run=active;if(!run||run.lastIndependentToken===q.token)return;
+    run.lastIndependentToken=q.token;
+    // The denominator includes hinted first attempts; only unhinted first
+    // answers count as independent-correct. Retries never add another sample.
+    run.firstAttemptQuestions=(run.firstAttemptQuestions||0)+1;
+    if(correct)run.independentCorrect=(run.independentCorrect||0)+1;
   }
 
   function firstWrong(q,option){
@@ -190,7 +201,8 @@
     profileDb.gembok=profileDb.gembok||{completions:{}};profileDb.gembok.completions=profileDb.gembok.completions||{};
     if(!profileDb.gembok.completions[run.id]){
       const coins=run.route==='adaptive'?10:15;
-      profileDb.gembok.completions[run.id]={route:run.route,coins,at:Date.now(),correct:run.correct};
+      profileDb.gembok.completions[run.id]={route:run.route,coins,at:Date.now(),correct:run.correct,grade:profileDb.schoolGrade,
+        firstAttemptQuestions:run.firstAttemptQuestions||0,independentCorrect:run.independentCorrect||0};
       profileDb.coins=(profileDb.coins||0)+coins;
       realSave();
     }

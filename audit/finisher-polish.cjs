@@ -14,6 +14,10 @@ const focus=await p.locator('.segelFinalFocus').evaluate(e=>({top:getComputedSty
 assert(focus.top.includes('jurus-penamat-logo-sheet'));assert(focus.bottom.includes('jurus-penamat-logo-sheet'));assert(focus.sounds.includes('finisherSwing'));
 await p.screenshot({path:path.join(root,'audit',`finisher-eye-${viewport.width}.png`)});
 await p.waitForFunction(()=>document.querySelector('.segelFinisherImpact').style.display==='block');
+await p.waitForFunction(()=>{const items=[...document.querySelectorAll('.segelFinisherImpact')];return Number(items[0].dataset.glacierFrame)>=5&&Number(items[1].dataset.glacierFrame)>Number(items[0].dataset.glacierFrame)});
+const glacierFrames=await p.locator('.segelFinisherImpact').evaluateAll(items=>items.map(e=>Number(e.dataset.glacierFrame)));
+assert.equal(glacierFrames[1],glacierFrames[2],'side glaciers must be synchronized');
+assert(glacierFrames[1]>glacierFrames[0],'side glaciers must advance faster than center');
 await p.evaluate(()=>{window.__frameTimes=[];let last=performance.now(),end=last+1300;function sample(now){__frameTimes.push(now-last);last=now;if(now<end)requestAnimationFrame(sample)}requestAnimationFrame(sample)});
 assert.equal(await p.evaluate(()=>__sounds.filter(n=>n==='glacierThunder').length),1);
 await p.waitForFunction(()=>document.querySelector('.segelFinisherImpact').style.backgroundPosition.endsWith('100%'));

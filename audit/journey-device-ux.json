@@ -1,0 +1,258 @@
+[
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "bodyWidth": 390,
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 337.59375,
+      "bottom": 337.59375,
+      "right": 390
+    },
+    "panel": {
+      "x": 0,
+      "y": 337.59375,
+      "width": 390,
+      "height": 506.40625,
+      "bottom": 844,
+      "right": 390
+    },
+    "answers": {
+      "x": 27,
+      "y": 678.1875,
+      "width": 336,
+      "height": 115.8125,
+      "bottom": 794,
+      "right": 363
+    },
+    "questionScroll": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "bodyWidth": 768,
+    "stage": {
+      "x": 24,
+      "y": 0,
+      "width": 720,
+      "height": 409.59375,
+      "bottom": 409.59375,
+      "right": 744
+    },
+    "panel": {
+      "x": 24,
+      "y": 409.59375,
+      "width": 720,
+      "height": 614.40625,
+      "bottom": 1024,
+      "right": 744
+    },
+    "answers": {
+      "x": 58,
+      "y": 853.1875,
+      "width": 652,
+      "height": 115.8125,
+      "bottom": 969,
+      "right": 710
+    },
+    "questionScroll": false
+  },
+  {
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "bodyWidth": 1024,
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 593.921875,
+      "height": 768,
+      "bottom": 768,
+      "right": 593.921875
+    },
+    "panel": {
+      "x": 593.921875,
+      "y": 0,
+      "width": 430.078125,
+      "height": 768,
+      "bottom": 768,
+      "right": 1024
+    },
+    "answers": {
+      "x": 639.921875,
+      "y": 582.46875,
+      "width": 338.078125,
+      "height": 120.53125,
+      "bottom": 703,
+      "right": 978
+    },
+    "questionScroll": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "bodyWidth": 1440,
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 840,
+      "height": 900,
+      "bottom": 900,
+      "right": 840
+    },
+    "panel": {
+      "x": 840,
+      "y": 0,
+      "width": 600,
+      "height": 900,
+      "bottom": 900,
+      "right": 1440
+    },
+    "answers": {
+      "x": 975.8125,
+      "y": 104,
+      "width": 328.375,
+      "height": 267.203125,
+      "bottom": 371.203125,
+      "right": 1304.1875
+    },
+    "questionScroll": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "bodyWidth": 844,
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 422,
+      "height": 390,
+      "bottom": 390,
+      "right": 422
+    },
+    "panel": {
+      "x": 422,
+      "y": 0,
+      "width": 422,
+      "height": 390,
+      "bottom": 390,
+      "right": 844
+    },
+    "answers": {
+      "x": 456,
+      "y": 79,
+      "width": 354,
+      "height": 264.4375,
+      "bottom": 343.4375,
+      "right": 810
+    },
+    "questionScroll": false
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "bodyWidth": 360,
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 360,
+      "height": 256,
+      "bottom": 256,
+      "right": 360
+    },
+    "panel": {
+      "x": 0,
+      "y": 256,
+      "width": 360,
+      "height": 384,
+      "bottom": 640,
+      "right": 360
+    },
+    "answers": {
+      "x": 27,
+      "y": 309,
+      "width": 306,
+      "height": 258.09375,
+      "bottom": 567.09375,
+      "right": 333
+    },
+    "questionScroll": false
+  },
+  {
+    "viewport": {
+      "width": 720,
+      "height": 844
+    },
+    "bodyWidth": 720,
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 720,
+      "height": 337.59375,
+      "bottom": 337.59375,
+      "right": 720
+    },
+    "panel": {
+      "x": 0,
+      "y": 337.59375,
+      "width": 720,
+      "height": 506.40625,
+      "bottom": 844,
+      "right": 720
+    },
+    "answers": {
+      "x": 34,
+      "y": 673.1875,
+      "width": 652,
+      "height": 115.8125,
+      "bottom": 789,
+      "right": 686
+    },
+    "questionScroll": false
+  },
+  {
+    "viewport": {
+      "width": 960,
+      "height": 844
+    },
+    "bodyWidth": 960,
+    "stage": {
+      "x": 0,
+      "y": 0,
+      "width": 556.8125,
+      "height": 844,
+      "bottom": 844,
+      "right": 556.8125
+    },
+    "panel": {
+      "x": 556.8125,
+      "y": 0,
+      "width": 403.1875,
+      "height": 844,
+      "bottom": 844,
+      "right": 960
+    },
+    "answers": {
+      "x": 602.8125,
+      "y": 658.46875,
+      "width": 311.1875,
+      "height": 120.53125,
+      "bottom": 779,
+      "right": 914
+    },
+    "questionScroll": false
+  }
+]

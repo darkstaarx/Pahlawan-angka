@@ -46,7 +46,7 @@
   function candidateSkills(){
     if(!db||typeof GRAPH==='undefined')return[];
     const grade=typeof coreGrade==='function'?coreGrade():db.schoolGrade;
-    return GRAPH.skills.filter(m=>m.grade===grade && (+m.chapter<=safeNum(db.coreFrontier,1)||m.id===db.focus));
+    return GRAPH.skills.filter(m=>m.grade===grade);
   }
   function skillPriority(id,now=Date.now()){
     const s=skillState(id)||{},mem=reviewMemory(id),m=metaFor(id)||{};

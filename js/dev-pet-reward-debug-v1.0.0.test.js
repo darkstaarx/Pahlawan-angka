@@ -18,13 +18,14 @@ test('pet reward debug is read-only and follows the deterministic rescue cycle',
  assert.equal(report.rescueAfter,1);
 });
 
-test('pet reward debug exposes level gates without awarding a rescue',()=>{
+test('pet reward debug selects repeat Aurora while higher pets remain locked',()=>{
  const report=debug.inspect(fresh(),{grade:1,level:1,rotation:4});
- assert.equal(report.petId,'durianKerbau');
- assert.equal(report.gate,25);
- assert.equal(report.eligible,false);
- assert.equal(report.rescueAwarded,false);
- assert.equal(report.rescueAfter,0);
+ assert.equal(report.petId,'aurora');
+ assert.equal(report.gate,1);
+ assert.equal(report.eligible,true);
+ assert.equal(report.rescueAwarded,true);
+ assert.equal(report.rescueAfter,1);
+ assert.equal(report.newlyTamed,false);
 });
 
 test('near-unlock simulation predicts the real tame threshold and Bond XP',()=>{

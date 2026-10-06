@@ -565,8 +565,39 @@ body[data-screen="segelDemo"] .appHeader{display:none}
    kekal sama. */
 @media (min-width:760px){
   #segelDemo.on{background:radial-gradient(circle at 50% 22%,#0e2745,#04101e)}
-  .segelStage,.segelPanel{width:100%;max-width:520px;margin-inline:auto}
+  .segelStage,.segelPanel{width:100%;max-width:720px;margin-inline:auto}
   .segelStage{border-radius:0 0 20px 20px}
+}
+
+/* Tablets in landscape and desktop use the available width for both the
+   battlefield and readable questions. Portrait keeps its familiar stack. */
+@media (min-width:960px) and (orientation:landscape) and (min-height:561px){
+  #segelDemo.on{flex-direction:row}
+  .segelStage{flex:1 1 0;width:auto;max-width:none;max-height:none;min-height:0;margin:0;border-radius:0}
+  .segelPanel{flex:0 0 42%;width:auto;max-width:600px;margin:0;
+    padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(20px + env(safe-area-inset-bottom,0px))}
+  .segelQHead{margin:0 0 14px}
+  .segelCard .question{font-size:clamp(23px,2vw,28px)}
+  .segelCard .ans{min-height:54px;font-size:21px}
+}
+
+/* Leave a readable question slot when long answer choices fill a short screen.
+   The card then owns one scroll instead of clipping the prompt to zero height. */
+@media (max-height:680px){
+  .segelCard{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .segelCard .question{min-height:96px;flex:1 0 auto;overflow-y:visible}
+}
+.segelSound,.segelSpk{min-width:44px;min-height:44px}
+.segelHint{min-height:44px}
+@media(max-width:480px), (orientation:landscape) and (max-height:560px){
+  .segelTop{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px}
+  .segelTop>.iconBtn{grid-column:1;grid-row:1;min-width:44px;min-height:44px}
+  .segelBanner{grid-column:2;grid-row:1;padding:7px 16px}
+  .segelBanner small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .segelSound{grid-column:3;grid-row:1}
+  .segelCount{grid-column:2;grid-row:2;justify-self:start;padding:6px 9px}
+  .segelTop>.paPageLockButton{grid-column:2/4;grid-row:2;justify-self:end;min-height:32px}
+  .segelDevControls{grid-column:1/-1}
 }
 
 /* Telefon melintang: pentas di kiri, soalan di kanan. Tanpa ini pentas 44%

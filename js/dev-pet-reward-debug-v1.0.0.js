@@ -19,7 +19,7 @@
   if(!pets||!data)return {available:false,reason:'PetCollection atau profil belum tersedia.'};
   const grade=integer(options.grade,integer(data.schoolGrade,1,1,6),1,6);
   const level=integer(options.level,pets.playerLevel(data),1,60);
-  const rotation=integer(options.rotation,0,0,999999);
+  const rotation=integer(options.rotation,0,0,200);
   const skillId=skillForGrade(grade);
   if(!skillId)return {available:false,reason:'Knowledge graph untuk Darjah '+grade+' belum tersedia.'};
 
@@ -27,14 +27,15 @@
   const before=copy(data);
   before.level=level;
   pets.ensure(before);
-  before.petRescueRotation[grade]=rotation;
+  for(let i=0;i<rotation;i++)pets.assignGembokRescue(before,{id:'preview-step-'+i,gembok:true},skillId);
   const run={id:'dev-pet-reward-preview',gembok:true,route:'debug',completed:true};
   const assignment=pets.assignGembokRescue(before,run,skillId);
   if(!assignment)return {available:false,reason:'Gembok ini belum boleh dipetakan kepada pet.'};
 
   const petId=assignment.petId,meta=pets.catalog[petId],pet=before.petCollection[petId],stateBefore=pet.state;
   const startingRescues=Number(pet.rescues||0);
-  const nearUnlock=Boolean(options.nearUnlock)&&pet.state!=='tamed'&&level>=meta.levelGate;
+  const eligible=Object.keys(pets.catalog).indexOf(petId)<=pets.rescueAccess(before,grade).tier;
+  const nearUnlock=Boolean(options.nearUnlock)&&pet.state!=='tamed'&&eligible;
   if(nearUnlock)pet.rescues=Math.max(startingRescues,Math.max(0,assignment.threshold-1));
   const rescueBefore=Number(pet.rescues||0);
   const activeId=before.expedition.activePetId,activeBefore=Number(before.petCollection[activeId]?.bondXp||0);
@@ -43,9 +44,9 @@
   const cycle=pets.rescueCycle;
   return {
    available:true,grade,level,rotation,cyclePosition:(rotation%cycle.length)+1,cycleLength:cycle.length,
-   skillId,petId,petName:meta.name,rarity:meta.rarity,gate:meta.levelGate,eligible:level>=meta.levelGate,
+   skillId,petId,petName:meta.name,rarity:meta.rarity,gate:meta.levelGate,eligible,
    graphSkills:pets.graphSkillCount(grade),threshold:assignment.threshold,
-   multiplier:multiplierByRarity[meta.rarity]||100,
+   multiplier:multiplierByRarity[meta.evolutionRarity||meta.rarity]||100,
    currentRescues:startingRescues,rescueBefore,rescueAfter:Number(after.rescues||0),
    stateBefore:nearUnlock?'simulasi-hampir-jinak':stateBefore,stateAfter:after.state,
    nearUnlock,newlyTamed:Boolean(awarded.newlyTamed),rescueAwarded:Boolean(awarded.rescueAwarded),
@@ -73,12 +74,12 @@
   return [
    '<section class="devScenario petRewardDebug">',
     '<div class="petRewardDebugHead"><div><span class="petRewardKicker">SIMULASI SAHAJA · DATA TIDAK DISIMPAN</span><b>Pet Reward Debug</b></div><span class="petRewardBadge">'+esc(report.rarity)+'</span></div>',
-    '<p class="mut devMiniCopy">Ikut logik Gembok sebenar: satu pet dipilih daripada kitaran tetap, kemudian rescue hanya dikreditkan jika gate tahap dipenuhi.</p>',
+    '<p class="mut devMiniCopy">Ikut giliran berwajaran sebenar. Tahap, pet dimiliki, jawapan sendiri dan misi selesai menentukan akses rescue.</p>',
     '<div class="petRewardControls">',
       '<label>Darjah<select data-pet-debug="grade">'+[1,2,3,4,5,6].map(grade=>'<option value="'+grade+'"'+(grade===report.grade?' selected':'')+'>Darjah '+grade+'</option>').join('')+'</select></label>',
       '<label>Tahap pemain<input data-pet-debug="level" type="number" min="1" max="60" value="'+report.level+'"></label>',
     '</div>',
-    '<div class="petRewardPet"><div><small>Gembok seterusnya · Kitaran '+report.cyclePosition+'/'+report.cycleLength+'</small><strong>'+esc(report.petName)+'</strong><span>'+esc(gate)+'</span></div><div class="petRewardStep"><button type="button" data-pet-debug-action="previous" aria-label="Gembok sebelumnya">←</button><button type="button" data-pet-debug-action="next" aria-label="Gembok seterusnya">→</button></div></div>',
+    '<div class="petRewardPet"><div><small>Gembok seterusnya · Giliran '+(report.rotation+1)+'</small><strong>'+esc(report.petName)+'</strong><span>'+esc(gate)+'</span></div><div class="petRewardStep"><button type="button" data-pet-debug-action="previous" aria-label="Gembok sebelumnya">←</button><button type="button" data-pet-debug-action="next" aria-label="Gembok seterusnya">→</button></div></div>',
     '<div class="petRewardProgress"><div><span>Rescue '+report.rescueAfter+' / '+report.threshold+'</span><b>'+report.remaining+' lagi</b></div><i><em style="width:'+progress+'%"></em></i></div>',
     '<div class="petRewardFacts"><span><b>Formula</b>'+esc(formula)+'</span><span><b>Selepas satu Gembok</b>'+esc(forecast)+'</span><span><b>Teman aktif</b>'+esc(bond)+'</span></div>',
     '<div class="petRewardActions"><button type="button" class="btn '+(report.nearUnlock?'devPrimary':'ghost')+' small" data-pet-debug-action="near">'+(report.nearUnlock?'✓ Simulasi hampir jinak':'Simulasi hampir jinak')+'</button><button type="button" class="btn ghost small" data-pet-debug-action="reset">Reset paparan</button></div>',

@@ -4,11 +4,11 @@ This document is the canonical product specification for pet progression. Future
 
 ## Philosophy
 
-Pets are visible companions, not power systems. Every one of the six pets is previewed in Khazanah from the start. A Wira level gate controls whether rescue progress may begin; it never hides a pet.
+Pets are visible companions, not power systems. Every one of the six pets is previewed in Khazanah from the start. Wira level establishes normal rescue access; completed effort or strong independent answers may earn early access. Owned pets, including Aurora, can be rescued again.
 
 ## 1. Wira-level eligibility
 
-The player level (`db.level`) gates rescue eligibility only:
+The player level (`db.level`) establishes normal rescue eligibility:
 
 | Pet | Rarity | Required Wira level |
 | --- | --- | ---: |
@@ -19,11 +19,15 @@ The player level (`db.level`) gates rescue eligibility only:
 | Arnab Kek Lapis | Epic | 18 |
 | Kerbau Durian | Legendary | 25 |
 
-A run may be assigned to an ineligible pet as a sneak preview, but it records no rescue progress and cannot tame that pet. Khazanah must state the gate rather than showing a misleading rescue counter.
+Early access advances at most one tier after 10 first questions with at least 85% answered correctly without hints or retries, or 8 completed missions. It advances at most two tiers after 20 first questions with at least 95% independent correct, or 20 completed missions. Accuracy aggregates the newest eight completed Gembok records with measured first-attempt fields; historical records contribute to effort only. Hints and retries never count as independent correct, and repeated attempts never add samples. Speed is not an eligibility condition.
+
+Earned access is saved by grade and retained. It does not raise Wira level, alter learning evidence, or instantly tame a pet. A mission reserves its chosen pet and eligibility before answers begin; abandoned missions give no rescue progress and do not count as completed effort.
 
 ## 2. Curriculum rescue and taming
 
-Curriculum-ratio rescues are the only way to tame a pet. A real completed 10-seal Gembok run credits only its pre-assigned pet, subject to that pet's Wira-level gate. Rescue thresholds remain `ceil(unique curriculum skills in the selected grade × rarity multiplier)`: Common 70%, Uncommon 100%, Rare 140%, Epic 180%, Legendary 240%. The stable configured rotation implements the 5:3:2:1:1 Common:Uncommon:Rare:Epic:Legendary ratio.
+Curriculum-ratio rescues are the only way to tame a pet. A real completed 10-seal Gembok run credits only its pre-assigned eligible pet. Rescue thresholds remain `ceil(unique curriculum skills in the selected grade × rarity multiplier)`: Common 70%, Uncommon 100%, Rare 140%, Epic 180%, Legendary 240%. Aurora uses the Common rescue multiplier while retaining Starter rarity and existing ownership.
+
+Selection uses persistent smooth weighted round robin, with base weights Aurora 2, Kura 8, Kumbang 5, Harimau 3, Arnab 2, Kerbau 1. Once normal access or ownership reaches Kumbang, Aurora/Kura weights are multiplied by 0.28. Pets one tier early receive half their base weight; two tiers early receive one quarter. Every eligible pet remains in rotation, including owned pets. A saved schedule produces the same next selection after reload; repeated assignment of the same live mission retains its reserved pet. Completion never duplicates ownership or awards Bond XP twice.
 
 There is no gacha, random tame, coin purchase, boss route, battle route, or legacy tame route.
 

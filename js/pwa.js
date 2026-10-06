@@ -65,7 +65,7 @@
   const gamesJs='js/cikgu-mini-games-v1.0.0.js?v=3.56.4';
   const devGamesJs='js/dev-coach-games-v1.0.0.js?v=3.56.4';
   const dailyCss=`css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css?v=${DAILY_REVIEW_VERSION}`;
-  const dailyJs=`js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js?v=${DAILY_REVIEW_VERSION}`;
+  const dailyJs=`js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js?v=${APP_VERSION}`;
   const devCss=`css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css?v=${DEV_EXPERIMENTS_VERSION}`;
   const devJs=`js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js?v=${DEV_EXPERIMENTS_VERSION}`;
   const combatCss=`css/combat-polish-v${COMBAT_POLISH_VERSION}.css?v=${COMBAT_POLISH_VERSION}`;
