@@ -53,7 +53,7 @@
 /* Attack sprite must be visible after the eye cut-in; the legacy rule hid it. */
   #segelStage.finisher-dash .segelFinisherAttack.segelFinisherAttack{display:block!important;opacity:1!important;visibility:visible!important;z-index:31!important}
   #segelStage.finisher-math .segelMathBurst{z-index:32}
-#segelStage.finisher-impact .segelFinisherImpact{display:block!important;opacity:1!important;visibility:visible!important;z-index:33!important}
+#segelStage.finisher-impact .segelFinisherImpact{visibility:visible!important;z-index:33!important}
 /* The 11-frame glacier is advanced by the live render loop. CSS must not
    animate or swap it independently, otherwise the last frame can overlap the
    victory panel or jump to the wrong row. */
@@ -75,3 +75,7 @@
 #segelStage.finisher-charge .segelChargeHero{z-index:12!important}
 #segelStage.finisher-charge canvas,
 #segelStage.finisher-charge .segelShellHud{filter:brightness(0)!important}
+
+
+/* JS owns the glacier timeline and fracture fade. */
+#segelStage .segelGlacierShard{position:absolute;z-index:33;pointer-events:none;background-repeat:no-repeat;transform-origin:50% 70%;filter:drop-shadow(0 0 5px rgba(173,235,255,.6));will-change:transform,opacity}
