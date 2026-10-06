@@ -13,7 +13,7 @@
  const dialog=document.createElement('dialog');
  dialog.className='paExitDialog';
  dialog.setAttribute('aria-labelledby','paExitTitle');
- dialog.innerHTML='<h2 id="paExitTitle">Aplikasi dikunci</h2><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci dan keluar. Semua halaman aplikasi dilindungi.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><label class="paExitPinLabel" data-confirm-label>Sahkan PIN ibu bapa<input data-confirm-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Sambung guna aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form><p class="paExitNote">Butang Home telefon memerlukan Screen Pinning (Android) atau Guided Access (iPhone). Pelayar mungkin memaparkan pengesahan sendiri apabila tab ditutup.</p>';
+ dialog.innerHTML='<h2 id="paExitTitle">Aplikasi dikunci</h2><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><label class="paExitPinLabel" data-confirm-label>Sahkan PIN ibu bapa<input data-confirm-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Sambung guna aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form><details class="paExitInfo"><summary aria-label="Maklumat kunci aplikasi">ⓘ Info</summary><p class="paExitNote">Kunci melindungi semua halaman. Demo tanpa profil menyimpan PIN pada pelayar ini.</p><p class="paExitNote">Untuk kunci butang Home, guna Screen Pinning (Android) atau Guided Access (iPhone). Tutup tab masih dikawal pelayar.</p></details>';
  document.body.append(dialog);
  const confirmLabel=dialog.querySelector('[data-confirm-label]');
  const input=dialog.querySelector('[data-exit-pin]');
@@ -40,6 +40,7 @@
   if(dialog.open)return;
   pendingExit=onExit;previousFocus=document.activeElement;
   input.value='';confirmInput.value='';error.textContent='';
+  dialog.querySelector('.paExitInfo').open=false;
   const configured=!!guardianPin();
   setupMode=!configured;
   input.disabled=false;
@@ -50,8 +51,8 @@
   dialog.querySelector('#paExitTitle').textContent=configured?'Aplikasi dikunci':'Cipta PIN ibu bapa';
   dialog.querySelector('[data-stay]').textContent=configured?'Sambung guna aplikasi':'Batal';
   dialog.querySelector('[data-exit-message]').textContent=configured
-   ?'Masukkan PIN ibu bapa untuk buka kunci dan keluar. Semua halaman aplikasi dilindungi.'
-   :'Cipta PIN 4 digit dan masukkan sekali lagi untuk mengaktifkan kunci. Untuk demo tanpa profil, PIN disimpan pada pelayar peranti ini.';
+   ?'Masukkan PIN ibu bapa untuk buka kunci.'
+   :'Cipta dan sahkan PIN 4 digit.';
   dialog.showModal();
  }
  function unlock(event){
