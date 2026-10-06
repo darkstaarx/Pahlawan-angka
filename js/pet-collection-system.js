@@ -3,11 +3,11 @@
  'use strict';
  const catalog={
   aurora:{name:'Aurora',species:'Musang Ekor Angka',rarity:'Starter',folder:null,levelGate:1,evolutionRarity:'Common'},
-  ketupatKura:{name:'Kura-Kura Ketupat',rarity:'Common',folder:'ketupat-kura',levelGate:3},
-  kumbangManggis:{name:'Kumbang Manggis',rarity:'Uncommon',folder:'kumbang-manggis',levelGate:7},
-  harimauBunga:{name:'Harimau Bunga',rarity:'Rare',folder:'harimau-bunga',levelGate:12},
-  arnabKekLapis:{name:'Arnab Kek Lapis',rarity:'Epic',folder:'arnab-kek-lapis',levelGate:18},
-  durianKerbau:{name:'Kerbau Durian',rarity:'Legendary',folder:'durian-kerbau',levelGate:25}
+  ketupatKura:{name:'Kukupat',species:'Kura-Kura Ketupat',rarity:'Common',folder:'ketupat-kura',levelGate:3},
+  kumbangManggis:{name:'Kumbis',species:'Kumbang Manggis',rarity:'Uncommon',folder:'kumbang-manggis',levelGate:7},
+  harimauBunga:{name:'Riya',species:'Harimau Bunga',rarity:'Rare',folder:'harimau-bunga',levelGate:12},
+  arnabKekLapis:{name:'Bunnis',species:'Arnab Kek Lapis',rarity:'Epic',folder:'arnab-kek-lapis',levelGate:18},
+  durianKerbau:{name:'Keryan',species:'Kerbau Durian',rarity:'Legendary',folder:'durian-kerbau',levelGate:25}
  };
  /* Legacy cycle retained for saved clients; new missions use weighted rotation. */
  const rescueCycle=['ketupatKura','kumbangManggis','harimauBunga','arnabKekLapis','durianKerbau','ketupatKura','ketupatKura','ketupatKura','ketupatKura','kumbangManggis','kumbangManggis','harimauBunga'];
@@ -171,3 +171,4 @@
   const api={ensure,snapshot,active,equip,rename,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueAccess,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:(id,petLevel)=>stage(id,petLevel),evolutionMilestones,milestonesFor,playerLevel};
  root.PetCollection=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
+

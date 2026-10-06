@@ -32,7 +32,7 @@
     badges:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v6a5 5 0 0 1-10 0z"/><path d="M9 20h6M12 14v6"/></svg>',
     lock:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
   };
-  const PET_NAMES={aurora:'Aurora',ketupatKura:'Kura-Kura Ketupat',kumbangManggis:'Kumbang Manggis',harimauBunga:'Harimau Bunga',arnabKekLapis:'Arnab Kek Lapis',durianKerbau:'Kerbau Durian'};
+  const PET_NAMES={aurora:'Aurora',ketupatKura:'Kukupat',kumbangManggis:'Kumbis',harimauBunga:'Riya',arnabKekLapis:'Bunnis',durianKerbau:'Keryan'};
 
   /* ---------------- rangka skrin ---------------- */
   function buildShell(){
@@ -111,7 +111,7 @@
     const rename=tamed?`<button class="kzBtn" type="button" onclick="renameCollectionPet('${pet.id}')">Tukar nama</button>`:'';
     return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
       <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?esc(name):'Belum ditemui'}"></div>
-      ${tamed?`<div class="kzName">${esc(name)}</div>`:''}
+      ${tamed?`<div class="kzName">${esc(name)}</div><div class="kzPetMeta"><small>${esc(pet.species||'')}</small></div>`:''}
       <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${tamed?`<div class="kzFoot">${action}${rename}</div>`:''}
     </article>`;
   }
@@ -285,3 +285,4 @@
 
   window.PAKhazanah={rarityOf, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
 })();
+
