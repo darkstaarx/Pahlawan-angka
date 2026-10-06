@@ -9,7 +9,7 @@ const fixture=`function pageLockParentPin(){return '4826'};let entryMode={guestD
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
  try{
-  const page=await browser.newPage({viewport:{width:390,height:844}});
+  const page=await browser.newPage({viewport:{width:390,height:844},hasTouch:true});
   const root='https://page-lock.test';
   await page.route(root+'/**',route=>route.fulfill({contentType:'text/html',body:route.request().url().endsWith('/outside')?'<h1>Outside</h1>':`<style>${css}</style><body data-screen="login"><header class="appHeader"></header><div class="mv2HeadRight"></div><div class="segelTop"></div><input id="answer"><button id="demoBack" onclick="closeSegelDemo()">Kembali</button><script>${fixture}</script><script>${script}</script></body>`}));
   await page.goto(root+'/outside');await page.goto(root+'/app');
@@ -46,6 +46,26 @@ const fixture=`function pageLockParentPin(){return '4826'};let entryMode={guestD
   assert.equal(await page.evaluate(()=>!!window.stagePaused&&!!window.guestRestored),true);
   assert.equal(await page.evaluate(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented;}),false);
   await page.evaluate(()=>history.back());await page.waitForURL(root+'/outside');
+  const guestPage=await browser.newPage({viewport:{width:390,height:844},hasTouch:true});
+  const app=fs.readFileSync('js/app.js','utf8');
+  const pinFunctions=app.split('\n').filter(line=>line.startsWith('function pageLockParentPin()')||line.startsWith('function createPageLockParentPin(')).join('\n');
+  await guestPage.route(root+'/**',route=>route.fulfill({contentType:'text/html',body:`<style>${css}</style><body data-screen="segelDemo"><div class="segelTop"></div><script>let db=null;${pinFunctions}</script><script>${script}</script></body>`}));
+  await guestPage.goto(root+'/guest');
+  await guestPage.locator('[data-page-lock]').tap();
+  assert.equal(await guestPage.locator('[data-exit-pin]').isEnabled(),true);
+  assert.equal(await guestPage.locator('[data-unlock]').isEnabled(),true);
+  await guestPage.locator('[data-exit-pin]').fill('7391');
+  await guestPage.locator('[data-confirm-pin]').fill('1234');await guestPage.locator('[data-unlock]').tap();
+  assert.equal(await guestPage.evaluate(()=>PAPageLock.isLocked()),false);
+  await guestPage.locator('[data-confirm-pin]').fill('7391');await guestPage.locator('[data-unlock]').tap();
+  assert.equal(await guestPage.evaluate(()=>PAPageLock.isLocked()),true);
+  await guestPage.locator('[data-page-lock]').tap();
+  assert.equal(await guestPage.locator('[data-confirm-pin]').isVisible(),false);
+  await guestPage.locator('[data-exit-pin]').fill('0000');await guestPage.locator('[data-unlock]').tap();
+  assert.equal(await guestPage.evaluate(()=>PAPageLock.isLocked()),true);
+  await guestPage.locator('[data-exit-pin]').fill('7391');await guestPage.locator('[data-unlock]').tap();
+  assert.equal(await guestPage.evaluate(()=>PAPageLock.isLocked()),false);
+  console.log('PASS: touch first-time PIN setup, mismatch rejection, activation and verified unlock');
   console.log('PASS: all pages, wrong/right guardian PIN, internal and browser Back, Escape, unlock/relock, preserved state, deliberate exit (390px)');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -53,6 +53,7 @@ function start(){
   window.openSegelDemo({guestDemo:true});
 }
 
-window.PADemo={mount,open,close,selectGrade,start,restoreGuest,parentPin:()=>st.db?.parentPin||null};
+function setParentPin(pin){if(!st.active||!st.db||st.db.parentPin)return false;const next={...st.db,parentPin:pin};localStorage.setItem('pa_coach_v6_full',JSON.stringify(next));st.db.parentPin=pin;return true}
+window.PADemo={mount,open,close,selectGrade,start,restoreGuest,parentPin:()=>st.db?.parentPin||null,setParentPin};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

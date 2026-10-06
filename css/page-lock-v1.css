@@ -14,3 +14,6 @@
 .paExitDialog #paExitError{min-height:22px;color:#ffc6bb;font-size:14px;margin:8px 0}
 .loginShell>.paPageLockButton{justify-self:center;margin:8px 0}
 .topNav>.paPageLockButton,.parentTop>.paPageLockButton{margin-left:auto}
+
+.paExitPinLabel[hidden]{display:none}
+.paExitPinLabel+.paExitPinLabel{margin-top:14px}

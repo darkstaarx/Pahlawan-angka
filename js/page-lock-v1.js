@@ -3,7 +3,7 @@
  'use strict';
  if(window.PAPageLock)return;
  const key='paPageLock';
- let enabled=true, installed=false, restoring=false, previousFocus=null, pendingExit=null;
+ let enabled=true, installed=false, restoring=false, previousFocus=null, pendingExit=null, setupMode=false;
  const guardianPin=()=>{
   const pin=String(window.pageLockParentPin?.()||'');
   return /^\d{4}$/.test(pin)?pin:null;
@@ -13,9 +13,11 @@
  const dialog=document.createElement('dialog');
  dialog.className='paExitDialog';
  dialog.setAttribute('aria-labelledby','paExitTitle');
- dialog.innerHTML='<h2 id="paExitTitle">Aplikasi dikunci</h2><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci dan keluar. Semua halaman aplikasi dilindungi.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Sambung guna aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form><p class="paExitNote">Butang Home telefon memerlukan Screen Pinning (Android) atau Guided Access (iPhone). Pelayar mungkin memaparkan pengesahan sendiri apabila tab ditutup.</p>';
+ dialog.innerHTML='<h2 id="paExitTitle">Aplikasi dikunci</h2><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci dan keluar. Semua halaman aplikasi dilindungi.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><label class="paExitPinLabel" data-confirm-label>Sahkan PIN ibu bapa<input data-confirm-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Sambung guna aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form><p class="paExitNote">Butang Home telefon memerlukan Screen Pinning (Android) atau Guided Access (iPhone). Pelayar mungkin memaparkan pengesahan sendiri apabila tab ditutup.</p>';
  document.body.append(dialog);
+ const confirmLabel=dialog.querySelector('[data-confirm-label]');
  const input=dialog.querySelector('[data-exit-pin]');
+ const confirmInput=dialog.querySelector('[data-confirm-pin]');
  const error=dialog.querySelector('#paExitError');
  function render(){
   document.querySelectorAll('[data-page-lock]').forEach(button=>{
@@ -33,25 +35,39 @@
    installed=true;
   }catch(error){console.warn('Kunci Back tidak tersedia.',error);}
  }
- function close(){pendingExit=null;input.value='';error.textContent='';dialog.close();previousFocus?.focus();}
+ function close(){pendingExit=null;input.value='';confirmInput.value='';error.textContent='';dialog.close();previousFocus?.focus();}
  function prompt(onExit=null){
   if(dialog.open)return;
   pendingExit=onExit;previousFocus=document.activeElement;
-  input.value='';error.textContent='';
+  input.value='';confirmInput.value='';error.textContent='';
   const configured=!!guardianPin();
-  input.disabled=!configured;
-  dialog.querySelector('[data-unlock]').disabled=!configured;
+  setupMode=!configured;
+  input.disabled=false;
+  confirmLabel.hidden=configured;
+  confirmInput.disabled=configured;
+  dialog.querySelector('[data-unlock]').disabled=false;
+  dialog.querySelector('[data-unlock]').textContent=configured?'Sahkan PIN · Buka kunci':'Simpan PIN · Aktifkan kunci';
+  dialog.querySelector('#paExitTitle').textContent=configured?'Aplikasi dikunci':'Cipta PIN ibu bapa';
+  dialog.querySelector('[data-stay]').textContent=configured?'Sambung guna aplikasi':'Batal';
   dialog.querySelector('[data-exit-message]').textContent=configured
    ?'Masukkan PIN ibu bapa untuk buka kunci dan keluar. Semua halaman aplikasi dilindungi.'
-   :'Kunci belum aktif. Cipta PIN melalui bahagian Ibu Bapa pada profil dahulu. Demo menggunakan PIN profil asal jika tersedia.';
+   :'Cipta PIN 4 digit dan masukkan sekali lagi untuk mengaktifkan kunci. Untuk demo tanpa profil, PIN disimpan pada pelayar peranti ini.';
   dialog.showModal();
  }
  function unlock(event){
   event.preventDefault();
   const expected=guardianPin();
-  if(!expected){error.textContent='PIN ibu bapa belum ditetapkan.';return;}
   const pin=input.value.trim();
   if(!/^\d{4}$/.test(pin)){error.textContent='Masukkan 4 digit PIN ibu bapa.';input.focus();return;}
+  if(setupMode){
+   if(expected){error.textContent='PIN sudah tersedia. Tutup dan buka semula untuk pengesahan.';return;}
+   if(pin!==confirmInput.value.trim()){error.textContent='PIN pengesahan tidak sepadan.';confirmInput.focus();return;}
+   try{
+    if(!window.createPageLockParentPin?.(pin)){error.textContent='PIN belum dapat disimpan. Cuba semula.';return;}
+   }catch(_){error.textContent='PIN tidak dapat disimpan. Benarkan storan pelayar dan cuba semula.';return;}
+   enabled=true;close();sync();return;
+  }
+  if(!expected){error.textContent='PIN ibu bapa belum ditetapkan. Tutup dan buka semula untuk mencipta PIN.';return;}
   if(pin!==expected){error.textContent='PIN tidak tepat. Cuba semula.';input.value='';input.focus();return;}
   const onExit=pendingExit;
   enabled=false;close();sync();

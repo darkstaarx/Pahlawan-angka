@@ -267,7 +267,9 @@ function applyEnemyVariant(forceReset=false){
 function nextEnemy(){ sess.enemy=(sess.enemy||1)+1;applyEnemyVariant(true); }
 function goLogin(){ screen('login'); refreshLoginResume(); if(typeof updateSoundButtons==='function')updateSoundButtons(); }
 // Read the guardian's existing PIN even while the guest demo owns temporary db state.
-function pageLockParentPin(){return db?.parentPin||window.PADemo?.parentPin?.()||null}
+function pageLockParentPin(){const pin=db?.parentPin||window.PADemo?.parentPin?.();if(pin)return pin;try{return localStorage.getItem('pa_guardian_pin_v1')||null}catch(_){return null}}
+// First-time setup only. Existing PINs must use the parent recovery flow to change.
+function createPageLockParentPin(pin){if(!/^\d{4}$/.test(pin)||pageLockParentPin())return false;if(db?.demoMode&&window.PADemo?.setParentPin?.(pin))return true;if(db&&!db.demoMode){db.parentPin=pin;save();return true}localStorage.setItem('pa_guardian_pin_v1',pin);return true}
 function goSetup(){ if(db){ const child=document.getElementById('child'), grade=document.getElementById('gradeSelect'); if(child) child.value=db.name||''; if(grade) grade.value=String(db.schoolGrade||2); selectedHero=db.hero||selectedHero||'wira'; chooseAvatar(db.avatar_id||PA_DEFAULT_AVATAR); } setupAvatarPicker(); screen('setup') }
 function goSetupAsGuest(){ if(typeof playSfx==='function')playSfx('ui'); screen('setup') }
 function setLoginError(msg=''){ const e=document.getElementById('loginError'); if(e){e.textContent=msg;e.classList.toggle('show',!!msg)} }
@@ -304,7 +306,7 @@ function openParentPin(){
   if(!db){setLoginError('Belum ada profil murid. Cipta profil murid dahulu.');return;}
   const input=document.getElementById('parentPinInput'),err=document.getElementById('parentPinError');
   if(input)input.value='';if(err){err.textContent='';err.classList.remove('show')}hideParentPinRecovery();
-  const title=document.querySelector('#parentPin .parentPinCard h2'),button=document.querySelector('#parentPin .parentPinCard .btn'),creating=!db.parentPin;
+  const title=document.querySelector('#parentPin .parentPinCard h2'),button=document.querySelector('#parentPin .parentPinCard .btn'),creating=!pageLockParentPin();
   if(title)title.textContent=creating?'Cipta PIN Ibu Bapa':'PIN Ibu Bapa';if(button)button.textContent=creating?'Simpan PIN':'Buka Parent Mode';
   screen('parentPin');setTimeout(()=>input&&input.focus(),80);
 }
@@ -327,7 +329,9 @@ function verifyParentPin(){
   const input=document.getElementById('parentPinInput'),err=document.getElementById('parentPinError');
   const pin=(input?.value||'').trim();
   if(!/^\d{4}$/.test(pin)){if(err){err.textContent='Masukkan 4 digit PIN.';err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong');return;}
-  if(!db.parentPin){db.parentPin=pin;save();}else if(pin!==db.parentPin){if(err){err.textContent='PIN tidak tepat.';err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong');return;}
+  const expected=pageLockParentPin();
+  if(expected&&pin!==expected){if(err){err.textContent='PIN tidak tepat.';err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong');return;}
+  if(!db.parentPin){db.parentPin=pin;save();}
   uiSession={role:'parent',email:'parent@demo.com',ts:Date.now(),pinVerified:true};localStorage.setItem('pa_dummy_login',JSON.stringify(uiSession));
   if(typeof playSfx==='function')playSfx('ui');renderParent();screen('parent');
 }
