@@ -3,7 +3,7 @@
  'use strict';
  if(window.PAPageLock)return;
  const key='paPageLock';
- let enabled=true, installed=false, restoring=false, previousFocus=null;
+ let enabled=true, installed=false, restoring=false, previousFocus=null, pendingExit=null;
  const active=()=>enabled&&document.body.dataset.screen!=='login';
  const dialog=document.createElement('dialog');
  dialog.className='paExitDialog';
@@ -27,13 +27,18 @@
    installed=true;
   }catch(error){console.warn('Kunci Back tidak tersedia.',error);}
  }
- function close(){dialog.close();previousFocus?.focus();}
- function prompt(){
+ function close(){pendingExit=null;dialog.close();previousFocus?.focus();}
+ function prompt(onExit=null){
   if(dialog.open)return;
+  pendingExit=onExit;
   previousFocus=document.activeElement;
   dialog.showModal();
  }
- function unlock(){enabled=false;close();render();}
+ function unlock(){
+  const onExit=pendingExit;
+  enabled=false;close();sync();
+  if(onExit)onExit();
+ }
  dialog.querySelector('[data-stay]').addEventListener('click',close);
  dialog.querySelector('[data-unlock]').addEventListener('click',unlock);
  dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
@@ -65,8 +70,14 @@
   render();arm();
   if(document.body.dataset.screen==='login'&&dialog.open)close();
  }
- dialog.querySelector('[data-unlock]').addEventListener('click',sync);
  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
- window.PAPageLock={isLocked:active};
+ window.PAPageLock={
+  isLocked:active,
+  requestExit(onExit){
+   if(!active())return true;
+   prompt(onExit);
+   return false;
+  }
+ };
  sync();
 })();
