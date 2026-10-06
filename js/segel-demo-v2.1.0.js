@@ -250,7 +250,23 @@
       const layer=finisherImpact.cloneNode(false);layer.dataset.glacierSide=String(side);
       layer.style.display='none';host.appendChild(layer);return layer;
     })]:[];
-    const hideGlaciers=()=>glacierLayers.forEach(layer=>{layer.style.opacity='0';layer.style.display='none'});
+    // Each glacier fractures into six pieces as soon as its sheet finishes.
+    const GLACIER_FADE=.20, GLACIER_END=1.08+GLACIER_FADE;
+    const glacierShards=glacierLayers.map(()=>Array.from({length:6},(_,i)=>{
+      const shard=document.createElement('div');shard.className='segelGlacierShard';
+      shard.setAttribute('aria-hidden','true');
+      const x=Math.floor(i/2)*100/3, end=x+100/3;
+      shard.style.clipPath=i%2
+        ? `polygon(${x}% 0, ${end}% 100%, ${x}% 100%)`
+        : `polygon(${x}% 0, ${end}% 0, ${end}% 100%)`;
+      shard.style.backgroundImage=`url("${FRAMES.glacierSheet}")`;
+      shard.style.backgroundSize='400% 300%';shard.style.backgroundPosition='66.666666% 100%';
+      shard.style.display='none';host.appendChild(shard);return shard;
+    }));
+    const hideGlaciers=()=>[...glacierLayers,...glacierShards.flat()].forEach(layer=>{
+      layer.style.opacity='0';layer.style.display='none';
+    });
+    let glacierThunderCount=0;
     const finisherChargeHero=host.querySelector('.segelChargeHero');
     const finisherChargeAura=host.querySelector('.segelChargeAura');
     const finisherFocusPortrait=host.querySelector('.finalEyePortrait');
@@ -293,14 +309,17 @@
       const pixels=host.clientHeight/viewH;
       const x=host.clientWidth/2+(target.x-camera.position.x)*pixels;
       const ground=host.clientHeight/2-(target.y-camera.position.y)*pixels;
-      glacierLayers.forEach(layer=>{
+      glacierLayers.forEach((layer,index)=>{
         const side=Number(layer.dataset.glacierSide)||0;
-        const height=target.height*1.22*pixels*(side ? .76 : 1);
+        const height=target.height*1.22*pixels*(side===-1 ? .76*1.10 : side===1 ? .76*1.03 : 1);
         const width=height*(1171/4)/(1343/3);
         const offset=side*target.height*.27*pixels;
         const anchor=[.981,.983,.994,.994,.993,.996,.996,.964,.964,.969,.971][Number(layer.dataset.glacierFrame)||0];
         layer.style.left=(x+offset-width*.5)+'px';layer.style.top=(ground-height*anchor)+'px';
         layer.style.width=width+'px';layer.style.height=height+'px';
+        glacierShards[index].forEach(shard=>{
+          for(const key of ['left','top','width','height'])shard.style[key]=layer.style[key];
+        });
       });
     }
     function ensureFinisherVideo(){
@@ -1384,33 +1403,36 @@
       });
 
       if(S.iceT>=0){
-        S.iceT+=dt; 
-        // Keep the 11-frame glacier readable in the live battlefield. The
-        // previous 460ms burst was too brief; it looked like only the math
-        // glyph layer fired while the glacier frames were skipped visually.
-        const k=S.iceT/1.70;
-        if(k>=1){
+        S.iceT+=dt;
+        if(S.iceT>=GLACIER_END){
           S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
-          hideGlaciers();
-          finalImpactActive=false;
-        }
-        else{
-          // Play all 11 frames at a readable pace, then give the last burst a
-          // short hold/fade so it lands before the victory layer takes over.
-          if(finalImpactActive&&finisherImpact){
-            glacierLayers.forEach(layer=>{
-              const side=Number(layer.dataset.glacierSide)||0;
-              const elapsed=S.iceT-(side ? .12 : 0);
-              const duration=side ? .78 : 1.08;
-              const f=Math.min(10,Math.floor(Math.max(0,elapsed)/duration*11));
-              layer.dataset.glacierFrame=String(f);
-              layer.style.backgroundPosition=`${f%4*33.333333}% ${Math.floor(f/4)*50}%`;
-              const fade=side ? 1-Math.max(0,elapsed)/1.30 : 1-k;
-              layer.style.opacity=String(Math.min(1,Math.max(0,fade*2.3)));
-              layer.style.display=elapsed>=0?'block':'none';
-            });
-            placeFinalImpact();
+          hideGlaciers(); finalImpactActive=false;
+        }else if(finalImpactActive&&finisherImpact){
+          // Thunder follows the three impacts; no detached audio timers.
+          while(glacierThunderCount<3&&S.iceT>=glacierThunderCount*.12){
+            sfx('glacierThunder');glacierThunderCount++;
           }
+          glacierLayers.forEach((layer,index)=>{
+            const side=Number(layer.dataset.glacierSide)||0;
+            const elapsed=S.iceT-(side===-1 ? .12 : side===1 ? .24 : 0);
+            const duration=side ? .78 : 1.08;
+            const f=Math.min(10,Math.floor(Math.max(0,elapsed)/duration*11));
+            layer.dataset.glacierFrame=String(f);
+            layer.style.backgroundPosition=`${f%4*33.333333}% ${Math.floor(f/4)*50}%`;
+            layer.style.opacity='1';
+            layer.style.display=elapsed>=0&&elapsed<duration?'block':'none';
+            const fracture=(elapsed-duration)/GLACIER_FADE;
+            glacierShards[index].forEach((shard,i)=>{
+              shard.style.display=fracture>=0&&fracture<1?'block':'none';
+              if(fracture<0||fracture>=1)return;
+              const direction=Math.floor(i/2)-1;
+              const dx=(direction*.22+(i%2 ? -.04 : .04))*fracture*parseFloat(layer.style.width);
+              const dy=(-.10+fracture*.22)*fracture*parseFloat(layer.style.height);
+              shard.style.transform=`translate(${dx}px,${dy}px) rotate(${(i%2 ? -1 : 1)*fracture*18}deg)`;
+              shard.style.opacity=String(1-fracture);
+            });
+          });
+          placeFinalImpact();
         }
       }
 
@@ -1506,7 +1528,7 @@
           sfx('swordSlash');
           S.heroLock=heroSlashE; S.heroX=-0.30; await wait(140);
           if(lifecycle!==S.lifecycle)return;
-          sfx('glacierThunder'); clearNormalIceFx();
+          sfx('glacierThunder'); glacierThunderCount=1; clearNormalIceFx();
           finalImpactActive=true; finalImpactPending=true;
           finalImpactTarget={x:SEAL_X,y:GROUND,z:seals[S.active].front.position.z,height:tier.visible};
           placeFinalImpact();
@@ -1518,10 +1540,8 @@
           // The 11 authored glacier frames start exactly when the sword lands.
           iceHit(SEAL_X,GROUND+.78);
           S.waveT=0; S.shake=.32;
-          // Return while the glacier is still visible. `respond()` then
-          // breaks the seal at the contact beat, and waits for the remaining
-          // burst before it can enter the victory layer.
-          await wait(260);
+          // Do not let respond() shatter the seal until the glacier finishes.
+          while(finalImpactActive&&lifecycle===S.lifecycle)await wait(16);
           if(lifecycle!==S.lifecycle)return;
           return;
         }
@@ -1563,7 +1583,6 @@
       },
       async waitFinalImpact(){
         if(!finalImpactPending)return;
-        await wait(1450);
         finalImpactPending=false; finalImpactActive=false;
         hideGlaciers();
         clearNormalIceFx();
@@ -2545,4 +2564,5 @@
     state:()=>run
   };
 })();
+
 
