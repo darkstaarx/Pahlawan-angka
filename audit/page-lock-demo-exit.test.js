@@ -37,23 +37,19 @@ const start=segel.indexOf('window.closeSegelDemo=function(){');
 const end=segel.indexOf('\n  window.restartSegelDemo=',start);
 assert.ok(start>=0&&end>start,'real Segel close function located');
 vm.runInContext(segel.slice(start,end),context);
+// Internal demo Back leaves battle without unlocking the app.
 context.closeSegelDemo();
-assert.equal(dialog.open,true);
-assert.deepEqual(calls,{paused:0,restored:0,login:0,hub:0});
-assert.equal(context.run.question,'preserved');
-dialog.querySelector('[data-stay]').emit('click');
-assert.equal(dialog.open,false);assert.equal(context.PAPageLock.isLocked(),true);
-context.closeSegelDemo();context.closeSegelDemo();
-assert.equal(dialog.open,true);assert.equal(calls.login,0);
-dialog.emit('cancel',{preventDefault(){}});
-assert.equal(dialog.open,false);assert.equal(context.run.question,'preserved');
+assert.equal(dialog.open,false);
+assert.deepEqual(calls,{paused:1,restored:1,login:1,hub:0});
+assert.equal(context.run,null);assert.equal(context.entryMode,null);
+assert.equal(context.db.parentPin,'4826');
+assert.equal(context.PAPageLock.isLocked(),true);
 const count=history.length;
 for(let i=0;i<3;i++){
  listeners.popstate({state:{paPageLock:'base'}});
  assert.equal(dialog.open,true);assert.equal(history.length,count);
  dialog.querySelector('[data-stay]').emit('click');
 }
-// Every page, including login and parent pages, remains protected.
 for(const screen of ['login','menuV2','missions','treasure','parent','setup','learning','result','segelDemo']){
  body.dataset.screen=screen;
  assert.equal(context.PAPageLock.isLocked(),true,screen);
@@ -61,24 +57,17 @@ for(const screen of ['login','menuV2','missions','treasure','parent','setup','le
  dialog.querySelector('[data-exit-pin]').value='0000';
  dialog.querySelector('[data-pin-form]').emit('submit',{preventDefault(){}});
  assert.equal(dialog.open,true);assert.equal(calls.hub,0);
- assert.equal(context.PAPageLock.isLocked(),true);
  dialog.querySelector('[data-stay]').emit('click');
 }
-body.dataset.screen='segelDemo';
-context.closeSegelDemo();
+context.PAPageLock.requestExit(()=>calls.hub++);
 const pinInput=dialog.querySelector('[data-exit-pin]');
 for(const pin of ['', '12', '0000']){
- pinInput.value=pin;
- dialog.querySelector('[data-pin-form]').emit('submit',{preventDefault(){}});
- assert.equal(context.PAPageLock.isLocked(),true);
- assert.equal(calls.login,0);assert.equal(context.run.question,'preserved');
+ pinInput.value=pin;dialog.querySelector('[data-pin-form]').emit('submit',{preventDefault(){}});
+ assert.equal(context.PAPageLock.isLocked(),true);assert.equal(calls.hub,0);
 }
 pinInput.value='4826';dialog.querySelector('[data-pin-form]').emit('submit',{preventDefault(){}});
-assert.deepEqual(calls,{paused:1,restored:1,login:1,hub:0});
-assert.equal(context.run,null);assert.equal(context.entryMode,null);
-assert.equal(dialog.open,false);assert.equal(listeners.beforeunload,undefined);
-assert.equal(context.db.parentPin,'4826','original profile restored');
-console.log('PASS: app-wide PIN validation, original guardian PIN through real demo state swap;  real demo exit blocked before state mutation; Continue/Escape preserve question; repeated exit/Back; Unlock runs exit exactly once and removes unload guard');
+assert.equal(calls.hub,1);assert.equal(dialog.open,false);assert.equal(listeners.beforeunload,undefined);
+console.log('PASS: internal demo Back allowed, original guardian PIN restored, exit lock stays active on all app pages, external-exit PIN validation and callback once');
 // Regression: guest demo with no saved profile must offer usable first-time setup.
 const storage=new Map();const guestListeners={};const guestBody=new Element();guestBody.dataset={screen:'login'};
 const guestDialog=new Element();let guestDialogCount=0;const guestHost=new Element();
@@ -117,3 +106,4 @@ assert.equal(guest.PAPageLock.isLocked(),false);
 guest.db={name:'New profile'};
 assert.equal(guest.pageLockParentPin(),'7391','later parent access uses the same local guardian PIN');
 console.log('PASS: no-profile demo setup fields/buttons enabled, mismatch rejected, PIN saved, lock activated, PIN retained after demo, existing PIN not replaced, correct PIN required to unlock');
+

@@ -13,12 +13,12 @@
  const dialog=document.createElement('dialog');
  dialog.className='paExitDialog';
  dialog.setAttribute('aria-labelledby','paExitTitle');
- dialog.innerHTML='<div class="paExitHead"><h2 id="paExitTitle">Aplikasi dikunci</h2><button type="button" class="paExitInfoButton" data-open-info aria-label="Maklumat kunci aplikasi" aria-haspopup="dialog">ⓘ</button></div><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><label class="paExitPinLabel" data-confirm-label>Sahkan PIN ibu bapa<input data-confirm-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Sambung guna aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form>';
+ dialog.innerHTML='<div class="paExitHead"><div><span class="paExitEyebrow">KAWALAN IBU BAPA</span><h2 id="paExitTitle">Kunci keluar aktif</h2></div><button type="button" class="paExitInfoButton" data-open-info aria-label="Maklumat kunci aplikasi" aria-haspopup="dialog">ⓘ</button></div><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><label class="paExitPinLabel" data-confirm-label>Sahkan PIN ibu bapa<input data-confirm-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Kekal dalam aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form>';
  document.body.append(dialog);
  const infoDialog=document.createElement('dialog');
  infoDialog.className='paExitDialog paExitInfoOverlay';
  infoDialog.setAttribute('aria-labelledby','paExitInfoTitle');
- infoDialog.innerHTML='<div class="paExitHead"><h2 id="paExitInfoTitle">Info kunci</h2><button type="button" class="paExitInfoButton" data-close-info aria-label="Tutup maklumat" autofocus>×</button></div><p class="paExitNote">Kunci melindungi semua halaman. Demo tanpa profil menyimpan PIN pada pelayar ini.</p><p class="paExitNote">Untuk kunci butang Home, guna Screen Pinning (Android) atau Guided Access (iPhone). Tutup tab masih dikawal pelayar.</p>';
+ infoDialog.innerHTML='<div class="paExitHead"><h2 id="paExitInfoTitle">Info kunci</h2><button type="button" class="paExitInfoButton" data-close-info aria-label="Tutup maklumat" autofocus>×</button></div><p class="paExitNote">Boleh bergerak antara semua halaman dalam apps. PIN ibu bapa diperlukan untuk buka kunci keluar. Demo tanpa profil menyimpan PIN pada pelayar ini.</p><p class="paExitNote">Untuk kunci butang Home, guna Screen Pinning (Android) atau Guided Access (iPhone). Tutup tab masih dikawal pelayar.</p>';
  document.body.append(infoDialog);
  const infoButton=dialog.querySelector('[data-open-info]');
  function closeInfo(){infoDialog.close();infoButton.focus();}
@@ -57,11 +57,11 @@
   confirmLabel.hidden=configured;
   confirmInput.disabled=configured;
   dialog.querySelector('[data-unlock]').disabled=false;
-  dialog.querySelector('[data-unlock]').textContent=configured?'Sahkan PIN · Buka kunci':'Simpan PIN · Aktifkan kunci';
-  dialog.querySelector('#paExitTitle').textContent=configured?'Aplikasi dikunci':'Cipta PIN ibu bapa';
-  dialog.querySelector('[data-stay]').textContent=configured?'Sambung guna aplikasi':'Batal';
+  dialog.querySelector('[data-unlock]').textContent=configured?(onExit?'Sahkan PIN · Teruskan keluar':'Sahkan PIN · Buka kunci'):'Simpan PIN · Aktifkan kunci';
+  dialog.querySelector('#paExitTitle').textContent=configured?(onExit?'Nak keluar aplikasi?':'Kunci keluar aktif'):'Cipta PIN ibu bapa';
+  dialog.querySelector('[data-stay]').textContent=configured?'Kekal dalam aplikasi':'Batal';
   dialog.querySelector('[data-exit-message]').textContent=configured
-   ?'Masukkan PIN ibu bapa untuk buka kunci.'
+   ?(onExit?'Masukkan PIN ibu bapa untuk teruskan keluar.':'Bebas bergerak dalam apps. Masukkan PIN untuk buka kunci keluar.')
    :'Cipta dan sahkan PIN 4 digit.';
   dialog.showModal();
  }
@@ -98,25 +98,24 @@
   button.setAttribute('data-page-lock','');button.addEventListener('click',toggle);
   host.append(button);
  }
- // Intercept in-app Back/exit controls before inline handlers mutate app state.
- // Forward navigation, answers and parent PIN recovery remain usable.
+ // Only guard leaving the app or signing out. Internal Back is always usable.
  document.addEventListener('click',event=>{
   if(!active()||dialog.open)return;
   const target=event.target.closest?.('button,a,[onclick]');
   if(!target||target.hasAttribute('data-page-lock'))return;
   const handler=target.getAttribute('onclick')||'';
-  const label=target.getAttribute('aria-label')||target.textContent||'';
-  const external=target.tagName==='A'&&target.hasAttribute('href')&&new URL(target.href,location.href).origin!==location.origin;
-  const exits=/\b(?:goLogin|logoutDemo|closeSegelDemo)\s*\(|PACloud\.logout\s*\(/.test(handler);
-  const back=/^Kembali(?:\s|$)/i.test(label.trim())||target.matches('.iconBtn,.kzBack')&&/\b(?:goHub|navHome|goSetup|returnFromLearning)\s*\(|PAOnboarding\.back\s*\(/.test(handler);
-  if(!external&&!exits&&!back)return;
+  const appPath=new URL('.',location.href).pathname;
+  const destination=target.tagName==='A'&&target.hasAttribute('href')?new URL(target.href,location.href):null;
+  const external=destination&&!target.hasAttribute('download')&&(destination.origin!==location.origin||!destination.pathname.startsWith(appPath));
+  const exits=/\blogoutDemo\s*\(|PACloud\.logout\s*\(/.test(handler);
+  if(!external&&!exits)return;
   event.preventDefault();event.stopImmediatePropagation();
   prompt(()=>target.click());
  },true);
  window.addEventListener('popstate',event=>{
   if(restoring){restoring=false;return;}
   if(!installed||event.state?.[key]!=='base')return;
-  if(active()){restoring=true;history.forward();prompt();}
+  if(active()){restoring=true;history.forward();prompt(()=>{installed=false;history.go(-2);});}
   else{installed=false;history.back();}
  });
  function beforeUnload(event){if(active()){event.preventDefault();event.returnValue='';}}
@@ -130,3 +129,4 @@
  window.PAPageLock={isLocked:active,refresh:sync,requestExit(onExit){if(!active())return true;prompt(onExit);return false;}};
  sync();
 })();
+

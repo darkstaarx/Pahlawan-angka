@@ -1,6 +1,6 @@
 // App shell v3.84.64 — mobile long-screen scroll ownership refresh.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-glacier-fracture-1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-app-exit-only-names-1`;
 const APP_SHELL=[
   './assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.png',
   './assets/fx/wira/final-v5/glacier-clean-sheet-v1.png',
@@ -151,4 +151,5 @@ self.addEventListener('fetch',event=>{
       }))
   );
 });
+
 

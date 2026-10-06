@@ -26,7 +26,7 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  assert.equal(preview.find(p=>p.id==='aurora').name,'Aurora');
  assert.equal(preview.find(p=>p.id==='aurora').species,'Musang Ekor Angka');
  assert.equal(preview.find(p=>p.id==='aurora').assets.idleSprite,null);
- assert.equal(preview.find(p=>p.id==='ketupatKura').name,'Kura-Kura Ketupat');
+ assert.equal(preview.find(p=>p.id==='ketupatKura').name,'Kukupat');
  assert.match(preview.find(p=>p.id==='ketupatKura').assets.sadSprite,/sad-v1\.png$/);
 });
 
@@ -217,3 +217,12 @@ test('later global access cannot turn a different locked pet into an old run awa
  assert.equal(pets.awardGembokCompletion(data,run).rescueAwarded,false);
  assert.equal(data.petCollection.durianKerbau.rescues,0);
 });
+
+
+ test('default companion names keep species separate and preserve player nicknames',()=>{
+ const expected={aurora:['Aurora','Musang Ekor Angka'],ketupatKura:['Kukupat','Kura-Kura Ketupat'],kumbangManggis:['Kumbis','Kumbang Manggis'],harimauBunga:['Riya','Harimau Bunga'],arnabKekLapis:['Bunnis','Arnab Kek Lapis'],durianKerbau:['Keryan','Kerbau Durian']};
+ const data=fresh();pets.ensure(data);data.petCollection.ketupatKura.state='tamed';data.petCollection.ketupatKura.customName='Si Comel';
+ for(const pet of pets.snapshot(data).pets){assert.equal(pet.defaultName,expected[pet.id][0]);assert.equal(pet.species,expected[pet.id][1]);assert.equal(pet.name,pet.id==='ketupatKura'?'Si Comel':expected[pet.id][0]);}
+ assert.equal(pets.rename(data,'ketupatKura',''),false);
+ assert.equal(data.petCollection.ketupatKura.customName,'Si Comel');
+ });
