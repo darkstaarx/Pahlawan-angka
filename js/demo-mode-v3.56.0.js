@@ -53,6 +53,6 @@ function start(){
   window.openSegelDemo({guestDemo:true});
 }
 
-window.PADemo={mount,open,close,selectGrade,start,restoreGuest};
+window.PADemo={mount,open,close,selectGrade,start,restoreGuest,parentPin:()=>st.db?.parentPin||null};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

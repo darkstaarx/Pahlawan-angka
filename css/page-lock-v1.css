@@ -9,3 +9,8 @@
 .paExitActions{display:grid;gap:10px;margin-top:20px}
 .paExitActions button{min-height:48px}
 @media(max-width:480px){.paPageLockButton{font-size:11px;padding:6px 8px}.segelTop{flex-wrap:wrap}}
+.paExitPinLabel{display:grid;gap:8px;font-weight:700}
+.paExitPinLabel input{box-sizing:border-box;width:100%;min-height:48px;border:1px solid #8fa5c2;border-radius:10px;background:#081426;color:#fff;padding:10px 12px;font:inherit;font-size:24px;letter-spacing:8px}
+.paExitDialog #paExitError{min-height:22px;color:#ffc6bb;font-size:14px;margin:8px 0}
+.loginShell>.paPageLockButton{justify-self:center;margin:8px 0}
+.topNav>.paPageLockButton,.parentTop>.paPageLockButton{margin-left:auto}

@@ -318,7 +318,7 @@
 
   function addChild(){state.needsOnboarding=true;screen('setup')}
 
-  async function logout(){await syncSaveNow();await endPlaySession('user_exit');window.PAQSV2BetaRollout?.reset?.(db);await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
+  async function logout(){if(window.PAPageLock?.requestExit(()=>logout())===false)return;await syncSaveNow();await endPlaySession('user_exit');window.PAQSV2BetaRollout?.reset?.(db);await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
 
   function wireLegacy(){
     const oldSave=window.save;window.save=function(){if(sess?.devBattlefield)return;oldSave();scheduleSave()};

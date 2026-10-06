@@ -266,6 +266,8 @@ function applyEnemyVariant(forceReset=false){
 }
 function nextEnemy(){ sess.enemy=(sess.enemy||1)+1;applyEnemyVariant(true); }
 function goLogin(){ screen('login'); refreshLoginResume(); if(typeof updateSoundButtons==='function')updateSoundButtons(); }
+// Read the guardian's existing PIN even while the guest demo owns temporary db state.
+function pageLockParentPin(){return db?.parentPin||window.PADemo?.parentPin?.()||null}
 function goSetup(){ if(db){ const child=document.getElementById('child'), grade=document.getElementById('gradeSelect'); if(child) child.value=db.name||''; if(grade) grade.value=String(db.schoolGrade||2); selectedHero=db.hero||selectedHero||'wira'; chooseAvatar(db.avatar_id||PA_DEFAULT_AVATAR); } setupAvatarPicker(); screen('setup') }
 function goSetupAsGuest(){ if(typeof playSfx==='function')playSfx('ui'); screen('setup') }
 function setLoginError(msg=''){ const e=document.getElementById('loginError'); if(e){e.textContent=msg;e.classList.toggle('show',!!msg)} }
@@ -290,7 +292,7 @@ function dummyLogin(){
   if(email==='parent@demo.com'){openParentPin();return;}
   setLoginError('Akaun demo tidak dikenali. Gunakan student@demo.com atau parent@demo.com.'); if(typeof playSfx==='function')playSfx('wrong');
 }
-function logoutDemo(){ uiSession=null; localStorage.removeItem('pa_dummy_login'); goLogin(); }
+function logoutDemo(){ if(window.PAPageLock?.requestExit(logoutDemo)===false)return;uiSession=null; localStorage.removeItem('pa_dummy_login'); goLogin(); }
 function refreshLoginResume(){
   const el=document.getElementById('loginResume'); if(!el) return;
   if(db){ el.innerHTML=`<button class="btn secondary heroStart" onclick="loginRoute('student')"><img class="resumeIcon" src="assets/ui/login/menu-arrow.svg" alt="">Sambung ${db.name||'permainan'} · Darjah ${db.schoolGrade||2}</button>`; }
