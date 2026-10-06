@@ -1,4 +1,4 @@
-.paPageLockButton{font:inherit;font-size:12px;font-weight:700;min-height:44px;padding:8px 10px;border:1px solid #b9a46b;border-radius:12px;background:#122237;color:#fff;cursor:pointer;flex-shrink:0}
+.paPageLockButton{font:inherit;font-size:20px;font-weight:700;width:44px;height:44px;min-height:44px;padding:0;display:grid;place-items:center;border:1px solid #b9a46b;border-radius:12px;background:#122237;color:#fff;cursor:pointer;flex-shrink:0}
 .paPageLockButton[hidden]{display:none}
 .paPageLockButton:focus-visible{outline:3px solid #f5d578;outline-offset:3px}
 .paExitDialog{box-sizing:border-box;width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #b9a46b;border-radius:20px;padding:24px;background:#122237;color:#fff;font-family:inherit;box-shadow:0 24px 80px #0008}
@@ -8,7 +8,7 @@
 .paExitNote{font-size:13px;color:#c8d4e4}
 .paExitActions{display:grid;gap:10px;margin-top:20px}
 .paExitActions button{min-height:48px;border-radius:12px;padding:12px;font:inherit;font-weight:800;cursor:pointer}.paExitActions [data-stay]{background:#ffd747;color:#122237;border:1px solid #ffd747}.paExitActions [data-unlock]{background:#253853;color:#fff;border:1px solid #8fa5c2}
-@media(max-width:480px){.paPageLockButton{font-size:11px;padding:6px 8px}.segelTop{flex-wrap:wrap}}
+@media(max-width:480px){.paPageLockButton{font-size:20px;padding:0}.segelTop{flex-wrap:wrap}}
 .paExitPinLabel{display:grid;gap:8px;font-weight:700}
 .paExitPinLabel input{box-sizing:border-box;width:100%;min-height:48px;border:1px solid #8fa5c2;border-radius:10px;background:#081426;color:#fff;padding:10px 12px;font:inherit;font-size:24px;letter-spacing:8px}
 .paExitDialog #paExitError{min-height:22px;color:#ffc6bb;font-size:14px;margin:8px 0}
@@ -24,3 +24,6 @@
 .paExitInfoButton:focus-visible{outline:3px solid #f5d578;outline-offset:3px}
 .paExitInfoOverlay::backdrop{background:#040914cc}
 
+
+
+.parentDeviceLock{margin-top:16px}.parentDeviceLock p{line-height:1.6}.parentDeviceLock details{margin-top:12px}.parentDeviceLock summary{cursor:pointer;font-weight:700}.parentDeviceLock ol{padding-left:22px;line-height:1.7}
