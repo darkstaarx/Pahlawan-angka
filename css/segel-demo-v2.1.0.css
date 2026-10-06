@@ -221,8 +221,7 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   -webkit-overflow-scrolling:touch;scrollbar-gutter:stable;
   align-items:stretch;justify-items:stretch
 }
-.segelCard .question .segelPrompt{min-height:100%;width:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 12px}
-.segelCard .question .segelPrompt:not(:has(.fraction-art)){justify-content:flex-start}
+.segelCard .question .segelPrompt{min-height:0;width:100%;box-sizing:border-box;display:block;padding:10px 12px}
 .segelCard .answers{flex:0 0 auto}
 .segelCard .feedback{flex:0 0 auto;min-height:32px}
 

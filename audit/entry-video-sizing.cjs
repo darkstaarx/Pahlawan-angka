@@ -1,0 +1,20 @@
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const {chromium}=require('C:/Users/affie/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const root=path.resolve(__dirname,'..');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});
+try{for(const viewport of [{width:1264,height:629},{width:1440,height:900},{width:390,height:844},{width:844,height:390}]){
+ const page=await browser.newPage({viewport,serviceWorkers:'block'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/js/segel-entry-cinematic-v1.2.0.js*',route=>route.fulfill({contentType:'application/javascript',body:fs.readFileSync(path.join(root,'js/segel-entry-cinematic-v1.2.0.js'),'utf8')}));
+ await page.goto('https://pahlawanangka.netlify.app/');
+ await page.locator('#paDemoButton').click();await page.locator('#paDemoStart').click();
+ await page.waitForSelector('.paSegelEntryCinematic video');
+ await page.waitForFunction(()=>document.querySelector('.paSegelEntryCinematic video')?.currentTime>.3);
+ const box=await page.locator('.paSegelEntryCinematic video').evaluate(v=>({w:v.clientWidth,h:v.clientHeight,fit:getComputedStyle(v).objectFit,natural:[v.videoWidth,v.videoHeight]}));
+ assert.equal(box.w,viewport.width);assert.equal(box.h,viewport.height);assert.equal(box.fit,'contain');assert.deepEqual(box.natural,[720,1280]);
+ await page.screenshot({path:path.join(root,'audit',`entry-video-${viewport.width}.png`)});
+ const skip=page.locator('.paSegelSkip.ready');await skip.waitFor();await skip.click();
+ await page.waitForFunction(()=>{const v=document.querySelector('.paSegelEntryCinematic video');return v&&v.currentTime>=v.duration-1.1},{},{timeout:2000});
+ await page.waitForSelector('.paSegelEntryCinematic',{state:'detached',timeout:15000});
+ await page.waitForFunction(()=>document.querySelector('#segelQuestion').innerText.trim().length>5);
+ assert.deepEqual(errors,[]);console.log('PASS',viewport,box,'skip and battlefield question');await page.close();
+}}finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

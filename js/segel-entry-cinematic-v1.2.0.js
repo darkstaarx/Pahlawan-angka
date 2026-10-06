@@ -49,8 +49,9 @@
       }
       .paSegelEntryCinematic.show{opacity:1}
       .paSegelEntryCinematic video{
-        grid-area:1/1;width:100%;height:100%;display:block;
-        object-fit:cover;background:#020711;opacity:1;
+        position:absolute;inset:0;width:100%;height:100%;display:block;
+        min-width:0;min-height:0;max-width:100%;max-height:100%;
+        object-fit:contain;background:#020711;opacity:1;
         transition:opacity ${VIDEO_TO_DARK_MS}ms ease;
       }
       .paSegelEntryCinematic.toDark video{opacity:0}

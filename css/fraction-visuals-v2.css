@@ -27,12 +27,13 @@
 
 /* The mobile Segel card is narrower than the normal battle question card.
    Keep picture prompts inside it even when source artwork has a loose canvas. */
-#segelQuestion,#segelQuestion .segelPrompt{min-width:0;max-width:100%;overflow-x:hidden}
+#segelQuestion,#segelQuestion .segelPrompt{min-width:0;max-width:100%}
+#segelQuestion{overflow-x:hidden}
 #segelQuestion .fraction-art{width:min(180px,calc(100vw - 56px));max-width:100%;max-height:150px;margin:6px auto}
 #segelQuestion .fraction-art-turn{max-width:100%;max-height:150px}
 #segelQuestion .fraction-texture-grid{width:100%;max-width:100%;min-width:0}
-#segelQuestion.hasFractionVisual{overflow:hidden}
-#segelQuestion.hasFractionVisual .segelPrompt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+#segelQuestion.hasFractionVisual{overflow-y:auto}
+#segelQuestion.hasFractionVisual .segelPrompt{display:block}
 
 /* Lorek questions repeat the instruction inside the touch panel. Reclaim the
    question slot so the picture, equal parts, status and Semak stay visible on
@@ -41,4 +42,4 @@
 .segelCard:has(#segelAnswers .d1-fraction-answer) .answers{min-height:0;overflow:hidden;display:block}
 .segelCard:has(#segelAnswers .d1-fraction-answer) .d1-fraction-answer{max-width:100%;padding:0 4px}
 .segelCard:has(#segelAnswers .d1-fraction-answer) .d1-fraction-answer .fraction-art-interactive{width:min(100%,210px);height:clamp(112px,26vw,150px)}
-.segelCard:has(#segelQuestion.hasFractionVisual) .question{flex:0 0 auto;min-height:54px;max-height:150px;overflow:hidden}
+.segelCard:has(#segelQuestion.hasFractionVisual) .question{flex:1 1 0;min-height:0;max-height:none;overflow-y:auto}
