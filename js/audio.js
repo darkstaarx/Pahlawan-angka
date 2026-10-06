@@ -9,6 +9,7 @@ const PA_AUDIO={
   wiraSword:'assets/audio/wira-heavy-metal-sword.wav',
   swordSlash:'assets/audio/sword-slash-v2.wav',
   finisherSwing:'assets/audio/sword-slash-v2.wav',
+  glacierThunder:'assets/audio/glacier-thunder.wav',
   coinPickup:'assets/audio/coin-pickup.wav',
   victoryStinger:'assets/audio/StingerPA.mp3',
   enemyDown:'assets/audio/enemy-down.wav',

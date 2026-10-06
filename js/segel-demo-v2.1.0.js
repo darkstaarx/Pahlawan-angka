@@ -246,6 +246,11 @@
     const mathBurst=host.querySelector('.segelMathBurst');
     const finisherAttack=host.querySelector('.segelFinisherAttack');
     const finisherImpact=host.querySelector('.segelFinisherImpact');
+    const glacierLayers=finisherImpact?[finisherImpact,...[-1,1].map(side=>{
+      const layer=finisherImpact.cloneNode(false);layer.dataset.glacierSide=String(side);
+      layer.style.display='none';host.appendChild(layer);return layer;
+    })]:[];
+    const hideGlaciers=()=>glacierLayers.forEach(layer=>{layer.style.opacity='0';layer.style.display='none'});
     const finisherChargeHero=host.querySelector('.segelChargeHero');
     const finisherChargeAura=host.querySelector('.segelChargeAura');
     const finisherFocusPortrait=host.querySelector('.finalEyePortrait');
@@ -255,7 +260,7 @@
       chargeAura:null,
       focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png',
       impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.png',
-      color:0xbfe9ff,chargeMs:1200,focusMs:980,impactMs:2400
+      color:0xbfe9ff,chargeMs:1000,focusMs:980,impactMs:2400
     };
     function applyLiveFinisherAssets(){
       const cfg=LIVE_FINISHER;
@@ -286,14 +291,17 @@
       const target=finalImpactTarget;
       const viewH=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-target.z);
       const pixels=host.clientHeight/viewH;
-      const height=target.height*1.22*pixels;
-      const width=height*(1171/4)/(1343/3);
       const x=host.clientWidth/2+(target.x-camera.position.x)*pixels;
       const ground=host.clientHeight/2-(target.y-camera.position.y)*pixels;
-      finisherImpact.style.left=(x-width*.5)+'px';
-      finisherImpact.style.top=(ground-height*(target.anchorY||.981))+'px';
-      finisherImpact.style.width=width+'px';
-      finisherImpact.style.height=height+'px';
+      glacierLayers.forEach(layer=>{
+        const side=Number(layer.dataset.glacierSide)||0;
+        const height=target.height*1.22*pixels*(side ? .76 : 1);
+        const width=height*(1171/4)/(1343/3);
+        const offset=side*target.height*.27*pixels;
+        const anchor=[.981,.983,.994,.994,.993,.996,.996,.964,.964,.969,.971][Number(layer.dataset.glacierFrame)||0];
+        layer.style.left=(x+offset-width*.5)+'px';layer.style.top=(ground-height*anchor)+'px';
+        layer.style.width=width+'px';layer.style.height=height+'px';
+      });
     }
     function ensureFinisherVideo(){
       if(finisherVideo&&finisherVideo.isConnected)return finisherVideo;
@@ -331,7 +339,7 @@
       if(mathBurst)mathBurst.style.display='';
       finalImpactActive=false;
       finalImpactPending=false;
-      if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
+      hideGlaciers();
       layer?.classList.remove('active','preparing','playing','flash-in','flash-out');
     }
     async function playFinisherVideo(lifecycle){
@@ -366,7 +374,7 @@
       
       finalImpactActive=false;
       finalImpactPending=false;
-      if(finisherImpact)finisherImpact.style.display='none';
+      hideGlaciers();
       S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
       S.heroFade=1;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;
       return true;
@@ -1383,23 +1391,23 @@
         const k=S.iceT/1.70;
         if(k>=1){
           S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
-          if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
+          hideGlaciers();
           finalImpactActive=false;
         }
         else{
           // Play all 11 frames at a readable pace, then give the last burst a
           // short hold/fade so it lands before the victory layer takes over.
-          const kb=Math.min(1,S.iceT/1.32);
-          const frame=Math.min(10,Math.floor(kb*11));
-          const col=frame%4, row=Math.floor(frame/4);
           if(finalImpactActive&&finisherImpact){
-            // Measured solid-alpha floor in each authored cell: compensate
-            // the small padding differences without changing effect scale.
-            finalImpactTarget.anchorY=[.981,.983,.994,.994,.993,.996,.996,.964,.964,.969,.971][frame];
+            glacierLayers.forEach(layer=>{
+              const side=Number(layer.dataset.glacierSide)||0;
+              const elapsed=S.iceT-(side<0 ? .12 : side>0 ? .24 : 0);
+              const f=Math.min(10,Math.floor(Math.max(0,elapsed)/1.08*11));
+              layer.dataset.glacierFrame=String(f);
+              layer.style.backgroundPosition=`${f%4*33.333333}% ${Math.floor(f/4)*50}%`;
+              layer.style.opacity=String(Math.min(1,Math.max(0,(1-k)*2.3)));
+              layer.style.display=elapsed>=0?'block':'none';
+            });
             placeFinalImpact();
-            finisherImpact.style.backgroundPosition=`${col*33.333333}% ${row*50}%`;
-            finisherImpact.style.opacity=String(Math.min(1,Math.max(.2,(1-k)*1.9)));
-            finisherImpact.style.display='block';
           }
         }
       }
@@ -1496,7 +1504,7 @@
           sfx('swordSlash');
           S.heroLock=heroSlashE; S.heroX=-0.30; await wait(140);
           if(lifecycle!==S.lifecycle)return;
-          sfx('hit'); clearNormalIceFx();
+          sfx('glacierThunder'); clearNormalIceFx();
           finalImpactActive=true; finalImpactPending=true;
           finalImpactTarget={x:SEAL_X,y:GROUND,z:seals[S.active].front.position.z,height:tier.visible};
           placeFinalImpact();
@@ -1555,7 +1563,7 @@
         if(!finalImpactPending)return;
         await wait(1450);
         finalImpactPending=false; finalImpactActive=false;
-        if(finisherImpact){finisherImpact.style.opacity='0';finisherImpact.style.display='none'}
+        hideGlaciers();
         clearNormalIceFx();
         S.heroLock=null; S.heroX=HERO_HOME;
       },
