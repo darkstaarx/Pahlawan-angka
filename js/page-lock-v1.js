@@ -13,8 +13,18 @@
  const dialog=document.createElement('dialog');
  dialog.className='paExitDialog';
  dialog.setAttribute('aria-labelledby','paExitTitle');
- dialog.innerHTML='<h2 id="paExitTitle">Aplikasi dikunci</h2><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><label class="paExitPinLabel" data-confirm-label>Sahkan PIN ibu bapa<input data-confirm-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Sambung guna aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form><details class="paExitInfo"><summary aria-label="Maklumat kunci aplikasi">ⓘ Info</summary><p class="paExitNote">Kunci melindungi semua halaman. Demo tanpa profil menyimpan PIN pada pelayar ini.</p><p class="paExitNote">Untuk kunci butang Home, guna Screen Pinning (Android) atau Guided Access (iPhone). Tutup tab masih dikawal pelayar.</p></details>';
+ dialog.innerHTML='<div class="paExitHead"><h2 id="paExitTitle">Aplikasi dikunci</h2><button type="button" class="paExitInfoButton" data-open-info aria-label="Maklumat kunci aplikasi" aria-haspopup="dialog">ⓘ</button></div><p data-exit-message>Masukkan PIN ibu bapa untuk buka kunci.</p><form data-pin-form><label class="paExitPinLabel">PIN ibu bapa<input data-exit-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" aria-describedby="paExitError" placeholder="••••"></label><label class="paExitPinLabel" data-confirm-label>Sahkan PIN ibu bapa<input data-confirm-pin type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" placeholder="••••"></label><p id="paExitError" role="alert"></p><div class="paExitActions"><button type="button" class="btn primary" data-stay autofocus>Sambung guna aplikasi</button><button type="submit" class="btn secondary" data-unlock>Sahkan PIN · Buka kunci</button></div></form>';
  document.body.append(dialog);
+ const infoDialog=document.createElement('dialog');
+ infoDialog.className='paExitDialog paExitInfoOverlay';
+ infoDialog.setAttribute('aria-labelledby','paExitInfoTitle');
+ infoDialog.innerHTML='<div class="paExitHead"><h2 id="paExitInfoTitle">Info kunci</h2><button type="button" class="paExitInfoButton" data-close-info aria-label="Tutup maklumat" autofocus>×</button></div><p class="paExitNote">Kunci melindungi semua halaman. Demo tanpa profil menyimpan PIN pada pelayar ini.</p><p class="paExitNote">Untuk kunci butang Home, guna Screen Pinning (Android) atau Guided Access (iPhone). Tutup tab masih dikawal pelayar.</p>';
+ document.body.append(infoDialog);
+ const infoButton=dialog.querySelector('[data-open-info]');
+ function closeInfo(){infoDialog.close();infoButton.focus();}
+ infoButton.addEventListener('click',()=>{if(!infoDialog.open)infoDialog.showModal();});
+ infoDialog.querySelector('[data-close-info]').addEventListener('click',closeInfo);
+ infoDialog.addEventListener('cancel',event=>{event.preventDefault();closeInfo();});
  const confirmLabel=dialog.querySelector('[data-confirm-label]');
  const input=dialog.querySelector('[data-exit-pin]');
  const confirmInput=dialog.querySelector('[data-confirm-pin]');
@@ -35,12 +45,12 @@
    installed=true;
   }catch(error){console.warn('Kunci Back tidak tersedia.',error);}
  }
- function close(){pendingExit=null;input.value='';confirmInput.value='';error.textContent='';dialog.close();previousFocus?.focus();}
+ function close(){if(infoDialog.open)infoDialog.close();pendingExit=null;input.value='';confirmInput.value='';error.textContent='';dialog.close();previousFocus?.focus();}
  function prompt(onExit=null){
   if(dialog.open)return;
   pendingExit=onExit;previousFocus=document.activeElement;
   input.value='';confirmInput.value='';error.textContent='';
-  dialog.querySelector('.paExitInfo').open=false;
+  if(infoDialog.open)infoDialog.close();
   const configured=!!guardianPin();
   setupMode=!configured;
   input.disabled=false;

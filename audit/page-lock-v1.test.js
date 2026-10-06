@@ -19,7 +19,7 @@ const fixture=`function pageLockParentPin(){return '4826'};let entryMode={guestD
    await page.evaluate(screen=>document.body.dataset.screen=screen,screen);
    await page.locator('#answer').fill('42');
    await page.evaluate(()=>history.back());
-   await page.locator('dialog').waitFor({state:'visible'});
+   await page.locator('.paExitDialog:not(.paExitInfoOverlay)').waitFor({state:'visible'});
    await page.waitForFunction(()=>history.state?.paPageLock==='guard');
    assert.equal(await page.evaluate(()=>document.body.dataset.screen),screen);
    assert.equal(await page.locator('#answer').inputValue(),'42');
@@ -27,7 +27,7 @@ const fixture=`function pageLockParentPin(){return '4826'};let entryMode={guestD
    await page.locator('[data-exit-pin]').fill('0000');
    await page.locator('[data-unlock]').click();
    assert.equal(await page.evaluate(()=>PAPageLock.isLocked()),true);
-   assert.equal(await page.locator('dialog').isVisible(),true);
+   assert.equal(await page.locator('.paExitDialog:not(.paExitInfoOverlay)').isVisible(),true);
    await page.locator('[data-stay]').click();
   }
   await page.locator('#demoBack').click();
