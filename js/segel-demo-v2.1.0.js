@@ -2523,7 +2523,8 @@
   };
 
   window.closeSegelDemo=function(){
-    // Returning to another app page is allowed while exit protection stays on.
+    // The optional battle lock requires the guardian PIN before leaving.
+    if(window.PAPageLock?.requestExit(()=>window.closeSegelDemo())===false)return;
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
     if(entryMode?.guestDemo){
@@ -2563,6 +2564,7 @@
     state:()=>run
   };
 })();
+
 
 
 

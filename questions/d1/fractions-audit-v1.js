@@ -53,6 +53,17 @@
    m.answerNumerator=answerN;
    add('harian',mode,prompt,asName?words[F(answerN,d)]:F(answerN,d),asName?nameChoices(answerN,d):choices(answerN,d),m);
  }
+ // Add 90 half-based tasks: equal sharing, everyday names, shading,
+ // remaining parts and folding. Every existing bitmap/orientation is reused.
+ const objects={epal:'Sebiji epal',coklat:'Sekeping coklat',kertas:'Sekeping kertas',reben:'Sehelai reben',kek:'Sebiji kek',kad:'Sekeping kad'};
+ for(const style of styles)for(const layout of layouts){
+   const m={n:1,d:2,style,layout},visual=image(1,2,style,layout);
+   add('kenal','equal_share_symbol',`${image(0,2,style,layout)}${objects[style]} dikongsi sama rata oleh 2 orang. Apakah pecahan untuk seorang?`,'1/2',choices(1,2),{...m});
+   add('kenal','half_everyday_name',`${visual}Bahagian ${style} yang ditanda ialah separuh. Apakah nama lain bagi separuh?`,'setengah',nameChoices(1,2),{...m});
+   add('lorek','equal_share_shade',`${objects[style]} dikongsi sama rata oleh 2 orang. Lorekkan bahagian untuk seorang.`,'1/2',choices(1,2),{...m},'shade');
+   add('harian','half_remaining_story',`${visual}Satu daripada 2 bahagian ${style} telah digunakan. Apakah pecahan yang masih tinggal?`,'1/2',choices(1,2),{...m,answerNumerator:1});
+   add('kenal','fold_half',`${visual}Satu ${style} dibahagi kepada 2 bahagian sama besar. Satu bahagian ditanda. Apakah pecahannya?`,'1/2',choices(1,2),{...m});
+ }
  function materialise(item){
    const hint=item.mode==='half_synonyms'?'Separuh, setengah dan satu perdua ialah nama bagi bahagian yang sama. Suku ialah satu perempat.':item.mode==='quarter_synonyms'?'Suku dan satu perempat ialah nama bagi bahagian yang sama. Separuh ialah satu perdua.':['picture_unused','unmarked_symbol'].includes(item.mode)?'Lihat bahagian yang tidak ditanda. Kira bahagian itu.':item.model.steps?'Ikut setiap tindakan dalam cerita. Kira bahagian yang diminta, kemudian bandingkan dengan semua bahagian asal.':'Kira semua bahagian sama besar. Kemudian kira bahagian yang dipilih.';
    const visualModes=new Set(['model_symbol','model_name','unmarked_symbol','selected_fraction','picture_unused','picture_used_name']);
@@ -63,14 +74,21 @@
  }
  const previous=window.PAQuestionBanks.d1;
  function shuffled(items){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
- const decks=new WeakMap(),fallbackSession={};
+ const decks=new WeakMap(),nextDenominator=new WeakMap(),fallbackSession={};
  window.PAQuestionBanks.d1=function(id,s,shift){
    if(id!=='D1.FRAC')return previous(id,s,shift);
    const hist=typeof sess!=='undefined'?(sess.questionHistory||[]).filter(x=>x.skillId===id):[],recent=new Set(hist.slice(-18).map(x=>x.templateId)),last=hist.at(-1)?.archetypeId;
    const owner=typeof sess!=='undefined'&&sess&&typeof sess==='object'?sess:fallbackSession;
    let deck=decks.get(owner);if(!deck?.length){deck=shuffled(bank);decks.set(owner,deck);}
-   const suitable=deck.findIndex(x=>!recent.has(x.id)&&x.mode!==last);
-   const [item]=deck.splice(suitable<0?0:suitable,1);return materialise(item);
+   // Alternate halves and quarters whenever both remain in this session's deck.
+   const preferred=nextDenominator.get(owner)||2;
+   const eligible=x=>!recent.has(x.id)&&x.mode!==last;
+   let suitable=deck.findIndex(x=>x.model.d===preferred&&eligible(x));
+   if(suitable<0)suitable=deck.findIndex(eligible);
+   const [item]=deck.splice(suitable<0?0:suitable,1);
+   nextDenominator.set(owner,item.model.d===2?4:2);
+   return materialise(item);
  };
  window.PAD1FractionBank={items:bank,materialise,image,shuffled};
 })();
+
