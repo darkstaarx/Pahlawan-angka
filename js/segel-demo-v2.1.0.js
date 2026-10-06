@@ -2487,6 +2487,8 @@
   };
 
   window.closeSegelDemo=function(){
+    // Guard before pausing the stage or clearing the guest session.
+    if(window.PAPageLock?.requestExit(()=>window.closeSegelDemo())===false)return;
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
     if(entryMode?.guestDemo){
@@ -2526,3 +2528,4 @@
     state:()=>run
   };
 })();
+
