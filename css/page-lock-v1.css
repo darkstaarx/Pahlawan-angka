@@ -1,0 +1,11 @@
+.paPageLockButton{font:inherit;font-size:12px;font-weight:700;min-height:44px;padding:8px 10px;border:1px solid #b9a46b;border-radius:12px;background:#122237;color:#fff;cursor:pointer;flex-shrink:0}
+.paPageLockButton[hidden]{display:none}
+.paPageLockButton:focus-visible{outline:3px solid #f5d578;outline-offset:3px}
+.paExitDialog{box-sizing:border-box;width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #b9a46b;border-radius:20px;padding:24px;background:#122237;color:#fff;font-family:inherit;box-shadow:0 24px 80px #0008}
+.paExitDialog::backdrop{background:#040914bb}
+.paExitDialog h2{margin:0 0 12px;font-size:24px}
+.paExitDialog p{line-height:1.6}
+.paExitNote{font-size:13px;color:#c8d4e4}
+.paExitActions{display:grid;gap:10px;margin-top:20px}
+.paExitActions button{min-height:48px}
+@media(max-width:480px){.paPageLockButton{font-size:11px;padding:6px 8px}.segelTop{flex-wrap:wrap}}
