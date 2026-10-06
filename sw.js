@@ -2,6 +2,8 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-page-lock-pin-6`;
 const APP_SHELL=[
+  './assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.png',
+  './assets/fx/wira/final-v5/glacier-clean-sheet-v1.png',
   './css/page-lock-v1.css','./js/page-lock-v1.js',
   './assets/avatars/pupils/avatar-01.png','./assets/avatars/pupils/avatar-02.png','./assets/avatars/pupils/avatar-03.png','./assets/avatars/pupils/avatar-04.png','./assets/avatars/pupils/avatar-05.png','./assets/avatars/pupils/avatar-06.png','./assets/avatars/pupils/avatar-07.png','./assets/avatars/pupils/avatar-08.png',
   './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js','./css/dev-pet-reward-debug-v1.0.0.css','./js/dev-pet-reward-debug-v1.0.0.js','./css/teman-reveal-v1.0.0.css','./css/teman-reveal-stars-v1.0.0.css','./js/teman-reveal-v1.0.0.js',

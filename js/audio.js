@@ -8,6 +8,7 @@ const PA_AUDIO={
   chargeup:'assets/audio/chargeup.mp3',
   wiraSword:'assets/audio/wira-heavy-metal-sword.wav',
   swordSlash:'assets/audio/sword-slash-v2.wav',
+  finisherSwing:'assets/audio/sword-slash-v2.wav',
   coinPickup:'assets/audio/coin-pickup.wav',
   victoryStinger:'assets/audio/StingerPA.mp3',
   enemyDown:'assets/audio/enemy-down.wav',
@@ -179,6 +180,7 @@ function playSfx(name){
     const a=base?base.cloneNode(true):new Audio(src);
     a.volume=(name==='victoryStinger'?PA_VICTORY_STINGER_VOLUME:(name==='finisher'?.8:(name==='auraCharge'?.72:(name==='wiraSword'?.82:.65))))*PA_VOLUME_SCALE;
     a.preload='auto';
+    if(name==='finisherSwing')a.playbackRate=.6;
     const p=a.play(); if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
 }

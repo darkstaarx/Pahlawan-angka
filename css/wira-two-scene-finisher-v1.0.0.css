@@ -17,9 +17,20 @@
   background:
     radial-gradient(ellipse at 50% 49%,rgba(195,251,255,.18),transparent 24%),
     linear-gradient(90deg,rgba(0,0,0,.9) 0,transparent 14% 86%,rgba(0,0,0,.9) 100%);
-  mix-blend-mode:screen;animation:wiraEyeElectricPulse 980ms ease-out both
+  mix-blend-mode:normal;animation:wiraEyeElectricPulse 980ms ease-out both
 }
 #segelStage.finisher-focus .finalFocusGlint,#segelStage.finisher-focus .segelFinisherCallout{display:none}
+#segelStage.finisher-focus .segelFinalFocus:before,
+#segelStage.finisher-focus .segelFinalFocus:after{
+  content:'';position:absolute;left:5%;width:90%;aspect-ratio:4/1;z-index:2;
+  background-image:url('../assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.png');
+  background-repeat:no-repeat;background-size:100% 200%;
+  animation:wiraFinalTitle 980ms ease-out both;pointer-events:none;
+  filter:drop-shadow(0 3px 7px rgba(16,148,255,.4));
+}
+#segelStage.finisher-focus .segelFinalFocus:before{top:4%;background-position:center top}
+#segelStage.finisher-focus .segelFinalFocus:after{bottom:4%;background-position:center bottom}
+@keyframes wiraFinalTitle{0%{opacity:0;transform:translateX(-18px) skewX(-7deg) rotate(-3deg) scale(.85)}24%,86%{opacity:1;transform:skewX(-7deg) rotate(-3deg)}100%{opacity:0;transform:translateX(12px) skewX(-7deg) rotate(-3deg)}}
 @keyframes wiraIcyEyeCutin{
   0%{opacity:0;transform:translateX(-115%) skewX(-4deg) scale(1.04);filter:brightness(.45) saturate(.7)}
   24%{opacity:1;transform:translateX(0) skewX(-4deg) scale(1.04);filter:brightness(.7) saturate(.95) drop-shadow(0 0 10px rgba(78,210,255,.5))}
@@ -46,12 +57,12 @@
 /* The 11-frame glacier is advanced by the live render loop. CSS must not
    animate or swap it independently, otherwise the last frame can overlap the
    victory panel or jump to the wrong row. */
-#segelStage .segelFinisherImpact{left:0;top:0;bottom:auto;width:0;height:0;background-image:url('../assets/fx/wira/final-v3/fx-glacier-burst-v3.png');background-repeat:no-repeat;background-size:400% 300%;background-position:0 0;transform:none;transform-origin:center bottom;animation:none!important;object-fit:contain}
+#segelStage .segelFinisherImpact{left:0;top:0;bottom:auto;width:0;height:0;background-image:url('../assets/fx/wira/final-v5/glacier-clean-sheet-v1.png');background-repeat:no-repeat;background-size:400% 300%;background-position:0 0;transform:none;transform-origin:center bottom;animation:none!important;object-fit:contain;mix-blend-mode:normal;filter:drop-shadow(0 0 12px rgba(94,219,255,.65))}
 
 /* Main battle charge: use the authored Wira charge sheet, not the old generic aura. */
 .segelChargeHero{position:absolute;left:5%;bottom:4%;width:auto;height:66%;aspect-ratio:543/724;z-index:11;opacity:0;visibility:hidden;pointer-events:none;background:url('../assets/fx/wira/final-v2/wira-charge-sheet-v3.png') 0 0/400% 100% no-repeat;filter:drop-shadow(0 10px 8px rgba(0,0,0,.58)) drop-shadow(0 0 13px rgba(71,211,255,.5))}
 #segelStage.finisher-charge .segelChargeAura{display:none!important}
-#segelStage.finisher-charge .segelChargeHero{visibility:visible;opacity:1;animation:wiraChargeSheet 2400ms steps(1,end) 1 forwards}
+#segelStage.finisher-charge .segelChargeHero{visibility:visible;opacity:1;animation:wiraChargeSheet 1200ms steps(1,end) 1 forwards}
 @keyframes wiraChargeSheet{0%,24.99%{background-position:0 0}25%,49.99%{background-position:33.333% 0}50%,74.99%{background-position:66.666% 0}75%,100%{background-position:100% 0}}
 @media(max-width:520px){.segelChargeHero{left:4%;bottom:5%;width:auto;height:66%;aspect-ratio:543/724}}
 

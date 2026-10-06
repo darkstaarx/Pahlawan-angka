@@ -97,7 +97,7 @@
     // Normal attacks keep their original small ice hit. The glacier sheet is
     // reserved for the final-blow DOM layer below.
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
-    glacierSheet:'assets/fx/wira/final-v3/fx-glacier-burst-v3.png',
+    glacierSheet:'assets/fx/wira/final-v5/glacier-clean-sheet-v1.png',
     iceEnd:'assets/fx/wira/final-v2/fx-impact-end-v1.webp',
     coin:'assets/fx/reward/coin-v1.webp',
     trail:'assets/fx/reward/trail-v1.webp',
@@ -255,7 +255,7 @@
       chargeAura:null,
       focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png',
       impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.png',
-      color:0xbfe9ff,chargeMs:2400,focusMs:980,impactMs:2400
+      color:0xbfe9ff,chargeMs:1200,focusMs:980,impactMs:2400
     };
     function applyLiveFinisherAssets(){
       const cfg=LIVE_FINISHER;
@@ -287,11 +287,11 @@
       const viewH=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-target.z);
       const pixels=host.clientHeight/viewH;
       const height=target.height*1.22*pixels;
-      const width=height*(1116/4)/(1280/3);
+      const width=height*(1171/4)/(1343/3);
       const x=host.clientWidth/2+(target.x-camera.position.x)*pixels;
       const ground=host.clientHeight/2-(target.y-camera.position.y)*pixels;
       finisherImpact.style.left=(x-width*.5)+'px';
-      finisherImpact.style.top=(ground-height*.99)+'px';
+      finisherImpact.style.top=(ground-height*(target.anchorY||.981))+'px';
       finisherImpact.style.width=width+'px';
       finisherImpact.style.height=height+'px';
     }
@@ -353,6 +353,8 @@
       // 2) Anime-style eye cut-in: the black charge screen collapses into
       // Wira's new icy-electric stare. No ordinary attack pose appears here.
       host.classList.remove('finisher-charge');host.classList.add('finisher-focus');
+      if(typeof stopChargeup==='function')stopChargeup();
+      sfx('finisherSwing');
       await wait(cfg.focusMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
       if(typeof stopChargeup==='function')stopChargeup();
@@ -1391,6 +1393,9 @@
           const frame=Math.min(10,Math.floor(kb*11));
           const col=frame%4, row=Math.floor(frame/4);
           if(finalImpactActive&&finisherImpact){
+            // Measured solid-alpha floor in each authored cell: compensate
+            // the small padding differences without changing effect scale.
+            finalImpactTarget.anchorY=[.981,.983,.994,.994,.993,.996,.996,.964,.964,.969,.971][frame];
             placeFinalImpact();
             finisherImpact.style.backgroundPosition=`${col*33.333333}% ${row*50}%`;
             finisherImpact.style.opacity=String(Math.min(1,Math.max(.2,(1-k)*1.9)));
