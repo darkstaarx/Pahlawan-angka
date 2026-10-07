@@ -219,7 +219,7 @@
       return;
     }
     name.textContent=item.name;
-    desc.textContent=`Tahap ${item.level||1} · Ikatan ${item.bondXp||0} XP`;
+    desc.textContent=`Tahap ${item.level||1}${item.evolutionTheme==='fire'?' · Bara':''} · Ikatan ${item.bondXp||0} XP`;
   }
 
   function paintTracker(){
@@ -285,4 +285,5 @@
 
   window.PAKhazanah={rarityOf, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
 })();
+
 

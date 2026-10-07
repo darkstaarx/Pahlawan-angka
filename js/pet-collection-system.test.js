@@ -138,12 +138,12 @@ test('an unequipped tamed pet gets no Bond XP',()=>{
 });
 
 test('rarity-specific evolution milestones and Aurora Common milestones are exact',()=>{
- assert.deepEqual(pets.evolutionMilestones,{Common:[10,25,45],Uncommon:[12,30,50],Rare:[15,35,55],Epic:[18,40,60],Legendary:[20,45,60]});
- for(const [id,expected] of Object.entries({aurora:[10,25,45],ketupatKura:[10,25,45],kumbangManggis:[12,30,50],harimauBunga:[15,35,55],arnabKekLapis:[18,40,60],durianKerbau:[20,45,60]})){
+ assert.deepEqual(pets.evolutionMilestones,{Common:[5,25,45],Uncommon:[5,30,50],Rare:[5,35,55],Epic:[5,40,60],Legendary:[5,45,60]});
+ for(const [id,expected] of Object.entries({aurora:[5,25,45],ketupatKura:[5,25,45],kumbangManggis:[5,30,50],harimauBunga:[5,35,55],arnabKekLapis:[5,40,60],durianKerbau:[5,45,60]})){
   assert.deepEqual(pets.milestonesFor(id),expected);assert.equal(pets.evolutionForLevel(id,expected[0]-1),0);assert.equal(pets.evolutionForLevel(id,expected[0]),1);assert.equal(pets.evolutionForLevel(id,expected[2]),3);
  }
  const data=fresh();pets.ensure(data);const aurora=data.petCollection.aurora;
- assert.equal(aurora.level,1);assert.equal(aurora.evolutionState,'Bentuk Asas');assert.equal(aurora.nextEvolution,10);
+ assert.equal(aurora.level,1);assert.equal(aurora.evolutionState,'Bentuk Asas');assert.equal(aurora.nextEvolution,5);
 });
 
 test('demo, legacy-shaped input, cancellation, Learning Camp and incomplete runs cannot award',()=>{
@@ -226,3 +226,26 @@ test('later global access cannot turn a different locked pet into an old run awa
  assert.equal(pets.rename(data,'ketupatKura',''),false);
  assert.equal(data.petCollection.ketupatKura.customName,'Si Comel');
  });
+
+
+test('all owned pets evolve at their own level five, preserve names/XP and select fire sprites',()=>{
+ const data=fresh();data.level=60;pets.ensure(data);
+ for(const id of Object.keys(pets.catalog)){
+  data.petCollection[id].state='tamed';data.petCollection[id].bondXp=399;data.petCollection[id].customName='Teman '+id;
+ }
+ for(const pet of pets.snapshot(data).pets){assert.equal(pet.level,4);assert.equal(pet.evolutionTheme,null);assert.equal(pet.companionScale,.58);assert(!pet.assets.happy.includes('/evolution/'));assert.equal(pet.nextEvolution,5);}
+ for(const id of Object.keys(pets.catalog))data.petCollection[id].bondXp=400;
+ data.level=1;
+ for(const pet of pets.snapshot(data).pets){
+  assert.equal(pet.level,5);assert.equal(pet.bondXp,400);assert.equal(pet.name,'Teman '+pet.id);assert.equal(pet.evolutionTheme,'fire');assert.equal(pet.evolutionStage,1);assert.equal(pet.evolutionState,'Bara · Evolusi 1');assert.equal(pet.companionScale,1);
+  for(const asset of [pet.assets.happy,pet.assets.idleSprite])assert(fs.existsSync(path.join(__dirname,'..',asset)),asset);
+ }
+ const before=JSON.stringify(data);pets.ensure(data);assert.equal(JSON.stringify(data),before,'refresh should not reset progression');
+ data.petCollection.durianKerbau.state='unseen';const unseen=pets.snapshot(data).pets.find(p=>p.id==='durianKerbau');assert.equal(unseen.evolutionTheme,null);assert(!unseen.assets.happy.includes('/evolution/'));
+});
+test('a real completion crosses level five only for the active pet; replay cannot grant more XP',()=>{
+ const data=fresh();pets.ensure(data);data.petCollection.aurora.bondXp=380;data.petCollection.ketupatKura.state='tamed';data.petCollection.ketupatKura.bondXp=380;
+ const run=assigned(data,'fire-threshold');const award=pets.awardGembokCompletion(data,run);
+ assert.equal(award.bondXpAwarded,true);assert.equal(award.evolvedPetName,'Aurora');assert.equal(data.petCollection.aurora.bondXp,400);assert.equal(pets.active(data).evolutionTheme,'fire');assert.equal(data.petCollection.ketupatKura.bondXp,380);
+ pets.awardGembokCompletion(data,run);assert.equal(data.petCollection.aurora.bondXp,400);
+});

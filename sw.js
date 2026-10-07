@@ -1,6 +1,6 @@
 // App shell v3.84.64 — mobile long-screen scroll ownership refresh.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-battle-lock-fraction-variety-1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-pets-fire-level5-1`;
 const APP_SHELL=[
   './assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.png',
   './assets/fx/wira/final-v5/glacier-clean-sheet-v1.png',
@@ -8,6 +8,18 @@ const APP_SHELL=[
   './css/page-lock-v1.css','./js/page-lock-v1.js',
   './assets/avatars/pupils/avatar-01.png','./assets/avatars/pupils/avatar-02.png','./assets/avatars/pupils/avatar-03.png','./assets/avatars/pupils/avatar-04.png','./assets/avatars/pupils/avatar-05.png','./assets/avatars/pupils/avatar-06.png','./assets/avatars/pupils/avatar-07.png','./assets/avatars/pupils/avatar-08.png',
   './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js','./css/dev-pet-reward-debug-v1.0.0.css','./js/dev-pet-reward-debug-v1.0.0.js','./css/teman-reveal-v1.0.0.css','./css/teman-reveal-stars-v1.0.0.css','./js/teman-reveal-v1.0.0.js',
+  './assets/pets/evolution/fire/aurora/happy-v1.webp',
+  './assets/pets/evolution/fire/aurora/companion-idle-v1.webp',
+  './assets/pets/evolution/fire/ketupatKura/happy-v1.webp',
+  './assets/pets/evolution/fire/ketupatKura/companion-idle-v1.webp',
+  './assets/pets/evolution/fire/kumbangManggis/happy-v1.webp',
+  './assets/pets/evolution/fire/kumbangManggis/companion-idle-v1.webp',
+  './assets/pets/evolution/fire/harimauBunga/happy-v1.webp',
+  './assets/pets/evolution/fire/harimauBunga/companion-idle-v1.webp',
+  './assets/pets/evolution/fire/arnabKekLapis/happy-v1.webp',
+  './assets/pets/evolution/fire/arnabKekLapis/companion-idle-v1.webp',
+  './assets/pets/evolution/fire/durianKerbau/happy-v1.webp',
+  './assets/pets/evolution/fire/durianKerbau/companion-idle-v1.webp',
   './assets/pets/aurora/standby-v2.webp','./assets/pets/aurora/frames/sad-0-v1.webp','./assets/pets/aurora/frames/sad-1-v1.webp','./assets/pets/aurora/frames/sad-2-v1.webp','./assets/pets/aurora/frames/sad-3-v1.webp','./assets/pets/aurora/frames/sad-4-v1.webp','./assets/pets/aurora/frames/sad-5-v1.webp','./assets/pets/aurora/frames/sad-6-v1.webp','./assets/pets/aurora/frames/sad-7-v1.webp','./assets/pets/aurora/frames/joy-0-v1.webp','./assets/pets/aurora/frames/joy-1-v1.webp',
   './assets/pets/collection/ketupat-kura/idle.png','./assets/pets/collection/ketupat-kura/sad.png','./assets/pets/collection/ketupat-kura/happy.png',
   './assets/pets/collection/kumbang-manggis/idle.png','./assets/pets/collection/kumbang-manggis/sad.png','./assets/pets/collection/kumbang-manggis/happy.png',
@@ -151,6 +163,7 @@ self.addEventListener('fetch',event=>{
       }))
   );
 });
+
 
 
 
