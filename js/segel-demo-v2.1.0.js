@@ -1125,7 +1125,7 @@
     });
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
-    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,camY:0,rescued:false,lifecycle:0,
+    const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,companionScale:COMPANION_SCALE,camY:0,rescued:false,lifecycle:0,
              shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
@@ -1143,6 +1143,7 @@
     async function setPetVisual(config){
       const generation=++petVisualGeneration;
       activePetConfig=config&&typeof config==='object'?config:null;
+      S.companionScale=activePetConfig?.evolutionTheme==='fire'?1:COMPANION_SCALE;
       const joy=await customPetFrames(activePetConfig,'happy',petJoy);
       const idle=await customPetFrames(activePetConfig,'idle',[]);
       // Tekan Swap Pet beberapa kali semasa texture masih dimuat tidak boleh
@@ -1158,7 +1159,7 @@
       const animated=idleE.length>1?idleE:(joyE.length>1?joyE:(petJoyE.length>1?petJoyE:[]));
       S.companionMirror=!idle.custom;
       S.companionFrames=animated.length?animated:(idleE.length?idleE:petJoyE);
-      S.companionHold=idle.custom&&idleE.length===4?PET_SHEET_HOLD:null;
+      S.companionHold=idle.custom&&idleE.length===2&&activePetConfig?.evolutionTheme==='fire'?[2.8,.12]:idle.custom&&idleE.length===4?PET_SHEET_HOLD:null;
       S.companionFps=animated.length>1?2:1; S.companionFrameT0=tAcc;
       companion.visible=!!activePetConfig&&S.companionFrames.length>0;
       if(S.companionFrames[0]){
@@ -1194,7 +1195,7 @@
       swap(companion,e);
       // Existing happy/joy art is authored facing left. A TEMAN faces right
       // toward Wira; mirror only this mesh so rescue/lock art stays untouched.
-      companion.scale.set((S.companionMirror?-1:1)*Math.abs(e.w)*COMPANION_SCALE,e.h*COMPANION_SCALE,1);
+      companion.scale.set((S.companionMirror?-1:1)*Math.abs(e.w)*S.companionScale,e.h*S.companionScale,1);
     }
 
     function frame(now){
@@ -1268,9 +1269,9 @@
       // The trapped pet remains present through recoil, shatter and impact;
       // only its frame/state changes. Never blink the mesh during a hit.
       pet.visible=!!S.petFrames.length;
-      S.companionFeet=damp(S.companionFeet,COMPANION_HOME,8,dt);
-      companion.position.x=S.companionFeet+(S.companionMirror?-1:1)*companion.userData.e.offX*COMPANION_SCALE;
-      companion.position.y=GROUND+companion.userData.e.offY*COMPANION_SCALE;
+      S.companionFeet=damp(S.companionFeet,COMPANION_HOME+(S.companionScale===1?.36:0),8,dt);
+      companion.position.x=S.companionFeet+(S.companionMirror?-1:1)*companion.userData.e.offX*S.companionScale;
+      companion.position.y=GROUND+companion.userData.e.offY*S.companionScale;
 
       // Bayang Aurora kekal di lantai dan mengecut bila dia naik.
       const rise=Math.max(0,(S.petFeet-GROUND))/.8;
@@ -2190,6 +2191,7 @@
   }
 
   function petCompletionNote(award){
+    if(award?.evolvedPetName)return `${award.evolvedPetName} mencapai Tahap 5 · Evolusi Bara dibuka!`;
     if(!award?.petId)return 'Misi selesai! Teruskan Gembok untuk mencari jejak teman baharu.';
     const name=petNameForAward(award);
     if(award.newlyTamed)return `${name} berjaya dijinakkan!`;
@@ -2564,6 +2566,7 @@
     state:()=>run
   };
 })();
+
 
 
 

@@ -13,7 +13,7 @@
  const rescueCycle=['ketupatKura','kumbangManggis','harimauBunga','arnabKekLapis','durianKerbau','ketupatKura','ketupatKura','ketupatKura','ketupatKura','kumbangManggis','kumbangManggis','harimauBunga'];
  const rescueMultipliers={Common:.70,Uncommon:1, Rare:1.4,Epic:1.8,Legendary:2.4};
   const MIGRATION_VERSION=2,PROGRESSION_VERSION=4,MAX_COUNT=Number.MAX_SAFE_INTEGER;
- const evolutionMilestones={Common:[10,25,45],Uncommon:[12,30,50],Rare:[15,35,55],Epic:[18,40,60],Legendary:[20,45,60]};
+ const evolutionMilestones={Common:[5,25,45],Uncommon:[5,30,50],Rare:[5,35,55],Epic:[5,40,60],Legendary:[5,45,60]};
  const count=x=>Number.isFinite(Number(x))?Math.max(0,Math.min(MAX_COUNT,Math.floor(Number(x)))):0;
  const addCount=(a,b)=>Math.min(MAX_COUNT,count(a)+count(b));
  const level=x=>Math.min(60,1+Math.floor(count(x)/100));
@@ -34,7 +34,7 @@
  }
  const milestonesFor=id=>evolutionMilestones[catalog[id]?.evolutionRarity||catalog[id]?.rarity]||evolutionMilestones.Common;
  const stage=(id,petLevel)=>milestonesFor(id).filter(milestone=>petLevel>=milestone).length;
- const evolutionName=stage=>stage?`Evolusi ${stage}`:'Bentuk Asas';
+ const evolutionName=stage=>stage?`Bara · Evolusi ${stage}`:'Bentuk Asas';
  const object=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
  const gradeFromSkill=id=>{const match=String(id||'').match(/^D(\d+)\./);return match?Number(match[1]):null;};
  function graphSkillCount(grade){
@@ -77,7 +77,7 @@
    const old=object(data.petCollection[id]),owned=id==='aurora'||old.state==='tamed';
    const xp=count(old.bondXp),lv=level(xp);
    const evolutionStage=stage(id,lv),milestones=milestonesFor(id),nextEvolution=milestones.find(milestone=>milestone>lv)||null;
-   data.petCollection[id]={...old,state:owned?'tamed':old.state==='encountered'?'encountered':'unseen',rarity:meta.rarity,species:meta.species||old.species||'',levelGate:meta.levelGate,encounters:count(old.encounters),tameProgress:count(old.tameProgress),petTrace:count(old.petTrace),rescues:count(old.rescues),bondXp:xp,level:lv,evolutionStage,evolutionState:evolutionName(evolutionStage),nextEvolution,unlockedAt:owned?(count(old.unlockedAt)||now):null};
+   data.petCollection[id]={...old,state:owned?'tamed':old.state==='encountered'?'encountered':'unseen',rarity:meta.rarity,species:meta.species||old.species||'',levelGate:meta.levelGate,encounters:count(old.encounters),tameProgress:count(old.tameProgress),petTrace:count(old.petTrace),rescues:count(old.rescues),bondXp:xp,level:lv,evolutionStage,evolutionTheme:owned&&evolutionStage>0?'fire':null,evolutionState:evolutionName(evolutionStage),nextEvolution,unlockedAt:owned?(count(old.unlockedAt)||now):null};
    if(owned&&!data.rewards.pets[id])data.rewards.pets[id]={unlockedAt:data.petCollection[id].unlockedAt,collection:true};
   });
   const e=object(data.expedition),requested=e.activePetId||data.rewards.equippedPet;
@@ -93,11 +93,14 @@
   const access=rescueAccess(data,Number(data.schoolGrade)||1);
   return {pets:Object.entries(catalog).map(([id,meta])=>{
    const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:meta.name};
-   const assets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,idleSprite:`assets/pets/collection/${meta.folder}/companion-idle-v1.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,sadSprite:`assets/pets/collection/${meta.folder}/sprite-sheets/sad-v1.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',idleSprite:null,sad:'assets/pets/aurora/standby-v2.webp',sadSprite:null,happySprite:null};
+   const baseAssets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,idleSprite:`assets/pets/collection/${meta.folder}/companion-idle-v1.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,sadSprite:`assets/pets/collection/${meta.folder}/sprite-sheets/sad-v1.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',idleSprite:null,sad:'assets/pets/aurora/standby-v2.webp',sadSprite:null,happySprite:null};
+   const evolved=data.petCollection[id].state==='tamed'&&data.petCollection[id].level>=5;
+   const fireRoot=`assets/pets/evolution/fire/${id}`;
+   const assets=evolved?{...baseAssets,happy:`${fireRoot}/happy-v1.webp`,idle:`${fireRoot}/happy-v1.webp`,idleSprite:`${fireRoot}/companion-idle-v1.webp`,happySprite:`${fireRoot}/companion-idle-v1.webp`}:baseAssets;
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=data.petCollection[id].state==='tamed'||rescueOrder.indexOf(id)<=access.tier;
     const customName=String(data.petCollection[id].customName||'').trim();
-    return {...item,...data.petCollection[id],id,name:customName||meta.name,defaultName:meta.name,species:meta.species||'',assets,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
+    return {...item,...data.petCollection[id],id,name:customName||meta.name,defaultName:meta.name,species:meta.species||'',assets,evolutionTheme:evolved?'fire':null,companionScale:evolved?1:.58,active:data.expedition.activePetId===id,eligible,rescueGrade:grade,rescueThreshold:eligible&&grade?rescueThreshold(id,grade):null};
   }),expedition:{...data.expedition}};
  }
  /* All battle renderers must read this helper instead of keeping their own
@@ -163,12 +166,13 @@
    newlyTamed=pet.state!=='tamed'&&pet.rescues>=threshold;
    if(newlyTamed){pet.state='tamed';pet.unlockedAt=now;data.rewards.pets[petId]={unlockedAt:now,collection:true};}
   }
-  const activePet=data.petCollection[data.expedition.activePetId];let bondXpAwarded=false;
-  if(activePet?.state==='tamed'){activePet.bondXp=addCount(activePet.bondXp,20);activePet.level=level(activePet.bondXp);activePet.evolutionStage=stage(data.expedition.activePetId,activePet.level);activePet.evolutionState=evolutionName(activePet.evolutionStage);activePet.nextEvolution=milestonesFor(data.expedition.activePetId).find(milestone=>milestone>activePet.level)||null;bondXpAwarded=true;}
+  const activePet=data.petCollection[data.expedition.activePetId];let bondXpAwarded=false,evolvedPetName=null;const previousPetLevel=activePet?level(activePet.bondXp):0;
+  if(activePet?.state==='tamed'){activePet.bondXp=addCount(activePet.bondXp,20);activePet.level=level(activePet.bondXp);activePet.evolutionStage=stage(data.expedition.activePetId,activePet.level);activePet.evolutionTheme=activePet.evolutionStage>0?'fire':null;activePet.evolutionState=evolutionName(activePet.evolutionStage);activePet.nextEvolution=milestonesFor(data.expedition.activePetId).find(milestone=>milestone>activePet.level)||null;bondXpAwarded=true;if(previousPetLevel<5&&activePet.level>=5)evolvedPetName=String(activePet.customName||catalog[data.expedition.activePetId].name);}
   data.gembokPetAwards[run.id]={at:now,route:run.route,petId,grade,skillId:run.rescueSkillId,rescues,threshold,rescueAwarded,bondXpAwarded,equippedPetId:bondXpAwarded?data.expedition.activePetId:null};
-  persist(data);return {awarded:rescueAwarded||bondXpAwarded,petId,grade,rescues,threshold,newlyTamed,alreadyTamed,rescueAwarded,bondXpAwarded};
+  persist(data);return {awarded:rescueAwarded||bondXpAwarded,petId,grade,rescues,threshold,newlyTamed,alreadyTamed,rescueAwarded,bondXpAwarded,evolvedPetName};
  }
   const api={ensure,snapshot,active,equip,rename,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueAccess,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:(id,petLevel)=>stage(id,petLevel),evolutionMilestones,milestonesFor,playerLevel};
  root.PetCollection=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
+
 

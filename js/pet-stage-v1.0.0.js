@@ -12,7 +12,7 @@
 (function(){
   'use strict';
 
-  let THREE=null, stage=null, booting=null, shownPet=null;
+  let THREE=null, stage=null, booting=null, shownPet=null, shownAsset=null;
 
   const $ = id => document.getElementById(id);
   const damp = (c,t,l,dt) => c + (t-c)*(1-Math.exp(-l*dt));
@@ -122,8 +122,11 @@
        KAKI dan saiznya ialah tinggi watak yang kelihatan — bukan tinggi
        bingkai. Kalau tidak, satu teman keluar gergasi dan satu lagi kerdil. */
     const PET_VISIBLE=1.95;
+    let petLoadGeneration=0;
     async function setPet(url){
+      const generation=++petLoadGeneration;
       const tex=await load(url);
+      if(generation!==petLoadGeneration)return;
       if(!tex||!tex.image){ pet.material.opacity=0; return }
       const img=tex.image, m=measure(img);
       const planeH=PET_VISIBLE/Math.max(.2,m.boxH), upp=planeH/img.height;
@@ -320,8 +323,9 @@
     let s;
     try{ s=await boot() }catch(_){ host.classList.add('noGl'); return }
     s.resume();
-    if(shownPet!==item.id){
-      shownPet=item.id;
+    const asset=item.hub||item.front;
+    if(shownPet!==item.id||shownAsset!==asset){
+      shownPet=item.id;shownAsset=asset;
       s.recentre();
       // `hub` ialah pose pengembaraan penuh badan; `front` sandaran.
       await s.setPet(item.hub||item.front);
@@ -372,3 +376,4 @@
 
   window.PAPetStage={refresh, tab:onTab, state:()=>({shownPet, ready:!!stage})};
 })();
+
