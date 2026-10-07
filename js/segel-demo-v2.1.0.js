@@ -578,9 +578,8 @@
        nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
     const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
-    // Companion sits just behind Wira spatially, but renders in front so the
-    // small pet remains readable instead of disappearing inside the hero.
-    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME+.52;
+    // Companion stands behind Wira, both spatially and in render order.
+    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME-.52;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
@@ -781,7 +780,7 @@
     // happy/Khazanah sprites are authored menghadap kanan atau ke depan.
     // Companion dan pet lock mesti kekal sebagai dua mesh yang berasingan.
     const pet =actor(petSadE[0],-.3); // pet terkunci: sedih, kiri
-    const companion=actor(petJoyE[0]||petSadE[0],.1); // aktif: happy, kanan/depan
+    const companion=actor(petJoyE[0]||petSadE[0],-.1); // aktif: happy, belakang Wira
     companion.visible=false;
     const COMPANION_SCALE=.58;
 
@@ -870,7 +869,7 @@
               damage:0, broken:false, breakT:-1};
     });
     pet.renderOrder=1;
-    companion.renderOrder=5;
+    companion.renderOrder=3;
     hero.renderOrder=4;
 
     /* SERPIHAN SEGEL
@@ -1143,7 +1142,7 @@
     async function setPetVisual(config){
       const generation=++petVisualGeneration;
       activePetConfig=config&&typeof config==='object'?config:null;
-      S.companionScale=activePetConfig?.evolutionTheme==='fire'?1:COMPANION_SCALE;
+      S.companionScale=activePetConfig?.evolutionTheme==='fire' ? .85 : COMPANION_SCALE;
       const joy=await customPetFrames(activePetConfig,'happy',petJoy);
       const idle=await customPetFrames(activePetConfig,'idle',[]);
       // Tekan Swap Pet beberapa kali semasa texture masih dimuat tidak boleh
@@ -1269,7 +1268,7 @@
       // The trapped pet remains present through recoil, shatter and impact;
       // only its frame/state changes. Never blink the mesh during a hit.
       pet.visible=!!S.petFrames.length;
-      S.companionFeet=damp(S.companionFeet,COMPANION_HOME+(S.companionScale===1?.36:0),8,dt);
+      S.companionFeet=damp(S.companionFeet,COMPANION_HOME,8,dt);
       companion.position.x=S.companionFeet+(S.companionMirror?-1:1)*companion.userData.e.offX*S.companionScale;
       companion.position.y=GROUND+companion.userData.e.offY*S.companionScale;
 
