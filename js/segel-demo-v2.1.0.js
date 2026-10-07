@@ -578,7 +578,7 @@
        nampak berdiri di hadapan kubah, bukan terkurung di dalamnya. */
     const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
-    // Companion stands behind Wira, both spatially and in render order.
+    // Companion stands behind Wira; draw its art in front to keep it readable.
     const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME-.52;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
@@ -780,7 +780,7 @@
     // happy/Khazanah sprites are authored menghadap kanan atau ke depan.
     // Companion dan pet lock mesti kekal sebagai dua mesh yang berasingan.
     const pet =actor(petSadE[0],-.3); // pet terkunci: sedih, kiri
-    const companion=actor(petJoyE[0]||petSadE[0],-.1); // aktif: happy, belakang Wira
+    const companion=actor(petJoyE[0]||petSadE[0],.1); // aktif: posisi belakang, grafik di depan Wira
     companion.visible=false;
     const COMPANION_SCALE=.58;
 
@@ -869,7 +869,7 @@
               damage:0, broken:false, breakT:-1};
     });
     pet.renderOrder=1;
-    companion.renderOrder=3;
+    companion.renderOrder=5;
     hero.renderOrder=4;
 
     /* SERPIHAN SEGEL
@@ -1175,10 +1175,9 @@
       const sad=await customPetFrames(rescuePetConfig,'sad',petSad);
       const happy=await customPetFrames(rescuePetConfig,'happy',petJoy);
       if(generation!==rescuePetVisualGeneration)return;
-      const sadUpp=sad.custom?petUpp(sad.frames):PET_UPP;
-      const happyUpp=happy.custom?petUpp(happy.frames):PET_UPP;
-      rescueSadE=sad.custom?petEntries(sad.frames,sadUpp):sad.frames.map(t=>entry(t,PET_UPP));
-      rescueHappyE=happy.custom?petEntries(happy.frames,happyUpp):happy.frames.map(t=>entry(t,PET_UPP));
+      // Static custom art needs the same visible-height normalization as sheets.
+      rescueSadE=petEntries(sad.frames);
+      rescueHappyE=petEntries(happy.frames);
       if(!rescueSadE.length)rescueSadE=petSadE;
       if(!rescueHappyE.length)rescueHappyE=petJoyE;
       rescueSadHold=sad.custom&&rescueSadE.length===4?PET_SHEET_HOLD:(rescueSadE.length===8?PET_IDLE_HOLD:null);

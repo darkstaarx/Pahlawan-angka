@@ -58,7 +58,7 @@
     if(!pet)return null;
     return {
       id:pet.id,name:pet.name,
-      sad:pet.assets?.sad?[pet.assets.sad]:[],
+      sad:pet.assets?.sadFrames||(pet.assets?.sad?[pet.assets.sad]:[]),
       happy:pet.assets?.happy?[pet.assets.happy]:[],
       idle:pet.assets?.idle?[pet.assets.idle]:[],
       sadSheet:pet.assets?.sadSprite||null,

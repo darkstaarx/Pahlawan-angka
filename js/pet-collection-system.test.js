@@ -249,3 +249,15 @@ test('a real completion crosses level five only for the active pet; replay canno
  assert.equal(award.bondXpAwarded,true);assert.equal(award.evolvedPetName,'Aurora');assert.equal(data.petCollection.aurora.bondXp,400);assert.equal(pets.active(data).evolutionTheme,'fire');assert.equal(data.petCollection.ketupatKura.bondXp,380);
  pets.awardGembokCompletion(data,run);assert.equal(data.petCollection.aurora.bondXp,400);
 });
+
+
+test('trapped Aurora uses eight sad animation frames independently of companion idle art',()=>{
+ const aurora=pets.snapshot(fresh()).pets.find(p=>p.id==='aurora');
+ assert.equal(aurora.assets.sad,'assets/pets/aurora/frames/sad-0-v1.webp');
+ assert.equal(aurora.assets.sadFrames.length,8);
+ aurora.assets.sadFrames.forEach((frame,i)=>{
+  assert.equal(frame,`assets/pets/aurora/frames/sad-${i}-v1.webp`);
+  assert.ok(fs.existsSync(path.join(__dirname,'..',frame)));
+ });
+ assert.notEqual(aurora.assets.sad,aurora.assets.idle);
+});
