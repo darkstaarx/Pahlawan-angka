@@ -4,31 +4,83 @@
 const RT=window.PAY6V2Runtime;if(!RT)return;
 const {GEN,Nq,choose,q,mark,chooseMode,bandModes,stage,coord,table}=RT;
 
+function localCoordMap(spec){
+ const W=360,H=360,left=34,top=22,right=22,bottom=34,cw=(W-left-right)/8,ch=(H-top-bottom)/8;
+ const px=x=>left+x*cw,py=y=>top+(8-y)*ch;
+ let g='';
+ for(let x=0;x<=8;x++)g+=`<line x1="${px(x)}" y1="${top}" x2="${px(x)}" y2="${H-bottom}" stroke="#d8e2ef" stroke-width="1"/>`;
+ for(let y=0;y<=8;y++)g+=`<line x1="${left}" y1="${py(y)}" x2="${W-right}" y2="${py(y)}" stroke="#d8e2ef" stroke-width="1"/>`;
+ const points=spec.points.map(p=>`<circle cx="${px(p.x)}" cy="${py(p.y)}" r="7" fill="#ffca62" stroke="#263b5d" stroke-width="2"/><text x="${px(p.x)}" y="${py(p.y)-10}" text-anchor="middle" font-size="11" font-weight="800" fill="#263b5d">${p.label}</text>`).join('');
+ const axes=`<line x1="${left}" y1="${py(0)}" x2="${W-right}" y2="${py(0)}" stroke="#526987" stroke-width="2"/><line x1="${left}" y1="${top}" x2="${left}" y2="${py(0)}" stroke="#526987" stroke-width="2"/>`;
+ const ticks=[...Array(9)].map((_,x)=>`<text x="${px(x)}" y="${H-20}" text-anchor="middle" font-size="12" fill="#526987">${x}</text>`).join('');
+ const yt=[...Array(9)].map((_,y)=>`<text x="16" y="${py(y)+3}" text-anchor="middle" font-size="12" fill="#526987">${y}</text>`).join('');
+ const legend=spec.points.map(p=>`<span style="display:inline-block;margin-right:9px"><b>${p.label}</b> = ${p.name}</span>`).join('');
+ return `<div><svg viewBox="0 0 ${W} ${H}" width="360" height="360" role="img" aria-label="Peta koordinat grid 0 hingga 8 pada kedua-dua paksi" style="display:block;max-width:100%;height:auto;margin:0 auto 5px;background:#f8fbff;border:1px solid #b9c9dc;border-radius:8px">${g}${axes}${points}${ticks}${yt}<text x="${W-20}" y="${H-7}" font-size="12" fill="#526987">x</text><text x="12" y="12" font-size="12" fill="#526987">y</text></svg><div style="font-size:11px;line-height:1.45;text-align:center">${legend}</div></div>`;
+}
+function coordMapSpec(mode){
+ const layouts=[[[1,1],[3,4],[5,1],[6,5],[8,2]],[[1,4],[2,1],[4,3],[7,1],[8,5]],[[1,2],[3,5],[4,1],[6,3],[8,4]],[[1,5],[2,2],[5,4],[7,2],[8,1]]];
+ const names=['Perpustakaan','Kantin','Dewan','Makmal','Taman'];
+ const xy=choose(layouts), ns=names.slice().sort(()=>Math.random()-.5);
+ return {mode,scale:choose([2,3,5]),points:xy.map((v,i)=>({x:v[0],y:v[1],label:String.fromCharCode(65+i),name:ns[i]})),from:null,to:null,target:null,movements:null,math:null};
+}
+function coordPair(spec,unequal){
+ const pairs=[];for(const a of spec.points)for(const b of spec.points)if(a!==b){const dx=Math.abs(b.x-a.x),dy=Math.abs(b.y-a.y);if(dx&&dy&&(!unequal||dx!==dy))pairs.push([a,b])}
+ return choose(pairs);
+}
+function tupleWrongs(p){
+ const out=[],seen=new Set([`(${p.x},${p.y})`]);
+ [[p.y,p.x],[p.x+1,p.y],[p.x,p.y+1],[p.x-1,p.y],[p.x,p.y-1]].forEach(v=>{if(v[0]>=0&&v[0]<=8&&v[1]>=0&&v[1]<=8){const s=`(${v[0]},${v[1]})`;if(!seen.has(s)){seen.add(s);out.push(s)}}});
+ return out.slice(0,3);
+}
+function mapMark(out,id,mode,rep,demand,s,spec,targets){out.coordMapSpec=spec;return mark(out,id,'7.1.1',mode,rep,demand,s,targets)}
+function dirText(dx,dy){return `${Math.abs(dx)} petak ${dx<0?'ke kiri':'ke kanan'} dan ${Math.abs(dy)} petak ${dy<0?'ke bawah':'ke atas'}`}
+function pairText(h,v){return `mengufuk ${h} km, mencancang ${v} km`}
+function pairWrongs(h,v,scale){return [...new Set([pairText(v,h),pairText(h+scale,v),pairText(h,v+scale),pairText(h+scale,v+scale),pairText(Math.max(scale,h-scale),v)])].filter(x=>x!==pairText(h,v)).slice(0,3)}
+
 GEN['7.1.1']=function(id,s){
  const mode=chooseMode(id,'7.1.1',bandModes(
   s,
-  ['petak_scale','direction','missing_point'],
-  ['petak_scale','direction','missing_point','cm_scale','representative_scale','route'],
-  ['cm_scale','representative_scale','route','scale_reverse','route_compare','coord_error']
- ));
+  ['map_coordinate','map_destination','petak_scale','direction','missing_point'],
+  ['map_destination','map_distances','map_scaled_destination','petak_scale','direction','missing_point','cm_scale','representative_scale','route'],
+  ['map_distances','map_scaled_destination','cm_scale','representative_scale','route','scale_reverse','route_compare','coord_error']
+  ));
+ if(mode==='map_coordinate'){
+  const spec=coordMapSpec(mode),p=choose(spec.points), answer=`(${p.x},${p.y})`, wrong=tupleWrongs(p); spec.target=p.label;
+  return mapMark(q(localCoordMap(spec)+'Apakah koordinat bagi '+p.name+'? ',answer,wrong.map(x=>Nq(x,'coord')),'Baca nilai x dahulu, kemudian nilai y.','Tahun 6 · Koordinat Peta'),id,mode,'visual',stage(s)===3?'reasoning':'application',s,spec,['coord','visual_reading']);
+ }
+ if(mode==='map_destination'){
+  const spec=coordMapSpec(mode),[from,to]=coordPair(spec,false),dx=to.x-from.x,dy=to.y-from.y; spec.from=from.label;spec.to=to.label;spec.target=to.label;spec.movements={dx,dy};spec.math={horizontalPetak:Math.abs(dx),verticalPetak:Math.abs(dy)};
+  const wrong=spec.points.filter(p=>p!==to).slice(0,3).map(p=>Nq(p.name,'coord'));
+  return mapMark(q(localCoordMap(spec)+'Dari '+from.name+', bergerak '+dirText(dx,dy)+'. Di manakah destinasi itu?',to.name,wrong,'Ikut perubahan mengufuk pada x dan mencancang pada y.','Tahun 6 · Destinasi Peta'),id,mode,'visual',stage(s)===3?'reasoning':'application',s,spec,['coord','direction','map_reasoning']);
+ }
+ if(mode==='map_distances'){
+  const spec=coordMapSpec(mode),[from,to]=coordPair(spec,true),dx=Math.abs(to.x-from.x),dy=Math.abs(to.y-from.y),h=dx*spec.scale,v=dy*spec.scale,answer=pairText(h,v); spec.from=from.label;spec.to=to.label;spec.target=to.label;spec.movements={dx:to.x-from.x,dy:to.y-from.y};spec.math={horizontalPetak:dx,verticalPetak:dy,horizontalKm:h,verticalKm:v};
+  const wrong=pairWrongs(h,v,spec.scale);
+  return mapMark(q(localCoordMap(spec)+'Antara '+from.name+' dan '+to.name+', jika 1 petak = '+spec.scale+' km, berapakah jarak sebenar bagi pasangan mengufuk dan mencancang? Nyatakan kedua-duanya dalam km.',answer,wrong.map(x=>Nq(x,'scale')),'Kira beza x dan y, kemudian darab setiap satu dengan skala '+spec.scale+' km bagi satu petak.','Tahun 6 · Jarak Mengufuk dan Mencancang'),id,mode,'visual','reasoning',s,spec,['coord','scale','distance_pair','swap_error']);
+ }
+ if(mode==='map_scaled_destination'){
+  const spec=coordMapSpec(mode),[from,to]=coordPair(spec,true),dx=Math.abs(to.x-from.x),dy=Math.abs(to.y-from.y),h=dx*spec.scale,v=dy*spec.scale,answer=to.name; spec.from=from.label;spec.to=to.label;spec.target=to.label;spec.movements={dx:to.x-from.x,dy:to.y-from.y};spec.math={horizontalPetak:dx,verticalPetak:dy,horizontalKm:h,verticalKm:v};
+  const wrong=spec.points.filter(p=>p!==to).slice(0,3).map(p=>Nq(p.name,'coord'));
+  return mapMark(q(localCoordMap(spec)+'Skala peta ialah 1 petak = '+spec.scale+' km. Dari '+from.name+', Hana bergerak '+h+' km '+(to.x<from.x?'ke kiri':'ke kanan')+' dan '+v+' km '+(to.y<from.y?'ke bawah':'ke atas')+'. Ke manakah Hana pergi?',answer,wrong,'Bahagi setiap jarak dengan skala untuk mendapatkan bilangan petak, kemudian ikut arah pergerakan.','Tahun 6 · Destinasi Berskala'),id,mode,'visual','reasoning',s,spec,['coord','scale','direction','map_reasoning']);
+ }
  if(mode==='petak_scale'){
   const sc=choose([2,5,10]),dx=choose([2,3,4]),ans=dx*sc;
-  return mark(q('Dua titik berada '+dx+' petak mengufuk. Jika 1 petak = '+sc+' km, jarak sebenar?',''+ans+' km',[Nq(dx+' km','scale'),Nq((ans+sc)+' km','scale'),Nq((dx+sc)+' km','operation')],'Darab bilangan petak dengan skala.','Tahun 6 · Jarak Berskala'),id,'7.1.1',mode,'verbal',stage(s)===1?'application':'application',s,['coord','scale']);
+  return mark(q('Jarak mengufuk antara dua titik ialah '+dx+' petak. Jika 1 petak mewakili '+sc+' km, berapakah jarak sebenar antara kedua-dua titik?',''+ans+' km',[Nq(dx+' km','scale'),Nq((ans+sc)+' km','scale'),Nq((dx+sc)+' km','operation')],'Darab bilangan petak dengan skala.','Tahun 6 · Jarak Berskala'),id,'7.1.1',mode,'verbal',stage(s)===1?'application':'application',s,['coord','scale']);
  }
  if(mode==='direction'){
-  return mark(q(coord([{x:1,y:2,label:'A'},{x:4,y:5,label:'B'}])+'Dari A ke B, gerakan yang betul?','3 petak kanan, 3 petak atas',[Nq('3 petak kiri, 3 petak atas','coord'),Nq('3 petak kanan, 3 petak bawah','coord'),Nq('4 petak kanan, 5 petak atas','coord')],'Banding perubahan x dan y.','Tahun 6 · Arah Koordinat'),id,'7.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['coord','direction']);
+  return mark(q(coord([{x:1,y:2,label:'A'},{x:4,y:5,label:'B'}])+'Apakah pergerakan yang betul dari titik A ke titik B?','3 petak kanan, 3 petak atas',[Nq('3 petak kiri, 3 petak atas','coord'),Nq('3 petak kanan, 3 petak bawah','coord'),Nq('4 petak kanan, 5 petak atas','coord')],'Banding perubahan x dan y.','Tahun 6 · Arah Koordinat'),id,'7.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['coord','direction']);
  }
  if(mode==='missing_point'){
-  return mark(q('A berada pada (2,3). B ialah 3 petak ke kanan dan 2 petak ke atas A. Koordinat B?','(5,5)',[Nq('(5,1)','coord'),Nq('(4,6)','coord'),Nq('(3,2)','coord')],'Tambah 3 pada x dan 2 pada y.','Tahun 6 · Titik Hilang'),id,'7.1.1',mode,'verbal',stage(s)===3?'reasoning':'application',s,['coord','inverse']);
+  return mark(q('A berada pada (2,3). B ialah 3 petak ke kanan dan 2 petak ke atas A. Apakah koordinat titik B?','(5,5)',[Nq('(5,1)','coord'),Nq('(4,6)','coord'),Nq('(3,2)','coord')],'Tambah 3 pada x dan 2 pada y.','Tahun 6 · Titik Hilang'),id,'7.1.1',mode,'verbal',stage(s)===3?'reasoning':'application',s,['coord','inverse']);
  }
  if(mode==='cm_scale'){
-  return mark(q('Pada peta, jarak A ke B ialah 6 cm. Skala 1 cm mewakili 2 km. Jarak sebenar?','12 km',[Nq('3 km','scale'),Nq('6 km','scale'),Nq('8 km','scale')],'6 × 2 km.','Tahun 6 · Skala Peta'),id,'7.1.1',mode,'story',stage(s)===3?'reasoning':'application',s,['coord','scale']);
+  return mark(q('Pada peta, jarak A ke B ialah 6 cm. Skala 1 cm mewakili 2 km. Berapakah jarak sebenar?','12 km',[Nq('3 km','scale'),Nq('6 km','scale'),Nq('8 km','scale')],'6 × 2 km.','Tahun 6 · Skala Peta'),id,'7.1.1',mode,'story',stage(s)===3?'reasoning':'application',s,['coord','scale']);
  }
  if(mode==='representative_scale'){
-  return mark(q('Skala peta ialah 1 : 100 000. Jarak pada peta 4 cm. Jarak sebenar?','4 km',[Nq('400 m','scale'),Nq('40 km','scale'),Nq('400 km','scale')],'1 : 100 000 bermaksud 1 cm mewakili 100 000 cm = 1 km.','Tahun 6 · Skala Wakilan'),id,'7.1.1',mode,'story',stage(s)===3?'reasoning':'application',s,['coord','scale','unit_conversion']);
+  return mark(q('Skala peta ialah 1 : 100 000. Jarak pada peta 4 cm. Berapakah jarak sebenar?','4 km',[Nq('400 m','scale'),Nq('40 km','scale'),Nq('400 km','scale')],'1 : 100 000 bermaksud 1 cm mewakili 100 000 cm = 1 km.','Tahun 6 · Skala Wakilan'),id,'7.1.1',mode,'story',stage(s)===3?'reasoning':'application',s,['coord','scale','unit_conversion']);
  }
  if(mode==='route'){
-  return mark(q(coord([{x:1,y:1,label:'A'},{x:4,y:1,label:'B'},{x:4,y:5,label:'C'}],5)+'Laluan A→B→C. 1 petak = 5 km. Jumlah jarak?','35 km',[Nq('7 km','coord'),Nq('20 km','coord'),Nq('45 km','coord')],'A→B=3 petak, B→C=4 petak; jumlah 7 petak ×5 km.','Tahun 6 · Laluan Koordinat Berskala'),id,'7.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['coord','scale','route']);
+  return mark(q(coord([{x:1,y:1,label:'A'},{x:4,y:1,label:'B'},{x:4,y:5,label:'C'}],5)+'Laluan A→B→C. 1 petak = 5 km. Berapakah jumlah jarak perjalanan?','35 km',[Nq('7 km','coord'),Nq('20 km','coord'),Nq('45 km','coord')],'A→B=3 petak, B→C=4 petak; jumlah 7 petak ×5 km.','Tahun 6 · Laluan Koordinat Berskala'),id,'7.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['coord','scale','route']);
  }
  if(mode==='scale_reverse'){
   return mark(q('A(1,2) ke B(5,2) mempunyai jarak sebenar 20 km. Berapakah skala bagi 1 petak?','5 km',[Nq('4 km','scale'),Nq('10 km','scale'),Nq('20 km','scale')],'Beza x=4 petak; 20 ÷ 4.','Tahun 6 · Menentukan Skala'),id,'7.1.1',mode,'verbal','reasoning',s,['coord','scale','inverse']);
@@ -36,7 +88,7 @@ GEN['7.1.1']=function(id,s){
  if(mode==='route_compare'){
   return mark(q(table(['Laluan','Bilangan petak'],[['A→B→D',7],['A→C→D',9]])+'Jika 1 petak=2 km, laluan lebih pendek dan beza jarak?','A→B→D, lebih pendek 4 km',[Nq('A→C→D, lebih pendek 4 km','route'),Nq('A→B→D, lebih pendek 2 km','route'),Nq('kedua-duanya sama','route')],'Beza 2 petak ×2 km.','Tahun 6 · Membanding Laluan'),id,'7.1.1',mode,'table','reasoning',s,['coord','route','compare']);
  }
- return mark(q('Murid mengira jarak A(1,1) ke B(4,5) sebagai 4 petak dengan hanya melihat perubahan y. Pembetulan bagi laluan mendatar kemudian menegak?','7 petak',[Nq('4 petak','coord'),Nq('5 petak','coord'),Nq('12 petak','coord')],'Perubahan x=3 dan y=4; jumlah 7 petak.','Tahun 6 · Analisis Laluan Koordinat'),id,'7.1.1',mode,'verbal','reasoning',s,['coord','error_analysis']);
+ return mark(q('Murid mengira jarak A(1,1) ke B(4,5) sebagai 4 petak dengan hanya melihat perubahan y. Berapakah jumlah petak yang betul bagi laluan mengufuk kemudian mencancang?','7 petak',[Nq('4 petak','coord'),Nq('5 petak','coord'),Nq('12 petak','coord')],'Perubahan x=3 dan y=4; jumlah 7 petak.','Tahun 6 · Analisis Laluan Koordinat'),id,'7.1.1',mode,'verbal','reasoning',s,['coord','error_analysis']);
 };
 
 GEN['7.2.1']=function(id,s){
