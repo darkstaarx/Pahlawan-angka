@@ -1,0 +1,4 @@
+.devKhazanahBar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:12px;border:1px solid #ffd44766;border-radius:14px;background:#14253b;color:#fff}
+.devKhazanahBar b,.devKhazanahBar small{display:block}.devKhazanahBar small{margin-top:3px;color:#b7c9dd;font-size:12px}.devKhazanahActions{display:flex;flex-wrap:wrap;gap:6px}.devKhazanahActions button{min-height:40px;border:1px solid #526b8e;border-radius:9px;padding:7px 10px;background:#223956;color:#fff;font:inherit;font-size:13px;cursor:pointer}.devKhazanahActions button[aria-pressed=true]{background:#ffd447;border-color:#ffd447;color:#14253b;font-weight:800}.devKhazanahActions button:focus-visible{outline:3px solid #65d9ff;outline-offset:2px}#devKhazanahBtn{margin-top:10px}
+
+#treasure[data-dev-khazanah] [onclick^="renameCollectionPet"]{display:none}
