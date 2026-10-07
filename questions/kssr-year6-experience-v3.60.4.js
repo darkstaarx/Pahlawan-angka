@@ -45,7 +45,7 @@ function priorCore(id,s,shift){
   return usePrior(prior(id,lifted,shift));
 }
 const Z=[['Kuala Lumpur',8],['Tokyo',9],['Bangkok',7],['Dubai',4]];
-const fmt=(h,m)=>String((h%24+24)%24).padStart(2,'0')+':'+String(m).padStart(2,'0');
+const fmt=(h,m)=>formatClockTime(h*60+m,'24');
 const LOW={},CORE={},HIGH={};
 
 // Numeric domains -----------------------------------------------------------

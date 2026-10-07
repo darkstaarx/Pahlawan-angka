@@ -58,7 +58,7 @@ GEN['5.2.1']=function(id,s){
  const mode=chooseMode(id,'5.2.1',bandModes(s,['hand_name'],['hand_name','hand_function'],['hand_function','hand_reason']));
  if(mode==='hand_name')return mark(q(`${clock(3,0)}Jarum yang pendek pada muka jam dipanggil?`,'jarum jam',[Nq('jarum minit','clock_hand'),Nq('jarum saat','clock_hand'),Nq('garis nombor','clock_hand')],'Jarum pendek menunjukkan jam.','Tahun 1 · Jarum Jam'),id,'5.2.1',mode,'visual','concept',s,['clock_hand']);
  if(mode==='hand_function')return mark(q(`${clock(6,30)}Jarum panjang membantu menunjukkan?`,'minit',[Nq('bulan','clock_hand'),Nq('hari','clock_hand'),Nq('tahun','clock_hand')],'Jarum panjang menunjukkan bahagian minit pada muka jam.','Tahun 1 · Fungsi Jarum'),id,'5.2.1',mode,'visual','application',s,['clock_hand']);
- const h=rand(1,11),ans=`${h}:00`;
+ const h=rand(1,11),ans=formatClockTime(h*60,'12','none');
  return mark(q(`${clock(h,0)}Jarum panjang menunjuk 12 dan jarum pendek menunjuk ${h}. Pukul berapakah sekarang?`,ans,[Nq(`${h}:30`,'time'),Nq(`${(h%12)+1}:00`,'time'),Nq(`${h}:15`,'time')],'Jarum panjang di 12 bermaksud minit 00. Jarum pendek menunjukkan jam.','Tahun 1 · Waktu Tepat'),id,'5.2.1',mode,'visual','reasoning',s,['clock_hand','time']);
 };
 
@@ -72,7 +72,7 @@ GEN['5.2.2']=function(id,s){
 
 GEN['5.2.3']=function(id,s){
  const mode=chooseMode(id,'5.2.3',bandModes(s,['hour'],['hour','half_hour'],['hour','half_hour','quarter_hour']));
- const h=rand(1,11),m=mode==='half_hour'?30:mode==='quarter_hour'?15:0,ans=`${h}:${String(m).padStart(2,'0')}`;
+ const h=rand(1,11),m=mode==='half_hour'?30:mode==='quarter_hour'?15:0,ans=formatClockTime(h*60+m,'12','none');
  return mark(q(`${clock(h,m)}Waktu yang ditunjukkan?`,ans,[Nq(`${h}:00`,'time'),Nq(`${h}:30`,'time'),Nq(`${h}:15`,'time'),Nq(`${h+1}:${String(m).padStart(2,'0')}`,'time')].filter(o=>o.v!==ans).slice(0,3),'Baca jarum pendek untuk jam dan jarum panjang untuk bahagian jam.','Tahun 1 · Baca Waktu Analog'),id,'5.2.3',mode,'visual',mode==='hour'?'concept':'application',s,['time']);
 };
 
@@ -80,10 +80,10 @@ GEN['5.3.1']=function(id,s){
  const mode=chooseMode(id,'5.3.1',bandModes(s,['daily_problem'],['daily_problem','half_hour_later'],['half_hour_later','quarter_hour_later','order_clock']));
  if(mode==='daily_problem')return mark(q('Perhimpunan sekolah berlaku sebelum waktu rehat. Yang berlaku dahulu?','perhimpunan',[Nq('waktu rehat','time_problem'),Nq('balik sekolah','time_problem'),Nq('makan malam','time_problem')],'Gunakan urutan aktiviti harian.','Tahun 1 · Masalah Masa Harian'),id,'5.3.1',mode,'story','application',s,['time_problem']);
  if(mode==='half_hour_later'){
-  const h=rand(7,10),ans=`${h}:30`;return mark(q(`Aktiviti bermula pukul <b>${h}:00</b> dan berlangsung setengah jam. Bilakah tamat?`,ans,[Nq(`${h}:15`,'time'),Nq(`${h+1}:00`,'time'),Nq(`${h+1}:30`,'time')],'Setengah jam selepas pukul tepat ialah :30.','Tahun 1 · Setengah Jam Kemudian'),id,'5.3.1',mode,'story','reasoning',s,['time']);
+  const h=rand(7,10),fmt=x=>formatClockTime(x,'12','bm'),ans=fmt(h*60+30);return mark(q(`Aktiviti bermula pukul <b>${fmt(h*60)}</b> dan berlangsung setengah jam. Bilakah tamat?`,ans,[Nq(fmt(h*60+15),'time'),Nq(fmt((h+1)*60),'time'),Nq(fmt((h+1)*60+30),'time')],'Setengah jam selepas pukul tepat ialah 30 minit.','Tahun 1 · Setengah Jam Kemudian'),id,'5.3.1',mode,'story','reasoning',s,['time']);
  }
  if(mode==='quarter_hour_later'){
-  const h=rand(7,10),ans=`${h}:15`;return mark(q(`Membaca bermula pukul <b>${h}:00</b> selama suku jam. Waktu tamat?`,ans,[Nq(`${h}:30`,'time'),Nq(`${h+1}:00`,'time'),Nq(`${h}:45`,'time')],'Suku jam pada muka jam ialah 15 minit.','Tahun 1 · Suku Jam Kemudian'),id,'5.3.1',mode,'story','reasoning',s,['time']);
+  const h=rand(7,10),fmt=x=>formatClockTime(x,'12','bm'),ans=fmt(h*60+15);return mark(q(`Membaca bermula pukul <b>${fmt(h*60)}</b> selama suku jam. Waktu tamat?`,ans,[Nq(fmt(h*60+30),'time'),Nq(fmt((h+1)*60),'time'),Nq(fmt(h*60+45),'time')],'Suku jam pada muka jam ialah 15 minit.','Tahun 1 · Suku Jam Kemudian'),id,'5.3.1',mode,'story','reasoning',s,['time']);
  }
  return mark(q('Aktiviti A pada 8:00, B pada 8:30 dan C pada 9:00. Susunan betul?','A → B → C',[Nq('B → A → C','time'),Nq('C → B → A','time'),Nq('A → C → B','time')],'Susun waktu daripada paling awal ke paling lewat.','Tahun 1 · Susun Waktu'),id,'5.3.1',mode,'verbal','reasoning',s,['time']);
 };

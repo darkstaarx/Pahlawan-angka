@@ -123,8 +123,8 @@
       const w=R(1,4),ans=w*7;return mark(Q(`${w} minggu = ? hari`,ans,[N(w*5,'time'),N(w*10,'time'),N(ans+7,'time')],'1 minggu = 7 hari.','Tahun 2 · Minggu dan Hari',true,true),id,rel,'symbolic','procedure',['time']);
     }
     if(id==='D2.5.3'){
-      const startH=R(7,15),startM=pick([0,15,30,45]),dur=pick([15,30,45,60,90,120]),total=startH*60+startM+dur,endH=Math.floor(total/60),endM=total%60,ans=`${endH}:${String(endM).padStart(2,'0')}`;
-      return mark(Q(`${timelineSvg(startH,startM,endH,endM,{showEnd:false})}Aktiviti bermula ${startH}:${String(startM).padStart(2,'0')} dan berlangsung ${dur} minit. Bilakah tamat?`,ans,[N(`${startH}:${String(startM).padStart(2,'0')}`,'time'),N(`${endH}:${String((endM+15)%60).padStart(2,'0')}`,'time'),N(`${Math.max(1,endH-1)}:${String(endM).padStart(2,'0')}`,'time')],'Gerakkan masa ke hadapan mengikut tempoh.','Tahun 2 · Masalah Masa',true,true),id,'elapsed_time','visual','application',['time']);
+      const startH=R(7,15),startM=pick([0,15,30,45]),dur=pick([15,30,45,60,90,120]),total=startH*60+startM+dur,endH=Math.floor(total/60),endM=total%60,fmt=x=>formatClockTime(x,'12','bm'),ans=fmt(total);
+      return mark(Q(`${timelineSvg(startH,startM,endH,endM,{showEnd:false,formatTime:(h,m)=>fmt(h*60+m)})}Aktiviti bermula ${fmt(startH*60+startM)} dan berlangsung ${dur} minit. Bilakah tamat?`,ans,[N(fmt(startH*60+startM),'time'),N(fmt(total+15),'time'),N(fmt(total-15),'time')],'Gerakkan masa ke hadapan mengikut tempoh.','Tahun 2 · Masalah Masa',true,true),id,'elapsed_time','visual','application',['time']);
     }
     return null;
   }

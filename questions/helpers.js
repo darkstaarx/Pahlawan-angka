@@ -1,4 +1,16 @@
 // Shared question-generation helpers.
+// Clock times carry a day-part only when the question supplies that context.
+// Durations keep their own units and must never pass through this formatter.
+function formatClockTime(minutes,notation='12',period='bm'){
+ const total=((Math.trunc(minutes)%1440)+1440)%1440,h=Math.floor(total/60),m=String(total%60).padStart(2,'0');
+ if(notation==='24')return `jam ${String(h).padStart(2,'0')}${m}`;
+ const clock=`${h%12||12}:${m}`;
+ if(period==='none')return clock;
+ if(period==='ampm')return `${clock} ${h<12?'a.m.':'p.m.'}`;
+ const dayPart=h===0?'tengah malam':h<12?'pagi':h===12?'tengah hari':h<19?'petang':'malam';
+ return `${clock} ${dayPart}`;
+}
+
 function tidyNumber(value,maxDp=2){
  if(typeof value!=="number"||!Number.isFinite(value))return value;
  return Number(value.toFixed(maxDp));
@@ -26,7 +38,9 @@ function fallbackChoice(answer,d){
  let m=s.match(/^RM(-?\d+(?:\.\d+)?)$/);if(m)return moneyFmtUpper(Number(m[1])+d*10);
  m=s.match(/^(\d+)%$/);if(m)return `${(Number(m[1])+d*10)%110}%`;
  m=s.match(/^(\d+)\/(\d+)$/);if(m)return `${Number(m[1])+d}/${m[2]}`;
- m=s.match(/^(\d+):(\d+)$/);if(m&&!s.includes('jam'))return `${Number(m[1])+d}:${m[2]}`;
+ m=s.match(/^(\d{1,2}):(\d{2})(?: (pagi|tengah hari|petang|malam|tengah malam|a\.m\.|p\.m\.))?$/);
+ if(m){let h=Number(m[1])%12;const suffix=m[3];if(suffix&&/^(?:tengah hari|petang|malam|p\.m\.)$/.test(suffix))h+=12;return formatClockTime(h*60+Number(m[2])+d*5,'12',suffix?(suffix.includes('.')?'ampm':'bm'):'none');}
+ m=s.match(/^jam (\d{2})(\d{2})$/);if(m)return formatClockTime(Number(m[1])*60+Number(m[2])+d*5,'24');
  m=s.match(/^\((\d+),(\d+)\)$/);if(m)return `(${Number(m[1])+d},${m[2]})`;
  m=s.match(/^(\d+):(\d+)$/);if(m)return `${Number(m[1])+d}:${m[2]}`;
  if(/^-?\d+\.\d+$/.test(s)){const dp=s.split('.')[1].length;return decimalFmt(Number(s)+d/Math.pow(10,dp),dp)}
@@ -330,9 +344,9 @@ function cylinderSvg(ml){
  return `<svg viewBox="0 0 130 ${H}" width="130" style="display:block;margin:0 auto 10px"><path d="M40 10 L40 132 Q40 140 58 140 Q76 140 76 132 L76 10" fill="#f8fbff" stroke="#405072" stroke-width="3"/><rect x="43" y="${fy}" width="30" height="${fillH}" fill="#7fcfff" opacity=".8"/>${marks}<text x="58" y="149" text-anchor="middle" font-size="10" font-weight="800">mL</text></svg>`;
 }
 function timelineSvg(sh,sm,eh,em,visibility={}){
- const fmt=(h,m)=>`${h}:${String(m).padStart(2,'0')}`;
+ const fmt=visibility.formatTime||((h,m)=>`${h}:${String(m).padStart(2,'0')}`);
  const startLabel=visibility.showStart===false?'?':fmt(sh,sm),endLabel=visibility.showEnd===false?'?':fmt(eh,em);
- return `<svg viewBox="0 0 330 78" width="min(340px,98%)" style="display:block;margin:0 auto 10px"><line x1="42" y1="36" x2="288" y2="36" stroke="#405072" stroke-width="4"/><circle cx="55" cy="36" r="7" fill="#78a9ff"/><circle cx="275" cy="36" r="7" fill="#8bd3a8"/><text x="55" y="64" text-anchor="middle" font-size="13" font-weight="800">${startLabel}</text><text x="275" y="64" text-anchor="middle" font-size="13" font-weight="800">${endLabel}</text><path d="M135 22 Q165 4 195 22" fill="none" stroke="#f0ae3d" stroke-width="3"/><path d="M190 16 l10 6 -10 6" fill="#f0ae3d"/></svg>`;
+ return `<svg viewBox="0 0 330 78" width="min(340px,98%)" style="display:block;margin:0 auto 10px"><line x1="42" y1="36" x2="288" y2="36" stroke="#405072" stroke-width="4"/><circle cx="55" cy="36" r="7" fill="#78a9ff"/><circle cx="275" cy="36" r="7" fill="#8bd3a8"/><text x="30" y="64" text-anchor="start" font-size="13" font-weight="800">${startLabel}</text><text x="300" y="64" text-anchor="end" font-size="13" font-weight="800">${endLabel}</text><path d="M135 22 Q165 4 195 22" fill="none" stroke="#f0ae3d" stroke-width="3"/><path d="M190 16 l10 6 -10 6" fill="#f0ae3d"/></svg>`;
 }
 function tallyTable(labels,vals){
  const tally=n=>{let s='';for(let i=0;i<n;i++)s+=(i>0&&i%5===0?' ':'')+'|';return s};

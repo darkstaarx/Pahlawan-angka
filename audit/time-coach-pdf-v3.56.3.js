@@ -3,6 +3,7 @@ const read=f=>fs.readFileSync(f,'utf8');
 const extract=(src,start,end)=>src.slice(src.indexOf(start),src.indexOf(end,src.indexOf(start)));
 let checks=0;const check=(ok,msg)=>{assert(ok,msg);checks++};
 const ctx=vm.createContext({window:{},Math,R:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick:a=>a[Math.floor(Math.random()*a.length)],N:(v,tag)=>({v,tag}),Q:(prompt,answer,wrong)=>({prompt,answer,wrong})});
+vm.runInContext(extract(read('questions/helpers.js'),'function formatClockTime(','function tidyNumber('),ctx);
 vm.runInContext(extract(read('questions/helpers.js'),'function timelineSvg(','function tallyTable('),ctx);
 for(let h=7;h<=15;h++)for(const m of [0,15,30,45]){
  const end=h+2;
