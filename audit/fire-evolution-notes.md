@@ -2,7 +2,7 @@
 
 All six captured pets use their own Bond XP to unlock Bara at pet level 5 (400 XP). Existing XP, names and capture history are preserved. Only the equipped pet earns the existing 20 Bond XP on a legitimately completed Gembok; replay, demo and abandoned runs cannot award it.
 
-Aurora retains the approved design. Kukupat gains a forged cannon and woven ember shell; Kumbis a volcanic mangosteen shell and flame leaf crown; Riya a fire flower and mane; Bunnis toasted cake layers and molten caramel details; Keryan a forged durian crown and flame horns. Each evolution keeps its original creature identity and companion pose.
+Aurora retains the approved design. Kukupat gains fire on its bamboo cannon and a smooth crimson/orange woven shell with restrained gold patterns; Kumbis a volcanic mangosteen shell and flame leaf crown; Riya a fire flower and mane; Bunnis warm caramel/crimson cake layers and a small fire tuft only on its head; Keryan a forged durian crown and flame horns. Each evolution keeps its original creature identity and companion pose.
 
 Assets are transparent WebP: a 512×512 inventory sprite and a 1024×512 two-frame companion atlas per pet. Frames use a shared scale, centred body and matched baseline, with safe transparent margins. Detached alpha debris is removed when packing. The blink holds for 2.8 seconds open and 0.12 seconds closed.
 

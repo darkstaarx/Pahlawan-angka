@@ -95,8 +95,8 @@
    const item=typeof REWARD_PETS!=='undefined'?REWARD_PETS[id]:{id,name:meta.name};
    const baseAssets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,idleSprite:`assets/pets/collection/${meta.folder}/companion-idle-v1.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,sadSprite:`assets/pets/collection/${meta.folder}/sprite-sheets/sad-v1.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',idleSprite:null,sad:'assets/pets/aurora/standby-v2.webp',sadSprite:null,happySprite:null};
    const evolved=data.petCollection[id].state==='tamed'&&data.petCollection[id].level>=5;
-   const fireRoot=`assets/pets/evolution/fire/${id}`;
-   const assets=evolved?{...baseAssets,happy:`${fireRoot}/happy-v1.webp`,idle:`${fireRoot}/happy-v1.webp`,idleSprite:`${fireRoot}/companion-idle-v1.webp`,happySprite:`${fireRoot}/companion-idle-v1.webp`}:baseAssets;
+   const fireRoot=`assets/pets/evolution/fire/${id}`,fireVersion=['ketupatKura','arnabKekLapis'].includes(id)?2:1;
+   const assets=evolved?{...baseAssets,happy:`${fireRoot}/happy-v${fireVersion}.webp`,idle:`${fireRoot}/happy-v${fireVersion}.webp`,idleSprite:`${fireRoot}/companion-idle-v${fireVersion}.webp`,happySprite:`${fireRoot}/companion-idle-v${fireVersion}.webp`}:baseAssets;
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=data.petCollection[id].state==='tamed'||rescueOrder.indexOf(id)<=access.tier;
     const customName=String(data.petCollection[id].customName||'').trim();
