@@ -96,7 +96,7 @@
    const baseAssets=meta.folder?{happy:`assets/pets/collection/${meta.folder}/happy.png`,idle:`assets/pets/collection/${meta.folder}/idle.png`,idleSprite:`assets/pets/collection/${meta.folder}/companion-idle-v1.png`,sad:`assets/pets/collection/${meta.folder}/sad.png`,sadSprite:`assets/pets/collection/${meta.folder}/sprite-sheets/sad-v1.png`,happySprite:`assets/pets/collection/${meta.folder}/sprite-sheets/happy-v1.png`}:{happy:'assets/pets/aurora/standby-v2.webp',idle:'assets/pets/aurora/standby-v2.webp',idleSprite:null,sad:'assets/pets/aurora/frames/sad-0-v1.webp',sadFrames:Array.from({length:8},(_,i)=>`assets/pets/aurora/frames/sad-${i}-v1.webp`),sadSprite:null,happySprite:null};
    const evolutionUnlocked=data.petCollection[id].state==='tamed'&&data.petCollection[id].level>=5;
    const evolved=evolutionUnlocked&&data.petCollection[id].appearance!=='base';
-   const fireRoot=`assets/pets/evolution/fire/${id}`,fireVersion=['ketupatKura','arnabKekLapis'].includes(id)?2:1;
+   const fireRoot=`assets/pets/evolution/fire/${id}`,fireVersion=id==='arnabKekLapis'?3:id==='ketupatKura'?2:1;
    const evolutionAssets={...baseAssets,happy:`${fireRoot}/happy-v${fireVersion}.webp`,idle:`${fireRoot}/happy-v${fireVersion}.webp`,idleSprite:`${fireRoot}/companion-idle-v${fireVersion}.webp`,happySprite:`${fireRoot}/companion-idle-v${fireVersion}.webp`};
    const assets=evolved?evolutionAssets:baseAssets;
    const grade=Number(data.petCollection[id].rescueGrade)||null;
