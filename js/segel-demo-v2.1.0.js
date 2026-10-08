@@ -1158,7 +1158,7 @@
       const animated=idleE.length>1?idleE:(joyE.length>1?joyE:(petJoyE.length>1?petJoyE:[]));
       S.companionMirror=!idle.custom;
       S.companionFrames=animated.length?animated:(idleE.length?idleE:petJoyE);
-      S.companionHold=idle.custom&&idleE.length===2&&activePetConfig?.evolutionTheme==='fire'?[2.8,.12]:idle.custom&&idleE.length===4?PET_SHEET_HOLD:null;
+      S.companionHold=idle.custom&&idleE.length===2&&(activePetConfig?.evolutionTheme==='fire'||activePetConfig?.id==='arnabKekLapis')?[2.8,.12]:idle.custom&&idleE.length===4?PET_SHEET_HOLD:null;
       S.companionFps=animated.length>1?2:1; S.companionFrameT0=tAcc;
       companion.visible=!!activePetConfig&&S.companionFrames.length>0;
       if(S.companionFrames[0]){
