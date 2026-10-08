@@ -271,8 +271,8 @@
 .kzSheetHeading h2{margin:0;font-size:28px;overflow-wrap:anywhere}
 .kzRename{width:44px;height:44px;flex:none;border:1px solid #53759c;border-radius:12px;background:#152e50;color:#fff;font-size:24px;cursor:pointer}
 .kzDetailSheet p{margin:7px 0;color:var(--kz-mut);font-size:14px}
-.kzDetailArt{height:clamp(150px,29dvh,270px);display:grid;place-items:center;margin:14px -22px;background:linear-gradient(0deg,#0b203e,transparent 35%),url('../assets/ui/khazanah/teman-night-math-v1.webp') center/cover}
-.kzDetailArt img{height:100%;width:85%;object-fit:contain}
+.kzDetailArt{position:relative;height:clamp(120px,23dvh,190px);overflow:hidden;isolation:isolate;margin:14px -22px;background:linear-gradient(0deg,#0b203e,transparent 35%),url('../assets/ui/khazanah/teman-night-math-v1.webp') center/cover}
+.kzDetailArt img{position:absolute;inset:10px 12%;display:block;width:76%;height:calc(100% - 20px);max-width:76%;max-height:calc(100% - 20px);min-width:0;min-height:0;object-fit:contain;object-position:center bottom}
 .kzFormLabel{font-size:15px;font-weight:800;margin:12px 0 8px}
 .kzDetailSheet .kzAppearance .kzBtn{min-height:46px;flex:1;font-size:15px}
 .kzEvolution{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:50px;margin:14px 0;border:1px solid #7695b5;border-radius:12px;padding:10px 14px;background:#112b4c;color:#fff;font:inherit;font-weight:800;cursor:pointer}
