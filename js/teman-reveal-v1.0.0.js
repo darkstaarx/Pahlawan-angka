@@ -8,6 +8,9 @@
   const clearTimers=()=>{timers.forEach(window.clearTimeout);timers=[];};
   const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[char]));
 
+  // Consistent frame-independent particles for all six Teman, no bitmap FX.
+  const flamePetals=n=>Array.from({length:n},(_,i)=>'<i style="--a:'+(i*360/n)+'deg;--d:'+((i*7%13)/20)+'s"></i>').join('');
+  const fireEmbers=n=>Array.from({length:n},(_,i)=>'<i style="--x:'+(8+i*37%85)+'%;--y:'+(27+i*19%58)+'%;--drift:'+((i*11%71)-35)+'px;--d:'+((i*13%19)/12)+'s;--t:'+(1.1+(i%5)*.3)+'s"></i>').join('');
   function ensure(){
     let root=$('temanReveal');
     if(root)return root;
@@ -22,6 +25,13 @@
         <img class="temanRevealArt temanRevealSilhouette" alt="Siluet Teman baharu">
         <div class="temanRevealStars" aria-hidden="true"><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""><img src="assets/ui/victory-result/star-earned.png" alt=""></div>
         <div class="temanRevealHappySprite" role="img" hidden></div><img class="temanRevealArt temanRevealHappy" alt="">
+        <div class="temanEvoFx" aria-hidden="true">
+          <i class="teAtmos"></i><i class="teSkyBeam"></i><i class="teRune"></i>
+          <div class="teVortex teVortexBack">${flamePetals(18)}</div>
+          <div class="teVortex teVortexFront">${flamePetals(22)}</div>
+          <div class="teEmbers">${fireEmbers(24)}</div>
+          <i class="teShock"></i><i class="teRays"></i><i class="teFlash"></i>
+        </div>
         <span class="temanRevealBurst" aria-hidden="true"></span><span class="temanEvolutionStageLabel" hidden>BENTUK ASAS</span>
       </div>
       <div class="temanRevealCopy"><p class="temanRevealFound">TEMAN BAHARU DITEMUI!</p><h3 class="temanRevealName"></h3><p class="temanRevealRarity"></p></div>
@@ -96,8 +106,8 @@
     root.hidden=false;root.className='temanReveal isEvolution';
     root.dataset.petId=String(id);root.dataset.petName=name;
     root.querySelector('.temanRevealEyebrow').textContent=preview?'PRATONTON DEV · TAHAP 5':'PENCAPAIAN TAHAP 5';
-    root.querySelector('#temanRevealTitle').textContent='Evolusi Bara Terbuka!';
-    root.querySelector('.temanRevealFound').textContent='KUASA BARA DIBANGKITKAN!';
+    root.querySelector('#temanRevealTitle').textContent='Tenaga Bara Bangkit...';
+    root.querySelector('.temanRevealFound').textContent='CAHAYA DIMENSI BERKUMPUL';
     root.querySelector('.temanRevealName').textContent=name;
     root.querySelector('.temanRevealRarity').textContent='Bentuk Asas → Evolusi Bara';
     const before=root.querySelector('.temanRevealSilhouette');
@@ -112,12 +122,32 @@
     const label=root.querySelector('.temanEvolutionStageLabel');
     label.hidden=false;label.textContent='BENTUK ASAS';
     void root.offsetWidth;root.classList.add('isOpen');
-    later(()=>{if(root.classList.contains('isOpen')){root.classList.add('isRevealed');label.textContent='EVOLUSI BARA';}},950);
-    later(()=>{if(root.classList.contains('isOpen'))root.classList.add('isReady');},1900);
+    const finalReveal=()=>{
+      label.textContent='EVOLUSI BARA';
+      root.querySelector('#temanRevealTitle').textContent='Evolusi Bara Terbuka!';
+      root.querySelector('.temanRevealFound').textContent='KUASA BARA DIBANGKITKAN!';
+    };
+    if(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
+      root.classList.add('isRevealed','isSettled','isReady');
+      finalReveal();
+      return true;
+    }
+    const phase=(time,name,fn)=>later(()=>{
+      if(!root.classList.contains('isOpen')||!root.classList.contains('isEvolution'))return;
+      root.classList.add(name);
+      fn?.();
+    },time);
+    phase(430,'isCharging');
+    phase(1020,'isBeamed');
+    phase(1550,'isVortex');
+    phase(2780,'isImpact');
+    phase(3070,'isRevealed',finalReveal);
+    phase(3560,'isSettled');
+    phase(4140,'isReady');
     return true;
   }
 
-  function close(){const root=$('temanReveal');if(!root)return;clearTimers();root.classList.remove('isOpen','isRevealed','isCollected','isReady');later(()=>{if(!root.classList.contains('isOpen'))root.hidden=true;},220);}
+  function close(){const root=$('temanReveal');if(!root)return;clearTimers();root.classList.remove('isOpen','isRevealed','isCollected','isReady','isCharging','isBeamed','isVortex','isImpact','isSettled');later(()=>{if(!root.classList.contains('isOpen'))root.hidden=true;},220);}
   function preview(id){
     if(typeof window.isDevMode==='function'&&!window.isDevMode())return false;
     const data=typeof db==='undefined'?null:db;

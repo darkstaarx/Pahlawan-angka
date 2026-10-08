@@ -1,0 +1,65 @@
+
+/* Pahlawan Angka — premium Bara evolution FX, all six pet variants.
+   The base and evolved art remain the source character images. */
+.temanReveal.isEvolution .temanRevealBackdrop{background:radial-gradient(ellipse at 50% 45%,#602b1ca5,#131020e8 46%,#040714 78%)}
+.temanReveal.isEvolution .temanRevealCard{max-height:94dvh;overflow-y:auto;scrollbar-width:none;border-color:#eab15e;background:linear-gradient(165deg,#41221d,#171526 40%,#091022);box-shadow:0 0 0 2px #ffaf3840,0 18px 80px #e65e2a55,0 25px 70px #000b}
+.temanReveal.isEvolution .temanRevealCard::-webkit-scrollbar{display:none}
+.temanReveal.isEvolution .temanRevealStage{height:clamp(265px,36dvh,330px);overflow:hidden;border-radius:18px;background:radial-gradient(ellipse at 50% 78%,#c354323b,#20152ae8 51%,#080b1b)}
+.temanReveal.isEvolution .temanRevealSeal{z-index:1;opacity:.25;border-color:#f5b65c}
+.temanReveal.isEvolution .temanRevealArt{left:50%;top:50%;width:min(230px,78%);height:220px;z-index:4;transform:translate(-50%,-47%) scale(.93)}
+.temanReveal.isEvolution .temanRevealSilhouette{opacity:1;filter:drop-shadow(0 12px 12px #000a) drop-shadow(0 0 12px #ffaa5b66);transition:opacity .28s,filter .42s,transform .46s}
+.temanReveal.isEvolution .temanRevealHappy{opacity:0;transform:translate(-50%,-46%) scale(.58);filter:drop-shadow(0 0 24px #ffd475bb) drop-shadow(0 13px 12px #0008);transition:opacity .34s,transform .7s cubic-bezier(.15,.8,.22,1.2)}
+.temanReveal.isEvolution.isVortex .temanRevealSilhouette{transform:translate(-50%,-51%) scale(1.06);filter:brightness(2.3) sepia(.4) drop-shadow(0 0 28px #ffe080)}
+.temanReveal.isEvolution.isImpact .temanRevealSilhouette{transform:translate(-50%,-56%) scale(1.19);filter:brightness(8) drop-shadow(0 0 35px #fff6ca)}
+.temanReveal.isEvolution.isRevealed .temanRevealSilhouette{opacity:0;filter:blur(9px) brightness(5);transform:translate(-50%,-57%) scale(1.24)}
+.temanReveal.isEvolution.isRevealed .temanRevealHappy{opacity:1;transform:translate(-50%,-50%) scale(1.14)}
+.temanReveal.isEvolution.isSettled .temanRevealHappy{transform:translate(-50%,-47%) scale(1.06)}
+.temanReveal.isEvolution .temanRevealBurst{z-index:14;width:230px;height:230px}
+.temanReveal.isEvolution.isImpact .temanRevealBurst{animation:temanBurst .7s ease-out both}
+.temanReveal.isEvolution .temanEvolutionStageLabel{z-index:16;bottom:6px}
+.temanReveal.isEvolution .temanRevealFound{color:#ffe09a}
+.temanReveal.isEvolution .temanEvoFx{position:absolute;inset:0;z-index:7;isolation:isolate;contain:paint;pointer-events:none}
+.temanEvoFx>*{position:absolute;display:block;pointer-events:none}
+.teAtmos{inset:-5%;opacity:0;mix-blend-mode:screen;background:radial-gradient(ellipse at 50% 53%,#ffc7617c,transparent 57%),repeating-conic-gradient(from 5deg at 50% 50%,transparent 0 17deg,#ffb3433d 19deg 21deg,transparent 24deg 39deg)}
+.temanReveal.isEvolution.isCharging .teAtmos{opacity:.55;animation:teAtmosPulse 1.1s ease-in-out infinite alternate}
+.temanReveal.isEvolution.isSettled .teAtmos{opacity:.23;transition:opacity .55s}
+.teSkyBeam{top:-72%;left:50%;width:82%;height:171%;opacity:0;transform:translateX(-50%) scaleY(.04);transform-origin:50% 0;clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);background:linear-gradient(90deg,transparent,#f99c4c78 22%,#fff6b7ee 43%,#fffefa 50%,#ffe6a9ee 57%,#ff9c4777 80%,transparent);filter:drop-shadow(0 0 19px #ffcd57);mix-blend-mode:screen}
+.teSkyBeam:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#fff8e8cc,#ffc35e66 40%,transparent)}
+.temanReveal.isEvolution.isBeamed .teSkyBeam{opacity:.96;animation:teBeamFall .75s cubic-bezier(.12,.53,.2,1) both}
+.temanReveal.isEvolution.isSettled .teSkyBeam{opacity:.06;transition:opacity .6s}
+.teRune{bottom:7%;left:12%;width:76%;height:25%;opacity:0;border-radius:50%;transform:scale(.2);background:radial-gradient(ellipse,#fff7b5a8 0 12%,#ffab29a9 19%,transparent 54%),repeating-conic-gradient(from 20deg,#ff6236 0deg 9deg,transparent 10deg 26deg);box-shadow:0 0 24px #ff623499,0 0 38px #ffb84c9a}
+.teRune:after{content:"";position:absolute;inset:16%;border:2px dashed #ffefbe;border-radius:50%;box-shadow:0 0 12px #ffca73}
+.temanReveal.isEvolution.isCharging .teRune{opacity:1;transform:scale(1);transition:opacity .3s,transform .56s cubic-bezier(.2,.8,.25,1)}
+.temanReveal.isEvolution.isVortex .teRune{animation:teRunePulse .7s ease-in-out infinite alternate}
+.temanReveal.isEvolution.isSettled .teRune{opacity:.35;transition:opacity .5s}
+.teVortex{width:86%;height:82%;left:7%;top:7%;opacity:0;border-radius:50%;will-change:transform;transform-origin:center;filter:drop-shadow(0 0 18px #ff7b31) drop-shadow(0 0 16px #ffc45c86);background:conic-gradient(from 10deg,transparent 0 11%,#fc662d8b 13% 21%,transparent 23% 32%,#ffdb7799 35% 39%,transparent 44% 55%,#ff562a91 59% 66%,transparent 72% 86%,#ffd47d66);-webkit-mask:radial-gradient(ellipse closest-side,transparent 0 48%,#000 60% 79%,transparent 92%);mask:radial-gradient(ellipse closest-side,transparent 0 48%,#000 60% 79%,transparent 92%)}
+.teVortexBack{z-index:1}
+.teVortexFront{z-index:9;left:2%;width:96%;top:8%;height:86%}
+.teVortex i{position:absolute;top:50%;left:50%;width:17px;height:54px;margin:-27px 0 0 -8px;border-radius:70% 0 65% 12%;background:linear-gradient(10deg,#f33c22 5%,#ff9228 42%,#ffe58c 78%,#fffbd0);box-shadow:0 0 10px #ff6829ac,0 0 17px #ffcf5888;transform:rotate(var(--a)) translateY(-110px) rotate(28deg);animation:teTongue .53s ease-in-out var(--d) infinite alternate}
+.teVortexFront i{height:63px;width:18px;transform:rotate(var(--a)) translateY(-121px) rotate(26deg)}
+.temanReveal.isEvolution.isVortex .teVortexBack{opacity:.78;animation:teSpinA 1.24s linear infinite}
+.temanReveal.isEvolution.isVortex .teVortexFront{opacity:1;animation:teSpinB .78s linear infinite}
+.temanReveal.isEvolution.isSettled .teVortex{opacity:.12;transition:opacity .6s}
+.teEmbers{inset:0;z-index:12;opacity:0;overflow:hidden}
+.teEmbers i{position:absolute;top:var(--y);left:var(--x);width:5px;height:12px;border-radius:50% 50% 25% 25%;background:linear-gradient(#fffbd5,#ffc14d 45%,#f94224);box-shadow:0 0 8px 2px #ff6c2da9;animation:teEmberFloat var(--t) linear var(--d) infinite}
+.temanReveal.isEvolution.isCharging .teEmbers{opacity:.35}
+.temanReveal.isEvolution.isVortex .teEmbers{opacity:1}
+.temanReveal.isEvolution.isSettled .teEmbers{opacity:.28;transition:opacity 1s}
+.teShock{left:50%;top:50%;width:170px;height:170px;margin:-85px;border:10px solid #fff5b5;border-radius:50%;opacity:0;box-shadow:0 0 45px #ff612e,0 0 65px #ffd56c,inset 0 0 24px #fff4d3}
+.temanReveal.isEvolution.isImpact .teShock{animation:teShockExpand .7s ease-out both}
+.teRays{inset:-15%;opacity:0;mix-blend-mode:screen;background:repeating-conic-gradient(from 14deg at 50% 50%,transparent 0 11deg,#ffeda5af 12deg 14deg,transparent 16deg 25deg);-webkit-mask:radial-gradient(circle at center,transparent 0 15%,#000 25% 70%,transparent 77%);mask:radial-gradient(circle at center,transparent 0 15%,#000 25% 70%,transparent 77%)}
+.temanReveal.isEvolution.isImpact .teRays{animation:teRayBlast .8s ease-out both}
+.teFlash{inset:-5%;z-index:14;opacity:0;mix-blend-mode:screen;background:radial-gradient(ellipse at 50% 50%,#fffffd 0 11%,#ffedb9ef 19%,#ffae457e 43%,transparent 71%)}
+.temanReveal.isEvolution.isImpact .teFlash{animation:teFlashBlast .62s ease-out both}
+@keyframes teAtmosPulse{from{filter:brightness(.8)}to{filter:brightness(1.35)}}
+@keyframes teBeamFall{0%{opacity:0;transform:translateX(-50%) scaleY(.05)}45%{opacity:1}100%{opacity:.96;transform:translateX(-50%) scaleY(1)}}
+@keyframes teRunePulse{from{filter:brightness(1);transform:scale(.95)}to{filter:brightness(1.8);transform:scale(1.14)}}
+@keyframes teSpinA{from{transform:rotate(0deg) scale(.93)}to{transform:rotate(360deg) scale(1.07)}}
+@keyframes teSpinB{from{transform:rotate(360deg) scale(1.06)}to{transform:rotate(0deg) scale(.94)}}
+@keyframes teTongue{from{height:44px;filter:brightness(.8)}to{height:75px;filter:brightness(1.6)}}
+@keyframes teEmberFloat{0%{opacity:0;transform:translate(0,33px) scale(.5)}23%{opacity:1}100%{opacity:0;transform:translate(var(--drift),-135px) scale(1.18)}}
+@keyframes teShockExpand{0%{opacity:0;transform:scale(.22);border-width:17px}24%{opacity:1}100%{opacity:0;transform:scale(3.2);border-width:1px}}
+@keyframes teRayBlast{0%{opacity:0;transform:scale(.2) rotate(-15deg)}25%{opacity:.88}100%{opacity:0;transform:scale(1.85) rotate(25deg)}}
+@keyframes teFlashBlast{0%{opacity:0;transform:scale(.25)}18%{opacity:1}48%{opacity:1}100%{opacity:0;transform:scale(1.7)}}
+@media(max-height:650px){.temanReveal.isEvolution .temanRevealStage{height:230px}.temanReveal.isEvolution .temanRevealArt{height:190px;width:190px}.temanReveal.isEvolution .temanRevealCard{padding:12px 14px}}
+@media(prefers-reduced-motion:reduce){.temanReveal.isEvolution .temanEvoFx{display:none}.temanReveal.isEvolution.isRevealed .temanRevealHappy{opacity:1;transform:translate(-50%,-47%) scale(1)}.temanReveal.isEvolution.isRevealed .temanRevealSilhouette{opacity:0}}
