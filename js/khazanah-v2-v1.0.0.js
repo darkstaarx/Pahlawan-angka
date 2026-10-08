@@ -109,16 +109,22 @@
     const progression=tamed?`<small>Tahap ${pet.level}</small><small>${pet.evolutionState}</small>`:'';
     const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
     const rename=tamed?`<button class="kzBtn" type="button" onclick="renameCollectionPet('${pet.id}')">Tukar nama</button>`:'';
+    const appearance=tamed&&pet.evolutionUnlocked?`<div class="kzAppearance" role="group" aria-label="Rupa teman"><button class="kzBtn" type="button" aria-pressed="${pet.appearance==='base'}" onclick="setCollectionAppearance('${pet.id}','base')">Asas</button><button class="kzBtn" type="button" aria-pressed="${pet.appearance==='bara'}" onclick="setCollectionAppearance('${pet.id}','bara')">Bara</button></div>`:'';
     const replay=tamed&&pet.evolutionStage>0?`<button class="kzBtn" type="button" onclick="previewCollectionEvolution('${pet.id}')">Lihat Evolusi</button>`:'';
     return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
       <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?esc(name):'Belum ditemui'}"></div>
       ${tamed?`<div class="kzName">${esc(name)}</div><div class="kzPetMeta"><small>${esc(pet.species||'')}</small></div>`:''}
-      <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${tamed?`<div class="kzFoot">${action}${rename}${replay}</div>`:''}
+      <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${tamed?`<div class="kzFoot">${appearance}${action}${rename}${replay}</div>`:''}
     </article>`;
   }
 
   window.equipCollectionPet=function(id){
     if(!window.PetCollection?.equip?.(db,id))return;
+    if(typeof renderTreasure==='function')renderTreasure();
+    if(typeof renderBattlePet==='function')renderBattlePet();
+  };
+  window.setCollectionAppearance=function(id,appearance){
+    if(!window.PetCollection?.setAppearance?.(db,id,appearance))return;
     if(typeof renderTreasure==='function')renderTreasure();
     if(typeof renderBattlePet==='function')renderBattlePet();
   };

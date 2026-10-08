@@ -261,3 +261,13 @@ test('trapped Aurora uses eight sad animation frames independently of companion 
  });
  assert.notEqual(aurora.assets.sad,aurora.assets.idle);
 });
+
+test('appearance switches preserve unlocked evolution and survive save reload',()=>{
+ const data=fresh();pets.ensure(data);const pet=data.petCollection.aurora;pet.state='tamed';pet.bondXp=400;pets.ensure(data);
+ assert.equal(pets.setAppearance(data,'aurora','base'),true);
+ let view=pets.snapshot(JSON.parse(JSON.stringify(data))).pets.find(p=>p.id==='aurora');
+ assert.equal(view.appearance,'base');assert.equal(view.evolutionStage,1);assert.equal(view.evolutionUnlocked,true);assert.equal(view.evolutionTheme,null);assert.ok(view.evolutionAssets.happy.includes('/evolution/fire/'));
+ assert.equal(pets.setAppearance(data,'aurora','bara'),true);view=pets.snapshot(data).pets.find(p=>p.id==='aurora');assert.equal(view.evolutionTheme,'fire');assert.equal(pet.bondXp,400);
+ assert.equal(pets.setAppearance(data,'aurora','invalid'),false);
+ const low=fresh();pets.ensure(low);assert.equal(pets.setAppearance(low,'aurora','bara'),false);assert.equal(pets.setAppearance(data,'durianKerbau','base'),false);
+});

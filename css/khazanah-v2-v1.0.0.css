@@ -250,3 +250,5 @@
   .kzGrid{grid-template-columns:repeat(4,1fr)}
   .kzShow{height:300px}
 }
+
+.kzAppearance{display:flex;gap:6px;width:100%;justify-content:center}.kzAppearance .kzBtn[aria-pressed="true"]{background:#ffcf66;color:#251b13;box-shadow:0 0 0 2px #ffe8a6}
