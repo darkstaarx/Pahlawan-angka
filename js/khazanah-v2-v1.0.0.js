@@ -103,20 +103,40 @@
   function companionCard(pet){
     const tamed=pet.state==='tamed', encountered=pet.state==='encountered';
     const name=pet.name||PET_NAMES[pet.id]||pet.id;
-    const status=tamed?(pet.active?'Sedang ikut kamu':'Lengkapi'):'Belum ditemui';
-    const rarity=`<span>${pet.rarity}</span>`;
-    const rescue=encountered&&pet.rescueThreshold?`<small>Jejak ditemui · ${pet.rescues||0}/${pet.rescueThreshold} rescue</small>`:'';
-    const progression=tamed?`<small>Tahap ${pet.level}</small><small>${pet.evolutionState}</small>`:'';
-    const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
-    const rename=tamed?`<button class="kzBtn" type="button" onclick="renameCollectionPet('${pet.id}')">Tukar nama</button>`:'';
-    const appearance=tamed&&pet.evolutionUnlocked?`<div class="kzAppearance" role="group" aria-label="Rupa teman"><button class="kzBtn" type="button" aria-pressed="${pet.appearance==='base'}" onclick="setCollectionAppearance('${pet.id}','base')">Asas</button><button class="kzBtn" type="button" aria-pressed="${pet.appearance==='bara'}" onclick="setCollectionAppearance('${pet.id}','bara')">Bara</button></div>`:'';
-    const replay=tamed&&pet.evolutionStage>0?`<button class="kzBtn" type="button" onclick="previewCollectionEvolution('${pet.id}')">Lihat Evolusi</button>`:'';
-    return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
-      <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?esc(name):'Belum ditemui'}"></div>
-      ${tamed?`<div class="kzName">${esc(name)}</div><div class="kzPetMeta"><small>${esc(pet.species||'')}</small></div>`:''}
-      <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${tamed?`<div class="kzFoot">${appearance}${action}${rename}${replay}</div>`:''}
+    return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}">
+      <button class="kzPetOpen" type="button" onclick="openCollectionPet('${pet.id}')" aria-label="Lihat ${esc(tamed||encountered?name:'teman belum ditemui')}">
+        ${pet.active?'<span class="kzActiveBadge" aria-label="Sedang ikut kamu">✓</span>':''}
+        <div class="kzArt"><img src="${pet.assets.happy}" alt=""></div>
+        <div class="kzName">${esc(tamed||encountered?name:'Belum ditemui')}</div>
+        <div class="kzPetMeta">${tamed?`<small>Tahap ${pet.level}</small><span class="kzFormChip">${pet.appearance==='bara'?'Bara':'Asas'}</span>`:encountered?`<small>Jejak ${pet.rescues||0}/${pet.rescueThreshold||1}</small>`:'<small>Teruskan kembara</small>'}</div>
+      </button>
     </article>`;
   }
+
+  window.openCollectionPet=function(id){
+    const pet=window.PetCollection?.snapshot?.(db)?.pets?.find(p=>p.id===id);
+    if(!pet)return;
+    let dialog=$('petDetailSheet');
+    if(!dialog){
+      dialog=document.createElement('dialog');dialog.id='petDetailSheet';dialog.className='kzDetailSheet';
+      document.body.appendChild(dialog);
+      dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
+    }
+    const tamed=pet.state==='tamed';
+    dialog.innerHTML=`<div class="kzSheetHandle"></div><button class="kzSheetClose" type="button" aria-label="Tutup pilihan teman">×</button>
+      <div class="kzSheetHeading"><h2>${esc(tamed?pet.name:'Belum ditemui')}</h2>${tamed?'<button class="kzRename" type="button" aria-label="Tukar nama">✎</button>':''}</div>
+      <p>${tamed?`Tahap ${pet.level} · ${esc(pet.species||'')}`:'Teruskan misi Gembok untuk menyelamatkan teman ini.'}</p>
+      <div class="kzDetailArt"><img src="${pet.assets.happy}" alt="${esc(pet.name)}"></div>
+      ${tamed&&pet.evolutionUnlocked?`<div class="kzFormLabel">Bentuk</div><div class="kzAppearance"><button class="kzBtn off" type="button" data-form="base" aria-pressed="${pet.appearance==='base'}">Asas</button><button class="kzBtn off" type="button" data-form="bara" aria-pressed="${pet.appearance==='bara'}">Bara</button></div>`:''}
+      ${tamed&&pet.evolutionStage>0?'<button class="kzEvolution" type="button">Lihat Evolusi <span>›</span></button>':''}
+      ${tamed?`<button class="kzCta kzEquip" type="button" ${pet.active?'disabled':''}>${pet.active?'Sedang ikut kamu':'Jadikan Teman'}</button>`:''}`;
+    dialog.querySelector('.kzSheetClose').onclick=()=>dialog.close();
+    const rename=dialog.querySelector('.kzRename');if(rename)rename.onclick=()=>{dialog.close();renameCollectionPet(id)};
+    dialog.querySelectorAll('[data-form]').forEach(button=>button.onclick=()=>{setCollectionAppearance(id,button.dataset.form);openCollectionPet(id)});
+    const replay=dialog.querySelector('.kzEvolution');if(replay)replay.onclick=()=>{dialog.close();previewCollectionEvolution(id)};
+    const equip=dialog.querySelector('.kzEquip');if(equip)equip.onclick=()=>{equipCollectionPet(id);dialog.close()};
+    if(!dialog.open)dialog.showModal();
+  };
 
   window.equipCollectionPet=function(id){
     if(!window.PetCollection?.equip?.(db,id))return;

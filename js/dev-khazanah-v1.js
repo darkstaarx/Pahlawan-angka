@@ -70,7 +70,7 @@
   if(wasActive&&goBack&&typeof renderHub==='function')renderHub();
  }
  function installWrappers(){
-  for(const name of ['renderTreasure','openTreasure','equipCollectionPet','setCollectionAppearance','equipPet','unequipPet','equipAura','unequipAura']){
+  for(const name of ['openCollectionPet','renderTreasure','openTreasure','equipCollectionPet','setCollectionAppearance','equipPet','unequipPet','equipAura','unequipAura']){
    const original=window[name];if(typeof original!=='function'||original.__devKhazanah)continue;
    const wrapped=function(...args){return active()||db===preview?withPreview(()=>original.apply(this,args)):original.apply(this,args)};
    wrapped.__devKhazanah=true;window[name]=wrapped;
