@@ -66,6 +66,7 @@
     root.querySelector('.temanRevealCollection').hidden=false;
     root.querySelector('.temanEvolutionStageLabel').hidden=true;
     root.querySelector('[data-teman-action="rename"]').hidden=false;
+    root.querySelector('[data-teman-action="continue"]').textContent='Teruskan Misi';
     root.querySelector('.temanRevealEyebrow').textContent=preview?'PRATONTON DEV · KHAZANAH':'KHAZANAH PAHLAWAN ANGKA';
     root.querySelector('.temanRevealName').innerHTML=name;
     root.querySelector('.temanRevealRarity').textContent=`Kejarangan · ${rarity}`;
@@ -83,7 +84,7 @@
 
 
   // Cosmetic playback only. Level 5 and ownership are verified by PetCollection.
-  function showEvolution(award,{profile=null,followup=null,petId=null}={}){
+  function showEvolution(award,{profile=null,followup=null,petId=null,preview=false}={}){
     if(typeof document==='undefined'||!award?.evolvedPetName||!profile)return false;
     const id=petId||profile.expedition?.activePetId;
     const item=window.PetCollection?.snapshot?.(profile)?.pets?.find(p=>p.id===id&&p.state==='tamed');
@@ -94,7 +95,7 @@
     clearTimers();queuedNewPet=followup?.newlyTamed?followup:null;
     root.hidden=false;root.className='temanReveal isEvolution';
     root.dataset.petId=String(id);root.dataset.petName=name;
-    root.querySelector('.temanRevealEyebrow').textContent='PENCAPAIAN TAHAP 5';
+    root.querySelector('.temanRevealEyebrow').textContent=preview?'PRATONTON DEV · TAHAP 5':'PENCAPAIAN TAHAP 5';
     root.querySelector('#temanRevealTitle').textContent='Evolusi Bara Terbuka!';
     root.querySelector('.temanRevealFound').textContent='KUASA BARA DIBANGKITKAN!';
     root.querySelector('.temanRevealName').textContent=name;
@@ -107,6 +108,7 @@
     sprite.hidden=true;sprite.style.backgroundImage='';
     root.querySelector('.temanRevealCollection').hidden=true;
     root.querySelector('[data-teman-action="rename"]').hidden=true;
+    root.querySelector('[data-teman-action="continue"]').textContent=preview?'Tutup Preview':'Teruskan Misi';
     const label=root.querySelector('.temanEvolutionStageLabel');
     label.hidden=false;label.textContent='BENTUK ASAS';
     void root.offsetWidth;root.classList.add('isOpen');
