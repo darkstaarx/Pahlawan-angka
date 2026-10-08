@@ -12,7 +12,7 @@
       const link=document.createElement('link');link.rel='stylesheet';link.href=css;document.head.appendChild(link);
     }
     return new Promise(resolve=>{
-      const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=3.85.22';script.async=false;
+      const script=document.createElement('script');script.src='js/segel-demo-v2.1.0.js?v=3.85.31';script.async=false;
       const done=()=>{window.__PA_LIVE_ASSET_REFRESHED=true;resolve()};
       script.addEventListener('load',done,{once:true});script.addEventListener('error',done,{once:true});document.head.appendChild(script);
     });

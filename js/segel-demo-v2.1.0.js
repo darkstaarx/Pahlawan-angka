@@ -2178,7 +2178,12 @@
     if(typeof playBattleVictoryStinger==='function')await playBattleVictoryStinger();
     if(!productionCurrent(hostRun,q))return;
     finishRun(true,petCompletionNote(award));
-    window.PATemanReveal?.show?.(hostRun.temanRevealAward);hostRun.temanRevealAward=null;
+    // Evolution is a real one-time Level 5 award, not a generic victory effect.
+    const evolved=award?.evolvedPetName && window.PATemanReveal?.showEvolution?.(award,{
+      profile:hostRun.profileDb,followup:hostRun.temanRevealAward
+    });
+    if(!evolved)window.PATemanReveal?.show?.(hostRun.temanRevealAward);
+    hostRun.temanRevealAward=null;
   }
 
   function petNameForAward(award){

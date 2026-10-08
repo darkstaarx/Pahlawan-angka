@@ -109,10 +109,11 @@
     const progression=tamed?`<small>Tahap ${pet.level}</small><small>${pet.evolutionState}</small>`:'';
     const action=tamed&&!pet.active?`<button class="kzBtn" type="button" onclick="equipCollectionPet('${pet.id}')">Lengkapi</button>`:'';
     const rename=tamed?`<button class="kzBtn" type="button" onclick="renameCollectionPet('${pet.id}')">Tukar nama</button>`:'';
+    const replay=tamed&&pet.evolutionStage>0?`<button class="kzBtn" type="button" onclick="previewCollectionEvolution('${pet.id}')">Lihat Evolusi</button>`:'';
     return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}" style="--gem:#5cc3ff">
       <i class="kzGem"></i><div class="kzArt"><img src="${pet.assets.happy}" alt="${tamed||encountered?esc(name):'Belum ditemui'}"></div>
       ${tamed?`<div class="kzName">${esc(name)}</div><div class="kzPetMeta"><small>${esc(pet.species||'')}</small></div>`:''}
-      <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${tamed?`<div class="kzFoot">${action}${rename}</div>`:''}
+      <div class="kzPetMeta">${encountered?rescue:`<b>${status}</b>${tamed?progression:rarity}`}</div>${tamed?`<div class="kzFoot">${action}${rename}${replay}</div>`:''}
     </article>`;
   }
 
@@ -120,6 +121,11 @@
     if(!window.PetCollection?.equip?.(db,id))return;
     if(typeof renderTreasure==='function')renderTreasure();
     if(typeof renderBattlePet==='function')renderBattlePet();
+  };
+  window.previewCollectionEvolution=function(id){
+    const pet=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.id===id&&item.state==='tamed'&&item.evolutionStage>0);
+    if(!pet)return false;
+    return window.PATemanReveal?.showEvolution?.({evolvedPetName:pet.name},{profile:db,petId:id})||false;
   };
   window.renameCollectionPet=function(id){
     const pet=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.id===id);
