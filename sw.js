@@ -2,6 +2,15 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-khazanah-full-1`;
 const APP_SHELL=[
+  './assets/questions/money/money_5sen.png',
+  './assets/questions/money/money_10sen.png',
+  './assets/questions/money/money_20sen.png',
+  './assets/questions/money/money_50sen.png',
+  './assets/questions/money/money_rm1.png',
+  './assets/questions/money/money_rm5.png',
+  './assets/questions/money/money_rm10.png',
+  './assets/questions/money/money_rm20.png',
+  './assets/questions/money/money_rm50.png',
   './js/dev-khazanah-v1.js','./css/dev-khazanah-v1.css',
   './assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.png',
   './assets/fx/wira/final-v5/glacier-clean-sheet-v1.png',

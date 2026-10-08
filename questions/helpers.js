@@ -122,6 +122,14 @@ function moneyPieces(cents){
  return pieces;
 }
 function moneyPieceSvg(cents){
+ const asset={5:'5sen',10:'10sen',20:'20sen',50:'50sen',100:'rm1',500:'rm5',1000:'rm10',2000:'rm20',5000:'rm50'}[cents];
+ if(asset){
+  const coin=cents<100, label=moneyFmt(cents), w=coin?58:92, h=coin?58:48;
+  return `<img class="paMoneyPiece" src="assets/questions/money/money_${asset}.png" alt="${label}" title="${label}" width="${w}" height="${h}" draggable="false" decoding="async" style="display:inline-block;flex:0 0 auto;width:${w}px;height:${h}px;object-fit:contain;vertical-align:middle;filter:drop-shadow(0 2px 2px #0002)" />`;
+ }
+ return moneyPieceFallback(cents);
+}
+function moneyPieceFallback(cents){
  const isCoin=cents<100;
  const label=moneyFmt(cents);
  if(isCoin){
