@@ -62,6 +62,7 @@ function wrongNums(ans,step=1,tag='operation'){
  return out.slice(0,3);
 }
 function dots(n){
+ if(typeof countingObjects==='function')return countingObjects(n);
  const cols=5,rows=Math.ceil(n/cols),w=250,h=Math.max(70,rows*38+18);let s='';
  for(let i=0;i<n;i++){const x=35+(i%cols)*45,y=28+Math.floor(i/cols)*38;s+=`<circle cx="${x}" cy="${y}" r="10" class="kd-fill"/>`}
  return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${n} objek">${s}</svg></div>`;

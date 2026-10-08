@@ -2,6 +2,7 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-khazanah-full-1`;
 const APP_SHELL=[
+ './assets/questions/counting/apple.png','./assets/questions/counting/orange.png','./assets/questions/counting/rambutan.png','./assets/questions/counting/watermelon_slice.png','./assets/questions/counting/starfruit_slice.png','./assets/questions/counting/pencil.png','./assets/questions/counting/eraser.png','./assets/questions/counting/candy.png','./assets/questions/counting/balloon.png',
   './assets/questions/money/money_5sen.png',
   './assets/questions/money/money_10sen.png',
   './assets/questions/money/money_20sen.png',

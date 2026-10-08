@@ -114,8 +114,9 @@ function d1(id,s,shift){
   const max=id==='D1.N20'?(Number(s?.evidence||0)<3?9:20):100;
   mode=d1ChooseMode(id,s,['count_visual','missing_line','compare','order'],['between_reason','one_more_reason']);
   if(mode==='count_visual'){
-   const n=R(3,Math.min(max,18)),thing=pick(['guli','buah rambutan','pensel warna']);
-   return depth(Q(`${fractionSet(n,n)}Di dalam bekas ada berapa <b>${thing}</b>?`,n,wrongNums(n,1,'count'),'Kira satu demi satu.','Tahun 1 · Bilangan',true,true),id,mode,'visual','concept',['count']);
+   const n=R(3,Math.min(max,18)),selected=pick([['buah rambutan','rambutan'],['batang pensel','pencil'],['biji gula-gula','candy'],['biji oren','orange'],['potong tembikai','watermelon_slice']]);
+   const visual=typeof countingObjects==='function'?countingObjects(n,selected[1]):fractionSet(n,n);
+   return depth(Q(`${visual}Di dalam bekas ada berapa <b>${selected[0]}</b>?`,n,wrongNums(n,1,'count'),'Kira satu demi satu.','Tahun 1 · Bilangan',true,true),id,mode,'visual','concept',['count']);
   }
   if(mode==='missing_line'){
    const a=R(1,Math.max(2,max-3)),ans=a+1;

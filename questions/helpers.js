@@ -314,6 +314,15 @@ function shapeNetSvg(type){
  return `<svg viewBox="0 0 130 100" width="150" height="112" style="display:block;margin:0 auto 8px">${cell(32,20,'#b6e3c2')}${cell(54,20,'#b6e3c2')}${cell(76,20,'#b6e3c2')}${cell(54,42,'#8dcc9f')}${cell(54,64,'#8dcc9f')}${cell(98,20,'#b6e3c2')}</svg>`;
 }
 
+// Shared illustrated counting objects. Numbers and correct answers still come from the question bank.
+function countingObjects(count,kind=null){
+ const names={apple:'epal',orange:'oren',rambutan:'rambutan',watermelon_slice:'potongan tembikai',starfruit_slice:'potongan belimbing',pencil:'pensel',eraser:'pemadam',candy:'gula-gula',balloon:'belon'};
+ const keys=Object.keys(names),type=Object.prototype.hasOwnProperty.call(names,kind)?kind:keys[Math.floor(Math.random()*keys.length)];
+ const n=Math.max(0,Math.floor(Number(count)||0));
+ const img=`<img src="assets/questions/counting/${type}.png" width="42" height="42" alt="" draggable="false" decoding="async" style="display:block;width:100%;max-width:42px;height:42px;object-fit:contain;aspect-ratio:1/1">`;
+ return `<div class="paCountingSet" role="img" aria-label="Kumpulan ${names[type]} untuk dikira" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));justify-items:center;align-items:center;gap:4px;width:min(250px,96%);max-width:100%;margin:6px auto 12px">${img.repeat(n)}</div>`;
+}
+
 // Phase 3.4 curriculum visuals / assessment helpers.
 function base10Visual(n){
  const h=Math.floor(n/100),t=Math.floor((n%100)/10),o=n%10;
