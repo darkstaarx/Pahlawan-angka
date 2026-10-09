@@ -2273,6 +2273,23 @@
     return String(profile?.name||'').trim()||'Pahlawan';
   }
 
+  /* Result is an internal state of the Segel screen, so changing only
+     `body[data-screen]` cannot tell the page lock or the question surface that
+     the run has ended. Keep the celebration and its CTAs as the only active
+     controls while preserving the Wira/Aurora arena behind it. */
+  function setResultLifecycle(done){
+    const screen=document.getElementById('segelDemo');
+    const panel=screen?.querySelector('.segelPanel');
+    const top=screen?.querySelector('.segelTop');
+    screen?.classList.toggle('segel-result-active',!!done);
+    [panel,top].forEach(el=>{
+      if(!el)return;
+      el.setAttribute('aria-hidden',done?'true':'false');
+      el.inert=!!done;
+    });
+    window.PAPageLock?.setResultState?.(!!done);
+  }
+
   function coachLine(t,acc,asked){
     const player=resultPlayerName();
     const pet=run?.productionRun?.petAward?.petId
@@ -2286,6 +2303,7 @@
 
   function finishRun(won,note){
     run.locked=true;
+    setResultLifecycle(true);
     const t=run.tally, correct=t.own+t.hint, asked=Math.max(1,run.asked);
     const acc=Math.round(correct/asked*100);
 
@@ -2304,6 +2322,7 @@
       $('segelDemoSummary').hidden=true;
       $('segelDone').hidden=false;
       $('segelDone').scrollTop=0;
+      $('segelDone').focus({preventScroll:true});
       return;
     }
 
@@ -2324,6 +2343,7 @@
     }else if(summary)summary.hidden=true;
     $('segelDone').hidden=false;
     $('segelDone').scrollTop=0;
+    $('segelDone').focus({preventScroll:true});
   }
 
   /* =================================================================
@@ -2343,6 +2363,7 @@
                coachAdaptive:!!(entryMode&&entryMode.adaptive&&!entryMode.devBattlefield),
                missionChapter:(entryMode&&entryMode.chapter)?String(entryMode.chapter):null,
                missionAnswered:0,coach:null,recoveryFor:null,stretchFor:null}};
+    setResultLifecycle(false);
     $('segelDone').hidden=true;
     stage.reset();
     stage.armEntry();
@@ -2355,6 +2376,7 @@
     if(!window.PAProductionJourney?.isCurrent?.(productionRun))return;
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     run={production:true,productionRun,generation:++runGeneration,productionGeneration:productionRun.session.generation,asked:0,locked:false,retryOpen:false,q:null,usedHint:false,tally:{own:0,hint:0,miss:0}};
+    setResultLifecycle(false);
     $('segelDone').hidden=true;stage.reset();stage.armEntry();enterWhenRevealed();paintSeal();drawQuestion();
   }
 
