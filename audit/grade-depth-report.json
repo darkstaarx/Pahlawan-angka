@@ -1,0 +1,1291 @@
+{
+  "status": "pass",
+  "samples": 7488,
+  "byGrade": [
+    {
+      "grade": 1,
+      "skills": 14,
+      "advanced": 353,
+      "strongSamples": 448,
+      "basicOnly": 0
+    },
+    {
+      "grade": 2,
+      "skills": 37,
+      "advanced": 836,
+      "strongSamples": 1184,
+      "basicOnly": 0
+    },
+    {
+      "grade": 3,
+      "skills": 15,
+      "advanced": 370,
+      "strongSamples": 480,
+      "basicOnly": 0
+    },
+    {
+      "grade": 4,
+      "skills": 17,
+      "advanced": 358,
+      "strongSamples": 544,
+      "basicOnly": 0
+    },
+    {
+      "grade": 5,
+      "skills": 18,
+      "advanced": 355,
+      "strongSamples": 576,
+      "basicOnly": 0
+    },
+    {
+      "grade": 6,
+      "skills": 16,
+      "advanced": 478,
+      "strongSamples": 512,
+      "basicOnly": 0
+    }
+  ],
+  "skills": [
+    {
+      "id": "D1.N20",
+      "grade": 1,
+      "archetypes": 5,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 14,
+        "application": 13,
+        "concept": 5
+      }
+    },
+    {
+      "id": "D1.N100",
+      "grade": 1,
+      "archetypes": 18,
+      "curriculumNodes": 9,
+      "demands": {
+        "reasoning": 17,
+        "procedure": 2,
+        "application": 9,
+        "concept": 4
+      }
+    },
+    {
+      "id": "D1.PV100",
+      "grade": 1,
+      "archetypes": 3,
+      "curriculumNodes": 1,
+      "demands": {
+        "reasoning": 22,
+        "application": 10
+      }
+    },
+    {
+      "id": "D1.CMP100",
+      "grade": 1,
+      "archetypes": 3,
+      "curriculumNodes": 1,
+      "demands": {
+        "reasoning": 11,
+        "procedure": 11,
+        "concept": 10
+      }
+    },
+    {
+      "id": "D1.ADD20",
+      "grade": 1,
+      "archetypes": 12,
+      "curriculumNodes": 5,
+      "demands": {
+        "reasoning": 14,
+        "procedure": 3,
+        "application": 15
+      }
+    },
+    {
+      "id": "D1.SUB20",
+      "grade": 1,
+      "archetypes": 6,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 11,
+        "application": 15,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D1.ADD100",
+      "grade": 1,
+      "archetypes": 7,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 22,
+        "procedure": 7,
+        "application": 3
+      }
+    },
+    {
+      "id": "D1.SUB100",
+      "grade": 1,
+      "archetypes": 6,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 23,
+        "application": 3,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D1.FRAC",
+      "grade": 1,
+      "archetypes": 6,
+      "curriculumNodes": 2,
+      "demands": {
+        "application": 8,
+        "reasoning": 5,
+        "concept": 19
+      }
+    },
+    {
+      "id": "D1.MONEY",
+      "grade": 1,
+      "archetypes": 17,
+      "curriculumNodes": 6,
+      "demands": {
+        "application": 13,
+        "reasoning": 12,
+        "concept": 4,
+        "procedure": 3
+      }
+    },
+    {
+      "id": "D1.TIME",
+      "grade": 1,
+      "archetypes": 22,
+      "curriculumNodes": 8,
+      "demands": {
+        "reasoning": 18,
+        "application": 11,
+        "concept": 3
+      }
+    },
+    {
+      "id": "D1.MEASURE",
+      "grade": 1,
+      "archetypes": 13,
+      "curriculumNodes": 4,
+      "demands": {
+        "reasoning": 17,
+        "application": 7,
+        "concept": 4,
+        "procedure": 4
+      }
+    },
+    {
+      "id": "D1.SHAPE",
+      "grade": 1,
+      "archetypes": 20,
+      "curriculumNodes": 9,
+      "demands": {
+        "reasoning": 18,
+        "application": 13,
+        "concept": 1
+      }
+    },
+    {
+      "id": "D1.DATA",
+      "grade": 1,
+      "archetypes": 9,
+      "curriculumNodes": 3,
+      "demands": {
+        "reasoning": 22,
+        "application": 7,
+        "concept": 3
+      }
+    },
+    {
+      "id": "D2.1.1",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 15,
+        "concept": 17
+      }
+    },
+    {
+      "id": "D2.1.2",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 11,
+        "concept": 21
+      }
+    },
+    {
+      "id": "D2.1.3",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 22,
+        "procedure": 10
+      }
+    },
+    {
+      "id": "D2.1.4",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 9,
+        "application": 6,
+        "procedure": 7,
+        "concept": 10
+      }
+    },
+    {
+      "id": "D2.1.5",
+      "grade": 2,
+      "archetypes": 2,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 16,
+        "concept": 16
+      }
+    },
+    {
+      "id": "D2.1.6",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 11,
+        "procedure": 21
+      }
+    },
+    {
+      "id": "D2.1.7",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 11,
+        "concept": 21
+      }
+    },
+    {
+      "id": "D2.1.8",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 11,
+        "application": 21
+      }
+    },
+    {
+      "id": "D2.2.1",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 18,
+        "application": 8,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.2.2",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 18,
+        "application": 8,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.2.3",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 19,
+        "application": 7,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.2.4",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 19,
+        "application": 7,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.2.5",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 32
+      }
+    },
+    {
+      "id": "D2.3.1",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 15,
+        "application": 5,
+        "concept": 12
+      }
+    },
+    {
+      "id": "D2.3.2",
+      "grade": 2,
+      "archetypes": 7,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 11,
+        "application": 15,
+        "concept": 6
+      }
+    },
+    {
+      "id": "D2.3.3",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 19,
+        "procedure": 7,
+        "concept": 6
+      }
+    },
+    {
+      "id": "D2.3.4",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 10,
+        "application": 22
+      }
+    },
+    {
+      "id": "D2.4.1",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 29,
+        "concept": 3
+      }
+    },
+    {
+      "id": "D2.4.2",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 18,
+        "application": 8,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.4.3",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 18,
+        "application": 8,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.4.4",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 19,
+        "application": 7,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.4.5",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 19,
+        "application": 7,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.4.6",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 18,
+        "application": 14
+      }
+    },
+    {
+      "id": "D2.4.7",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 18,
+        "application": 14
+      }
+    },
+    {
+      "id": "D2.5.1",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 26,
+        "concept": 6
+      }
+    },
+    {
+      "id": "D2.5.2",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 13,
+        "application": 13,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D2.5.3",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 10,
+        "application": 22
+      }
+    },
+    {
+      "id": "D2.6.1",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 13,
+        "concept": 19
+      }
+    },
+    {
+      "id": "D2.6.2",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 14,
+        "concept": 18
+      }
+    },
+    {
+      "id": "D2.6.3",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 14,
+        "concept": 18
+      }
+    },
+    {
+      "id": "D2.6.4",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 10,
+        "application": 22
+      }
+    },
+    {
+      "id": "D2.7.1",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 7,
+        "procedure": 13,
+        "concept": 12
+      }
+    },
+    {
+      "id": "D2.7.2",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 11,
+        "concept": 21
+      }
+    },
+    {
+      "id": "D2.7.3",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 14,
+        "procedure": 13,
+        "concept": 5
+      }
+    },
+    {
+      "id": "D2.8.1",
+      "grade": 2,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 26,
+        "concept": 6
+      }
+    },
+    {
+      "id": "D2.8.2",
+      "grade": 2,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 26,
+        "concept": 6
+      }
+    },
+    {
+      "id": "D2.8.3",
+      "grade": 2,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 12,
+        "application": 20
+      }
+    },
+    {
+      "id": "D3.N10000",
+      "grade": 3,
+      "archetypes": 13,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 22,
+        "application": 5,
+        "procedure": 3,
+        "concept": 2
+      }
+    },
+    {
+      "id": "D3.PV10000",
+      "grade": 3,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 26,
+        "concept": 4,
+        "foundation": 2
+      }
+    },
+    {
+      "id": "D3.ADD10000",
+      "grade": 3,
+      "archetypes": 10,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 14,
+        "reasoning": 12,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D3.SUB10000",
+      "grade": 3,
+      "archetypes": 10,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 14,
+        "application": 12,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D3.MUL",
+      "grade": 3,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 26,
+        "concept": 3,
+        "procedure": 3
+      }
+    },
+    {
+      "id": "D3.DIV",
+      "grade": 3,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 26,
+        "concept": 3,
+        "procedure": 3
+      }
+    },
+    {
+      "id": "D3.FRAC",
+      "grade": 3,
+      "archetypes": 14,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 5,
+        "reasoning": 17,
+        "concept": 5,
+        "transfer": 1,
+        "procedure": 4
+      }
+    },
+    {
+      "id": "D3.DEC",
+      "grade": 3,
+      "archetypes": 8,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 26,
+        "procedure": 5,
+        "transfer": 1
+      }
+    },
+    {
+      "id": "D3.MONEY",
+      "grade": 3,
+      "archetypes": 13,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 18,
+        "reasoning": 10,
+        "procedure": 1,
+        "foundation": 3
+      }
+    },
+    {
+      "id": "D3.TIME",
+      "grade": 3,
+      "archetypes": 12,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 19,
+        "reasoning": 10,
+        "concept": 1,
+        "foundation": 1,
+        "procedure": 1
+      }
+    },
+    {
+      "id": "D3.MEASURE",
+      "grade": 3,
+      "archetypes": 20,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 21,
+        "procedure": 4,
+        "application": 6,
+        "concept": 1
+      }
+    },
+    {
+      "id": "D3.SHAPE",
+      "grade": 3,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 11,
+        "procedure": 11,
+        "concept": 10
+      }
+    },
+    {
+      "id": "D3.DATA",
+      "grade": 3,
+      "archetypes": 9,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 17,
+        "application": 9,
+        "procedure": 2,
+        "transfer": 1,
+        "concept": 3
+      }
+    },
+    {
+      "id": "D4.N100000",
+      "grade": 4,
+      "archetypes": 8,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 10,
+        "procedure": 17,
+        "concept": 5
+      }
+    },
+    {
+      "id": "D4.PV100000",
+      "grade": 4,
+      "archetypes": 6,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 11,
+        "application": 6,
+        "procedure": 6,
+        "concept": 9
+      }
+    },
+    {
+      "id": "D4.ADD",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 8,
+        "application": 17,
+        "procedure": 7
+      }
+    },
+    {
+      "id": "D4.SUB",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 9,
+        "application": 16,
+        "procedure": 7
+      }
+    },
+    {
+      "id": "D4.MUL",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 16,
+        "application": 8,
+        "procedure": 8
+      }
+    },
+    {
+      "id": "D4.DIV",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 9,
+        "application": 8,
+        "procedure": 15
+      }
+    },
+    {
+      "id": "D4.FRAC",
+      "grade": 4,
+      "archetypes": 6,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 26,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D4.DEC",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 26,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D4.MONEY",
+      "grade": 4,
+      "archetypes": 6,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 11,
+        "procedure": 10,
+        "application": 11
+      }
+    },
+    {
+      "id": "D4.TIME",
+      "grade": 4,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 4,
+        "application": 22,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D4.MEASURE",
+      "grade": 4,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 13,
+        "procedure": 19
+      }
+    },
+    {
+      "id": "D4.PERIM",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 13,
+        "procedure": 19
+      }
+    },
+    {
+      "id": "D4.DATA",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 29,
+        "concept": 3
+      }
+    },
+    {
+      "id": "D5.N1000000",
+      "grade": 5,
+      "archetypes": 9,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 9,
+        "application": 5,
+        "procedure": 13,
+        "concept": 5
+      }
+    },
+    {
+      "id": "D5.PV1000000",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 9,
+        "procedure": 16,
+        "concept": 7
+      }
+    },
+    {
+      "id": "D5.MUL",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 17,
+        "application": 8,
+        "procedure": 7
+      }
+    },
+    {
+      "id": "D5.DIV",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 8,
+        "application": 8,
+        "procedure": 16
+      }
+    },
+    {
+      "id": "D5.FRAC",
+      "grade": 5,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 14,
+        "procedure": 14,
+        "concept": 4
+      }
+    },
+    {
+      "id": "D5.DEC",
+      "grade": 5,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 7,
+        "procedure": 20,
+        "concept": 5
+      }
+    },
+    {
+      "id": "D5.PERCENT",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 10,
+        "application": 7,
+        "procedure": 8,
+        "concept": 7
+      }
+    },
+    {
+      "id": "D5.MONEY",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 17,
+        "application": 15
+      }
+    },
+    {
+      "id": "D5.TIME",
+      "grade": 5,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 7,
+        "procedure": 21,
+        "concept": 4
+      }
+    },
+    {
+      "id": "D5.MEASURE",
+      "grade": 5,
+      "archetypes": 5,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 20,
+        "procedure": 12
+      }
+    },
+    {
+      "id": "D5.AREA",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 17,
+        "application": 8,
+        "procedure": 7
+      }
+    },
+    {
+      "id": "D5.COORD",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 17,
+        "application": 8,
+        "concept": 7
+      }
+    },
+    {
+      "id": "D5.DATA",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 10,
+        "application": 15,
+        "concept": 7
+      }
+    },
+    {
+      "id": "D6.NUMBERS",
+      "grade": 6,
+      "archetypes": 22,
+      "curriculumNodes": 7,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.OPS",
+      "grade": 6,
+      "archetypes": 7,
+      "curriculumNodes": 1,
+      "demands": {
+        "procedure": 10,
+        "reasoning": 22
+      }
+    },
+    {
+      "id": "D6.FRAC",
+      "grade": 6,
+      "archetypes": 12,
+      "curriculumNodes": 3,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.DEC",
+      "grade": 6,
+      "archetypes": 16,
+      "curriculumNodes": 4,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.PERCENT",
+      "grade": 6,
+      "archetypes": 18,
+      "curriculumNodes": 5,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.RATIO",
+      "grade": 6,
+      "archetypes": 18,
+      "curriculumNodes": 3,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.MONEY",
+      "grade": 6,
+      "archetypes": 20,
+      "curriculumNodes": 5,
+      "demands": {
+        "concept": 24,
+        "application": 4,
+        "reasoning": 4
+      }
+    },
+    {
+      "id": "D6.TIME",
+      "grade": 6,
+      "archetypes": 14,
+      "curriculumNodes": 3,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.MEASURE",
+      "grade": 6,
+      "archetypes": 7,
+      "curriculumNodes": 1,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.COORD",
+      "grade": 6,
+      "archetypes": 14,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D3.PERCENT",
+      "grade": 3,
+      "archetypes": 9,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 18,
+        "concept": 6,
+        "procedure": 1,
+        "foundation": 6,
+        "transfer": 1
+      }
+    },
+    {
+      "id": "D3.POSITION",
+      "grade": 3,
+      "archetypes": 9,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 13,
+        "application": 13,
+        "procedure": 4,
+        "concept": 2
+      }
+    },
+    {
+      "id": "D4.PERCENT",
+      "grade": 4,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "application": 27,
+        "concept": 5
+      }
+    },
+    {
+      "id": "D4.COORD",
+      "grade": 4,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 11,
+        "application": 11,
+        "concept": 10
+      }
+    },
+    {
+      "id": "D4.RATIO",
+      "grade": 4,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 13,
+        "procedure": 19
+      }
+    },
+    {
+      "id": "D4.RATE",
+      "grade": 4,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 13,
+        "application": 10,
+        "concept": 9
+      }
+    },
+    {
+      "id": "D5.ADD",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 20,
+        "application": 6,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D5.SUB",
+      "grade": 5,
+      "archetypes": 4,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 20,
+        "application": 6,
+        "procedure": 6
+      }
+    },
+    {
+      "id": "D5.OPS",
+      "grade": 5,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D5.RATIO",
+      "grade": 5,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 12,
+        "procedure": 20
+      }
+    },
+    {
+      "id": "D5.RATE",
+      "grade": 5,
+      "archetypes": 3,
+      "curriculumNodes": 0,
+      "demands": {
+        "reasoning": 13,
+        "application": 10,
+        "concept": 9
+      }
+    },
+    {
+      "id": "D6.PROB",
+      "grade": 6,
+      "archetypes": 11,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.ANGLE",
+      "grade": 6,
+      "archetypes": 8,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.CIRCLE",
+      "grade": 6,
+      "archetypes": 9,
+      "curriculumNodes": 2,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.SPACE_PROBLEM",
+      "grade": 6,
+      "archetypes": 7,
+      "curriculumNodes": 1,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.PIE",
+      "grade": 6,
+      "archetypes": 7,
+      "curriculumNodes": 1,
+      "demands": {
+        "reasoning": 32
+      }
+    },
+    {
+      "id": "D6.DATA_PROBLEM",
+      "grade": 6,
+      "archetypes": 7,
+      "curriculumNodes": 1,
+      "demands": {
+        "reasoning": 32
+      }
+    }
+  ]
+}

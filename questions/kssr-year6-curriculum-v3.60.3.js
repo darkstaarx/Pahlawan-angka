@@ -18,7 +18,7 @@ const polygon=n=>H.regularPolygonSvg?H.regularPolygonSvg(n):'<div class="kssrDia
 const circle=(m,r)=>H.circleSvg?H.circleSvg(m,r):'<div class="kssrDiagram">Bulatan</div>';
 const pie=(s,o={})=>H.pieSvg?H.pieSvg(s,o):table(['Kategori','Sudut'],s.map(x=>[x.label,x.angle+'°']));
 const bag=(r,b,g=0)=>H.bagVisual?H.bagVisual(r,b,g):table(['Warna','Bilangan'],[['Merah',r],['Biru',b],['Hijau',g]]);
-function stage(s){const m=Number(s?.mastery||0),e=Number(s?.evidence||0),c=Number(s?.confidence||0),w=Number(s?.wrong||0);if(e===0)return 2;if(w>=1&&e<=3)return 1;if(w>=2)return 1;if(e>=4&&(m<35||c<35))return 1;if(e<4||m<70||c<60)return 2;return 3}
+function stage(s){const m=Number(s?.mastery||0),e=Number(s?.evidence||0),c=Number(s?.confidence||0),w=Number(s?.wrong||0);if(e===0)return 2;if(w>=1&&e<=3)return 1;if(w>=2&&w/Math.max(1,e)>=.35&&(m<60||c<50))return 1;if(e>=4&&(m<35||c<35))return 1;if(e<4||m<70||c<60)return 2;return 3}
 const REF={
 'D6.NUMBERS':['1.1.1','1.1.2','1.1.3','1.1.4','1.1.5','1.3.1','1.4.1'],
 'D6.OPS':['1.2.1','2.4.1','2.5.1'],'D6.FRAC':['2.1.1','2.5.1'],'D6.DEC':['2.2.1','2.2.2','2.5.1'],

@@ -26,6 +26,7 @@
   const GAME_QUESTION_VERSION='3.62.4';
   const PROFILE_MANAGER_VERSION='3.24.2';
 
+  const gradeDepthJs=`questions/grade-depth-v1.js?v=${APP_VERSION}`;
   const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;
   const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${APP_VERSION}`;
@@ -114,6 +115,7 @@
     if(!document.querySelector(`script[src^="questions/kssr-year6-v2-unit8-v${Y6_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y6V2Unit8Js}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-curriculum-v2-v${Y6_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y6CurriculumV2Js}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-adaptive-v${Y6_ADAPTIVE_VERSION}.js"]`))document.write(`<script src="${y6AdaptiveJs}"><\/script>`);
+    if(!document.querySelector('script[src^="questions/grade-depth-v1.js"]'))document.write(`<script src="${gradeDepthJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${sensoryCss}">`);
     if(!document.querySelector(`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`))document.write(`<script src="${sensoryJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${manipCss}">`);
@@ -156,7 +158,8 @@
     const loadGames=()=>{loadCss(gamesCss,'link[href^="css/cikgu-mini-games-v1.0.0.css"]');loadScript(fractionJs,'script[src^="js/fraction-lesson-v1.js"]',()=>loadScript(gamesJs,'script[src^="js/cikgu-mini-games-v1.0.0.js"]',loadDevGames));};
     const loadManip=()=>{loadCss(manipCss,`link[href^="css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css"]`);loadScript(manipJs,`script[src^="js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js"]`,loadGames);};
     const loadSensory=()=>{loadCss(sensoryCss,`link[href^="css/sensory-learning-v${SENSORY_VERSION}.css"]`);loadScript(sensoryJs,`script[src^="js/sensory-learning-v${SENSORY_VERSION}.js"]`,loadManip);};
-    const loadY6Adaptive=()=>loadScript(y6AdaptiveJs,`script[src^="questions/kssr-year6-adaptive-v${Y6_ADAPTIVE_VERSION}.js"]`,loadSensory);
+    const loadGradeDepth=()=>loadScript(gradeDepthJs,'script[src^="questions/grade-depth-v1.js"]',loadSensory);
+    const loadY6Adaptive=()=>loadScript(y6AdaptiveJs,`script[src^="questions/kssr-year6-adaptive-v${Y6_ADAPTIVE_VERSION}.js"]`,loadGradeDepth);
     const loadY6V2Final=()=>loadScript(y6CurriculumV2Js,`script[src^="questions/kssr-year6-curriculum-v2-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadY6Adaptive);
     const loadY6V2Unit8=()=>loadScript(y6V2Unit8Js,`script[src^="questions/kssr-year6-v2-unit8-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadY6V2Final);
     const loadY6V2Unit7=()=>loadScript(y6V2Unit7Js,`script[src^="questions/kssr-year6-v2-unit7-v${Y6_CURRICULUM_V2_VERSION}.js"]`,loadY6V2Unit8);

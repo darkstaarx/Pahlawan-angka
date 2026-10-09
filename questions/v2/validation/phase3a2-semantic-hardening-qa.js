@@ -10,8 +10,8 @@ for(const f of ['questions/v2/generators/d3/full-kssr.js','questions/v2/generato
 const bankFiles=['full-number.json','p0-operations.json','p0-fractions-decimals-percent.json','full-money.json','p0-time.json','p0-measurement.json','full-coordinates.json','p0-data.json'];
 const bankBase='questions/v2/banks/kssr-e3-2024/d3/';
 const templates=bankFiles.flatMap(f=>js(bankBase+f).templates);
-eq(templates.length,136,'semantic QA covers exactly 136 non-T7 authored templates');
-const expected={'D3.T1':18,'D3.T2':13,'D3.T3':30,'D3.T4':15,'D3.T5':15,'D3.T6':27,'D3.T8':9,'D3.T9':9};for(const k of Object.keys(expected))eq(templates.filter(t=>t.topicId===k).length,expected[k],k+' template count');
+eq(templates.length,137,'semantic QA covers exactly 137 non-T7 authored templates');
+const expected={'D3.T1':19,'D3.T2':13,'D3.T3':30,'D3.T4':15,'D3.T5':15,'D3.T6':27,'D3.T8':9,'D3.T9':9};for(const k of Object.keys(expected))eq(templates.filter(t=>t.topicId===k).length,expected[k],k+' template count');
 
 // Metadata scope gates: prevent diagnostic contamination.
 for(const t of templates.filter(t=>t.topicId==='D3.T4')){
@@ -34,6 +34,7 @@ for(let ti=0;ti<templates.length;ti++){
     const sem=raw.meta.semanticProperties||{},mode=(t.params||{}).mode;
 
     // T1
+    if(mode==='missing_place_value'){eq(sem.parts.reduce((a,b)=>a+b,0),sem.number,'expanded parts total');eq(Number(raw.value.answer.labelMs),sem.number-sem.parts.filter((_,i)=>i!==sem.missingIndex).reduce((a,b)=>a+b,0),'missing value independent oracle');ok(sem.number<=10000,'D3 number range');ok(!raw.value.visual,'missing value is not revealed in visual');}
     if(t.standardId==='1.1.1'&&mode==='digit_value'){ok(Number.isInteger(sem.value)&&sem.value>0,'digit-value semantic oracle');ok(raw.value.visual&&raw.value.visual.kind==='place_value_table'&&raw.value.visual.highlight>=0,'digit-value highlighted place');}
     if(t.standardId==='1.2.1'){ok(raw.value.visual&&raw.value.visual.kind==='estimate_reference_sets','estimation uses reference/target set evidence');ok(sem.referenceCount>0&&sem.targetCount>0,'estimation records reference and target quantities');ok(!/kumpulan yang sama/i.test(raw.value.promptMs),'estimation is not disguised repeated-group multiplication');}
     if(t.standardId==='1.4.1'||t.standardId==='1.4.2'){if(raw.value.visual&&raw.value.visual.kind==='number_sequence')ok((raw.value.visual.sequence||[]).length>=6,'number-pattern evidence uses >=6 positions');}

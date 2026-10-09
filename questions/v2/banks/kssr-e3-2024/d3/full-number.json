@@ -401,6 +401,28 @@
       "params": {
         "mode": "pattern_rule"
       }
+    },
+    {
+      "templateId": "D3-1-111-missing-place-value-v1",
+      "curriculumVersion": "KSSR-E3-2024",
+      "grade": 3,
+      "topicId": "D3.T1",
+      "standardId": "1.1.1",
+      "competencyId": "represent_numbers_to_10000",
+      "archetypeId": "missing_place_value",
+      "familyKey": "d3.d3_t1.represent_numbers_to_10000",
+      "representation": "symbolic",
+      "demand": "reasoning",
+      "difficultyBand": 3,
+      "misconceptionTargets": [
+        "place_value_confusion"
+      ],
+      "generator": "d3.fullKssr",
+      "renderer": "d3full",
+      "responseType": "mcq",
+      "params": {
+        "mode": "missing_place_value"
+      }
     }
   ]
 }

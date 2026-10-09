@@ -1021,6 +1021,28 @@
 ];
   var TEMPLATES = [
   {
+    "templateId": "D3-1-111-missing-place-value-v1",
+    "curriculumVersion": "KSSR-E3-2024",
+    "grade": 3,
+    "topicId": "D3.T1",
+    "standardId": "1.1.1",
+    "competencyId": "represent_numbers_to_10000",
+    "archetypeId": "missing_place_value",
+    "familyKey": "d3.d3_t1.represent_numbers_to_10000",
+    "representation": "symbolic",
+    "demand": "reasoning",
+    "difficultyBand": 3,
+    "misconceptionTargets": [
+      "place_value_confusion"
+    ],
+    "generator": "d3.fullKssr",
+    "renderer": "d3full",
+    "responseType": "mcq",
+    "params": {
+      "mode": "missing_place_value"
+    }
+  },
+  {
     "templateId": "D3-1-111-number_to_expanded_form-v1",
     "curriculumVersion": "KSSR-E3-2024",
     "grade": 3,
@@ -4709,7 +4731,7 @@
 ];
   var BUILD_MANIFEST = {
   "curriculumCount": 50,
-  "templateCount": 162,
+  "templateCount": 163,
   "generatorFiles": [
     "generators/d3/full-kssr.js",
     "generators/d3/p0-kssr.js",
@@ -4724,7 +4746,7 @@
     "renderers/geometry/prism.js"
   ]
 };
-  var SOURCE_HASH = "82ce61a23f35f221af4f13a62f01548053ab52b7915dd5f3d8f0789ea86aa0f1";
+  var SOURCE_HASH = "5205f7d960934620baa8ad0a857b8b8a7e665d3f6602cdcc526b62ce91884468";
 
   var generators = Object.create(null);
   var renderers = Object.create(null);
@@ -4824,6 +4846,13 @@ registerGenerator('d3.fullKssr',function(params,rng){
     var n2=ri(rng,1000,9999),ans2=choice(n2,String(n2)),s=String(n2),alt=Number(s[0]+s[2]+s[1]+s[3]);
     var dis2=numChoices(n2,[alt,n2+100,n2-100,n2+10],'place_value_confusion',null,0,10000);
     return{value:{promptMs:'Nombor manakah diwakili oleh jadual nilai tempat ini?',answer:ans2,visual:pvVisual(n2)},distractors:shuffle(rng,dis2),meta:{archetype:'place_value_model_to_number',hintMs:'Gabungkan digit mengikut tempat ribu, ratus, puluh dan sa.',semanticProperties:{number:n2},fingerprint:fp(m,n2,[s])}};
+  }
+  if(m==='missing_place_value'){
+    var number=ri(rng,1000,9999),digitsMissing=String(number).split('').map(Number),placeMissing=ri(rng,0,3),powers=[1000,100,10,1];
+    while(digitsMissing[placeMissing]===0)placeMissing=ri(rng,0,3);
+    var partsMissing=digitsMissing.map(function(d,i){return d*powers[i];}),valueMissing=partsMissing[placeMissing];
+    var promptMissing=number+' = '+partsMissing.map(function(v,i){return i===placeMissing?'___':v;}).join(' + ')+'. Apakah nilai yang hilang?';
+    return {value:{promptMs:promptMissing,answer:choice(valueMissing,String(valueMissing)),visual:null},distractors:shuffle(rng,numChoices(valueMissing,[digitsMissing[placeMissing],valueMissing+10,Math.max(0,valueMissing-10)],'place_value_confusion',null,0,10000)),meta:{archetype:'missing_place_value',hintMs:'Tolak jumlah nilai yang diketahui daripada nombor asal.',semanticProperties:{number:number,parts:partsMissing,missingIndex:placeMissing,value:valueMissing},fingerprint:fp(m,valueMissing,[number,placeMissing])}};
   }
   if(m==='digit_value'){
     var n3=ri(rng,1000,9999),digits=String(n3).split('').map(Number),pos=ri(rng,0,3);while(digits[pos]===0){pos=ri(rng,0,3);}var pv=[1000,100,10,1],val=digits[pos]*pv[pos],place=['ribu','ratus','puluh','sa'][pos];

@@ -109,7 +109,9 @@
     const q=moneyQ(id,shift,s),mode={
       'D2.4.1':'money_value','D2.4.2':'money_add','D2.4.3':'money_sub','D2.4.4':'money_mul','D2.4.5':'money_div','D2.4.6':'money_saving','D2.4.7':'money_problem'
     }[id];
-    return mark(q,id,mode,/svg|moneyVisual|moneyModel/i.test(String(q.prompt))?'visual':'story',id==='D2.4.1'?'concept':'application',['money','operation']);
+    const text=String(q.prompt),sub=text.includes('nilainya lebih besar')?'compare':text.includes('jumlah wang semuanya')?'total':text.includes('nilai wang yang ditunjukkan')?'recognise':(text.match(/[+−]/g)||[]).length>=2?'three_values':text.includes(' = ?')?'calculate':text.includes('baki')?'balance':text.includes('simpan')?'saving':'story';
+    const demand=id==='D2.4.1'?(sub==='recognise'?'concept':'application'):sub==='calculate'?'procedure':'application';
+    return mark(q,id,mode+'_'+sub,/svg|moneyVisual|moneyModel/i.test(text)?'visual':'story',demand,['money','operation']);
   }
   function d2Time(id,s,shift){
     if(id==='D2.5.1'){

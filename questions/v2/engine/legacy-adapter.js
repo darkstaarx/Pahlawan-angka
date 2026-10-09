@@ -128,7 +128,9 @@
   function targetDifficulty(state) {
     var mastery = Number(state && state.mastery);
     if (!Number.isFinite(mastery)) mastery = 50;
-    return mastery < 35 ? 1 : mastery < 70 ? 2 : 3;
+    var evidence = Number(state && state.evidence) || 0;
+    var confidence = Number(state && state.confidence) || 0;
+    return mastery < 35 ? 1 : evidence < 3 ? 2 : mastery >= 70 && confidence >= 55 ? 4 : mastery < 50 ? 2 : 3;
   }
 
   function selectTemplate(runtime, legacySkillId, state, history, rng, rolloutRegistry) {
@@ -155,6 +157,12 @@
 
     var targetBand = targetDifficulty(state);
     var templates = exactTemplates(runtime, record);
+    var skillHistory = (history || []).filter(function (item) { return item.skillId === legacySkillId; });
+    if (targetBand >= 4 && skillHistory.length % 5 !== 4) {
+      var deeper = templates.filter(function (tpl) { return tpl.demand === 'application' || tpl.demand === 'reasoning'; });
+      if (deeper.length) templates = deeper;
+    }
+
     // Prefer a template not shown in the previous six questions. If every
     // template for this competency is still in cooldown, fall back to the
     // full set rather than failing generation.
