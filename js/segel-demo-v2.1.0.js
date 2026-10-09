@@ -2199,7 +2199,7 @@
     const name=petNameForAward(award);
     if(award.newlyTamed)return `${name} berjaya dijinakkan!`;
     if(award.alreadyTamed)return `${name} berjaya diselamatkan lagi!`;
-    if(award.rescueAwarded)return `Jejak ${name} ditemui · Rescue ${award.rescues}/${award.threshold}`;
+    if(award.rescueAwarded)return `Terima kasih selamatkan ${name}! · Rescue ${award.rescues}/${award.threshold}`;
     return `Misi selesai! Teruskan Gembok untuk mengumpul jejak ${name}.`;
   }
 
@@ -2266,9 +2266,17 @@
     },Math.max(0,stars)*180+760);
   }
 
+  function resultPlayerName(){
+    const profile=run?.productionRun?.profileDb || (typeof db!=='undefined'?db:null);
+    return String(profile?.name||'').trim()||'Pahlawan';
+  }
+
   function coachLine(t,acc,asked){
-    if(acc===100)return `Hebat, Wira! Semua ${asked} soalan kamu jawab tepat. Teruskan usaha ini!`;
-    const say=[acc>=80?'Syabas! Aurora sudah selamat.':'Aurora sudah selamat.'];
+    const player=resultPlayerName();
+    const pet=run?.productionRun?.petAward?.petId
+      ? petNameForAward(run.productionRun.petAward) : devPetName();
+    if(acc===100)return `Hebat, ${player}! Semua ${asked} soalan kamu jawab tepat. Teruskan usaha ini!`;
+    const say=[acc>=80?`Syabas, ${player}! ${pet} sudah selamat.`:`${pet} sudah selamat.`];
     if(t.hint>0)say.push(`${t.own} soalan kamu selesaikan sendiri, ${t.hint} dengan petunjuk.`);
     say.push(acc>=80?'Sikit lagi untuk tiga bintang.':'Ulang sekali lagi untuk kumpul lebih bintang.');
     return say.join(' ');
@@ -2305,7 +2313,7 @@
     $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
     $('segelStatAcc').textContent=acc+'%';
     popStars(stars);
-    $('segelCoachSay').textContent=devSubject(coachLine(t,acc,run.asked));
+    $('segelCoachSay').textContent=coachLine(t,acc,run.asked);
     const summary=$('segelDemoSummary');
     if(entryMode?.guestDemo&&summary){
       const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;

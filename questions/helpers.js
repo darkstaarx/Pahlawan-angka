@@ -329,11 +329,11 @@ function base10Visual(n){
  const group=(count,label,bg)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:94px">${Array.from({length:count},()=>`<span style="width:18px;height:18px;border:2px solid #4a5a76;border-radius:3px;background:${bg};display:inline-block"></span>`).join('')||'<span style="font-weight:900;color:#8090aa">0</span>'}</div><small style="font-weight:900">${label}</small></div>`;
  return `<div style="display:flex;justify-content:center;gap:18px;align-items:flex-end;margin:4px auto 12px">${group(h,'ratus','#ffd27d')}${group(t,'puluh','#87c8ff')}${group(o,'sa','#8ee1aa')}</div>`;
 }
-function numberLineSvg(min,max,step,point=null){
+function numberLineSvg(min,max,step,point=null,options={}){
  const vals=[];for(let v=min;v<=max;v+=step)vals.push(v);
  const W=320,H=74,left=22,right=298,y=34,span=Math.max(1,max-min);
- const ticks=vals.map(v=>{const x=Number((left+(v-min)/span*(right-left)).toFixed(2));return `<line x1="${x}" y1="28" x2="${x}" y2="42" stroke="#405072" stroke-width="2"/><text x="${x}" y="59" text-anchor="middle" font-size="10" fill="#405072">${tidyDisplay(v)}</text>`}).join('');
- let marker=''; if(point!=null){const x=Number((left+(point-min)/span*(right-left)).toFixed(2));marker=`<circle cx="${x}" cy="${y}" r="6" fill="#ef6f6c"/><path d="M${x} 8 L${x} 24" stroke="#ef6f6c" stroke-width="3"/><text x="${x}" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="#9c3e3b">${tidyDisplay(point)}</text>`}
+ const ticks=vals.map(v=>{const x=Number((left+(v-min)/span*(right-left)).toFixed(2));return `<line x1="${x}" y1="28" x2="${x}" y2="42" stroke="#405072" stroke-width="2"/><text x="${x}" y="59" text-anchor="middle" font-size="10" fill="#405072">${options.endpointLabelsOnly&&Math.abs(v-min)>1e-8&&Math.abs(v-max)>1e-8?'':tidyDisplay(v)}</text>`}).join('');
+ let marker=''; if(point!=null){const x=Number((left+(point-min)/span*(right-left)).toFixed(2));marker=`<circle cx="${x}" cy="${y}" r="6" fill="#ef6f6c"/><path d="M${x} 8 L${x} 24" stroke="#ef6f6c" stroke-width="3"/><text x="${x}" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="#9c3e3b">${options.hidePointValue?'?':tidyDisplay(point)}</text>`}
  return `<svg viewBox="0 0 ${W} ${H}" width="min(330px,98%)" style="display:block;margin:0 auto 10px"><line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#405072" stroke-width="3"/>${ticks}${marker}</svg>`;
 }
 function dotsEstimateVisual(count){
