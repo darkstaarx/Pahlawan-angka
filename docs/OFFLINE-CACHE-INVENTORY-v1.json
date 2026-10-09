@@ -1,0 +1,137 @@
+{
+  "auditVersion": 1,
+  "repository": "darkstaarx/Pahlawan-angka",
+  "mainAtAudit": "9f9e3789b19eadf977b1962c04b7f827a14b05c0",
+  "cacheEntries": 436,
+  "totalKnownOriginalBytes": 86093375,
+  "allEntriesFound": true,
+  "byType": {
+    "js": {
+      "files": 129,
+      "rawBytes": 2420674
+    },
+    "css": {
+      "files": 83,
+      "rawBytes": 500857
+    },
+    "png": {
+      "files": 104,
+      "rawBytes": 65973008
+    },
+    "wav": {
+      "files": 1,
+      "rawBytes": 145574
+    },
+    "webp": {
+      "files": 114,
+      "rawBytes": 16999802
+    },
+    "html": {
+      "files": 1,
+      "rawBytes": 48358
+    },
+    "webmanifest": {
+      "files": 1,
+      "rawBytes": 954
+    },
+    "svg": {
+      "files": 3,
+      "rawBytes": 4148
+    }
+  },
+  "largestEntries": [
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/sprite-sheets/happy-v1.png",
+      "rawBytes": 2613086
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/sprite-sheets/happy-v1.png",
+      "rawBytes": 2561978
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/happy.png",
+      "rawBytes": 2290592
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.png",
+      "rawBytes": 2287156
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/sad.png",
+      "rawBytes": 2226019
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/happy.png",
+      "rawBytes": 2217389
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/sad.png",
+      "rawBytes": 2121801
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.png",
+      "rawBytes": 2056076
+    },
+    {
+      "path": "assets/branding/pahlawan-angka-full-logo-v1.png",
+      "rawBytes": 2006817
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/happy.png",
+      "rawBytes": 1983508
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/happy.png",
+      "rawBytes": 1963466
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/sad.png",
+      "rawBytes": 1962440
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.png",
+      "rawBytes": 1938629
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/happy.png",
+      "rawBytes": 1922097
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/sprite-sheets/happy-v1.png",
+      "rawBytes": 1894880
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/sad.png",
+      "rawBytes": 1883287
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/idle.png",
+      "rawBytes": 1817378
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/sad.png",
+      "rawBytes": 1815369
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/idle.png",
+      "rawBytes": 1814044
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/sprite-sheets/happy-v1.png",
+      "rawBytes": 1794552
+    },
+    {
+      "path": "assets/coach/time-lab/sidma-push-v1.png",
+      "rawBytes": 1747003
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/sprite-sheets/happy-v1.png",
+      "rawBytes": 1736883
+    }
+  ],
+  "notes": [
+    "Sizes are raw Git object blob size, not HTTP bytes, transfer size or cache storage used.",
+    "APP_SHELL is installed using cache.addAll(cache:'reload') on every version; current implementation purges older caches on activation.",
+    "Dynamic audio music/PDF dependencies require separate full offline audit."
+  ]
+}

@@ -1,0 +1,3 @@
+.secrets/
+# Offline signing private JWK files must never be committed
+*.private.jwk.json

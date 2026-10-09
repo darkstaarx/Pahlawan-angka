@@ -33,6 +33,20 @@ async function inspect(raw){
  return {ready:true,estimatedBytes:m.estimatedBytes,total:m.files.length};
 }
 const digest=async body=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',body)),b=>b.toString(16).padStart(2,'0')).join('');
+async function reuseFromOlder(file,currentName){
+ if(!file.sha256)return null;
+ const keys=await caches.keys();
+ for(const key of keys){
+  if(!key.startsWith(PREFIX)||key===currentName)continue;
+  const c=await caches.open(key),marker=await c.match(metaURL());
+  if(!marker?.ok)continue;
+  let manifest;try{manifest=await marker.json()}catch(_){continue}
+  if(!manifest?.files?.some(f=>f.url===file.url&&f.sha256===file.sha256))continue;
+  const content=await c.match(file.url);
+  if(content?.ok&&await digest(await content.clone().arrayBuffer())===file.sha256)return content;
+ }
+ return null;
+}
 async function start(raw,{verifyEntitlement,signal,onProgress}={}){
  if(busy)fail('Muat turun sedang berjalan');
  const m=manifest(raw);
@@ -50,6 +64,8 @@ async function start(raw,{verifyEntitlement,signal,onProgress}={}){
    if(signal?.aborted)fail('Muat turun dihentikan');
    const old=await cache.match(f.url);
    if(old?.ok&&f.sha256&&await digest(await old.clone().arrayBuffer())===f.sha256){done++;emit('downloading');continue}
+   const reusable=await reuseFromOlder(f,PREFIX+m.version);
+   if(reusable){await cache.put(f.url,reusable.clone());done++;emit('downloading');continue}
    const response=await fetch(f.url,{cache:'reload',credentials:'same-origin',signal});
    if(!response.ok||response.type==='opaque')fail('Gagal muat turun: '+f.url);
    const body=await response.arrayBuffer();networkBytes+=body.byteLength;
