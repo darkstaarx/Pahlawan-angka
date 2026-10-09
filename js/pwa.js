@@ -68,7 +68,7 @@
   const dailyCss=`css/daily-spaced-review-v${DAILY_REVIEW_VERSION}.css?v=${DAILY_REVIEW_VERSION}`;
   const dailyJs=`js/daily-spaced-review-v${DAILY_REVIEW_VERSION}.js?v=${APP_VERSION}`;
   const devCss=`css/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.css?v=${DEV_EXPERIMENTS_VERSION}`;
-  const devJs=`js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js?v=${DEV_EXPERIMENTS_VERSION}`;
+  const devJs=`js/dev-experiments-v${DEV_EXPERIMENTS_VERSION}.js?v=${APP_VERSION}`;
   const combatCss=`css/combat-polish-v${COMBAT_POLISH_VERSION}.css?v=${COMBAT_POLISH_VERSION}`;
   const combatJs=`js/combat-polish-v${COMBAT_POLISH_VERSION}.js?v=${COMBAT_POLISH_VERSION}`;
   const bossCss=`css/boss-stage-dev-v${BOSS_LAB_VERSION}.css?v=${APP_VERSION}`;
@@ -78,7 +78,7 @@
   const finisherCss=`css/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.css?v=${FINISHER_HOTSPOT_VERSION}`;
   const finisherJs=`js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js?v=${FINISHER_HOTSPOT_VERSION}`;
   const typedCss=`css/typed-answer-ui-v${TYPED_UI_VERSION}.css?v=${TYPED_UI_VERSION}`;
-  const typedJs=`js/typed-answer-ui-v${TYPED_UI_VERSION}.js?v=${TYPED_UI_VERSION}`;
+  const typedJs=`js/typed-answer-ui-v${TYPED_UI_VERSION}.js?v=${APP_VERSION}`;
   const gameQuestionCss=`css/game-question-interactions-v${GAME_QUESTION_VERSION}.css?v=${GAME_QUESTION_VERSION}`;
   const gameQuestionJs=`js/game-question-interactions-v${GAME_QUESTION_VERSION}.js?v=${APP_VERSION}`;
   const profileCss=`css/profile-manager-v${PROFILE_MANAGER_VERSION}.css?v=${PROFILE_MANAGER_VERSION}`;

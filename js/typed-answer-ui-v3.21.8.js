@@ -40,8 +40,9 @@
     label.classList.add('paTypedLabelClean');
     form.querySelector('.paTypedNote')?.remove();
 
-    input.placeholder='Jawapan';
-    input.setAttribute('aria-label','Jawapan kamu');
+    const unit=input.dataset.answerUnit;
+    input.placeholder=unit?`Jawapan (${unit})`:'Jawapan';
+    input.setAttribute('aria-label',unit?`Jawapan kamu dalam ${unit}`:'Jawapan kamu');
     input.setAttribute('enterkeyhint','done');
     input.spellcheck=false;
 

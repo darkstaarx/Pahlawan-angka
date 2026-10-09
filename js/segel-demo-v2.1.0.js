@@ -1905,7 +1905,9 @@
     const input=document.createElement('input');
     input.className='paTypedInput'; input.type='text'; input.inputMode='decimal';
     input.autocapitalize='off'; input.autocomplete='off'; input.spellcheck=false;
-    input.placeholder='Taip jawapan';
+    const moneyUnit=/sen\s*$/i.test(String(q.answer))?'sen':/^RM/i.test(String(q.answer))?'RM':null;
+    input.dataset.answerUnit=moneyUnit||'';
+    input.placeholder=moneyUnit?`Jawapan (${moneyUnit})`:'Taip jawapan';
     input.setAttribute('aria-label','Taip jawapan sendiri');
     const button=document.createElement('button');
     button.className='paTypedSubmit'; button.type='submit'; button.textContent='Jawab';

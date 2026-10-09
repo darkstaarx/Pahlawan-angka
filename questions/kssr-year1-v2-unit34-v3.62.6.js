@@ -76,7 +76,7 @@ GEN['4.1.2']=function(id,s){
  }
  if(mode==='combine_ringgit'){
   const a=choose([100,200,500]),b=choose([100,200,500]);const total=Math.min(1000,a+b);
-  return mark(q(`Wang RM${a/100} dan RM${b/100} berjumlah?`,fmt(total),[Nq(fmt(Math.abs(a-b)),'money'),Nq(fmt(Math.min(1000,total+100)),'money'),Nq(total+' sen','money')],'Tambah nilai ringgit.','Tahun 1 · Wakil Nilai Ringgit'),id,'4.1.2',mode,'story','procedure',s,['money']);
+  return mark(q(`Wang RM${a/100} dan RM${b/100} berjumlah?`,fmt(total),[Nq(fmt(Math.abs(a-b)),'money'),Nq(fmt(total+100),'money'),Nq(fmt(a),'money')],'Tambah nilai ringgit.','Tahun 1 · Wakil Nilai Ringgit'),id,'4.1.2',mode,'story','procedure',s,['money']);
  }
  const target=choose([50,100,200,500]);const ans=target===50?'2 syiling 20 sen + 1 syiling 10 sen':target===100?'2 syiling 50 sen':target===200?'2 keping RM1':'1 keping RM5';
  return mark(q(`Gabungan manakah mewakili <b>${fmt(target)}</b>?`,ans,[Nq(target===50?'1 syiling 20 sen':'1 keping RM1','money'),Nq(target===100?'1 syiling 50 sen':'3 keping RM1','money'),Nq(target===500?'2 keping RM5':'1 syiling 10 sen','money')],'Jumlahkan nilai dalam setiap gabungan.','Tahun 1 · Pilih Perwakilan Wang'),id,'4.1.2',mode,'verbal','reasoning',s,['money']);

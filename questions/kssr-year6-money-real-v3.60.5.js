@@ -307,10 +307,10 @@ function coreQ(s){
     ),'3.3.1',mode,'table','application',s,['asset_liability']);
   }
   if(mode==='money_sufficient'){
-    const shoe=pick1([40,50,60]),disc=pick1([10,20]),sock=pick1([8,10]),cash=pick1([50,60,70,80]),pay=shoe*(100-disc)/100+sock,ans=cash>=pay?'mencukupi':'tidak mencukupi';
+    const shoe=pick1([40,50,60]),disc=pick1([10,20]),sock=pick1([8,10]),cash=pick1([50,60,70,80]),pay=shoe*(100-disc)/100+sock,delta=Math.abs(cash-pay),enough=cash>=pay,ans=(enough?'baki ':'kurang ')+rm(delta);
     return mark(qc(
-      'Kasut berharga '+rm(shoe)+' diberi diskaun '+disc+'%. Stoking berharga '+rm(sock)+'. Murid mempunyai '+rm(cash)+'. Adakah wangnya mencukupi untuk membeli kedua-duanya?',
-      ans,[Nq(ans==='mencukupi'?'tidak mencukupi':'mencukupi','money'),Nq('tidak boleh ditentukan','money'),Nq('hanya cukup membeli stoking','money')],
+      'Kasut berharga '+rm(shoe)+' diberi diskaun '+disc+'%. Stoking berharga '+rm(sock)+'. Murid mempunyai '+rm(cash)+'. Nyatakan baki jika wang cukup, atau kekurangan jika tidak cukup untuk membeli kedua-duanya.',
+      ans,[Nq((enough?'kurang ':'baki ')+rm(delta||1),'money'),Nq((enough?'baki ':'kurang ')+rm(delta+1),'money'),Nq('baki '+rm(cash),'money')],
       'Cari harga kasut selepas diskaun, tambah harga stoking, kemudian banding dengan wang yang ada.','Tahun 6 · Kewajaran Bayaran'
     ),'3.3.1',mode,'story','application',s,['discount','compare']);
   }

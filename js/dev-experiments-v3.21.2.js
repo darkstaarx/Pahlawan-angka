@@ -32,24 +32,31 @@
     const raw=safeText(answer),core=raw.replace(/\s+/g,'');
     if(/^-?\d+(?:,\d{3})*(?:\.\d+)?$/.test(core))return{kind:'number',value:Number(core.replace(/,/g,''))};
     if(/^RM-?\d+(?:,\d{3})*(?:\.\d{1,2})?$/i.test(core))return{kind:'money',value:Number(core.replace(/^RM/i,'').replace(/,/g,''))};
+    if(/^\d+(?:\.\d{1,2})?sen$/i.test(core))return{kind:'money',unit:'sen',value:Number(core.replace(/sen$/i,''))/100};
     if(/^-?\d+(?:,\d{3})*(?:\.\d+)?%$/.test(core))return{kind:'percent',value:Number(core.replace(/[% ,]/g,''))};
     return null;
   }
-  function parseTypedValue(value,kind){
+  function parseTypedValue(value,kind,unit){
     let raw=safeText(value).replace(/\s+/g,'');
-    if(kind==='money')raw=raw.replace(/^RM/i,'');
+    let scale=1;
+    if(kind==='money'){
+      const explicitRm=/^RM/i.test(raw),explicitSen=/sen$/i.test(raw);
+      if(explicitRm&&explicitSen)return null;
+      scale=explicitSen||(!explicitRm&&unit==='sen')?100:1;
+      raw=raw.replace(/^RM/i,'').replace(/sen$/i,'');
+    }
     if(kind==='percent')raw=raw.replace(/%$/,'');
     raw=raw.replace(/,/g,'');
     if(!/^-?\d+(?:\.\d+)?$/.test(raw))return null;
-    const n=Number(raw);return Number.isFinite(n)?n:null;
+    const n=Number(raw)/scale;return Number.isFinite(n)?n:null;
   }
   function typedEligible(question){return !!parseAnswerSpec(question?.answer)}
   function typedMatch(question,value){
     const spec=parseAnswerSpec(question?.answer);if(!spec)return false;
-    const got=parseTypedValue(value,spec.kind);return got!==null&&Math.abs(got-spec.value)<1e-9;
+    const got=parseTypedValue(value,spec.kind,spec.unit);return got!==null&&Math.abs(got-spec.value)<1e-9;
   }
   function inferTypedWrongTag(question,value){
-    const spec=parseAnswerSpec(question?.answer),got=spec?parseTypedValue(value,spec.kind):null;
+    const spec=parseAnswerSpec(question?.answer),got=spec?parseTypedValue(value,spec.kind,spec.unit):null;
     if(got!==null){
       const ranked=(question?.wrong||[]).map(w=>({w,s:parseAnswerSpec(w?.v??w?.label)})).filter(x=>x.s)
         .map(x=>({tag:x.w.tag||'generated',d:Math.abs(got-x.s.value)})).sort((a,b)=>a.d-b.d);
@@ -89,7 +96,8 @@
     label.innerHTML='<span>BOSS PROOF</span><b>Taip jawapan sendiri</b>';
     const row=document.createElement('div');row.className='paTypedRow';
     const input=document.createElement('input');input.id='paTypedInput';input.className='paTypedInput';input.type='text';input.inputMode='decimal';input.autocapitalize='off';input.autocomplete='off';
-    input.placeholder=spec.kind==='money'?'Taip nilai (RM pilihan)':spec.kind==='percent'?'Taip nilai (% pilihan)':'Taip jawapan';input.setAttribute('aria-label','Taip jawapan sendiri');
+    input.dataset.answerUnit=spec.kind==='money'?(spec.unit||'RM'):'';
+    input.placeholder=spec.kind==='money'?`Jawapan (${spec.unit||'RM'})`:spec.kind==='percent'?'Taip nilai (% pilihan)':'Taip jawapan';input.setAttribute('aria-label','Taip jawapan sendiri');
     const button=document.createElement('button');button.type='submit';button.className='paTypedSubmit';button.textContent='Jawab';button.dataset.questionToken=String(question.token);
     const note=document.createElement('small');note.className='paTypedNote';note.textContent='Tiada pilihan jawapan · tunjuk apa yang kamu benar-benar tahu';
     row.append(input,button);form.append(label,row,note);answers.appendChild(form);

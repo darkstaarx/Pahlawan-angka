@@ -12,14 +12,14 @@
     {
       "grade": 2,
       "skills": 37,
-      "advanced": 836,
+      "advanced": 833,
       "strongSamples": 1184,
       "basicOnly": 0
     },
     {
       "grade": 3,
       "skills": 15,
-      "advanced": 370,
+      "advanced": 371,
       "strongSamples": 480,
       "basicOnly": 0
     },
@@ -407,8 +407,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 18,
-        "application": 8,
+        "reasoning": 19,
+        "application": 7,
         "procedure": 6
       }
     },
@@ -418,8 +418,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 19,
-        "application": 7,
+        "reasoning": 18,
+        "application": 8,
         "procedure": 6
       }
     },
@@ -429,8 +429,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 19,
-        "application": 7,
+        "reasoning": 18,
+        "application": 8,
         "procedure": 6
       }
     },
@@ -440,8 +440,8 @@
       "archetypes": 5,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 18,
-        "application": 14
+        "reasoning": 19,
+        "application": 13
       }
     },
     {
@@ -501,8 +501,8 @@
       "archetypes": 3,
       "curriculumNodes": 0,
       "demands": {
-        "application": 14,
-        "concept": 18
+        "application": 13,
+        "concept": 19
       }
     },
     {
@@ -511,8 +511,8 @@
       "archetypes": 3,
       "curriculumNodes": 0,
       "demands": {
-        "application": 14,
-        "concept": 18
+        "application": 13,
+        "concept": 19
       }
     },
     {
@@ -531,9 +531,9 @@
       "archetypes": 3,
       "curriculumNodes": 0,
       "demands": {
-        "application": 7,
-        "procedure": 13,
-        "concept": 12
+        "application": 6,
+        "procedure": 15,
+        "concept": 11
       }
     },
     {
@@ -553,8 +553,8 @@
       "curriculumNodes": 0,
       "demands": {
         "application": 14,
-        "procedure": 13,
-        "concept": 5
+        "procedure": 14,
+        "concept": 4
       }
     },
     {
@@ -583,20 +583,21 @@
       "archetypes": 3,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 12,
-        "application": 20
+        "reasoning": 11,
+        "application": 21
       }
     },
     {
       "id": "D3.N10000",
       "grade": 3,
-      "archetypes": 13,
+      "archetypes": 14,
       "curriculumNodes": 0,
       "demands": {
         "reasoning": 22,
-        "application": 5,
+        "application": 4,
         "procedure": 3,
-        "concept": 2
+        "concept": 2,
+        "foundation": 1
       }
     },
     {
@@ -616,8 +617,8 @@
       "archetypes": 10,
       "curriculumNodes": 0,
       "demands": {
-        "application": 14,
-        "reasoning": 12,
+        "reasoning": 14,
+        "application": 12,
         "procedure": 6
       }
     },
@@ -627,8 +628,8 @@
       "archetypes": 10,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 14,
-        "application": 12,
+        "application": 14,
+        "reasoning": 12,
         "procedure": 6
       }
     },
@@ -660,59 +661,57 @@
       "archetypes": 14,
       "curriculumNodes": 0,
       "demands": {
-        "application": 5,
         "reasoning": 17,
+        "application": 5,
         "concept": 5,
-        "transfer": 1,
-        "procedure": 4
+        "procedure": 4,
+        "transfer": 1
       }
     },
     {
       "id": "D3.DEC",
       "grade": 3,
-      "archetypes": 8,
+      "archetypes": 10,
       "curriculumNodes": 0,
       "demands": {
         "reasoning": 26,
-        "procedure": 5,
+        "procedure": 3,
+        "concept": 2,
         "transfer": 1
       }
     },
     {
       "id": "D3.MONEY",
       "grade": 3,
-      "archetypes": 13,
+      "archetypes": 12,
       "curriculumNodes": 0,
       "demands": {
-        "application": 18,
-        "reasoning": 10,
-        "procedure": 1,
-        "foundation": 3
+        "reasoning": 12,
+        "application": 16,
+        "foundation": 2,
+        "procedure": 2
       }
     },
     {
       "id": "D3.TIME",
       "grade": 3,
-      "archetypes": 12,
+      "archetypes": 13,
       "curriculumNodes": 0,
       "demands": {
+        "reasoning": 9,
         "application": 19,
-        "reasoning": 10,
-        "concept": 1,
-        "foundation": 1,
-        "procedure": 1
+        "procedure": 4
       }
     },
     {
       "id": "D3.MEASURE",
       "grade": 3,
-      "archetypes": 20,
+      "archetypes": 17,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 21,
-        "procedure": 4,
+        "reasoning": 24,
         "application": 6,
-        "concept": 1
+        "procedure": 2
       }
     },
     {
@@ -732,11 +731,11 @@
       "archetypes": 9,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 17,
-        "application": 9,
+        "reasoning": 16,
+        "application": 10,
         "procedure": 2,
-        "transfer": 1,
-        "concept": 3
+        "concept": 3,
+        "transfer": 1
       }
     },
     {
@@ -745,9 +744,9 @@
       "archetypes": 8,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 10,
-        "procedure": 17,
-        "concept": 5
+        "reasoning": 8,
+        "procedure": 18,
+        "concept": 6
       }
     },
     {
@@ -758,8 +757,8 @@
       "demands": {
         "reasoning": 11,
         "application": 6,
-        "procedure": 6,
-        "concept": 9
+        "procedure": 5,
+        "concept": 10
       }
     },
     {
@@ -768,9 +767,9 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 8,
-        "application": 17,
-        "procedure": 7
+        "reasoning": 9,
+        "application": 15,
+        "procedure": 8
       }
     },
     {
@@ -829,12 +828,12 @@
     {
       "id": "D4.MONEY",
       "grade": 4,
-      "archetypes": 6,
+      "archetypes": 7,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 11,
-        "procedure": 10,
-        "application": 11
+        "reasoning": 21,
+        "application": 5,
+        "procedure": 6
       }
     },
     {
@@ -844,8 +843,8 @@
       "curriculumNodes": 0,
       "demands": {
         "reasoning": 4,
-        "application": 22,
-        "procedure": 6
+        "application": 21,
+        "procedure": 7
       }
     },
     {
@@ -864,8 +863,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "application": 13,
-        "procedure": 19
+        "application": 12,
+        "procedure": 20
       }
     },
     {
@@ -874,8 +873,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "application": 29,
-        "concept": 3
+        "application": 30,
+        "concept": 2
       }
     },
     {
@@ -886,8 +885,8 @@
       "demands": {
         "reasoning": 9,
         "application": 5,
-        "procedure": 13,
-        "concept": 5
+        "procedure": 14,
+        "concept": 4
       }
     },
     {
@@ -896,8 +895,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 9,
-        "procedure": 16,
+        "reasoning": 10,
+        "procedure": 15,
         "concept": 7
       }
     },
@@ -907,9 +906,9 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 17,
+        "reasoning": 16,
         "application": 8,
-        "procedure": 7
+        "procedure": 8
       }
     },
     {
@@ -930,8 +929,8 @@
       "curriculumNodes": 0,
       "demands": {
         "application": 14,
-        "procedure": 14,
-        "concept": 4
+        "procedure": 13,
+        "concept": 5
       }
     },
     {
@@ -941,8 +940,8 @@
       "curriculumNodes": 0,
       "demands": {
         "application": 7,
-        "procedure": 20,
-        "concept": 5
+        "procedure": 21,
+        "concept": 4
       }
     },
     {
@@ -1122,9 +1121,9 @@
       "demands": {
         "reasoning": 18,
         "concept": 6,
-        "procedure": 1,
+        "transfer": 1,
         "foundation": 6,
-        "transfer": 1
+        "procedure": 1
       }
     },
     {

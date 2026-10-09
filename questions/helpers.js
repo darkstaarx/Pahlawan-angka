@@ -56,6 +56,8 @@ function semanticChoiceKey(value){
  const raw=choiceKey(value), compact=raw.replace(/\s+/g,'');
  if(/^-?\d+(?:\.\d+)?$/.test(compact))return `number:${cleanNumericNoise(Number(compact))}`;
  let m=compact.match(/^rm(-?\d+(?:\.\d+)?)$/);if(m)return `money:${tidyNumber(Number(m[1]))}`;
+ m=compact.match(/^(-?\d+(?:\.\d+)?)sen$/);if(m)return `money:${tidyNumber(Number(m[1])/100)}`;
+ m=compact.match(/^(-?\d+(?:\.\d+)?)rm$/);if(m)return `money:${tidyNumber(Number(m[1]))}`;
  m=compact.match(/^(-?\d+(?:\.\d+)?)%$/);if(m)return `percent:${cleanNumericNoise(Number(m[1]))}`;
  m=compact.match(/^(-?\d+)\/(-?\d+)$/);if(m){const n=Number(m[1]),d=Number(m[2]);if(d){const g=gcd(Math.abs(n),Math.abs(d));return Math.abs(d/g)===1?`number:${n/d}`:`fraction:${n/g}/${d/g}`}}
  // Expanded notation is an addition statement: 20 + 5 and 5 + 20 are the same answer.

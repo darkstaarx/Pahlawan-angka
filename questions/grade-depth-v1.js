@@ -39,26 +39,30 @@ function d2(id,s){
   return question(id,m,p,ans,wrong(ans),'Pilih operasi mengikut situasi, kemudian kira.','application');
  }
  if(/^D2\.4\.[2-7]$/.test(id)){
-  const m=mode(id,['money_inverse','money_situation','money_check']),kind=id.slice(-1),a=R(15,50),b=R(2,10),k=pick([2,3,4,5]),unit=R(2,10),total=unit*k;
+  // Generate in integer sen: deeper tasks must still exercise RM/sen,
+  // and retain the operation named by the selected skill.
+  const m=mode(id,['money_inverse','money_situation','money_check']),kind=id.slice(-1);
+  const a=pick([575,825,1275,1520,1875,2350,2725,3150,4050]),b=pick([25,50,75,125,250,375]);
+  const k=pick([2,3,4,5]),unit=pick([125,175,250,375,525,750]),total=unit*k;
   const x=kind==='2'?a:kind==='3'?a+b:kind==='4'?unit:kind==='5'?total:a;
   const y=kind==='2'||kind==='3'?b:kind==='4'||kind==='5'?k:b;
   const ans=kind==='2'?x+y:kind==='3'?x-y:kind==='4'?total:kind==='5'?unit:a-b;
-  const rm=v=>'RM'+v;
+  const rm=moneyFmt,wr=n=>moneyWrongSet(n,[n+100,n-100,n+5]).map(z=>z.v);
   if(kind==='6'||kind==='7'){
    const save=kind==='6';
-   if(m==='money_inverse')return question(id,m,save?`Selepas menambah RM${b} ke dalam tabung, simpanan Aina menjadi RM${a+b}. Berapa simpanan asal?`:`Selepas membayar RM${b}, baki wang Aina ialah RM${a}. Berapa wangnya sebelum membeli?`,rm(save?a:a+b),wrong(save?a:a+b).map(rm),'Gunakan operasi songsang.');
-   if(m==='money_check')return question(id,m,`Aina ada RM${a}. Dia mahu membeli buku RM${a+b}. Berapakah wang tambahan yang diperlukan?`,rm(b),[rm(a),rm(a+b),rm(b+1)],'Banding harga dengan wang yang ada.');
-   return question(id,m,save?`Aina mempunyai RM${a} dalam tabung. Dia menggunakan RM${b} untuk membeli alat tulis. Berapa simpanan yang tinggal?`:`Aina membayar RM${a} untuk barang berharga RM${b}. Berapa baki yang diterima?`,rm(a-b),wrong(a-b).map(rm),'Tolak jumlah yang digunakan.','application');
+   if(m==='money_inverse')return question(id,m,save?`Selepas menambah ${rm(b)} ke dalam tabung, simpanan Aina menjadi ${rm(a+b)}. Berapakah simpanan asal?`:`Selepas membeli barang berharga ${rm(b)}, baki wang Aina ialah ${rm(a)}. Berapakah wangnya sebelum membeli?`,rm(save?a:a+b),wr(save?a:a+b),'Gunakan operasi songsang.');
+   if(m==='money_check')return question(id,m,save?`Simpanan Aina ialah ${rm(a)}. Sasaran simpanannya ialah ${rm(a+b)}. Berapakah lagi yang perlu disimpan?`:`Aina ada ${rm(a)}. Harga buku ialah ${rm(a+b)}. Berapakah wang tambahan yang diperlukan?`,rm(b),wr(b),'Cari beza antara sasaran atau harga dengan wang yang ada.');
+   return question(id,m,save?`Aina menerima ${rm(a)}. Dia berbelanja ${rm(b)} dan menyimpan semua baki. Berapakah wang yang disimpan?`:`Aina membayar ${rm(a)} untuk barang berharga ${rm(b)}. Berapakah baki yang diterima?`,rm(a-b),wr(a-b),'Tolak jumlah yang dibelanjakan.','application');
   }
   const sym=({'2':'+','3':'−','4':'×','5':'÷'})[kind];
   if(m==='money_inverse'){
-   const missing=kind==='4'?unit:kind==='5'?total:b;
-   const prompt=kind==='4'?`Harga ${k} buku yang sama ialah RM${total}. Berapakah harga sebuah buku?`:kind==='5'?`Sejumlah wang dibahagi sama rata kepada ${k} murid. Setiap murid mendapat RM${unit}. Berapakah jumlah wang asal?`:`${rm(x)} ${sym} ___ = ${rm(ans)}<br>Apakah nilai wang yang hilang?`;
-   return question(id,m,prompt,rm(missing),wrong(missing).map(rm),'Gunakan operasi songsang.');
+   const count=kind==='4'||kind==='5';
+   const prompt=kind==='4'?`Sebiji pau berharga ${rm(unit)}. Jumlah harga beberapa biji pau yang sama ialah ${rm(total)}. Berapa biji pau dibeli?`:kind==='5'?`${rm(total)} dibahagi sama rata. Setiap murid menerima ${rm(unit)}. Berapa orang murid menerima wang itu?`:`${rm(x)} ${sym} ___ = ${rm(ans)}<br>Apakah nilai wang yang hilang?`;
+   return question(id,m,prompt,count?k:rm(b),count?[k+1,k-1,k+2]:wr(b),'Gunakan hubungan operasi songsang.');
   }
-  if(m==='money_check')return question(id,m,`Hakim mengira ${rm(x)} ${sym} ${kind==='4'||kind==='5'?y:rm(y)} = ${rm(ans+1)}. Apakah jawapan yang betul?`,rm(ans),wrong(ans).map(rm),'Kira semula dan semak nilai wang.');
-  const prompt=kind==='2'?`Aina menyimpan RM${x} dan menerima RM${y} lagi. Berapa jumlah wangnya?`:kind==='3'?`Aina ada RM${x}. Dia membeli buku RM${y}. Berapa wang yang tinggal?`:kind==='4'?`Sebuah buku berharga RM${x}. Berapakah harga ${y} buku yang sama?`:`RM${x} dibahagi sama rata kepada ${y} murid. Berapa setiap murid dapat?`;
-  return question(id,m,prompt,rm(ans),wrong(ans).map(rm),'Pilih operasi mengikut situasi.','application');
+  if(m==='money_check')return question(id,m,`Hakim mengira ${rm(x)} ${sym} ${kind==='4'||kind==='5'?y:rm(y)} = ${rm(ans+100)}. Apakah jawapan yang betul?`,rm(ans),wr(ans),'Kira dalam sen, kemudian tulis nilai wang dengan betul.');
+  const prompt=kind==='2'?`Aina menyimpan ${rm(x)} dan menerima ${rm(y)} lagi. Berapakah jumlah wangnya?`:kind==='3'?`Aina ada ${rm(x)}. Dia membeli buku berharga ${rm(y)}. Berapakah wang yang tinggal?`:kind==='4'?`Sebiji pau berharga ${rm(x)}. Berapakah harga ${y} biji pau yang sama?`:`${rm(x)} dibahagi sama rata kepada ${y} murid. Berapakah setiap murid dapat?`;
+  return question(id,m,prompt,rm(ans),wr(ans),'Pilih operasi mengikut situasi.','application');
  }
  if(id==='D2.5.3'){
   const m=mode(id,['time_duration','time_start','time_end']),start=R(8,14)*60+pick([0,15,30]),duration=pick([15,30,45,60,90]),end=start+duration,fmt=x=>formatClockTime(x,'12','bm');

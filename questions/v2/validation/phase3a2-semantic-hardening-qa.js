@@ -52,6 +52,7 @@ for(let ti=0;ti<templates.length;ti++){
     if(t.standardId==='3.4.1')ok(sem.usesHundredths===true,'fraction-decimal-percent bridge explicitly uses hundredths');
 
     // T4
+    if(mode==='money_multiply'){eq(raw.value.visual.amounts.length,sem.factor,'money price cards match actual item count');eq(raw.value.visual.quantity,sem.factor,'money quantity matches prompt');eq(sem.unitCents*raw.value.visual.amounts.length,Number(raw.value.answer.id),'money visual independent total');}
     if(t.topicId==='D3.T4'){for(const k of Object.keys(sem)){if(/Cents$/.test(k))ok(sem[k]>=0&&sem[k]<=1000000,'money semantic value stays within RM10,000');}}
     if(t.standardId==='4.2.1'){ok(sem.factorClass==='one_digit'||sem.factorClass==='power10','money multiplication/division factor class recorded');if(sem.factorClass==='power10'){ok([10,100,1000].includes(sem.factor),'money power10 uses 10/100/1000');power10Seen.add(sem.factor);}}
     if(t.standardId==='4.3.1'){

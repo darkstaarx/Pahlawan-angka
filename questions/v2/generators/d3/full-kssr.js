@@ -177,7 +177,7 @@ registerGenerator('d3.fullKssr',function(params,rng){
   }
   if(m==='money_multiply'){
     var qty=ri(rng,2,9),maxPrice=Math.floor(950000/qty),price=ri(rng,5000,Math.max(5000,maxPrice)),tot=price*qty;
-    return{value:{promptMs:'Setiap barang berharga '+money(price)+'. Berapakah harga '+qty+' barang yang sama?',answer:choice(tot,money(tot)),visual:{kind:'money_items',amounts:Array(Math.min(qty,6)).fill(money(price)),quantity:qty}},distractors:shuffle(rng,moneyWrong(tot,[price+qty,price*(qty-1),Math.min(1000000,price*(qty+1))],'money_operation_confusion')),meta:{archetype:'multiply_equal_item_prices',hintMs:'Darab harga satu barang dengan bilangan barang.',semanticProperties:{factor:qty,factorClass:'one_digit',unitCents:price,totalCents:tot},fingerprint:fp(m,tot,[price,qty])}};
+    return{value:{promptMs:'Setiap barang berharga '+money(price)+'. Berapakah harga '+qty+' barang yang sama?',answer:choice(tot,money(tot)),visual:{kind:'money_items',amounts:Array(qty).fill(money(price)),quantity:qty}},distractors:shuffle(rng,moneyWrong(tot,[price+qty,price*(qty-1),Math.min(1000000,price*(qty+1))],'money_operation_confusion')),meta:{archetype:'multiply_equal_item_prices',hintMs:'Darab harga satu barang dengan bilangan barang.',semanticProperties:{factor:qty,factorClass:'one_digit',unitCents:price,totalCents:tot},fingerprint:fp(m,tot,[price,qty])}};
   }
   if(m==='money_divide'){
     var factor=pick(rng,[10,100,1000]),unit=ri(rng,1,Math.max(1,Math.floor(900000/factor))),tot2=unit*factor;
