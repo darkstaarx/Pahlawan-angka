@@ -24,7 +24,7 @@ begin
  end if;
  if p_expected_revision is null or p_expected_revision<0 or
     p_state is null or jsonb_typeof(p_state)<>'object' or
-    p_state->>'cloudChildId'<>p_child_id::text then
+    coalesce(p_state->>'cloudChildId','')<>p_child_id::text then
   raise exception 'Invalid save payload' using errcode='22023';
  end if;
 
