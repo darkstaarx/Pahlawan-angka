@@ -45,10 +45,10 @@
   <button class="kzBack" type="button" onclick="goHub()" aria-label="Kembali">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
   </button>
-  <div class="kzTitle"><h1>Teman</h1></div>
+  <div class="kzTitle"><h1>Khazanah</h1></div>
 </header>
 
-<div class="kzTabs">
+<div class="kzTabs" aria-label="Koleksi Khazanah">
   <button class="kzTab active" id="treasurePetTab" type="button" onclick="treasureTab('pets')">
     Teman</button>
   <button class="kzTab" id="treasureBadgeTab" type="button" onclick="treasureTab('badges')">
@@ -58,6 +58,7 @@
 <section class="kzShow" id="petStage">
   <canvas id="petStageCanvas"></canvas>
   <div class="kzShowCard">
+    <span class="kzStageLabel">Teman pilihan</span>
     <b id="petStageName">Belum ada teman</b>
     <small id="petStageDesc"></small>
   </div>
@@ -66,6 +67,7 @@
 <section class="kzTracker" id="petHuntTracker" aria-live="polite"></section>
 
 <section class="kzPanel">
+  <div class="kzCollectionHead"><h2 id="kzPanelTitle">Teman kamu</h2><span id="kzCollectionCount"></span></div>
   <div id="petCollection" class="kzGrid"></div>
   <div id="auraCollection" class="kzGrid hidden"></div>
   <div id="badgeCollection" class="kzGrid hidden"></div>
@@ -101,14 +103,15 @@
   }
 
   function companionCard(pet){
-    const tamed=pet.state==='tamed', encountered=pet.state==='encountered';
+    const tamed=pet.state==='tamed',encountered=pet.state==='encountered';
     const name=pet.name||PET_NAMES[pet.id]||pet.id;
+    const visibleName=tamed||encountered?name:'Belum ditemui';
+    const detail=tamed?`Tahap ${pet.level}`:encountered?`Jejak ${pet.rescues||0}/${pet.rescueThreshold||1}`:'Temui dalam misi Gembok';
     return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}">
-      <button class="kzPetOpen" type="button" onclick="openCollectionPet('${pet.id}')" aria-label="Lihat ${esc(tamed||encountered?name:'teman belum ditemui')}">
-        ${pet.active?'<span class="kzActiveBadge" aria-label="Sedang ikut kamu">✓</span>':''}
-        <div class="kzArt"><img src="${pet.assets.happy}" alt=""></div>
-        <div class="kzName">${esc(tamed||encountered?name:'Belum ditemui')}</div>
-        <div class="kzPetMeta">${tamed?`<small>Tahap ${pet.level}</small><span class="kzFormChip">${pet.appearance==='bara'?'Bara':'Asas'}</span>`:encountered?`<small>Jejak ${pet.rescues||0}/${pet.rescueThreshold||1}</small>`:'<small>Teruskan kembara</small>'}</div>
+      <button class="kzPetOpen" type="button" onclick="openCollectionPet('${pet.id}')" aria-label="Lihat ${esc(visibleName)}${pet.active?', teman pilihan':''}">
+        <div class="kzArt"><img src="${esc(pet.assets.happy)}" alt="" loading="lazy"></div>
+        <div class="kzPetCopy"><div class="kzName">${esc(visibleName)}</div><div class="kzPetMeta"><small>${detail}</small>${pet.active?'<span class="kzSelectedLabel">Ikut kamu</span>':''}</div></div>
+        <svg class="kzPetArrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
       </button>
     </article>`;
   }
@@ -125,7 +128,7 @@
     const tamed=pet.state==='tamed';
     dialog.innerHTML=`<div class="kzSheetHandle"></div><button class="kzSheetClose" type="button" aria-label="Tutup pilihan teman">×</button>
       <div class="kzSheetHeading"><h2>${esc(tamed?pet.name:'Belum ditemui')}</h2>${tamed?'<button class="kzRename" type="button" aria-label="Tukar nama">✎</button>':''}</div>
-      <p>${tamed?`Tahap ${pet.level} · ${esc(pet.species||'')}`:'Teruskan misi Gembok untuk menyelamatkan teman ini.'}</p>
+      <p>${tamed?`Tahap ${pet.level} · ${esc(pet.species||'')} · Ikatan ${pet.bondXp||0} XP`:'Teruskan misi Gembok untuk menyelamatkan teman ini.'}</p>
       <div class="kzDetailArt"><img src="${pet.assets.happy}" alt="${esc(pet.name)}"></div>
       ${tamed&&pet.evolutionUnlocked?`<div class="kzFormLabel">Bentuk</div><div class="kzAppearance"><button class="kzBtn off" type="button" data-form="base" aria-pressed="${pet.appearance==='base'}">Asas</button><button class="kzBtn off" type="button" data-form="bara" aria-pressed="${pet.appearance==='bara'}">Bara</button></div>`:''}
       ${tamed&&pet.evolutionStage>0?'<button class="kzEvolution" type="button">Lihat Evolusi <span>›</span></button>':''}
@@ -224,7 +227,9 @@
     if(stage)stage.classList.toggle('hidden',!petOnly);
     if(tracker)tracker.classList.toggle('hidden',!petOnly);
 
-    set('kzPanelTitle', tab==='pets'?'Teman Dimensi':tab==='auras'?'Aura Kuasa':'Trofi Pengembaraan');
+    set('kzPanelTitle',tab==='pets'?'Teman kamu':tab==='auras'?'Aura kamu':'Trofi kamu');
+    set('kzCollectionCount',tab==='pets'?`${c.petOwn}/${c.petTotal} diselamatkan`:tab==='auras'?`${c.auraOwn}/${c.auraTotal} dibuka`:`${c.badgeOwn}/${c.badgeTotal} diperoleh`);
+    ['treasurePetTab','treasureBadgeTab'].forEach(id=>{const button=$(id);if(button)button.setAttribute('aria-pressed',String(button.classList.contains('active')))});
     const filter=$('kzFilter');
     if(filter)filter.textContent = tab==='badges' ? `${c.badgeOwn} diperoleh` : 'Semua';
 
@@ -251,7 +256,7 @@
       return;
     }
     name.textContent=item.name;
-    desc.textContent=`Tahap ${item.level||1}${item.evolutionTheme==='fire'?' · Bara':''} · Ikatan ${item.bondXp||0} XP`;
+    desc.textContent=`Tahap ${item.level||1}${item.appearance==='bara'?' · Bara':''}`;
   }
 
   function paintTracker(){
@@ -317,5 +322,6 @@
 
   window.PAKhazanah={rarityOf, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
 })();
+
 
 

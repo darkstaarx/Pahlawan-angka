@@ -4,7 +4,8 @@ const root=path.resolve(__dirname,'..');
 const read=file=>fs.readFileSync(path.join(root,file),'utf8');
 const html=read('index.html');
 assert(/data-parent-tab="worksheet" onclick="tab\('worksheet'\)">Latihan<\/button>/.test(html));
-assert(html.includes('js/parent-live-runtime-v1.js?v=3.85.48'));
+const appVersion=/PA_APP_VERSION='([^']+)'/.exec(read('js/version.js'))[1];
+assert(html.includes(`js/parent-live-runtime-v1.js?v=${appVersion}`));
 assert(read('sw.js').includes("'./js/parent-live-runtime-v1.js'"));
 let checks=3;
 function classList(){const values=new Set();return{toggle(name,on){on?values.add(name):values.delete(name)},contains:name=>values.has(name)}}
