@@ -52,7 +52,7 @@
     '{name}, jom kembara digit!',
     'Jom pilih misi kita!',
     'Kita kuatkan kemahiran!',
-    'Aurora dah bersedia!'
+    '{pet} dah bersedia!'
   ];
 
   const PET_FRAMES = [
@@ -112,19 +112,29 @@
   function showAutoHeroDialogue() {
     const name = typeof db!=='undefined' && db?.name ? db.name : '';
     const line = HERO_AUTO_DIALOGUES[heroDialogueIdx % HERO_AUTO_DIALOGUES.length]
-      .replace('{name}',name||'wira');
+      .replace('{name}',name||'wira').replace('{pet}',activeMenuPet()?.name||'Teman kamu');
     heroDialogueIdx++;
     triggerSpeech('wiraBubble', line);
   }
 
-  function renderPetFrame() {
-    if (!PET_FRAMES.length) return;
-    petFrameIdx = (petFrameIdx + 1) % PET_FRAMES.length;
-    const pet = $('mv2Pet');
-    if (pet) {
-      pet.src = PET_FRAMES[petFrameIdx];
-      pet.classList.remove('hidden');
-    }
+  function activeMenuPet(){
+    try{
+      if(window.PetCollection?.snapshot)return window.PetCollection.snapshot(db)?.pets?.find(p=>p.active)||null;
+      return REWARD_PETS[db.rewards?.equippedPet]||null;
+    }catch(_){return null}
+  }
+  function renderPetFrame(){
+    const pet=activeMenuPet(),img=$('mv2Pet');if(!img)return;
+    if(!pet){setPetArt(img,null);if($('petSlot'))$('petSlot').title='Belum ada teman';return}
+    const frames=pet.id==='aurora'&&pet.appearance!=='bara'?PET_FRAMES:[pet.assets?.happy||pet.front||pet.hub].filter(Boolean);
+    if(!frames.length){setPetArt(img,null);return}
+    petFrameIdx=(petFrameIdx+1)%frames.length;
+    const wanted=frames[petFrameIdx];
+    img.alt=pet.name||'Teman';img.classList.remove('hidden');
+    const fallback=pet.assets?.happy||pet.front||pet.hub||'';
+    img.onerror=()=>{img.onerror=null;if(fallback&&fallback!==wanted)img.src=fallback;else img.classList.add('hidden')};
+    if(img.getAttribute('src')!==wanted)img.src=wanted;
+    if($('petSlot'))$('petSlot').title=`Ketuk ${pet.name||'teman'} untuk bermain`;
   }
 
   function startSpriteEngine() {
@@ -192,7 +202,9 @@
         wiraSlot.classList.add('actorHop');
       }
     } else if (actorType === 'pet') {
-      const q = PET_QUOTES[Math.floor(Math.random() * PET_QUOTES.length)];
+      const pet=activeMenuPet();if(!pet)return;
+      const quotes=pet.id==='aurora'?PET_QUOTES:[`${pet.name} dah bersedia!`,'Jom sambung kembara!','Seronoknya ikut kamu!'];
+      const q=quotes[Math.floor(Math.random()*quotes.length)];
       triggerSpeech('petBubble', q);
       const petSlot = $('petSlot');
       if (petSlot) {
@@ -234,8 +246,8 @@
     img.classList.toggle('hidden',!pet);
     if(!pet){ img.removeAttribute('src'); img.alt=''; return }
     img.alt=pet.name||'';
-    const fallback=pet.front||pet.hub||'';
-    const wanted=happyFrame(pet)||fallback;
+    const fallback=pet.assets?.happy||pet.front||pet.hub||'';
+    const wanted=pet.assets?.happy||happyFrame(pet)||fallback;
     img.onerror=()=>{ img.onerror=null; if(fallback&&img.src!==fallback)img.src=fallback };
     if(img.getAttribute('src')!==wanted)img.src=wanted;
   }
@@ -301,14 +313,7 @@
        Kad "Pet Aktif" di bawah masih membaca pet sebenar yang dilengkapi. */
     startSpriteEngine();
 
-    let pet=null;
-    try{
-      const active=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.active);
-      if(active)pet={...active,front:active.front||active.assets?.happy,hub:active.hub||active.assets?.happy};
-    }catch(_){}
-    if(!pet){
-      try{ pet=REWARD_PETS[db.rewards&&db.rewards.equippedPet]||null }catch(_){}
-    }
+    const pet=activeMenuPet();
 
     /* Kad ini membuka Demo v2, dan Demo v2 SENGAJA tidak menulis apa-apa
        kepada kemajuan murid — tiada db.daily, db.xp, db.coins mahupun db.logs.
@@ -659,3 +664,4 @@
     install();
   })();
 })();
+
