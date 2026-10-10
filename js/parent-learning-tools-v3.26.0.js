@@ -45,7 +45,7 @@ function status(text,error=false){const el=$('paWorksheetStatus');if(el){el.text
 let logoPromise=null;
 function loadLogo(){
  if(logoPromise)return logoPromise;
- logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/icons/pahlawan-angka-crest-192.png'});return logoPromise;
+ logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/branding/pahlawan-angka-full-logo-v1.png?v='+String(window.PA_APP_VERSION||'3.85.46')});return logoPromise;
 }
 function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
 function wrap(ctx,text,maxWidth){
@@ -54,10 +54,11 @@ function wrap(ctx,text,maxWidth){
 }
 function drawWrapped(ctx,text,x,y,maxWidth,lineHeight,maxLines=99){const lines=wrap(ctx,text,maxWidth).slice(0,maxLines);lines.forEach((line,i)=>ctx.fillText(line,x,y+i*lineHeight));return y+lines.length*lineHeight}
 function fitText(ctx,text,maxWidth,maxSize=17,minSize=11){let size=maxSize;for(;size>minSize;size--){ctx.font=`900 ${size}px Arial`;if(ctx.measureText(String(text)).width<=maxWidth)break}ctx.font=`900 ${size}px Arial`;return size}
+function drawBrand(ctx,image,x,y,w,h){const scale=Math.min(w/image.naturalWidth,h/image.naturalHeight),width=image.naturalWidth*scale,height=image.naturalHeight*scale;ctx.drawImage(image,x+(w-width)/2,y+(h-height)/2,width,height)}
 async function page(title,subtitle){
  const canvas=document.createElement('canvas');canvas.width=1240;canvas.height=1754;const ctx=canvas.getContext('2d');ctx.fillStyle='#f7f4ec';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#0b2340';ctx.fillRect(0,0,canvas.width,212);ctx.fillStyle='#f1c645';ctx.fillRect(0,202,canvas.width,10);
- const logo=await loadLogo();if(logo){roundRect(ctx,78,48,116,116,28,'#102f55','#d8ad34');ctx.drawImage(logo,88,58,96,96)}
- ctx.fillStyle='#f4ca48';ctx.font='900 23px Arial';ctx.fillText('PAHLAWAN ANGKA',224,77);ctx.fillStyle='#fff';ctx.font='900 43px Arial';ctx.fillText(title,224,126);ctx.fillStyle='#b9c9dc';ctx.font='22px Arial';ctx.fillText(subtitle,224,164);return{canvas,ctx,y:270};
+ const logo=await loadLogo();if(logo)drawBrand(ctx,logo,78,26,238,158);
+ ctx.fillStyle='#f4ca48';ctx.font='900 20px Arial';ctx.fillText('PAHLAWAN ANGKA',344,72);ctx.fillStyle='#fff';fitText(ctx,title,818,40,26);ctx.fillText(title,344,122,818);ctx.fillStyle='#b9c9dc';ctx.font='21px Arial';ctx.fillText(subtitle,344,163,818);return{canvas,ctx,y:270};
 }
 function footer(ctx,pageNo,label='pahlawanangka.netlify.app'){ctx.strokeStyle='#d4cdbd';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(78,1668);ctx.lineTo(1162,1668);ctx.stroke();ctx.fillStyle='#6e7783';ctx.font='18px Arial';ctx.fillText(label,78,1704);ctx.textAlign='right';ctx.fillText(`Halaman ${pageNo}`,1162,1704);ctx.textAlign='left'}
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1200)}
@@ -98,7 +99,7 @@ async function exportReport(){
 async function shareCard(){
  if(!gate()||state.busy)return;state.busy=true;
  try{
-  const snap=snapshot(),canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1920;const ctx=canvas.getContext('2d'),gradient=ctx.createLinearGradient(0,0,0,1920);gradient.addColorStop(0,'#0c2948');gradient.addColorStop(1,'#061324');ctx.fillStyle=gradient;ctx.fillRect(0,0,1080,1920);ctx.fillStyle='#f2c646';ctx.fillRect(0,0,1080,18);const logo=await loadLogo();if(logo)ctx.drawImage(logo,74,70,130,130);ctx.fillStyle='#f2c646';ctx.font='900 28px Arial';ctx.fillText('PAHLAWAN ANGKA',228,111);ctx.fillStyle='#fff';ctx.font='900 48px Arial';ctx.fillText('Kemajuan Matematik',228,170);ctx.fillStyle='#aebed2';ctx.font='25px Arial';ctx.fillText(dateLabel(),76,252);
+  const snap=snapshot(),canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1920;const ctx=canvas.getContext('2d'),gradient=ctx.createLinearGradient(0,0,0,1920);gradient.addColorStop(0,'#0c2948');gradient.addColorStop(1,'#061324');ctx.fillStyle=gradient;ctx.fillRect(0,0,1080,1920);ctx.fillStyle='#f2c646';ctx.fillRect(0,0,1080,18);const logo=await loadLogo();if(logo)drawBrand(ctx,logo,60,48,260,160);ctx.fillStyle='#f2c646';ctx.font='900 28px Arial';ctx.fillText('PAHLAWAN ANGKA',344,106);ctx.fillStyle='#fff';ctx.font='900 48px Arial';fitText(ctx,'Kemajuan Matematik',660,45,30);ctx.fillText('Kemajuan Matematik',344,166,660);ctx.fillStyle='#aebed2';ctx.font='25px Arial';ctx.fillText(dateLabel(),76,252);
   roundRect(ctx,60,310,960,300,34,'#102f51','#416589');ctx.fillStyle='#f2c646';ctx.font='900 24px Arial';ctx.fillText(`DARJAH ${snap.grade}`,102,370);ctx.fillStyle='#fff';ctx.font='900 60px Arial';ctx.fillText(snap.name,102,445);ctx.fillStyle='#bdcada';ctx.font='27px Arial';ctx.fillText('Perjalanan pembelajaran minggu ini',102,500);ctx.fillStyle='#f2c646';ctx.font='900 68px Arial';ctx.fillText(snap.attempts?snap.accuracy+'%':'-',102,578);ctx.fillStyle='#dce6f2';ctx.font='24px Arial';ctx.fillText('ketepatan semasa',280,566);
   const stats=[['SOALAN',snap.attempts],['MANTAP',snap.strong.length],['DITEROKA',snap.tested.length]];stats.forEach((s,i)=>{const x=60+i*326;roundRect(ctx,x,650,304,150,24,'#0b213b','#304e72');ctx.fillStyle='#f3cc4e';ctx.font='900 42px Arial';ctx.textAlign='center';ctx.fillText(String(s[1]),x+152,711);ctx.fillStyle='#9fb2ca';ctx.font='900 19px Arial';ctx.fillText(s[0],x+152,756);ctx.textAlign='left'});
   const strong=snap.strong.slice(0,2),priority=snap.priority[0]||snap.developing[0];ctx.fillStyle='#fff';ctx.font='900 32px Arial';ctx.fillText('Yang semakin kuat',76,890);let y=932;(strong.length?strong:[null]).forEach(x=>{roundRect(ctx,76,y,928,96,19,'#103c35','#2d8062');ctx.fillStyle='#5de0a1';ctx.font='900 25px Arial';ctx.fillText('✓',106,y+58);ctx.fillStyle='#effff7';ctx.font='900 25px Arial';ctx.fillText(x?x.m.title:'Masih mengumpul bukti',154,y+58);y+=112});ctx.fillStyle='#fff';ctx.font='900 32px Arial';ctx.fillText('Misi seterusnya',76,y+44);roundRect(ctx,76,y+70,928,220,23,'#302a19','#d5aa35');ctx.fillStyle='#f3cb4c';ctx.font='900 27px Arial';ctx.fillText(priority?priority.m.title:'Teruskan pengembaraan',108,y+124);ctx.fillStyle='#e4e8ee';ctx.font='24px Arial';drawWrapped(ctx,recommendationCopy(snap),108,y+166,850,34,4);ctx.fillStyle='#7f95af';ctx.font='20px Arial';ctx.fillText('Dikongsi oleh penjaga | Tiada maklumat akaun dipaparkan',76,1810);ctx.fillStyle='#f2c646';ctx.fillRect(76,1844,928,4);
@@ -110,9 +111,12 @@ function printVisualDependent(raw){return /blok\s+nilai\s+tempat|waktu\s+yang\s+
 function plainPrompt(raw){const div=document.createElement('div'),spaced=String(raw||'').replace(/<br\s*\/?\s*>/gi,' ').replace(/<\/(?:div|p|li|section|h[1-6])>/gi,' ');div.innerHTML=spaced;let text=(div.textContent||'').replace(/\s+/g,' ').replace(/([.!?])(?=[A-Za-z])/g,'$1 ').trim();if(/^Mempunyai\b/i.test(text))text='Bentuk ini '+text.charAt(0).toLowerCase()+text.slice(1);return text}
 const optionDependent=prompt=>/\b(?:manakah|yang mana|pilih|antara berikut|jawapan[^.?!]{0,30}munasabah|anggaran[^.?!]{0,25}sesuai)\b/i.test(prompt);
 function printableQuestion(q){
- const raw=String(q?.prompt||'');if(!raw||printVisualDependent(raw)||/<(?:svg|img|canvas|table)\b/i.test(raw)||/(moneyVisual|clockFace|barChart|pictureGraph|coordinateGrid|shapeVisual|dataChart)/i.test(raw))return null;const prompt=plainPrompt(raw);if(prompt.length<3||prompt.length>260)return null;
- const answer=String(q.answer??'').replace(/\s+/g,' ').trim(),choices=optionDependent(prompt)?shuffle([{value:answer,correct:true},...(q.wrong||[]).map(x=>({value:String(x?.label??x?.v??'').replace(/\s+/g,' ').trim(),correct:false}))]).filter(x=>x.value).slice(0,4):null;
- return{prompt,answer,hint:plainPrompt(q.hint||'Semak langkah pengiraan dengan teliti.'),skill:q.skill,choices};
+ const raw=String(q?.prompt||'');if(!raw)return null;
+ const graphic=window.PAWorksheetGraphics?.fromQuestion(q)||null;
+ if(!graphic&&(/aria-label\s*=|role=["']group|[●■□]{2,}|rajah manakah/i.test(raw)||printVisualDependent(raw)||/<(?:svg|img|canvas|table)\b/i.test(raw)||/(moneyVisual|clockFace|barChart|pictureGraph|coordinateGrid|shapeVisual|dataChart|kd-pictograph|paCountingSet|fractionVisual|kssrDiagram)/i.test(raw)||q.visualChoiceSpec))return null;
+ const prompt=graphic?graphic.prompt:plainPrompt(raw);if(prompt.length<3||prompt.length>500)return null;
+ const answer=String(q.answer??'').replace(/\s+/g,' ').trim(),choices=(optionDependent(prompt)||q.visualChoiceSpec)?shuffle([{value:answer,correct:true},...(q.wrong||[]).map(x=>({value:String(x?.label??x?.v??'').replace(/\s+/g,' ').trim(),correct:false}))]).filter(x=>x.value).slice(0,4):null;
+ return{prompt,answer,hint:plainPrompt(q.hint||'Semak langkah pengiraan dengan teliti.'),skill:q.skill,choices,graphic,printKey:graphic?.key};
 }
 const wr=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const wp=arr=>arr[wr(0,arr.length-1)];
@@ -184,7 +188,7 @@ function acceptDiverseItem(item,counts,limits){
 }
 function makeQuestions(){
  const snap=snapshot(),pool=worksheetSkills(snap);if(!pool.length)throw new Error('Tiada kemahiran tersedia.');const originalSess=typeof sess!=='undefined'?sess:null,items=[],seen=new Set(),mixed=state.mode!=='topic',counts={skill:{},format:{},operation:{},concept:{}},limits={skill:Math.max(3,Math.ceil(state.count/pool.length)+1),format:Math.max(3,Math.ceil(state.count/7)),operation:Math.max(4,Math.ceil(state.count/5))};
- try{sess={mode:'practice',questionFingerprints:[],questionHistory:[],recent:[],hint:false};let guard=0;while(items.length<state.count&&guard++<state.count*90){const m=pool[guard%pool.length],s=scoreState(m.id);let q=null;try{q=generate(m.id,s);q.skill=m.id}catch(_){}const item=(q&&printableQuestion(q))||worksheetFallback(m),key=item?.prompt.toLowerCase();if(item&&!seen.has(key)){item.skill=item.skill||m.id;const relaxed=guard>state.count*55,activeLimits=relaxed?{skill:limits.skill+Math.ceil(state.count/10),format:limits.format+1,operation:limits.operation+Math.ceil(state.count/10)}:limits;if(mixed&&!acceptDiverseItem(item,counts,activeLimits))continue;seen.add(key);item.title=m.title;items.push(item)}}}finally{sess=originalSess}
+ try{sess={mode:'practice',questionFingerprints:[],questionHistory:[],recent:[],hint:false};let guard=0;while(items.length<state.count&&guard++<state.count*90){const m=pool[guard%pool.length],s=scoreState(m.id);let q=null;try{q=generate(m.id,s);q.skill=m.id}catch(_){}const item=(q&&printableQuestion(q))||worksheetFallback(m),key=item&&(item.printKey||item.prompt.toLowerCase());if(item&&!seen.has(key)){item.skill=item.skill||m.id;const relaxed=guard>state.count*55,activeLimits=relaxed?{skill:limits.skill+Math.ceil(state.count/10),format:limits.format+1,operation:limits.operation+Math.ceil(state.count/10)}:limits;if(mixed&&!acceptDiverseItem(item,counts,activeLimits))continue;seen.add(key);item.title=m.title;items.push(item)}}}finally{sess=originalSess}
  if(items.length<Math.min(10,state.count))throw new Error('Bank soalan bercetak belum cukup untuk pilihan ini.');return{snap,items,title:state.mode==='topic'?(pool[0]?.title||'Latihan Topikal'):state.mode==='grade'?`Latihan Campuran Darjah ${snap.grade}`:'Latihan Disyorkan Cikgu Dimensi'};
 }
 function numericValue(value){const raw=String(value??'');if(/\d\s*[/:]\s*\d/.test(raw))return null;const match=raw.replace(/,/g,'').match(/-?\d+(?:\.\d+)?/);return match?Number(match[0]):null}
@@ -273,20 +277,65 @@ function solutionFor(item){
  if(/susun|urutan/i.test(prompt))return `Bandingkan nilai tempat terbesar dahulu. Susunan yang betul ialah ${answer}.`;
  return `${item.hint} Hasil akhirnya ialah ${answer}.`;
 }
+function studentLayout(ctx,item){
+ ctx.font='23px Arial';const lines=wrap(ctx,item.prompt,970),graphicHeight=item.graphicCanvas?.height||0;
+ let content=30+graphicHeight+(graphicHeight?20:0)+lines.length*30;
+ const choices=(item.choices||[]).map(choice=>{ctx.font='18px Arial';return wrap(ctx,choice.value,405)});
+ const choiceRows=[];for(let i=0;i<choices.length;i+=2)choiceRows.push(Math.max(choices[i].length,choices[i+1]?.length||0)*24+18);
+ const height=Math.max(190,content+16+(choices.length?choiceRows.reduce((n,h)=>n+h+10,0):75)+20);
+ return{lines,content,height,choices,choiceRows};
+}
+function drawStudentItem(ctx,item,number,y,layout){
+ roundRect(ctx,78,y,1084,layout.height,18,'#ffffff','#ddd8cc');ctx.fillStyle='#0e2b4a';ctx.font='900 22px Arial';ctx.fillText(`${number}.`,102,y+37);
+ let top=y+30;if(item.graphicCanvas){ctx.drawImage(item.graphicCanvas,147,top);top+=item.graphicCanvas.height+20}
+ ctx.fillStyle='#17263a';ctx.font='23px Arial';layout.lines.forEach((line,i)=>ctx.fillText(line,147,top+24+i*30));top+=layout.lines.length*30+16;
+ if(layout.choices.length){
+  let offset=0;layout.choiceRows.forEach((height,row)=>{for(let col=0;col<2;col++){const lines=layout.choices[row*2+col];if(!lines)continue;const x=147+col*470;roundRect(ctx,x,top+offset,440,height,9,'#f4f6f8','#c9cfd4');ctx.fillStyle='#26364a';ctx.font='18px Arial';ctx.fillText('○',x+12,top+offset+26);lines.forEach((line,i)=>ctx.fillText(line,x+35,top+offset+26+i*24))}offset+=height+10});
+ }else{ctx.strokeStyle='#bfc5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(147,top+28);ctx.lineTo(1090,top+28);ctx.stroke();ctx.fillStyle='#8993a0';ctx.font='16px Arial';ctx.fillText('Jawapan / ruang kerja',147,top+54)}
+}
+async function studentPages(items,title,subtitle,options={}){
+ const pages=[];let current=null,y=0;
+ for(let i=0;i<items.length;i++){
+  const item=items[i];if(item.graphic)item.graphicCanvas=await window.PAWorksheetGraphics.render(item.graphic);
+  if(!current){current=await page(title,subtitle);y=270;if(!pages.length){current.ctx.fillStyle='#526173';current.ctx.font='20px Arial';current.ctx.fillText('Nama: ______________________________',78,y);current.ctx.fillText(`Tarikh: ${dateLabel()}`,720,y);y+=62}}
+  const layout=studentLayout(current.ctx,item);
+  if(layout.height>1270)throw new Error('Satu rajah terlalu tinggi untuk halaman A4. Cuba soalan lain.');
+  if(y+layout.height>1610){finishStudentPage(current,pages,options);current=await page(title,subtitle);y=270}
+  drawStudentItem(current.ctx,item,i+1,y,layout);y+=layout.height+24;
+ }
+ if(current)finishStudentPage(current,pages,options);return pages;
+}
+function demoWatermark(ctx){ctx.save();ctx.globalAlpha=.08;ctx.translate(620,875);ctx.rotate(-.35);ctx.fillStyle='#9a6b17';ctx.font='900 92px Arial';ctx.textAlign='center';ctx.fillText('VERSI DEMO',0,0);ctx.restore()}
+function finishStudentPage(current,pages,options){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,pages.length+1,options.demo?'Pahlawan Angka | Lembaran kerja demo':'Pahlawan Angka | Worksheet murid');pages.push(current.canvas)}
+async function answerPages(items,title,subtitle,startPage=0,options={}){
+ const pages=[];let current=null,y=0;
+ for(let i=0;i<items.length;i++){
+  const item=items[i];if(!current){current=await page(title,subtitle);y=272}
+  const ctx=current.ctx;ctx.font='900 18px Arial';const prompt=wrap(ctx,`${i+1}. ${item.prompt}`,1010);ctx.font='16px Arial';const solution=wrap(ctx,solutionFor(item),960);
+  const height=Math.max(178,25+prompt.length*24+18+solution.length*22+66);
+  if(y+height>1610){if(options.demo)demoWatermark(ctx);footer(ctx,startPage+pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(current.canvas);current=await page(title,subtitle);y=272}
+  const a=current.ctx;roundRect(a,78,y,1084,height,16,i%2?'#f4f1e9':'#ffffff','#ddd8cc');a.fillStyle='#0e2b4a';a.font='900 18px Arial';prompt.forEach((line,j)=>a.fillText(line,102,y+29+j*24));
+  let sy=y+29+prompt.length*24+10;a.fillStyle='#9a6b17';a.font='900 14px Arial';a.fillText('CARA',102,sy);sy+=24;a.fillStyle='#536174';a.font='16px Arial';solution.forEach((line,j)=>a.fillText(line,102,sy+j*22));
+  roundRect(a,802,y+height-56,334,42,12,'#102b4a','#d4aa35');a.fillStyle='#f5cf52';fitText(a,`Jawapan: ${item.answer}`,310);a.textAlign='center';a.fillText(`Jawapan: ${item.answer}`,969,y+height-29,310);a.textAlign='left';y+=height+16;
+ }
+ if(current){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,startPage+pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(current.canvas)}return pages;
+}
 async function worksheet(includeAnswers){
  if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun worksheet...');
  try{
-  const pack=makeQuestions(),pages=[],studentChunks=balancedChunks(pack.items,5);let studentStart=0;for(const subset of studentChunks){const p=await page(pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`),ctx=p.ctx;let y=270;if(studentStart===0){ctx.fillStyle='#526173';ctx.font='20px Arial';ctx.fillText('Nama: ______________________________',78,y);ctx.fillText(`Tarikh: ${dateLabel()}`,720,y);y+=62}for(let i=0;i<subset.length;i++){const item=subset[i],number=studentStart+i+1;roundRect(ctx,78,y,1084,190,18,'#ffffff','#ddd8cc');ctx.fillStyle='#0e2b4a';ctx.font='900 22px Arial';ctx.fillText(`${number}.`,102,y+37);ctx.fillStyle='#17263a';ctx.font='23px Arial';const bottom=drawWrapped(ctx,item.prompt,147,y+37,970,30,3);if(item.choices?.length){ctx.font='18px Arial';item.choices.forEach((choice,index)=>{const col=index%2,row=Math.floor(index/2),x=147+col*470,cy=Math.max(y+98,bottom+12)+row*39;roundRect(ctx,x,cy,440,31,9,'#f4f6f8','#c9cfd4');ctx.fillStyle='#26364a';ctx.fillText('○  '+choice.value,x+12,cy+22)})}else{ctx.strokeStyle='#bfc5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(147,Math.max(y+112,bottom+20));ctx.lineTo(1090,Math.max(y+112,bottom+20));ctx.stroke();ctx.fillStyle='#8993a0';ctx.font='16px Arial';ctx.fillText('Jawapan / ruang kerja',147,Math.max(y+140,bottom+48))}y+=225}footer(ctx,pages.length+1,'Pahlawan Angka | Worksheet murid');pages.push(p.canvas);studentStart+=subset.length}
-  if(includeAnswers){const answerChunks=balancedChunks(pack.items,7);let answerStart=0;for(const subset of answerChunks){const p=await page('Skema dan Cara Menjawab',`${pack.title} | Untuk ibu bapa / penjaga`),ctx=p.ctx;let y=272;for(let i=0;i<subset.length;i++){const item=subset[i],number=answerStart+i+1;roundRect(ctx,78,y,1084,178,16,i%2?'#f4f1e9':'#ffffff','#ddd8cc');ctx.fillStyle='#0e2b4a';ctx.font='900 18px Arial';drawWrapped(ctx,`${number}. ${item.prompt}`,102,y+27,1010,22,3);ctx.fillStyle='#9a6b17';ctx.font='900 14px Arial';ctx.fillText('CARA',102,y+102);ctx.fillStyle='#536174';ctx.font='16px Arial';drawWrapped(ctx,solutionFor(item),164,y+102,680,20,3);roundRect(ctx,862,y+121,274,42,12,'#102b4a','#d4aa35');ctx.fillStyle='#f5cf52';ctx.font='900 17px Arial';ctx.textAlign='center';ctx.fillText(`Jawapan: ${item.answer}`,999,y+148);ctx.textAlign='left';y+=190}footer(ctx,pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(p.canvas);answerStart+=subset.length}}
+  const pack=makeQuestions(),pages=await studentPages(pack.items,pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`);
+  if(includeAnswers)pages.push(...await answerPages(pack.items,'Skema dan Cara Menjawab',`${pack.title} | Untuk ibu bapa / penjaga`,pages.length));
   download(pdfFromCanvases(pages),`worksheet-${slug(pack.title)}-${slug(pack.snap.name)}${includeAnswers?'-dengan-skema':''}.pdf`);status(`${pack.items.length} soalan berjaya disediakan.`);
  }catch(error){console.error(error);status(error.message||'Worksheet belum dapat dijana. Cuba pilihan lain.',true)}finally{state.busy=false}
 }
-
-function demoPrintableItems(rawItems){return (rawItems||[]).filter(x=>{const raw=String(x?.prompt||'');return raw&&!printVisualDependent(raw)&&!/<(?:svg|img|canvas|table)\b/i.test(raw)}).map(x=>({prompt:plainPrompt(x.prompt),answer:String(x.answer??'')})).filter(x=>x.prompt&&x.answer).slice(0,8)}
+function demoPrintableItems(rawItems){return(rawItems||[]).map(printableQuestion).filter(Boolean).filter(x=>x.prompt&&x.answer).slice(0,8)}
 async function demoWorksheet(rawItems,grade){
- if(state.busy)return;state.busy=true;try{const items=demoPrintableItems(rawItems);if(!items.length)throw new Error('Tiada soalan sesuai untuk cetakan dalam sesi ini.');const pages=[],student=await page('Latihan Selepas Demo',`Darjah ${grade} | ${items.length} soalan pengukuhan terpilih | VERSI DEMO`),s=student.ctx;let y=260;s.fillStyle='#526173';s.font='20px Arial';s.fillText('Nama: __________________________',78,y);s.fillText(`Tarikh: ${dateLabel()}`,720,y);y+=52;items.forEach((item,i)=>{roundRect(s,78,y,1084,125,16,'#fff','#ddd8cc');s.fillStyle='#0e2b4a';s.font='900 20px Arial';s.fillText(`${i+1}.`,102,y+34);s.fillStyle='#17263a';s.font='20px Arial';drawWrapped(s,item.prompt,145,y+34,950,26,2);s.strokeStyle='#c4cad1';s.beginPath();s.moveTo(145,y+98);s.lineTo(1085,y+98);s.stroke();y+=137});s.save();s.globalAlpha=.08;s.translate(620,875);s.rotate(-.35);s.fillStyle='#9a6b17';s.font='900 92px Arial';s.textAlign='center';s.fillText('VERSI DEMO',0,0);s.restore();footer(s,1,'Pahlawan Angka | Lembaran kerja demo');pages.push(student.canvas);const answer=await page('Skema Ringkas',`Darjah ${grade} | Penjaga | VERSI DEMO`),a=answer.ctx;y=275;items.forEach((item,i)=>{roundRect(a,78,y,1084,105,14,i%2?'#f4f1e9':'#fff','#ddd8cc');a.fillStyle='#17263a';a.font='18px Arial';drawWrapped(a,`${i+1}. ${item.prompt}`,102,y+28,770,22,2);roundRect(a,900,y+34,225,42,12,'#102b4a','#d4aa35');a.fillStyle='#f5cf52';fitText(a,item.answer,195);a.textAlign='center';a.fillText(item.answer,1012,y+61,195);a.textAlign='left';y+=116});a.save();a.globalAlpha=.08;a.translate(620,875);a.rotate(-.35);a.fillStyle='#9a6b17';a.font='900 92px Arial';a.textAlign='center';a.fillText('VERSI DEMO',0,0);a.restore();footer(a,2,'Pahlawan Angka | Skema demo');pages.push(answer.canvas);download(pdfFromCanvases(pages),`pahlawan-angka-demo-darjah-${grade}.pdf`)}catch(error){console.error(error);alert(error.message||'Worksheet demo belum dapat dijana.')}finally{state.busy=false}
+ if(state.busy)return;state.busy=true;
+ try{const items=demoPrintableItems(rawItems);if(!items.length)throw new Error('Tiada soalan sesuai untuk cetakan dalam sesi ini.');const pages=await studentPages(items,'Latihan Selepas Demo',`Darjah ${grade} | ${items.length} soalan pengukuhan terpilih | VERSI DEMO`,{demo:true});pages.push(...await answerPages(items,'Skema Ringkas',`Darjah ${grade} | Penjaga | VERSI DEMO`,pages.length,{demo:true}));download(pdfFromCanvases(pages),`pahlawan-angka-demo-darjah-${grade}.pdf`)}catch(error){console.error(error);alert(error.message||'Worksheet demo belum dapat dijana.')}finally{state.busy=false}
 }
+
 const originalRender=window.renderParent;if(typeof originalRender==='function')window.renderParent=function(){const result=originalRender.apply(this,arguments);mount();return result};
 window.PAParentTools={mount,mode,count,topic,exportReport,shareCard,worksheet,demoWorksheet,demoPrintableItems};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(mount,0),{once:true});else setTimeout(mount,0);
 })();
+

@@ -2,6 +2,7 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-khazanah-full-1`;
 const APP_SHELL=[
+  './js/worksheet-graphics-v1.js',
   './css/loading-screen-v1.css',
   './assets/ui/loading/wira-shield-v1.png',
   './questions/grade-depth-v1.js',
@@ -178,6 +179,7 @@ self.addEventListener('fetch',event=>{
       }))
   );
 });
+
 
 
 
