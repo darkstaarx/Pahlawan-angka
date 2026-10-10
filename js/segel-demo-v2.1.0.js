@@ -57,6 +57,13 @@
     {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, visible:2.18},
     {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, visible:2.45}
   ];
+  // Match one guest-demo seal cycle to its complete topic/question plan.
+  function demoSealHits(questionTarget){
+    const total=Math.max(3,Math.floor(Number(questionTarget)||10));
+    const bronze=Math.max(1,Math.round(total*.2));
+    const silver=Math.max(1,Math.round(total*.3));
+    return [bronze,silver,total-bronze-silver];
+  }
   const SEAL_HITS=TIERS.reduce((n,t)=>n+t.hits,0);  // 10 hentaman = 2+3+5
   /* Dua soalan lebih daripada jumlah hentaman. Tanpa ruang ini satu jawapan
      salah sahaja sudah bermakna Aurora tidak dapat diselamatkan, dan kanun
@@ -239,6 +246,7 @@
      PENTAS
      ================================================================= */
   async function buildStage(){
+    const stageTiers=TIERS.map(tier=>({...tier}));
     const canvas=$('segelCanvas'), host=$('segelStage');
     const finisherCutIn=host.querySelector('.segelCutIn');
     const finisherCutInHero=host.querySelector('.cutInHero');
@@ -856,7 +864,7 @@
        rune melintasi badannya dan dia kelihatan menembusi kaca. renderOrder
        ditetapkan supaya susunan tidak bergantung pada pengisihan kedalaman
        bahan lutsinar. */
-    const seals=TIERS.map((tier,i)=>{
+    const seals=stageTiers.map((tier,i)=>{
       const e=sealEntry(sealTex[i], tier.visible);
       const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
       m.scale.set(e.w,e.h,1);
@@ -929,7 +937,7 @@
        "terkurung" terbaca: tepinya menyala mengikut sudut pandang (fresnel),
        sesuatu yang tidak mungkin dibuat dengan sprite rata. */
     const shellUni={uTime:{value:0},uPower:{value:1},uGrey:{value:0},
-                    uTint:{value:new THREE.Color(TIERS[0].color)}};
+                    uTint:{value:new THREE.Color(stageTiers[0].color)}};
     const shell=new THREE.Mesh(new THREE.SphereGeometry(1,40,28),
       new THREE.ShaderMaterial({
         uniforms:shellUni, transparent:true, depthWrite:false,
@@ -944,8 +952,8 @@
       }));
     shell.renderOrder=2; scene.add(shell);
     function fitShell(){
-      const i=Math.min(S.active,TIERS.length-1);
-      const tier=TIERS[i], r=tier.visible*.40;
+      const i=Math.min(S.active,stageTiers.length-1);
+      const tier=stageTiers[i], r=tier.visible*.40;
       shell.scale.set(r,r*1.02,r);
       shell.position.set(SEAL_X, GROUND+r*.96, -.30);
       shellUni.uTint.value.setHex(tier.color);
@@ -1289,9 +1297,9 @@
         else recoil=Math.sin(k*Math.PI*2.2)*Math.exp(-k*4.2);
       }
       // Segel: satu tier kelihatan, bernafas perlahan, kelabu bila terkena.
-      const activeTier=TIERS[Math.min(S.active,TIERS.length-1)];
+      const activeTier=stageTiers[Math.min(S.active,stageTiers.length-1)];
       backGlow.material.color.setHex(activeTier.color);
-      backGlow.material.opacity=S.active>=TIERS.length?0:.42+(reduceMotion?0:.1*Math.sin(tAcc*2));
+      backGlow.material.opacity=S.active>=stageTiers.length?0:.42+(reduceMotion?0:.1*Math.sin(tAcc*2));
       S.grey=damp(S.grey,0,3.4,dt);
       shellUni.uTime.value=tAcc;
       seals.forEach((s,i)=>{
@@ -1329,7 +1337,7 @@
         floorGlow.visible=true;
         floorGlow.material.opacity=(.44+(reduceMotion?0:breath*.08))*(1-grey*.6);
       });
-      if(S.active>=TIERS.length){ shell.visible=false; floorGlow.visible=false }
+      if(S.active>=stageTiers.length){ shell.visible=false; floorGlow.visible=false }
 
       S.shake=damp(S.shake,0,6,dt);
       camera.position.x=(Math.random()-.5)*S.shake;
@@ -1490,13 +1498,13 @@
 
     if(activePetConfig)setPetVisual(activePetConfig);
     return {
-      tiers:TIERS,
+      tiers:stageTiers,
       setArena,
       /* Tempat bar kesihatan sepatutnya duduk, dalam peratus saiz pentas.
          Diunjur melalui kamera supaya ia kekal di atas kubah pada setiap
          nisbah skrin, bukan diteka dengan nilai CSS tetap. */
       sealAnchor(){
-        const tier=TIERS[Math.min(S.active,TIERS.length-1)];
+        const tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
         // Dikira terus daripada fov dan jarak, bukan melalui matriks kamera:
         // Vector3.project() bergantung pada matrixWorldInverse yang hanya
         // disegarkan semasa render, jadi ia boleh memulangkan nilai liar bila
@@ -1510,13 +1518,13 @@
       /* Wira menyerang SEGEL, bukan Aurora. Bunyi: pedang masa tebasan,
          hentaman masa sentuh — dua kesan berasingan, bukan satu. */
       isFinalHit(){
-        const s=seals[S.active], tier=TIERS[Math.min(S.active,TIERS.length-1)];
-        return Boolean(s && S.active===TIERS.length-1 && s.damage+1/tier.hits>=.999);
+        const s=seals[S.active], tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
+        return Boolean(s && S.active===stageTiers.length-1 && s.damage+1/tier.hits>=.999);
       },
       async strike(){
         const lifecycle=S.lifecycle;
-        const tier=TIERS[Math.min(S.active,TIERS.length-1)];
-        const finalHit=S.active===TIERS.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
+        const tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
+        const finalHit=S.active===stageTiers.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
         if(finalHit){
           await playFinisherVideo(lifecycle);
           if(lifecycle!==S.lifecycle)return;
@@ -1571,7 +1579,7 @@
           burst(6.5,s.tier.color);
           waveMat.color.setHex(s.tier.color); S.waveScale=1.35; S.waveT=0;
           S.flashT=0; S.shake=.46; S.hitT=-1;
-          S.active=Math.min(TIERS.length,S.active+1);
+          S.active=Math.min(stageTiers.length,S.active+1);
           fitShell();
           return {broken:true, tier:s.tier};
         }
@@ -1591,14 +1599,14 @@
         const s=seals[S.active];
         return s ? Math.max(0,Math.round((1-s.damage)*s.tier.hits)) : 0;
       },
-      activeTier(){ return TIERS[Math.min(S.active,TIERS.length-1)] },
-      allBroken(){ return S.active>=TIERS.length },
+      activeTier(){ return stageTiers[Math.min(S.active,stageTiers.length-1)] },
+      allBroken(){ return S.active>=stageTiers.length },
       /* Tiada pengembaraan yang gagal — Aurora sentiasa diselamatkan, cuma
          bintang yang berbeza. Kalau soalan habis sebelum semua segel pecah,
          Wira menghabiskan bakinya di sini. */
       async forceBreakRest(){
         const lifecycle=S.lifecycle;
-        while(S.active<TIERS.length){
+        while(S.active<stageTiers.length){
           if(lifecycle!==S.lifecycle)return false;
           const s=seals[S.active];
           s.damage=1; s.broken=true; s.breakT=0;
@@ -1624,7 +1632,7 @@
       },
       async previewFinalBlow(){
         if(!entryMode?.devBattlefield)return false;
-        const lastIndex=TIERS.length-1;
+        const lastIndex=stageTiers.length-1;
         S.active=lastIndex; S.heroLock=null; S.heroX=HERO_HOME;
         seals.forEach((seal,i)=>{
           seal.damage=i===lastIndex?Math.max(0,1-1/seal.tier.hits):1;
@@ -1636,7 +1644,7 @@
       },
       async previewAuraFarming(){
         if(!entryMode?.devBattlefield)return false;
-        const lastIndex=TIERS.length-1;
+        const lastIndex=stageTiers.length-1;
         ++S.lifecycle; S.active=lastIndex; S.heroX=HERO_HOME-.12; S.heroLock=heroPrepareE;
         seals.forEach((seal,i)=>{
           seal.damage=i===lastIndex?Math.max(0,1-1/seal.tier.hits):1;
@@ -1679,7 +1687,9 @@
         sfx('auraCharge');
       },
       wrong(){ S.shake=.14 },
-      reset(){
+      reset(questionTarget=null){
+        const hits=questionTarget==null?TIERS.map(tier=>tier.hits):demoSealHits(questionTarget);
+        stageTiers.forEach((tier,i)=>{tier.hits=hits[i]});
         ++S.lifecycle;stopFinisherVideo();S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
         host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
         finalImpactPending=false; finalImpactActive=false;
@@ -2158,11 +2168,7 @@
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
       paintSeal();
       if(reachedTarget)return celebrate(activeRun);
-      if(stage.allBroken()&&entryMode?.guestDemo){
-        stage.reset();paintSeal();
-        toast('GEMBOK SETERUSNYA MUNCUL!');
-        $('segelFeedback').textContent='Bagus! Teruskan ke topik seterusnya.';
-      }else if(stage.allBroken())return celebrate(activeRun);
+      if(stage.allBroken())return celebrate(activeRun);
     }else if(sameWrong){
       // A repeated typed/choice value is feedback only. It must not resolve
       // the question or consume the retry; the learner gets another chance.
@@ -2417,7 +2423,7 @@
                missionAnswered:0,coach:null,recoveryFor:null,stretchFor:null}};
     setResultLifecycle(false);
     $('segelDone').hidden=true;
-    stage.reset();
+    stage.reset(entryMode?.guestDemo?run.questionTarget:null);
     stage.armEntry();
     enterWhenRevealed();    // Wira turun sebagai zarah biru, sama seperti portal
     paintSeal();

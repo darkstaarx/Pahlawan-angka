@@ -190,3 +190,25 @@ test('interaction bridge forwards actual guest values and keeps guest retry stat
   listeners.click[1].fn({});
   assert.deepEqual(run.sess.retryState,{before:true});
 });
+
+
+test('guest seal ratios complete exactly one cycle at the last correct answer',()=>{
+  const source=fs.readFileSync('js/segel-demo-v2.1.0.js','utf8');
+  const ratio=source.slice(source.indexOf('  function demoSealHits('),source.indexOf('  const SEAL_HITS='));
+  const method=(start,end)=>source.slice(source.indexOf(start),source.indexOf(end,source.indexOf(start)));
+  for(const target of [14,15,16,17,18,20]){
+    const c={reduceMotion:true,popSound(){},burst(){},fitShell(){},waveMat:{color:{setHex(){}}}};
+    vm.createContext(c);
+    vm.runInContext(ratio+'; globalThis.hits=demoSealHits('+target+');',c);
+    assert.equal(c.hits.reduce((a,b)=>a+b,0),target);
+    c.stageTiers=c.hits.map(hits=>({hits,color:0}));
+    c.seals=c.stageTiers.map(tier=>({tier,damage:0,broken:false}));c.S={active:0};
+    vm.runInContext('globalThis.stage={'+method('      isFinalHit(){','      async strike(){')+method('      hitSeal(){','      async waitFinalImpact(){')+method('      activeTier(){','      /* Tiada pengembaraan')+'};',c);
+    for(let hit=1;hit<=target;hit++){
+      assert.equal(c.stage.isFinalHit(),hit===target,'finisher only at final planned hit');
+      c.stage.hitSeal();
+      assert.equal(c.stage.allBroken(),hit===target);
+      if(hit<target)assert.ok(c.S.active<3);
+    }
+  }
+});
