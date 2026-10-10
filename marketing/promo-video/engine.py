@@ -712,7 +712,7 @@ class Renderer:
                 sp.draw(out, t)
         for (tf, dur, strength) in getattr(self.tl, 'FLASHES', []):
             if tf - 0.05 <= t <= tf + dur:
-                k = (t - tf + 0.05) / (dur + 0.05)
+                k = min(1.0, max(0.0, (t - tf + 0.05) / (dur + 0.05)))
                 e = math.sin(min(1, k * 4) * math.pi / 2) * (1 - k) ** 1.5 * strength
                 out += (GOLD * 0.6 + 0.4) * e
         self.draw_texts(out, t)
