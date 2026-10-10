@@ -85,7 +85,7 @@ body[data-screen="menuV2"] .appHeader{display:none}
 
 /* ---------- pentas hero & pet (enjin animasi sprite sebenar) ---------- */
 .mv2Stage{
-  position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;gap:12px;
+  position:relative;z-index:2;display:flex;align-items:flex-end;justify-content:center;gap:0;
   height:clamp(165px,24vh,210px);margin:0 0 2px;padding-bottom:2px
 }
 .mv2Actor{
@@ -94,7 +94,7 @@ body[data-screen="menuV2"] .appHeader{display:none}
 }
 .mv2Actor:active{transform:scale(.96)}
 .mv2HeroSlot{height:100%;width:175px;max-width:52%}
-.mv2PetSlot{height:78px;width:90px;max-width:28%;margin-bottom:4px}
+.mv2PetSlot{height:78px;width:90px;max-width:28%;margin-bottom:4px;margin-left:-14px}
 
 /* bayang-bayang tanah menambat watak ke lantai */
 .mv2ActorShadow{
