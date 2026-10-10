@@ -52,7 +52,7 @@
     '{name}, jom kembara digit!',
     'Jom pilih misi kita!',
     'Kita kuatkan kemahiran!',
-    'Aurora dah bersedia!'
+    '{pet} dah bersedia!'
   ];
 
   const PET_FRAMES = [
@@ -112,19 +112,44 @@
   function showAutoHeroDialogue() {
     const name = typeof db!=='undefined' && db?.name ? db.name : '';
     const line = HERO_AUTO_DIALOGUES[heroDialogueIdx % HERO_AUTO_DIALOGUES.length]
-      .replace('{name}',name||'wira');
+      .replace('{name}',name||'wira').replace('{pet}',activeMenuPet()?.name||'Teman kamu');
     heroDialogueIdx++;
     triggerSpeech('wiraBubble', line);
   }
 
-  function renderPetFrame() {
-    if (!PET_FRAMES.length) return;
-    petFrameIdx = (petFrameIdx + 1) % PET_FRAMES.length;
-    const pet = $('mv2Pet');
-    if (pet) {
-      pet.src = PET_FRAMES[petFrameIdx];
-      pet.classList.remove('hidden');
+  function activeMenuPet(){
+    try{
+      if(window.PetCollection?.snapshot)return window.PetCollection.snapshot(db)?.pets?.find(p=>p.active)||null;
+      return REWARD_PETS[db.rewards?.equippedPet]||null;
+    }catch(_){return null}
+  }
+  function renderPetFrame(){
+    const pet=activeMenuPet(),img=$('mv2Pet');if(!img)return;
+    let canvas=$('mv2PetHappy');
+    if(!canvas){canvas=document.createElement('canvas');canvas.id='mv2PetHappy';canvas.className='mv2PetSprite hidden';canvas.width=512;canvas.height=512;canvas.setAttribute('role','img');img.parentNode.appendChild(canvas)}
+    canvas.classList.add('hidden');
+    if(!pet){setPetArt(img,null);if($('petSlot'))$('petSlot').title='Belum ada teman';return}
+    const sheet=pet.assets?.happySprite;
+    if(sheet){
+      if(!spriteCache[sheet]){const art=new Image();spriteCache[sheet]=art;art.src=sheet}
+      const art=spriteCache[sheet];
+      if(art.complete&&art.naturalWidth&&art.naturalHeight){
+        const frame=petFrameIdx++%4,w=art.naturalWidth/2,h=art.naturalHeight/2;
+        const ctx=canvas.getContext('2d');ctx.clearRect(0,0,512,512);ctx.drawImage(art,(frame%2)*w,Math.floor(frame/2)*h,w,h,0,0,512,512);
+        canvas.setAttribute('aria-label',pet.name||'Teman');canvas.classList.remove('hidden');img.classList.add('hidden');
+        if($('petSlot'))$('petSlot').title=`Ketuk ${pet.name||'teman'} untuk bermain`;
+        return;
+      }
     }
+    const frames=pet.id==='aurora'&&pet.appearance!=='bara'?PET_FRAMES:[pet.assets?.happy||pet.front||pet.hub].filter(Boolean);
+    if(!frames.length){setPetArt(img,null);return}
+    petFrameIdx=(petFrameIdx+1)%frames.length;
+    const wanted=frames[petFrameIdx];
+    img.alt=pet.name||'Teman';img.classList.remove('hidden');
+    const fallback=pet.assets?.happy||pet.front||pet.hub||'';
+    img.onerror=()=>{img.onerror=null;if(fallback&&fallback!==wanted)img.src=fallback;else img.classList.add('hidden')};
+    if(img.getAttribute('src')!==wanted)img.src=wanted;
+    if($('petSlot'))$('petSlot').title=`Ketuk ${pet.name||'teman'} untuk bermain`;
   }
 
   function startSpriteEngine() {
@@ -192,7 +217,9 @@
         wiraSlot.classList.add('actorHop');
       }
     } else if (actorType === 'pet') {
-      const q = PET_QUOTES[Math.floor(Math.random() * PET_QUOTES.length)];
+      const pet=activeMenuPet();if(!pet)return;
+      const quotes=pet.id==='aurora'?PET_QUOTES:[`${pet.name} dah bersedia!`,'Jom sambung kembara!','Seronoknya ikut kamu!'];
+      const q=quotes[Math.floor(Math.random()*quotes.length)];
       triggerSpeech('petBubble', q);
       const petSlot = $('petSlot');
       if (petSlot) {
@@ -234,14 +261,38 @@
     img.classList.toggle('hidden',!pet);
     if(!pet){ img.removeAttribute('src'); img.alt=''; return }
     img.alt=pet.name||'';
-    const fallback=pet.front||pet.hub||'';
-    const wanted=happyFrame(pet)||fallback;
+    const fallback=pet.assets?.happy||pet.front||pet.hub||'';
+    const wanted=pet.assets?.happy||happyFrame(pet)||fallback;
     img.onerror=()=>{ img.onerror=null; if(fallback&&img.src!==fallback)img.src=fallback };
     if(img.getAttribute('src')!==wanted)img.src=wanted;
   }
 
   /* Kemahiran fokus: pilihan ibu bapa kalau ada, jika tidak kemahiran teras
      pertama bab semasa. Kedua-duanya wujud dalam profil — tiada tekaan. */
+  /* Face composition is per companion and appearance, independent of stage
+     sprites. New art can supply assets.portrait without changing this table. */
+  const petFaceCrops={
+    aurora:{base:[.68,.40,2.2],bara:[.70,.52,2.2]},
+    ketupatKura:{base:[.72,.66,2.35],bara:[.73,.67,2.35]},
+    kumbangManggis:{base:[.68,.69,2.1],bara:[.70,.71,2.1]},
+    harimauBunga:{base:[.70,.53,2.3],bara:[.75,.54,2.3]},
+    arnabKekLapis:{base:[.47,.38,2.3],bara:[.45,.35,2.3]},
+    durianKerbau:{base:[.50,.53,2.1],bara:[.50,.55,2.1]}
+  };
+  function setPetPortrait(img,pet){
+    setPetArt(img,pet);
+    if(!img)return;
+    const crop=petFaceCrops[pet?.id]?.[pet?.appearance==='bara'?'bara':'base']||[.5,.5,1];
+    const portrait=pet?.assets?.portrait;
+    const [x,y,zoom]=portrait?[.5,.5,1]:pet?crop:[.5,.5,1];
+    img.style.setProperty('--pet-face-x',x);
+    img.style.setProperty('--pet-face-y',y);
+    img.style.setProperty('--pet-face-zoom',zoom);
+    if(portrait){
+      img.onerror=()=>{img.onerror=null;setPetPortrait(img,{...pet,assets:{...pet.assets,portrait:null}})};
+      if(img.getAttribute('src')!==portrait)img.src=portrait;
+    }
+  }
   function focusSkillId(){
     try{
       if(db.focus&&META[db.focus])return db.focus;
@@ -301,14 +352,7 @@
        Kad "Pet Aktif" di bawah masih membaca pet sebenar yang dilengkapi. */
     startSpriteEngine();
 
-    let pet=null;
-    try{
-      const active=window.PetCollection?.snapshot?.(db)?.pets?.find(item=>item.active);
-      if(active)pet={...active,front:active.front||active.assets?.happy,hub:active.hub||active.assets?.happy};
-    }catch(_){}
-    if(!pet){
-      try{ pet=REWARD_PETS[db.rewards&&db.rewards.equippedPet]||null }catch(_){}
-    }
+    const pet=activeMenuPet();
 
     /* Kad ini membuka Demo v2, dan Demo v2 SENGAJA tidak menulis apa-apa
        kepada kemajuan murid — tiada db.daily, db.xp, db.coins mahupun db.logs.
@@ -337,7 +381,7 @@
     // Pet Aktif. Data tahap dan ikatan datang daripada koleksi teman canonical.
     if($('mv2PetName'))$('mv2PetName').textContent=pet?pet.name:'Belum ada teman';
     const face=$('mv2PetFace');
-    if(face)setPetArt(face,pet);
+    if(face)setPetPortrait(face,pet);
     const bondXp=pet?Math.max(0,Number(pet.bondXp)||0):0;
     const petLevel=pet?Math.max(1,Math.min(60,Number(pet.level)||1)):1;
     const petMaxed=!!pet&&petLevel>=60;
@@ -659,3 +703,5 @@
     install();
   })();
 })();
+
+

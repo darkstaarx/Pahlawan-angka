@@ -187,7 +187,6 @@ function renderParent(){
  const levelMarkup=`<section class="card parentReportHead embeddedLevelsHead"><div class="eyebrow">JULAT PEMBELAJARAN</div><h2>Asas dan cabaran</h2><p>Cikgu Dimensi turun kepada asas atau naik kepada cabaran apabila bukti pembelajaran memerlukannya.</p></section><div class="parentLevelGrid"><div class="card"><h3>Pengukuhan asas</h3><small>${gradeLabel(prev)}</small>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Tiada pengukuhan tambahan diperlukan sekarang.</p>"}</div><div class="card"><h3>Cabaran lanjutan</h3><small>${gradeLabel(next)}</small>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div></div>`;
  document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat kemahiran, bukti dan julat latihan anak dalam satu tempat.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>${levelMarkup}`;
  document.getElementById("levelsTab").innerHTML=levelMarkup;
- document.getElementById("engineTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">AKTIVITI TERKINI</div><h2>Apa yang berlaku semasa latihan</h2><p>Hanya peristiwa pembelajaran penting dipaparkan di sini.</p></section><section class="card parentActivityCard">${parentActivityList()}</section>`;
  document.getElementById("restuTab").innerHTML=renderParentRestu(restuFocus);
  tab("summary");
 }
@@ -199,9 +198,11 @@ function skillHTML(m,allowFocus){
  return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${evidence}${support}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
 }
 function tab(n){
- const normalized=n==='levels'?'core':n==='restu'?'restu':['summary','core','engine','settings'].includes(n)?n:'summary';
- ["summary","core","levels","engine","restu","settings"].forEach(x=>document.getElementById(x+"Tab")?.classList.toggle("hidden",x!==normalized));
+ const normalized=n==='engine'?'worksheet':n==='levels'?'core':n==='restu'?'restu':['summary','core','worksheet','settings'].includes(n)?n:'summary';
+ ["summary","core","levels","worksheet","engine","restu","settings"].forEach(x=>document.getElementById(x+"Tab")?.classList.toggle("hidden",x!==normalized));
+ if(normalized==='worksheet')window.PAParentTools?.mountWorksheet?.();
  document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(b=>b.classList.toggle('active',b.dataset.parentTab===normalized));
  document.getElementById('parent')?.classList.toggle('restuOpen',normalized==='restu');
 }
 function exportCSV(){let rows=[["Skill","Grade","Role","Title","Mastery","Confidence","Evidence","Correct","Wrong","Misconception"],...GRAPH.skills.map(m=>{let s=scoreState(m.id);return[m.id,m.grade,m.role,m.title,Math.round(s.mastery),Math.round(s.confidence),s.evidence,s.correct,s.wrong,topMis(s)]})];let csv=rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n"),blob=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pahlawan-angka-kemajuan.csv";a.click();URL.revokeObjectURL(a.href)}
+

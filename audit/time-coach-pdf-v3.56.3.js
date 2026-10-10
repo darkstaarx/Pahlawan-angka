@@ -26,7 +26,7 @@ ctx.fitText(canvas,'enam ratus lapan puluh empat',195);
 check(canvas.measureText('enam ratus lapan puluh empat').width<=195,'long answer does not fit');
 ctx.fitText(canvas,'42',195);check(canvas.font==='900 17px Arial','short answer should retain size');
 ctx.fitText(canvas,'x'.repeat(100),195);check(canvas.font==='900 11px Arial','minimum font not applied');
-check(read('js/parent-learning-tools-v3.26.0.js').includes('fillText(item.answer,1012,y+61,195)'),'hard width guard missing');
+check(/fillText\(`Jawapan: \$\{item.answer\}`,969,y\+height-29,310\)/.test(read('js/parent-learning-tools-v3.26.0.js')),'hard width guard missing');
 let enter=0,pending=null;
 Object.assign(ctx,{META:{test:{id:'test',title:'Test'}},sess:{q:{prompt:'question'}},db:{coachMemory:{interventions:{}}},ensureCoachMemory(){},coachStrategyPlan:()=>({need:'concept',strategy:'model',ladder:['model']}),conceptKeyFor:()=> 'general',document:{getElementById:()=>({textContent:''})},renderLearningStage(){enter++},screen(){},save(){}});
 ctx.window.PADimensionalPortal={open:({onDone})=>{pending=onDone}};
@@ -35,3 +35,4 @@ ctx.learningStart('test',{});check(enter===0&&pending,'lesson opened before cine
 ctx.learningStart('test',{}, {dev:true});check(enter===2,'dev fallback broken');
 delete ctx.window.PADimensionalPortal;ctx.learningStart('test',{});check(enter===3,'no-portal fallback broken');
 console.log(`${checks} checks passed: timeline, PDF fit, learning cut-in ordering.`);
+
