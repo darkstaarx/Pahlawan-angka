@@ -584,13 +584,16 @@ class Renderer:
         return pose, roi
 
     def motion_blur(self, out, ph, t, roi):
-        c0 = Pose(ph.track.at(t - 1 / FPS)).project(np.array([[0.0, 0.0]]))[0]
-        c1 = Pose(ph.track.at(t)).project(np.array([[0.0, 0.0]]))[0]
+        p0, p1 = ph.track.at(t - 1 / FPS), ph.track.at(t)
+        if abs(p1['s'] - p0['s']) / max(p1['s'], 1e-3) > 0.012:
+            return  # zoom: kabur arah tunggal akan mencomotkan teks UI
+        c0 = Pose(p0).project(np.array([[0.0, 0.0]]))[0]
+        c1 = Pose(p1).project(np.array([[0.0, 0.0]]))[0]
         d = c1 - c0
-        L = float(np.hypot(*d)) * 0.9
-        if L < 5:
+        L = float(np.hypot(*d)) * 0.4
+        if L < 6:
             return
-        n = int(min(L, 80)) | 1
+        n = int(min(L, 24)) | 1
         k = np.zeros((n, n), np.float32)
         cv2.line(k, (0, n // 2), (n - 1, n // 2), 1.0, 1)
         M = cv2.getRotationMatrix2D((n / 2 - 0.5, n / 2 - 0.5), -math.degrees(math.atan2(d[1], d[0])), 1.0)
