@@ -20,19 +20,19 @@ function miniBars(rows){return rows.slice(0,4).map(x=>`<span><b>${safe(x.m.title
 function reportMarkup(snap){return `<section class="paExportCard"><div class="paToolHead"><span class="paToolIcon">▤</span><div><small>ANALISIS PEMBELAJARAN</small><h3>Laporan yang mudah dikongsi</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Ringkasan kemahiran yang kemas untuk simpanan keluarga, perbincangan bersama guru atau perkongsian media sosial.</p><div class="paSkillSnapshot"><div><b>${snap.attempts}</b><small>soalan dijawab</small></div><div><b>${snap.attempts?snap.accuracy+'%':'-'}</b><small>ketepatan</small></div><div><b>${snap.strong.length}</b><small>kemahiran mantap</small></div></div><div class="paExportPreview"><div class="paExportPreviewHead"><b>Pratonton kemahiran utama</b><span>Darjah ${snap.grade}</span></div><div class="paMiniBars">${miniBars([...snap.priority,...snap.developing,...snap.strong])||'<span><b>Belum cukup bukti</b><i style="--w:8%"></i><em>baru</em></span>'}</div></div><div class="paToolActions"><button class="paToolBtn primary" onclick="PAParentTools.exportReport()">Muat turun PDF</button><button class="paToolBtn" onclick="PAParentTools.shareCard()">Kongsi kad kemajuan</button></div></section>`;}
 function worksheetMarkup(){
  const snap=snapshot(),topics=coreSkills(),limit=worksheetLimit();if(!topics.some(m=>m.id===state.topic))state.topic=topics[0]?.id||'';if(state.count>limit)state.count=limit;
- return `<section class="card parentReportHead"><div class="eyebrow">WORKSHEET ANAK</div><h2>Latihan untuk dicetak</h2><p>Pilih latihan, muat turun PDF dan cetak untuk ${safe(snap.name)} · Darjah ${snap.grade}.</p></section><div class="paParentTools"><section class="paWorksheetCard"><div class="paToolHead"><span class="paToolIcon">✎</span><div><small>MUAT TURUN WORKSHEET</small><h3>Sediakan latihan anak</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Pilih latihan mengikut satu topik, campuran Darjah ${snap.grade}, atau fokus yang dikenal pasti oleh Cikgu Dimensi.</p><div class="paWorksheetModes"><button class="paWorksheetMode ${state.mode==='topic'?'active':''}" onclick="PAParentTools.mode('topic')"><span>◎</span><b>Topik</b><small>Satu kemahiran</small></button><button class="paWorksheetMode ${state.mode==='grade'?'active':''}" onclick="PAParentTools.mode('grade')"><span>▦</span><b>Darjah</b><small>Latihan campuran</small></button><button class="paWorksheetMode ${state.mode==='recommended'?'active':''}" onclick="PAParentTools.mode('recommended')"><span>✦</span><b>Disyorkan</b><small>Ikut bukti anak</small></button></div><div class="paWorksheetOptions"><label>Fokus worksheet<select id="paWorksheetTopic" ${state.mode==='topic'?'':'disabled'} onchange="PAParentTools.topic(this.value)">${topics.map(m=>`<option value="${m.id}" ${m.id===state.topic?'selected':''}>${safe(m.title)}</option>`).join('')}</select></label><label>Bilangan soalan<div class="paCountPicker">${[10,20,30,40].map(n=>`<button class="${state.count===n?'active':''}" onclick="PAParentTools.count(${n})">${n}</button>`).join('')}</div></label></div><div class="paWorksheetHint"><span>✦</span><span><b>Cadangan Cikgu Dimensi</b><br>${safe(recommendationCopy(snap))}</span></div><div class="paToolActions"><button class="paToolBtn" onclick="PAParentTools.worksheet(false)">Muat turun latihan</button><button class="paToolBtn primary" onclick="PAParentTools.worksheet(true)">Latihan + skema</button></div><div id="paWorksheetStatus" class="paWorksheetStatus" role="status" aria-live="polite"></div></section></div>`;
+ return `<section class="card parentReportHead"><div class="eyebrow">LATIHAN ANAK</div><h2>Latihan untuk dicetak</h2><p>Pilih latihan, muat turun PDF dan cetak untuk ${safe(snap.name)} · Darjah ${snap.grade}.</p></section><div class="paParentTools"><section class="paWorksheetCard"><div class="paToolHead"><span class="paToolIcon">✎</span><div><small>MUAT TURUN LATIHAN</small><h3>Sediakan latihan anak</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Pilih latihan mengikut satu topik, campuran Darjah ${snap.grade}, atau fokus yang dikenal pasti oleh Cikgu Dimensi.</p><div class="paWorksheetModes"><button class="paWorksheetMode ${state.mode==='topic'?'active':''}" onclick="PAParentTools.mode('topic')"><span>◎</span><b>Topik</b><small>Satu kemahiran</small></button><button class="paWorksheetMode ${state.mode==='grade'?'active':''}" onclick="PAParentTools.mode('grade')"><span>▦</span><b>Darjah</b><small>Latihan campuran</small></button><button class="paWorksheetMode ${state.mode==='recommended'?'active':''}" onclick="PAParentTools.mode('recommended')"><span>✦</span><b>Disyorkan</b><small>Ikut bukti anak</small></button></div><div class="paWorksheetOptions"><label>Fokus latihan<select id="paWorksheetTopic" ${state.mode==='topic'?'':'disabled'} onchange="PAParentTools.topic(this.value)">${topics.map(m=>`<option value="${m.id}" ${m.id===state.topic?'selected':''}>${safe(m.title)}</option>`).join('')}</select></label><label>Bilangan soalan<div class="paCountPicker">${[10,20,30,40].map(n=>`<button class="${state.count===n?'active':''}" onclick="PAParentTools.count(${n})">${n}</button>`).join('')}</div></label></div><div class="paWorksheetHint"><span>✦</span><span><b>Cadangan Cikgu Dimensi</b><br>${safe(recommendationCopy(snap))}</span></div><div class="paToolActions"><button class="paToolBtn" onclick="PAParentTools.worksheet(false)">Muat turun latihan</button><button class="paToolBtn primary" onclick="PAParentTools.worksheet(true)">Latihan + skema</button></div><div id="paWorksheetStatus" class="paWorksheetStatus" role="status" aria-live="polite"></div></section></div>`;
 }
 function recommendationCopy(snap){
  const lead=snap.priority[0]||snap.developing[0];
  if(lead)return `Mulakan dengan ${lead.m.title}, kemudian selang-selikan satu kemahiran yang lebih stabil.`;
- if(!snap.tested.length)return 'Belum cukup bukti. Worksheet akan menggunakan campuran asas pada darjah semasa.';
- return 'Kemajuan semasa kelihatan seimbang. Worksheet akan mengukuhkan kemahiran melalui format soalan yang berbeza.';
+ if(!snap.tested.length)return 'Belum cukup bukti. Latihan akan menggunakan campuran asas pada darjah semasa.';
+ return 'Kemajuan semasa kelihatan seimbang. Latihan akan mengukuhkan kemahiran melalui format soalan yang berbeza.';
 }
 function applyWorksheetAccessUI(host){
  const full=allowed(),card=host?.querySelector('.paWorksheetCard');if(!card)return;
  const pill=card.querySelector('.paProPill'),copy=card.querySelector('.paToolCopy');
  if(pill)pill.textContent=full?'PRO':'CUBA · 10';
- if(copy&&!full)copy.textContent='Akses asas boleh mencuba dan memuat turun worksheet sehingga 10 soalan.';
+ if(copy&&!full)copy.textContent='Akses asas boleh mencuba dan memuat turun latihan sehingga 10 soalan.';
  card.querySelectorAll('.paCountPicker button').forEach(button=>{const n=Number(button.textContent);button.disabled=!full&&n>10;button.title=button.disabled?'Family Plus diperlukan':''});
 }
 function mount(){
@@ -53,7 +53,7 @@ function status(text,error=false){state.statusText=text||'';state.statusError=er
 let logoPromise=null;
 function loadLogo(){
  if(logoPromise)return logoPromise;
- logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/branding/pahlawan-angka-full-logo-v1.png?v='+String(window.PA_APP_VERSION||'3.85.47')});return logoPromise;
+ logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/branding/pahlawan-angka-full-logo-v1.png?v='+String(window.PA_APP_VERSION||'3.85.48')});return logoPromise;
 }
 function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
 function wrap(ctx,text,maxWidth){
@@ -314,7 +314,7 @@ async function studentPages(items,title,subtitle,options={}){
  if(current)finishStudentPage(current,pages,options);return pages;
 }
 function demoWatermark(ctx){ctx.save();ctx.globalAlpha=.08;ctx.translate(620,875);ctx.rotate(-.35);ctx.fillStyle='#9a6b17';ctx.font='900 92px Arial';ctx.textAlign='center';ctx.fillText('VERSI DEMO',0,0);ctx.restore()}
-function finishStudentPage(current,pages,options){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,pages.length+1,options.demo?'Pahlawan Angka | Lembaran kerja demo':'Pahlawan Angka | Worksheet murid');pages.push(current.canvas)}
+function finishStudentPage(current,pages,options){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,pages.length+1,options.demo?'Pahlawan Angka | Lembaran kerja demo':'Pahlawan Angka | Latihan murid');pages.push(current.canvas)}
 async function answerPages(items,title,subtitle,startPage=0,options={}){
  const pages=[];let current=null,y=0;
  for(let i=0;i<items.length;i++){
@@ -329,21 +329,22 @@ async function answerPages(items,title,subtitle,startPage=0,options={}){
  if(current){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,startPage+pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(current.canvas)}return pages;
 }
 async function worksheet(includeAnswers){
- if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun worksheet...');mountWorksheet();
+ if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun latihan...');mountWorksheet();
  try{
   const pack=makeQuestions(),pages=await studentPages(pack.items,pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`);
   if(includeAnswers)pages.push(...await answerPages(pack.items,'Skema dan Cara Menjawab',`${pack.title} | Untuk ibu bapa / penjaga`,pages.length));
-  download(pdfFromCanvases(pages),`worksheet-${slug(pack.title)}-${slug(pack.snap.name)}${includeAnswers?'-dengan-skema':''}.pdf`);status(`${pack.items.length} soalan berjaya disediakan.`);
- }catch(error){console.error(error);status(error.message||'Worksheet belum dapat dijana. Cuba pilihan lain.',true)}finally{state.busy=false;mountWorksheet()}
+  download(pdfFromCanvases(pages),`latihan-${slug(pack.title)}-${slug(pack.snap.name)}${includeAnswers?'-dengan-skema':''}.pdf`);status(`${pack.items.length} soalan berjaya disediakan.`);
+ }catch(error){console.error(error);status(error.message||'Latihan belum dapat dijana. Cuba pilihan lain.',true)}finally{state.busy=false;mountWorksheet()}
 }
 function demoPrintableItems(rawItems){return(rawItems||[]).map(printableQuestion).filter(Boolean).filter(x=>x.prompt&&x.answer).slice(0,8)}
 async function demoWorksheet(rawItems,grade){
  if(state.busy)return;state.busy=true;
- try{const items=demoPrintableItems(rawItems);if(!items.length)throw new Error('Tiada soalan sesuai untuk cetakan dalam sesi ini.');const pages=await studentPages(items,'Latihan Selepas Demo',`Darjah ${grade} | ${items.length} soalan pengukuhan terpilih | VERSI DEMO`,{demo:true});pages.push(...await answerPages(items,'Skema Ringkas',`Darjah ${grade} | Penjaga | VERSI DEMO`,pages.length,{demo:true}));download(pdfFromCanvases(pages),`pahlawan-angka-demo-darjah-${grade}.pdf`)}catch(error){console.error(error);alert(error.message||'Worksheet demo belum dapat dijana.')}finally{state.busy=false;mountWorksheet()}
+ try{const items=demoPrintableItems(rawItems);if(!items.length)throw new Error('Tiada soalan sesuai untuk cetakan dalam sesi ini.');const pages=await studentPages(items,'Latihan Selepas Demo',`Darjah ${grade} | ${items.length} soalan pengukuhan terpilih | VERSI DEMO`,{demo:true});pages.push(...await answerPages(items,'Skema Ringkas',`Darjah ${grade} | Penjaga | VERSI DEMO`,pages.length,{demo:true}));download(pdfFromCanvases(pages),`pahlawan-angka-demo-darjah-${grade}.pdf`)}catch(error){console.error(error);alert(error.message||'Latihan demo belum dapat dijana.')}finally{state.busy=false;mountWorksheet()}
 }
 
 const originalRender=window.renderParent;if(typeof originalRender==='function')window.renderParent=function(){const result=originalRender.apply(this,arguments);mount();return result};
 window.PAParentTools={mount,mountWorksheet,mode,count,topic,exportReport,shareCard,worksheet,demoWorksheet,demoPrintableItems};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(mount,0),{once:true});else setTimeout(mount,0);
 })();
+
 
