@@ -1,16 +1,9 @@
-/* Khazanah v2 — susun atur penuh skrin Koleksi. v1.0.0
- *
- * Skrin lama membaca sebagai senarai kedai: kad rata dua lajur, harga paling
- * menonjol, dan teman yang sudah diselamatkan kelihatan sama berat dengan
- * yang belum dibeli. Versi ini memberi skrin hierarki: kepala, tab besar
- * berkiraan, panggung untuk teman aktif, kemudian panel berbingkai emas.
- *
- * Yang TIDAK berubah: harga, `equipPet`, `unequipPet`, `equipAura`,
- * `unequipAura`, `buyReward` dan seluruh ekonomi kekal milik rewards-v2.js.
- * Fail ini hanya menggantikan cara ia dipaparkan.
- */
+/* Khazanah — interactive companion card deck.
+ * PetCollection owns rescue progress, appearances and equipment.
+ * This module renders the collection without changing its reward rules. */
 (function(){
   'use strict';
+  if(window.PAKhazanah?.cardDeckVersion===1)return;
 
   const $ = id => document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[char]));
@@ -55,20 +48,9 @@
     Trofi</button>
 </div>
 
-<section class="kzShow" id="petStage">
-  <canvas id="petStageCanvas"></canvas>
-  <div class="kzShowCard">
-    <span class="kzStageLabel">Teman pilihan</span>
-    <b id="petStageName">Belum ada teman</b>
-    <small id="petStageDesc"></small>
-  </div>
-</section>
-
-<section class="kzTracker" id="petHuntTracker" aria-live="polite"></section>
-
 <section class="kzPanel">
   <div class="kzCollectionHead"><h2 id="kzPanelTitle">Teman kamu</h2><span id="kzCollectionCount"></span></div>
-  <div id="petCollection" class="kzGrid"></div>
+  <div id="kzPetGallery"><div id="petCollection" class="kzDeck" tabindex="0" aria-label="Kad koleksi teman"></div><div class="kzDeckNav"><button id="kzDeckPrev" type="button" aria-label="Kad sebelumnya">‹</button><div id="kzDeckDots" class="kzDeckDots" aria-label="Pilih kad teman"></div><button id="kzDeckNext" type="button" aria-label="Kad seterusnya">›</button></div><p class="kzDeckHint">Leret untuk pilih · Tekan kad untuk lihat</p></div>
   <div id="auraCollection" class="kzGrid hidden"></div>
   <div id="badgeCollection" class="kzGrid hidden"></div>
 </section>`;
@@ -102,42 +84,82 @@
     </article>`;
   }
 
-  function companionCard(pet){
-    const tamed=pet.state==='tamed',encountered=pet.state==='encountered';
-    const name=pet.name||PET_NAMES[pet.id]||pet.id;
-    const visibleName=tamed||encountered?name:'Belum ditemui';
-    const detail=tamed?`Tahap ${pet.level}`:encountered?`Jejak ${pet.rescues||0}/${pet.rescueThreshold||1}`:'Temui dalam misi Gembok';
-    return `<article class="kzCard companionCard ${tamed?'owned':encountered?'encountered':'locked'} ${pet.active?'equipped':''}">
-      <button class="kzPetOpen" type="button" onclick="openCollectionPet('${pet.id}')" aria-label="Lihat ${esc(visibleName)}${pet.active?', teman pilihan':''}">
-        <div class="kzArt"><img src="${esc(pet.assets.happy)}" alt="" loading="lazy"></div>
-        <div class="kzPetCopy"><div class="kzName">${esc(visibleName)}</div><div class="kzPetMeta"><small>${detail}</small>${pet.active?'<span class="kzSelectedLabel">Ikut kamu</span>':''}</div></div>
-        <svg class="kzPetArrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-      </button>
+  const deckState={id:null,index:0,signature:'',frame:0};
+  const reducedMotion=()=>!!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  function petPresentation(pet){
+    const tamed=pet.state==='tamed';
+    // A known companion remains known while its rescue requirement is incomplete.
+    const known=tamed||pet.state==='encountered'||Number(pet.rescues)>0||Number(pet.encounters)>0;
+    const threshold=Number(pet.rescueThreshold)>0?Number(pet.rescueThreshold):null;
+    const rescues=Math.max(0,Number(pet.rescues)||0);
+    const remaining=threshold?Math.max(0,threshold-rescues):null;
+    return {tamed,known,name:known?(pet.name||PET_NAMES[pet.id]||pet.id):'Belum ditemui',status:tamed?(pet.active?'Ikut kamu':'Dijinakkan'):known?'Belum Dijinakkan':'Belum ditemui',rescues,threshold,remaining,percent:threshold?Math.min(100,Math.round(rescues/threshold*100)):0};
+  }
+  function cardFace(pet,index,total){
+    const p=petPresentation(pet);
+    const rarity={Starter:'Permulaan',Common:'Biasa',Uncommon:'Unik',Rare:'Jarang',Epic:'Epik',Legendary:'Legenda'}[pet.rarity]||'Teman';
+    const progress=!p.tamed&&p.known?`<div class="kzRescue"><div><span>Misi Gembok</span><b>${p.rescues}${p.threshold?` / ${p.threshold}`:''}</b></div>${p.threshold?`<div class="kzRescueBar" role="progressbar" aria-label="Kemajuan menjinakkan teman" aria-valuemin="0" aria-valuemax="${p.threshold}" aria-valuenow="${Math.min(p.rescues,p.threshold)}"><i style="width:${p.percent}%"></i></div><small>${p.remaining?`Lagi ${p.remaining} misi untuk dijinakkan`:'Jumlah misi mencukupi'}</small>`:'<small>Teruskan misi Gembok untuk menjinakkan teman ini.</small>'}</div>`:'';
+    return `<div class="kzCardTop"><span>${esc(rarity)}</span><small>${String(index+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}</small></div>
+      <div class="kzCardHeading"><h2>${esc(p.name)}</h2>${p.tamed?`<span>Tahap <b>${pet.level}</b></span>`:''}</div>
+      <div class="kzCardScene ${p.known?'':'unseen'}"><img src="${esc(pet.assets.happy)}" alt="" loading="lazy">${p.tamed&&pet.appearance==='bara'?'<span class="kzCardForm">Bara</span>':''}</div>
+      <div class="kzCardInfo"><span class="kzCardStatus ${p.tamed?'tamed':''}">${esc(p.status)}</span><p>${p.known?esc(pet.species||'Teman Dimensi'):'Satu teman sedang menunggu dalam kembara kamu.'}</p>${progress}${p.tamed?`<div class="kzBond"><span>Ikatan</span><b>${Number(pet.bondXp)||0} XP</b></div>`:!p.known?`<small class="kzDiscovery">${pet.eligible?'Temui dalam misi Gembok':`Teruskan kembara · Tahap ${Math.max(1,Number(pet.levelGate)||1)}`}</small>`:''}</div>`;
+  }
+  function companionCard(pet,index,total){
+    const p=petPresentation(pet);
+    return `<article class="kzTradingCard ${p.tamed?'owned':p.known?'encountered':'locked'} ${pet.active?'equipped':''}" data-pet-id="${esc(pet.id)}">
+      <button class="kzCardOpen" type="button" onclick="openCollectionPet('${pet.id}')" aria-label="Lihat ${esc(p.name)} · ${esc(p.status)}">${cardFace(pet,index,total)}</button>
     </article>`;
+  }
+  function updateDeck(){
+    const host=$('petCollection');if(!host)return;
+    const cards=[...host.querySelectorAll('[data-pet-id]')];if(!cards.length)return;
+    const centre=host.getBoundingClientRect().left+host.clientWidth/2;
+    let selected=0,distance=Infinity;
+    cards.forEach((card,index)=>{const r=card.getBoundingClientRect(),d=Math.abs(r.left+r.width/2-centre);if(d<distance){distance=d;selected=index}});
+    deckState.index=selected;deckState.id=cards[selected].dataset.petId;
+    cards.forEach((card,index)=>card.classList.toggle('is-focus',index===selected));
+    $('kzDeckDots')?.querySelectorAll('button').forEach((dot,index)=>{dot.classList.toggle('active',index===selected);dot.setAttribute('aria-current',index===selected?'true':'false')});
+    const prev=$('kzDeckPrev'),next=$('kzDeckNext');if(prev)prev.disabled=selected===0;if(next)next.disabled=selected===cards.length-1;
+  }
+  function selectDeck(index,smooth=true){
+    const host=$('petCollection'),cards=host?[...host.querySelectorAll('[data-pet-id]')]:[];if(!cards.length)return;
+    const card=cards[Math.max(0,Math.min(cards.length-1,index))];
+    host.scrollTo({left:card.offsetLeft-(host.clientWidth-card.offsetWidth)/2,behavior:smooth&&!reducedMotion()?'smooth':'instant'});
+    if(!smooth||reducedMotion())updateDeck();
+  }
+  function setupDeck(pets){
+    const host=$('petCollection');if(!host)return;
+    const dots=$('kzDeckDots');if(dots){dots.innerHTML=pets.map((pet,index)=>`<button type="button" aria-label="Kad ${index+1}: ${esc(petPresentation(pet).name)}" data-index="${index}"></button>`).join('');dots.querySelectorAll('button').forEach((dot,index)=>dot.onclick=()=>selectDeck(index))}
+    const prev=$('kzDeckPrev'),next=$('kzDeckNext');if(prev)prev.onclick=()=>selectDeck(deckState.index-1);if(next)next.onclick=()=>selectDeck(deckState.index+1);
+    if(!host.dataset.deckBound){
+      host.dataset.deckBound='1';
+      host.addEventListener('scroll',()=>{if(deckState.frame)return;deckState.frame=requestAnimationFrame(()=>{deckState.frame=0;updateDeck()})},{passive:true});
+      host.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();selectDeck(deckState.index+(event.key==='ArrowRight'?1:-1))}});
+      if(typeof ResizeObserver==='function')new ResizeObserver(()=>selectDeck(deckState.index,false)).observe(host);
+    }
+    host.querySelectorAll('[data-pet-id]').forEach(card=>{
+      card.addEventListener('pointermove',event=>{if(reducedMotion()||!window.matchMedia?.('(hover: hover) and (pointer: fine)').matches)return;const r=card.getBoundingClientRect();card.style.setProperty('--tilt-x',`${-(event.clientY-r.top-r.height/2)/r.height*7}deg`);card.style.setProperty('--tilt-y',`${(event.clientX-r.left-r.width/2)/r.width*7}deg`)});
+      card.addEventListener('pointerleave',()=>{card.style.setProperty('--tilt-x','0deg');card.style.setProperty('--tilt-y','0deg')});
+    });
+    requestAnimationFrame(()=>{const index=pets.findIndex(p=>p.id===deckState.id);selectDeck(index<0?Math.max(0,pets.findIndex(p=>p.active)):index,false)});
   }
 
   window.openCollectionPet=function(id){
-    const pet=window.PetCollection?.snapshot?.(db)?.pets?.find(p=>p.id===id);
-    if(!pet)return;
+    const pets=window.PetCollection?.snapshot?.(db)?.pets||[],pet=pets.find(p=>p.id===id);if(!pet)return;
+    const p=petPresentation(pet);
     let dialog=$('petDetailSheet');
-    if(!dialog){
-      dialog=document.createElement('dialog');dialog.id='petDetailSheet';dialog.className='kzDetailSheet';
-      document.body.appendChild(dialog);
-      dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
-    }
-    const tamed=pet.state==='tamed';
-    dialog.innerHTML=`<div class="kzSheetHandle"></div><button class="kzSheetClose" type="button" aria-label="Tutup pilihan teman">×</button>
-      <div class="kzSheetHeading"><h2>${esc(tamed?pet.name:'Belum ditemui')}</h2>${tamed?'<button class="kzRename" type="button" aria-label="Tukar nama">✎</button>':''}</div>
-      <p>${tamed?`Tahap ${pet.level} · ${esc(pet.species||'')} · Ikatan ${pet.bondXp||0} XP`:'Teruskan misi Gembok untuk menyelamatkan teman ini.'}</p>
-      <div class="kzDetailArt"><img src="${pet.assets.happy}" alt="${esc(pet.name)}"></div>
-      ${tamed&&pet.evolutionUnlocked?`<div class="kzFormLabel">Bentuk</div><div class="kzAppearance"><button class="kzBtn off" type="button" data-form="base" aria-pressed="${pet.appearance==='base'}">Asas</button><button class="kzBtn off" type="button" data-form="bara" aria-pressed="${pet.appearance==='bara'}">Bara</button></div>`:''}
-      ${tamed&&pet.evolutionStage>0?'<button class="kzEvolution" type="button">Lihat Evolusi <span>›</span></button>':''}
-      ${tamed?`<button class="kzCta kzEquip" type="button" ${pet.active?'disabled':''}>${pet.active?'Sedang ikut kamu':'Jadikan Teman'}</button>`:''}`;
+    if(!dialog){dialog=document.createElement('dialog');dialog.id='petDetailSheet';dialog.className='kzDetailSheet';document.body.appendChild(dialog);dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()})}
+    dialog.innerHTML=`<button class="kzSheetClose" type="button" aria-label="Tutup kad teman">×</button><article class="kzTradingCard kzFullCard ${p.tamed?'owned':p.known?'encountered':'locked'}"><div class="kzFullFace">${cardFace(pet,pets.indexOf(pet),pets.length)}</div></article>
+      <div class="kzDetailActions">${p.tamed?'<button class="kzRename kzBtn off" type="button">Tukar nama</button>':''}
+      ${p.tamed&&pet.evolutionUnlocked?`<div class="kzFormLabel">Bentuk teman</div><div class="kzAppearance"><button class="kzBtn off" type="button" data-form="base" aria-pressed="${pet.appearance==='base'}">Asas</button><button class="kzBtn off" type="button" data-form="bara" aria-pressed="${pet.appearance==='bara'}">Bara</button></div>`:''}
+      ${p.tamed&&pet.evolutionStage>0?'<button class="kzEvolution" type="button">Lihat evolusi <span>›</span></button>':''}
+      ${p.tamed?`<button class="kzCta kzEquip" type="button" ${pet.active?'disabled':''}>${pet.active?'Sedang ikut kamu':'Jadikan teman'}</button>`:''}</div>`;
     dialog.querySelector('.kzSheetClose').onclick=()=>dialog.close();
     const rename=dialog.querySelector('.kzRename');if(rename)rename.onclick=()=>{dialog.close();renameCollectionPet(id)};
     dialog.querySelectorAll('[data-form]').forEach(button=>button.onclick=()=>{setCollectionAppearance(id,button.dataset.form);openCollectionPet(id)});
     const replay=dialog.querySelector('.kzEvolution');if(replay)replay.onclick=()=>{dialog.close();previewCollectionEvolution(id)};
     const equip=dialog.querySelector('.kzEquip');if(equip)equip.onclick=()=>{equipCollectionPet(id);dialog.close()};
+    dialog.setAttribute('aria-label',`Kad ${p.name} · ${p.status}`);
     if(!dialog.open)dialog.showModal();
   };
 
@@ -177,7 +199,9 @@
   };
   function paintCompanions(){
     if(typeof db==='undefined'||!db||!window.PetCollection)return;
-    const pets=$('petCollection');if(pets)pets.innerHTML=window.PetCollection.snapshot(db).pets.map(companionCard).join('');
+    const host=$('petCollection'),pets=window.PetCollection.snapshot(db).pets;if(!host)return;
+    const signature=JSON.stringify(pets);if(signature===deckState.signature&&host.querySelector('[data-pet-id]'))return;
+    deckState.signature=signature;host.innerHTML=pets.map((pet,index)=>companionCard(pet,index,pets.length)).join('');setupDeck(pets);
   }
 
   /* ---------------- kemas kini kepala, tab dan kemajuan ---------------- */
@@ -225,6 +249,8 @@
     const stage=$('petStage');
     const tracker=$('petHuntTracker');
     if(stage)stage.classList.toggle('hidden',!petOnly);
+    $('kzPetGallery')?.classList.toggle('hidden',!petOnly);
+    if(petOnly)requestAnimationFrame(()=>selectDeck(deckState.index,false));
     if(tracker)tracker.classList.toggle('hidden',!petOnly);
 
     set('kzPanelTitle',tab==='pets'?'Teman kamu':tab==='auras'?'Aura kamu':'Trofi kamu');
@@ -320,8 +346,9 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
   else install();
 
-  window.PAKhazanah={rarityOf, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
+  window.PAKhazanah={cardDeckVersion:1,rarityOf,petPresentation,selectDeck,updateDeck, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
 })();
+
 
 
 
