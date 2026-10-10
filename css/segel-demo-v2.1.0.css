@@ -624,3 +624,46 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .segelDone{top:0;padding-top:calc(12px + env(safe-area-inset-top,0px));
     background:rgb(7,18,34)}
 }
+
+/* ---------- final web/tablet overrides ----------
+   These rules intentionally live after the historical phone/tablet rules
+   above so the wide composition wins at its target breakpoints. */
+@media (min-width:760px) and (orientation:landscape) and (min-height:561px){
+  #segelDemo.on{flex-direction:row;align-items:stretch}
+  .segelStage{
+    flex:0 1 38%;width:auto;min-width:300px;max-width:none;min-height:0;
+    max-height:none;margin:0;border-radius:0
+  }
+  .segelPanel{
+    flex:1 1 62%;width:auto;min-width:400px;max-width:none;box-sizing:border-box;
+    padding:clamp(18px,3vw,32px) clamp(12px,2.4vw,28px)
+      calc(16px + env(safe-area-inset-bottom,0px))
+  }
+  .segelQHead{margin:0 0 clamp(9px,1.6vh,16px)}
+  .segelCard .question{font-size:clamp(23px,2.2vw,30px)}
+  .segelCard .ans{min-height:54px;font-size:clamp(19px,1.7vw,22px)}
+  .segelTop{
+    display:grid;grid-template-columns:44px minmax(0,1fr) 44px;
+    gap:6px;box-sizing:border-box;max-width:100%;padding-inline:clamp(8px,1.5vw,18px)
+  }
+  .segelTop>.iconBtn{grid-column:1;grid-row:1;min-width:44px;min-height:44px}
+  .segelBanner{grid-column:2;grid-row:1;padding-inline:clamp(12px,1.8vw,22px)}
+  .segelBanner b{font-size:clamp(13px,1.5vw,16px)}
+  .segelSound{grid-column:3;grid-row:1;min-width:44px;min-height:44px}
+  .segelCount{grid-column:2;grid-row:2;justify-self:start;width:max-content;white-space:nowrap;font-size:clamp(11px,1.2vw,13.5px);padding-inline:8px}
+  .segelTop>.paPageLockButton{grid-column:3;grid-row:2;justify-self:end;min-width:44px;min-height:44px}
+}
+
+@media (min-width:600px) and (orientation:portrait){
+  .segelStage{flex-basis:clamp(190px,32dvh,300px);max-height:36dvh}
+  .segelPanel{padding-inline:clamp(18px,4vw,32px)}
+  .segelCard .question{font-size:clamp(23px,3.2vw,29px)}
+}
+
+/* Once the result is ready, give the result sheet the entire stage. The
+   question panel must leave the flex layout so it cannot reserve a blank
+   column behind the full-screen result backdrop. */
+#segelDemo.segel-result-active .segelStage{
+  flex:1 1 auto;width:100%;max-width:none;min-width:0;min-height:0;max-height:none;margin:0
+}
+#segelDemo.segel-result-active .segelPanel{display:none!important}

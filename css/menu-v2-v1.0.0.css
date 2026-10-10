@@ -573,3 +573,27 @@ body.app-loading-active{overflow:hidden}
   .mv2Coins{min-width:80px;padding-right:9px;font-size:13px}
   .mv2HeadRight{gap:5px}
 }
+
+/* ---------- skrin lebar web/tablet ----------
+   The two primary destinations share the wide screen; stats remain a pair
+   underneath. This keeps the same cards and handlers while avoiding a long
+   single column on desktop. */
+@media (min-width:720px) and (max-width:959px){
+  .mv2Scroll{
+    width:min(100%,680px);box-sizing:border-box;padding-inline:clamp(18px,3vw,34px)
+  }
+}
+@media (min-width:960px){
+  .mv2Scroll{
+    width:min(100%,1000px);box-sizing:border-box;padding-inline:clamp(18px,3vw,34px);
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    align-content:start;gap:16px
+  }
+  .mv2Scroll>.mv2Card{width:100%;margin:0;min-width:0}
+  .mv2Scroll>.mv2Stats{grid-column:1 / -1;width:auto;margin:0}
+  .mv2Quest,.mv2Learn{grid-template-columns:132px minmax(0,1fr) 18px}
+  .mv2QuestArt{width:min(100%,124px);max-height:102px}
+  .mv2LearnCikgu{width:140px;height:120px}
+  .mv2CardBody b{font-size:18px;white-space:normal;overflow-wrap:break-word}
+  .mv2PlayerName{max-width:220px}
+}
