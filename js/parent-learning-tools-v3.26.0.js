@@ -1,7 +1,7 @@
 // Pahlawan Angka v3.26.0 — skill report exports and premium worksheet studio.
 (()=>{
 'use strict';
-const state={mode:'recommended',count:10,topic:'',busy:false};
+const state={mode:'recommended',count:10,topic:'',busy:false,statusText:'',statusError:false};
 const $=id=>document.getElementById(id);
 const safe=value=>typeof parentSafe==='function'?parentSafe(value):String(value??'');
 const allowed=()=>!!(window.PACommercial?.isPremium?.()||window.PACommercial?.canUseDev?.());
@@ -17,11 +17,10 @@ function snapshot(){
  return{grade:Number(db.schoolGrade||1),name:String(db.name||'Anak'),skills,attempts,accuracy:attempts?Math.round(correct/attempts*100):0,tested,strong,priority,developing,recommended:[...priority,...developing,...skills.filter(x=>x.level===0),...strong].map(x=>x.m)};
 }
 function miniBars(rows){return rows.slice(0,4).map(x=>`<span><b>${safe(x.m.title)}</b><i style="--w:${Math.max(3,Math.round(x.s.mastery||0))}%"></i><em>${x.attempts?x.accuracy+'%':'baru'}</em></span>`).join('')}
-function markup(){
- const snap=snapshot(),topics=coreSkills(),limit=worksheetLimit();if(!state.topic)state.topic=topics[0]?.id||'';if(state.count>limit)state.count=limit;
- return `<div class="paParentTools">
- <section class="paExportCard"><div class="paToolHead"><span class="paToolIcon">▤</span><div><small>ANALISIS PEMBELAJARAN</small><h3>Laporan yang mudah dikongsi</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Ringkasan kemahiran yang kemas untuk simpanan keluarga, perbincangan bersama guru atau perkongsian media sosial.</p><div class="paSkillSnapshot"><div><b>${snap.attempts}</b><small>soalan dijawab</small></div><div><b>${snap.attempts?snap.accuracy+'%':'-'}</b><small>ketepatan</small></div><div><b>${snap.strong.length}</b><small>kemahiran mantap</small></div></div><div class="paExportPreview"><div class="paExportPreviewHead"><b>Pratonton kemahiran utama</b><span>Darjah ${snap.grade}</span></div><div class="paMiniBars">${miniBars([...snap.priority,...snap.developing,...snap.strong])||'<span><b>Belum cukup bukti</b><i style="--w:8%"></i><em>baru</em></span>'}</div></div><div class="paToolActions"><button class="paToolBtn primary" onclick="PAParentTools.exportReport()">Muat turun PDF</button><button class="paToolBtn" onclick="PAParentTools.shareCard()">Kongsi kad kemajuan</button></div></section>
- <section class="paWorksheetCard"><div class="paToolHead"><span class="paToolIcon">✎</span><div><small>STUDIO WORKSHEET</small><h3>Latihan untuk dicetak</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Pilih latihan mengikut satu topik, campuran Darjah ${snap.grade}, atau fokus yang dikenal pasti oleh Cikgu Dimensi.</p><div class="paWorksheetModes"><button class="paWorksheetMode ${state.mode==='topic'?'active':''}" onclick="PAParentTools.mode('topic')"><span>◎</span><b>Topik</b><small>Satu kemahiran</small></button><button class="paWorksheetMode ${state.mode==='grade'?'active':''}" onclick="PAParentTools.mode('grade')"><span>▦</span><b>Darjah</b><small>Latihan campuran</small></button><button class="paWorksheetMode ${state.mode==='recommended'?'active':''}" onclick="PAParentTools.mode('recommended')"><span>✦</span><b>Disyorkan</b><small>Ikut bukti anak</small></button></div><div class="paWorksheetOptions"><label>Fokus worksheet<select id="paWorksheetTopic" ${state.mode==='topic'?'':'disabled'} onchange="PAParentTools.topic(this.value)">${topics.map(m=>`<option value="${m.id}" ${m.id===state.topic?'selected':''}>${safe(m.title)}</option>`).join('')}</select></label><label>Bilangan soalan<div class="paCountPicker">${[10,20,30,40].map(n=>`<button class="${state.count===n?'active':''}" onclick="PAParentTools.count(${n})">${n}</button>`).join('')}</div></label></div><div class="paWorksheetHint"><span>✦</span><span><b>Cadangan Cikgu Dimensi</b><br>${safe(recommendationCopy(snap))}</span></div><div class="paToolActions"><button class="paToolBtn" onclick="PAParentTools.worksheet(false)">Versi murid</button><button class="paToolBtn primary" onclick="PAParentTools.worksheet(true)">Murid + skema</button></div><div id="paWorksheetStatus" class="paWorksheetStatus"></div></section></div>`;
+function reportMarkup(snap){return `<section class="paExportCard"><div class="paToolHead"><span class="paToolIcon">▤</span><div><small>ANALISIS PEMBELAJARAN</small><h3>Laporan yang mudah dikongsi</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Ringkasan kemahiran yang kemas untuk simpanan keluarga, perbincangan bersama guru atau perkongsian media sosial.</p><div class="paSkillSnapshot"><div><b>${snap.attempts}</b><small>soalan dijawab</small></div><div><b>${snap.attempts?snap.accuracy+'%':'-'}</b><small>ketepatan</small></div><div><b>${snap.strong.length}</b><small>kemahiran mantap</small></div></div><div class="paExportPreview"><div class="paExportPreviewHead"><b>Pratonton kemahiran utama</b><span>Darjah ${snap.grade}</span></div><div class="paMiniBars">${miniBars([...snap.priority,...snap.developing,...snap.strong])||'<span><b>Belum cukup bukti</b><i style="--w:8%"></i><em>baru</em></span>'}</div></div><div class="paToolActions"><button class="paToolBtn primary" onclick="PAParentTools.exportReport()">Muat turun PDF</button><button class="paToolBtn" onclick="PAParentTools.shareCard()">Kongsi kad kemajuan</button></div></section>`;}
+function worksheetMarkup(){
+ const snap=snapshot(),topics=coreSkills(),limit=worksheetLimit();if(!topics.some(m=>m.id===state.topic))state.topic=topics[0]?.id||'';if(state.count>limit)state.count=limit;
+ return `<section class="card parentReportHead"><div class="eyebrow">WORKSHEET ANAK</div><h2>Latihan untuk dicetak</h2><p>Pilih latihan, muat turun PDF dan cetak untuk ${safe(snap.name)} · Darjah ${snap.grade}.</p></section><div class="paParentTools"><section class="paWorksheetCard"><div class="paToolHead"><span class="paToolIcon">✎</span><div><small>MUAT TURUN WORKSHEET</small><h3>Sediakan latihan anak</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Pilih latihan mengikut satu topik, campuran Darjah ${snap.grade}, atau fokus yang dikenal pasti oleh Cikgu Dimensi.</p><div class="paWorksheetModes"><button class="paWorksheetMode ${state.mode==='topic'?'active':''}" onclick="PAParentTools.mode('topic')"><span>◎</span><b>Topik</b><small>Satu kemahiran</small></button><button class="paWorksheetMode ${state.mode==='grade'?'active':''}" onclick="PAParentTools.mode('grade')"><span>▦</span><b>Darjah</b><small>Latihan campuran</small></button><button class="paWorksheetMode ${state.mode==='recommended'?'active':''}" onclick="PAParentTools.mode('recommended')"><span>✦</span><b>Disyorkan</b><small>Ikut bukti anak</small></button></div><div class="paWorksheetOptions"><label>Fokus worksheet<select id="paWorksheetTopic" ${state.mode==='topic'?'':'disabled'} onchange="PAParentTools.topic(this.value)">${topics.map(m=>`<option value="${m.id}" ${m.id===state.topic?'selected':''}>${safe(m.title)}</option>`).join('')}</select></label><label>Bilangan soalan<div class="paCountPicker">${[10,20,30,40].map(n=>`<button class="${state.count===n?'active':''}" onclick="PAParentTools.count(${n})">${n}</button>`).join('')}</div></label></div><div class="paWorksheetHint"><span>✦</span><span><b>Cadangan Cikgu Dimensi</b><br>${safe(recommendationCopy(snap))}</span></div><div class="paToolActions"><button class="paToolBtn" onclick="PAParentTools.worksheet(false)">Muat turun latihan</button><button class="paToolBtn primary" onclick="PAParentTools.worksheet(true)">Latihan + skema</button></div><div id="paWorksheetStatus" class="paWorksheetStatus" role="status" aria-live="polite"></div></section></div>`;
 }
 function recommendationCopy(snap){
  const lead=snap.priority[0]||snap.developing[0];
@@ -36,16 +35,25 @@ function applyWorksheetAccessUI(host){
  if(copy&&!full)copy.textContent='Akses asas boleh mencuba dan memuat turun worksheet sehingga 10 soalan.';
  card.querySelectorAll('.paCountPicker button').forEach(button=>{const n=Number(button.textContent);button.disabled=!full&&n>10;button.title=button.disabled?'Family Plus diperlukan':''});
 }
-function mount(){const core=$('coreTab');if(!core)return;const head=core.querySelector('.parentReportHead');if(!head)return;let host=$('paParentTools');if(!host){host=document.createElement('div');host.id='paParentTools';head.after(host)}host.innerHTML=markup();applyWorksheetAccessUI(host)}
-function mode(value){state.mode=value;mount()}
-function count(value){state.count=Math.max(10,Math.min(worksheetLimit(),Number(value)||10));mount()}
-function topic(value){state.topic=value}
-function status(text,error=false){const el=$('paWorksheetStatus');if(el){el.textContent=text||'';el.classList.toggle('error',error)}}
+function mount(){
+ const core=$('coreTab'),head=core?.querySelector('.parentReportHead');
+ if(head){let report=$('paParentReports');if(!report){report=document.createElement('div');report.id='paParentReports';report.className='paParentTools';head.after(report)}report.innerHTML=reportMarkup(snapshot())}
+ mountWorksheet();
+}
+function mountWorksheet(){
+ const host=$('worksheetTab');if(!host)return;host.innerHTML=worksheetMarkup();applyWorksheetAccessUI(host);
+ host.querySelectorAll('button,select').forEach(control=>{if(state.busy)control.disabled=true});host.setAttribute('aria-busy',String(state.busy));
+ status(state.statusText,state.statusError);
+}
+function mode(value){if(state.busy)return;state.mode=value;status('');mountWorksheet()}
+function count(value){if(state.busy)return;state.count=Math.max(10,Math.min(worksheetLimit(),Number(value)||10));status('');mountWorksheet()}
+function topic(value){if(state.busy)return;state.topic=value;status('')}
+function status(text,error=false){state.statusText=text||'';state.statusError=error;const el=$('paWorksheetStatus');if(el){el.textContent=state.statusText;el.classList.toggle('error',error)}}
 
 let logoPromise=null;
 function loadLogo(){
  if(logoPromise)return logoPromise;
- logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/branding/pahlawan-angka-full-logo-v1.png?v='+String(window.PA_APP_VERSION||'3.85.46')});return logoPromise;
+ logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/branding/pahlawan-angka-full-logo-v1.png?v='+String(window.PA_APP_VERSION||'3.85.47')});return logoPromise;
 }
 function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
 function wrap(ctx,text,maxWidth){
@@ -93,7 +101,7 @@ async function exportReport(){
   ctx.fillStyle='#17263a';ctx.font='900 30px Arial';ctx.fillText('Yang boleh dijadikan sandaran',78,y+28);y+=65;const stable=snap.strong.slice(0,3);if(stable.length)for(const x of stable)y=reportSkillRow(ctx,x,y,'stable');else{ctx.fillStyle='#687486';ctx.font='21px Arial';drawWrapped(ctx,'Belum cukup bukti untuk menamakan kemahiran mantap. Sistem masih mengumpul jawapan dalam format berbeza supaya rumusan lebih tepat.',78,y,1060,30,3);y+=105}
   const untested=snap.skills.filter(x=>x.attempts<2).length;roundRect(ctx,78,Math.min(y+25,1420),1084,150,20,'#eef2f6','#d7dce2');const noteY=Math.min(y+25,1420);ctx.fillStyle='#526174';ctx.font='900 18px Arial';ctx.fillText('APA YANG LAPORAN INI BELUM BOLEH SIMPULKAN',108,noteY+40);ctx.fillStyle='#687486';ctx.font='19px Arial';drawWrapped(ctx,`${untested} kemahiran masih mempunyai kurang daripada 2 jawapan. Elakkan membuat kesimpulan tentang topik tersebut sehingga lebih banyak bukti tersedia.`,108,noteY+78,990,28,2);footer(ctx,2,'Pahlawan Angka | Bukti pembelajaran');pages.push(p.canvas);
   download(pdfFromCanvases(pages),`ringkasan-pembelajaran-${slug(snap.name)}-darjah-${snap.grade}.pdf`);
- }catch(error){console.error(error);alert('Laporan belum dapat dijana. Cuba sekali lagi.')}finally{state.busy=false}
+ }catch(error){console.error(error);alert('Laporan belum dapat dijana. Cuba sekali lagi.')}finally{state.busy=false;mountWorksheet()}
 }
 
 async function shareCard(){
@@ -104,7 +112,7 @@ async function shareCard(){
   const stats=[['SOALAN',snap.attempts],['MANTAP',snap.strong.length],['DITEROKA',snap.tested.length]];stats.forEach((s,i)=>{const x=60+i*326;roundRect(ctx,x,650,304,150,24,'#0b213b','#304e72');ctx.fillStyle='#f3cc4e';ctx.font='900 42px Arial';ctx.textAlign='center';ctx.fillText(String(s[1]),x+152,711);ctx.fillStyle='#9fb2ca';ctx.font='900 19px Arial';ctx.fillText(s[0],x+152,756);ctx.textAlign='left'});
   const strong=snap.strong.slice(0,2),priority=snap.priority[0]||snap.developing[0];ctx.fillStyle='#fff';ctx.font='900 32px Arial';ctx.fillText('Yang semakin kuat',76,890);let y=932;(strong.length?strong:[null]).forEach(x=>{roundRect(ctx,76,y,928,96,19,'#103c35','#2d8062');ctx.fillStyle='#5de0a1';ctx.font='900 25px Arial';ctx.fillText('✓',106,y+58);ctx.fillStyle='#effff7';ctx.font='900 25px Arial';ctx.fillText(x?x.m.title:'Masih mengumpul bukti',154,y+58);y+=112});ctx.fillStyle='#fff';ctx.font='900 32px Arial';ctx.fillText('Misi seterusnya',76,y+44);roundRect(ctx,76,y+70,928,220,23,'#302a19','#d5aa35');ctx.fillStyle='#f3cb4c';ctx.font='900 27px Arial';ctx.fillText(priority?priority.m.title:'Teruskan pengembaraan',108,y+124);ctx.fillStyle='#e4e8ee';ctx.font='24px Arial';drawWrapped(ctx,recommendationCopy(snap),108,y+166,850,34,4);ctx.fillStyle='#7f95af';ctx.font='20px Arial';ctx.fillText('Dikongsi oleh penjaga | Tiada maklumat akaun dipaparkan',76,1810);ctx.fillStyle='#f2c646';ctx.fillRect(76,1844,928,4);
   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));const file=new File([blob],`kemajuan-${slug(snap.name)}.png`,{type:'image/png'});if(navigator.share&&navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:`Kemajuan Matematik ${snap.name}`});return}catch(error){if(error.name==='AbortError')return}}download(blob,file.name);
- }catch(error){console.error(error);alert('Kad kemajuan belum dapat disediakan.')}finally{state.busy=false}
+ }catch(error){console.error(error);alert('Kad kemajuan belum dapat disediakan.')}finally{state.busy=false;mountWorksheet()}
 }
 
 function printVisualDependent(raw){return /blok\s+nilai\s+tempat|waktu\s+yang\s+ditunjukkan|bahagian\s+berlorek|berdasarkan\s+(?:rajah|carta|graf)|(?:rajah|carta|graf)\s+(?:di atas|berikut)|paksi[- ]?[xy]\s+(?:di atas|berikut)/i.test(String(raw||''))}
@@ -321,21 +329,21 @@ async function answerPages(items,title,subtitle,startPage=0,options={}){
  if(current){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,startPage+pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(current.canvas)}return pages;
 }
 async function worksheet(includeAnswers){
- if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun worksheet...');
+ if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun worksheet...');mountWorksheet();
  try{
   const pack=makeQuestions(),pages=await studentPages(pack.items,pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`);
   if(includeAnswers)pages.push(...await answerPages(pack.items,'Skema dan Cara Menjawab',`${pack.title} | Untuk ibu bapa / penjaga`,pages.length));
   download(pdfFromCanvases(pages),`worksheet-${slug(pack.title)}-${slug(pack.snap.name)}${includeAnswers?'-dengan-skema':''}.pdf`);status(`${pack.items.length} soalan berjaya disediakan.`);
- }catch(error){console.error(error);status(error.message||'Worksheet belum dapat dijana. Cuba pilihan lain.',true)}finally{state.busy=false}
+ }catch(error){console.error(error);status(error.message||'Worksheet belum dapat dijana. Cuba pilihan lain.',true)}finally{state.busy=false;mountWorksheet()}
 }
 function demoPrintableItems(rawItems){return(rawItems||[]).map(printableQuestion).filter(Boolean).filter(x=>x.prompt&&x.answer).slice(0,8)}
 async function demoWorksheet(rawItems,grade){
  if(state.busy)return;state.busy=true;
- try{const items=demoPrintableItems(rawItems);if(!items.length)throw new Error('Tiada soalan sesuai untuk cetakan dalam sesi ini.');const pages=await studentPages(items,'Latihan Selepas Demo',`Darjah ${grade} | ${items.length} soalan pengukuhan terpilih | VERSI DEMO`,{demo:true});pages.push(...await answerPages(items,'Skema Ringkas',`Darjah ${grade} | Penjaga | VERSI DEMO`,pages.length,{demo:true}));download(pdfFromCanvases(pages),`pahlawan-angka-demo-darjah-${grade}.pdf`)}catch(error){console.error(error);alert(error.message||'Worksheet demo belum dapat dijana.')}finally{state.busy=false}
+ try{const items=demoPrintableItems(rawItems);if(!items.length)throw new Error('Tiada soalan sesuai untuk cetakan dalam sesi ini.');const pages=await studentPages(items,'Latihan Selepas Demo',`Darjah ${grade} | ${items.length} soalan pengukuhan terpilih | VERSI DEMO`,{demo:true});pages.push(...await answerPages(items,'Skema Ringkas',`Darjah ${grade} | Penjaga | VERSI DEMO`,pages.length,{demo:true}));download(pdfFromCanvases(pages),`pahlawan-angka-demo-darjah-${grade}.pdf`)}catch(error){console.error(error);alert(error.message||'Worksheet demo belum dapat dijana.')}finally{state.busy=false;mountWorksheet()}
 }
 
 const originalRender=window.renderParent;if(typeof originalRender==='function')window.renderParent=function(){const result=originalRender.apply(this,arguments);mount();return result};
-window.PAParentTools={mount,mode,count,topic,exportReport,shareCard,worksheet,demoWorksheet,demoPrintableItems};
+window.PAParentTools={mount,mountWorksheet,mode,count,topic,exportReport,shareCard,worksheet,demoWorksheet,demoPrintableItems};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(mount,0),{once:true});else setTimeout(mount,0);
 })();
 
