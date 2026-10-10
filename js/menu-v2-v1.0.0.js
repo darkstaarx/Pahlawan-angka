@@ -269,6 +269,30 @@
 
   /* Kemahiran fokus: pilihan ibu bapa kalau ada, jika tidak kemahiran teras
      pertama bab semasa. Kedua-duanya wujud dalam profil — tiada tekaan. */
+  /* Face composition is per companion and appearance, independent of stage
+     sprites. New art can supply assets.portrait without changing this table. */
+  const petFaceCrops={
+    aurora:{base:[.68,.40,2.2],bara:[.70,.52,2.2]},
+    ketupatKura:{base:[.72,.66,2.35],bara:[.73,.67,2.35]},
+    kumbangManggis:{base:[.68,.69,2.1],bara:[.70,.71,2.1]},
+    harimauBunga:{base:[.70,.53,2.3],bara:[.75,.54,2.3]},
+    arnabKekLapis:{base:[.47,.38,2.3],bara:[.45,.35,2.3]},
+    durianKerbau:{base:[.50,.53,2.1],bara:[.50,.55,2.1]}
+  };
+  function setPetPortrait(img,pet){
+    setPetArt(img,pet);
+    if(!img)return;
+    const crop=petFaceCrops[pet?.id]?.[pet?.appearance==='bara'?'bara':'base']||[.5,.5,1];
+    const portrait=pet?.assets?.portrait;
+    const [x,y,zoom]=portrait?[.5,.5,1]:pet?crop:[.5,.5,1];
+    img.style.setProperty('--pet-face-x',x);
+    img.style.setProperty('--pet-face-y',y);
+    img.style.setProperty('--pet-face-zoom',zoom);
+    if(portrait){
+      img.onerror=()=>{img.onerror=null;setPetPortrait(img,{...pet,assets:{...pet.assets,portrait:null}})};
+      if(img.getAttribute('src')!==portrait)img.src=portrait;
+    }
+  }
   function focusSkillId(){
     try{
       if(db.focus&&META[db.focus])return db.focus;
@@ -357,7 +381,7 @@
     // Pet Aktif. Data tahap dan ikatan datang daripada koleksi teman canonical.
     if($('mv2PetName'))$('mv2PetName').textContent=pet?pet.name:'Belum ada teman';
     const face=$('mv2PetFace');
-    if(face)setPetArt(face,pet);
+    if(face)setPetPortrait(face,pet);
     const bondXp=pet?Math.max(0,Number(pet.bondXp)||0):0;
     const petLevel=pet?Math.max(1,Math.min(60,Number(pet.level)||1)):1;
     const petMaxed=!!pet&&petLevel>=60;
@@ -679,4 +703,5 @@
     install();
   })();
 })();
+
 
