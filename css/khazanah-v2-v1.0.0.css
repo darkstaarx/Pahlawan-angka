@@ -260,7 +260,7 @@
 .kzDeck{position:relative;height:536px;overflow:hidden;touch-action:pan-y;perspective:1200px;isolation:isolate}
 .kzDeck:focus-visible{outline:2px solid #e9b949;outline-offset:2px;border-radius:14px}
 .kzTradingCard{position:relative;box-sizing:border-box;min-width:0;border:1px solid #bda366;border-radius:20px;padding:4px;background:#102a47;box-shadow:0 14px 32px #0008,inset 0 0 0 1px #315578;isolation:isolate;overflow:hidden}
-.kzDeck .kzTradingCard{--depth:0;--drag-x:0px;--drag-angle:0deg;position:absolute;top:86px;left:50%;width:clamp(230px,76vw,300px);height:438px;transform-origin:50% 0%;transform:translateX(calc(-50% + var(--depth)*10px)) translateY(calc(var(--depth)*-14px)) scale(calc(1 - var(--depth)*.055)) rotateZ(calc(var(--depth)*1.2deg));transition:transform .52s cubic-bezier(.22,.7,.2,1),filter .52s;filter:brightness(calc(1 - var(--depth)*.06));pointer-events:none}
+.kzDeck .kzTradingCard{--depth:0;--drag-x:0px;--drag-angle:0deg;position:absolute;top:4px;left:50%;width:var(--kz-card-width, min(76vw,300px));height:var(--kz-card-height,420px);transform-origin:50% 100%;transform:translateX(calc(-50% + var(--depth)*3px)) translateY(calc(var(--depth)*9px)) scale(calc(1 - var(--depth)*.035)) rotateZ(calc(var(--depth)*.4deg));transition:transform .52s cubic-bezier(.22,.7,.2,1),filter .52s;filter:brightness(calc(1 - var(--depth)*.06));pointer-events:none}
 .kzDeck .kzTradingCard.is-focus{transform:translateX(calc(-50% + var(--drag-x))) translateY(0) scale(1) rotateZ(var(--drag-angle));filter:none;pointer-events:auto}
 .kzDeck .kzTradingCard.is-rolling{transition:none;pointer-events:none}
 .kzDeck.is-dragging .kzTradingCard.is-focus{transition:none}
@@ -322,3 +322,14 @@
 @media(min-width:640px){#badgeCollection.kzGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.kzDeck .kzTradingCard,.kzFullCard,.kzDeckDots button::after{transition:none;animation:none}.kzDeck .is-focus .kzCardScene img{animation:none}}
 
+
+
+/* Compact faces flex around artwork so all rescue copy remains readable. */
+.kzDeck .kzCardOpen{padding:10px}
+.kzDeck .kzCardHeading{margin:5px 0 8px;min-height:26px}
+.kzDeck .kzCardHeading h2{font-size:20px}
+.kzDeck .kzCardScene{min-height:0;margin:0 -4px}
+.kzDeck .kzCardInfo{padding-top:8px;min-height:0}
+.kzDeck .kzCardInfo p{margin:3px 0 7px}
+.kzDeck .kzRescue,.kzDeck .kzBond{padding-top:7px}
+.kzDeck .kzRescue small{display:block}

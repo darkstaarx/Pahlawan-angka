@@ -110,6 +110,12 @@
       <button class="kzCardOpen" type="button" onclick="openCollectionPet('${pet.id}')" aria-label="Lihat ${esc(p.name)} · ${esc(p.status)}">${cardFace(pet,index,total)}</button>
     </article>`;
   }
+  function fitDeck(){
+    const host=$('petCollection');if(!host||!host.clientHeight)return;
+    const height=Math.min(420,Math.max(0,host.clientHeight-50));
+    const width=Math.min(300,Math.max(0,host.clientWidth-40),height*.78);
+    host.style.setProperty('--kz-card-height',`${height}px`);host.style.setProperty('--kz-card-width',`${width}px`);
+  }
   function deckCards(){return [...($('petCollection')?.querySelectorAll('[data-pet-id]')||[])]}
   function updateDeck(){
     const cards=deckCards();if(!cards.length)return;
@@ -156,6 +162,9 @@
     const prev=$('kzDeckPrev'),next=$('kzDeckNext');if(prev)prev.onclick=()=>selectDeck(deckState.index-1);if(next)next.onclick=()=>selectDeck(deckState.index+1);
     if(!host.dataset.deckBound){
       host.dataset.deckBound='1';
+      if(typeof ResizeObserver==='function')new ResizeObserver(fitDeck).observe(host);
+      window.addEventListener?.('resize',fitDeck);
+      window.visualViewport?.addEventListener('resize',fitDeck);
       host.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();selectDeck(deckState.index+(event.key==='ArrowRight'?1:-1))}});
       host.addEventListener('pointerdown',event=>{if(deckState.moving||event.isPrimary===false||event.button>0)return;deckState.gesture={id:event.pointerId,x:event.clientX,y:event.clientY,start:Date.now(),dragging:false}});
       host.addEventListener('pointermove',event=>{
@@ -176,7 +185,7 @@
       host.addEventListener('pointercancel',resetGesture);
       host.addEventListener('click',event=>{if(deckState.moving||Date.now()<deckState.suppressClickUntil){event.preventDefault();event.stopPropagation()}},true);
     }
-    updateDeck();
+    updateDeck();requestAnimationFrame(fitDeck);
   }
 
   window.openCollectionPet=function(id){
@@ -276,16 +285,18 @@
     }
 
     const tab=activeTab();
+    if($('treasure'))$('treasure').dataset.kzTab=tab;
 
     // Only the Teman tab owns the interactive pet stage. Keeping the stage
     // mounted above Trofi/Aura wastes vertical space and can interfere with
     // touch scrolling on mobile.
     const petOnly=tab==='pets';
+    if(petOnly&&$('treasure'))$('treasure').scrollTop=0;
     const stage=$('petStage');
     const tracker=$('petHuntTracker');
     if(stage)stage.classList.toggle('hidden',!petOnly);
     $('kzPetGallery')?.classList.toggle('hidden',!petOnly);
-    if(petOnly)requestAnimationFrame(updateDeck);
+    if(petOnly)requestAnimationFrame(()=>{updateDeck();fitDeck()});
     if(tracker)tracker.classList.toggle('hidden',!petOnly);
 
     set('kzPanelTitle',tab==='pets'?'Teman kamu':tab==='auras'?'Aura kamu':'Trofi kamu');
@@ -381,8 +392,9 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
   else install();
 
-  window.PAKhazanah={cardDeckVersion:2,rarityOf,petPresentation,selectDeck,updateDeck, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
+  window.PAKhazanah={cardDeckVersion:2,rarityOf,petPresentation,selectDeck,updateDeck,fitDeck, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
 })();
+
 
 
 
