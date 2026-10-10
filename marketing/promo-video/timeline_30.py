@@ -6,7 +6,7 @@ DURATION = 30.0
 SHOTS = [
     Shot(0.0, 3.0, [(125.2, 128.2, 3.0)], 'hook-jurus-penamat'),
     Shot(3.0, 7.0, [(60.0, 64.0, 4.0)], 'soalan-jawapan-aksi'),
-    Shot(7.0, 11.0, [(51.7, 55.7, 4.0)], 'hub-kembara-dimensi'),
+    Shot(7.0, 11.0, [(51.4, 55.2, 4.0)], 'hub-kembara-dimensi'),
     Shot(11.0, 15.0, [(110.8, 114.2, 3.4), (114.2, 114.2, 0.6)], 'kunci-emas-taip'),
     Shot(15.0, 18.4, [(150.6, 154.0, 3.4)], 'evolusi-bara'),
     Shot(18.4, 21.8, [(161.2, 163.0, 1.8), (163.0, 163.0, 1.6)], 'ringkasan-anak'),
