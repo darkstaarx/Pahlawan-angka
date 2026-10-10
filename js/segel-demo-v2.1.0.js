@@ -2044,8 +2044,14 @@
     const meta=(typeof META!=='undefined'&&META[id])||{};
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||meta.grade||1;
     // Kembara keeps the first selected subtopic's world for the whole mission.
-    const terrainMeta=run?.production&&run.productionRun.route==='adaptive'
-      ? (run.productionRun.firstArenaMeta ||= meta) : meta;
+    // The guest demo follows the same visual promise: its first selected
+    // background stays for the complete sample session, even while the
+    // questions tour several topics. A new run (including replay) gets a new
+    // first background because `run` is recreated by startRun().
+    const terrainMeta=entryMode?.guestDemo
+      ? (run.firstArenaMeta ||= meta)
+      : run?.production&&run.productionRun.route==='adaptive'
+        ? (run.productionRun.firstArenaMeta ||= meta) : meta;
     stage?.setArena?.(arenaForMeta(terrainMeta));
     // helper yang sama dengan battle: buang awalan "Tahun N · " supaya tajuk
     // tidak mengulang baris kecil di bawahnya.
@@ -2080,6 +2086,8 @@
     const hintBtn=$('segelHint');
     if(hintBtn){ hintBtn.disabled=false; hintBtn.classList.remove('used') }
     $('segelQuestion').scrollTop=0;
+    // Wide layouts scroll the whole card; each new question starts at its instruction.
+    $('segelQuestion').closest('.segelCard')?.scrollTo({top:0,left:0});
     paintSeal();
 
     const box=$('segelAnswers'); box.innerHTML=''; box.classList.remove('paLegacyAnswersHidden');
@@ -2109,18 +2117,42 @@
     setTimeout(()=>el.classList.remove('show'),1100);
   }
 
+  function unlockGuestRetryControls(except){
+    const box=$('segelAnswers');if(!box)return;
+    // Explicit interaction widgets own their retry focus/selection state.
+    // The bridge calls submitInteraction() below so this fallback must not
+    // re-enable every internal control behind the renderer's back.
+    if(box.querySelector?.('.paInteraction'))return;
+    const fraction=box.querySelector?.('.d1-fraction-answer');
+    if(fraction){
+      // The fraction renderer disables controls nested inside its panel before
+      // calling submit(). Re-enable the whole surface so the learner can
+      // change the shaded cells or numerator/denominator on the retry.
+      fraction.querySelectorAll?.('button,input').forEach(control=>{control.disabled=false;});
+      fraction.querySelectorAll?.('button').forEach(control=>{control.classList.remove('no');control.classList.remove('ok');});
+      return;
+    }
+    [...box.querySelectorAll?.('button,input')||[]].forEach(control=>{
+      if(control!==except)control.disabled=false;
+    });
+  }
+
   async function respond(option,button){
     if(run&&run.production)return respondProduction(option,button);
     const activeRun=run;
     if(!activeRun||activeRun.locked)return;
+    const guestRetry=!!entryMode?.guestDemo;
     activeRun.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
     button.classList.add(correct?'ok':'no');
-    activeRun.asked++;
+    const retrying=guestRetry&&!!activeRun.retryOpen;
+    const sameWrong=guestRetry&&retrying&&!correct&&String(option.v)===String(activeRun.retryWrongValue);
+    const resolveQuestion=!guestRetry||correct||retrying&&!sameWrong;
+    if(resolveQuestion)activeRun.asked++;
     const reachedTarget=activeRun.asked>=activeRun.questionTarget;
     if(correct){
-      sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike();
+      sfx('correct');activeRun.tally[activeRun.usedHint||retrying?'hint':'own']++;await stage.strike();
       if(!currentRun(activeRun))return;
       const outcome=stage.hitSeal();await stage.waitFinalImpact?.();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
@@ -2131,9 +2163,29 @@
         toast('GEMBOK SETERUSNYA MUNCUL!');
         $('segelFeedback').textContent='Bagus! Teruskan ke topik seterusnya.';
       }else if(stage.allBroken())return celebrate(activeRun);
-    }else{sfx('wrong');activeRun.tally.miss++;$('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();await wait(520);if(!currentRun(activeRun))return;}
+    }else if(sameWrong){
+      // A repeated typed/choice value is feedback only. It must not resolve
+      // the question or consume the retry; the learner gets another chance.
+      sfx('wrong');$('segelFeedback').textContent='Jawapan itu sudah dicuba. Cuba nilai yang lain.';
+      unlockGuestRetryControls(button);
+      activeRun.locked=false;
+      setTypedRetryEnabled(true);
+      return;
+    }else if(guestRetry&&!retrying){
+      // First wrong attempt is a learning cue, not a miss in the demo score.
+      // Keep the same question visible and reopen the answer surface.
+      sfx('wrong');activeRun.retryOpen=true;activeRun.retryWrongValue=option.v;
+      $('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();
+      await wait(520);if(!currentRun(activeRun))return;
+      unlockGuestRetryControls(button);setTypedRetryEnabled();activeRun.locked=false;
+      return;
+    }else{
+      // A distinct second wrong answer resolves this question once.
+      sfx('wrong');activeRun.tally.miss++;$('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();
+      await wait(520);if(!currentRun(activeRun))return;
+    }
     if(reachedTarget)return celebrate(activeRun);
-    await wait(420);if(!currentRun(activeRun))return;activeRun.locked=false;drawQuestion();
+    await wait(420);if(!currentRun(activeRun))return;activeRun.retryOpen=false;activeRun.retryWrongValue=null;activeRun.locked=false;drawQuestion();
   }
 
   async function respondProduction(option,button){
@@ -2352,7 +2404,7 @@
   function startRun(){
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     const pool=skillPool();
-    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,q:null,usedHint:false,coveredTopics:[],
+    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],
          writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
@@ -2596,6 +2648,10 @@
     previewAuraFarming:()=>stage?.previewAuraFarming?.(),
     previewFinalBlow:()=>stage?.previewFinalBlow?.(),
     clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
+    submitInteraction:(choice,button,q)=>{
+      if(!entryMode?.guestDemo||!run||run.q!==q||run.locked)return false;
+      respond(choice,button);return true;
+    },
     tiers:TIERS,
     guestScope:grade=>guestTopicScope(Number(grade)||1),
     state:()=>run

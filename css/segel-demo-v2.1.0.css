@@ -660,6 +660,87 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .segelCard .question{font-size:clamp(23px,3.2vw,29px)}
 }
 
+/* Wide web question composition. Keep the card sized to its content so a
+   short prompt does not leave a large empty stage between it and the answers.
+   This is deliberately scoped to the existing wide layout; phone and tablet
+   portrait keep the stacked composition above. */
+@media (min-width:760px) and (orientation:landscape) and (min-height:561px){
+  .segelPanel{justify-content:center}
+  .segelQHead{width:min(100%,880px);margin-inline:auto}
+  .segelCard{
+    flex:0 1 auto;width:min(100%,880px);max-height:calc(100% - 48px);
+    margin-block:0;margin-inline:auto;overflow-y:auto;overflow-x:hidden;
+    overscroll-behavior:contain;-webkit-overflow-scrolling:touch
+  }
+  .segelCard .question{
+    flex:0 0 auto;min-height:0;display:block;overflow:visible;
+    padding:0;text-align:center
+  }
+  #segelDemo .segelCard #segelQuestion{overflow-x:clip;overflow-y:visible}
+  .segelCard .question .segelPrompt{
+    width:min(100%,700px);max-width:65ch;margin-inline:auto;
+    padding:clamp(16px,2.2vh,28px) clamp(16px,2.5vw,30px) 0;
+    text-align:center
+  }
+  .segelCard .question .segelPrompt > img,
+  .segelCard .question .segelPrompt svg{max-width:100%}
+  .segelCard .answers{
+    width:min(100%,640px);max-width:640px;margin:clamp(18px,3vh,30px) auto 0;
+    align-self:center;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px
+  }
+  .segelCard .ans{min-width:0;min-height:58px;padding-inline:14px;line-height:1.2}
+  .segelCard .feedback{width:min(100%,640px);margin-inline:auto}
+
+  /* Keep visual prompts large enough to read without changing their source
+     proportions. The later fraction stylesheet has narrower mobile rules;
+     this higher-specificity selector is the intentional wide override. */
+  #segelDemo .segelCard #segelQuestion .segelPrompt .fraction-art{
+    width:min(100%,420px);max-width:100%;max-height:none;margin:12px auto
+  }
+  #segelDemo .segelCard #segelQuestion .segelPrompt .fraction-art-turn{
+    max-width:100%;max-height:none
+  }
+  #segelDemo .segelCard #segelQuestion .segelPrompt .paWrittenArithmetic{
+    width:min(100%,390px);max-width:100%;margin:12px auto
+  }
+
+  /* Data visuals are teaching evidence and need room to be read. These
+     selectors are semantic so icons, coin rows, and fraction art keep their
+     existing sizing. The renderer's old inline max-width is overridden only
+     for these chart types on the wide web layout. */
+  #segelDemo .segelCard #segelQuestion .segelPrompt .paQuestionPictograph{
+    display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 16px;
+    width:min(100%,480px) !important;max-width:480px !important;margin:12px auto 18px;
+    font:700 clamp(18px,1.8vw,24px)/1.3 sans-serif !important;text-align:left
+  }
+  #segelDemo .segelCard #segelQuestion .segelPrompt .paQuestionPictograph > span:nth-child(2n){
+    letter-spacing:.08em;white-space:normal;overflow-wrap:anywhere
+  }
+  #segelDemo .segelCard #segelQuestion .segelPrompt svg.paQuestionChart{
+    display:block;width:min(100%,440px);max-width:440px !important;height:auto;
+    margin:12px auto 18px
+  }
+
+  /* Interactive answer panels need their own internal flow and controls;
+     never compress them into the two-column MCQ grid. */
+  .segelCard:has(#segelAnswers .d1-fraction-answer) .answers{
+    display:block;max-width:100%;overflow:visible;margin-top:12px
+  }
+  .segelCard:has(#segelAnswers .d1-fraction-answer) .d1-fraction-answer{
+    max-width:640px;margin-inline:auto
+  }
+  #segelDemo .segelCard #segelAnswers.paGameAnswers{
+    display:block;width:min(100%,640px);max-width:640px;overflow:visible;margin:12px auto 0
+  }
+
+  /* fraction-visuals-v2.css deliberately makes visual prompts a flexible
+     scroll slot for short phones. On the wide card the card itself owns the
+     scroll, so the prompt must retain its natural height. */
+  #segelDemo .segelCard:has(#segelQuestion.hasFractionVisual) .question{
+    flex:0 0 auto;min-height:0;max-height:none;overflow:visible
+  }
+}
+
 /* Once the result is ready, give the result sheet the entire stage. The
    question panel must leave the flex layout so it cannot reserve a blank
    column behind the full-screen result backdrop. */
