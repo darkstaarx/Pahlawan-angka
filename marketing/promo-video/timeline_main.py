@@ -36,10 +36,10 @@ GANGSA, PERAK, EMAS = (205, 127, 50), (196, 204, 218), (245, 190, 60)
 
 # ---------------------------------------------------------------- babak (latar)
 SCENES = [
-    dict(t0=0.0, bg='cream', tiles=[('+', 150, 360, 150, -14, 0.0), ('÷', 930, 1600, 170, 12, 0.15), ('×', 940, 330, 110, 8, 0.3), ('−', 170, 1560, 120, -6, 0.4)]),
-    dict(t0=3.6, bg='navy', wipe=0.45, wipe_tile='×', origin=(540, 960),
+    dict(t0=0.0, bg='deep'),
+    dict(t0=6.0, bg='navy', wipe=0.4, wipe_tile='×', origin=(540, 960),
          tiles=[('+', 170, 470, 130, -12, 0.15), ('−', 910, 520, 120, 10, 0.25), ('×', 180, 1560, 130, 8, 0.3), ('÷', 900, 1520, 150, -8, 0.2)]),
-    dict(t0=6.0, bg='deep', wipe=0.3, wipe_tile='+', origin=(540, 1300)),
+    dict(t0=8.0, bg='deep', wipe=0.35, wipe_tile='+', origin=(540, 1300)),
     dict(t0=12.0, bg='cream', wipe=0.45, wipe_tile='÷', origin=(940, 1600), tiles=[('+', 120, 1760, 110, -10, 0.3), ('×', 980, 640, 90, 12, 0.45)]),
     dict(t0=22.0, bg='navy', wipe=0.45, wipe_tile='−', origin=(140, 600)),
     dict(t0=36.0, bg='deep', wipe=0.4, wipe_tile='+', origin=(540, 1150)),
@@ -52,7 +52,8 @@ SCENES = [
 
 # ---------------------------------------------------------------- telefon
 SHOTS = [
-    Shot(6.0, 12.0, 'C', [(10.6, 16.6, 6.0)], 'hook-soalan-jurus-penamat'),
+    Shot(0.0, 6.0, 'C', [(11.0, 11.0, 0.6), (11.0, 12.4, 1.4), (12.4, 16.4, 4.0)], 'hook-masalah-jurus-penamat'),
+    Shot(8.0, 12.0, 'B', [(16.4, 18.8, 2.4), (18.8, 18.8, 0.8), (18.8, 19.6, 0.8)], 'soalan-wang-betul'),
     Shot(12.0, 16.0, 'A', [(0.3, 4.3, 4.0)], 'hub-kembara-dimensi'),
     Shot(16.0, 19.0, 'T', [(1.4, 1.7, 0.3), (1.7, 1.7, 1.0), (1.7, 4.6, 1.7)], 'peta-topik'),
     Shot(19.0, 19.7, 'B', [(4.55, 5.25, 0.7)], 'tekan-mula-kembara'),
@@ -70,13 +71,18 @@ SHOTS = [
 ]
 
 CAMERA = [
-    (0.0, R(s=0.85, oy=1420, ry=-38, rz=-9, rx=14, a=0.0)),
-    (6.0, R(s=0.85, oy=1420, ry=-38, rz=-9, rx=14, a=0.0)),
-    # hook: telefon masuk dengan sudut dramatik, kemudian push-in ke Jurus Penamat
-    (6.6, R(s=1.0, oy=1190, ry=-8, rz=-2, rx=4), 'out'),
-    (7.6, R(s=1.0, oy=1190, ry=-5, rz=-1, rx=2)),
-    (8.05, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
-    (11.3, Z(0.5, 0.21, 1.8, oy=1130)),
+    # hook masalah: soalan kelabu, push-in perlahan; snap zoom ke Jurus Penamat tepat pada drop (2.0 s)
+    (0.0, R(s=1.02, oy=1250, ry=-7, rz=-1.5, rx=3)),
+    (1.95, R(s=1.1, oy=1235, ry=-3, rz=-0.5, rx=1)),
+    (2.15, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
+    (5.4, Z(0.5, 0.21, 1.8, oy=1130)),
+    (5.95, R(s=1.2, v=0.3, oy=1250, a=0.0), 'in'),
+    (7.85, R(s=0.85, oy=1400, ry=30, rz=6, rx=12, a=0.0)),
+    # soalan wang -> jawab -> Betul! Kunci retak.
+    (8.45, R(s=1.0, oy=1220, ry=8, rz=1.5, rx=3), 'out'),
+    (9.6, R(s=1.0, oy=1220, ry=5, rz=1, rx=2)),
+    (10.1, Z(0.5, 0.7, 1.25, oy=1390)),
+    (11.5, Z(0.5, 0.7, 1.27, oy=1390)),
     # Kembara Dimensi (latar krim)
     (12.4, R(s=0.98, ox=610, oy=1240, ry=14, rz=2, rx=3)),
     (15.8, R(s=0.98, ox=600, oy=1240, ry=10, rz=1.5, rx=2)),
@@ -125,6 +131,7 @@ CAMERA = [
 ]
 
 HIGHLIGHTS = [
+    (10.25, 11.15, 0.04, 0.885, 0.4, 0.92),     # Betul! Kunci retak.
     (19.0, 19.65, 0.32, 0.56, 0.85, 0.615),     # Mula Kembara
     (22.9, 23.45, 0.63, 0.125, 0.83, 0.175),    # 2 pip segel Gangsa
     (23.65, 24.4, 0.04, 0.878, 0.45, 0.93),     # Kunci GANGSA pecah!
@@ -134,17 +141,17 @@ HIGHLIGHTS = [
     (54.85, 55.8, 0.05, 0.805, 0.95, 0.868),    # Latihan + skema
 ]
 
-PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS)]
+PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS, grade=[(0.0, 1.9, 2.05)])]
 
 # ---------------------------------------------------------------- teks
 TEXTS = [
-    dict(t0=0.2, t1=3.65, style='slate', size=112, y=720, lines=[
-        [('Bila', 0.25, 'fill'), ('matematik', 0.5, 'fill')],
-        [('jadi', 1.2, 'fill')],
-        [('pengembaraan…', 1.45, 'outline')],
+    dict(t0=0.0, t1=1.98, style='slate', size=88, y=210, lines=[
+        [('Anak', 0.0, 'fill'), ('liat', 0.12, 'fill'), ('nak', 0.24, 'fill'), ('buat', 0.34, 'fill')],
+        [('latihan', 0.5, 'fill'), ('Matematik?', 0.72, 'fill')],
     ]),
-    dict(t0=4.1, t1=5.95, kicker='MATEMATIK KSSR · DARJAH 1–6', head='Dalam Bahasa Melayu', align='center', y=1290, small=True),
-    dict(t0=6.15, t1=11.8, kicker='JAWAB SOALAN', head='Jawapan betul, wira beraksi!'),
+    dict(t0=2.1, t1=5.85, kicker='PAHLAWAN ANGKA', head='Setiap jawapan betul jadi serangan!'),
+    dict(t0=6.3, t1=7.95, kicker='MATEMATIK KSSR · DARJAH 1–6', head='Dalam Bahasa Melayu', align='center', y=1290, small=True),
+    dict(t0=8.15, t1=11.85, kicker='SOALAN SEBENAR', head='Wang, masa, pecahan & banyak lagi'),
     dict(t0=12.15, t1=15.9, kicker='KEMBARA DIMENSI', head='Latihan ikut kemampuan anak',
          sub='Cikgu Dimensi pilih latihan ikut tahap penguasaan.'),
     dict(t0=16.1, t1=18.95, kicker='PETA TOPIK', head='Penguasaan setiap topik dipantau'),
@@ -183,8 +190,8 @@ PDF_A = os.path.join(BUILD, 'pdf_ws-1.png')   # Latihan Disyorkan Cikgu Dimensi 
 PDF_B = os.path.join(BUILD, 'pdf_sk-5.png')   # Skema dan Cara Menjawab (halaman 5)
 
 SPECIALS = [
-    LogoReveal(3.75, 5.95, y=830, scale=0.92, dark_text=False),
-    lambda r: Callout(r, 0, 6.45, 7.55, (0.03, 0.445, 0.97, 0.6), 540, 560, 900, ry=-4),
+    LogoReveal(6.1, 7.95, y=830, scale=0.92, dark_text=False),
+    lambda r: Callout(r, 0, 8.45, 9.3, (0.03, 0.445, 0.97, 0.62), 540, 600, 900, ry=-4),
     lambda r: Callout(r, 0, 12.9, 15.85, (0.03, 0.475, 0.97, 0.632), 500, 1020, 880, ry=-6, rz=-1),
     lambda r: Callout(r, 0, 14.0, 15.85, (0.03, 0.637, 0.49, 0.785), 300, 1500, 420, ry=8, rz=-2),
     lambda r: Callout(r, 0, 14.25, 15.85, (0.505, 0.637, 0.955, 0.785), 790, 1560, 400, ry=-8, rz=2),
@@ -208,17 +215,17 @@ SPECIALS = [
                cta='Cuba demo Pahlawan Angka', cta_t=61.9, dark_text=True),
 ]
 
-FLASHES = [(6.0, 0.2, 0.2), (7.82, 0.35, 0.55), (23.6, 0.25, 0.25), (25.25, 0.25, 0.25), (40.0, 0.45, 0.6)]
+FLASHES = [(2.0, 0.35, 0.6), (2.8, 0.25, 0.3), (23.6, 0.25, 0.25), (25.25, 0.25, 0.25), (40.0, 0.45, 0.6)]
 
 # ---------------------------------------------------------------- audio
 MUSIC = [
-    ('intro', 0, 3), ('drop', 3, 3), ('groove', 6, 5), ('drop', 11, 5), ('groove', 16, 2),
+    ('intro', 0, 1), ('drop', 1, 3), ('groove', 4, 7), ('drop', 11, 5), ('groove', 16, 2),
     ('break', 18, 2), ('drop', 20, 2), ('light', 22, 6), ('groove', 28, 1), ('build', 29, 1), ('outro', 30, 2),
 ]
 
 SFX = [
-    ('whoosh', 3.2, 0.7, 0.8), ('pop', 3.9, 0.7), ('whoosh', 5.65, 0.6, 0.9),
-    ('pop', 6.5, 0.6), ('src', 7.3, 'C', 11.9, 16.8, 0.8),
+    ('src', 1.5, 'C', 11.9, 16.4, 0.85), ('whoosh', 5.6, 0.6, 0.8), ('pop', 6.3, 0.7),
+    ('whoosh', 7.6, 0.6, 0.8), ('pop', 8.5, 0.55), ('src', 9.2, 'B', 17.6, 18.8, 0.7),
     ('whoosh', 11.5, 0.6, 0.7), ('pop', 12.95, 0.6), ('pop', 14.05, 0.45), ('pop', 14.3, 0.45),
     ('whoosh', 15.95, 0.5, 0.5), ('pop', 16.45, 0.55),
     ('src', 19.7, 'B', 7.2, 8.6, 0.6), ('pop', 20.85, 0.55),

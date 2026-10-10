@@ -356,6 +356,7 @@ class Phone:
         self.track = Track(spec['camera'])
         self.shots = spec['shots']
         self.highlights = spec.get('highlights', [])
+        self.grade = spec.get('grade', [])   # [(t0, t1, t2)]: kelabu t0..t1, warna kembali t1..t2
         self.sources = sources
         self.readers = {}
 
@@ -554,6 +555,15 @@ class Renderer:
             scr = scr[..., ::-1].astype(np.float32) / 255
         else:
             scr = np.zeros((y1 - y0, x1 - x0, 3), np.float32)
+        ga = 0.0
+        for g0, g1, g2 in ph.grade:
+            if g0 <= t < g1:
+                ga = 1.0
+            elif g1 <= t < g2:
+                ga = 1 - smooth((t - g1) / (g2 - g1))
+        if ga > 0:
+            lum = (scr * np.array([0.299, 0.587, 0.114], np.float32)).sum(2, keepdims=True)
+            scr = (scr * (1 - 0.85 * ga) + lum * 0.85 * ga) * (1 - 0.3 * ga)
         smask = poly_mask(pose.project(self.screen_poly), roi)
         yy, xx = np.mgrid[0:(y1 - y0):4, 0:(x1 - x0):4].astype(np.float32)
         c = pose.project(np.array([[0.0, 0.0]]))[0] - [x0, y0]

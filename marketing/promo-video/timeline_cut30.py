@@ -6,10 +6,9 @@ from timeline_main import R, Z, SOURCES, SOURCES_AUDIO, GANGSA, PERAK, EMAS, PDF
 DURATION = 30.0
 
 SCENES = [
-    dict(t0=0.0, bg='cream', tiles=[('+', 150, 380, 140, -14, 0.0), ('÷', 930, 1580, 160, 12, 0.1), ('×', 940, 360, 110, 8, 0.2)]),
-    dict(t0=2.0, bg='navy', wipe=0.4, wipe_tile='×', origin=(540, 960),
+    dict(t0=0.0, bg='deep'),
+    dict(t0=6.0, bg='navy', wipe=0.4, wipe_tile='×', origin=(540, 960),
          tiles=[('+', 170, 470, 130, -12, 0.1), ('−', 910, 520, 120, 10, 0.2), ('÷', 900, 1520, 150, -8, 0.15)]),
-    dict(t0=4.0, bg='deep', wipe=0.3, wipe_tile='+', origin=(540, 1300)),
     dict(t0=8.0, bg='cream', wipe=0.4, wipe_tile='÷', origin=(940, 1600)),
     dict(t0=12.0, bg='navy', wipe=0.4, wipe_tile='−', origin=(140, 600)),
     dict(t0=16.0, bg='deep', wipe=0.35, wipe_tile='+', origin=(540, 1150)),
@@ -20,7 +19,7 @@ SCENES = [
 ]
 
 SHOTS = [
-    Shot(4.0, 8.0, 'C', [(10.9, 14.9, 4.0)], 'hook-soalan-jurus-penamat'),
+    Shot(0.0, 6.0, 'C', [(11.0, 11.0, 0.6), (11.0, 12.4, 1.4), (12.4, 16.4, 4.0)], 'hook-masalah-jurus-penamat'),
     Shot(8.0, 12.0, 'A', [(0.3, 4.3, 4.0)], 'hub-kembara-dimensi'),
     Shot(12.0, 13.8, 'C', [(7.3, 8.9, 1.6), (8.9, 8.9, 0.2)], 'kunci-perak'),
     Shot(13.8, 16.0, 'O', [(112.3, 114.3, 2.0), (114.3, 114.3, 0.2)], 'kunci-emas-taip'),
@@ -31,12 +30,12 @@ SHOTS = [
 ]
 
 CAMERA = [
-    (0.0, R(s=0.85, oy=1420, ry=-38, rz=-9, rx=14, a=0.0)),
-    (4.0, R(s=0.85, oy=1420, ry=-38, rz=-9, rx=14, a=0.0)),
-    (4.55, R(s=1.0, oy=1190, ry=-8, rz=-2, rx=4), 'out'),
-    (5.3, R(s=1.0, oy=1190, ry=-5, rz=-1, rx=2)),
-    (5.75, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
-    (7.6, Z(0.5, 0.21, 1.78, oy=1130)),
+    (0.0, R(s=1.02, oy=1250, ry=-7, rz=-1.5, rx=3)),
+    (1.95, R(s=1.1, oy=1235, ry=-3, rz=-0.5, rx=1)),
+    (2.15, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
+    (5.4, Z(0.5, 0.21, 1.8, oy=1130)),
+    (5.95, R(s=1.2, v=0.3, oy=1250, a=0.0), 'in'),
+    (7.85, R(s=0.85, oy=1400, ry=30, rz=6, rx=12, a=0.0)),
     (8.35, R(s=0.98, ox=610, oy=1240, ry=14, rz=2, rx=3)),
     (11.7, R(s=0.98, ox=600, oy=1240, ry=10, rz=1.5, rx=2)),
     (12.25, R(s=1.0, oy=1260, ry=8, rz=1)),
@@ -66,16 +65,15 @@ HIGHLIGHTS = [
     (24.5, 25.3, 0.05, 0.805, 0.95, 0.868),     # Latihan + skema
 ]
 
-PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS)]
+PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS, grade=[(0.0, 1.9, 2.05)])]
 
 TEXTS = [
-    dict(t0=0.12, t1=1.95, style='slate', size=112, y=720, lines=[
-        [('Bila', 0.15, 'fill'), ('matematik', 0.3, 'fill')],
-        [('jadi', 0.75, 'fill')],
-        [('pengembaraan…', 0.9, 'outline')],
+    dict(t0=0.0, t1=1.98, style='slate', size=88, y=210, lines=[
+        [('Anak', 0.0, 'fill'), ('liat', 0.12, 'fill'), ('nak', 0.24, 'fill'), ('buat', 0.34, 'fill')],
+        [('latihan', 0.5, 'fill'), ('Matematik?', 0.72, 'fill')],
     ]),
-    dict(t0=2.25, t1=3.95, kicker='MATEMATIK KSSR · DARJAH 1–6', head='Dalam Bahasa Melayu', align='center', y=1290, small=True),
-    dict(t0=4.1, t1=7.85, kicker='JAWAB SOALAN', head='Jawapan betul, wira beraksi!'),
+    dict(t0=2.1, t1=5.85, kicker='PAHLAWAN ANGKA', head='Setiap jawapan betul jadi serangan!'),
+    dict(t0=6.3, t1=7.95, kicker='MATEMATIK KSSR · DARJAH 1–6', head='Dalam Bahasa Melayu', align='center', y=1290, small=True),
     dict(t0=8.15, t1=11.9, kicker='KEMBARA DIMENSI', head='Latihan ikut kemampuan anak',
          sub='Cikgu Dimensi pilih latihan ikut tahap penguasaan.'),
     dict(t0=12.05, t1=15.9, kicker='TIGA TAHAP KUNCI', head='', align='center'),
@@ -88,8 +86,7 @@ TEXTS = [
 ]
 
 SPECIALS = [
-    LogoReveal(2.15, 3.95, y=830, scale=0.92, dark_text=False),
-    lambda r: Callout(r, 0, 4.4, 5.35, (0.03, 0.445, 0.97, 0.6), 540, 560, 900, ry=-4),
+    LogoReveal(6.1, 7.95, y=830, scale=0.92, dark_text=False),
     lambda r: Callout(r, 0, 8.7, 11.85, (0.03, 0.475, 0.97, 0.632), 500, 1020, 880, ry=-6, rz=-1),
     TierPills(12.1, 15.9, 300, [('Gangsa', GANGSA, 12.2), ('Perak', PERAK, 13.15), ('Emas', EMAS, 13.6)]),
     lambda r: Callout(r, 0, 20.5, 22.1, (0.025, 0.628, 0.975, 0.885), 540, 1150, 860, ry=-6),
@@ -106,14 +103,14 @@ SPECIALS = [
                cta='Cuba demo Pahlawan Angka', cta_t=27.6, dark_text=True),
 ]
 
-FLASHES = [(4.0, 0.2, 0.2), (5.52, 0.35, 0.55), (13.15, 0.25, 0.25), (18.0, 0.45, 0.6)]
+FLASHES = [(2.0, 0.35, 0.6), (2.8, 0.25, 0.3), (13.15, 0.25, 0.25), (18.0, 0.45, 0.6)]
 
-MUSIC = [('intro', 0, 2), ('drop', 2, 2), ('groove', 4, 2), ('drop', 6, 2), ('break', 8, 1), ('drop', 9, 1),
+MUSIC = [('intro', 0, 1), ('drop', 1, 3), ('groove', 4, 2), ('drop', 6, 2), ('break', 8, 1), ('drop', 9, 1),
          ('light', 10, 2), ('build', 12, 1), ('outro', 13, 2)]
 
 SFX = [
-    ('whoosh', 1.6, 0.6, 0.8), ('pop', 2.3, 0.7), ('whoosh', 3.65, 0.6, 0.9), ('pop', 4.45, 0.6),
-    ('src', 5.0, 'C', 11.9, 14.9, 0.8), ('whoosh', 7.6, 0.6, 0.7), ('pop', 8.75, 0.6),
+    ('src', 1.5, 'C', 11.9, 16.4, 0.85), ('whoosh', 5.6, 0.6, 0.8), ('pop', 6.3, 0.7),
+    ('whoosh', 7.6, 0.6, 0.7), ('pop', 8.75, 0.6),
     ('whoosh', 11.6, 0.6, 0.7), ('src', 12.2, 'C', 7.5, 8.9, 0.8), ('src', 14.3, 'O', 112.8, 114.3, 0.8),
     ('whoosh', 15.65, 0.6, 0.8), ('src', 16.0, 'K', 14.0, 17.6, 0.35), ('impact', 18.0, 0.45), ('shimmer', 18.05, 0.7),
     ('whoosh', 19.6, 0.6, 0.7), ('pop', 20.55, 0.55), ('pop', 22.55, 0.55), ('pop', 24.55, 0.45),

@@ -34,9 +34,10 @@ Video akhir dihantar terus kepada pemilik projek dan tidak disimpan dalam git.
 
 | Masa | Babak / latar | Telefon & kamera | Callout / grafik | Teks | Muzik |
 | --- | --- | --- | --- | --- | --- |
-| 0:00–0:03.6 | Krim | — | Jubin `+ − × ÷` terapung | **Bila matematik / jadi / pengembaraan…** (taip + garis luar kabur→tajam) | Intro |
-| 0:03.6–0:06 | Navy, wipe jubin × | — | Logo muncul | MATEMATIK KSSR · DARJAH 1–6 / Dalam Bahasa Melayu | Riser |
-| 0:06–0:12 | Gelap | Masuk dari sudut −38° → hampir depan; push-in 1.7× ke Jurus Penamat | Kad soalan "Matahari baru terbit…" terangkat (0:06.4–0:07.5) | JAWAB SOALAN / Jawapan betul, wira beraksi! | **Drop** + kilat 0:07.8 |
+| 0:00–0:02 | Gelap | Telefon depan, soalan sebenar **dikelabukan**, push-in perlahan | — | **Anak liat nak buat / latihan Matematik?** (hook masalah, ditaip laju) | Intro tegang + riser |
+| 0:02–0:06 | Gelap | Warna kembali + snap zoom ke **Jurus Penamat** → serangan → KUKUPAT DITEMUI | Kilat 0:02 & 0:02.8 | PAHLAWAN ANGKA / Setiap jawapan betul jadi serangan! | **Drop tepat 0:02** |
+| 0:06–0:08 | Navy, wipe × | — | Logo muncul | MATEMATIK KSSR · DARJAH 1–6 / Dalam Bahasa Melayu | Drop |
+| 0:08–0:12 | Gelap, wipe + | Masuk dari kanan; zoom 1.25× ke jawapan | Kad soalan "Harga barang RM1…" terangkat; highlight "Betul! Kunci retak." | SOALAN SEBENAR / Wang, masa, pecahan & banyak lagi | Groove |
 | 0:12–0:16 | Krim, wipe ÷ | Condong 14°, ke kanan | Kad Kembara Dimensi, Kemahiran Fokus, Teman Aktif terangkat | KEMBARA DIMENSI / Latihan ikut kemampuan anak | Groove |
 | 0:16–0:19 | Krim | Condong −10° | Kad Laluan Topik "Penguasaan keseluruhan 86%" | PETA TOPIK / Penguasaan setiap topik dipantau | Groove |
 | 0:19–0:22 | Krim | Highlight Mula Kembara → push-in menara → BERJAYA | Gelembung Cikgu Dimensi "Syabas, Cica!…" | CIKGU DIMENSI / Pilih misi & beri semangat | Groove |
@@ -61,9 +62,10 @@ Jika VO mahu ditambah, rakam atau jana menggunakan skrip di bawah, kemudian camp
 
 | Masa | VO |
 | --- | --- |
-| 0:00 | Bila matematik jadi pengembaraan… |
-| 0:04 | Pahlawan Angka — Matematik KSSR Darjah 1 hingga 6. |
-| 0:06.5 | Jawab betul, wira terus beraksi! |
+| 0:00 | Anak liat nak buat latihan Matematik? |
+| 0:02.2 | Di sini, setiap jawapan betul jadi serangan! |
+| 0:06.2 | Pahlawan Angka — Matematik KSSR Darjah 1 hingga 6. |
+| 0:08.3 | Soalan sebenar: wang, masa, pecahan dan banyak lagi. |
 | 0:12.3 | Dalam Kembara Dimensi, Cikgu Dimensi pilih latihan ikut kemampuan anak. |
 | 0:16.3 | Penguasaan setiap topik dipantau. |
 | 0:19.3 | Misi berkembang bersama kemajuan mereka. |
