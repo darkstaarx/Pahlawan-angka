@@ -94,7 +94,7 @@ body[data-screen="menuV2"] .appHeader{display:none}
 }
 .mv2Actor:active{transform:scale(.96)}
 .mv2HeroSlot{height:100%;width:175px;max-width:52%}
-.mv2PetSlot{height:78px;width:90px;max-width:28%;margin-bottom:4px;margin-left:-14px}
+.mv2PetSlot{height:78px;width:90px;max-width:28%;margin-bottom:4px;margin-left:-44px}
 
 /* bayang-bayang tanah menambat watak ke lantai */
 .mv2ActorShadow{
