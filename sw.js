@@ -2,6 +2,13 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-khazanah-full-1`;
 const APP_SHELL=[
+  './assets/pets/evolution/fire/aurora/happy-sprite-v1.webp',
+  './assets/pets/evolution/fire/ketupatKura/happy-sprite-v1.webp',
+  './assets/pets/evolution/fire/kumbangManggis/happy-sprite-v1.webp',
+  './assets/pets/evolution/fire/harimauBunga/happy-sprite-v1.webp',
+  './assets/pets/evolution/fire/arnabKekLapis/happy-sprite-v1.webp',
+  './assets/pets/evolution/fire/durianKerbau/happy-sprite-v1.webp',
+
   './assets/ui/menu-v2/kembara-dimensi-book-v7.webp',
   './js/parent-live-runtime-v1.js',
   './js/worksheet-graphics-v1.js',

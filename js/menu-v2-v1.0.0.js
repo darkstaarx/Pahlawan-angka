@@ -125,7 +125,22 @@
   }
   function renderPetFrame(){
     const pet=activeMenuPet(),img=$('mv2Pet');if(!img)return;
+    let canvas=$('mv2PetHappy');
+    if(!canvas){canvas=document.createElement('canvas');canvas.id='mv2PetHappy';canvas.className='mv2PetSprite hidden';canvas.width=512;canvas.height=512;canvas.setAttribute('role','img');img.parentNode.appendChild(canvas)}
+    canvas.classList.add('hidden');
     if(!pet){setPetArt(img,null);if($('petSlot'))$('petSlot').title='Belum ada teman';return}
+    const sheet=pet.assets?.happySprite;
+    if(sheet){
+      if(!spriteCache[sheet]){const art=new Image();spriteCache[sheet]=art;art.src=sheet}
+      const art=spriteCache[sheet];
+      if(art.complete&&art.naturalWidth&&art.naturalHeight){
+        const frame=petFrameIdx++%4,w=art.naturalWidth/2,h=art.naturalHeight/2;
+        const ctx=canvas.getContext('2d');ctx.clearRect(0,0,512,512);ctx.drawImage(art,(frame%2)*w,Math.floor(frame/2)*h,w,h,0,0,512,512);
+        canvas.setAttribute('aria-label',pet.name||'Teman');canvas.classList.remove('hidden');img.classList.add('hidden');
+        if($('petSlot'))$('petSlot').title=`Ketuk ${pet.name||'teman'} untuk bermain`;
+        return;
+      }
+    }
     const frames=pet.id==='aurora'&&pet.appearance!=='bara'?PET_FRAMES:[pet.assets?.happy||pet.front||pet.hub].filter(Boolean);
     if(!frames.length){setPetArt(img,null);return}
     petFrameIdx=(petFrameIdx+1)%frames.length;

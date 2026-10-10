@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 function img(){const classes=new Set();return{src:'',alt:'',classList:{toggle(k,on){on?classes.add(k):classes.delete(k)},add:k=>classes.add(k),remove:k=>classes.delete(k),contains:k=>classes.has(k)},getAttribute(k){return this[k]},removeAttribute(k){this[k]=''}}}
-const nodes={mv2Pet:img(),mv2PetFace:img(),petSlot:{}},pets=[];
+const nodes={mv2Pet:img(),mv2PetFace:img(),petSlot:{},mv2PetHappy:{...img(),setAttribute(k,v){this[k]=v},getContext(){return{clearRect(){},drawImage(){}}}}},pets=[];
 const ctx={console,db:{rewards:{equippedPet:'legacy'}},REWARD_PETS:{legacy:{id:'legacy',name:'Legacy',front:'legacy-own.webp'}},document:{getElementById:id=>nodes[id]},setTimeout(){},setInterval(){},clearTimeout(){},clearInterval(){},PetCollection:{snapshot:()=>({pets})}};ctx.window=ctx;vm.createContext(ctx);
 let source=read('js/menu-v2-v1.0.0.js');source=source.replace('  function startSpriteEngine()', '  window.__petTest={renderPetFrame,setPetArt,activeMenuPet};\n  function startSpriteEngine()');vm.runInContext(source,ctx);
 const api=ctx.__petTest;let checks=0;
