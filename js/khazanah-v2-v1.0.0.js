@@ -3,7 +3,7 @@
  * This module renders the collection without changing its reward rules. */
 (function(){
   'use strict';
-  if(window.PAKhazanah?.cardDeckVersion===1)return;
+  if(window.PAKhazanah?.cardDeckVersion===2)return;
 
   const $ = id => document.getElementById(id);
   const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[char]));
@@ -50,7 +50,7 @@
 
 <section class="kzPanel">
   <div class="kzCollectionHead"><h2 id="kzPanelTitle">Teman kamu</h2><span id="kzCollectionCount"></span></div>
-  <div id="kzPetGallery"><div id="petCollection" class="kzDeck" tabindex="0" aria-label="Kad koleksi teman"></div><div class="kzDeckNav"><button id="kzDeckPrev" type="button" aria-label="Kad sebelumnya">‹</button><div id="kzDeckDots" class="kzDeckDots" aria-label="Pilih kad teman"></div><button id="kzDeckNext" type="button" aria-label="Kad seterusnya">›</button></div><p class="kzDeckHint">Leret untuk pilih · Tekan kad untuk lihat</p></div>
+  <div id="kzPetGallery"><div id="petCollection" class="kzDeck" tabindex="0" aria-label="Kad koleksi teman"></div><div class="kzDeckNav"><button id="kzDeckPrev" type="button" aria-label="Kad sebelumnya">‹</button><div id="kzDeckDots" class="kzDeckDots" aria-label="Pilih kad teman"></div><button id="kzDeckNext" type="button" aria-label="Kad seterusnya">›</button></div><p class="kzDeckHint">Leret untuk kad seterusnya · Tekan untuk buka</p></div>
   <div id="auraCollection" class="kzGrid hidden"></div>
   <div id="badgeCollection" class="kzGrid hidden"></div>
 </section>`;
@@ -84,7 +84,7 @@
     </article>`;
   }
 
-  const deckState={id:null,index:0,signature:'',frame:0};
+  const deckState={id:null,index:0,signature:'',moving:false,gesture:null,suppressClickUntil:0};
   const reducedMotion=()=>!!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   function petPresentation(pet){
     const tamed=pet.state==='tamed';
@@ -110,38 +110,73 @@
       <button class="kzCardOpen" type="button" onclick="openCollectionPet('${pet.id}')" aria-label="Lihat ${esc(p.name)} · ${esc(p.status)}">${cardFace(pet,index,total)}</button>
     </article>`;
   }
+  function deckCards(){return [...($('petCollection')?.querySelectorAll('[data-pet-id]')||[])]}
   function updateDeck(){
-    const host=$('petCollection');if(!host)return;
-    const cards=[...host.querySelectorAll('[data-pet-id]')];if(!cards.length)return;
-    const centre=host.getBoundingClientRect().left+host.clientWidth/2;
-    let selected=0,distance=Infinity;
-    cards.forEach((card,index)=>{const r=card.getBoundingClientRect(),d=Math.abs(r.left+r.width/2-centre);if(d<distance){distance=d;selected=index}});
-    deckState.index=selected;deckState.id=cards[selected].dataset.petId;
-    cards.forEach((card,index)=>card.classList.toggle('is-focus',index===selected));
-    $('kzDeckDots')?.querySelectorAll('button').forEach((dot,index)=>{dot.classList.toggle('active',index===selected);dot.setAttribute('aria-current',index===selected?'true':'false')});
-    const prev=$('kzDeckPrev'),next=$('kzDeckNext');if(prev)prev.disabled=selected===0;if(next)next.disabled=selected===cards.length-1;
+    const cards=deckCards();if(!cards.length)return;
+    deckState.index=((deckState.index%cards.length)+cards.length)%cards.length;
+    deckState.id=cards[deckState.index].dataset.petId;
+    cards.forEach((card,index)=>{
+      const depth=(index-deckState.index+cards.length)%cards.length;
+      card.dataset.depth=String(depth);card.style.setProperty('--depth',String(depth));card.style.zIndex=String(cards.length-depth);
+      card.classList.toggle('is-focus',depth===0);card.setAttribute('aria-hidden',String(depth!==0));
+      const button=card.querySelector('button');if(button){button.disabled=depth!==0;button.tabIndex=depth===0?0:-1}
+    });
+    $('kzDeckDots')?.querySelectorAll('button').forEach((dot,index)=>{dot.classList.toggle('active',index===deckState.index);dot.setAttribute('aria-current',index===deckState.index?'true':'false')});
+    const host=$('petCollection');if(host)host.setAttribute('aria-busy',String(deckState.moving));
+    const prev=$('kzDeckPrev'),next=$('kzDeckNext');if(prev)prev.disabled=cards.length<2;if(next)next.disabled=cards.length<2;
   }
-  function selectDeck(index,smooth=true){
-    const host=$('petCollection'),cards=host?[...host.querySelectorAll('[data-pet-id]')]:[];if(!cards.length)return;
-    const card=cards[Math.max(0,Math.min(cards.length-1,index))];
-    host.scrollTo({left:card.offsetLeft-(host.clientWidth-card.offsetWidth)/2,behavior:smooth&&!reducedMotion()?'smooth':'instant'});
-    if(!smooth||reducedMotion())updateDeck();
+  function selectDeck(index,animate=true,fromTransform=null){
+    const cards=deckCards();if(!cards.length||deckState.moving)return;
+    const target=((index%cards.length)+cards.length)%cards.length;
+    if(target===deckState.index){updateDeck();return}
+    const outgoing=cards[deckState.index],direction=index<deckState.index?-1:1;
+    const frontButton=outgoing.querySelector('button'),restoreFocus=frontButton===document.activeElement;
+    deckState.index=target;deckState.id=cards[target].dataset.petId;
+    const motion=animate&&!reducedMotion()&&typeof outgoing.animate==='function';
+    deckState.moving=motion;updateDeck();
+    if(restoreFocus)cards[target].querySelector('button')?.focus({preventScroll:true});
+    if(!motion)return;
+    outgoing.style.zIndex=String(cards.length+1);
+    outgoing.classList.add('is-rolling');
+    const roll=outgoing.animate([
+      {transform:fromTransform||'translateX(-50%) translateY(0) rotateZ(0deg) rotateY(0deg) scale(1)',opacity:1},
+      {transform:`translateX(calc(-50% - ${direction*70}px)) translateY(-18px) rotateZ(${-direction*8}deg) rotateY(${-direction*20}deg) scale(1.02)`,opacity:1,offset:.4},
+      {transform:`translateX(calc(-50% - ${direction*240}px)) translateY(32px) rotateZ(${-direction*18}deg) rotateY(${-direction*48}deg) scale(.83)`,opacity:0}
+    ],{duration:520,easing:'cubic-bezier(.22,.7,.2,1)',fill:'none'});
+    Promise.resolve(roll.finished).catch(()=>{}).then(()=>{outgoing.classList.remove('is-rolling');deckState.moving=false;updateDeck()});
+  }
+  function resetGesture(){
+    $('petCollection')?.classList.remove('is-dragging');
+    deckCards().forEach(card=>{card.style.setProperty('--drag-x','0px');card.style.setProperty('--drag-angle','0deg')});deckState.gesture=null;
   }
   function setupDeck(pets){
     const host=$('petCollection');if(!host)return;
+    const selected=pets.findIndex(p=>p.id===deckState.id);deckState.index=selected<0?Math.max(0,pets.findIndex(p=>p.active)):selected;updateDeck();
     const dots=$('kzDeckDots');if(dots){dots.innerHTML=pets.map((pet,index)=>`<button type="button" aria-label="Kad ${index+1}: ${esc(petPresentation(pet).name)}" data-index="${index}"></button>`).join('');dots.querySelectorAll('button').forEach((dot,index)=>dot.onclick=()=>selectDeck(index))}
     const prev=$('kzDeckPrev'),next=$('kzDeckNext');if(prev)prev.onclick=()=>selectDeck(deckState.index-1);if(next)next.onclick=()=>selectDeck(deckState.index+1);
     if(!host.dataset.deckBound){
       host.dataset.deckBound='1';
-      host.addEventListener('scroll',()=>{if(deckState.frame)return;deckState.frame=requestAnimationFrame(()=>{deckState.frame=0;updateDeck()})},{passive:true});
       host.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();selectDeck(deckState.index+(event.key==='ArrowRight'?1:-1))}});
-      if(typeof ResizeObserver==='function')new ResizeObserver(()=>selectDeck(deckState.index,false)).observe(host);
+      host.addEventListener('pointerdown',event=>{if(deckState.moving||event.isPrimary===false||event.button>0)return;deckState.gesture={id:event.pointerId,x:event.clientX,y:event.clientY,start:Date.now(),dragging:false}});
+      host.addEventListener('pointermove',event=>{
+        const g=deckState.gesture;if(!g||g.id!==event.pointerId)return;const dx=event.clientX-g.x,dy=event.clientY-g.y;
+        if(!g.dragging&&Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>8){resetGesture();return}
+        if(!g.dragging&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy)){g.dragging=true;host.classList.add('is-dragging');host.setPointerCapture?.(event.pointerId)}
+        if(!g.dragging)return;if(event.cancelable)event.preventDefault();
+        const front=deckCards()[deckState.index];front?.style.setProperty('--drag-x',`${Math.max(-100,Math.min(100,dx))}px`);front?.style.setProperty('--drag-angle',`${Math.max(-8,Math.min(8,dx/14))}deg`);
+      });
+      host.addEventListener('pointerup',event=>{
+        const g=deckState.gesture;if(!g||g.id!==event.pointerId)return;const dx=event.clientX-g.x,elapsed=Math.max(1,Date.now()-g.start);
+        const swipe=g.dragging&&(Math.abs(dx)>42||(Math.abs(dx)>18&&Math.abs(dx)/elapsed>.5));
+        const fromTransform=swipe?window.getComputedStyle?.(deckCards()[deckState.index]).transform:null;
+        if(g.dragging)deckState.suppressClickUntil=Date.now()+350;
+        if(host.hasPointerCapture?.(event.pointerId))host.releasePointerCapture(event.pointerId);
+        resetGesture();if(swipe)selectDeck(deckState.index+(dx<0?1:-1),true,fromTransform);
+      });
+      host.addEventListener('pointercancel',resetGesture);
+      host.addEventListener('click',event=>{if(deckState.moving||Date.now()<deckState.suppressClickUntil){event.preventDefault();event.stopPropagation()}},true);
     }
-    host.querySelectorAll('[data-pet-id]').forEach(card=>{
-      card.addEventListener('pointermove',event=>{if(reducedMotion()||!window.matchMedia?.('(hover: hover) and (pointer: fine)').matches)return;const r=card.getBoundingClientRect();card.style.setProperty('--tilt-x',`${-(event.clientY-r.top-r.height/2)/r.height*7}deg`);card.style.setProperty('--tilt-y',`${(event.clientX-r.left-r.width/2)/r.width*7}deg`)});
-      card.addEventListener('pointerleave',()=>{card.style.setProperty('--tilt-x','0deg');card.style.setProperty('--tilt-y','0deg')});
-    });
-    requestAnimationFrame(()=>{const index=pets.findIndex(p=>p.id===deckState.id);selectDeck(index<0?Math.max(0,pets.findIndex(p=>p.active)):index,false)});
+    updateDeck();
   }
 
   window.openCollectionPet=function(id){
@@ -250,7 +285,7 @@
     const tracker=$('petHuntTracker');
     if(stage)stage.classList.toggle('hidden',!petOnly);
     $('kzPetGallery')?.classList.toggle('hidden',!petOnly);
-    if(petOnly)requestAnimationFrame(()=>selectDeck(deckState.index,false));
+    if(petOnly)requestAnimationFrame(updateDeck);
     if(tracker)tracker.classList.toggle('hidden',!petOnly);
 
     set('kzPanelTitle',tab==='pets'?'Teman kamu':tab==='auras'?'Aura kamu':'Trofi kamu');
@@ -346,8 +381,9 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
   else install();
 
-  window.PAKhazanah={cardDeckVersion:1,rarityOf,petPresentation,selectDeck,updateDeck, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
+  window.PAKhazanah={cardDeckVersion:2,rarityOf,petPresentation,selectDeck,updateDeck, paint:()=>{paintChrome();paintShowcase();paintTracker()}};
 })();
+
 
 
 

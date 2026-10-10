@@ -257,40 +257,40 @@
 .kzCollectionHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:12px 0}
 .kzCollectionHead h2{margin:0;font-size:16px;font-weight:700;color:var(--kz-ink)}
 .kzCollectionHead>span{font-size:11px;color:var(--kz-mut)}
-.kzDeck{--card-width:clamp(240px,76vw,300px);position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:var(--card-width);gap:18px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;padding:22px max(12px,calc((100% - var(--card-width))/2)) 26px;scroll-padding-inline:max(12px,calc((100% - var(--card-width))/2));touch-action:pan-x pan-y;perspective:1000px}
-.kzDeck::-webkit-scrollbar{display:none}
-.kzDeck:focus-visible{outline:2px solid #e9b949;outline-offset:2px;border-radius:12px}
-.kzTradingCard{--tilt-x:0deg;--tilt-y:0deg;position:relative;box-sizing:border-box;border:6px solid #d4ac51;border-radius:18px;padding:3px;background:linear-gradient(135deg,#f9eac1,#c8a86d 36%,#f5e7bd 62%,#b38c42);box-shadow:0 12px 22px #0006,inset 0 0 0 1px #fff4ce;isolation:isolate;scroll-snap-align:center;scroll-snap-stop:always;min-width:0}
-.kzDeck .kzTradingCard{transform:scale(.92) rotateY(-3deg);opacity:.65;transition:transform .35s cubic-bezier(.2,.7,.25,1),opacity .35s,box-shadow .35s}
-.kzDeck .kzTradingCard.is-focus{transform:scale(1) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));opacity:1;box-shadow:0 16px 28px #0008,0 0 0 1px #f6dc9a77}
-.kzTradingCard::after{content:"";position:absolute;inset:0;border-radius:12px;background:linear-gradient(120deg,transparent 25%,#b8ebff18 35%,#fff9cd44 42%,transparent 50%);pointer-events:none;z-index:2;opacity:.65}
-.kzCardOpen,.kzFullFace{box-sizing:border-box;display:flex;flex-direction:column;width:100%;height:100%;min-height:390px;padding:12px;border:1px solid #735c37;border-radius:8px;background:#f4edda;color:#172c40;text-align:left;font:inherit}
+.kzDeck{position:relative;height:536px;overflow:hidden;touch-action:pan-y;perspective:1200px;isolation:isolate}
+.kzDeck:focus-visible{outline:2px solid #e9b949;outline-offset:2px;border-radius:14px}
+.kzTradingCard{position:relative;box-sizing:border-box;min-width:0;border:1px solid #bda366;border-radius:20px;padding:4px;background:#102a47;box-shadow:0 14px 32px #0008,inset 0 0 0 1px #315578;isolation:isolate;overflow:hidden}
+.kzDeck .kzTradingCard{--depth:0;--drag-x:0px;--drag-angle:0deg;position:absolute;top:86px;left:50%;width:clamp(230px,76vw,300px);height:438px;transform-origin:50% 0%;transform:translateX(calc(-50% + var(--depth)*10px)) translateY(calc(var(--depth)*-14px)) scale(calc(1 - var(--depth)*.055)) rotateZ(calc(var(--depth)*1.2deg));transition:transform .52s cubic-bezier(.22,.7,.2,1),filter .52s;filter:brightness(calc(1 - var(--depth)*.06));pointer-events:none}
+.kzDeck .kzTradingCard.is-focus{transform:translateX(calc(-50% + var(--drag-x))) translateY(0) scale(1) rotateZ(var(--drag-angle));filter:none;pointer-events:auto}
+.kzDeck .kzTradingCard.is-rolling{transition:none;pointer-events:none}
+.kzDeck.is-dragging .kzTradingCard.is-focus{transition:none}
+.kzTradingCard::after{content:none}
+.kzCardOpen,.kzFullFace{box-sizing:border-box;display:flex;flex-direction:column;width:100%;height:100%;min-height:0;padding:14px;border:0;border-radius:16px;background:linear-gradient(160deg,#183c5b,#0b1c32 68%);color:#f3f6fc;text-align:left;font:inherit}
 .kzCardOpen{cursor:pointer}
-.kzCardOpen:focus-visible{outline:3px solid #60cff0;outline-offset:4px}
-.kzCardTop{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:10px;font-weight:800;color:#6d5731;letter-spacing:.06em}
-.kzCardTop small{font-size:10px;font-weight:600;letter-spacing:0;font-variant-numeric:tabular-nums}
-.kzCardHeading{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:8px 0 10px;min-height:32px}
-.kzCardHeading h2,#treasure .kzCardHeading h2{margin:0;font-size:21px;font-weight:900;line-height:1.15;color:#172c40;overflow-wrap:anywhere}
-.kzCardHeading>span{flex:none;font-size:9px;color:#56626c;text-align:center}
-.kzCardHeading>span b{display:block;font-size:21px;color:#172c40}
-.kzCardScene{position:relative;aspect-ratio:1.16;border:2px solid #a78b51;border-radius:4px;overflow:hidden;background:#0b213a url('../assets/ui/khazanah/teman-night-math-v1.webp') center/cover;display:grid;place-items:center}
-.kzCardScene img{display:block;width:94%;height:94%;object-fit:contain;filter:drop-shadow(0 9px 7px #0008);position:absolute;inset:3%;will-change:auto}
+.kzCardOpen:focus-visible{outline:2px solid #f6dc9a;outline-offset:-2px}
+.kzCardTop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10px;font-weight:600;color:#d6bb78;letter-spacing:.03em}
+.kzCardTop small{font-size:10px;color:#8ba8c0;font-variant-numeric:tabular-nums}
+.kzCardHeading{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:8px 0 12px;min-height:30px}
+.kzCardHeading h2,#treasure .kzCardHeading h2{margin:0;font-size:23px;font-weight:800;line-height:1.15;color:#fff;overflow-wrap:anywhere;letter-spacing:-.4px}
+.kzCardHeading>span{flex:none;text-align:center;font-size:9px;color:#a3b9cc}
+.kzCardHeading>span b{display:block;font-size:21px;color:#f6dc9a}
+.kzCardScene{position:relative;flex:1;min-height:170px;border:0;border-radius:12px;overflow:hidden;background:#0b213a url('../assets/ui/khazanah/teman-night-math-v1.webp') center/cover;display:grid;place-items:center;margin:0 -8px}
+.kzCardScene::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0b1c32 0%,transparent 30%);pointer-events:none}
+.kzCardScene img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 9px 7px #0008)}
 .kzDeck .is-focus .kzCardScene img{animation:kzCardFloat 4s ease-in-out infinite}
 .kzCardScene.unseen img{filter:brightness(0) drop-shadow(0 0 12px #8acfff66);opacity:.75}
-.kzCardScene.unseen{background-position:20% center}
-.kzCardForm{position:absolute;bottom:8px;right:8px;font-size:10px;font-weight:800;color:#fff1bd;text-shadow:0 1px 4px #000}
-.kzCardInfo{display:flex;flex-direction:column;flex:1;padding-top:12px;min-height:110px}
-.kzCardStatus{font-size:12px;font-weight:900;color:#81571f}
-.kzCardStatus.tamed{color:#234a58}
-.kzCardInfo p{font-size:11px;line-height:1.5;margin:4px 0 10px;color:#5a625b}
-.kzBond{display:flex;justify-content:space-between;margin-top:auto;border-top:1px solid #cbbd99;padding-top:10px;font-size:11px;color:#5f614f}
-.kzBond b{color:#213c4a;font-size:12px}
-.kzRescue{margin-top:auto;border-top:1px solid #cbbd99;padding-top:9px}
-.kzRescue>div:first-child{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#675b41}
-.kzRescueBar{height:5px;margin:7px 0;border-radius:6px;background:#ddd0af;overflow:hidden}
-.kzRescueBar i{display:block;height:100%;background:#b48534;border-radius:inherit}
-.kzRescue small,.kzDiscovery{font-size:10px;line-height:1.45;color:#675b41}
-.kzDiscovery{margin-top:auto}
+.kzCardForm{position:absolute;bottom:10px;right:12px;z-index:1;font-size:10px;font-weight:700;color:#f6dc9a;text-shadow:0 1px 4px #000}
+.kzCardInfo{display:flex;flex-direction:column;flex:none;padding-top:12px;min-height:90px}
+.kzCardStatus{font-size:12px;font-weight:700;color:#f6dc9a}
+.kzCardStatus.tamed{color:#c6e5ee}
+.kzCardInfo p{font-size:11px;line-height:1.5;margin:4px 0 10px;color:#93aec3}
+.kzBond{display:flex;justify-content:space-between;border-top:1px solid #31516b;padding-top:9px;font-size:11px;color:#93aec3}
+.kzBond b{color:#e1eaf2;font-size:12px}
+.kzRescue{border-top:1px solid #31516b;padding-top:9px}
+.kzRescue>div:first-child{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#a9bdce}
+.kzRescueBar{height:4px;margin:7px 0;border-radius:6px;background:#213e57;overflow:hidden}
+.kzRescueBar i{display:block;height:100%;background:#e3bf66;border-radius:inherit}
+.kzRescue small,.kzDiscovery{font-size:10px;line-height:1.45;color:#93aec3}
 .kzDeckNav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:0}
 .kzDeckNav>button{width:42px;height:42px;border:1px solid #d4ac5166;border-radius:50%;background:#14243b;color:#f6dc9a;font-size:26px;cursor:pointer}
 .kzDeckNav>button:disabled{opacity:.3;cursor:default}
@@ -305,7 +305,7 @@
 .kzDetailSheet::backdrop{background:#030b18df;backdrop-filter:blur(5px)}
 .kzSheetClose{position:absolute;right:18px;top:0;width:36px;height:36px;border:1px solid #f6dc9a66;border-radius:50%;background:#13243b;color:#f6dc9a;font-size:27px;cursor:pointer}
 .kzFullCard{animation:kzCardReveal .35s cubic-bezier(.2,.7,.25,1) both}
-.kzFullFace{min-height:0;padding:14px}
+.kzFullFace{height:auto;min-height:0;padding:16px}.kzFullCard .kzCardScene{flex:none;height:240px}.kzFullCard .kzCardInfo{min-height:0}
 .kzFullCard .kzCardHeading h2{font-size:24px}
 .kzDetailActions{margin-top:14px;display:grid;gap:10px;padding:14px;border:1px solid #61728955;border-radius:12px;background:#0c1b30}
 .kzDetailActions:empty{display:none}
@@ -318,6 +318,7 @@
 .kzDetailActions .kzCta{min-height:46px;font-size:14px;letter-spacing:0}
 .kzDetailActions .kzCta:disabled{background:#173b42;color:#a1d4cf;box-shadow:none;cursor:default}
 @keyframes kzCardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes kzCardReveal{from{opacity:0;transform:translateY(16px) rotateY(-9deg) scale(.95)}to{opacity:1;transform:none}}
-@media(min-width:640px){.kzDeck{--card-width:300px}#badgeCollection.kzGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@keyframes kzCardReveal{from{opacity:0;transform:translateY(16px) rotateZ(-3deg) scale(.95)}to{opacity:1;transform:none}}
+@media(min-width:640px){#badgeCollection.kzGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.kzDeck .kzTradingCard,.kzFullCard,.kzDeckDots button::after{transition:none;animation:none}.kzDeck .is-focus .kzCardScene img{animation:none}}
+
