@@ -1,40 +1,34 @@
-"""Promo 4 — gaya pelancaran "Muse": kanvas bersih, UI sebenar terapung, zoom-tembus, ikon sebaris (54 s).
+"""Promo 4 v2 — gaya pelancaran "Muse" dengan gameplay sebenar sebagai teras (56 s).
 
 Koordinat dunia = piksel skrin apabila kamera (cx 540, cy 960, z 1).
-Muzik 120 BPM (1 bar = 2 s): drop tepat pada serangan (30 s) dan Evolusi Bara (40 s), outro pada kad akhir (50 s).
+Hampir setiap babak ialah kad video rakaman sebenar yang terapung; transisi Muse (letupan jubin, ikon/klip
+sebaris dalam ayat, zoom-tembus, templat slot, butang → skrin penuh) menyambungkan babak.
+Muzik 120 BPM (1 bar = 2 s): drop pada Jurus Penamat (16 s) dan Evolusi Bara (40 s), outro pada kad akhir (52 s).
 """
-import os
-from muse import (Img, Vid, Line, Bubble, Check, Burst, Confetti, Panel, Tap, asset, rounded, rich_img,
-                  INK, BLUE, BUILD)
+from muse import (Img, Vid, Tiles, Line, Bubble, Check, Confetti, Panel, Tap, asset, rounded, rich_img, INK, BLUE)
 
-DURATION = 54.0
+DURATION = 56.0
 WHITE = (255, 255, 255)
-GOLD = (214, 158, 24)
 YELLOW = (255, 205, 60)
 NAVY = (14, 22, 54)
+LIGHT = (246, 247, 250)
 
-ICON = rounded(asset('assets/icons/pa-master-1024.png', 520), 116)
 ICON_S = rounded(asset('assets/icons/pa-master-1024.png', 220), 50)
-PDF = os.path.join(BUILD, 'pdf_ws-1.png')
+ICON = rounded(asset('assets/icons/pa-master-1024.png', 520), 116)
 
-OBJ = ['assets/questions/money/money_10sen.png', 'assets/missions/v2/kiraan.webp', 'assets/questions/counting/apple.png',
-       'assets/ui/star-earned-v1.webp', 'assets/questions/money/money_rm5.png', 'assets/missions/v2/masa.webp',
-       'assets/questions/counting/rambutan.png', 'assets/enemies/minions/pigiramid.webp', 'assets/questions/money/money_50sen.png',
-       'assets/missions/v2/pecahan.webp', 'assets/questions/counting/watermelon_slice.png', 'assets/ui/trophies-v1/bintang-sempurna.png',
-       'assets/questions/counting/orange.png', 'assets/missions/v2/wang.webp', 'assets/questions/money/money_rm1.png',
-       'assets/enemies/minions/askabus.webp', 'assets/questions/counting/starfruit_slice.png', 'assets/missions/v2/ruang.webp',
-       'assets/fx/reward/coin-v1.webp', 'assets/questions/counting/balloon.png', 'assets/missions/v2/tambah-tolak.webp',
-       'assets/questions/money/money_20sen.png', 'assets/enemies/minions/syilinggit.webp', 'assets/questions/counting/pencil.png',
-       'assets/missions/v2/ukuran.webp', 'assets/ui/trophies-v1/yakin-sendiri.png', 'assets/questions/counting/candy.png',
-       'assets/missions/v2/data.webp', 'assets/questions/money/money_rm10.png', 'assets/enemies/minions/wipening.webp']
+# kawasan potongan rakaman telefon 1080×2236 (pecahan)
+ARENA = (0.0, 0.0, 1.0, 0.372)       # pengepala + arena battle
+QPANEL = (0.0, 0.395, 1.0, 0.885)    # kad soalan + jawapan
+GAME = (0.0, 0.0, 1.0, 0.885)        # skrin permainan tanpa bar bawah
+SQ_ARENA = (0.1, 0.0, 0.9, 0.386)    # jubin segi empat: arena
+SQ_Q = (0.0, 0.40, 1.0, 0.883)       # jubin segi empat: soalan
 
-PETS = ['assets/pets/collection/ketupat-kura/idle.png', 'assets/pets/collection/kumbang-manggis/idle.png',
-        'assets/pets/collection/harimau-bunga/idle.png', 'assets/pets/collection/arnab-kek-lapis/idle.png',
-        'assets/pets/collection/durian-kerbau/idle.png']
+
+def sq(v0):
+    return (0.0, v0, 1.0, v0 + 0.483)
 
 
 def words(t, text, gap=0.14, **opt):
-    """'a b c' → token bermasa satu perkataan demi satu."""
     return [(t + i * gap, w, opt) for i, w in enumerate(text.split())]
 
 
@@ -42,186 +36,211 @@ def cam(*keys):
     return list(keys)
 
 
-# ---------------------------------------------------------------- babak
-
 SCENES = []
 
-# S1 0–2.6: ikon app → letupan objek
-SCENES.append(dict(t0=0.0, bg='light', cam=cam((0, dict(z=1.0)), (2.6, dict(z=1.1), 'linear')), els=[
-    Burst(OBJ, 0.65, 2.55, 540, 960, cols=5, rows=9, cell=215, size=150, seed=7, hole=(250, 690, 830, 1230)),
-    Img(ICON, 0.1, 2.6, [(0.1, dict(x=540, y=960, s=0.78)), (0.7, dict(s=0.7), 'back'), (2.6, dict(s=0.76))], shadow=0.9, pop=0.5),
+# ---------------------------------------------------------------- S1 0–2.4: ikon app → letupan jubin gameplay hidup
+GRID = [(195, 270), (540, 270), (885, 270), (195, 615), (540, 615), (885, 615), (195, 960), (885, 960),
+        (195, 1305), (540, 1305), (885, 1305), (195, 1650), (540, 1650), (885, 1650)]
+TILES1 = [('src_O.mp4', SQ_ARENA, 62.6), ('src_C.mp4', SQ_ARENA, 12.3), ('src_K.mp4', sq(0.2), 13.2),
+          ('src_B.mp4', SQ_Q, 18.0), ('src_B.mp4', sq(0.18), 6.0), ('src_A.mp4', sq(0.08), 0.5),
+          ('src_T.mp4', sq(0.12), 2.0), ('src_O.mp4', SQ_ARENA, 91.4),
+          ('src_K.mp4', sq(0.1), 2.2), ('src_C.mp4', SQ_ARENA, 13.8), ('src_R.mp4', sq(0.1), 4.3),
+          ('src_O.mp4', SQ_ARENA, 81.6), ('src_K.mp4', sq(0.12), 16.2), ('src_O.mp4', SQ_ARENA, 119.6)]
+SCENES.append(dict(t0=0.0, bg='light', cam=cam((0, dict(z=1.04)), (2.4, dict(z=1.12), 'linear')), els=[
+    Tiles(TILES1, GRID, 0.3, 2.4, 540, 960, size=300, collapse=1.95),
+    Img(ICON, 0.05, 2.4, [(0.05, dict(x=540, y=960, s=0.62)), (0.45, dict(s=0.56), 'back'), (1.95, dict()), (2.35, dict(s=0.7), 'in')],
+        shadow=0.9, pop=0.45, out=0.1),
 ]))
 
-# S2 2.6–5.2: Memperkenalkan / Pahlawan Angka
-SCENES.append(dict(t0=2.6, bg='light', cam=cam((2.6, dict(z=1.0)), (5.2, dict(z=1.05), 'linear')), els=[
-    Line([(2.75, 'Memperkenalkan')], 540, 880, 64, 5.1, color=(96, 104, 124), weight='InterDisplay-SemiBold.otf'),
-    Line([(3.2, 'Pahlawan'), (3.35, 'Angka', dict(color=BLUE))], 540, 1000, 112, 5.1),
+# ---------------------------------------------------------------- S2 2.4–4.2: Memperkenalkan / [ikon] Pahlawan Angka
+SCENES.append(dict(t0=2.4, bg='light', cam=cam((2.4, dict(z=1.0)), (4.2, dict(z=1.05), 'linear')), els=[
+    Line([(2.5, 'Memperkenalkan')], 540, 880, 62, 4.1, color=(96, 104, 124), weight='InterDisplay-SemiBold.otf'),
+    Line([(2.85, ('i', ICON_S), dict(icon=1.0)), (3.0, 'Pahlawan'), (3.15, 'Angka', dict(color=BLUE))], 540, 1000, 104, 4.1),
 ]))
 
-# S3 5.2–9.6: ayat dengan ikon sebaris → zoom-tembus ke Wira
-SCENES.append(dict(t0=5.2, bg='light', cam=cam((5.2, dict(z=1.0)), (8.9, dict(z=1.06), 'linear'),
-                                                  (9.6, dict(cx=600, cy=1150, z=5.0), 'in')), els=[
-    Line([*words(5.35, 'Pahlawan Angka'), (5.65, ('i', ICON_S), dict(icon=1.05)), (5.8, 'ialah')], 540, 740, 84, 9.6, out=0),
-    Line([(6.15, 'pengembaraan'), (6.35, ('i', 'assets/missions/v2/kiraan.webp'), dict(icon=1.35))], 540, 870, 84, 9.6, out=0),
-    Line([(6.75, 'matematik'), (6.95, ('i', 'assets/ui/star-earned-v1.webp'), dict(icon=1.1)), (7.1, 'KSSR', dict(color=BLUE))],
-         540, 1000, 84, 9.6, out=0),
-    Line([*words(7.5, 'untuk anak'), (7.8, ('i', 'assets/heroes/wira-chibi/frames/happy-05-v2.webp'), dict(icon=1.6)), (8.0, 'anda.')],
-         540, 1140, 84, 9.6, out=0),
+# ---------------------------------------------------------------- S3 4.2–8.0: ayat dengan klip hidup sebaris → zoom-tembus ke battle
+L3a = Line([(4.35, 'Pengembaraan'), (4.6, ('vid', 'src_B.mp4', (0.1, 0.18, 0.9, 0.58), 5.7, 0.6), dict(icon=1.6))], 540, 775, 86, 8.0, out=0)
+L3b = Line([(5.0, 'matematik'), (5.25, ('vid', 'src_C.mp4', ARENA, 7.55), dict(icon=1.6)), (5.5, 'KSSR', dict(color=BLUE))],
+           540, 950, 86, 8.0, out=0)
+L3c = Line(words(5.9, 'Darjah 1 hingga 6.', 0.13), 540, 1115, 86, 8.0, out=0)
+BX, BY, BW = L3b.centers()[1]
+Z_IN = 1026 / BW
+SCENES.append(dict(t0=4.2, bg='light', cam=cam((4.2, dict(z=1.0)), (7.2, dict(z=1.05), 'linear'),
+                                                  (8.0, dict(cx=BX, cy=BY, z=Z_IN), 'in')), els=[L3a, L3b, L3c]))
+
+# ---------------------------------------------------------------- S4 8.0–16.0: UI battle dipisahkan (arena + soalan hidup)
+AW, QW = 900, 820
+AY, QY = 455, 1310
+QTOP = QY - QW * (0.885 - 0.395) * 2236 / 1080 / 2        # tepi atas kad soalan (dunia)
+QH = QW * (0.885 - 0.395) * 2236 / 1080
+TEXT_Y = QTOP + (0.495 - 0.395) / 0.49 * QH
+PAGI = (540 + (0.67 - 0.5) * QW, QTOP + (0.806 - 0.395) / 0.49 * QH)
+
+# S4a 8.0–10.0: mula sebesar klip sebaris, tarik keluar → zoom ke teks soalan
+SCENES.append(dict(t0=8.0, bg='light', cam=cam((8.0, dict(cx=540, cy=AY, z=1026 / AW)), (8.75, dict(cx=540, cy=960, z=1.0), 'smooth'),
+                                                  (9.35, dict(z=1.02), 'linear'), (10.0, dict(cx=540, cy=TEXT_Y, z=2.5), 'in')), els=[
+    Vid('src_C.mp4', ARENA, 8.0, 10.0, [(10.4, 10.9, 1.6), (10.9, 10.9, 0.4)], [(8.0, dict(x=540, y=AY))], width=AW, radius=40,
+        shadow=0.7, pop=False, out=0),
+    Vid('src_C.mp4', QPANEL, 8.0, 10.0, [(10.4, 10.9, 1.6), (10.9, 10.9, 0.4)], [(8.0, dict(x=540, y=QY + 60, a=0.0)),
+                                                                                  (8.6, dict(y=QY, a=1.0), 'out')],
+        width=QW, radius=40, shadow=0.7, pop=False, out=0),
 ]))
 
-# S4a 9.6–11.2: soalan sebenar terapung → zoom ke teks soalan
-Q_X, Q_Y, Q_S = 540, 860, 0.8
-WIRA = 'assets/heroes/wira-chibi/frames/happy-05-v2.webp'
-SCENES.append(dict(t0=9.6, bg='light', cam=cam((9.6, dict(z=1.0)), (10.55, dict(z=1.04), 'linear'),
-                                                  (11.2, dict(cx=540, cy=630, z=2.7), 'in')), els=[
-    Img('muse/q_neutral.png', 9.65, 11.2, [(9.65, dict(x=Q_X, y=Q_Y, s=Q_S, r=-1.5)), (10.6, dict(r=0))], shadow=0.8, out=0),
-    Img(WIRA, 9.9, 11.2, [(9.9, dict(x=215, y=1560, s=0.44))], size=900, shadow=0.4, out=0),
-    Bubble('Jom jawab!', 10.1, 11.2, 330, 1490, size=44, align='l'),
+# S4b 10.0–12.0: teks soalan gergasi, kamera menyorot
+BIG = rich_img([[('Matahari baru', BLUE)], [('terbit', BLUE), (' dan murid', INK)], [('bersiap ke sekolah.', INK)],
+                [('Waktu yang paling', INK)], [('sesuai?', INK)]], 140)
+SCENES.append(dict(t0=10.0, bg='light', cam=cam((10.0, dict(cx=420, cy=900, z=1.25)), (11.45, dict(cx=640, cy=1010, z=1.08), 'linear'),
+                                                   (12.0, dict(cx=640, cy=1040, z=0.9), 'in')), els=[
+    Img(BIG, 10.0, 12.0, [(10.0, dict(x=540, y=960, s=0.9, a=0.0)), (10.25, dict(s=1.0, a=1.0), 'out')], shadow=0, pop=0, out=0.15),
 ]))
 
-# S4b 11.2–13.6: teks soalan gergasi, kamera menyorot
-BIG = rich_img([[('Wang sebanyak', INK)], [('RM41.25', BLUE), (' dibahagi', INK)], [('sama rata kepada', INK)],
-                [('5 orang', BLUE), ('. Berapa', INK)], [('setiap orang dapat?', INK)]], 138)
-SCENES.append(dict(t0=11.2, bg='light', cam=cam((11.2, dict(cx=420, cy=900, z=1.25)), (13.0, dict(cx=640, cy=1010, z=1.08), 'linear'),
-                                                   (13.6, dict(cx=640, cy=1040, z=0.9), 'in')), els=[
-    Img(BIG, 11.2, 13.6, [(11.2, dict(x=540, y=960, s=0.9, a=0.0)), (11.45, dict(s=1.0, a=1.0), 'out')], shadow=0, pop=0, out=0.15),
+# S4c 12.0–16.0: zoom keluar → tekan "pagi" → Betul ✓ → Jurus Penamat, arena membesar
+SCENES.append(dict(t0=12.0, bg='light', cam=cam((12.0, dict(cx=540, cy=TEXT_Y, z=2.2)), (12.5, dict(cx=540, cy=960, z=1.0), 'out'),
+                                                   (14.2, dict()), (16.0, dict(cy=900, z=1.05), 'in')), els=[
+    Vid('src_C.mp4', QPANEL, 12.0, 16.0, [(10.5, 14.5, 4.0)], [(12.0, dict(x=540, y=QY)), (14.1, dict()),
+                                                              (14.9, dict(y=QY + 420, a=0.0, r=4), 'in')],
+        width=QW, radius=40, shadow=0.7, pop=False, out=0),
+    Vid('src_C.mp4', ARENA, 12.0, 16.0, [(10.5, 14.5, 4.0)], [(12.0, dict(x=540, y=AY)), (14.1, dict()),
+                                                             (15.6, dict(y=760, s=1.15), 'smooth')],
+        width=AW, radius=40, shadow=0.7, pop=False, out=0),
+    Tap(13.15, *PAGI),
+    Check(13.4, 14.4, 400, TEXT_Y + 250, r=46),
+    Bubble('Betul!', 13.55, 14.4, 460, TEXT_Y + 250, size=46, align='l', type_speed=0.04),
 ]))
 
-# S4c 13.6–17.6: zoom keluar → tekan RM8.25 → Betul! ✓
-SCENES.append(dict(t0=13.6, bg='light', cam=cam((13.6, dict(cx=540, cy=640, z=2.3)), (14.1, dict(cx=540, cy=960, z=1.0), 'out'),
-                                                   (16.95, dict(z=1.04), 'linear'), (17.6, dict(cx=470, cy=1520, z=5.0), 'in')), els=[
-    Img('muse/q_neutral.png', 13.6, 14.45, [(13.6, dict(x=Q_X, y=Q_Y, s=Q_S))], shadow=0.8, pop=0, out=0),
-    Img('muse/q_correct.png', 14.45, 17.6, [(14.45, dict(x=Q_X, y=Q_Y, s=Q_S * 0.965)), (14.75, dict(s=Q_S), 'back')],
-        shadow=0.8, pop=0, out=0),
-    Tap(14.22, 348, 1214, dur=0.3),
-    Img(WIRA, 13.6, 14.75, [(13.6, dict(x=215, y=1560, s=0.44))], size=900, shadow=0.4, pop=0, out=0.12),
-    Img('assets/heroes/wira-chibi/frames/victory-v1.webp', 14.65, 17.6, [(14.65, dict(x=215, y=1545, s=1.35))], shadow=0.4, pop=0.4, out=0),
-    Check(14.75, 17.6, 450, 1520, r=46),
-    Bubble('Betul!  Kunci retak.', 14.95, 17.6, 515, 1520, size=44, align='l', type_speed=0.03),
+# ---------------------------------------------------------------- S5 16.0–19.6: (gelap) DROP — serangan & teman ditemui
+SCENES.append(dict(t0=16.0, bg='dark', cam=cam((16.0, dict(z=1.06)), (16.5, dict(z=1.0), 'out'), (19.6, dict(z=1.03), 'linear')), els=[
+    Vid('src_C.mp4', ARENA, 16.0, 19.6, [(14.5, 18.1, 3.6)], [(16.0, dict(x=540, y=760, s=1.15)), (19.25, dict()),
+                                                            (19.6, dict(y=-520), 'in')],
+        width=AW, radius=40, shadow=0.0, pop=False, out=0),
+    Line(words(16.15, 'Setiap jawapan betul'), 540, 1330, 80, 19.5, color=WHITE, out=0.25),
+    Line(words(16.5, 'jadi serangan!', color=YELLOW), 540, 1445, 80, 19.5, color=WHITE, out=0.25),
+    Bubble('Teman baharu ditemui!', 17.25, 19.5, 540, 1610, size=44, fill=YELLOW, type_speed=0.025),
 ]))
 
-# S5 17.6–25.6: templat "Matematik yang / [ikon] … / untuk anak anda."
-SLOTS = [
-    ('assets/coach/cikgu-dimensi/hub-portrait-v1.webp', 'ikut kemampuan', 1.45),
-    ('assets/missions/v2/tambah-tolak.webp', 'jadi pengembaraan', 1.35),
-    ('assets/enemies/minions/askabus.webp', 'ada cabaran', 1.5),
-    ('assets/ui/star-earned-v1.webp', 'beri ganjaran', 1.15),
-    ('assets/pets/aurora/front.webp', 'ada teman', 1.5),
-    (PDF, 'boleh dicetak', 1.4),
+# ---------------------------------------------------------------- S6 19.6–27.6: templat "Setiap topik / [ikon] X / jadi pengembaraan."
+TOPICS = [
+    ('assets/missions/v2/kiraan.webp', 'Nombor', 'src_O.mp4', (61.9, 63.7)),
+    ('assets/missions/v2/wang.webp', 'Wang', 'src_B.mp4', (17.6, 19.0)),
+    ('assets/missions/v2/masa.webp', 'Masa', 'src_O.mp4', (90.9, 92.5)),
+    ('assets/missions/v2/ruang.webp', 'Ruang', 'src_O.mp4', (68.9, 70.4)),
+    ('assets/missions/v2/data.webp', 'Data', 'src_O.mp4', (119.2, 120.8)),
+    ('assets/missions/v2/pecahan.webp', '& banyak lagi', 'src_T.mp4', (1.7, 3.6)),
 ]
-slot_els = []
-for i, (ic, txt, isz) in enumerate(SLOTS):
-    t = 18.3 + i * 1.2
-    last = i == len(SLOTS) - 1
-    slot_els.append(Line([(t, ('i', ic), dict(icon=isz)), *words(t + 0.1, txt, 0.1, color=BLUE)], 540, 960, 92,
-                         25.55 if last else t + 1.35, out=0.25 if not last else 0.3, exit_up=0 if last else 70))
-SCENES.append(dict(t0=17.6, bg='light', cam=cam((17.6, dict(z=1.0)), (25.6, dict(z=1.06), 'linear')), els=[
-    Line(words(17.75, 'Matematik yang'), 540, 790, 80, 25.55, color=(70, 76, 96)),
-    *slot_els,
-    Line(words(18.0, 'untuk anak anda.'), 540, 1135, 80, 25.55, color=(70, 76, 96)),
+CW, CY, STEP = 580, 655, 1.3
+topic_els = []
+for i, (ic, name, src, (a, b)) in enumerate(TOPICS):
+    t = 19.75 + i * STEP
+    last = i == len(TOPICS) - 1
+    t1 = 27.6 if last else t + STEP + 0.12
+    keys = [(t - 0.05, dict(x=1380, y=CY, r=9)), (t + 0.25, dict(x=540, r=0), 'out')]
+    if not last:
+        keys += [(t + STEP - 0.15, dict()), (t + STEP + 0.12, dict(x=-300, r=-9), 'in')]
+    topic_els.append(Vid(src, GAME, t - 0.05, t1, [(a, b, t1 - t + 0.05)], keys, width=CW, radius=34, shadow=0.75,
+                         pop=False, out=0.2 if last else 0))
+    topic_els.append(Line([(t, ('i', ic), dict(icon=1.35)), (t + 0.08, name, dict(color=BLUE))], 540, 1420, 96,
+                          27.55 if last else t + STEP + 0.1, out=0.3 if last else 0.2, exit_up=0 if last else 60))
+SCENES.append(dict(t0=19.6, bg='light', cam=cam((19.6, dict(z=1.0)), (27.6, dict(z=1.04), 'linear')), els=[
+    *topic_els,
+    Line(words(19.8, 'Setiap topik'), 540, 1285, 72, 27.55, color=(70, 76, 96)),
+    Line(words(20.0, 'jadi pengembaraan.'), 540, 1555, 72, 27.55, color=(70, 76, 96)),
 ]))
 
-# S6a 25.6–29.3: 3 fokus dipilih ikut jawapan → tekan Latih → panel navy
-FC = [(800, -1.5), (1062, 1.2), (1322, -0.8)]
-SCENES.append(dict(t0=25.6, bg='light', cam=cam((25.6, dict(z=1.0)), (28.5, dict(z=1.04), 'linear')), els=[
-    Line(words(25.75, 'Fokus latihan dipilih'), 540, 420, 76, 29.3, out=0),
-    Line(words(26.1, 'ikut jawapan anak.', color=BLUE), 540, 525, 76, 29.3, out=0),
-    *[Img(f'muse/focus{i + 1}.png', 26.4 + i * 0.25, 29.3, [(26.4, dict(x=540, y=y, s=0.86, r=r))], shadow=0.7, bob=4, out=0)
-      for i, (y, r) in enumerate(FC)],
-    Tap(28.55, 803, 800, color=WHITE),
-    Panel(28.8, 29.3, 803, 800, 150, 80, NAVY, grow=0.5),
+# ---------------------------------------------------------------- S7 27.6–33.2: (gelap) Gangsa → Perak → Emas, rakaman hidup
+TIERS = [('gangsa', 'Gangsa', (236, 150, 96), 'src_O.mp4', (68.95, 70.45), 27.6, 29.1),
+         ('perak', 'Perak', (200, 210, 228), 'src_C.mp4', (7.3, 8.8), 29.1, 30.6),
+         ('emas', 'Emas', YELLOW, 'src_O.mp4', (111.6, 114.3), 30.6, 33.2)]
+tier_els = []
+for k, name, col, src, (a, b), t0, t1 in TIERS:
+    last = k == 'emas'
+    tier_els.append(Vid(src, GAME, t0, t1, [(a, b, t1 - t0)],
+                        [(t0, dict(x=540, y=1080, s=0.92)), (t0 + 0.3, dict(s=1.0), 'out')] +
+                        ([] if last else [(t1 - 0.15, dict()), (t1, dict(s=0.9, a=0.0), 'in')]),
+                        width=600, radius=36, shadow=0.0, pop=False, fade_in=0.12, out=0.25 if last else 0))
+    tier_els.append(Line([(t0 + 0.05, ('i', f'assets/fx/segel/{k}-v2.png'), dict(icon=1.5)), (t0 + 0.12, 'Kunci', {}),
+                          (t0 + 0.2, name, dict(color=col))], 540, 330, 84, t1 + 0.05, color=WHITE, out=0.15 if not last else 0.25))
+SCENES.append(dict(t0=27.6, bg='dark', cam=cam((27.6, dict(z=1.0)), (33.2, dict(z=1.04), 'linear')), els=[
+    Line(words(27.7, 'Tiga tahap kunci'), 540, 190, 46, 33.1, color=(150, 166, 204), weight='InterDisplay-SemiBold.otf'),
+    *tier_els,
+    Bubble('taip jawapan sendiri', 30.9, 33.15, 540, 1720, size=46, fill=(226, 236, 255), type_speed=0.04),
 ]))
 
-# S6b 29.3–34.0: (gelap) setiap jawapan betul jadi serangan — rakaman sebenar Jurus Penamat
-SCENES.append(dict(t0=29.3, bg='dark', cam=cam((29.3, dict(z=1.0)), (34.0, dict(z=1.05), 'linear')), els=[
-    Line(words(29.4, 'Setiap jawapan betul'), 540, 300, 78, 33.95, color=WHITE, out=0.2),
-    Line(words(29.75, 'jadi serangan!', color=YELLOW), 540, 410, 78, 33.95, color=WHITE, out=0.2),
-    Vid('src_C.mp4', (0.0, 0.0, 1.0, 0.372), 30.0, 33.95, [(12.35, 16.3, 3.95)],
-        [(30.0, dict(x=540, y=1040, s=1.0)), (33.95, dict(s=1.05), 'linear')], width=980, radius=44, shadow=0.0),
-    Bubble('Teman baharu ditemui!', 33.15, 33.95, 540, 1570, size=44, fill=YELLOW, type_speed=0.025),
+# ---------------------------------------------------------------- S8 33.2–36.0: Khazanah — selamatkan & kumpul teman
+SCENES.append(dict(t0=33.2, bg='light', cam=cam((33.2, dict(z=1.0)), (35.4, dict(z=1.04), 'linear'),
+                                                   (36.0, dict(cy=1000, z=1.7), 'in')), els=[
+    Line(words(33.3, 'Selamatkan &'), 540, 300, 80, 36.0, out=0),
+    Line(words(33.6, 'kumpul teman.', color=BLUE), 540, 405, 80, 36.0, out=0),
+    Vid('src_K.mp4', (0.0, 0.05, 1.0, 0.80), 33.35, 36.0, [(1.6, 4.25, 2.65)], [(33.35, dict(x=540, y=1100, r=-1.5)), (34.5, dict(r=0))],
+        width=600, radius=36, shadow=0.75, out=0),
 ]))
 
-# S7 34.0–38.0: tiga tahap kunci → Kunci Emas: taip jawapan sendiri
-SEG = [('gangsa', 'Gangsa', (236, 150, 96), 200), ('perak', 'Perak', (196, 206, 224), 540), ('emas', 'Emas', YELLOW, 880)]
-seg_els = []
-for i, (k, name, col, x) in enumerate(SEG):
-    t = 34.4 + i * 0.2
-    if k == 'emas':
-        keys = [(t, dict(x=x, y=900, s=0.4)), (35.7, dict()), (36.2, dict(x=540, y=850, s=0.82), 'back')]
-        t1 = 38.0
-    else:
-        keys = [(t, dict(x=x, y=900, s=0.4)), (35.7, dict()), (36.0, dict(s=0.25, a=0.0), 'in')]
-        t1 = 36.05
-    seg_els.append(Img(f'assets/fx/segel/{k}-v2.png', t, t1, keys, size=700, shadow=0.3, bob=5, out=0))
-    seg_els.append(Line([(t + 0.1, name, dict(color=col))], x, 1120, 52, 35.75, out=0.2))
-SCENES.append(dict(t0=34.0, bg='dark', cam=cam((34.0, dict(z=1.0)), (37.4, dict(z=1.04), 'linear'),
-                                                   (38.0, dict(cx=540, cy=860, z=4.0), 'in')), els=[
-    Line(words(34.15, 'Tiga tahap kunci'), 540, 520, 84, 35.75, color=WHITE, out=0.25, exit_up=60),
-    *seg_els,
-    Line([(36.2, 'Kunci'), (36.32, 'Emas', dict(color=YELLOW))], 540, 1290, 84, 38.0, color=WHITE, out=0),
-    Bubble('taip jawapan sendiri', 36.55, 38.0, 540, 1420, size=46, fill=(226, 236, 255), type_speed=0.04),
+# ---------------------------------------------------------------- S9 36.0–42.0: (gelap) EVOLUSI BARA — drop 40 s
+SCENES.append(dict(t0=36.0, bg='dark', cam=cam((36.0, dict(z=1.0)), (39.9, dict(z=1.06), 'linear'), (40.0, dict(z=1.0)),
+                                                   (42.0, dict(z=1.03), 'linear')), els=[
+    Line(words(36.15, 'Teman pun membesar…'), 540, 215, 70, 41.9, color=WHITE, out=0.2),
+    Vid('src_K.mp4', (0.0, 0.1, 1.0, 0.75), 36.0, 42.0, [(12.0, 17.6, 5.6), (17.6, 17.6, 0.4)], [(36.0, dict(x=540, y=1010))],
+        width=900, radius=40, shadow=0.0, pop=False, fade_in=0.15, out=0.2),
+    Confetti(40.0, 42.0, n=170),
+    Bubble('Evolusi Bara!', 40.2, 41.9, 540, 1745, size=54, fill=(255, 228, 206), color=(196, 64, 20), type_speed=0.04),
 ]))
 
-# S8 38.0–44.0: teman membesar → EVOLUSI BARA (drop 40 s) → kumpul 6 teman
-BARA = 'assets/pets/evolution/fire/aurora/happy-v1.webp'
-RING = [(540 + 330 * c, 1080 + 330 * s) for c, s in [(0, -1), (0.866, -0.5), (0.866, 0.5), (0, 1), (-0.866, 0.5), (-0.866, -0.5)]]
-SCENES.append(dict(t0=38.0, bg='light', cam=cam((38.0, dict(z=1.0)), (39.9, dict(z=1.08), 'linear'), (40.0, dict(z=1.0)),
-                                                   (41.8, dict(z=1.03), 'linear'), (42.4, dict(z=1.0))), els=[
-    Line(words(38.15, 'Teman pun membesar'), 540, 430, 80, 41.7, out=0.25, exit_up=60),
-    Img('assets/pets/aurora/front.webp', 38.25, 40.0, [(38.25, dict(x=540, y=1000, s=0.6)), (39.3, dict()),
-                                                        (39.95, dict(s=0.66), 'in')], shadow=0.5, bob=6, out=0.1),
-    Img('assets/ui/evolution/emblem-bara-v1.png', 39.25, 40.02, [(39.25, dict(x=540, y=990, s=0.9)), (39.95, dict(s=1.05), 'in')],
-        size=560, shadow=0.4, pop=0.3, out=0.05),
-    Confetti(40.0, 43.8, n=150),
-    Img(BARA, 40.0, 44.0, [(40.0, dict(x=540, y=1000, s=1.25)), (41.8, dict()), (42.35, dict(x=RING[0][0], y=RING[0][1], s=0.56), 'smooth')],
-        shadow=0.5, pop=0.45, bob=6, out=0),
-    Bubble('Evolusi Bara!', 40.35, 41.75, 540, 1350, size=50, fill=(255, 228, 206), color=(196, 64, 20), type_speed=0.04),
-    Line([*words(42.0, 'Kumpul semua'), (42.3, '6', dict(color=BLUE)), (42.42, 'teman', dict(color=BLUE))], 540, 430, 80, 44.0, out=0),
-    *[Img(p, 42.25 + i * 0.12, 44.0, [(42.25, dict(x=RING[i + 1][0], y=RING[i + 1][1]))], size=250, shadow=0.4, bob=5, out=0)
-      for i, p in enumerate(PETS)],
+# ---------------------------------------------------------------- S10 42.0–46.4: ibu bapa — kad laporan, fokus & kunci hidup
+SCENES.append(dict(t0=42.0, bg='light', cam=cam((42.0, dict(z=1.05)), (46.4, dict(z=1.0), 'linear')), els=[
+    Line(words(42.15, 'Mak ayah pun nampak'), 540, 290, 72, 46.35, out=0.2),
+    Line(words(42.5, 'kemajuan anak.', color=BLUE), 540, 390, 72, 46.35, out=0.2),
+    Vid('src_R.mp4', (0.0, 0.04, 1.0, 0.86), 42.5, 46.35, [(4.3, 6.8, 2.5), (6.8, 6.8, 1.35)], [(42.5, dict(x=285, y=1060, r=-2))],
+        width=470, radius=30, shadow=0.75, out=0.2),
+    Vid('src_F.mp4', (0.06, 0.1, 0.94, 0.84), 42.8, 46.35, [(0.2, 1.4, 1.2), (1.4, 1.4, 2.35)], [(42.8, dict(x=790, y=890, r=2))],
+        width=420, radius=30, shadow=0.75, out=0.2),
+    Vid('src_F.mp4', (0.03, 0.15, 0.97, 0.55), 43.1, 46.35, [(12.1, 12.5, 0.4), (12.5, 12.5, 2.85)], [(43.1, dict(x=770, y=1520, r=3))],
+        width=480, radius=30, shadow=0.8, out=0.2),
+    Bubble('Laporan kemahiran', 42.9, 46.35, 285, 1545, size=32, fill=(226, 236, 255), type_speed=0),
+    Bubble('Fokus pilihan app', 43.2, 46.35, 790, 480, size=32, fill=(226, 236, 255), type_speed=0),
+    Bubble('Kunci battle (PIN)', 43.5, 46.35, 770, 1775, size=32, fill=(226, 236, 255), type_speed=0),
 ]))
 
-# S9 44.0–47.6: ibu bapa nampak kemajuan
-SCENES.append(dict(t0=44.0, bg='light', cam=cam((44.0, dict(z=1.04)), (47.6, dict(z=1.0), 'linear')), els=[
-    Line(words(44.15, 'Mak ayah pun nampak'), 540, 380, 76, 47.55, out=0.2),
-    Line(words(44.5, 'kemajuan anak.', color=BLUE), 540, 482, 76, 47.55, out=0.2),
-    Img('muse/report.png', 44.65, 47.55, [(44.65, dict(x=540, y=748, s=0.86, r=-1.2))], shadow=0.7, bob=4, out=0.2),
-    Img('muse/fokus_seterusnya.png', 44.9, 47.55, [(44.9, dict(x=540, y=1010, s=0.86, r=1.0))], shadow=0.7, bob=4, out=0.2),
-    Img('muse/lock.png', 45.15, 47.55, [(45.15, dict(x=300, y=1420, s=0.37, r=-4))], shadow=0.8, bob=5, out=0.2),
-    Img(PDF, 45.4, 47.55, [(45.4, dict(x=785, y=1420, s=0.3, r=4))], shadow=0.8, bob=5, out=0.2),
-    Bubble('Laporan kemahiran', 45.0, 47.55, 540, 575, size=34, fill=(226, 236, 255), type_speed=0),
-    Bubble('Kunci battle', 45.3, 47.55, 300, 1680, size=34, fill=(226, 236, 255), type_speed=0),
-    Bubble('Worksheet PDF', 45.55, 47.55, 785, 1680, size=34, fill=(226, 236, 255), type_speed=0),
+# ---------------------------------------------------------------- S11 46.4–49.0: semua skrin (audio rakaman dibisukan)
+SCENES.append(dict(t0=46.4, bg='light', cam=cam((46.4, dict(z=1.04)), (49.0, dict(z=1.0), 'linear')), els=[
+    Line([(46.5, 'Telefon,'), (46.7, 'laptop,'), (46.95, 'tablet,'), (47.2, 'TV.', dict(color=BLUE))], 540, 300, 76, 48.95, out=0.2),
+    Vid('src_LAP.mp4', (0.0, 0.0, 1.0, 1.0), 46.7, 48.95, [(12.0, 14.25, 2.25)], [(46.7, dict(x=540, y=720, r=-1))],
+        width=860, radius=26, shadow=0.75, out=0.2),
+    Vid('src_TAB.mp4', (0.0, 0.0, 1.0, 1.0), 46.95, 48.95, [(24.0, 26.0, 2.0)], [(46.95, dict(x=290, y=1380, r=-2))],
+        width=380, radius=26, shadow=0.75, out=0.2),
+    Vid('src_TV1.mp4', (0.0, 0.15, 1.0, 0.75), 47.2, 48.95, [(0.5, 2.25, 1.75)], [(47.2, dict(x=770, y=1380, r=2))],
+        width=440, radius=26, shadow=0.75, out=0.2),
 ]))
 
-# S10 47.6–50.0: medan ikon + slogan → panel gelap
-SCENES.append(dict(t0=47.6, bg='light', cam=cam((47.6, dict(z=1.1)), (50.0, dict(z=1.0), 'linear')), els=[
-    Burst(OBJ[::-1], 47.6, 50.0, 540, 960, cols=5, rows=9, cell=215, size=150, seed=3, hole=(150, 730, 930, 1190), collapse=49.35),
-    Line([(47.85, 'Belajar.')], 540, 850, 100, 49.6, out=0.2),
-    Line([(48.25, 'Bertarung.')], 540, 965, 100, 49.6, out=0.2),
-    Line([(48.65, 'Jadi'), (48.75, 'Pahlawan.', dict(color=BLUE))], 540, 1080, 100, 49.6, out=0.2),
-    Panel(49.5, 50.0, 540, 960, 60, 60, NAVY, grow=0.48, radius=30),
+# ---------------------------------------------------------------- S12 49.0–52.0: slogan dalam medan jubin hidup → panel gelap
+GRID2 = [(195, 270), (540, 270), (885, 270), (195, 600), (885, 600), (195, 1320), (885, 1320), (195, 1650), (540, 1650), (885, 1650)]
+TILES2 = [('src_C.mp4', SQ_ARENA, 13.6), ('src_K.mp4', sq(0.12), 16.4), ('src_O.mp4', SQ_ARENA, 92.0), ('src_B.mp4', sq(0.18), 6.6),
+          ('src_O.mp4', SQ_ARENA, 120.0), ('src_K.mp4', sq(0.1), 3.0), ('src_C.mp4', SQ_Q, 11.0), ('src_A.mp4', sq(0.08), 1.5),
+          ('src_O.mp4', SQ_ARENA, 63.0), ('src_T.mp4', sq(0.12), 3.0)]
+SCENES.append(dict(t0=49.0, bg='light', cam=cam((49.0, dict(z=1.1)), (52.0, dict(z=1.0), 'linear')), els=[
+    Tiles(TILES2, GRID2, 49.0, 52.0, 540, 960, size=290, collapse=51.15, seed=8),
+    Line([(49.25, 'Belajar.')], 540, 830, 100, 51.3, out=0.2),
+    Line([(49.65, 'Bertarung.')], 540, 950, 100, 51.3, out=0.2),
+    Line([(50.05, 'Jadi'), (50.15, 'Pahlawan.', dict(color=BLUE))], 540, 1070, 100, 51.3, out=0.2),
+    Panel(51.5, 52.0, 540, 960, 60, 60, NAVY, grow=0.48, radius=30),
 ]))
 
-# S11 50.0–54.0: kad akhir gelap
-SCENES.append(dict(t0=50.0, bg='dark', cam=cam((50.0, dict(z=1.0)), (54.0, dict(z=1.04), 'linear')), els=[
-    Img('assets/branding/pahlawan-angka-full-logo-v1.png', 50.05, 54.0, [(50.05, dict(x=540, y=770, s=0.6))], shadow=0.0, pop=0.55,
+# ---------------------------------------------------------------- S13 52.0–56.0: kad akhir gelap
+SCENES.append(dict(t0=52.0, bg='dark', cam=cam((52.0, dict(z=1.0)), (56.0, dict(z=1.04), 'linear')), els=[
+    Img('assets/branding/pahlawan-angka-full-logo-v1.png', 52.05, 56.0, [(52.05, dict(x=540, y=770, s=0.6))], shadow=0.0, pop=0.55,
         bob=4, out=0),
-    Line(words(50.7, 'Pengembaraan matematik', 0.12), 540, 1190, 60, 54.0, color=WHITE, weight='InterDisplay-SemiBold.otf', out=0),
-    Line(words(51.0, 'ikut kemampuan anak.', 0.12), 540, 1272, 60, 54.0, color=(200, 214, 245), weight='InterDisplay-SemiBold.otf', out=0),
-    Bubble('Cuba Demo Sekarang', 51.6, 54.0, 540, 1480, size=58, fill=YELLOW, color=INK, type_speed=0),
+    Line(words(52.7, 'Pengembaraan matematik', 0.12), 540, 1190, 60, 56.0, color=WHITE, weight='InterDisplay-SemiBold.otf', out=0),
+    Line(words(53.0, 'ikut kemampuan anak.', 0.12), 540, 1272, 60, 56.0, color=(200, 214, 245), weight='InterDisplay-SemiBold.otf', out=0),
+    Bubble('Cuba Demo Sekarang', 53.6, 56.0, 540, 1480, size=58, fill=YELLOW, color=INK, type_speed=0),
 ]))
 
-FADES = [(2.6, 0.18, (246, 247, 250)), (9.6, 0.16, (246, 247, 250)), (11.2, 0.14, (246, 247, 250)),
-         (17.6, 0.16, (246, 247, 250)), (25.6, 0.16, (246, 247, 250)), (34.0, 0.14, NAVY),
-         (38.0, 0.2, (246, 247, 250)), (40.0, 0.2, (255, 250, 236)), (44.0, 0.16, (246, 247, 250))]
+FADES = [(2.4, 0.18, LIGHT), (16.0, 0.12, WHITE), (19.6, 0.14, LIGHT), (27.6, 0.14, NAVY), (33.2, 0.16, LIGHT),
+         (36.0, 0.18, NAVY), (40.0, 0.2, (255, 250, 236)), (42.0, 0.16, LIGHT), (46.4, 0.14, LIGHT), (49.0, 0.14, LIGHT)]
+SHAKES = [(16.0, 0.45, 16), (17.15, 0.3, 8), (40.0, 0.5, 14)]
 
 # ---------------------------------------------------------------- audio
 
-BAR = 2.0
-MUSIC = [('intro', 0, 2), ('light', 2, 3), ('groove', 5, 8), ('build', 13, 2), ('drop', 15, 2), ('groove', 17, 2),
-         ('break', 19, 1), ('drop', 20, 2), ('light', 22, 2), ('groove', 24, 1), ('outro', 25, 2)]
-SOURCES_AUDIO = {'C': 'aud_C.wav'}
+MUSIC = [('intro', 0, 2), ('light', 2, 2), ('groove', 4, 3), ('build', 7, 1), ('drop', 8, 2), ('groove', 10, 6),
+         ('light', 16, 2), ('break', 18, 2), ('drop', 20, 2), ('light', 22, 2), ('groove', 24, 2), ('outro', 26, 2)]
+SOURCES_AUDIO = {'C': 'aud_C.wav', 'K': 'aud_K.wav'}
 
 
 def pops(ts, g=0.3):
@@ -229,25 +248,23 @@ def pops(ts, g=0.3):
 
 
 SFX = [
-    ('pop', 0.1, 0.55), ('whoosh', 0.62, 0.55, 0.7, 500, 5000), ('shimmer', 0.75, 0.4), ('whoosh', 2.35, 0.4, 0.5, 6000, 500),
-    ('pop', 2.75, 0.3), ('pop', 3.2, 0.4), ('pop', 3.35, 0.4),
-    *pops([5.35, 5.65, 6.15, 6.35, 6.75, 6.95, 7.1, 7.5, 7.8, 8.0], 0.26),
-    ('whoosh', 9.0, 0.6, 0.7, 400, 6000),
-    ('pop', 9.65, 0.45), ('pop', 9.9, 0.35), ('pop', 10.1, 0.3),
-    ('whoosh', 10.65, 0.55, 0.7, 400, 6000), ('whoosh', 13.4, 0.5, 0.6, 6000, 400),
-    ('pop', 14.22, 0.6), ('shimmer', 14.55, 0.55), ('pop', 14.75, 0.45), ('pop', 14.95, 0.3),
-    ('whoosh', 17.0, 0.6, 0.7, 400, 6000),
-    *pops([17.75, 18.0], 0.28), *pops([18.3 + i * 1.2 for i in range(6)], 0.42),
-    *[('whoosh', 18.3 + i * 1.2 - 0.12, 0.3, 0.22, 3000, 800) for i in range(1, 6)],
-    *pops([25.75, 26.1], 0.28), *pops([26.4, 26.65, 26.9], 0.45),
-    ('pop', 28.55, 0.6), ('whoosh', 28.75, 0.55, 0.75, 300, 4000),
-    ('src', 30.0, 'C', 12.35, 16.3, 0.8), ('pop', 33.15, 0.35),
-    *pops([34.15, 34.4, 34.6, 34.8], 0.38), ('whoosh', 35.65, 0.45, 0.5), ('pop', 36.2, 0.45),
-    *pops([36.75 + i * 0.16 for i in range(10)], 0.12),
-    ('whoosh', 37.45, 0.55, 0.6, 400, 6000),
-    ('pop', 38.25, 0.4), ('thud', 39.25, 0.7), ('shimmer', 40.0, 0.7), ('pop', 40.35, 0.4),
-    ('whoosh', 41.8, 0.45, 0.45), *pops([42.25 + i * 0.12 for i in range(5)], 0.35),
-    *pops([44.15, 44.65, 44.9, 45.15, 45.4], 0.38),
-    ('whoosh', 47.55, 0.5, 0.6, 500, 5000), *pops([47.85, 48.25, 48.65], 0.45), ('whoosh', 49.3, 0.6, 0.7, 5000, 300),
-    ('pop', 51.6, 0.5), ('shimmer', 51.65, 0.45),
+    ('pop', 0.05, 0.55), ('whoosh', 0.28, 0.55, 0.7, 500, 5000), *pops([0.35 + i * 0.03 for i in range(0, 14, 3)], 0.22),
+    ('whoosh', 1.95, 0.45, 0.6, 5000, 400),
+    ('pop', 2.5, 0.3), ('pop', 2.85, 0.45), ('pop', 3.0, 0.35), ('pop', 3.15, 0.35),
+    *pops([4.35, 4.6, 5.0, 5.25, 5.5, 5.9, 6.03, 6.16, 6.29], 0.26),
+    ('whoosh', 7.25, 0.75, 0.75, 400, 6000),
+    ('whoosh', 9.4, 0.6, 0.6, 400, 6000), ('whoosh', 11.8, 0.5, 0.55, 6000, 400),
+    ('src', 12.0, 'C', 10.5, 18.1, 0.8),
+    ('pop', 13.15, 0.6), ('shimmer', 13.4, 0.5), ('pop', 13.55, 0.35),
+    ('whoosh', 19.3, 0.45, 0.6, 3000, 600),
+    *pops([19.8, 19.94, 20.0, 20.14], 0.25),
+    *[('whoosh', 19.75 + i * 1.3 - 0.08, 0.32, 0.35, 900, 4000) for i in range(6)], *pops([19.75 + i * 1.3 + 0.05 for i in range(6)], 0.4),
+    ('whoosh', 27.45, 0.4, 0.5), ('pop', 27.65, 0.45), ('pop', 29.15, 0.45), ('pop', 30.65, 0.45),
+    *pops([31.1 + i * 0.12 for i in range(14)], 0.1),
+    ('whoosh', 33.05, 0.4, 0.5), *pops([33.3, 33.45, 33.6, 33.75], 0.32), ('whoosh', 35.5, 0.55, 0.6, 400, 6000),
+    ('src', 36.0, 'K', 12.0, 17.6, 0.75), ('shimmer', 40.0, 0.7), ('pop', 40.2, 0.4),
+    *pops([42.15, 42.5, 42.8, 43.1], 0.38),
+    ('whoosh', 46.3, 0.4, 0.5), *pops([46.5, 46.7, 46.95, 47.2], 0.42),
+    ('whoosh', 48.9, 0.5, 0.6, 500, 5000), *pops([49.25, 49.65, 50.05], 0.45), ('whoosh', 51.05, 0.6, 0.7, 5000, 300),
+    ('pop', 53.6, 0.5), ('shimmer', 53.65, 0.45),
 ]

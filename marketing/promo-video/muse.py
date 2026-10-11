@@ -175,36 +175,100 @@ class Img(El):
         blit(out, self.img, sx, sy, p['s'] * z * ks, p['a'] * min(1, kin * 2 if self.pop else kin) * kout, p['r'], self.shadow, self.mips)
 
 
-class Vid(El):
-    """Kad video terapung (rakaman sebenar) dengan bucu bulat."""
+def round_mask(w, h, radius):
+    m = Image.new('L', (w, h), 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, w - 1, h - 1], radius=radius, fill=255)
+    return (np.asarray(m, np.float32) / 255)[..., None]
 
-    def __init__(self, src, rect, t0, t1, segs, keys, width=900, radius=40, shadow=0.7):
-        super().__init__(t0, t1)
+
+class Clip:
+    """Pembaca rakaman: potong rect (u0, v0, u1, v1) → RGBA float bersaiz (w, h) dengan bucu bulat."""
+
+    def __init__(self, src, rect, w, radius=36):
+        self.name = src
         self.src = Source(os.path.join(BUILD, src))
-        self.shot = Shot(t0, t1, None, segs)
-        self.rect, self.width, self.radius, self.shadow = rect, width, radius, shadow
-        self.k = Keys(keys, dict(x=0, y=0, s=1.0, a=1.0, r=0.0))
-        self.mask = None
+        self.rect, self.w, self.radius = rect, int(w), radius
+        self.mask, self.last = None, (None, None)
 
-    def draw(self, out, t, cam):
-        p = self.k.at(t)
-        f = self.src.get(int(round(self.shot.src_time(t) * FPS)))
+    def frame(self, st):
+        i = int(round(st * FPS))
+        if self.last[0] == i:
+            return self.last[1]
+        f = self.src.get(i)
         if f is None:
-            return
+            return None
         Hh, Ww = f.shape[:2]
         u0, v0, u1, v1 = self.rect
         c = f[int(v0 * Hh):int(v1 * Hh), int(u0 * Ww):int(u1 * Ww)]
-        h = int(c.shape[0] * self.width / c.shape[1])
-        c = cv2.resize(c, (self.width, h), interpolation=cv2.INTER_AREA)[..., ::-1].astype(np.float32) / 255
-        if self.mask is None or self.mask.shape[:2] != (h, self.width):
-            m = Image.new('L', (self.width, h), 0)
-            ImageDraw.Draw(m).rounded_rectangle([0, 0, self.width - 1, h - 1], radius=self.radius, fill=255)
-            self.mask = (np.asarray(m, np.float32) / 255)[..., None]
+        h = max(2, int(c.shape[0] * self.w / c.shape[1]))
+        c = cv2.resize(c, (self.w, h), interpolation=cv2.INTER_AREA)[..., ::-1].astype(np.float32) / 255
+        if self.mask is None or self.mask.shape[:2] != (h, self.w):
+            self.mask = round_mask(self.w, h, self.radius)
         img = np.concatenate([c, self.mask], 2)
-        kin = ease_back((t - self.t0) / 0.4, 1.3)
-        kout = 1 - smooth((t - (self.t1 - 0.25)) / 0.25)
+        self.last = (i, img)
+        return img
+
+
+class Vid(El):
+    """Kad video terapung (rakaman sebenar) dengan bucu bulat. keys: x, y, s, a, r."""
+
+    def __init__(self, src, rect, t0, t1, segs, keys, width=900, radius=40, shadow=0.7, pop=True, fade_in=0.0, out=0.25):
+        super().__init__(t0, t1)
+        self.clip = Clip(src, rect, width, radius)
+        self.shot = Shot(t0, t1, None, segs)
+        self.shadow, self.pop, self.fin, self.fout = shadow, pop, fade_in, out
+        self.k = Keys(keys, dict(x=0, y=0, s=1.0, a=1.0, r=0.0))
+
+    def draw(self, out, t, cam):
+        p = self.k.at(t)
+        img = self.clip.frame(self.shot.src_time(t))
+        if img is None:
+            return
+        if self.pop:
+            kin = ease_back((t - self.t0) / 0.4, 1.3)
+            ks, ka = max(0.02, kin), min(1, kin * 2)
+        else:
+            ks, ka = 1.0, (smooth((t - self.t0) / self.fin) if self.fin else 1.0)
+        kout = 1 - smooth((t - (self.t1 - self.fout)) / self.fout) if self.fout else 1.0
         sx, sy, z = cam.to_screen(p['x'], p['y'])
-        blit(out, img, sx, sy, p['s'] * z * max(0.02, kin), p['a'] * min(1, kin * 2) * kout, p['r'], self.shadow)
+        blit(out, img, sx, sy, p['s'] * z * ks, p['a'] * ka * kout, p['r'], self.shadow)
+
+
+class Tiles(El):
+    """Jubin video hidup yang meletup dari satu titik ke kedudukan masing-masing (gaya ikon app Muse).
+
+    clips: [(src, rect, s0)], pos: [(x, y)] dunia; collapse: masa jubin tersedut semula ke titik asal."""
+
+    def __init__(self, clips, pos, t0, t1, x, y, size=300, radius=40, collapse=None, seed=5, stagger=0.3):
+        super().__init__(t0, t1)
+        rng = np.random.default_rng(seed)
+        self.items = [dict(c=Clip(src, rect, size, radius), s0=s0, gx=gx, gy=gy, d=rng.uniform(0, stagger), rot=rng.uniform(-14, 14))
+                      for (src, rect, s0), (gx, gy) in zip(clips, pos)]
+        self.x, self.y, self.collapse = x, y, collapse
+
+    def draw(self, out, t, cam):
+        for o in self.items:
+            k = ease_out((t - self.t0 - o['d']) / 0.6)
+            if k <= 0:
+                continue
+            x = self.x + (o['gx'] - self.x) * k
+            y = self.y + (o['gy'] - self.y) * k + 5 * math.sin(t * 2 + o['gx'] * 0.01)
+            a, sc = min(1, k * 3), 0.35 + 0.65 * k
+            if self.collapse:
+                kc = ease_in((t - self.collapse - o['d'] * 0.4) / 0.45)
+                x += (self.x - x) * kc
+                y += (self.y - y) * kc
+                a *= 1 - kc
+                sc *= 1 - 0.6 * kc
+            else:
+                a *= 1 - smooth((t - (self.t1 - 0.3)) / 0.3)
+            if a <= 0.003:
+                continue
+            img = o['c'].frame(o['s0'] + (t - self.t0))
+            if img is None:
+                continue
+            sx, sy, z = cam.to_screen(x, y)
+            blit(out, img, sx, sy, z * sc, a, o['rot'] * (1 - k * 0.75), 0.35)
 
 
 class Line(El):
@@ -220,6 +284,15 @@ class Line(El):
         for tok in tokens:
             t, v = tok[0], tok[1]
             opt = tok[2] if len(tok) > 2 else {}
+            if isinstance(v, tuple) and v[0] == 'vid':
+                # ('vid', src, rect, s0[, laju]): klip mini hidup dalam ayat
+                hh = size * opt.get('icon', 1.25)
+                u0, v0, u1, v1 = v[2]
+                ar = (u1 - u0) * 1080 / ((v1 - v0) * 2236)
+                clip = Clip(v[1], v[2], int(hh * ar * 2), int(hh * 0.22 * 2))
+                self.items.append(dict(t=t, clip=clip, s0=v[3], sp=v[4] if len(v) > 4 else 1.0, w=hh * ar, sc=0.5, icon=True,
+                                       img=None, mips=None))
+                continue
             if isinstance(v, tuple):
                 img = asset(v[1], int(size * opt.get('icon', 1.15) * 2))
                 if img.shape[0] > size * opt.get('icon', 1.15) * 2.2:
@@ -233,6 +306,15 @@ class Line(El):
                 img = text_img(v, size * 2, col, opt.get('weight', weight))
                 self.items.append(dict(t=t, img=img, w=(img.shape[1] - 32) / 2, sc=0.5, icon=False, mips=make_mips(img)))
         self.gap = size * gap
+
+    def centers(self):
+        """Pusat dunia setiap token apabila baris lengkap (untuk sasaran zoom-tembus)."""
+        total = sum(it['w'] for it in self.items) + self.gap * (len(self.items) - 1)
+        xx, out = self.x - total / 2, []
+        for it in self.items:
+            out.append((xx + it['w'] / 2, self.y, it['w']))
+            xx += it['w'] + self.gap
+        return out
 
     def draw(self, out, t, cam):
         kout = 1 - smooth((t - (self.t1 - self.fout)) / self.fout) if self.fout else 1.0
@@ -252,6 +334,12 @@ class Line(El):
             pop = ease_back(k, 2.2) if it['icon'] else 1.0
             cx = xx + it['w'] / 2   # berlabuh di kiri ruang: token baharu tidak bertindih token sebelumnya
             sx, sy, z = cam.to_screen(cx, self.y + dy + (1 - ka) * self.size * 0.25 * (0 if it['icon'] else 1))
+            if it.get('clip'):
+                img = it['clip'].frame(it['s0'] + max(0.0, t - it['t']) * it['sp'])
+                if img is not None:
+                    blit(out, img, sx, sy, it['sc'] * z * max(0.02, pop), ka * kout, 0.0, 0.3)
+                xx += w + self.gap
+                continue
             blit(out, it['img'], sx, sy, it['sc'] * z * max(0.02, pop if it['icon'] else (0.92 + 0.08 * ka)),
                  ka * kout, 0.0, 0.25 if it['icon'] else 0.0, it['mips'])
             xx += w + self.gap
@@ -466,7 +554,13 @@ class Renderer:
             if s['t0'] <= t:
                 sc = s
         out = self.bg[sc.get('bg', 'light')].copy()
-        cam = Cam(sc['cam'].at(t))
+        cp = sc['cam'].at(t)
+        for (ts, d, amp) in getattr(self.tl, 'SHAKES', []):
+            if ts <= t <= ts + d:
+                k = (1 - (t - ts) / d) ** 2 * amp
+                cp['cx'] += k * math.sin(t * 91.0) / cp['z']
+                cp['cy'] += k * math.cos(t * 77.0) / cp['z']
+        cam = Cam(cp)
         for e in sc['els']:
             if e.live(t):
                 e.draw(out, t, cam)

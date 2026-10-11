@@ -1,62 +1,78 @@
-# Pahlawan Angka — Promo 4 "Gaya Muse" (54 s)
+# Pahlawan Angka — Promo 4 "Gaya Muse" (v2, 56 s)
 
-Video promo keempat. Gayanya diadaptasi daripada video pelancaran Meta "Introducing Muse":
+Video promo keempat. Transisinya diadaptasi daripada video pelancaran Meta "Introducing Muse":
 
-- kanvas putih bersih tanpa mockup telefon;
-- UI sebenar terapung sebagai objek sendiri;
+- kanvas bersih tanpa mockup telefon;
+- UI terapung sebagai objek sendiri;
 - kamera **zoom-tembus** ke dalam elemen sehingga elemen itu menjadi babak seterusnya;
-- tipografi berpusat dengan **ikon sebaris** yang muncul perkataan demi perkataan;
-- templat berulang "baris atas / [ikon] baris tengah bertukar / baris bawah";
-- letupan objek, tanda ✓ dilukis, confetti, dan butang yang membesar menjadi skrin penuh.
+- tipografi berpusat dengan objek sebaris;
+- templat slot "atas / [ikon] tengah bertukar / bawah";
+- jubin meletup, tanda ✓ dilukis, confetti, dan panel yang membesar menjadi skrin penuh.
 
-Semua grafik diambil daripada aset repo atau potongan rakaman skrin sebenar. Tiada aset luar atau aset jana AI baharu.
+**v2: gameplay sebagai teras.** Versi pertama terlalu banyak guna imej statik. Dalam v2, hampir setiap babak ialah **kad video rakaman sebenar** yang hidup:
+
+- jubin pembuka dan penutup ialah klip gameplay;
+- "ikon" dalam ayat ialah klip mini yang bermain;
+- UI battle dipecahkan kepada dua kad hidup yang segerak, iaitu arena dan soalan;
+- montaj topik, kunci, Khazanah, evolusi, ibu bapa dan multi-skrin semuanya rakaman.
+
+Imej statik hanya untuk ikon app, ikon misi atau kubah dalam teks, dan logo kad akhir.
 
 | Fail | Isi |
 | --- | --- |
-| `muse.py` | Enjin gaya Muse. Elemen: `Img`, `Vid`, `Line` (ikon sebaris), `Bubble` (taip), `Check`, `Tap`, `Burst`, `Confetti`, `Panel`. Kamera 2D per babak, `FADES` antara babak |
-| `timeline_muse.py` | Babak, kamera, muzik dan SFX versi 54 s |
+| `muse.py` | Enjin gaya Muse. Elemen: `Vid` (kad video), `Tiles` (jubin video meletup / tersedut), `Line` (perkataan + ikon + **klip video sebaris**), `Img`, `Bubble` (taip), `Check`, `Tap`, `Confetti`, `Panel`. Kamera 2D per babak, `FADES` antara babak, `SHAKES` (gegaran) |
+| `timeline_muse.py` | Babak, kamera, muzik dan SFX versi 56 s |
 
-Audio menggunakan `build_audio` daripada `engine.py`, iaitu muzik asli `music.py` (120 BPM) ditambah SFX, dinormalkan ke −14 LUFS.
+Audio menggunakan `build_audio` daripada `engine.py`, iaitu muzik asli `music.py` (120 BPM) ditambah SFX dan bunyi asal permainan pada dua detik penting. Audio dinormalkan ke −14 LUFS.
 
-## Bahan
+## Rakaman yang digunakan
 
-| Sumber | Digunakan untuk |
-| --- | --- |
-| `assets/icons/pa-master-1024.png` | Ikon app (pembuka, ikon sebaris) |
-| `assets/questions/money/*`, `assets/questions/counting/*`, `assets/missions/v2/*`, `assets/enemies/minions/*`, trofi, bintang, syiling | Letupan objek pembuka dan medan ikon penutup |
-| `assets/heroes/wira-chibi/frames/happy-05-v2.webp`, `victory-v1.webp` | Wira (ikon sebaris, maskot soalan) |
-| `assets/coach/cikgu-dimensi/hub-portrait-v1.webp`, `assets/pets/aurora/front.webp` | Ikon templat "Matematik yang …" |
-| `assets/fx/segel/{gangsa,perak,emas}-v2.png` | Tiga tahap kunci |
-| `assets/ui/evolution/emblem-bara-v1.png`, `assets/pets/evolution/fire/aurora/happy-v1.webp` | Evolusi Bara |
-| `assets/pets/collection/*/idle.png` | Enam teman |
-| `assets/branding/pahlawan-angka-full-logo-v1.png` | Kad akhir |
-| `$PROMO_BUILD/muse/q_neutral.png`, `q_correct.png` | Kad soalan RM41.25 (rakaman F 7.4 s, 9.4 s) |
-| `$PROMO_BUILD/muse/focus1-3.png` | Tiga kad Kemahiran Fokus (F 1.4 s) |
-| `$PROMO_BUILD/muse/report.png`, `fokus_seterusnya.png` | Laporan kemahiran (R 3.4 s, 0.3 s) |
-| `$PROMO_BUILD/muse/lock.png` | Kunci battle aktif. PIN bertitik sahaja (F 12.6 s) |
-| `$PROMO_BUILD/src_C.mp4` 12.35–16.3 s | Jurus Penamat → KUKUPAT DITEMUI (kawasan arena sahaja, `rect 0–0.372`) |
-| `$PROMO_BUILD/pdf_ws-1.png` | Halaman worksheet PDF |
+Semua rakaman berada di `$PROMO_BUILD/src_*.mp4`: 30 fps, tanpa status bar, 1080×2236.
+
+| Kod | Julat (s) | Isi |
+| --- | --- | --- |
+| C | 7.3–8.8, 7.55–10.3, 10.4–18.1 | Kunci Perak pecah; arena (klip sebaris); soalan "Matahari baru terbit…" → tekan **pagi** → Jurus Penamat → KUKUPAT DITEMUI |
+| O (590p dinaikkan) | 61.9–63.7, 68.9–70.45, 81.6, 90.9–92.5, 111.6–114.3, 119.2–120.8 | Soalan Nombor, Ruang (Kunci Gangsa), Wang, Masa, **Kunci Emas, taip "40"**, Data |
+| B | 5.7–7.9, 17.6–19.0 | Wira berjalan ke menara; soalan wang dijawab betul |
+| K | 1.6–4.25, 12.0–17.6 | Khazanah (Aurora → Kurapat → Kumbis); Aurora → emblem api → **EVOLUSI BARA** |
+| R | 4.3–6.8 | Laporan kemahiran (skrol) |
+| F | 0.2–1.4, 12.1–12.5 | Halaman Kemahiran Fokus; dialog "Kunci battle aktif" (medan PIN kosong) |
+| A, T | 0.5–1.5, 1.7–3.6 | Hub; Peta Topik |
+| LAP, TAB, TV1 | 12.0–14.25, 24.0–26.0, 0.5–2.25 | Laptop, tablet, TV. **Audio dibisukan** |
+
+Julat yang **dielakkan**:
+
+- B 1.5–3.5 dan F 1.6–3.05 (e-mel);
+- F ≥ 12.6 (PIN sedang ditaip);
+- O sekitar 0:42–0:50 dan 2:37–2:42 (dialog PIN, pop-up kata laluan) serta ≥ 3:06 (notifikasi muat turun);
+- O soalan yang dijawab salah dahulu (wang RM12, pecahan).
 
 ## Storyboard (1 bar = 2 s)
 
 | Masa | Babak | Teks | Muzik |
 | --- | --- | --- | --- |
-| 0:00–0:02.6 | Ikon app muncul, kemudian 40+ objek matematik meletup ke grid | — | Intro |
-| 0:02.6–0:05.2 | Tipografi | Memperkenalkan / Pahlawan **Angka** | Intro |
-| 0:05.2–0:09.6 | Ayat dengan ikon sebaris (ikon PA, abakus, bintang, Wira), kemudian zoom-tembus ke Wira | Pahlawan Angka [ikon] ialah / pengembaraan [abakus] / matematik [bintang] KSSR / untuk anak [Wira] anda. | Ringan |
-| 0:09.6–0:11.2 | Kad soalan sebenar terapung, Wira dengan "Jom jawab!", kemudian zoom ke teks soalan | — | Groove |
-| 0:11.2–0:13.6 | Teks soalan gergasi, kamera menyorot | Wang sebanyak **RM41.25** dibahagi sama rata kepada **5 orang**… | Groove |
-| 0:13.6–0:17.6 | Zoom keluar, tekan RM8.25, jawapan betul, Wira menang, ✓ dilukis | Betul! Kunci retak. | Groove |
-| 0:17.6–0:25.6 | Templat bertukar setiap 1.2 s | Matematik yang / [Cikgu Dimensi] ikut kemampuan · [tambah-tolak] jadi pengembaraan · [minion] ada cabaran · [bintang] beri ganjaran · [Aurora] ada teman · [PDF] boleh dicetak / untuk anak anda. | Groove |
-| 0:25.6–0:29.3 | 3 kad fokus sebenar terapung, tekan "Latih", butang membesar jadi panel navy | Fokus latihan dipilih / **ikut jawapan anak.** | Build |
-| 0:29.3–0:34 | (Gelap) kad video arena sebenar: Jurus Penamat → KUKUPAT DITEMUI | Setiap jawapan betul / **jadi serangan!** · "Teman baharu ditemui!" | **Drop 0:30** |
-| 0:34–0:38 | (Gelap) Kubah Gangsa, Perak dan Emas; Emas membesar ke tengah | Tiga tahap kunci → Kunci **Emas** / taip jawapan sendiri | Groove |
-| 0:38–0:44 | Aurora → emblem api → **Evolusi Bara** + confetti; Bara bergerak ke cincin 6 teman | Teman pun membesar → Kumpul semua **6 teman** | Break → **drop 0:40** |
-| 0:44–0:47.6 | Kad laporan, fokus seterusnya, kunci battle dan worksheet terapung | Mak ayah pun nampak / **kemajuan anak.** | Ringan |
-| 0:47.6–0:50 | Medan ikon dengan slogan logo, objek tersedut ke tengah, panel navy | Belajar. / Bertarung. / Jadi **Pahlawan.** | Groove |
-| 0:50–0:54 | Kad akhir gelap: logo penuh | Pengembaraan matematik / ikut kemampuan anak. · [Cuba Demo Sekarang] | Outro (hentakan) |
+| 0:00–0:02.4 | Ikon app; 14 **jubin gameplay hidup** meletup ke grid (serangan, Jurus Penamat, emblem api, Khazanah, menara, hub, Peta Topik…), kemudian tersedut semula ke ikon | — | Intro |
+| 0:02.4–0:04.2 | Tipografi | Memperkenalkan / [ikon] Pahlawan **Angka** | Intro |
+| 0:04.2–0:08 | Ayat dengan **klip sebaris** (Wira berjalan ke menara; arena battle dengan kunci pecah), kemudian zoom-tembus ke klip battle | Pengembaraan [klip] / matematik [klip] **KSSR** / Darjah 1 hingga 6. | Ringan |
+| 0:08–0:10 | Klip itu menjadi **kad arena hidup**; kad soalan hidup naik di bawahnya (UI dipecahkan). Zoom ke teks soalan | — | Groove |
+| 0:10–0:12 | Teks soalan gergasi, kamera menyorot | **Matahari baru terbit** dan murid bersiap ke sekolah. Waktu yang paling sesuai? | Groove |
+| 0:12–0:16 | Zoom keluar, jari tekan **pagi**, ✓ "Betul!", arena masuk Jurus Penamat, kad soalan jatuh, arena membesar ke tengah | — | Groove → build |
+| 0:16–0:19.6 | (Gelap) **DROP**: arena besar, serangan kilat, KUKUPAT DITEMUI, gegaran kamera | Setiap jawapan betul / **jadi serangan!** · "Teman baharu ditemui!" | **Drop 0:16** |
+| 0:19.6–0:27.6 | Templat slot. Kad gameplay hidup bertukar (whip) setiap 1.3 s: Nombor, Wang, Masa, Ruang, Data, Peta Topik | Setiap topik / [ikon misi] **Nombor · Wang · Masa · Ruang · Data · & banyak lagi** / jadi pengembaraan. | Groove |
+| 0:27.6–0:33.2 | (Gelap) Kad hidup morph: Kunci Gangsa pecah → Kunci Perak pecah → Kunci Emas (taip "40", Jawab) | Tiga tahap kunci · [kubah] Kunci **Gangsa / Perak / Emas** · "taip jawapan sendiri" | Groove |
+| 0:33.2–0:36 | Kad Khazanah hidup (teman bertukar), zoom-tembus | Selamatkan & / **kumpul teman.** | Ringan |
+| 0:36–0:42 | (Gelap) Rakaman evolusi: Aurora → emblem api → **EVOLUSI BARA** + confetti + gegaran | Teman pun membesar… · "Evolusi Bara!" | Break → **drop 0:40** |
+| 0:42–0:46.4 | Tiga kad hidup: laporan kemahiran (skrol), Kemahiran Fokus, dialog kunci battle | Mak ayah pun nampak / **kemajuan anak.** | Ringan |
+| 0:46.4–0:49 | Kad laptop, tablet dan TV (rakaman sebenar, bisu) | Telefon, laptop, tablet, **TV.** | Ringan |
+| 0:49–0:52 | Medan jubin gameplay hidup mengelilingi slogan, tersedut ke tengah, panel navy membesar | Belajar. / Bertarung. / Jadi **Pahlawan.** | Groove |
+| 0:52–0:56 | Kad akhir gelap: logo penuh | Pengembaraan matematik / ikut kemampuan anak. · [Cuba Demo Sekarang] | Outro (hentakan) |
 
-Satu-satunya bunyi permainan asal ialah serangan Jurus Penamat (0:30–0:34). Muzik direndahkan sedikit (ducking) ketika bunyi itu dimainkan.
+Bunyi asal permainan hanya dimainkan pada dua detik:
+
+- C 10.5–18.1 (tekan jawapan → Jurus Penamat → teman ditemui);
+- K 12.0–17.6 (evolusi).
+
+Muzik direndahkan sedikit (ducking) ketika bunyi itu dimainkan. Audio TV, laptop dan tablet dibisukan.
 
 ## Voice-over (pilihan)
 
@@ -64,36 +80,35 @@ TTS disekat dalam persekitaran render. Jika VO mahu ditambah, gunakan skrip ini,
 
 | Masa | VO |
 | --- | --- |
-| 0:02.7 | Memperkenalkan… Pahlawan Angka. |
-| 0:05.3 | Pengembaraan matematik KSSR untuk anak anda. |
-| 0:09.8 | Soalan wang, masa, pecahan dan banyak lagi. |
-| 0:14.3 | Jawab betul? Kunci retak! |
-| 0:17.8 | Matematik yang ikut kemampuan, ada cabaran, ganjaran dan teman. |
-| 0:25.8 | Fokus latihan dipilih sendiri oleh app, ikut jawapan anak. |
-| 0:29.5 | Setiap jawapan betul jadi serangan! |
-| 0:34.2 | Gangsa, Perak, Emas. Di tahap Emas, anak taip jawapan sendiri. |
-| 0:38.2 | Teman pun membesar… Evolusi Bara! |
-| 0:44.2 | Mak ayah pun nampak kemajuan anak. |
-| 0:47.8 | Belajar. Bertarung. Jadi Pahlawan. |
-| 0:50.5 | Pahlawan Angka. Cuba demo sekarang! |
+| 0:02.5 | Memperkenalkan… Pahlawan Angka. |
+| 0:04.4 | Pengembaraan matematik KSSR, Darjah 1 hingga 6. |
+| 0:12.6 | Jawab betul… |
+| 0:16.1 | …setiap jawapan betul jadi serangan! |
+| 0:19.8 | Nombor, wang, masa, ruang, data — setiap topik jadi pengembaraan. |
+| 0:27.8 | Gangsa, Perak, Emas. Di tahap Emas, anak taip jawapan sendiri. |
+| 0:33.4 | Selamatkan dan kumpul teman… |
+| 0:36.2 | …dan lihat mereka membesar. Evolusi Bara! |
+| 0:42.2 | Mak ayah pun nampak kemajuan anak. |
+| 0:46.5 | Di telefon, laptop, tablet atau TV. |
+| 0:49.2 | Belajar. Bertarung. Jadi Pahlawan. |
+| 0:52.5 | Pahlawan Angka. Cuba demo sekarang! |
 
 ## Semakan
 
 - **Maklumat peribadi:**
-  - E-mel akaun tidak muncul, kerana semua potongan diambil di luar julat pop-up e-mel.
-  - Kad "Kunci battle aktif" hanya menunjukkan titik PIN, tanpa digit.
+  - Tiada e-mel; julat pop-up e-mel dan kata laluan dielakkan.
+  - Dialog "Kunci battle aktif" diambil sebelum PIN ditaip, jadi medan PIN kosong atau bertitik dan tiada digit kelihatan.
   - Tiada notifikasi muat turun.
+  - Nama profil demo (Cica) dan nama teman "Kurapat" (ditukar pengguna) kelihatan dalam rakaman.
 - **Dakwaan:** tiada harga, tiada "percuma", tiada pengiktirafan KPM, tiada janji markah naik dan tiada perkataan "lemah".
-  - "Fokus latihan dipilih ikut jawapan anak" selari dengan `focusPracticeSummary`: 20 cubaan terkini setiap kemahiran, 3 teratas.
-  - "Boleh dicetak" merujuk kepada Latihan PDF (ciri berbayar), tanpa menyebut harga.
+  - Label "Fokus pilihan app" selari dengan `focusPracticeSummary`, yang memilih 3 teratas berdasarkan 20 cubaan terkini.
+  - "Kunci battle (PIN)" ialah kawalan ibu bapa.
 - **Pautan:** tiada pautan dalam video. Butang hanya berbunyi "Cuba Demo Sekarang". Letakkan [PAUTAN DEMO] dalam kapsyen semasa memuat naik.
 
 ## Render semula
 
 ```bash
-export PROMO_BUILD=/laluan/ke/build      # src_C.mp4, aud_C.wav, pdf_ws-1.png, muse/*.png
-python3 muse.py timeline_muse --frames 12.2,31.5,41 --out semak        # bingkai semakan
-python3 muse.py timeline_muse --out out/promo4-muse.mp4 --workers 4
+export PROMO_BUILD=/laluan/ke/build      # src_*.mp4, aud_C.wav, aud_K.wav
+python3 muse.py timeline_muse --frames 1.2,9.2,17,23.5,40.6 --out semak     # bingkai semakan
+python3 muse.py timeline_muse --out out/promo4-muse-v2.mp4 --workers 4
 ```
-
-Potongan `muse/*.png` dibuat daripada bingkai rakaman (30 fps, tanpa status bar). Kawasan kad dipotong dan bucunya dibulatkan dengan alfa.
