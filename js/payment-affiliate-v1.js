@@ -5,7 +5,7 @@
 (() => {
   'use strict';
   const root = window;
-  const PLANS = { premium: { label: 'Akses Keluarga', price: 19, commission: 9 }, family_plus: { label: 'Family Plus', price: 29, commission: 15 } };
+  const PLANS = { premium: { label: 'Akses Keluarga', price: 19, priceCents: 1900, commission: 9 }, family_plus: { label: 'Family Plus', price: 29, priceCents: 2900, commission: 15 } };
   const REF_KEY = 'pa_affiliate_referral_v1';
   const ORDER_KEY = 'pa_pending_payment_v1';
   const REF_TTL = 30 * 24 * 60 * 60 * 1000;
@@ -25,12 +25,17 @@
     const c = client(); if (!c?.from) return PLANS;
     const result = await c.from('plan_catalog').select('plan,price_cents,commission_cents,active').eq('active', true);
     if (result?.error) throw result.error;
-    (result.data || []).forEach((item) => { if (PLANS[item.plan]) { PLANS[item.plan].price = Number(item.price_cents) / 100; PLANS[item.plan].commission = Number(item.commission_cents) / 100; } });
+    (result.data || []).forEach((item) => { if (PLANS[item.plan]) { PLANS[item.plan].priceCents = Number(item.price_cents); PLANS[item.plan].price = PLANS[item.plan].priceCents / 100; PLANS[item.plan].commission = Number(item.commission_cents) / 100; } });
     document.querySelectorAll('[data-plan-price]').forEach(el=>{const plan=PLANS[el.dataset.planPrice];if(plan)el.textContent='RM'+plan.price;});
     return PLANS;
   }
   const loggedIn = () => !!user()?.id;
   const admin = () => String(root.PACommercial?.getAccess?.()?.role || '') === 'admin';
+  const upgradeFor = (plan) => plan === 'family_plus' && root.PACommercial?.getAccess?.()?.plan === 'premium' && root.PACommercial?.isPaid?.() === true && root.PACommercial?.isPremium?.() !== true;
+  const amountCents = (plan) => upgradeFor(plan) ? Math.max(0, PLANS[plan].priceCents - PLANS.premium.priceCents) : PLANS[plan].priceCents;
+  const money = (cents) => { const value = Number(cents || 0) / 100; return `RM${Number.isInteger(value) ? value : value.toFixed(2)}`; };
+  const checkoutLabel = (plan) => `${PLANS[plan].label} · ${money(amountCents(plan))}${upgradeFor(plan) ? ' tambahan' : ''}`;
+  function updateCheckoutOverlay(overlay) { const plan = PLANS[overlay?.dataset?.plan] ? overlay.dataset.plan : 'premium'; const line = overlay?.querySelector?.('[data-pa-plan]'); if (line) { line.textContent = ''; line.append(text('span', checkoutLabel(plan))); } const note = overlay?.querySelector?.('[data-pa-upgrade-note]'); if (note) note.hidden = !upgradeFor(plan); }
 
   function captureReferral() {
     if (referralCaptured) return;
@@ -54,19 +59,20 @@
   function checkoutModal(plan) {
     $('paPricingOverlay')?.classList.add('hidden');
     let overlay = $('paCheckoutOverlay');
-    if (overlay) { overlay.dataset.plan = plan; const line = overlay.querySelector('[data-pa-plan]'); if (line) { line.textContent = ''; line.append(text('span', `${PLANS[plan].label} · RM${PLANS[plan].price}`)); } overlay.classList.remove('hidden'); return overlay; }
+    if (overlay) { overlay.dataset.plan = plan; updateCheckoutOverlay(overlay); overlay.classList.remove('hidden'); loadCatalog().then(() => updateCheckoutOverlay(overlay)).catch(() => {}); return overlay; }
     overlay = document.createElement('div'); overlay.id = 'paCheckoutOverlay'; overlay.className = 'pa-aff-overlay'; overlay.dataset.plan = plan; overlay.setAttribute('role', 'dialog'); overlay.setAttribute('aria-modal', 'true');
     const card = document.createElement('section'); card.className = 'pa-aff-dialog';
     const close = text('button', '×', 'pa-aff-close'); close.type = 'button'; close.setAttribute('aria-label', 'Tutup'); close.addEventListener('click', () => overlay.classList.add('hidden'));
     card.append(close, text('p', 'PEMBAYARAN SELAMAT', 'pa-eyebrow'));
     const heading = text('h2', 'Sambung dengan ToyyibPay'); card.append(heading);
-    const planLine = document.createElement('p'); planLine.dataset.paPlan = '1'; planLine.append(text('span', `${PLANS[plan].label} · RM${PLANS[plan].price}`)); card.append(planLine);
+    const planLine = document.createElement('p'); planLine.dataset.paPlan = '1'; planLine.append(text('span', checkoutLabel(plan))); card.append(planLine);
     const form = document.createElement('form'); form.className = 'pa-aff-form';
     const nameLabel = text('label', 'Nama penjaga'); const name = document.createElement('input'); name.id = 'paCheckoutName'; name.required = true; name.maxLength = 100; name.autocomplete = 'name'; nameLabel.append(name);
     const phoneLabel = text('label', 'Nombor telefon'); const phone = document.createElement('input'); phone.id = 'paCheckoutPhone'; phone.required = true; phone.maxLength = 30; phone.inputMode = 'tel'; phone.autocomplete = 'tel'; phoneLabel.append(phone);
     const note = text('p', 'Bayaran akan dibuka dalam halaman ToyyibPay. Akses diaktifkan selepas bayaran disahkan oleh pelayan.', 'pa-aff-note');
+    const upgradeNote = text('p', 'Ini ialah bayaran tambahan untuk upgrade Family Plus. Komisen affiliate tidak dibayar untuk upgrade.', 'pa-aff-note'); upgradeNote.dataset.paUpgradeNote = '1'; upgradeNote.hidden = !upgradeFor(plan);
     const message = document.createElement('div'); message.id = 'paCheckoutMessage'; message.setAttribute('aria-live', 'polite'); const submit = text('button', 'Teruskan ke ToyyibPay', 'pa-aff-primary'); submit.type = 'submit';
-    form.append(nameLabel, phoneLabel, note, message, submit); form.addEventListener('submit', (event) => beginCheckout(event, overlay)); card.append(form); overlay.append(card); document.body.append(overlay);
+    form.append(nameLabel, phoneLabel, note, upgradeNote, message, submit); form.addEventListener('submit', (event) => beginCheckout(event, overlay)); card.append(form); overlay.append(card); document.body.append(overlay); loadCatalog().then(() => updateCheckoutOverlay(overlay)).catch(() => {});
     if (!loggedIn()) { status(message, 'Log masuk akaun penjaga dahulu.'); submit.disabled = true; }
     return overlay;
   }
@@ -79,7 +85,8 @@
     if (!validPhone(details.phone)) return status(message, 'Masukkan nombor telefon yang sah.');
     button.disabled = true; button.textContent = 'Menyediakan pembayaran…';
     try {
-      const data = await functionCall('create-checkout', { plan, parent_name: details.name, phone: details.phone, affiliate_code: referral() || null, expected_price_cents: Math.round(PLANS[plan].price * 100) });
+      const payload = { plan, parent_name: details.name, phone: details.phone, expected_price_cents: amountCents(plan) }; if (!upgradeFor(plan)) payload.affiliate_code = referral() || null;
+      const data = await functionCall('create-checkout', payload);
       const url = typeof data === 'string' ? data : data?.live_url || data?.url || data?.payment_url;
       if (!url || !/^https:\/\/(?:dev\.)?toyyibpay\.com\//i.test(url)) throw new Error('Pautan pembayaran tidak tersedia.');
       const order = data?.order_id || data?.bill_code || data?.id; if (order) localStorage.setItem(ORDER_KEY, JSON.stringify({ order: String(order).slice(0, 100), expires: Date.now() + 86400000 })); overlay.classList.add('hidden'); location.assign(url);
@@ -198,6 +205,7 @@
   }
   function mount() {
     captureReferral(); mountCheckoutButtons(); const currentUser = user()?.id || ''; const currentAdmin = admin(); const settings = $('settingsTab');
+    const checkout = $('paCheckoutOverlay'); if (checkout) updateCheckoutOverlay(checkout);
     if (settings) { ensureAffiliateTrigger(settings); ensureAffiliateOverlay(); }
     if (settings && !$('paAffiliateMount')) { const host = document.createElement('section'); host.id = 'paAffiliateMount'; host.className = 'card pa-aff-section'; host.hidden = true; settings.append(host); }
     if (settings && !$('paAffiliateAdmin')) { const host = document.createElement('section'); host.id = 'paAffiliateAdmin'; host.className = 'card pa-aff-section'; settings.append(host); }

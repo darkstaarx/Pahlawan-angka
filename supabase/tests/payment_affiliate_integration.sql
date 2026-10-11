@@ -3,6 +3,7 @@ insert into auth.users(id,email) values
 ('00000000-0000-4000-8000-000000000091','pa-affiliate-test@example.invalid'),
 ('00000000-0000-4000-8000-000000000092','pa-buyer-test@example.invalid'),
 ('00000000-0000-4000-8000-000000000093','pa-admin-test@example.invalid');
+update auth.users set email_confirmed_at=now() where id in ('00000000-0000-4000-8000-000000000091','00000000-0000-4000-8000-000000000092','00000000-0000-4000-8000-000000000093');
 insert into public.app_user_roles(user_id,role) values('00000000-0000-4000-8000-000000000093','admin') on conflict(user_id) do update set role='admin';
 select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000091',true);
 select set_config('request.jwt.claim.role','authenticated',true);

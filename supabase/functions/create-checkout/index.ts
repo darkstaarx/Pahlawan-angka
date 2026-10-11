@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     if (order.billcode) return json({ order_id: order.id, external_uuid: order.external_uuid, bill_code: order.billcode, live_url: `${TOYYIBPAY_BASE_URL.replace(/\/$/, '')}/${order.billcode}` }, 200, origin);
     stage = 'claim_bill';
     const { data: claimed, error: claimError } = await authClient.rpc('claim_payment_bill', { p_order_id: order.id });
-    if (claimError || claimed !== true) return json({ error: 'Checkout is already being prepared' }, 409, origin);
+    if (claimError || claimed !== true) return json({ error: 'Pesanan sedang disediakan atau memerlukan semakan. Cuba semula sebentar lagi. Jika masih tersekat, hubungi bantuan sebelum membuat bayaran baharu.' }, 409, origin);
     const amount = Number(order.amount_cents);
     const appUrl = new URL(CANONICAL_APP_URL).origin;
     const providerUrl = TOYYIBPAY_BASE_URL.replace(/\/$/, '');

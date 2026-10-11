@@ -33,6 +33,7 @@ function loadFunction(relativeFile, { clientFactory, fetchImpl, env = {} } = {})
   const values = { ...fakeEnv, ...env };
   const context = {
     Response,
+    URL,
     URLSearchParams,
     console,
     fetch: fetchImpl || (async () => { throw new Error('unexpected network request'); }),
@@ -113,6 +114,29 @@ test('disabled checkout returns 503 before creating an order or calling the prov
   assert.match(await response.text(), /Pembayaran belum dibuka/);
   assert.equal(clients, 0);
   assert.equal(networkCalls, 0);
+});
+
+test('upgrade checkout charges the server order amount and returns to Netlify', async () => {
+  let providerForm;
+  const auth = {
+    auth: { getUser: async () => ({ data: { user: { id: 'buyer', email: 'buyer@example.invalid' } } }) },
+    rpc: (name) => name === 'create_payment_order'
+      ? { single: async () => ({ data: { id: 'upgrade-order', external_uuid: '00000000-0000-4000-8000-000000000001', amount_cents: 1000, billcode: null } }) }
+      : Promise.resolve({ data: true }),
+  };
+  const service = { from: () => ({ update: () => ({ eq: () => ({ eq: async () => ({ error: null }) }) }) }) };
+  const executeRequest = loadFunction('supabase/functions/create-checkout/index.ts', {
+    env: { PAYMENTS_ENABLED: 'true' },
+    clientFactory: (_url, key) => key === fakeEnv.SUPABASE_SERVICE_ROLE_KEY ? service : auth,
+    fetchImpl: async (_url, options) => { providerForm = options.body; return { text: async () => '[{"BillCode":"UPGRADE123"}]' }; },
+  });
+  const response = await executeRequest(new Request('https://example.invalid/checkout', {
+    method: 'POST', headers: { Authorization: 'Bearer buyer-token', 'content-type': 'application/json' },
+    body: JSON.stringify({ plan: 'family_plus', phone: '0123456789', parent_name: 'Parent', expected_price_cents: 1000, external_uuid: '00000000-0000-4000-8000-000000000001' }),
+  }));
+  assert.equal(response.status, 200, await response.clone().text());
+  assert.equal(providerForm.get('billAmount'), '1000');
+  assert.equal(providerForm.get('billReturnUrl'), 'https://pahlawanangka.netlify.app/?payment_order=upgrade-order');
 });
 
 test('callback rejects a tampered signature before loading the order or provider', async () => {
