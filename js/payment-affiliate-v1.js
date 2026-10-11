@@ -93,8 +93,17 @@
     document.querySelectorAll('[data-pa-checkout]').forEach((button) => { const plan = button.dataset.paCheckout === 'family_plus' ? 'family_plus' : 'premium'; button.dataset.paPrice = String(PLANS[plan].price); button.dataset.paCommission = String(PLANS[plan].commission); if (button.dataset.paBound) return; button.dataset.paBound = '1'; button.addEventListener('click', () => checkoutModal(plan)); });
   }
 
+  function commissionTable() {
+    const section = document.createElement('section'); section.className = 'pa-aff-rates';
+    const table = document.createElement('table'); table.append(text('caption', 'Komisen bagi setiap jualan yang disahkan'));
+    const head = document.createElement('thead'); const headings = document.createElement('tr');
+    ['Pakej', 'Harga jualan', 'Komisen anda'].forEach(label => { const cell = text('th', label); cell.scope = 'col'; headings.append(cell); }); head.append(headings); table.append(head);
+    const body = document.createElement('tbody');
+    ['premium', 'family_plus'].forEach(key => { const plan = PLANS[key]; const row = document.createElement('tr'); const name = text('th', plan.label); name.scope = 'row'; row.append(name, text('td', `RM${plan.price.toFixed(2)}`), text('td', `RM${plan.commission.toFixed(2)}`, 'pa-aff-rate-earned')); body.append(row); });
+    table.append(body); section.append(table, text('p', 'Daftar percuma · Tiada yuran pendahuluan', 'pa-aff-free-note'), text('p', 'Komisen dikira selepas bayaran pembeli disahkan. Pembelian sendiri tidak mendapat komisen. Bayaran komisen diurus secara manual.', 'pa-aff-note')); return section;
+  }
   function affiliateForm(host) {
-    host.textContent = ''; host.append(text('h3', 'Daftar Rakan Affiliate — percuma'), text('p', 'Dapatkan komisen bagi setiap pembelian melalui pautan anda. Tiada yuran pendaftaran.'), text('p', `Akses Keluarga RM${PLANS.premium.price.toFixed(2)} → komisen RM${PLANS.premium.commission.toFixed(2)}. Family Plus RM${PLANS.family_plus.price.toFixed(2)} → komisen RM${PLANS.family_plus.commission.toFixed(2)}.`));
+    host.textContent = ''; host.append(text('h3', 'Daftar Rakan Affiliate — percuma'), commissionTable());
     const form = document.createElement('form'); form.className = 'pa-aff-form';
     const accountLabel = text('label', 'Akaun'); const account = document.createElement('input'); account.type = 'email'; account.value = user()?.email || user()?.user_metadata?.email || ''; account.readOnly = true; account.tabIndex = -1; accountLabel.append(account); form.append(accountLabel);
     [['name','Nama penuh','text'],['phone','Telefon','tel']].forEach(([key, label, type]) => { const wrap = text('label', label); const input = document.createElement('input'); input.name = key; input.type = type; input.required = true; input.maxLength = key === 'phone' ? 30 : 100; if (key === 'phone') { input.inputMode = 'tel'; input.autocomplete = 'tel'; } else input.autocomplete = 'name'; wrap.append(input); form.append(wrap); });
@@ -112,7 +121,7 @@
   async function renderAffiliate(host) {
     host.textContent = '';
     try { await loadCatalog(); } catch (_) {}
-    const priceNote = text('p', `Komisen semasa: Akses Keluarga RM${PLANS.premium.price.toFixed(2)} → RM${PLANS.premium.commission.toFixed(2)}, Family Plus RM${PLANS.family_plus.price.toFixed(2)} → RM${PLANS.family_plus.commission.toFixed(2)}.`); host.append(priceNote);
+    host.append(commissionTable());
     if (!loggedIn()) { host.append(text('p', 'Log masuk akaun penjaga untuk mengurus affiliate.')); return; }
     const renderUserId = user().id;
     try {
