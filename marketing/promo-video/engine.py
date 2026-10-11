@@ -1056,6 +1056,12 @@ class HookText:
             reg = out[y0:y1, x0:x1]
             reg *= (1 - a)
             reg += warped[..., :3] * a
+            if w.get('strike_t') is not None and t >= w['strike_t']:
+                kst = ease_out((t - w['strike_t']) / 0.25)
+                half = (w_ - 80) / 2 * sx * scale
+                p0 = (x - half - 10, y + 6)
+                p1 = (p0[0] + (2 * half + 20) * kst, y - 2)
+                cv2.line(out, (int(p0[0]), int(p0[1])), (int(p1[0]), int(p1[1])), (0.93, 0.25, 0.22), max(6, int(w['size'] * 0.09)), cv2.LINE_AA)
 
 
 class EndScene:
@@ -1316,6 +1322,185 @@ class FocusShift:
         if kn > 0:
             self._card(out, self.placeholder, 540, self.slot_y(2) + (1 - kn) * 260, 0.9 + 0.1 * min(1, kn), min(1, kn * 2) * fade)
         over(out, self.tag, W - 260, int(self.slot_y(2) + self.ch / 2 + 40), 0.9 * fade * min(1, max(0, (t - t0) / 0.4)))
+
+
+class FullClip:
+    """Video penuh skrin (cover-fit) dengan zoom perlahan, pudar, malap dan gelang sorotan."""
+
+    def __init__(self, src_path, t0, t1, segs, zoom=(1.0, 1.06), dim=1.0, fade=(0.0, 0.0), scrim=0.0, rings=(), layer='back', blur=0.0):
+        self.blur = blur
+        self.src = Source(os.path.join(BUILD, src_path))
+        self.t0, self.t1, self.segs, self.zoom, self.dim, self.fade, self.scrim, self.rings, self.layer = t0, t1, segs, zoom, dim, fade, scrim, rings, layer
+        self.shot = Shot(t0, t1, None, segs)
+
+    def active(self, t):
+        return self.t0 <= t < self.t1
+
+    def draw(self, out, t):
+        f = self.src.get(int(round(self.shot.src_time(t) * FPS)))
+        if f is None:
+            return
+        fh, fw = f.shape[:2]
+        k = (t - self.t0) / max(1e-6, self.t1 - self.t0)
+        z = self.zoom[0] + (self.zoom[1] - self.zoom[0]) * smooth(k)
+        sc = max(W / fw, H / fh) * z
+        nw, nh = int(fw * sc), int(fh * sc)
+        img = cv2.resize(f, (nw, nh), interpolation=cv2.INTER_AREA if sc < 1 else cv2.INTER_LINEAR)
+        ox, oy = (nw - W) // 2, (nh - H) // 2
+        img = img[oy:oy + H, ox:ox + W]
+        if self.blur > 0:
+            img = cv2.GaussianBlur(img, (0, 0), self.blur)
+        img = img[..., ::-1].astype(np.float32) / 255 * self.dim
+        a = 1.0
+        if self.fade[0] > 0:
+            a = min(a, smooth((t - self.t0) / self.fade[0]))
+        if self.fade[1] > 0:
+            a = min(a, 1 - smooth((t - (self.t1 - self.fade[1])) / self.fade[1]))
+        if self.scrim > 0:
+            yy = np.arange(H, dtype=np.float32)
+            g = (np.clip(1 - yy / 700, 0, 1) ** 1.5 * self.scrim)[:, None, None]
+            img = img * (1 - g) + NAVY * g
+        out[:] = out * (1 - a) + img * a
+        for (r0, r1, u, v, rad) in self.rings:
+            ar = ramp(t, r0, r1, 0.25) * a
+            if ar <= 0:
+                continue
+            cx, cy = int(u * nw - ox), int(v * nh - oy)
+            grow = 1 + 0.25 * (1 - ease_out((t - r0) / 0.4))
+            lay = np.zeros((H, W), np.float32)
+            cv2.circle(lay, (cx, cy), int(rad * grow), 1.0, 7, cv2.LINE_AA)
+            m = np.clip(lay + cv2.GaussianBlur(lay, (0, 0), 9) * 1.5, 0, 1)[..., None] * ar
+            out[:] = out * (1 - m) + GOLD * m
+
+
+class DeviceClip:
+    """Rakaman app sebenar di dalam bingkai laptop atau tablet, digerakkan dalam 3D."""
+
+    def __init__(self, kind, src_path, t0, t1, segs, keys, label=None, label_t=None, label_xy=None):
+        self.kind, self.t0, self.t1, self.layer = kind, t0, t1, 'front'
+        self.src = Source(os.path.join(BUILD, src_path))
+        self.shot = Shot(t0, t1, None, segs)
+        self.track = Track(keys)
+        ss = 1
+        if kind == 'laptop':
+            sw, sh = 1080, 675
+            bz, bzb = 26, 40
+            lw, lh = sw + 2 * bz, sh + bz + bzb
+            base_h, base_over = 44, 90
+            iw, ih = lw + 2 * base_over, lh + base_h + 10
+            im = Image.new('RGBA', (iw, ih), (0, 0, 0, 0))
+            d = ImageDraw.Draw(im)
+            lx = base_over
+            d.rounded_rectangle([lx, 0, lx + lw, lh], radius=30, fill=(22, 24, 30, 255), outline=(120, 126, 140, 255), width=3)
+            d.ellipse([lx + lw / 2 - 5, 9, lx + lw / 2 + 5, 19], fill=(40, 44, 54, 255))
+            # tapak papan kekunci
+            d.polygon([(0, lh + 6), (iw, lh + 6), (iw - 40, lh + base_h), (40, lh + base_h)], fill=(196, 200, 210, 255))
+            d.rectangle([0, lh, iw, lh + 10], fill=(222, 226, 234, 255))
+            d.rounded_rectangle([iw / 2 - 90, lh, iw / 2 + 90, lh + 9], radius=5, fill=(170, 174, 186, 255))
+            self.screen_box = (lx + bz, bz, sw, sh)
+        elif kind == 'browser':
+            sw, sh = 1080, 675
+            top, side = 112, 10
+            iw, ih = sw + 2 * side, sh + top + side
+            im = Image.new('RGBA', (iw, ih), (0, 0, 0, 0))
+            d = ImageDraw.Draw(im)
+            d.rounded_rectangle([0, 0, iw - 1, ih - 1], radius=22, fill=(226, 230, 238, 255), outline=(170, 176, 190, 255), width=2)
+            d.rounded_rectangle([0, 0, iw - 1, 52], radius=22, fill=(205, 210, 222, 255))
+            d.rectangle([0, 30, iw - 1, 52], fill=(205, 210, 222, 255))
+            for i, col in enumerate([(238, 94, 82), (246, 190, 60), (98, 196, 92)]):
+                d.ellipse([22 + i * 26, 18, 38 + i * 26, 34], fill=col + (255,))
+            d.rounded_rectangle([120, 10, 420, 60], radius=12, fill=(248, 249, 252, 255))
+            logo = Image.open(os.path.join(REPO, 'assets/branding/pahlawan-angka-full-logo-v1.png')).convert('RGBA')
+            logo = logo.crop(logo.getbbox())
+            logo.thumbnail((40, 30), Image.LANCZOS)
+            im.alpha_composite(logo, (134, 20))
+            d.text((184, 35), 'Pahlawan Angka', font=font('Inter-SemiBold.otf', 22), fill=(40, 46, 60, 255), anchor='lm')
+            d.rounded_rectangle([110, 64, iw - 30, 102], radius=19, fill=(248, 249, 252, 255), outline=(200, 204, 214, 255), width=2)
+            d.rounded_rectangle([132, 76, 146, 92], radius=3, fill=(90, 100, 120, 255))
+            d.arc([134, 68, 144, 82], 180, 360, fill=(90, 100, 120, 255), width=3)
+            d.text((162, 83), 'Pahlawan Angka', font=font('Inter-Medium.otf', 22), fill=(70, 78, 96, 255), anchor='lm')
+            for i in range(3):
+                d.ellipse([30 + i * 26, 76, 44 + i * 26, 90], outline=(120, 128, 146, 255), width=2)
+            self.screen_box = (side, top, sw, sh)
+        else:
+            sw, sh = 626, 896
+            bz = 34
+            iw, ih = sw + 2 * bz, sh + 2 * bz
+            im = Image.new('RGBA', (iw, ih), (0, 0, 0, 0))
+            d = ImageDraw.Draw(im)
+            d.rounded_rectangle([0, 0, iw - 1, ih - 1], radius=58, fill=(24, 26, 32, 255), outline=(150, 156, 170, 255), width=4)
+            d.rounded_rectangle([5, 5, iw - 6, ih - 6], radius=54, outline=(60, 64, 76, 255), width=2)
+            d.ellipse([iw / 2 - 6, bz / 2 - 6, iw / 2 + 6, bz / 2 + 6], fill=(40, 44, 54, 255))
+            self.screen_box = (bz, bz, sw, sh)
+        self.frame = np.asarray(im, np.float32) / 255
+        x, y, sw, sh = self.screen_box
+        m = Image.new('L', (sw, sh), 0)
+        ImageDraw.Draw(m).rounded_rectangle([0, 0, sw - 1, sh - 1], radius={'laptop': 10, 'browser': 4}.get(kind, 26), fill=255)
+        self.smask = (np.asarray(m, np.float32) / 255)[..., None]
+        self.label = None
+        if label:
+            f = font('Inter-ExtraBold.otf', 40)
+            pw, ph = int(f.getlength(label)) + 70, 76
+            lb = Image.new('RGBA', (pw + 40, ph + 40), (0, 0, 0, 0))
+            g = Image.new('RGBA', lb.size, (0, 0, 0, 0))
+            ImageDraw.Draw(g).rounded_rectangle([20, 26, 20 + pw, 26 + ph], radius=38, fill=(0, 0, 0, 120))
+            lb = Image.alpha_composite(lb, g.filter(ImageFilter.GaussianBlur(10)))
+            d = ImageDraw.Draw(lb)
+            d.rounded_rectangle([20, 20, 20 + pw, 20 + ph], radius=38, fill=(250, 196, 70, 255), outline=(255, 236, 170, 255), width=3)
+            d.text((20 + pw / 2, 20 + ph / 2), label, font=f, fill=(14, 22, 54, 255), anchor='mm')
+            self.label = np.asarray(lb, np.float32) / 255
+        self.label_t, self.label_xy = label_t, label_xy
+
+    def active(self, t):
+        return self.t0 <= t <= self.t1
+
+    def draw(self, out, t):
+        p = self.track.at(t)
+        if p['a'] <= 0.003:
+            return
+        f = self.src.get(int(round(self.shot.src_time(t) * FPS)))
+        img = self.frame.copy()
+        if f is not None:
+            x, y, sw, sh = self.screen_box
+            scr = cv2.resize(f, (sw, sh), interpolation=cv2.INTER_AREA)[..., ::-1].astype(np.float32) / 255
+            reg = img[y:y + sh, x:x + sw]
+            reg[..., :3] = reg[..., :3] * (1 - self.smask) + scr * self.smask
+            reg[..., 3:4] = np.maximum(reg[..., 3:4], self.smask)
+        warp_plane(out, img, p, alpha=p['a'], shadow=0.5, shadow_off=(18, 50), blur=24)
+        if self.label is not None and self.label_t is not None:
+            kl = ease_back((t - self.label_t) / 0.45, 1.8)
+            if kl > 0:
+                lb = cv2.resize(self.label, None, fx=max(0.05, kl), fy=max(0.05, kl), interpolation=cv2.INTER_LINEAR)
+                lx, ly = self.label_xy
+                over(out, lb, int(lx - lb.shape[1] / 2), int(ly - lb.shape[0] / 2), min(1, kl * 2) * p['a'])
+
+
+class Chip:
+    """Label pil emas kecil yang muncul dengan pop."""
+
+    def __init__(self, text, t0, t1, x, y):
+        self.t0, self.t1, self.x, self.y, self.layer = t0, t1, x, y, 'front'
+        f = font('Inter-ExtraBold.otf', 40)
+        pw, ph = int(f.getlength(text)) + 70, 76
+        lb = Image.new('RGBA', (pw + 40, ph + 40), (0, 0, 0, 0))
+        g = Image.new('RGBA', lb.size, (0, 0, 0, 0))
+        ImageDraw.Draw(g).rounded_rectangle([20, 26, 20 + pw, 26 + ph], radius=38, fill=(0, 0, 0, 120))
+        lb = Image.alpha_composite(lb, g.filter(ImageFilter.GaussianBlur(10)))
+        d = ImageDraw.Draw(lb)
+        d.rounded_rectangle([20, 20, 20 + pw, 20 + ph], radius=38, fill=(250, 196, 70, 255), outline=(255, 236, 170, 255), width=3)
+        d.text((20 + pw / 2, 20 + ph / 2), text, font=f, fill=(14, 22, 54, 255), anchor='mm')
+        self.img = np.asarray(lb, np.float32) / 255
+
+    def active(self, t):
+        return self.t0 <= t <= self.t1
+
+    def draw(self, out, t):
+        k = ease_back((t - self.t0) / 0.45, 1.8)
+        a = 1 - smooth((t - (self.t1 - 0.3)) / 0.3)
+        if k <= 0:
+            return
+        im = cv2.resize(self.img, None, fx=max(0.05, k), fy=max(0.05, k), interpolation=cv2.INTER_LINEAR)
+        over(out, im, int(self.x - im.shape[1] / 2), int(self.y - im.shape[0] / 2), min(1, k * 2) * a)
 
 
 # ---------------------------------------------------------------- audio
