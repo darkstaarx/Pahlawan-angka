@@ -21,6 +21,8 @@ Secrets backend: TOYYIBPAY_SECRET_KEY, CATEGORY_CODE, APP_URL, TOYYIBPAY_BASE_UR
 
 PAYMENTS_ENABLED kekal false sehingga ujian pembayaran disahkan. Sandbox memerlukan akaun/key/kategori sandbox sendiri; key live tidak boleh digunakan di sandbox. Tiada dana dipindahkan atau bayaran sebenar dibuat oleh ujian database.
 
+Untuk ujian bil live sebelum pelancaran, tetapkan PAYMENTS_ADMIN_TEST_MODE=true sementara PAYMENTS_ENABLED=false. Hanya pengguna yang mempunyai role admin dalam app_user_roles boleh menjana bil; metadata pengguna tidak digunakan. Bil ujian ini masih mengenakan harga sebenar jika dibayar. Selepas ujian pembayaran dan callback disahkan, tetapkan PAYMENTS_ENABLED=true dan PAYMENTS_ADMIN_TEST_MODE=false.
+
 ## Ujian penerimaan
 
 - Permohonan affiliate menyimpan bank peribadi; guardian lain tidak boleh baca atau approve.
