@@ -276,7 +276,7 @@ function coreQ(s){
   if(mode==='interest_loan_years'){
     const principal=pick1([2000,3000,5000,8000]),rate=pick1([2,3,4,5]),years=pick1([2,3,4]),interest=principal*rate/100*years;
     return mark(qc(
-      'Pinjaman '+rm(principal)+' dikenakan faedah '+rate+'% setahun selama '+years+' tahun. Berapakah jumlah faedah?',
+      'Dalam contoh ini, pinjaman '+rm(principal)+' dikenakan faedah mudah '+rate+'% setahun atas pinjaman asal selama '+years+' tahun. Berapakah jumlah faedah?',
       rm(interest),[Nq(rm(principal+interest),'interest'),Nq(rm(principal*rate/100),'interest'),Nq(rm(principal-rate*years),'operation')],
       'Kira faedah setahun, kemudian darab bilangan tahun.','Tahun 6 · Faedah Pinjaman'
     ),'3.1.2',mode,'story','application',s,['interest','duration']);
@@ -349,10 +349,10 @@ function highQ(s){
     ),'3.3.1',mode,'story','reasoning',s,['profit_loss','multi_step']);
   }
   if(mode==='discount_then_profit'){
-    const list=pick1([120,160,200]),disc=pick1([10,20,25]),cost=pick1([80,100,120]),sell=tidy(list*(100-disc)/100,2),profit=sell-cost,ans=profit>=0?'untung '+rm(profit):'rugi '+rm(Math.abs(profit));
+    const list=pick1([120,160,200]),disc=pick1([10,20,25]),cost=pick1([80,100,120]),sell=tidy(list*(100-disc)/100,2),profit=sell-cost,ans=profit===0?'tiada untung atau rugi':profit>0?'untung '+rm(profit):'rugi '+rm(Math.abs(profit));
     return mark(qc(
       'Harga bertanda '+rm(list)+'. Selepas diskaun '+disc+'%, barang dijual kepada pelanggan. Harga kos peniaga '+rm(cost)+'. Apakah keputusan jualan sebenar?',
-      ans,[Nq('untung '+rm(Math.abs(list-cost)),'profit_loss'),Nq('rugi '+rm(Math.abs(sell-cost)),'profit_loss'),Nq('tiada untung atau rugi','profit_loss')],
+      ans,[Nq('untung '+rm(Math.max(1,Math.abs(list-cost))),'profit_loss'),Nq((profit<0?'untung ':'rugi ')+rm(Math.max(1,Math.abs(sell-cost))),'profit_loss'),Nq(profit===0?'untung '+rm(disc):'tiada untung atau rugi','profit_loss')],
       'Cari harga jual sebenar selepas diskaun, kemudian banding dengan harga kos.','Tahun 6 · Diskaun dan Untung/Rugi'
     ),'3.3.1',mode,'story','reasoning',s,['discount','profit_loss','multi_step']);
   }
@@ -402,7 +402,7 @@ function highQ(s){
   if(mode==='loan_total_payment'){
     const p=pick1([3000,5000,8000]),rate=pick1([3,4,5]),years=pick1([2,3,4]),interest=p*rate/100*years,total=p+interest;
     return mark(qc(
-      'Pinjaman '+rm(p)+' dikenakan faedah '+rate+'% setahun selama '+years+' tahun. Berapakah jumlah keseluruhan yang perlu dibayar?',
+      'Dalam contoh ini, pinjaman '+rm(p)+' dikenakan faedah mudah '+rate+'% setahun atas pinjaman asal selama '+years+' tahun. Berapakah jumlah keseluruhan yang perlu dibayar?',
       rm(total),[Nq(rm(interest),'interest'),Nq(rm(p+p*rate/100),'interest'),Nq(rm(p-rate*years),'operation')],
       'Kira jumlah faedah untuk semua tahun, kemudian tambah kepada pinjaman asal.','Tahun 6 · Jumlah Bayaran Pinjaman'
     ),'3.3.1',mode,'story','reasoning',s,['interest','duration','multi_step']);

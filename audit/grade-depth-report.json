@@ -12,35 +12,35 @@
     {
       "grade": 2,
       "skills": 37,
-      "advanced": 833,
+      "advanced": 841,
       "strongSamples": 1184,
       "basicOnly": 0
     },
     {
       "grade": 3,
       "skills": 15,
-      "advanced": 371,
+      "advanced": 369,
       "strongSamples": 480,
       "basicOnly": 0
     },
     {
       "grade": 4,
       "skills": 17,
-      "advanced": 358,
+      "advanced": 360,
       "strongSamples": 544,
       "basicOnly": 0
     },
     {
       "grade": 5,
       "skills": 18,
-      "advanced": 355,
+      "advanced": 357,
       "strongSamples": 576,
       "basicOnly": 0
     },
     {
       "grade": 6,
       "skills": 16,
-      "advanced": 478,
+      "advanced": 479,
       "strongSamples": 512,
       "basicOnly": 0
     }
@@ -539,11 +539,11 @@
     {
       "id": "D2.7.2",
       "grade": 2,
-      "archetypes": 3,
+      "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "application": 11,
-        "concept": 21
+        "application": 19,
+        "concept": 13
       }
     },
     {
@@ -596,8 +596,7 @@
         "reasoning": 22,
         "application": 4,
         "procedure": 3,
-        "concept": 2,
-        "foundation": 1
+        "concept": 3
       }
     },
     {
@@ -617,8 +616,8 @@
       "archetypes": 10,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 14,
-        "application": 12,
+        "application": 14,
+        "reasoning": 12,
         "procedure": 6
       }
     },
@@ -661,35 +660,36 @@
       "archetypes": 14,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 17,
-        "application": 5,
-        "concept": 5,
-        "procedure": 4,
+        "reasoning": 18,
+        "application": 4,
+        "concept": 4,
+        "procedure": 5,
         "transfer": 1
       }
     },
     {
       "id": "D3.DEC",
       "grade": 3,
-      "archetypes": 10,
+      "archetypes": 9,
       "curriculumNodes": 0,
       "demands": {
         "reasoning": 26,
-        "procedure": 3,
-        "concept": 2,
-        "transfer": 1
+        "procedure": 2,
+        "transfer": 2,
+        "concept": 2
       }
     },
     {
       "id": "D3.MONEY",
       "grade": 3,
-      "archetypes": 12,
+      "archetypes": 14,
       "curriculumNodes": 0,
       "demands": {
         "reasoning": 12,
         "application": 16,
         "foundation": 2,
-        "procedure": 2
+        "concept": 1,
+        "procedure": 1
       }
     },
     {
@@ -698,20 +698,23 @@
       "archetypes": 13,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 9,
-        "application": 19,
-        "procedure": 4
+        "application": 16,
+        "reasoning": 11,
+        "procedure": 3,
+        "concept": 1,
+        "foundation": 1
       }
     },
     {
       "id": "D3.MEASURE",
       "grade": 3,
-      "archetypes": 17,
+      "archetypes": 18,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 24,
-        "application": 6,
-        "procedure": 2
+        "reasoning": 22,
+        "application": 7,
+        "concept": 2,
+        "procedure": 1
       }
     },
     {
@@ -731,11 +734,11 @@
       "archetypes": 9,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 16,
-        "application": 10,
+        "reasoning": 17,
+        "application": 9,
         "procedure": 2,
-        "concept": 3,
-        "transfer": 1
+        "transfer": 1,
+        "concept": 3
       }
     },
     {
@@ -744,9 +747,9 @@
       "archetypes": 8,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 8,
-        "procedure": 18,
-        "concept": 6
+        "reasoning": 10,
+        "procedure": 17,
+        "concept": 5
       }
     },
     {
@@ -757,8 +760,8 @@
       "demands": {
         "reasoning": 11,
         "application": 6,
-        "procedure": 5,
-        "concept": 10
+        "procedure": 6,
+        "concept": 9
       }
     },
     {
@@ -767,8 +770,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 9,
-        "application": 15,
+        "reasoning": 8,
+        "application": 16,
         "procedure": 8
       }
     },
@@ -779,8 +782,8 @@
       "curriculumNodes": 0,
       "demands": {
         "reasoning": 9,
-        "application": 16,
-        "procedure": 7
+        "application": 15,
+        "procedure": 8
       }
     },
     {
@@ -789,9 +792,9 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 16,
+        "reasoning": 17,
         "application": 8,
-        "procedure": 8
+        "procedure": 7
       }
     },
     {
@@ -808,7 +811,7 @@
     {
       "id": "D4.FRAC",
       "grade": 4,
-      "archetypes": 6,
+      "archetypes": 5,
       "curriculumNodes": 0,
       "demands": {
         "application": 26,
@@ -828,12 +831,12 @@
     {
       "id": "D4.MONEY",
       "grade": 4,
-      "archetypes": 7,
+      "archetypes": 11,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 21,
-        "application": 5,
-        "procedure": 6
+        "reasoning": 22,
+        "procedure": 6,
+        "application": 4
       }
     },
     {
@@ -863,8 +866,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "application": 12,
-        "procedure": 20
+        "application": 13,
+        "procedure": 19
       }
     },
     {
@@ -873,8 +876,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "application": 30,
-        "concept": 2
+        "application": 31,
+        "concept": 1
       }
     },
     {
@@ -883,10 +886,10 @@
       "archetypes": 9,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 9,
-        "application": 5,
-        "procedure": 14,
-        "concept": 4
+        "reasoning": 8,
+        "application": 6,
+        "procedure": 13,
+        "concept": 5
       }
     },
     {
@@ -906,9 +909,9 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 16,
+        "reasoning": 17,
         "application": 8,
-        "procedure": 8
+        "procedure": 7
       }
     },
     {
@@ -917,9 +920,9 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 8,
+        "reasoning": 9,
         "application": 8,
-        "procedure": 16
+        "procedure": 15
       }
     },
     {
@@ -929,8 +932,8 @@
       "curriculumNodes": 0,
       "demands": {
         "application": 14,
-        "procedure": 13,
-        "concept": 5
+        "procedure": 14,
+        "concept": 4
       }
     },
     {
@@ -950,8 +953,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 10,
-        "application": 7,
+        "reasoning": 9,
+        "application": 8,
         "procedure": 8,
         "concept": 7
       }
@@ -959,11 +962,11 @@
     {
       "id": "D5.MONEY",
       "grade": 5,
-      "archetypes": 4,
+      "archetypes": 9,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 17,
-        "application": 15
+        "reasoning": 16,
+        "application": 16
       }
     },
     {
@@ -1078,11 +1081,11 @@
     {
       "id": "D6.MONEY",
       "grade": 6,
-      "archetypes": 20,
+      "archetypes": 21,
       "curriculumNodes": 5,
       "demands": {
-        "concept": 24,
-        "application": 4,
+        "concept": 23,
+        "application": 5,
         "reasoning": 4
       }
     },
@@ -1144,8 +1147,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "application": 27,
-        "concept": 5
+        "application": 26,
+        "concept": 6
       }
     },
     {
@@ -1165,8 +1168,8 @@
       "archetypes": 3,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 13,
-        "procedure": 19
+        "reasoning": 12,
+        "procedure": 20
       }
     },
     {
@@ -1197,8 +1200,8 @@
       "archetypes": 4,
       "curriculumNodes": 0,
       "demands": {
-        "reasoning": 20,
-        "application": 6,
+        "reasoning": 19,
+        "application": 7,
         "procedure": 6
       }
     },

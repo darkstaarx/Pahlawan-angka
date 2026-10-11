@@ -437,7 +437,13 @@
             if (!tpl) { if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt); else liveEvent(root, bridge, 'fallback', { reason: 'no_template' }, startedAt); return null; }
             var generator = runtime._generators[tpl.generator];
             if (typeof generator !== 'function') { var gd={ reason: 'generator_missing', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId }; if (mode === 'shadow') shadowEvent(root, bridge, 'fallback', gd, startedAt); else liveEvent(root, bridge, 'fallback', gd, startedAt); return null; }
-            var raw = generator(tpl.params || {}, rng); q = assembleLegacyQuestion(runtime, tpl, raw);
+            // Difficulty is authored on the template record, while operation
+            // knobs remain in params. Pass the band through without mutating
+            // either object so generators can calibrate their values in the
+            // same production path used by the legacy bridge.
+            var generatorParams = Object.assign({}, tpl.params || {});
+            if (generatorParams.difficultyBand == null && tpl.difficultyBand != null) generatorParams.difficultyBand = tpl.difficultyBand;
+            var raw = generator(generatorParams, rng); q = assembleLegacyQuestion(runtime, tpl, raw);
             if (!recent.has(legacyQuestionFingerprint(q)) || attempt === 9) break;
           }
           // Phase 3A-4: for non-pilot D3 shadow skills, a record's mode is

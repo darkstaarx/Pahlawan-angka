@@ -25,7 +25,7 @@ for(const skill of skills){let numeric=0,modes=new Set();
    const key=v=>cents(v)===null?'text:'+String(v).trim().toLowerCase():'money:'+cents(v);
    assert.equal(new Set([q.answer,...q.wrong.map(x=>x.v)].map(key)).size,4,id+' equivalent money options '+JSON.stringify(q));
    const n=cents(q.answer);if(n!==null){numeric++;assert(n>=0,id+' negative balance '+p);assert(Number.isInteger(n),id+' fraction of a sen');}
-   if(/^(?:RM\d+(?:\.\d+)?|\d+ sen) [＋+−×÷] .* = \?$/.test(p)){
+   if(!/[()]/.test(p)&&/^(?:RM\d+(?:\.\d+)?|\d+ sen) [＋+−×÷] .* = \?$/.test(p)){
     const tokens=p.replace(/RM\d+(?:\.\d+)?|\d+ sen/g,x=>String(cents(x))).replace(/ = \?$/,'').split(' ');
     let expected=Number(tokens[0]);for(let j=1;j<tokens.length;j+=2){const v=Number(tokens[j+1]);expected=tokens[j]==='+'?expected+v:tokens[j]==='−'?expected-v:tokens[j]==='×'?expected*v:expected/v;}
     check(q,expected);

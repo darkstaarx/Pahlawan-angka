@@ -1,11 +1,11 @@
 {
   "status": "pass",
   "samples": 9000,
-  "independentOracles": 4634,
+  "independentOracles": 4210,
   "senAdvanced": 2799,
-  "d4Records": 218,
-  "d5Budgets": 206,
-  "d6Balance": 12,
+  "d4Records": 135,
+  "d5Budgets": 99,
+  "d6Balance": 10,
   "dealWinners": [
     "Pakej B",
     "Pakej A"
@@ -62,26 +62,26 @@
     {
       "id": "D3.MONEY",
       "samples": 750,
-      "numeric": 403,
+      "numeric": 405,
       "archetypes": 15
     },
     {
       "id": "D4.MONEY",
       "samples": 750,
-      "numeric": 750,
-      "archetypes": 8
+      "numeric": 586,
+      "archetypes": 14
     },
     {
       "id": "D5.MONEY",
       "samples": 750,
-      "numeric": 546,
-      "archetypes": 4
+      "numeric": 582,
+      "archetypes": 9
     },
     {
       "id": "D6.MONEY",
       "samples": 750,
-      "numeric": 141,
-      "archetypes": 50
+      "numeric": 145,
+      "archetypes": 48
     }
   ]
 }
