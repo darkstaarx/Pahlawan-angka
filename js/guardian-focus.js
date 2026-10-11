@@ -1,3 +1,73 @@
+/* Home focus uses actual encounters, not low default mastery or retry counts.
+   Five encounters across two distinct questions are a minimum for a suggestion.
+   The latest twenty encounters allow a recovering skill to leave the list. */
+function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
+ const grade=Number(profile?.schoolGrade),skills=typeof GRAPH==='undefined'?[]:GRAPH.skills.filter(m=>Number(m.grade)===grade);
+ const rows=(profile?.learnerReviewV1?.encounters||[]).filter(e=>Number(e.grade)===grade
+  &&['independent','corrected','assisted','unresolved'].includes(e.outcome)
+  &&!['demo','dev','dev-test'].includes(e.mode));
+ let hasEvidence=false;
+ const candidates=skills.flatMap(m=>{
+  const recent=rows.filter(e=>e.skillId===m.id).slice(-20),unique=new Set(recent.map(e=>e.questionKey).filter(Boolean));
+  if(recent.length<5||unique.size<2)return [];
+  hasEvidence=true;
+  const independent=recent.filter(e=>e.outcome==='independent').length,rate=independent/recent.length;
+  if(rate>=.8)return [];
+  if(typeof questionBankFor!=='function'||typeof questionBankFor(m.id)!=='function')return [];
+  const unresolved=recent.filter(e=>e.outcome==='unresolved').length,assisted=recent.filter(e=>e.outcome==='assisted').length;
+  return [{id:m.id,title:m.title,chapter:String(m.chapter),attempts:recent.length,independent,
+   independentRate:Math.round(rate*100),priority:(1-rate)*100+unresolved/recent.length*15,
+   reason:unresolved?'Ulang latihan untuk kukuhkan asas.':assisted?'Latih menjawab sendiri selepas bantuan.':'Kukuhkan jawapan pada percubaan pertama.'}];
+ });
+ candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));
+ return {items:candidates.slice(0,3),hasEvidence};
+}
+let focusPickerProfile=null,focusPickerTrigger=null;
+function closeFocusPicker(){document.getElementById('focusPickerOverlay')?.classList.add('hidden');focusPickerTrigger?.focus?.()}
+function openFocusPicker(){
+ if(typeof db==='undefined'||!db)return;
+ const overlay=document.getElementById('focusPickerOverlay'),deck=document.getElementById('focusPickerDeck');
+ if(!overlay||!deck)return;
+ if(overlay.classList.contains('hidden'))focusPickerTrigger=document.activeElement;
+ focusPickerProfile=db;
+ const {items,hasEvidence}=focusPracticeSummary();
+ deck.replaceChildren();
+ for(const item of items){
+  const card=document.createElement('button');card.type='button';card.className='focusPickCard';
+  card.dataset.skill=item.id;
+  for(const [tag,cls,value] of [
+   ['small','focusPickLabel','FOKUS SETERUSNYA'],['b','focusPickTitle',item.title],
+   ['span','focusPickEvidence',item.independent+'/'+item.attempts+' betul sendiri'],
+   ['span','focusPickReason',item.reason],['span','focusPickCta','Latih kemahiran ini →']
+  ]){const node=document.createElement(tag);node.className=cls;node.textContent=value;card.appendChild(node)}
+  card.onclick=()=>startFocusChoice(item.id);deck.appendChild(card);
+ }
+ const empty=document.getElementById('focusPickerEmpty');
+ empty.hidden=items.length>0;
+ document.getElementById('focusPickerEmptyText').textContent=hasEvidence
+  ?'Belum ada kemahiran yang perlukan fokus berdasarkan latihan terkini. Teruskan kembara untuk semak kemahiran lain.'
+  :'Belum cukup latihan untuk kenal pasti fokus. Selesaikan beberapa soalan berbeza dalam kembara dahulu.';
+ document.getElementById('focusPickerNav').hidden=items.length<2;
+ document.getElementById('focusPickerHint').textContent=items.length>1?'Leret atau guna anak panah untuk pilih fokus.':items.length?'Latihan dikunci pada kemahiran yang dipilih.':'';
+ overlay.classList.remove('hidden');deck.scrollLeft=0;
+ overlay.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();closeFocusPicker()}
+  if(e.key==='Tab'){const controls=Array.from(overlay.querySelectorAll('button')).filter(el=>!el.closest('[hidden]'));const first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}};
+ (deck.firstElementChild||empty.querySelector('button'))?.focus();
+}
+function moveFocusChoice(direction){
+ const deck=document.getElementById('focusPickerDeck'),card=deck?.firstElementChild;
+ if(card)deck.scrollBy({left:direction*(card.getBoundingClientRect().width+12),behavior:'smooth'});
+}
+function startFocusChoice(id){
+ if(focusPickerProfile!==db||!focusPracticeSummary().items.some(item=>item.id===id)){openFocusPicker();return}
+ if(typeof enforceRestuLock==='function'&&enforceRestuLock())return;
+ closeFocusPicker();
+ // Keep the existing production battle/count; only lock the selected skill.
+ if(typeof openGembok==='function'&&window.PAProductionJourney)openGembok({focusSkill:id});
+ else openGuardianFocus(id);
+}
+function continueFocusJourney(){closeFocusPicker();window.PAMenuV2?.kembara?.()}
+window.PAFocusPractice={summary:focusPracticeSummary,open:openFocusPicker,close:closeFocusPicker,start:startFocusChoice};
 function guardianSnapshot(id){const s=scoreState(id);return{mastery:+s.mastery||0,confidence:+s.confidence||0,evidence:+s.evidence||0,correct:+s.correct||0,wrong:+s.wrong||0,hints:+s.hints||0,mis:{...(s.mis||{})}}}
 function openGuardianFocus(id){
  if(!META[id]||META[id].grade!==coreGrade())return;
@@ -63,3 +133,4 @@ function finishGuardianFocus(){
 function repeatGuardianFocus(){if(sess?.focusSkill){openGuardianFocus(sess.focusSkill);screen('parent')}}
 function resultPrimary(){if(sess?.guardianFocus){renderParent();screen('parent')}else goHub()}
 function resultReplay(){if(sess?.guardianFocus)repeatGuardianFocus();else replayMission()}
+

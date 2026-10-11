@@ -106,7 +106,7 @@
     const s=run.session,id=selectSkill(run),state=realScore(id);
     if(!id||!state)return null;
     return withSession(s,()=>{
-      const q=generate(id,state,{battleTier:'gembok',isBoss:false});
+      const q=generate(id,state,{battleTier:'gembok',isBoss:false,strictSkill:run.route==='focus'});
       if(!q)return null;
       q.skill=id;q.token=++s.questionToken;
       s.q=q;s.start=now();s.hint=false;s.hintLevel=0;s.retryState=null;
@@ -243,4 +243,5 @@
   window.PAProductionJourney={open,nextQuestion,firstWrong,resolve,hint,complete,pauseForLearning,resumeFromLearning,restart,close,isActive:()=>!!active,state:()=>active,isCurrent:run=>active===run&&!run.paused};
   window.openGembok=open;
 })();
+
 
