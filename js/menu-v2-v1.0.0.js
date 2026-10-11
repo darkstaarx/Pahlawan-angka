@@ -503,9 +503,10 @@
     if(has('playSfx'))try{playSfx('ui')}catch(_){}
     if(has('openGembok'))return openGembok({chapter:String(ch)});
   }
-  function openMapV2(){
+  async function openMapV2(){
     if(typeof db==='undefined'||!db)return has('goLogin')?goLogin():null;
     if(has('enforceRestuLock')&&enforceRestuLock())return;
+    if(!await window.PACommercial?.checkMissionAccess?.())return;
     if(has('ensureProgression'))ensureProgression();
     if(has('updateFrontier'))updateFrontier();
     const wrap=document.getElementById('missionGrid');
@@ -574,9 +575,10 @@
      HAD JUJUR: pemilihan adalah adaptif sebenar, tetapi Gembok V2 tidak
      memanggil recordFrontierResponse()/recordMissionAnswer(), jadi jawapan di
      sini tidak menambah bukti frontier. Jangan dakwa pariti adaptif penuh. */
-  function openKembaraDimensi(){
+  async function openKembaraDimensi(){
     if(typeof db==='undefined'||!db)return has('goLogin')?goLogin():null;
     if(has('enforceRestuLock')&&enforceRestuLock())return;
+    if(!await window.PACommercial?.checkMissionAccess?.())return;
     if(has('ensureProgression'))ensureProgression();
     if(has('updateFrontier'))updateFrontier();
     if(typeof chooseModeAndSkill!=='function'){

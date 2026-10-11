@@ -27,6 +27,17 @@ function render(){
  let overlay=document.getElementById('paPricingOverlay');if(!overlay){document.body.insertAdjacentHTML('beforeend',`<div id="paPricingOverlay" class="paPricingOverlay hidden" role="dialog" aria-modal="true"><div class="paPricing"><button class="paPricingClose" onclick="PACommercial.closePricing()">×</button><small>SEKALI BAYAR · AKSES KEKAL</small><h2>Pilih akses untuk keluarga</h2><div class="paPrices"><article class="best"><em>PALING LENGKAP</em><b>Family Plus</b><span class="paBetaLabel">HARGA BETA</span><del class="paRegularPrice" aria-label="Harga biasa selepas beta RM49">RM49</del><strong>RM29</strong><span>sekali bayar</span><ul><li>Semua dalam Akses Keluarga</li><li>Latihan Fokus Plus</li><li>Laporan PDF dan worksheet tanpa had muat turun</li><li>Sehingga lima profil anak</li><li>Akses automatik kepada semua ciri baharu yang dilancarkan dalam <b>2 bulan selepas pembelian</b>, tanpa caj tambahan.</li></ul></article><article><b>Akses Keluarga</b><span class="paBetaLabel">HARGA BETA</span><del class="paRegularPrice" aria-label="Harga biasa selepas beta RM29">RM29</del><strong>RM19</strong><span>sekali bayar</span><ul><li>Semua Darjah 1–6 · misi tanpa had</li><li>Dua profil anak</li><li>Worksheet: satu muat turun sehari bagi setiap akaun keluarga</li><li>Cikgu Dimensi dan rekod kemajuan</li></ul></article><article class="free"><b>Free</b><strong>RM0</strong><span>Percuma</span><ul><li>Satu profil anak</li><li>Satu misi sehari</li><li>Demo boleh dimainkan tanpa had</li><li>Rekod kemajuan anak</li><li>Worksheet dan ciri Plus memerlukan pelan berbayar</li></ul><p>Kuota misi dikira apabila misi dimulakan. Reset pada tengah malam waktu Malaysia.</p></article></div><p class="paBetaNote">Harga beta: RM19 untuk Akses Keluarga dan RM29 untuk Family Plus. Harga biasa selepas beta: RM29 dan RM49.</p><p class="paPriceNote">Perlu satu profil tambahan sahaja? Tambah <b>RM5</b> bagi setiap profil.</p><button class="paFounder" disabled>Pembayaran belum dibuka</button><p>Urusan pembelian hanya melalui akaun penjaga.</p></div></div>`);overlay=document.getElementById('paPricingOverlay')}
  overlay.classList.remove('hidden')
 }
+let missionCheckPending=false;
+async function checkMissionAccess(){
+ if(missionCheckPending||!requireFeature('missions'))return false;
+ const cloud=window.PACloud?.state,userId=cloud?.user?.id;if(!cloud?.client||!userId)return false;
+ missionCheckPending=true;
+ try{const {data,error}=await cloud.client.rpc('get_daily_mission_access');if(error)throw error;
+ if(window.PACloud?.state?.user?.id!==userId)return false;
+ if(!data?.allowed){showMissionLimit(data?.day);return false;}return true;
+ }catch(error){console.warn('Mission access unavailable',error);alert('Akses misi belum dapat disahkan. Semak sambungan dan cuba semula.');return false;}
+ finally{missionCheckPending=false;}
+}
 async function authorizeMission(){
  if(missionClaimPending||!requireFeature('missions'))return false;
  const cloud=window.PACloud?.state,userId=cloud?.user?.id;
@@ -69,6 +80,6 @@ function installProfileLimit(){
  wrapped=true
 }
 function boot(){refresh();setInterval(()=>{installProfileLimit();render()},1200)}
-window.PACommercial={refresh,reset,render,openPricing,closePricing,isPremium:premium,isPaid:paid,canUse,requireFeature,canUseDev,authorizeMission,closeMissionLimit,viewMissionPlans,getAccess:()=>({...access})};
+window.PACommercial={refresh,reset,render,openPricing,closePricing,isPremium:premium,isPaid:paid,canUse,requireFeature,canUseDev,checkMissionAccess,authorizeMission,closeMissionLimit,viewMissionPlans,getAccess:()=>({...access})};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

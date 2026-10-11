@@ -42,3 +42,19 @@ test('quota card remains on mission attempts after returning home or logging in 
   assert.equal(await c.window.PACommercial.authorizeMission(),false);assert.equal(shown,2);
  }
 });
+
+test('hub cards check quota before preparing the map or journey',async()=>{
+ const source=fs.readFileSync('js/menu-v2-v1.0.0.js','utf8');
+ for(const name of ['openMapV2','openKembaraDimensi']){
+  let checked=0,prepared=0;const c={db:{},has:()=>true,enforceRestuLock:()=>false,ensureProgression:()=>prepared++,window:{PACommercial:{checkMissionAccess:async()=>{checked++;return false}}}};
+  vm.createContext(c);const start=source.indexOf('async function '+name+'(){'),end=source.indexOf("if(has('ensureProgression'))",start);
+  vm.runInContext(source.slice(start,end)+'prepared++;}',Object.assign(c,{prepared:0}));
+  await c[name]();assert.equal(checked,1);assert.equal(c.prepared,0);assert.equal(prepared,0);
+ }
+});
+test('hub quota check uses a non consuming RPC',async()=>{
+ const c=harness({plan:'free'});await c.window.PACommercial.refresh();let calls=[];
+ c.window.PACloud.state.client.rpc=async name=>{calls.push(name);return {data:{allowed:true}}};
+ assert.equal(await c.window.PACommercial.checkMissionAccess(),true);assert.equal(await c.window.PACommercial.checkMissionAccess(),true);
+ assert.deepEqual(calls,['get_daily_mission_access','get_daily_mission_access']);
+});
