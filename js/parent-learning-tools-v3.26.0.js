@@ -329,6 +329,7 @@ async function answerPages(items,title,subtitle,startPage=0,options={}){
  if(current){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,startPage+pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(current.canvas)}return pages;
 }
 async function worksheet(includeAnswers){
+ if(navigator.onLine===false){status('Worksheet belum tersedia offline. Sambung internet dan cuba lagi.',true);return;}
  if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun latihan...');mountWorksheet();
  try{
   const pack=makeQuestions(),pages=await studentPages(pack.items,pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`);
@@ -338,6 +339,7 @@ async function worksheet(includeAnswers){
 }
 function demoPrintableItems(rawItems){return(rawItems||[]).map(printableQuestion).filter(Boolean).filter(x=>x.prompt&&x.answer).slice(0,8)}
 async function demoWorksheet(rawItems,grade){
+ if(navigator.onLine===false){status('Worksheet belum tersedia offline. Sambung internet dan cuba lagi.',true);return;}
  if(state.busy)return;state.busy=true;
  try{const items=demoPrintableItems(rawItems);if(!items.length)throw new Error('Tiada soalan sesuai untuk cetakan dalam sesi ini.');const pages=await studentPages(items,'Latihan Selepas Demo',`Darjah ${grade} | ${items.length} soalan pengukuhan terpilih | VERSI DEMO`,{demo:true});pages.push(...await answerPages(items,'Skema Ringkas',`Darjah ${grade} | Penjaga | VERSI DEMO`,pages.length,{demo:true}));download(pdfFromCanvases(pages),`pahlawan-angka-demo-darjah-${grade}.pdf`)}catch(error){console.error(error);alert(error.message||'Latihan demo belum dapat dijana.')}finally{state.busy=false;mountWorksheet()}
 }
