@@ -50,7 +50,7 @@ Video akhir dihantar terus kepada pemilik projek dan tidak disimpan dalam git.
 | 0:50.2–0:54.4 | Krim | Condong −8° | Kad Had Masa Bermain (30/30/15 minit, kunci) | **CONTOH TETAPAN IBU BAPA** / Ibu bapa tentukan masa bermain | Ringan |
 | 0:54.4–0:56 | Krim | Depan | Highlight Latihan + skema | WORKSHEET / Muat turun latihan bercetak | Ringan |
 | 0:56–1:00 | Navy, wipe + | Telefon jatuh ke bawah | 2 halaman PDF sebenar terbang keluar | WORKSHEET PDF / Sambung latihan atas kertas | Groove → riser |
-| 1:00–1:04 | Emas, wipe × | — | `EndScene`: logo → kotak panel naik → **Wira (sprite gembira `rescue-happy-v6`, 20 bingkai) melompat dari kanan dan mendarat di atas kotak** → "Jom, Wira temankan!" → butang "Cuba Demo Sekarang" berkilau → tagline | Pengembaraan matematik ikut kemampuan anak. | Hentakan akhir |
+| 1:00–1:04 | Emas, wipe × | — | `EndScene`: logo → kotak panel naik → **Wira (sprite gembira `rescue-happy-v6`, 20 bingkai pada kanvas & skala tetap) melompat dari kiri dan berdiri di tepi kotak** → "Jom, Wira / temankan!" → butang "Cuba Demo Sekarang" berkilau → tagline | Pengembaraan matematik ikut kemampuan anak. | Hentakan akhir |
 
 Bunyi permainan asal hanya digunakan pada detik penting, iaitu Jurus Penamat, segel pecah, menaip + serangan, dan evolusi. Muzik direndahkan sedikit (ducking) ketika bunyi itu dimainkan. Audio dinormalkan ke −14 LUFS.
 

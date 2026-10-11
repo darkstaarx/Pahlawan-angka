@@ -1054,39 +1054,39 @@ class HookText:
 
 
 class EndScene:
-    """Penutup: logo, kotak panel dengan Wira (sprite gembira) berdiri di atasnya, ajakan dan butang demo."""
+    """Penutup: logo, kotak panel ajakan, dan Wira (sprite gembira) berdiri di tepi kotak."""
 
-    def __init__(self, t0, t1, headline='Jom, Wira temankan!', button='Cuba Demo Sekarang',
+    def __init__(self, t0, t1, lines=('Jom, Wira', 'temankan!'), button='Cuba Demo Sekarang',
                  tag=('Pengembaraan matematik', 'ikut kemampuan anak.')):
         self.t0, self.t1, self.layer = t0, t1, 'front'
         logo = Image.open(os.path.join(REPO, 'assets/branding/pahlawan-angka-full-logo-v1.png')).convert('RGBA')
         logo = logo.crop(logo.getbbox())
-        logo.thumbnail((620, 620), Image.LANCZOS)
+        logo.thumbnail((700, 700), Image.LANCZOS)
         self.logo = np.asarray(logo, np.float32) / 255
-        # kotak panel
-        bw, bh = 880, 430
-        ss = 2
-        box = Image.new('RGBA', ((bw + 80) * ss, (bh + 80) * ss), (0, 0, 0, 0))
-        g = Image.new('RGBA', box.size, (0, 0, 0, 0))
-        ImageDraw.Draw(g).rounded_rectangle([40 * ss, 56 * ss, (40 + bw) * ss, (56 + bh) * ss], radius=50 * ss, fill=(60, 30, 0, 120))
-        box = Image.alpha_composite(box, g.filter(ImageFilter.GaussianBlur(18 * ss)))
+        # susun atur: kotak di kanan, Wira di kiri, kedua-duanya di atas garis tanah yang sama
+        self.box_w, self.box_h = 640, 470
+        self.box_cx, self.ground = 690, 1410
+        self.box_cy = self.ground - self.box_h / 2
+        self.wira_x = 215
+        bw, bh, ss, m = self.box_w, self.box_h, 2, 40
+        box = Image.new('RGBA', ((bw + 2 * m) * ss, (bh + 2 * m) * ss), (0, 0, 0, 0))
         d = ImageDraw.Draw(box)
-        d.rounded_rectangle([40 * ss, 40 * ss, (40 + bw) * ss, (40 + bh) * ss], radius=50 * ss, fill=(14, 24, 62, 255),
+        d.rounded_rectangle([m * ss, m * ss, (m + bw) * ss, (m + bh) * ss], radius=50 * ss, fill=(14, 24, 62, 255),
                             outline=(255, 214, 110, 255), width=7 * ss)
-        d.rounded_rectangle([54 * ss, 54 * ss, (26 + bw) * ss, (26 + bh) * ss], radius=40 * ss, outline=(70, 96, 170, 255), width=2 * ss)
-        self.box = np.asarray(box.resize((bw + 80, bh + 80), Image.LANCZOS), np.float32) / 255
-        self.box_size = (bw, bh)
-        self.f_head = font('InterDisplay-Black.otf', 70)
-        self.headline = headline.split()
+        d.rounded_rectangle([(m + 14) * ss, (m + 14) * ss, (m + bw - 14) * ss, (m + bh - 14) * ss], radius=40 * ss,
+                            outline=(70, 96, 170, 255), width=2 * ss)
+        self.box = np.asarray(box.resize((bw + 2 * m, bh + 2 * m), Image.LANCZOS), np.float32) / 255
+        self.f_head = font('InterDisplay-Black.otf', 84)
+        self.lines = [ln.split() for ln in lines]
         self.g = Glyphs()
-        f2 = font('Inter-ExtraBold.otf', 48)
-        pw, phh = int(f2.getlength(button)) + 130, 116
+        f2 = font('Inter-ExtraBold.otf', 40)
+        pw, phh = int(f2.getlength(button)) + 100, 104
         btn = Image.new('RGBA', (pw + 60, phh + 60), (0, 0, 0, 0))
         g = Image.new('RGBA', btn.size, (0, 0, 0, 0))
-        ImageDraw.Draw(g).rounded_rectangle([30, 30, 30 + pw, 30 + phh], radius=58, fill=(245, 184, 61, 200))
+        ImageDraw.Draw(g).rounded_rectangle([30, 30, 30 + pw, 30 + phh], radius=52, fill=(245, 184, 61, 200))
         btn = Image.alpha_composite(btn, g.filter(ImageFilter.GaussianBlur(16)))
         d = ImageDraw.Draw(btn)
-        d.rounded_rectangle([30, 30, 30 + pw, 30 + phh], radius=58, fill=(250, 196, 70, 255), outline=(255, 236, 170, 255), width=4)
+        d.rounded_rectangle([30, 30, 30 + pw, 30 + phh], radius=52, fill=(250, 196, 70, 255), outline=(255, 236, 170, 255), width=4)
         d.text((30 + pw / 2, 30 + phh / 2), button, font=f2, fill=(14, 22, 54, 255), anchor='mm')
         self.btn = np.asarray(btn, np.float32) / 255
         f3 = font('InterDisplay-Bold.otf', 48)
@@ -1095,18 +1095,20 @@ class EndScene:
         for i, ln in enumerate(tag):
             d.text((W / 2, 6 + i * 62), ln, font=f3, fill=(14, 22, 54, 255), anchor='mt')
         self.tag = np.asarray(tagim, np.float32) / 255
-        # sprite Wira gembira (20 bingkai)
+        # Sprite Wira gembira: SEMUA bingkai guna kanvas asal yang sama (245x360) dan skala tetap,
+        # supaya saiz dan kedudukan tidak melompat antara bingkai.
         import glob as _glob
         frames = sorted(_glob.glob(os.path.join(REPO, 'assets/heroes/wira-chibi/frames/rescue-happy-v6/rescue-happy-*-v6.png')))
+        scale = 1.75
         self.wira = []
+        foot = 0
         for f in frames:
             im = Image.open(f).convert('RGBA')
-            im = im.crop(im.getbbox())
-            hgt = 500
-            im = im.resize((int(im.width * hgt / im.height), hgt), Image.LANCZOS)
+            foot = max(foot, im.getchannel('A').getbbox()[3])
+            im = im.resize((int(im.width * scale), int(im.height * scale)), Image.LANCZOS)
+            im = im.filter(ImageFilter.UnsharpMask(radius=1.6, percent=60, threshold=2))
             self.wira.append(np.asarray(im, np.float32) / 255)
-        self.box_y = 1300          # pusat kotak
-        self.wira_x = 760          # pusat Wira
+        self.wira_foot = foot * scale - 6     # garis tapak kaki dalam kanvas berskala
 
     def active(self, t):
         return self.t0 <= t <= self.t1
@@ -1118,85 +1120,82 @@ class EndScene:
         k = ease_back((t - t0) / 0.6, 1.4)
         if k > 0:
             lg = cv2.resize(self.logo, None, fx=max(0.05, k), fy=max(0.05, k), interpolation=cv2.INTER_AREA)
-            over(out, lg, (W - lg.shape[1]) // 2, int(420 - lg.shape[0] / 2), min(1, k * 1.5) * a_all)
-        # kotak naik dari bawah
+            over(out, lg, (W - lg.shape[1]) // 2, int(500 - lg.shape[0] / 2), min(1, k * 1.5) * a_all)
+        # bayang tanah bersama untuk kotak dan Wira
         kb = ease_back((t - t0 - 0.3) / 0.55, 1.2)
-        if kb <= 0:
-            return
-        bw, bh = self.box_size
-        by = self.box_y + (1 - kb) * 520
-        top = by - bh / 2
-        over(out, self.box, int(W / 2 - self.box.shape[1] / 2), int(by - self.box.shape[0] / 2), min(1, kb * 2) * a_all)
-        # Wira jatuh dan mendarat di atas kotak
+        if kb > 0:
+            sh = np.zeros((90, 1000), np.float32)
+            cv2.ellipse(sh, (690 - 40, 45), (360, 22), 0, 0, 360, 0.55, -1, cv2.LINE_AA)
+            sh = cv2.GaussianBlur(sh, (0, 0), 12)[..., None] * min(1, kb) * a_all
+            reg = out[self.ground - 45:self.ground + 45, 40:1040]
+            reg *= (1 - sh)
+        # kotak naik dari bawah
+        if kb > 0:
+            dy = (1 - kb) * 520
+            over(out, self.box, int(self.box_cx - self.box.shape[1] / 2), int(self.box_cy + dy - self.box.shape[0] / 2), min(1, kb * 2) * a_all)
+        cy = self.box_cy + (1 - max(0.0, kb)) * 520
+        # Wira melompat masuk dari kiri dan mendarat di tepi kotak
         tl = t0 + 0.95
-        if t >= t0 + 0.6:
-            fr = self.wira[int(max(0, t - tl) * 12) % len(self.wira)] if t > tl else self.wira[0]
+        if t >= t0 + 0.55:
+            i = int(max(0.0, t - tl) * 12) % len(self.wira) if t > tl else 0
+            fr = self.wira[i]
             h, w_ = fr.shape[:2]
             wx = self.wira_x
             if t < tl:
-                kf = min(1.0, max(0.0, (t - (t0 + 0.6)) / (tl - t0 - 0.6)))
-                wx = self.wira_x + (1 - kf) * 560          # lompat masuk dari kanan
-                foot = top + 22 - 430 * 4 * kf * (1 - kf) - (1 - kf) * 120
-                sxw, syw = 0.95, 1.06
+                kf = min(1.0, max(0.0, (t - (t0 + 0.55)) / (tl - t0 - 0.55)))
+                wx = self.wira_x - (1 - kf) * 420
+                foot = self.ground - 360 * 4 * kf * (1 - kf)
+                sxw, syw = 0.96, 1.04
             else:
-                kl = (t - tl) / 0.35
-                sq = math.sin(min(1.0, kl) * math.pi) * (1 - min(1.0, kl)) * 0.9
-                sxw, syw = 1 + 0.14 * sq, 1 - 0.16 * sq
-                foot = top + 22 - 6 * math.sin(max(0, t - tl - 0.4) * 3.2) * min(1, max(0, t - tl - 0.4))
-            fr2 = cv2.resize(fr, (max(2, int(w_ * sxw)), max(2, int(h * syw))), interpolation=cv2.INTER_LINEAR)
-            # bayang pada kotak
-            if t >= tl - 0.15:
-                sh = np.zeros((40, 300), np.float32)
-                cv2.ellipse(sh, (150, 20), (120, 12), 0, 0, 360, 1.0, -1, cv2.LINE_AA)
-                sh = cv2.GaussianBlur(sh, (0, 0), 6)[..., None] * 0.45 * a_all
-                ys, xs = int(top + 4), int(self.wira_x - 150)
-                reg = out[ys:ys + 40, xs:xs + 300]
-                reg *= (1 - sh[:reg.shape[0], :reg.shape[1]])
-            over(out, fr2, int(wx - fr2.shape[1] / 2), int(foot - fr2.shape[0]), a_all)
-            # debu pendaratan
-            if tl <= t <= tl + 0.5:
-                kd = (t - tl) / 0.5
-                for j in range(10):
-                    ang = math.pi * (j / 9)
-                    r = 60 + 150 * ease_out(kd)
-                    px = int(self.wira_x + math.cos(ang) * r * (1 if j % 2 else -1) * 0.9)
-                    py = int(top - 10 - math.sin(ang) * 30 * ease_out(kd))
-                    rad = int(10 * (1 - kd) + 3)
-                    cv2.circle(out, (px, py), rad, (1.0, 0.92, 0.7), -1, cv2.LINE_AA)
-        # tajuk dalam kotak (perkataan pop)
-        x_words = self.headline
-        total = self.f_head.getlength(' '.join(x_words))
-        x = W / 2 - total / 2
-        for i, wd in enumerate(x_words):
-            kw = ease_back((t - t0 - 1.1 - 0.09 * i) / 0.35, 1.8)
-            ww = self.f_head.getlength(wd)
-            if kw > 0:
-                arr, ox, oy = self.g.img(wd, self.f_head, (255, 255, 255))
-                sc = max(0.05, kw)
-                arr2 = cv2.resize(arr, None, fx=sc, fy=sc, interpolation=cv2.INTER_LINEAR) if abs(sc - 1) > 0.01 else arr
-                cx, cy = x + ww / 2, by - 70
-                over(out, arr2, int(cx - arr2.shape[1] / 2), int(cy - arr2.shape[0] / 2 + 8), min(1, kw * 2) * a_all)
-            x += ww + self.f_head.getlength(' ')
+                kl = min(1.0, (t - tl) / 0.3)
+                sq = math.sin(kl * math.pi) * (1 - kl)
+                sxw, syw = 1 + 0.12 * sq, 1 - 0.13 * sq
+                foot = self.ground
+            fr2 = cv2.resize(fr, (max(2, int(w_ * sxw)), max(2, int(h * syw))), interpolation=cv2.INTER_LINEAR) if (sxw, syw) != (1, 1) else fr
+            over(out, fr2, int(wx - fr2.shape[1] / 2), int(foot - self.wira_foot * syw), a_all)
+            if tl <= t <= tl + 0.45:
+                kd = (t - tl) / 0.45
+                for j in range(8):
+                    side = 1 if j % 2 else -1
+                    r = 40 + 120 * ease_out(kd) * (0.6 + 0.4 * (j // 2) / 3)
+                    px = int(self.wira_x + side * r)
+                    py = int(self.ground - 8 - 40 * math.sin(math.pi * kd) * (0.5 + 0.5 * (j // 2) / 3))
+                    cv2.circle(out, (px, py), int(9 * (1 - kd) + 2), (1.0, 0.93, 0.75), -1, cv2.LINE_AA)
+        # tajuk dua baris dalam kotak
+        wi = 0
+        for li, words in enumerate(self.lines):
+            total = self.f_head.getlength(' '.join(words))
+            x = self.box_cx - total / 2
+            for wd in words:
+                kw = ease_back((t - t0 - 1.1 - 0.09 * wi) / 0.35, 1.8)
+                ww = self.f_head.getlength(wd)
+                if kw > 0:
+                    col = (255, 255, 255) if li == 0 else (250, 196, 70)
+                    arr, ox, oy = self.g.img(wd, self.f_head, col)
+                    sc = max(0.05, kw)
+                    arr2 = cv2.resize(arr, None, fx=sc, fy=sc, interpolation=cv2.INTER_LINEAR) if abs(sc - 1) > 0.01 else arr
+                    ccx, ccy = x + ww / 2, cy - 120 + li * 96
+                    over(out, arr2, int(ccx - arr2.shape[1] / 2), int(ccy - arr2.shape[0] / 2 + 10), min(1, kw * 2) * a_all)
+                x += ww + self.f_head.getlength(' ')
+                wi += 1
         # butang demo
         kc = ease_back((t - t0 - 1.6) / 0.45, 1.6)
         if kc > 0:
-            pulse = 1 + 0.03 * math.sin(max(0, t - t0 - 2.2) * 5)
+            pulse = 1 + 0.03 * math.sin(max(0, t - t0 - 2.1) * 5)
             sc = max(0.05, kc * pulse)
             b2 = cv2.resize(self.btn, None, fx=sc, fy=sc, interpolation=cv2.INTER_LINEAR)
-            bx, byy = int(W / 2 - b2.shape[1] / 2), int(by + 90 - b2.shape[0] / 2)
-            # kilauan melintas
-            if t > t0 + 2.3:
-                ks = ((t - t0 - 2.3) % 1.6) / 0.6
+            if t > t0 + 2.2:
+                ks = ((t - t0 - 2.2) % 1.6) / 0.6
                 if ks <= 1:
                     b2 = b2.copy()
                     hh, ww2 = b2.shape[:2]
                     xx = np.arange(ww2, dtype=np.float32)[None, :] + np.arange(hh, dtype=np.float32)[:, None] * 0.5
                     band = np.exp(-((xx - ks * (ww2 + hh)) / 40) ** 2)[..., None] * 0.55
                     b2[..., :3] = np.clip(b2[..., :3] + band * b2[..., 3:4], 0, 1)
-            over(out, b2, bx, byy, min(1, kc * 2) * a_all)
-        # tagline di bawah kotak
+            over(out, b2, int(self.box_cx - b2.shape[1] / 2), int(cy + 120 - b2.shape[0] / 2), min(1, kc * 2) * a_all)
+        # tagline di bawah
         ka = ease_out((t - t0 - 2.0) / 0.5) * a_all
-        over(out, self.tag, 0, int(by + bh / 2 + 70 + (1 - ka) * 20), ka)
+        over(out, self.tag, 0, int(self.ground + 70 + (1 - ka) * 20), ka)
 
 
 # ---------------------------------------------------------------- audio
