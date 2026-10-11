@@ -53,7 +53,7 @@ const run=ctx.PAProductionJourney.state();
 assert.equal(run.route,'focus');assert.deepEqual(Array.from(run.pool),['D2.2.3']);
 for(let i=0;i<30;i++){const q=ctx.PAProductionJourney.nextQuestion(run);assert.equal(q.skill,'D2.2.3');assert(!/Fallback/.test(q.kind||''));assert.equal(ctx.sess.focusSkill,'D2.2.3')}
 // Mobile picker selection and profile changes.
-function node(){return {children:[],dataset:{},hidden:false,textContent:'',classList:{values:new Set(['hidden']),add(k){this.values.add(k)},remove(k){this.values.delete(k)},contains(k){return this.values.has(k)}},appendChild(n){this.children.push(n)},replaceChildren(){this.children=[]},get firstElementChild(){return this.children[0]},focus(){doc.activeElement=this},getBoundingClientRect:()=>({width:300}),scrollBy(o){this.lastScroll=o},querySelector:()=>null,querySelectorAll(){return this.children}}}
+function node(){return {children:[],dataset:{},setAttribute(){},hidden:false,textContent:'',classList:{values:new Set(['hidden']),add(k){this.values.add(k)},remove(k){this.values.delete(k)},contains(k){return this.values.has(k)}},appendChild(n){this.children.push(n)},replaceChildren(){this.children=[]},get firstElementChild(){return this.children[0]},focus(){doc.activeElement=this},getBoundingClientRect:()=>({width:300}),scrollBy(o){this.lastScroll=o},querySelector:()=>null,querySelectorAll(){return this.children}}}
 const nodes=Object.fromEntries(['focusPickerOverlay','focusPickerDeck','focusPickerEmpty','focusPickerEmptyText','focusPickerNav','focusPickerHint'].map(id=>[id,node()]));
 doc.getElementById=id=>nodes[id];doc.createElement=node;
 ctx.db=profile;const opened=[];ctx.openGembok=options=>opened.push(options);

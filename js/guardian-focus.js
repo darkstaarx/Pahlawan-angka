@@ -32,14 +32,16 @@ function openFocusPicker(){
  focusPickerProfile=db;
  const {items,hasEvidence}=focusPracticeSummary();
  deck.replaceChildren();
- for(const item of items){
+ for(const [index,item] of items.entries()){
   const card=document.createElement('button');card.type='button';card.className='focusPickCard';
   card.dataset.skill=item.id;
   for(const [tag,cls,value] of [
-   ['small','focusPickLabel','FOKUS SETERUSNYA'],['b','focusPickTitle',item.title],
-   ['span','focusPickEvidence',item.independent+'/'+item.attempts+' betul sendiri'],
-   ['span','focusPickReason',item.reason],['span','focusPickCta','Latih kemahiran ini →']
-  ]){const node=document.createElement(tag);node.className=cls;node.textContent=value;card.appendChild(node)}
+   ['small','focusPickLabel','FOKUS '+(index+1)+' / '+items.length],
+   ['span','focusPickEmblem',/darab/i.test(item.title)?'×':/bahagi/i.test(item.title)?'÷':/tambah/i.test(item.title)?'+':/tolak/i.test(item.title)?'−':/pecahan/i.test(item.title)?'½':/bentuk|ruang/i.test(item.title)?'◇':'◎'],
+   ['b','focusPickTitle',item.title],
+   ['span','focusPickEvidence',item.independent+' daripada '+item.attempts+' betul sendiri'],
+   ['span','focusPickReason',item.reason],['span','focusPickCta','Mula latihan  →']
+  ]){const node=document.createElement(tag);node.className=cls;node.textContent=value;if(cls==='focusPickEmblem')node.setAttribute('aria-hidden','true');card.appendChild(node)}
   card.onclick=()=>startFocusChoice(item.id);deck.appendChild(card);
  }
  const empty=document.getElementById('focusPickerEmpty');
@@ -48,7 +50,7 @@ function openFocusPicker(){
   ?'Belum ada kemahiran yang perlukan fokus berdasarkan latihan terkini. Teruskan kembara untuk semak kemahiran lain.'
   :'Belum cukup latihan untuk kenal pasti fokus. Selesaikan beberapa soalan berbeza dalam kembara dahulu.';
  document.getElementById('focusPickerNav').hidden=items.length<2;
- document.getElementById('focusPickerHint').textContent=items.length>1?'Leret atau guna anak panah untuk pilih fokus.':items.length?'Latihan dikunci pada kemahiran yang dipilih.':'';
+ document.getElementById('focusPickerHint').textContent=items.length>1?'Leret untuk pilih fokus':items.length?'Latihan dikunci pada kemahiran yang dipilih.':'';
  overlay.classList.remove('hidden');deck.scrollLeft=0;
  overlay.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();closeFocusPicker()}
   if(e.key==='Tab'){const controls=Array.from(overlay.querySelectorAll('button')).filter(el=>!el.closest('[hidden]'));const first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}};
