@@ -33,15 +33,22 @@ function openFocusPicker(){
  const {items,hasEvidence}=focusPracticeSummary();
  deck.replaceChildren();
  for(const [index,item] of items.entries()){
-  const card=document.createElement('button');card.type='button';card.className='focusPickCard';
-  card.dataset.skill=item.id;
+  const card=document.createElement('button');card.type='button';card.className='focusPickCard';card.dataset.skill=item.id;
+  const art=document.createElement('span');art.className='focusPickArt';art.setAttribute('aria-hidden','true');
+  const picture=document.createElement('img');picture.alt='';picture.width=72;picture.height=72;
+  picture.src=/wang|transaksi|bajet/i.test(item.title)?'assets/fx/reward/coin-v1.webp':/bentuk|ruang|kedudukan|koordinat|perimeter|luas/i.test(item.title)?'assets/ui/menu-v2/jejak-map-v1.webp':'assets/ui/menu-v2/cikgu-dimensi-book-fixed-v1.webp';
+  art.appendChild(picture);
+  const symbol=/darab/i.test(item.title)?'×':/bahagi/i.test(item.title)?'÷':/tambah/i.test(item.title)?'+':/tolak/i.test(item.title)?'−':/pecahan/i.test(item.title)?'½':/masa|waktu/i.test(item.title)?'◷':/peratus/i.test(item.title)?'%':/nisbah/i.test(item.title)?':':null;
+  if(symbol){const badge=document.createElement('span');badge.className='focusPickSymbol';badge.textContent=symbol;art.appendChild(badge)}
+  card.appendChild(art);
+  const body=document.createElement('span');body.className='focusPickBody';
   for(const [tag,cls,value] of [
-   ['small','focusPickLabel','FOKUS '+(index+1)+' / '+items.length],
-   ['span','focusPickEmblem',/darab/i.test(item.title)?'×':/bahagi/i.test(item.title)?'÷':/tambah/i.test(item.title)?'+':/tolak/i.test(item.title)?'−':/pecahan/i.test(item.title)?'½':/bentuk|ruang/i.test(item.title)?'◇':'◎'],
+   ['small','focusPickLabel',index===0?'FOKUS UTAMA':'FOKUS '+(index+1)],
    ['b','focusPickTitle',item.title],
-   ['span','focusPickEvidence',item.independent+' daripada '+item.attempts+' betul sendiri'],
-   ['span','focusPickReason',item.reason],['span','focusPickCta','Mula latihan  →']
-  ]){const node=document.createElement(tag);node.className=cls;node.textContent=value;if(cls==='focusPickEmblem')node.setAttribute('aria-hidden','true');card.appendChild(node)}
+   ['span','focusPickEvidence',item.independent+' / '+item.attempts+' betul sendiri']
+  ]){const node=document.createElement(tag);node.className=cls;node.textContent=value;body.appendChild(node)}
+  card.appendChild(body);
+  const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih →';card.appendChild(cta);
   card.onclick=()=>startFocusChoice(item.id);deck.appendChild(card);
  }
  const empty=document.getElementById('focusPickerEmpty');
@@ -49,16 +56,10 @@ function openFocusPicker(){
  document.getElementById('focusPickerEmptyText').textContent=hasEvidence
   ?'Belum ada kemahiran yang perlukan fokus berdasarkan latihan terkini. Teruskan kembara untuk semak kemahiran lain.'
   :'Belum cukup latihan untuk kenal pasti fokus. Selesaikan beberapa soalan berbeza dalam kembara dahulu.';
- document.getElementById('focusPickerNav').hidden=items.length<2;
- document.getElementById('focusPickerHint').textContent=items.length>1?'Leret untuk pilih fokus':items.length?'Latihan dikunci pada kemahiran yang dipilih.':'';
  overlay.classList.remove('hidden');deck.scrollLeft=0;
  overlay.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();closeFocusPicker()}
   if(e.key==='Tab'){const controls=Array.from(overlay.querySelectorAll('button')).filter(el=>!el.closest('[hidden]'));const first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}};
  (deck.firstElementChild||empty.querySelector('button'))?.focus();
-}
-function moveFocusChoice(direction){
- const deck=document.getElementById('focusPickerDeck'),card=deck?.firstElementChild;
- if(card)deck.scrollBy({left:direction*(card.getBoundingClientRect().width+12),behavior:'smooth'});
 }
 function startFocusChoice(id){
  if(focusPickerProfile!==db||!focusPracticeSummary().items.some(item=>item.id===id)){openFocusPicker();return}
