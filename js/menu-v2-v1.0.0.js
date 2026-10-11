@@ -603,6 +603,7 @@
     if(focus&&!focus.dataset.boundV2){
       focus.dataset.boundV2='1';
       const openFocus=()=>{
+        if(!window.PACommercial?.requireFeature?.('focus'))return;
         window.PAFocusPractice?.open?.();
       };
       focus.onclick=openFocus;

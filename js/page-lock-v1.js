@@ -33,8 +33,10 @@
  function render(){
   document.querySelectorAll('[data-page-lock]').forEach(button=>{
    button.hidden=!inBattle()||showingResult();
-   button.textContent=active()?'🔒':'🔓';
-   button.title=active()?'Buka kunci battle':'Kunci battle';
+   const locked=active();
+   button.innerHTML='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="12" rx="2"/>'+(locked?'<path d="M8 10V6a4 4 0 0 1 8 0v4"/>':'<path d="M8 10V6a4 4 0 0 1 8 0"/>')+'<path d="M12 15v2"/></svg>';
+   button.setAttribute('data-lock-state',locked?'locked':'unlocked');
+   button.title=active()?'Buka kunci battle':'Kunci terbuka · Tekan untuk kunci semula';
    button.setAttribute('aria-pressed',String(active()));
    button.setAttribute('aria-label',active()?'Kunci battle aktif. Masukkan PIN untuk buka kunci.':'Aktifkan kunci battle');
   });

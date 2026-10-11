@@ -58,3 +58,11 @@ test('hub quota check uses a non consuming RPC',async()=>{
  assert.equal(await c.window.PACommercial.checkMissionAccess(),true);assert.equal(await c.window.PACommercial.checkMissionAccess(),true);
  assert.deepEqual(calls,['get_daily_mission_access','get_daily_mission_access']);
 });
+
+test('Free and RM19 focus entry cannot open the picker',async()=>{
+ for(const plan of ['free','premium']){
+  const c=harness({plan,status:'active'});await c.window.PACommercial.refresh();let pricing=0;c.document.body={insertAdjacentHTML(){pricing++}};c.document.getElementById=id=>id==='paPricingOverlay'?{classList:{remove(){}}}:null;
+  const source=fs.readFileSync('js/guardian-focus.js','utf8'),start=source.indexOf('function openFocusPicker(){'),end=source.indexOf("if(typeof db",start);
+  vm.runInContext(source.slice(start,end)+'throw Error("picker opened");}',c);c.openFocusPicker();assert.equal(pricing,0);assert.equal(c.window.PACommercial.canUse('focus'),false);
+ }
+});

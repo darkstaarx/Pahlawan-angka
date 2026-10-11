@@ -117,7 +117,7 @@ guestDialog.querySelector('[data-exit-pin]').value='7391';
 guestDialog.querySelector('[data-confirm-pin]').value='1234';submitGuest();
 assert.equal(guest.PAPageLock.isLocked(),false);assert.equal(storage.size,0);assert.equal(guestDialog.open,true);
 guestDialog.querySelector('[data-confirm-pin]').value='7391';submitGuest();
-assert.equal(guest.PAPageLock.isLocked(),true);assert.equal(guestDialog.open,false);
+assert.equal(guest.PAPageLock.isLocked(),true);assert.equal(guestDialog.open,false);assert.equal(guestHost.button.attributes['data-lock-state'],'locked');
 assert.equal(storage.get('pa_guardian_pin_v1'),'7391');
 guest.PADemo.restoreGuest();
 assert.equal(guest.db,null);assert.equal(guest.pageLockParentPin(),'7391');
@@ -132,3 +132,5 @@ assert.equal(guest.PAPageLock.isLocked(),false);
 guest.db={name:'New profile'};
 assert.equal(guest.pageLockParentPin(),'7391','later parent access uses the same local guardian PIN');
 console.log('PASS: no-profile demo setup fields/buttons enabled, mismatch rejected, PIN saved, lock activated, PIN retained after demo, existing PIN not replaced, correct PIN required to unlock');
+
+assert.equal(guestHost.button.attributes['data-lock-state'],'unlocked','successful PIN updates the visible button');

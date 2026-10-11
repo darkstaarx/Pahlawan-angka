@@ -22,3 +22,5 @@
 .paMissionReset span{color:#ffe078;font-weight:800;line-height:1.5}
 .paMissionLimitActions{display:grid;gap:10px;margin-top:20px}
 .paMissionLimitActions button{width:100%;min-height:48px;white-space:normal}
+
+.paFocusPlanBadge{display:block;color:#ffe078;font-size:12px;font-weight:800;margin-bottom:8px}.paFocusPlanBadge[hidden]{display:none}

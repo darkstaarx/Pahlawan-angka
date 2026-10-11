@@ -19,6 +19,10 @@ async function refresh(){
 }
 function pricingMarkup(){const plus=premium(),active=paid();return `<section class="paPlanCard"><div><small>AKSES KELUARGA</small><h3>${plus?'Family Plus aktif':active?'Akses Keluarga aktif':'Cuba dahulu'}</h3><p>${plus?'Latihan Fokus Plus dan sehingga lima profil anak.':active?'Semua Darjah 1–6, dua profil anak dan satu muat turun worksheet sehari.':'Satu profil anak, satu misi sehari dan demo percuma.'}</p></div><button type="button" onclick="PACommercial.openPricing()">${active?'Lihat akses':'Lihat harga'}</button></section>`}
 function render(){
+ const focus=document.getElementById('mv2FocusCard');
+ if(focus){const locked=!canUse('focus');focus.setAttribute('data-plan-locked',String(locked));focus.setAttribute('aria-label',locked?'Kemahiran Fokus dikunci · Family Plus':'Latih kemahiran fokus');
+ let badge=document.getElementById('paFocusPlanBadge');if(!badge){focus.insertAdjacentHTML('afterbegin','<span id="paFocusPlanBadge" class="paFocusPlanBadge">🔒 Family Plus</span>');badge=document.getElementById('paFocusPlanBadge');}if(badge)badge.hidden=!locked;}
+
  const controls=document.getElementById('cloudParentControls');if(controls&&!document.getElementById('paPlanMount')){const mount=document.createElement('div');mount.id='paPlanMount';controls.before(mount)}
  const mount=document.getElementById('paPlanMount');if(mount)mount.innerHTML=pricingMarkup();
  const manager=document.querySelector('.pmManager');if(manager&&!manager.querySelector('.paManagerPlan'))manager.insertAdjacentHTML('beforeend',`<div class="paManagerPlan">${pricingMarkup()}</div>`)
