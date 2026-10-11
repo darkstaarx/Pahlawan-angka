@@ -5,7 +5,8 @@
 | Guest demo | Yes | Yes | Yes |
 | Missions, Cikgu Dimensi, saved progress | No | Yes | Yes |
 | Active child profiles | 0 | 2 | 5 |
-| Focus practice, PDF reports, full worksheets | No | No | Yes |
+| Focus practice and PDF reports | No | No | Yes |
+| Worksheet downloads | No | 1 per family per Malaysia calendar day | Unlimited |
 
 Prices: RM19/RM29 during beta, RM29/RM49 after beta. Lifetime access uses active status and null current_period_end. Expired/cancelled access falls back to free. Trusted admins retain access. RM5 profile add-ons are recorded as extra_profile_slots and only extend an active paid plan.
 
@@ -20,3 +21,5 @@ Subscriptions and admin roles are read-only for browser clients. Existing saves 
 Validation: run node --test audit/commercial-production-access.test.js and execute supabase/tests/commercial_production_access.sql (rollback-only). Supabase security advisor reports no database warnings; existing leaked-password protection remains disabled.
 
 Frontend v3.85.76 is prepared locally; release frontend together with the already-applied backend rules. Demo math/rendering remains publicly delivered static content: client controls govern the normal UI, database policies govern protected cloud writes. Server-side worksheet/report delivery would be needed to make downloadable content private.
+
+Worksheet quota revision v3.85.77: claim_worksheet_download is an atomic server RPC, required for both PDF variants. Build PDF before claiming; a failed browser save after a successful claim still consumes that day. No external AI API is used. Supabase API requests are required for authorization/quota. Generation stays browser-side, so a modified client could bypass local generation; this quota protects the supported download flow, not public source code.
