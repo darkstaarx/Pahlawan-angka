@@ -177,6 +177,11 @@
   function triggerSpeech(bubbleId, text) {
     const el = $(bubbleId);
     if (!el) return;
+    // The shared RPG row shows one speaker at a time.
+    const otherId=bubbleId==='wiraBubble'?'petBubble':'wiraBubble';
+    if(speechWriters[otherId]){clearTimeout(speechWriters[otherId]);speechWriters[otherId]=null}
+    if(speechTimeouts[otherId]){clearTimeout(speechTimeouts[otherId]);speechTimeouts[otherId]=null}
+    const other=$(otherId);if(other)other.classList.remove('show');
     if (speechWriters[bubbleId]) clearTimeout(speechWriters[bubbleId]);
     if (speechTimeouts[bubbleId]) clearTimeout(speechTimeouts[bubbleId]);
     el.textContent = '';

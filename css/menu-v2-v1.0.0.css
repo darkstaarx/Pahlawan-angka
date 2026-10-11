@@ -624,10 +624,10 @@ body[data-screen="menuV2"] .appHeader{display:none}
    Keep the typewriter effect while preventing the old side bubble clipping. */
 .mv2HeroDialogueSlot{
   position:relative;z-index:20;height:48px;margin:4px 4px 2px;
-  display:flex;align-items:center;justify-content:center;
+  display:grid;place-items:center;
 }
-#wiraBubble{
-  position:relative;inset:auto;width:fit-content;max-width:calc(100% - 16px);height:auto;min-height:42px;
+#wiraBubble,#petBubble{
+  position:relative;grid-area:1 / 1;inset:auto;width:fit-content;max-width:calc(100% - 16px);height:auto;min-height:42px;
   box-sizing:border-box;padding:7px 11px;border:5px double #253047;
   border-radius:4px;background:#fff;color:#111827;
   font-family:inherit;font-size:13px;font-weight:750;line-height:1.35;
@@ -636,8 +636,8 @@ body[data-screen="menuV2"] .appHeader{display:none}
   box-shadow:0 3px 0 #0b1729,0 5px 12px rgba(0,0,0,.2);
   transform:translateY(3px);transition:opacity .15s ease,transform .15s ease;
 }
-#wiraBubble::after{content:none}
-#wiraBubble.show{transform:translateY(0)}
+#wiraBubble::after,#petBubble::after{content:none}
+#wiraBubble.show,#petBubble.show{transform:translateY(0)}
 @media (prefers-reduced-motion:reduce){
   #wiraBubble{transition:none;transform:none}
 }
