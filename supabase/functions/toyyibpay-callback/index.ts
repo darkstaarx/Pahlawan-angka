@@ -27,6 +27,14 @@ Deno.serve(async (req) => {
     if (status === '1' && (!providerTx || !providerRef || Math.round(Number(providerTx.billpaymentAmount) * 100) !== Number(orderResponse.data.amount_cents))) return json({ error: 'Payment verification failed' }, 400, origin);
     const { data: completed, error } = await service.rpc('complete_payment', { p_billcode: billcode, p_provider_ref: providerRef ?? refno, p_status: status, p_amount_cents: Math.round(Number(providerTx?.billpaymentAmount ?? amount) * 100), p_payload: { status, order_id: orderId, billcode, amount, refno } });
     if (error) return json({ error: 'Payment completion failed' }, 500, origin);
+    if (completed === true && Deno.env.get('EMAIL_DELIVERY_ENABLED') === 'true') {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/send-payment-emails`, { method: 'POST', headers: { Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` }, signal: controller.signal });
+      } catch { /* Email delivery is independent of payment confirmation. */ }
+      finally { clearTimeout(timeout); }
+    }
     return json({ ok: completed === true }, 200, origin);
   } catch (error) { return json({ error: 'Callback failed' }, 500, origin); }
 });
