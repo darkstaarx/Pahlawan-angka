@@ -27,6 +27,49 @@ FONT_DIR = '/usr/share/fonts/opentype/inter'
 BUILD = os.environ.get('PROMO_BUILD', os.path.join(HERE, 'build'))
 
 W, H, FPS = 1080, 1920, 30
+
+# ---------------------------------------------------------------- format output (iklan)
+# '916'    : asal 1080×1920 (TikTok/Reels organik)
+# 'ads916' : 1080×1920 untuk iklan Reels/Stories — teks & butang dijauhkan dari zon UI Meta
+#            (~14% atas, ~20–35% bawah)
+# 'feed45' : 1080×1350 untuk Feed FB/IG — disusun semula, bukan sekadar crop
+# Kanvas maya kekal 1080×1920; setiap kumpulan lapisan (latar, kandungan telefon, hook, kad akhir)
+# dirender berasingan, diekstrak alfa (render atas hitam + putih) dan diletak semula dengan skala
+# k: titik (sx, sy) kanvas maya → (dx, dy) kanvas output.
+FMT = os.environ.get('PROMO_FORMAT', '916')
+OUT_H = 1350 if FMT == 'feed45' else H
+LAYOUTS = {
+    'ads916': dict(full=(1.0, (540, 960), (540, 960)), content=(0.9, (540, 1180), (540, 1252)),
+                   hook=(0.92, (540, 960), (540, 900)), end=(0.82, (540, 951), (540, 812)),
+                   text_y=280, fade=(630, 890)),
+    'feed45': dict(full=(1.0, (540, 960), (540, 675)), content=(0.72, (540, 1180), (540, 850)),
+                   hook=(0.74, (540, 960), (540, 675)), end=(0.74, (540, 951), (540, 675)),
+                   text_y=50, fade=(330, 520)),
+}
+
+
+def fmt_group(sp):
+    g = getattr(sp, 'fmt_group', None)
+    if g:
+        return g
+    return {'HookText': 'hook', 'EndScene': 'end', 'FullClip': 'full'}.get(type(sp).__name__, 'content')
+
+
+def scrim_shift():
+    """Anjakan (kanvas maya) supaya scrim atas FullClip tetap gelap di belakang teks dalam format iklan."""
+    if FMT not in LAYOUTS:
+        return 0.0
+    L = LAYOUTS[FMT]
+    k, (_, sy), (_, dy) = L['full']
+    return sy + (L['text_y'] - dy) / k - 150
+
+
+def fmt_y(y, group='content'):
+    """Petakan koordinat y kanvas maya ke kanvas output bagi kumpulan lapisan."""
+    if FMT not in LAYOUTS:
+        return y
+    k, (_, sy), (_, dy) = LAYOUTS[FMT][group]
+    return dy + (y - sy) * k
 SRC_W, SRC_H = 1080, 2236
 SW = 520.0
 SH = SW * SRC_H / SRC_W
@@ -629,7 +672,7 @@ class Renderer:
                 arr, ox, oy = G.img(spec['head'], F['beat'], pal['head'], shadow=0.6 if dark else 0)
                 if abs(sc - 1) > 0.002:
                     arr = cv2.resize(arr, None, fx=sc, fy=sc, interpolation=cv2.INTER_LINEAR)
-                y = spec.get('y', 300)
+                y = fmt_y(spec.get('y', 300))
                 over(out, arr, (W - arr.shape[1]) // 2, int(y - arr.shape[0] / 2), k * a_out)
             elif style == 'slate':
                 self.draw_slate(out, spec, pal, t, a_out)
@@ -641,6 +684,8 @@ class Renderer:
         t0 = spec['t0']
         x = spec.get('x', 84)
         y = spec.get('y', 150)
+        if FMT in LAYOUTS:
+            y = fmt_y(y) if 'y' in spec else LAYOUTS[FMT]['text_y']
         dark = pal['particles']
         shadow = 0.55 if dark else 0.0
         dy_out = -(1 - a_out) * 24
@@ -687,7 +732,7 @@ class Renderer:
         fo = font('InterDisplay-Bold.otf', fs)
         lh = int(fs * 1.12)
         lines = spec['lines']
-        y = spec.get('y', (H - lh * len(lines)) / 2)
+        y = fmt_y(spec['y']) if 'y' in spec else (out.shape[0] - lh * len(lines)) / 2
         for li, words in enumerate(lines):
             widths = [(ff if st == 'fill' else fo).getlength(w) for w, _, st in words]
             space = ff.getlength(' ')
@@ -706,6 +751,8 @@ class Renderer:
                 x += ww + space
 
     def render(self, t):
+        if FMT in LAYOUTS:
+            return self.render_fmt(t)
         out = self.background(t)
         for sp in self.specials:
             if getattr(sp, 'layer', 'front') == 'back' and sp.active(t):
@@ -723,6 +770,106 @@ class Renderer:
         for sp in self.specials:
             if getattr(sp, 'layer', 'front') == 'front' and sp.active(t):
                 sp.draw(out, t)
+        for (tf, dur, strength) in getattr(self.tl, 'FLASHES', []):
+            if tf - 0.05 <= t <= tf + dur:
+                k = min(1.0, max(0.0, (t - tf + 0.05) / (dur + 0.05)))
+                e = math.sin(min(1, k * 4) * math.pi / 2) * (1 - k) ** 1.5 * strength
+                out += (GOLD * 0.6 + 0.4) * e
+        self.draw_texts(out, t)
+        return np.clip(out, 0, 1)
+
+    # -- format iklan: lapisan dirender berasingan, alfa diekstrak, kemudian disusun semula
+    def _layer(self, fns):
+        if not hasattr(self, '_bufs'):
+            self._bufs = (np.zeros((H, W, 3), np.float32), np.zeros((H, W, 3), np.float32))
+        blk, wht = self._bufs
+        blk[:] = 0
+        wht[:] = 1
+        for fn in fns:
+            fn(blk)
+            fn(wht)
+        a = 1 - (wht - blk).mean(axis=2)
+        np.clip(a, 0, 1, out=a)
+        return blk, a
+
+    @staticmethod
+    def _place(out, prem, a, T):
+        """out = out·(1−a′) + prem′, dengan prem/a diskala k dan dianjak supaya (sx, sy) → (dx, dy)."""
+        k, (sx, sy), (dx, dy) = T
+        if a is not None:
+            m = a > 0.002
+            rows = np.nonzero(m.any(axis=1))[0]
+            if len(rows) == 0:
+                return
+            cols = np.nonzero(m[rows[0]:rows[-1] + 1].any(axis=0))[0]
+            y0, y1, x0, x1 = rows[0], rows[-1] + 1, cols[0], cols[-1] + 1
+        else:
+            y0, y1, x0, x1 = 0, prem.shape[0], 0, prem.shape[1]
+        p = prem[y0:y1, x0:x1]
+        aa = a[y0:y1, x0:x1] if a is not None else None
+        if abs(k - 1) > 1e-3:
+            nw, nh = max(1, int(round((x1 - x0) * k))), max(1, int(round((y1 - y0) * k)))
+            interp = cv2.INTER_AREA if k < 1 else cv2.INTER_LINEAR
+            p = cv2.resize(p, (nw, nh), interpolation=interp)
+            aa = cv2.resize(aa, (nw, nh), interpolation=interp) if aa is not None else None
+        ox = int(round(dx + (x0 - sx) * k))
+        oy = int(round(dy + (y0 - sy) * k))
+        Ho, Wo = out.shape[:2]
+        h, w = p.shape[:2]
+        X0, Y0, X1, Y1 = max(0, ox), max(0, oy), min(Wo, ox + w), min(Ho, oy + h)
+        if X1 <= X0 or Y1 <= Y0:
+            return
+        ps = p[Y0 - oy:Y1 - oy, X0 - ox:X1 - ox]
+        if aa is None:
+            out[Y0:Y1, X0:X1] = ps
+            return
+        as_ = aa[Y0 - oy:Y1 - oy, X0 - ox:X1 - ox][..., None]
+        reg = out[Y0:Y1, X0:X1]
+        reg *= (1 - as_)
+        reg += ps
+
+    def render_fmt(self, t):
+        L = LAYOUTS[FMT]
+        out = np.zeros((OUT_H, W, 3), np.float32)
+        self._place(out, self.background(t), None, L['full'])
+        act = [sp for sp in self.specials if sp.active(t)]
+
+        def sp_fn(sp):
+            return lambda c: sp.draw(c, t)
+
+        def ph_fn(ph):
+            def f(c):
+                r = self.draw_phone(c, ph, t)
+                if r is not None:
+                    self.motion_blur(c, ph, t, r[1])
+            return f
+
+        def group(g, layer=None):
+            return [sp_fn(sp) for sp in act if fmt_group(sp) == g and (layer is None or getattr(sp, 'layer', 'front') == layer)]
+
+        full = group('full')
+        if full:
+            self._place(out, *self._layer(full), L['full'])
+            # latar gelap lembut di belakang teks atas footage penuh (TV terang)
+            sc = max(getattr(sp, 'scrim', 0.0) for sp in act if fmt_group(sp) == 'full')
+            if sc > 0:
+                te = L['text_y'] + 300
+                yy = np.arange(te + 240, dtype=np.float32)
+                g = ((1 - np.clip((yy - te) / 240, 0, 1)) ** 1.5 * 0.55 * sc)[:, None, None]
+                out[:te + 240] = out[:te + 240] * (1 - g) + NAVY * g
+        back = group('content', 'back') + [ph_fn(ph) for ph in self.phones]
+        self._place(out, *self._layer(back), L['content'])
+        z = max((smooth((ph.track.at(t)['s'] - 1.12) / 0.45) * ph.track.at(t)['a'] for ph in self.phones), default=0)
+        if z > 0:
+            f0, f1 = L['fade']
+            base = rgb(*self.palette(t)['top'])
+            yy = np.arange(f1, dtype=np.float32)
+            g = (1 - np.clip((yy - f0) / (f1 - f0), 0, 1) ** 2) * 0.94 * z
+            out[:f1] = out[:f1] * (1 - g[:, None, None]) + base * g[:, None, None]
+        for g, T in (('content', L['content']), ('hook', L['hook']), ('end', L['end'])):
+            fns = group(g, 'front')
+            if fns:
+                self._place(out, *self._layer(fns), T)
         for (tf, dur, strength) in getattr(self.tl, 'FLASHES', []):
             if tf - 0.05 <= t <= tf + dur:
                 k = min(1.0, max(0.0, (t - tf + 0.05) / (dur + 0.05)))
@@ -1358,7 +1505,7 @@ class FullClip:
             a = min(a, 1 - smooth((t - (self.t1 - self.fade[1])) / self.fade[1]))
         if self.scrim > 0:
             yy = np.arange(H, dtype=np.float32)
-            g = (np.clip(1 - yy / 700, 0, 1) ** 1.5 * self.scrim)[:, None, None]
+            g = (np.clip(1 - (yy - scrim_shift()) / 700, 0, 1) ** 1.5 * self.scrim)[:, None, None]
             img = img * (1 - g) + NAVY * g
         out[:] = out * (1 - a) + img * a
         for (r0, r1, u, v, rad) in self.rings:
@@ -1563,7 +1710,7 @@ def build_audio(tl, out_wav):
 
 def render_range(tl, start, end, path):
     r = Renderer(tl)
-    enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
+    enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{OUT_H}', '-r', str(FPS), '-i', '-',
                             '-c:v', 'libx264', '-preset', 'medium', '-crf', '16', '-pix_fmt', 'yuv420p', path], stdin=subprocess.PIPE)
     for i in range(start, end):
         enc.stdin.write((r.render(i / FPS) * 255 + 0.5).astype(np.uint8).tobytes())
