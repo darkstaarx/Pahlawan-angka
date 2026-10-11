@@ -51,6 +51,7 @@
   function validPhone(phone) { return /^[+\d][\d\s().-]{7,24}$/.test(phone); }
 
   function checkoutModal(plan) {
+    $('paPricingOverlay')?.classList.add('hidden');
     let overlay = $('paCheckoutOverlay');
     if (overlay) { overlay.dataset.plan = plan; const line = overlay.querySelector('[data-pa-plan]'); if (line) { line.textContent = ''; line.append(text('span', `${PLANS[plan].label} · RM${PLANS[plan].price}`)); } overlay.classList.remove('hidden'); return overlay; }
     overlay = document.createElement('div'); overlay.id = 'paCheckoutOverlay'; overlay.className = 'pa-aff-overlay'; overlay.dataset.plan = plan; overlay.setAttribute('role', 'dialog'); overlay.setAttribute('aria-modal', 'true');

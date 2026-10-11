@@ -16,6 +16,13 @@ assert.equal(JSON.parse(context.localStorage.getItem('pa_affiliate_referral_v1')
   await context.PAPayments.refreshCatalog();
   assert.equal(context.PAPayments.plans.premium.price, 23);
   assert.equal(context.PAPayments.plans.family_plus.commission, 17);
+  const pricingClasses = new Set();
+  const checkoutClasses = new Set(['hidden']);
+  const checkoutOverlay = { dataset: {}, querySelector: () => null, classList: { remove: value => checkoutClasses.delete(value) } };
+  document.getElementById = id => id === 'paPricingOverlay' ? { classList: { add: value => pricingClasses.add(value) } } : id === 'paCheckoutOverlay' ? checkoutOverlay : null;
+  context.PAPayments.checkout('premium');
+  assert.equal(pricingClasses.has('hidden'), true, 'pricing must stop covering checkout');
+  assert.equal(checkoutClasses.has('hidden'), false, 'checkout must be visible');
   assert.match(source, /create-checkout/);
   assert.match(source, /admin_set_affiliate_approval/);
   assert.match(source, /admin_mark_commission_paid/);
