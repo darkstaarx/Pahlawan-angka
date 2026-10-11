@@ -508,3 +508,26 @@ def thud():
     x += lp(noise(n), 1800) * np.exp(-t / 0.012) * 0.4
     x = np.tanh(1.6 * x)
     return np.stack([x, x], 1) * 0.8
+
+
+def buzz():
+    """Bunyi 'tak boleh' — dua nada pendek rendah."""
+    out = []
+    for f in (170, 150):
+        n = int(0.13 * SR)
+        t = np.arange(n) / SR
+        x = np.sign(np.sin(2 * np.pi * f * t)) * 0.6 + np.sin(2 * np.pi * 2 * f * t) * 0.3
+        x *= np.minimum(1, t / 0.005) * np.minimum(1, (0.13 - t) / 0.02)
+        out += [lp(x, 1800), np.zeros(int(0.05 * SR))]
+    x = np.concatenate(out)
+    return np.stack([x, x], 1) * 0.55
+
+
+def shh(dur=0.9):
+    """Bisikan 'shhh'."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    x = bp(noise(n), 2200, 7500, 3)
+    env = np.minimum(1, t / 0.08) * np.clip((dur - t) / 0.35, 0, 1)
+    x = x * env
+    return np.stack([x * 0.9, x], 1) * 1.2

@@ -737,7 +737,8 @@ class Renderer:
 class Callout:
     """Bahagian UI sebenar diangkat keluar dari skrin telefon sebagai kad terapung."""
 
-    def __init__(self, r, phone, t0, t1, rect, x, y, width, ry=0.0, rz=0.0, ring=True):
+    def __init__(self, r, phone, t0, t1, rect, x, y, width, ry=0.0, rz=0.0, ring=True, shake=None):
+        self.shake = shake   # (masa, tempoh, amplitud px): goyang kiri-kanan seperti "ditolak"
         self.r, self.ph = r, r.phones[phone]
         self.t0, self.t1, self.rect = t0, t1, rect
         self.x, self.y, self.width, self.ry, self.rz, self.ring = x, y, width, ry, rz, ring
@@ -776,8 +777,12 @@ class Callout:
         kout = smooth((t - (self.t1 - 0.35)) / 0.35)
         k = kin * (1 - kout)
         float_y = math.sin((t - self.t0) * 1.6) * 5 * min(1, kin)
+        shake_x = 0.0
+        if self.shake and self.shake[0] <= t <= self.shake[0] + self.shake[1]:
+            ks = (t - self.shake[0]) / self.shake[1]
+            shake_x = self.shake[2] * math.sin(2 * math.pi * 11 * (t - self.shake[0])) * (1 - ks)
         pd = dict(REST, s=s_start + (s_end - s_start) * k,
-                  ox=c_screen[0] + (self.x - c_screen[0]) * k, oy=c_screen[1] + (self.y - c_screen[1]) * k + float_y,
+                  ox=c_screen[0] + (self.x - c_screen[0]) * k + shake_x, oy=c_screen[1] + (self.y - c_screen[1]) * k + float_y,
                   ry=pp['ry'] * (1 - k) + self.ry * k, rx=pp['rx'] * (1 - k) + 4 * k, rz=pp['rz'] * (1 - k) + self.rz * k, a=1)
         a = min(1, (t - self.t0) / 0.12) * (1 - smooth((t - (self.t1 - 0.12)) / 0.12))
         warp_plane(out, rgba, pd, alpha=a, shadow=0.55 * k, shadow_off=(16, 44), blur=22)
@@ -1005,8 +1010,8 @@ class HookText:
                 continue
             kb = ease_back(k_in, 1.9)
             scale = 1 + (1 - kb) * 1.1
-            rot = (1 - kb) * w.get('spin', -10)
-            alpha = min(1.0, k_in * 4)
+            rot = (1 - kb) * w.get('spin', -10) + w.get('angle', 0.0)
+            alpha = min(1.0, k_in * 4) * w.get('alpha', 1.0)
             x, y = w['x'] + sx_, w['y'] + sy_
             img = w['img']
             sx = sy = 1.0
@@ -1057,14 +1062,14 @@ class EndScene:
     """Penutup: logo, kotak panel ajakan, dan Wira (sprite gembira) berdiri di tepi kotak."""
 
     def __init__(self, t0, t1, lines=('Jom, Wira', 'temankan!'), button='Cuba Demo Sekarang',
-                 tag=('Pengembaraan matematik', 'ikut kemampuan anak.')):
+                 tag=('Pengembaraan matematik', 'ikut kemampuan anak.'), box_h=470):
         self.t0, self.t1, self.layer = t0, t1, 'front'
         logo = Image.open(os.path.join(REPO, 'assets/branding/pahlawan-angka-full-logo-v1.png')).convert('RGBA')
         logo = logo.crop(logo.getbbox())
         logo.thumbnail((700, 700), Image.LANCZOS)
         self.logo = np.asarray(logo, np.float32) / 255
         # susun atur: kotak di kanan, Wira di kiri, kedua-duanya di atas garis tanah yang sama
-        self.box_w, self.box_h = 640, 470
+        self.box_w, self.box_h = 640, box_h
         self.box_cx, self.ground = 690, 1410
         self.box_cy = self.ground - self.box_h / 2
         self.wira_x = 215
@@ -1076,8 +1081,13 @@ class EndScene:
         d.rounded_rectangle([(m + 14) * ss, (m + 14) * ss, (m + bw - 14) * ss, (m + bh - 14) * ss], radius=40 * ss,
                             outline=(70, 96, 170, 255), width=2 * ss)
         self.box = np.asarray(box.resize((bw + 2 * m, bh + 2 * m), Image.LANCZOS), np.float32) / 255
-        self.f_head = font('InterDisplay-Black.otf', 84)
-        self.lines = [ln.split() for ln in lines]
+        # baris tajuk: rentetan biasa (84 px; baris 1 putih, baris 2 emas) atau (teks, saiz, warna)
+        spec = []
+        for i, ln in enumerate(lines):
+            if isinstance(ln, str):
+                ln = (ln, 84, (255, 255, 255) if i == 0 else (250, 196, 70))
+            spec.append(ln)
+        self.line_spec = [(txt.split(), font('InterDisplay-Black.otf', size), col, size) for txt, size, col in spec]
         self.g = Glyphs()
         f2 = font('Inter-ExtraBold.otf', 40)
         pw, phh = int(f2.getlength(button)) + 100, 104
@@ -1163,21 +1173,23 @@ class EndScene:
                     cv2.circle(out, (px, py), int(9 * (1 - kd) + 2), (1.0, 0.93, 0.75), -1, cv2.LINE_AA)
         # tajuk dua baris dalam kotak
         wi = 0
-        for li, words in enumerate(self.lines):
-            total = self.f_head.getlength(' '.join(words))
+        heights = [sz * 1.14 for _, _, _, sz in self.line_spec]
+        ly = cy - 40 - sum(heights) / 2
+        for (words, fnt, col, sz), lh in zip(self.line_spec, heights):
+            total = fnt.getlength(' '.join(words))
             x = self.box_cx - total / 2
             for wd in words:
                 kw = ease_back((t - t0 - 1.1 - 0.09 * wi) / 0.35, 1.8)
-                ww = self.f_head.getlength(wd)
+                ww = fnt.getlength(wd)
                 if kw > 0:
-                    col = (255, 255, 255) if li == 0 else (250, 196, 70)
-                    arr, ox, oy = self.g.img(wd, self.f_head, col)
+                    arr, ox, oy = self.g.img(wd, fnt, col)
                     sc = max(0.05, kw)
                     arr2 = cv2.resize(arr, None, fx=sc, fy=sc, interpolation=cv2.INTER_LINEAR) if abs(sc - 1) > 0.01 else arr
-                    ccx, ccy = x + ww / 2, cy - 120 + li * 96
+                    ccx, ccy = x + ww / 2, ly + lh / 2
                     over(out, arr2, int(ccx - arr2.shape[1] / 2), int(ccy - arr2.shape[0] / 2 + 10), min(1, kw * 2) * a_all)
-                x += ww + self.f_head.getlength(' ')
+                x += ww + fnt.getlength(' ')
                 wi += 1
+            ly += lh
         # butang demo
         kc = ease_back((t - t0 - 1.6) / 0.45, 1.6)
         if kc > 0:
@@ -1192,7 +1204,7 @@ class EndScene:
                     xx = np.arange(ww2, dtype=np.float32)[None, :] + np.arange(hh, dtype=np.float32)[:, None] * 0.5
                     band = np.exp(-((xx - ks * (ww2 + hh)) / 40) ** 2)[..., None] * 0.55
                     b2[..., :3] = np.clip(b2[..., :3] + band * b2[..., 3:4], 0, 1)
-            over(out, b2, int(self.box_cx - b2.shape[1] / 2), int(cy + 120 - b2.shape[0] / 2), min(1, kc * 2) * a_all)
+            over(out, b2, int(self.box_cx - b2.shape[1] / 2), int(cy + self.box_h / 2 - 115 - b2.shape[0] / 2), min(1, kc * 2) * a_all)
         # tagline di bawah
         ka = ease_out((t - t0 - 2.0) / 0.5) * a_all
         over(out, self.tag, 0, int(self.ground + 70 + (1 - ka) * 20), ka)
@@ -1229,6 +1241,10 @@ def build_audio(tl, out_wav):
             x = music.boing(ev[2]) * ev[3]
         elif kind == 'thud':
             x = music.thud() * ev[2]
+        elif kind == 'buzz':
+            x = music.buzz() * ev[2]
+        elif kind == 'shh':
+            x = music.shh(ev[2]) * ev[3]
         elif kind == 'pop':
             x = music.pop() * ev[2]
         elif kind == 'impact':
