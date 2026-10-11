@@ -35,20 +35,23 @@ function openFocusPicker(){
  for(const [index,item] of items.entries()){
   const card=document.createElement('button');card.type='button';card.className='focusPickCard';card.dataset.skill=item.id;
   const art=document.createElement('span');art.className='focusPickArt';art.setAttribute('aria-hidden','true');
-  const picture=document.createElement('img');picture.alt='';picture.width=72;picture.height=72;
-  picture.src=/wang|transaksi|bajet/i.test(item.title)?'assets/fx/reward/coin-v1.webp':/bentuk|ruang|kedudukan|koordinat|perimeter|luas/i.test(item.title)?'assets/ui/menu-v2/jejak-map-v1.webp':'assets/ui/menu-v2/cikgu-dimensi-book-fixed-v1.webp';
-  art.appendChild(picture);
-  const symbol=/darab/i.test(item.title)?'×':/bahagi/i.test(item.title)?'÷':/tambah/i.test(item.title)?'+':/tolak/i.test(item.title)?'−':/pecahan/i.test(item.title)?'½':/masa|waktu/i.test(item.title)?'◷':/peratus/i.test(item.title)?'%':/nisbah/i.test(item.title)?':':null;
-  if(symbol){const badge=document.createElement('span');badge.className='focusPickSymbol';badge.textContent=symbol;art.appendChild(badge)}
-  card.appendChild(art);
+  const number=document.createElement('b');number.className='focusPickNumber';number.textContent=String(index+1);
+  art.appendChild(number);card.appendChild(art);
   const body=document.createElement('span');body.className='focusPickBody';
-  for(const [tag,cls,value] of [
-   ['small','focusPickLabel',index===0?'FOKUS UTAMA':'FOKUS '+(index+1)],
-   ['b','focusPickTitle',item.title],
-   ['span','focusPickEvidence',item.independent+' / '+item.attempts+' betul sendiri']
-  ]){const node=document.createElement(tag);node.className=cls;node.textContent=value;body.appendChild(node)}
+  const label=document.createElement('small');label.className='focusPickLabel';
+  label.textContent=index===0?'Fokus utama':'Fokus '+(index+1);body.appendChild(label);
+  const title=document.createElement('b');title.className='focusPickTitle';title.textContent=item.title;
+  body.appendChild(title);
+  const evidence=document.createElement('span');evidence.className='focusPickEvidence';
+  evidence.textContent=item.independent+'/'+item.attempts+' betul sendiri';
+  body.appendChild(evidence);
+  const progress=document.createElement('span');progress.className='focusPickProgress';
+  progress.setAttribute('aria-hidden','true');
+  const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,item.independentRate))+'%';
+  progress.appendChild(fill);body.appendChild(progress);
   card.appendChild(body);
-  const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih →';card.appendChild(cta);
+  const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih ❯';
+  card.appendChild(cta);
   card.onclick=()=>startFocusChoice(item.id);deck.appendChild(card);
  }
  const empty=document.getElementById('focusPickerEmpty');
