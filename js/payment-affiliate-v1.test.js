@@ -1,0 +1,25 @@
+/* Meaningful browser-contract test. Run with: node js/payment-affiliate-v1.test.js */
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const source = fs.readFileSync(__dirname + '/payment-affiliate-v1.js', 'utf8');
+const store = () => { const data = new Map(); return { getItem: (key) => data.get(key) || null, setItem: (key, value) => data.set(key, String(value)), removeItem: (key) => data.delete(key) }; };
+const document = { readyState: 'loading', addEventListener: (name, fn) => { if (name === 'DOMContentLoaded') document.ready = fn; }, querySelectorAll: () => [], getElementById: () => null };
+const catalog = [{ plan: 'premium', price_cents: 2300, commission_cents: 1100, active: true }, { plan: 'family_plus', price_cents: 3700, commission_cents: 1700, active: true }];
+const context = { window: {}, document, location: { search: '?ref=ab%3Cbad%3E42', pathname: '/index.html', origin: 'https://example.test', assign: () => {} }, URLSearchParams, localStorage: store(), sessionStorage: store(), setTimeout: () => {}, setInterval: () => {}, console, navigator: {} };
+context.window = context; context.PACloud = { state: { client: { from: () => ({ select: () => ({ eq: async () => ({ data: catalog }) }) }) }, user: { id: 'u1' } } };
+vm.runInNewContext(source, context, { filename: 'payment-affiliate-v1.js' });
+document.ready();
+assert.equal(context.PAAffiliate.getReferral(), 'ABBAD42');
+assert.equal(JSON.parse(context.localStorage.getItem('pa_affiliate_referral_v1')).expires > Date.now(), true);
+(async () => {
+  await context.PAPayments.refreshCatalog();
+  assert.equal(context.PAPayments.plans.premium.price, 23);
+  assert.equal(context.PAPayments.plans.family_plus.commission, 17);
+  assert.match(source, /create-checkout/);
+  assert.match(source, /admin_set_affiliate_approval/);
+  assert.match(source, /admin_mark_commission_paid/);
+  assert.doesNotMatch(source, /[?&]unlock/);
+  assert.doesNotMatch(source, /innerHTML/);
+  console.log('payment-affiliate-v1 VM tests passed');
+})().catch((error) => { console.error(error); process.exitCode = 1; });

@@ -1,0 +1,6 @@
+
+# Payment/backend credentials
+.env
+.env.*
+supabase/functions/.env
+*.secret.env
