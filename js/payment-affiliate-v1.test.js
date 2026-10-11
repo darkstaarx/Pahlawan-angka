@@ -8,7 +8,7 @@ const document = { readyState: 'loading', addEventListener: (name, fn) => { if (
 const catalog = [{ plan: 'premium', price_cents: 2300, commission_cents: 1100, active: true }, { plan: 'family_plus', price_cents: 3700, commission_cents: 1700, active: true }];
 const context = { window: {}, document, location: { search: '?ref=ab%3Cbad%3E42', pathname: '/index.html', origin: 'https://example.test', assign: () => {} }, URLSearchParams, localStorage: store(), sessionStorage: store(), setTimeout: () => {}, setInterval: () => {}, console, navigator: {} };
 context.window = context; context.PACloud = { state: { client: { from: () => ({ select: () => ({ eq: async () => ({ data: catalog }) }) }) }, user: { id: 'u1' } } };
-vm.runInNewContext(source, context, { filename: 'payment-affiliate-v1.js' });
+vm.runInNewContext(source.replace('root.PAPayments = Object.freeze', 'root.testFunctionCall = functionCall; root.PAPayments = Object.freeze'), context, { filename: 'payment-affiliate-v1.js' });
 document.ready();
 assert.equal(context.PAAffiliate.getReferral(), 'ABBAD42');
 assert.equal(JSON.parse(context.localStorage.getItem('pa_affiliate_referral_v1')).expires > Date.now(), true);
@@ -16,6 +16,11 @@ assert.equal(JSON.parse(context.localStorage.getItem('pa_affiliate_referral_v1')
   await context.PAPayments.refreshCatalog();
   assert.equal(context.PAPayments.plans.premium.price, 23);
   assert.equal(context.PAPayments.plans.family_plus.commission, 17);
+  const reconciliationMessage = 'Pesanan memerlukan semakan. Hubungi bantuan sebelum membuat bayaran baharu.';
+  context.PACloud.state.client.functions = { invoke: async () => ({ error: { message: 'Edge Function returned a non-2xx status code', context: new Response(JSON.stringify({ error: reconciliationMessage }), { status: 409 }) } }) };
+  await assert.rejects(context.testFunctionCall('create-checkout', {}), error => error.message === reconciliationMessage);
+  context.PACloud.state.client.functions.invoke = async () => ({ error: new Error('Network unavailable') });
+  await assert.rejects(context.testFunctionCall('create-checkout', {}), /Network unavailable/);
   const pricingClasses = new Set();
   const checkoutClasses = new Set(['hidden']);
   const checkoutOverlay = { dataset: {}, querySelector: () => null, classList: { remove: value => checkoutClasses.delete(value) } };
