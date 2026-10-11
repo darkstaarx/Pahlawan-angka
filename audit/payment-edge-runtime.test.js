@@ -154,6 +154,21 @@ test('admin test mode validates authentication and allows a database admin to re
   assert.match(await admin.text(), /Unknown plan/);
 });
 
+test('test account allowlist uses the verified user id and leaves other guardians blocked', async () => {
+  let identity = 'selected-buyer';
+  const client = {
+    auth: { getUser: async () => ({ data: { user: { id: identity, user_metadata: { id: 'selected-buyer' } } }, error: null }) },
+    from: () => ({ select: () => ({ eq: () => ({ single: async () => ({ data: { role: 'guardian' }, error: null }) }) }) }),
+  };
+  const handler = loadFunction('supabase/functions/create-checkout/index.ts', {
+    env: { PAYMENTS_ENABLED: 'false', PAYMENTS_ADMIN_TEST_MODE: 'true', PAYMENTS_TEST_USER_IDS: ' selected-buyer ' }, clientFactory: () => client,
+  });
+  const request = () => new Request('https://example.invalid/checkout', { method: 'POST', headers: { authorization: 'Bearer fake' }, body: '{}' });
+  assert.equal((await handler(request())).status, 400);
+  identity = 'other-buyer';
+  assert.equal((await handler(request())).status, 503);
+});
+
 test('signed successful callback rejects a provider transaction with the wrong amount', async () => {
   const h = callbackHarness({ providerText: JSON.stringify([{ billpaymentStatus: '1', billpaymentAmount: '18.99', billpaymentInvoiceNo: 'provider-invoice-1' }]) });
   const response = await h.executeRequest(callbackRequest({ status: '1', order_id: 'order-1', refno: 'invoice-1', billcode: 'BILL1234', amount: '19.00', hash: callbackHash() }));

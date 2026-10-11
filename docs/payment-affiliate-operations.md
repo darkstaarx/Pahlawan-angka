@@ -25,6 +25,8 @@ Untuk ujian bil live sebelum pelancaran, tetapkan PAYMENTS_ADMIN_TEST_MODE=true 
 
 ## Ujian penerimaan
 
+Akaun dummy boleh diuji tanpa diberi role admin: isi PAYMENTS_TEST_USER_IDS dengan UUID pengguna terpilih (dipisahkan koma), sementara PAYMENTS_ADMIN_TEST_MODE=true dan PAYMENTS_ENABLED=false. Backend menyemak UUID daripada getUser(), bukan email atau metadata yang dihantar browser. Kos bil kekal sebenar. Kosongkan senarai selepas ujian selesai. Ujian tanpa referral mesti menggunakan pelayar yang tiada referral tersimpan; pastikan affiliate_id order kosong sebelum membayar. Ujian referral menggunakan pembeli yang berbeza daripada pemilik affiliate.
+
 - Permohonan affiliate menyimpan bank peribadi; guardian lain tidak boleh baca atau approve.
 - Bayaran RM19/RM29 menghasilkan komisen RM9/RM15 hanya jika referral sah.
 - Callback berulang tidak menambah komisen atau reset tarikh pembelian.

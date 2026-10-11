@@ -11,6 +11,7 @@ Deno.serve(async (req) => {
   try {
     const paymentsEnabled = Deno.env.get('PAYMENTS_ENABLED') === 'true';
     const adminTestMode = Deno.env.get('PAYMENTS_ADMIN_TEST_MODE') === 'true';
+    const testUserIds = new Set((Deno.env.get('PAYMENTS_TEST_USER_IDS') ?? '').split(',').map(id => id.trim()).filter(Boolean));
     if (!paymentsEnabled && !adminTestMode) return json({ error: 'Pembayaran belum dibuka. Konfigurasi gateway sedang disiapkan.' },503,origin);
     const { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, TOYYIBPAY_SECRET_KEY, CATEGORY_CODE, APP_URL, TOYYIBPAY_BASE_URL } = requireConfig('SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'TOYYIBPAY_SECRET_KEY', 'CATEGORY_CODE', 'APP_URL', 'TOYYIBPAY_BASE_URL');
     if (!['https://toyyibpay.com', 'https://dev.toyyibpay.com'].includes(TOYYIBPAY_BASE_URL.replace(/\/$/, ''))) return json({ error: 'Payment provider configuration invalid' }, 500, origin);
@@ -19,7 +20,7 @@ Deno.serve(async (req) => {
     const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { global: { headers: { Authorization: token } } });
     const { data: { user }, error: authError } = await authClient.auth.getUser();
     if (authError || !user) return json({ error: 'Authentication required' }, 401, origin);
-    if (!paymentsEnabled) {
+    if (!paymentsEnabled && !testUserIds.has(user.id)) {
       const { data: role, error: roleError } = await authClient.from('app_user_roles').select('role').eq('user_id', user.id).single();
       if (roleError || role?.role !== 'admin') return json({ error: 'Pembayaran belum dibuka. Ujian gateway sedang dijalankan.' }, 503, origin);
     }
