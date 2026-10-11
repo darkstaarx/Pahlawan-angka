@@ -1210,6 +1210,114 @@ class EndScene:
         over(out, self.tag, 0, int(self.ground + 70 + (1 - ka) * 20), ka)
 
 
+class FocusShift:
+    """Ilustrasi adaptive: tiga kad Fokus sebenar (dipotong daripada rakaman), kad pertama dicop
+    "Dah kukuh" lalu keluar, kad lain naik, dan slot baharu diisi topik seterusnya."""
+
+    def __init__(self, src_path, src_t, rects, t0, t1, width=860, top=700, gap=26):
+        self.t0, self.t1, self.layer, self.width, self.top, self.gap = t0, t1, 'front', width, top, gap
+        f = Source(os.path.join(BUILD, src_path)).get(int(round(src_t * FPS)))
+        f = f[..., ::-1]
+        self.cards = []
+        for (u0, v0, u1, v1) in rects:
+            x0, y0, x1, y1 = int(u0 * SRC_W), int(v0 * SRC_H), int(u1 * SRC_W), int(v1 * SRC_H)
+            im = Image.fromarray(f[y0:y1, x0:x1].copy()).convert('RGBA')
+            m = Image.new('L', im.size, 0)
+            ImageDraw.Draw(m).rounded_rectangle([0, 0, im.width - 1, im.height - 1], radius=34, fill=255)
+            im.putalpha(m)
+            self.cards.append(np.asarray(im, np.float32) / 255)
+        cw, ch = self.cards[0].shape[1], self.cards[0].shape[0]
+        self.scale = width / cw
+        # kad slot baharu (gaya sama dengan kad sebenar)
+        ph = Image.new('RGBA', (cw, ch), (0, 0, 0, 0))
+        d = ImageDraw.Draw(ph)
+        d.rounded_rectangle([0, 0, cw - 1, ch - 1], radius=34, fill=(250, 238, 206, 255), outline=(214, 166, 72, 255), width=6)
+        d.rounded_rectangle([10, 10, cw - 11, ch - 11], radius=28, outline=(236, 206, 140, 255), width=2)
+        r = ch * 0.2
+        cx, cy = 0.11 * cw, ch / 2
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(16, 30, 74, 255), outline=(214, 166, 72, 255), width=5)
+        d.text((cx, cy), '?', font=font('InterDisplay-Black.otf', int(r * 1.3)), fill=(255, 255, 255, 255), anchor='mm')
+        d.text((0.21 * cw, ch * 0.42), 'Topik seterusnya', font=font('InterDisplay-ExtraBold.otf', int(ch * 0.15)), fill=(16, 26, 56, 255), anchor='lm')
+        d.text((0.21 * cw, ch * 0.64), 'dipilih ikut jawapan terkini', font=font('Inter-Medium.otf', int(ch * 0.1)), fill=(120, 104, 80, 255), anchor='lm')
+        bx0, by0, bx1, by1 = 0.77 * cw, ch * 0.3, 0.95 * cw, ch * 0.7
+        d.rounded_rectangle([bx0, by0, bx1, by1], radius=16, fill=(20, 36, 84, 255), outline=(214, 166, 72, 255), width=3)
+        d.text(((bx0 + bx1) / 2, (by0 + by1) / 2), 'Latih ›', font=font('Inter-Bold.otf', int(ch * 0.11)), fill=(255, 255, 255, 255), anchor='mm')
+        self.placeholder = np.asarray(ph, np.float32) / 255
+        # cop "Dah kukuh"
+        fs = font('InterDisplay-Black.otf', 52)
+        label = '✓ Dah kukuh'
+        sw, sh = int(fs.getlength(label)) + 70, 96
+        st = Image.new('RGBA', (sw + 40, sh + 40), (0, 0, 0, 0))
+        g = Image.new('RGBA', st.size, (0, 0, 0, 0))
+        ImageDraw.Draw(g).rounded_rectangle([20, 20, 20 + sw, 20 + sh], radius=48, fill=(40, 200, 110, 180))
+        st = Image.alpha_composite(st, g.filter(ImageFilter.GaussianBlur(14)))
+        d = ImageDraw.Draw(st)
+        d.rounded_rectangle([20, 20, 20 + sw, 20 + sh], radius=48, fill=(30, 176, 96, 255), outline=(220, 255, 230, 255), width=4)
+        d.text((20 + sw / 2, 20 + sh / 2), label, font=fs, fill=(255, 255, 255, 255), anchor='mm')
+        self.stamp = np.asarray(st, np.float32) / 255
+        tag = Image.new('RGBA', (220, 50), (0, 0, 0, 0))
+        d = ImageDraw.Draw(tag)
+        d.rounded_rectangle([0, 0, 219, 49], radius=25, fill=(14, 22, 54, 150))
+        d.text((110, 25), 'ILUSTRASI', font=font('Inter-Bold.otf', 24), fill=(230, 236, 250, 230), anchor='mm')
+        self.tag = np.asarray(tag, np.float32) / 255
+        self.ch = ch * self.scale
+
+    def active(self, t):
+        return self.t0 <= t <= self.t1
+
+    def slot_y(self, i):
+        return self.top + i * (self.ch + self.gap) + self.ch / 2
+
+    def _card(self, out, img, x, y, sc, alpha, rot=0.0):
+        s = self.scale * sc
+        if s <= 0.01 or alpha <= 0.003:
+            return
+        im = cv2.resize(img, None, fx=s, fy=s, interpolation=cv2.INTER_AREA)
+        if abs(rot) > 0.1:
+            h, w = im.shape[:2]
+            M = cv2.getRotationMatrix2D((w / 2, h / 2), rot, 1.0)
+            c, s_ = abs(M[0, 0]), abs(M[0, 1])
+            nw, nh = int(h * s_ + w * c), int(h * c + w * s_)
+            M[0, 2] += nw / 2 - w / 2
+            M[1, 2] += nh / 2 - h / 2
+            im = cv2.warpAffine(im, M, (nw, nh), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+        h, w = im.shape[:2]
+        sh = np.zeros((h + 60, w + 60), np.float32)
+        cv2.rectangle(sh, (30, 44), (30 + w, 30 + h), 1.0, -1)
+        sh = cv2.GaussianBlur(sh, (0, 0), 14) * 0.35 * alpha
+        x0, y0 = int(x - w / 2 - 30), int(y - h / 2 - 30)
+        rx0, ry0, rx1, ry1 = max(0, x0), max(0, y0), min(W, x0 + w + 60), min(H, y0 + h + 60)
+        if rx1 > rx0 and ry1 > ry0:
+            out[ry0:ry1, rx0:rx1] *= (1 - sh[ry0 - y0:ry1 - y0, rx0 - x0:rx1 - x0, None])
+        over(out, im, int(x - w / 2), int(y - h / 2), alpha)
+
+    def draw(self, out, t):
+        t0 = self.t0
+        fade = 1 - smooth((t - (self.t1 - 0.3)) / 0.3)
+        # kad 1: masuk, dicop, keluar ke kanan
+        k = ease_back((t - t0) / 0.5, 1.3)
+        kx = ease_in((t - t0 - 2.0) / 0.55)
+        if k > 0 and kx < 1:
+            self._card(out, self.cards[0], 540 + kx * 900, self.slot_y(0) + (1 - k) * 80, 0.9 + 0.1 * min(1, k), min(1, k * 2) * (1 - kx) * fade, rot=-kx * 14)
+            ks = ease_back((t - t0 - 1.15) / 0.4, 2.0)
+            if ks > 0:
+                st = cv2.resize(self.stamp, None, fx=max(0.05, ks), fy=max(0.05, ks), interpolation=cv2.INTER_LINEAR)
+                over(out, st, int(540 + kx * 900 + self.width * 0.28 - st.shape[1] / 2), int(self.slot_y(0) - self.ch * 0.5 - st.shape[0] / 2 + 10), min(1, ks) * (1 - kx) * fade)
+        # kad 2 & 3: masuk, kemudian naik satu slot
+        for i in (1, 2):
+            k = ease_back((t - t0 - 0.12 * i) / 0.5, 1.3)
+            if k <= 0:
+                continue
+            ku = smooth((t - t0 - 2.45 - 0.08 * i) / 0.5)
+            y = self.slot_y(i) + (self.slot_y(i - 1) - self.slot_y(i)) * ku + (1 - k) * 80
+            self._card(out, self.cards[i], 540, y, 0.9 + 0.1 * min(1, k), min(1, k * 2) * fade)
+        # slot baharu
+        kn = ease_back((t - t0 - 3.0) / 0.55, 1.4)
+        if kn > 0:
+            self._card(out, self.placeholder, 540, self.slot_y(2) + (1 - kn) * 260, 0.9 + 0.1 * min(1, kn), min(1, kn * 2) * fade)
+        over(out, self.tag, W - 260, int(self.slot_y(2) + self.ch / 2 + 40), 0.9 * fade * min(1, max(0, (t - t0) / 0.4)))
+
+
 # ---------------------------------------------------------------- audio
 
 def build_audio(tl, out_wav):
