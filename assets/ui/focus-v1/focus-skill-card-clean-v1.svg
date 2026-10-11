@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="200" viewBox="0 0 720 200" preserveAspectRatio="none"><defs><linearGradient id="gold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff4bc"/><stop offset=".25" stop-color="#ffb42d"/><stop offset=".51" stop-color="#9f570e"/><stop offset=".68" stop-color="#ffe288"/><stop offset="1" stop-color="#8e4610"/></linearGradient><linearGradient id="cream" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#fffae8"/><stop offset=".55" stop-color="#fff1d1"/><stop offset="1" stop-color="#edd4a3"/></linearGradient></defs>
+<path d="M34 7H685L712 35V166L685 193H35L8 166V35Z" fill="url(#gold)" stroke="#6b3909" stroke-width="5"/>
+<path d="M41 20H679L700 40V160L680 180H40L20 158V41Z" fill="url(#cream)" stroke="#fff2af" stroke-width="3"/>
+<path d="M53 30H666L690 52V148L665 170H55L30 146V51Z" fill="none" stroke="#b16b18" stroke-width="3" opacity=".8"/>
+<path d="M91 24H625M91 176H625" stroke="#fff4be" stroke-width="2" opacity=".75"/>
+<path d="M18 48L60 15M702 48L660 15M18 150L60 183M702 150L660 183" stroke="#f9c354" stroke-width="6" opacity=".75"/>
+
+</svg>

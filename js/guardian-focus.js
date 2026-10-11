@@ -43,12 +43,8 @@ function openFocusPicker(){
   const title=document.createElement('b');title.className='focusPickTitle';title.textContent=item.title;
   body.appendChild(title);
   const evidence=document.createElement('span');evidence.className='focusPickEvidence';
-  evidence.textContent=item.independent+'/'+item.attempts+' betul sendiri';
+  evidence.textContent='Ketepatan '+item.independentRate+'%';
   body.appendChild(evidence);
-  const progress=document.createElement('span');progress.className='focusPickProgress';
-  progress.setAttribute('aria-hidden','true');
-  const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,item.independentRate))+'%';
-  progress.appendChild(fill);body.appendChild(progress);
   card.appendChild(body);
   const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih ❯';
   card.appendChild(cta);

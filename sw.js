@@ -3,7 +3,7 @@ importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-khazanah-full-1`;
 const APP_SHELL=[
   './assets/ui/focus-v1/focus-panel-illustrated-v1.webp',
-  './assets/ui/focus-v1/focus-skill-card.svg',
+  './assets/ui/focus-v1/focus-skill-card-clean-v1.svg',
   './assets/pets/evolution/fire/aurora/happy-sprite-v1.webp',
   './assets/pets/evolution/fire/ketupatKura/happy-sprite-v1.webp',
   './assets/pets/evolution/fire/kumbangManggis/happy-sprite-v1.webp',

@@ -68,11 +68,11 @@
 }
 #focusPickerOverlay .focusPickCard{
   box-sizing:border-box;position:relative;width:100%;
-  min-height:clamp(102px,16.8dvh,132px);
+  min-height:clamp(100px,14.5dvh,118px);
   display:grid;grid-template-columns:clamp(49px,12vw,69px) minmax(0,1fr) clamp(68px,20vw,101px);
   align-items:center;gap:clamp(6px,1.7vw,12px);
   padding:15px clamp(12px,3.6vw,22px) 14px clamp(12px,3.6vw,22px);
-  background:transparent url('../assets/ui/focus-v1/focus-skill-card.svg') center/100% 100% no-repeat;
+  background:transparent url('../assets/ui/focus-v1/focus-skill-card-clean-v1.svg') center/100% 100% no-repeat;
   border:0;outline-offset:0;border-radius:16px;
   color:#082042;cursor:pointer;text-align:left;box-shadow:none;
   font:inherit;transition:filter .15s,transform .15s;
@@ -92,7 +92,7 @@
 }
 #focusPickerOverlay .focusPickBody{
   position:relative;display:flex;flex-direction:column;align-items:stretch;
-  min-width:0;gap:clamp(3px,.6vw,6px);padding:5px 0 0;
+  min-width:0;gap:clamp(5px,1vw,8px);padding:3px 0 0;justify-content:center;
 }
 #focusPickerOverlay .focusPickCard:first-child .focusPickBody{padding-top:14px}
 #focusPickerOverlay .focusPickLabel{display:none}
@@ -110,16 +110,6 @@
 }
 #focusPickerOverlay .focusPickEvidence{
   font-size:clamp(10px,2.9vw,14px);line-height:1.15;color:#567397;font-weight:700;
-}
-#focusPickerOverlay .focusPickProgress{
-  margin-top:3px;display:block;width:100%;height:clamp(7px,1.35dvh,11px);
-  border-radius:50px;background:linear-gradient(#d0d5dc,#bfc6d0);overflow:hidden;
-  box-shadow:inset 0 1px 1px #8492a86f;
-}
-#focusPickerOverlay .focusPickProgress i{
-  display:block;height:100%;border-radius:inherit;
-  background:linear-gradient(90deg,#0ad3eb,#009dfa);
-  box-shadow:inset 0 1px 3px #b4fcff99,0 0 5px #08b7ecaa;
 }
 #focusPickerOverlay .focusPickCta{
   box-sizing:border-box;min-width:0;min-height:clamp(43px,7.1dvh,60px);
