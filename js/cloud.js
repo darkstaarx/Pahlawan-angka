@@ -126,6 +126,31 @@
     setAppLoading(false)
   }
 
+  // First authenticated online session caches each authorized child's most
+  // recent server snapshot. Local pending changes always take precedence.
+  async function hydrateOfflineProfiles(profiles){
+    const guard=offlineSave(),userId=state.user?.id;
+    if(!guard||!userId||!hasConnection()||!profiles.length)return;
+    const ids=profiles.map(p=>p.id);
+    const {data,error}=await state.client.from('game_saves')
+      .select('child_id,state,server_revision').in('child_id',ids);
+    if(error){console.warn('Some offline profiles could not be cached',error);return}
+    const remote=new Map((data||[]).map(v=>[v.child_id,v]));
+    for(const p of profiles){
+      if(state.user?.id!==userId)break;
+      try{
+        guard.bind(userId,p.id,{confirmedOwnership:true});
+        const local=guard.read(),cloud=remote.get(p.id);
+        if(cloud?.state?.cloudChildId===p.id){
+          const rev=Number(cloud.server_revision||0);
+          if(!local||(!local.dirty&&!local.conflict&&local.serverRevision<=rev))
+            guard.installCloud(cloud.state,rev);
+        }
+      }catch(error){console.warn('Offline profile cache skipped',p.id,error)}
+    }
+    guard.unbind({clearLegacy:false});
+  }
+
   async function loadProfiles(){
     let result=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,avatar_id,updated_at').eq('is_active',true).order('created_at');
     if(result.error&&!schemaMismatch(result.error))throw result.error;
@@ -150,6 +175,7 @@
       return {...p,avatar_id,...(_avatarSource?{_avatarSource}:{})};
     });
     rememberChildren();
+    await hydrateOfflineProfiles(state.profiles);
     if(!state.profiles.length){state.childId=null;state.needsOnboarding=true;setAppLoading(false);renderAccount();screen('setup');return;}
     const remembered=localStorage.getItem('pa_active_child_id');
     const profile=state.profiles.find(p=>p.id===remembered)||state.profiles[0];
