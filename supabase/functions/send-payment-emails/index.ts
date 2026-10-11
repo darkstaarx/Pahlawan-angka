@@ -62,7 +62,11 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
   try {
     const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = requireConfig('SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY');
-    if (req.headers.get('Authorization') !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`) return json({ error: 'Service authorization required' }, 401);
+    const authorization = req.headers.get('Authorization');
+    const workerKey = Deno.env.get('PAYMENT_EMAIL_WORKER_KEY') ?? '';
+    const suppliedWorkerKey = req.headers.get('x-payment-email-worker-key') ?? '';
+    const hasServiceAuthorization = authorization === `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` || (workerKey.length >= 32 && suppliedWorkerKey === workerKey);
+    if (!hasServiceAuthorization) return json({ error: 'Service authorization required' }, 401);
     if (Deno.env.get('EMAIL_DELIVERY_ENABLED') !== 'true') return json({ ok: true, disabled: true, processed: 0 });
     const { GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, GMAIL_SENDER_EMAIL } = requireConfig('GMAIL_CLIENT_ID', 'GMAIL_CLIENT_SECRET', 'GMAIL_REFRESH_TOKEN', 'GMAIL_SENDER_EMAIL');
     if (GMAIL_SENDER_EMAIL !== SENDER) return json({ error: 'Gmail sender configuration invalid' }, 500);

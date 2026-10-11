@@ -7,7 +7,7 @@ const { stripTypeScriptTypes } = require('node:module');
 const root = path.resolve(__dirname, '..');
 const env = { APP_URL: 'https://pahlawanangka.app', SUPABASE_URL: 'https://example.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'service-secret', GMAIL_CLIENT_ID: 'client', GMAIL_CLIENT_SECRET: 'secret', GMAIL_REFRESH_TOKEN: 'refresh', GMAIL_SENDER_EMAIL: 'pahlawanangka.app@gmail.com' };
 
-function load({ client, fetchImpl, emailEnabled = 'true' }) {
+function load({ client, fetchImpl, emailEnabled = 'true', extraEnv = {} }) {
   let source = fs.readFileSync(path.join(root, 'supabase/functions/send-payment-emails/index.ts'), 'utf8');
   source = source.replace(/^import \{ createClient \}[^\n]+\n/m, '');
   source = source.replace(/^import \{ paymentEmail \}[^\n]+\n/m, '');
@@ -15,7 +15,7 @@ function load({ client, fetchImpl, emailEnabled = 'true' }) {
   source = stripTypeScriptTypes(source, { mode: 'transform' });
   source = source.replace(/Deno\.serve\(async \(req\)\s*=>\s*\{/, 'globalThis.executeRequest = async (req) => {');
   source = source.replace(/\n\}\);\s*$/, '\n};\n');
-  const values = { ...env, EMAIL_DELIVERY_ENABLED: emailEnabled };
+  const values = { ...env, EMAIL_DELIVERY_ENABLED: emailEnabled, ...extraEnv };
   const vm = require('node:vm');
   const context = {
     Response, Request, URLSearchParams, TextEncoder, AbortController, setTimeout, clearTimeout, btoa: (value) => Buffer.from(value, 'binary').toString('base64'), crypto,
@@ -42,6 +42,27 @@ test('sender rejects callers without the exact service-role bearer', async () =>
   const handler = load({ client: {}, fetchImpl: async () => { calls++; throw new Error('must not send'); } });
   const response = await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer wrong' } }));
   assert.equal(response.status, 401); assert.equal(calls, 0);
+});
+
+test('sender accepts the dedicated worker key alongside a gateway bearer', async () => {
+  let calls = 0;
+  const workerKey = 'worker-key-with-at-least-32-characters';
+  const handler = load({ emailEnabled: 'false', extraEnv: { PAYMENT_EMAIL_WORKER_KEY: workerKey }, client: {}, fetchImpl: async () => { calls++; throw new Error('must not send while disabled'); } });
+  const response = await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer valid-gateway-jwt', 'x-payment-email-worker-key': workerKey } }));
+  assert.equal(response.status, 200); assert.deepEqual(await response.json(), { ok: true, disabled: true, processed: 0 }); assert.equal(calls, 0);
+});
+
+test('sender rejects an anonymous bearer with a wrong or missing worker key', async () => {
+  const handler = load({ client: {}, fetchImpl: async () => { throw new Error('must not send'); } });
+  const wrong = await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer anon-jwt', 'x-payment-email-worker-key': 'wrong-key' } }));
+  const missing = await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer anon-jwt' } }));
+  assert.equal(wrong.status, 401); assert.equal(missing.status, 401);
+});
+
+test('worker key shorter than 32 characters is rejected', async () => {
+  const handler = load({ extraEnv: { PAYMENT_EMAIL_WORKER_KEY: 'too-short' }, client: {}, fetchImpl: async () => { throw new Error('must not send'); } });
+  const response = await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer anon-jwt', 'x-payment-email-worker-key': 'too-short' } }));
+  assert.equal(response.status, 401);
 });
 
 test('successful delivery sends multipart plain text and HTML, then marks sent', async () => {
