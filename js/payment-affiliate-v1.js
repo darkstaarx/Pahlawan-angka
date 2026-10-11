@@ -101,7 +101,7 @@
     const msg = document.createElement('div'); const submit = text('button', 'Hantar permohonan', 'pa-aff-primary'); submit.type = 'submit'; form.append(msg, submit); form.addEventListener('submit', async (event) => { event.preventDefault(); if (!loggedIn()) return status(msg, 'Log masuk dahulu.'); submit.disabled = true; const payload = Object.fromEntries(new FormData(form)); try { await functionCall('affiliate-application', { display_name: payload.name, phone: payload.phone, bank_name: payload.bank_name, account_number: payload.account_number, account_name: payload.account_name }); status(msg, 'Permohonan diterima. Tunggu semakan admin.', true); form.reset(); } catch (error) { status(msg, error?.message || 'Permohonan belum dapat dihantar.'); } finally { submit.disabled = false; } }); host.append(form);
   }
   async function renderAffiliate(host) {
-    host.textContent = ''; host.append(text('h2', 'Affiliate Pahlawan Angka'));
+    host.textContent = '';
     try { await loadCatalog(); } catch (_) {}
     const priceNote = text('p', `Komisen semasa: RM${PLANS.premium.commission.toFixed(2)} untuk Akses Keluarga, RM${PLANS.family_plus.commission.toFixed(2)} untuk Family Plus.`); host.append(priceNote);
     if (!loggedIn()) { host.append(text('p', 'Log masuk akaun penjaga untuk mengurus affiliate.')); return; }
@@ -134,11 +134,59 @@
     } catch (error) { status(list, error?.message || 'Senarai permohonan belum tersedia.'); }
     try { const commissions = await client().from('affiliate_commissions').select('id,affiliate_id,amount_cents,status,payout_reference').in('status', ['pending','approved']); if (commissions?.error) throw commissions.error;if(user()?.id!==renderUserId||!admin())return; (commissions.data || []).forEach((item) => { const row = document.createElement('article'); row.className = 'pa-admin-row'; row.append(text('strong', `RM${(Number(item.amount_cents || 0) / 100).toFixed(2)}`), text('span', item.status),text('span',affiliateLabels.get(item.affiliate_id)||item.affiliate_id)); const reference = document.createElement('input'); reference.placeholder = 'Rujukan transaksi'; reference.maxLength = 120; const button = text('button', 'Tanda dibayar', 'pa-aff-primary'); button.type = 'button'; button.addEventListener('click', async () => { button.disabled = true; try { await rpc('admin_mark_commission_paid', { p_commission_id: item.id, p_payout_reference: reference.value.trim() }); row.remove(); } catch (error) { status(row, error?.message || 'Rekod belum dapat disimpan.'); button.disabled = false; } }); row.append(reference, button); list.append(row); }); } catch (error) { status(list, error?.message || 'Senarai komisen belum tersedia.'); }
   }
-  let lastUser = '', lastAdmin = false;
-  function mount() { captureReferral(); mountCheckoutButtons(); const currentUser = user()?.id || ''; const currentAdmin = admin(); const settings = $('settingsTab'); if (settings && !$('paAffiliateMount')) { const host = document.createElement('section'); host.id = 'paAffiliateMount'; host.className = 'card pa-aff-section'; settings.append(host); } if (settings && !$('paAffiliateAdmin')) { const host = document.createElement('section'); host.id = 'paAffiliateAdmin'; host.className = 'card pa-aff-section'; settings.append(host); } const host = $('paAffiliateMount'); if (host && (currentUser !== lastUser)) renderAffiliate(host); const adminHost = $('paAffiliateAdmin'); if (adminHost && (currentUser !== lastUser || currentAdmin !== lastAdmin)) renderAdmin(adminHost); lastUser = currentUser; lastAdmin = currentAdmin; }
-  const refresh = async () => { try { await loadCatalog(); } catch (_) {} mountCheckoutButtons(); mount(); const host = $('paAffiliateMount'); if (host) renderAffiliate(host); const adminHost = $('paAffiliateAdmin'); if (adminHost) renderAdmin(adminHost); return PLANS; };
+  let affiliateOverlay, affiliateContent, affiliateTrigger, lastUser = '', lastAdmin = false, previousFocus;
+  function closeAffiliate() {
+    if (!affiliateOverlay) return;
+    affiliateOverlay.classList.add('hidden');
+    document.body.classList.remove('pa-aff-modal-open');
+    if (affiliateContent) affiliateContent.textContent = '';
+    const focus = previousFocus; previousFocus = null;
+    if (focus && typeof focus.focus === 'function' && document.contains(focus)) focus.focus();
+  }
+  function focusAffiliateDialog(event) {
+    if (!affiliateOverlay || affiliateOverlay.classList.contains('hidden')) return;
+    if (event.key === 'Escape') { event.preventDefault(); closeAffiliate(); return; }
+    if (event.key !== 'Tab') return;
+    const focusable = [...affiliateOverlay.querySelectorAll('button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])')].filter((el) => !el.disabled && el.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+  function ensureAffiliateOverlay() {
+    if (affiliateOverlay) return affiliateOverlay;
+    affiliateOverlay = document.createElement('div'); affiliateOverlay.id = 'paAffiliateOverlay'; affiliateOverlay.className = 'pa-aff-overlay hidden'; affiliateOverlay.setAttribute('role', 'dialog'); affiliateOverlay.setAttribute('aria-modal', 'true'); affiliateOverlay.setAttribute('aria-labelledby', 'paAffiliateTitle');
+    const dialog = document.createElement('section'); dialog.className = 'pa-aff-dialog';
+    const header = document.createElement('div'); header.className = 'pa-aff-dialog-header';
+    const heading = text('h2', 'Affiliate Pahlawan Angka'); heading.id = 'paAffiliateTitle';
+    const close = text('button', '×', 'pa-aff-close'); close.type = 'button'; close.setAttribute('aria-label', 'Tutup affiliate'); close.addEventListener('click', closeAffiliate);
+    header.append(heading, close); affiliateContent = document.createElement('div'); affiliateContent.id = 'paAffiliateContent'; dialog.append(header, affiliateContent); affiliateOverlay.append(dialog);
+    affiliateOverlay.addEventListener('click', (event) => { if (event.target === affiliateOverlay) closeAffiliate(); }); document.body.append(affiliateOverlay); document.addEventListener('keydown', focusAffiliateDialog);
+    return affiliateOverlay;
+  }
+  async function openAffiliate() {
+    const overlay = ensureAffiliateOverlay(); previousFocus = document.activeElement; overlay.classList.remove('hidden'); document.body.classList.add('pa-aff-modal-open');
+    const close = overlay.querySelector('.pa-aff-close'); if (close) close.focus();
+    if (affiliateContent) await renderAffiliate(affiliateContent);
+  }
+  function ensureAffiliateTrigger(settings) {
+    if (affiliateTrigger && affiliateTrigger.isConnected) return affiliateTrigger;
+    affiliateTrigger = $('paAffiliateOpen');
+    if (!affiliateTrigger) { affiliateTrigger = text('button', 'Rakan Affiliate', 'pa-aff-trigger'); affiliateTrigger.id = 'paAffiliateOpen'; affiliateTrigger.type = 'button'; affiliateTrigger.setAttribute('aria-haspopup', 'dialog'); affiliateTrigger.addEventListener('click', openAffiliate); settings.insertBefore(affiliateTrigger, settings.firstChild); }
+    return affiliateTrigger;
+  }
+  function mount() {
+    captureReferral(); mountCheckoutButtons(); const currentUser = user()?.id || ''; const currentAdmin = admin(); const settings = $('settingsTab');
+    if (settings) { ensureAffiliateTrigger(settings); ensureAffiliateOverlay(); }
+    if (settings && !$('paAffiliateMount')) { const host = document.createElement('section'); host.id = 'paAffiliateMount'; host.className = 'card pa-aff-section'; host.hidden = true; settings.append(host); }
+    if (settings && !$('paAffiliateAdmin')) { const host = document.createElement('section'); host.id = 'paAffiliateAdmin'; host.className = 'card pa-aff-section'; settings.append(host); }
+    const changed = currentUser !== lastUser; if (changed && affiliateOverlay && !affiliateOverlay.classList.contains('hidden')) closeAffiliate();
+    const adminHost = $('paAffiliateAdmin'); if (adminHost && (changed || currentAdmin !== lastAdmin)) renderAdmin(adminHost);
+    lastUser = currentUser; lastAdmin = currentAdmin;
+  }
+  const refresh = async () => { try { await loadCatalog(); } catch (_) {} mountCheckoutButtons(); mount(); const adminHost = $('paAffiliateAdmin'); if (adminHost) renderAdmin(adminHost); if (affiliateOverlay && !affiliateOverlay.classList.contains('hidden') && affiliateContent) await renderAffiliate(affiliateContent); return PLANS; };
   root.PAPayments = Object.freeze({ plans: PLANS, refreshCatalog: loadCatalog, checkout: (plan) => checkoutModal(PLANS[plan] ? plan : 'premium'), pollOrder });
-  root.PAAffiliate = Object.freeze({ captureReferral, getReferral: referral, refresh, renderAdmin });
+  root.PAAffiliate = Object.freeze({ captureReferral, getReferral: referral, refresh, renderAdmin, open: openAffiliate, close: closeAffiliate });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true }); else mount();
   try { const pending = JSON.parse(localStorage.getItem(ORDER_KEY) || 'null'); const returned = new URLSearchParams(location.search).get('payment_order'); if (returned && /^[0-9a-f-]{36}$/i.test(returned)) pollOrder(returned); else if (pending?.expires > Date.now()) pollOrder(pending.order); else localStorage.removeItem(ORDER_KEY); } catch (_) {}
   loadCatalog().then(mountCheckoutButtons).catch(() => {});
