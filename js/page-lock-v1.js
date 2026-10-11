@@ -3,13 +3,14 @@
  'use strict';
  if(window.PAPageLock)return;
  const key='paPageLock';
- let enabled=true, installed=false, restoring=false, previousFocus=null, pendingExit=null, setupMode=false;
+ let enabled=true, installed=false, restoring=false, previousFocus=null, pendingExit=null, setupMode=false, resultActive=false;
  const guardianPin=()=>{
   const pin=String(window.pageLockParentPin?.()||'');
   return /^\d{4}$/.test(pin)?pin:null;
  };
  const inBattle=()=>['game','segelDemo'].includes(document.body.dataset.screen);
- const active=()=>inBattle()&&enabled&&!!guardianPin();
+ const showingResult=()=>document.body.dataset.screen==='segelDemo'&&resultActive;
+ const active=()=>inBattle()&&!showingResult()&&enabled&&!!guardianPin();
  const dialog=document.createElement('dialog');
  dialog.className='paExitDialog';
  dialog.setAttribute('aria-labelledby','paExitTitle');
@@ -31,7 +32,7 @@
  const error=dialog.querySelector('#paExitError');
  function render(){
   document.querySelectorAll('[data-page-lock]').forEach(button=>{
-   button.hidden=!inBattle();
+   button.hidden=!inBattle()||showingResult();
    button.textContent=active()?'🔒':'🔓';
    button.title=active()?'Buka kunci battle':'Kunci battle';
    button.setAttribute('aria-pressed',String(active()));
@@ -127,7 +128,7 @@
   render();arm();
  }
  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
- window.PAPageLock={isLocked:active,refresh:sync,requestExit(onExit){if(!active())return true;prompt(onExit);return false;}};
+ window.PAPageLock={isLocked:active,refresh:sync,setResultState(value){resultActive=!!value;sync();},requestExit(onExit){if(!active())return true;prompt(onExit);return false;}};
  sync();
 })();
 

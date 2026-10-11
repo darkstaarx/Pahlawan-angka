@@ -1,0 +1,53 @@
+/* Wira loading screen. The cloud operation owns visibility; motion is decorative. */
+.appLoading{
+  position:fixed;inset:0;z-index:2000;display:grid;place-items:center;isolation:isolate;
+  padding:calc(30px + env(safe-area-inset-top,0px)) 20px calc(30px + env(safe-area-inset-bottom,0px));
+  overflow:auto;color:#f3f8ff;font-family:"Trebuchet MS",Arial,sans-serif;
+  background:radial-gradient(ellipse at 50% 39%,#144ca17a,transparent 48%),radial-gradient(ellipse at 50% 100%,#123e7a80,transparent 65%),#060f25;
+}
+.appLoading.hidden{display:none}
+body.app-loading-active{overflow:hidden}
+.paLoaderGrid{position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(#9bbcec05 1px,transparent 1px),linear-gradient(90deg,#9bbcec05 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse,#000,transparent 75%)}
+.paLoaderFrame{position:absolute;inset:20px;border:1px solid #e7b33938;pointer-events:none;z-index:-1}
+.paLoaderFrame:before,.paLoaderFrame:after{content:'✦';position:absolute;top:-10px;padding:0 8px;background:#08142b;color:#ffd347;font-size:15px}
+.paLoaderFrame:before{left:20px}.paLoaderFrame:after{right:20px}
+.paLoaderContent{position:relative;width:min(100%,520px);text-align:center;padding:18px 0}
+.paLoaderKicker{margin:0 0 17px;color:#ffe389;font-size:10px;font-weight:700;letter-spacing:3px}
+.paLoaderEmblem{position:relative;display:grid;place-items:center;width:320px;height:320px;max-width:100%;margin:0 auto 17px}
+.paLoaderAura{position:absolute;inset:23px;border-radius:50%;background:radial-gradient(circle,#139eff45,#138dff0a 65%,transparent);filter:blur(24px);animation:paLoaderAuraBeat 1.6s ease-in-out infinite}
+.paLoaderCircle{position:absolute;inset:33px;border:1px solid #53c4ff25;border-radius:50%;box-shadow:inset 0 0 25px #0d8fff0a,0 0 22px #0d8fff12}
+.paLoaderWave{position:absolute;inset:47px;border:2px solid #75d8ff;border-radius:50%;opacity:0;box-shadow:0 0 12px #29b6ff55;animation:paLoaderWave 1.6s cubic-bezier(.16,.7,.2,1) infinite;pointer-events:none}
+.paLoaderWaveGold{border-color:#ffd752;box-shadow:0 0 12px #ffd75244;animation-delay:.32s}
+.paLoaderShieldFloat{position:relative;z-index:2;animation:paLoaderHover 4.8s ease-in-out infinite}
+.paLoaderShield{display:block;width:212px;height:232px;object-fit:contain;transform-origin:50% 54%;animation:paLoaderHeartbeat 1.6s ease-in-out infinite;will-change:transform}
+.paLoaderSymbol{position:absolute;z-index:3;width:47px;height:47px;color:#ffe18b;font-size:33px;font-weight:900;text-shadow:0 0 18px #fdcf4350;animation:paLoaderSymbolHover 4.3s ease-in-out infinite}
+.paLoaderSymbol:nth-of-type(1){top:39px;left:28px;animation-delay:-.5s;--tilt:-12deg}
+.paLoaderSymbol:nth-of-type(2){top:49px;right:19px;color:#78d4ff;animation-delay:-2.1s;--tilt:9deg}
+.paLoaderSymbol:nth-of-type(3){bottom:40px;left:33px;animation-delay:-3.3s;--tilt:8deg}
+.paLoaderSymbol:nth-of-type(4){bottom:31px;right:25px;color:#78d4ff;animation-delay:-1.2s;--tilt:-8deg}
+.paLoaderGlyph{position:relative;display:grid;place-items:center;width:100%;height:100%;animation:paLoaderSymbolBeat 6.4s ease-in-out infinite;filter:drop-shadow(0 0 5px currentColor)}
+.paLoaderGlyph:after{content:'';position:absolute;inset:-4px;border:1px solid currentColor;border-radius:50%;opacity:0;animation:paLoaderSymbolWave 6.4s ease-out infinite}
+.paLoaderSymbol:nth-of-type(2) .paLoaderGlyph,.paLoaderSymbol:nth-of-type(2) .paLoaderGlyph:after{animation-delay:-4.8s}
+.paLoaderSymbol:nth-of-type(3) .paLoaderGlyph,.paLoaderSymbol:nth-of-type(3) .paLoaderGlyph:after{animation-delay:-3.2s}
+.paLoaderSymbol:nth-of-type(4) .paLoaderGlyph,.paLoaderSymbol:nth-of-type(4) .paLoaderGlyph:after{animation-delay:-1.6s}
+.appLoading .paLoaderTitle{margin:0;color:#f3f8ff;font-size:clamp(34px,6vw,51px);font-weight:900;line-height:1.08;letter-spacing:-1.5px;text-shadow:0 3px 0 #153872,0 5px 18px #0008}
+.paLoaderTitle span{color:#ffdb58;text-shadow:0 3px 0 #90601b,0 5px 18px #0008}
+.appLoading .paLoaderTagline{margin:15px 0 30px;color:#a1c0e8;font-size:13px;letter-spacing:.6px}
+.paLoaderStatus{width:min(100%,300px);margin:auto}
+.appLoading .paLoaderText{margin:0 0 13px;color:#c3dafa;font-size:12px;line-height:1.5;font-weight:700}
+.paLoaderTrack{height:12px;padding:2px;overflow:hidden;background:#07152e;border:1px solid #927034;border-radius:20px;box-shadow:0 0 14px #239cff12,inset 0 1px 3px #000b}
+.paLoaderFill{display:block;width:38%;height:100%;border-radius:20px;background:linear-gradient(180deg,#ffed9a,#ffd347 45%,#df9b20);box-shadow:0 0 9px #ffd34755;animation:paLoaderProgress 2.4s ease-in-out infinite}
+.appLoading .paLoaderTip{margin:21px 0 0;color:#86a4cd;font-size:11px;line-height:1.8}
+.paLoaderTip strong{color:#c6ddfb;font-weight:400}
+.appLoading .paLoaderMotto{margin:32px 0 0;color:#729acb;font-size:9px;letter-spacing:2.5px}
+@keyframes paLoaderHover{0%,100%{transform:translateY(3px)}50%{transform:translateY(-5px)}}
+@keyframes paLoaderSymbolHover{0%,100%{transform:translateY(5px) rotate(var(--tilt,0deg));opacity:.72}50%{transform:translateY(-8px) rotate(var(--tilt,0deg));opacity:1}}
+@keyframes paLoaderHeartbeat{0%,7%,38%,100%{transform:scale(1);filter:drop-shadow(0 12px 12px #0007) drop-shadow(0 0 12px #169fff45)}14%{transform:scale(1.065);filter:drop-shadow(0 10px 12px #0007) drop-shadow(0 0 24px #32c5ff99)}22%{transform:scale(.985)}29%{transform:scale(1.095);filter:drop-shadow(0 10px 12px #0007) drop-shadow(0 0 30px #59d0ff99)}}
+@keyframes paLoaderAuraBeat{0%,40%,100%{opacity:.5;transform:scale(.97)}14%{opacity:.85;transform:scale(1.06)}29%{opacity:1;transform:scale(1.12)}}
+@keyframes paLoaderWave{0%,7%{opacity:0;transform:scale(.75)}14%{opacity:.6}75%,100%{opacity:0;transform:scale(1.45)}}
+@keyframes paLoaderSymbolBeat{0%,25%,100%{transform:scale(1);opacity:.57}3.5%{transform:scale(1.22);opacity:1}5.5%{transform:scale(1.04);opacity:.9}7.3%{transform:scale(1.4);opacity:1}15%{transform:scale(1.06);opacity:.85}}
+@keyframes paLoaderSymbolWave{0%,5%{opacity:0;transform:scale(.72)}7%{opacity:.6}23%,100%{opacity:0;transform:scale(1.65)}}
+@keyframes paLoaderProgress{0%{transform:translateX(-105%)}50%{filter:brightness(1.3)}100%{transform:translateX(365%)}}
+@media(max-width:380px){.paLoaderEmblem{width:280px;height:280px}.paLoaderShield{width:183px;height:201px}.paLoaderKicker{font-size:9px;letter-spacing:2px}.paLoaderSymbol:nth-of-type(1){left:15px}.paLoaderSymbol:nth-of-type(2){right:10px}.paLoaderSymbol:nth-of-type(3){left:17px}.paLoaderSymbol:nth-of-type(4){right:12px}.paLoaderWave{inset:36px}}
+@media(max-height:650px){.paLoaderContent{padding:8px 0}.paLoaderEmblem{width:250px;height:250px;margin-bottom:10px}.paLoaderShield{width:165px;height:180px}.paLoaderKicker{margin-bottom:7px}.appLoading .paLoaderTagline{margin:12px 0 20px}.appLoading .paLoaderMotto{margin-top:18px}.paLoaderWave{inset:33px}.paLoaderSymbol:nth-of-type(1){top:24px;left:7px}.paLoaderSymbol:nth-of-type(2){top:24px;right:7px}.paLoaderSymbol:nth-of-type(3){bottom:24px;left:10px}.paLoaderSymbol:nth-of-type(4){bottom:24px;right:10px}}
+@media(prefers-reduced-motion:reduce){.appLoading *,.appLoading *:after{animation:none!important;will-change:auto}.paLoaderWave{display:none}.paLoaderFill{width:100%;opacity:.65}.paLoaderGlyph{opacity:1}}

@@ -97,7 +97,7 @@
    const evolutionUnlocked=data.petCollection[id].state==='tamed'&&data.petCollection[id].level>=5;
    const evolved=evolutionUnlocked&&data.petCollection[id].appearance!=='base';
    const fireRoot=`assets/pets/evolution/fire/${id}`,fireVersion=id==='arnabKekLapis'?4:id==='ketupatKura'?2:1;
-   const evolutionAssets={...baseAssets,happy:`${fireRoot}/happy-v${fireVersion}.webp`,idle:`${fireRoot}/happy-v${fireVersion}.webp`,idleSprite:`${fireRoot}/companion-idle-v${id==='arnabKekLapis'?5:fireVersion}.webp`,happySprite:`${fireRoot}/companion-idle-v${fireVersion}.webp`};
+   const evolutionAssets={...baseAssets,happy:`${fireRoot}/happy-v${fireVersion}.webp`,idle:`${fireRoot}/happy-v${fireVersion}.webp`,idleSprite:`${fireRoot}/companion-idle-v${id==='arnabKekLapis'?5:fireVersion}.webp`,happySprite:`${fireRoot}/happy-sprite-v1.webp`};
    const assets=evolved?evolutionAssets:baseAssets;
    const grade=Number(data.petCollection[id].rescueGrade)||null;
    const eligible=data.petCollection[id].state==='tamed'||rescueOrder.indexOf(id)<=access.tier;
@@ -181,5 +181,6 @@
   const api={ensure,snapshot,active,equip,rename,setAppearance,assignGembokRescue,awardGembokCompletion,catalog,rescueCycle,rescueAccess,rescueThreshold,graphSkillCount,gradeFromSkill,levelForXp:level,evolutionForLevel:(id,petLevel)=>stage(id,petLevel),evolutionMilestones,milestonesFor,playerLevel};
  root.PetCollection=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
+
 
 

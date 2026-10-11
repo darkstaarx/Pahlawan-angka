@@ -11,8 +11,9 @@
 .temanReveal.isEvolution .temanRevealCard{width:min(100%,650px);padding:0;border:0;background:transparent;box-shadow:none;max-height:96dvh;overflow:auto}.temanReveal.isEvolution .temanRevealCard > :not(.baraScene):not(.temanRevealActions){display:none!important}.temanReveal.isEvolution .temanRevealBackdrop{background:#07101ff5}.temanReveal.isEvolution .baraScene{width:100%;padding:12px 20px}.temanReveal.isEvolution .temanRevealActions{margin:0 0 12px}.temanReveal:not(.isEvolution) .baraScene{display:none}
 
 /* One frame width and one exact sheet step on every viewport. */
-.temanReveal.isEvolution .pet.happy-sprite{width:256px;height:256px;background-size:200% 100%;background-position:0% 0}
+.temanReveal.isEvolution .pet.happy-sprite{width:256px;height:256px;background-size:200% 200%;background-position:0% 0}
 .temanReveal.isEvolution .play .happy-sprite{animation:new 6.5s both,baraBlink 3s steps(1) infinite}
 @keyframes baraBlink{0%,91%{background-position:0% 0}92%,96%{background-position:100% 0}97%,100%{background-position:0% 0}}
 @media(max-width:440px){.temanReveal.isEvolution .stage{height:340px}.temanReveal.isEvolution .pet.happy-sprite{width:230px;height:230px}}
 @media(prefers-reduced-motion:reduce){.temanReveal.isEvolution .play .happy-sprite{animation:none!important}}
+

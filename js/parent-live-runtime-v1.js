@@ -3,7 +3,7 @@
 // bundle rolls forward. Fresh builds still use the full parent.js renderer.
 (function(){
   'use strict';
-  const parentTabs=['summary','core','engine','settings'];
+  const parentTabs=['summary','core','worksheet','settings'];
 
   function renderFallbackRestu(){
     const restu=document.getElementById('restuTab');
@@ -29,8 +29,9 @@
 
   function installTabBridge(){
     window.tab=function(name){
-      const normalized=name==='restu'?'restu':name==='levels'?'core':parentTabs.includes(name)?name:'summary';
-      [...parentTabs,'levels','restu'].forEach(id=>document.getElementById(id+'Tab')?.classList.toggle('hidden',id!==normalized));
+      const normalized=name==='engine'?'worksheet':name==='restu'?'restu':name==='levels'?'core':parentTabs.includes(name)?name:'summary';
+      [...parentTabs,'engine','levels','restu'].forEach(id=>document.getElementById(id+'Tab')?.classList.toggle('hidden',id!==normalized));
+      if(normalized==='worksheet')window.PAParentTools?.mountWorksheet?.();
       document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(button=>button.classList.toggle('active',button.dataset.parentTab===normalized));
       document.getElementById('parent')?.classList.toggle('restuOpen',normalized==='restu');
       patchParentSurface();
@@ -49,3 +50,4 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,40),{once:true});
   else setTimeout(boot,40);
 })();
+

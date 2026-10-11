@@ -1,182 +1,114 @@
-// App shell v3.84.64 — mobile long-screen scroll ownership refresh.
+/* STAGING offline core. No production release until end-to-end QA. */
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-khazanah-full-1`;
-const APP_SHELL=[
-  './questions/grade-depth-v1.js',
-  './css/teman-evolution-cinematic-v1.css',
- './assets/questions/counting/apple.png','./assets/questions/counting/orange.png','./assets/questions/counting/rambutan.png','./assets/questions/counting/watermelon_slice.png','./assets/questions/counting/starfruit_slice.png','./assets/questions/counting/pencil.png','./assets/questions/counting/eraser.png','./assets/questions/counting/candy.png','./assets/questions/counting/balloon.png',
-  './assets/questions/money/money_5sen.png',
-  './assets/questions/money/money_10sen.png',
-  './assets/questions/money/money_20sen.png',
-  './assets/questions/money/money_50sen.png',
-  './assets/questions/money/money_rm1.png',
-  './assets/questions/money/money_rm5.png',
-  './assets/questions/money/money_rm10.png',
-  './assets/questions/money/money_rm20.png',
-  './assets/questions/money/money_rm50.png',
-  './js/dev-khazanah-v1.js','./css/dev-khazanah-v1.css',
-  './assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.png',
-  './assets/fx/wira/final-v5/glacier-clean-sheet-v1.png',
-  './assets/audio/glacier-thunder.wav',
-  './css/page-lock-v1.css','./js/page-lock-v1.js',
-  './assets/avatars/pupils/avatar-01.png','./assets/avatars/pupils/avatar-02.png','./assets/avatars/pupils/avatar-03.png','./assets/avatars/pupils/avatar-04.png','./assets/avatars/pupils/avatar-05.png','./assets/avatars/pupils/avatar-06.png','./assets/avatars/pupils/avatar-07.png','./assets/avatars/pupils/avatar-08.png',
-  './css/pet-battlefield-dev-v1.0.0.css','./js/pet-battlefield-dev-v1.0.0.js','./css/dev-pet-reward-debug-v1.0.0.css','./js/dev-pet-reward-debug-v1.0.0.js','./css/teman-reveal-v1.0.0.css','./css/teman-reveal-stars-v1.0.0.css','./js/teman-reveal-v1.0.0.js',
-  './assets/pets/evolution/fire/aurora/happy-v1.webp',
-  './assets/pets/evolution/fire/aurora/companion-idle-v1.webp',
-  './assets/pets/evolution/fire/ketupatKura/happy-v2.webp',
-  './assets/pets/evolution/fire/ketupatKura/companion-idle-v2.webp',
-  './assets/pets/evolution/fire/kumbangManggis/happy-v1.webp',
-  './assets/pets/evolution/fire/kumbangManggis/companion-idle-v1.webp',
-  './assets/pets/evolution/fire/harimauBunga/happy-v1.webp',
-  './assets/pets/evolution/fire/harimauBunga/companion-idle-v1.webp',
-  './assets/pets/evolution/fire/arnabKekLapis/happy-v2.webp',
-  './assets/pets/evolution/fire/arnabKekLapis/companion-idle-v2.webp',
-  './assets/pets/evolution/fire/durianKerbau/happy-v1.webp',
-  './assets/pets/evolution/fire/durianKerbau/companion-idle-v1.webp',
-  './assets/pets/aurora/standby-v2.webp','./assets/pets/aurora/frames/sad-0-v1.webp','./assets/pets/aurora/frames/sad-1-v1.webp','./assets/pets/aurora/frames/sad-2-v1.webp','./assets/pets/aurora/frames/sad-3-v1.webp','./assets/pets/aurora/frames/sad-4-v1.webp','./assets/pets/aurora/frames/sad-5-v1.webp','./assets/pets/aurora/frames/sad-6-v1.webp','./assets/pets/aurora/frames/sad-7-v1.webp','./assets/pets/aurora/frames/joy-0-v1.webp','./assets/pets/aurora/frames/joy-1-v1.webp',
-  './assets/pets/collection/ketupat-kura/idle.png','./assets/pets/collection/ketupat-kura/sad.png','./assets/pets/collection/ketupat-kura/happy.png',
-  './assets/pets/collection/kumbang-manggis/idle.png','./assets/pets/collection/kumbang-manggis/sad.png','./assets/pets/collection/kumbang-manggis/happy.png',
-  './assets/pets/collection/harimau-bunga/idle.png','./assets/pets/collection/harimau-bunga/sad.png','./assets/pets/collection/harimau-bunga/happy.png',
-  './assets/pets/collection/arnab-kek-lapis/idle.png','./assets/pets/collection/arnab-kek-lapis/sad.png','./assets/pets/collection/arnab-kek-lapis/happy.png',
-  './assets/pets/collection/durian-kerbau/idle.png','./assets/pets/collection/durian-kerbau/sad.png','./assets/pets/collection/durian-kerbau/happy.png',
-  './assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.png','./assets/pets/collection/ketupat-kura/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/kumbang-manggis/sprite-sheets/sad-v1.png','./assets/pets/collection/kumbang-manggis/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/harimau-bunga/sprite-sheets/sad-v1.png','./assets/pets/collection/harimau-bunga/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.png','./assets/pets/collection/arnab-kek-lapis/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.png','./assets/pets/collection/durian-kerbau/sprite-sheets/happy-v1.png',
-  './css/segel-demo-v2.1.0.css','./js/segel-demo-v2.1.0.js',
-  './assets/ui/star-earned-v1.webp','./assets/ui/star-empty-v1.webp','./assets/ui/victory-result/star-earned.png','./assets/ui/victory-result/star-empty.png','./assets/ui/victory-result/crest-frame.png','./assets/ui/victory-result/crest-side-left.png','./assets/ui/victory-result/crest-side-right.png','./assets/ui/victory-result/summary-frame.png','./assets/ui/victory-result/button-navy-rest.png','./assets/ui/victory-result/button-gold-rest.png','./assets/ui/victory-result/button-navy-press.png','./assets/ui/victory-result/button-gold-press.png','./assets/coach/cikgu-dimensi/hub-portrait-v1.webp',
-  './assets/ui/khazanah/teman-night-math-v1.webp','./css/khazanah-v2-v1.0.0.css','./js/khazanah-v2-v1.0.0.js','./js/pet-stage-v1.0.0.js',
-  './assets/ui/trophies-v1/langkah-pertama.png','./assets/ui/trophies-v1/rentak-lima.png','./assets/ui/trophies-v1/tepat-50.png','./assets/ui/trophies-v1/bintang-sempurna.png','./assets/ui/trophies-v1/pakar-nombor.png','./assets/ui/trophies-v1/jagoan-operasi.png','./assets/ui/trophies-v1/wira-pecahan.png','./assets/ui/trophies-v1/yakin-sendiri.png','./assets/ui/trophies-v1/gigih-berlatih.png','./assets/ui/trophies-v1/penakluk-cabaran.png','./assets/ui/trophies-v1/wira-harian.png','./assets/ui/trophies-v1/pahlawan-tahap-5.png','./assets/ui/trophies-v1/juara-tahap-10.png','./assets/ui/trophies-v1/penjelajah-tiga-topik.png','./assets/ui/trophies-v1/penakluk-lima-topik.png','./assets/ui/trophies-v1/kuasa-dikuasai.png','./assets/ui/trophies-v1/lima-kuasa-dikuasai.png','./assets/ui/trophies-v1/penewas-boss.png',
-  './css/menu-v2-v1.0.0.css','./js/menu-v2-v1.0.0.js','./assets/ui/menu-v2/jejak-map-v1.webp','./assets/ui/menu-v2/hero-stage-v1.webp','./assets/ui/menu-v2/stage-aurora-v1.webp','./assets/ui/menu-v2/cikgu-card-v2.webp','./assets/ui/menu-v2/cikgu-dimensi-book-hq-v1.webp','./assets/ui/menu-v2/cikgu-dimensi-book-fixed-v1.webp','./assets/ui/menu-v2/cikgu-dimensi-book-v4.webp','./assets/pets/aurora/frames/happy-v1.webp',
-  // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
-  // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
-  './assets/heroes/wira-chibi/hub/idle-loop-v3.webp',
-  './css/combat-motion-v1.css','./js/combat-motion-v1.js','./css/battle-story-v3.60.0.css','./js/battle-story-v3.60.0.js',
-  './css/learner-review-v1.css','./js/engine/learner-review-v1.js',
-  './css/demo-result-child-v3.56.6.css',
-  './js/fraction-lesson-v1.js',
-  './js/cikgu-mini-games-v1.0.0.js','./js/dev-coach-games-v1.0.0.js','./css/cikgu-mini-games-v1.0.0.css',
-  './assets/coach/time-lab/sidma-push-v1.png',
-  './','./index.html','./manifest.webmanifest','./js/version.js',
-  './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js','./css/demo-mode-v3.56.0.css','./js/demo-mode-v3.56.0.js','./css/hero-wira-finisher-v1.0.0.css','./js/hero-wira-finisher-v1.0.0.js','./css/hero-bunga-v2.0.0.css','./js/hero-bunga-v2.0.0.js',
-  './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js','./css/question-card-theme-v1.0.0.css','./css/written-arithmetic-v1.0.0.css','./js/written-arithmetic-v1.0.0.js',
-  './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp','./assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp','./assets/heroes/sidma/frames/skill2-dash-v1.webp','./assets/heroes/sidma/frames/skill2-impact-v1.webp',
-  './assets/heroes/sidma/hub/adventure-v1.webp','./assets/ui/coin-gold.svg','./assets/heroes/sidma/profile-happy-v1.webp','./assets/fx/hub/sidma-math-sigma-v1.webp',
-  './assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp','./assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp',
-  './css/effort-restu-v3.32.0.css','./js/effort-guard-v3.32.0.js',
-  './assets/heroes/wira/attack.webp','./assets/heroes/wira/frames/attack-dash-v2.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
-  './assets/heroes/wira-chibi/idle.webp','./assets/heroes/wira-chibi/attack.webp','./assets/heroes/wira-chibi/frames/anticipation-v1.webp','./assets/heroes/wira-chibi/frames/aura-framing-v1.webp','./assets/heroes/wira-chibi/frames/attack-dash-v2.webp','./assets/heroes/wira-chibi/frames/attack-arc-v2.webp','./assets/heroes/wira-chibi/frames/attack-pulse-v2.webp','./assets/heroes/wira-chibi/frames/follow-through-v1.webp','./assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp',
-  './assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-00-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-01-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-02-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-03-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-04-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-05-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-06-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-07-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-08-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-09-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-10-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-11-v4.png',
-'./assets/fx/wira/final-v2/fx-charge-aura-v1.webp','./assets/fx/wira/final-v2/fx-frost-seal-v1.webp','./assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp','./assets/fx/wira/final-v2/fx-glacier-burst-v2.png','./assets/fx/wira/final-v3/fx-glacier-burst-v3.png','./assets/fx/wira/final-v2/fx-impact-end-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/idle-master-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/idle-breathe-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/profile-happy-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/quick-ready-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/staff-aim-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-projectile-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-impact-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/hurt-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/defeat-v1.webp',
-  './assets/icons/pahlawan-angka-app-32.png','./assets/icons/pahlawan-angka-app-64.png','./assets/icons/pahlawan-angka-app-180.png','./assets/icons/pahlawan-angka-app-192.png','./assets/icons/pahlawan-angka-app-512.png','./assets/icons/pahlawan-angka-app-maskable-512.png','./assets/icons/pahlawan-angka-crest-192.png',
-  './assets/branding/login-chibi-math-world-v1.webp','./assets/branding/pahlawan-angka-full-logo-v1.png','./assets/ui/login/guardian-crest.svg',
-  './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
-  './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
-  './assets/enemies/minions/askabus.webp','./assets/enemies/minions/syilinggit.webp','./assets/enemies/minions/pigiramid.webp',
-  './assets/heroes/wira/idle.webp','./assets/heroes/wira/profile-happy-v1.webp',
-  './assets/heroes/switch-cards/wira-v1.webp','./assets/heroes/switch-cards/bunga-v1.webp','./assets/heroes/switch-cards/sidma-v1.webp',
-  './assets/heroes/wira/hub/adventure-v1.webp','./assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
-  './assets/pets/aurora/hub/adventure-v1.webp','./assets/pets/arif/hub/adventure-v1.webp','./assets/pets/kucing-pembaris/hub/adventure-v1.webp','./assets/pets/tiko/hub/adventure-v1.webp',
-  './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg','./assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp',
-  './css/game.css','./css/login-chibi-world-v1.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/parent-pin-recovery-v3.27.3.css','./css/google-auth-v3.25.2.css','./css/parent-dashboard-v3.25.4.css','./css/theme-controls-v3.25.5.css','./css/custom-picker-v3.25.6.css','./css/parent-learning-tools-v3.26.0.css','./css/hint-overlay-v3.28.1.css','./css/beta-trust-v3.29.0.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',
-  './css/phase-3.6.4.css','./css/phase-3.6.6.css','./css/phase-3.6.8-animation.css',
-  './css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
-  './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',
-  './css/battle-flow-v3.7.7.css','./css/boss-motion-v3.7.9.css','./css/coach-mascot-v3.8.1.css',
-  './css/responsive-modes-v3.8.2.css','./css/responsive-layout-v1.css','./css/pet-sizing-v3.8.21.css','./css/battle-polish-v3.8.22.css',
-  './css/battle-scene-v3.8.25.css','./css/coach-teaching-v3.8.26.css','./css/battle-scene-v3.8.27.css',
-  './css/battle-scene-v3.8.28.css','./css/pwa-v3.8.29.css','./css/guardian-focus-v3.8.30.css','./css/hero-pose-normalization-v3.8.31.css','./css/battle-fix-v3.9.1.css','./css/battle-fix-v3.11.css','./css/pet-staging-v3.14.3.css',
-  './css/sensory-learning-v3.19.0.css','./css/cikgu-manipulatives-v3.19.1.css','./css/daily-spaced-review-v3.20.0.css',
-  './css/dev-experiments-v3.21.2.css','./css/combat-polish-v3.21.3.css','./css/boss-stage-dev-v3.21.4.css','./css/combat-target-anchor-v3.21.5.css','./css/finisher-alpha-hotspots-v3.21.6.css','./css/typed-answer-ui-v3.21.8.css',
-  './css/kssr-assessment-depth-v3.22.1.css','./css/kssr-year6-space-data-v3.23.0.css','./css/profile-manager-v3.24.2.css',
-  './css/game-question-interactions-v3.62.4.css',
-  './css/unit-grounding-v3.24.5.css','./css/cikgu-dimensi-place-value-v0.1.css','./css/cikgu-dimensi-core-v0.2.css','./css/hub-adventure-v3.24.11.css',
-  './data/kssr/knowledge-graph.js','./data/kssr/mastery-knowledge-v1.js','./data/kssr/alignment-v3.9.0.js','./data/kssr/d3-topic7-curriculum-correction-v3.38.0.js','./data/kssr/d3-topic7-evidence-epoch-v3.39.0.js','./data/kssr/d3-topic7-live-cutover-v3.40.0.js','./data/kssr/d3-nonT7-live-isolation-v1.0.0.js',
-  './questions/helpers.js','./questions/index.js','./data/kssr/year1-competencies-v2.js','./questions/kssr-year1-v2-runtime-v3.62.6.js','./questions/kssr-year1-v2-unit1-v3.62.6.js','./questions/kssr-year1-v2-unit2-v3.62.6.js','./questions/kssr-year1-v2-unit34-v3.62.6.js','./questions/kssr-year1-v2-unit56-v3.62.6.js','./questions/kssr-year1-v2-unit78-v3.62.6.js','./questions/kssr-year1-curriculum-v2-v3.62.6.js','./questions/kssr-year1-adaptive-v3.62.6.js','./questions/v2/dist/runtime.js','./questions/v2/engine/d3-rollout.js','./questions/v2/engine/legacy-adapter.js','./js/dev-qsv2-v3.36.0.js','./js/dev-qsv2-live-v3.40.0.js','./questions/kssr-archetypes-v3.9.0.js','./questions/kssr-content-v3.11.js','./questions/kssr-content-integrity-v3.18.1.js','./questions/kssr-assessment-depth-v3.22.1.js','./questions/kssr-year4-curriculum-v3.58.0.js','./questions/kssr-year6-space-data-v3.23.0.js','./questions/kssr-year6-curriculum-v3.60.3.js','./questions/kssr-year6-experience-v3.60.4.js','./questions/kssr-year6-money-real-v3.60.5.js','./data/kssr/year6-competencies-v2.js','./questions/kssr-year6-v2-runtime-v3.61.0.js','./questions/kssr-year6-v2-unit1-v3.61.0.js','./questions/kssr-year6-v2-unit2-v3.61.0.js','./questions/kssr-year6-v2-unit45-v3.61.0.js','./questions/kssr-year6-v2-unit6-angle-v3.61.0.js','./questions/kssr-year6-v2-unit6-circle-v3.61.0.js','./questions/kssr-year6-v2-unit6-space-v3.61.0.js','./questions/kssr-year6-v2-unit7-v3.61.0.js','./questions/kssr-year6-v2-unit8-v3.61.0.js','./questions/kssr-year6-curriculum-v2-v3.61.0.js','./questions/kssr-year6-adaptive-v3.61.1.js','./js/game-question-interactions-v3.62.4.js',
-  './questions/d1/core.js','./questions/d2/topic-1.js','./questions/d2/topic-2.js','./questions/d2/topic-3.js',
-  './questions/d2/topic-4.js','./questions/d2/topic-5.js','./questions/d2/topic-6.js','./questions/d2/topic-7.js','./questions/d2/topic-8.js',
-  './questions/d3/core.js','./questions/d4/core.js','./questions/d5/core.js','./questions/d6/core.js',
-  './js/engine/telemetry.js','./js/engine/intervention.js','./js/engine/frontier.js','./js/engine/adaptive.js',
-  './js/engine/dimensional-memory.js','./js/engine/dimensional-portal.js','./js/engine/representations/place-value.js','./js/engine/representations/fraction-area.js','./js/engine/representations/number-line.js','./js/engine/representations/grouping-array.js','./js/engine/representations/number-bond.js','./js/engine/representations/bar-relational.js','./js/engine/dimensional-catalog.js','./js/engine/dimensional-view.js','./js/engine/dimensional-lab.js',
-  './js/heroes.js','./js/progression.js','./js/rewards-v2.js','./js/learning.js','./js/audio.js',
-  './js/battle.js','./js/parent.js','./js/parent-learning-tools-v3.26.0.js','./js/guardian-focus.js','./js/app.js','./js/beta-trust-v3.29.0.js','./js/cloud.js','./js/qsv2-shadow-sync-v3.37.0.js','./js/qsv2-pilot-sync-v3.40.0.js','./js/qsv2-beta-rollout-v3.42.0.js','./js/commercial-foundation-v3.25.0.js','./js/guardian-onboarding-v3.25.1.js','./js/custom-picker-v3.25.6.js','./js/phase-3.6.4.js','./js/dev-cikgu-dimensi-v3.24.10.js',
-  './js/sensory-learning-v3.19.0.js','./js/cikgu-manipulatives-v3.19.1.js','./js/daily-spaced-review-v3.20.0.js',
-  './js/dev-experiments-v3.21.2.js','./js/combat-polish-v3.21.3.js','./js/dev-boss-lab-v3.21.4.js','./js/combat-target-anchor-v3.21.5.js','./js/finisher-alpha-hotspots-v3.21.6.js','./js/typed-answer-ui-v3.21.8.js','./js/profile-manager-v3.24.2.js','./js/pwa.js'
-];
-
-const freshRequest=(input)=>new Request(
-  typeof input==='string'?input:input.url,
-  {cache:'reload'}
-);
-
+const CACHE_NAME='pahlawan-angka-v3.85.72-offline-core-v1';
+const CORE_FILES=["./js/parent-live-runtime-v1.js","./js/worksheet-graphics-v1.js","./css/loading-screen-v1.css","./questions/grade-depth-v1.js","./css/teman-evolution-cinematic-v1.css","./js/dev-khazanah-v1.js","./css/dev-khazanah-v1.css","./css/page-lock-v1.css","./js/page-lock-v1.js","./css/pet-battlefield-dev-v1.0.0.css","./js/pet-battlefield-dev-v1.0.0.js","./css/dev-pet-reward-debug-v1.0.0.css","./js/dev-pet-reward-debug-v1.0.0.js","./css/teman-reveal-v1.0.0.css","./css/teman-reveal-stars-v1.0.0.css","./js/teman-reveal-v1.0.0.js","./css/segel-demo-v2.1.0.css","./js/segel-demo-v2.1.0.js","./css/khazanah-v2-v1.0.0.css","./js/khazanah-v2-v1.0.0.js","./js/pet-stage-v1.0.0.js","./css/menu-v2-v1.0.0.css","./js/menu-v2-v1.0.0.js","./css/combat-motion-v1.css","./js/combat-motion-v1.js","./css/battle-story-v3.60.0.css","./js/battle-story-v3.60.0.js","./css/learner-review-v1.css","./js/engine/learner-review-v1.js","./css/demo-result-child-v3.56.6.css","./js/fraction-lesson-v1.js","./js/cikgu-mini-games-v1.0.0.js","./js/dev-coach-games-v1.0.0.js","./css/cikgu-mini-games-v1.0.0.css","./index.html","./manifest.webmanifest","./js/version.js","./css/action-variety-v3.30.0.css","./js/action-variety-v3.30.0.js","./css/demo-mode-v3.56.0.css","./js/demo-mode-v3.56.0.js","./css/hero-wira-finisher-v1.0.0.css","./js/hero-wira-finisher-v1.0.0.js","./css/hero-bunga-v2.0.0.css","./js/hero-bunga-v2.0.0.js","./css/hero-sidma-v1.0.0.css","./js/hero-sidma-v1.0.0.js","./css/hub-hero-switch-v1.0.0.css","./js/hub-hero-switch-v1.0.0.js","./css/question-card-theme-v1.0.0.css","./css/written-arithmetic-v1.0.0.css","./js/written-arithmetic-v1.0.0.js","./css/effort-restu-v3.32.0.css","./js/effort-guard-v3.32.0.js","./assets/icons/pahlawan-angka-app-192.png","./assets/icons/pahlawan-angka-app-512.png","./assets/icons/pahlawan-angka-app-maskable-512.png","./css/game.css","./css/login-chibi-world-v1.css","./css/commercial-foundation-v3.25.0.css","./css/guardian-onboarding-v3.25.1.css","./css/parent-pin-recovery-v3.27.3.css","./css/google-auth-v3.25.2.css","./css/parent-dashboard-v3.25.4.css","./css/theme-controls-v3.25.5.css","./css/custom-picker-v3.25.6.css","./css/parent-learning-tools-v3.26.0.css","./css/hint-overlay-v3.28.1.css","./css/beta-trust-v3.29.0.css","./css/cloud-auth-v3.15.0.css","./css/visual-coach-v3.16.0.css","./css/finisher-auras-v3.8.7.css","./css/finisher-cinematic-v3.8.8.css","./css/kssr-question-v3.9.0.css","./css/phase-3.6.4.css","./css/phase-3.6.6.css","./css/phase-3.6.8-animation.css","./css/battlefield-motion-v3.7.2.css","./css/battlefield-depth-v3.7.3.css","./css/pet-monster-motion-v3.7.4.css","./css/mobile-battle-v3.7.5.css","./css/combat-fov-v3.7.6.css","./css/battle-flow-v3.7.7.css","./css/boss-motion-v3.7.9.css","./css/coach-mascot-v3.8.1.css","./css/responsive-modes-v3.8.2.css","./css/responsive-layout-v1.css","./css/pet-sizing-v3.8.21.css","./css/battle-polish-v3.8.22.css","./css/battle-scene-v3.8.25.css","./css/coach-teaching-v3.8.26.css","./css/battle-scene-v3.8.27.css","./css/battle-scene-v3.8.28.css","./css/pwa-v3.8.29.css","./css/guardian-focus-v3.8.30.css","./css/hero-pose-normalization-v3.8.31.css","./css/battle-fix-v3.9.1.css","./css/battle-fix-v3.11.css","./css/pet-staging-v3.14.3.css","./css/sensory-learning-v3.19.0.css","./css/cikgu-manipulatives-v3.19.1.css","./css/daily-spaced-review-v3.20.0.css","./css/dev-experiments-v3.21.2.css","./css/combat-polish-v3.21.3.css","./css/boss-stage-dev-v3.21.4.css","./css/combat-target-anchor-v3.21.5.css","./css/finisher-alpha-hotspots-v3.21.6.css","./css/typed-answer-ui-v3.21.8.css","./css/kssr-assessment-depth-v3.22.1.css","./css/kssr-year6-space-data-v3.23.0.css","./css/profile-manager-v3.24.2.css","./css/game-question-interactions-v3.62.4.css","./css/unit-grounding-v3.24.5.css","./css/cikgu-dimensi-place-value-v0.1.css","./css/cikgu-dimensi-core-v0.2.css","./css/hub-adventure-v3.24.11.css","./data/kssr/knowledge-graph.js","./data/kssr/mastery-knowledge-v1.js","./data/kssr/alignment-v3.9.0.js","./data/kssr/d3-topic7-curriculum-correction-v3.38.0.js","./data/kssr/d3-topic7-evidence-epoch-v3.39.0.js","./data/kssr/d3-topic7-live-cutover-v3.40.0.js","./data/kssr/d3-nonT7-live-isolation-v1.0.0.js","./questions/helpers.js","./questions/index.js","./data/kssr/year1-competencies-v2.js","./questions/kssr-year1-v2-runtime-v3.62.6.js","./questions/kssr-year1-v2-unit1-v3.62.6.js","./questions/kssr-year1-v2-unit2-v3.62.6.js","./questions/kssr-year1-v2-unit34-v3.62.6.js","./questions/kssr-year1-v2-unit56-v3.62.6.js","./questions/kssr-year1-v2-unit78-v3.62.6.js","./questions/kssr-year1-curriculum-v2-v3.62.6.js","./questions/kssr-year1-adaptive-v3.62.6.js","./questions/v2/dist/runtime.js","./questions/v2/engine/d3-rollout.js","./questions/v2/engine/legacy-adapter.js","./js/dev-qsv2-v3.36.0.js","./js/dev-qsv2-live-v3.40.0.js","./questions/kssr-archetypes-v3.9.0.js","./questions/kssr-content-v3.11.js","./questions/kssr-content-integrity-v3.18.1.js","./questions/kssr-assessment-depth-v3.22.1.js","./questions/kssr-year4-curriculum-v3.58.0.js","./questions/kssr-year6-space-data-v3.23.0.js","./questions/kssr-year6-curriculum-v3.60.3.js","./questions/kssr-year6-experience-v3.60.4.js","./questions/kssr-year6-money-real-v3.60.5.js","./data/kssr/year6-competencies-v2.js","./questions/kssr-year6-v2-runtime-v3.61.0.js","./questions/kssr-year6-v2-unit1-v3.61.0.js","./questions/kssr-year6-v2-unit2-v3.61.0.js","./questions/kssr-year6-v2-unit45-v3.61.0.js","./questions/kssr-year6-v2-unit6-angle-v3.61.0.js","./questions/kssr-year6-v2-unit6-circle-v3.61.0.js","./questions/kssr-year6-v2-unit6-space-v3.61.0.js","./questions/kssr-year6-v2-unit7-v3.61.0.js","./questions/kssr-year6-v2-unit8-v3.61.0.js","./questions/kssr-year6-curriculum-v2-v3.61.0.js","./questions/kssr-year6-adaptive-v3.61.1.js","./js/game-question-interactions-v3.62.4.js","./questions/d1/core.js","./questions/d2/topic-1.js","./questions/d2/topic-2.js","./questions/d2/topic-3.js","./questions/d2/topic-4.js","./questions/d2/topic-5.js","./questions/d2/topic-6.js","./questions/d2/topic-7.js","./questions/d2/topic-8.js","./questions/d3/core.js","./questions/d4/core.js","./questions/d5/core.js","./questions/d6/core.js","./js/engine/telemetry.js","./js/engine/intervention.js","./js/engine/frontier.js","./js/engine/adaptive.js","./js/engine/dimensional-memory.js","./js/engine/dimensional-portal.js","./js/engine/representations/place-value.js","./js/engine/representations/fraction-area.js","./js/engine/representations/number-line.js","./js/engine/representations/grouping-array.js","./js/engine/representations/number-bond.js","./js/engine/representations/bar-relational.js","./js/engine/dimensional-catalog.js","./js/engine/dimensional-view.js","./js/engine/dimensional-lab.js","./js/heroes.js","./js/progression.js","./js/rewards-v2.js","./js/learning.js","./js/audio.js","./js/battle.js","./js/parent.js","./js/parent-learning-tools-v3.26.0.js","./js/guardian-focus.js","./js/app.js","./js/beta-trust-v3.29.0.js","./js/cloud.js","./js/qsv2-shadow-sync-v3.37.0.js","./js/qsv2-pilot-sync-v3.40.0.js","./js/qsv2-beta-rollout-v3.42.0.js","./js/commercial-foundation-v3.25.0.js","./js/guardian-onboarding-v3.25.1.js","./js/custom-picker-v3.25.6.js","./js/phase-3.6.4.js","./js/dev-cikgu-dimensi-v3.24.10.js","./js/sensory-learning-v3.19.0.js","./js/cikgu-manipulatives-v3.19.1.js","./js/daily-spaced-review-v3.20.0.js","./js/dev-experiments-v3.21.2.js","./js/combat-polish-v3.21.3.js","./js/dev-boss-lab-v3.21.4.js","./js/combat-target-anchor-v3.21.5.js","./js/finisher-alpha-hotspots-v3.21.6.js","./js/typed-answer-ui-v3.21.8.js","./js/profile-manager-v3.24.2.js","./js/pwa.js","./","./js/account-save-guard-v1.js","./js/offline-entitlement-v1.js","./js/offline-pack-core-v1.js","./js/offline-manager-v1.js","./css/offline-manager-v1.css"];
+const CORE_BLOBS={"./js/parent-live-runtime-v1.js":"c79a10d4a647d919dc41ffc9a12098a95e1db75c","./js/worksheet-graphics-v1.js":"af280f5cc42f47ea6c3ee0177ac8470d47b0635b","./css/loading-screen-v1.css":"3acc7f6bf593ad2a75f355a82319fabd026b08bd","./questions/grade-depth-v1.js":"68ab59136da8ede8ad39a340e43a0326a2ea2c1d","./css/teman-evolution-cinematic-v1.css":"dd56891d0e39f8bddd3e13366da3041bdffd19e9","./js/dev-khazanah-v1.js":"92fac8fc151eaed0994d66d52d89093aafab489c","./css/dev-khazanah-v1.css":"61de05ea714da65fe9e3ef71eff74081ede5f57e","./css/page-lock-v1.css":"cd6299942bb0614d126c26a248d9aa39bed180a8","./js/page-lock-v1.js":"7424b0f920ddafddcbda8c15d5c92e55a56e0c9f","./css/pet-battlefield-dev-v1.0.0.css":"c8d12d2e8fc952835f6e364af6364184936e423b","./js/pet-battlefield-dev-v1.0.0.js":"e36fe5c940a217f5ae6113925b857ec733c304eb","./css/dev-pet-reward-debug-v1.0.0.css":"08d52e99dcd4673c39aff93780893c1002ce5a4d","./js/dev-pet-reward-debug-v1.0.0.js":"d7e77c8daf93ebce910591dc654fe1fc2ab30436","./css/teman-reveal-v1.0.0.css":"4c360f76c271444fa60bc06fae8f4f8354cb7b03","./css/teman-reveal-stars-v1.0.0.css":"dcbdbec5944e8f7d027bb8794b73ef22bb9bc3ea","./js/teman-reveal-v1.0.0.js":"3d3dfa2f9e7a7e7da1d8dea26f37aeab43864c2f","./css/segel-demo-v2.1.0.css":"56e85f47aa3a9aa6ef49f9b5cdba504a1d48799f","./js/segel-demo-v2.1.0.js":"cc6742f4e7d3fa1547c17f9e10fe2c1bdc2f48a3","./css/khazanah-v2-v1.0.0.css":"27c193bb22a321b22be4becc2206f2ca76a5c9c0","./js/khazanah-v2-v1.0.0.js":"f5e7693cd1ebbff7045c15e31e5de66a3a5ee003","./js/pet-stage-v1.0.0.js":"1d510b2d9aa105679e73aff53eed9e477c261363","./css/menu-v2-v1.0.0.css":"5f23220ec9111d7fc10bafbc4bc6b190afeb552d","./js/menu-v2-v1.0.0.js":"f0c56ecdfb30881d149e510e1326f4bb5461e48f","./css/combat-motion-v1.css":"4ae1aee78f1c9395b609920f318bd69053dd2cb3","./js/combat-motion-v1.js":"e044b978e8c901a295626d9dfa328dac2fdd949d","./css/battle-story-v3.60.0.css":"88574b5630640ec975c1e1b67d8b9957bdc1cd9c","./js/battle-story-v3.60.0.js":"9e13e24a777f6e2b15213a2296ee2cfe367a3a23","./css/learner-review-v1.css":"9a882226c7d7c0d5fd09d5bcf34b6139041df407","./js/engine/learner-review-v1.js":"0e455f61bc32e4034a58d5002412c63bdf549e79","./css/demo-result-child-v3.56.6.css":"ef54d3e5d6cdbe00cc1f97ad8243f131ab0ba9c8","./js/fraction-lesson-v1.js":"dcfd1a11f15538017f1a7cae304cc060b42767c7","./js/cikgu-mini-games-v1.0.0.js":"386404a9deb5d1f516fc482a4068278d9f8a49cf","./js/dev-coach-games-v1.0.0.js":"3a044c10578b264adfa069c062a33901e39f1ea8","./css/cikgu-mini-games-v1.0.0.css":"13cde593cb7665d59f640c82f6886b6687982efc","./index.html":"c609d90582937bfa16219ac140696ffd9148bc35","./manifest.webmanifest":"6557ce1406b1b9aa8a2746e318278edb281295b6","./js/version.js":"607e698070e1639254971d46b8c0bea9499a002f","./css/action-variety-v3.30.0.css":"47fbc14d1d165c33bf2c47e9ea56406a5a174682","./js/action-variety-v3.30.0.js":"2691f1bbb01d5a51c4bb8436cdc8cb649b9c6b20","./css/demo-mode-v3.56.0.css":"4f73dcea9a867e596c84f3d6c8a2304acff4d826","./js/demo-mode-v3.56.0.js":"c44f1dfbca25cd3d7e5a1c7bc3bcbabf30e6e6e8","./css/hero-wira-finisher-v1.0.0.css":"272a200c563b1c3d94b8f5a05c4966af31a2bfd6","./js/hero-wira-finisher-v1.0.0.js":"580fcb3b0b2b0c78941fdc1001e7733e696a60ec","./css/hero-bunga-v2.0.0.css":"9097d536b556f85a35552b0620ac650b6adcde9e","./js/hero-bunga-v2.0.0.js":"acf1782df8c40987df17a74579e1ad76698dedbd","./css/hero-sidma-v1.0.0.css":"6071a89138d9bc3c62f714aed0553b566879883f","./js/hero-sidma-v1.0.0.js":"b5c23b8977edc8f2093157b7636a4d3e9a89e9c0","./css/hub-hero-switch-v1.0.0.css":"94f835e7ae33e2957d8b94f34441d04169fe2656","./js/hub-hero-switch-v1.0.0.js":"00aeee606e9c727ad138abcc678e859da7be54f2","./css/question-card-theme-v1.0.0.css":"2370713d887a8ab3f86aee2766e2c2be72651bde","./css/written-arithmetic-v1.0.0.css":"274b22ee0471b3ee9124badbced225b2d0a4b14a","./js/written-arithmetic-v1.0.0.js":"c01b0d91ad53353ca8e81d1e09b1d9996bba462e","./css/effort-restu-v3.32.0.css":"ed6b28fb71f6f140c4372a17158ccb04c9dc03af","./js/effort-guard-v3.32.0.js":"d74a1add055965b4061c6d1295781e3307c8f096","./assets/icons/pahlawan-angka-app-192.png":"b47147ff1db20398536e0a25ffc0c82081f7e62c","./assets/icons/pahlawan-angka-app-512.png":"cffb1adf0e2d247b8be58136f7e2e27fc0042d2a","./assets/icons/pahlawan-angka-app-maskable-512.png":"4b50cc4adf2d0c0072cc3228b8e5d9caad2904a6","./css/game.css":"21528274de9ea441e051113ba4c764efd56d7564","./css/login-chibi-world-v1.css":"a484ec379a6d0145eef86d9e225abb1f79065d29","./css/commercial-foundation-v3.25.0.css":"e86861083e801def9ce4a45152db0e4d224ed30c","./css/guardian-onboarding-v3.25.1.css":"cb783e0a6c4dfb997bad958b704468470921d11e","./css/parent-pin-recovery-v3.27.3.css":"1f0d192117fa2193f332a598ac74fc6515d20483","./css/google-auth-v3.25.2.css":"ee38c0c6143b548f7a911f2854369cf1a85b33ed","./css/parent-dashboard-v3.25.4.css":"6743a9756a683e6192bea7368c854f0779d66011","./css/theme-controls-v3.25.5.css":"10e6a729326d5b3b39872061bcb625043a0e6c1b","./css/custom-picker-v3.25.6.css":"e5e799084c4dec2034577a4704e41caf88b5ed13","./css/parent-learning-tools-v3.26.0.css":"6ba44e8df8618dfd946f25da763ff44167b6ec7d","./css/hint-overlay-v3.28.1.css":"f3f4aa5e43a58f77fa4a576a5ddd0bff5bf9777e","./css/beta-trust-v3.29.0.css":"5b37eea7af60a8fbdd5e6b893651eaaba45d87bf","./css/cloud-auth-v3.15.0.css":"47c66a702c039fee5545cb4a2940648d2fee3f0c","./css/visual-coach-v3.16.0.css":"1c341facd546e61cddb7149fac69d8c4a8f67758","./css/finisher-auras-v3.8.7.css":"b6870c5551040a15ecf3bd5edbacd15bd6f9f711","./css/finisher-cinematic-v3.8.8.css":"96375cb532ddeafd66acdcecde4e003ea4d01ae8","./css/kssr-question-v3.9.0.css":"abb66200c357fe466b1051107df6b123fc1e5b68","./css/phase-3.6.4.css":"814d4527fe4a18acbd06a1ddbb8db6e129853fb6","./css/phase-3.6.6.css":"87d6805e876c71d6f9cf0ca6f50d8456ee9e3383","./css/phase-3.6.8-animation.css":"1cf5ee785e7687bf5b2e973470adcf8e2cc05728","./css/battlefield-motion-v3.7.2.css":"64db4d77362f350823358256755dfa8ef686f243","./css/battlefield-depth-v3.7.3.css":"8102644fc070b59772ad6b9e8d8d630e19c160f2","./css/pet-monster-motion-v3.7.4.css":"3a39e5f661525bfb1373778046b64f7525350a95","./css/mobile-battle-v3.7.5.css":"c826acca5149c663e3b82ae7f38c4fb226fb75c1","./css/combat-fov-v3.7.6.css":"4322c921374f3b15bec19686d644b4277d4a71db","./css/battle-flow-v3.7.7.css":"845add3e4acbccacc2aa7d7c6f6d4731c8f32922","./css/boss-motion-v3.7.9.css":"24e13da509f14c53cd4ff494657373a4710c5151","./css/coach-mascot-v3.8.1.css":"799d25881dd9ac021692e0c79bdea369b0f49c0e","./css/responsive-modes-v3.8.2.css":"d973bfefedad5b62b3e65efbea61e697f83cbddd","./css/responsive-layout-v1.css":"4ee080e7ebbb1d515e84dc4f21ef86f9d8c87bdf","./css/pet-sizing-v3.8.21.css":"249e9162eb10ec7fd7631e56474fc2356682aa5f","./css/battle-polish-v3.8.22.css":"7bbb2a11a0367d972c7554a756a9c8aaf7ec0015","./css/battle-scene-v3.8.25.css":"21cdbda427d0faf8f512785c6c6a9beb6202f67f","./css/coach-teaching-v3.8.26.css":"5bf8f2825f68a602580952b0217a7b7a0dea0054","./css/battle-scene-v3.8.27.css":"3d425c560d4389b88a7afa531b4c60390ded7dfc","./css/battle-scene-v3.8.28.css":"d35bd3f63f698d392040f275c9b7998f1d3b7a95","./css/pwa-v3.8.29.css":"b4a7ea1c73c767b11a06e246614970d7ab0c7723","./css/guardian-focus-v3.8.30.css":"4520566790010b262e49cd0710df5205bd711460","./css/hero-pose-normalization-v3.8.31.css":"c4c04b88d8ed30d26a6fcccda41338ba67ea7946","./css/battle-fix-v3.9.1.css":"f1de24e35c836d2559f3581d88993d80d80fa6a1","./css/battle-fix-v3.11.css":"99dcc5cfc0ae6422c3be9b8b2ebbcfbc1e1fa907","./css/pet-staging-v3.14.3.css":"58e3a8669bcb1299b6c82717d832f60c8a25510d","./css/sensory-learning-v3.19.0.css":"c739809a2083fa16379a00daae731d6b8cfe5e09","./css/cikgu-manipulatives-v3.19.1.css":"16bea10b684e953550f7ca87f074627353445f50","./css/daily-spaced-review-v3.20.0.css":"ea69bb9709ad122e5ebd8947eba1558b913ff1ff","./css/dev-experiments-v3.21.2.css":"9162e191c5d38c9a0e5db70f604b960bcbef2e8a","./css/combat-polish-v3.21.3.css":"6aa3c12ba4a83ddba016e23fd24b1e862ec1b7a6","./css/boss-stage-dev-v3.21.4.css":"75e026f90059ca58003d55d7221c0b6e51c71706","./css/combat-target-anchor-v3.21.5.css":"ad9b538b8fed33a4661457c9c0135bad4963b7b9","./css/finisher-alpha-hotspots-v3.21.6.css":"de18a4553a76459684959995bbf7df8a8d84f340","./css/typed-answer-ui-v3.21.8.css":"53c54f22244428d7589bf4605f271d61598bfc5f","./css/kssr-assessment-depth-v3.22.1.css":"f27429301f36554f3899c729e4ecf0fe1fd41c21","./css/kssr-year6-space-data-v3.23.0.css":"e42ba5ed2efeefd2158ae774a73c938a62c2b431","./css/profile-manager-v3.24.2.css":"123d3ee516ba17a432b8e55aaabe8374e80a72fa","./css/game-question-interactions-v3.62.4.css":"5642b47675f80d374dccd20e4eff59137e8b45bc","./css/unit-grounding-v3.24.5.css":"7f6646519267a35c6c6121f6181b5348ee707902","./css/cikgu-dimensi-place-value-v0.1.css":"7270c7a8921d965e362f14a5252eebb4f808feb3","./css/cikgu-dimensi-core-v0.2.css":"067025c1d33bc19faa020d2e87a4ff756f23babe","./css/hub-adventure-v3.24.11.css":"64d91cac7f94fa21fbc8bda8c09a01d5e73e8be3","./data/kssr/knowledge-graph.js":"c420e796f47ad9c6c95fd5bc07d2237a668519a4","./data/kssr/mastery-knowledge-v1.js":"22b90c5424b7c05dc95c138915c4ad512721c19f","./data/kssr/alignment-v3.9.0.js":"39ba902c5e43ecd4ccec20174fc4ba1ea77053c4","./data/kssr/d3-topic7-curriculum-correction-v3.38.0.js":"1e20019ef151baf5834adcbe543e37038f4f2809","./data/kssr/d3-topic7-evidence-epoch-v3.39.0.js":"4fe18be1199394ab89d85046a5a85954c685ba6d","./data/kssr/d3-topic7-live-cutover-v3.40.0.js":"16a6fd97c4b125327d59492b1e48494b636e5c45","./data/kssr/d3-nonT7-live-isolation-v1.0.0.js":"ff54d7d476f8bddb76df6d63efdaacc0eea638f8","./questions/helpers.js":"dbcbdf225869b4d9a78e142d863afc6aa725b101","./questions/index.js":"4d7bd9dc4584a2ced854492b051289c4831ecab0","./data/kssr/year1-competencies-v2.js":"8328c31219dff899e486ac602589935c8e2465e0","./questions/kssr-year1-v2-runtime-v3.62.6.js":"b37b7ec877e94b43cdfa3bb42dfb90c672443f1f","./questions/kssr-year1-v2-unit1-v3.62.6.js":"8f2c39adbf13b63b1ed6391aefd314e7a6107895","./questions/kssr-year1-v2-unit2-v3.62.6.js":"863638014d96c2d00788ff11394f58cd59e3e1ea","./questions/kssr-year1-v2-unit34-v3.62.6.js":"d3ff0016353c8c91bcc3300c3b94a7e29aa83516","./questions/kssr-year1-v2-unit56-v3.62.6.js":"a422822fde7b1839531a20eaade168585593779d","./questions/kssr-year1-v2-unit78-v3.62.6.js":"1ca6d4ffdedd00c21052041edbf6879245e9d29d","./questions/kssr-year1-curriculum-v2-v3.62.6.js":"5ce0a38989a2cae46d1f19b6d6afebf10ced91d7","./questions/kssr-year1-adaptive-v3.62.6.js":"118a037f63152444c716a83f2402a2e4097bc942","./questions/v2/dist/runtime.js":"c83688b855fdb25d7ee5465fe165bf93b6c6444c","./questions/v2/engine/d3-rollout.js":"99c9314cb2d53b29bc15f2fd1b09240dd1606699","./questions/v2/engine/legacy-adapter.js":"48a085dd0104ecf1e962608a02ab3bf6c16dff3a","./js/dev-qsv2-v3.36.0.js":"b49fcbdb3d14e3aecea3823a037561bd7f5005c4","./js/dev-qsv2-live-v3.40.0.js":"d74ad0bacd10e5660d89926a8dad549de74df568","./questions/kssr-archetypes-v3.9.0.js":"e883596358db57117fdcf32583eaae80e1c0275e","./questions/kssr-content-v3.11.js":"d20588464e0ab782edd3fa0a41780a426fcb8e7f","./questions/kssr-content-integrity-v3.18.1.js":"541c1821b07fc64756ca0a3edba0ff71590ec084","./questions/kssr-assessment-depth-v3.22.1.js":"065f9c07b6d015258627b18d32e9ea6d0c19c817","./questions/kssr-year4-curriculum-v3.58.0.js":"428f1dc7d887aecaf83a080b46907c3221aaa095","./questions/kssr-year6-space-data-v3.23.0.js":"f6463dc4588b94c7675799ee98d3b49069788496","./questions/kssr-year6-curriculum-v3.60.3.js":"59b84364be1687f21f3af188c08fa128a4a1c474","./questions/kssr-year6-experience-v3.60.4.js":"5204e481683215e3354b9c70b2770a916d6981e4","./questions/kssr-year6-money-real-v3.60.5.js":"511f1b9c1eacd10b600f2e6459a856f5b88cb1e0","./data/kssr/year6-competencies-v2.js":"e523cc7cd8ab032334b8e19a54e706467f759a83","./questions/kssr-year6-v2-runtime-v3.61.0.js":"d7b36718886984a5b477be9e7bd5cecc74fdc5ea","./questions/kssr-year6-v2-unit1-v3.61.0.js":"566d86980f59f7323f141d9e5cfd897e2b5bab68","./questions/kssr-year6-v2-unit2-v3.61.0.js":"67ea043a735a7ea926fdcdbded232238d46ed4f2","./questions/kssr-year6-v2-unit45-v3.61.0.js":"0f9c8429522527886027b881659d862e4e052ad4","./questions/kssr-year6-v2-unit6-angle-v3.61.0.js":"c8b066a71415ddb3b305c565bf75b1fa70a83cf1","./questions/kssr-year6-v2-unit6-circle-v3.61.0.js":"d5b040f0fb6787681c2486d02cbb83fdc7be4fb7","./questions/kssr-year6-v2-unit6-space-v3.61.0.js":"6833bc8b4ec079b1a5e93d3149bec44e022a48d7","./questions/kssr-year6-v2-unit7-v3.61.0.js":"2c1fcb54cba623b14e6c23557e79aa312148eeb0","./questions/kssr-year6-v2-unit8-v3.61.0.js":"dac618f1156f5f5f00114d8a79be0881a6ad5b85","./questions/kssr-year6-curriculum-v2-v3.61.0.js":"634f7d5363381fdd37c8e12a8cdafac0979587c1","./questions/kssr-year6-adaptive-v3.61.1.js":"3e84125f776876f1d525d346446cdb7c035c368d","./js/game-question-interactions-v3.62.4.js":"f1a40574a0fee7cbfbf2d7818d8e759567747c30","./questions/d1/core.js":"f75c9fedf77bae9f14e1289f887121a33fd43078","./questions/d2/topic-1.js":"e92335a8f5fe6ec49a049dd3dcfcffabb9691f85","./questions/d2/topic-2.js":"186615b88a2cf11efcd9233680fb7a61e1461506","./questions/d2/topic-3.js":"622b045a429033951bf3ef175701288d42d2edb3","./questions/d2/topic-4.js":"8ba23b954f3fbe45ac828f5e9b6b6aa55d4430c2","./questions/d2/topic-5.js":"8ec3275422b5a35d5faf33cd6ff1aff31c7ca292","./questions/d2/topic-6.js":"07b013f552178b6d38e3bb1c60db390aad4a4a4a","./questions/d2/topic-7.js":"e41e0329c1d6d983f88567c367fb2097d8fbc9ee","./questions/d2/topic-8.js":"cfd335c496108050b4d17a0d4089fbec40f91e64","./questions/d3/core.js":"5c8d4ac8a79a209ce1c512ebbdd795cf1da8bf80","./questions/d4/core.js":"b7099a7b174e2ee74ebd877d8af39f62ea5ea0e4","./questions/d5/core.js":"f163e27646233b59e380353f55a010a08359f410","./questions/d6/core.js":"fa0a836fb28c7dc1797f011d972d23b88f68bdc6","./js/engine/telemetry.js":"12cfc29f47925bfb4f907700ef18094afda46092","./js/engine/intervention.js":"53affd5fee7a9517fc6b09bc2480976306d8b8db","./js/engine/frontier.js":"9dbc1851000fbc2a8bc1b8c6b3b2f1303d2b1e9d","./js/engine/adaptive.js":"e26b5886141dab6ede233f661670180f2dcf38cd","./js/engine/dimensional-memory.js":"5aaa63fd14f48e6960e8910b831f9d6665e64433","./js/engine/dimensional-portal.js":"7e7a07790b84da19f92af427cc2eb2bafb1f930d","./js/engine/representations/place-value.js":"9fee3f289858e83bb2fa72e58bb17fe2de1639fc","./js/engine/representations/fraction-area.js":"5fad70ecfa0478f812427630953d9a6758af1797","./js/engine/representations/number-line.js":"1ccdf1688e637a6ee1a5de4b5a8549f2a8e5236c","./js/engine/representations/grouping-array.js":"3c400d23a5ab0c7d7c38a200ae571766b325d13a","./js/engine/representations/number-bond.js":"8697bcc1783c45d521dc631dfb3bd3376485e12d","./js/engine/representations/bar-relational.js":"ee7f357422f47be3941655a71263fe3274f3f4d6","./js/engine/dimensional-catalog.js":"f677e5b0ee536449fc24460cddd7aa41da83e3cf","./js/engine/dimensional-view.js":"d977ec254d804e4eb3dd3cedf59ebc5afbd0a31d","./js/engine/dimensional-lab.js":"2a27f8c84d376b242aefde40c5a8b00316c0d524","./js/heroes.js":"b6882127b72d1aa788b79c00337c2f67a0cfc717","./js/progression.js":"80c7a94c39d34fc344485dfa0787228edcc91560","./js/rewards-v2.js":"9da89640dc194a2e2b9678065a6fe30eb5caf267","./js/learning.js":"a2a26bcb993a6f41aeb6c9f077cfe112e553bd8c","./js/audio.js":"0c848dbd4c549b7af02e2bb1864d1b79b78fa904","./js/battle.js":"2d029d4b76d7693cf3814fbe6080f41a436ef088","./js/parent.js":"077c4038427ced3087728e763ee863666410869d","./js/parent-learning-tools-v3.26.0.js":"dd312861fc8651e2861fa401594d584e97ee77d0","./js/guardian-focus.js":"2c73aa4b878676c7a53c269a49137d82d24b61ec","./js/app.js":"36a0cabcf1c18d5d95c3dd642239ca89ab89037d","./js/beta-trust-v3.29.0.js":"e480c0f4a9e25f3dd33fb0a22c98c03bcb909479","./js/cloud.js":"e875836b1f8b6309fb941c78cf2450bc0db49bb8","./js/qsv2-shadow-sync-v3.37.0.js":"fa2598ca09aed4302cc5349b21ce91abcf22e982","./js/qsv2-pilot-sync-v3.40.0.js":"6090cbe364c09f5afd44d959aa3f5810d06e5161","./js/qsv2-beta-rollout-v3.42.0.js":"d011648f585548c3300fd8fde50e303cf88e2660","./js/commercial-foundation-v3.25.0.js":"c08e0b25c10fd74a96a6a1988ef5c89fe6f2840e","./js/guardian-onboarding-v3.25.1.js":"6788c143914ec0ffd5e6a8903161aabc658f800a","./js/custom-picker-v3.25.6.js":"eff2f8f80b3a28a15e935a7b1a682cc94d52c28f","./js/phase-3.6.4.js":"8787fde45d5dccea821961fdc86ad5dd38903edf","./js/dev-cikgu-dimensi-v3.24.10.js":"46659ae0e74c7ac8574bb0602fdebc6cb9e8f5c4","./js/sensory-learning-v3.19.0.js":"aaf12988f4d8c41d99bc65e283db6e6de3021177","./js/cikgu-manipulatives-v3.19.1.js":"4fffeec4949d714f85575ac9fa6a792149c059e1","./js/daily-spaced-review-v3.20.0.js":"bd27b8cba2d0dd8b8004dd96cfe94a14a4542bd3","./js/dev-experiments-v3.21.2.js":"f90a2c2d66d2b4e98a6a67db0161b0d40c26c2d1","./js/combat-polish-v3.21.3.js":"f058569622f4b97a8f484f5aae9ab9b107ac12e7","./js/dev-boss-lab-v3.21.4.js":"d408af7fd529ce3cbe4c0184db9b0899bee5ed58","./js/combat-target-anchor-v3.21.5.js":"644c22707924e222b14043a5dfb897a1989f1f18","./js/finisher-alpha-hotspots-v3.21.6.js":"b4083a321be59001476d10c9e715b766821298a9","./js/typed-answer-ui-v3.21.8.js":"767eabed97e426b660d613ecc9e8fe64922f1682","./js/profile-manager-v3.24.2.js":"6f461f8cca6fd0d8a950fe56a7c593e40a8d80ea","./js/pwa.js":"262b23106a1529d357d9c85c0a53a55e88e855a8","./":"c609d90582937bfa16219ac140696ffd9148bc35","./js/account-save-guard-v1.js":"a26591073514cf16e615bcee407f76227cb758e5","./js/offline-entitlement-v1.js":"716b2d01a4c7c1ce5fdc6f677e89d384a6ab5b43","./js/offline-pack-core-v1.js":"63429275257831952af4eea98b2dbd8ba5dced6d","./js/offline-manager-v1.js":"845998b237247395a15628c694ee7d3cc0610eae","./css/offline-manager-v1.css":"64bac25a6563a6a3223263683df44cfa4b248bd4"};
+const CORE_METADATA='./__pa_core_build_manifest.json';
+const OFFLINE_PREFIX='pa-offline-pack-v1-';
+const BATCH=6;
+const SUPABASE_SDK='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.min.js';
+CORE_FILES.push(SUPABASE_SDK);
+CORE_BLOBS[SUPABASE_SDK]='supabase-js-umd-2.111.0';
+const safeResponse=res=>res&&res.ok&&res.type!=='opaque';
+const fresh=path=>new Request(path,{cache:'reload',credentials:'same-origin'});
+async function previousAsset(path,hash,keys){
+ for(const key of keys){
+  if(!key.startsWith('pahlawan-angka-')||key===CACHE_NAME)continue;
+  const c=await caches.open(key),meta=await c.match(CORE_METADATA);
+  if(!safeResponse(meta))continue;
+  let list;try{list=await meta.json()}catch(_){continue}
+  if(list?.hashes?.[path]!==hash)continue;
+  const found=await c.match(path,{ignoreSearch:true});
+  if(safeResponse(found))return found;
+ }
+ return null;
+}
+async function populate(){
+ const existing=await caches.keys(),cache=await caches.open(CACHE_NAME);
+ let index=0;
+ const worker=async()=>{
+  while(index<CORE_FILES.length){
+   const path=CORE_FILES[index++];
+   if(await cache.match(path,{ignoreSearch:true}))continue;
+   const reused=await previousAsset(path,CORE_BLOBS[path],existing);
+   if(reused){await cache.put(path,reused.clone());continue}
+   const response=await fetch(fresh(path));
+   if(!safeResponse(response))throw Error('Missing offline core asset: '+path);
+   await cache.put(path,response);
+  }
+ };
+ await Promise.all(Array.from({length:Math.min(BATCH,CORE_FILES.length)},worker));
+ // Only stamp "ready" when all core paths exist: an interrupted install cannot activate.
+ for(const path of CORE_FILES)if(!safeResponse(await cache.match(path,{ignoreSearch:true})))throw Error('Incomplete core cache: '+path);
+ await cache.put(CORE_METADATA,new Response(JSON.stringify({version:self.PA_APP_VERSION,hashes:CORE_BLOBS}),{headers:{'content-type':'application/json'}}));
+}
 self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache=>cache.addAll(APP_SHELL.map(freshRequest)))
-      .then(()=>self.skipWaiting())
-  );
+ event.waitUntil(populate().then(async()=>{
+  const controlled=await self.clients.matchAll({type:'window',includeUncontrolled:false});
+  if(!controlled.length)await self.skipWaiting();
+ }));
 });
-
+self.addEventListener('message',event=>{
+ if(event.data?.type==='PA_APPLY_UPDATE_AFTER_SAVE')event.waitUntil(self.skipWaiting());
+});
 self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(
-        keys.filter(key=>key.startsWith('pahlawan-angka-')&&key!==CACHE_NAME)
-            .map(key=>caches.delete(key))
-      ))
-  );
+ event.waitUntil((async()=>{
+  const keys=(await caches.keys()).filter(x=>x.startsWith('pahlawan-angka-'));
+  // Keep the previous complete shell as fallback during the current update.
+  const keep=new Set([CACHE_NAME,...keys.filter(x=>x!==CACHE_NAME).slice(-1)]);
+  await Promise.all(keys.filter(x=>!keep.has(x)).map(x=>caches.delete(x)));
+  await self.clients.claim();
+ })());
 });
-
+async function readyPackMatch(request){
+ const keys=(await caches.keys()).filter(x=>x.startsWith(OFFLINE_PREFIX)).reverse();
+ for(const key of keys){
+  const c=await caches.open(key);
+  const marker=await c.match('./__offline_pack_ready_v1');
+  if(!safeResponse(marker))continue;
+  const res=await c.match(request,{ignoreSearch:true});
+  if(safeResponse(res))return res;
+ }
+ return null;
+}
+async function currentMatch(request){
+ const cache=await caches.open(CACHE_NAME);
+ return cache.match(request,{ignoreSearch:true})||readyPackMatch(request);
+}
 self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET')return;
-  const url=new URL(event.request.url);
-  if(url.origin!==self.location.origin)return;
-
-  if(event.request.mode==='navigate'){
-    event.respondWith(
-      fetch(freshRequest(event.request))
-        .then(response=>{
-          const copy=response.clone();
-          caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));
-          return response;
-        })
-        .catch(()=>caches.match('./index.html'))
-    );
-    return;
-  }
-
-  if(event.request.destination==='script'||event.request.destination==='style'){
-    event.respondWith(
-      fetch(freshRequest(event.request))
-        .then(response=>{
-          if(response&&response.status===200){
-            const copy=response.clone();
-            caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
-          }
-          return response;
-        })
-        .catch(()=>caches.match(event.request,{ignoreSearch:true}))
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(event.request,{ignoreSearch:true})
-      .then(cached=>cached||fetch(event.request).then(response=>{
-        if(response&&response.status===200){
-          const copy=response.clone();
-          caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
-        }
-        return response;
-      }))
-  );
+ const req=event.request,url=new URL(req.url);
+ if(req.method!=='GET')return;
+ if(req.url===SUPABASE_SDK){
+   event.respondWith((async()=>{
+     const cache=await caches.open(CACHE_NAME);
+     const hit=await cache.match(req);
+     if(safeResponse(hit))return hit;
+     try{
+       const response=await fetch(req);
+       if(safeResponse(response))event.waitUntil(cache.put(req,response.clone()).catch(()=>{}));
+       return response;
+     }catch(_){return Response.error()}
+   })());
+   return;
+ }
+ if(url.origin!==self.location.origin)return;
+ if(req.mode==='navigate'){
+  event.respondWith(fetch(req).then(async res=>{
+   if(safeResponse(res)){const c=await caches.open(CACHE_NAME);await c.put('./index.html',res.clone())}
+   return res;
+  }).catch(async()=>(await currentMatch('./index.html'))||Response.error()));
+  return;
+ }
+ event.respondWith((async()=>{
+  const existing=await currentMatch(req);
+  if(safeResponse(existing))return existing;
+  try{
+   const res=await fetch(req);
+   if(safeResponse(res)&&!url.pathname.includes('/api/')){
+    const c=await caches.open(CACHE_NAME);
+    event.waitUntil(c.put(req,res.clone()).catch(()=>{}));
+   }
+   return res;
+  }catch(_){return Response.error()}
+ })());
 });
-
-
-
-

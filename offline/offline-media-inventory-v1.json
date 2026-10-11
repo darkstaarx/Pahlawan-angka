@@ -1,0 +1,1252 @@
+{
+  "schema": 1,
+  "baseCommit": "50179b1e72cc956d9c4872d823d4bf38eb78b83a",
+  "description": "Source files to assess for downloadable offline runtime. Not an entitlement manifest; not guaranteed sufficient until E2E tests.",
+  "files": [
+    {
+      "path": "assets/pets/evolution/fire/aurora/happy-sprite-v1.webp",
+      "bytes": 244454,
+      "gitBlob": "4942349c67ff284ca420816b6f4049ce6cab3b13"
+    },
+    {
+      "path": "assets/pets/evolution/fire/ketupatKura/happy-sprite-v1.webp",
+      "bytes": 286538,
+      "gitBlob": "38ff7d458b1fc5614aa608d4b2591e3d1d33d66c"
+    },
+    {
+      "path": "assets/pets/evolution/fire/kumbangManggis/happy-sprite-v1.webp",
+      "bytes": 269340,
+      "gitBlob": "f38a2ccc369fe0795ed6e90331eacb987fe327d5"
+    },
+    {
+      "path": "assets/pets/evolution/fire/harimauBunga/happy-sprite-v1.webp",
+      "bytes": 260384,
+      "gitBlob": "5f3260f06505c82de896ae305beb174edc8b2a06"
+    },
+    {
+      "path": "assets/pets/evolution/fire/arnabKekLapis/happy-sprite-v1.webp",
+      "bytes": 291064,
+      "gitBlob": "b370d0db5d78e383b240065e8a172fd6f10b6492"
+    },
+    {
+      "path": "assets/pets/evolution/fire/durianKerbau/happy-sprite-v1.webp",
+      "bytes": 287948,
+      "gitBlob": "a79f917a72f4e050424a367d010e7573f6ec1fa3"
+    },
+    {
+      "path": "assets/ui/menu-v2/kembara-dimensi-book-v7.webp",
+      "bytes": 414986,
+      "gitBlob": "d02f8b25cddb05810698d6f71a6532ea2b076833"
+    },
+    {
+      "path": "assets/ui/loading/wira-shield-v1.png",
+      "bytes": 988191,
+      "gitBlob": "25e2840090f70955b2319744ee1186ebf085379d"
+    },
+    {
+      "path": "assets/questions/counting/apple.png",
+      "bytes": 102891,
+      "gitBlob": "fb026324a7cca713454d1bf751032dbbc888e23b"
+    },
+    {
+      "path": "assets/questions/counting/orange.png",
+      "bytes": 107777,
+      "gitBlob": "056cddc1bfbb42da9b9c2fe387e0bdc0d0969c82"
+    },
+    {
+      "path": "assets/questions/counting/rambutan.png",
+      "bytes": 152305,
+      "gitBlob": "623ba87f3ee67056175d745fc4a01f8b45839a92"
+    },
+    {
+      "path": "assets/questions/counting/watermelon_slice.png",
+      "bytes": 98518,
+      "gitBlob": "e2e3c6f67fcbcaf4ffac4c79f09180372d590b58"
+    },
+    {
+      "path": "assets/questions/counting/starfruit_slice.png",
+      "bytes": 97235,
+      "gitBlob": "a6b40d0dfb011684fed1dcb1b92be795b39d3154"
+    },
+    {
+      "path": "assets/questions/counting/pencil.png",
+      "bytes": 62808,
+      "gitBlob": "5c4dc6634aa219bf52d982c386d4bdbf6b4cb616"
+    },
+    {
+      "path": "assets/questions/counting/eraser.png",
+      "bytes": 62094,
+      "gitBlob": "41ca72ce9f0bfbefd7eaff13cf90aa31757c9361"
+    },
+    {
+      "path": "assets/questions/counting/candy.png",
+      "bytes": 71820,
+      "gitBlob": "faa38f9a88aa42b3651d248c0e33a4947b2079c5"
+    },
+    {
+      "path": "assets/questions/counting/balloon.png",
+      "bytes": 70153,
+      "gitBlob": "779ce7cd0bd7e8ce955b3f50dd2200354fa587ce"
+    },
+    {
+      "path": "assets/questions/money/money_5sen.png",
+      "bytes": 28868,
+      "gitBlob": "b96e3194fa830d80b719f4fd928bb3b295bb42ea"
+    },
+    {
+      "path": "assets/questions/money/money_10sen.png",
+      "bytes": 29043,
+      "gitBlob": "735ca0c3f73915e8e674624df875c7b8cd0f9c84"
+    },
+    {
+      "path": "assets/questions/money/money_20sen.png",
+      "bytes": 31926,
+      "gitBlob": "84bfa0b0326108df06bde24411bc9033a702899c"
+    },
+    {
+      "path": "assets/questions/money/money_50sen.png",
+      "bytes": 31311,
+      "gitBlob": "c48c3619b51a45afd818109d2e5dd03a485029ab"
+    },
+    {
+      "path": "assets/questions/money/money_rm1.png",
+      "bytes": 45238,
+      "gitBlob": "e125eb7b53e872bf3c32a2c0c9c402f1c3099965"
+    },
+    {
+      "path": "assets/questions/money/money_rm5.png",
+      "bytes": 48167,
+      "gitBlob": "6bf93aebf364be8abaf09fdbc5fbf5f34a4b3389"
+    },
+    {
+      "path": "assets/questions/money/money_rm10.png",
+      "bytes": 43357,
+      "gitBlob": "6161e1a5b75033025ace007c793b4c9604376900"
+    },
+    {
+      "path": "assets/questions/money/money_rm20.png",
+      "bytes": 43583,
+      "gitBlob": "e56f654e93c1e753548b3b6da116f383dc0c4dba"
+    },
+    {
+      "path": "assets/questions/money/money_rm50.png",
+      "bytes": 43148,
+      "gitBlob": "a463b68a2d82b76c3839fce0c3c0963342472442"
+    },
+    {
+      "path": "assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.png",
+      "bytes": 1054825,
+      "gitBlob": "7f00cad2d683509294e40923d489cfceaa069d36"
+    },
+    {
+      "path": "assets/fx/wira/final-v5/glacier-clean-sheet-v1.png",
+      "bytes": 753764,
+      "gitBlob": "c98400fa28c557ba872dc54d0c76d8b728f3ec1a"
+    },
+    {
+      "path": "assets/audio/glacier-thunder.wav",
+      "bytes": 145574,
+      "gitBlob": "e15fa518b8f118c4c94087df3919fdea87c1db18"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-01.png",
+      "bytes": 343913,
+      "gitBlob": "bf1511e6814ae0a2c055696581d6a4d62dd78c40"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-02.png",
+      "bytes": 370813,
+      "gitBlob": "c1fc0704195d19fd70ac34229bd5412d1b2babf0"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-03.png",
+      "bytes": 353212,
+      "gitBlob": "1d983ccc0549d6dc846bbaf9279974e3be3d3c0c"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-04.png",
+      "bytes": 322914,
+      "gitBlob": "a36c247d709ba0dfb4c46265983596f2bea9ea9c"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-05.png",
+      "bytes": 335166,
+      "gitBlob": "ec66002be75a47906619102898c27654c9617c28"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-06.png",
+      "bytes": 331989,
+      "gitBlob": "ab1a87d00e37c50485003d52580c2d28c7d061a8"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-07.png",
+      "bytes": 312825,
+      "gitBlob": "6a17cc6909ff1481981e8faf366f4f0d985ab6ec"
+    },
+    {
+      "path": "assets/avatars/pupils/avatar-08.png",
+      "bytes": 328797,
+      "gitBlob": "d2003cb9800b36cf180a221dfe5005391f0da048"
+    },
+    {
+      "path": "assets/pets/evolution/fire/aurora/happy-v1.webp",
+      "bytes": 68970,
+      "gitBlob": "668c1b1a6bd70ceaecb539f29a665e9ff32e77f6"
+    },
+    {
+      "path": "assets/pets/evolution/fire/aurora/companion-idle-v1.webp",
+      "bytes": 133984,
+      "gitBlob": "675d2bd513a742d1f7c87bc47ac004f9d9df5057"
+    },
+    {
+      "path": "assets/pets/evolution/fire/ketupatKura/happy-v2.webp",
+      "bytes": 77088,
+      "gitBlob": "34b58a1bc295091aad650bc93559a7687c6477a0"
+    },
+    {
+      "path": "assets/pets/evolution/fire/ketupatKura/companion-idle-v2.webp",
+      "bytes": 151910,
+      "gitBlob": "3daf66b9bfc09b0880d5d4b746b3f19c977b08df"
+    },
+    {
+      "path": "assets/pets/evolution/fire/kumbangManggis/happy-v1.webp",
+      "bytes": 73172,
+      "gitBlob": "a570cf207ab2e2b5d1d0938b58f1c1feaf0bbfef"
+    },
+    {
+      "path": "assets/pets/evolution/fire/kumbangManggis/companion-idle-v1.webp",
+      "bytes": 142756,
+      "gitBlob": "2ea292995a3c1033108baccc6324506560b45d8a"
+    },
+    {
+      "path": "assets/pets/evolution/fire/harimauBunga/happy-v1.webp",
+      "bytes": 84790,
+      "gitBlob": "1a13e9a0563f65d84a96d0eba626a6b81df44807"
+    },
+    {
+      "path": "assets/pets/evolution/fire/harimauBunga/companion-idle-v1.webp",
+      "bytes": 171448,
+      "gitBlob": "f6309216600818010cb920b610d08099e3b109d0"
+    },
+    {
+      "path": "assets/pets/evolution/fire/arnabKekLapis/happy-v2.webp",
+      "bytes": 77014,
+      "gitBlob": "38d664d853305d04f4fcf754bf3a9b799c1b2889"
+    },
+    {
+      "path": "assets/pets/evolution/fire/arnabKekLapis/companion-idle-v2.webp",
+      "bytes": 151762,
+      "gitBlob": "7dc9193df4c4636d41f61976f14194a533519aba"
+    },
+    {
+      "path": "assets/pets/evolution/fire/durianKerbau/happy-v1.webp",
+      "bytes": 83466,
+      "gitBlob": "d90e1141633532514db444f691392ffdaa57a729"
+    },
+    {
+      "path": "assets/pets/evolution/fire/durianKerbau/companion-idle-v1.webp",
+      "bytes": 162234,
+      "gitBlob": "9946ce5e966a832b3726f2eca44c92d798daa222"
+    },
+    {
+      "path": "assets/pets/aurora/standby-v2.webp",
+      "bytes": 77184,
+      "gitBlob": "656b70e1db7f4d5529af0f328a68088c29a589f8"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-0-v1.webp",
+      "bytes": 49868,
+      "gitBlob": "f50d3360555ba139f84a264cd4fd9f13e147fdce"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-1-v1.webp",
+      "bytes": 47930,
+      "gitBlob": "b761d33ee2c3f61cc75f8bfe67fc132e69955e2e"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-2-v1.webp",
+      "bytes": 46788,
+      "gitBlob": "1b05b11413977ede3d82ed03fd8136da418e4fe8"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-3-v1.webp",
+      "bytes": 49642,
+      "gitBlob": "2ad6a15c350b92091fe396b3471e312e0e1d745a"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-4-v1.webp",
+      "bytes": 50090,
+      "gitBlob": "30cd01c73ac66822cb5e7db5687afd117d86ae9a"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-5-v1.webp",
+      "bytes": 47924,
+      "gitBlob": "21ee248d48d1dac749c841fe392d42bad7cba018"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-6-v1.webp",
+      "bytes": 47978,
+      "gitBlob": "d9f6dac34b6deec360f7f885bdd221b2c5f8a527"
+    },
+    {
+      "path": "assets/pets/aurora/frames/sad-7-v1.webp",
+      "bytes": 45108,
+      "gitBlob": "5f804dc1208fe66eecb9d0da4055e722c9a79ee2"
+    },
+    {
+      "path": "assets/pets/aurora/frames/joy-0-v1.webp",
+      "bytes": 48666,
+      "gitBlob": "16ea87c1ea8b7ef30218b784c84e409770287d1a"
+    },
+    {
+      "path": "assets/pets/aurora/frames/joy-1-v1.webp",
+      "bytes": 47476,
+      "gitBlob": "220e5f9329ac40cc2fa0f4fb1a09c63eff3d4935"
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/idle.png",
+      "bytes": 1814044,
+      "gitBlob": "723b13c51d66fe7762900db158e6d82cd8a59372"
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/sad.png",
+      "bytes": 2226019,
+      "gitBlob": "4265722a8d75c25bfb4eaf5c281d39b5b5add3f2"
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/happy.png",
+      "bytes": 2290592,
+      "gitBlob": "485e1cd95056e5f0431435bcd7a9ba1ca7bc5a3b"
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/idle.png",
+      "bytes": 1546535,
+      "gitBlob": "5e40d7341493e50f80c8bf612d966339156abb96"
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/sad.png",
+      "bytes": 1883287,
+      "gitBlob": "581884212d1e8c5c9cee3bc8a44e626c3f5fc69f"
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/happy.png",
+      "bytes": 1963466,
+      "gitBlob": "cd7dfd20c86165600f1deef079f909affe37640d"
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/idle.png",
+      "bytes": 1817378,
+      "gitBlob": "12fb37e7f00dfc3d557f7bac84073dfa5a42fd89"
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/sad.png",
+      "bytes": 2121801,
+      "gitBlob": "b9bf5eee37026df7412ab740dfacae143e73f680"
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/happy.png",
+      "bytes": 2217389,
+      "gitBlob": "f16d5ca698733298ea2f9665e654c976927f6927"
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/idle.png",
+      "bytes": 1668699,
+      "gitBlob": "860dcaf517494623d796aa2f307ddf3f2f761b0b"
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/sad.png",
+      "bytes": 1962440,
+      "gitBlob": "0f69a84b4a6c17667605070124cc1341aeae79d5"
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/happy.png",
+      "bytes": 1983508,
+      "gitBlob": "7bf2ded16af8cf0477954913ea7e56298512c2cf"
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/idle.png",
+      "bytes": 1650137,
+      "gitBlob": "4f51686eb4c28d652aa3bd3a48d9afc206438324"
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/sad.png",
+      "bytes": 1815369,
+      "gitBlob": "463d135ef776f84f5c3159a9003718fd08b4d245"
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/happy.png",
+      "bytes": 1922097,
+      "gitBlob": "8b12534c65ecf9586bf01538a0fc52c37f00e62a"
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.png",
+      "bytes": 2287156,
+      "gitBlob": "5c2ac3195b7ed64dfca046de76aca88c6c1b47bb"
+    },
+    {
+      "path": "assets/pets/collection/ketupat-kura/sprite-sheets/happy-v1.png",
+      "bytes": 1794552,
+      "gitBlob": "d5d8c675c87553feb045a0f6372fe0bd0bca9c77"
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/sprite-sheets/sad-v1.png",
+      "bytes": 1717335,
+      "gitBlob": "5b6659787e49a01530178034fbc771797795358c"
+    },
+    {
+      "path": "assets/pets/collection/kumbang-manggis/sprite-sheets/happy-v1.png",
+      "bytes": 1736883,
+      "gitBlob": "94e253aeb816184244014475c310d1b68faf43e0"
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/sprite-sheets/sad-v1.png",
+      "bytes": 1720869,
+      "gitBlob": "b74efd4525ad11b2b053564bc3f9b82852ed91ca"
+    },
+    {
+      "path": "assets/pets/collection/harimau-bunga/sprite-sheets/happy-v1.png",
+      "bytes": 2561978,
+      "gitBlob": "5b7516c455386876d6b0fa278ca31a5a6c6e74ad"
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.png",
+      "bytes": 2056076,
+      "gitBlob": "0baed8734339cb1c9246eb9378cf7730a8e388a0"
+    },
+    {
+      "path": "assets/pets/collection/arnab-kek-lapis/sprite-sheets/happy-v1.png",
+      "bytes": 2613086,
+      "gitBlob": "27189260209f6e64bc9c5af2374f8d126c87b8ed"
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.png",
+      "bytes": 1938629,
+      "gitBlob": "fa62a847ff0e9f28e20e82836239c5f5da6df7e9"
+    },
+    {
+      "path": "assets/pets/collection/durian-kerbau/sprite-sheets/happy-v1.png",
+      "bytes": 1894880,
+      "gitBlob": "3c01c791c673a1ef064bcb2473f440670c6f8482"
+    },
+    {
+      "path": "assets/ui/star-earned-v1.webp",
+      "bytes": 5348,
+      "gitBlob": "04c814648eb660ce734334d29627557013b6b737"
+    },
+    {
+      "path": "assets/ui/star-empty-v1.webp",
+      "bytes": 4496,
+      "gitBlob": "b6c6be41a971d946672974157b0870e9c3d0dd50"
+    },
+    {
+      "path": "assets/ui/victory-result/star-earned.png",
+      "bytes": 128984,
+      "gitBlob": "aba3c51a7c71b2f653614766aa92a0d6d5581595"
+    },
+    {
+      "path": "assets/ui/victory-result/star-empty.png",
+      "bytes": 150284,
+      "gitBlob": "b07f8e8802dc8d1dd483d08c8dff90a5ac4a24af"
+    },
+    {
+      "path": "assets/ui/victory-result/crest-frame.png",
+      "bytes": 187489,
+      "gitBlob": "75ee5af9669acb03aa25491085387d662e173bca"
+    },
+    {
+      "path": "assets/ui/victory-result/crest-side-left.png",
+      "bytes": 74619,
+      "gitBlob": "10e3c2a06bbaa087212f1eb28e7edb4ad08b8f16"
+    },
+    {
+      "path": "assets/ui/victory-result/crest-side-right.png",
+      "bytes": 74484,
+      "gitBlob": "a5044ed285161c6375a3a9740c1e91d293a020f7"
+    },
+    {
+      "path": "assets/ui/victory-result/summary-frame.png",
+      "bytes": 207462,
+      "gitBlob": "f2761c45f6c7a446c59c7c948cfb42a6ee2e8eda"
+    },
+    {
+      "path": "assets/ui/victory-result/button-navy-rest.png",
+      "bytes": 89867,
+      "gitBlob": "f42ee5dfb18d7fd887fbbd9930d58d7ac0f4f758"
+    },
+    {
+      "path": "assets/ui/victory-result/button-gold-rest.png",
+      "bytes": 92440,
+      "gitBlob": "0eff28439b9c524d539c9a8ac9650970568d3806"
+    },
+    {
+      "path": "assets/ui/victory-result/button-navy-press.png",
+      "bytes": 89583,
+      "gitBlob": "10bde3d21947e1252255d6c5caa302637463366b"
+    },
+    {
+      "path": "assets/ui/victory-result/button-gold-press.png",
+      "bytes": 99415,
+      "gitBlob": "30324d8429a6752d5399545845ce97416742add8"
+    },
+    {
+      "path": "assets/coach/cikgu-dimensi/hub-portrait-v1.webp",
+      "bytes": 22900,
+      "gitBlob": "10efec70e2a8898231a17a4aa00f7c8e5a24b6eb"
+    },
+    {
+      "path": "assets/ui/khazanah/teman-night-math-v1.webp",
+      "bytes": 435850,
+      "gitBlob": "2ccaba21e6de45a704e52a6bb734ebaa8c237ce8"
+    },
+    {
+      "path": "assets/ui/trophies-v1/langkah-pertama.png",
+      "bytes": 100317,
+      "gitBlob": "b172b9b8821fca02708163dd8c1cbd636aec685f"
+    },
+    {
+      "path": "assets/ui/trophies-v1/rentak-lima.png",
+      "bytes": 104012,
+      "gitBlob": "e91f93e8dee5a9a5f1122c0c5771b3e47d207da9"
+    },
+    {
+      "path": "assets/ui/trophies-v1/tepat-50.png",
+      "bytes": 105650,
+      "gitBlob": "119e084f63f9ddf0ce7932a862d951d6e50cf716"
+    },
+    {
+      "path": "assets/ui/trophies-v1/bintang-sempurna.png",
+      "bytes": 106115,
+      "gitBlob": "1195fe1d8fd1f2f1e14ed34171a6b61bb412dff6"
+    },
+    {
+      "path": "assets/ui/trophies-v1/pakar-nombor.png",
+      "bytes": 101559,
+      "gitBlob": "1a0fa18f6bce29c824fb5a4f18c4b76564cc181e"
+    },
+    {
+      "path": "assets/ui/trophies-v1/jagoan-operasi.png",
+      "bytes": 96491,
+      "gitBlob": "3420363a7727fd60df69e4dc5cb7ab29a0a6d017"
+    },
+    {
+      "path": "assets/ui/trophies-v1/wira-pecahan.png",
+      "bytes": 94797,
+      "gitBlob": "3aac9623de42ccdc0a9574e3986a972bfac8b85a"
+    },
+    {
+      "path": "assets/ui/trophies-v1/yakin-sendiri.png",
+      "bytes": 102573,
+      "gitBlob": "1b54a58d6c95d605e0e25f7aa6848ac9fc37c401"
+    },
+    {
+      "path": "assets/ui/trophies-v1/gigih-berlatih.png",
+      "bytes": 103084,
+      "gitBlob": "b994b634b73911df8bd1dd68adaf20d8ce578734"
+    },
+    {
+      "path": "assets/ui/trophies-v1/penakluk-cabaran.png",
+      "bytes": 102405,
+      "gitBlob": "a7ef80efd430f5d3fda6e5dc1adc102ffcc04fd5"
+    },
+    {
+      "path": "assets/ui/trophies-v1/wira-harian.png",
+      "bytes": 102441,
+      "gitBlob": "b1227a39b24c1a7afd204d696fab7c13f51d3531"
+    },
+    {
+      "path": "assets/ui/trophies-v1/pahlawan-tahap-5.png",
+      "bytes": 102320,
+      "gitBlob": "88e1509df616a3a6382d4ff1771a26c2239eb4e4"
+    },
+    {
+      "path": "assets/ui/trophies-v1/juara-tahap-10.png",
+      "bytes": 100584,
+      "gitBlob": "bb6e01ed4e203f5200dc2d2c2f83e5e482586215"
+    },
+    {
+      "path": "assets/ui/trophies-v1/penjelajah-tiga-topik.png",
+      "bytes": 107573,
+      "gitBlob": "97375943649384b7ccb4f9a4b65467ac47cc5144"
+    },
+    {
+      "path": "assets/ui/trophies-v1/penakluk-lima-topik.png",
+      "bytes": 102429,
+      "gitBlob": "717ba114ab32f22d8139b70e390ce9a3c7bbe0d1"
+    },
+    {
+      "path": "assets/ui/trophies-v1/kuasa-dikuasai.png",
+      "bytes": 100406,
+      "gitBlob": "c7b97b22e8ac55d6c5a342a72069c6ad6a85f4a4"
+    },
+    {
+      "path": "assets/ui/trophies-v1/lima-kuasa-dikuasai.png",
+      "bytes": 105992,
+      "gitBlob": "d0bad993e93c3046e8e45e5852b015dfdedf260c"
+    },
+    {
+      "path": "assets/ui/trophies-v1/penewas-boss.png",
+      "bytes": 102602,
+      "gitBlob": "cb8100095319fd18aea09b5042b0059e51e0e4d1"
+    },
+    {
+      "path": "assets/ui/menu-v2/jejak-map-v1.webp",
+      "bytes": 48074,
+      "gitBlob": "18d750c1bfc0de052f25a246d209030c8aa3d40a"
+    },
+    {
+      "path": "assets/ui/menu-v2/hero-stage-v1.webp",
+      "bytes": 131316,
+      "gitBlob": "ec3b16031d443e9b49151dd9880de48e0eebfdf7"
+    },
+    {
+      "path": "assets/ui/menu-v2/stage-aurora-v1.webp",
+      "bytes": 43086,
+      "gitBlob": "8adda19ea960b8c16fcbfc5abe361db9c5bb7987"
+    },
+    {
+      "path": "assets/ui/menu-v2/cikgu-card-v2.webp",
+      "bytes": 27752,
+      "gitBlob": "c9027beb55ded9523a7260643a260aacebaa9d9c"
+    },
+    {
+      "path": "assets/ui/menu-v2/cikgu-dimensi-book-hq-v1.webp",
+      "bytes": 7506,
+      "gitBlob": "9326e810b430f16830d02746e68e58b436ada6ba"
+    },
+    {
+      "path": "assets/ui/menu-v2/cikgu-dimensi-book-fixed-v1.webp",
+      "bytes": 12288,
+      "gitBlob": "6b38e339ef280f3fb29ca307c0b4b275f8d92241"
+    },
+    {
+      "path": "assets/ui/menu-v2/cikgu-dimensi-book-v4.webp",
+      "bytes": 7318,
+      "gitBlob": "3fc64f2a9cb9b4e69327727375a1a7927b495e7c"
+    },
+    {
+      "path": "assets/pets/aurora/frames/happy-v1.webp",
+      "bytes": 43100,
+      "gitBlob": "1f8310bf3c0d62049fdcfb561b51c6105a06c043"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/hub/idle-loop-v3.webp",
+      "bytes": 14978,
+      "gitBlob": "a031a9f9d961be0d97f076fcd1667956d98bf7fb"
+    },
+    {
+      "path": "assets/coach/time-lab/sidma-push-v1.png",
+      "bytes": 1747003,
+      "gitBlob": "93a1515a45cdacf8f9e2073dfe10b748d600b08b"
+    },
+    {
+      "path": "assets/heroes/sidma/idle.webp",
+      "bytes": 61938,
+      "gitBlob": "731aadff25f8758a650539b6037f15f0834af192"
+    },
+    {
+      "path": "assets/heroes/sidma/frames/attack-stance-v1.webp",
+      "bytes": 62142,
+      "gitBlob": "523b11426d9109ec2db65d003bdf13af95c1a8de"
+    },
+    {
+      "path": "assets/heroes/sidma/frames/cast-start-v1.webp",
+      "bytes": 62742,
+      "gitBlob": "535353044e17141019895df8aaa7e83876a7729b"
+    },
+    {
+      "path": "assets/heroes/sidma/frames/release-v1.webp",
+      "bytes": 65262,
+      "gitBlob": "c45de50118725e7505e8402b5f3b314a8c33c777"
+    },
+    {
+      "path": "assets/heroes/sidma/frames/recovery-v1.webp",
+      "bytes": 61754,
+      "gitBlob": "786a43a93b780e09ba901763379ebf968f9ba4b3"
+    },
+    {
+      "path": "assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp",
+      "bytes": 61276,
+      "gitBlob": "bf00e46716b3b215558fc3f7a20ea89a918dc56c"
+    },
+    {
+      "path": "assets/heroes/sidma/frames/skill2-dash-v1.webp",
+      "bytes": 389052,
+      "gitBlob": "0d122ed3b2b2e33eb70280093f7cea8636637bba"
+    },
+    {
+      "path": "assets/heroes/sidma/frames/skill2-impact-v1.webp",
+      "bytes": 581270,
+      "gitBlob": "9c6685115d9578d956df1f15d8e6a723f8a86b33"
+    },
+    {
+      "path": "assets/heroes/sidma/hub/adventure-v1.webp",
+      "bytes": 289788,
+      "gitBlob": "cd545c200d79501238340e0e2217c5bb2960bfa4"
+    },
+    {
+      "path": "assets/ui/coin-gold.svg",
+      "bytes": 1170,
+      "gitBlob": "cf97a0f3926a019b5ce65cee4343facae9b46867"
+    },
+    {
+      "path": "assets/heroes/sidma/profile-happy-v1.webp",
+      "bytes": 276886,
+      "gitBlob": "e8617d37fa4959b5accf97cb134f427a5efe4e38"
+    },
+    {
+      "path": "assets/fx/hub/sidma-math-sigma-v1.webp",
+      "bytes": 9304,
+      "gitBlob": "8a0e02236ca10d8e29d8d1638f767ccb828de158"
+    },
+    {
+      "path": "assets/fx/sidma/rumus-sigma/fx_sidma_charge.webp",
+      "bytes": 529038,
+      "gitBlob": "b836e6e64494f218bf4f8986b861c387dde8791a"
+    },
+    {
+      "path": "assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp",
+      "bytes": 386758,
+      "gitBlob": "7ada1a861437a963c30ccf42b70d49b6b959ea2f"
+    },
+    {
+      "path": "assets/fx/sidma/rumus-sigma/fx_sigma_impact.webp",
+      "bytes": 668932,
+      "gitBlob": "b8f6225b5bb7a9de0c07fe8b2b9fb7425793fc5f"
+    },
+    {
+      "path": "assets/fx/sidma/rumus-sigma/fx_sigma_impact_end.webp",
+      "bytes": 334216,
+      "gitBlob": "02a52cba1a3ef44972a622b011b824f5e8202ed5"
+    },
+    {
+      "path": "assets/heroes/wira/attack.webp",
+      "bytes": 57366,
+      "gitBlob": "5654eb0c60ce5952fe47c7eb3a7ef1691bda4afe"
+    },
+    {
+      "path": "assets/heroes/wira/frames/attack-dash-v2.webp",
+      "bytes": 91344,
+      "gitBlob": "18d4083d92cedd3e72f258df1e8739ac965042cf"
+    },
+    {
+      "path": "assets/heroes/wira/frames/attack-arc-v2.webp",
+      "bytes": 218486,
+      "gitBlob": "da851e4a71b25c1b7c9a3ddcea2d63ebc6c32c3d"
+    },
+    {
+      "path": "assets/heroes/wira/frames/attack-pulse-v2.webp",
+      "bytes": 73638,
+      "gitBlob": "ce5d1a0785c8d763ddefa69fbd0920b2c0cc1810"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/idle.webp",
+      "bytes": 115738,
+      "gitBlob": "84f433de60f29f7b2f19d113a7abacb49e64f263"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/attack.webp",
+      "bytes": 151548,
+      "gitBlob": "53c36c23d083539c93e87ab2b6bcf471008ff467"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/anticipation-v1.webp",
+      "bytes": 120628,
+      "gitBlob": "dc5a5fa66e25bcfef6c1095dc8a09154cfb99993"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/aura-framing-v1.webp",
+      "bytes": 115938,
+      "gitBlob": "a09ccfcfc8a07bad3db5fc3766c886ab3bc89794"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/attack-dash-v2.webp",
+      "bytes": 112364,
+      "gitBlob": "698e82baffa142607d1c29857cdad87f30a70ba6"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/attack-arc-v2.webp",
+      "bytes": 162074,
+      "gitBlob": "f9ab847d1d512ae65fdd3e926c31be39785cd231"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/attack-pulse-v2.webp",
+      "bytes": 157182,
+      "gitBlob": "3df2679cc0e489933cccd185454798d8347e64f2"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/follow-through-v1.webp",
+      "bytes": 136082,
+      "gitBlob": "cc72b0cd524d12990ea7fbe3e9df291e75fc05bc"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp",
+      "bytes": 329048,
+      "gitBlob": "32252c0fdcecb49cd7bf7a975a048b5e37a4f979"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-00-v4.png",
+      "bytes": 156945,
+      "gitBlob": "73c7618dd0c113fe7aadd5f362104ad7bcf1b376"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-01-v4.png",
+      "bytes": 155304,
+      "gitBlob": "9e631959a9b0fb4c3398a8055e4ee85675a22cc1"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-02-v4.png",
+      "bytes": 154239,
+      "gitBlob": "7c358d034cb933b143f63b47e6059e963afe25b8"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-03-v4.png",
+      "bytes": 153623,
+      "gitBlob": "3229c6eddcc62d59b80ebe521aea80d0724ef9c4"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-04-v4.png",
+      "bytes": 164839,
+      "gitBlob": "afc799a458457a88aee201bfa879b2d7bf210857"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-05-v4.png",
+      "bytes": 161692,
+      "gitBlob": "df9a2828e4b053fcc66d7cc0047495a761a34d00"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-06-v4.png",
+      "bytes": 163454,
+      "gitBlob": "4691238e40d3e46eb74804e3bc8f4be0d73cde3f"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-07-v4.png",
+      "bytes": 150834,
+      "gitBlob": "d9a544e34cd869087a05502ad81f58ec6d8bccb6"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-08-v4.png",
+      "bytes": 160499,
+      "gitBlob": "455173479fcde3894b33f588100ea1379b7e8e9c"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-09-v4.png",
+      "bytes": 159699,
+      "gitBlob": "aa2a32157f4cd29256b8fb66696f5722a9673629"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-10-v4.png",
+      "bytes": 155832,
+      "gitBlob": "dd92c4ff4dad4276bc9b17e6c88550302ad8161c"
+    },
+    {
+      "path": "assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-11-v4.png",
+      "bytes": 157673,
+      "gitBlob": "367b1413d0faec4e8c387a6fd67633856ba0784e"
+    },
+    {
+      "path": "assets/fx/wira/final-v2/fx-charge-aura-v1.webp",
+      "bytes": 162756,
+      "gitBlob": "073e0808f5fba349164a80f5b2cff3f7c5d7a2bf"
+    },
+    {
+      "path": "assets/fx/wira/final-v2/fx-frost-seal-v1.webp",
+      "bytes": 223510,
+      "gitBlob": "c7eea4b3ff946a3227cbdd726fd6f7deaedc6cdb"
+    },
+    {
+      "path": "assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp",
+      "bytes": 232774,
+      "gitBlob": "018bc884afacae2d89ccb8b50db1702374da9302"
+    },
+    {
+      "path": "assets/fx/wira/final-v2/fx-glacier-burst-v2.png",
+      "bytes": 586617,
+      "gitBlob": "9ac97faf3a64de3394a442078a8389f6671c1fbd"
+    },
+    {
+      "path": "assets/fx/wira/final-v3/fx-glacier-burst-v3.png",
+      "bytes": 718119,
+      "gitBlob": "55d7231d8d13075d8a507da79f584cc256b024d6"
+    },
+    {
+      "path": "assets/fx/wira/final-v2/fx-impact-end-v1.webp",
+      "bytes": 90072,
+      "gitBlob": "ccab80b8eb4678bcb7d173ec04811435fbc69c32"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/idle-master-v1.webp",
+      "bytes": 82296,
+      "gitBlob": "c027b0d288173a3b99b531d48ad4071b36aa865f"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/idle-breathe-v1.webp",
+      "bytes": 80778,
+      "gitBlob": "a4de56aec155cbc34a08af51e305bd7230a074f3"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/profile-happy-v1.webp",
+      "bytes": 102528,
+      "gitBlob": "772f5e6ea6d635aab49a76e3144f92a46874a61a"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/quick-ready-v1.webp",
+      "bytes": 78126,
+      "gitBlob": "eafbac02004663d5cfaecf6c89d3c5d4b6a50492"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/staff-aim-v1.webp",
+      "bytes": 75280,
+      "gitBlob": "18f96fb8334496612993a6f989cf7613ccbec02d"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp",
+      "bytes": 75764,
+      "gitBlob": "24e71c3f09a985200c842de95546bef380c51d33"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-projectile-v1.webp",
+      "bytes": 51286,
+      "gitBlob": "635154225c5bfcc2098a235c1c3d28c6123f3dd3"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-impact-v1.webp",
+      "bytes": 145524,
+      "gitBlob": "db52cf2daff75a33def35654b9a16249f7fbc5cf"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp",
+      "bytes": 50482,
+      "gitBlob": "b240927bcb8a084f1cc7fd41f39eeae26ed0a1b8"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp",
+      "bytes": 68916,
+      "gitBlob": "88d22941713bb3faceab92da324ebf0360b7a572"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp",
+      "bytes": 61726,
+      "gitBlob": "c90382f4cc1d1b3dcc6f96e6c2ac15199b4b9954"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp",
+      "bytes": 71456,
+      "gitBlob": "3f332bb182e6d1f968f6dc0640dee2b2648b7be4"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp",
+      "bytes": 151234,
+      "gitBlob": "6a22e2123456962918b5645cb3132bbbb70405ad"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp",
+      "bytes": 212522,
+      "gitBlob": "cb1c8a63ed73ed519381bc8e6067f1df48a02428"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp",
+      "bytes": 96020,
+      "gitBlob": "a432fc60255600a6eeb20764f00a131ed295bdc1"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp",
+      "bytes": 259564,
+      "gitBlob": "1bed13e5aea9366f8010fb951379bcfded86a6ec"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-enemy-bloom-v1.webp",
+      "bytes": 119114,
+      "gitBlob": "1b24e7fcd422e842a452b1f9084cf0c6966f05b5"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp",
+      "bytes": 137438,
+      "gitBlob": "347139ddd13f2de917920815f15b40ff07633cbd"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/states/hurt-v1.webp",
+      "bytes": 115998,
+      "gitBlob": "d67121f95a51e0db24ec7eeea01fcdac2007f0c7"
+    },
+    {
+      "path": "assets/heroes/bunga/redesign-v1/runtime/states/defeat-v1.webp",
+      "bytes": 97758,
+      "gitBlob": "ec844cef24dea363866424361d08d0d7750f2930"
+    },
+    {
+      "path": "assets/icons/pahlawan-angka-app-32.png",
+      "bytes": 3436,
+      "gitBlob": "d7bfb2cff147a5b2e535d817a920fbe1e9c2277f"
+    },
+    {
+      "path": "assets/icons/pahlawan-angka-app-64.png",
+      "bytes": 12046,
+      "gitBlob": "2baaca8eddf8a309449afa8fc41c940199924fba"
+    },
+    {
+      "path": "assets/icons/pahlawan-angka-app-180.png",
+      "bytes": 74057,
+      "gitBlob": "b682658bd95aafdc4d4cd6a36c0c5d83ae0146ab"
+    },
+    {
+      "path": "assets/icons/pahlawan-angka-app-192.png",
+      "bytes": 82862,
+      "gitBlob": "b47147ff1db20398536e0a25ffc0c82081f7e62c"
+    },
+    {
+      "path": "assets/icons/pahlawan-angka-app-512.png",
+      "bytes": 454691,
+      "gitBlob": "cffb1adf0e2d247b8be58136f7e2e27fc0042d2a"
+    },
+    {
+      "path": "assets/icons/pahlawan-angka-app-maskable-512.png",
+      "bytes": 422409,
+      "gitBlob": "4b50cc4adf2d0c0072cc3228b8e5d9caad2904a6"
+    },
+    {
+      "path": "assets/icons/pahlawan-angka-crest-192.png",
+      "bytes": 51676,
+      "gitBlob": "e2bb47020ef014a29bc2abf51663fe794f843606"
+    },
+    {
+      "path": "assets/branding/login-chibi-math-world-v1.webp",
+      "bytes": 226158,
+      "gitBlob": "eac7eb8391a178ae24b98606e5543b6125944a63"
+    },
+    {
+      "path": "assets/branding/pahlawan-angka-full-logo-v1.png",
+      "bytes": 2006817,
+      "gitBlob": "b9e1d8fe5065d1308ed941849ae7e0d8a38bcc9b"
+    },
+    {
+      "path": "assets/ui/login/guardian-crest.svg",
+      "bytes": 1211,
+      "gitBlob": "129084c62e8da46dc3eafcd416f57d813e43233e"
+    },
+    {
+      "path": "assets/battlefields/forest-temple/arena-v1.webp",
+      "bytes": 178862,
+      "gitBlob": "df0f0eb1f66673b11cfce540c57858423ff0cc95"
+    },
+    {
+      "path": "assets/battlefields/cave-temple/arena-depth-v2.webp",
+      "bytes": 100328,
+      "gitBlob": "fdeb54c765090d4dad68d2caf2e77e7817a2ceb5"
+    },
+    {
+      "path": "assets/battlefields/nusantara-temple/arena-v1.webp",
+      "bytes": 634644,
+      "gitBlob": "52669b34b3da25c2c4d75ab284c2fc8788cd0c3a"
+    },
+    {
+      "path": "assets/battlefields/operations-forge/arena-v1.webp",
+      "bytes": 256948,
+      "gitBlob": "30726ef368384c59243462c36e0984792d060021"
+    },
+    {
+      "path": "assets/battlefields/money-market/arena-v1.webp",
+      "bytes": 241684,
+      "gitBlob": "698078d4fd6bcf9ba13706705b6c925d11faf9c0"
+    },
+    {
+      "path": "assets/battlefields/time-tower/arena-v1.webp",
+      "bytes": 226222,
+      "gitBlob": "f5c24e6ee39eb660a981120c98de98b8f027ba15"
+    },
+    {
+      "path": "assets/battlefields/measurement-court/arena-v1.webp",
+      "bytes": 209012,
+      "gitBlob": "5ab2e87fc110e3eac9a9caf79cb491aca3d40dfa"
+    },
+    {
+      "path": "assets/battlefields/data-observatory/arena-v1.webp",
+      "bytes": 181848,
+      "gitBlob": "6a77eaabb12d1045491c09f2e906a261688ae0d4"
+    },
+    {
+      "path": "assets/enemies/minions/askabus.webp",
+      "bytes": 943300,
+      "gitBlob": "af95233caeb618354ce6cd4519deea8de85f3a24"
+    },
+    {
+      "path": "assets/enemies/minions/syilinggit.webp",
+      "bytes": 847142,
+      "gitBlob": "4e6ef33059381299fb8ab5b4dd88423118ea9430"
+    },
+    {
+      "path": "assets/enemies/minions/pigiramid.webp",
+      "bytes": 660888,
+      "gitBlob": "8d3666f184f6d11235560359cc01f81fa959e3fc"
+    },
+    {
+      "path": "assets/heroes/wira/idle.webp",
+      "bytes": 79790,
+      "gitBlob": "3e7cc183aa682f30ce59dd0b4d2271ebcceaf9e2"
+    },
+    {
+      "path": "assets/heroes/wira/profile-happy-v1.webp",
+      "bytes": 112592,
+      "gitBlob": "e164c4b1969243f64ffb476e46100454bd6aa3bc"
+    },
+    {
+      "path": "assets/heroes/switch-cards/wira-v1.webp",
+      "bytes": 47852,
+      "gitBlob": "d9f16d928617dd2f7b46887a8cdf8ef0d1a51912"
+    },
+    {
+      "path": "assets/heroes/switch-cards/bunga-v1.webp",
+      "bytes": 35932,
+      "gitBlob": "661dd0627ad8d7b51522ac71ac01bea4ecaaaa45"
+    },
+    {
+      "path": "assets/heroes/switch-cards/sidma-v1.webp",
+      "bytes": 32968,
+      "gitBlob": "bfdd7192247365bd9d848d249006ac4a07581a6e"
+    },
+    {
+      "path": "assets/heroes/wira/hub/adventure-v1.webp",
+      "bytes": 74632,
+      "gitBlob": "321f5758c780e7e75ec892b13838ee281c7042c5"
+    },
+    {
+      "path": "assets/fx/hub/wira-math-runes-v1.webp",
+      "bytes": 114326,
+      "gitBlob": "56495bcb67668f74f038791bec3c7989c10c0f84"
+    },
+    {
+      "path": "assets/fx/hub/bunga-fraction-bloom-v1.webp",
+      "bytes": 111140,
+      "gitBlob": "55fd23a5f5cab338fbc34b684cfb4b5e79cda011"
+    },
+    {
+      "path": "assets/pets/aurora/hub/adventure-v1.webp",
+      "bytes": 50550,
+      "gitBlob": "720fcfd6566491e1a51275173b9421e0c1b2e665"
+    },
+    {
+      "path": "assets/pets/arif/hub/adventure-v1.webp",
+      "bytes": 82628,
+      "gitBlob": "054cb6c12e14ffe4c2d711e70d1f82b6536ffa35"
+    },
+    {
+      "path": "assets/pets/kucing-pembaris/hub/adventure-v1.webp",
+      "bytes": 109768,
+      "gitBlob": "d0f543ff763c4edf72d2ddf785f4d2ed29eba2f6"
+    },
+    {
+      "path": "assets/pets/tiko/hub/adventure-v1.webp",
+      "bytes": 89800,
+      "gitBlob": "828239afe0a351310d9d2cacd45308ea8677d157"
+    },
+    {
+      "path": "assets/coach/cikgu-wajar/welcome.webp",
+      "bytes": 34008,
+      "gitBlob": "34cf82cf13d63ecdc6db7ae4c12d4f21867f47f5"
+    },
+    {
+      "path": "assets/coach/cikgu-dimensi/dimensional-aura.svg",
+      "bytes": 1767,
+      "gitBlob": "6384043f65dad4dc4730fc200b626944cf34e4b0"
+    },
+    {
+      "path": "assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp",
+      "bytes": 50804,
+      "gitBlob": "c36928bd615d892bc26cdbaed51df6294339c4bf"
+    },
+    {
+      "path": "assets/audio/PAMusic.mp3",
+      "bytes": 4145150,
+      "gitBlob": "e71e08315d6892859c26ebc20b02699490f7dc2c"
+    },
+    {
+      "path": "assets/audio/StingerPA.mp3",
+      "bytes": 216448,
+      "gitBlob": "7e44476cc9badc7ffc5480aacd57ef3334c6198c"
+    },
+    {
+      "path": "assets/audio/attack.wav",
+      "bytes": 15920,
+      "gitBlob": "26bd973408ba64e9f59ad7536e15ec4a81911493"
+    },
+    {
+      "path": "assets/audio/aura-charge.wav",
+      "bytes": 112974,
+      "gitBlob": "0f2d442026e50a4f7cca1aa402e45d243548f7d1"
+    },
+    {
+      "path": "assets/audio/chargeup.mp3",
+      "bytes": 153706,
+      "gitBlob": "9f0917948c72f92793ec93a6296c6c936dee13b4"
+    },
+    {
+      "path": "assets/audio/coin-pickup.wav",
+      "bytes": 19448,
+      "gitBlob": "3248635b9a7ee92a518c11b5ec96f20f5916abbc"
+    },
+    {
+      "path": "assets/audio/correct.wav",
+      "bytes": 11068,
+      "gitBlob": "e098a84703a47ae4bb34cf6d14b1f6187c78f567"
+    },
+    {
+      "path": "assets/audio/enemy-attack.wav",
+      "bytes": 15038,
+      "gitBlob": "adcc5916075855c738d24a0f8f2f5d7657787065"
+    },
+    {
+      "path": "assets/audio/enemy-down.wav",
+      "bytes": 24740,
+      "gitBlob": "1742670c8fd853c90a4e6b8167f61309705d4dcb"
+    },
+    {
+      "path": "assets/audio/evolution.mp3",
+      "bytes": 468525,
+      "gitBlob": "41521afdef90a73f7cac3b4eac29dec73cfc12e0"
+    },
+    {
+      "path": "assets/audio/finisher.wav",
+      "bytes": 33560,
+      "gitBlob": "d4ae5065ce513f74c6296d38805308c5d71d7501"
+    },
+    {
+      "path": "assets/audio/forest-battle-ambience.mp3",
+      "bytes": 524288,
+      "gitBlob": "5342f007e366db6b4e0b32cadeaa5064f68613ea"
+    },
+    {
+      "path": "assets/audio/hit.wav",
+      "bytes": 12392,
+      "gitBlob": "2904bc672297a706e7feccf6bae163ee00027e83"
+    },
+    {
+      "path": "assets/audio/sword-slash-v2.wav",
+      "bytes": 30066,
+      "gitBlob": "d45122a73f35b15f38e95e06f8d72d40cd38f25b"
+    },
+    {
+      "path": "assets/audio/sword-slash.wav",
+      "bytes": 39590,
+      "gitBlob": "287ebe35c26469ab274dd0c832ae59dd2ed18691"
+    },
+    {
+      "path": "assets/audio/ui.wav",
+      "bytes": 4012,
+      "gitBlob": "4423653015aa7ad46a5437a7778e60f9dbe9257e"
+    },
+    {
+      "path": "assets/audio/wira-heavy-metal-sword.wav",
+      "bytes": 38100,
+      "gitBlob": "9ec24070776fcf6767eff188e606b53a0761df83"
+    },
+    {
+      "path": "assets/audio/wrong.wav",
+      "bytes": 14156,
+      "gitBlob": "2ca15fd2605a9b28bf5fa604ae671e62d7468aaf"
+    },
+    {
+      "path": "js/vendor/three.module.min.js",
+      "bytes": 687458,
+      "gitBlob": "424ef1c8e5dd8ce1ca89c8004954b17485aef269"
+    }
+  ]
+}

@@ -53,6 +53,13 @@ async function start(raw,{verifyEntitlement,signal,onProgress}={}){
  if(typeof verifyEntitlement!=='function')fail('Pengesahan entitlement diperlukan');
  if(root.navigator.onLine===false)fail('Internet diperlukan untuk muat turun');
  const a=await verifyEntitlement();
+ // Estimate storage before network transfer; CacheStorage can still evict or
+ // reject writes afterward, so completion is always independently verified.
+ const storage=await root.navigator.storage?.estimate?.().catch(()=>null);
+ if(storage&&Number.isFinite(storage.quota)&&Number.isFinite(storage.usage)){
+  const space=Math.max(0,storage.quota-storage.usage);
+  if(space<m.estimatedBytes*1.08)fail('Ruang telefon tidak mencukupi untuk download offline');
+ }
  if(!a?.verified||!a.userId||!Array.isArray(a.scopes)||!m.scopes.every(s=>a.scopes.includes(s)))fail('Akses tidak disahkan');
  busy=true;let done=0,networkBytes=0;
  const emit=stage=>onProgress?.({stage,done,total:m.files.length,networkBytes,estimatedBytes:m.estimatedBytes});
@@ -64,7 +71,14 @@ async function start(raw,{verifyEntitlement,signal,onProgress}={}){
    if(signal?.aborted)fail('Muat turun dihentikan');
    const old=await cache.match(f.url);
    if(old?.ok&&f.sha256&&await digest(await old.clone().arrayBuffer())===f.sha256){done++;emit('downloading');continue}
-   const reusable=await reuseFromOlder(f,PREFIX+m.version);
+   // Assets already installed in the PWA core can be copied without network
+   // only after verifying their content against this pack's SHA-256.
+   let reusedCore=null;
+   if(f.sha256){
+     const hit=await caches.match(f.url,{ignoreSearch:true});
+     if(hit?.ok&&await digest(await hit.clone().arrayBuffer())===f.sha256)reusedCore=hit;
+   }
+   const reusable=reusedCore||await reuseFromOlder(f,PREFIX+m.version);
    if(reusable){await cache.put(f.url,reusable.clone());done++;emit('downloading');continue}
    const response=await fetch(f.url,{cache:'reload',credentials:'same-origin',signal});
    if(!response.ok||response.type==='opaque')fail('Gagal muat turun: '+f.url);

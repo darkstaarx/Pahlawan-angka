@@ -6,50 +6,46 @@
   const IDLE_AFTER_MS=120000;
   const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
-  const loader={canvas:null,context:null,image:null,frame:0,running:false,failed:false,started:false,particles:[],symbols:['+','−','×','÷'],motionQuery:null};
-  function reducedMotion(){return !!loader.motionQuery?.matches}
-  function handleMotionPreference(){
-    if(reducedMotion()){stopLoaderCanvas();drawLoaderFrame(performance.now())}
-    else if($('appLoading')&&!$('appLoading').classList.contains('hidden'))startLoaderCanvas()
+  const offlineSave=()=>window.PAAccountSaveV1||null;
+  const hasConnection=()=>navigator.onLine!==false;
+  const knownKey=id=>'pa_known_children_v1:'+id;
+  const rememberedGuardian='pa_last_online_guardian_v1';
+  const offlineLogoutKey=id=>'pa_offline_signed_out_v1:'+id;
+  const offlineNotify=status=>window.PAOfflineUI?.setSaveStatus?.(status);
+  const rememberChildren=()=>{
+    if(!state.user?.id||!Array.isArray(state.profiles))return;
+    const safeProfiles=state.profiles.map(p=>({id:p.id,display_name:p.display_name,grade:p.grade,hero_id:p.hero_id,avatar_id:p.avatar_id}));
+    localStorage.setItem(knownKey(state.user.id),JSON.stringify(safeProfiles));
+    localStorage.setItem(rememberedGuardian,state.user.id);
+  };
+  async function resumeOffline(){
+    const userId=localStorage.getItem(rememberedGuardian);
+    if(!userId||localStorage.getItem(offlineLogoutKey(userId))==='1')return false;
+    const entitlement=await window.PAOfflineEntitlement?.restore?.(userId);
+    if(!entitlement?.verified||entitlement.userId!==userId||!offlineSave())return false;
+    let profiles;try{profiles=JSON.parse(localStorage.getItem(knownKey(userId))||'[]')}catch(_){return false}
+    if(!Array.isArray(profiles)||!profiles.length)return false;
+    profiles=profiles.filter(p=>p&&typeof p.id==='string'&&/^[-a-f0-9]{36}$/i.test(p.id));
+    if(!profiles.length)return false;
+    const preferred=localStorage.getItem('pa_active_child_id');
+    const selected=profiles.find(p=>p.id===preferred)||profiles[0];
+    state.user={id:userId,email:''};state.profiles=profiles;state.childId=selected.id;
+    state.offline=true;state.ready=true;state.controls=null;state.needsOnboarding=false;
+    offlineSave().bind(userId,selected.id,{confirmedOwnership:true});
+    const stored=offlineSave().read();
+    if(!stored?.profile||stored.profile.cloudChildId!==selected.id)return false;
+    db=stored.profile;
+    window.PACommercial?.setOfflineAccess?.(entitlement);
+    initAll();ensureProgression();renderHub();renderAccount();
+    offlineNotify(stored.conflict?'conflict':stored.dirty?'local_only':'synced');
+    setAppLoading(false);
+    return true;
   }
-  function setupLoaderCanvas(){
-    if(loader.started)return;
-    loader.started=true;loader.canvas=$('appLoadingCanvas');loader.image=$('appLoadingAurora');
-    if(!loader.canvas||!loader.image)return;
-    try{loader.context=loader.canvas.getContext('2d');}catch(_){loader.context=null;}
-    if(!loader.context){loader.failed=true;return;}
-    const fail=()=>{loader.failed=true;stopLoaderCanvas();$('appLoading')?.classList.remove('canvas-ready');};
-    loader.image.addEventListener('error',fail,{once:true});
-    loader.image.addEventListener('load',()=>{$('appLoading')?.classList.add('canvas-ready');drawLoaderFrame(performance.now());},{once:true});
-    loader.motionQuery=window.matchMedia?.('(prefers-reduced-motion: reduce)')||null;
-    loader.motionQuery?.addEventListener?.('change',handleMotionPreference);
-    if(loader.image.complete&&loader.image.naturalWidth) $('appLoading')?.classList.add('canvas-ready');
-    else if(loader.image.complete)fail();
-    for(let i=0;i<18;i++)loader.particles.push({angle:Math.random()*Math.PI*2,radius:42+Math.random()*48,speed:(.08+Math.random()*.13)*(i%2?-1:1),size:1.2+Math.random()*2.2,alpha:.25+Math.random()*.55,phase:Math.random()*Math.PI*2});
-  }
-  function resizeLoaderCanvas(){
-    if(!loader.canvas||!loader.context)return;
-    const ratio=Math.min(2,window.devicePixelRatio||1),width=Math.max(1,loader.canvas.clientWidth),height=Math.max(1,loader.canvas.clientHeight);
-    if(loader.canvas.width!==Math.round(width*ratio)||loader.canvas.height!==Math.round(height*ratio)){loader.canvas.width=Math.round(width*ratio);loader.canvas.height=Math.round(height*ratio);loader.context.setTransform(ratio,0,0,ratio,0,0);}
-  }
-  function drawLoaderFrame(now){
-    if(!loader.context||loader.failed)return;
-    resizeLoaderCanvas();const ctx=loader.context,w=Math.max(1,loader.canvas.clientWidth),h=Math.max(1,loader.canvas.clientHeight),cx=w/2,cy=h/2;
-    ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(cx,cy);
-    ctx.strokeStyle='rgba(255,208,54,.22)';ctx.lineWidth=1;ctx.setLineDash([2,7]);ctx.beginPath();ctx.arc(0,0,47+Math.sin(now*.001)*2,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
-    for(const particle of loader.particles){const angle=particle.angle+now*.001*particle.speed,x=Math.cos(angle)*particle.radius,y=Math.sin(angle)*particle.radius*.7,twinkle=.55+.45*Math.sin(now*.002+particle.phase);ctx.fillStyle=`rgba(255,226,132,${particle.alpha*twinkle})`;ctx.beginPath();ctx.arc(x,y,particle.size,0,Math.PI*2);ctx.fill();}
-    loader.symbols.forEach((symbol,index)=>{const angle=now*.00045*(index%2?-1:1)+index*Math.PI/2,x=Math.cos(angle)*58,y=Math.sin(angle)*42;ctx.font='700 17px system-ui, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(255,208,54,.8)';ctx.shadowBlur=9;ctx.fillStyle=index%2?'#ffe5a6':'#ffd036';ctx.fillText(symbol,x,y);});
-    ctx.restore();
-  }
-  function animateLoader(now){if(!loader.running)return;drawLoaderFrame(now);loader.frame=requestAnimationFrame(animateLoader);}
-  function startLoaderCanvas(){setupLoaderCanvas();if(loader.failed)return;if(reducedMotion()){drawLoaderFrame(performance.now());return}if(loader.running)return;loader.running=true;loader.frame=requestAnimationFrame(animateLoader);}
-  function stopLoaderCanvas(){if(loader.frame)cancelAnimationFrame(loader.frame);loader.frame=0;loader.running=false;}
   function setAppLoading(on,text){
-    const el=$('appLoading');if(!el)return;setupLoaderCanvas();
+    const el=$('appLoading');if(!el)return;
     el.classList.toggle('hidden',!on);el.setAttribute('aria-busy',on?'true':'false');
     if(text&&$('appLoadingText'))$('appLoadingText').textContent=text;
     document.body.classList.toggle('app-loading-active',!!on);
-    if(on)startLoaderCanvas();else stopLoaderCanvas();
   }
   const message=(text,bad=false)=>{const el=$('loginError');if(!el)return;el.textContent=text||'';el.classList.toggle('show',!!text);el.classList.toggle('success',!!text&&!bad)};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -112,6 +108,12 @@
 
   async function signedIn(session){
     state.user=session?.user||null;if(!state.user)return;
+    if(!hasConnection()){
+      if(await resumeOffline())return;
+      message('Sambung internet untuk mengesahkan akaun kali pertama.',true);return;
+    }
+    state.offline=false;
+    localStorage.removeItem(offlineLogoutKey(state.user.id));
     message('');
     try{if(window.PABetaTrust&&!await window.PABetaTrust.ensureConsent(state.client,state.user))return}catch(error){console.warn('Consent check failed',error);message('Persetujuan penjaga belum dapat disahkan. Semak sambungan dan cuba semula.',true);return}
     await resumeAfterConsent();
@@ -119,7 +121,7 @@
 
   async function resumeAfterConsent(){
     if(!state.user)return;message('');setAppLoading(true,'Menyambung profil dan kemajuan kamu…');
-    try{await window.PACommercial?.refresh?.();await loadProfiles();renderAccount()}
+    try{await window.PACommercial?.refresh?.();await loadProfiles();rememberChildren();renderAccount()}
     catch(error){setAppLoading(false);throw error}
     setAppLoading(false)
   }
@@ -147,6 +149,7 @@
       const _avatarSource=profileAvatar?'profile':(saveAvatar?'save':undefined);
       return {...p,avatar_id,...(_avatarSource?{_avatarSource}:{})};
     });
+    rememberChildren();
     if(!state.profiles.length){state.childId=null;state.needsOnboarding=true;setAppLoading(false);renderAccount();screen('setup');return;}
     const remembered=localStorage.getItem('pa_active_child_id');
     const profile=state.profiles.find(p=>p.id===remembered)||state.profiles[0];
@@ -160,37 +163,67 @@
   }
 
   async function selectChildCore(childId,navigate=true){
-    await endPlaySession('user_exit');state.childId=childId;state.locked=false;localStorage.setItem('pa_active_child_id',childId);
+    if(!state.user?.id||!state.profiles?.some(p=>p.id===childId))throw Error('Profil bukan milik akaun ini');
+    await endPlaySession('user_exit');
+    if(!hasConnection()&&state.offline){
+      const cache=offlineSave();
+      cache?.bind(state.user.id,childId,{confirmedOwnership:true});
+      const local=cache?.read();
+      if(!local?.profile)throw Error('Profil ini belum disimpan untuk offline');
+      state.childId=childId;db=local.profile;
+      localStorage.setItem('pa_active_child_id',childId);
+      initAll();ensureProgression();renderHub();renderAccount();
+      offlineNotify(local.conflict?'conflict':local.dirty?'local_only':'synced');
+      return;
+    }
     const profile=state.profiles.find(p=>p.id===childId);
     const [{data:saveRow,error:saveError},{data:control,error:controlError}]=await Promise.all([
       state.client.from('game_saves').select('*').eq('child_id',childId).maybeSingle(),
       state.client.from('parental_controls').select('*').eq('child_id',childId).maybeSingle()
     ]);
     if(saveError)throw saveError;if(controlError)throw controlError;
+    const previousId=state.childId;
+    state.childId=childId;state.locked=false;
+    localStorage.setItem('pa_active_child_id',childId);
     state.controls=control||null;
-    const cloudState=saveRow?.state&&Object.keys(saveRow.state).length?saveRow.state:null;
-    const localMatches=db&&(!db.cloudChildId||db.cloudChildId===childId);
-    const localUpdated=localMatches?Number(db.lastSavedAt||0):0;
-    const cloudUpdated=saveRow?.client_updated_at?new Date(saveRow.client_updated_at).getTime():Number(cloudState?.lastSavedAt||0);
-    const keepNewerLocal=!!(cloudState&&localMatches&&localUpdated>cloudUpdated);
-    if(cloudState&&!keepNewerLocal){db=cloudState;}
-    else if(!localMatches){db=null;}
-    if(db){
-      db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;
-      const explicitProfileAvatar=profile?._avatarSource==='profile'&&validAvatarId(profile.avatar_id);
-      if(!keepNewerLocal||explicitProfileAvatar)db.avatar_id=avatarId(profile.avatar_id??db.avatar_id);
-      localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+    const bridge=offlineSave();
+    if(!bridge)throw Error('Offline account save bridge is required');
+    bridge.bind(state.user.id,childId,{confirmedOwnership:true});
+    const local=bridge.read();
+    const remote=saveRow?.state&&Object.keys(saveRow.state).length?saveRow.state:null;
+    const remoteRevision=Number(saveRow?.server_revision||0);
+    if(remote&&remote.cloudChildId!==childId){
+      throw Error('Cloud snapshot identity mismatch');
     }
-    else{await createBlankLocal(profile);}
-    await loadTodaySeconds();await window.PAQSV2BetaRollout?.refresh?.(db);renderAccount();updateTimer();
-    if(keepNewerLocal)await syncSaveNow();
-    if(navigate||currentScreen()==='login'){initAll();ensureProgression();renderHub();}
+    if(local?.dirty||local?.conflict)db=local.profile;
+    else if(local&&local.serverRevision>remoteRevision)db=local.profile;
+    else if(remote){
+      const imported=bridge.installCloud(remote,remoteRevision);
+      db=imported.local?.profile||remote;
+    }else if(local)db=local.profile;
+    else db=null;
+    if(db){
+      if(db.cloudChildId!==childId)throw Error('Simpanan lokal salah profil');
+      db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;
+      const explicitAvatar=profile._avatarSource==='profile'&&validAvatarId(profile.avatar_id);
+      if(explicitAvatar)db.avatar_id=avatarId(profile.avatar_id);
+      localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+    }else await createBlankLocal(profile);
+    await loadTodaySeconds();
+    await window.PAQSV2BetaRollout?.refresh?.(db);
+    renderAccount();updateTimer();
+    const latest=bridge.read();
+    offlineNotify(latest?.conflict?'conflict':latest?.dirty?'local_only':'synced');
+    if(latest?.dirty&&!latest.conflict)void syncSaveNow();
+    if(navigate||currentScreen()==='login'){initAll();ensureProgression();renderHub()}
   }
-
   async function createBlankLocal(profile){
-    db={name:profile.display_name,schoolGrade:profile.grade,hero:profile.hero_id,avatar_id:avatarId(profile.avatar_id),cloudChildId:profile.id,skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};initAll();ensureProgression();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));await syncSaveNow();
+    db={name:profile.display_name,schoolGrade:profile.grade,hero:profile.hero_id,avatar_id:avatarId(profile.avatar_id),cloudChildId:profile.id,skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};
+    initAll();ensureProgression();
+    offlineSave()?.capture(db);
+    localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+    void syncSaveNow();
   }
-
   async function attachNewChild(){
     if(!state.user||!db)return;
     try{
@@ -198,38 +231,63 @@
       if(result.error&&!schemaMismatch(result.error))throw result.error;
       if(result.error)result=await state.client.rpc('create_initial_child',{child_display_name:db.name,child_grade:db.schoolGrade,child_hero_id:db.hero||'wira'});
       const {data,error}=result;
-      if(error)throw error;state.childId=data;db.cloudChildId=data;localStorage.setItem('pa_active_child_id',data);localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
+      if(error)throw error;state.childId=data;db.cloudChildId=data;localStorage.setItem('pa_active_child_id',data);
+      offlineSave()?.bind(state.user.id,data,{confirmedOwnership:true});
+      offlineSave()?.capture(db);localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
       await loadProfiles();state.needsOnboarding=false;await syncSaveNow();if(playing())ensurePlaySession();showRewardToast('Progress kini disimpan ke awan ✓');
     }catch(error){console.warn('Cloud profile creation failed',error);showRewardToast('Progress disimpan pada peranti · sync akan dicuba lagi');}
   }
 
   function scheduleSave(){
-    clearTimeout(state.saveTimer);if(!db||sess?.demoMode||sess?.devBattlefield||db?.demoMode)return;
-    db.lastSavedAt=Date.now();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
-    if(!state.user||!state.childId)return;state.saveTimer=setTimeout(syncSaveNow,900);
+    clearTimeout(state.saveTimer);
+    if(!db||sess?.demoMode||sess?.devBattlefield||db?.demoMode)return;
+    if(!state.user?.id||!state.childId)return; // anonymous/demo continues using legacy local save
+    if(db.cloudChildId!==state.childId){console.error('Prevented cross-child save');return}
+    db.lastSavedAt=Date.now();
+    try{offlineSave()?.capture(db);offlineNotify('local_only')}
+    catch(error){console.error('Offline local save failed',error);offlineNotify('error');return}
+    if(hasConnection()&&!state.offline)state.saveTimer=setTimeout(syncSaveNow,900);
   }
   function settleSaveWaiters(result){
     const waiters=state.saveWaiters.splice(0);waiters.forEach(resolve=>resolve(result));
   }
   async function syncSaveNow(){
-    if(!state.user||!state.childId||!db||sess?.demoMode||sess?.devBattlefield||db?.demoMode){settleSaveWaiters(false);return false;}
-    if(state.saveInFlight){state.savePending=true;return new Promise(resolve=>state.saveWaiters.push(resolve));}
+    if(!state.user?.id||!state.childId||!db||sess?.demoMode||sess?.devBattlefield||db?.demoMode){
+      settleSaveWaiters(false);return false;
+    }
+    const bridge=offlineSave();
+    if(!bridge){offlineNotify('error');settleSaveWaiters(false);return false}
+    if(!hasConnection()||state.offline){offlineNotify('local_only');settleSaveWaiters(false);return false}
+    if(state.saveInFlight){state.savePending=true;return new Promise(resolve=>state.saveWaiters.push(resolve))}
     state.saveInFlight=true;clearTimeout(state.saveTimer);
-    let snapshot,savedAt;
-    let error;
+    let result;
     try{
-      if(!db.lastSavedAt)db.lastSavedAt=Date.now();db.cloudChildId=state.childId;localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
-      snapshot=JSON.parse(JSON.stringify(db));
-      delete snapshot._avatarSource;
-      savedAt=Number(snapshot.lastSavedAt);
-      ({error}=await state.client.from('game_saves').upsert({child_id:state.childId,schema_version:1,state:snapshot,xp:Number(snapshot.xp||0),coins:Number(snapshot.coins||0),level:Number(snapshot.level||1),active_mission_chapter:snapshot.activeMissionChapter==null?null:String(snapshot.activeMissionChapter),client_updated_at:new Date(savedAt).toISOString()},{onConflict:'child_id'}));
-    }catch(saveError){error=saveError;}
-    state.saveInFlight=false;
-    if(error){console.warn('Cloud save failed',error);state.savePending=true;state.saveTimer=setTimeout(()=>{void syncSaveNow().catch(retryError=>console.warn('Cloud save retry failed',retryError));},3000);settleSaveWaiters(false);return false;}
-    const changed=Number(db?.lastSavedAt||0)>savedAt,pending=state.savePending;state.savePending=false;
-    if(changed||pending)state.saveTimer=setTimeout(()=>{void syncSaveNow().catch(retryError=>console.warn('Cloud save follow-up failed',retryError));},0);
-    else settleSaveWaiters(true);
-    return true;
+      result=await bridge.flush(async({userId,childId,expectedRevision,profile})=>{
+        if(state.user?.id!==userId||state.childId!==childId)return null;
+        const {data,error}=await state.client.rpc('save_game_snapshot_cas',{
+          p_child_id:childId,p_expected_revision:expectedRevision,p_state:profile
+        });
+        if(error)throw error;
+        return Array.isArray(data)?data[0]:data;
+      });
+    }catch(error){
+      console.warn('CAS cloud save unavailable, progress retained locally',error);
+      result={status:'pending'};
+    }finally{state.saveInFlight=false}
+    if(result?.status==='conflict'){
+      offlineNotify('conflict');
+      settleSaveWaiters(false);
+      return false;
+    }
+    const saved=result?.status==='synced';
+    offlineNotify(saved?'synced':result?.status==='switched_account'?'local_only':'local_only');
+    const pending=state.savePending;state.savePending=false;
+    if(result?.status==='pending'||pending){
+      // Bounded retry when online; local snapshots survive closures/restarts.
+      state.saveTimer=setTimeout(()=>{void syncSaveNow()},5000);
+    }
+    settleSaveWaiters(saved);
+    return saved;
   }
 
   async function loadTodaySeconds(){
@@ -318,23 +376,57 @@
 
   function addChild(){state.needsOnboarding=true;screen('setup')}
 
-  async function logout(){if(window.PAPageLock?.requestExit(()=>logout())===false)return;await syncSaveNow();await endPlaySession('user_exit');window.PAQSV2BetaRollout?.reset?.(db);await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
+  async function logout(){if(window.PAPageLock?.requestExit(()=>logout())===false)return;await syncSaveNow();await endPlaySession('user_exit');window.PAQSV2BetaRollout?.reset?.(db);
+    if(state.user?.id)localStorage.setItem(offlineLogoutKey(state.user.id),'1');
+    offlineSave()?.unbind();db=null;
+    if(state.client?.auth)await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
 
+  let legacyWired=false;
   function wireLegacy(){
-    const oldSave=window.save;window.save=function(){if(sess?.devBattlefield)return;oldSave();scheduleSave()};
+    if(legacyWired)return;legacyWired=true;
+    const oldSave=window.save;window.save=function(){if(sess?.devBattlefield)return;if(state.user?.id&&state.childId&&db?.cloudChildId!==state.childId){console.error('Cross-child save rejected');offlineNotify('error');return;}oldSave();scheduleSave()};
     const oldStart=window.startNew;window.startNew=function(){oldStart();if(state.user)attachNewChild()};
     const oldScreen=window.screen;window.screen=function(id){oldScreen(id);if(ACTIVE_SCREENS.has(id))ensurePlaySession();else if(['login','parent','setup'].includes(id))endPlaySession(id==='parent'?'parent_lock':'user_exit');if(id==='parent')setTimeout(renderParentControls,0)};
     if(window.PATelemetry?.response){const oldResponse=window.PATelemetry.response;window.PATelemetry.response=function(skillId,ok,tag,sec,usedHint,q,mode){if(sess?.devBattlefield)return;oldResponse(skillId,ok,tag,sec,usedHint,q,mode);if(sess?.demoMode||!state.user||!state.childId)return;state.client.from('learning_attempts').insert({client_event_id:crypto.randomUUID(),child_id:state.childId,question_id:String(q?.token||''),skill_id:String(skillId),grade:Number(db?.schoolGrade||1),is_correct:!!ok,used_hint:!!usedHint,response_ms:Math.round((Number(sec)||0)*1000),misconception_tag:ok?null:(tag||'generic'),battle_type:mode==='boss'?'boss':'practice'}).then(({error})=>{if(error)console.warn('Attempt sync failed',error)});};}
   }
 
   async function init(){
-    if(!window.supabase?.createClient){message('Cloud login gagal dimuat. Semak internet dan muat semula.',true);return;}
-    state.client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});wireLegacy();
-    const {data}=await state.client.auth.getSession();if(data.session)await signedIn(data.session);else renderAccount();
+    wireLegacy();
+    if(!window.supabase?.createClient){
+      if(!hasConnection()&&await resumeOffline()){
+        window.addEventListener('online',()=>{
+          if(window.supabase?.createClient){void init();return}
+          const sdk=document.createElement('script');
+          sdk.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.min.js';
+          sdk.crossOrigin='anonymous';
+          sdk.onload=()=>{void init().catch(error=>console.warn('Cloud reconnect failed',error))};
+          sdk.onerror=()=>{offlineNotify('local_only')};
+          document.head.appendChild(sdk);
+        },{once:true});
+        return;
+      }
+      message('Cloud login gagal dimuat. Semak internet dan muat semula.',true);return;
+    }
+    state.client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    const {data}=await state.client.auth.getSession();
+    if(!hasConnection()&&await resumeOffline()){
+      window.addEventListener('online',()=>{
+        state.offline=false;
+        if(data?.session)void signedIn(data.session).catch(error=>console.warn('Offline progress remains pending',error));
+        else offlineNotify('local_only');
+      },{once:true});
+      return;
+    }
+    if(data.session)await signedIn(data.session);else renderAccount();
     state.client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session&&session.user.id!==state.user?.id)setTimeout(()=>signedIn(session),0);if(event==='SIGNED_OUT'){state.user=null;renderAccount();}});
-    setInterval(tick,1000);document.addEventListener('pointerdown',markInteraction,{passive:true,capture:true});document.addEventListener('keydown',markInteraction,{passive:true,capture:true});document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else{state.lastTick=performance.now();markInteraction()}});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
+    setInterval(tick,1000);document.addEventListener('pointerdown',markInteraction,{passive:true,capture:true});document.addEventListener('keydown',markInteraction,{passive:true,capture:true});document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else{state.lastTick=performance.now();markInteraction()}});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{
+      if(state.offline){state.offline=false;void resumeAfterConsent().catch(error=>console.warn('Online resume pending',error))}
+      else{void syncSaveNow();void syncDailyTotal('online')}
+      if(playing())ensurePlaySession()
+    });state.ready=true;
   }
 
   window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,resumeAfterConsent,setLoading:setAppLoading,state};
   init().catch(error=>{setAppLoading(false);console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
 })();
+

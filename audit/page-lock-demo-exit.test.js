@@ -64,6 +64,16 @@ for(const screen of ['game','segelDemo']){
  assert.equal(context.PAPageLock.isLocked(),true);
  dialog.querySelector('[data-stay]').emit('click');
 }
+// A Segel result is still inside data-screen=segelDemo, but its question
+// surface is finished and must not trap the celebration behind the battle lock.
+context.PAPageLock.setResultState(true);
+assert.equal(context.PAPageLock.isLocked(),false);
+assert.equal(context.PAPageLock.requestExit(()=>calls.hub++),true);
+body.dataset.screen='game';
+assert.equal(context.PAPageLock.isLocked(),true,'Segel result must not bypass a later classic battle lock');
+body.dataset.screen='segelDemo';
+context.PAPageLock.setResultState(false);
+assert.equal(context.PAPageLock.isLocked(),true);
 for(const screen of ['login','menuV2','missions','treasure','parent','setup','learning','result']){
  body.dataset.screen=screen;assert.equal(context.PAPageLock.isLocked(),false,screen);
  assert.equal(context.PAPageLock.requestExit(()=>calls.hub++),true,screen);

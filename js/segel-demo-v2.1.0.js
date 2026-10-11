@@ -57,6 +57,13 @@
     {key:'perak',  name:'PERAK',  hits:3, color:0xbde0ff, period:3.0, visible:2.18},
     {key:'emas',   name:'EMAS',   hits:5, color:0xffb838, period:2.6, visible:2.45}
   ];
+  // Match one guest-demo seal cycle to its complete topic/question plan.
+  function demoSealHits(questionTarget){
+    const total=Math.max(3,Math.floor(Number(questionTarget)||10));
+    const bronze=Math.max(1,Math.round(total*.2));
+    const silver=Math.max(1,Math.round(total*.3));
+    return [bronze,silver,total-bronze-silver];
+  }
   const SEAL_HITS=TIERS.reduce((n,t)=>n+t.hits,0);  // 10 hentaman = 2+3+5
   /* Dua soalan lebih daripada jumlah hentaman. Tanpa ruang ini satu jawapan
      salah sahaja sudah bermakna Aurora tidak dapat diselamatkan, dan kanun
@@ -239,6 +246,7 @@
      PENTAS
      ================================================================= */
   async function buildStage(){
+    const stageTiers=TIERS.map(tier=>({...tier}));
     const canvas=$('segelCanvas'), host=$('segelStage');
     const finisherCutIn=host.querySelector('.segelCutIn');
     const finisherCutInHero=host.querySelector('.cutInHero');
@@ -856,7 +864,7 @@
        rune melintasi badannya dan dia kelihatan menembusi kaca. renderOrder
        ditetapkan supaya susunan tidak bergantung pada pengisihan kedalaman
        bahan lutsinar. */
-    const seals=TIERS.map((tier,i)=>{
+    const seals=stageTiers.map((tier,i)=>{
       const e=sealEntry(sealTex[i], tier.visible);
       const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1), sealMaterial(e.tex));
       m.scale.set(e.w,e.h,1);
@@ -929,7 +937,7 @@
        "terkurung" terbaca: tepinya menyala mengikut sudut pandang (fresnel),
        sesuatu yang tidak mungkin dibuat dengan sprite rata. */
     const shellUni={uTime:{value:0},uPower:{value:1},uGrey:{value:0},
-                    uTint:{value:new THREE.Color(TIERS[0].color)}};
+                    uTint:{value:new THREE.Color(stageTiers[0].color)}};
     const shell=new THREE.Mesh(new THREE.SphereGeometry(1,40,28),
       new THREE.ShaderMaterial({
         uniforms:shellUni, transparent:true, depthWrite:false,
@@ -944,8 +952,8 @@
       }));
     shell.renderOrder=2; scene.add(shell);
     function fitShell(){
-      const i=Math.min(S.active,TIERS.length-1);
-      const tier=TIERS[i], r=tier.visible*.40;
+      const i=Math.min(S.active,stageTiers.length-1);
+      const tier=stageTiers[i], r=tier.visible*.40;
       shell.scale.set(r,r*1.02,r);
       shell.position.set(SEAL_X, GROUND+r*.96, -.30);
       shellUni.uTint.value.setHex(tier.color);
@@ -1289,9 +1297,9 @@
         else recoil=Math.sin(k*Math.PI*2.2)*Math.exp(-k*4.2);
       }
       // Segel: satu tier kelihatan, bernafas perlahan, kelabu bila terkena.
-      const activeTier=TIERS[Math.min(S.active,TIERS.length-1)];
+      const activeTier=stageTiers[Math.min(S.active,stageTiers.length-1)];
       backGlow.material.color.setHex(activeTier.color);
-      backGlow.material.opacity=S.active>=TIERS.length?0:.42+(reduceMotion?0:.1*Math.sin(tAcc*2));
+      backGlow.material.opacity=S.active>=stageTiers.length?0:.42+(reduceMotion?0:.1*Math.sin(tAcc*2));
       S.grey=damp(S.grey,0,3.4,dt);
       shellUni.uTime.value=tAcc;
       seals.forEach((s,i)=>{
@@ -1329,7 +1337,7 @@
         floorGlow.visible=true;
         floorGlow.material.opacity=(.44+(reduceMotion?0:breath*.08))*(1-grey*.6);
       });
-      if(S.active>=TIERS.length){ shell.visible=false; floorGlow.visible=false }
+      if(S.active>=stageTiers.length){ shell.visible=false; floorGlow.visible=false }
 
       S.shake=damp(S.shake,0,6,dt);
       camera.position.x=(Math.random()-.5)*S.shake;
@@ -1490,13 +1498,13 @@
 
     if(activePetConfig)setPetVisual(activePetConfig);
     return {
-      tiers:TIERS,
+      tiers:stageTiers,
       setArena,
       /* Tempat bar kesihatan sepatutnya duduk, dalam peratus saiz pentas.
          Diunjur melalui kamera supaya ia kekal di atas kubah pada setiap
          nisbah skrin, bukan diteka dengan nilai CSS tetap. */
       sealAnchor(){
-        const tier=TIERS[Math.min(S.active,TIERS.length-1)];
+        const tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
         // Dikira terus daripada fov dan jarak, bukan melalui matriks kamera:
         // Vector3.project() bergantung pada matrixWorldInverse yang hanya
         // disegarkan semasa render, jadi ia boleh memulangkan nilai liar bila
@@ -1510,13 +1518,13 @@
       /* Wira menyerang SEGEL, bukan Aurora. Bunyi: pedang masa tebasan,
          hentaman masa sentuh — dua kesan berasingan, bukan satu. */
       isFinalHit(){
-        const s=seals[S.active], tier=TIERS[Math.min(S.active,TIERS.length-1)];
-        return Boolean(s && S.active===TIERS.length-1 && s.damage+1/tier.hits>=.999);
+        const s=seals[S.active], tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
+        return Boolean(s && S.active===stageTiers.length-1 && s.damage+1/tier.hits>=.999);
       },
       async strike(){
         const lifecycle=S.lifecycle;
-        const tier=TIERS[Math.min(S.active,TIERS.length-1)];
-        const finalHit=S.active===TIERS.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
+        const tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
+        const finalHit=S.active===stageTiers.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
         if(finalHit){
           await playFinisherVideo(lifecycle);
           if(lifecycle!==S.lifecycle)return;
@@ -1571,7 +1579,7 @@
           burst(6.5,s.tier.color);
           waveMat.color.setHex(s.tier.color); S.waveScale=1.35; S.waveT=0;
           S.flashT=0; S.shake=.46; S.hitT=-1;
-          S.active=Math.min(TIERS.length,S.active+1);
+          S.active=Math.min(stageTiers.length,S.active+1);
           fitShell();
           return {broken:true, tier:s.tier};
         }
@@ -1591,14 +1599,14 @@
         const s=seals[S.active];
         return s ? Math.max(0,Math.round((1-s.damage)*s.tier.hits)) : 0;
       },
-      activeTier(){ return TIERS[Math.min(S.active,TIERS.length-1)] },
-      allBroken(){ return S.active>=TIERS.length },
+      activeTier(){ return stageTiers[Math.min(S.active,stageTiers.length-1)] },
+      allBroken(){ return S.active>=stageTiers.length },
       /* Tiada pengembaraan yang gagal — Aurora sentiasa diselamatkan, cuma
          bintang yang berbeza. Kalau soalan habis sebelum semua segel pecah,
          Wira menghabiskan bakinya di sini. */
       async forceBreakRest(){
         const lifecycle=S.lifecycle;
-        while(S.active<TIERS.length){
+        while(S.active<stageTiers.length){
           if(lifecycle!==S.lifecycle)return false;
           const s=seals[S.active];
           s.damage=1; s.broken=true; s.breakT=0;
@@ -1624,7 +1632,7 @@
       },
       async previewFinalBlow(){
         if(!entryMode?.devBattlefield)return false;
-        const lastIndex=TIERS.length-1;
+        const lastIndex=stageTiers.length-1;
         S.active=lastIndex; S.heroLock=null; S.heroX=HERO_HOME;
         seals.forEach((seal,i)=>{
           seal.damage=i===lastIndex?Math.max(0,1-1/seal.tier.hits):1;
@@ -1636,7 +1644,7 @@
       },
       async previewAuraFarming(){
         if(!entryMode?.devBattlefield)return false;
-        const lastIndex=TIERS.length-1;
+        const lastIndex=stageTiers.length-1;
         ++S.lifecycle; S.active=lastIndex; S.heroX=HERO_HOME-.12; S.heroLock=heroPrepareE;
         seals.forEach((seal,i)=>{
           seal.damage=i===lastIndex?Math.max(0,1-1/seal.tier.hits):1;
@@ -1679,7 +1687,9 @@
         sfx('auraCharge');
       },
       wrong(){ S.shake=.14 },
-      reset(){
+      reset(questionTarget=null){
+        const hits=questionTarget==null?TIERS.map(tier=>tier.hits):demoSealHits(questionTarget);
+        stageTiers.forEach((tier,i)=>{tier.hits=hits[i]});
         ++S.lifecycle;stopFinisherVideo();S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
         host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
         finalImpactPending=false; finalImpactActive=false;
@@ -2044,8 +2054,14 @@
     const meta=(typeof META!=='undefined'&&META[id])||{};
     const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||meta.grade||1;
     // Kembara keeps the first selected subtopic's world for the whole mission.
-    const terrainMeta=run?.production&&run.productionRun.route==='adaptive'
-      ? (run.productionRun.firstArenaMeta ||= meta) : meta;
+    // The guest demo follows the same visual promise: its first selected
+    // background stays for the complete sample session, even while the
+    // questions tour several topics. A new run (including replay) gets a new
+    // first background because `run` is recreated by startRun().
+    const terrainMeta=entryMode?.guestDemo
+      ? (run.firstArenaMeta ||= meta)
+      : run?.production&&run.productionRun.route==='adaptive'
+        ? (run.productionRun.firstArenaMeta ||= meta) : meta;
     stage?.setArena?.(arenaForMeta(terrainMeta));
     // helper yang sama dengan battle: buang awalan "Tahun N · " supaya tajuk
     // tidak mengulang baris kecil di bawahnya.
@@ -2080,6 +2096,8 @@
     const hintBtn=$('segelHint');
     if(hintBtn){ hintBtn.disabled=false; hintBtn.classList.remove('used') }
     $('segelQuestion').scrollTop=0;
+    // Wide layouts scroll the whole card; each new question starts at its instruction.
+    $('segelQuestion').closest('.segelCard')?.scrollTo({top:0,left:0});
     paintSeal();
 
     const box=$('segelAnswers'); box.innerHTML=''; box.classList.remove('paLegacyAnswersHidden');
@@ -2109,31 +2127,71 @@
     setTimeout(()=>el.classList.remove('show'),1100);
   }
 
+  function unlockGuestRetryControls(except){
+    const box=$('segelAnswers');if(!box)return;
+    // Explicit interaction widgets own their retry focus/selection state.
+    // The bridge calls submitInteraction() below so this fallback must not
+    // re-enable every internal control behind the renderer's back.
+    if(box.querySelector?.('.paInteraction'))return;
+    const fraction=box.querySelector?.('.d1-fraction-answer');
+    if(fraction){
+      // The fraction renderer disables controls nested inside its panel before
+      // calling submit(). Re-enable the whole surface so the learner can
+      // change the shaded cells or numerator/denominator on the retry.
+      fraction.querySelectorAll?.('button,input').forEach(control=>{control.disabled=false;});
+      fraction.querySelectorAll?.('button').forEach(control=>{control.classList.remove('no');control.classList.remove('ok');});
+      return;
+    }
+    [...box.querySelectorAll?.('button,input')||[]].forEach(control=>{
+      if(control!==except)control.disabled=false;
+    });
+  }
+
   async function respond(option,button){
     if(run&&run.production)return respondProduction(option,button);
     const activeRun=run;
     if(!activeRun||activeRun.locked)return;
+    const guestRetry=!!entryMode?.guestDemo;
     activeRun.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
     button.classList.add(correct?'ok':'no');
-    activeRun.asked++;
+    const retrying=guestRetry&&!!activeRun.retryOpen;
+    const sameWrong=guestRetry&&retrying&&!correct&&String(option.v)===String(activeRun.retryWrongValue);
+    const resolveQuestion=!guestRetry||correct||retrying&&!sameWrong;
+    if(resolveQuestion)activeRun.asked++;
     const reachedTarget=activeRun.asked>=activeRun.questionTarget;
     if(correct){
-      sfx('correct');activeRun.tally[activeRun.usedHint?'hint':'own']++;await stage.strike();
+      sfx('correct');activeRun.tally[activeRun.usedHint||retrying?'hint':'own']++;await stage.strike();
       if(!currentRun(activeRun))return;
       const outcome=stage.hitSeal();await stage.waitFinalImpact?.();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
       paintSeal();
       if(reachedTarget)return celebrate(activeRun);
-      if(stage.allBroken()&&entryMode?.guestDemo){
-        stage.reset();paintSeal();
-        toast('GEMBOK SETERUSNYA MUNCUL!');
-        $('segelFeedback').textContent='Bagus! Teruskan ke topik seterusnya.';
-      }else if(stage.allBroken())return celebrate(activeRun);
-    }else{sfx('wrong');activeRun.tally.miss++;$('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();await wait(520);if(!currentRun(activeRun))return;}
+      if(stage.allBroken())return celebrate(activeRun);
+    }else if(sameWrong){
+      // A repeated typed/choice value is feedback only. It must not resolve
+      // the question or consume the retry; the learner gets another chance.
+      sfx('wrong');$('segelFeedback').textContent='Jawapan itu sudah dicuba. Cuba nilai yang lain.';
+      unlockGuestRetryControls(button);
+      activeRun.locked=false;
+      setTypedRetryEnabled(true);
+      return;
+    }else if(guestRetry&&!retrying){
+      // First wrong attempt is a learning cue, not a miss in the demo score.
+      // Keep the same question visible and reopen the answer surface.
+      sfx('wrong');activeRun.retryOpen=true;activeRun.retryWrongValue=option.v;
+      $('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();
+      await wait(520);if(!currentRun(activeRun))return;
+      unlockGuestRetryControls(button);setTypedRetryEnabled();activeRun.locked=false;
+      return;
+    }else{
+      // A distinct second wrong answer resolves this question once.
+      sfx('wrong');activeRun.tally.miss++;$('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();
+      await wait(520);if(!currentRun(activeRun))return;
+    }
     if(reachedTarget)return celebrate(activeRun);
-    await wait(420);if(!currentRun(activeRun))return;activeRun.locked=false;drawQuestion();
+    await wait(420);if(!currentRun(activeRun))return;activeRun.retryOpen=false;activeRun.retryWrongValue=null;activeRun.locked=false;drawQuestion();
   }
 
   async function respondProduction(option,button){
@@ -2273,6 +2331,23 @@
     return String(profile?.name||'').trim()||'Pahlawan';
   }
 
+  /* Result is an internal state of the Segel screen, so changing only
+     `body[data-screen]` cannot tell the page lock or the question surface that
+     the run has ended. Keep the celebration and its CTAs as the only active
+     controls while preserving the Wira/Aurora arena behind it. */
+  function setResultLifecycle(done){
+    const screen=document.getElementById('segelDemo');
+    const panel=screen?.querySelector('.segelPanel');
+    const top=screen?.querySelector('.segelTop');
+    screen?.classList.toggle('segel-result-active',!!done);
+    [panel,top].forEach(el=>{
+      if(!el)return;
+      el.setAttribute('aria-hidden',done?'true':'false');
+      el.inert=!!done;
+    });
+    window.PAPageLock?.setResultState?.(!!done);
+  }
+
   function coachLine(t,acc,asked){
     const player=resultPlayerName();
     const pet=run?.productionRun?.petAward?.petId
@@ -2286,6 +2361,7 @@
 
   function finishRun(won,note){
     run.locked=true;
+    setResultLifecycle(true);
     const t=run.tally, correct=t.own+t.hint, asked=Math.max(1,run.asked);
     const acc=Math.round(correct/asked*100);
 
@@ -2304,6 +2380,7 @@
       $('segelDemoSummary').hidden=true;
       $('segelDone').hidden=false;
       $('segelDone').scrollTop=0;
+      $('segelDone').focus({preventScroll:true});
       return;
     }
 
@@ -2324,6 +2401,7 @@
     }else if(summary)summary.hidden=true;
     $('segelDone').hidden=false;
     $('segelDone').scrollTop=0;
+    $('segelDone').focus({preventScroll:true});
   }
 
   /* =================================================================
@@ -2332,7 +2410,7 @@
   function startRun(){
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     const pool=skillPool();
-    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,q:null,usedHint:false,coveredTopics:[],
+    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],
          writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
@@ -2343,8 +2421,9 @@
                coachAdaptive:!!(entryMode&&entryMode.adaptive&&!entryMode.devBattlefield),
                missionChapter:(entryMode&&entryMode.chapter)?String(entryMode.chapter):null,
                missionAnswered:0,coach:null,recoveryFor:null,stretchFor:null}};
+    setResultLifecycle(false);
     $('segelDone').hidden=true;
-    stage.reset();
+    stage.reset(entryMode?.guestDemo?run.questionTarget:null);
     stage.armEntry();
     enterWhenRevealed();    // Wira turun sebagai zarah biru, sama seperti portal
     paintSeal();
@@ -2355,6 +2434,7 @@
     if(!window.PAProductionJourney?.isCurrent?.(productionRun))return;
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     run={production:true,productionRun,generation:++runGeneration,productionGeneration:productionRun.session.generation,asked:0,locked:false,retryOpen:false,q:null,usedHint:false,tally:{own:0,hint:0,miss:0}};
+    setResultLifecycle(false);
     $('segelDone').hidden=true;stage.reset();stage.armEntry();enterWhenRevealed();paintSeal();drawQuestion();
   }
 
@@ -2574,6 +2654,10 @@
     previewAuraFarming:()=>stage?.previewAuraFarming?.(),
     previewFinalBlow:()=>stage?.previewFinalBlow?.(),
     clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
+    submitInteraction:(choice,button,q)=>{
+      if(!entryMode?.guestDemo||!run||run.q!==q||run.locked)return false;
+      respond(choice,button);return true;
+    },
     tiers:TIERS,
     guestScope:grade=>guestTopicScope(Number(grade)||1),
     state:()=>run

@@ -1,0 +1,14 @@
+/* Existing navy/gold palette, mobile-first. Optional staging module only. */
+.paOfflineCard{margin:14px 0;padding:15px;border-radius:18px;border:1px solid #877648;background:linear-gradient(155deg,#102c50,#0a172b);color:#edf3fa;display:grid;gap:9px}
+.paOfflineHead{display:flex;flex-direction:column;gap:3px}.paOfflineHead b{font-size:1.1rem;color:#ffda68}.paOfflineHead small{color:#adc1d9}
+.paOfflineCard p{margin:0;color:#cbd9e8;font-size:.87rem;line-height:1.4}.paOfflineCard label{color:#f0dba6;font-weight:800;font-size:.86rem}
+.paOfflineCard select{background:#162e4a;color:#fff;border:1px solid #8da3bd;border-radius:9px;min-height:43px;padding:6px}
+.paOfflineCard progress{width:100%;height:11px;accent-color:#f1bf44}.paOfflineCard progress[hidden]{display:none}
+.paOfflineActions{display:flex;flex-wrap:wrap;gap:8px}
+.paOfflineActions button{padding:10px 12px;flex:1 1 135px;min-height:42px;border:1px solid #cca14a;border-radius:10px;color:#fff1bf;background:#534019;font-weight:800}
+.paOfflineActions button[hidden]{display:none}.paOfflineActions button:disabled{opacity:.42;cursor:not-allowed}
+.paOfflineCard .error{color:#ffb7a6!important}.paOfflineCard .paOfflineFine{font-size:.75rem;color:#93a9bc}
+#paOfflineSync[data-status="conflict"],#paOfflineSync[data-status="error"]{color:#ffb7a6}
+
+#paOfflineGlobalSaveStatus{position:fixed;z-index:1002;right:9px;bottom:calc(7px + env(safe-area-inset-bottom));max-width:min(80vw,340px);padding:6px 10px;border:1px solid #62768d;border-radius:10px;background:#0c2443e8;box-shadow:0 5px 15px #0005;color:#fff0cf;font-size:11px;line-height:1.3;pointer-events:none}
+#paOfflineGlobalSaveStatus[data-status="synced"]{opacity:.58}#paOfflineGlobalSaveStatus[data-status="conflict"],#paOfflineGlobalSaveStatus[data-status="error"]{border-color:#fa8867;color:#ffd0c0;opacity:1}

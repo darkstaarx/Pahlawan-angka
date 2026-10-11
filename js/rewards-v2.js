@@ -118,7 +118,10 @@ function renderBattlePet(){
  if(!item){wrap.classList.add('hidden');wrap.removeAttribute('data-pet');return;} wrap.dataset.pet=id;wrap.style.setProperty('--pet-art-scale',String(item.battleScale||1));idle.src=item.front;idle.alt=`${item.name} bersedia`;anticipation.src=item.anticipation;anticipation.alt=`${item.name} mengambil ancang-ancang`;attack.src=item.battle;attack.alt=`${item.name} menyerang`;follow.src=item.followThrough;follow.alt=`${item.name} selepas serangan`;wrap.classList.remove('hidden');
 }
 function openTreasure(){ensureRewards();renderTreasure();screen('treasure')}
-function treasureTab(tab){document.getElementById('petCollection').classList.toggle('hidden',tab!=='pets');document.getElementById('auraCollection').classList.toggle('hidden',tab!=='auras');document.getElementById('badgeCollection').classList.toggle('hidden',tab!=='badges');document.getElementById('treasurePetTab').classList.toggle('active',tab==='pets');document.getElementById('treasureAuraTab').classList.toggle('active',tab==='auras');document.getElementById('treasureBadgeTab').classList.toggle('active',tab==='badges')}
+function treasureTab(tab){
+ ['petCollection','auraCollection','badgeCollection'].forEach((id,index)=>document.getElementById(id)?.classList.toggle('hidden',tab!==['pets','auras','badges'][index]));
+ ['treasurePetTab','treasureAuraTab','treasureBadgeTab'].forEach((id,index)=>document.getElementById(id)?.classList.toggle('active',tab===['pets','auras','badges'][index]));
+}
 function renderTreasure(){
  ensureRewards(); if(typeof evaluateMilestoneBadges==='function')evaluateMilestoneBadges(true); const c=document.getElementById('treasureCoins');if(c)c.textContent=`🪙 ${db.coins||0}`;
  const pets=document.getElementById('petCollection'); if(pets)pets.innerHTML=Object.values(REWARD_PETS).map(p=>shopCard('pet',p)).join('');
@@ -166,3 +169,4 @@ function previewTrophyUnlockFromQuery(){
  if(family&&tier)setTimeout(()=>showUnlock('badge',topicTrophyId(family,tier)),260);
 }
 previewTrophyUnlockFromQuery();
+

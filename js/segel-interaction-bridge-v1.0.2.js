@@ -77,11 +77,18 @@
 
   function armDemoSession(root,run){
     let armed=false,previousSession=null,previousRetry;
-    const enter=()=>{
+    const enter=event=>{
+      if(window.PASegelDemo?.mode?.()?.guestDemo&&
+        (state()!==run||run.locked)){
+        event?.preventDefault?.();event?.stopImmediatePropagation?.();return;
+      }
       if(armed||typeof sess==='undefined')return;
       previousSession=sess;
       previousRetry=run.sess.retryState;
-      run.sess.retryState={demoSingleAttempt:true};
+      // Guest retries are owned by Segel. A fake resolved retry would make
+      // the shared interaction engine lock its entire surface on the first miss.
+      run.sess.retryState=window.PASegelDemo?.mode?.()?.guestDemo
+        ? null : {demoSingleAttempt:true};
       sess=run.sess;
       armed=true;
     };
@@ -157,6 +164,12 @@
     const rendered=withDemoSession(run,()=>engine.render(q,box,{
       session:run.sess,
       respond:(choice,interactiveButton)=>{
+        if(window.PASegelDemo?.mode?.()?.guestDemo){
+          // Preserve the constructed value so distinct wrong attempts can be
+          // distinguished, and reject callbacks from a stale question.
+          window.PASegelDemo?.submitInteraction?.(choice,interactiveButton,q);
+          return;
+        }
         const correct=choice?.tag==='correct';
         if(interactiveButton?.classList)interactiveButton.classList.add(correct?'ok':'no');
         const target=correct?fallback.correct:fallback.wrong;

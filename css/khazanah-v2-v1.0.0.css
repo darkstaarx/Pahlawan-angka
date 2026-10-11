@@ -15,19 +15,19 @@
 }
 
 /* ---------- kepala ---------- */
-.kzHead{display:flex;align-items:center;gap:12px;padding:14px 2px 8px}
+.kzHead{display:flex;align-items:center;gap:12px;padding:16px 0 14px}
 .kzBack{
   width:42px;height:42px;flex:none;border:0;border-radius:14px;cursor:pointer;
   display:grid;place-items:center;
-  background:linear-gradient(#173a66,#0d2244);color:var(--kz-ink);
-  box-shadow:inset 0 0 0 1.5px #ffffff2b, 0 4px 12px #0007
+  background:transparent;color:var(--kz-ink);
+  box-shadow:none;border:1px solid #ffffff24;border-radius:10px
 }
 .kzBack svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.4;
   stroke-linecap:round;stroke-linejoin:round}
 .kzTitle{flex:1;min-width:0}
 .kzTitle h1{
-  margin:0;font-size:27px;font-weight:950;letter-spacing:-.3px;color:var(--kz-ink);
-  text-shadow:0 2px 10px #0008
+  margin:0;font-size:24px;font-weight:800;letter-spacing:-.3px;color:var(--kz-ink);
+  text-shadow:none
 }
 .kzTitle p{margin:2px 0 0;font-size:11.5px;color:var(--kz-mut);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -45,17 +45,17 @@
 }
 
 /* ---------- tab besar berkiraan ---------- */
-.kzTabs{display:flex;gap:4px;margin:0 2px 10px}
+.kzTabs{display:flex;gap:24px;margin:0 0 16px;border-bottom:1px solid #ffffff18}
 .kzTab{
-  flex:1;min-width:0;border:0;cursor:pointer;
+  flex:0 1 auto;min-width:0;border:0;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:7px 6px;border-radius:10px;font-size:12px;font-weight:800;
+  min-height:44px;padding:8px 2px;border-radius:0;font-size:14px;font-weight:700;
   color:var(--kz-mut);background:transparent;box-shadow:none
 }
 .kzTab svg{width:16px;height:16px;fill:currentColor;flex:none}
 .kzTab b{font-size:12px;font-weight:900;opacity:.72;font-variant-numeric:tabular-nums}
 .kzTab.active{
-  color:var(--kz-ink);background:#ffffff12;box-shadow:inset 0 -2px 0 var(--kz-blue-hi)
+  color:#f6d776;background:transparent;box-shadow:inset 0 -2px 0 #e9b949
 }
 .kzTab.active b{opacity:.9}
 .kzTab:active{transform:translateY(2px)}
@@ -66,7 +66,7 @@
   /* Latar bergambar sebenar, bukan kecerunan rata: inilah beza antara panel
      dan panggung. Arena kuil digunakan semula, jadi tiada aset baharu. */
   background:#0b1c33 url("../assets/battlefields/forest-temple/arena-v1.webp") center 38%/cover no-repeat;
-  box-shadow:inset 0 0 0 2px #e9b94955, 0 14px 32px #00000066;
+  box-shadow:none;border:1px solid #e9b94940;
   touch-action:none;cursor:grab
 }
 .kzShow.grabbing{cursor:grabbing}
@@ -78,11 +78,11 @@
   background:linear-gradient(100deg, #05111fe8 0%, #05111fb0 34%, #05111f18 62%, #05111f00 100%)
 }
 .kzShowCard{
-  position:absolute;left:10px;top:10px;width:auto;max-width:54%;
-  padding:8px 10px;border-radius:12px;
-  background:linear-gradient(#0d2247e8,#081730ee);
-  box-shadow:inset 0 0 0 1.5px #e9b94955, 0 8px 22px #0008
+  position:absolute;left:16px;top:16px;max-width:52%;padding:0;
+  background:transparent;border-radius:0;box-shadow:none;
+  text-shadow:0 2px 8px #000;
 }
+.kzStageLabel{display:block;margin-bottom:7px;font-size:11px;color:#e5d6ac}
 .kzChip{
   display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:1.1px;
   color:#06301e;background:linear-gradient(#8ef0b8,#3ec489);
@@ -253,29 +253,83 @@
 
 .kzAppearance{display:flex;gap:6px;width:100%;justify-content:center}.kzAppearance .kzBtn[aria-pressed="true"]{background:#ffcf66;color:#251b13;box-shadow:0 0 0 2px #ffe8a6}
 
-/* Mobile collection: quiet cards; actions belong to the selected pet sheet. */
-.kzShow{height:auto;aspect-ratio:1.9;background-image:url('../assets/ui/khazanah/teman-night-math-v1.webp');background-position:center;background-size:cover}
-.kzGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.kzPetOpen{position:relative;display:block;width:100%;padding:0;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;text-align:center}
-.kzPetOpen:focus-visible{outline:3px solid #5cc3ff;outline-offset:-4px;border-radius:15px}
-.companionCard .kzName{background:transparent;color:var(--kz-ink);font-size:15px;padding:4px 8px;min-height:0}
-.companionCard .kzPetMeta{background:transparent;padding:4px 8px 14px;justify-items:center;gap:7px}
-.companionCard .kzPetMeta small{font-size:12px}
-.kzActiveBadge{position:absolute;right:10px;top:10px;z-index:2;width:26px;height:26px;border-radius:50%;background:#7ff0c0;color:#06301e;font-size:18px;font-weight:900}
-.kzFormChip{padding:4px 14px;border-radius:99px;background:#183657;border:1px solid #6a94bf;font-size:11px!important;color:#e7efff!important}
-.kzDetailSheet{box-sizing:border-box;position:fixed;inset:auto 0 0;margin:0 auto;width:min(100%,540px);max-width:540px;max-height:92dvh;overflow-y:auto;border:1px solid #53759c;border-radius:26px 26px 0 0;padding:12px 22px max(24px,env(safe-area-inset-bottom));background:#0b203e;color:var(--kz-ink);box-shadow:0 -12px 60px #0008}
-.kzDetailSheet::backdrop{background:#020a16b8}
-.kzSheetHandle{width:48px;height:5px;border-radius:8px;background:#7894b1;margin:0 auto 20px}
-.kzSheetClose{position:absolute;right:16px;top:19px;width:44px;height:44px;border:1px solid #7695b5;border-radius:50%;background:#152e50;color:#fff;font-size:28px;cursor:pointer}
-.kzSheetHeading{display:flex;align-items:center;gap:12px;padding-right:40px}
-.kzSheetHeading h2{margin:0;font-size:28px;overflow-wrap:anywhere}
-.kzRename{width:44px;height:44px;flex:none;border:1px solid #53759c;border-radius:12px;background:#152e50;color:#fff;font-size:24px;cursor:pointer}
-.kzDetailSheet p{margin:7px 0;color:var(--kz-mut);font-size:14px}
-.kzDetailArt{position:relative;height:clamp(120px,23dvh,190px);overflow:hidden;isolation:isolate;margin:14px -22px;background:linear-gradient(0deg,#0b203e,transparent 35%),url('../assets/ui/khazanah/teman-night-math-v1.webp') center/cover}
-.kzDetailArt img{position:absolute;inset:10px 12%;display:block;width:76%;height:calc(100% - 20px);max-width:76%;max-height:calc(100% - 20px);min-width:0;min-height:0;object-fit:contain;object-position:center bottom}
-.kzFormLabel{font-size:15px;font-weight:800;margin:12px 0 8px}
-.kzDetailSheet .kzAppearance .kzBtn{min-height:46px;flex:1;font-size:15px}
-.kzEvolution{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:50px;margin:14px 0;border:1px solid #7695b5;border-radius:12px;padding:10px 14px;background:#112b4c;color:#fff;font:inherit;font-weight:800;cursor:pointer}
-.kzDetailSheet .kzCta{min-height:52px;margin-top:14px;font-size:17px}
-.kzDetailSheet .kzCta:disabled{background:#183d42;color:#9bf0d0;box-shadow:none;cursor:default}
-@media(min-width:640px){.kzGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.kzShow{max-height:320px}}
+/* A swipeable deck of PA companion cards. */
+.kzCollectionHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:12px 0}
+.kzCollectionHead h2{margin:0;font-size:16px;font-weight:700;color:var(--kz-ink)}
+.kzCollectionHead>span{font-size:11px;color:var(--kz-mut)}
+.kzDeck{position:relative;height:536px;overflow:hidden;touch-action:pan-y;perspective:1200px;isolation:isolate}
+.kzDeck:focus-visible{outline:2px solid #e9b949;outline-offset:2px;border-radius:14px}
+.kzTradingCard{position:relative;box-sizing:border-box;min-width:0;border:1px solid #bda366;border-radius:20px;padding:4px;background:#102a47;box-shadow:0 14px 32px #0008,inset 0 0 0 1px #315578;isolation:isolate;overflow:hidden}
+.kzDeck .kzTradingCard{--depth:0;--drag-x:0px;--drag-angle:0deg;position:absolute;top:4px;left:50%;width:var(--kz-card-width, min(76vw,300px));height:var(--kz-card-height,420px);transform-origin:50% 100%;transform:translateX(calc(-50% + var(--depth)*3px)) translateY(calc(var(--depth)*9px)) scale(calc(1 - var(--depth)*.035)) rotateZ(calc(var(--depth)*.4deg));transition:transform .52s cubic-bezier(.22,.7,.2,1),filter .52s;filter:brightness(calc(1 - var(--depth)*.06));pointer-events:none}
+.kzDeck .kzTradingCard.is-focus{transform:translateX(calc(-50% + var(--drag-x))) translateY(0) scale(1) rotateZ(var(--drag-angle));filter:none;pointer-events:auto}
+.kzDeck .kzTradingCard.is-rolling{transition:none;pointer-events:none}
+.kzDeck.is-dragging .kzTradingCard.is-focus{transition:none}
+.kzTradingCard::after{content:none}
+.kzCardOpen,.kzFullFace{box-sizing:border-box;display:flex;flex-direction:column;width:100%;height:100%;min-height:0;padding:14px;border:0;border-radius:16px;background:linear-gradient(160deg,#183c5b,#0b1c32 68%);color:#f3f6fc;text-align:left;font:inherit}
+.kzCardOpen{cursor:pointer}
+.kzCardOpen:focus-visible{outline:2px solid #f6dc9a;outline-offset:-2px}
+.kzCardTop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10px;font-weight:600;color:#d6bb78;letter-spacing:.03em}
+.kzCardTop small{font-size:10px;color:#8ba8c0;font-variant-numeric:tabular-nums}
+.kzCardHeading{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:8px 0 12px;min-height:30px}
+.kzCardHeading h2,#treasure .kzCardHeading h2{margin:0;font-size:23px;font-weight:800;line-height:1.15;color:#fff;overflow-wrap:anywhere;letter-spacing:-.4px}
+.kzCardHeading>span{flex:none;text-align:center;font-size:9px;color:#a3b9cc}
+.kzCardHeading>span b{display:block;font-size:21px;color:#f6dc9a}
+.kzCardScene{position:relative;flex:1;min-height:170px;border:0;border-radius:12px;overflow:hidden;background:#0b213a url('../assets/ui/khazanah/teman-night-math-v1.webp') center/cover;display:grid;place-items:center;margin:0 -8px}
+.kzCardScene::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0b1c32 0%,transparent 30%);pointer-events:none}
+.kzCardScene img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 9px 7px #0008)}
+.kzDeck .is-focus .kzCardScene img{animation:kzCardFloat 4s ease-in-out infinite}
+.kzCardScene.unseen img{filter:brightness(0) drop-shadow(0 0 12px #8acfff66);opacity:.75}
+.kzCardForm{position:absolute;bottom:10px;right:12px;z-index:1;font-size:10px;font-weight:700;color:#f6dc9a;text-shadow:0 1px 4px #000}
+.kzCardInfo{display:flex;flex-direction:column;flex:none;padding-top:12px;min-height:90px}
+.kzCardStatus{font-size:12px;font-weight:700;color:#f6dc9a}
+.kzCardStatus.tamed{color:#c6e5ee}
+.kzCardInfo p{font-size:11px;line-height:1.5;margin:4px 0 10px;color:#93aec3}
+.kzBond{display:flex;justify-content:space-between;border-top:1px solid #31516b;padding-top:9px;font-size:11px;color:#93aec3}
+.kzBond b{color:#e1eaf2;font-size:12px}
+.kzRescue{border-top:1px solid #31516b;padding-top:9px}
+.kzRescue>div:first-child{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#a9bdce}
+.kzRescueBar{height:4px;margin:7px 0;border-radius:6px;background:#213e57;overflow:hidden}
+.kzRescueBar i{display:block;height:100%;background:#e3bf66;border-radius:inherit}
+.kzRescue small,.kzDiscovery{font-size:10px;line-height:1.45;color:#93aec3}
+.kzDeckNav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:0}
+.kzDeckNav>button{width:42px;height:42px;border:1px solid #d4ac5166;border-radius:50%;background:#14243b;color:#f6dc9a;font-size:26px;cursor:pointer}
+.kzDeckNav>button:disabled{opacity:.3;cursor:default}
+.kzDeckDots{display:flex;align-items:center;gap:0}
+.kzDeckDots button{position:relative;width:25px;height:40px;padding:0;border:0;background:transparent;cursor:pointer}
+.kzDeckDots button::after{content:"";position:absolute;width:6px;height:6px;left:calc(50% - 3px);top:calc(50% - 3px);border-radius:50%;background:#526076;transition:background .2s,transform .2s}
+.kzDeckDots button.active::after{background:#f6dc9a;transform:scale(1.4)}
+.kzDeckHint{font-size:11px;color:#92a5bb;text-align:center;margin:10px 0 18px}
+#badgeCollection.kzGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#badgeCollection .badgeCard,#badgeCollection .badgeCard.owned{background:#0c1c31;box-shadow:none;border:1px solid #ffffff1a;border-radius:12px;padding:16px 10px}
+.kzDetailSheet{box-sizing:border-box;position:fixed;inset:0;margin:auto;width:min(100%,420px);max-width:420px;max-height:calc(100dvh - 20px);overflow-y:auto;overscroll-behavior:contain;padding:40px 18px 20px;border:0;border-radius:0;background:transparent;color:var(--kz-ink);scrollbar-width:none}
+.kzDetailSheet::backdrop{background:#030b18df;backdrop-filter:blur(5px)}
+.kzSheetClose{position:absolute;right:18px;top:0;width:36px;height:36px;border:1px solid #f6dc9a66;border-radius:50%;background:#13243b;color:#f6dc9a;font-size:27px;cursor:pointer}
+.kzFullCard{animation:kzCardReveal .35s cubic-bezier(.2,.7,.25,1) both}
+.kzFullFace{height:auto;min-height:0;padding:16px}.kzFullCard .kzCardScene{flex:none;height:240px}.kzFullCard .kzCardInfo{min-height:0}
+.kzFullCard .kzCardHeading h2{font-size:24px}
+.kzDetailActions{margin-top:14px;display:grid;gap:10px;padding:14px;border:1px solid #61728955;border-radius:12px;background:#0c1b30}
+.kzDetailActions:empty{display:none}
+.kzRename{min-height:42px;font-size:13px}
+.kzFormLabel{font-size:12px;color:#aabdd0}
+.kzAppearance{display:flex;gap:8px;width:100%}
+.kzAppearance .kzBtn{flex:1;min-height:42px;font-size:13px}
+.kzAppearance .kzBtn[aria-pressed="true"]{background:#f6dc9a;color:#362a18;box-shadow:none}
+.kzEvolution{display:flex;align-items:center;justify-content:space-between;min-height:44px;border:1px solid #8196ac55;border-radius:9px;padding:8px 12px;background:#172b45;color:#fff;font:inherit;font-size:13px;cursor:pointer}
+.kzDetailActions .kzCta{min-height:46px;font-size:14px;letter-spacing:0}
+.kzDetailActions .kzCta:disabled{background:#173b42;color:#a1d4cf;box-shadow:none;cursor:default}
+@keyframes kzCardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes kzCardReveal{from{opacity:0;transform:translateY(16px) rotateZ(-3deg) scale(.95)}to{opacity:1;transform:none}}
+@media(min-width:640px){#badgeCollection.kzGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.kzDeck .kzTradingCard,.kzFullCard,.kzDeckDots button::after{transition:none;animation:none}.kzDeck .is-focus .kzCardScene img{animation:none}}
+
+
+
+/* Compact faces flex around artwork so all rescue copy remains readable. */
+.kzDeck .kzCardOpen{padding:10px}
+.kzDeck .kzCardHeading{margin:5px 0 8px;min-height:26px}
+.kzDeck .kzCardHeading h2{font-size:20px}
+.kzDeck .kzCardScene{min-height:0;margin:0 -4px}
+.kzDeck .kzCardInfo{padding-top:8px;min-height:0}
+.kzDeck .kzCardInfo p{margin:3px 0 7px}
+.kzDeck .kzRescue,.kzDeck .kzBond{padding-top:7px}
+.kzDeck .kzRescue small{display:block}

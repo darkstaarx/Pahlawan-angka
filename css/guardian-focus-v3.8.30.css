@@ -1,1 +1,28 @@
 .guardianFocusOverlay{position:fixed;inset:0;z-index:2500;display:grid;place-items:center;padding:18px;background:rgba(3,11,25,.82);backdrop-filter:blur(8px)}.guardianFocusOverlay.hidden{display:none}.guardianFocusCard{width:min(100%,440px);padding:22px;border:1px solid rgba(255,211,76,.35);background:#102039;border-radius:24px;color:#f7f9ff;box-shadow:0 24px 70px rgba(0,0,0,.5)}.guardianFocusCard h2{margin:5px 0 8px}.guardianFocusCard p{line-height:1.5}.focusCount{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.focusCount button{padding:12px 6px;border-radius:14px;border:1px solid #435979;background:#172b49;color:#fff;font:inherit;font-weight:800}.focusCount button.active{color:#13203a;background:#ffd54f;border-color:#ffd54f}.guardianFocusActions{display:grid;gap:9px}.focusLaunch{white-space:nowrap}.guardianFocusNote{font-size:.88rem;color:#bdc9dc}
+
+/* Three visible choices use the same illustrated frame and art as the hub. */
+.focusPickerCard{box-sizing:border-box;width:min(100%,460px);max-height:calc(100dvh - 32px);overflow-y:auto;min-width:0;padding:22px 12px 10px;border:2px solid #b99a45;border-radius:24px;background:radial-gradient(ellipse at top,#213d57,transparent 65%),#0e1e33;box-shadow:inset 0 0 0 3px #ffffff08,0 24px 70px #0009}
+.focusPickerCard>.eyebrow{padding:0 8px;color:#ffdb75;font-size:.72rem;letter-spacing:.13em}
+.focusPickerCard h2{padding:0 8px;font-size:1.4rem;line-height:1.25;margin:8px 0}
+.focusPickerCard>.guardianFocusNote{padding:0 8px;margin:0 0 16px;color:#c2cfdd;font-size:.83rem;line-height:1.4}
+.focusPickerDeck{display:grid;gap:9px;overflow:visible;padding:0}
+.focusPickCard{position:relative;box-sizing:border-box;display:grid;grid-template-columns:72px minmax(0,1fr) 42px;align-items:center;gap:8px;width:100%;min-height:124px;padding:19px 18px 16px 20px;text-align:left;white-space:normal;font:inherit;color:#18344d;background:url('../assets/ui/menu-v2/jejak-pet-frame-v2.webp') center/100% 100% no-repeat;border:0;border-radius:18px;cursor:pointer;transition:filter .15s,transform .15s}
+.focusPickCard:hover{filter:brightness(1.05)}
+.focusPickCard:active{transform:scale(.985)}
+.focusPickCard:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.focusPickArt{position:relative;display:grid;place-items:center;width:72px;height:72px;filter:drop-shadow(0 3px 3px #84632740)}
+.focusPickArt img{display:block;width:72px;height:72px;object-fit:contain}
+.focusPickCard:first-child .focusPickArt img[src*='coin']{width:60px;height:60px}
+.focusPickSymbol{position:absolute;right:-2px;bottom:0;display:grid;place-items:center;width:25px;height:25px;border:2px solid #dcb352;border-radius:8px;color:#ffe49d;background:#153d60;font-size:1.2rem;font-weight:900;line-height:1}
+.focusPickBody{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0}
+.focusPickLabel{color:#8a661b;font-weight:900;letter-spacing:.08em;font-size:.61rem;line-height:1.2}
+.focusPickTitle{font-size:1.03rem;line-height:1.2;overflow-wrap:anywhere;letter-spacing:-.02em}
+.focusPickEvidence{color:#586575;font-size:.69rem;line-height:1.3}
+.focusPickCta{display:grid;place-items:center;min-height:40px;padding:4px;border:1px solid #bd8c29;border-radius:10px;color:#24333a;background:linear-gradient(#ffe17a,#efba35);font-size:.64rem;font-weight:900;line-height:1.2;box-shadow:0 2px 0 #a87924}
+.focusPickerEmpty{padding:16px;border:1px solid #a58742;border-radius:16px;background:#ffffff08}
+.focusPickerEmpty[hidden]{display:none}
+.focusPickerEmpty p{color:#d0dbe5;font-size:.9rem;margin-top:0}
+.focusPickerClose{display:block;width:100%;min-height:42px;margin-top:8px!important;padding:10px!important;border:0!important;background:transparent!important;color:#c6d3e1!important;font-size:.88rem!important;box-shadow:none!important}
+.focusPickerClose:focus-visible{outline:2px solid #ffdc75;outline-offset:2px}
+@media(max-width:360px){.guardianFocusOverlay{padding:10px}.focusPickerCard{padding:18px 8px 8px}.focusPickCard{grid-template-columns:60px minmax(0,1fr) 36px;gap:5px;padding-left:17px;padding-right:15px}.focusPickArt,.focusPickArt img{width:60px;height:60px}.focusPickTitle{font-size:.95rem}}
+@media(max-height:650px){.focusPickerCard{padding-top:16px}.focusPickerCard>.guardianFocusNote{margin-bottom:10px}.focusPickCard{min-height:105px;padding-top:14px;padding-bottom:12px}.focusPickerDeck{gap:6px}}

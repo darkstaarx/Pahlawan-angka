@@ -143,3 +143,30 @@ body[data-screen="parent"] #parent {
 body[data-screen="parent"] .parentTabs {
   touch-action: pan-x pan-y;
 }
+
+
+/* The Teman deck fills the space between the app header and bottom nav.
+   Trofi keeps its normal scrolling collection. */
+body[data-screen="treasure"] #treasure.on[data-kz-tab="pets"]{
+  display:flex;flex-direction:column;overflow-y:hidden;scrollbar-gutter:auto;
+  padding:10px 13px calc(var(--nav-h,72px) + env(safe-area-inset-bottom,0px) + 8px);
+}
+#treasure[data-kz-tab="pets"] .kzHead{position:static;flex:0 0 46px;height:46px;padding:0;background:transparent;margin-bottom:4px;border-bottom:0}
+#treasure[data-kz-tab="pets"] .kzTitle h1{font-size:24px}
+#treasure[data-kz-tab="pets"] .kzTabs{flex:none;margin:0 0 6px}
+#treasure[data-kz-tab="pets"] .kzTab{min-height:38px;padding:6px 2px}
+#treasure[data-kz-tab="pets"] .kzPanel{display:flex;flex-direction:column;flex:1;min-height:0}
+#treasure[data-kz-tab="pets"] .kzCollectionHead{flex:none;margin:4px 0 6px;min-height:20px}
+#treasure[data-kz-tab="pets"] .kzCollectionHead h2{font-size:14px}
+#treasure[data-kz-tab="pets"] #kzPetGallery{display:flex;flex-direction:column;flex:1;min-height:0}
+#treasure[data-kz-tab="pets"] .kzDeck{flex:1;min-height:0;height:auto}
+#treasure[data-kz-tab="pets"] .kzDeckNav{flex:none;gap:12px;margin:4px 0 0}
+#treasure[data-kz-tab="pets"] .kzDeckNav>button{width:36px;height:36px;font-size:23px}
+#treasure[data-kz-tab="pets"] .kzDeckDots button{height:36px}
+#treasure[data-kz-tab="pets"] .kzDeckHint{flex:none;font-size:10px;margin:4px 0 0;line-height:16px}
+/* Very short landscape windows retain scrolling rather than clip card text. */
+@media(max-height:540px){
+  body[data-screen="treasure"] #treasure.on[data-kz-tab="pets"]{overflow-y:auto}
+  #treasure[data-kz-tab="pets"] .kzPanel,#treasure[data-kz-tab="pets"] #kzPetGallery{flex:none}
+  #treasure[data-kz-tab="pets"] .kzDeck{flex:none;height:350px}
+}

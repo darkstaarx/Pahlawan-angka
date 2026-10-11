@@ -11,3 +11,13 @@
 .paExportPreview{margin-top:12px;border:1px solid #304969;border-radius:14px;background:#08182d;padding:10px}.paExportPreviewHead{display:flex;justify-content:space-between;gap:8px;align-items:center}.paExportPreviewHead b{font-size:11px}.paExportPreviewHead span{font-size:9px;color:#87a0be}.paMiniBars{display:grid;gap:6px;margin-top:9px}.paMiniBars span{display:grid;grid-template-columns:minmax(0,1fr) 70px 27px;gap:6px;align-items:center;color:#aabbd0;font-size:9px}.paMiniBars i{height:5px;border-radius:99px;background:#203958;overflow:hidden}.paMiniBars i::before{content:"";display:block;width:var(--w);height:100%;border-radius:inherit;background:linear-gradient(90deg,#55cf98,#f1c644)}.paMiniBars em{font-style:normal;text-align:right;color:#e9f2ff}
 @media(max-width:390px){.paExportCard,.paWorksheetCard{padding:14px}.paToolHead{grid-template-columns:40px minmax(0,1fr) auto;gap:9px}.paToolIcon{width:40px;height:40px}.paToolHead h3{font-size:16px}.paWorksheetOptions{grid-template-columns:1fr}.paToolActions{grid-template-columns:1fr}.paWorksheetModes{gap:5px}.paWorksheetMode{padding-inline:4px}.paSkillSnapshot b{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.paWorksheetMode,.paToolBtn{transition:none}}
+
+
+/* Dedicated parent worksheet downloads. */
+#parent .parentTabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#parent .parentTabs button{min-width:0;padding-inline:6px}
+#worksheetTab .paParentTools{margin-top:12px}
+#worksheetTab .paToolBtn{padding:10px 12px;line-height:1.35}
+#worksheetTab .paWorksheetStatus{font-size:12px;line-height:1.5}
+#worksheetTab [aria-busy="true"]{cursor:progress}
+@media(max-width:390px){#parent .parentTabs{gap:5px}#parent .parentTabs button{font-size:12px;padding-inline:3px}}

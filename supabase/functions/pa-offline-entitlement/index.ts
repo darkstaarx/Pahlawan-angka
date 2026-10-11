@@ -23,7 +23,7 @@ function reply(status:number,body:unknown){
 }
 Deno.serve(async req=>{
  if(req.method==='OPTIONS')return new Response(null,{status:204,headers:{
-  'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type',
+  'access-control-allow-origin':'*','access-control-allow-headers':'authorization,apikey,content-type,x-client-info,x-retry-count,traceparent,tracestate,baggage',
   'access-control-allow-methods':'POST','access-control-max-age':'600'
  }});
  if(req.method!=='POST')return reply(405,{error:'method_not_allowed'});
