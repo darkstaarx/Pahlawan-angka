@@ -4,3 +4,13 @@
 .paPrices .paBetaLabel{align-self:flex-start;margin-top:3px;padding:3px 6px;border-radius:6px;background:#3c3013;color:#ffe27e;font-size:8px;font-weight:950;letter-spacing:.06em}
 .paRegularPrice{color:#aebcd1;font-size:14px;font-weight:750;text-decoration-thickness:1.5px}
 .paPricing .paBetaNote{margin:12px 0 0;color:#c8d5e7;font-size:11px;line-height:1.5}
+
+/* Vertical plans: most complete first, with room for clear benefit copy. */
+.paPricing{box-sizing:border-box;width:min(100%,560px)}
+.paPrices{grid-template-columns:minmax(0,1fr);gap:16px}
+.paPrices article{padding:20px;gap:7px;min-width:0}
+.paPrices article>b{font-size:21px}
+.paPrices em{position:static;align-self:flex-start;font-size:11px}
+.paPrices strong{font-size:34px}
+.paPrices span,.paPrices article ul,.paPrices article p{font-size:13px;line-height:1.6}
+.paPrices article p{margin:5px 0 0;color:#afbdd3}

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+(async()=>{
 'use strict';
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
 const repo=path.resolve(__dirname,'..');
@@ -46,10 +46,10 @@ ctx.performance={now:()=>10};ctx.db=profile;
 ctx.scoreState=()=>({mastery:35,evidence:5,confidence:40,correct:2,wrong:3});
 ctx.swapDemoState=(profile,session)=>{const old={db:ctx.db,sess:ctx.sess};ctx.db=profile;ctx.sess=session;return old};
 ctx.PASegelHost={openProduction:()=>{}};
-ctx.PACommercial={requireFeature:feature=>feature==='focus'};
+ctx.PACommercial={requireFeature:feature=>feature==='focus',authorizeMission:async()=>true};
 const doc=ctx.document;ctx.document=undefined;
 load('js/engine/production-journey.js');ctx.document=doc;ctx.__PA_LIVE_ASSET_REFRESHED=true;
-ctx.PAProductionJourney.open({focusSkill:'D2.2.3'});
+await ctx.PAProductionJourney.open({focusSkill:'D2.2.3'});
 const run=ctx.PAProductionJourney.state();
 assert.equal(run.route,'focus');assert.deepEqual(Array.from(run.pool),['D2.2.3']);
 for(let i=0;i<30;i++){const q=ctx.PAProductionJourney.nextQuestion(run);assert.equal(q.skill,'D2.2.3');assert(!/Fallback/.test(q.kind||''));assert.equal(ctx.sess.focusSkill,'D2.2.3')}
@@ -62,3 +62,5 @@ ctx.PAFocusPractice.open();assert.equal(nodes.focusPickerDeck.children.length,3)
 nodes.focusPickerDeck.children[0].onclick();assert.equal(opened[0].focusSkill,ids[0]);assert.equal(nodes.focusPickerOverlay.classList.contains('hidden'),true);
 ctx.PAFocusPractice.open();ctx.db={schoolGrade:1};nodes.focusPickerDeck.children[0].onclick();assert.equal(opened.length,1,'stale profile selection cannot launch');assert.equal(nodes.focusPickerEmpty.hidden,false);
 console.log(JSON.stringify({skills:report.length,samples:report.length*80,minimumUnique:Math.min(...report.map(r=>r.unique)),lowVariety:report.filter(r=>r.unique<20),multiplication:report.filter(r=>/MUL|D2\.2\.3/.test(r.id)),ranking:'passed'},null,2));
+
+})().catch(error=>{console.error(error);process.exitCode=1});

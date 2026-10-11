@@ -124,9 +124,11 @@ function renderMissions(){
   });
   screen('missions'); save();
 }
-function startMission(ch=null){
+async function startMission(ch=null){
  if(!window.PACommercial?.requireFeature?.('missions'))return;
   if(typeof enforceRestuLock==='function' && enforceRestuLock())return;
+  if(window.PAProductionJourney)return window.PAProductionJourney.open({chapter:ch,adaptive:!ch});
+  if(!await window.PACommercial?.authorizeMission?.())return;
   ensureProgression(); db.activeMissionChapter=ch?String(ch):null; save();
   const arena=document.getElementById('battleArena');if(arena)arena.classList.remove('boss-cleared');
   document.getElementById('bossCheckpoint')?.classList.remove('show');

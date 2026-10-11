@@ -3,8 +3,8 @@
 | Feature | Free | Akses Keluarga (premium) | Family Plus |
 | --- | --- | --- | --- |
 | Guest demo | Yes | Yes | Yes |
-| Missions, Cikgu Dimensi, saved progress | No | Yes | Yes |
-| Active child profiles | 0 | 2 | 5 |
+| Missions, Cikgu Dimensi, saved progress | 1 mission daily | Unlimited | Unlimited |
+| Active child profiles | 1 | 2 | 5 |
 | Focus practice and PDF reports | No | No | Yes |
 | Worksheet downloads | No | 1 per family per Malaysia calendar day | Unlimited |
 
@@ -23,3 +23,5 @@ Validation: run node --test audit/commercial-production-access.test.js and execu
 Frontend v3.85.76 is prepared locally; release frontend together with the already-applied backend rules. Demo math/rendering remains publicly delivered static content: client controls govern the normal UI, database policies govern protected cloud writes. Server-side worksheet/report delivery would be needed to make downloadable content private.
 
 Worksheet quota revision v3.85.77: claim_worksheet_download is an atomic server RPC, required for both PDF variants. Build PDF before claiming; a failed browser save after a successful claim still consumes that day. No external AI API is used. Supabase API requests are required for authorization/quota. Generation stays browser-side, so a modified client could bypass local generation; this quota protects the supported download flow, not public source code.
+
+Free daily mission revision v3.85.79: signed-in Free gets one active child profile and one mission START per Malaysia calendar day. Leaving/restarting a mission does not refund the start. Demo is exempt. Paid plans bypass the daily mission cap. Direct quota access is revoked and server claims use the family/day unique key; browser offline claims fail closed. Pricing cards stack Plus, standard, Free.

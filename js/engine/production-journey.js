@@ -73,7 +73,7 @@
     return petConfig(profile,null);
   }
 
-  function open(options={}){
+  async function open(options={}){
  if(!window.PACommercial?.requireFeature?.(options.focusSkill?'focus':'missions'))return;
     if(typeof document!=='undefined'&&!window.__PA_LIVE_ASSET_REFRESHED){liveAssetRefresh.then(()=>open(options));return;}
     if(!db||!window.PASegelHost)return;
@@ -84,6 +84,8 @@
       console.error('[gembok] no real skill pool for production route',options);
       return;
     }
+    const profile=db;
+    if(!await window.PACommercial?.authorizeMission?.()||db!==profile)return;
     if(active)close(false);
     const id=`gembok-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
     active={id,gembok:true,route:focusSkill?'focus':(options.adaptive?'adaptive':'manual'),chapter,focusSkill,pool,profileDb:db,petConfig:activePetConfig(db),previousSession:sess,session:makeSession(options),
