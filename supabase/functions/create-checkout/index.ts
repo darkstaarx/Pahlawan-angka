@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 import { corsHeaders, json, requireConfig } from '../_shared/http.ts';
 
 const PLAN_SET = new Set(['premium', 'family_plus']);
+const CANONICAL_APP_URL = 'https://pahlawanangka.netlify.app/';
 type PaymentOrder = { id: string; external_uuid: string; billcode: string | null; amount_cents: number };
 
 Deno.serve(async (req) => {
@@ -42,7 +43,7 @@ Deno.serve(async (req) => {
     const { data: claimed, error: claimError } = await authClient.rpc('claim_payment_bill', { p_order_id: order.id });
     if (claimError || claimed !== true) return json({ error: 'Checkout is already being prepared' }, 409, origin);
     const amount = Number(order.amount_cents);
-    const appUrl = APP_URL.replace(/\/$/, '');
+    const appUrl = new URL(CANONICAL_APP_URL).origin;
     const providerUrl = TOYYIBPAY_BASE_URL.replace(/\/$/, '');
     const form = new URLSearchParams({ userSecretKey: TOYYIBPAY_SECRET_KEY, categoryCode: CATEGORY_CODE, billName: `Pahlawan Angka ${plan}`, billDescription: `Pahlawan Angka ${plan} order`, billPriceSetting: '1', billPayorInfo: '1', billAmount: String(amount), billReturnUrl: `${appUrl}/?payment_order=${encodeURIComponent(order.id)}`, billCallbackUrl: `${SUPABASE_URL}/functions/v1/toyyibpay-callback`, billExternalReferenceNo: order.external_uuid, billTo: parentName, billEmail: user.email, billPhone: phone, billPaymentChannel: '2' });
     stage = 'provider_request';

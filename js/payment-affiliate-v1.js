@@ -9,6 +9,7 @@
   const REF_KEY = 'pa_affiliate_referral_v1';
   const ORDER_KEY = 'pa_pending_payment_v1';
   const REF_TTL = 30 * 24 * 60 * 60 * 1000;
+  const CANONICAL_APP_URL = 'https://pahlawanangka.netlify.app/';
   let referralCaptured = false;
   const api = () => root.PACloud?.state;
   const client = () => api()?.client;
@@ -78,7 +79,7 @@
     if (!validPhone(details.phone)) return status(message, 'Masukkan nombor telefon yang sah.');
     button.disabled = true; button.textContent = 'Menyediakan pembayaran…';
     try {
-      const data = await functionCall('create-checkout', { plan, parent_name: details.name, phone: details.phone, affiliate_code: referral() || null, return_path: location.pathname, expected_price_cents: Math.round(PLANS[plan].price * 100) });
+      const data = await functionCall('create-checkout', { plan, parent_name: details.name, phone: details.phone, affiliate_code: referral() || null, expected_price_cents: Math.round(PLANS[plan].price * 100) });
       const url = typeof data === 'string' ? data : data?.live_url || data?.url || data?.payment_url;
       if (!url || !/^https:\/\/(?:dev\.)?toyyibpay\.com\//i.test(url)) throw new Error('Pautan pembayaran tidak tersedia.');
       const order = data?.order_id || data?.bill_code || data?.id; if (order) localStorage.setItem(ORDER_KEY, JSON.stringify({ order: String(order).slice(0, 100), expires: Date.now() + 86400000 })); overlay.classList.add('hidden'); location.assign(url);
@@ -133,7 +134,7 @@
       host.append(text('p', data.status === 'pending' ? 'Permohonan sedang disemak.' : data.status === 'suspended' ? 'Status: Digantung. Pendaftaran semula tidak tersedia.' : 'Status: Aktif', 'pa-aff-status'));
       if (data.status === 'suspended') return;
       if (data.status !== 'approved') { affiliateForm(host); return; }
-      const link = `${location.origin}${location.pathname}?ref=${encodeURIComponent(safeRef(data.code))}`; const box = document.createElement('div'); box.className = 'pa-aff-link'; box.append(text('label', 'Pautan rujukan anda')); const input = document.createElement('input'); input.readOnly = true; input.value = link; box.append(input); const copy = text('button', 'Salin pautan', 'pa-aff-secondary'); copy.type = 'button'; copy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(link); copy.textContent = 'Disalin ✓'; } catch (_) { input.select(); } }); box.append(copy); host.append(box);
+      const link = `${CANONICAL_APP_URL}?ref=${encodeURIComponent(safeRef(data.code))}`; const box = document.createElement('div'); box.className = 'pa-aff-link'; box.append(text('label', 'Pautan rujukan anda')); const input = document.createElement('input'); input.readOnly = true; input.value = link; input.setAttribute('aria-label', 'Pautan rujukan anda'); box.append(input); const copy = text('button', 'Salin pautan', 'pa-aff-secondary'); copy.type = 'button'; copy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(link); copy.textContent = 'Disalin ✓'; } catch (_) { input.select(); } }); box.append(copy); host.append(box);
       const commissions = await client().from('affiliate_commissions').select('amount_cents,status').eq('affiliate_id', application.data.id);
       if (commissions?.error) throw commissions.error;
       if (user()?.id !== renderUserId) return;

@@ -113,8 +113,8 @@ Deno.serve(async (req) => {
         continue;
       }
       const rendered = item.kind === 'payment'
-        ? paymentEmail({ plan: item.plan, amountCents: item.amount_cents, orderId: item.order_id, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.app' })
-        : affiliateWelcomeEmail({ affiliateCode: item.affiliate_code, commissionSnapshot: item.commission_snapshot, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.app' });
+        ? paymentEmail({ plan: item.plan, amountCents: item.amount_cents, orderId: item.order_id, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.netlify.app/' })
+        : affiliateWelcomeEmail({ affiliateCode: item.affiliate_code, commissionSnapshot: item.commission_snapshot, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.netlify.app/' });
       let response: Response;
       try { response = await sendGmail(token, recipient, rendered.subject, rendered.text, rendered.html); }
       catch { reconciliationRequired++; break outer; }
