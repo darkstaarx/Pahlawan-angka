@@ -177,6 +177,11 @@
   function triggerSpeech(bubbleId, text) {
     const el = $(bubbleId);
     if (!el) return;
+    // The shared RPG row shows one speaker at a time.
+    const otherId=bubbleId==='wiraBubble'?'petBubble':'wiraBubble';
+    if(speechWriters[otherId]){clearTimeout(speechWriters[otherId]);speechWriters[otherId]=null}
+    if(speechTimeouts[otherId]){clearTimeout(speechTimeouts[otherId]);speechTimeouts[otherId]=null}
+    const other=$(otherId);if(other)other.classList.remove('show');
     if (speechWriters[bubbleId]) clearTimeout(speechWriters[bubbleId]);
     if (speechTimeouts[bubbleId]) clearTimeout(speechTimeouts[bubbleId]);
     el.textContent = '';
@@ -294,12 +299,7 @@
     }
   }
   function focusSkillId(){
-    try{
-      if(db.focus&&META[db.focus])return db.focus;
-      const ch=String(db.activeMissionChapter||db.coreFrontier||1);
-      const first=GRAPH.skills.find(x=>x.grade===db.schoolGrade&&String(x.chapter)===ch);
-      return first?first.id:null;
-    }catch(_){ return null }
+    return window.PAFocusPractice?.summary?.().items[0]?.id||null;
   }
 
   /* Nota bukti mengikut gerbang sebenar powerLevel() dalam parent.js:
@@ -366,16 +366,21 @@
     if(fid){
       let title=fid, m=0;
       try{ title=(META[fid]&&META[fid].title)||fid }catch(_){}
-      try{ m=Math.round(Number((scoreState(fid)||{}).mastery||0)) }catch(_){}
+      const recommendation=window.PAFocusPractice?.summary?.().items[0];
+      m=recommendation?.independentRate||0;
       if(fname)fname.textContent=title;
       if(fpct)fpct.textContent=m+'%';
       if(ffill)ffill.style.width=Math.max(0,Math.min(100,m))+'%';
-      if(fnote)fnote.textContent=focusNote(fid);
+      if(fnote)fnote.textContent=recommendation
+        ?'Betul sendiri: '+recommendation.independent+'/'+recommendation.attempts+' · Pilih fokus'
+        :focusNote(fid);
     }else{
-      if(fname)fname.textContent='Belum ditetapkan';
+      if(fname)fname.textContent='Pilih fokus';
       if(fpct)fpct.textContent='—';
       if(ffill)ffill.style.width='0%';
-      if(fnote)fnote.textContent='Mula satu misi untuk menguji kuasa kamu.';
+      if(fnote)fnote.textContent=window.PAFocusPractice?.summary?.().hasEvidence
+        ?'Teruskan kembara untuk semak kemahiran lain.'
+        :'Kumpul bukti melalui latihan dahulu.';
     }
 
     // Pet Aktif. Data tahap dan ikatan datang daripada koleksi teman canonical.
@@ -596,12 +601,7 @@
     if(focus&&!focus.dataset.boundV2){
       focus.dataset.boundV2='1';
       const openFocus=()=>{
-        const id=focusSkillId();
-        if(!id){
-          if(has('showRewardToast'))showRewardToast('Kemahiran fokus belum tersedia.');
-          return;
-        }
-        if(typeof openGuardianFocus==='function')openGuardianFocus(id);
+        window.PAFocusPractice?.open?.();
       };
       focus.onclick=openFocus;
       focus.onkeydown=(event)=>{
@@ -703,5 +703,6 @@
     install();
   })();
 })();
+
 
 

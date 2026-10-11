@@ -214,7 +214,11 @@ body[data-screen="menuV2"] .appHeader{display:none}
 }
 
 .mv2Learn{
-  background:url("../assets/ui/menu-v2/cikgu-card-v2.webp") center / 100% 100% no-repeat;
+  /* Scale the decorative artwork down and fade it before the text column. */
+  background:
+    linear-gradient(90deg,transparent 15%,rgba(230,246,255,.65) 24%,#e6f6ff 31%,#edf9ff 100%),
+    url("../assets/ui/menu-v2/cikgu-card-v2.webp") left center / 80% 100% no-repeat,
+    linear-gradient(160deg,#d1effc,#edf9ff);
   border:0;box-shadow:0 10px 26px rgba(0,0,0,.5);padding:12px 14px
 }
 .mv2LearnCikgu{
@@ -619,3 +623,25 @@ body[data-screen="menuV2"] .appHeader{display:none}
 }
 .mv2PetPortrait .mv2PetFace.hidden{display:none}
 
+
+/* Classic RPG dialogue: a compact, centered box above the actors.
+   Keep the typewriter effect while preventing the old side bubble clipping. */
+.mv2HeroDialogueSlot{
+  position:relative;z-index:20;height:48px;margin:4px 4px 2px;
+  display:grid;place-items:center;
+}
+#wiraBubble,#petBubble{
+  position:relative;grid-area:1 / 1;inset:auto;width:fit-content;max-width:calc(100% - 16px);height:auto;min-height:42px;
+  box-sizing:border-box;padding:7px 11px;border:5px double #253047;
+  border-radius:4px;background:#fff;color:#111827;
+  font-family:inherit;font-size:13px;font-weight:750;line-height:1.35;
+  text-align:left;white-space:normal;overflow-wrap:anywhere;
+  display:flex;align-items:center;justify-content:flex-start;
+  box-shadow:0 3px 0 #0b1729,0 5px 12px rgba(0,0,0,.2);
+  transform:translateY(3px);transition:opacity .15s ease,transform .15s ease;
+}
+#wiraBubble::after,#petBubble::after{content:none}
+#wiraBubble.show,#petBubble.show{transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){
+  #wiraBubble{transition:none;transform:none}
+}

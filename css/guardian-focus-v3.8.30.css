@@ -1,1 +1,139 @@
 .guardianFocusOverlay{position:fixed;inset:0;z-index:2500;display:grid;place-items:center;padding:18px;background:rgba(3,11,25,.82);backdrop-filter:blur(8px)}.guardianFocusOverlay.hidden{display:none}.guardianFocusCard{width:min(100%,440px);padding:22px;border:1px solid rgba(255,211,76,.35);background:#102039;border-radius:24px;color:#f7f9ff;box-shadow:0 24px 70px rgba(0,0,0,.5)}.guardianFocusCard h2{margin:5px 0 8px}.guardianFocusCard p{line-height:1.5}.focusCount{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.focusCount button{padding:12px 6px;border-radius:14px;border:1px solid #435979;background:#172b49;color:#fff;font:inherit;font-weight:800}.focusCount button.active{color:#13203a;background:#ffd54f;border-color:#ffd54f}.guardianFocusActions{display:grid;gap:9px}.focusLaunch{white-space:nowrap}.guardianFocusNote{font-size:.88rem;color:#bdc9dc}
+
+/* Three visible choices use the same illustrated frame and art as the hub. */
+.focusPickerCard{box-sizing:border-box;width:min(100%,460px);max-height:calc(100dvh - 32px);overflow-y:auto;min-width:0;padding:22px 12px 10px;border:2px solid #b99a45;border-radius:24px;background:radial-gradient(ellipse at top,#213d57,transparent 65%),#0e1e33;box-shadow:inset 0 0 0 3px #ffffff08,0 24px 70px #0009}
+.focusPickerCard>.eyebrow{padding:0 8px;color:#ffdb75;font-size:.72rem;letter-spacing:.13em}
+.focusPickerCard h2{padding:0 8px;font-size:1.4rem;line-height:1.25;margin:8px 0}
+.focusPickerCard>.guardianFocusNote{padding:0 8px;margin:0 0 16px;color:#c2cfdd;font-size:.83rem;line-height:1.4}
+.focusPickerDeck{display:grid;gap:9px;overflow:visible;padding:0}
+.focusPickCard{position:relative;box-sizing:border-box;display:grid;grid-template-columns:72px minmax(0,1fr) 42px;align-items:center;gap:8px;width:100%;min-height:124px;padding:19px 18px 16px 20px;text-align:left;white-space:normal;font:inherit;color:#18344d;background:url('../assets/ui/menu-v2/jejak-pet-frame-v2.webp') center/100% 100% no-repeat;border:0;border-radius:18px;cursor:pointer;transition:filter .15s,transform .15s}
+.focusPickCard:hover{filter:brightness(1.05)}
+.focusPickCard:active{transform:scale(.985)}
+.focusPickCard:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.focusPickArt{position:relative;display:grid;place-items:center;width:72px;height:72px;filter:drop-shadow(0 3px 3px #84632740)}
+.focusPickArt img{display:block;width:72px;height:72px;object-fit:contain}
+.focusPickCard:first-child .focusPickArt img[src*='coin']{width:60px;height:60px}
+.focusPickSymbol{position:absolute;right:-2px;bottom:0;display:grid;place-items:center;width:25px;height:25px;border:2px solid #dcb352;border-radius:8px;color:#ffe49d;background:#153d60;font-size:1.2rem;font-weight:900;line-height:1}
+.focusPickBody{display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-width:0}
+.focusPickLabel{color:#8a661b;font-weight:900;letter-spacing:.08em;font-size:.61rem;line-height:1.2}
+.focusPickTitle{font-size:1.03rem;line-height:1.2;overflow-wrap:anywhere;letter-spacing:-.02em}
+.focusPickEvidence{color:#586575;font-size:.69rem;line-height:1.3}
+.focusPickCta{display:grid;place-items:center;min-height:40px;padding:4px;border:1px solid #bd8c29;border-radius:10px;color:#24333a;background:linear-gradient(#ffe17a,#efba35);font-size:.64rem;font-weight:900;line-height:1.2;box-shadow:0 2px 0 #a87924}
+.focusPickerEmpty{padding:16px;border:1px solid #a58742;border-radius:16px;background:#ffffff08}
+.focusPickerEmpty[hidden]{display:none}
+.focusPickerEmpty p{color:#d0dbe5;font-size:.9rem;margin-top:0}
+.focusPickerClose{display:block;width:100%;min-height:42px;margin-top:8px!important;padding:10px!important;border:0!important;background:transparent!important;color:#c6d3e1!important;font-size:.88rem!important;box-shadow:none!important}
+.focusPickerClose:focus-visible{outline:2px solid #ffdc75;outline-offset:2px}
+@media(max-width:360px){.guardianFocusOverlay{padding:10px}.focusPickerCard{padding:18px 8px 8px}.focusPickCard{grid-template-columns:60px minmax(0,1fr) 36px;gap:5px;padding-left:17px;padding-right:15px}.focusPickArt,.focusPickArt img{width:60px;height:60px}.focusPickTitle{font-size:.95rem}}
+@media(max-height:650px){.focusPickerCard{padding-top:16px}.focusPickerCard>.guardianFocusNote{margin-bottom:10px}.focusPickCard{min-height:105px;padding-top:14px;padding-bottom:12px}.focusPickerDeck{gap:6px}}
+
+
+/* Kemahiran Fokus — mockup-aligned premium modal. All titles and progress are real DOM. */
+#focusPickerOverlay.guardianFocusOverlay{
+  padding:max(8px,env(safe-area-inset-top)) 7px max(8px,env(safe-area-inset-bottom));
+  background:rgba(5,11,24,.66);backdrop-filter:blur(8px);
+}
+#focusPickerOverlay .focusPickerCard{
+  position:relative;isolation:isolate;box-sizing:border-box;
+  width:min(96vw,480px);max-height:min(98dvh,780px);
+  padding:48px clamp(23px,5.5vw,39px) 32px;
+  border:0;border-radius:32px;overflow-y:auto;overflow-x:hidden;
+  background:#06182f url('../assets/ui/focus-v1/focus-panel-illustrated-v1.webp') center/100% 100% no-repeat;
+  box-shadow:0 28px 75px #000b,0 0 40px #8e682539;
+  scrollbar-width:thin;scrollbar-color:#b58c39 transparent;
+  text-align:center;color:#fff3cc;
+}
+#focusPickerOverlay .focusPickerCard>.eyebrow{display:none}
+#focusPickerOverlay .focusPickerCard #focusPickerTitle{
+  margin:0 auto 5px;padding:0 9px;
+  color:#ffe2a0;font-weight:1000;letter-spacing:-.035em;
+  font-size:clamp(24px,6.4vw,35px);line-height:1.15;
+  text-shadow:0 3px 1px #5f3309,0 5px 11px #0008;
+}
+#focusPickerOverlay .focusPickerCard>.guardianFocusNote{
+  font-size:clamp(12px,3.4vw,15px);line-height:1.35;margin:0 0 22px;
+  color:#bfcdea;padding:0 12px;
+}
+#focusPickerOverlay .focusPickerDeck{
+  display:grid;grid-template-columns:1fr;gap:clamp(9px,1.8dvh,15px);
+  padding:10px 0 0;overflow:visible;
+}
+#focusPickerOverlay .focusPickCard{
+  box-sizing:border-box;position:relative;width:100%;
+  min-height:clamp(100px,14.5dvh,118px);
+  display:grid;grid-template-columns:clamp(43px,11vw,57px) minmax(0,1fr) clamp(68px,20vw,101px);
+  align-items:center;gap:clamp(6px,1.7vw,12px);
+  padding:15px clamp(12px,3.6vw,22px) 14px clamp(19px,4.6vw,27px);
+  background:transparent url('../assets/ui/focus-v1/focus-skill-card-clean-v1.svg') center/100% 100% no-repeat;
+  border:0;outline-offset:0;border-radius:16px;
+  color:#082042;cursor:pointer;text-align:left;box-shadow:none;
+  font:inherit;transition:filter .15s,transform .15s;
+}
+#focusPickerOverlay .focusPickCard:first-child{margin-top:4px}
+#focusPickerOverlay .focusPickCard:focus-visible{outline:3px solid #a7e5ff;outline-offset:3px}
+#focusPickerOverlay .focusPickCard:hover{filter:brightness(1.045)}
+#focusPickerOverlay .focusPickCard:active{transform:scale(.987)}
+#focusPickerOverlay .focusPickArt{width:100%;height:auto;aspect-ratio:1;filter:none;display:flex;align-items:center;justify-content:flex-start}
+#focusPickerOverlay .focusPickNumber{
+  display:grid;place-items:center;width:min(100%,clamp(41px,11vw,52px));aspect-ratio:1;transform:translateX(-2px);
+  border-radius:50%;box-sizing:border-box;
+  border:4px ridge #ffdc66;background:radial-gradient(circle at 30% 20%,#195290,#071f54 53%,#061637 100%);
+  color:#ffe2a2;text-shadow:0 2px 3px #051028,0 -1px #fff5cd;
+  box-shadow:0 0 0 2px #78420f,0 0 0 5px #edb83a,inset 0 0 0 2px #03275e,0 5px 9px #6a441d80;
+  font-family:Georgia,serif;font-size:clamp(22px,5.7vw,33px);line-height:1;font-weight:900;
+}
+#focusPickerOverlay .focusPickBody{
+  position:relative;display:flex;flex-direction:column;align-items:stretch;
+  min-width:0;gap:clamp(5px,1vw,8px);padding:3px 0 0;justify-content:center;
+}
+#focusPickerOverlay .focusPickCard:first-child .focusPickBody{padding-top:14px}
+#focusPickerOverlay .focusPickLabel{display:none}
+#focusPickerOverlay .focusPickCard:first-child .focusPickLabel{
+  display:block;position:absolute;top:-16px;left:0;white-space:nowrap;
+  padding:4px 11px 5px;border-radius:7px;
+  font-size:clamp(9px,2.4vw,12px);line-height:1;font-weight:950;letter-spacing:0;
+  background:linear-gradient(180deg,#0d4e98,#041d43);
+  color:#ffe5a7;box-shadow:0 0 0 2px #d59b2f,inset 0 0 0 1px #6b9dd7,0 2px 4px #4e391a55;
+}
+#focusPickerOverlay .focusPickTitle{
+  font-weight:1000;color:#071a39;font-size:clamp(13px,3.9vw,20px);
+  line-height:1.1;letter-spacing:-.023em;
+  overflow-wrap:anywhere;text-shadow:0 1px #fff8e9;
+}
+#focusPickerOverlay .focusPickEvidence{
+  font-size:clamp(10px,2.9vw,14px);line-height:1.15;color:#567397;font-weight:700;
+}
+#focusPickerOverlay .focusPickCta{
+  box-sizing:border-box;min-width:0;min-height:clamp(43px,7.1dvh,60px);
+  padding:8px 3px;display:grid;place-items:center;
+  background:linear-gradient(170deg,#214e7f,#0b2a59 40%,#071a39);
+  border:2px solid #ab803b;border-radius:11px;color:#fff3c3;
+  box-shadow:0 4px 9px #47321780,inset 0 1px 1px #79b2dd;
+  font-size:clamp(13px,3.4vw,19px);font-weight:900;letter-spacing:-.025em;white-space:nowrap;
+}
+#focusPickerOverlay .focusPickerClose{
+  display:block;width:min(66%,230px);min-height:46px;margin:20px auto 5px!important;
+  padding:7px 15px!important;border:3px solid #c68b26!important;border-radius:12px!important;
+  background:linear-gradient(150deg,#17447c,#071d43 70%)!important;
+  color:#ffdf9a!important;font-weight:900!important;font-size:clamp(16px,4.5vw,20px)!important;
+  box-shadow:0 2px 0 #7f4c0f,inset 0 1px 2px #6ca0cc!important;
+}
+#focusPickerOverlay .focusPickerEmpty{
+  margin:8px 0 3px;padding:20px 14px;border:2px solid #d3a147;
+  border-radius:12px;background:#112d51;
+}
+@media(max-width:360px){
+  #focusPickerOverlay .focusPickerCard{padding:45px 24px 24px;}
+  #focusPickerOverlay .focusPickerCard #focusPickerTitle{padding:0 6px;font-size:24px;}
+  #focusPickerOverlay .focusPickCard{grid-template-columns:41px minmax(0,1fr) 70px;min-height:108px;padding-left:19px;padding-right:12px;gap:6px;}
+  #focusPickerOverlay .focusPickTitle{font-size:13px}
+  #focusPickerOverlay .focusPickEvidence{font-size:10px}
+  #focusPickerOverlay .focusPickCta{font-size:12px;min-height:42px}
+}
+@media(max-height:640px){
+  #focusPickerOverlay .focusPickerCard{padding-top:35px;padding-bottom:19px}
+  #focusPickerOverlay .focusPickerCard>.guardianFocusNote{margin-bottom:10px}
+  #focusPickerOverlay .focusPickCard{min-height:96px;padding-top:12px;padding-bottom:10px}
+  #focusPickerOverlay .focusPickerDeck{gap:7px}
+  #focusPickerOverlay .focusPickerClose{min-height:40px;margin-top:10px!important}
+}
