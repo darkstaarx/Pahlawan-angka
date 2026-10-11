@@ -94,7 +94,7 @@
   }
 
   function affiliateForm(host) {
-    host.textContent = ''; host.append(text('h3', 'Daftar Rakan Affiliate — percuma'), text('p', 'Dapatkan komisen bagi setiap pembelian melalui pautan anda. Tiada yuran pendaftaran.'));
+    host.textContent = ''; host.append(text('h3', 'Daftar Rakan Affiliate — percuma'), text('p', 'Dapatkan komisen bagi setiap pembelian melalui pautan anda. Tiada yuran pendaftaran.'), text('p', `Akses Keluarga RM${PLANS.premium.price.toFixed(2)} → komisen RM${PLANS.premium.commission.toFixed(2)}. Family Plus RM${PLANS.family_plus.price.toFixed(2)} → komisen RM${PLANS.family_plus.commission.toFixed(2)}.`));
     const form = document.createElement('form'); form.className = 'pa-aff-form';
     const accountLabel = text('label', 'Akaun'); const account = document.createElement('input'); account.type = 'email'; account.value = user()?.email || user()?.user_metadata?.email || ''; account.readOnly = true; account.tabIndex = -1; accountLabel.append(account); form.append(accountLabel);
     [['name','Nama penuh','text'],['phone','Telefon','tel']].forEach(([key, label, type]) => { const wrap = text('label', label); const input = document.createElement('input'); input.name = key; input.type = type; input.required = true; input.maxLength = key === 'phone' ? 30 : 100; if (key === 'phone') { input.inputMode = 'tel'; input.autocomplete = 'tel'; } else input.autocomplete = 'name'; wrap.append(input); form.append(wrap); });
