@@ -12,7 +12,7 @@ Bahagian yang memaparkan e-mel (B 1.5–3.5 s), PIN (P 0–1.5 s) dan notifikasi
 (P > 22.1 s) tidak digunakan.
 """
 import os
-from engine import Shot, REST, CardGrid, TierPills, PdfPages, LogoReveal, Callout, BUILD
+from engine import Shot, REST, CardGrid, TierPills, PdfPages, LogoReveal, Callout, HookText, EndScene, BUILD, font
 
 DURATION = 64.0
 
@@ -52,7 +52,7 @@ SCENES = [
 
 # ---------------------------------------------------------------- telefon
 SHOTS = [
-    Shot(0.0, 6.0, 'C', [(11.0, 11.0, 0.6), (11.0, 12.4, 1.4), (12.4, 16.4, 4.0)], 'hook-masalah-jurus-penamat'),
+    Shot(0.0, 6.0, 'C', [(12.25, 12.4, 2.0), (12.4, 16.4, 4.0)], 'jurus-penamat'),
     Shot(8.0, 12.0, 'B', [(16.4, 18.8, 2.4), (18.8, 18.8, 0.8), (18.8, 19.6, 0.8)], 'soalan-wang-betul'),
     Shot(12.0, 16.0, 'A', [(0.3, 4.3, 4.0)], 'hub-kembara-dimensi'),
     Shot(16.0, 19.0, 'T', [(1.4, 1.7, 0.3), (1.7, 1.7, 1.0), (1.7, 4.6, 1.7)], 'peta-topik'),
@@ -71,10 +71,11 @@ SHOTS = [
 ]
 
 CAMERA = [
-    # hook masalah: soalan kelabu, push-in perlahan; snap zoom ke Jurus Penamat tepat pada drop (2.0 s)
-    (0.0, R(s=1.02, oy=1250, ry=-7, rz=-1.5, rx=3)),
-    (1.95, R(s=1.1, oy=1235, ry=-3, rz=-0.5, rx=1)),
-    (2.15, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
+    # 0-1.9 s: hook teks sahaja (telefon tersembunyi); telefon muncul terus di Jurus Penamat pada drop 2.0 s
+    (0.0, Z(0.5, 0.19, 2.2, oy=1130, a=0.0)),
+    (1.9, Z(0.5, 0.19, 2.2, oy=1130, a=0.0)),
+    (1.98, Z(0.5, 0.19, 2.0, oy=1130, a=1.0)),
+    (2.3, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
     (5.4, Z(0.5, 0.21, 1.8, oy=1130)),
     (5.95, R(s=1.2, v=0.3, oy=1250, a=0.0), 'in'),
     (7.85, R(s=0.85, oy=1400, ry=30, rz=6, rx=12, a=0.0)),
@@ -141,14 +142,10 @@ HIGHLIGHTS = [
     (54.85, 55.8, 0.05, 0.805, 0.95, 0.868),    # Latihan + skema
 ]
 
-PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS, grade=[(0.0, 1.9, 2.05)])]
+PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS)]
 
 # ---------------------------------------------------------------- teks
 TEXTS = [
-    dict(t0=0.0, t1=1.98, style='slate', size=88, y=210, lines=[
-        [('Anak', 0.0, 'fill'), ('liat', 0.12, 'fill'), ('nak', 0.24, 'fill'), ('buat', 0.34, 'fill')],
-        [('latihan', 0.5, 'fill'), ('Matematik?', 0.72, 'fill')],
-    ]),
     dict(t0=2.1, t1=5.85, kicker='PAHLAWAN ANGKA', head='Setiap jawapan betul jadi serangan!'),
     dict(t0=6.3, t1=7.95, kicker='MATEMATIK KSSR · DARJAH 1–6', head='Dalam Bahasa Melayu', align='center', y=1290, small=True),
     dict(t0=8.15, t1=11.85, kicker='SOALAN SEBENAR', head='Wang, masa, pecahan & banyak lagi'),
@@ -189,7 +186,39 @@ TROFI = [
 PDF_A = os.path.join(BUILD, 'pdf_ws-1.png')   # Latihan Disyorkan Cikgu Dimensi (halaman 1)
 PDF_B = os.path.join(BUILD, 'pdf_sk-5.png')   # Skema dan Cara Menjawab (halaman 5)
 
+# ---------------------------------------------------------------- hook (0-2 s): tipografi kinetik
+def _line(words, size, y, t0, dt):
+    f = font('InterDisplay-Black.otf', size)
+    space = f.getlength(' ')
+    widths = [f.getlength(w) for w in words]
+    x = 540 - (sum(widths) + space * (len(words) - 1)) / 2
+    out = []
+    for i, (w, ww) in enumerate(zip(words, widths)):
+        out.append(dict(text=w, size=size, x=x + ww / 2, y=y, t=t0 + dt * i))
+        x += ww + space
+    return out
+
+
+def make_hook():
+    words = [dict(text='Anak', size=150, x=540, y=670, t=0.0),
+             dict(text='liat', size=300, x=540, y=885, t=0.16, color=(252, 192, 66), focus=True,
+                  stroke=7, stroke_color=(112, 50, 0), glow=(255, 140, 30), spin=14)]
+    words += _line(['nak', 'buat', 'latihan'], 96, 1082, 0.42, 0.08)
+    words += [dict(text='Matematik?', size=150, x=540, y=1235, t=0.70)]
+    return HookText(0.0, words, twist=(0.92, 1.5), exit_=(1.5, 1.88), center=(540, 950), shake_word=1)
+
+
+HOOK_SFX = [('thud', 0.02, 0.55), ('thud', 0.19, 0.95), ('pop', 0.43, 0.4), ('pop', 0.51, 0.4), ('pop', 0.59, 0.4),
+            ('thud', 0.72, 0.6), ('boing', 0.92, 0.65, 0.85), ('whoosh', 1.45, 0.45, 0.9, 6000, 400)]
+
+
+def end_sfx(t0):
+    return [('whoosh', t0 + 0.55, 0.45, 0.6), ('thud', t0 + 0.95, 0.7), ('pop', t0 + 1.12, 0.4), ('pop', t0 + 1.21, 0.4),
+            ('pop', t0 + 1.3, 0.4), ('pop', t0 + 1.63, 0.6), ('shimmer', t0 + 1.7, 0.5)]
+
+
 SPECIALS = [
+    make_hook(),
     LogoReveal(6.1, 7.95, y=830, scale=0.92, dark_text=False),
     lambda r: Callout(r, 0, 8.45, 9.3, (0.03, 0.445, 0.97, 0.62), 540, 600, 900, ry=-4),
     lambda r: Callout(r, 0, 12.9, 15.85, (0.03, 0.475, 0.97, 0.632), 500, 1020, 880, ry=-6, rz=-1),
@@ -211,11 +240,10 @@ SPECIALS = [
          (57.25, R(s=1.15, ox=690, oy=1340, rz=6, ry=-14, rx=6), 'back'), (59.6, R(s=1.19, ox=700, oy=1330, rz=5, ry=-12, rx=5)),
          (60.0, R(s=1.3, ox=720, oy=1320, rz=5, ry=-12, rx=5, a=0.0))],
     ]),
-    LogoReveal(60.15, 64.6, y=760, scale=1.0, tag=['Pengembaraan matematik', 'ikut kemampuan anak.'], tag_t=60.9,
-               cta='Cuba demo Pahlawan Angka', cta_t=61.9, dark_text=True),
+    EndScene(60.1, 64.6),
 ]
 
-FLASHES = [(2.0, 0.35, 0.6), (2.8, 0.25, 0.3), (23.6, 0.25, 0.25), (25.25, 0.25, 0.25), (40.0, 0.45, 0.6)]
+FLASHES = [(0.18, 0.15, 0.12), (2.0, 0.35, 0.6), (2.8, 0.25, 0.3), (23.6, 0.25, 0.25), (25.25, 0.25, 0.25), (40.0, 0.45, 0.6)]
 
 # ---------------------------------------------------------------- audio
 MUSIC = [
@@ -224,7 +252,7 @@ MUSIC = [
 ]
 
 SFX = [
-    ('src', 1.5, 'C', 11.9, 16.4, 0.85), ('whoosh', 5.6, 0.6, 0.8), ('pop', 6.3, 0.7),
+    *HOOK_SFX, ('src', 1.95, 'C', 12.35, 16.4, 0.85), ('whoosh', 5.6, 0.6, 0.8), ('pop', 6.3, 0.7),
     ('whoosh', 7.6, 0.6, 0.8), ('pop', 8.5, 0.55), ('src', 9.2, 'B', 17.6, 18.8, 0.7),
     ('whoosh', 11.5, 0.6, 0.7), ('pop', 12.95, 0.6), ('pop', 14.05, 0.45), ('pop', 14.3, 0.45),
     ('whoosh', 15.95, 0.5, 0.5), ('pop', 16.45, 0.55),
@@ -236,4 +264,5 @@ SFX = [
     ('whoosh', 41.2, 0.6, 0.7), ('pop', 41.85, 0.4), ('pop', 42.1, 0.4), ('pop', 42.35, 0.4),
     ('whoosh', 44.2, 0.6, 0.7), ('pop', 45.4, 0.55), ('pop', 48.0, 0.55), ('pop', 50.65, 0.55), ('pop', 54.9, 0.45),
     ('whoosh', 55.6, 0.7, 0.8), ('whoosh', 56.1, 0.6, 0.6), ('whoosh', 59.55, 0.7, 0.8),
+    *end_sfx(60.1),
 ]

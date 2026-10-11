@@ -34,7 +34,7 @@ Video akhir dihantar terus kepada pemilik projek dan tidak disimpan dalam git.
 
 | Masa | Babak / latar | Telefon & kamera | Callout / grafik | Teks | Muzik |
 | --- | --- | --- | --- | --- | --- |
-| 0:00–0:02 | Gelap | Telefon depan, soalan sebenar **dikelabukan**, push-in perlahan | — | **Anak liat nak buat / latihan Matematik?** (hook masalah, ditaip laju) | Intro tegang + riser |
+| 0:00–0:02 | Gelap | Tersembunyi | **Tipografi kinetik** (`HookText`): Anak → **liat** (besar, emas, gegaran skrin) → nak buat latihan → Matematik? terhempas masuk; 0:00.9 "liat" dipintal seperti getah (gelombang + regangan + ricih, bunyi *boing*); 0:01.5 semua perkataan berpusing dan disedut ke tengah | (teks hook) | Intro + riser |
 | 0:02–0:06 | Gelap | Warna kembali + snap zoom ke **Jurus Penamat** → serangan → KUKUPAT DITEMUI | Kilat 0:02 & 0:02.8 | PAHLAWAN ANGKA / Setiap jawapan betul jadi serangan! | **Drop tepat 0:02** |
 | 0:06–0:08 | Navy, wipe × | — | Logo muncul | MATEMATIK KSSR · DARJAH 1–6 / Dalam Bahasa Melayu | Drop |
 | 0:08–0:12 | Gelap, wipe + | Masuk dari kanan; zoom 1.25× ke jawapan | Kad soalan "Harga barang RM1…" terangkat; highlight "Betul! Kunci retak." | SOALAN SEBENAR / Wang, masa, pecahan & banyak lagi | Groove |
@@ -50,7 +50,7 @@ Video akhir dihantar terus kepada pemilik projek dan tidak disimpan dalam git.
 | 0:50.2–0:54.4 | Krim | Condong −8° | Kad Had Masa Bermain (30/30/15 minit, kunci) | **CONTOH TETAPAN IBU BAPA** / Ibu bapa tentukan masa bermain | Ringan |
 | 0:54.4–0:56 | Krim | Depan | Highlight Latihan + skema | WORKSHEET / Muat turun latihan bercetak | Ringan |
 | 0:56–1:00 | Navy, wipe + | Telefon jatuh ke bawah | 2 halaman PDF sebenar terbang keluar | WORKSHEET PDF / Sambung latihan atas kertas | Groove → riser |
-| 1:00–1:04 | Emas, wipe × | — | Logo + tagline + butang | Pengembaraan matematik ikut kemampuan anak. / **Cuba demo Pahlawan Angka** | Hentakan akhir |
+| 1:00–1:04 | Emas, wipe × | — | `EndScene`: logo → kotak panel naik → **Wira (sprite gembira `rescue-happy-v6`, 20 bingkai) melompat dari kanan dan mendarat di atas kotak** → "Jom, Wira temankan!" → butang "Cuba Demo Sekarang" berkilau → tagline | Pengembaraan matematik ikut kemampuan anak. | Hentakan akhir |
 
 Bunyi permainan asal hanya digunakan pada detik penting, iaitu Jurus Penamat, segel pecah, menaip + serangan, dan evolusi. Muzik direndahkan sedikit (ducking) ketika bunyi itu dimainkan. Audio dinormalkan ke −14 LUFS.
 

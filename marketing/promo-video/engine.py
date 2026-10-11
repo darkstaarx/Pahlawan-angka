@@ -953,6 +953,252 @@ class LogoReveal:
                 over(out, c2, (W - c2.shape[1]) // 2, int(self.y + self.logo.shape[0] / 2 + 210 - c2.shape[0] / 2 + 56), min(1, ac))
 
 
+class HookText:
+    """Tipografi kinetik untuk hook: perkataan terhempas masuk satu demi satu, satu perkataan
+    fokus "dipintal" seperti getah, kemudian semua perkataan disedut ke tengah dan hilang."""
+
+    def __init__(self, t0, words, twist, exit_, center=(540, 880), shake_word=None):
+        self.t0, self.twist, self.exit_, self.center, self.layer = t0, twist, exit_, center, 'front'
+        self.shake_word = shake_word
+        self.words = []
+        for w in words:
+            fnt = font(w.get('font', 'InterDisplay-Black.otf'), w['size'])
+            col = w.get('color', (255, 255, 255))
+            bb = fnt.getbbox(w['text'])
+            pad = 40
+            iw, ih = bb[2] - bb[0] + 2 * pad, bb[3] - bb[1] + 2 * pad
+            im = Image.new('RGBA', (iw, ih), (0, 0, 0, 0))
+            d = ImageDraw.Draw(im)
+            stroke = w.get('stroke', 0)
+            d.text((pad - bb[0], pad - bb[1]), w['text'], font=fnt, fill=col + (255,),
+                   stroke_width=stroke, stroke_fill=w.get('stroke_color', (120, 60, 0)) + (255,))
+            sh = im.getchannel('A').filter(ImageFilter.GaussianBlur(12)).point(lambda v: int(v * 0.7))
+            shadow = Image.new('RGBA', im.size, (0, 0, 0, 0))
+            shadow.putalpha(sh)
+            if w.get('glow'):
+                g = Image.new('RGBA', im.size, w['glow'] + (0,))
+                g.putalpha(im.getchannel('A').filter(ImageFilter.GaussianBlur(22)).point(lambda v: int(v * 0.8)))
+                shadow = Image.alpha_composite(shadow, g)
+            im = Image.alpha_composite(shadow, im)
+            self.words.append(dict(w, img=np.asarray(im, np.float32) / 255))
+
+    def active(self, t):
+        return self.t0 - 0.01 <= t <= self.exit_[1] + 0.02
+
+    def _shake(self, t):
+        if self.shake_word is None:
+            return 0.0, 0.0
+        ts = self.words[self.shake_word]['t'] + 0.07
+        if not (ts <= t <= ts + 0.35):
+            return 0.0, 0.0
+        k = (t - ts) / 0.35
+        a = 16 * (1 - k) ** 2
+        return a * math.sin(t * 95), a * math.cos(t * 83)
+
+    def draw(self, out, t):
+        sx_, sy_ = self._shake(t)
+        e0, e1 = self.exit_
+        n = len(self.words)
+        for i, w in enumerate(self.words):
+            k_in = (t - w['t']) / 0.24
+            if k_in <= 0:
+                continue
+            kb = ease_back(k_in, 1.9)
+            scale = 1 + (1 - kb) * 1.1
+            rot = (1 - kb) * w.get('spin', -10)
+            alpha = min(1.0, k_in * 4)
+            x, y = w['x'] + sx_, w['y'] + sy_
+            img = w['img']
+            sx = sy = 1.0
+            shear = 0.0
+            wave = 0.0
+            if w.get('focus') and self.twist[0] <= t <= self.twist[1]:
+                tau = (t - self.twist[0]) / (self.twist[1] - self.twist[0])
+                env = math.sin(math.pi * tau) ** 0.7
+                sx = 1 + 0.38 * env * (0.5 + 0.5 * math.sin(2 * math.pi * 2.0 * tau))
+                sy = 1 - 0.14 * env * (0.5 + 0.5 * math.sin(2 * math.pi * 2.0 * tau + math.pi))
+                shear = 0.42 * env * math.sin(2 * math.pi * 1.5 * tau)
+                rot += 9 * env * math.sin(2 * math.pi * 1.2 * tau + 0.6)
+                wave = 26 * env
+                ph = 2.6 * tau
+            ke = ease_in((t - e0 - 0.035 * (n - 1 - i if not w.get('focus') else n)) / max(0.05, e1 - e0 - 0.035 * n))
+            if ke > 0:
+                x += (self.center[0] - x) * ke
+                y += (self.center[1] - y) * ke
+                scale *= max(0.0, 1 - ke)
+                rot += ke * 200 * (1 if i % 2 else -1)
+                alpha *= 1 - ke ** 3
+            if scale <= 0.01 or alpha <= 0.003:
+                continue
+            if wave > 0:
+                h, w_ = img.shape[:2]
+                yy, xx = np.mgrid[0:h, 0:w_].astype(np.float32)
+                dx = wave * np.sin(2 * math.pi * (yy / h * 1.3 - ph))
+                img = cv2.remap(img, xx + dx, yy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+            h, w_ = img.shape[:2]
+            c, s_ = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+            A = np.array([[sx * scale, shear * sy * scale], [0, sy * scale]])
+            Rm = np.array([[c, -s_], [s_, c]])
+            M2 = Rm @ A
+            corners = np.array([[-w_ / 2, -h / 2], [w_ / 2, -h / 2], [w_ / 2, h / 2], [-w_ / 2, h / 2]]) @ M2.T + [x, y]
+            roi = roi_of(corners, pad=4)
+            if roi is None:
+                continue
+            x0, y0, x1, y1 = roi
+            M = np.hstack([M2, (np.array([x - x0, y - y0]) - M2 @ np.array([w_ / 2, h / 2]))[:, None]])
+            warped = cv2.warpAffine(img, M, (x1 - x0, y1 - y0), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+            a = warped[..., 3:4] * alpha
+            reg = out[y0:y1, x0:x1]
+            reg *= (1 - a)
+            reg += warped[..., :3] * a
+
+
+class EndScene:
+    """Penutup: logo, kotak panel dengan Wira (sprite gembira) berdiri di atasnya, ajakan dan butang demo."""
+
+    def __init__(self, t0, t1, headline='Jom, Wira temankan!', button='Cuba Demo Sekarang',
+                 tag=('Pengembaraan matematik', 'ikut kemampuan anak.')):
+        self.t0, self.t1, self.layer = t0, t1, 'front'
+        logo = Image.open(os.path.join(REPO, 'assets/branding/pahlawan-angka-full-logo-v1.png')).convert('RGBA')
+        logo = logo.crop(logo.getbbox())
+        logo.thumbnail((620, 620), Image.LANCZOS)
+        self.logo = np.asarray(logo, np.float32) / 255
+        # kotak panel
+        bw, bh = 880, 430
+        ss = 2
+        box = Image.new('RGBA', ((bw + 80) * ss, (bh + 80) * ss), (0, 0, 0, 0))
+        g = Image.new('RGBA', box.size, (0, 0, 0, 0))
+        ImageDraw.Draw(g).rounded_rectangle([40 * ss, 56 * ss, (40 + bw) * ss, (56 + bh) * ss], radius=50 * ss, fill=(60, 30, 0, 120))
+        box = Image.alpha_composite(box, g.filter(ImageFilter.GaussianBlur(18 * ss)))
+        d = ImageDraw.Draw(box)
+        d.rounded_rectangle([40 * ss, 40 * ss, (40 + bw) * ss, (40 + bh) * ss], radius=50 * ss, fill=(14, 24, 62, 255),
+                            outline=(255, 214, 110, 255), width=7 * ss)
+        d.rounded_rectangle([54 * ss, 54 * ss, (26 + bw) * ss, (26 + bh) * ss], radius=40 * ss, outline=(70, 96, 170, 255), width=2 * ss)
+        self.box = np.asarray(box.resize((bw + 80, bh + 80), Image.LANCZOS), np.float32) / 255
+        self.box_size = (bw, bh)
+        self.f_head = font('InterDisplay-Black.otf', 70)
+        self.headline = headline.split()
+        self.g = Glyphs()
+        f2 = font('Inter-ExtraBold.otf', 48)
+        pw, phh = int(f2.getlength(button)) + 130, 116
+        btn = Image.new('RGBA', (pw + 60, phh + 60), (0, 0, 0, 0))
+        g = Image.new('RGBA', btn.size, (0, 0, 0, 0))
+        ImageDraw.Draw(g).rounded_rectangle([30, 30, 30 + pw, 30 + phh], radius=58, fill=(245, 184, 61, 200))
+        btn = Image.alpha_composite(btn, g.filter(ImageFilter.GaussianBlur(16)))
+        d = ImageDraw.Draw(btn)
+        d.rounded_rectangle([30, 30, 30 + pw, 30 + phh], radius=58, fill=(250, 196, 70, 255), outline=(255, 236, 170, 255), width=4)
+        d.text((30 + pw / 2, 30 + phh / 2), button, font=f2, fill=(14, 22, 54, 255), anchor='mm')
+        self.btn = np.asarray(btn, np.float32) / 255
+        f3 = font('InterDisplay-Bold.otf', 48)
+        tagim = Image.new('RGBA', (W, 140), (0, 0, 0, 0))
+        d = ImageDraw.Draw(tagim)
+        for i, ln in enumerate(tag):
+            d.text((W / 2, 6 + i * 62), ln, font=f3, fill=(14, 22, 54, 255), anchor='mt')
+        self.tag = np.asarray(tagim, np.float32) / 255
+        # sprite Wira gembira (20 bingkai)
+        import glob as _glob
+        frames = sorted(_glob.glob(os.path.join(REPO, 'assets/heroes/wira-chibi/frames/rescue-happy-v6/rescue-happy-*-v6.png')))
+        self.wira = []
+        for f in frames:
+            im = Image.open(f).convert('RGBA')
+            im = im.crop(im.getbbox())
+            hgt = 500
+            im = im.resize((int(im.width * hgt / im.height), hgt), Image.LANCZOS)
+            self.wira.append(np.asarray(im, np.float32) / 255)
+        self.box_y = 1300          # pusat kotak
+        self.wira_x = 760          # pusat Wira
+
+    def active(self, t):
+        return self.t0 <= t <= self.t1
+
+    def draw(self, out, t):
+        t0 = self.t0
+        a_all = 1 - smooth((t - (self.t1 - 0.25)) / 0.25)
+        # logo
+        k = ease_back((t - t0) / 0.6, 1.4)
+        if k > 0:
+            lg = cv2.resize(self.logo, None, fx=max(0.05, k), fy=max(0.05, k), interpolation=cv2.INTER_AREA)
+            over(out, lg, (W - lg.shape[1]) // 2, int(420 - lg.shape[0] / 2), min(1, k * 1.5) * a_all)
+        # kotak naik dari bawah
+        kb = ease_back((t - t0 - 0.3) / 0.55, 1.2)
+        if kb <= 0:
+            return
+        bw, bh = self.box_size
+        by = self.box_y + (1 - kb) * 520
+        top = by - bh / 2
+        over(out, self.box, int(W / 2 - self.box.shape[1] / 2), int(by - self.box.shape[0] / 2), min(1, kb * 2) * a_all)
+        # Wira jatuh dan mendarat di atas kotak
+        tl = t0 + 0.95
+        if t >= t0 + 0.6:
+            fr = self.wira[int(max(0, t - tl) * 12) % len(self.wira)] if t > tl else self.wira[0]
+            h, w_ = fr.shape[:2]
+            wx = self.wira_x
+            if t < tl:
+                kf = min(1.0, max(0.0, (t - (t0 + 0.6)) / (tl - t0 - 0.6)))
+                wx = self.wira_x + (1 - kf) * 560          # lompat masuk dari kanan
+                foot = top + 22 - 430 * 4 * kf * (1 - kf) - (1 - kf) * 120
+                sxw, syw = 0.95, 1.06
+            else:
+                kl = (t - tl) / 0.35
+                sq = math.sin(min(1.0, kl) * math.pi) * (1 - min(1.0, kl)) * 0.9
+                sxw, syw = 1 + 0.14 * sq, 1 - 0.16 * sq
+                foot = top + 22 - 6 * math.sin(max(0, t - tl - 0.4) * 3.2) * min(1, max(0, t - tl - 0.4))
+            fr2 = cv2.resize(fr, (max(2, int(w_ * sxw)), max(2, int(h * syw))), interpolation=cv2.INTER_LINEAR)
+            # bayang pada kotak
+            if t >= tl - 0.15:
+                sh = np.zeros((40, 300), np.float32)
+                cv2.ellipse(sh, (150, 20), (120, 12), 0, 0, 360, 1.0, -1, cv2.LINE_AA)
+                sh = cv2.GaussianBlur(sh, (0, 0), 6)[..., None] * 0.45 * a_all
+                ys, xs = int(top + 4), int(self.wira_x - 150)
+                reg = out[ys:ys + 40, xs:xs + 300]
+                reg *= (1 - sh[:reg.shape[0], :reg.shape[1]])
+            over(out, fr2, int(wx - fr2.shape[1] / 2), int(foot - fr2.shape[0]), a_all)
+            # debu pendaratan
+            if tl <= t <= tl + 0.5:
+                kd = (t - tl) / 0.5
+                for j in range(10):
+                    ang = math.pi * (j / 9)
+                    r = 60 + 150 * ease_out(kd)
+                    px = int(self.wira_x + math.cos(ang) * r * (1 if j % 2 else -1) * 0.9)
+                    py = int(top - 10 - math.sin(ang) * 30 * ease_out(kd))
+                    rad = int(10 * (1 - kd) + 3)
+                    cv2.circle(out, (px, py), rad, (1.0, 0.92, 0.7), -1, cv2.LINE_AA)
+        # tajuk dalam kotak (perkataan pop)
+        x_words = self.headline
+        total = self.f_head.getlength(' '.join(x_words))
+        x = W / 2 - total / 2
+        for i, wd in enumerate(x_words):
+            kw = ease_back((t - t0 - 1.1 - 0.09 * i) / 0.35, 1.8)
+            ww = self.f_head.getlength(wd)
+            if kw > 0:
+                arr, ox, oy = self.g.img(wd, self.f_head, (255, 255, 255))
+                sc = max(0.05, kw)
+                arr2 = cv2.resize(arr, None, fx=sc, fy=sc, interpolation=cv2.INTER_LINEAR) if abs(sc - 1) > 0.01 else arr
+                cx, cy = x + ww / 2, by - 70
+                over(out, arr2, int(cx - arr2.shape[1] / 2), int(cy - arr2.shape[0] / 2 + 8), min(1, kw * 2) * a_all)
+            x += ww + self.f_head.getlength(' ')
+        # butang demo
+        kc = ease_back((t - t0 - 1.6) / 0.45, 1.6)
+        if kc > 0:
+            pulse = 1 + 0.03 * math.sin(max(0, t - t0 - 2.2) * 5)
+            sc = max(0.05, kc * pulse)
+            b2 = cv2.resize(self.btn, None, fx=sc, fy=sc, interpolation=cv2.INTER_LINEAR)
+            bx, byy = int(W / 2 - b2.shape[1] / 2), int(by + 90 - b2.shape[0] / 2)
+            # kilauan melintas
+            if t > t0 + 2.3:
+                ks = ((t - t0 - 2.3) % 1.6) / 0.6
+                if ks <= 1:
+                    b2 = b2.copy()
+                    hh, ww2 = b2.shape[:2]
+                    xx = np.arange(ww2, dtype=np.float32)[None, :] + np.arange(hh, dtype=np.float32)[:, None] * 0.5
+                    band = np.exp(-((xx - ks * (ww2 + hh)) / 40) ** 2)[..., None] * 0.55
+                    b2[..., :3] = np.clip(b2[..., :3] + band * b2[..., 3:4], 0, 1)
+            over(out, b2, bx, byy, min(1, kc * 2) * a_all)
+        # tagline di bawah kotak
+        ka = ease_out((t - t0 - 2.0) / 0.5) * a_all
+        over(out, self.tag, 0, int(by + bh / 2 + 70 + (1 - ka) * 20), ka)
+
+
 # ---------------------------------------------------------------- audio
 
 def build_audio(tl, out_wav):
@@ -979,7 +1225,11 @@ def build_audio(tl, out_wav):
             x = x * gain
             duck[i:i + len(x)] = np.minimum(duck[i:i + len(x)], 0.6)
         elif kind == 'whoosh':
-            x = music.whoosh(ev[2]) * ev[3]
+            x = (music.whoosh(ev[2], *ev[4:6]) if len(ev) > 4 else music.whoosh(ev[2])) * ev[3]
+        elif kind == 'boing':
+            x = music.boing(ev[2]) * ev[3]
+        elif kind == 'thud':
+            x = music.thud() * ev[2]
         elif kind == 'pop':
             x = music.pop() * ev[2]
         elif kind == 'impact':

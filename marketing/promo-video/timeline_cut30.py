@@ -1,7 +1,8 @@
 """Potongan ringkas 30 saat (9:16) — enjin, footage dan muzik yang sama dengan timeline_main."""
 import os
 from engine import Shot, REST, CardGrid, TierPills, PdfPages, LogoReveal, Callout, BUILD
-from timeline_main import R, Z, SOURCES, SOURCES_AUDIO, GANGSA, PERAK, EMAS, PDF_A, PDF_B
+from engine import EndScene
+from timeline_main import R, Z, SOURCES, SOURCES_AUDIO, GANGSA, PERAK, EMAS, PDF_A, PDF_B, make_hook, HOOK_SFX, end_sfx
 
 DURATION = 30.0
 
@@ -19,7 +20,7 @@ SCENES = [
 ]
 
 SHOTS = [
-    Shot(0.0, 6.0, 'C', [(11.0, 11.0, 0.6), (11.0, 12.4, 1.4), (12.4, 16.4, 4.0)], 'hook-masalah-jurus-penamat'),
+    Shot(0.0, 6.0, 'C', [(12.25, 12.4, 2.0), (12.4, 16.4, 4.0)], 'jurus-penamat'),
     Shot(8.0, 12.0, 'A', [(0.3, 4.3, 4.0)], 'hub-kembara-dimensi'),
     Shot(12.0, 13.8, 'C', [(7.3, 8.9, 1.6), (8.9, 8.9, 0.2)], 'kunci-perak'),
     Shot(13.8, 16.0, 'O', [(112.3, 114.3, 2.0), (114.3, 114.3, 0.2)], 'kunci-emas-taip'),
@@ -30,9 +31,10 @@ SHOTS = [
 ]
 
 CAMERA = [
-    (0.0, R(s=1.02, oy=1250, ry=-7, rz=-1.5, rx=3)),
-    (1.95, R(s=1.1, oy=1235, ry=-3, rz=-0.5, rx=1)),
-    (2.15, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
+    (0.0, Z(0.5, 0.19, 2.2, oy=1130, a=0.0)),
+    (1.9, Z(0.5, 0.19, 2.2, oy=1130, a=0.0)),
+    (1.98, Z(0.5, 0.19, 2.0, oy=1130, a=1.0)),
+    (2.3, Z(0.5, 0.19, 1.7, oy=1130), 'out'),
     (5.4, Z(0.5, 0.21, 1.8, oy=1130)),
     (5.95, R(s=1.2, v=0.3, oy=1250, a=0.0), 'in'),
     (7.85, R(s=0.85, oy=1400, ry=30, rz=6, rx=12, a=0.0)),
@@ -65,13 +67,9 @@ HIGHLIGHTS = [
     (24.5, 25.3, 0.05, 0.805, 0.95, 0.868),     # Latihan + skema
 ]
 
-PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS, grade=[(0.0, 1.9, 2.05)])]
+PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=HIGHLIGHTS)]
 
 TEXTS = [
-    dict(t0=0.0, t1=1.98, style='slate', size=88, y=210, lines=[
-        [('Anak', 0.0, 'fill'), ('liat', 0.12, 'fill'), ('nak', 0.24, 'fill'), ('buat', 0.34, 'fill')],
-        [('latihan', 0.5, 'fill'), ('Matematik?', 0.72, 'fill')],
-    ]),
     dict(t0=2.1, t1=5.85, kicker='PAHLAWAN ANGKA', head='Setiap jawapan betul jadi serangan!'),
     dict(t0=6.3, t1=7.95, kicker='MATEMATIK KSSR · DARJAH 1–6', head='Dalam Bahasa Melayu', align='center', y=1290, small=True),
     dict(t0=8.15, t1=11.9, kicker='KEMBARA DIMENSI', head='Latihan ikut kemampuan anak',
@@ -86,6 +84,7 @@ TEXTS = [
 ]
 
 SPECIALS = [
+    make_hook(),
     LogoReveal(6.1, 7.95, y=830, scale=0.92, dark_text=False),
     lambda r: Callout(r, 0, 8.7, 11.85, (0.03, 0.475, 0.97, 0.632), 500, 1020, 880, ry=-6, rz=-1),
     TierPills(12.1, 15.9, 300, [('Gangsa', GANGSA, 12.2), ('Perak', PERAK, 13.15), ('Emas', EMAS, 13.6)]),
@@ -99,20 +98,19 @@ SPECIALS = [
          (25.55, R(s=1.15, ox=690, oy=1340, rz=6, ry=-14, rx=6), 'back'), (25.95, R(s=1.19, ox=700, oy=1330, rz=5, ry=-12, rx=5)),
          (26.2, R(s=1.3, ox=720, oy=1320, rz=5, ry=-12, rx=5, a=0.0))],
     ]),
-    LogoReveal(26.15, 30.6, y=760, scale=1.0, tag=['Pengembaraan matematik', 'ikut kemampuan anak.'], tag_t=26.8,
-               cta='Cuba demo Pahlawan Angka', cta_t=27.6, dark_text=True),
+    EndScene(26.1, 30.6),
 ]
 
-FLASHES = [(2.0, 0.35, 0.6), (2.8, 0.25, 0.3), (13.15, 0.25, 0.25), (18.0, 0.45, 0.6)]
+FLASHES = [(0.18, 0.15, 0.12), (2.0, 0.35, 0.6), (2.8, 0.25, 0.3), (13.15, 0.25, 0.25), (18.0, 0.45, 0.6)]
 
 MUSIC = [('intro', 0, 1), ('drop', 1, 3), ('groove', 4, 2), ('drop', 6, 2), ('break', 8, 1), ('drop', 9, 1),
          ('light', 10, 2), ('build', 12, 1), ('outro', 13, 2)]
 
 SFX = [
-    ('src', 1.5, 'C', 11.9, 16.4, 0.85), ('whoosh', 5.6, 0.6, 0.8), ('pop', 6.3, 0.7),
+    *HOOK_SFX, ('src', 1.95, 'C', 12.35, 16.4, 0.85), ('whoosh', 5.6, 0.6, 0.8), ('pop', 6.3, 0.7),
     ('whoosh', 7.6, 0.6, 0.7), ('pop', 8.75, 0.6),
     ('whoosh', 11.6, 0.6, 0.7), ('src', 12.2, 'C', 7.5, 8.9, 0.8), ('src', 14.3, 'O', 112.8, 114.3, 0.8),
     ('whoosh', 15.65, 0.6, 0.8), ('src', 16.0, 'K', 14.0, 17.6, 0.35), ('impact', 18.0, 0.45), ('shimmer', 18.05, 0.7),
     ('whoosh', 19.6, 0.6, 0.7), ('pop', 20.55, 0.55), ('pop', 22.55, 0.55), ('pop', 24.55, 0.45),
-    ('whoosh', 24.6, 0.6, 0.7), ('whoosh', 25.6, 0.7, 0.8),
+    ('whoosh', 24.6, 0.6, 0.7), ('whoosh', 25.6, 0.7, 0.8), *end_sfx(26.1),
 ]

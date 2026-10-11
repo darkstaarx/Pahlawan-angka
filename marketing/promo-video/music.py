@@ -485,3 +485,26 @@ if __name__ == '__main__':
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     tl = importlib.import_module(sys.argv[1])
     render_music(tl.MUSIC, tl.DURATION, sys.argv[2])
+
+
+def boing(dur=0.7):
+    """Bunyi 'liat' — nada getah yang bergoyang dan menurun."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    f = 210 * (1 + 0.35 * np.sin(2 * np.pi * 9 * t) * np.exp(-t / 0.35)) * (1 - 0.25 * t / dur)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    x = (2 / np.pi) * np.arcsin(np.sin(ph)) * 0.8 + 0.3 * np.sin(2 * ph)
+    env = np.minimum(1, t / 0.01) * np.exp(-t / (dur * 0.45))
+    x = lp(x * env, 2200)
+    return np.stack([x, x], 1) * 0.7
+
+
+def thud():
+    """Hentakan pendek untuk perkataan yang terhempas masuk."""
+    n = int(0.25 * SR)
+    t = np.arange(n) / SR
+    f = 70 + 160 * np.exp(-t / 0.02)
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.07)
+    x += lp(noise(n), 1800) * np.exp(-t / 0.012) * 0.4
+    x = np.tanh(1.6 * x)
+    return np.stack([x, x], 1) * 0.8
