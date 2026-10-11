@@ -21,3 +21,5 @@ Unit tests cover MIME alternatives, authorization, retryable failures and ambigu
 The private outbox deliberately has RLS enabled with no browser policies. Browser roles cannot access the queue or Vault decrypted secrets.
 
 The managed `pg_net` extension is non-relocatable and currently reports `extension_in_public`. Its objects live in the unexposed `net` schema. Do not use `ALTER EXTENSION ... SET SCHEMA` or drop a populated request queue to clear this advisory. Supabase documents recreating it in `extensions` only after preserving needed responses and checking that no requests are pending: https://supabase.com/docs/guides/database/extensions/pg_net#troubleshooting.
+
+Recipient verification (11 October 2026, 21:54 MYT): the buyer's Gmail contained the activation email in Spam, with Gmail stating similarity to earlier spam messages. Report not spam moved the message into Inbox. Logo, HTML layout, RM19 benefits, order reference and app CTA were visibly present. Delivery is verified; Inbox placement for other recipients remains unproven. No duplicate email was sent.

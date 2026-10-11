@@ -11,7 +11,13 @@ Harga dan komisen disalin ke setiap order. Untuk tukar kadar, nyahaktif versi ka
 
 ## Operasi
 
-Penjaga memohon affiliate melalui Tetapan Ibu Bapa. Admin menyemak permohonan, meluluskan kod, dan melihat bank apabila diperlukan. Dashboard affiliate memaparkan komisen sendiri; dashboard admin memaparkan komisen dan rekod payout. Payout dibuat oleh admin melalui bank dahulu, kemudian simpan rujukan pada komisen. Butang rekod payout tidak memindahkan wang.
+Penjaga mendaftar affiliate secara percuma melalui butang Rakan Affiliate dalam Tetapan Ibu Bapa. Akaun dengan email disahkan terus mendapat kod dan pautan daripada pelayan; tiada approval manual diperlukan. Nama dan telefon diperlukan, butiran bank boleh diisi kemudian. Akaun suspended tidak boleh mengaktifkan semula dirinya. Pendaftaran semula mengekalkan kod dan tidak menambah welcome email.
+
+Nama, status dan kod disimpan dalam affiliate_applications; telefon dan bank disimpan dalam affiliate_bank_info private. Dashboard affiliate memaparkan komisen sendiri; dashboard admin memaparkan komisen dan rekod payout. Payout dibuat oleh admin melalui bank dahulu, kemudian simpan rujukan pada komisen. Butang rekod payout tidak memindahkan wang.
+
+Welcome email menggunakan queue private affiliate_welcome_email_outbox dengan satu rekod bagi setiap affiliate. Snapshot harga dan komisen datang daripada katalog aktif ketika pendaftaran. Worker Gmail memproses kedua-dua queue dalam jumlah maksimum sepuluh email setiap panggilan, satu claim sebelum setiap penghantaran; cron berjalan setiap lima minit. Telegram belum dikonfigurasi dan tiada pautan palsu dipaparkan.
+
+Migration affiliate_auto_registration dan ujian SQL rollback telah lulus pada projek live pada 11 Oktober 2026. Ujian Node gabungan 26 lulus, Deno type check lulus, dan semakan Astra tidak menemui isu material. Worker baru dipanggil secara langsung menggunakan Vault dan membalas HTTP 200 tanpa menghantar semula email payment lama. Welcome email pelanggan sebenar masih memerlukan pendaftaran ujian.
 
 Referral terakhir disimpan sehingga 30 hari dalam pelayar; kod mesti milik affiliate diluluskan dan pembelian sendiri tidak mendapat komisen. Tempoh pelayar ialah aturan atribusi aplikasi, bukan cookie merentas peranti. Order menyimpan affiliate ketika dicipta.
 

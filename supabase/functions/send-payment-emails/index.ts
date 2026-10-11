@@ -1,11 +1,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 import { paymentEmail } from '../_shared/payment-email.ts';
+import { affiliateWelcomeEmail } from '../_shared/affiliate-email.ts';
 import { json, requireConfig } from '../_shared/http.ts';
 
 const SENDER = 'pahlawanangka.app@gmail.com';
 const MAX_ITEMS = 10;
 const FETCH_TIMEOUT_MS = 10_000;
-type Item = { id: string; order_id: string; user_id: string; recipient_email: string | null; plan: 'premium' | 'family_plus'; amount_cents: number; attempts: number };
+type Item = { id: string; user_id: string; recipient_email: string | null; kind: 'payment'; order_id: string; plan: 'premium' | 'family_plus'; amount_cents: number; attempts: number } | { id: string; user_id: string; recipient_email: string | null; kind: 'affiliate'; affiliate_id: string; affiliate_code: string; commission_snapshot: Record<string, unknown>; attempts: number };
 
 function base64Url(bytes: Uint8Array) {
   let binary = '';
@@ -81,40 +82,52 @@ Deno.serve(async (req) => {
         return false;
       }
     };
-    for (let index = 0; index < MAX_ITEMS; index++) {
-      const { data: claimed, error: claimError } = await service.rpc('claim_payment_email_outbox', { p_limit: 1 });
-      if (claimError) return json({ error: 'Outbox claim failed' }, 500);
-      const item = (claimed?.[0] ?? null) as Item | null;
-      if (!item) break;
+    outer: for (let index = 0, turn = 0, emptyQueues = 0; index < MAX_ITEMS;) {
+      const affiliateTurn = turn++ % 2 === 1;
+      const claimRpc = affiliateTurn ? 'claim_affiliate_welcome_email_outbox' : 'claim_payment_email_outbox';
+      const claimResult = await service.rpc(claimRpc, { p_limit: 1 });
+      if (claimResult.error) return json({ error: affiliateTurn ? 'Affiliate outbox claim failed' : 'Outbox claim failed' }, 500);
+      const raw = claimResult.data?.[0] ?? null;
+      if (!raw) {
+        emptyQueues++;
+        if (emptyQueues >= 2) break;
+        continue;
+      }
+      emptyQueues = 0;
+      const item = { ...raw, kind: affiliateTurn ? 'affiliate' : 'payment' } as Item;
+      index++;
+        const prefix = item.kind === 'payment' ? 'payment' : 'affiliate_welcome';
       let recipient = item.recipient_email;
       if (!recipient) {
         const { data, error } = await service.auth.admin.getUserById(item.user_id);
         if (error || !data.user?.email) {
-          if (await mark('mark_payment_email_failed', { p_id: item.id, p_error: 'recipient_unavailable' })) failed++;
+          if (await mark(`mark_${prefix}_email_failed`, { p_id: item.id, p_error: 'recipient_unavailable' })) failed++;
           else reconciliationRequired++;
           continue;
         }
         recipient = data.user.email;
       }
       if (!validRecipient(recipient)) {
-        if (await mark('mark_payment_email_failed', { p_id: item.id, p_error: 'invalid_recipient' })) failed++;
+        if (await mark(`mark_${prefix}_email_failed`, { p_id: item.id, p_error: 'invalid_recipient' })) failed++;
         else reconciliationRequired++;
         continue;
       }
-      const rendered = paymentEmail({ plan: item.plan, amountCents: item.amount_cents, orderId: item.order_id, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.app' });
+      const rendered = item.kind === 'payment'
+        ? paymentEmail({ plan: item.plan, amountCents: item.amount_cents, orderId: item.order_id, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.app' })
+        : affiliateWelcomeEmail({ affiliateCode: item.affiliate_code, commissionSnapshot: item.commission_snapshot, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.app' });
       let response: Response;
       try { response = await sendGmail(token, recipient, rendered.subject, rendered.text, rendered.html); }
-      catch { reconciliationRequired++; break; }
+      catch { reconciliationRequired++; break outer; }
       if (response.ok) {
-        if (await mark('mark_payment_email_sent', { p_id: item.id })) sent++;
+        if (await mark(`mark_${prefix}_email_sent`, { p_id: item.id })) sent++;
         else reconciliationRequired++;
         continue;
       }
       if ([408, 409, 429].includes(response.status) || response.status >= 500) {
-        if (await mark('mark_payment_email_retry', { p_id: item.id, p_error: `gmail_http_${response.status}` })) retried++;
+        if (await mark(`mark_${prefix}_email_retry`, { p_id: item.id, p_error: `gmail_http_${response.status}` })) retried++;
         else reconciliationRequired++;
       } else {
-        if (await mark('mark_payment_email_failed', { p_id: item.id, p_error: `gmail_http_${response.status}` })) failed++;
+        if (await mark(`mark_${prefix}_email_failed`, { p_id: item.id, p_error: `gmail_http_${response.status}` })) failed++;
         else reconciliationRequired++;
       }
     }

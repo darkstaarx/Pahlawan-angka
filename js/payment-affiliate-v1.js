@@ -94,33 +94,44 @@
   }
 
   function affiliateForm(host) {
-    host.textContent = ''; host.append(text('h3', 'Mohon jadi rakan affiliate'), text('p', 'Permohonan akan disemak oleh admin sebelum pautan rujukan diaktifkan.'));
-    const form = document.createElement('form'); form.className = 'pa-aff-form'; const fields = [['name','Nama penuh','text'],['phone','Telefon','tel'],['bank_name','Nama bank','text'],['account_number','Nombor akaun','text'],['account_name','Nama pemegang akaun','text']];
-    fields.forEach(([key, label, type]) => { const wrap = text('label', label); const input = document.createElement('input'); input.name = key; input.type = type; input.required = true; input.maxLength = 120; if (key === 'account_number') input.inputMode = 'numeric'; wrap.append(input); form.append(wrap); });
-    form.append(text('p','Maklumat bank digunakan untuk pembayaran komisen dan hanya boleh disemak oleh admin yang dibenarkan.','pa-aff-note'));
-    const msg = document.createElement('div'); const submit = text('button', 'Hantar permohonan', 'pa-aff-primary'); submit.type = 'submit'; form.append(msg, submit); form.addEventListener('submit', async (event) => { event.preventDefault(); if (!loggedIn()) return status(msg, 'Log masuk dahulu.'); submit.disabled = true; const payload = Object.fromEntries(new FormData(form)); try { await functionCall('affiliate-application', { display_name: payload.name, phone: payload.phone, bank_name: payload.bank_name, account_number: payload.account_number, account_name: payload.account_name }); status(msg, 'Permohonan diterima. Tunggu semakan admin.', true); form.reset(); } catch (error) { status(msg, error?.message || 'Permohonan belum dapat dihantar.'); } finally { submit.disabled = false; } }); host.append(form);
+    host.textContent = ''; host.append(text('h3', 'Daftar Rakan Affiliate — percuma'), text('p', 'Dapatkan komisen bagi setiap pembelian melalui pautan anda. Tiada yuran pendaftaran.'));
+    const form = document.createElement('form'); form.className = 'pa-aff-form';
+    const accountLabel = text('label', 'Akaun'); const account = document.createElement('input'); account.type = 'email'; account.value = user()?.email || user()?.user_metadata?.email || ''; account.readOnly = true; account.tabIndex = -1; accountLabel.append(account); form.append(accountLabel);
+    [['name','Nama penuh','text'],['phone','Telefon','tel']].forEach(([key, label, type]) => { const wrap = text('label', label); const input = document.createElement('input'); input.name = key; input.type = type; input.required = true; input.maxLength = key === 'phone' ? 30 : 100; if (key === 'phone') { input.inputMode = 'tel'; input.autocomplete = 'tel'; } else input.autocomplete = 'name'; wrap.append(input); form.append(wrap); });
+    form.append(text('p','Butiran bank boleh diisi kemudian sebelum pembayaran manual dibuat.','pa-aff-note'));
+    const msg = document.createElement('div'); msg.setAttribute('aria-live', 'polite'); const submit = text('button', 'Daftar percuma', 'pa-aff-primary'); submit.type = 'submit'; form.append(msg, submit);
+    form.addEventListener('submit', async (event) => { event.preventDefault(); if (!loggedIn()) return status(msg, 'Log masuk dahulu.'); const renderUserId = user()?.id; submit.disabled = true; const payload = Object.fromEntries(new FormData(form)); try { await functionCall('affiliate-application', { display_name: String(payload.name || '').trim(), phone: String(payload.phone || '').trim(), bank_name: '', account_number: '', account_name: '' }); if (user()?.id !== renderUserId) return; await renderAffiliate(host); } catch (error) { if (user()?.id === renderUserId) status(msg, error?.message || 'Pendaftaran belum dapat dihantar.'); } finally { submit.disabled = false; } }); host.append(form);
+  }
+  function payoutDetailsForm(host, application) {
+    const section = document.createElement('section'); section.className = 'pa-aff-payout'; section.append(text('h3', 'Butiran pembayaran (pilihan)'), text('p', 'Isi sebelum meminta pembayaran manual. Maklumat ini hanya digunakan untuk bayaran komisen.', 'pa-aff-note'));
+    const form = document.createElement('form'); form.className = 'pa-aff-form'; const fields = [['phone','Telefon untuk pengesahan','tel'],['bank_name','Nama bank','text'],['account_number','Nombor akaun','text'],['account_name','Nama pemegang akaun','text']];
+    fields.forEach(([key, label, type]) => { const wrap = text('label', label); const input = document.createElement('input'); input.name = key; input.type = type; input.required = true; input.maxLength = key === 'phone' ? 30 : 120; if (key === 'phone') { input.inputMode = 'tel'; input.autocomplete = 'tel'; } if (key === 'account_number') input.inputMode = 'numeric'; wrap.append(input); form.append(wrap); });
+    const msg = document.createElement('div'); msg.setAttribute('aria-live', 'polite'); const save = text('button', 'Simpan butiran bank', 'pa-aff-secondary'); save.type = 'submit'; form.append(msg, save);
+    form.addEventListener('submit', async (event) => { event.preventDefault(); const renderUserId = user()?.id; if (!renderUserId || renderUserId !== application.user_id) return status(msg, 'Log masuk semula untuk mengemas kini butiran.'); save.disabled = true; const payload = Object.fromEntries(new FormData(form)); try { await functionCall('affiliate-application', { display_name: application.display_name, phone: String(payload.phone || '').trim(), bank_name: String(payload.bank_name || '').trim(), account_number: String(payload.account_number || '').trim(), account_name: String(payload.account_name || '').trim() }); if (user()?.id !== renderUserId) return; status(msg, 'Butiran pembayaran disimpan.', true); form.reset(); } catch (error) { if (user()?.id === renderUserId) status(msg, error?.message || 'Butiran pembayaran belum dapat disimpan.'); } finally { save.disabled = false; } }); section.append(form); host.append(section);
   }
   async function renderAffiliate(host) {
     host.textContent = '';
     try { await loadCatalog(); } catch (_) {}
-    const priceNote = text('p', `Komisen semasa: RM${PLANS.premium.commission.toFixed(2)} untuk Akses Keluarga, RM${PLANS.family_plus.commission.toFixed(2)} untuk Family Plus.`); host.append(priceNote);
+    const priceNote = text('p', `Komisen semasa: Akses Keluarga RM${PLANS.premium.price.toFixed(2)} → RM${PLANS.premium.commission.toFixed(2)}, Family Plus RM${PLANS.family_plus.price.toFixed(2)} → RM${PLANS.family_plus.commission.toFixed(2)}.`); host.append(priceNote);
     if (!loggedIn()) { host.append(text('p', 'Log masuk akaun penjaga untuk mengurus affiliate.')); return; }
     const renderUserId = user().id;
     try {
-      const application = await client().from('affiliate_applications').select('id,status,code,display_name').eq('user_id', renderUserId).maybeSingle();
+      const application = await client().from('affiliate_applications').select('id,status,code,display_name,user_id').eq('user_id', renderUserId).maybeSingle();
       if (user()?.id !== renderUserId) return;
       if (application?.error) throw application.error;
       const data = application?.data ? { status: application.data.status, code: application.data.code } : null;
       if (!data?.status || data.status === 'none' || data.status === 'rejected') { affiliateForm(host); return; }
-      host.append(text('p', data.status === 'pending' ? 'Permohonan sedang disemak.' : data.status === 'suspended' ? 'Status: Digantung.' : 'Status: Diluluskan', 'pa-aff-status'));
-      if (data.status !== 'approved') return;
+      host.append(text('p', data.status === 'pending' ? 'Permohonan sedang disemak.' : data.status === 'suspended' ? 'Status: Digantung. Pendaftaran semula tidak tersedia.' : 'Status: Aktif', 'pa-aff-status'));
+      if (data.status === 'suspended') return;
+      if (data.status !== 'approved') { affiliateForm(host); return; }
       const link = `${location.origin}${location.pathname}?ref=${encodeURIComponent(safeRef(data.code))}`; const box = document.createElement('div'); box.className = 'pa-aff-link'; box.append(text('label', 'Pautan rujukan anda')); const input = document.createElement('input'); input.readOnly = true; input.value = link; box.append(input); const copy = text('button', 'Salin pautan', 'pa-aff-secondary'); copy.type = 'button'; copy.addEventListener('click', async () => { try { await navigator.clipboard.writeText(link); copy.textContent = 'Disalin ✓'; } catch (_) { input.select(); } }); box.append(copy); host.append(box);
       const commissions = await client().from('affiliate_commissions').select('amount_cents,status').eq('affiliate_id', application.data.id);
       if (commissions?.error) throw commissions.error;
       if (user()?.id !== renderUserId) return;
-      const rows = commissions.data || []; const total = rows.filter((row) => row.status !== 'void').reduce((sum, row) => sum + Number(row.amount_cents || 0), 0); const paid = rows.filter((row) => row.status === 'paid').reduce((sum, row) => sum + Number(row.amount_cents || 0), 0); const pending = rows.filter((row) => row.status === 'pending' || row.status === 'approved').reduce((sum, row) => sum + Number(row.amount_cents || 0), 0);
-      const metrics = document.createElement('div'); metrics.className = 'pa-aff-metrics'; [['Jumlah komisen', `RM${(total / 100).toFixed(2)}`],['Boleh dikeluarkan', `RM${(pending / 100).toFixed(2)}`],['Dibayar', `RM${(paid / 100).toFixed(2)}`]].forEach(([label, value]) => { const card = document.createElement('div'); card.append(text('span', label), text('strong', value)); metrics.append(card); }); host.append(metrics);
-    } catch (error) { status(host, error?.message || 'Dashboard affiliate belum tersedia.'); }
+      const rows = commissions.data || []; const activeRows = rows.filter((row) => row.status !== 'void'); const total = activeRows.reduce((sum, row) => sum + Number(row.amount_cents || 0), 0); const paid = activeRows.filter((row) => row.status === 'paid').reduce((sum, row) => sum + Number(row.amount_cents || 0), 0); const pending = activeRows.filter((row) => row.status === 'pending' || row.status === 'approved').reduce((sum, row) => sum + Number(row.amount_cents || 0), 0);
+      const metrics = document.createElement('div'); metrics.className = 'pa-aff-metrics'; [['Jualan dirujuk', String(activeRows.length)],['Jumlah komisen', `RM${(total / 100).toFixed(2)}`],['Belum dibayar', `RM${(pending / 100).toFixed(2)}`],['Dibayar', `RM${(paid / 100).toFixed(2)}`]].forEach(([label, value]) => { const card = document.createElement('div'); card.append(text('span', label), text('strong', value)); metrics.append(card); }); host.append(metrics);
+      payoutDetailsForm(host, { ...application.data, user_id: renderUserId });
+    } catch (error) { if (user()?.id === renderUserId) status(host, error?.message || 'Dashboard affiliate belum tersedia.'); }
   }
   async function renderAdmin(host) {
     const renderUserId=user()?.id;const affiliateLabels=new Map();
@@ -172,7 +183,7 @@
   function ensureAffiliateTrigger(settings) {
     if (affiliateTrigger && affiliateTrigger.isConnected) return affiliateTrigger;
     affiliateTrigger = $('paAffiliateOpen');
-    if (!affiliateTrigger) { affiliateTrigger = text('button', 'Rakan Affiliate', 'pa-aff-trigger'); affiliateTrigger.id = 'paAffiliateOpen'; affiliateTrigger.type = 'button'; affiliateTrigger.setAttribute('aria-haspopup', 'dialog'); affiliateTrigger.addEventListener('click', openAffiliate); settings.insertBefore(affiliateTrigger, settings.firstChild); }
+    if (!affiliateTrigger) { affiliateTrigger = text('button', 'Rakan Affiliate · Daftar Percuma', 'pa-aff-trigger'); affiliateTrigger.id = 'paAffiliateOpen'; affiliateTrigger.type = 'button'; affiliateTrigger.setAttribute('aria-haspopup', 'dialog'); affiliateTrigger.addEventListener('click', openAffiliate); settings.insertBefore(affiliateTrigger, settings.firstChild); }
     return affiliateTrigger;
   }
   function mount() {
