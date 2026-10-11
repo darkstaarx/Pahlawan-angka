@@ -8,6 +8,7 @@ Deno.serve(async (req) => {
   const origin = req.headers.get('Origin') ?? undefined;
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders(origin) });
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405, origin);
+  let stage = 'configuration';
   try {
     const paymentsEnabled = Deno.env.get('PAYMENTS_ENABLED') === 'true';
     const adminTestMode = Deno.env.get('PAYMENTS_ADMIN_TEST_MODE') === 'true';
@@ -37,12 +38,14 @@ Deno.serve(async (req) => {
     const order = rawOrder as PaymentOrder | null;
     if (error || !order) return json({ error: 'Could not create order' }, 400, origin);
     if (order.billcode) return json({ order_id: order.id, external_uuid: order.external_uuid, bill_code: order.billcode, live_url: `${TOYYIBPAY_BASE_URL.replace(/\/$/, '')}/${order.billcode}` }, 200, origin);
+    stage = 'claim_bill';
     const { data: claimed, error: claimError } = await authClient.rpc('claim_payment_bill', { p_order_id: order.id });
     if (claimError || claimed !== true) return json({ error: 'Checkout is already being prepared' }, 409, origin);
     const amount = Number(order.amount_cents);
     const appUrl = APP_URL.replace(/\/$/, '');
     const providerUrl = TOYYIBPAY_BASE_URL.replace(/\/$/, '');
     const form = new URLSearchParams({ userSecretKey: TOYYIBPAY_SECRET_KEY, categoryCode: CATEGORY_CODE, billName: `Pahlawan Angka ${plan}`, billDescription: `Pahlawan Angka ${plan} order`, billPriceSetting: '1', billPayorInfo: '1', billAmount: String(amount), billReturnUrl: `${appUrl}/?payment_order=${encodeURIComponent(order.id)}`, billCallbackUrl: `${SUPABASE_URL}/functions/v1/toyyibpay-callback`, billExternalReferenceNo: order.external_uuid, billTo: parentName, billEmail: user.email, billPhone: phone, billPaymentChannel: '2' });
+    stage = 'provider_request';
     const response = await fetch(`${providerUrl}/index.php/api/createBill`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
     const result = await response.text();
     let parsed: any;
@@ -50,9 +53,10 @@ Deno.serve(async (req) => {
     const billcode = parsed?.[0]?.BillCode;
     if (!billcode || !/^[A-Za-z0-9_-]{4,40}$/.test(billcode)) return json({ error: 'Payment provider could not create a bill' }, 502, origin);
     const { error: updateError } = await service.from('payment_orders').update({ billcode, status: 'pending' }).eq('id', order.id).eq('user_id', user.id);
-    if (updateError) return json({ error: 'Order could not be prepared' }, 500, origin);
+    if (updateError) { console.error('checkout_order_update_failure', { code: updateError.code }); return json({ error: 'Order could not be prepared' }, 500, origin); }
     return json({ order_id: order.id, external_uuid: order.external_uuid, bill_code: billcode, live_url: `${providerUrl}/${billcode}` }, 200, origin);
   } catch (error) {
+    console.error('checkout_failure', { stage, kind: error instanceof Error ? error.name : 'unknown' });
     return json({ error: 'Checkout failed' }, 500, origin);
   }
 });
