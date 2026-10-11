@@ -592,10 +592,10 @@
 
   /* Dua kad produksi. */
   function bindCards(){
-    const quest=$('mv2QuestCard');
+    const quest=$('mv2ChooseTopicButton');
     if(quest&&!quest.dataset.boundV2){ quest.dataset.boundV2='1';
       quest.onclick=()=>openMapV2() }
-    const learn=$('mv2LearnCard');
+    const learn=$('mv2StartJourneyButton');
     if(learn&&!learn.dataset.boundV2){ learn.dataset.boundV2='1';
       learn.onclick=()=>openKembaraDimensi() }
 

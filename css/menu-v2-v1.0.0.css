@@ -645,3 +645,5 @@ body[data-screen="menuV2"] .appHeader{display:none}
 @media (prefers-reduced-motion:reduce){
   #wiraBubble{transition:none;transform:none}
 }
+
+section.mv2Card{cursor:default}button.mv2Cta{font-family:inherit;cursor:pointer;min-height:44px}button.mv2Cta:focus-visible{outline:3px solid #fff;outline-offset:4px}
