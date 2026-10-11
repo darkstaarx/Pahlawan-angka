@@ -35,10 +35,28 @@ async function authorizeMission(){
  try{const {data,error}=await cloud.client.rpc('claim_daily_mission');
  if(error)throw error;
  if(window.PACloud?.state?.user?.id!==userId)return false;
- if(!data?.allowed){openPricing();return false;}return true;
+ if(!data?.allowed){showMissionLimit(data.day);return false;}return true;
  }catch(error){console.warn('Mission quota unavailable',error);alert('Akses misi belum dapat disahkan. Semak sambungan dan cuba semula.');return false;}
  finally{missionClaimPending=false;}
 }
+function missionResetLabel(day){
+ const match=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(day||''));
+ if(!match)return '12:00 tengah malam waktu Malaysia';
+ const reset=new Date(Date.UTC(Number(match[1]),Number(match[2])-1,Number(match[3])+1)-8*60*60*1000);
+ return '12:00 tengah malam, '+reset.toLocaleDateString('ms-MY',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kuala_Lumpur'})+' (waktu Malaysia)';
+}
+let missionLimitTrigger=null;
+function showMissionLimit(day){
+ missionLimitTrigger=document.activeElement;
+ let overlay=document.getElementById('paMissionLimitOverlay');
+ if(!overlay){document.body.insertAdjacentHTML('beforeend',`<div id="paMissionLimitOverlay" class="paPricingOverlay hidden" role="dialog" aria-modal="true" aria-labelledby="paMissionLimitTitle"><div class="paPricing paMissionLimitCard" tabindex="-1"><button class="paPricingClose" aria-label="Tutup" onclick="PACommercial.closeMissionLimit()">×</button><div class="paMissionLimitIcon" aria-hidden="true">🛡️</div><small>KEMBARA WIRA</small><h2 id="paMissionLimitTitle">Rehat sekejap, Wira!</h2><p>Wira sudah menggunakan satu misi percuma hari ini. Kembara seterusnya menanti apabila kuota dibuka semula!</p><div class="paMissionReset"><b>Misi seterusnya dibuka pada</b><span id="paMissionResetTime"></span></div><p>Tunggu sehingga kuota dibuka semula, atau pilih pelan berbayar untuk teruskan kembara tanpa had misi.</p><div class="paMissionLimitActions"><button class="btn secondary" onclick="PACommercial.closeMissionLimit()">Tunggu esok</button><button class="btn primary" onclick="PACommercial.viewMissionPlans()">Lihat pelan untuk sambung</button></div></div></div>`);overlay=document.getElementById('paMissionLimitOverlay');
+ overlay.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeMissionLimit();}});
+ }
+ document.getElementById('paMissionResetTime').textContent=missionResetLabel(day);
+ overlay.classList.remove('hidden');overlay.querySelector('.paMissionLimitCard')?.focus();
+}
+function closeMissionLimit(){document.getElementById('paMissionLimitOverlay')?.classList.add('hidden');missionLimitTrigger?.focus?.();}
+function viewMissionPlans(){closeMissionLimit();openPricing();}
 function closePricing(){document.getElementById('paPricingOverlay')?.classList.add('hidden')}
 function installProfileLimit(){
  const pm=window.PAProfileManager;if(!pm||wrapped)return;const original=pm.create;
@@ -51,6 +69,6 @@ function installProfileLimit(){
  wrapped=true
 }
 function boot(){refresh();setInterval(()=>{installProfileLimit();render()},1200)}
-window.PACommercial={refresh,reset,render,openPricing,closePricing,isPremium:premium,isPaid:paid,canUse,requireFeature,canUseDev,authorizeMission,getAccess:()=>({...access})};
+window.PACommercial={refresh,reset,render,openPricing,closePricing,isPremium:premium,isPaid:paid,canUse,requireFeature,canUseDev,authorizeMission,closeMissionLimit,viewMissionPlans,getAccess:()=>({...access})};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

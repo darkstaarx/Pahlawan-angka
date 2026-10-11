@@ -15,3 +15,30 @@ test('double click consumes only one claim and downloads once',async()=>{const c
 
 test('mission quota blocks concurrent starts',async()=>{const c=harness({plan:'free',status:'inactive',profile_limit:1});await c.window.PACommercial.refresh();let complete,calls=0;c.window.PACloud.state.client.rpc=()=>{calls++;return new Promise(r=>complete=r)};const first=c.window.PACommercial.authorizeMission();assert.equal(await c.window.PACommercial.authorizeMission(),false);complete({data:{allowed:true}});assert.equal(await first,true);assert.equal(calls,1)});
 test('pricing presents Plus then standard then Free',()=>{const c=harness({});const overlay={classList:{remove(){}}};let html='';c.document.body={insertAdjacentHTML:(_,s)=>html=s};let mounted=false;c.document.getElementById=id=>id==='paPricingOverlay'&&mounted?overlay:null;c.document.body.insertAdjacentHTML=(_,s)=>{html=s;mounted=true};c.window.PACommercial.openPricing();assert.ok(html.indexOf('<b>Family Plus</b>')<html.indexOf('<b>Akses Keluarga</b>'));assert.ok(html.indexOf('<b>Akses Keluarga</b>')<html.indexOf('<b>Free</b>'));assert.match(html,/Satu misi sehari/)});
+
+test('spent free mission shows a reset card before any pricing page',async()=>{
+ const c=harness({plan:'free',status:'inactive',profile_limit:1});await c.window.PACommercial.refresh();
+ let html='',focused=false;const reset={textContent:''};const overlay={classList:{remove(){},add(){}},addEventListener(){},querySelector:()=>({focus(){focused=true}})};
+ let mounted=false;c.document.body={insertAdjacentHTML:(_,text)=>{html=text;mounted=true}};
+ c.document.getElementById=id=>id==='paMissionLimitOverlay'&&mounted?overlay:id==='paMissionResetTime'?reset:null;
+ c.window.PACloud.state.client.rpc=async()=>({data:{allowed:false,day:'2026-12-31'}});
+ assert.equal(await c.window.PACommercial.authorizeMission(),false);
+ assert.match(html,/Rehat sekejap, Wira/);assert.match(html,/Tunggu esok/);assert.match(html,/Lihat pelan untuk sambung/);
+ assert.doesNotMatch(html,/id="paPricingOverlay"/);assert.match(reset.textContent,/1 Januari 2027/i);assert.match(reset.textContent,/12:00 tengah malam/);assert.equal(focused,true);
+});
+
+test('quota card remains on mission attempts after returning home or logging in again',async()=>{
+ for(const relog of [false,true]){
+  const c=harness({plan:'free',status:'inactive',profile_limit:1});await c.window.PACommercial.refresh();
+  let shown=0,claims=0;const overlay={classList:{remove(){shown++},add(){}},addEventListener(){},querySelector:()=>({focus(){}})};
+  let mounted=false;c.document.body={insertAdjacentHTML(){mounted=true}};
+  c.document.getElementById=id=>id==='paMissionLimitOverlay'&&mounted?overlay:id==='paMissionResetTime'?{textContent:''}:null;
+  const rpc=async name=>name==='get_commercial_access'?{data:[{plan:'free',status:'inactive',profile_limit:1}]}:{data:{allowed:++claims===1,day:'2026-10-11'}};
+  c.window.PACloud.state.client.rpc=rpc;
+  assert.equal(await c.window.PACommercial.authorizeMission(),true);assert.equal(shown,0);
+  if(relog){c.window.PACommercial.reset();c.window.PACloud.state.user={id:'owner'};await c.window.PACommercial.refresh();}
+  assert.equal(await c.window.PACommercial.authorizeMission(),false);assert.equal(shown,1);
+  c.window.PACommercial.closeMissionLimit();
+  assert.equal(await c.window.PACommercial.authorizeMission(),false);assert.equal(shown,2);
+ }
+});
