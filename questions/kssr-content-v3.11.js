@@ -142,7 +142,7 @@
  function year1MeasureTask(id,mode){
   const cfg=pick([{a:'reben',attr:'panjang',word:'panjang',unit:'klip kertas'},{a:'pensel',attr:'panjang',word:'panjang',unit:'klip kertas'},{a:'meja',attr:'panjang',word:'panjang',unit:'jengkal'},{a:'buku',attr:'panjang',word:'panjang',unit:'klip kertas'},{a:'bekas',attr:'jisim',word:'berat',unit:'guli yang sama saiz'},{a:'kotak',attr:'jisim',word:'berat',unit:'guli yang sama saiz'},{a:'jag',attr:'kapasiti',word:'banyak isinya',unit:'cawan yang sama saiz'},{a:'botol',attr:'kapasiti',word:'banyak isinya',unit:'cawan yang sama saiz'}]);
   const a=R(2,10),b=pick(Array.from({length:9},(_,i)=>i+2).filter(n=>n!==a)),more=Math.random()<.5,answer=(more?a>b:a<b)?'A':'B';
-  const prompt=`Ukuran ${cfg.attr} ${cfg.a} A ialah <b>${a} ${cfg.unit}</b>. Ukuran ${cfg.a} B ialah <b>${b} ${cfg.unit}</b>. ${cfg.a[0].toUpperCase()+cfg.a.slice(1)} manakah lebih ${more?'':'kurang '}${cfg.word}?`;
+  const prompt=`Ukuran ${cfg.attr} ${cfg.a} A ialah <b>${a} ${cfg.unit}</b>. Ukuran ${cfg.a} B ialah <b>${b} ${cfg.unit}</b>. ${cfg.a[0].toUpperCase()+cfg.a.slice(1)} manakah ${more?'lebih '+cfg.word:cfg.attr==='panjang'?'lebih pendek':cfg.attr==='jisim'?'lebih ringan':'kurang isinya'}?`;
   return mark(Q(prompt,answer,[N(answer==='A'?'B':'A','unit'),N('Kedua-duanya sama','unit'),N('Tidak dapat ditentukan','unit')],'Unit yang digunakan sama. Banding bilangan unit untuk kedua-dua objek.','Tahun 1 · Banding Ukuran',true,true),id,mode,'story',mode==='apply'?'application':'concept','measurement',['unit','compare']);
  }
  function year1Task(id){const mode=rotate(id,id==='D1.FRAC'?['recognise','name','visual_choice','apply']:id==='D1.SHAPE'?['recognise','compare','apply','classify_set']:['recognise','compare','apply']);
