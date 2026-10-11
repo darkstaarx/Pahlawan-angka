@@ -42,7 +42,7 @@ SCENES = []
 GRID = [(195, 270), (540, 270), (885, 270), (195, 615), (540, 615), (885, 615), (195, 960), (885, 960),
         (195, 1305), (540, 1305), (885, 1305), (195, 1650), (540, 1650), (885, 1650)]
 TILES1 = [('src_O.mp4', SQ_ARENA, 62.6), ('src_C.mp4', SQ_ARENA, 12.3), ('src_K.mp4', sq(0.2), 13.2),
-          ('src_B.mp4', SQ_Q, 18.0), ('src_B.mp4', sq(0.18), 6.0), ('src_A.mp4', sq(0.08), 0.5),
+          ('src_B.mp4', SQ_Q, 18.0), ('src_B.mp4', sq(0.18), 5.9), ('src_A.mp4', sq(0.08), 0.5),
           ('src_T.mp4', sq(0.12), 2.0), ('src_O.mp4', SQ_ARENA, 91.4),
           ('src_K.mp4', sq(0.1), 2.2), ('src_C.mp4', SQ_ARENA, 13.8), ('src_R.mp4', sq(0.1), 4.3),
           ('src_O.mp4', SQ_ARENA, 81.6), ('src_K.mp4', sq(0.12), 16.2), ('src_O.mp4', SQ_ARENA, 119.6)]
@@ -59,7 +59,7 @@ SCENES.append(dict(t0=2.4, bg='light', cam=cam((2.4, dict(z=1.0)), (4.2, dict(z=
 ]))
 
 # ---------------------------------------------------------------- S3 4.2–8.0: ayat dengan klip hidup sebaris → zoom-tembus ke battle
-L3a = Line([(4.35, 'Pengembaraan'), (4.6, ('vid', 'src_B.mp4', (0.1, 0.18, 0.9, 0.58), 5.7, 0.6), dict(icon=1.6))], 540, 775, 86, 8.0, out=0)
+L3a = Line([(4.35, 'Pengembaraan'), (4.6, ('vid', 'src_B.mp4', (0.1, 0.18, 0.9, 0.58), 6.05, 0.55), dict(icon=1.6))], 540, 775, 86, 8.0, out=0)
 L3b = Line([(5.0, 'matematik'), (5.25, ('vid', 'src_C.mp4', ARENA, 7.55), dict(icon=1.6)), (5.5, 'KSSR', dict(color=BLUE))],
            540, 950, 86, 8.0, out=0)
 L3c = Line(words(5.9, 'Darjah 1 hingga 6.', 0.13), 540, 1115, 86, 8.0, out=0)
@@ -212,7 +212,7 @@ SCENES.append(dict(t0=46.4, bg='light', cam=cam((46.4, dict(z=1.04)), (49.0, dic
 
 # ---------------------------------------------------------------- S12 49.0–52.0: slogan dalam medan jubin hidup → panel gelap
 GRID2 = [(195, 270), (540, 270), (885, 270), (195, 600), (885, 600), (195, 1320), (885, 1320), (195, 1650), (540, 1650), (885, 1650)]
-TILES2 = [('src_C.mp4', SQ_ARENA, 13.6), ('src_K.mp4', sq(0.12), 16.4), ('src_O.mp4', SQ_ARENA, 92.0), ('src_B.mp4', sq(0.18), 6.6),
+TILES2 = [('src_C.mp4', SQ_ARENA, 13.6), ('src_K.mp4', sq(0.12), 16.4), ('src_O.mp4', SQ_ARENA, 92.0), ('src_K.mp4', sq(0.2), 13.0),
           ('src_O.mp4', SQ_ARENA, 120.0), ('src_K.mp4', sq(0.1), 3.0), ('src_C.mp4', SQ_Q, 11.0), ('src_A.mp4', sq(0.08), 1.5),
           ('src_O.mp4', SQ_ARENA, 63.0), ('src_T.mp4', sq(0.12), 3.0)]
 SCENES.append(dict(t0=49.0, bg='light', cam=cam((49.0, dict(z=1.1)), (52.0, dict(z=1.0), 'linear')), els=[
