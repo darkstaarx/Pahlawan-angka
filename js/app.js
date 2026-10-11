@@ -112,6 +112,7 @@ function setupHeroPicker(){
 function currentCoreSkills(){ return GRAPH.skills.filter(x=>x.grade===db.schoolGrade) }
 function chapterCountForGrade(g){ return [...new Set(GRAPH.skills.filter(x=>x.grade===g).map(x=>String(x.chapter)))].length || 1 }
 function startNew(){
+ if(!window.PACommercial?.requireFeature?.('profiles'))return;
  let g=+document.getElementById('gradeSelect').value||2;
  db={name:document.getElementById("child").value.trim()||"Anak",schoolGrade:g,hero:selectedHero||"wira",avatar_id:normalizeAvatarId(selectedAvatar),skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};
  initAll();ensureProgression();save();renderHub()
@@ -119,6 +120,7 @@ function startNew(){
 function resumeGame(){if(db&&db.hero)selectedHero=db.hero;initAll();ensureProgression();if(playSfx)playSfx('ui');renderHub()}
 function resetAll(){if(confirm("Reset semua progress coach?")){localStorage.removeItem("pa_coach_v6_full");location.reload()}}
 function screen(id){
+  if(['hub','menuV2','missions','treasure','learning','game'].includes(id)&&!window.PACommercial?.requireFeature?.('missions'))return;
   document.querySelectorAll(".screen").forEach(x=>x.classList.remove("on"));
   const target=document.getElementById(id); if(target) target.classList.add("on");
   document.body.dataset.screen=id;

@@ -74,6 +74,7 @@
   }
 
   function open(options={}){
+ if(!window.PACommercial?.requireFeature?.(options.focusSkill?'focus':'missions'))return;
     if(typeof document!=='undefined'&&!window.__PA_LIVE_ASSET_REFRESHED){liveAssetRefresh.then(()=>open(options));return;}
     if(!db||!window.PASegelHost)return;
     const chapter=options.chapter?String(options.chapter):null;

@@ -1,5 +1,6 @@
 function guardianSnapshot(id){const s=scoreState(id);return{mastery:+s.mastery||0,confidence:+s.confidence||0,evidence:+s.evidence||0,correct:+s.correct||0,wrong:+s.wrong||0,hints:+s.hints||0,mis:{...(s.mis||{})}}}
 function openGuardianFocus(id){
+ if(!window.PACommercial?.requireFeature?.('focus'))return;
  if(!META[id]||META[id].grade!==coreGrade())return;
  const s=scoreState(id),attempts=skillAttempts(s),accuracy=attempts?Math.round(s.correct/attempts*100):0;
  const box=document.getElementById('guardianFocusOverlay');box.dataset.skill=id;
@@ -11,6 +12,7 @@ function openGuardianFocus(id){
 function closeGuardianFocus(){document.getElementById('guardianFocusOverlay')?.classList.add('hidden')}
 function chooseGuardianCount(n){const box=document.getElementById('guardianFocusOverlay');box.dataset.count=String(n);document.querySelectorAll('[data-focus-count]').forEach(b=>b.classList.toggle('active',+b.dataset.focusCount===+n))}
 function startGuardianFocus(){
+ if(!window.PACommercial?.requireFeature?.('focus'))return;
  const box=document.getElementById('guardianFocusOverlay'),id=box?.dataset.skill,count=Number(box?.dataset.count||5);
  if(!META[id]||META[id].grade!==coreGrade())return;
  if(typeof enforceRestuLock==='function'&&enforceRestuLock())return;

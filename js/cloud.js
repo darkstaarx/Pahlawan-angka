@@ -86,6 +86,7 @@
   }
 
   async function loadProfiles(){
+    if(!window.PACommercial?.canUse?.('profiles')){state.profiles=[];state.childId=null;state.needsOnboarding=false;renderAccount();screen('login');window.PACommercial?.openPricing?.();return;}
     let result=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,avatar_id,updated_at').eq('is_active',true).order('created_at');
     if(result.error&&!schemaMismatch(result.error))throw result.error;
     if(result.error)result=await state.client.from('child_profiles').select('id,display_name,grade,hero_id,updated_at').eq('is_active',true).order('created_at');
@@ -153,6 +154,7 @@
   }
 
   async function attachNewChild(){
+    if(!window.PACommercial?.canUse?.('profiles'))return;
     if(!state.user||!db)return;
     try{
       let result=await state.client.rpc('create_initial_child',{child_display_name:db.name,child_grade:db.schoolGrade,child_hero_id:db.hero||'wira',child_avatar_id:avatarId(db.avatar_id)});
@@ -173,6 +175,7 @@
     const waiters=state.saveWaiters.splice(0);waiters.forEach(resolve=>resolve(result));
   }
   async function syncSaveNow(){
+    if(!window.PACommercial?.canUse?.('missions'))return;
     if(!state.user||!state.childId||!db||sess?.demoMode||sess?.devBattlefield||db?.demoMode){settleSaveWaiters(false);return false;}
     if(state.saveInFlight){state.savePending=true;return new Promise(resolve=>state.saveWaiters.push(resolve));}
     state.saveInFlight=true;clearTimeout(state.saveTimer);
@@ -277,7 +280,7 @@
     return String(data.user.email||'').trim().toLowerCase()===email;
   }
 
-  function addChild(){state.needsOnboarding=true;screen('setup')}
+  function addChild(){if(!window.PACommercial?.requireFeature?.('profiles'))return;state.needsOnboarding=true;screen('setup')}
 
   async function logout(){if(window.PAPageLock?.requestExit(()=>logout())===false)return;await syncSaveNow();await endPlaySession('user_exit');window.PAQSV2BetaRollout?.reset?.(db);await state.client.auth.signOut();state.user=null;state.childId=null;state.profiles=[];window.PACommercial?.reset?.();renderAccount();screen('login');}
 

@@ -125,6 +125,7 @@ function renderMissions(){
   screen('missions'); save();
 }
 function startMission(ch=null){
+ if(!window.PACommercial?.requireFeature?.('missions'))return;
   if(typeof enforceRestuLock==='function' && enforceRestuLock())return;
   ensureProgression(); db.activeMissionChapter=ch?String(ch):null; save();
   const arena=document.getElementById('battleArena');if(arena)arena.classList.remove('boss-cleared');

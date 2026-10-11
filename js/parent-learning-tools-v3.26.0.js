@@ -6,7 +6,7 @@ const $=id=>document.getElementById(id);
 const safe=value=>typeof parentSafe==='function'?parentSafe(value):String(value??'');
 const allowed=()=>!!(window.PACommercial?.isPremium?.()||window.PACommercial?.canUseDev?.());
 const gate=()=>{if(allowed())return true;window.PACommercial?.openPricing?.();return false};
-const worksheetLimit=()=>allowed()?40:10;
+const worksheetLimit=()=>allowed()?40:0;
 const slug=value=>String(value||'anak').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'anak';
 const dateLabel=()=>new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'long',year:'numeric'});
 function coreSkills(){const g=typeof coreGrade==='function'?coreGrade():Number(db?.schoolGrade||1);return GRAPH.skills.filter(m=>m.grade===g&&m.role==='core')}
@@ -329,6 +329,7 @@ async function answerPages(items,title,subtitle,startPage=0,options={}){
  if(current){if(options.demo)demoWatermark(current.ctx);footer(current.ctx,startPage+pages.length+1,'Pahlawan Angka | Skema penjaga');pages.push(current.canvas)}return pages;
 }
 async function worksheet(includeAnswers){
+ if(!gate())return;
  if(state.busy)return;state.count=Math.min(state.count,worksheetLimit());state.busy=true;status('Cikgu Dimensi sedang menyusun latihan...');mountWorksheet();
  try{
   const pack=makeQuestions(),pages=await studentPages(pack.items,pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`);

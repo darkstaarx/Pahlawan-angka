@@ -231,6 +231,7 @@ function learningGuidedChoice(btn,correct){
  else{btn.classList.add('wrong');if(box)box.textContent='Belum. Tengok semula langkah yang Coach tunjuk tadi.';setTimeout(()=>{btn.classList.remove('wrong');btn.parentElement.querySelectorAll('button').forEach(x=>x.disabled=false)},700)}
 }
 function learningStart(skillId,intervention,opts={}){
+  if(!window.PACommercial?.requireFeature?.('missions'))return;
   if(!opts.dev)window.PAEffortGuard?.coachStarted?.(skillId);
   const m=META[skillId];if(!m)return;
   ensureCoachMemory();

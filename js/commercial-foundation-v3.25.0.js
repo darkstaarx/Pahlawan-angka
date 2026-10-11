@@ -1,19 +1,23 @@
 (()=>{
 'use strict';
-const DEFAULT={role:'guardian',plan:'free',status:'inactive',current_period_end:null,profile_limit:1};
+const DEFAULT={role:'guardian',plan:'free',status:'inactive',current_period_end:null,profile_limit:0};
 let access={...DEFAULT},wrapped=false;
-const premium=()=>['active','trialing'].includes(access.status)&&['premium','family_plus'].includes(access.plan);
-const paid=()=>['active','trialing'].includes(access.status)&&['standard','premium','family_plus'].includes(access.plan);
+const valid=()=>['active','trialing'].includes(access.status)&&(!access.current_period_end||Date.parse(access.current_period_end)>Date.now());
+const premium=()=>valid()&&access.plan==='family_plus';
+const paid=()=>valid()&&['premium','family_plus'].includes(access.plan);
+function canUse(feature){if(feature==='demo')return true;if(!['profiles','missions','progress','focus','report','worksheet'].includes(feature))return false;return canUseDev()||(['focus','report','worksheet'].includes(feature)?premium():paid())}
+function requireFeature(feature){if(canUse(feature))return true;openPricing();return false}
 const canUseDev=()=>access.role==='admin';
 function reset(){access={...DEFAULT};localStorage.removeItem('pa_dev_unlocked');if(typeof db!=='undefined'&&db)db.devMode=false;render()}
 async function refresh(){
- const state=window.PACloud?.state;if(!state?.client||!state.user){reset();return access}
- try{const {data,error}=await state.client.rpc('get_commercial_access');if(error)throw error;access={...DEFAULT,...(Array.isArray(data)?data[0]:data||{})}}
+ const state=window.PACloud?.state;access={...DEFAULT};if(!state?.client||!state.user){reset();return access}
+ const userId=state.user.id;
+ try{const {data,error}=await state.client.rpc('get_commercial_access');if(error)throw error;if(window.PACloud?.state?.user?.id!==userId)return access;access={...DEFAULT,...(Array.isArray(data)?data[0]:data||{})}}
  catch(error){console.warn('Commercial access unavailable; using free plan',error);access={...DEFAULT}}
  if(!canUseDev()){localStorage.removeItem('pa_dev_unlocked');if(typeof db!=='undefined'&&db)db.devMode=false}
  render();installProfileLimit();return access
 }
-function pricingMarkup(){const plus=premium(),active=paid();return `<section class="paPlanCard"><div><small>AKSES KELUARGA</small><h3>${plus?'Family Plus aktif':active?'Akses Keluarga aktif':'Cuba dahulu'}</h3><p>${plus?'Latihan Fokus Plus dan sehingga lima profil anak.':active?'Semua Darjah 1–6 untuk dua profil anak.':'Satu profil anak dan worksheet percubaan 10 soalan.'}</p></div><button type="button" onclick="PACommercial.openPricing()">${active?'Lihat akses':'Lihat harga'}</button></section>`}
+function pricingMarkup(){const plus=premium(),active=paid();return `<section class="paPlanCard"><div><small>AKSES KELUARGA</small><h3>${plus?'Family Plus aktif':active?'Akses Keluarga aktif':'Cuba dahulu'}</h3><p>${plus?'Latihan Fokus Plus dan sehingga lima profil anak.':active?'Semua Darjah 1–6 untuk dua profil anak.':'Demo Matematik sahaja. Pilih akses berbayar untuk membuka pembelajaran penuh.'}</p></div><button type="button" onclick="PACommercial.openPricing()">${active?'Lihat akses':'Lihat harga'}</button></section>`}
 function render(){
  const controls=document.getElementById('cloudParentControls');if(controls&&!document.getElementById('paPlanMount')){const mount=document.createElement('div');mount.id='paPlanMount';controls.before(mount)}
  const mount=document.getElementById('paPlanMount');if(mount)mount.innerHTML=pricingMarkup();
@@ -28,13 +32,13 @@ function installProfileLimit(){
  const pm=window.PAProfileManager;if(!pm||wrapped)return;const original=pm.create;
  pm.create=function(){
   const count=window.PACloud?.state?.profiles?.length||0;
-  const limit=premium()?5:Number(access.profile_limit||1);
-  if(!canUseDev()&&count>=limit){openPricing();return}
+  const limit=Number(access.profile_limit||0);
+  if(!canUseDev()&&(!paid()||count>=limit)){openPricing();return}
   return original.apply(pm,arguments)
  };
  wrapped=true
 }
 function boot(){refresh();setInterval(()=>{installProfileLimit();render()},1200)}
-window.PACommercial={refresh,reset,render,openPricing,closePricing,isPremium:premium,isPaid:paid,canUseDev,getAccess:()=>({...access})};
+window.PACommercial={refresh,reset,render,openPricing,closePricing,isPremium:premium,isPaid:paid,canUse,requireFeature,canUseDev,getAccess:()=>({...access})};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

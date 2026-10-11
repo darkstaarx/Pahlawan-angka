@@ -6,6 +6,7 @@ const goals={school:['Ikut tahap sekolah','Latihan disusun mengikut darjah anak.
 function needsWizard(){return !!window.PACloud?.state?.user&&window.PACloud.state.needsOnboarding===true}
 function openDraft(data){draft={pin:'',daily:20,session:20,hardLock:true,goal:'school',...data};step=1;busy=false;render();screen('guardianOnboarding')}
 function begin(){
+ if(!window.PACommercial?.requireFeature?.('profiles'))return;
  const name=($('child')?.value||'').trim(),grade=Number($('gradeSelect')?.value||2);
  if(!name){$('child')?.focus();return}
  if(!needsWizard()){window.startNew();return}
@@ -43,6 +44,7 @@ async function persistExistingAvatar(){
 }
 function error(message){const el=$('obError');if(el)el.textContent=message}
 async function finish(){
+ if(!window.PACommercial?.requireFeature?.('profiles'))return;
  if(busy)return;busy=true;render();
  try{
   if(draft.existingId){
