@@ -18,7 +18,7 @@ function load({ client, fetchImpl, emailEnabled = 'true' }) {
   const values = { ...env, EMAIL_DELIVERY_ENABLED: emailEnabled };
   const vm = require('node:vm');
   const context = {
-    Response, Request, URLSearchParams, TextEncoder, btoa: (value) => Buffer.from(value, 'binary').toString('base64'), crypto,
+    Response, Request, URLSearchParams, TextEncoder, AbortController, setTimeout, clearTimeout, btoa: (value) => Buffer.from(value, 'binary').toString('base64'), crypto,
     fetch: fetchImpl, createClient: () => client,
     paymentEmail: ({ plan, amountCents, orderId, appUrl }) => ({ subject: `${plan}:${orderId}`, text: `plain ${amountCents}`, html: `<p>${appUrl}</p>` }),
     Deno: { env: { get: (name) => values[name] ?? '' } },
@@ -93,4 +93,46 @@ test('network ambiguity leaves later rows unclaimed', async () => {
   const handler = load({ client, fetchImpl: async (url) => url.includes('oauth2') ? new Response(JSON.stringify({ access_token: 'access' }), { status: 200 }) : (() => { throw new Error('network'); })() });
   await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer service-secret' } }));
   assert.equal(claimIds.length, 1);
+});
+
+test('Gmail accepted but sent-state persistence fails reports reconciliation and does not count sent', async () => {
+  const rpcCalls = [];
+  let remaining = 1;
+  const client = { rpc: async (name) => {
+    rpcCalls.push(name);
+    if (name === 'claim_payment_email_outbox') return { data: remaining-- > 0 ? item() : [], error: null };
+    if (name === 'mark_payment_email_sent') return { data: false, error: { message: 'write failed' } };
+    return { data: true, error: null };
+  } };
+  const handler = load({ client, fetchImpl: async (url) => url.includes('oauth2') ? new Response(JSON.stringify({ access_token: 'access' }), { status: 200 }) : new Response('{}', { status: 200 }) });
+  const response = await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer service-secret' } }));
+  const body = await response.json();
+  assert.equal(body.sent, 0); assert.equal(body.reconciliation_required, 1); assert.equal(body.ok, false);
+  assert.deepEqual(rpcCalls, ['claim_payment_email_outbox', 'mark_payment_email_sent', 'claim_payment_email_outbox']);
+});
+
+test('processing row is not resent after a prior Gmail acceptance with unresolved state', async () => {
+  let gmailSends = 0; let claims = 0;
+  const client = { rpc: async (name) => {
+    if (name === 'claim_payment_email_outbox') { claims++; return { data: claims === 1 ? item() : [], error: null }; }
+    return { data: false, error: { message: 'write failed' } };
+  } };
+  const handler = load({ client, fetchImpl: async (url) => {
+    if (url.includes('oauth2')) return new Response(JSON.stringify({ access_token: 'access' }), { status: 200 });
+    gmailSends++; return new Response('{}', { status: 200 });
+  } });
+  await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer service-secret' } }));
+  await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer service-secret' } }));
+  assert.equal(gmailSends, 1);
+});
+
+test('state RPC exception is reported as reconciliation required', async () => {
+  let remaining = 1;
+  const client = { rpc: async (name) => {
+    if (name === 'claim_payment_email_outbox') return { data: remaining-- > 0 ? item() : [], error: null };
+    throw new Error('database unavailable');
+  } };
+  const handler = load({ client, fetchImpl: async (url) => url.includes('oauth2') ? new Response(JSON.stringify({ access_token: 'access' }), { status: 200 }) : new Response('{}', { status: 200 }) });
+  const body = await (await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer service-secret' } }))).json();
+  assert.equal(body.sent, 0); assert.equal(body.reconciliation_required, 1); assert.equal(body.ok, false);
 });
