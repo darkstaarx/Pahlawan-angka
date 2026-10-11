@@ -46,6 +46,7 @@ ctx.performance={now:()=>10};ctx.db=profile;
 ctx.scoreState=()=>({mastery:35,evidence:5,confidence:40,correct:2,wrong:3});
 ctx.swapDemoState=(profile,session)=>{const old={db:ctx.db,sess:ctx.sess};ctx.db=profile;ctx.sess=session;return old};
 ctx.PASegelHost={openProduction:()=>{}};
+ctx.PACommercial={requireFeature:feature=>feature==='focus'};
 const doc=ctx.document;ctx.document=undefined;
 load('js/engine/production-journey.js');ctx.document=doc;ctx.__PA_LIVE_ASSET_REFRESHED=true;
 ctx.PAProductionJourney.open({focusSkill:'D2.2.3'});

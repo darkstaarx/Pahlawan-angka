@@ -25,6 +25,7 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
 let focusPickerProfile=null,focusPickerTrigger=null;
 function closeFocusPicker(){document.getElementById('focusPickerOverlay')?.classList.add('hidden');focusPickerTrigger?.focus?.()}
 function openFocusPicker(){
+ if(!window.PACommercial?.requireFeature?.('focus'))return;
  if(typeof db==='undefined'||!db)return;
  const overlay=document.getElementById('focusPickerOverlay'),deck=document.getElementById('focusPickerDeck');
  if(!overlay||!deck)return;

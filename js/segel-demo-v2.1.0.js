@@ -2546,6 +2546,7 @@
      Sinematik masuk (segel-entry-cinematic) menghantar semula argumen ini
      tanpa diubah, jadi tiada perubahan diperlukan di sana. */
   window.openSegelDemo=async function(mode){
+    if(!mode?.guestDemo&&!window.PACommercial?.requireFeature?.('missions'))return;
     if(typeof db==='undefined'||!db)return;
     const opening=++demoOpenGeneration;
     entryMode=(mode&&typeof mode==='object')?mode:null;
