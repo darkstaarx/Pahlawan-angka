@@ -55,7 +55,7 @@
       "original": {
         "originSkillId": "D2.4.5",
         "contextDomain": "money",
-        "promptIllustration": "RM24.00 ÷ 3"
+        "promptIllustration": "RM24.00 ÷ 4"
       },
       "tags": {
         "operationFamilies": [
@@ -63,7 +63,7 @@
         ],
         "operands": {
           "dividend": 24,
-          "divisor": 3,
+          "divisor": 4,
           "unit": "RM",
           "moneyMinorUnit": 2400
         },
@@ -95,7 +95,7 @@
       "original": {
         "originSkillId": "D2.2.4",
         "contextDomain": "operations",
-        "promptIllustration": "24 ÷ 3"
+        "promptIllustration": "24 ÷ 4"
       },
       "tags": {
         "operationFamilies": [
@@ -103,7 +103,7 @@
         ],
         "operands": {
           "dividend": 24,
-          "divisor": 3,
+          "divisor": 4,
           "unit": "integer"
         },
         "operandDimensions": {
