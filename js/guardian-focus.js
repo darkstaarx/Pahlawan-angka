@@ -64,6 +64,7 @@ function openFocusPicker(){
 function startFocusChoice(id){
  if(focusPickerProfile!==db||!focusPracticeSummary().items.some(item=>item.id===id)){openFocusPicker();return}
  if(typeof enforceRestuLock==='function'&&enforceRestuLock())return;
+ if(window.PAWirayungLive?.tryStartFocus?.(id))return;
  closeFocusPicker();
  // Keep the existing production battle/count; only lock the selected skill.
  if(typeof openGembok==='function'&&window.PAProductionJourney)openGembok({focusSkill:id});
