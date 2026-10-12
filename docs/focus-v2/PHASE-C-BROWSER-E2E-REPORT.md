@@ -7,12 +7,12 @@ Date: 12 October 2026. Decision: **NO-GO for user-facing Focus v2 integration.**
 - Repository: darkstaarx/Pahlawan-angka. Work performed only on feature/focus-diagnosis-foundations-v1, based on 065f0c2; fetched main snapshot 27e1e69 (refresh division offline bank). No merge, push or deployment was performed.
 - Live read-only URL: https://darkstaarx.github.io/Pahlawan-angka/ ; observed release 3.86.1. Local feature served over loopback. Isolated Edge/Chromium contexts, service workers blocked, desktop 1280×800 and Android-emulated portrait 360×640 (9:16). This is browser emulation, not physical Android hardware.
 - Automated browser contexts reject non-GET/HEAD network requests. Synthetic Focus profiles bypass commercial/rest gates in memory and disable save/cloud. No real account, child profile or cloud data was used.
-- Reviewed README, foundation map, tag audit, Phase C shadow report, ten fixtures, engine, collector, guardian Focus, adaptive and learner-review code. Static app deploy surface is index.html/sw.js/version.js. The sole checked-in Actions workflow builds marketing posters on main; GitHub Pages dashboard/source settings were not independently verified (gh unavailable). Local feature is never presented as deployed.
+- Reviewed README, foundation map, tag audit, Phase C shadow report, eleven fixtures, engine, collector, guardian Focus, adaptive and learner-review code. Static app deploy surface is index.html/sw.js/version.js. The sole checked-in Actions workflow builds marketing posters on main; GitHub Pages dashboard/source settings were not independently verified (gh unavailable). Local feature is never presented as deployed.
 - Existing Node checks initially passed except the Guardian audit's stale 3.9.0 version assertion. That audit now checks the current version source and cache wiring; all six final Node suites pass.
 
 ## Final results
 
-**239 listed checks: 219 PASS, 3 FAIL, 17 BLOCKED.** 222 checks executed with final outcomes; blocked rows are unimplemented/inaccessible acceptance gates, not passing tests. All three final failures concern unchanged production. Feature fixes passed dedicated browser retests.
+**12 October baseline: 239 listed checks: 219 PASS, 3 FAIL, 17 BLOCKED.** 222 checks executed with final outcomes; blocked rows are unimplemented/inaccessible acceptance gates, not passing tests. All three final failures concern unchanged production. The 13 October Scenario A follow-up is reported separately below and is not included in those baseline totals.
 
 The initial broad browser run recorded 58 checks (48 pass, 4 storage failures, 6 metadata blockers). Its four storage rows are superseded in the final totals by dedicated post-fix persistence retests. Original results.json is preserved; old feature console exceptions there predate the bootstrap fix. Sample counts are supporting evidence, not separate tests. Routing's 148 assertions are setup-assisted component/browser checks and do not prove naturally earned authenticated Kembara progress.
 
@@ -55,7 +55,7 @@ Distinct fingerprints alone do not establish diagnostic form diversity. Some fin
 
 ## Educational correctness, recovery and integrity
 
-- All ten golden specifications match actual browser and Node evaluator decisions. Money failures with successful pure division request money-unit contrast; two division fact failures plus grouping success produce a provisional div.facts candidate. Digit-depth failures can isolate regrouping; successful subtraction/multiplication plus percent-concept failures isolate percent.part_whole. These are synthetic tagged observations, not live pupil diagnoses.
+- All eleven golden specifications match actual browser and Node evaluator decisions. Money failures with successful pure division request money-unit contrast; two division fact failures plus grouping success produce a provisional div.facts candidate. Digit-depth failures can isolate regrouping; successful subtraction/multiplication plus percent-concept failures isolate percent.part_whole. These are synthetic tagged observations, not live pupil diagnoses.
 - One error/repeated same probe yields insufficient_evidence. Assistance/correction is not independent mastery. Two independent transfer probes report transfer_observed separately from certainty about a previous root cause; assisted transfer does not verify. Historical candidates are not automatically cleared into mastery after transfer.
 - Addition/subtraction carry/borrow/place-value separation and multiplication group/fact/multi-digit root rules are absent. Remainder evidence abstains conservatively but falls back to div.facts rather than a specific remainder probe. Cross-topic unsupported families abstain; that is a safety pass, not validated cross-topic diagnosis.
 - D6 synthetic cases request earlier foundations without changing grade. Existing UI Focus remains same-grade and the adaptive engine's prior-grade readiness shortcut is not diagnostic proof. No v2 controller generates a D2-style probe for a D6 learner and returns to an independent D6 task. This is BLOCKED.
@@ -95,6 +95,7 @@ node audit/focus-v2-scenario-guards.cjs
 node audit/focus-v2-foundation-contract.cjs
 node audit/focus-v2-d2-tag-smoke.cjs
 node audit/focus-v2-diagnosis-shadow.cjs
+node audit/focus-v2-scenario-a.cjs
 node audit/focus-practice-v3.85.68.js
 node audit/guardian-focus-v3.8.30.js
 node audit/focus-v2-demo-persistence.cjs
@@ -340,11 +341,24 @@ Evidence files below live in audit/focus-v2-e2e. Long exact observations are ret
 | production android guest persistence retest | 1–6 | Learner profile keys unchanged after six lifecycle cycles | {"profileKeysBefore":[["pa_coach_v6_full",null],["pa_coach_v5",null]],"profileKeysAfter":[["pa_coach_v6_full",{"name":"Demo","schoolGrade":3,"demoMode":true,"skills":117}],["pa_coa | FAIL | [persistence-results.json](../../audit/focus-v2-e2e/persistence-results.json) |
 | feature desktop guest persistence retest | 1–6 | Learner profile keys unchanged after six lifecycle cycles | {"profileKeysBefore":[["pa_coach_v6_full",null],["pa_coach_v5",null]],"profileKeysAfter":[["pa_coach_v6_full",null],["pa_coach_v5",null]],"otherChangedKeys":[]} | PASS | [persistence-results.json](../../audit/focus-v2-e2e/persistence-results.json) |
 | feature android guest persistence retest | 1–6 | Learner profile keys unchanged after six lifecycle cycles | {"profileKeysBefore":[["pa_coach_v6_full",null],["pa_coach_v5",null]],"profileKeysAfter":[["pa_coach_v6_full",null],["pa_coach_v5",null]],"otherChangedKeys":[]} | PASS | [persistence-results.json](../../audit/focus-v2-e2e/persistence-results.json) |
-| Foundation contract | 1–6 | Regression passes | 114 curriculum skills; 23 operation; 12 money; 33 proposed foundations; 10 fixture specs | PASS | See reproduction commands |
+| Foundation contract | 1–6 | Regression passes | 114 curriculum skills; 23 operation; 12 money; 33 proposed foundations; 11 fixture specs | PASS | See reproduction commands |
 | Source D2 tag smoke | 1–6 | Regression passes | 500 seeded source questions; numeric/tag invariants passed | PASS | See reproduction commands |
-| Shadow Node regression | 1–6 | Regression passes | 10 fixtures; 77 assertions; scoped adapter/collector; no mutation | PASS | See reproduction commands |
+| Shadow Node regression | 1–6 | Regression passes | 11 fixtures; 84 assertions; scoped adapter/collector; no mutation | PASS | See reproduction commands |
 | Existing Focus regression | 1–6 | Regression passes | 9,120 VM samples across 114 skills; minimum unique 20; ranking/routing passed | PASS | See reproduction commands |
 | Guardian Focus version wiring | 1–6 | Regression passes | 8 checks; obsolete version literal replaced by current-version/cache contract | PASS | See reproduction commands |
 | D3 persistence unit regression | 1–6 | Regression passes | 16 assertions: demo does not persist/schedule cloud; normal profiles still persist; legacy mastery unchanged | PASS | See reproduction commands |
 | Manual Computer Use production D2 | 2 | Wrong -> hint -> correct -> next question | 635 + 191; chose 836, read hint, chose 826; next question was Tafsir Carta | PASS | [manual-production-d2-after-hint.png](../../audit/focus-v2-e2e/manual-production-d2-after-hint.png) |
 | Production fresh-login console | 1–6 | No profile-null exception | coreGrade -> parent worksheet mount reads null schoolGrade; feature fixed separately | FAIL | [production-bootstrap-errors.json](../../audit/focus-v2-e2e/production-bootstrap-errors.json) |
+
+## Follow-up: Scenario A vertical slice (13 October 2026)
+
+The earlier report correctly marked the live Focus router as disconnected from v2. A follow-up completed a bounded, opt-in browser harness flow only; it does not change production routing or Focus cards. The harness now joins authored question tags to actual `PALearnerReview` outcomes on a disposable profile and renders a shadow recommendation card.
+
+| Test | Grade | Expected | Actual | Status | Evidence |
+|---|---:|---|---|---|---|
+| A1: money-division miss(es), two plain division successes | 2 | No root-cause label; request a money-unit contrast | Browser simulation with two distinct money misses and two plain successes returns `needs_contrast`, `rootCause: null`, `nextProbe: money.ringgit_sen`; actual-generator collector regression with one money miss and two plain successes returns the same | PASS | Computer Use on `audit/focus-v2-shadow-harness.html?shadow=1`; [scenario-a-results.json](../../audit/focus-v2-e2e/scenario-a-results.json) |
+| A2: money and basic-division misses, grouping success | 2 | Focus on the operation foundation, not money | Provisional `div.facts` candidate; recovery plus two independent transfer questions recorded; shadow card says “Calon fokus: Fakta bahagi asas” | PASS | Computer Use on the opt-in harness; [shadow regression](../../audit/focus-v2-diagnosis-shadow.cjs) |
+| A3: profile integrity during both runs | 2 | Mastery, XP, coins, rewards and grade unchanged | Mastery values 61/43 and XP/coins 100/55 unchanged; report `writes: 0`, `integrity: true` | PASS | [scenario-a-results.json](../../audit/focus-v2-e2e/scenario-a-results.json); browser harness result |
+| A4: one wrong contextual answer alone | 2 | Insufficient evidence | No confident root cause; additional independent contrast required | PASS | Fixture `single-money-failure-needs-context-contrast` in [diagnosis fixtures](../../data/focus-v2/diagnosis-fixtures-v1.json) |
+
+The targeted regression now covers the D2 money-vs-division source generators, learner-review outcomes, authored-tag collector and evaluator. The shadow panel is visibly isolated from the app iframe and requires `?shadow=1`. A fresh runtime sample in that browser run found **120 authored-tagged questions out of 7,020 valid questions**; metadata remains sparse overall. This is not a live pupil recommendation and does not prove complete runtime coverage. V2 remains **NO-GO for public integration**: the next `money.ringgit_sen` probe is selected but no authored follow-up question bank for that probe exists yet.

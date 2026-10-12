@@ -21,6 +21,33 @@
       "rationale": "Single wrong item cannot establish cause"
     },
     {
+      "id": "single-money-failure-needs-context-contrast",
+      "originSkillId": "D2.4.5",
+      "observations": [
+        {
+          "probe": "money_rm24_div4",
+          "family": "money",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_24_div_4",
+          "family": "division_fact",
+          "result": "independent"
+        },
+        {
+          "probe": "plain_32_div_4",
+          "family": "division_fact",
+          "result": "independent"
+        }
+      ],
+      "expected": {
+        "state": "needs_contrast",
+        "rootCause": null,
+        "nextProbe": "money.ringgit_sen"
+      },
+      "rationale": "One money-context failure with two independent plain division successes stays uncertain and requests a money-unit contrast."
+    },
+    {
       "id": "money-context-versus-divide",
       "originSkillId": "D2.4.5",
       "observations": [

@@ -125,7 +125,7 @@
     decision=answer('candidate','operation.choose','operation.choose','SELECTION_FAILURE_WITH_CALCULATION_SUCCESS','medium');
    }else if(failed(grp.percent)>=2&&clean(['subtraction'])>=1&&clean(['multiplication'])>=1){
     decision=answer('candidate','percent.part_whole','fraction.equal_parts','PERCENT_CONCEPT_FAILURE_WITH_OPERATIONS_SUCCESS','medium');
-   }else if(failed(grp.money)>=2&&clean(grp.plainDivision)>=2){
+   }else if(failed(grp.money)>=1&&clean(grp.plainDivision)>=2){
     decision=answer('needs_contrast',null,'money.ringgit_sen','MONEY_CONTEXT_VS_DIVISION_CONTRAST','low');
    }else if((failed(grp.plainDivision)+failed(grp.regroup)>=1)&&clean(grp.plainDivision)===0){
     decision=answer('needs_contrast',null,'div.facts','DIVISION_NEEDS_INDEPENDENT_PROBE');

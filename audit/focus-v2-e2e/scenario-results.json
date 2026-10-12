@@ -10,9 +10,9 @@
         "originSkillId": "D2.2.4",
         "state": "needs_contrast",
         "rootCause": null,
-        "nextProbe": "div.facts",
+        "nextProbe": "div.remainder",
         "confidence": "low",
-        "reasonCode": "AMBIGUOUS_UNASSISTED_SKILLS",
+        "reasonCode": "REMAINDER_FAILURE_WITH_EXACT_DIVISION_SUCCESS",
         "verification": "not_yet_verified",
         "evidence": {
           "uniqueTaggedQuestions": 4,
