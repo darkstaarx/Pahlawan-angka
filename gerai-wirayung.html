@@ -485,7 +485,13 @@ function chooseDivisionCase(t){
  if(!options.length)throw new Error('Tiada soalan Bahagi Wang yang sah.');
  // First exclude the last 14 maths combinations even when the scenario changes.
  let pool=options.filter(o=>!recent.has(o.total+'/'+o.people));
- if(!pool.length)pool=options;
+ if(!pool.length){
+  // If a tier has exhausted its question pool, take the least recently
+  // used maths combination rather than drawing a recent one at random.
+  const lastSeen=options.map(o=>history.map(x=>x.total+'/'+x.people).lastIndexOf(o.total+'/'+o.people));
+  const oldest=Math.min(...lastSeen);
+  pool=options.filter((o,i)=>lastSeen[i]===oldest);
+ }
  // Avoid repeating the same per-person answer over the last three questions if possible.
  const recentShares=new Set(history.slice(-3).map(x=>x.total/x.people));
  const varied=pool.filter(o=>!recentShares.has(o.share));
