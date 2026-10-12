@@ -1,0 +1,234 @@
+{
+  "schema": "pa.focus.question-tag-contract.v1",
+  "status": "proposed_not_wired",
+  "granularity": "question_instance",
+  "provenancePolicy": "All foundation tags must be authored by a generator/template or validated derivation; never infer from a wrong answer alone.",
+  "required": {
+    "originSkillId": "Valid GRAPH skill ID of original encounter",
+    "contextDomain": "money|number|operations|time|measurement|fraction|percent|ratio|data|other",
+    "arithmeticProfile": {
+      "operationFamilies": "Array of candidate calculations truly required by this concrete question (can be [] for conceptual)",
+      "operands": "Structured values and exact unit as needed; no personally identifying data",
+      "operandDimensions": "For division: dividendDigits, divisorDigits, quotientDigits, canHaveRemainder, usesRegrouping, decimalPlaces; unknown if not measured",
+      "steps": "Ordered calculation actions; e.g. [subtraction,division], not guessed from chapter title"
+    },
+    "probes": {
+      "foundationIds": "Subskills the item can assess, not proof that any one is deficient",
+      "conceptIds": "Specific domain concepts exercised",
+      "diagnosticPurpose": "screen|contrast_plain|prerequisite_probe|concept_probe|transfer_verify|normal"
+    },
+    "evidence": {
+      "questionFamilyKey": "Stable archetype identity separate from literal numbers",
+      "variantFingerprint": "Stable numeric/representation diversity hash (not raw prompt)",
+      "representation": "symbolic|contextual|manipulative|visual|bar_model|other",
+      "demand": "concept|procedure|application|reasoning|transfer",
+      "misconceptionTargets": "Potential distractor errors, never a diagnosis by themselves",
+      "difficultyBand": "1..4 or unknown",
+      "tagOrigin": "authored|verified_generator_derivation|unknown",
+      "tagRevision": "Changeable controlled schema version"
+    }
+  },
+  "optional": [
+    "curriculumVersion",
+    "standardRef",
+    "competencyId",
+    "subcompetencyId",
+    "contextId",
+    "questionSource",
+    "attemptKind",
+    "moneyMinorUnit",
+    "unknownFieldReasons"
+  ],
+  "hardRules": [
+    "A failure on a contextual question creates candidate causes only; no mastery penalty for unrelated GRAPH skill IDs.",
+    "Numeric magnitude alone does not establish regrouping; tag needs algorithmically verified operation detail.",
+    "Grade is not a prerequisite mastery guarantee; probe weaker previous-year foundation when evidence demands.",
+    "Do not move question text or child PII into cloud diagnostics; store opaque variant fingerprints and coarse operand profiles.",
+    "A first wrong attempt followed by correction does not count as independent evidence.",
+    "Demand independent evidence in multiple question families and spaced transfer before secure conclusions.",
+    "If mapping unknown, abstain and ask contrast probes; never guess arithmetic root cause from domain title."
+  ],
+  "examples": [
+    {
+      "source": "questions/helpers.js moneyQ(D2.4.5), example format",
+      "provenance": "illustrative_expected_after_tagging",
+      "original": {
+        "originSkillId": "D2.4.5",
+        "contextDomain": "money",
+        "promptIllustration": "RM24.00 ÷ 3"
+      },
+      "tags": {
+        "operationFamilies": [
+          "division"
+        ],
+        "operands": {
+          "dividend": 24,
+          "divisor": 3,
+          "unit": "RM",
+          "moneyMinorUnit": 2400
+        },
+        "operandDimensions": {
+          "dividendDigits": 2,
+          "divisorDigits": 1,
+          "quotientDigits": 1,
+          "canHaveRemainder": false,
+          "usesRegrouping": false,
+          "decimalPlaces": 0
+        },
+        "foundationIds": [
+          "div.equal_sharing",
+          "div.facts"
+        ],
+        "conceptIds": [
+          "money.ringgit_sen",
+          "money.equal_sharing_application"
+        ],
+        "diagnosticPurpose": "screen",
+        "questionFamilyKey": "money_equal_sharing",
+        "representation": "contextual",
+        "tagOrigin": "authored"
+      }
+    },
+    {
+      "source": "questions/d2/topic-2.js D2.2.4",
+      "provenance": "illustrative_expected_after_tagging",
+      "original": {
+        "originSkillId": "D2.2.4",
+        "contextDomain": "operations",
+        "promptIllustration": "24 ÷ 3"
+      },
+      "tags": {
+        "operationFamilies": [
+          "division"
+        ],
+        "operands": {
+          "dividend": 24,
+          "divisor": 3,
+          "unit": "integer"
+        },
+        "operandDimensions": {
+          "dividendDigits": 2,
+          "divisorDigits": 1,
+          "quotientDigits": 1,
+          "canHaveRemainder": false,
+          "usesRegrouping": false,
+          "decimalPlaces": 0
+        },
+        "foundationIds": [
+          "div.facts"
+        ],
+        "conceptIds": [],
+        "diagnosticPurpose": "contrast_plain",
+        "questionFamilyKey": "division_basic_fact",
+        "representation": "symbolic",
+        "tagOrigin": "authored"
+      }
+    },
+    {
+      "source": "questions/d2/topic-2.js D2.2.4 remainder mode",
+      "provenance": "illustrative_expected_after_tagging",
+      "original": {
+        "originSkillId": "D2.2.4",
+        "contextDomain": "operations",
+        "promptIllustration": "25 ÷ 4 dengan baki"
+      },
+      "tags": {
+        "operationFamilies": [
+          "division"
+        ],
+        "operands": {
+          "dividend": 25,
+          "divisor": 4,
+          "unit": "integer"
+        },
+        "operandDimensions": {
+          "dividendDigits": 2,
+          "divisorDigits": 1,
+          "quotientDigits": 1,
+          "canHaveRemainder": true,
+          "usesRegrouping": "unknown",
+          "decimalPlaces": 0
+        },
+        "foundationIds": [
+          "div.remainder"
+        ],
+        "conceptIds": [],
+        "diagnosticPurpose": "prerequisite_probe",
+        "questionFamilyKey": "division_remainder",
+        "representation": "contextual",
+        "tagOrigin": "authored"
+      }
+    },
+    {
+      "source": "questions/d5/core.js D5.MONEY",
+      "provenance": "illustrative_expected_after_tagging",
+      "original": {
+        "originSkillId": "D5.MONEY",
+        "contextDomain": "money",
+        "promptIllustration": "RM80 diskaun 25%"
+      },
+      "tags": {
+        "operationFamilies": [
+          "multiplication",
+          "subtraction"
+        ],
+        "operands": {
+          "initialPriceRM": 80,
+          "discountPercent": 25,
+          "unit": "money_percent"
+        },
+        "operandDimensions": {
+          "decimalPlaces": 0
+        },
+        "foundationIds": [],
+        "conceptIds": [
+          "percent.part_whole",
+          "money.discount"
+        ],
+        "diagnosticPurpose": "screen",
+        "questionFamilyKey": "discount_final_price",
+        "representation": "contextual",
+        "tagOrigin": "authored"
+      }
+    },
+    {
+      "source": "questions/d6/core.js D6.OPS",
+      "provenance": "illustrative_expected_after_tagging",
+      "original": {
+        "originSkillId": "D6.OPS",
+        "contextDomain": "operations",
+        "promptIllustration": "40 + 12 × 3"
+      },
+      "tags": {
+        "operationFamilies": [
+          "multiplication",
+          "addition"
+        ],
+        "operands": {
+          "base": 40,
+          "factorA": 12,
+          "factorB": 3
+        },
+        "operandDimensions": {
+          "steps": 2
+        },
+        "foundationIds": [
+          "mul.facts",
+          "add.place_value"
+        ],
+        "conceptIds": [
+          "operation.choose"
+        ],
+        "diagnosticPurpose": "screen",
+        "questionFamilyKey": "order_of_operations",
+        "representation": "symbolic",
+        "tagOrigin": "authored"
+      }
+    }
+  ],
+  "implementationBoundary": {
+    "safeTarget": "new optional per-question metadata attached within generators/templates BEFORE question enters questions/index.js",
+    "noLiveChanges": "Do not change Q() output, legacy selector, scoreState, db.skills, or focus picker in Phase A/B",
+    "futureShadow": "Observe tagged encounters alongside PALearnerReview without changing selection, rewards or mastery"
+  }
+}
