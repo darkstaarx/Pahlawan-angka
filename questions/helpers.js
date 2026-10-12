@@ -163,6 +163,12 @@ function chooseMoneyValue(mode="mixed",max=10000){
  let pool=mode==="coin"?coin:mode==="ringgit"?ringgit:mixed;
  pool=pool.filter(x=>x<=max);return pick(pool.length?pool:[Math.min(max,100)]);
 }
+/* Focus Diagnosis v2: optional question-instance evidence, not scores/routing. */
+function attachFoundationQuestionTags(q,meta){
+ if(!q)return q;
+ q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',...meta};
+ return q;
+}
 function moneyQ(id,shift,s){
  const difficulty=(s&&s.mastery>=75)?"STRETCH":(s&&s.mastery>=50)?"APPLICATION":(s&&s.mastery>=25)?"CORE":"FOUNDATION";
  if(id==="D2.4.1"){
@@ -219,7 +225,19 @@ function moneyQ(id,shift,s){
    const contextual=Math.random()<0.6;
    const prompt=contextual?`Wang sebanyak <b>${moneyFmt(total)}</b> dibahagi sama rata kepada <b>${k}</b> orang. Berapakah setiap orang dapat?`:`${moneyFmt(total)} ÷ ${k} = ?`;
    const wrong=moneyWrongSet(each,[total-k*100,total/k+100,total-k,each+50]);
-   return Q(prompt,moneyFmt(each),wrong,"Bahagi jumlah wang kepada kumpulan yang sama banyak.",`D2 ${difficulty} · Bahagi Wang`,true,shift);
+   return attachFoundationQuestionTags(
+      Q(prompt,moneyFmt(each),wrong,"Bahagi jumlah wang kepada kumpulan yang sama banyak.",`D2 ${difficulty} · Bahagi Wang`,true,shift),
+      {originSkillId:id,contextDomain:'money',arithmeticProfile:{
+        operationFamilies:['division'],
+        operands:{totalMinorUnits:total,divisor:k,quotientMinorUnits:each,unit:'sen'},
+        operandDimensions:{dividendDigits:String(total).length,divisorDigits:String(k).length,quotientDigits:String(each).length,unit:'sen',canHaveRemainder:false,usesRegrouping:'unknown'},
+        steps:['division']
+       },
+       probes:{foundationIds:['div.equal_sharing','div.facts'],conceptIds:['money.ringgit_sen','money.equal_sharing_application'],diagnosticPurpose:'screen'},
+       evidence:{questionFamilyKey:'d2-money-equal-share',representation:contextual?'contextual':'symbolic',demand:contextual?'application':'procedure',
+        difficultyBand:difficulty==='STRETCH'?4:difficulty==='APPLICATION'?3:difficulty==='CORE'?2:1},
+       note:'Money minor-unit digits are NOT equivalent to plain integer division difficulty; contrast before diagnosis.'}
+    );
  }
  if(id==="D2.4.6"){
    const income=chooseMoneyValue("mixed",7000),spend=chooseMoneyValue(pick(["coin","mixed","ringgit"]),Math.max(50,income-5));
