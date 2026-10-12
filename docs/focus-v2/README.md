@@ -1,0 +1,29 @@
+# Focus Diagnosis v2 — Phase A/B isolated workspace
+
+**Status:** branch-only design + D2 source-generator pilot. **Not live.** No main-branch changes, schema migrations, mobile/PWA deploy changes, saved-state changes or mastery-score recalculations.
+
+## Deliverables
+- `data/focus-v2/foundation-map-v1.json`: 33 atomic foundations, 23 Operasi curriculum anchors, all 12 Wang skills, six representative cross-topic context mappings.
+- `docs/focus-v2/FOUNDATION-SKILL-MAP-v1.md`: educational rules, cross-grade remediation and abstention boundaries.
+- `docs/focus-v2/QUESTION-TAG-AUDIT-v1.md`: source-level audit covering D2–D6 selected generators, legacy dispatcher, new bank template layers, adaptive and learner review.
+- `data/focus-v2/question-tag-contract-v1.json`: proposed per-question tag contract + five example records.
+- `data/focus-v2/diagnosis-fixtures-v1.json`: 10 gold *specifications* of expected root-cause diagnosis/probe next-step behaviours, **not** an implemented diagnostic engine.
+- `questions/helpers.js`: optional D2.4.5 tagging pilot.
+- `questions/d2/topic-2.js`: optional D2.2.4 tagging pilot.
+- `audit/focus-v2-foundation-contract.cjs`: structural integrity checks.
+- `audit/focus-v2-d2-tag-smoke.cjs`: deterministic 500-question bank/tag smoke check.
+
+## Reproduce tests
+```sh
+node audit/focus-v2-foundation-contract.cjs
+node audit/focus-v2-d2-tag-smoke.cjs
+```
+
+The initial structural assertions were executed against checked-in files in a V8-compatible test runner, and a deterministic 500-question comparison with untouched `main` reported 0 changes to legacy prompt/answer/distractors. Full browser end-to-end and Node CLI runs on a checked-out repository are follow-up gates, not claimed completed.
+
+## Blockers before Focus v2 roll-out
+1. Add authored tags to the remaining key D2 money/operations generators and validate output **after** applicable runtime wrappers.
+2. Build and audit diagnosis-style contrast banks with distinct equation, manipulative and contextual forms across root levels; don't assume all forms are already present.
+3. Build *pure shadow-only* evaluator that consumes tag/evidence without mutating profile.
+4. Validate with the ten gold fixture specifications and larger blinded/edge-case families before making any user-visible Focus routing change.
+5. Preserve existing gameplay/mastery algorithm until oracle parity and accuracy gates pass.
