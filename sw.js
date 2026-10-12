@@ -1,8 +1,9 @@
 // App shell v3.84.64 — mobile long-screen scroll ownership refresh.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-chibi-2`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-original-router-3`;
 const APP_SHELL=[
-  './gerai-wirayung.html', './js/wirayung-live-bridge.js',
+  './gerai-wirayung.html', './js/wirayung-live-bridge.js', './js/gerai-wirayung-router.js',
+  './assets/minigames/kedai-ajaib/wira-idle.webp', './assets/minigames/kedai-ajaib/wira-thumb.webp', './assets/minigames/kedai-ajaib/wira-victory.webp',
   './assets/heroes/wira-chibi/frames/victory-v1.webp',
   './assets/ui/focus-v1/focus-panel-illustrated-v1.webp',
   './assets/ui/focus-v1/focus-skill-card-clean-v1.svg',

@@ -16,19 +16,16 @@ css.textContent='#paWirayungOverlay{position:fixed;inset:0;z-index:2147482000;ba
 document.head.append(css);
 const escapeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const activeGrade=()=>Number(typeof db!=="undefined"&&db&&db.schoolGrade)||0;
-function moneySkill(id){return !!id&&(/^D[1-6]\.MONEY$/.test(id)||/^D2\.4\.[13]$/.test(id));}
+function moneySkill(id){return !!(typeof db!=='undefined'&&db&&window.PAGeraiWirayung?.planFor?.(db,id));}
 function open(skillId){
  if(typeof db==="undefined"||!db||!window.PACommercial?.requireFeature?.("focus"))return false;
  if(typeof enforceRestuLock==="function"&&enforceRestuLock())return false;
  const grade=activeGrade();if(!gradeModes[grade])return false;
- let modes=gradeModes[grade];
- if(skillId){
-  if(!moneySkill(skillId)||typeof META==="undefined"||!META[skillId]||Number(META[skillId].grade)!==grade)return false;
-  const plan=window.PAGeraiWirayung?.planFor?.(db,skillId);
-  if(Array.isArray(plan?.modes)&&plan.modes.length)modes=plan.modes.filter(x=>gradeModes[grade].includes(x));
-  else if(grade===2)modes=[skillId==="D2.4.3"?"baki":"bayar"];
-  if(!modes.length)return false;
- }
+ // Original Gerai Wirayung router decides which Focus skill belongs here.
+ const plan=skillId&&window.PAGeraiWirayung?.planFor?.(db,skillId);
+ if(!plan||Number(plan.grade)!==grade||typeof META==='undefined'||!META[skillId]||Number(META[skillId].grade)!==grade)return false;
+ const modes=plan.modes.filter(mode=>gradeModes[grade].includes(mode));
+ if(!modes.length)return false;
  if(run)close();
  const nonce=(crypto.randomUUID?.()||String(Date.now())+"-"+Math.random().toString(36).slice(2));
  const node=document.createElement("section");node.id="paWirayungOverlay";node.setAttribute("role","dialog");node.setAttribute("aria-label","Gerai Wirayung");node.setAttribute("aria-modal","true");
