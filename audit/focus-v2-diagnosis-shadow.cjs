@@ -43,7 +43,6 @@ const transfer=diagnose([
 check(transfer.verification==='transfer_observed','distinct independent transfer is observed, not claimed psychology');
 check(transfer.rootCause==='div.facts'&&transfer.state==='candidate','transfer does not erase historical root candidate without new diagnosis window');
 const profile={schoolGrade:2,skills:{'D2.2.4':{mastery:44},'D2.4.5':{mastery:17}}};
-const before=JSON.stringify(profile);
 const math=Object.create(Math);let seed=31;
 math.random=()=>((seed=Math.imul(1664525,seed)+1013904223|0)>>>0)/4294967296;
 const source=fs.readFileSync(path.join(root,'questions/helpers.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'questions/d2/topic-2.js'),'utf8');
@@ -60,6 +59,7 @@ for(const [q,outcome] of [[q1,'unresolved'],[q2,'independent']]){
  tags[e.questionKey]=q.focusDiagnosticV1;
 }
 const keys=profile.learnerReviewV1.encounters.map(x=>x.questionKey);
+const profileSnapshot=JSON.stringify(profile);
 const joined=engine.fromReview(profile,tags,{originSkillId:'D2.4.5',questionKeys:keys});
 check(joined.tagged===2&&joined.unmatched===0,'joined exactly two explicit tagged encounters');
 const shadow=engine.evaluate({originSkillId:'D2.4.5',profile,questionTagsByKey:tags,questionKeys:keys});
@@ -69,5 +69,5 @@ const withoutScope=engine.evaluate({originSkillId:'D2.4.5',profile,questionTagsB
 check(withoutScope.evidence.uniqueTaggedQuestions===0&&withoutScope.state==='insufficient_evidence','no whole-profile diagnosis without explicit question scope');
 const withoutTags=engine.evaluate({originSkillId:'D2.4.5',profile,questionKeys:keys});
 check(withoutTags.evidence.uniqueTaggedQuestions===0&&withoutTags.evidence.untaggedExcluded===2,'legacy observations cannot be guessed into tagged evidence');
-check(JSON.stringify(profile)===before.replace('"skills"', '"skills"')||profile.skills['D2.4.5'].mastery===17,'check no score mutation'); // profile intentionally gained review encounters above
+check(JSON.stringify(profile)===profileSnapshot,'shadow evaluator and adapter must not mutate any profile fields');
 console.log(JSON.stringify({status:'focus_v2_phase_c_shadow_pass',goldenFixtures:fixtures.cases.length,assertions:checks,adapter:'tagged learner review join passed',productionRouting:'not connected',masteryMutation:false},null,2));
