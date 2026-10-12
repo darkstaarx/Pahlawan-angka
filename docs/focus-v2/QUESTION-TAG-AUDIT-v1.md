@@ -22,7 +22,16 @@
 | `js/guardian-focus.js` | At least 5 encounters and 2 question keys; picks up to three same-grade skills with independent rate below 80%. | It's a **weak-skill selector**, not root-cause diagnosis; do not silently relabel weakness. |
 | `js/engine/adaptive.js` | Recovery is grade-constrained; `prereqReady` accepts prior-year prerequisites as ready by grade alone. | Future cross-year diagnosis **cannot** rely on this existing readiness check as proof of mastery. |
 
-## Priority tags to author before engine roll-out
+## Branch-only D2 pilot (implemented after the source audit)
+
+- `questions/helpers.js` now attaches optional `focusDiagnosticV1` to D2.4.5 source-generator output, with operation family, money minor units, divisor, context, candidate foundations and stable family ID.
+- `questions/d2/topic-2.js` now attaches the same optional metadata to D2.2.4 exact division, divide-by-ten and remainder cases.
+- This metadata is **not consumed by app Focus, adaptive routing, db.skills, Supabase or rewards**. The existing generated prompt/answer/choices are unchanged.
+- Deterministic seeded comparison against `main`: **250 D2.4.5 + 250 D2.2.4 = 500 question outputs, 0 content differences** after removing the new tag. Mathematical division invariants and emitted tag shape were also checked.
+- Added `audit/focus-v2-d2-tag-smoke.cjs` to repeat structural and numeric validation using local Node; `audit/focus-v2-foundation-contract.cjs` validates JSON graph references and fixtures.
+- **Known limitation**: other D1–D6 generators and later runtime wrappers can be richer or replace output; final effective-question coverage remains to be assessed before connecting shadow diagnosis.
+
+## Remaining priority tags to author before engine roll-out
 
 1. **D2.2.4 / D2.4.5**: `division.equal_sharing`, `division_fact`, 2-digit/1-digit, regrouping, remainder, RM/sen conversion. Crucial to distinguish a money/context failure from pure arithmetic.
 2. **D2.4.2–D2.4.3 / D2.2.1–D2.2.2**: add/tolak facts, place value, regrouping and money handling.
