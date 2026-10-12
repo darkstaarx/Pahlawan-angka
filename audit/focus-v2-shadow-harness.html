@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Focus v2 isolated shadow audit</title>
+<style>body{font:16px system-ui;background:#142638;color:#fff;padding:24px}button{padding:12px}pre{white-space:pre-wrap}iframe{width:100%;height:640px;border:1px solid #aaa}</style>
+<h1>Focus v2 isolated shadow audit</h1><p>No scoring, routing or persistence is connected to this harness.</p><button id="run" disabled>Run shadow audit</button><pre id="output">Explicit ?shadow=1 opt-in required.</pre>
+<script>
+(async()=>{
+ if(new URLSearchParams(location.search).get('shadow')!=='1')return;
+ for(const src of ['../js/engine/focus-diagnosis-v2.js','../js/engine/focus-diagnosis-shadow-v1.js'])await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.append(s)});
+ const frame=document.createElement('iframe');frame.title='Fresh local app runtime';frame.src='../index.html';document.body.append(frame);
+ const fixtures=await (await fetch('../data/focus-v2/diagnosis-fixtures-v1.json')).json();
+ window.runShadowAudit=async()=>{
+  const w=frame.contentWindow;
+  const deadline=Date.now()+30000;while(w.document.readyState!=='complete'||typeof w.generate!=='function'||!w.PALearnerReview||!w.__PA_LIVE_ASSET_REFRESHED){if(Date.now()>deadline)throw Error('App runtime unavailable');await new Promise(r=>setTimeout(r,100))}
+  await new Promise(r=>setTimeout(r,1000));
+  const rows=fixtures.cases.map(f=>{const before=JSON.stringify(f),actual=PAFocusDiagnosisV2.evaluate(f);return{id:f.id,expected:f.expected,actual,pass:actual.state===f.expected.state&&actual.rootCause===f.expected.rootCause&&actual.nextProbe===f.expected.nextProbe&&JSON.stringify(f)===before&&actual.writes===0}});
+  const metadata=[],skills=w.eval('GRAPH.skills');
+  for(const skill of skills)for(const band of [15,35,80]){
+   w.eval('db={schoolGrade:'+skill.grade+'};sess={mode:"practice",questionFingerprints:[],questionHistory:[]}');
+   const samples=[],unique=new Set();let valid=0,tagged=0;
+   for(let i=0;i<20;i++){
+    const q=w.generate(skill.id,{mastery:band,evidence:5,confidence:band,correct:2,wrong:3},{strictSkill:true,battleTier:'gembok'});
+    if(!q)continue;if(q.prompt&&q.answer!==undefined&&q.title!=='Fallback')valid++;
+    unique.add(w.questionFingerprint(q));if(q.focusDiagnosticV1)tagged++;
+    if(i<2)samples.push({skill:q.skill,prompt:q.prompt,answer:q.answer,archetypeId:q.archetypeId,focusDiagnosticV1:q.focusDiagnosticV1||null});
+   }
+   metadata.push({id:skill.id,grade:skill.grade,band,valid,unique:unique.size,tagged,samples});
+  }
+  // Real final runtime -> production review -> collector, on an ephemeral clone only.
+  const profile={schoolGrade:2,skills:{'D2.2.4':{mastery:61},'D2.4.5':{mastery:43}},xp:100,coins:55,level:3,rewards:{},completedMissions:{}};
+  const protectedBefore=JSON.stringify(profile),collector=PAFocusShadowCollectorV1.createSession({originSkillId:'D2.4.5'},PAFocusDiagnosisV2);
+  const captures=[];
+  w.eval('db={schoolGrade:2};sess={mode:"practice",questionFingerprints:[],questionHistory:[]}');
+  for(const [i,outcome] of ['independent','corrected','assisted','unresolved'].entries()){
+   const id=i%2?'D2.2.4':'D2.4.5',q=w.generate(id,{mastery:15,evidence:0},{strictSkill:true,battleTier:'gembok'});q.skill=id;q.token='shadow-'+i;
+   const begin=w.PALearnerReview.beginQuestion(q,{grade:2,mode:'practice',now:1000+i*1000});
+   const captured=collector.capture(begin,q);
+   if(outcome==='corrected'||outcome==='unresolved')w.PALearnerReview.firstWrong(q,{now:1100+i*1000,seconds:3});
+   if(outcome==='assisted')w.PALearnerReview.hintUsed(q,1);
+   const record=w.PALearnerReview.resolve(q,{correct:outcome!=='unresolved',seconds:5,now:1500+i*1000},profile);
+   captures.push({skill:q.skill,captured,expected:outcome,actual:record.outcome,tag:q.focusDiagnosticV1||null});
+  }
+  const beforeEvaluation=JSON.stringify(profile),decision=collector.evaluate(profile),stats=collector.stats();collector.close();
+  const protectedAfter=JSON.stringify(Object.fromEntries(Object.entries(profile).filter(([k])=>k!=='learnerReviewV1')));
+  const result={rows,metadata,captures,decision,stats,integrity:protectedBefore===protectedAfter&&beforeEvaluation===JSON.stringify(profile),closed:collector.stats().closed};
+  window.shadowResult=result;document.getElementById('output').textContent=JSON.stringify({fixtures:rows.filter(x=>x.pass).length,total:rows.length,validQuestions:metadata.reduce((s,x)=>s+x.valid,0),taggedQuestions:metadata.reduce((s,x)=>s+x.tagged,0),captures,decision,integrity:result.integrity},null,2);return result;
+ };
+ document.getElementById('run').disabled=false;document.getElementById('output').textContent='Ready. Results are in memory only.';
+ document.getElementById('run').onclick=()=>runShadowAudit().catch(e=>document.getElementById('output').textContent=e.stack);
+})();
+</script></html>

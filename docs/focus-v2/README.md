@@ -30,6 +30,8 @@ The initial structural assertions were executed against checked-in files in a V8
 - Current `main` and `index.html` are unchanged. **No live shadow observer is installed yet.**
 
 ## Blockers before Focus v2 roll-out
+See [Phase C browser audit](PHASE-C-BROWSER-E2E-REPORT.md) for the final browser/shadow results, runtime metadata gaps and branch-only regression fixes. User-facing integration remains NO-GO.
+
 1. Add authored tags to the remaining key D2 money/operations generators and validate output **after** applicable runtime wrappers.
 2. Build and audit diagnosis-style contrast banks with distinct equation, manipulative and contextual forms across root levels; don't assume all forms are already present.
 3. Build *pure shadow-only* evaluator that consumes tag/evidence without mutating profile.

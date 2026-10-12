@@ -113,7 +113,7 @@
   }
 
   function persist(stateRoot){
-    if(!stateRoot)return;
+    if(!stateRoot||stateRoot.demoMode)return;
     stateRoot.lastSavedAt=now();
     try{
       if(root.localStorage&&typeof root.localStorage.setItem==='function')root.localStorage.setItem('pa_coach_v6_full',JSON.stringify(stateRoot));

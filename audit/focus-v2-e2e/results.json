@@ -1,0 +1,517 @@
+{
+  "date": "2026-10-12T13:23:03.264Z",
+  "rows": [
+    {
+      "test": "production desktop login",
+      "grade": "1–6",
+      "expected": "Login + demo visible",
+      "actual": "1 Google button; 3.86.1",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production desktop demo wrong/hint/correct",
+      "grade": 1,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D1.SUB20 18 − 6 = ? = 12",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production desktop demo wrong/hint/correct",
+      "grade": 2,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D2.1.4 Apakah nilai digit yang ditanda pada tempat <b>ratus</b> dalam <b><span style=\"display:inline-block;padding:0 3px;border-bottom:3px solid #ef9b35;color:#b34f18\">4</span>99</b>? = 400",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production desktop demo wrong/hint/correct",
+      "grade": 3,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D3.MEASURE <svg class=\"paQuestionVisual\" viewBox=\"0 0 140 108\" width=\"100%\" style=\"max-width:140px;height:auto\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-hidden=\"true\"><path d=\"M25 75 A45 45 0 0 1 115 75\" fill=\"none\" stroke=\"#2b2540\" stroke-width=\"3\"/><line x1=\"70\" y1=\"70\" x2=\"101.33126432638733\" y2=\"85.59973960391805\" stroke=\"#7254a8\" stroke-width=\"4\"/><circle cx=\"70\" cy=\"70\" r=\"4\" fill=\"#2b2540\"/><text x=\"70\" y=\"98\" text-anchor=\"middle\" font-size=\"11\" font-family=\"sans-serif\">4 kg 272 g</text></svg><div class=\"qsv2-prompt\">3 kg 172 g + 698 g + 402 g = ?</div> = 4 kg 272 g",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production desktop demo wrong/hint/correct",
+      "grade": 4,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D4.COORD <div class=\"coordVisual\" role=\"img\" aria-label=\"Grid koordinat dengan titik pada 2, 2\" style=\"font-family:monospace;white-space:pre;line-height:1.15;display:inline-block;text-align:left;background:#fff;padding:8px 10px;border-radius:10px;border:2px solid #8394b2;margin:0 auto 10px\">4 | · · · · ·\n3 | · · · · ·\n2 | · · ● · ·\n1 | · · · · ·\n0 | · · · · ·\n    0 1 2 3 4</div>Apakah koordinat titik ●? = (2,2)",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production desktop demo wrong/hint/correct",
+      "grade": 5,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D5.FRAC <div class=\"kssrDiagram\" style=\"--kd-accent:#5b8def\"><svg viewBox=\"0 0 300 68\" aria-label=\"jalur pecahan\"><rect x=\"10\" y=\"14\" width=\"56\" height=\"38\" class=\"kd-fill\"/><rect x=\"66\" y=\"14\" width=\"56\" height=\"38\" class=\"kd-empty\"/><rect x=\"122\" y=\"14\" width=\"56\" height=\"38\" class=\"kd-empty\"/><rect x=\"178\" y=\"14\" width=\"56\" height=\"38\" class=\"kd-empty\"/><rect x=\"234\" y=\"14\" width=\"56\" height=\"38\" class=\"kd-empty\"/></svg></div>Gambar mewakili <b>1/5</b>. Jika kuantiti ini diambil <b>4 kali</b>, hasil 1/5 × 4 ialah? = 4/5",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production desktop demo wrong/hint/correct",
+      "grade": 6,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D6.DEC 7.2 ÷ □ = 3. Apakah nilai □? = 2.4",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production desktop guest persistence",
+      "grade": "1–6",
+      "expected": "No learner profile saved",
+      "actual": "Storage changed: inspect evidence",
+      "status": "FAIL",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android login",
+      "grade": "1–6",
+      "expected": "Login + demo visible",
+      "actual": "1 Google button; 3.86.1",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android demo wrong/hint/correct",
+      "grade": 1,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D1.MONEY Di kantin, satu pau berharga 40 sen dan air 10 sen. Jumlah harga? = 50 sen",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android demo wrong/hint/correct",
+      "grade": 2,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D2.1.4 Apakah nilai digit yang ditanda pada tempat <b>sa</b> dalam <b>59<span style=\"display:inline-block;padding:0 3px;border-bottom:3px solid #ef9b35;color:#b34f18\">7</span></b>? = 7",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android demo wrong/hint/correct",
+      "grade": 3,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D3.SHAPE <svg viewBox=\"0 0 100 100\" width=\"96\" height=\"96\" style=\"display:block;margin:0 auto 10px\"><rect x=\"12\" y=\"24\" width=\"76\" height=\"52\" rx=\"4\" fill=\"#8fd9a8\" stroke=\"#405072\" stroke-width=\"3\"/></svg>Segi empat tepat mempunyai berapa sisi? = 4",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android demo wrong/hint/correct",
+      "grade": 4,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D4.RATIO Ringkaskan nisbah 2:4. = 1:2",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android demo wrong/hint/correct",
+      "grade": 5,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D5.FRAC <div class=\"kssrDiagram\" style=\"--kd-accent:#5b8def\"><svg viewBox=\"0 0 300 68\" aria-label=\"jalur pecahan\"><rect x=\"10\" y=\"14\" width=\"70\" height=\"38\" class=\"kd-fill\"/><rect x=\"80\" y=\"14\" width=\"70\" height=\"38\" class=\"kd-empty\"/><rect x=\"150\" y=\"14\" width=\"70\" height=\"38\" class=\"kd-empty\"/><rect x=\"220\" y=\"14\" width=\"70\" height=\"38\" class=\"kd-empty\"/></svg></div>Gambar mewakili <b>1/4</b>. Jika kuantiti ini diambil <b>2 kali</b>, hasil 1/4 × 2 ialah? = 1/2",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android demo wrong/hint/correct",
+      "grade": 6,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D6.RATIO 4 botol menggunakan 10 L air. Pada kadar sama, 10 botol menggunakan? = 25 L",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "production android guest persistence",
+      "grade": "1–6",
+      "expected": "No learner profile saved",
+      "actual": "Storage changed: inspect evidence",
+      "status": "FAIL",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop login",
+      "grade": "1–6",
+      "expected": "Login + demo visible",
+      "actual": "1 Google button; 3.86.1",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop demo wrong/hint/correct",
+      "grade": 1,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D1.DATA <div class=\"kssrDiagram\"><table class=\"kd-table\"><thead><tr><th>Makanan</th><th>Gundalan</th></tr></thead><tbody><tr><td>Karipap</td><td>||||| </td></tr><tr><td>Pau</td><td>||</td></tr><tr><td>Kuih</td><td>|||</td></tr></tbody></table></div>Berapakah Karipap direkod? = 5",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop demo wrong/hint/correct",
+      "grade": 2,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D2.2.2 978 − 374 − 108 = ? = 496",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop demo wrong/hint/correct",
+      "grade": 3,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D3.PERCENT <svg class=\"paQuestionVisual\" viewBox=\"0 0 126 126\" width=\"100%\" style=\"max-width:126px;height:auto\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-hidden=\"true\"><rect x=\"8\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"8\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"19\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"30\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"41\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"52\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"63\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"74\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"85\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"96\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"8\" y=\"107\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"19\" y=\"107\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"30\" y=\"107\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"41\" y=\"107\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"52\" y=\"107\" width=\"11\" height=\"11\" fill=\"#7254a8\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"63\" y=\"107\" width=\"11\" height=\"11\" fill=\"#ffffff\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"74\" y=\"107\" width=\"11\" height=\"11\" fill=\"#ffffff\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"85\" y=\"107\" width=\"11\" height=\"11\" fill=\"#ffffff\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"96\" y=\"107\" width=\"11\" height=\"11\" fill=\"#ffffff\" stroke=\"#2b2540\" stroke-width=\".55\"/><rect x=\"107\" y=\"107\" width=\"11\" height=\"11\" fill=\"#ffffff\" stroke=\"#2b2540\" stroke-width=\".55\"/></svg><div class=\"qsv2-prompt\">Berapakah peratus petak yang berlorek?</div> = 95%",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop demo wrong/hint/correct",
+      "grade": 4,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D4.RATE 16 botol disusun sama rata dalam 4 kotak. Berapa botol satu kotak? = 4",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop demo wrong/hint/correct",
+      "grade": 5,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D5.RATIO Nisbah setara bagi 1:1 ialah? = 3:3",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop demo wrong/hint/correct",
+      "grade": 6,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D6.MEASURE Setiap 2 m kain memerlukan 0.5 L pewarna. Terdapat 1.4 L pewarna. Berapakah bilangan kumpulan penuh kain sepanjang 2 m yang boleh disiapkan? = 2",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature desktop guest persistence",
+      "grade": "1–6",
+      "expected": "No learner profile saved",
+      "actual": "Storage changed: inspect evidence",
+      "status": "FAIL",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android login",
+      "grade": "1–6",
+      "expected": "Login + demo visible",
+      "actual": "1 Google button; 3.86.1",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android demo wrong/hint/correct",
+      "grade": 1,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D1.MEASURE Untuk membanding panjang dua reben, perkataan yang sesuai? = lebih panjang / lebih pendek",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android demo wrong/hint/correct",
+      "grade": 2,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D2.3.3 <div class=\"fractionVisual\" role=\"img\" aria-label=\"Satu keseluruhan dibahagi kepada 10 bahagian sama besar; 7 bahagian berlorek\" style=\"width:min(280px,94%);display:flex;border:3px solid #516684;border-radius:10px;overflow:hidden;margin:2px auto 12px;box-shadow:0 2px 0 #d3daea\"><div style=\"flex:1;height:34px;border-left:0 solid #516684;background:#62c991\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#62c991\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#62c991\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#62c991\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#62c991\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#62c991\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#62c991\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#edf2ff\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#edf2ff\"></div><div style=\"flex:1;height:34px;border-left:2px solid #516684;background:#edf2ff\"></div></div>Notasi manakah sepadan dengan rajah? = 0.7",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android demo wrong/hint/correct",
+      "grade": 3,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D3.DEC <svg class=\"paQuestionVisual\" viewBox=\"0 0 260 90\" width=\"100%\" style=\"max-width:260px;height:auto\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-hidden=\"true\"><rect x=\"18\" y=\"18\" width=\"224\" height=\"54\" rx=\"8\" fill=\"#f4f0fa\" stroke=\"#2b2540\" stroke-width=\"2\"/><text x=\"130\" y=\"50\" text-anchor=\"middle\" font-size=\"20\" font-family=\"monospace\">0.08 + 0.11</text></svg><div class=\"qsv2-prompt\">Aina mempunyai 0.08 m reben merah dan 0.11 m reben biru. Berapakah jumlah panjang reben?</div> = 0.19 m",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android demo wrong/hint/correct",
+      "grade": 4,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D4.MONEY Apakah mata wang yang digunakan di Indonesia? = rupiah",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android demo wrong/hint/correct",
+      "grade": 5,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D5.PERCENT <div class=\"kssrDiagram\"><svg viewBox=\"0 0 270 200\" aria-label=\"petak seratus\"><rect x=\"10\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"160\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"185\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"210\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"235\" y=\"8\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"10\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"160\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"185\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"210\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"235\" y=\"26\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"10\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"160\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"185\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"210\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"235\" y=\"44\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"10\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"160\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"185\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"210\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"235\" y=\"62\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"10\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"160\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"185\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"210\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"235\" y=\"80\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"10\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"160\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"185\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"210\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"235\" y=\"98\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"10\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"160\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"185\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"210\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"235\" y=\"116\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"10\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"35\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"60\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"85\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"110\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-fill\"/><rect x=\"135\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"160\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"185\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"210\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"235\" y=\"134\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"10\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"35\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"60\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"85\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"110\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"135\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"160\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"185\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"210\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"235\" y=\"152\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"10\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"35\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"60\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"85\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"110\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"135\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"160\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"185\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"210\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/><rect x=\"235\" y=\"170\" width=\"22\" height=\"15\" rx=\"2\" class=\"kd-empty\"/></svg></div>Peratus yang ditunjukkan/ditanya ialah <b>75%</b>. Dalam bentuk perpuluhan? = 0.75",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android demo wrong/hint/correct",
+      "grade": 6,
+      "expected": "Valid question; wrong retry; hint; correct accepted",
+      "actual": "D6.FRAC (3.5 + 2.5) × 4 = ? = 24",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "feature android guest persistence",
+      "grade": "1–6",
+      "expected": "No learner profile saved",
+      "actual": "Storage changed: inspect evidence",
+      "status": "FAIL",
+      "evidence": "results.json"
+    },
+    {
+      "test": "Harness default off",
+      "grade": "1–6",
+      "expected": "No engine without opt-in",
+      "actual": "undefined",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "Oracle no-evidence-single-error",
+      "grade": 2,
+      "expected": "{\"state\":\"insufficient_evidence\",\"rootCause\":null,\"nextProbe\":\"div.facts\"}",
+      "actual": "{\"state\":\"insufficient_evidence\",\"rootCause\":null,\"nextProbe\":\"div.facts\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle money-context-versus-divide",
+      "grade": 2,
+      "expected": "{\"state\":\"needs_contrast\",\"rootCause\":null,\"nextProbe\":\"money.ringgit_sen\"}",
+      "actual": "{\"state\":\"needs_contrast\",\"rootCause\":null,\"nextProbe\":\"money.ringgit_sen\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle weak-basic-division",
+      "grade": 2,
+      "expected": "{\"state\":\"candidate\",\"rootCause\":\"div.facts\",\"nextProbe\":\"mul.facts\"}",
+      "actual": "{\"state\":\"candidate\",\"rootCause\":\"div.facts\",\"nextProbe\":\"mul.facts\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle digit-depth-probe",
+      "grade": 2,
+      "expected": "{\"state\":\"candidate\",\"rootCause\":\"div.regroup\",\"nextProbe\":\"number.place_value\"}",
+      "actual": "{\"state\":\"candidate\",\"rootCause\":\"div.regroup\",\"nextProbe\":\"number.place_value\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle operation-selection-not-fluency",
+      "grade": 2,
+      "expected": "{\"state\":\"candidate\",\"rootCause\":\"operation.choose\",\"nextProbe\":\"operation.choose\"}",
+      "actual": "{\"state\":\"candidate\",\"rootCause\":\"operation.choose\",\"nextProbe\":\"operation.choose\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle discount-concept-not-subtraction",
+      "grade": 5,
+      "expected": "{\"state\":\"candidate\",\"rootCause\":\"percent.part_whole\",\"nextProbe\":\"fraction.equal_parts\"}",
+      "actual": "{\"state\":\"candidate\",\"rootCause\":\"percent.part_whole\",\"nextProbe\":\"fraction.equal_parts\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle d6-mixed-ambiguous",
+      "grade": 6,
+      "expected": "{\"state\":\"insufficient_evidence\",\"rootCause\":null,\"nextProbe\":\"operation.choose\"}",
+      "actual": "{\"state\":\"insufficient_evidence\",\"rootCause\":null,\"nextProbe\":\"operation.choose\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle assistance-not-independent",
+      "grade": 2,
+      "expected": "{\"state\":\"needs_contrast\",\"rootCause\":null,\"nextProbe\":\"div.facts\"}",
+      "actual": "{\"state\":\"needs_contrast\",\"rootCause\":null,\"nextProbe\":\"div.facts\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle cross-grade-recovery",
+      "grade": 6,
+      "expected": "{\"state\":\"needs_contrast\",\"rootCause\":null,\"nextProbe\":\"div.regroup\"}",
+      "actual": "{\"state\":\"needs_contrast\",\"rootCause\":null,\"nextProbe\":\"div.regroup\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Oracle cannot-downscore-other-subject",
+      "grade": 2,
+      "expected": "{\"state\":\"insufficient_evidence\",\"rootCause\":null,\"nextProbe\":\"div.facts\",\"mustNotMutate\":[\"D2.2.4\",\"D2.2.3\"]}",
+      "actual": "{\"state\":\"insufficient_evidence\",\"rootCause\":null,\"nextProbe\":\"div.facts\"}",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Shadow review outcomes",
+      "grade": 2,
+      "expected": "Independent/corrected/assisted/unresolved kept distinct",
+      "actual": "independent, corrected, assisted, unresolved",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "Shadow mastery integrity",
+      "grade": 2,
+      "expected": "No mastery/reward/grade writes; clone review only",
+      "actual": "true",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "Collector disposal",
+      "grade": 2,
+      "expected": "In-memory session clears on close",
+      "actual": "true",
+      "status": "PASS",
+      "evidence": "results.json"
+    },
+    {
+      "test": "Final runtime generation",
+      "grade": 1,
+      "expected": "20 valid items per available skill; distinct variants",
+      "actual": "42 skills; 840 valid; min unique 12",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Authored diagnostic metadata",
+      "grade": 1,
+      "expected": "Final items carry complete diagnostic tags",
+      "actual": "0/840 tagged",
+      "status": "BLOCKED",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Final runtime generation",
+      "grade": 2,
+      "expected": "20 valid items per available skill; distinct variants",
+      "actual": "111 skills; 2220 valid; min unique 12",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Authored diagnostic metadata",
+      "grade": 2,
+      "expected": "Final items carry complete diagnostic tags",
+      "actual": "44/2220 tagged",
+      "status": "BLOCKED",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Final runtime generation",
+      "grade": 3,
+      "expected": "20 valid items per available skill; distinct variants",
+      "actual": "45 skills; 900 valid; min unique 11",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Authored diagnostic metadata",
+      "grade": 3,
+      "expected": "Final items carry complete diagnostic tags",
+      "actual": "0/900 tagged",
+      "status": "BLOCKED",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Final runtime generation",
+      "grade": 4,
+      "expected": "20 valid items per available skill; distinct variants",
+      "actual": "51 skills; 1020 valid; min unique 19",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Authored diagnostic metadata",
+      "grade": 4,
+      "expected": "Final items carry complete diagnostic tags",
+      "actual": "0/1020 tagged",
+      "status": "BLOCKED",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Final runtime generation",
+      "grade": 5,
+      "expected": "20 valid items per available skill; distinct variants",
+      "actual": "54 skills; 1080 valid; min unique 3",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Authored diagnostic metadata",
+      "grade": 5,
+      "expected": "Final items carry complete diagnostic tags",
+      "actual": "0/1080 tagged",
+      "status": "BLOCKED",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Final runtime generation",
+      "grade": 6,
+      "expected": "20 valid items per available skill; distinct variants",
+      "actual": "48 skills; 960 valid; min unique 4",
+      "status": "PASS",
+      "evidence": "runtime-metadata.json"
+    },
+    {
+      "test": "Authored diagnostic metadata",
+      "grade": 6,
+      "expected": "Final items carry complete diagnostic tags",
+      "actual": "0/960 tagged",
+      "status": "BLOCKED",
+      "evidence": "runtime-metadata.json"
+    }
+  ],
+  "errors": [
+    {
+      "source": "production",
+      "device": "desktop",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "production",
+      "device": "desktop",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "production",
+      "device": "desktop",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "production",
+      "device": "android",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "production",
+      "device": "android",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "production",
+      "device": "android",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "feature",
+      "device": "desktop",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "feature",
+      "device": "desktop",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    },
+    {
+      "source": "feature",
+      "device": "desktop",
+      "message": "Cannot read properties of null (reading 'schoolGrade')"
+    }
+  ],
+  "blockedMutationRequests": []
+}

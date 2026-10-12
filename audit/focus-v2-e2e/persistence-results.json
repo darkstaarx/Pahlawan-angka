@@ -1,0 +1,134 @@
+{
+  "rows": [
+    {
+      "test": "production desktop guest persistence retest",
+      "grade": "1–6",
+      "expected": "Learner profile keys unchanged after six lifecycle cycles",
+      "actual": {
+        "profileKeysBefore": [
+          [
+            "pa_coach_v6_full",
+            null
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "profileKeysAfter": [
+          [
+            "pa_coach_v6_full",
+            {
+              "name": "Demo",
+              "schoolGrade": 3,
+              "demoMode": true,
+              "skills": 117
+            }
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "otherChangedKeys": []
+      },
+      "status": "FAIL",
+      "evidence": "persistence-results.json"
+    },
+    {
+      "test": "production android guest persistence retest",
+      "grade": "1–6",
+      "expected": "Learner profile keys unchanged after six lifecycle cycles",
+      "actual": {
+        "profileKeysBefore": [
+          [
+            "pa_coach_v6_full",
+            null
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "profileKeysAfter": [
+          [
+            "pa_coach_v6_full",
+            {
+              "name": "Demo",
+              "schoolGrade": 3,
+              "demoMode": true,
+              "skills": 117
+            }
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "otherChangedKeys": []
+      },
+      "status": "FAIL",
+      "evidence": "persistence-results.json"
+    },
+    {
+      "test": "feature desktop guest persistence retest",
+      "grade": "1–6",
+      "expected": "Learner profile keys unchanged after six lifecycle cycles",
+      "actual": {
+        "profileKeysBefore": [
+          [
+            "pa_coach_v6_full",
+            null
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "profileKeysAfter": [
+          [
+            "pa_coach_v6_full",
+            null
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "otherChangedKeys": []
+      },
+      "status": "PASS",
+      "evidence": "persistence-results.json"
+    },
+    {
+      "test": "feature android guest persistence retest",
+      "grade": "1–6",
+      "expected": "Learner profile keys unchanged after six lifecycle cycles",
+      "actual": {
+        "profileKeysBefore": [
+          [
+            "pa_coach_v6_full",
+            null
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "profileKeysAfter": [
+          [
+            "pa_coach_v6_full",
+            null
+          ],
+          [
+            "pa_coach_v5",
+            null
+          ]
+        ],
+        "otherChangedKeys": []
+      },
+      "status": "PASS",
+      "evidence": "persistence-results.json"
+    }
+  ]
+}

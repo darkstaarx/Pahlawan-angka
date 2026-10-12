@@ -1,0 +1,381 @@
+{
+  "rows": [
+    {
+      "test": "B distinct remainder failures do not condemn all division",
+      "grade": 2,
+      "expected": "Conservative abstention; precise remainder probe selection is unavailable",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "D2.2.4",
+        "state": "needs_contrast",
+        "rootCause": null,
+        "nextProbe": "div.facts",
+        "confidence": "low",
+        "reasonCode": "AMBIGUOUS_UNASSISTED_SKILLS",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 4,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "remainder_div": {
+              "uniqueQuestions": 2,
+              "independent": 0,
+              "nonindependent": 2
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "H same equation repeated does not become evidence",
+      "grade": 2,
+      "expected": "One unique question is insufficient",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "D2.4.5",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "div.facts",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 1,
+          "duplicatesDiscarded": 1,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "money": {
+              "uniqueQuestions": 1,
+              "independent": 0,
+              "nonindependent": 1
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "I assisted transfer does not verify",
+      "grade": 2,
+      "expected": "Only independent transfer verifies",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "D2.4.5",
+        "state": "needs_contrast",
+        "rootCause": null,
+        "nextProbe": "div.facts",
+        "confidence": "low",
+        "reasonCode": "ASSISTED_NOT_INDEPENDENT",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 2,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 0,
+              "nonindependent": 2
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "I two independent transfers observed",
+      "grade": 6,
+      "expected": "Transfer observation is separate from mastery certification",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "D6.MONEY",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 2,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "J unsupported time abstains",
+      "grade": "1–6",
+      "expected": "No arithmetic weakness inferred from unsupported context",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "context-audit",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 0,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {}
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "J unsupported measurement abstains",
+      "grade": "1–6",
+      "expected": "No arithmetic weakness inferred from unsupported context",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "context-audit",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 0,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {}
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "J unsupported fraction abstains",
+      "grade": "1–6",
+      "expected": "No arithmetic weakness inferred from unsupported context",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "context-audit",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 0,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {}
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "J unsupported percent abstains",
+      "grade": "1–6",
+      "expected": "No arithmetic weakness inferred from unsupported context",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "context-audit",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 0,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {}
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "J unsupported ratio abstains",
+      "grade": "1–6",
+      "expected": "No arithmetic weakness inferred from unsupported context",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "context-audit",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 0,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {}
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "J unsupported data abstains",
+      "grade": "1–6",
+      "expected": "No arithmetic weakness inferred from unsupported context",
+      "actual": {
+        "version": "0.1.0-shadow",
+        "mode": "shadow_read_only",
+        "originSkillId": "context-audit",
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose",
+        "confidence": "none",
+        "reasonCode": "NOT_ENOUGH_DIVERSE_EVIDENCE",
+        "verification": "not_yet_verified",
+        "evidence": {
+          "uniqueTaggedQuestions": 0,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {}
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified."
+      },
+      "status": "PASS",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "A real money vs plain arithmetic contrast",
+      "grade": 2,
+      "expected": "Matched varied authored money/plain probes",
+      "actual": "Money tags partially survive; final plain D2 division tags absent",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "B operand depth/remainder diagnostic bank",
+      "grade": "2–6",
+      "expected": "Choose digit/regroup/remainder probes at matched arithmetic load",
+      "actual": "Synthetic digit-depth fixture exists; no runtime contrast-bank scheduler; remainder falls back to div.facts",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "C addition/subtraction root separation",
+      "grade": "1–6",
+      "expected": "Facts vs carrying/borrowing/place-value/conceptual probes",
+      "actual": "Families do not encode carry/borrow; no specialized inference rule or authored runtime probes",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "D multiplication root separation",
+      "grade": "1–6",
+      "expected": "Equal groups vs facts vs multi-digit probes",
+      "actual": "Multiplication is only clean-computation evidence; no root-specific rule",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "E live discount root separation",
+      "grade": 5,
+      "expected": "Percent misconception contrasted with subtraction",
+      "actual": "Synthetic oracle supported; final authored D5 diagnostic tags absent",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "F cross-grade v2 remediation",
+      "grade": 6,
+      "expected": "Earlier-grade probes with D6 identity and return to origin",
+      "actual": "V2 returns a probe ID only; active Focus router remains same-grade; no v2 recovery controller",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "I recover -> independent -> transfer -> card removal",
+      "grade": "1–6",
+      "expected": "Complete v2 recovery lifecycle",
+      "actual": "Independent recent evidence removes existing cards; v2 transfer lifecycle/root re-evaluation not wired",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "J mathematically validated cross-topic dependency probes",
+      "grade": "1–6",
+      "expected": "Time/measure/fraction/percent/ratio/data operation vs context contrast",
+      "actual": "Context banks generate content but authored v2 dependency metadata and contrast orchestration absent",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "Authenticated onboarding/save/reload",
+      "grade": "1–6",
+      "expected": "Real account onboarding, child grade selection and save/reload",
+      "actual": "No dedicated authorized test account supplied; guest and synthetic profiles only",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "Kembara earns focus through authenticated gameplay",
+      "grade": "1–6",
+      "expected": "Earn five encounters naturally, open hub Focus and complete/reload a real profile",
+      "actual": "Guest gameplay and setup-assisted production Focus route tested; authenticated cumulative journey not executed",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    },
+    {
+      "test": "Manual D1–D6 full focus journeys",
+      "grade": "1–6",
+      "expected": "Computer Use verifies every full journey",
+      "actual": "Manual production D2 wrong/hint/correct and local shadow inspected; remaining journeys automated/setup-assisted",
+      "status": "BLOCKED",
+      "evidence": "scenario-results.json"
+    }
+  ]
+}

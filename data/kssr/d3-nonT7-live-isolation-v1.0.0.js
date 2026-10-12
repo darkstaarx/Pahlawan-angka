@@ -3,11 +3,11 @@
 // Additive companion to:
 //   data/kssr/d3-topic7-live-cutover-v3.40.0.js
 //   data/kssr/d3-topic7-evidence-epoch-v3.39.0.js
-// Both remain byte-for-byte unchanged. This module mirrors their
+// This module mirrors their
 // capture/restore mechanics and evidence-recording contract for any D3
 // topic OTHER than D3.T7. It deliberately duplicates a small amount of
 // persist/store-shape logic rather than importing from the T7 files, to
-// keep those files at zero diff.
+// keep each topic's persistence/store contract independent.
 //
 // Contract (mirrors PAD3Topic7LiveCutover / PAD3Topic7Evidence shapes):
 //   isTargetQuestion(question) -> boolean
@@ -63,7 +63,7 @@
   }
 
   function persist(stateRoot) {
-    if (!stateRoot) return;
+    if (!stateRoot || stateRoot.demoMode) return;
     stateRoot.lastSavedAt = now();
     try { if (root.localStorage && typeof root.localStorage.setItem === 'function') root.localStorage.setItem('pa_coach_v6_full', JSON.stringify(stateRoot)); } catch (_) {}
     try { if (root.PACloud && typeof root.PACloud.scheduleSave === 'function') setTimeout(function () { try { root.PACloud.scheduleSave(); } catch (_) {} }, 0); } catch (_) {}
