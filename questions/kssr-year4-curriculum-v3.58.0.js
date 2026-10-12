@@ -4,6 +4,7 @@
 'use strict';
 const banks=window.PAQuestionBanks||{},prior=banks.d4;if(typeof prior!=='function')return;
 const V='3.58.0',choose=a=>pick(a),rand=(a,b)=>R(a,b);
+const stage=s=>Number(s?.mastery||0)<35||Number(s?.evidence||0)<2?1:Number(s?.mastery||0)>=70&&Number(s?.confidence||0)>=55?3:2;
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1};
 const frac=(n,d)=>{const g=gcd(n,d);n/=g;d/=g;if(n>=d){const w=Math.floor(n/d),r=n%d;return r?`${w} ${r}/${d}`:String(w)}return `${n}/${d}`};
 const rm=n=>moneyFmtUpper(Number(Number(n).toFixed(2)));
@@ -70,13 +71,15 @@ function timeQ(id){
  if(mode==='relationship'){const x=choose([['1 dekad',10],['1 abad',100],['1 alaf',1000],['2 abad',200]]);return mark(Q(`<b>${x[0]}</b> = ? tahun`,x[1],wrong(x[1],10,'time'),'Gunakan hubungan alaf, abad, dekad dan tahun.','Tahun 4 · Perkaitan Masa',true,true),id,'4.4.1','time_relationship') }
  const a=rand(2,6),b=rand(1,4),c=rand(1,3),ans=a+b-c;return mark(Q(`${a} hari + ${b} hari − ${c} hari = ? hari`,ans,wrong(ans,1,'time'),'Samakan unit sebelum tambah atau tolak.','Tahun 4 · Operasi Masa',true,true),id,'4.5.1','time_operation','symbolic','application');
 }
-function measureQ(id){
- const mode=choose(['mm_cm','km_m','length_op','mass','liquid']);
- if(mode==='mm_cm'){const cm=rand(2,90),mm=cm*10;return mark(Q(`${mm} mm = ? cm`,cm,[N(mm,'unit'),N(cm*10,'unit'),N(Math.max(1,cm-1),'unit')],'10 mm = 1 cm.','Tahun 4 · Milimeter dan Sentimeter',true,true),id,'5.1.2-5.1.3','mm_cm') }
- if(mode==='km_m'){const km=rand(1,9),m=km*1000;return mark(Q(`${km} km = ? m`,m,[N(km*100,'unit'),N(km,'unit'),N(m+100,'unit')],'1 km = 1000 m.','Tahun 4 · Meter dan Kilometer',true,true),id,'5.1.2-5.1.3','km_m') }
- if(mode==='length_op'){const a=rand(100,500),b=rand(50,300),c=rand(20,100),ans=a+b+c;return mark(Q(`${a} mm + ${b} mm + ${c} mm = ? mm`,ans,wrong(ans,10,'unit'),'Pastikan semua unit sama sebelum mengira.','Tahun 4 · Operasi Panjang',true,true),id,'5.1.6-5.1.9','length_operation','symbolic','application') }
- if(mode==='mass'){const kg=rand(1,9),g=kg*1000;return mark(Q(`${kg} kg = ? g`,g,[N(kg*100,'unit'),N(kg,'unit'),N(g+100,'unit')],'1 kg = 1000 g.','Tahun 4 · Jisim',true,true),id,'5.2','mass_convert') }
- const L=rand(1,9),ml=L*1000;return mark(Q(`${L} L = ? mL`,ml,[N(L*100,'unit'),N(L,'unit'),N(ml+100,'unit')],'1 L = 1000 mL.','Tahun 4 · Isi Padu Cecair',true,true),id,'5.3','liquid_convert');
+function measureQ(id,s){
+ const types=[{name:'panjang',big:'cm',small:'mm',factor:10,parts:[2,5,8]},{name:'panjang',big:'m',small:'cm',factor:100,parts:[25,50,75]},{name:'panjang',big:'km',small:'m',factor:1000,parts:[250,500,750]},{name:'jisim',big:'kg',small:'g',factor:1000,parts:[250,500,750]},{name:'isi padu cecair',big:'L',small:'mL',factor:1000,parts:[250,500,750]}],type=choose(types),f=type.factor,part=()=>choose(type.parts),step=Math.max(1,Math.round(f/10)),st=stage(s),mode=choose(st===1?['convert','add']:st===2?['add','subtract','multiply']:['divide','combined','missing']);
+ if(mode==='convert'){const n=rand(1,9),ans=n*f;return mark(Q(`${n} ${type.big} = ? ${type.small}`,ans,[N(n*Math.max(1,f/10),'unit'),N(n,'unit'),N(ans+step,'unit')],`1 ${type.big} = ${f} ${type.small}.`,`Tahun 4 · Penukaran ${type.name}`,true,true),id,`5.${type.name==='panjang'?'1':type.name==='jisim'?'2':'3'}`,`${type.name}_convert`) }
+ if(mode==='add'){const a=rand(1,5)*f,b=part(),ans=a+b;return mark(Q(`${a} ${type.small} + ${b} ${type.small} = ? ${type.small}`,ans,wrong(ans,step,'unit'),'Tambah nilai dalam unit yang sama.',`Tahun 4 · Tambah ${type.name}`,true,true),id,'5.1-5.3',`${type.name}_add`,'symbolic','application') }
+ if(mode==='subtract'){const a=rand(3,8)*f,b=part(),ans=a-b;return mark(Q(`${a} ${type.small} − ${b} ${type.small} = ? ${type.small}`,ans,wrong(ans,step,'unit'),'Tolak nilai dalam unit yang sama.',`Tahun 4 · Tolak ${type.name}`,true,true),id,'5.1-5.3',`${type.name}_subtract`,'symbolic','application') }
+ if(mode==='multiply'){const each=part(),qty=rand(2,9),ans=each*qty;return mark(Q(`${qty} bahagian, setiap satu ${each} ${type.small}. Jumlah?`,`${ans} ${type.small}`,[N(`${each+qty} ${type.small}`,'operation'),N(`${ans+each} ${type.small}`,'unit'),N(`${each} ${type.small}`,'unit')],'Darab ukuran setiap bahagian dengan bilangan bahagian.',`Tahun 4 · Darab ${type.name}`,true,true),id,'5.1-5.3',`${type.name}_multiply`,'story','application') }
+ if(mode==='divide'){const qty=choose([2,4,5,8]),each=part(),total=qty*each;return mark(Q(`${total} ${type.small} dibahagi sama rata kepada ${qty} bahagian. Setiap bahagian?`,`${each} ${type.small}`,[N(`${total} ${type.small}`,'unit'),N(`${each+qty} ${type.small}`,'operation'),N(`${each*2} ${type.small}`,'unit')],'Bahagi jumlah dengan bilangan bahagian.',`Tahun 4 · Bahagi ${type.name}`,true,true),id,'5.1-5.3',`${type.name}_divide`,'story','reasoning') }
+ if(mode==='combined'){const a=rand(2,5)*f,b=part(),c=step,ans=a+b-c;return mark(Q(`${a} ${type.small} + ${b} ${type.small} − ${c} ${type.small} = ? ${type.small}`,ans,wrong(ans,step,'unit'),'Selesaikan tambah, kemudian tolak.',`Tahun 4 · Operasi Bergabung ${type.name}`,true,true),id,'5.1-5.3',`${type.name}_combined`,'symbolic','reasoning') }
+ const qty=4,each=part(),total=qty*each;return mark(Q(`Empat bekas sama mengandungi ${total} ${type.small}. Isi setiap bekas?`,`${each} ${type.small}`,[N(`${total} ${type.small}`,'unit'),N(`${each+4} ${type.small}`,'operation'),N(`${each*2} ${type.small}`,'unit')],'Bahagi jumlah kepada empat bahagian sama.',`Tahun 4 · Nilai Hilang ${type.name}`,true,true),id,'5.1-5.3',`${type.name}_missing`,'story','reasoning');
 }
 function spaceQ(id){
  const mode=choose(['angle','lines','perimeter','area','volume','story']);
@@ -87,8 +90,10 @@ function spaceQ(id){
  if(mode==='volume'){const l=rand(2,8),w=rand(2,6),h=rand(2,5),ans=l*w*h;return mark(Q(`Kuboid berukuran ${l} cm × ${w} cm × ${h} cm. Isi padu?`,`${ans} cm³`,[N(`${l*w} cm³`,'area'),N(`${2*(l+w+h)} cm³`,'area'),N(`${ans+h} cm³`,'area')],'Isi padu kuboid = panjang × lebar × tinggi.','Tahun 4 · Isi Padu Pepejal',true,true),id,'6.4.1','cuboid_volume') }
  const l=rand(5,12),w=rand(3,9),ans=2*(l+w);return mark(Q(`Aina mahu memasang reben mengelilingi kad ${l} cm × ${w} cm. Berapa reben minimum diperlukan?`,`${ans} cm`,[N(`${l*w} cm`,'area'),N(`${l+w} cm`,'operation'),N(`${ans+w} cm`,'shape')],'“Mengelilingi” meminta perimeter.','Tahun 4 · Masalah Ruang',true,true),id,'6.5.1','space_story','story','application','space');
 }
-function dataQ(id){
- const labels=['Isnin','Selasa','Rabu','Khamis'],vals=labels.map(()=>rand(5,25)),mode=choose(['read','difference','total','construct']);
+function pictographCard(labels,vals,key){return `<div class="kssrDiagram kd-pictograph" role="img" aria-label="Piktograf; satu bintang mewakili ${key}">${labels.map((l,i)=>`<div class="kd-picto-row"><b>${l}</b><span style="letter-spacing:4px;color:#d89614">${'★'.repeat(vals[i]/key)}</span></div>`).join('')}<small>★ = ${key}</small></div>`}
+function dataQ(id,s){
+ const labels=['Isnin','Selasa','Rabu','Khamis'],vals=labels.map(()=>rand(5,25)),st=stage(s),mode=choose(st===1?['read','pictograph_read','pictograph_key']:st===2?['difference','total','construct','pictograph_total']:['pictograph_difference','pictograph_claim','construct']);
+ if(mode.startsWith('pictograph')){const pl=['Buku','Pensel','Pemadam','Pembaris'],key=choose([2,5]),counts=pl.map(()=>rand(2,6)*key),vis=pictographCard(pl,counts,key);if(mode==='pictograph_read'){const i=rand(0,3);return mark(Q(`${vis}Berapakah bilangan ${pl[i]}?`,counts[i],[N(counts[i]/key,'data'),N(counts[i]+key,'data'),N(Math.max(key,counts[i]-key),'data')],'Darab bilangan simbol dengan nilai satu simbol.','Tahun 4 · Baca Piktograf',true,true),id,'8.1.2','pictograph_read','visual','concept','data')};if(mode==='pictograph_key'){return mark(Q(`${vis}Apakah maksud satu simbol ★?`,key,[N(1,'data'),N(key+1,'data'),N(key*2,'data')],'Baca petunjuk piktograf.','Tahun 4 · Petunjuk Piktograf',true,true),id,'8.1.2','pictograph_key','visual','concept','data')};if(mode==='pictograph_total'){const ans=counts.reduce((a,b)=>a+b,0);return mark(Q(`${vis}Berapakah jumlah semua item?`,ans,[N(ans/key,'data'),N(Math.max(...counts),'data'),N(ans+key,'data')],'Tukar setiap baris kepada bilangan sebenar, kemudian tambah.','Tahun 4 · Jumlah Piktograf',true,true),id,'8.1.2','pictograph_total','visual','application','data')};if(mode==='pictograph_difference'){const hi=Math.max(...counts),lo=Math.min(...counts),ans=hi-lo;return mark(Q(`${vis}Berapakah beza bilangan tertinggi dengan terendah?`,ans,[N((hi-lo)/key,'data'),N(hi,'data'),N(hi+lo,'operation')],'Banding bilangan sebenar, bukan bilangan simbol sahaja.','Tahun 4 · Beza Piktograf',true,true),id,'8.1.2','pictograph_difference','visual','reasoning','data')};return mark(Q(`${vis}Murid berkata empat simbol sentiasa bermaksud empat item. Penilaian?`,`salah; empat simbol mewakili ${4*key} item`,[N('betul; satu simbol ialah satu item','data_reason'),N(`salah; empat simbol mewakili ${key} item`,'data_reason'),N('tidak boleh ditentukan','data_reason')],'Gunakan nilai pada petunjuk bagi setiap simbol.','Tahun 4 · Menilai Piktograf',true,true),id,'8.1.2','pictograph_claim','visual','reasoning','data')}
  if(mode==='construct'){const i=rand(0,3);return mark(Q(`Jika jadual menunjukkan ${labels[i]} = ${vals[i]}, palang ${labels[i]} pada carta berskala 1 unit perlu mencapai nilai berapa?`,vals[i],[N(vals[(i+1)%4],'data'),N(vals[i]+2,'data'),N(Math.max(0,vals[i]-2),'data')],'Ketinggian palang mesti sama dengan nilai data.','Tahun 4 · Membina Carta Palang',true,true),id,'8.1.1','construct_bar','verbal','application','data') }
  const vis=barChart(labels,vals);
  if(mode==='read'){const i=rand(0,3);return mark(Q(`${vis}Berapakah nilai bagi <b>${labels[i]}</b>?`,vals[i],[N(vals[(i+1)%4],'data'),N(vals[i]+2,'data'),N(Math.max(0,vals[i]-2),'data')],'Baca label dan skala carta.','Tahun 4 · Tafsir Carta',true,true),id,'8.1.2','read_bar','visual','concept','data') }
@@ -102,9 +107,9 @@ banks.d4=function(id,s,shift){
  else if(id==='D4.PERCENT')q=percentQ(id);
  else if(id==='D4.MONEY')q=moneyQ4(id);
  else if(id==='D4.TIME')q=timeQ(id);
- else if(id==='D4.MEASURE')q=measureQ(id);
+ else if(id==='D4.MEASURE')q=measureQ(id,s);
  else if(id==='D4.PERIM')q=spaceQ(id);
- else if(id==='D4.DATA')q=dataQ(id);
+ else if(id==='D4.DATA')q=dataQ(id,s);
  return q||prior(id,s,shift);
 };
 window.PAKSSRYear4={version:V};

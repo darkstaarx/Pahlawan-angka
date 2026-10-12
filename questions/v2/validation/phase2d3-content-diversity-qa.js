@@ -98,8 +98,18 @@ for(let i=0;i<240;i++){
  if(lastAt[tpl.competencyId]!=null)maxGap=Math.max(maxGap,i-lastAt[tpl.competencyId]);lastAt[tpl.competencyId]=i;
  history.push({competencyId:tpl.competencyId,templateId:tpl.templateId,archetypeId:tpl.archetypeId,representation:tpl.representation,demand:tpl.demand});if(history.length>60)history.shift();
 }
-eq(seenTemplates.size,24,'scheduler surfaces all 24 battle templates');
+ok(seenTemplates.size>=20,'difficulty-aware scheduler still surfaces broad battle-template coverage');
 const counts=Object.values(compCounts);eq(Object.keys(compCounts).length,6,'scheduler covers six competencies');ok(Math.max(...counts)-Math.min(...counts)<=2,'competency distribution remains balanced');ok(maxGap<=8,'no competency disappears for long stretches');
+
+// A learner with little evidence must stay within foundation/procedure bands
+// even though the same legacy skill maps to harder one-template standards.
+const beginnerHistory=[],beginnerRng=makeRng(20261012);let beginnerMaxBand=0;
+for(let i=0;i<180;i++){
+ const tpl=_test.selectTemplate(runtime,'D3.SHAPE',{mastery:20,evidence:1,confidence:20},beginnerHistory,beginnerRng);
+ beginnerMaxBand=Math.max(beginnerMaxBand,Number(tpl.difficultyBand||0));
+ beginnerHistory.push({competencyId:tpl.competencyId,templateId:tpl.templateId,archetypeId:tpl.archetypeId,representation:tpl.representation,demand:tpl.demand});if(beginnerHistory.length>60)beginnerHistory.shift();
+}
+ok(beginnerMaxBand<=2,'beginner scheduler excludes band 3-4 templates');
 
 // Default/control safety remains unchanged.
 const storage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};const root={document:{},localStorage:storage,PAQuestionSystemV2:runtime,PA_QSV2_FLAGS:{}};const bridge=createBridge(root);

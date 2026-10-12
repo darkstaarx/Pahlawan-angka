@@ -986,20 +986,14 @@
         "beginner": {
           "archetypes": [
             "add_time_values",
-            "choose_expression_for_time_problem",
             "convert_hours_to_minutes",
-            "convert_minutes_to_hours_minutes",
             "convert_minutes_to_seconds",
-            "divide_then_multiply_time",
             "divide_time_duration",
-            "find_time_difference",
-            "mixed_time_adjustment",
             "multiply_time_duration",
             "read_activity_schedule",
             "read_analogue_clock",
             "read_calendar_date",
-            "subtract_time_values",
-            "two_step_time_schedule"
+            "subtract_time_values"
           ],
           "maxPromptNumber": 2026
         },
@@ -1025,9 +1019,10 @@
         },
         "secure": {
           "archetypes": [
-            "add_time_values",
             "choose_expression_for_time_problem",
+            "convert_hours_to_minutes",
             "convert_minutes_to_hours_minutes",
+            "convert_minutes_to_seconds",
             "divide_then_multiply_time",
             "divide_time_duration",
             "find_time_difference",
@@ -1092,13 +1087,7 @@
             "divide_length",
             "divide_liquid_volume",
             "divide_mass",
-            "find_missing_length",
-            "find_missing_liquid_volume",
-            "find_missing_mass",
             "grams_to_mixed_kilograms",
-            "inverse_length_factor",
-            "inverse_liquid_volume_factor",
-            "inverse_mass_factor",
             "kilograms_to_grams",
             "litres_to_millilitres",
             "metres_to_centimetres",
@@ -1110,7 +1099,7 @@
             "subtract_liquid_volumes",
             "subtract_mass_values"
           ],
-          "maxPromptNumber": 6900
+          "maxPromptNumber": 6800
         },
         "core": {
           "archetypes": [
@@ -1146,9 +1135,6 @@
         },
         "secure": {
           "archetypes": [
-            "add_length_values",
-            "add_mass_values",
-            "centimetres_to_mixed_metres",
             "choose_equivalent_length",
             "choose_equivalent_mass",
             "choose_equivalent_volume",
@@ -1162,13 +1148,13 @@
             "inverse_length_factor",
             "inverse_liquid_volume_factor",
             "inverse_mass_factor",
-            "kilograms_to_grams",
             "metres_to_centimetres",
-            "millilitres_to_mixed_litres",
             "multiply_length",
             "multiply_liquid_volume",
             "multiply_mass",
-            "subtract_liquid_volumes"
+            "subtract_length_values",
+            "subtract_liquid_volumes",
+            "subtract_mass_values"
           ],
           "maxPromptNumber": 6900
         }
@@ -1277,16 +1263,11 @@
         "beginner": {
           "archetypes": [
             "classify_and_count_items",
-            "compare_chart_representations",
-            "compare_pie_categories",
             "count_from_tally",
-            "derive_count_from_pie",
             "identify_largest_pie_category",
-            "interpret_organized_table",
-            "relate_bar_to_pie",
             "relate_pictograph_to_bar"
           ],
-          "maxPromptNumber": 9
+          "maxPromptNumber": 0
         },
         "core": {
           "archetypes": [
@@ -1300,7 +1281,7 @@
             "relate_bar_to_pie",
             "relate_pictograph_to_bar"
           ],
-          "maxPromptNumber": 10
+          "maxPromptNumber": 8
         },
         "secure": {
           "archetypes": [
@@ -1406,45 +1387,72 @@
       "states": {
         "beginner": {
           "archetypes": [
-            "km_m",
-            "liquid_convert",
-            "mass_convert",
-            "mm_cm"
+            "isi padu cecair_add",
+            "isi padu cecair_convert",
+            "jisim_add",
+            "jisim_convert",
+            "panjang_add",
+            "panjang_convert"
           ],
-          "maxPromptNumber": 890
+          "maxPromptNumber": 5000
         },
         "core": {
           "archetypes": [
-            "km_m",
-            "length_operation",
-            "liquid_convert",
-            "mass_convert",
-            "mm_cm"
+            "isi padu cecair_add",
+            "isi padu cecair_multiply",
+            "isi padu cecair_subtract",
+            "jisim_add",
+            "jisim_multiply",
+            "jisim_subtract",
+            "panjang_add",
+            "panjang_multiply",
+            "panjang_subtract"
           ],
-          "maxPromptNumber": 900
+          "maxPromptNumber": 8000
         },
         "secure": {
           "archetypes": [
-            "km_m",
-            "length_operation",
-            "liquid_convert",
-            "mass_convert",
-            "mm_cm"
+            "isi padu cecair_combined",
+            "isi padu cecair_divide",
+            "isi padu cecair_missing",
+            "jisim_combined",
+            "jisim_divide",
+            "jisim_missing",
+            "panjang_combined",
+            "panjang_divide",
+            "panjang_missing"
           ],
-          "maxPromptNumber": 880
+          "maxPromptNumber": 6000
         }
       },
       "archetypes": [
-        "km_m",
-        "length_operation",
-        "liquid_convert",
-        "mass_convert",
-        "mm_cm"
+        "isi padu cecair_add",
+        "isi padu cecair_combined",
+        "isi padu cecair_convert",
+        "isi padu cecair_divide",
+        "isi padu cecair_missing",
+        "isi padu cecair_multiply",
+        "isi padu cecair_subtract",
+        "jisim_add",
+        "jisim_combined",
+        "jisim_convert",
+        "jisim_divide",
+        "jisim_missing",
+        "jisim_multiply",
+        "jisim_subtract",
+        "panjang_add",
+        "panjang_combined",
+        "panjang_convert",
+        "panjang_divide",
+        "panjang_missing",
+        "panjang_multiply",
+        "panjang_subtract"
       ],
       "representations": [
+        "story",
         "symbolic"
       ],
-      "maxPromptNumber": 900,
+      "maxPromptNumber": 8000,
       "invalidClocks": [],
       "malformed": [],
       "fallbacks": 0
@@ -1462,7 +1470,6 @@
             "cuboid_volume",
             "line_relationship",
             "polygon_perimeter",
-            "space_story",
             "triangle_area"
           ],
           "maxPromptNumber": 12
@@ -1479,7 +1486,6 @@
         "secure": {
           "archetypes": [
             "cuboid_volume",
-            "line_relationship",
             "polygon_perimeter",
             "space_story",
             "triangle_area"
@@ -1514,9 +1520,8 @@
       "states": {
         "beginner": {
           "archetypes": [
-            "construct_bar",
-            "data_difference",
-            "data_total",
+            "pictograph_key",
+            "pictograph_read",
             "read_bar"
           ],
           "maxPromptNumber": 26
@@ -1525,24 +1530,29 @@
           "archetypes": [
             "construct_bar",
             "data_difference",
-            "data_total"
+            "data_total",
+            "pictograph_total"
           ],
           "maxPromptNumber": 26
         },
         "secure": {
           "archetypes": [
             "construct_bar",
-            "data_difference",
-            "data_total",
-            "read_bar"
+            "pictograph_claim",
+            "pictograph_difference"
           ],
-          "maxPromptNumber": 26
+          "maxPromptNumber": 23
         }
       },
       "archetypes": [
         "construct_bar",
         "data_difference",
         "data_total",
+        "pictograph_claim",
+        "pictograph_difference",
+        "pictograph_key",
+        "pictograph_read",
+        "pictograph_total",
         "read_bar"
       ],
       "representations": [
@@ -1563,47 +1573,46 @@
       "states": {
         "beginner": {
           "archetypes": [
-            "depth_day_hour",
-            "depth_fraction_convert",
-            "depth_leap",
-            "depth_month_day"
+            "y5_decade_year",
+            "y5_decimal_year",
+            "y5_fraction_day"
           ],
-          "maxPromptNumber": 2024
+          "maxPromptNumber": 4
         },
         "core": {
           "archetypes": [
-            "depth_day_hour",
-            "depth_elapsed_multi",
-            "depth_fraction_convert",
-            "depth_leap",
-            "depth_month_day"
+            "y5_add_hours",
+            "y5_century_year",
+            "y5_subtract_days"
           ],
-          "maxPromptNumber": 2024
+          "maxPromptNumber": 45
         },
         "secure": {
           "archetypes": [
-            "depth_day_hour",
-            "depth_elapsed_multi",
-            "depth_fraction_convert",
-            "depth_leap",
-            "depth_month_day"
+            "y5_compare_duration",
+            "y5_missing_duration",
+            "y5_time_claim"
           ],
-          "maxPromptNumber": 2024
+          "maxPromptNumber": 20
         }
       },
       "archetypes": [
-        "depth_day_hour",
-        "depth_elapsed_multi",
-        "depth_fraction_convert",
-        "depth_leap",
-        "depth_month_day"
+        "y5_add_hours",
+        "y5_century_year",
+        "y5_compare_duration",
+        "y5_decade_year",
+        "y5_decimal_year",
+        "y5_fraction_day",
+        "y5_missing_duration",
+        "y5_subtract_days",
+        "y5_time_claim"
       ],
       "representations": [
         "story",
         "symbolic",
         "verbal"
       ],
-      "maxPromptNumber": 2024,
+      "maxPromptNumber": 45,
       "invalidClocks": [],
       "malformed": [],
       "fallbacks": 0
@@ -1617,45 +1626,76 @@
       "states": {
         "beginner": {
           "archetypes": [
-            "depth_add_three",
-            "depth_decimal_convert",
-            "depth_divide",
-            "depth_fraction_convert"
+            "y5_decimal_convert_isi padu cecair",
+            "y5_decimal_convert_jisim",
+            "y5_decimal_convert_panjang",
+            "y5_fraction_convert_isi padu cecair",
+            "y5_fraction_convert_jisim",
+            "y5_fraction_convert_panjang"
           ],
-          "maxPromptNumber": 62.5
+          "maxPromptNumber": 4
         },
         "core": {
           "archetypes": [
-            "depth_add_three",
-            "depth_decimal_convert",
-            "depth_divide",
-            "depth_fraction_convert",
-            "depth_multiply"
+            "y5_add_isi padu cecair",
+            "y5_add_jisim",
+            "y5_add_panjang",
+            "y5_multiply_isi padu cecair",
+            "y5_multiply_jisim",
+            "y5_multiply_panjang",
+            "y5_subtract_isi padu cecair",
+            "y5_subtract_jisim",
+            "y5_subtract_panjang"
           ],
-          "maxPromptNumber": 62.5
+          "maxPromptNumber": 1250
         },
         "secure": {
           "archetypes": [
-            "depth_add_three",
-            "depth_decimal_convert",
-            "depth_divide",
-            "depth_fraction_convert",
-            "depth_multiply"
+            "y5_claim_isi padu cecair",
+            "y5_claim_jisim",
+            "y5_claim_panjang",
+            "y5_divide_isi padu cecair",
+            "y5_divide_jisim",
+            "y5_divide_panjang",
+            "y5_missing_isi padu cecair",
+            "y5_missing_jisim",
+            "y5_missing_panjang"
           ],
-          "maxPromptNumber": 62.5
+          "maxPromptNumber": 500
         }
       },
       "archetypes": [
-        "depth_add_three",
-        "depth_decimal_convert",
-        "depth_divide",
-        "depth_fraction_convert",
-        "depth_multiply"
+        "y5_add_isi padu cecair",
+        "y5_add_jisim",
+        "y5_add_panjang",
+        "y5_claim_isi padu cecair",
+        "y5_claim_jisim",
+        "y5_claim_panjang",
+        "y5_decimal_convert_isi padu cecair",
+        "y5_decimal_convert_jisim",
+        "y5_decimal_convert_panjang",
+        "y5_divide_isi padu cecair",
+        "y5_divide_jisim",
+        "y5_divide_panjang",
+        "y5_fraction_convert_isi padu cecair",
+        "y5_fraction_convert_jisim",
+        "y5_fraction_convert_panjang",
+        "y5_missing_isi padu cecair",
+        "y5_missing_jisim",
+        "y5_missing_panjang",
+        "y5_multiply_isi padu cecair",
+        "y5_multiply_jisim",
+        "y5_multiply_panjang",
+        "y5_subtract_isi padu cecair",
+        "y5_subtract_jisim",
+        "y5_subtract_panjang"
       ],
       "representations": [
-        "symbolic"
+        "story",
+        "symbolic",
+        "verbal"
       ],
-      "maxPromptNumber": 62.5,
+      "maxPromptNumber": 1250,
       "invalidClocks": [],
       "malformed": [],
       "fallbacks": 0
@@ -1669,42 +1709,47 @@
       "states": {
         "beginner": {
           "archetypes": [
-            "depth_compare",
-            "depth_rectangle"
+            "y5_perimeter",
+            "y5_polygon_angle",
+            "y5_polygon_name"
           ],
-          "maxPromptNumber": 14
+          "maxPromptNumber": 9
         },
         "core": {
           "archetypes": [
-            "depth_compare",
-            "depth_composite",
-            "depth_missing_side",
-            "depth_rectangle"
+            "y5_composite_area",
+            "y5_composite_volume",
+            "y5_triangle_area"
           ],
-          "maxPromptNumber": 140
+          "maxPromptNumber": 12
         },
         "secure": {
           "archetypes": [
-            "depth_compare",
-            "depth_composite",
-            "depth_missing_side",
-            "depth_rectangle"
+            "y5_missing_angle",
+            "y5_perimeter_claim",
+            "y5_volume_claim"
           ],
-          "maxPromptNumber": 126
+          "maxPromptNumber": 720
         }
       },
       "archetypes": [
-        "depth_compare",
-        "depth_composite",
-        "depth_missing_side",
-        "depth_rectangle"
+        "y5_composite_area",
+        "y5_composite_volume",
+        "y5_missing_angle",
+        "y5_perimeter",
+        "y5_perimeter_claim",
+        "y5_polygon_angle",
+        "y5_polygon_name",
+        "y5_triangle_area",
+        "y5_volume_claim"
       ],
       "representations": [
+        "story",
         "symbolic",
         "table",
         "visual"
       ],
-      "maxPromptNumber": 140,
+      "maxPromptNumber": 720,
       "invalidClocks": [],
       "malformed": [],
       "fallbacks": 0
@@ -1766,43 +1811,52 @@
       "states": {
         "beginner": {
           "archetypes": [
-            "depth_compare",
-            "depth_interpret",
-            "depth_mean"
+            "y5_median",
+            "y5_mode",
+            "y5_pie_read",
+            "y5_range"
           ],
           "maxPromptNumber": 40
         },
         "core": {
           "archetypes": [
-            "depth_compare",
-            "depth_interpret",
-            "depth_mean",
-            "depth_missing_mean"
+            "y5_mean",
+            "y5_median_even",
+            "y5_pie_compare",
+            "y5_pie_quantity"
           ],
-          "maxPromptNumber": 40
+          "maxPromptNumber": 120
         },
         "secure": {
           "archetypes": [
-            "depth_compare",
-            "depth_interpret",
-            "depth_mean",
-            "depth_missing_mean"
+            "y5_missing_mean",
+            "y5_pie_claim",
+            "y5_range_change",
+            "y5_stat_claim"
           ],
           "maxPromptNumber": 40
         }
       },
       "archetypes": [
-        "depth_compare",
-        "depth_interpret",
-        "depth_mean",
-        "depth_missing_mean"
+        "y5_mean",
+        "y5_median",
+        "y5_median_even",
+        "y5_missing_mean",
+        "y5_mode",
+        "y5_pie_claim",
+        "y5_pie_compare",
+        "y5_pie_quantity",
+        "y5_pie_read",
+        "y5_range",
+        "y5_range_change",
+        "y5_stat_claim"
       ],
       "representations": [
         "symbolic",
         "table",
         "visual"
       ],
-      "maxPromptNumber": 40,
+      "maxPromptNumber": 120,
       "invalidClocks": [],
       "malformed": [],
       "fallbacks": 0
@@ -2081,13 +2135,10 @@
         "beginner": {
           "archetypes": [
             "choose_moves_to_target",
-            "compare_two_object_positions",
             "describe_cardinal_relative_position",
             "describe_relative_distance",
             "identify_object_at_axis_intersection",
             "identify_object_from_axis_clue",
-            "locate_after_movement_instruction",
-            "match_object_to_position_description",
             "read_horizontal_vertical_position"
           ],
           "maxPromptNumber": 5

@@ -139,6 +139,22 @@
     });
     if (!records.length) return null;
 
+    // Difficulty must constrain the curriculum record before rotation. Most
+    // D3 records intentionally contain one template, so selecting the record
+    // first made the later template score unable to protect a beginner from
+    // inverse, multi-step or reasoning work.
+    var targetBand = targetDifficulty(state);
+    var bandedRecords = records.filter(function (rec) {
+      return exactTemplates(runtime, rec).some(function (tpl) {
+        var band = Number(tpl.difficultyBand || 2);
+        if (targetBand <= 1) return band <= 2;
+        if (targetBand === 2) return band <= 3;
+        if (targetBand >= 4) return true;
+        return band <= 4;
+      });
+    });
+    if (bandedRecords.length) records = bandedRecords;
+
     var last = (history || []).length ? history[history.length - 1] : null;
     // Avoid returning to the same competency within the previous two visible
     // questions when other Topic 7 competencies are available.
@@ -147,16 +163,52 @@
       return countRecent(history, 'competencyId', rec.competencyId, 2) === 0;
     });
     if (cooledRecords.length) recordPool = cooledRecords;
+    var freshRecordPool = recordPool.filter(function (rec) {
+      var eligible = exactTemplates(runtime, rec).filter(function (tpl) {
+        var band = Number(tpl.difficultyBand || 2);
+        return targetBand <= 1 ? band <= 2 : targetBand === 2 ? band <= 3 : true;
+      });
+      if (!eligible.length) eligible = exactTemplates(runtime, rec);
+      return eligible.some(function (tpl) { return countRecent(history, 'templateId', tpl.templateId, 6) === 0; });
+    });
+    if (freshRecordPool.length) recordPool = freshRecordPool;
+    else {
+      // Exact-template freshness is stronger than the softer competency
+      // cooldown. This matters at high bands where only a few records carry
+      // reasoning templates.
+      var freshAcrossRecords = records.filter(function (rec) {
+        var eligible = exactTemplates(runtime, rec).filter(function (tpl) {
+          var band = Number(tpl.difficultyBand || 2);
+          return targetBand <= 1 ? band <= 2 : targetBand === 2 ? band <= 3 : true;
+        });
+        if (!eligible.length) eligible = exactTemplates(runtime, rec);
+        return eligible.some(function (tpl) { return countRecent(history, 'templateId', tpl.templateId, 6) === 0; });
+      });
+      if (freshAcrossRecords.length) recordPool = freshAcrossRecords;
+    }
 
     var record = chooseMinScore(recordPool, function (rec) {
       var score = countRecent(history, 'competencyId', rec.competencyId, 12) * 18;
       score += countRecent(history, 'competencyId', rec.competencyId, 5) * 8;
+      var eligible = exactTemplates(runtime, rec).filter(function (tpl) {
+        var band = Number(tpl.difficultyBand || 2);
+        return targetBand <= 1 ? band <= 2 : targetBand === 2 ? band <= 3 : true;
+      });
+      if (!eligible.length) eligible = exactTemplates(runtime, rec);
+      if (eligible.every(function (tpl) { return countRecent(history, 'templateId', tpl.templateId, 6) > 0; })) score += 120;
       if (last && last.competencyId === rec.competencyId) score += 60;
       return score;
     }, rng);
 
-    var targetBand = targetDifficulty(state);
     var templates = exactTemplates(runtime, record);
+    var bandedTemplates = templates.filter(function (tpl) {
+      var band = Number(tpl.difficultyBand || 2);
+      if (targetBand <= 1) return band <= 2;
+      if (targetBand === 2) return band <= 3;
+      if (targetBand >= 4) return true;
+      return true;
+    });
+    if (bandedTemplates.length) templates = bandedTemplates;
     var skillHistory = (history || []).filter(function (item) { return item.skillId === legacySkillId; });
     if (targetBand >= 4 && skillHistory.length % 5 !== 4) {
       var deeper = templates.filter(function (tpl) { return tpl.demand === 'application' || tpl.demand === 'reasoning'; });

@@ -3,6 +3,16 @@
 Tarikh: 12 Oktober 2026  
 Skop: 40 kemahiran aktif D1–D6 dalam domain Masa, Ukuran, Ruang, Kedudukan/Koordinat dan Data. Audit ini menyemak laluan production, julat/nilai, pilihan jawapan, format masa, variasi aras dan liputan kandungan generator. Ia bukan pengesahan keseluruhan aplikasi.
 
+## Status pembaikan v3.85.97
+
+- **Selesai:** D5 Data kini merangkumi carta pai, mod, median, min dan julat dengan progression pemula → aplikasi → penaakulan.
+- **Selesai:** D5 Ruang kini merangkumi poligon sekata, sudut, perimeter, luas bentuk gabungan serta isi padu gabungan.
+- **Selesai:** D4–D5 Ukuran kini meliputi panjang, jisim dan isi padu cecair bagi penukaran, tambah/tolak, darab/bahagi dan nilai hilang mengikut aras.
+- **Selesai:** D5 Masa kini meliputi penukaran pecahan/perpuluhan dan operasi masa merentas hari, tahun, dekad serta abad.
+- **Selesai:** D4 Data kini mempunyai piktograf untuk membaca petunjuk, jumlah, beza dan menilai dakwaan.
+- **Selesai:** pemilih QSv2 D3 kini menapis band kesukaran sebelum memutar standard; murid pemula dihadkan kepada band 1–2.
+- **Baki:** pemisahan ID bukti D4 Ruang dan pembukaan penuh QSv2 D3 Ruang masih perubahan struktur/rollout berasingan, bukan pembetulan generator dalam release ini.
+
 ## Ringkasan ujian
 
 - 30,000 soalan production dijana pada keadaan pemula, sederhana dan kukuh.
@@ -11,9 +21,9 @@ Skop: 40 kemahiran aktif D1–D6 dalam domain Masa, Ukuran, Ruang, Kedudukan/Koo
 - D6 menunjukkan perkembangan terbaik: pemula menerima bacaan langsung; murid kukuh menerima soalan songsang, hujah, kekangan dan pelbagai langkah.
 - Isu terbesar terdapat pada liputan D4–D5 dan pemilihan aras D3. Membesarkan nombor bukan punca utama.
 
-## Penemuan mengikut keutamaan
+## Penemuan asal mengikut keutamaan
 
-| Keutamaan | Topik | Apa yang berlaku sekarang | Kenapa ia penting |
+| Keutamaan | Topik | Keadaan sebelum v3.85.97 | Kenapa ia penting |
 |---|---|---|---|
 | P0 | D5 Data | Bank aktif hanya mempunyai min/purata, nilai hilang daripada min dan tafsiran carta palang ringkas. Tiada carta pai, mod, median atau julat. | DSKP Tahun 5 secara jelas meliputi carta pai serta mod, median, min dan julat. Sebahagian besar topik tidak diuji. |
 | P0 | D5 Ruang | `D5.AREA` hanya menguji luas segi empat tepat, sisi hilang, potongan segi empat dan perbandingan luas. | Kandungan Tahun 5 turut memerlukan ciri poligon sekata, ukuran sudut, perimeter dan luas bentuk gabungan serta isi padu gabungan kubus/kuboid. Nama kemahiran dan liputan semasa terlalu sempit. |
