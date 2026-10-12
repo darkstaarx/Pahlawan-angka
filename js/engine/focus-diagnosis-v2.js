@@ -44,11 +44,15 @@
   const encounters=Array.isArray(profile)?profile:
    (Array.isArray(profile?.learnerReviewV1?.encounters)?profile.learnerReviewV1.encounters:[]);
   const origin=safe(options.originSkillId||'');
+  // A diagnosis is scoped to deliberately selected question instances.
+  // Do not mine an entire child's history and confuse unrelated episodes.
+  const selected=new Set(Array.isArray(options.questionKeys)?options.questionKeys.map(safe).filter(Boolean):[]);
   const items=[],unmatched=[],excluded=[];
   for(const e of encounters){
    if(!e||!VALID.has(e.outcome))continue;
    if(IGNORED.has(safe(e.mode))){excluded.push(safe(e.questionKey));continue}
    const key=safe(e.questionKey);
+   if(!selected.has(key))continue;
    const supplied=(key&&questionTagsByKey&&Object.hasOwn(questionTagsByKey,key))
     ? questionTagsByKey[key] : null;
    const t=e.focusDiagnosticV1||supplied?.focusDiagnosticV1||supplied;
@@ -59,7 +63,7 @@
    if(skill!==safe(e.skillId)){unmatched.push(key);continue}
    const fam=familyFromTag(t);
    if(fam==='unknown'){unmatched.push(key);continue}
-   items.push({probe:key,questionKey:key,family:fam,result:e.outcome,
+   items.push({probe:safe(t.evidence?.variantFingerprint||key),questionKey:key,family:fam,result:e.outcome,
     originSkillId:skill,tagRevision:safe(t.evidence?.tagRevision||t.tagRevision),
     purpose:safe(t.probes?.diagnosticPurpose||'normal'),archetype:safe(t.evidence?.questionFamilyKey),
     mode:safe(e.mode)});
@@ -80,7 +84,8 @@
   let raw,untagged=0;
   if(Array.isArray(input.observations))raw=input.observations;
   else{
-   const joined=fromReview(input.profile||input.encounters||[],input.questionTagsByKey||{},{originSkillId});
+   const joined=fromReview(input.profile||input.encounters||[],input.questionTagsByKey||{},
+    {originSkillId,questionKeys:input.questionKeys});
    raw=joined.observations;
    untagged=joined.unmatched;
   }
@@ -110,6 +115,8 @@
    }else if(failed(grp.regroup)>=2&&clean(grp.plainDivision)>=1){
     const prereq=clean(['two_digit_div'])>=1?'number.place_value':'div.regroup';
     decision=answer('candidate','div.regroup',prereq,'REGROUP_FAILURE_WITH_BASIC_DIVISION_EVIDENCE','medium');
+   }else if(failed(grp.regroup)>=1&&clean(grp.plainDivision)>=2){
+    decision=answer('needs_contrast',null,'div.regroup','SINGLE_REGROUP_FAILURE_NEEDS_REPEAT');
    }else if(failed(['division_fact'])>=2&&clean(['grouping'])>=1){
     decision=answer('candidate','div.facts','mul.facts','DIVISION_FACT_FAILURE_WITH_GROUPING_SUCCESS','medium');
    }else if(failed(grp.selection)>=2&&clean(grp.operations)>=2){
