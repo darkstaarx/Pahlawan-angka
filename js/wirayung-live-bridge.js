@@ -16,7 +16,7 @@ css.textContent='#paWirayungOverlay{position:fixed;inset:0;z-index:2147482000;ba
 document.head.append(css);
 const escapeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const activeGrade=()=>Number(typeof db!=="undefined"&&db&&db.schoolGrade)||0;
-function moneySkill(id){return !!id&&(/^D[1-6]\.MONEY$/.test(id)||/^D2\.4\./.test(id));}
+function moneySkill(id){return !!id&&(/^D[1-6]\.MONEY$/.test(id)||/^D2\.4\.[13]$/.test(id));}
 function open(skillId){
  if(typeof db==="undefined"||!db||!window.PACommercial?.requireFeature?.("focus"))return false;
  if(typeof enforceRestuLock==="function"&&enforceRestuLock())return false;
