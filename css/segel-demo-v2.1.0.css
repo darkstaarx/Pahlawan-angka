@@ -660,6 +660,23 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   .segelCard .question{font-size:clamp(23px,3.2vw,29px)}
 }
 
+/* Potret: pendekkan bahagian bawah pentas kira-kira 2 cm supaya kad soalan
+   menerima ruang menegak tambahan. Nilai responsif dan min-height sedia ada
+   menjaga pentas pada telefon rendah; landscape kekal komposisi sebelah. */
+@media (orientation:portrait){
+  #segelDemo.on{--segel-stage-bottom-crop:clamp(48px,7dvh,76px)}
+  .segelStage{
+    flex-basis:max(174px,calc(40dvh - var(--segel-stage-bottom-crop)));
+    max-height:calc(50dvh - var(--segel-stage-bottom-crop))
+  }
+}
+@media (min-width:600px) and (orientation:portrait){
+  .segelStage{
+    flex-basis:clamp(210px,calc(32dvh - var(--segel-stage-bottom-crop)),280px);
+    max-height:calc(36dvh - var(--segel-stage-bottom-crop))
+  }
+}
+
 /* Wide web question composition. Keep the card sized to its content so a
    short prompt does not leave a large empty stage between it and the answers.
    This is deliberately scoped to the existing wide layout; phone and tablet
