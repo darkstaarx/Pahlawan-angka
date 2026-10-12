@@ -426,7 +426,11 @@ const GRADES={
  1:{title:'Wang asas',modes:['bayar'],
     bayar:[{n:1,min:10,max:100},{n:1,min:50,max:300}]},
  2:{title:'Tambah, tolak & bahagi wang',modes:['bayar','baki'],
-    bahagi:[{cases:[[2,200,'kongsi'],[2,400,'tukar'],[3,300,'kongsi']]},{cases:[[3,600,'kongsi'],[4,400,'tukar'],[3,450,'kongsi']]},{cases:[[3,750,'kongsi'],[4,600,'tukar'],[4,800,'kongsi'],[3,360,'tukar']]}],
+    bahagi:[
+      {people:[2,3],shares:[50,100,150,200,250,300],maxTotal:900},
+      {people:[2,3,4],shares:[80,100,120,150,180,200,250,300,350],maxTotal:1200},
+      {people:[2,3,4],shares:[120,150,160,180,200,220,250,300,350,400,450],maxTotal:1800}
+    ],
     bayar:[{n:1,min:50,max:300},{n:2,min:50,max:300}],
     baki:[{n:1,paid:500,min:100,max:400,whole:true},{n:1,paid:500,min:50,max:490}]},
  3:{title:'Operasi wang',modes:['bayar','baki'],
@@ -465,10 +469,35 @@ function chooseItems(n){const pool=shuffle(products).sort((x,y)=>lastItems.inclu
 const name=id=>P(id).name;
 
 /* ---------- penjana pesanan ikut mod ---------- */
+/* Choose from many mathematically distinct division questions, not 3 fixed
+   examples. Keep the last 14 calculations (not just their story wording)
+   across PWA restarts so RM6 / 3 cannot reappear several times in a row. */
+const DIVISION_RECENT_KEY='pa_wirayung_bahagi_recent_v2';
+function divisionHistory(){
+ try{const data=JSON.parse(localStorage.getItem(DIVISION_RECENT_KEY)||'[]');
+  return Array.isArray(data)?data.filter(x=>x&&Number.isInteger(x.people)&&Number.isInteger(x.total)&&['kongsi','tukar'].includes(x.kind)).slice(-14):[];
+ }catch(_){return []}
+}
+function chooseDivisionCase(t){
+ const history=divisionHistory(),recent=new Set(history.map(x=>x.total+'/'+x.people));
+ const options=t.people.flatMap(people=>t.shares.map(share=>({people,total:people*share,share})))
+  .filter(o=>o.total<=t.maxTotal&&o.total%10===0);
+ if(!options.length)throw new Error('Tiada soalan Bahagi Wang yang sah.');
+ // First exclude the last 14 maths combinations even when the scenario changes.
+ let pool=options.filter(o=>!recent.has(o.total+'/'+o.people));
+ if(!pool.length)pool=options;
+ // Avoid repeating the same per-person answer over the last three questions if possible.
+ const recentShares=new Set(history.slice(-3).map(x=>x.total/x.people));
+ const varied=pool.filter(o=>!recentShares.has(o.share));
+ if(varied.length)pool=varied;
+ const chosen=pick(pool),last=history[history.length-1],kind=last?(last.kind==='kongsi'?'tukar':'kongsi'):pick(['kongsi','tukar']);
+ try{localStorage.setItem(DIVISION_RECENT_KEY,JSON.stringify([...history,{people:chosen.people,total:chosen.total,kind}].slice(-14)))}catch(_){}
+ return [chosen.people,chosen.total,kind];
+}
 const MODES={
  bahagi:{
   make(t){
-   const [people,total,kind]=pick(t.cases),petWord=kind==='kongsi'?'kawan':'sampul',item=kind==='kongsi'?pick(products):null;
+   const [people,total,kind]=chooseDivisionCase(t),petWord=kind==='kongsi'?'kawan':'sampul',item=kind==='kongsi'?pick(products):null;
    const say=kind==='kongsi'
     ?'Kami '+people+' orang beli '+item.name+'. Bil '+money(total)+'. Boleh bahagi sama rata?'
     :'Aku nak tukar '+money(total)+' jadi duit kecil untuk '+people+' sampul sama nilai!';
