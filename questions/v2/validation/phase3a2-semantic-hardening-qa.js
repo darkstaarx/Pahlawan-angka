@@ -34,6 +34,16 @@ for(let ti=0;ti<templates.length;ti++){
     const sem=raw.meta.semanticProperties||{},mode=(t.params||{}).mode;
 
     // T1
+    if(mode==='place_value_model'){
+      const visual=raw.value.visual||{},pair=sem.swapIndices||[],digits=visual.digits||[];
+      ok(visual.kind==='place_value_table'&&digits.length===4,'place-value table evidence is present');
+      ok(pair.length===2&&[1,2,3].includes(pair[0])&&[1,2,3].includes(pair[1])&&pair[0]!==pair[1],'a valid pair of non-thousands places is exchanged');
+      const expected=digits.slice(),temp=expected[pair[0]];expected[pair[0]]=expected[pair[1]];expected[pair[1]]=temp;
+      eq(Number(raw.value.answer.labelMs),Number(expected.join('')),'swapped digits independently determine the answer');
+      ok(Number(raw.value.answer.labelMs)!==Number(digits.join('')),'copying the table cannot yield the answer');
+      ok(raw.distractors.some(d=>Number(d.labelMs)===Number(digits.join(''))),'the copied number is a distractor');
+      ok(/bertukar tempat/.test(raw.value.promptMs),'prompt requests a place-value transformation');
+    }
     if(mode==='missing_place_value'){eq(sem.parts.reduce((a,b)=>a+b,0),sem.number,'expanded parts total');eq(Number(raw.value.answer.labelMs),sem.number-sem.parts.filter((_,i)=>i!==sem.missingIndex).reduce((a,b)=>a+b,0),'missing value independent oracle');ok(sem.number<=10000,'D3 number range');ok(!raw.value.visual,'missing value is not revealed in visual');}
     if(t.standardId==='1.1.1'&&mode==='digit_value'){ok(Number.isInteger(sem.value)&&sem.value>0,'digit-value semantic oracle');ok(raw.value.visual&&raw.value.visual.kind==='place_value_table'&&raw.value.visual.highlight>=0,'digit-value highlighted place');}
     if(t.standardId==='1.2.1'){ok(raw.value.visual&&raw.value.visual.kind==='estimate_reference_sets','estimation uses reference/target set evidence');ok(sem.referenceCount>0&&sem.targetCount>0,'estimation records reference and target quantities');ok(!/kumpulan yang sama/i.test(raw.value.promptMs),'estimation is not disguised repeated-group multiplication');}

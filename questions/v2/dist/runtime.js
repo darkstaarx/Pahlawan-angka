@@ -1097,7 +1097,7 @@
     "familyKey": "d3.d3_t1.represent_numbers_to_10000",
     "representation": "place_value_model",
     "demand": "concept",
-    "difficultyBand": 1,
+    "difficultyBand": 2,
     "misconceptionTargets": [
       "place_value_confusion"
     ],
@@ -4746,7 +4746,7 @@
     "renderers/geometry/prism.js"
   ]
 };
-  var SOURCE_HASH = "30f3a7076f9c8d0fe834147506e21ce872d5532eb58a8fc49f995e97f29d6ad1";
+  var SOURCE_HASH = "254a779c0d0942aa351a6f5ed34b2fbaf854d911e3cd26a68766c65931288da1";
 
   var generators = Object.create(null);
   var renderers = Object.create(null);
@@ -4845,9 +4845,29 @@ registerGenerator('d3.fullKssr',function(params,rng){
     return{value:{promptMs:'Nombor “'+numberToMalay(n)+'” ditulis dalam angka sebagai?',answer:ans,visual:null},distractors:shuffle(rng,dis),meta:{archetype:'number_words_to_numeral',hintMs:'Baca nilai ribu, ratus, puluh dan sa satu demi satu.',semanticProperties:{number:n},fingerprint:fp(m,n,[numberToMalay(n)])}};
   }
   if(m==='place_value_model'){
-    var n2=ri(rng,1000,9999),ans2=choice(n2,String(n2)),s=String(n2),alt=Number(s[0]+s[2]+s[1]+s[3]);
-    var dis2=numChoices(n2,[alt,n2+100,n2-100,n2+10],'place_value_confusion',null,0,10000);
-    return{value:{promptMs:'Nombor manakah diwakili oleh jadual nilai tempat ini?',answer:ans2,visual:pvVisual(n2)},distractors:shuffle(rng,dis2),meta:{archetype:'place_value_model_to_number',hintMs:'Gabungkan digit mengikut tempat ribu, ratus, puluh dan sa.',semanticProperties:{number:n2},fingerprint:fp(m,n2,[s])}};
+    // Do not ask learners to copy all four table digits as the answer.
+    // A position swap makes the visible table evidence, not the final numeral.
+    var n2, digits2;
+    do {
+      n2=ri(rng,1000,9999);
+      digits2=String(n2).split('').map(Number);
+    } while(digits2[1]===digits2[2]||digits2[1]===digits2[3]||digits2[2]===digits2[3]);
+    var pairs2=[[1,2],[2,3],[1,3]],pair2=pick(rng,pairs2),places2=['ribu','ratus','puluh','sa'];
+    function swapDigits2(parts,a,b){
+      var copy=parts.slice(),temp=copy[a];copy[a]=copy[b];copy[b]=temp;
+      return Number(copy.join(''));
+    }
+    var result2=swapDigits2(digits2,pair2[0],pair2[1]);
+    var ans2=choice(result2,String(result2));
+    var dis2=[choice(n2,String(n2),'place_value_confusion')];
+    for(var pi2=0;pi2<pairs2.length;pi2++){
+      var other2=pairs2[pi2];
+      if(other2[0]===pair2[0]&&other2[1]===pair2[1])continue;
+      var wrong2=swapDigits2(digits2,other2[0],other2[1]);
+      dis2.push(choice(wrong2,String(wrong2),'place_value_confusion'));
+    }
+    var prompt2='Dalam jadual, digit pada tempat '+places2[pair2[0]]+' dan '+places2[pair2[1]]+' bertukar tempat. Apakah nombor baharu?';
+    return{value:{promptMs:prompt2,answer:ans2,visual:pvVisual(n2)},distractors:shuffle(rng,dis2),meta:{archetype:'place_value_model_to_number',hintMs:'Tukar kedudukan dua digit yang disebut. Digit pada tempat lain kekal.',semanticProperties:{number:n2,transformedNumber:result2,swapIndices:pair2.slice(),digitsBefore:digits2.slice()},fingerprint:fp(m,result2,[n2,pair2.join('-')])}};
   }
   if(m==='missing_place_value'){
     var number=ri(rng,1000,9999),digitsMissing=String(number).split('').map(Number),placeMissing=ri(rng,0,3),powers=[1000,100,10,1];

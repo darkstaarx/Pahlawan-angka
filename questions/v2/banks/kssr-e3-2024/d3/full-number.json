@@ -39,7 +39,7 @@
       "familyKey": "d3.d3_t1.represent_numbers_to_10000",
       "representation": "place_value_model",
       "demand": "concept",
-      "difficultyBand": 1,
+      "difficultyBand": 2,
       "misconceptionTargets": [
         "place_value_confusion"
       ],
