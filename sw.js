@@ -1,6 +1,6 @@
 // App shell v3.84.64 — mobile long-screen scroll ownership refresh.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-chibi-2`;
 const APP_SHELL=[
   './gerai-wirayung.html', './js/wirayung-live-bridge.js',
   './assets/ui/focus-v1/focus-panel-illustrated-v1.webp',
