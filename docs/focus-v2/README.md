@@ -24,7 +24,8 @@ The initial structural assertions were executed against checked-in files in a V8
 ## Phase C delivery
 
 - `js/engine/focus-diagnosis-v2.js` — **pure** root-cause candidate evaluator and scoped production encounter-tag adapter.
-- `audit/focus-v2-diagnosis-shadow.cjs` — 10/10 golden cases and 69 assertions on a simulated learner-review integration.
+- `js/engine/focus-diagnosis-shadow-v1.js` — optional ephemeral question-key/tag collector used in testing only (no app registration).
+- `audit/focus-v2-diagnosis-shadow.cjs` — 10/10 golden cases and 77 assertions on a simulated learner-review integration.
 - `docs/focus-v2/PHASE-C-SHADOW-REPORT.md` — test details, conservative D6 oracle correction, current integration limits and release gates.
 - Current `main` and `index.html` are unchanged. **No live shadow observer is installed yet.**
 
