@@ -250,11 +250,11 @@
         }
       ],
       "expected": {
-        "state": "candidate",
-        "rootCause": "div.regroup",
+        "state": "needs_contrast",
+        "rootCause": null,
         "nextProbe": "div.regroup"
       },
-      "rationale": "D6 pupil may need earlier-foundation work without changing grade"
+      "rationale": "One regrouping error at D6 with successful basic division is not enough for a precise root-cause label. Probe another regrouping variant before suggesting remediation."
     },
     {
       "id": "cannot-downscore-other-subject",
@@ -277,5 +277,6 @@
       },
       "rationale": "One money failure cannot lower Operasi mastery"
     }
-  ]
+  ],
+  "policy": "Conservative oracle: one failure of a specific subskill + a money failure is insufficient to declare that subskill weak."
 }
