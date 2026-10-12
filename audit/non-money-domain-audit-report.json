@@ -1,0 +1,2548 @@
+{
+  "status": "pass",
+  "generatedAt": "2026-10-12",
+  "samples": 30000,
+  "skills": [
+    {
+      "id": "D1.TIME",
+      "grade": 1,
+      "domain": "Masa",
+      "title": "Masa asas",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y1v2_5_1_1_daily_time",
+            "y1v2_5_1_2_order_two",
+            "y1v2_5_1_3_name_day",
+            "y1v2_5_1_4_name_month",
+            "y1v2_5_2_1_hand_name",
+            "y1v2_5_2_2_half",
+            "y1v2_5_2_3_hour",
+            "y1v2_5_3_1_daily_problem"
+          ],
+          "maxPromptNumber": 12
+        },
+        "core": {
+          "archetypes": [
+            "y1v2_5_1_1_daily_time",
+            "y1v2_5_1_1_light_time",
+            "y1v2_5_1_2_order_three",
+            "y1v2_5_1_2_order_two",
+            "y1v2_5_1_3_name_day",
+            "y1v2_5_1_3_next_day",
+            "y1v2_5_1_4_name_month",
+            "y1v2_5_1_4_next_month",
+            "y1v2_5_2_1_hand_function",
+            "y1v2_5_2_1_hand_name",
+            "y1v2_5_2_2_half",
+            "y1v2_5_2_2_quarter",
+            "y1v2_5_2_3_half_hour",
+            "y1v2_5_2_3_hour",
+            "y1v2_5_3_1_daily_problem",
+            "y1v2_5_3_1_half_hour_later"
+          ],
+          "maxPromptNumber": 12
+        },
+        "secure": {
+          "archetypes": [
+            "y1v2_5_1_1_daily_time",
+            "y1v2_5_1_1_light_time",
+            "y1v2_5_1_1_reason_time",
+            "y1v2_5_1_2_missing_event",
+            "y1v2_5_1_2_order_three",
+            "y1v2_5_1_3_day_reason",
+            "y1v2_5_1_3_next_day",
+            "y1v2_5_1_3_yesterday_day",
+            "y1v2_5_1_4_before_month",
+            "y1v2_5_1_4_month_reason",
+            "y1v2_5_1_4_next_month",
+            "y1v2_5_2_1_hand_function",
+            "y1v2_5_2_1_hand_reason",
+            "y1v2_5_2_2_compare_fraction",
+            "y1v2_5_2_2_quarter",
+            "y1v2_5_2_2_three_quarter",
+            "y1v2_5_2_3_half_hour",
+            "y1v2_5_2_3_hour",
+            "y1v2_5_2_3_quarter_hour",
+            "y1v2_5_3_1_half_hour_later",
+            "y1v2_5_3_1_order_clock",
+            "y1v2_5_3_1_quarter_hour_later"
+          ],
+          "maxPromptNumber": 30
+        }
+      },
+      "archetypes": [
+        "y1v2_5_1_1_daily_time",
+        "y1v2_5_1_1_light_time",
+        "y1v2_5_1_1_reason_time",
+        "y1v2_5_1_2_missing_event",
+        "y1v2_5_1_2_order_three",
+        "y1v2_5_1_2_order_two",
+        "y1v2_5_1_3_day_reason",
+        "y1v2_5_1_3_name_day",
+        "y1v2_5_1_3_next_day",
+        "y1v2_5_1_3_yesterday_day",
+        "y1v2_5_1_4_before_month",
+        "y1v2_5_1_4_month_reason",
+        "y1v2_5_1_4_name_month",
+        "y1v2_5_1_4_next_month",
+        "y1v2_5_2_1_hand_function",
+        "y1v2_5_2_1_hand_name",
+        "y1v2_5_2_1_hand_reason",
+        "y1v2_5_2_2_compare_fraction",
+        "y1v2_5_2_2_half",
+        "y1v2_5_2_2_quarter",
+        "y1v2_5_2_2_three_quarter",
+        "y1v2_5_2_3_half_hour",
+        "y1v2_5_2_3_hour",
+        "y1v2_5_2_3_quarter_hour",
+        "y1v2_5_3_1_daily_problem",
+        "y1v2_5_3_1_half_hour_later",
+        "y1v2_5_3_1_order_clock",
+        "y1v2_5_3_1_quarter_hour_later"
+      ],
+      "representations": [
+        "story",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 30,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D1.MEASURE",
+      "grade": 1,
+      "domain": "Ukuran",
+      "title": "Banding ukuran",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y1v2_6_1_1_vocab_length",
+            "y1v2_6_1_2_length_units",
+            "y1v2_6_1_3_compare_length",
+            "y1v2_6_2_1_one_step"
+          ],
+          "maxPromptNumber": 9
+        },
+        "core": {
+          "archetypes": [
+            "y1v2_6_1_1_vocab_capacity",
+            "y1v2_6_1_1_vocab_length",
+            "y1v2_6_1_1_vocab_mass",
+            "y1v2_6_1_2_capacity_units",
+            "y1v2_6_1_2_length_units",
+            "y1v2_6_1_2_mass_units",
+            "y1v2_6_1_3_compare_capacity",
+            "y1v2_6_1_3_compare_length",
+            "y1v2_6_1_3_compare_mass",
+            "y1v2_6_2_1_difference",
+            "y1v2_6_2_1_one_step"
+          ],
+          "maxPromptNumber": 10
+        },
+        "secure": {
+          "archetypes": [
+            "y1v2_6_1_1_reason_vocab",
+            "y1v2_6_1_1_vocab_capacity",
+            "y1v2_6_1_1_vocab_mass",
+            "y1v2_6_1_2_capacity_units",
+            "y1v2_6_1_2_choose_unit",
+            "y1v2_6_1_2_length_units",
+            "y1v2_6_1_2_mass_units",
+            "y1v2_6_1_3_compare_capacity",
+            "y1v2_6_1_3_compare_mass",
+            "y1v2_6_1_3_three_compare",
+            "y1v2_6_2_1_difference",
+            "y1v2_6_2_1_missing_measure",
+            "y1v2_6_2_1_reason_measure"
+          ],
+          "maxPromptNumber": 12
+        }
+      },
+      "archetypes": [
+        "y1v2_6_1_1_reason_vocab",
+        "y1v2_6_1_1_vocab_capacity",
+        "y1v2_6_1_1_vocab_length",
+        "y1v2_6_1_1_vocab_mass",
+        "y1v2_6_1_2_capacity_units",
+        "y1v2_6_1_2_choose_unit",
+        "y1v2_6_1_2_length_units",
+        "y1v2_6_1_2_mass_units",
+        "y1v2_6_1_3_compare_capacity",
+        "y1v2_6_1_3_compare_length",
+        "y1v2_6_1_3_compare_mass",
+        "y1v2_6_1_3_three_compare",
+        "y1v2_6_2_1_difference",
+        "y1v2_6_2_1_missing_measure",
+        "y1v2_6_2_1_one_step",
+        "y1v2_6_2_1_reason_measure"
+      ],
+      "representations": [
+        "story",
+        "table",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 12,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D1.SHAPE",
+      "grade": 1,
+      "domain": "Ruang",
+      "title": "Bentuk asas",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y1v2_7_1_1_name_solid",
+            "y1v2_7_1_2_surface",
+            "y1v2_7_1_3_repeat_two",
+            "y1v2_7_1_4_combine_object",
+            "y1v2_7_2_1_name_2d",
+            "y1v2_7_2_2_count_sides",
+            "y1v2_7_2_3_pattern_two",
+            "y1v2_7_2_4_choose_pattern",
+            "y1v2_7_3_1_daily_shape"
+          ],
+          "maxPromptNumber": 2
+        },
+        "core": {
+          "archetypes": [
+            "y1v2_7_1_1_name_solid",
+            "y1v2_7_1_1_object_match",
+            "y1v2_7_1_2_surface",
+            "y1v2_7_1_2_vertex",
+            "y1v2_7_1_3_repeat_three",
+            "y1v2_7_1_3_repeat_two",
+            "y1v2_7_1_4_choose_parts",
+            "y1v2_7_1_4_combine_object",
+            "y1v2_7_2_1_name_2d",
+            "y1v2_7_2_1_object_face",
+            "y1v2_7_2_2_count_sides",
+            "y1v2_7_2_2_count_vertices",
+            "y1v2_7_2_2_curve",
+            "y1v2_7_2_3_pattern_three",
+            "y1v2_7_2_3_pattern_two",
+            "y1v2_7_2_4_choose_pattern",
+            "y1v2_7_2_4_extend_pattern",
+            "y1v2_7_3_1_daily_shape",
+            "y1v2_7_3_1_property_problem"
+          ],
+          "maxPromptNumber": 2
+        },
+        "secure": {
+          "archetypes": [
+            "y1v2_7_1_1_distinguish_solid",
+            "y1v2_7_1_1_object_match",
+            "y1v2_7_1_2_edge",
+            "y1v2_7_1_2_reason_property",
+            "y1v2_7_1_2_vertex",
+            "y1v2_7_1_3_missing_pattern",
+            "y1v2_7_1_3_repeat_three",
+            "y1v2_7_1_4_choose_parts",
+            "y1v2_7_1_4_reason_build",
+            "y1v2_7_2_1_distinguish_2d",
+            "y1v2_7_2_1_object_face",
+            "y1v2_7_2_2_count_vertices",
+            "y1v2_7_2_2_curve",
+            "y1v2_7_2_2_reason_property",
+            "y1v2_7_2_3_missing_two",
+            "y1v2_7_2_3_pattern_three",
+            "y1v2_7_2_4_extend_pattern",
+            "y1v2_7_2_4_reason_pattern",
+            "y1v2_7_3_1_combine_problem",
+            "y1v2_7_3_1_property_problem"
+          ],
+          "maxPromptNumber": 4
+        }
+      },
+      "archetypes": [
+        "y1v2_7_1_1_distinguish_solid",
+        "y1v2_7_1_1_name_solid",
+        "y1v2_7_1_1_object_match",
+        "y1v2_7_1_2_edge",
+        "y1v2_7_1_2_reason_property",
+        "y1v2_7_1_2_surface",
+        "y1v2_7_1_2_vertex",
+        "y1v2_7_1_3_missing_pattern",
+        "y1v2_7_1_3_repeat_three",
+        "y1v2_7_1_3_repeat_two",
+        "y1v2_7_1_4_choose_parts",
+        "y1v2_7_1_4_combine_object",
+        "y1v2_7_1_4_reason_build",
+        "y1v2_7_2_1_distinguish_2d",
+        "y1v2_7_2_1_name_2d",
+        "y1v2_7_2_1_object_face",
+        "y1v2_7_2_2_count_sides",
+        "y1v2_7_2_2_count_vertices",
+        "y1v2_7_2_2_curve",
+        "y1v2_7_2_2_reason_property",
+        "y1v2_7_2_3_missing_two",
+        "y1v2_7_2_3_pattern_three",
+        "y1v2_7_2_3_pattern_two",
+        "y1v2_7_2_4_choose_pattern",
+        "y1v2_7_2_4_extend_pattern",
+        "y1v2_7_2_4_reason_pattern",
+        "y1v2_7_3_1_combine_problem",
+        "y1v2_7_3_1_daily_shape",
+        "y1v2_7_3_1_property_problem"
+      ],
+      "representations": [
+        "story",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 4,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D1.DATA",
+      "grade": 1,
+      "domain": "Data",
+      "title": "Data mudah",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y1v2_8_1_1_count_tally",
+            "y1v2_8_2_1_read_one",
+            "y1v2_8_3_1_one_question"
+          ],
+          "maxPromptNumber": 1
+        },
+        "core": {
+          "archetypes": [
+            "y1v2_8_1_1_classify",
+            "y1v2_8_1_1_count_tally",
+            "y1v2_8_2_1_most",
+            "y1v2_8_2_1_read_one",
+            "y1v2_8_3_1_one_question",
+            "y1v2_8_3_1_total_two"
+          ],
+          "maxPromptNumber": 1
+        },
+        "secure": {
+          "archetypes": [
+            "y1v2_8_1_1_classify",
+            "y1v2_8_1_1_complete_tally",
+            "y1v2_8_1_1_reason_collect",
+            "y1v2_8_2_1_difference",
+            "y1v2_8_2_1_most",
+            "y1v2_8_2_1_read_one",
+            "y1v2_8_3_1_missing_data",
+            "y1v2_8_3_1_reason_data",
+            "y1v2_8_3_1_total_two"
+          ],
+          "maxPromptNumber": 9
+        }
+      },
+      "archetypes": [
+        "y1v2_8_1_1_classify",
+        "y1v2_8_1_1_complete_tally",
+        "y1v2_8_1_1_count_tally",
+        "y1v2_8_1_1_reason_collect",
+        "y1v2_8_2_1_difference",
+        "y1v2_8_2_1_most",
+        "y1v2_8_2_1_read_one",
+        "y1v2_8_3_1_missing_data",
+        "y1v2_8_3_1_one_question",
+        "y1v2_8_3_1_reason_data",
+        "y1v2_8_3_1_total_two"
+      ],
+      "representations": [
+        "story",
+        "table",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 9,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.5.1",
+      "grade": 2,
+      "domain": "Masa",
+      "title": "Jam & minit",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_read_clock"
+          ],
+          "maxPromptNumber": 12
+        },
+        "core": {
+          "archetypes": [
+            "integrity_read_clock",
+            "progress_clock_compare",
+            "progress_clock_words"
+          ],
+          "maxPromptNumber": 55
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_read_clock",
+            "progress_clock_compare",
+            "progress_clock_words"
+          ],
+          "maxPromptNumber": 55
+        }
+      },
+      "archetypes": [
+        "integrity_read_clock",
+        "progress_clock_compare",
+        "progress_clock_words"
+      ],
+      "representations": [
+        "visual"
+      ],
+      "maxPromptNumber": 55,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.5.2",
+      "grade": 2,
+      "domain": "Masa",
+      "title": "Perkaitan masa",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_day_hour",
+            "integrity_hour_minute",
+            "integrity_week_day"
+          ],
+          "maxPromptNumber": 4
+        },
+        "core": {
+          "archetypes": [
+            "integrity_day_hour",
+            "integrity_hour_minute",
+            "integrity_week_day",
+            "progress_time_claim",
+            "progress_time_inverse"
+          ],
+          "maxPromptNumber": 300
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_day_hour",
+            "integrity_hour_minute",
+            "integrity_week_day",
+            "progress_time_claim",
+            "progress_time_inverse"
+          ],
+          "maxPromptNumber": 300
+        }
+      },
+      "archetypes": [
+        "integrity_day_hour",
+        "integrity_hour_minute",
+        "integrity_week_day",
+        "progress_time_claim",
+        "progress_time_inverse"
+      ],
+      "representations": [
+        "story",
+        "symbolic"
+      ],
+      "maxPromptNumber": 300,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.5.3",
+      "grade": 2,
+      "domain": "Masa",
+      "title": "Masalah masa",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_elapsed_time"
+          ],
+          "maxPromptNumber": 120
+        },
+        "core": {
+          "archetypes": [
+            "integrity_elapsed_time",
+            "progress_time_duration",
+            "progress_time_end",
+            "progress_time_start"
+          ],
+          "maxPromptNumber": 120
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_elapsed_time",
+            "progress_time_duration",
+            "progress_time_end",
+            "progress_time_start"
+          ],
+          "maxPromptNumber": 120
+        }
+      },
+      "archetypes": [
+        "integrity_elapsed_time",
+        "progress_time_duration",
+        "progress_time_end",
+        "progress_time_start"
+      ],
+      "representations": [
+        "story",
+        "visual"
+      ],
+      "maxPromptNumber": 120,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.6.1",
+      "grade": 2,
+      "domain": "Ukuran",
+      "title": "Panjang",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_compare_length",
+            "integrity_read_ruler",
+            "integrity_unit_length"
+          ],
+          "maxPromptNumber": 20
+        },
+        "core": {
+          "archetypes": [
+            "integrity_compare_length",
+            "integrity_read_ruler",
+            "integrity_unit_length"
+          ],
+          "maxPromptNumber": 20
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_compare_length",
+            "integrity_read_ruler",
+            "integrity_unit_length"
+          ],
+          "maxPromptNumber": 20
+        }
+      },
+      "archetypes": [
+        "integrity_compare_length",
+        "integrity_read_ruler",
+        "integrity_unit_length"
+      ],
+      "representations": [
+        "story",
+        "visual"
+      ],
+      "maxPromptNumber": 20,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.6.2",
+      "grade": 2,
+      "domain": "Ukuran",
+      "title": "Jisim",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_compare_mass",
+            "integrity_read_scale",
+            "integrity_unit_mass"
+          ],
+          "maxPromptNumber": 1000
+        },
+        "core": {
+          "archetypes": [
+            "integrity_compare_mass",
+            "integrity_read_scale",
+            "integrity_unit_mass"
+          ],
+          "maxPromptNumber": 1000
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_compare_mass",
+            "integrity_read_scale",
+            "integrity_unit_mass"
+          ],
+          "maxPromptNumber": 1000
+        }
+      },
+      "archetypes": [
+        "integrity_compare_mass",
+        "integrity_read_scale",
+        "integrity_unit_mass"
+      ],
+      "representations": [
+        "story",
+        "visual"
+      ],
+      "maxPromptNumber": 1000,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.6.3",
+      "grade": 2,
+      "domain": "Ukuran",
+      "title": "Isi padu cecair",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_compare_volume",
+            "integrity_read_jug",
+            "integrity_unit_volume"
+          ],
+          "maxPromptNumber": 1000
+        },
+        "core": {
+          "archetypes": [
+            "integrity_compare_volume",
+            "integrity_read_jug",
+            "integrity_unit_volume"
+          ],
+          "maxPromptNumber": 1000
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_compare_volume",
+            "integrity_read_jug",
+            "integrity_unit_volume"
+          ],
+          "maxPromptNumber": 1000
+        }
+      },
+      "archetypes": [
+        "integrity_compare_volume",
+        "integrity_read_jug",
+        "integrity_unit_volume"
+      ],
+      "representations": [
+        "story",
+        "visual"
+      ],
+      "maxPromptNumber": 1000,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.6.4",
+      "grade": 2,
+      "domain": "Ukuran",
+      "title": "Masalah ukuran",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_measure_problem"
+          ],
+          "maxPromptNumber": 120
+        },
+        "core": {
+          "archetypes": [
+            "integrity_measure_problem",
+            "progress_measure_difference",
+            "progress_measure_inverse",
+            "progress_measure_total"
+          ],
+          "maxPromptNumber": 664
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_measure_problem",
+            "progress_measure_difference",
+            "progress_measure_inverse",
+            "progress_measure_total"
+          ],
+          "maxPromptNumber": 688
+        }
+      },
+      "archetypes": [
+        "integrity_measure_problem",
+        "progress_measure_difference",
+        "progress_measure_inverse",
+        "progress_measure_total"
+      ],
+      "representations": [
+        "story"
+      ],
+      "maxPromptNumber": 688,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.7.1",
+      "grade": 2,
+      "domain": "Ruang",
+      "title": "Bentuk 3D",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "native_estimate",
+            "native_property",
+            "native_story"
+          ],
+          "maxPromptNumber": 3
+        },
+        "core": {
+          "archetypes": [
+            "native_estimate",
+            "native_property",
+            "native_story"
+          ],
+          "maxPromptNumber": 3
+        },
+        "secure": {
+          "archetypes": [
+            "native_estimate",
+            "native_property",
+            "native_story"
+          ],
+          "maxPromptNumber": 3
+        }
+      },
+      "archetypes": [
+        "native_estimate",
+        "native_property",
+        "native_story"
+      ],
+      "representations": [
+        "symbolic",
+        "visual"
+      ],
+      "maxPromptNumber": 3,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.7.2",
+      "grade": 2,
+      "domain": "Ruang",
+      "title": "Bentuk 2D",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "classify",
+            "classify_set",
+            "name",
+            "property"
+          ],
+          "maxPromptNumber": 0
+        },
+        "core": {
+          "archetypes": [
+            "classify",
+            "classify_set",
+            "name",
+            "property"
+          ],
+          "maxPromptNumber": 0
+        },
+        "secure": {
+          "archetypes": [
+            "classify",
+            "classify_set",
+            "name",
+            "property"
+          ],
+          "maxPromptNumber": 0
+        }
+      },
+      "archetypes": [
+        "classify",
+        "classify_set",
+        "name",
+        "property"
+      ],
+      "representations": [
+        "visual"
+      ],
+      "maxPromptNumber": 0,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.7.3",
+      "grade": 2,
+      "domain": "Ruang",
+      "title": "Masalah ruang",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "native_estimate",
+            "native_property",
+            "native_story"
+          ],
+          "maxPromptNumber": 4
+        },
+        "core": {
+          "archetypes": [
+            "native_estimate",
+            "native_property",
+            "native_story"
+          ],
+          "maxPromptNumber": 4
+        },
+        "secure": {
+          "archetypes": [
+            "native_estimate",
+            "native_property",
+            "native_story"
+          ],
+          "maxPromptNumber": 4
+        }
+      },
+      "archetypes": [
+        "native_estimate",
+        "native_property",
+        "native_story"
+      ],
+      "representations": [
+        "symbolic"
+      ],
+      "maxPromptNumber": 4,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.8.1",
+      "grade": 2,
+      "domain": "Data",
+      "title": "Kumpul & susun data",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_tally_data"
+          ],
+          "maxPromptNumber": 0
+        },
+        "core": {
+          "archetypes": [
+            "integrity_tally_data",
+            "progress_data_compare",
+            "progress_data_difference",
+            "progress_data_total"
+          ],
+          "maxPromptNumber": 0
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_tally_data",
+            "progress_data_compare",
+            "progress_data_difference",
+            "progress_data_total"
+          ],
+          "maxPromptNumber": 0
+        }
+      },
+      "archetypes": [
+        "integrity_tally_data",
+        "progress_data_compare",
+        "progress_data_difference",
+        "progress_data_total"
+      ],
+      "representations": [
+        "visual"
+      ],
+      "maxPromptNumber": 0,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.8.2",
+      "grade": 2,
+      "domain": "Data",
+      "title": "Carta palang",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_bar_compare",
+            "integrity_bar_read"
+          ],
+          "maxPromptNumber": 10
+        },
+        "core": {
+          "archetypes": [
+            "integrity_bar_compare",
+            "integrity_bar_read",
+            "progress_data_compare",
+            "progress_data_difference",
+            "progress_data_total"
+          ],
+          "maxPromptNumber": 20
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_bar_compare",
+            "integrity_bar_read",
+            "progress_data_compare",
+            "progress_data_difference",
+            "progress_data_total"
+          ],
+          "maxPromptNumber": 20
+        }
+      },
+      "archetypes": [
+        "integrity_bar_compare",
+        "integrity_bar_read",
+        "progress_data_compare",
+        "progress_data_difference",
+        "progress_data_total"
+      ],
+      "representations": [
+        "visual"
+      ],
+      "maxPromptNumber": 20,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D2.8.3",
+      "grade": 2,
+      "domain": "Data",
+      "title": "Masalah data",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "integrity_data_difference",
+            "integrity_data_sum",
+            "integrity_data_two_step"
+          ],
+          "maxPromptNumber": 10
+        },
+        "core": {
+          "archetypes": [
+            "integrity_data_difference",
+            "integrity_data_sum",
+            "integrity_data_two_step"
+          ],
+          "maxPromptNumber": 10
+        },
+        "secure": {
+          "archetypes": [
+            "integrity_data_difference",
+            "integrity_data_sum",
+            "integrity_data_two_step"
+          ],
+          "maxPromptNumber": 10
+        }
+      },
+      "archetypes": [
+        "integrity_data_difference",
+        "integrity_data_sum",
+        "integrity_data_two_step"
+      ],
+      "representations": [
+        "visual"
+      ],
+      "maxPromptNumber": 10,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D3.TIME",
+      "grade": 3,
+      "domain": "Masa",
+      "title": "Tempoh masa",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "add_time_values",
+            "choose_expression_for_time_problem",
+            "convert_hours_to_minutes",
+            "convert_minutes_to_hours_minutes",
+            "convert_minutes_to_seconds",
+            "divide_then_multiply_time",
+            "divide_time_duration",
+            "find_time_difference",
+            "mixed_time_adjustment",
+            "multiply_time_duration",
+            "read_activity_schedule",
+            "read_analogue_clock",
+            "read_calendar_date",
+            "subtract_time_values",
+            "two_step_time_schedule"
+          ],
+          "maxPromptNumber": 2026
+        },
+        "core": {
+          "archetypes": [
+            "add_time_values",
+            "choose_expression_for_time_problem",
+            "convert_hours_to_minutes",
+            "convert_minutes_to_hours_minutes",
+            "convert_minutes_to_seconds",
+            "divide_then_multiply_time",
+            "divide_time_duration",
+            "find_time_difference",
+            "mixed_time_adjustment",
+            "multiply_time_duration",
+            "read_activity_schedule",
+            "read_analogue_clock",
+            "read_calendar_date",
+            "subtract_time_values",
+            "two_step_time_schedule"
+          ],
+          "maxPromptNumber": 2026
+        },
+        "secure": {
+          "archetypes": [
+            "add_time_values",
+            "choose_expression_for_time_problem",
+            "convert_minutes_to_hours_minutes",
+            "divide_then_multiply_time",
+            "divide_time_duration",
+            "find_time_difference",
+            "mixed_time_adjustment",
+            "multiply_time_duration",
+            "read_activity_schedule",
+            "read_analogue_clock",
+            "read_calendar_date",
+            "subtract_time_values",
+            "two_step_time_schedule"
+          ],
+          "maxPromptNumber": 2026
+        }
+      },
+      "archetypes": [
+        "add_time_values",
+        "choose_expression_for_time_problem",
+        "convert_hours_to_minutes",
+        "convert_minutes_to_hours_minutes",
+        "convert_minutes_to_seconds",
+        "divide_then_multiply_time",
+        "divide_time_duration",
+        "find_time_difference",
+        "mixed_time_adjustment",
+        "multiply_time_duration",
+        "read_activity_schedule",
+        "read_analogue_clock",
+        "read_calendar_date",
+        "subtract_time_values",
+        "two_step_time_schedule"
+      ],
+      "representations": [
+        "calendar",
+        "clock",
+        "grouping_array",
+        "symbolic",
+        "timeline",
+        "timetable",
+        "unit_relation"
+      ],
+      "maxPromptNumber": 2026,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D3.MEASURE",
+      "grade": 3,
+      "domain": "Ukuran",
+      "title": "Ukuran & penukaran mudah",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "add_length_values",
+            "add_liquid_volumes",
+            "add_mass_values",
+            "centimetres_to_mixed_metres",
+            "choose_equivalent_length",
+            "choose_equivalent_mass",
+            "choose_equivalent_volume",
+            "divide_length",
+            "divide_liquid_volume",
+            "divide_mass",
+            "find_missing_length",
+            "find_missing_liquid_volume",
+            "find_missing_mass",
+            "grams_to_mixed_kilograms",
+            "inverse_length_factor",
+            "inverse_liquid_volume_factor",
+            "inverse_mass_factor",
+            "kilograms_to_grams",
+            "litres_to_millilitres",
+            "metres_to_centimetres",
+            "millilitres_to_mixed_litres",
+            "multiply_length",
+            "multiply_liquid_volume",
+            "multiply_mass",
+            "subtract_length_values",
+            "subtract_liquid_volumes",
+            "subtract_mass_values"
+          ],
+          "maxPromptNumber": 6900
+        },
+        "core": {
+          "archetypes": [
+            "add_length_values",
+            "add_liquid_volumes",
+            "add_mass_values",
+            "centimetres_to_mixed_metres",
+            "choose_equivalent_length",
+            "choose_equivalent_mass",
+            "choose_equivalent_volume",
+            "divide_length",
+            "divide_liquid_volume",
+            "divide_mass",
+            "find_missing_length",
+            "find_missing_liquid_volume",
+            "find_missing_mass",
+            "grams_to_mixed_kilograms",
+            "inverse_length_factor",
+            "inverse_liquid_volume_factor",
+            "inverse_mass_factor",
+            "kilograms_to_grams",
+            "litres_to_millilitres",
+            "metres_to_centimetres",
+            "millilitres_to_mixed_litres",
+            "multiply_length",
+            "multiply_liquid_volume",
+            "multiply_mass",
+            "subtract_length_values",
+            "subtract_liquid_volumes",
+            "subtract_mass_values"
+          ],
+          "maxPromptNumber": 6900
+        },
+        "secure": {
+          "archetypes": [
+            "add_length_values",
+            "add_mass_values",
+            "centimetres_to_mixed_metres",
+            "choose_equivalent_length",
+            "choose_equivalent_mass",
+            "choose_equivalent_volume",
+            "divide_length",
+            "divide_liquid_volume",
+            "divide_mass",
+            "find_missing_length",
+            "find_missing_liquid_volume",
+            "find_missing_mass",
+            "grams_to_mixed_kilograms",
+            "inverse_length_factor",
+            "inverse_liquid_volume_factor",
+            "inverse_mass_factor",
+            "kilograms_to_grams",
+            "metres_to_centimetres",
+            "millilitres_to_mixed_litres",
+            "multiply_length",
+            "multiply_liquid_volume",
+            "multiply_mass",
+            "subtract_liquid_volumes"
+          ],
+          "maxPromptNumber": 6900
+        }
+      },
+      "archetypes": [
+        "add_length_values",
+        "add_liquid_volumes",
+        "add_mass_values",
+        "centimetres_to_mixed_metres",
+        "choose_equivalent_length",
+        "choose_equivalent_mass",
+        "choose_equivalent_volume",
+        "divide_length",
+        "divide_liquid_volume",
+        "divide_mass",
+        "find_missing_length",
+        "find_missing_liquid_volume",
+        "find_missing_mass",
+        "grams_to_mixed_kilograms",
+        "inverse_length_factor",
+        "inverse_liquid_volume_factor",
+        "inverse_mass_factor",
+        "kilograms_to_grams",
+        "litres_to_millilitres",
+        "metres_to_centimetres",
+        "millilitres_to_mixed_litres",
+        "multiply_length",
+        "multiply_liquid_volume",
+        "multiply_mass",
+        "subtract_length_values",
+        "subtract_liquid_volumes",
+        "subtract_mass_values"
+      ],
+      "representations": [
+        "bar_model",
+        "container",
+        "grouping_array",
+        "length_equivalence",
+        "mass_equivalence",
+        "mixed_unit_length",
+        "mixed_unit_mass",
+        "mixed_unit_volume",
+        "ruler",
+        "scale",
+        "symbolic",
+        "unit_conversion_symbolic",
+        "volume_equivalence"
+      ],
+      "maxPromptNumber": 6900,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D3.SHAPE",
+      "grade": 3,
+      "domain": "Ruang",
+      "title": "Bentuk & perimeter asas",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "depth_perimeter",
+            "depth_property"
+          ],
+          "maxPromptNumber": 12
+        },
+        "core": {
+          "archetypes": [
+            "depth_missing_side",
+            "depth_perimeter",
+            "depth_property"
+          ],
+          "maxPromptNumber": 40
+        },
+        "secure": {
+          "archetypes": [
+            "depth_missing_side",
+            "depth_perimeter",
+            "depth_property"
+          ],
+          "maxPromptNumber": 40
+        }
+      },
+      "archetypes": [
+        "depth_missing_side",
+        "depth_perimeter",
+        "depth_property"
+      ],
+      "representations": [
+        "symbolic",
+        "visual"
+      ],
+      "maxPromptNumber": 40,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D3.DATA",
+      "grade": 3,
+      "domain": "Data",
+      "title": "Tafsiran carta",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "classify_and_count_items",
+            "compare_chart_representations",
+            "compare_pie_categories",
+            "count_from_tally",
+            "derive_count_from_pie",
+            "identify_largest_pie_category",
+            "interpret_organized_table",
+            "relate_bar_to_pie",
+            "relate_pictograph_to_bar"
+          ],
+          "maxPromptNumber": 9
+        },
+        "core": {
+          "archetypes": [
+            "classify_and_count_items",
+            "compare_chart_representations",
+            "compare_pie_categories",
+            "count_from_tally",
+            "derive_count_from_pie",
+            "identify_largest_pie_category",
+            "interpret_organized_table",
+            "relate_bar_to_pie",
+            "relate_pictograph_to_bar"
+          ],
+          "maxPromptNumber": 10
+        },
+        "secure": {
+          "archetypes": [
+            "classify_and_count_items",
+            "compare_chart_representations",
+            "compare_pie_categories",
+            "count_from_tally",
+            "derive_count_from_pie",
+            "identify_largest_pie_category",
+            "interpret_organized_table",
+            "relate_bar_to_pie",
+            "relate_pictograph_to_bar"
+          ],
+          "maxPromptNumber": 10
+        }
+      },
+      "archetypes": [
+        "classify_and_count_items",
+        "compare_chart_representations",
+        "compare_pie_categories",
+        "count_from_tally",
+        "derive_count_from_pie",
+        "identify_largest_pie_category",
+        "interpret_organized_table",
+        "relate_bar_to_pie",
+        "relate_pictograph_to_bar"
+      ],
+      "representations": [
+        "bar_chart",
+        "multi_chart",
+        "pictograph",
+        "pie_chart_category_compare",
+        "pie_chart_difference",
+        "pie_chart_read_value",
+        "raw_data_classification",
+        "raw_data_tally",
+        "raw_data_to_table"
+      ],
+      "maxPromptNumber": 10,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D4.TIME",
+      "grade": 4,
+      "domain": "Masa",
+      "title": "Tempoh dan jadual",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "time_24h",
+            "time_duration",
+            "time_operation",
+            "time_relationship"
+          ],
+          "maxPromptNumber": 50
+        },
+        "core": {
+          "archetypes": [
+            "time_24h",
+            "time_duration",
+            "time_estimate",
+            "time_operation",
+            "time_relationship"
+          ],
+          "maxPromptNumber": 50
+        },
+        "secure": {
+          "archetypes": [
+            "time_24h",
+            "time_duration",
+            "time_estimate",
+            "time_operation",
+            "time_relationship"
+          ],
+          "maxPromptNumber": 50
+        }
+      },
+      "archetypes": [
+        "time_24h",
+        "time_duration",
+        "time_estimate",
+        "time_operation",
+        "time_relationship"
+      ],
+      "representations": [
+        "story",
+        "symbolic"
+      ],
+      "maxPromptNumber": 50,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D4.MEASURE",
+      "grade": 4,
+      "domain": "Ukuran",
+      "title": "Penukaran unit mudah",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "km_m",
+            "liquid_convert",
+            "mass_convert",
+            "mm_cm"
+          ],
+          "maxPromptNumber": 890
+        },
+        "core": {
+          "archetypes": [
+            "km_m",
+            "length_operation",
+            "liquid_convert",
+            "mass_convert",
+            "mm_cm"
+          ],
+          "maxPromptNumber": 900
+        },
+        "secure": {
+          "archetypes": [
+            "km_m",
+            "length_operation",
+            "liquid_convert",
+            "mass_convert",
+            "mm_cm"
+          ],
+          "maxPromptNumber": 880
+        }
+      },
+      "archetypes": [
+        "km_m",
+        "length_operation",
+        "liquid_convert",
+        "mass_convert",
+        "mm_cm"
+      ],
+      "representations": [
+        "symbolic"
+      ],
+      "maxPromptNumber": 900,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D4.PERIM",
+      "grade": 4,
+      "domain": "Ruang",
+      "title": "Perimeter",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "angle_type",
+            "cuboid_volume",
+            "line_relationship",
+            "polygon_perimeter",
+            "space_story",
+            "triangle_area"
+          ],
+          "maxPromptNumber": 12
+        },
+        "core": {
+          "archetypes": [
+            "cuboid_volume",
+            "polygon_perimeter",
+            "space_story",
+            "triangle_area"
+          ],
+          "maxPromptNumber": 12
+        },
+        "secure": {
+          "archetypes": [
+            "cuboid_volume",
+            "line_relationship",
+            "polygon_perimeter",
+            "space_story",
+            "triangle_area"
+          ],
+          "maxPromptNumber": 12
+        }
+      },
+      "archetypes": [
+        "angle_type",
+        "cuboid_volume",
+        "line_relationship",
+        "polygon_perimeter",
+        "space_story",
+        "triangle_area"
+      ],
+      "representations": [
+        "story",
+        "symbolic",
+        "visual"
+      ],
+      "maxPromptNumber": 12,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D4.DATA",
+      "grade": 4,
+      "domain": "Data",
+      "title": "Carta dan tafsiran",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "construct_bar",
+            "data_difference",
+            "data_total",
+            "read_bar"
+          ],
+          "maxPromptNumber": 26
+        },
+        "core": {
+          "archetypes": [
+            "construct_bar",
+            "data_difference",
+            "data_total"
+          ],
+          "maxPromptNumber": 26
+        },
+        "secure": {
+          "archetypes": [
+            "construct_bar",
+            "data_difference",
+            "data_total",
+            "read_bar"
+          ],
+          "maxPromptNumber": 26
+        }
+      },
+      "archetypes": [
+        "construct_bar",
+        "data_difference",
+        "data_total",
+        "read_bar"
+      ],
+      "representations": [
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 26,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D5.TIME",
+      "grade": 5,
+      "domain": "Masa",
+      "title": "Tempoh masa lanjutan",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "depth_day_hour",
+            "depth_fraction_convert",
+            "depth_leap",
+            "depth_month_day"
+          ],
+          "maxPromptNumber": 2024
+        },
+        "core": {
+          "archetypes": [
+            "depth_day_hour",
+            "depth_elapsed_multi",
+            "depth_fraction_convert",
+            "depth_leap",
+            "depth_month_day"
+          ],
+          "maxPromptNumber": 2024
+        },
+        "secure": {
+          "archetypes": [
+            "depth_day_hour",
+            "depth_elapsed_multi",
+            "depth_fraction_convert",
+            "depth_leap",
+            "depth_month_day"
+          ],
+          "maxPromptNumber": 2024
+        }
+      },
+      "archetypes": [
+        "depth_day_hour",
+        "depth_elapsed_multi",
+        "depth_fraction_convert",
+        "depth_leap",
+        "depth_month_day"
+      ],
+      "representations": [
+        "story",
+        "symbolic",
+        "verbal"
+      ],
+      "maxPromptNumber": 2024,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D5.MEASURE",
+      "grade": 5,
+      "domain": "Ukuran",
+      "title": "Isipadu dan penukaran",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "depth_add_three",
+            "depth_decimal_convert",
+            "depth_divide",
+            "depth_fraction_convert"
+          ],
+          "maxPromptNumber": 62.5
+        },
+        "core": {
+          "archetypes": [
+            "depth_add_three",
+            "depth_decimal_convert",
+            "depth_divide",
+            "depth_fraction_convert",
+            "depth_multiply"
+          ],
+          "maxPromptNumber": 62.5
+        },
+        "secure": {
+          "archetypes": [
+            "depth_add_three",
+            "depth_decimal_convert",
+            "depth_divide",
+            "depth_fraction_convert",
+            "depth_multiply"
+          ],
+          "maxPromptNumber": 62.5
+        }
+      },
+      "archetypes": [
+        "depth_add_three",
+        "depth_decimal_convert",
+        "depth_divide",
+        "depth_fraction_convert",
+        "depth_multiply"
+      ],
+      "representations": [
+        "symbolic"
+      ],
+      "maxPromptNumber": 62.5,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D5.AREA",
+      "grade": 5,
+      "domain": "Ruang",
+      "title": "Luas segi empat",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "depth_compare",
+            "depth_rectangle"
+          ],
+          "maxPromptNumber": 14
+        },
+        "core": {
+          "archetypes": [
+            "depth_compare",
+            "depth_composite",
+            "depth_missing_side",
+            "depth_rectangle"
+          ],
+          "maxPromptNumber": 140
+        },
+        "secure": {
+          "archetypes": [
+            "depth_compare",
+            "depth_composite",
+            "depth_missing_side",
+            "depth_rectangle"
+          ],
+          "maxPromptNumber": 126
+        }
+      },
+      "archetypes": [
+        "depth_compare",
+        "depth_composite",
+        "depth_missing_side",
+        "depth_rectangle"
+      ],
+      "representations": [
+        "symbolic",
+        "table",
+        "visual"
+      ],
+      "maxPromptNumber": 140,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D5.COORD",
+      "grade": 5,
+      "domain": "Ruang",
+      "title": "Koordinat asas",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "depth_distance",
+            "depth_read",
+            "depth_translate"
+          ],
+          "maxPromptNumber": 6
+        },
+        "core": {
+          "archetypes": [
+            "depth_distance",
+            "depth_missing",
+            "depth_read",
+            "depth_translate"
+          ],
+          "maxPromptNumber": 6
+        },
+        "secure": {
+          "archetypes": [
+            "depth_distance",
+            "depth_missing",
+            "depth_read",
+            "depth_translate"
+          ],
+          "maxPromptNumber": 6
+        }
+      },
+      "archetypes": [
+        "depth_distance",
+        "depth_missing",
+        "depth_read",
+        "depth_translate"
+      ],
+      "representations": [
+        "visual"
+      ],
+      "maxPromptNumber": 6,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D5.DATA",
+      "grade": 5,
+      "domain": "Data",
+      "title": "Purata dan tafsiran",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "depth_compare",
+            "depth_interpret",
+            "depth_mean"
+          ],
+          "maxPromptNumber": 40
+        },
+        "core": {
+          "archetypes": [
+            "depth_compare",
+            "depth_interpret",
+            "depth_mean",
+            "depth_missing_mean"
+          ],
+          "maxPromptNumber": 40
+        },
+        "secure": {
+          "archetypes": [
+            "depth_compare",
+            "depth_interpret",
+            "depth_mean",
+            "depth_missing_mean"
+          ],
+          "maxPromptNumber": 40
+        }
+      },
+      "archetypes": [
+        "depth_compare",
+        "depth_interpret",
+        "depth_mean",
+        "depth_missing_mean"
+      ],
+      "representations": [
+        "symbolic",
+        "table",
+        "visual"
+      ],
+      "maxPromptNumber": 40,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.TIME",
+      "grade": 6,
+      "domain": "Masa",
+      "title": "Masa, jadual dan tempoh",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_4_1_1_compare_offsets",
+            "y6v2_4_1_1_identify_ahead",
+            "y6v2_4_1_1_read_offset",
+            "y6v2_4_1_1_same_zone",
+            "y6v2_4_1_2_convert_simple",
+            "y6v2_4_1_2_difference",
+            "y6v2_4_1_2_half_hour",
+            "y6v2_4_1_2_next_day",
+            "y6v2_4_1_2_previous_day",
+            "y6v2_4_2_1_arrival_simple",
+            "y6v2_4_2_1_day_change_problem",
+            "y6v2_4_2_1_flight_half_hour",
+            "y6v2_4_2_1_meeting",
+            "y6v2_4_2_1_schedule_table"
+          ],
+          "maxPromptNumber": 30
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_4_1_1_compare_offsets",
+            "y6v2_4_1_1_identify_ahead",
+            "y6v2_4_1_1_read_offset",
+            "y6v2_4_1_1_same_zone",
+            "y6v2_4_1_2_convert_simple",
+            "y6v2_4_1_2_difference",
+            "y6v2_4_1_2_half_hour",
+            "y6v2_4_1_2_next_day",
+            "y6v2_4_1_2_previous_day",
+            "y6v2_4_2_1_arrival_simple",
+            "y6v2_4_2_1_day_change_problem",
+            "y6v2_4_2_1_flight_half_hour",
+            "y6v2_4_2_1_meeting",
+            "y6v2_4_2_1_schedule_table"
+          ],
+          "maxPromptNumber": 30
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_4_1_1_compare_offsets",
+            "y6v2_4_1_1_offset_difference",
+            "y6v2_4_1_1_timezone_claim",
+            "y6v2_4_1_2_half_hour",
+            "y6v2_4_1_2_next_day",
+            "y6v2_4_1_2_previous_day",
+            "y6v2_4_1_2_reverse_time",
+            "y6v2_4_1_2_time_claim",
+            "y6v2_4_2_1_day_change_problem",
+            "y6v2_4_2_1_departure_reverse",
+            "y6v2_4_2_1_flight_half_hour",
+            "y6v2_4_2_1_reason_claim",
+            "y6v2_4_2_1_schedule_table",
+            "y6v2_4_2_1_two_leg"
+          ],
+          "maxPromptNumber": 45
+        }
+      },
+      "archetypes": [
+        "y6v2_4_1_1_compare_offsets",
+        "y6v2_4_1_1_identify_ahead",
+        "y6v2_4_1_1_offset_difference",
+        "y6v2_4_1_1_read_offset",
+        "y6v2_4_1_1_same_zone",
+        "y6v2_4_1_1_timezone_claim",
+        "y6v2_4_1_2_convert_simple",
+        "y6v2_4_1_2_difference",
+        "y6v2_4_1_2_half_hour",
+        "y6v2_4_1_2_next_day",
+        "y6v2_4_1_2_previous_day",
+        "y6v2_4_1_2_reverse_time",
+        "y6v2_4_1_2_time_claim",
+        "y6v2_4_2_1_arrival_simple",
+        "y6v2_4_2_1_day_change_problem",
+        "y6v2_4_2_1_departure_reverse",
+        "y6v2_4_2_1_flight_half_hour",
+        "y6v2_4_2_1_meeting",
+        "y6v2_4_2_1_reason_claim",
+        "y6v2_4_2_1_schedule_table",
+        "y6v2_4_2_1_two_leg"
+      ],
+      "representations": [
+        "story",
+        "table",
+        "verbal"
+      ],
+      "maxPromptNumber": 45,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.MEASURE",
+      "grade": 6,
+      "domain": "Ukuran",
+      "title": "Ukuran dan penukaran",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_5_1_1_length_liquid_direct",
+            "y6v2_5_1_1_length_mass_direct",
+            "y6v2_5_1_1_length_mass_inverse",
+            "y6v2_5_1_1_mass_liquid_direct",
+            "y6v2_5_1_1_resource_limit",
+            "y6v2_5_1_1_table_compare",
+            "y6v2_5_1_1_unit_rate"
+          ],
+          "maxPromptNumber": 15
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_5_1_1_length_liquid_direct",
+            "y6v2_5_1_1_length_mass_direct",
+            "y6v2_5_1_1_length_mass_inverse",
+            "y6v2_5_1_1_mass_liquid_direct",
+            "y6v2_5_1_1_resource_limit",
+            "y6v2_5_1_1_table_compare",
+            "y6v2_5_1_1_unit_rate"
+          ],
+          "maxPromptNumber": 15
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_5_1_1_length_liquid_inverse",
+            "y6v2_5_1_1_length_mass_inverse",
+            "y6v2_5_1_1_mass_liquid_inverse",
+            "y6v2_5_1_1_measurement_claim",
+            "y6v2_5_1_1_multi_relation",
+            "y6v2_5_1_1_resource_limit",
+            "y6v2_5_1_1_table_compare"
+          ],
+          "maxPromptNumber": 10
+        }
+      },
+      "archetypes": [
+        "y6v2_5_1_1_length_liquid_direct",
+        "y6v2_5_1_1_length_liquid_inverse",
+        "y6v2_5_1_1_length_mass_direct",
+        "y6v2_5_1_1_length_mass_inverse",
+        "y6v2_5_1_1_mass_liquid_direct",
+        "y6v2_5_1_1_mass_liquid_inverse",
+        "y6v2_5_1_1_measurement_claim",
+        "y6v2_5_1_1_multi_relation",
+        "y6v2_5_1_1_resource_limit",
+        "y6v2_5_1_1_table_compare",
+        "y6v2_5_1_1_unit_rate"
+      ],
+      "representations": [
+        "story",
+        "table",
+        "verbal"
+      ],
+      "maxPromptNumber": 15,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.COORD",
+      "grade": 6,
+      "domain": "Koordinat",
+      "title": "Koordinat dan jarak berskala",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_7_1_1_cm_scale",
+            "y6v2_7_1_1_direction",
+            "y6v2_7_1_1_map_destination",
+            "y6v2_7_1_1_map_distances",
+            "y6v2_7_1_1_map_scaled_destination",
+            "y6v2_7_1_1_missing_point",
+            "y6v2_7_1_1_petak_scale",
+            "y6v2_7_1_1_representative_scale",
+            "y6v2_7_1_1_route",
+            "y6v2_7_4_1_map_budget",
+            "y6v2_7_4_1_proportion_problem",
+            "y6v2_7_4_1_ratio_problem",
+            "y6v2_7_4_1_recipe_route",
+            "y6v2_7_4_1_route_problem"
+          ],
+          "maxPromptNumber": 100
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_7_1_1_cm_scale",
+            "y6v2_7_1_1_direction",
+            "y6v2_7_1_1_map_destination",
+            "y6v2_7_1_1_map_distances",
+            "y6v2_7_1_1_map_scaled_destination",
+            "y6v2_7_1_1_missing_point",
+            "y6v2_7_1_1_petak_scale",
+            "y6v2_7_1_1_representative_scale",
+            "y6v2_7_1_1_route",
+            "y6v2_7_4_1_map_budget",
+            "y6v2_7_4_1_proportion_problem",
+            "y6v2_7_4_1_ratio_problem",
+            "y6v2_7_4_1_recipe_route",
+            "y6v2_7_4_1_route_problem"
+          ],
+          "maxPromptNumber": 100
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_7_1_1_cm_scale",
+            "y6v2_7_1_1_coord_error",
+            "y6v2_7_1_1_map_distances",
+            "y6v2_7_1_1_map_scaled_destination",
+            "y6v2_7_1_1_representative_scale",
+            "y6v2_7_1_1_route",
+            "y6v2_7_1_1_route_compare",
+            "y6v2_7_1_1_scale_reverse",
+            "y6v2_7_4_1_claim",
+            "y6v2_7_4_1_compare_plans",
+            "y6v2_7_4_1_map_budget",
+            "y6v2_7_4_1_multi_constraint",
+            "y6v2_7_4_1_recipe_route",
+            "y6v2_7_4_1_reverse_problem"
+          ],
+          "maxPromptNumber": 100
+        }
+      },
+      "archetypes": [
+        "y6v2_7_1_1_cm_scale",
+        "y6v2_7_1_1_coord_error",
+        "y6v2_7_1_1_direction",
+        "y6v2_7_1_1_map_destination",
+        "y6v2_7_1_1_map_distances",
+        "y6v2_7_1_1_map_scaled_destination",
+        "y6v2_7_1_1_missing_point",
+        "y6v2_7_1_1_petak_scale",
+        "y6v2_7_1_1_representative_scale",
+        "y6v2_7_1_1_route",
+        "y6v2_7_1_1_route_compare",
+        "y6v2_7_1_1_scale_reverse",
+        "y6v2_7_4_1_claim",
+        "y6v2_7_4_1_compare_plans",
+        "y6v2_7_4_1_map_budget",
+        "y6v2_7_4_1_multi_constraint",
+        "y6v2_7_4_1_proportion_problem",
+        "y6v2_7_4_1_ratio_problem",
+        "y6v2_7_4_1_recipe_route",
+        "y6v2_7_4_1_reverse_problem",
+        "y6v2_7_4_1_route_problem"
+      ],
+      "representations": [
+        "story",
+        "table",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 100,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D3.POSITION",
+      "grade": 3,
+      "domain": "Kedudukan",
+      "title": "Kedudukan pada grid",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "choose_moves_to_target",
+            "compare_two_object_positions",
+            "describe_cardinal_relative_position",
+            "describe_relative_distance",
+            "identify_object_at_axis_intersection",
+            "identify_object_from_axis_clue",
+            "locate_after_movement_instruction",
+            "match_object_to_position_description",
+            "read_horizontal_vertical_position"
+          ],
+          "maxPromptNumber": 5
+        },
+        "core": {
+          "archetypes": [
+            "choose_moves_to_target",
+            "compare_two_object_positions",
+            "describe_cardinal_relative_position",
+            "describe_relative_distance",
+            "identify_object_at_axis_intersection",
+            "identify_object_from_axis_clue",
+            "locate_after_movement_instruction",
+            "match_object_to_position_description",
+            "read_horizontal_vertical_position"
+          ],
+          "maxPromptNumber": 5
+        },
+        "secure": {
+          "archetypes": [
+            "choose_moves_to_target",
+            "compare_two_object_positions",
+            "describe_cardinal_relative_position",
+            "describe_relative_distance",
+            "identify_object_at_axis_intersection",
+            "identify_object_from_axis_clue",
+            "locate_after_movement_instruction",
+            "match_object_to_position_description",
+            "read_horizontal_vertical_position"
+          ],
+          "maxPromptNumber": 5
+        }
+      },
+      "archetypes": [
+        "choose_moves_to_target",
+        "compare_two_object_positions",
+        "describe_cardinal_relative_position",
+        "describe_relative_distance",
+        "identify_object_at_axis_intersection",
+        "identify_object_from_axis_clue",
+        "locate_after_movement_instruction",
+        "match_object_to_position_description",
+        "read_horizontal_vertical_position"
+      ],
+      "representations": [
+        "axis_clue_grid",
+        "axis_intersection_grid",
+        "coordinate_read_grid",
+        "distance_grid",
+        "movement_grid",
+        "movement_trace_grid",
+        "position_match_grid",
+        "reference_grid",
+        "relative_grid"
+      ],
+      "maxPromptNumber": 5,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D4.COORD",
+      "grade": 4,
+      "domain": "Koordinat",
+      "title": "Koordinat asas",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "move",
+            "read",
+            "reverse"
+          ],
+          "maxPromptNumber": 4
+        },
+        "core": {
+          "archetypes": [
+            "move",
+            "read",
+            "reverse"
+          ],
+          "maxPromptNumber": 4
+        },
+        "secure": {
+          "archetypes": [
+            "move",
+            "read",
+            "reverse"
+          ],
+          "maxPromptNumber": 4
+        }
+      },
+      "archetypes": [
+        "move",
+        "read",
+        "reverse"
+      ],
+      "representations": [
+        "visual"
+      ],
+      "maxPromptNumber": 4,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.ANGLE",
+      "grade": 6,
+      "domain": "Ruang",
+      "title": "Sudut dan poligon sekata",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_6_1_1_classify",
+            "y6v2_6_1_1_polygon_compare",
+            "y6v2_6_1_1_read",
+            "y6v2_6_1_1_straight",
+            "y6v2_6_1_2_combine",
+            "y6v2_6_1_2_target",
+            "y6v2_6_1_2_tool",
+            "y6v2_6_1_2_turn"
+          ],
+          "maxPromptNumber": 180
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_6_1_1_classify",
+            "y6v2_6_1_1_polygon_compare",
+            "y6v2_6_1_1_read",
+            "y6v2_6_1_1_straight",
+            "y6v2_6_1_2_combine",
+            "y6v2_6_1_2_target",
+            "y6v2_6_1_2_tool",
+            "y6v2_6_1_2_turn"
+          ],
+          "maxPromptNumber": 180
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_6_1_1_claim",
+            "y6v2_6_1_1_missing",
+            "y6v2_6_1_1_polygon_compare",
+            "y6v2_6_1_1_scale_error",
+            "y6v2_6_1_2_claim",
+            "y6v2_6_1_2_combine",
+            "y6v2_6_1_2_construct_error",
+            "y6v2_6_1_2_sequence"
+          ],
+          "maxPromptNumber": 180
+        }
+      },
+      "archetypes": [
+        "y6v2_6_1_1_claim",
+        "y6v2_6_1_1_classify",
+        "y6v2_6_1_1_missing",
+        "y6v2_6_1_1_polygon_compare",
+        "y6v2_6_1_1_read",
+        "y6v2_6_1_1_scale_error",
+        "y6v2_6_1_1_straight",
+        "y6v2_6_1_2_claim",
+        "y6v2_6_1_2_combine",
+        "y6v2_6_1_2_construct_error",
+        "y6v2_6_1_2_sequence",
+        "y6v2_6_1_2_target",
+        "y6v2_6_1_2_tool",
+        "y6v2_6_1_2_turn"
+      ],
+      "representations": [
+        "story",
+        "symbolic",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 180,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.CIRCLE",
+      "grade": 6,
+      "domain": "Ruang",
+      "title": "Pusat, jejari dan diameter bulatan",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_6_2_1_compare",
+            "y6v2_6_2_1_diameter",
+            "y6v2_6_2_1_diameter_from_radius",
+            "y6v2_6_2_1_radius",
+            "y6v2_6_2_1_radius_from_diameter",
+            "y6v2_6_2_2_choose_setting",
+            "y6v2_6_2_2_diameter_setting",
+            "y6v2_6_2_2_radius_setting",
+            "y6v2_6_2_2_steps"
+          ],
+          "maxPromptNumber": 16
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_6_2_1_compare",
+            "y6v2_6_2_1_diameter",
+            "y6v2_6_2_1_diameter_from_radius",
+            "y6v2_6_2_1_radius",
+            "y6v2_6_2_1_radius_from_diameter",
+            "y6v2_6_2_2_choose_setting",
+            "y6v2_6_2_2_diameter_setting",
+            "y6v2_6_2_2_radius_setting",
+            "y6v2_6_2_2_steps"
+          ],
+          "maxPromptNumber": 16
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_6_2_1_claim",
+            "y6v2_6_2_1_compare",
+            "y6v2_6_2_1_label_error",
+            "y6v2_6_2_1_two_circle",
+            "y6v2_6_2_2_choose_setting",
+            "y6v2_6_2_2_claim",
+            "y6v2_6_2_2_construction_error",
+            "y6v2_6_2_2_design_compare",
+            "y6v2_6_2_2_steps"
+          ],
+          "maxPromptNumber": 18
+        }
+      },
+      "archetypes": [
+        "y6v2_6_2_1_claim",
+        "y6v2_6_2_1_compare",
+        "y6v2_6_2_1_diameter",
+        "y6v2_6_2_1_diameter_from_radius",
+        "y6v2_6_2_1_label_error",
+        "y6v2_6_2_1_radius",
+        "y6v2_6_2_1_radius_from_diameter",
+        "y6v2_6_2_1_two_circle",
+        "y6v2_6_2_2_choose_setting",
+        "y6v2_6_2_2_claim",
+        "y6v2_6_2_2_construction_error",
+        "y6v2_6_2_2_design_compare",
+        "y6v2_6_2_2_diameter_setting",
+        "y6v2_6_2_2_radius_setting",
+        "y6v2_6_2_2_steps"
+      ],
+      "representations": [
+        "story",
+        "symbolic",
+        "table",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 18,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.SPACE_PROBLEM",
+      "grade": 6,
+      "domain": "Ruang",
+      "title": "Masalah harian melibatkan ruang",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_6_3_1_compass_plan",
+            "y6v2_6_3_1_polygon_sum",
+            "y6v2_6_3_1_radius_path",
+            "y6v2_6_3_1_simple_design",
+            "y6v2_6_3_1_straight_context",
+            "y6v2_6_3_1_tool_choice"
+          ],
+          "maxPromptNumber": 180
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_6_3_1_compass_plan",
+            "y6v2_6_3_1_polygon_sum",
+            "y6v2_6_3_1_radius_path",
+            "y6v2_6_3_1_simple_design",
+            "y6v2_6_3_1_straight_context",
+            "y6v2_6_3_1_tool_choice"
+          ],
+          "maxPromptNumber": 180
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_6_3_1_compare_design",
+            "y6v2_6_3_1_compass_plan",
+            "y6v2_6_3_1_error_analysis",
+            "y6v2_6_3_1_integrated_design",
+            "y6v2_6_3_1_multi_step",
+            "y6v2_6_3_1_polygon_sum",
+            "y6v2_6_3_1_relevant_info"
+          ],
+          "maxPromptNumber": 180
+        }
+      },
+      "archetypes": [
+        "y6v2_6_3_1_compare_design",
+        "y6v2_6_3_1_compass_plan",
+        "y6v2_6_3_1_error_analysis",
+        "y6v2_6_3_1_integrated_design",
+        "y6v2_6_3_1_multi_step",
+        "y6v2_6_3_1_polygon_sum",
+        "y6v2_6_3_1_radius_path",
+        "y6v2_6_3_1_relevant_info",
+        "y6v2_6_3_1_simple_design",
+        "y6v2_6_3_1_straight_context",
+        "y6v2_6_3_1_tool_choice"
+      ],
+      "representations": [
+        "story",
+        "table",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 180,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.PIE",
+      "grade": 6,
+      "domain": "Data",
+      "title": "Carta pai 45°, 90° dan 180°",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_8_1_1_combine",
+            "y6v2_8_1_1_compare",
+            "y6v2_8_1_1_complete_label",
+            "y6v2_8_1_1_infer_total",
+            "y6v2_8_1_1_largest_sector",
+            "y6v2_8_1_1_missing_angle",
+            "y6v2_8_1_1_read_quantity"
+          ],
+          "maxPromptNumber": 180
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_8_1_1_combine",
+            "y6v2_8_1_1_compare",
+            "y6v2_8_1_1_complete_label",
+            "y6v2_8_1_1_infer_total",
+            "y6v2_8_1_1_largest_sector",
+            "y6v2_8_1_1_missing_angle",
+            "y6v2_8_1_1_read_quantity"
+          ],
+          "maxPromptNumber": 180
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_8_1_1_claim",
+            "y6v2_8_1_1_combine",
+            "y6v2_8_1_1_compare",
+            "y6v2_8_1_1_decision",
+            "y6v2_8_1_1_infer_total",
+            "y6v2_8_1_1_reverse_sector",
+            "y6v2_8_1_1_validate_chart"
+          ],
+          "maxPromptNumber": 180
+        }
+      },
+      "archetypes": [
+        "y6v2_8_1_1_claim",
+        "y6v2_8_1_1_combine",
+        "y6v2_8_1_1_compare",
+        "y6v2_8_1_1_complete_label",
+        "y6v2_8_1_1_decision",
+        "y6v2_8_1_1_infer_total",
+        "y6v2_8_1_1_largest_sector",
+        "y6v2_8_1_1_missing_angle",
+        "y6v2_8_1_1_read_quantity",
+        "y6v2_8_1_1_reverse_sector",
+        "y6v2_8_1_1_validate_chart"
+      ],
+      "representations": [
+        "story",
+        "symbolic",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 180,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    },
+    {
+      "id": "D6.DATA_PROBLEM",
+      "grade": 6,
+      "domain": "Data",
+      "title": "Masalah data dan kebolehjadian",
+      "samples": 750,
+      "states": {
+        "beginner": {
+          "archetypes": [
+            "y6v2_8_3_1_combine_data",
+            "y6v2_8_3_1_compare",
+            "y6v2_8_3_1_decision",
+            "y6v2_8_3_1_infer_total",
+            "y6v2_8_3_1_largest_data",
+            "y6v2_8_3_1_simple_chance"
+          ],
+          "maxPromptNumber": 180
+        },
+        "core": {
+          "archetypes": [
+            "y6v2_8_3_1_combine_data",
+            "y6v2_8_3_1_compare",
+            "y6v2_8_3_1_decision",
+            "y6v2_8_3_1_infer_total",
+            "y6v2_8_3_1_largest_data",
+            "y6v2_8_3_1_simple_chance"
+          ],
+          "maxPromptNumber": 180
+        },
+        "secure": {
+          "archetypes": [
+            "y6v2_8_3_1_chance_from_data",
+            "y6v2_8_3_1_claim",
+            "y6v2_8_3_1_compare",
+            "y6v2_8_3_1_decision",
+            "y6v2_8_3_1_infer_total",
+            "y6v2_8_3_1_multi_step",
+            "y6v2_8_3_1_threshold"
+          ],
+          "maxPromptNumber": 180
+        }
+      },
+      "archetypes": [
+        "y6v2_8_3_1_chance_from_data",
+        "y6v2_8_3_1_claim",
+        "y6v2_8_3_1_combine_data",
+        "y6v2_8_3_1_compare",
+        "y6v2_8_3_1_decision",
+        "y6v2_8_3_1_infer_total",
+        "y6v2_8_3_1_largest_data",
+        "y6v2_8_3_1_multi_step",
+        "y6v2_8_3_1_simple_chance",
+        "y6v2_8_3_1_threshold"
+      ],
+      "representations": [
+        "story",
+        "verbal",
+        "visual"
+      ],
+      "maxPromptNumber": 180,
+      "invalidClocks": [],
+      "malformed": [],
+      "fallbacks": 0
+    }
+  ]
+}

@@ -16,6 +16,11 @@ for(const mode of modes)for(const difficultyBand of [1,2,3])for(let i=0;i<100;i+
   const v=q.value.visual||{},html=render(q.value,{});if(mode!=='money_mixed_error')assert(html.length>20,mode+' visual');
   if(mode==='money_add')assert(!html.includes('Jumlah harga'),'addition answer is not exposed in price visual');
   if(mode==='money_mixed_change')assert(!html.includes('Jumlah harga')&&!html.includes(moneyLabel(q.meta.semanticProperties.costCents)),'change answer is not exposed in purchase visual');
+  if(mode==='money_compare'){
+    assert.equal((html.match(/<table/g)||[]).length,2,'comparison visual uses one table per receipt');
+    assert.equal((html.match(/white-space:nowrap/g)||[]).length,12,'receipt labels and values must not split');
+    assert(html.includes('Item 1')&&html.includes('Item 2')&&html.includes('Item 3'),'receipt rows have clear labels');
+  }
   if(mode==='money_multiply')assert.equal(v.amounts.length,v.quantity,'multiplication units match');
   if(mode==='money_subtract'||mode==='money_mixed_budget'){assert(!/[+−]/.test(html),mode+' visual exposes operation signs');ledgerValues++;}
   if(mode==='money_add'||mode==='money_compare'||mode==='money_mixed_change'||mode==='money_multiply'){
