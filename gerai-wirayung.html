@@ -468,11 +468,11 @@ const name=id=>P(id).name;
 const MODES={
  bahagi:{
   make(t){
-   const [people,total,kind]=pick(t.cases),petWord=kind==='kongsi'?'kawan':'sampul';
+   const [people,total,kind]=pick(t.cases),petWord=kind==='kongsi'?'kawan':'sampul',item=kind==='kongsi'?pick(products):null;
    const say=kind==='kongsi'
-    ?'Kami '+people+' orang kongsi bil '+money(total)+'. Bahagi sama rata, ya!'
+    ?'Kami '+people+' orang beli '+item.name+'. Bil '+money(total)+'. Boleh bahagi sama rata?'
     :'Aku nak tukar '+money(total)+' jadi duit kecil untuk '+people+' sampul sama nilai!';
-   return {items:[],qty:1,people,total,kind,petWord,say};
+   return {items:item?[item.id]:[],qty:1,people,total,kind,petWord,say};
   },
   target:o=>o.total/o.people,
   ask:o=>o.kind==='kongsi'?'Berapa seorang perlu bayar?':'Berapa nilai dalam setiap sampul?',
@@ -595,7 +595,7 @@ function wira(text,ms=3600){$('wsayTxt').textContent=text;show($('wsay'),true);$
 function petFace(state){$('petImg').src=asset(m.pet+'-'+state+'.webp')}
 function sad(){const c=$('customer');petFace('sad');c.classList.remove('sadshake');void c.offsetWidth;c.classList.add('sadshake');sfx.bad();setTimeout(()=>{if(step<3)petFace('idle')},1300)}
 function setTill(v){till=v;$('tillAmt').textContent=money(v);const t=$('till');t.classList.remove('bump');void t.offsetWidth;t.classList.add('bump')}
-function chips(){[1,2,3].forEach(i=>{$('c'+i).className=i<step?'done':i===step?'now':''});$('stepLbl').textContent=['AMBIL','KIRA','SERAH'][step-1]}
+function chips(){[1,2,3].forEach(i=>{$('c'+i).className=i<step?'done':i===step?'now':''});$('stepLbl').textContent=m?.mode==='bahagi'?(step===3?'SIAP':'AGIH'):['AMBIL','KIRA','SERAH'][step-1]}
 function banner(){const md=M();
  $('mode').textContent=MODE_LABEL[m.mode]+' · T'+(m.tierIx+1);
  if(step===1){$('bTitle').textContent=m.mode==='untung'?'Ambil stok untuk diborong':'Ambil pesanan';$('bText').textContent='Lihat pesanan, sentuh barang yang betul.';$('go').textContent='Siap ambil'}
@@ -629,7 +629,7 @@ function drawSign(){const need=!!(M().needSign&&M().needSign(m));$('signRow').hi
 function drawReceipt(){$('receipt').innerHTML=M().receipt(m);
  $('countHint').textContent={bayar:'Kira sendiri, tiada kalkulator',baki:'Baki = dibayar − jumlah',bahagi:'Setiap bahagian mesti sama nilai',diskaun:'Akhir = asal − diskaun',untung:'Untung/rugi = beza jualan & kos'}[m.mode];document.querySelector('.mat-total>span').firstChild.textContent=m.mode==='bahagi'?'Jumlah diagih ':'Atas kaunter '}
 function drawOrder(){$('who').textContent=m.who;$('say').textContent=m.say;
- if(m.mode==='bahagi'){$('order').innerHTML='<span class="paid-note"><img src="'+asset('wang-'+(m.total>=500?'rm5':'rm1')+'.webp')+'" alt="Wang"></span>';return}
+ if(m.mode==='bahagi'){$('order').innerHTML=m.items.map(id=>'<span>'+ART[id]+'</span>').join('')+'<span class="coupon">'+money(m.total)+'</span>';return}
  let h=m.items.map(id=>'<span>'+ART[id]+(m.qty>1?'<b class="qtyb">×'+m.qty+'</b>':'')+'</span>').join('');
  if(m.coupon)h+='<span class="coupon">'+m.coupon+'</span>';
  if(m.paid)h+=`<span class="paid-note"><img src="${asset('wang-'+(m.paid===1000?'rm10':'rm5')+'.webp')}" alt="${money(m.paid)}"></span>`;
@@ -645,7 +645,7 @@ function startRound(){roundStartedAt=Date.now();m=makeOrder();const t=times[Math
  const c=$('customer');c.className='customer away';petFace('idle');$('petImg').alt=m.who;
  requestAnimationFrame(()=>requestAnimationFrame(()=>{c.className='customer'}));
  setTimeout(()=>{drawOrder();show($('bubble'),true);sfx.pop()},750);
- drawShelf();drawBasket();chips();banner();if(m.mode==='bahagi'){drawReceipt();drawSign();drawPurse();drawMat()}}
+ if(m.mode!=='bahagi')drawShelf();drawBasket();chips();banner();if(m.mode==='bahagi'){drawReceipt();drawSign();drawPurse();drawMat()}}
 
 function togglePick(id,btn){if(busy||step!==1)return;
  if(picked.includes(id)){picked=picked.filter(x=>x!==id);sfx.pop();drawShelf();drawBasket();return}
