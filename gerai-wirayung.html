@@ -248,6 +248,16 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
  .actions{padding-left:25px;padding-right:25px}
 }
 @media (max-height:560px) and (min-width:720px){.pa-game{height:98dvh}.scene{min-height:125px}.hud{padding-block:4px}.panel{padding-block:5px}}
+.mat.split-layout{padding:5px;min-height:74px;display:block;background:linear-gradient(140deg,#477d58,#265738)}
+.mat.split-layout .mat-empty{display:none}
+.share-trays{display:grid;grid-template-columns:repeat(var(--slices),minmax(0,1fr));gap:4px;width:100%}
+.share-slot{min-width:0;min-height:61px;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;gap:2px;padding:4px 2px;background:#fff2d5;border:2px solid #a4763d;border-radius:9px;cursor:pointer;color:#4a2a16;font:800 10px/1.05 var(--f-body);touch-action:manipulation}
+.share-slot.selected{background:#fff9e9;border-color:#facc55;box-shadow:inset 0 0 0 2px #4d7bb9,0 0 0 2px #244b83}
+.share-slot b{font:900 13px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.share-slot .smallcoins{display:flex;gap:0;justify-content:center;max-width:100%;height:16px;align-items:center;overflow:hidden}
+.share-slot .smallcoins img{width:16px;height:14px;object-fit:contain;margin:0 -2px}
+.share-slot:focus-visible{outline:3px solid #fff;outline-offset:2px}
+@media(max-height:670px){.mat.split-layout{min-height:56px}.share-slot{min-height:48px;font-size:9px}.share-slot b{font-size:11px}.share-slot .smallcoins{height:12px}.share-slot .smallcoins img{height:12px}}
 </style></head><body>
 
 <main class="pa-game" id="game" aria-label="Gerai Wirayung">
@@ -325,10 +335,9 @@ const FAMILIES=[
  {mode:'untung', re:/profit|loss|cost_from_selling|selling_price|all_stock/},
  {mode:'baki',   re:/cash_balance|balance|change|budget|multi_step/}
 ];
-/* Skill wang D1–D4 dipetakan terus ke mod. Skill yang tiada dalam jadual
-   (D2.4.5 bahagi, D2.4.6 simpanan) tidak dihantar ke gerai. */
+/* Skill wang D1–D4 dipetakan ke mod mini-game yang benar-benar menguji skill itu. D2.4.6 kekal dalam battle. */
 const DIRECT={
- 'D1.MONEY':['bayar'],'D2.4.1':['bayar'],'D2.4.2':['bayar'],'D2.4.3':['baki'],'D2.4.4':['bayar'],
+ 'D1.MONEY':['bayar'],'D2.4.1':['bayar'],'D2.4.2':['bayar'],'D2.4.3':['baki'],'D2.4.4':['bayar'],'D2.4.5':['bahagi'],
  'D2.4.7':['bayar','baki'],'D3.MONEY':['bayar','baki'],'D4.MONEY':['bayar','baki']
 };
 const DEFAULT={5:['diskaun','baki'],6:['diskaun','untung']};
@@ -412,11 +421,12 @@ const rmShort=v=>money(v).replace('.00','');
    Hash: #d<darjah>[-mod-mod]  cth #d6-diskaun-untung, #d2-baki.
    (#bayar / #baki lama = Darjah 3.)  Setiap mod ada 2–3 tahap mengikut
    darjah. 2 pesanan bersih berturut-turut → naik; 2+ bantuan/cubaan → turun. */
-const MODE_LABEL={bayar:'BAYAR TEPAT',baki:'PULANGKAN BAKI',diskaun:'JUALAN MURAH',untung:'UNTUNG RUGI'};
+const MODE_LABEL={bayar:'BAYAR TEPAT',baki:'PULANGKAN BAKI',bahagi:'BAHAGI WANG',diskaun:'JUALAN MURAH',untung:'UNTUNG RUGI'};
 const GRADES={
  1:{title:'Wang asas',modes:['bayar'],
     bayar:[{n:1,min:10,max:100},{n:1,min:50,max:300}]},
- 2:{title:'Tambah & tolak wang',modes:['bayar','baki'],
+ 2:{title:'Tambah, tolak & bahagi wang',modes:['bayar','baki'],
+    bahagi:[{cases:[[2,200,'kongsi'],[2,400,'tukar'],[3,300,'kongsi']]},{cases:[[3,600,'kongsi'],[4,400,'tukar'],[3,450,'kongsi']]},{cases:[[3,750,'kongsi'],[4,600,'tukar'],[4,800,'kongsi'],[3,360,'tukar']]}],
     bayar:[{n:1,min:50,max:300},{n:2,min:50,max:300}],
     baki:[{n:1,paid:500,min:100,max:400,whole:true},{n:1,paid:500,min:50,max:490}]},
  3:{title:'Operasi wang',modes:['bayar','baki'],
@@ -447,7 +457,7 @@ let cfg=parseHash();
 const CHECK_EVERY=8;
 let roundStartedAt=Date.now();
 let lastItems=[],tier={},clean={},served=0,streak=0,lastPet=[],m=null,sign=null;
-let step=1,picked=[],mat=[],misses=0,hints=0,hint2=0,till=0,log=[],audioOn=false,ac,busy=false;
+let step=1,picked=[],mat=[],splitPiles=[],activeSplit=0,misses=0,hints=0,hint2=0,till=0,log=[],audioOn=false,ac,busy=false;
 function resetProgress(){tier={};clean={};cfg.modes.forEach(k=>{tier[k]=0;clean[k]=0});served=0;streak=0;log=[];setTill(0)}
 
 function choosePet(){const p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];return p}
@@ -456,6 +466,26 @@ const name=id=>P(id).name;
 
 /* ---------- penjana pesanan ikut mod ---------- */
 const MODES={
+ bahagi:{
+  make(t){
+   const [people,total,kind]=pick(t.cases),petWord=kind==='kongsi'?'kawan':'sampul';
+   const say=kind==='kongsi'
+    ?'Kami '+people+' orang kongsi bil '+money(total)+'. Bahagi sama rata, ya!'
+    :'Aku nak tukar '+money(total)+' jadi duit kecil untuk '+people+' sampul sama nilai!';
+   return {items:[],qty:1,people,total,kind,petWord,say};
+  },
+  target:o=>o.total/o.people,
+  ask:o=>o.kind==='kongsi'?'Berapa seorang perlu bayar?':'Berapa nilai dalam setiap sampul?',
+  title:o=>o.kind==='kongsi'?'Bahagi bil '+money(o.total):'Tukar '+money(o.total)+' sama rata',
+  text:o=>'Pilih penerima, kemudian agihkan duit sama banyak kepada setiap '+o.petWord+'.',
+  goLbl:'Semak pembahagian',
+  receipt(o){return '<div class="items one"><div class="row"><span>'+(o.kind==='kongsi'?'Jumlah bil':'Jumlah wang')+'</span><span>'+money(o.total)+'</span></div></div>'
+    +sumline([['Bahagi kepada',o.people+' '+o.petWord],['Setiap '+(o.kind==='kongsi'?'orang':'sampul'),'?']]);},
+  strategy(o){return 'Jumlah '+money(o.total)+' dibahagikan kepada '+o.people+'. Cuba beri amaun yang sama kepada setiap '+o.petWord+'.'},
+  answer(o){return money(o.total)+' ÷ '+o.people+' = '+money(this.target(o))+' setiap '+o.petWord+'.'},
+  stamp:(o,v)=>money(v)+' seorang',
+  revenue:o=>o.kind==='kongsi'?o.total:0
+ },
  bayar:{
   make(t){const items=chooseItems(t.n),qty=t.qty?rnd(t.qty[0],t.qty[1]):1;
    products.forEach(p=>p.price=price10(t.min,t.max));
@@ -575,31 +605,47 @@ function banner(){const md=M();
 function drawShelf(){const sh=$('shelf');sh.innerHTML='';products.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='item'+(picked.includes(p.id)?' picked':'');b.dataset.id=p.id;b.setAttribute('aria-pressed',picked.includes(p.id));b.setAttribute('aria-label',p.name+' '+money(p.price));
  b.innerHTML='<span class="art">'+ART[p.id]+'</span><span class="tagp">'+money(p.price)+'</span><span class="nm">'+p.name+'</span>';b.onclick=()=>togglePick(p.id,b);sh.appendChild(b)})}
 function drawBasket(){$('basketIn').innerHTML=picked.map(id=>ART[id]).join('')+(picked.length&&m.qty>1?'<b class="qtyb">×'+m.qty+'</b>':'')}
-function drawPurse(){const pu=$('purse');pu.innerHTML='';denoms.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='money';b.setAttribute('aria-label','Letak '+d.l);b.innerHTML=cash(d)+'<small>'+d.l+'</small>';b.onclick=()=>{if(busy)return;mat.push(d.v);sfx.coin();drawMat()};pu.appendChild(b)})}
-function drawMat(){const el=$('mat');el.querySelectorAll('.tok').forEach(t=>t.remove());$('matEmpty').hidden=mat.length>0;
+function drawPurse(){const pu=$('purse');pu.innerHTML='';denoms.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='money';b.setAttribute('aria-label','Letak '+d.l);b.innerHTML=cash(d)+'<small>'+d.l+'</small>';b.onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSplit].push(d.v);else mat.push(d.v);sfx.coin();drawMat()};pu.appendChild(b)})}
+function drawSharePiles(){
+ const el=$('mat');el.classList.add('split-layout');
+ el.querySelectorAll('.tok,.share-trays').forEach(t=>t.remove());
+ $('matEmpty').hidden=true;
+ const tray=document.createElement('div');tray.className='share-trays';tray.style.setProperty('--slices',m.people);
+ for(let i=0;i<m.people;i++){
+  const selected=i===activeSplit,amount=splitPiles[i].reduce((a,b)=>a+b,0),button=document.createElement('button');
+  button.type='button';button.className='share-slot'+(selected?' selected':'');
+  button.setAttribute('aria-pressed',String(selected));button.setAttribute('aria-label',(m.kind==='kongsi'?'Pet ':'Sampul ')+(i+1)+' '+money(amount));
+  button.innerHTML='<span>'+(m.kind==='kongsi'?'Pet ':'Sampul ')+(i+1)+'</span><b>'+money(amount)+'</b><span class="smallcoins">'+splitPiles[i].slice(-5).map(v=>cash(denoms.find(d=>d.v===v))).join('')+'</span>';
+  button.onclick=()=>{activeSplit=i;sfx.pick();drawMat()};tray.appendChild(button)
+ }
+ el.appendChild(tray);
+ $('matSum').textContent=money(splitPiles.flat().reduce((a,b)=>a+b,0))
+}
+function drawMat(){if(m.mode==='bahagi'){drawSharePiles();return}const el=$('mat');el.classList.remove('split-layout');el.querySelectorAll('.share-trays,.tok').forEach(t=>t.remove());$('matEmpty').hidden=mat.length>0;
  [...mat].map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v).forEach(({v,i})=>{const d=denoms.find(x=>x.v===v),b=document.createElement('button');b.type='button';b.className='tok';b.title='Sentuh untuk ambil semula';b.setAttribute('aria-label','Ambil semula '+d.l);b.innerHTML=cash(d);b.onclick=()=>{mat.splice(i,1);sfx.pop();drawMat()};el.appendChild(b)});
  $('matSum').textContent=money(mat.reduce((a,b)=>a+b,0))}
 function drawSign(){const need=!!(M().needSign&&M().needSign(m));$('signRow').hidden=!need;$('countHint').hidden=need;
  document.querySelectorAll('#signRow button').forEach(b=>{b.classList.toggle('on',b.dataset.sign===sign);b.setAttribute('aria-pressed',b.dataset.sign===sign)})}
 function drawReceipt(){$('receipt').innerHTML=M().receipt(m);
- $('countHint').textContent={bayar:'Kira sendiri, tiada kalkulator',baki:'Baki = dibayar − jumlah',diskaun:'Akhir = asal − diskaun',untung:'Untung/rugi = beza jualan & kos'}[m.mode]}
+ $('countHint').textContent={bayar:'Kira sendiri, tiada kalkulator',baki:'Baki = dibayar − jumlah',bahagi:'Setiap bahagian mesti sama nilai',diskaun:'Akhir = asal − diskaun',untung:'Untung/rugi = beza jualan & kos'}[m.mode];document.querySelector('.mat-total>span').firstChild.textContent=m.mode==='bahagi'?'Jumlah diagih ':'Atas kaunter '}
 function drawOrder(){$('who').textContent=m.who;$('say').textContent=m.say;
+ if(m.mode==='bahagi'){$('order').innerHTML='<span class="paid-note"><img src="'+asset('wang-'+(m.total>=500?'rm5':'rm1')+'.webp')+'" alt="Wang"></span>';return}
  let h=m.items.map(id=>'<span>'+ART[id]+(m.qty>1?'<b class="qtyb">×'+m.qty+'</b>':'')+'</span>').join('');
  if(m.coupon)h+='<span class="coupon">'+m.coupon+'</span>';
  if(m.paid)h+=`<span class="paid-note"><img src="${asset('wang-'+(m.paid===1000?'rm10':'rm5')+'.webp')}" alt="${money(m.paid)}"></span>`;
  $('order').innerHTML=h}
 
 /* ---------- flow ---------- */
-function startRound(){roundStartedAt=Date.now();m=makeOrder();const t=times[Math.floor(served/2)%4];step=1;picked=[];mat=[];sign=null;misses=0;hints=0;hint2=0;busy=false;
+function startRound(){roundStartedAt=Date.now();m=makeOrder();const t=times[Math.floor(served/2)%4];step=m.mode==='bahagi'?2:1;picked=[];mat=[];splitPiles=m.mode==='bahagi'?Array.from({length:m.people},()=>[]):[];activeSplit=0;sign=null;misses=0;hints=0;hint2=0;busy=false;
  $('dial').style.setProperty('--p',t.p);$('dayLbl').textContent='Ke-'+(served+1);$('timeLbl').textContent=t.t;$('dial').title=t.t;$('tint').style.background=t.tint;
  $('devBtn').textContent='D'+cfg.grade+' ▾';
- $('stationShelf').hidden=false;$('stationCount').hidden=true;$('go').disabled=false;
+ $('stationShelf').hidden=m.mode==='bahagi';$('stationCount').hidden=m.mode!=='bahagi';$('go').disabled=false;
  $('wiraImg').src=asset('wira-idle.webp');$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
  show($('bubble'),false);show($('wsay'),false);$('bubble').classList.remove('dim');
  const c=$('customer');c.className='customer away';petFace('idle');$('petImg').alt=m.who;
  requestAnimationFrame(()=>requestAnimationFrame(()=>{c.className='customer'}));
  setTimeout(()=>{drawOrder();show($('bubble'),true);sfx.pop()},750);
- drawShelf();drawBasket();chips();banner()}
+ drawShelf();drawBasket();chips();banner();if(m.mode==='bahagi'){drawReceipt();drawSign();drawPurse();drawMat()}}
 
 function togglePick(id,btn){if(busy||step!==1)return;
  if(picked.includes(id)){picked=picked.filter(x=>x!==id);sfx.pop();drawShelf();drawBasket();return}
@@ -617,7 +663,16 @@ function go(){if(busy)return;const md=M();
   if(!ok){misses++;sad();$('say').textContent=picked.length<m.items.length?'Eh, ada yang belum masuk beg…':'Hmm, itu bukan pesanan aku.';return}
   step=2;chips();banner();$('say').textContent=val(md.ask,m);
   $('stationShelf').hidden=true;$('stationCount').hidden=false;drawReceipt();drawSign();drawPurse();drawMat();return}
- if(step===2){const tg=target(),cur=mat.reduce((a,b)=>a+b,0);
+ if(step===2){
+  if(m.mode==='bahagi'){
+   const per=target(),amounts=splitPiles.map(p=>p.reduce((a,b)=>a+b,0)),total=amounts.reduce((a,b)=>a+b,0);
+   if(amounts.every(n=>n===per)&&total===m.total){finish(per);return}
+   misses++;sad();
+   $('say').textContent=amounts.some(n=>n===0)?'Ada '+m.petWord+' yang masih kosong!':'Bahagian belum sama banyak, cuba semula!';
+   wira('Pastikan semua '+m.petWord+' mendapat jumlah yang sama. Jumlah keseluruhan mesti '+money(m.total)+'.',3800);
+   return
+  }
+  const tg=target(),cur=mat.reduce((a,b)=>a+b,0);
   if(md.needSign&&md.needSign(m)){
    if(!sign){wira('Pilih dulu: untung atau rugi?',2600);sfx.bad();return}
    if(sign!==m.kind){misses++;sad();$('say').textContent='Betul ke? Banding jualan dengan kos semula.';return}}
@@ -628,8 +683,8 @@ function finish(tg){busy=true;step=3;chips();$('go').disabled=true;show($('wsay'
  const md=M(),stars=hints===0&&misses===0?3:(hints+misses<=2?2:1),rev=md.revenue(m);
  log.push({m,stars,target:tg,first:misses===0});
  try{
-  const key=[m.mode,m.qty,m.items.map(id=>id+':'+P(id).price).join(','),m.paid||0,m.pct||0,m.cost||0].join('|');
-  window.parent.postMessage({type:'PA_WIRAYUNG_ROUND',version:1,nonce:new URLSearchParams(location.search).get('pa_nonce'),grade:cfg.grade,mode:m.mode,questionKey:key,stars,misses,hints,elapsedMs:Date.now()-roundStartedAt,at:Date.now()},location.origin);
+  const key=[m.mode,m.kind||'',m.people||0,m.total||0,m.qty,m.items.map(id=>id+':'+P(id).price).join(','),m.paid||0,m.pct||0,m.cost||0].join('|');
+  window.parent.postMessage({type:'PA_WIRAYUNG_ROUND',version:1,nonce:new URLSearchParams(location.search).get('pa_nonce'),grade:cfg.grade,mode:m.mode,variant:m.kind||null,questionKey:key,stars,misses,hints,elapsedMs:Date.now()-roundStartedAt,at:Date.now()},location.origin);
  }catch(e){console.warn('Wirayung event unavailable',e)}
  served++;
  streak=stars===3?streak+1:0;adapt(stars);
@@ -660,7 +715,7 @@ function ledger(){const st=log.reduce((a,l)=>a+l.stars,0),firsts=log.filter(l=>l
 let devGrade=cfg.grade,devModes=[...cfg.modes];
 function drawDev(){
  $('devGrades').innerHTML=[1,2,3,4,5,6].map(g=>'<button type="button" data-g="'+g+'" class="'+(g===devGrade?'on':'')+'">D'+g+'</button>').join('');
- const G=GRADES[devGrade],avail=['bayar','baki','diskaun','untung'].filter(k=>G[k]);
+ const G=GRADES[devGrade],avail=['bayar','baki','bahagi','diskaun','untung'].filter(k=>G[k]);
  $('devTitle').textContent='Darjah '+devGrade+' · '+G.title;
  $('devModes').innerHTML=avail.map(k=>'<button type="button" data-k="'+k+'" class="'+(devModes.includes(k)?'on':'')+'">'+MODE_LABEL[k].toLowerCase()+'</button>').join('');
  $('devGrades').querySelectorAll('button').forEach(b=>b.onclick=()=>{devGrade=+b.dataset.g;devModes=[...GRADES[devGrade].modes];drawDev()});
@@ -682,7 +737,7 @@ function runSim(key){const s=SIMS[key],R=window.PAGeraiWirayung;if(!R){$('simOut
 
 /* ---------- wiring ---------- */
 $('go').onclick=go;
-$('clear').onclick=()=>{if(busy)return;mat=[];sfx.pop();drawMat()};
+$('clear').onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSplit]=[];else mat=[];sfx.pop();drawMat()};
 document.querySelectorAll('#signRow button').forEach(b=>b.onclick=()=>{if(busy)return;sign=b.dataset.sign;sfx.pop();drawSign()});
 $('hint').onclick=()=>{if(busy)return;hints++;
  if(step===1){wira('Cari '+m.items.map(name).join(' dan ')+'. Barang itu sedang bercahaya.',4200);document.querySelectorAll('.item').forEach(b=>b.classList.toggle('glow',m.items.includes(b.dataset.id)));setTimeout(()=>document.querySelectorAll('.item').forEach(b=>b.classList.remove('glow')),2600)}
