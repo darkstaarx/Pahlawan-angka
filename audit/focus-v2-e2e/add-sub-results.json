@@ -1,0 +1,28 @@
+{
+  "status": "focus_v2_add_sub_shadow_pass",
+  "actualGeneratorSources": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "kssr-content final wrapper"
+  ],
+  "scenarios": {
+    "largeDigitsAcrossBothOperations": "number.place_value",
+    "additionRegroup": "add.regroup",
+    "subtractionBorrow": "sub.regroup",
+    "additionFacts": "add.facts",
+    "subtractionFacts": "sub.facts",
+    "singleFailureAbstains": "insufficient_evidence"
+  },
+  "exactFactsToRetest": {
+    "addition": [
+      "add:1+8"
+    ],
+    "subtraction": [
+      "sub:3-2",
+      "sub:6-4"
+    ]
+  },
+  "profileRewardsOrMasteryChanged": false
+}

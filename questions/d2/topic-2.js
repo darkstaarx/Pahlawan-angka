@@ -3,11 +3,11 @@ window.PAQuestionBanks = window.PAQuestionBanks || {};
 window.PAQuestionBanks.d2t2 = function(id,s,shift){
  if(id==="D2.2.1"){
    const three=Math.random()<.42;let a=R(100,650),b=R(20,250),c=three?R(10,100):0;while(a+b+c>1000){a=R(100,550);b=R(20,220);c=three?R(10,90):0}const ans=a+b+c;
-   return Q(`${a} + ${b}${three?` + ${c}`:''} = ?`,ans,addDistractors(a,b+c,ans),"Tambah mengikut nilai tempat. Jika 10 sa, tukar kepada 1 puluh.",three?"D2 Application · Tambah 3 Nombor":"D2 Core · Tambah",true,shift);
+   return attachFoundationQuestionTags(Q(`${a} + ${b}${three?` + ${c}`:''} = ?`,ans,addDistractors(a,b+c,ans),"Tambah mengikut nilai tempat. Jika 10 sa, tukar kepada 1 puluh.",three?"D2 Application · Tambah 3 Nombor":"D2 Core · Tambah",true,shift),addSubFocusMeta(id,'addition',three?[a,b,c]:[a,b],ans));
  }
  if(id==="D2.2.2"){
    const three=Math.random()<.42;let a=R(300,999),b=R(20,Math.min(400,a-20)),c=three?R(10,Math.min(200,a-b)):0;if(a-b-c<0)return window.PAQuestionBanks.d2t2(id,s,shift);const ans=a-b-c;
-   return Q(`${a} − ${b}${three?` − ${c}`:''} = ?`,ans,[N(ans+10,'same_end'),N(a+b+c,'operation'),N(Math.max(0,a-b+c),'operation')],"Tolak satu nilai pada satu masa dan semak nilai tempat.",three?"D2 Application · Tolak 2 Nilai":"D2 Core · Tolak",true,shift);
+   return attachFoundationQuestionTags(Q(`${a} − ${b}${three?` − ${c}`:''} = ?`,ans,[N(ans+10,'same_end'),N(a+b+c,'operation'),N(Math.max(0,a-b+c),'operation')],"Tolak satu nilai pada satu masa dan semak nilai tempat.",three?"D2 Application · Tolak 2 Nilai":"D2 Core · Tolak",true,shift),addSubFocusMeta(id,'subtraction',three?[a,b,c]:[a,b],ans));
  }
  if(id==="D2.2.3"){
    const timesTen=Math.random()<.28;

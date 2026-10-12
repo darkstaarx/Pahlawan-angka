@@ -66,6 +66,7 @@
    items.push({probe:safe(t.evidence?.variantFingerprint||key),questionKey:key,family:fam,result:e.outcome,
     originSkillId:skill,tagRevision:safe(t.evidence?.tagRevision||t.tagRevision),
     purpose:safe(t.probes?.diagnosticPurpose||'normal'),archetype:safe(t.evidence?.questionFamilyKey),
+    contextDomain:safe(t.contextDomain),features:t.arithmeticProfile?.operandDimensions||null,
     mode:safe(e.mode)});
   }
   return {originSkillId:origin,observations:items,tagged:items.length,unmatched:unmatched.length,
@@ -77,7 +78,8 @@
   const family=safe(raw?.family||'unknown');
   const probe=safe(raw?.probe||raw?.questionKey||raw?.variantFingerprint);
   if(!probe||!RECOGNIZED.has(family))return null;
-  return {probe,family,result,purpose:safe(raw?.purpose||'normal'),originSkillId:safe(raw?.originSkillId)};
+  return {probe,family,result,purpose:safe(raw?.purpose||'normal'),originSkillId:safe(raw?.originSkillId),
+   contextDomain:safe(raw?.contextDomain),features:raw?.features&&typeof raw.features==='object'?raw.features:null};
  }
  function evaluate(input={}){
   const originSkillId=safe(input.originSkillId);
@@ -100,10 +102,31 @@
   const group=(f)=>rows.filter(x=>f.includes(x.family));
   const failed=(f)=>count(group(f),'nonindependent');
   const clean=(f)=>count(group(f),'independent');
+  const numeric=(f,predicate,result)=>group([f]).filter(x=>(!x.contextDomain||x.contextDomain==='number')&&
+   (!x.purpose||['normal','prerequisite_probe','contrast_plain','transfer_verify'].includes(x.purpose))&&predicate(x.features||{})&&
+   (result==='failed'?NONINDEPENDENT.has(x.result):x.result==='independent')).length;
   const ambiguous=()=>({state:'insufficient_evidence',rootCause:null,nextProbe:baseProbe(originSkillId),
    confidence:'none',reasonCode:'NOT_ENOUGH_DIVERSE_EVIDENCE'});
   const answer=(state,rootCause,nextProbe,reasonCode,confidence='low')=>
    ({state,rootCause,nextProbe,confidence,reasonCode});
+  // A one-digit operation exposes the exact fact involved. Report these only
+  // as retest candidates; never infer an exact weak fact from a single miss.
+  const factCandidates=(family)=>{
+   const stats=new Map();
+   for(const row of group([family])){
+    if(row.contextDomain&&row.contextDomain!=='number')continue;
+    if(row.purpose&&!['normal','prerequisite_probe','contrast_plain','transfer_verify'].includes(row.purpose))continue;
+    const dims=row.features||{};
+    if(dims.maxOperandDigits!==1||dims.usesRegrouping!==false)continue;
+    for(const fact of Array.isArray(dims.factDependencies)?dims.factDependencies:[]){
+     const key=safe(fact);if(!/^(add|sub):\d+[+-]\d+$/.test(key))continue;
+     const item=stats.get(key)||{fact:key,failedQuestions:0,independentQuestions:0};
+     if(NONINDEPENDENT.has(row.result))item.failedQuestions++;else if(row.result==='independent')item.independentQuestions++;
+     stats.set(key,item);
+    }
+   }
+   return [...stats.values()].filter(x=>x.failedQuestions>0).map(x=>({...x,status:'retest_candidate'}));
+  };
   let decision=ambiguous();
   const grp={money:['money','money_unit','budget','money_discount'],plainDivision:['division_fact','one_digit_div','two_digit_div'],
    regroup:['regroup_div'],selection:['operation_choice'],percent:['percent_concept'],
@@ -112,6 +135,27 @@
    const helpOnly=rows.length>=2&&rows.every(x=>x.result==='assisted'||x.result==='corrected');
    if(helpOnly){
     decision=answer('needs_contrast',null,clean(grp.plainDivision)+failed(grp.plainDivision)>0?'div.facts':baseProbe(originSkillId),'ASSISTED_NOT_INDEPENDENT');
+   }else if(numeric('addition',f=>f.maxOperandDigits>=3&&f.usesRegrouping===false,'failed')>=2&&
+      numeric('subtraction',f=>f.maxOperandDigits>=3&&f.usesRegrouping===false,'failed')>=2&&
+      numeric('addition',f=>f.maxOperandDigits<=2&&f.usesRegrouping===false,'independent')>=2&&
+      numeric('subtraction',f=>f.maxOperandDigits<=2&&f.usesRegrouping===false,'independent')>=2){
+    decision=answer('candidate','number.place_value','number.place_value','LARGE_DIGIT_FAILURE_ACROSS_ADD_SUB_WITH_SMALLER_SUCCESS','medium');
+   }else if(numeric('addition',f=>f.maxOperandDigits>=2&&f.usesRegrouping===true,'failed')>=2&&
+      numeric('addition',f=>f.maxOperandDigits>=2&&f.usesRegrouping===false,'independent')>=2){
+    decision=answer('candidate','add.regroup','add.regroup','ADDITION_REGROUP_FAILURE_WITH_NO_REGROUP_SUCCESS','medium');
+   }else if(numeric('subtraction',f=>f.maxOperandDigits>=2&&f.usesRegrouping===true,'failed')>=2&&
+      numeric('subtraction',f=>f.maxOperandDigits>=2&&f.usesRegrouping===false,'independent')>=2){
+    decision=answer('candidate','sub.regroup','sub.regroup','SUBTRACTION_REGROUP_FAILURE_WITH_NO_REGROUP_SUCCESS','medium');
+   }else if(numeric('addition',f=>f.maxOperandDigits>=3&&f.usesRegrouping===false,'failed')>=2&&
+      numeric('addition',f=>f.maxOperandDigits<=2,'independent')>=2){
+    decision=answer('candidate','add.place_value','number.place_value','ADDITION_LARGE_DIGIT_FAILURE_WITH_SMALLER_SUCCESS','medium');
+   }else if(numeric('subtraction',f=>f.maxOperandDigits>=3&&f.usesRegrouping===false,'failed')>=2&&
+      numeric('subtraction',f=>f.maxOperandDigits<=2,'independent')>=2){
+    decision=answer('candidate','sub.place_value','number.place_value','SUBTRACTION_LARGE_DIGIT_FAILURE_WITH_SMALLER_SUCCESS','medium');
+   }else if(numeric('addition',f=>f.maxOperandDigits===1,'failed')>=2){
+    decision=answer('candidate','add.facts','add.facts','ADDITION_FACT_FAILURE_ACROSS_DISTINCT_FACTS','medium');
+   }else if(numeric('subtraction',f=>f.maxOperandDigits===1,'failed')>=2){
+    decision=answer('candidate','sub.facts','sub.facts','SUBTRACTION_FACT_FAILURE_ACROSS_DISTINCT_FACTS','medium');
    }else if(failed(grp.regroup)>=2&&clean(grp.plainDivision)>=1){
     const prereq=clean(['two_digit_div'])>=1?'number.place_value':'div.regroup';
     decision=answer('candidate','div.regroup',prereq,'REGROUP_FAILURE_WITH_BASIC_DIVISION_EVIDENCE','medium');
@@ -146,9 +190,11 @@
   const byFamily={};
   for(const f of new Set(rows.map(x=>x.family)))byFamily[f]={
    uniqueQuestions:group([f]).length,independent:clean([f]),nonindependent:failed([f])};
+  const factFamily=decision.rootCause==='add.facts'?'addition':decision.rootCause==='sub.facts'?'subtraction':null;
   return {
    version:VERSION,mode:'shadow_read_only',originSkillId,
    ...decision,verification,
+   ...(factFamily?{factCandidates:factCandidates(factFamily)}:{}),
    evidence:{uniqueTaggedQuestions:rows.length,duplicatesDiscarded:known.length-rows.length,
     untaggedExcluded:untagged,byFamily},
    writes:0,

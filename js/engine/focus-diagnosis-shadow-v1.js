@@ -23,6 +23,15 @@
    schema:tag.schema,tagOrigin:'authored',originSkillId:skill,
    contextDomain:safe(tag.contextDomain),
    diagnosticFamily:safe(tag.diagnosticFamily),
+   arithmeticProfile:{operationFamilies:Array.isArray(tag.arithmeticProfile?.operationFamilies)?tag.arithmeticProfile.operationFamilies.filter(x=>typeof x==='string').slice(0,4):[],
+    operandDimensions:tag.arithmeticProfile?.operandDimensions?{
+     maxOperandDigits:Number.isFinite(tag.arithmeticProfile.operandDimensions.maxOperandDigits)?tag.arithmeticProfile.operandDimensions.maxOperandDigits:null,
+     usesRegrouping:typeof tag.arithmeticProfile.operandDimensions.usesRegrouping==='boolean'?tag.arithmeticProfile.operandDimensions.usesRegrouping:null,
+     regroupingColumns:Array.isArray(tag.arithmeticProfile.operandDimensions.regroupingColumns)?tag.arithmeticProfile.operandDimensions.regroupingColumns.filter(x=>typeof x==='string').slice(0,6):[],
+     zeroCrossingBorrow:typeof tag.arithmeticProfile.operandDimensions.zeroCrossingBorrow==='boolean'?tag.arithmeticProfile.operandDimensions.zeroCrossingBorrow:null,
+     stepCount:Number.isFinite(tag.arithmeticProfile.operandDimensions.stepCount)?tag.arithmeticProfile.operandDimensions.stepCount:null,
+     factDependencies:Array.isArray(tag.arithmeticProfile.operandDimensions.factDependencies)?tag.arithmeticProfile.operandDimensions.factDependencies.filter(x=>typeof x==='string').slice(0,12):[]
+    }:null},
    probes:{foundationIds:foundations,conceptIds:concepts,diagnosticPurpose:safe(tag.probes?.diagnosticPurpose)},
    evidence:{questionFamilyKey:family,variantFingerprint:safe(tag.evidence?.variantFingerprint),
     tagRevision:safe(tag.evidence?.tagRevision||tag.tagRevision),

@@ -303,6 +303,75 @@
         ]
       },
       "rationale": "One money failure cannot lower Operasi mastery"
+    },
+    {
+      "id": "large-digit-confusion-across-add-sub",
+      "originSkillId": "D2.2.1",
+      "observations": [
+        {"probe":"add_24_31","family":"addition","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"add_42_15","family":"addition","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"sub_85_42","family":"subtraction","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"sub_96_31","family":"subtraction","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"add_123_100","family":"addition","result":"unresolved","features":{"maxOperandDigits":3,"usesRegrouping":false}},
+        {"probe":"add_234_200","family":"addition","result":"unresolved","features":{"maxOperandDigits":3,"usesRegrouping":false}},
+        {"probe":"sub_456_100","family":"subtraction","result":"unresolved","features":{"maxOperandDigits":3,"usesRegrouping":false}},
+        {"probe":"sub_678_300","family":"subtraction","result":"unresolved","features":{"maxOperandDigits":3,"usesRegrouping":false}}
+      ],
+      "expected":{"state":"candidate","rootCause":"number.place_value","nextProbe":"number.place_value"},
+      "rationale":"Separate high-digit failure from carry/borrow: both operations work on two-digit no-regroup items but fail on three-digit no-regroup items."
+    },
+    {
+      "id": "addition-regroup-isolated",
+      "originSkillId":"D2.2.1",
+      "observations":[
+        {"probe":"add_nc_24_31","family":"addition","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"add_nc_42_15","family":"addition","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"add_c_28_17","family":"addition","result":"unresolved","features":{"maxOperandDigits":2,"usesRegrouping":true}},
+        {"probe":"add_c_36_27","family":"addition","result":"unresolved","features":{"maxOperandDigits":2,"usesRegrouping":true}}
+      ],
+      "expected":{"state":"candidate","rootCause":"add.regroup","nextProbe":"add.regroup"},
+      "rationale":"Carry failures are isolated only after independent success on matched no-carry addition."
+    },
+    {
+      "id": "subtraction-borrow-isolated",
+      "originSkillId":"D2.2.2",
+      "observations":[
+        {"probe":"sub_nb_85_42","family":"subtraction","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"sub_nb_96_31","family":"subtraction","result":"independent","features":{"maxOperandDigits":2,"usesRegrouping":false}},
+        {"probe":"sub_b_52_28","family":"subtraction","result":"unresolved","features":{"maxOperandDigits":2,"usesRegrouping":true}},
+        {"probe":"sub_b_63_47","family":"subtraction","result":"unresolved","features":{"maxOperandDigits":2,"usesRegrouping":true}}
+      ],
+      "expected":{"state":"candidate","rootCause":"sub.regroup","nextProbe":"sub.regroup"},
+      "rationale":"Borrow failures are separated from general subtraction after no-borrow successes."
+    },
+    {
+      "id":"addition-facts-isolated",
+      "originSkillId":"D1.ADD20",
+      "observations":[
+        {"probe":"add_3_5","family":"addition","result":"unresolved","features":{"maxOperandDigits":1,"usesRegrouping":false}},
+        {"probe":"add_4_7","family":"addition","result":"unresolved","features":{"maxOperandDigits":1,"usesRegrouping":false}}
+      ],
+      "expected":{"state":"candidate","rootCause":"add.facts","nextProbe":"add.facts"},
+      "rationale":"Distinct one-digit addition facts fail; do not label place-value difficulty."
+    },
+    {
+      "id":"subtraction-facts-isolated",
+      "originSkillId":"D1.SUB20",
+      "observations":[
+        {"probe":"sub_8_3","family":"subtraction","result":"unresolved","features":{"maxOperandDigits":1,"usesRegrouping":false}},
+        {"probe":"sub_9_4","family":"subtraction","result":"unresolved","features":{"maxOperandDigits":1,"usesRegrouping":false}}
+      ],
+      "expected":{"state":"candidate","rootCause":"sub.facts","nextProbe":"sub.facts"},
+      "rationale":"Distinct one-digit subtraction facts fail; do not label regrouping difficulty."
+    },
+    {
+      "id":"single-large-addition-failure-abstains",
+      "originSkillId":"D2.2.1",
+      "observations":[
+        {"probe":"add_123_100","family":"addition","result":"unresolved","features":{"maxOperandDigits":3,"usesRegrouping":false}}
+      ],
+      "expected":{"state":"insufficient_evidence","rootCause":null,"nextProbe":"operation.choose"},
+      "rationale":"One high-digit miss alone cannot distinguish digit complexity from attention, unfamiliarity or error."
     }
   ],
   "policy": "Conservative oracle: one failure of a specific subskill + a money failure is insufficient to declare that subskill weak."

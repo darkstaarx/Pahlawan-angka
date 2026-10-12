@@ -7,7 +7,7 @@ Date: 12 October 2026. Decision: **NO-GO for user-facing Focus v2 integration.**
 - Repository: darkstaarx/Pahlawan-angka. Work performed only on feature/focus-diagnosis-foundations-v1, based on 065f0c2; fetched main snapshot 27e1e69 (refresh division offline bank). No merge, push or deployment was performed.
 - Live read-only URL: https://darkstaarx.github.io/Pahlawan-angka/ ; observed release 3.86.1. Local feature served over loopback. Isolated Edge/Chromium contexts, service workers blocked, desktop 1280×800 and Android-emulated portrait 360×640 (9:16). This is browser emulation, not physical Android hardware.
 - Automated browser contexts reject non-GET/HEAD network requests. Synthetic Focus profiles bypass commercial/rest gates in memory and disable save/cloud. No real account, child profile or cloud data was used.
-- Reviewed README, foundation map, tag audit, Phase C shadow report, eleven fixtures, engine, collector, guardian Focus, adaptive and learner-review code. Static app deploy surface is index.html/sw.js/version.js. The sole checked-in Actions workflow builds marketing posters on main; GitHub Pages dashboard/source settings were not independently verified (gh unavailable). Local feature is never presented as deployed.
+- Reviewed README, foundation map, tag audit, Phase C shadow report, seventeen fixtures, engine, collector, guardian Focus, adaptive and learner-review code. Static app deploy surface is index.html/sw.js/version.js. The sole checked-in Actions workflow builds marketing posters on main; GitHub Pages dashboard/source settings were not independently verified (gh unavailable). Local feature is never presented as deployed.
 - Existing Node checks initially passed except the Guardian audit's stale 3.9.0 version assertion. That audit now checks the current version source and cache wiring; all six final Node suites pass.
 
 ## Final results
@@ -96,6 +96,7 @@ node audit/focus-v2-foundation-contract.cjs
 node audit/focus-v2-d2-tag-smoke.cjs
 node audit/focus-v2-diagnosis-shadow.cjs
 node audit/focus-v2-scenario-a.cjs
+node audit/focus-v2-add-sub-shadow.cjs
 node audit/focus-practice-v3.85.68.js
 node audit/guardian-focus-v3.8.30.js
 node audit/focus-v2-demo-persistence.cjs
@@ -362,3 +363,20 @@ The earlier report correctly marked the live Focus router as disconnected from v
 | A4: one wrong contextual answer alone | 2 | Insufficient evidence | No confident root cause; additional independent contrast required | PASS | Fixture `single-money-failure-needs-context-contrast` in [diagnosis fixtures](../../data/focus-v2/diagnosis-fixtures-v1.json) |
 
 The targeted regression now covers the D2 money-vs-division source generators, learner-review outcomes, authored-tag collector and evaluator. The shadow panel is visibly isolated from the app iframe and requires `?shadow=1`. A fresh runtime sample in that browser run found **120 authored-tagged questions out of 7,020 valid questions**; metadata remains sparse overall. This is not a live pupil recommendation and does not prove complete runtime coverage. V2 remains **NO-GO for public integration**: the next `money.ringgit_sen` probe is selected but no authored follow-up question bank for that probe exists yet.
+
+## Follow-up: addition and subtraction dimensional slice (13 October 2026)
+
+The requested first expansion is the shared arithmetic difficulty hidden by broad operation/topic labels. Authored tags on generated D1–D4 integer addition/subtraction items now carry operand digit counts, place-value columns, magnitude band, whether regrouping is actually required, affected columns, zero-crossing borrow, step count and component fact dependencies. These fields describe the item; none alone diagnose a pupil.
+
+The pure shadow evaluator only suggests a candidate after distinct, independent contrast evidence: small and larger no-regroup items can reveal a digit/place-value pattern across addition and subtraction; carry/borrow errors are compared with success on same-operation no-regroup items; single-digit facts stay separate. For a basic-fact candidate, the report names the exact generated fact(s) to retest (for example, `add:7+8`) and labels them as retest candidates, never confirmed weaknesses from one miss. A lone large-number error abstains. The audit runs actual generators through `PALearnerReview` and the in-memory tag collector, and confirms mastery/XP/coins remain unchanged.
+
+| Test | Actual result | Status |
+|---|---|---|
+| Both operations: two-digit no-regroup success, three-digit no-regroup misses | `number.place_value` candidate | PASS |
+| Addition: no-carry success, carry misses | `add.regroup` candidate | PASS |
+| Subtraction: no-borrow success, borrow misses | `sub.regroup` candidate | PASS |
+| Distinct one-digit addition or subtraction misses | `add.facts` / `sub.facts` candidate plus exact fact retest candidates | PASS |
+| One high-digit miss alone | `insufficient_evidence`, no root cause | PASS |
+| Generated source and profile integrity | D1–D4 generators; no mastery/reward changes | PASS |
+
+The shadow audit has **17/17 golden cases and 114 assertions**. This closes the branch-only addition/subtraction diagnosis prototype gate for integer items, not classroom validity or production readiness. Decimal/money addition, multi-step/story operation selection, exact practice selection, D5/D6 runtime coverage and real-pupil evaluation remain open. Focus v2 remains **NO-GO for user-facing routing**.

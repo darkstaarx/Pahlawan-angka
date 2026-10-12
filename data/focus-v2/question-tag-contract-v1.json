@@ -9,7 +9,7 @@
     "arithmeticProfile": {
       "operationFamilies": "Array of candidate calculations truly required by this concrete question (can be [] for conceptual)",
       "operands": "Structured values and exact unit as needed; no personally identifying data",
-      "operandDimensions": "For division: dividendDigits, divisorDigits, quotientDigits, canHaveRemainder, usesRegrouping, decimalPlaces; unknown if not measured",
+      "operandDimensions": "Operation-specific, authored/derived features: operandDigits, maxOperandDigits, placeValueColumns, numberMagnitudeBand, usesRegrouping, regroupingColumns, zeroCrossingBorrow, stepCount, factDependencies; division may additionally include dividendDigits, divisorDigits, quotientDigits, canHaveRemainder, decimalPlaces. Unknown if not measured.",
       "steps": "Ordered calculation actions; e.g. [subtraction,division], not guessed from chapter title"
     },
     "probes": {
@@ -42,6 +42,7 @@
   "hardRules": [
     "A failure on a contextual question creates candidate causes only; no mastery penalty for unrelated GRAPH skill IDs.",
     "Numeric magnitude alone does not establish regrouping; tag needs algorithmically verified operation detail.",
+    "Digit count, numeric magnitude band, place-value width, regrouping, and fact dependencies are separate observable item features; do not merge them into a single large-number diagnosis.",
     "Grade is not a prerequisite mastery guarantee; probe weaker previous-year foundation when evidence demands.",
     "Do not move question text or child PII into cloud diagnostics; store opaque variant fingerprints and coarse operand profiles.",
     "A first wrong attempt followed by correction does not count as independent evidence.",
@@ -221,6 +222,66 @@
         ],
         "diagnosticPurpose": "screen",
         "questionFamilyKey": "order_of_operations",
+        "representation": "symbolic",
+        "tagOrigin": "authored"
+      }
+    },
+    {
+      "source": "questions/kssr-content-v3.11.js operationTask(D2.2.1)",
+      "provenance": "authored final-wrapper feature tags",
+      "original": {
+        "originSkillId": "D2.2.1",
+        "contextDomain": "number",
+        "promptIllustration": "123 + 100 = ?"
+      },
+      "tags": {
+        "operationFamilies": ["addition"],
+        "operands": {"addends": [123, 100], "sum": 223, "unit": "integer"},
+        "operandDimensions": {
+          "operandDigits": [3, 3],
+          "maxOperandDigits": 3,
+          "placeValueColumns": ["ones", "tens", "hundreds"],
+          "numberMagnitudeBand": "hundreds",
+          "usesRegrouping": false,
+          "regroupingColumns": [],
+          "zeroCrossingBorrow": false,
+          "decimalPlaces": 0,
+          "stepCount": 1,
+          "factDependencies": ["add:3+0", "add:2+0", "add:1+1"]
+        },
+        "foundationIds": ["add.facts", "add.place_value"],
+        "diagnosticPurpose": "normal",
+        "questionFamilyKey": "integer_addition_calculation",
+        "representation": "symbolic",
+        "tagOrigin": "authored"
+      }
+    },
+    {
+      "source": "questions/kssr-content-v3.11.js operationTask(D2.2.2)",
+      "provenance": "authored final-wrapper feature tags",
+      "original": {
+        "originSkillId": "D2.2.2",
+        "contextDomain": "number",
+        "promptIllustration": "523 − 287 = ?"
+      },
+      "tags": {
+        "operationFamilies": ["subtraction"],
+        "operands": {"minuend": 523, "subtrahend": 287, "difference": 236, "unit": "integer"},
+        "operandDimensions": {
+          "operandDigits": [3, 3],
+          "maxOperandDigits": 3,
+          "placeValueColumns": ["ones", "tens", "hundreds"],
+          "numberMagnitudeBand": "hundreds",
+          "usesRegrouping": true,
+          "regroupingColumns": ["ones", "tens"],
+          "zeroCrossingBorrow": false,
+          "decimalPlaces": 0,
+          "stepCount": 1,
+          "factDependencies": ["sub:13-7", "sub:11-8", "sub:4-2"]
+        },
+        "foundationIds": ["sub.facts", "sub.place_value", "sub.regroup"],
+        "diagnosticPurpose": "normal",
+        "questionFamilyKey": "integer_subtraction_calculation",
         "representation": "symbolic",
         "tagOrigin": "authored"
       }

@@ -102,8 +102,42 @@ function addDistractors(a,b,ans){
  let unit=(a%10)+(b%10),partial=a+(b%10);
  return [N(same[R(0,same.length-1)],"same_end"),N(unit,"units_only"),N(partial===ans?ans+1:partial,"place")]
 }
-function addQ(a,b,ans,kind,shift){return Q(`${a} + ${b} = ?`,ans,addDistractors(a,b,ans),"Pisahkan ikut nilai tempat, kemudian gabungkan.",kind,true,shift)}
-function subQ(a,b,ans,kind,shift){return Q(`${a} − ${b} = ?`,ans,[N(ans+10,"same_end"),N(Math.abs((a%10)-(b%10)),"units_only"),N(a+b,"operation")],"Tolak ikut nilai tempat.",kind,true,shift)}
+function addQ(a,b,ans,kind,shift,focus={}){const q=Q(`${a} + ${b} = ?`,ans,addDistractors(a,b,ans),"Pisahkan ikut nilai tempat, kemudian gabungkan.",kind,true,shift);return focus.skillId?attachFoundationQuestionTags(q,addSubFocusMeta(focus.skillId,'addition',[a,b],ans,focus)):q}
+function subQ(a,b,ans,kind,shift,focus={}){const q=Q(`${a} − ${b} = ?`,ans,[N(ans+10,"same_end"),N(Math.abs((a%10)-(b%10)),"units_only"),N(a+b,"operation")],"Tolak ikut nilai tempat.",kind,true,shift);return focus.skillId?attachFoundationQuestionTags(q,addSubFocusMeta(focus.skillId,'subtraction',[a,b],ans,focus)):q}
+
+function addSubFocusMeta(skillId,operation,operands,result,options={}){
+ const values=operands.filter(Number.isFinite).map(Math.trunc),digits=n=>String(Math.abs(n)).length;
+ const columns=Math.max(1,...values.map(digits)),regroupingColumns=[],factDependencies=[];
+ let current=values[0]||0;
+ for(let step=1;step<values.length;step++){
+  const next=values[step],max=Math.max(digits(current),digits(next));let carry=0;
+  const currentDigits=Array.from({length:max},(_,col)=>Math.floor(Math.abs(current)/Math.pow(10,col))%10);
+  for(let col=0;col<max;col++){
+   const right=Math.floor(Math.abs(next)/Math.pow(10,col))%10,left=currentDigits[col];
+   if(operation==='addition'){
+    const raw=left+right+carry;if(raw>=10)regroupingColumns.push(col);carry=raw>=10?1:0;
+    factDependencies.push(`add:${Math.min(left,right)}+${Math.max(left,right)}`);
+   }else{
+    if(left<right){
+     let lender=col+1;while(lender<max&&currentDigits[lender]===0)lender++;
+     if(lender<max){currentDigits[lender]--;for(let k=col+1;k<lender;k++)currentDigits[k]=9;currentDigits[col]+=10;for(let k=col;k<lender;k++)regroupingColumns.push(k)}
+    }
+    factDependencies.push(`sub:${currentDigits[col]}-${right}`);
+   }
+  }
+  current=operation==='addition'?current+next:current-next;
+ }
+ const uniqueColumns=[...new Set(regroupingColumns)].sort((a,b)=>a-b),labels=['ones','tens','hundreds','thousands','ten_thousands','hundred_thousands'];
+ const maxDigits=Math.max(...values.map(digits));
+ const simple=maxDigits===1;
+ const foundations=operation==='addition'?(simple?['add.facts']:['add.facts','add.place_value']):(simple?['sub.facts']:['sub.facts','sub.place_value']);
+ if(uniqueColumns.length)foundations.push(operation==='addition'?'add.regroup':'sub.regroup');
+ const equationOperands=operation==='addition'?{addends:values,sum:result,unit:options.unit||'integer'}:{minuend:values[0],subtrahend:values[1],subsequentSubtrahends:values.slice(2),difference:result,unit:options.unit||'integer'};
+ return {originSkillId:skillId,contextDomain:options.contextDomain||'number',diagnosticFamily:operation,
+  arithmeticProfile:{operationFamilies:[operation],operands:equationOperands,operandDimensions:{operandDigits:values.map(digits),maxOperandDigits:maxDigits,placeValueColumns:labels.slice(0,columns),numberMagnitudeBand:maxDigits===1?'ones':maxDigits===2?'tens':maxDigits===3?'hundreds':'thousands_or_more',usesRegrouping:uniqueColumns.length>0,regroupingColumns:uniqueColumns.map(i=>labels[i]||`column_${i}`),zeroCrossingBorrow:operation==='subtraction'&&uniqueColumns.some(i=>values[0]&&Math.floor(Math.abs(values[0])/Math.pow(10,i))%10===0),decimalPlaces:0,stepCount:Math.max(1,values.length-1),factDependencies:[...new Set(factDependencies)]}},
+  probes:{foundationIds:[...new Set(foundations)],conceptIds:[],diagnosticPurpose:options.diagnosticPurpose||'normal'},
+  evidence:{questionFamilyKey:operation==='addition'?'integer_addition_calculation':'integer_subtraction_calculation',representation:'symbolic',demand:'procedure',difficultyBand:Math.min(4,maxDigits)}};
+}
 
 function moneyFmt(cents){
  cents=Math.round(cents);
@@ -169,12 +203,14 @@ function attachFoundationQuestionTags(q,meta){
  const operands=meta.arithmeticProfile?.operands||{};
  // Equation identity deliberately excludes wording/representation: showing
  // the same calculation in a story is not a second independent equation.
- const identity=JSON.stringify([meta.arithmeticProfile?.operationFamilies||[],
-   operands.unit||'unknown',operands.totalMinorUnits??operands.dividend,
-   operands.divisor,operands.quotientMinorUnits??operands.quotient,operands.remainder??0]);
+ const operationFamilies=meta.arithmeticProfile?.operationFamilies||[];
+ const expression=Array.isArray(operands.addends)?[...operands.addends].sort((a,b)=>a-b):
+   operands.minuend!==undefined?[operands.minuend,operands.subtrahend,...(operands.subsequentSubtrahends||[])]:
+   [operands.totalMinorUnits??operands.dividend,operands.divisor,operands.quotientMinorUnits??operands.quotient,operands.remainder??0];
+ const identity=JSON.stringify([operationFamilies,operands.unit||'unknown',expression]);
  let hash=2166136261;for(const char of identity){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}
  q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',...meta,
-   evidence:{...meta.evidence,tagRevision:'d2-pilot-v2',
+   evidence:{...meta.evidence,tagRevision:meta.evidence?.tagRevision||(['addition','subtraction'].includes(meta.diagnosticFamily)?'add-sub-features-v1':'d2-pilot-v2'),
      variantFingerprint:meta.evidence?.variantFingerprint||'eq-'+(hash>>>0).toString(36)}};
  return q;
 }
