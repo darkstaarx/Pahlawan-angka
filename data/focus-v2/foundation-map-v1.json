@@ -11,7 +11,8 @@
     "gradeIsCeilingNotFloor": true,
     "diagnosticNeedsIndependentContrastingItems": true,
     "doNotTreatPreGradeAsAutoMastered": true,
-    "legacyMasteryUntouched": true
+    "legacyMasteryUntouched": true,
+    "foundationPrerequisitesDoNotReplaceCurriculumPrerequisites": true
   },
   "operations": [
     "addition",
@@ -337,14 +338,12 @@
       "id": "money.denominations",
       "label": "Kenal nilai duit dan gabungan syiling",
       "family": "money",
-      "prerequisites": [
-        "add.combine"
-      ],
+      "prerequisites": [],
       "curriculumAnchors": [
         "D1.MONEY",
         "D2.4.1"
       ],
-      "notes": "Masalah mengenal wang bukan kelemahan operasi",
+      "notes": "Masalah mengenal wang bukan kelemahan operasi; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
       "status": "proposed_requires_question_level_validation"
     },
     {
@@ -352,7 +351,6 @@
       "label": "Hubungan RM dan sen",
       "family": "money",
       "prerequisites": [
-        "number.decimal_place_value",
         "money.denominations"
       ],
       "curriculumAnchors": [
@@ -361,7 +359,7 @@
         "D2.4.3",
         "D2.4.5"
       ],
-      "notes": "Semak 100 sen = RM1, bukan cuma pengiraan simbolik",
+      "notes": "Semak 100 sen = RM1, bukan cuma pengiraan simbolik; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
       "status": "proposed_requires_question_level_validation"
     },
     {
@@ -431,7 +429,7 @@
       "label": "Peratus sebagai bahagian keseluruhan",
       "family": "percent",
       "prerequisites": [
-        "div.equal_sharing"
+        "fraction.equal_parts"
       ],
       "curriculumAnchors": [
         "D3.PERCENT",
@@ -439,22 +437,20 @@
         "D5.PERCENT",
         "D6.PERCENT"
       ],
-      "notes": "Peratus salah tidak automatik bukti bahagi salah",
+      "notes": "Peratus salah tidak automatik bukti bahagi salah; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
       "status": "proposed_requires_question_level_validation"
     },
     {
       "id": "fraction.equal_parts",
       "label": "Bahagian sama besar dan pecahan",
       "family": "fraction",
-      "prerequisites": [
-        "div.equal_sharing"
-      ],
+      "prerequisites": [],
       "curriculumAnchors": [
         "D1.FRAC",
         "D2.3.1",
         "D3.FRAC"
       ],
-      "notes": "Diagnostik visual berasingan daripada bahagi nombor",
+      "notes": "Diagnostik visual berasingan daripada bahagi nombor; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
       "status": "proposed_requires_question_level_validation"
     },
     {
@@ -478,9 +474,7 @@
       "id": "measurement.units",
       "label": "Unit dan penukaran ukuran",
       "family": "measurement",
-      "prerequisites": [
-        "number.place_value"
-      ],
+      "prerequisites": [],
       "curriculumAnchors": [
         "D1.MEASURE",
         "D2.6.1",
@@ -492,7 +486,7 @@
         "D5.MEASURE",
         "D6.MEASURE"
       ],
-      "notes": "Bezakan unit berbanding operasi",
+      "notes": "Bezakan unit berbanding operasi; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
       "status": "proposed_requires_question_level_validation"
     },
     {
