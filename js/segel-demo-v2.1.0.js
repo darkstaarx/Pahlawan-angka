@@ -248,6 +248,7 @@
   async function buildStage(){
     const stageTiers=TIERS.map(tier=>({...tier}));
     const canvas=$('segelCanvas'), host=$('segelStage');
+    let stageRenderHeight=host.clientHeight;
     const finisherCutIn=host.querySelector('.segelCutIn');
     const finisherCutInHero=host.querySelector('.cutInHero');
     const finalFocus=host.querySelector('.segelFinalFocus');
@@ -314,9 +315,9 @@
       if(!finisherImpact||!finalImpactTarget)return;
       const target=finalImpactTarget;
       const viewH=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-target.z);
-      const pixels=host.clientHeight/viewH;
+      const pixels=stageRenderHeight/viewH;
       const x=host.clientWidth/2+(target.x-camera.position.x)*pixels;
-      const ground=host.clientHeight/2-(target.y-camera.position.y)*pixels;
+      const ground=stageRenderHeight/2-(target.y-camera.position.y)*pixels;
       glacierLayers.forEach((layer,index)=>{
         const side=Number(layer.dataset.glacierSide)||0;
         const height=target.height*1.22*pixels*(side===-1 ? .76*1.10 : side===1 ? .76*1.03 : 1);
@@ -1476,11 +1477,28 @@
        telefon melintang dan tablet. */
     const WORLD_W=6.0, MIN_H=5.2, FLOOR_MARGIN=.30;
     const HIT_REBOUND=.42;         // tempoh lantunan hentaman, saat
+    function portraitCropPx(){
+      const raw=getComputedStyle(host).getPropertyValue('--segel-stage-bottom-crop');
+      if(!raw.trim())return 0;
+      /* Custom properties retain the literal clamp(...) text in computed
+         styles, so mirror its 48px / 7dvh / 76px limits here. */
+      const viewportH=window.visualViewport?.height||window.innerHeight||host.clientHeight;
+      const crop=Math.max(48,Math.min(76,viewportH*.07));
+      return Math.min(crop,host.clientHeight*.4);
+    }
     function resize(){
       const w=host.clientWidth, h=host.clientHeight;
       if(!w||!h)return;
-      renderer.setSize(w,h,false);
-      camera.aspect=w/h;
+      /* The layout gives the question panel more height by shortening its
+         viewport. Render the arena at its former height and let the host's
+         overflow clip only the bottom strip; otherwise Three.js reframes the
+         whole scene and makes Wira, Aurora and the seal look smaller. */
+      const renderH=Math.round(h+portraitCropPx());
+      stageRenderHeight=renderH;
+      canvas.style.inset='0 auto auto 0';
+      canvas.style.width=w+'px';canvas.style.height=renderH+'px';
+      renderer.setSize(w,renderH,false);
+      camera.aspect=w/renderH;
       const visH=Math.max(WORLD_W/camera.aspect, MIN_H);
       camera.fov=2*Math.atan(visH/2/camera.position.z)*180/Math.PI;
       camera.updateProjectionMatrix();
@@ -1513,7 +1531,8 @@
         const visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
         const wx=SEAL_X-camera.position.x;
         const wy=(GROUND+tier.visible*.98)-camera.position.y;
-        return {x:(wx/visW+.5)*100, y:(.5-wy/visH)*100};
+        const yInRender=(.5-wy/visH)*stageRenderHeight;
+        return {x:(wx/visW+.5)*100, y:yInRender/host.clientHeight*100};
       },
       /* Wira menyerang SEGEL, bukan Aurora. Bunyi: pedang masa tebasan,
          hentaman masa sentuh — dua kesan berasingan, bukan satu. */
