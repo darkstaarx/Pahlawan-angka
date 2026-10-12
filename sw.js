@@ -3,6 +3,7 @@ importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-chibi-2`;
 const APP_SHELL=[
   './gerai-wirayung.html', './js/wirayung-live-bridge.js',
+  './assets/heroes/wira-chibi/frames/victory-v1.webp',
   './assets/ui/focus-v1/focus-panel-illustrated-v1.webp',
   './assets/ui/focus-v1/focus-skill-card-clean-v1.svg',
   './assets/pets/evolution/fire/aurora/happy-sprite-v1.webp',
