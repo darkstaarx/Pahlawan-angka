@@ -261,7 +261,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <div class="tint" id="tint"></div>
     <div class="awning-rod"></div><div class="awning"></div>
     <div class="sign"><b>Wirayung</b></div>
-    <div class="wira" id="wira"><img id="wiraImg" src="assets/heroes/wira/idle.webp" alt="Wira menjaga gerai"></div>
+    <div class="wira" id="wira"><img id="wiraImg" src="assets/heroes/wira-chibi/idle.webp" alt="Wira menjaga gerai"></div>
     <div class="counter"></div>
     <div class="basket" id="basket" aria-label="Beg pesanan"><div class="in" id="basketIn"></div><div class="bag"></div></div>
     <div class="customer away" id="customer"><img id="petImg" src="assets/pets/collection/durian-kerbau/idle.png" alt=""></div>
@@ -375,12 +375,12 @@ window.PAGeraiWirayung={planFor,url,weakFamilies,FAMILIES};
 (()=>{
 const asset=(key)=>{
  if(key.startsWith('wang-')){const n=key.slice(5).replace('.webp','');return 'assets/questions/money/money_'+n+'.png'}
- if(key==='wira-idle.webp')return 'assets/heroes/wira/idle.webp';
- if(key==='wira-victory.webp')return 'assets/heroes/wira/profile-happy-v1.webp';
- if(key==='wira-thumb.webp')return 'assets/heroes/wira/idle.webp';
+ if(key==='wira-idle.webp')return 'assets/heroes/wira-chibi/idle.webp';
+ if(key==='wira-victory.webp')return 'assets/heroes/wira-chibi/frames/victory-v1.webp';
+ if(key==='wira-thumb.webp')return 'assets/heroes/wira-chibi/idle.webp';
  const pet=/^(durian-kerbau|ketupat-kura|arnab-kek-lapis|harimau-bunga|kumbang-manggis)-(idle|sad|happy)\.webp$/.exec(key);
  if(pet)return 'assets/pets/collection/'+pet[1]+'/'+pet[2]+'.png';
- return 'assets/heroes/wira/idle.webp';
+ return 'assets/heroes/wira-chibi/idle.webp';
 };
 const $=id=>document.getElementById(id);
 const money=v=>'RM'+(v/100).toFixed(2);
