@@ -6,6 +6,7 @@ if(!banks)return;
 const history=id=>(typeof sess!=='undefined'?sess.questionHistory||[]:[]).filter(x=>x.skillId===id);
 function mode(id,modes){const h=history(id).slice(-12),last=h.at(-1)?.archetypeId;return [...modes].sort((a,b)=>(last==='progress_'+a)-(last==='progress_'+b)||h.filter(x=>x.archetypeId==='progress_'+a).length-h.filter(x=>x.archetypeId==='progress_'+b).length||Math.random()-.5)[0]}
 function mark(q,id,m,demand,rep='story'){Object.assign(q,{familyKey:id,archetypeId:'progress_'+m,competencyId:m,demand,representation:rep,contextId:'on-grade:'+m,difficultyBand:demand==='reasoning'?4:demand==='application'?3:1,depthVersion:'1'});return q}
+function tagDivision(q,id,variant,op,o={}){const r=op.remainder??0;return attachFoundationQuestionTags(q,{originSkillId:id,contextDomain:o.contextDomain||'operations',diagnosticFamily:o.diagnosticFamily,taskRole:o.taskRole||'quotient',unknownPosition:o.unknownPosition||null,arithmeticProfile:{operationFamilies:['division'],operands:op,operandDimensions:{dividendDigits:String(op.dividend??op.totalMinorUnits??'').length,divisorDigits:String(op.divisor??'').length,quotientDigits:String(op.quotient??op.quotientMinorUnits??'').length,canHaveRemainder:Boolean(o.canHaveRemainder??r>0),usesRegrouping:o.usesRegrouping??'unknown',numericDimension:o.numericDimension||(op.unit==='sen'?'totalMinorUnits':'integer')},taskRole:o.taskRole||'quotient',unknownPosition:o.unknownPosition||null,steps:['division']},probes:{foundationIds:o.foundationIds||['div.facts','div.equal_sharing'],conceptIds:[],diagnosticPurpose:'normal'},evidence:{questionFamilyKey:variant,representation:o.representation||'symbolic',demand:o.demand||'procedure',difficultyBand:o.difficultyBand||4,questionSource:'questions/grade-depth-v1.js',taskRole:o.taskRole||'quotient',unknownPosition:o.unknownPosition||null}})}
 function question(id,m,p,a,w,h,d='reasoning',rep='story'){return mark(Q(p,a,w.map(x=>N(x,'reasoning')),h,`Tahun ${id[1]} · Cabaran Kefahaman`,true,true),id,m,d,rep)}
 const recovery=()=>typeof sess!=='undefined'&&['recover','teach'].includes(sess.mode);
 const wrong=n=>[n+1,Math.max(0,n-1),n+10];
@@ -33,10 +34,11 @@ function d2(id,s){
  if(/^D2\.2\.[1-4]$/.test(id)){
   const m=mode(id,['operation_missing','operation_story','operation_check']),op=id.slice(-1),a=R(120,500),b=R(20,200),g=R(2,9),each=R(2,9);
   const x=op==='1'?a:op==='2'?a+b:op==='3'?g:g*each,y=op==='1'||op==='2'?b:op==='3'?each:g,ans=op==='1'?x+y:op==='2'?x-y:op==='3'?x*y:each,sym=({'1':'+','2':'−','3':'×','4':'÷'})[op];
-  if(m==='operation_missing')return question(id,m,`${x} ${sym} ___ = ${ans}<br>Apakah nombor yang hilang?`,y,[ans,x,y+1],'Gunakan hubungan operasi songsang.','reasoning','symbolic');
-  if(m==='operation_check'){const error=ans+pick([1,10]);return question(id,m,`Hakim menulis ${x} ${sym} ${y} = ${error}. Apakah jawapan yang betul?`,ans,[error,...wrong(ans).filter(z=>z!==error).slice(0,2)],'Kira semula dan semak dengan operasi songsang.','reasoning','symbolic')}
+  const div=op==='4'?{dividend:x,divisor:y,quotient:ans,remainder:0,unit:'integer'}:null;
+  if(m==='operation_missing'){const q=question(id,m,`${x} ${sym} ___ = ${ans}<br>Apakah nombor yang hilang?`,y,[ans,x,y+1],'Gunakan hubungan operasi songsang.','reasoning','symbolic');return div?tagDivision(q,id,'d2-divide-missing-divisor',div,{diagnosticFamily:'unknown',taskRole:'unknown_divisor',unknownPosition:'divisor',foundationIds:['div.facts','div.equal_sharing']}):q;}
+  if(m==='operation_check'){const error=ans+pick([1,10]),q=question(id,m,`Hakim menulis ${x} ${sym} ${y} = ${error}. Apakah jawapan yang betul?`,ans,[error,...wrong(ans).filter(z=>z!==error).slice(0,2)],'Kira semula dan semak dengan operasi songsang.','reasoning','symbolic');return div?tagDivision(q,id,'d2-divide-check',div,{diagnosticFamily:'division_fact',taskRole:'check'}):q;}
   const p=op==='1'?`Kantin menjual ${x} karipap pada waktu pagi dan ${y} lagi waktu petang. Berapa semuanya?`:op==='2'?`Ada ${x} rambutan. ${y} diberikan kepada jiran. Berapa yang tinggal?`:op==='3'?`Ada ${x} dulang kuih. Setiap dulang ada ${y} biji. Berapa biji semuanya?`:`${x} biji kuih dibahagi sama rata kepada ${y} keluarga. Berapa biji setiap keluarga dapat?`;
-  return question(id,m,p,ans,wrong(ans),'Pilih operasi mengikut situasi, kemudian kira.','application');
+  const q=question(id,m,p,ans,wrong(ans),'Pilih operasi mengikut situasi, kemudian kira.','application');return div?tagDivision(q,id,'d2-divide-story',div,{diagnosticFamily:'division_fact',representation:'contextual',demand:'application'}):q;
  }
  if(/^D2\.4\.[2-7]$/.test(id)){
   // Generate in integer sen: deeper tasks must still exercise RM/sen,
@@ -58,11 +60,11 @@ function d2(id,s){
   if(m==='money_inverse'){
    const count=kind==='4'||kind==='5';
    const prompt=kind==='4'?`Sebiji pau berharga ${rm(unit)}. Jumlah harga beberapa biji pau yang sama ialah ${rm(total)}. Berapa biji pau dibeli?`:kind==='5'?`${rm(total)} dibahagi sama rata. Setiap murid menerima ${rm(unit)}. Berapa orang murid menerima wang itu?`:`${rm(x)} ${sym} ___ = ${rm(ans)}<br>Apakah nilai wang yang hilang?`;
-   return question(id,m,prompt,count?k:rm(b),count?[k+1,k-1,k+2]:wr(b),'Gunakan hubungan operasi songsang.');
+   const q=question(id,m,prompt,count?k:rm(b),count?[k+1,k-1,k+2]:wr(b),'Gunakan hubungan operasi songsang.');return kind==='5'?tagDivision(q,id,'d2-money-missing-divisor',{totalMinorUnits:total,divisor:k,quotientMinorUnits:unit,unit:'sen'},{contextDomain:'money',diagnosticFamily:'unknown',taskRole:'unknown_divisor',unknownPosition:'divisor',representation:'contextual',demand:'reasoning',numericDimension:'totalMinorUnits'}):q;
   }
-  if(m==='money_check')return question(id,m,`Hakim mengira ${rm(x)} ${sym} ${kind==='4'||kind==='5'?y:rm(y)} = ${rm(ans+100)}. Apakah jawapan yang betul?`,rm(ans),wr(ans),'Kira dalam sen, kemudian tulis nilai wang dengan betul.');
+  if(m==='money_check'){const q=question(id,m,`Hakim mengira ${rm(x)} ${sym} ${kind==='4'||kind==='5'?y:rm(y)} = ${rm(ans+100)}. Apakah jawapan yang betul?`,rm(ans),wr(ans),'Kira dalam sen, kemudian tulis nilai wang dengan betul.');return kind==='5'?tagDivision(q,id,'d2-money-check',{totalMinorUnits:total,divisor:k,quotientMinorUnits:unit,unit:'sen'},{contextDomain:'money',diagnosticFamily:'money',taskRole:'check',representation:'contextual',demand:'reasoning',numericDimension:'totalMinorUnits'}):q;}
   const prompt=kind==='2'?`Aina menyimpan ${rm(x)} dan menerima ${rm(y)} lagi. Berapakah jumlah wangnya?`:kind==='3'?`Aina ada ${rm(x)}. Dia membeli buku berharga ${rm(y)}. Berapakah wang yang tinggal?`:kind==='4'?`Sebiji pau berharga ${rm(x)}. Berapakah harga ${y} biji pau yang sama?`:`${rm(x)} dibahagi sama rata kepada ${y} murid. Berapakah setiap murid dapat?`;
-  return question(id,m,prompt,rm(ans),wr(ans),'Pilih operasi mengikut situasi.','application');
+  const q=question(id,m,prompt,rm(ans),wr(ans),'Pilih operasi mengikut situasi.','application');return kind==='5'?tagDivision(q,id,'d2-money-situation',{totalMinorUnits:total,divisor:k,quotientMinorUnits:unit,unit:'sen'},{contextDomain:'money',diagnosticFamily:'money',taskRole:'quotient',representation:'contextual',demand:'application',numericDimension:'totalMinorUnits'}):q;
  }
  if(id==='D2.5.3'){
   const m=mode(id,['time_duration','time_start','time_end']),start=R(8,14)*60+pick([0,15,30]),duration=pick([15,30,45,60,90]),end=start+duration,fmt=x=>formatClockTime(x,'12','bm');

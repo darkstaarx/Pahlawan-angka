@@ -30,6 +30,23 @@
     q.misconceptionTargets=targets.length?targets:[q.wrong?.[0]?.tag||'generated'];
     return q;
   }
+  function tagDivision(q,id,variant,operands,opts={}){
+    const o=opts, op=operands||{}, remainder=op.remainder??0;
+    const dims={
+      dividendDigits:String(op.dividend??op.totalMinorUnits??'').length,
+      divisorDigits:String(op.divisor??'').length,
+      quotientDigits:String(op.quotient??op.quotientMinorUnits??'').length,
+      canHaveRemainder:Boolean(o.canHaveRemainder??remainder>0),
+      usesRegrouping:o.usesRegrouping??'unknown',
+      numericDimension:o.numericDimension||(op.unit==='sen'?'totalMinorUnits':'integer')
+    };
+    return attachFoundationQuestionTags(q,{originSkillId:id,contextDomain:o.contextDomain||'operations',diagnosticFamily:o.diagnosticFamily,
+      taskRole:o.taskRole||'quotient',unknownPosition:o.unknownPosition||null,
+      arithmeticProfile:{operationFamilies:['division'],operands:op,operandDimensions:dims,taskRole:o.taskRole||'quotient',unknownPosition:o.unknownPosition||null,steps:['division']},
+      probes:{foundationIds:o.foundationIds||['div.facts'],conceptIds:o.conceptIds||[],diagnosticPurpose:o.diagnosticPurpose||'normal'},
+      evidence:{questionFamilyKey:variant,representation:o.representation||'symbolic',demand:o.demand||'procedure',difficultyBand:o.difficultyBand||2,
+        questionSource:'questions/kssr-content-integrity-v3.18.1.js',taskRole:o.taskRole||'quotient',unknownPosition:o.unknownPosition||null}});
+  }
 
   // ---------- D1: keep the first number work genuinely introductory ----------
   function d1Repair(id,s,shift){
@@ -85,15 +102,15 @@
       const mode=rotate(id,['div_exact','div_remainder','div10']);
       if(mode==='div10'){
         const total=R(2,9)*10+pick([0,0,R(1,9)]),q=Math.floor(total/10),rem=total%10,ans=rem?`${q} baki ${rem}`:q;
-        return mark(Q(`${total} ÷ 10 = ?`,ans,rem?[N(q,'division'),N(`${q+1} baki ${rem}`,'division'),N(`${q} baki ${Math.max(0,rem-1)}`,'division')]:[N(10,'division'),N(Math.max(1,q-1),'division'),N(q+1,'division')],'Bentuk kumpulan 10. Yang tinggal ialah baki.','Tahun 2 · Bahagi dengan 10',true,true),id,mode,'symbolic','procedure',['division']);
+        return tagDivision(mark(Q(`${total} ÷ 10 = ?`,ans,rem?[N(q,'division'),N(`${q+1} baki ${rem}`,'division'),N(`${q} baki ${Math.max(0,rem-1)}`,'division')]:[N(10,'division'),N(Math.max(1,q-1),'division'),N(q+1,'division')],'Bentuk kumpulan 10. Yang tinggal ialah baki.','Tahun 2 · Bahagi dengan 10',true,true),id,mode,'symbolic','procedure',['division']),id,mode,{dividend:total,divisor:10,quotient:q,remainder:rem,unit:'integer'},{diagnosticFamily:rem?'remainder_div':'division_fact',representation:'symbolic',demand:'procedure',canHaveRemainder:rem>0,usesRegrouping:false,foundationIds:rem?['div.facts','div.remainder']:['div.facts']});
       }
       const divisor=R(2,9),q=R(2,9);
       if(mode==='div_remainder'){
         const rem=R(1,divisor-1),total=divisor*q+rem,ans=`${q} baki ${rem}`;
-        return mark(Q(`${total} objek dibahagi kepada kumpulan <b>${divisor}</b>. Berapa kumpulan penuh dan baki?`,ans,[N(q,'division'),N(`${q+1} baki ${rem}`,'division'),N(`${q} baki ${Math.max(0,rem-1)}`,'division')],'Cari kumpulan penuh dahulu; objek yang tidak cukup satu kumpulan menjadi baki.','Tahun 2 · Bahagi Berbaki',true,true),id,mode,'story','application',['division']);
+        return tagDivision(mark(Q(`${total} objek dibahagi kepada kumpulan <b>${divisor}</b>. Berapa kumpulan penuh dan baki?`,ans,[N(q,'division'),N(`${q+1} baki ${rem}`,'division'),N(`${q} baki ${Math.max(0,rem-1)}`,'division')],'Cari kumpulan penuh dahulu; objek yang tidak cukup satu kumpulan menjadi baki.','Tahun 2 · Bahagi Berbaki',true,true),id,mode,'story','application',['division']),id,mode,{dividend:total,divisor,quotient:q,remainder:rem,unit:'integer'},{diagnosticFamily:'remainder_div',representation:'contextual',demand:'application',canHaveRemainder:true,usesRegrouping:'unknown',foundationIds:['div.equal_sharing','div.remainder']});
       }
       const total=divisor*q;
-      return mark(Q(`${total} ÷ ${divisor} = ?`,q,[N(divisor,'operation'),N(q+1,'division'),N(Math.max(1,q-1),'division')],'Gunakan hubungan songsang darab dan bahagi.','Tahun 2 · Bahagi Tepat',true,shift),id,mode,'symbolic','procedure',['division','fact']);
+      return tagDivision(mark(Q(`${total} ÷ ${divisor} = ?`,q,[N(divisor,'operation'),N(q+1,'division'),N(Math.max(1,q-1),'division')],'Gunakan hubungan songsang darab dan bahagi.','Tahun 2 · Bahagi Tepat',true,shift),id,mode,'symbolic','procedure',['division','fact']),id,mode,{dividend:total,divisor,quotient:q,remainder:0,unit:'integer'},{diagnosticFamily:'division_fact',representation:'symbolic',demand:'procedure',canHaveRemainder:false,usesRegrouping:false,foundationIds:['div.facts']});
     }
     if(id==='D2.2.5'){
       const mode=rotate(id,['problem_add','problem_sub','problem_mul','problem_div']);

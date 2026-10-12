@@ -31,6 +31,8 @@ const money=diagnose([
 check(money.state==='needs_contrast'&&money.rootCause===null&&money.nextProbe==='money.ringgit_sen','money issue is not automatically divide facts');
 const allGood=diagnose([o('division_fact','f1','independent'),o('division_fact','f2','independent')]);
 check(allGood.rootCause===null,'no root cause from healthy arithmetic');
+const remainder=diagnose([o('division_fact','24/4','independent'),o('division_fact','36/6','independent'),o('remainder_div','25/4','unresolved')]);
+check(remainder.rootCause===null&&remainder.nextProbe==='div.remainder'&&remainder.state==='needs_contrast','remainder failure does not downgrade clean exact division');
 const allHelp=diagnose([o('division_fact','f1','assisted'),o('division_fact','f2','corrected')]);
 check(allHelp.rootCause===null,'hint or correction not mastered');
 const none=engine.evaluate({originSkillId:'D2.4.5',observations:[]});
@@ -78,6 +80,7 @@ check(JSON.stringify(profile)===profileSnapshot,'shadow evaluator and adapter mu
 const badQuestion={skill:'D2.4.5',focusDiagnosticV1:{schema:'pa.focus.question-tag.v1',tagOrigin:'guessed',originSkillId:'D2.4.5',evidence:{questionFamilyKey:'d2-money-equal-share'}}};
 check(collector.capture({questionKey:'not-authoritative'},badQuestion)===false,'guessed tags must never enter collector');
 const copied=collector.stats();check(copied.rejected===1,'rejected attempt accounted for');
+check(!collector.capture({questionKey:'mismatch',skillId:'D6.2.4'},q1),'review skill must match authored question provenance');
 collector.close();check(collector.stats().capturedQuestionKeys===0&&collector.stats().closed,'collector erased all in-memory keys');
 let closedError=false;try{collector.evaluate(profile)}catch(_){closedError=true}
 check(closedError,'closed collector cannot evaluate');

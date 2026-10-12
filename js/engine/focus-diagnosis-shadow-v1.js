@@ -25,6 +25,7 @@
    diagnosticFamily:safe(tag.diagnosticFamily),
    probes:{foundationIds:foundations,conceptIds:concepts,diagnosticPurpose:safe(tag.probes?.diagnosticPurpose)},
    evidence:{questionFamilyKey:family,variantFingerprint:safe(tag.evidence?.variantFingerprint),
+    tagRevision:safe(tag.evidence?.tagRevision||tag.tagRevision),
     representation:safe(tag.evidence?.representation),difficultyBand:tag.evidence?.difficultyBand??null}
   };
  }
@@ -38,6 +39,7 @@
    const key=safe(beginRecord?.questionKey);
    const tag=sanitize(question);
    if(!key||!tag){rejected.push(key?'untagged':'missing-question-key');return false}
+   if(safe(beginRecord.skillId)!==tag.originSkillId){rejected.push('review-skill-mismatch');return false}
    if(Object.prototype.hasOwnProperty.call(keyed,key))return false; // One encounter only.
    keyed[key]=tag;ordered.push(key);
    return true;

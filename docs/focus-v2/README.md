@@ -32,8 +32,10 @@ The initial structural assertions were executed against checked-in files in a V8
 ## Blockers before Focus v2 roll-out
 See [Phase C browser audit](PHASE-C-BROWSER-E2E-REPORT.md) for the final browser/shadow results, runtime metadata gaps and branch-only regression fixes. User-facing integration remains NO-GO.
 
-1. Add authored tags to the remaining key D2 money/operations generators and validate output **after** applicable runtime wrappers.
+The [D2 metadata and shadow recovery follow-up](D2-SHADOW-RECOVERY-FOLLOWUP.md) closes the final-wrapper D2 tag gap and adds a bounded, opt-in probe/prerequisite/transfer prototype. Desktop/Android shadow checks pass; addition/subtraction, multiplication, discount, other cross-topic banks and authenticated journeys remain release gates.
+
+1. Extend the verified D2 division metadata pilot to the remaining diagnostic families and validate output **after** applicable runtime wrappers.
 2. Build and audit diagnosis-style contrast banks with distinct equation, manipulative and contextual forms across root levels; don't assume all forms are already present.
-3. Build *pure shadow-only* evaluator that consumes tag/evidence without mutating profile.
+3. Preserve the implemented *pure shadow-only* evaluator and bounded D2 controller; audit a pupil-facing teaching and original-topic return flow before connecting routing.
 4. Validate with the ten gold fixture specifications and larger blinded/edge-case families before making any user-visible Focus routing change.
 5. Preserve existing gameplay/mastery algorithm until oracle parity and accuracy gates pass.

@@ -119,6 +119,8 @@
     decision=answer('needs_contrast',null,'div.regroup','SINGLE_REGROUP_FAILURE_NEEDS_REPEAT');
    }else if(failed(['division_fact'])>=2&&clean(['grouping'])>=1){
     decision=answer('candidate','div.facts','mul.facts','DIVISION_FACT_FAILURE_WITH_GROUPING_SUCCESS','medium');
+   }else if(failed(['remainder_div'])>=1&&clean(grp.plainDivision)>=2){
+    decision=answer('needs_contrast',null,'div.remainder','REMAINDER_FAILURE_WITH_EXACT_DIVISION_SUCCESS');
    }else if(failed(grp.selection)>=2&&clean(grp.operations)>=2){
     decision=answer('candidate','operation.choose','operation.choose','SELECTION_FAILURE_WITH_CALCULATION_SUCCESS','medium');
    }else if(failed(grp.percent)>=2&&clean(['subtraction'])>=1&&clean(['multiplication'])>=1){

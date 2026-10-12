@@ -1,0 +1,574 @@
+{
+  "rows": [
+    {
+      "device": "desktop",
+      "test": "final runtime pilot metadata",
+      "pass": true,
+      "samples": 120
+    },
+    {
+      "device": "desktop",
+      "test": "facts recovery",
+      "grade": 2,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D2.2.4",
+        "state": "candidate",
+        "rootCause": "div.facts",
+        "nextProbe": "mul.facts",
+        "confidence": "medium",
+        "reasonCode": "DIVISION_FACT_FAILURE_WITH_GROUPING_SUCCESS",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 0,
+              "nonindependent": 2
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 3,
+              "independent": 3,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.facts",
+        "schoolGrade": 2,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.facts",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "desktop",
+      "test": "regroup recovery",
+      "grade": 2,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D2.2.4",
+        "state": "candidate",
+        "rootCause": "div.regroup",
+        "nextProbe": "div.regroup",
+        "confidence": "medium",
+        "reasonCode": "REGROUP_FAILURE_WITH_BASIC_DIVISION_EVIDENCE",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 1,
+              "independent": 1,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 4,
+              "independent": 2,
+              "nonindependent": 2
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.regroup",
+        "schoolGrade": 2,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.regroup",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "desktop",
+      "test": "facts recovery",
+      "grade": 6,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D6.OPS",
+        "state": "candidate",
+        "rootCause": "div.facts",
+        "nextProbe": "mul.facts",
+        "confidence": "medium",
+        "reasonCode": "DIVISION_FACT_FAILURE_WITH_GROUPING_SUCCESS",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 0,
+              "nonindependent": 2
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 3,
+              "independent": 3,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.facts",
+        "schoolGrade": 6,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.facts",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "desktop",
+      "test": "regroup recovery",
+      "grade": 6,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D6.OPS",
+        "state": "candidate",
+        "rootCause": "div.regroup",
+        "nextProbe": "div.regroup",
+        "confidence": "medium",
+        "reasonCode": "REGROUP_FAILURE_WITH_BASIC_DIVISION_EVIDENCE",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 1,
+              "independent": 1,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 4,
+              "independent": 2,
+              "nonindependent": 2
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.regroup",
+        "schoolGrade": 6,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.regroup",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "desktop",
+      "test": "actual hint excludes independent outcome",
+      "pass": true
+    },
+    {
+      "device": "desktop",
+      "test": "facts assisted recovery terminates",
+      "pass": true,
+      "attempts": 11
+    },
+    {
+      "device": "desktop",
+      "test": "regroup assisted recovery terminates",
+      "pass": true,
+      "attempts": 11
+    },
+    {
+      "device": "desktop",
+      "test": "no learner profile persisted",
+      "pass": true
+    },
+    {
+      "device": "android",
+      "test": "final runtime pilot metadata",
+      "pass": true,
+      "samples": 120
+    },
+    {
+      "device": "android",
+      "test": "facts recovery",
+      "grade": 2,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D2.2.4",
+        "state": "candidate",
+        "rootCause": "div.facts",
+        "nextProbe": "mul.facts",
+        "confidence": "medium",
+        "reasonCode": "DIVISION_FACT_FAILURE_WITH_GROUPING_SUCCESS",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 0,
+              "nonindependent": 2
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 3,
+              "independent": 3,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.facts",
+        "schoolGrade": 2,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.facts",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "android",
+      "test": "regroup recovery",
+      "grade": 2,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D2.2.4",
+        "state": "candidate",
+        "rootCause": "div.regroup",
+        "nextProbe": "div.regroup",
+        "confidence": "medium",
+        "reasonCode": "REGROUP_FAILURE_WITH_BASIC_DIVISION_EVIDENCE",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 1,
+              "independent": 1,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 4,
+              "independent": 2,
+              "nonindependent": 2
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.regroup",
+        "schoolGrade": 2,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.regroup",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "android",
+      "test": "facts recovery",
+      "grade": 6,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D6.OPS",
+        "state": "candidate",
+        "rootCause": "div.facts",
+        "nextProbe": "mul.facts",
+        "confidence": "medium",
+        "reasonCode": "DIVISION_FACT_FAILURE_WITH_GROUPING_SUCCESS",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 0,
+              "nonindependent": 2
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 3,
+              "independent": 3,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.facts",
+        "schoolGrade": 6,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.facts",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "android",
+      "test": "regroup recovery",
+      "grade": 6,
+      "pass": true,
+      "attempts": 11,
+      "report": {
+        "version": "0.2.0-test-only",
+        "mode": "shadow_read_only",
+        "originSkillId": "D6.OPS",
+        "state": "candidate",
+        "rootCause": "div.regroup",
+        "nextProbe": "div.regroup",
+        "confidence": "medium",
+        "reasonCode": "REGROUP_FAILURE_WITH_BASIC_DIVISION_EVIDENCE",
+        "verification": "transfer_observed",
+        "evidence": {
+          "uniqueTaggedQuestions": 11,
+          "duplicatesDiscarded": 0,
+          "untaggedExcluded": 0,
+          "byFamily": {
+            "division_fact": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "money": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            },
+            "grouping": {
+              "uniqueQuestions": 1,
+              "independent": 1,
+              "nonindependent": 0
+            },
+            "regroup_div": {
+              "uniqueQuestions": 4,
+              "independent": 2,
+              "nonindependent": 2
+            },
+            "transfer_verify": {
+              "uniqueQuestions": 2,
+              "independent": 2,
+              "nonindependent": 0
+            }
+          }
+        },
+        "writes": 0,
+        "note": "Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.",
+        "sessionPhase": "stopped",
+        "candidate": "div.regroup",
+        "schoolGrade": 6,
+        "attempts": 11,
+        "stopped": true,
+        "transferObserved": true,
+        "recovery": {
+          "candidate": "div.regroup",
+          "independentPrerequisites": 2,
+          "transferIndependentStreak": 2,
+          "supported": true
+        }
+      }
+    },
+    {
+      "device": "android",
+      "test": "actual hint excludes independent outcome",
+      "pass": true
+    },
+    {
+      "device": "android",
+      "test": "facts assisted recovery terminates",
+      "pass": true,
+      "attempts": 11
+    },
+    {
+      "device": "android",
+      "test": "regroup assisted recovery terminates",
+      "pass": true,
+      "attempts": 11
+    },
+    {
+      "device": "android",
+      "test": "no learner profile persisted",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "mode": "isolated shadow / synthetic learner outcomes"
+}

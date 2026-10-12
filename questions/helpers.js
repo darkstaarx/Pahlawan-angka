@@ -166,7 +166,16 @@ function chooseMoneyValue(mode="mixed",max=10000){
 /* Focus Diagnosis v2: optional question-instance evidence, not scores/routing. */
 function attachFoundationQuestionTags(q,meta){
  if(!q)return q;
- q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',...meta};
+ const operands=meta.arithmeticProfile?.operands||{};
+ // Equation identity deliberately excludes wording/representation: showing
+ // the same calculation in a story is not a second independent equation.
+ const identity=JSON.stringify([meta.arithmeticProfile?.operationFamilies||[],
+   operands.unit||'unknown',operands.totalMinorUnits??operands.dividend,
+   operands.divisor,operands.quotientMinorUnits??operands.quotient,operands.remainder??0]);
+ let hash=2166136261;for(const char of identity){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}
+ q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',...meta,
+   evidence:{...meta.evidence,tagRevision:'d2-pilot-v2',
+     variantFingerprint:meta.evidence?.variantFingerprint||'eq-'+(hash>>>0).toString(36)}};
  return q;
 }
 function moneyQ(id,shift,s){

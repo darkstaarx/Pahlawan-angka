@@ -1,13 +1,29 @@
 <!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Focus v2 isolated shadow audit</title>
-<style>body{font:16px system-ui;background:#142638;color:#fff;padding:24px}button{padding:12px}pre{white-space:pre-wrap}iframe{width:100%;height:640px;border:1px solid #aaa}</style>
+<style>body{font:16px system-ui;background:#142638;color:#fff;padding:24px}button{padding:12px}pre{white-space:pre-wrap}iframe{width:100%;height:640px;border:1px solid #aaa}.groupBoxes{display:flex;flex-wrap:wrap;gap:4px;max-width:280px;margin-top:8px}.groupBox{display:flex;flex-wrap:wrap;gap:2px;border:1px solid #456;padding:4px;max-width:65px}.object{width:6px;height:6px;border-radius:50%;background:#274}</style>
 <h1>Focus v2 isolated shadow audit</h1><p>No scoring, routing or persistence is connected to this harness.</p><button id="run" disabled>Run shadow audit</button><pre id="output">Explicit ?shadow=1 opt-in required.</pre>
 <script>
 (async()=>{
  if(new URLSearchParams(location.search).get('shadow')!=='1')return;
- for(const src of ['../js/engine/focus-diagnosis-v2.js','../js/engine/focus-diagnosis-shadow-v1.js'])await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.append(s)});
+ for(const src of ['../js/engine/focus-diagnosis-v2.js','../js/engine/focus-diagnosis-shadow-v1.js','../js/engine/focus-probe-session-v2.js'])await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=reject;document.head.append(s)});
  const frame=document.createElement('iframe');frame.title='Fresh local app runtime';frame.src='../index.html';document.body.append(frame);
  const fixtures=await (await fetch('../data/focus-v2/diagnosis-fixtures-v1.json')).json();
+ // Explicit local audit UI. The production learner review writes to a disposable
+ // clone only; no save/cloud/mastery/rewards functions are called.
+ const panel=document.createElement('section');panel.innerHTML='<h2>Probe → recovery → transfer (shadow)</h2><label>School grade <select id="probeGrade"><option>2</option><option>6</option></select></label> <button id="probeStart">Start isolated session</button><p id="probeQuestion"></p><div id="probeAnswers"></div><button id="probeHint" hidden>Hint used</button><pre id="probeReport"></pre>';document.body.insertBefore(panel,frame);
+ let probeSession,probeQuestion,probeProfile;
+ window.startProbeAudit=grade=>{probeProfile={schoolGrade:grade,skills:{'D2.2.4':{mastery:61}},xp:100,coins:55};probeSession=PAFocusProbeSessionV2.createSession({originSkillId:grade===6?'D6.OPS':'D2.2.4',schoolGrade:grade},PAFocusDiagnosisV2);return showProbe()};
+ function showProbe(){
+  const w=frame.contentWindow;if(!w.PALearnerReview)throw Error('App learner review not ready');
+  probeQuestion=probeSession.next();const report=probeSession.evaluate();document.getElementById('probeReport').textContent=JSON.stringify(report,null,2);
+  const answers=document.getElementById('probeAnswers');answers.replaceChildren();document.getElementById('probeHint').hidden=!probeQuestion;
+  document.getElementById('probeQuestion').textContent=probeQuestion?probeQuestion.prompt:'Session complete: '+report.verification;
+  if(probeQuestion){w.PALearnerReview.beginQuestion(probeQuestion,{grade:probeSession.schoolGrade,mode:'practice'});for(const v of [probeQuestion.answer,...probeQuestion.wrong.map(x=>x.v)]){const b=document.createElement('button');b.textContent=v;if(probeQuestion.groupModel){const boxes=document.createElement('span');boxes.className='groupBoxes';boxes.setAttribute('aria-hidden','true');for(let i=0;i<probeQuestion.groupModel.groups;i++){const box=document.createElement('span');box.className='groupBox';for(let j=0;j<parseInt(v,10);j++){const dot=document.createElement('span');dot.className='object';box.append(dot)}boxes.append(box)}b.append(boxes)}b.onclick=()=>{if(v!==probeQuestion.answer){w.PALearnerReview.firstWrong(probeQuestion,{value:v});b.disabled=true;return}finishProbe(true)};answers.append(b)}}return probeQuestion;
+ }
+ function finishProbe(correct){const record=frame.contentWindow.PALearnerReview.resolve(probeQuestion,{correct,seconds:5},probeProfile);const result=probeSession.record(probeQuestion,{outcome:record.outcome});showProbe();return result}
+ window.probeAuditState=()=>({question:probeQuestion,report:probeSession.evaluate(),profile:probeProfile});
+ window.resolveProbeAudit=outcome=>{const review=frame.contentWindow.PALearnerReview;if(outcome==='corrected')review.firstWrong(probeQuestion,{value:'audit wrong'});if(outcome==='assisted')review.hintUsed(probeQuestion,1);return finishProbe(outcome!=='unresolved')};
+ document.getElementById('probeStart').onclick=()=>startProbeAudit(Number(document.getElementById('probeGrade').value));document.getElementById('probeHint').onclick=()=>frame.contentWindow.PALearnerReview.hintUsed(probeQuestion,1);
  window.runShadowAudit=async()=>{
   const w=frame.contentWindow;
   const deadline=Date.now()+30000;while(w.document.readyState!=='complete'||typeof w.generate!=='function'||!w.PALearnerReview||!w.__PA_LIVE_ASSET_REFRESHED){if(Date.now()>deadline)throw Error('App runtime unavailable');await new Promise(r=>setTimeout(r,100))}
