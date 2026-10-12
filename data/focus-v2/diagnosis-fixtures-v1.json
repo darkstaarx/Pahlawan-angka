@@ -1,0 +1,281 @@
+{
+  "schema": "pa.focus.diagnosis-fixtures.v1",
+  "purpose": "gold-standard expected next diagnostic probe (NOT observed production engine results)",
+  "status": "specification_only",
+  "cases": [
+    {
+      "id": "no-evidence-single-error",
+      "originSkillId": "D2.4.5",
+      "observations": [
+        {
+          "probe": "money_equal_sharing",
+          "family": "money",
+          "result": "unresolved"
+        }
+      ],
+      "expected": {
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "div.facts"
+      },
+      "rationale": "Single wrong item cannot establish cause"
+    },
+    {
+      "id": "money-context-versus-divide",
+      "originSkillId": "D2.4.5",
+      "observations": [
+        {
+          "probe": "money_equal_sharing",
+          "family": "money",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_24_div_4",
+          "family": "division_fact",
+          "result": "independent"
+        },
+        {
+          "probe": "plain_32_div_4",
+          "family": "division_fact",
+          "result": "independent"
+        },
+        {
+          "probe": "money_same_load_32_div_4",
+          "family": "money",
+          "result": "unresolved"
+        }
+      ],
+      "expected": {
+        "state": "needs_contrast",
+        "rootCause": null,
+        "nextProbe": "money.ringgit_sen"
+      },
+      "rationale": "Two successful pure division facts and unsuccessful money transfer point to a candidate, not a verdict"
+    },
+    {
+      "id": "weak-basic-division",
+      "originSkillId": "D2.4.5",
+      "observations": [
+        {
+          "probe": "money_equal_sharing",
+          "family": "money",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_24_div_4",
+          "family": "division_fact",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_20_div_5",
+          "family": "division_fact",
+          "result": "unresolved"
+        },
+        {
+          "probe": "model_equal_sharing",
+          "family": "grouping",
+          "result": "independent"
+        }
+      ],
+      "expected": {
+        "state": "candidate",
+        "rootCause": "div.facts",
+        "nextProbe": "mul.facts"
+      },
+      "rationale": "Equal sharing meaning sound; basic exact division facts across variants fail"
+    },
+    {
+      "id": "digit-depth-probe",
+      "originSkillId": "D2.4.5",
+      "observations": [
+        {
+          "probe": "plain_8_div_2",
+          "family": "one_digit_div",
+          "result": "independent"
+        },
+        {
+          "probe": "plain_12_div_3",
+          "family": "two_digit_div",
+          "result": "independent"
+        },
+        {
+          "probe": "plain_84_div_4",
+          "family": "regroup_div",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_76_div_4",
+          "family": "regroup_div",
+          "result": "unresolved"
+        }
+      ],
+      "expected": {
+        "state": "candidate",
+        "rootCause": "div.regroup",
+        "nextProbe": "number.place_value"
+      },
+      "rationale": "Avoid calling all of division weak when evidence isolates regrouping"
+    },
+    {
+      "id": "operation-selection-not-fluency",
+      "originSkillId": "D2.4.7",
+      "observations": [
+        {
+          "probe": "plain_24_div_4",
+          "family": "division_fact",
+          "result": "independent"
+        },
+        {
+          "probe": "plain_20_plus_6",
+          "family": "addition",
+          "result": "independent"
+        },
+        {
+          "probe": "word_problem_select_operation_a",
+          "family": "operation_choice",
+          "result": "unresolved"
+        },
+        {
+          "probe": "word_problem_select_operation_b",
+          "family": "operation_choice",
+          "result": "unresolved"
+        }
+      ],
+      "expected": {
+        "state": "candidate",
+        "rootCause": "operation.choose",
+        "nextProbe": "operation.choose"
+      },
+      "rationale": "Computation succeeds but selection of operation in text is weak"
+    },
+    {
+      "id": "discount-concept-not-subtraction",
+      "originSkillId": "D5.MONEY",
+      "observations": [
+        {
+          "probe": "price_minus_discount",
+          "family": "money_discount",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_80_minus_20",
+          "family": "subtraction",
+          "result": "independent"
+        },
+        {
+          "probe": "plain_20_times_4",
+          "family": "multiplication",
+          "result": "independent"
+        },
+        {
+          "probe": "quarter_of_whole_visual_a",
+          "family": "percent_concept",
+          "result": "unresolved"
+        },
+        {
+          "probe": "quarter_of_whole_visual_b",
+          "family": "percent_concept",
+          "result": "unresolved"
+        }
+      ],
+      "expected": {
+        "state": "candidate",
+        "rootCause": "percent.part_whole",
+        "nextProbe": "fraction.equal_parts"
+      },
+      "rationale": "Separate percent/quarter understanding from arithmetic"
+    },
+    {
+      "id": "d6-mixed-ambiguous",
+      "originSkillId": "D6.OPS",
+      "observations": [
+        {
+          "probe": "mixed_operators_single",
+          "family": "mixed",
+          "result": "unresolved"
+        }
+      ],
+      "expected": {
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "operation.choose"
+      },
+      "rationale": "Cannot infer particular operation from one mixed question"
+    },
+    {
+      "id": "assistance-not-independent",
+      "originSkillId": "D2.2.4",
+      "observations": [
+        {
+          "probe": "plain_24_div_4",
+          "family": "division_fact",
+          "result": "assisted"
+        },
+        {
+          "probe": "plain_20_div_5",
+          "family": "division_fact",
+          "result": "corrected"
+        }
+      ],
+      "expected": {
+        "state": "needs_contrast",
+        "rootCause": null,
+        "nextProbe": "div.facts"
+      },
+      "rationale": "Success after hints or correction cannot certify secure independent mastery"
+    },
+    {
+      "id": "cross-grade-recovery",
+      "originSkillId": "D6.MONEY",
+      "observations": [
+        {
+          "probe": "d6_budget_division",
+          "family": "budget",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_84_div_4",
+          "family": "regroup_div",
+          "result": "unresolved"
+        },
+        {
+          "probe": "plain_24_div_4",
+          "family": "division_fact",
+          "result": "independent"
+        },
+        {
+          "probe": "plain_32_div_4",
+          "family": "division_fact",
+          "result": "independent"
+        }
+      ],
+      "expected": {
+        "state": "candidate",
+        "rootCause": "div.regroup",
+        "nextProbe": "div.regroup"
+      },
+      "rationale": "D6 pupil may need earlier-foundation work without changing grade"
+    },
+    {
+      "id": "cannot-downscore-other-subject",
+      "originSkillId": "D2.4.5",
+      "observations": [
+        {
+          "probe": "money_equal_sharing",
+          "family": "money",
+          "result": "unresolved"
+        }
+      ],
+      "expected": {
+        "state": "insufficient_evidence",
+        "rootCause": null,
+        "nextProbe": "div.facts",
+        "mustNotMutate": [
+          "D2.2.4",
+          "D2.2.3"
+        ]
+      },
+      "rationale": "One money failure cannot lower Operasi mastery"
+    }
+  ]
+}
