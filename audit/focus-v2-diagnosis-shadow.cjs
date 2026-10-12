@@ -5,6 +5,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const root=path.resolve(__dirname,'..');
 const engine=require(path.join(root,'js/engine/focus-diagnosis-v2.js'));
 const review=require(path.join(root,'js/engine/learner-review-v1.js'));
+const shadowCollector=require(path.join(root,'js/engine/focus-diagnosis-shadow-v1.js'));
 const fixtures=JSON.parse(fs.readFileSync(path.join(root,'data/focus-v2/diagnosis-fixtures-v1.json'),'utf8'));
 let checks=0;
 function check(condition,desc){assert(condition,desc);checks++}
@@ -49,10 +50,11 @@ const source=fs.readFileSync(path.join(root,'questions/helpers.js'),'utf8')+'\n'
 const bank=new Function('Math','window',source+'\nreturn {moneyQ,divide:window.PAQuestionBanks.d2t2};')(math,{PAQuestionBanks:{}});
 const q1=bank.moneyQ('D2.4.5',false,{mastery:15});q1.token='s1';q1.skill='D2.4.5';
 const q2=bank.divide('D2.2.4',{mastery:15},false);q2.token='s2';q2.skill='D2.2.4';
-const tags={};profile.learnerReviewV1={schema:1,encounters:[],updatedAt:0};
+const tags={};const collector=shadowCollector.createSession({originSkillId:'D2.4.5'},engine);profile.learnerReviewV1={schema:1,encounters:[],updatedAt:0};
 for(const [q,outcome] of [[q1,'unresolved'],[q2,'independent']]){
  const begin=review.beginQuestion(q,{grade:2,mode:'practice',now:1000});
  check(!!begin.questionKey,'learner review produced a joinable questionKey');
+ check(collector.capture(begin,q),'collector captured authored tags using exact review key');
  if(outcome==='unresolved')review.firstWrong(q,{tag:'division',now:1200});
  const e=review.resolve(q,{correct:outcome==='independent',usedHint:false,now:1500},profile);
  check(e?.outcome===outcome,'production-style learner review outcome recorded');
@@ -62,6 +64,9 @@ const keys=profile.learnerReviewV1.encounters.map(x=>x.questionKey);
 const profileSnapshot=JSON.stringify(profile);
 const joined=engine.fromReview(profile,tags,{originSkillId:'D2.4.5',questionKeys:keys});
 check(joined.tagged===2&&joined.unmatched===0,'joined exactly two explicit tagged encounters');
+const collected=collector.evaluate(profile);
+check(collected.evidence.uniqueTaggedQuestions===2,'in-memory collector joined review and authored tags');
+check(collector.stats().capturedQuestionKeys===2,'collector capture count before disposal');
 const shadow=engine.evaluate({originSkillId:'D2.4.5',profile,questionTagsByKey:tags,questionKeys:keys});
 check(shadow.evidence.uniqueTaggedQuestions===2&&shadow.mode==='shadow_read_only','shadow consumed tagged production-shaped records');
 check(profile.skills['D2.2.4'].mastery===44&&profile.skills['D2.4.5'].mastery===17,'mastery untouched');
@@ -70,4 +75,10 @@ check(withoutScope.evidence.uniqueTaggedQuestions===0&&withoutScope.state==='ins
 const withoutTags=engine.evaluate({originSkillId:'D2.4.5',profile,questionKeys:keys});
 check(withoutTags.evidence.uniqueTaggedQuestions===0&&withoutTags.evidence.untaggedExcluded===2,'legacy observations cannot be guessed into tagged evidence');
 check(JSON.stringify(profile)===profileSnapshot,'shadow evaluator and adapter must not mutate any profile fields');
-console.log(JSON.stringify({status:'focus_v2_phase_c_shadow_pass',goldenFixtures:fixtures.cases.length,assertions:checks,adapter:'tagged learner review join passed',productionRouting:'not connected',masteryMutation:false},null,2));
+const badQuestion={skill:'D2.4.5',focusDiagnosticV1:{schema:'pa.focus.question-tag.v1',tagOrigin:'guessed',originSkillId:'D2.4.5',evidence:{questionFamilyKey:'d2-money-equal-share'}}};
+check(collector.capture({questionKey:'not-authoritative'},badQuestion)===false,'guessed tags must never enter collector');
+const copied=collector.stats();check(copied.rejected===1,'rejected attempt accounted for');
+collector.close();check(collector.stats().capturedQuestionKeys===0&&collector.stats().closed,'collector erased all in-memory keys');
+let closedError=false;try{collector.evaluate(profile)}catch(_){closedError=true}
+check(closedError,'closed collector cannot evaluate');
+console.log(JSON.stringify({status:'focus_v2_phase_c_shadow_pass',goldenFixtures:fixtures.cases.length,assertions:checks,adapter:'tagged learner-review join and in-memory collector passed',productionRouting:'not connected',masteryMutation:false},null,2));
