@@ -21,6 +21,13 @@ node audit/focus-v2-d2-tag-smoke.cjs
 
 The initial structural assertions were executed against checked-in files in a V8-compatible test runner, and a deterministic 500-question comparison with untouched `main` reported 0 changes to legacy prompt/answer/distractors. Full browser end-to-end and Node CLI runs on a checked-out repository are follow-up gates, not claimed completed.
 
+## Phase C delivery
+
+- `js/engine/focus-diagnosis-v2.js` — **pure** root-cause candidate evaluator and scoped production encounter-tag adapter.
+- `audit/focus-v2-diagnosis-shadow.cjs` — 10/10 golden cases and 69 assertions on a simulated learner-review integration.
+- `docs/focus-v2/PHASE-C-SHADOW-REPORT.md` — test details, conservative D6 oracle correction, current integration limits and release gates.
+- Current `main` and `index.html` are unchanged. **No live shadow observer is installed yet.**
+
 ## Blockers before Focus v2 roll-out
 1. Add authored tags to the remaining key D2 money/operations generators and validate output **after** applicable runtime wrappers.
 2. Build and audit diagnosis-style contrast banks with distinct equation, manipulative and contextual forms across root levels; don't assume all forms are already present.
