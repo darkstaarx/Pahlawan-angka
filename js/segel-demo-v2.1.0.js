@@ -25,7 +25,7 @@
   // Index lama masih memanggil bundle ini beberapa kali. Selepas bundle live
   // masuk, jangan benarkan salinan legacy overwrite host dan stage semula.
   const src=String(document.currentScript?.src||'');
-  const canonical=/[?&]v=4\.0\.21(?:[&#]|$)/.test(src);
+  const canonical=/[?&]v=4\.0\.22(?:[&#]|$)/.test(src);
   if(window.__PA_SEGEL_CANONICAL__)return;
   if(canonical)window.__PA_SEGEL_CANONICAL__=true;
   'use strict';
@@ -2134,10 +2134,27 @@
       });
     }
     wireLegacyFractionTouch(box);
+    syncQuestionLayout();
     // Give the touch-choice bridge a deterministic hook after both the legacy
     // visual prompt and its answer buttons exist. This also covers cached
     // question-bank paths that do not trigger the answer observer in order.
     queueMicrotask(()=>window.PASegelInteractionBridge?.sync?.());
+  }
+
+  function syncQuestionLayout(){
+    const question=$('segelQuestion');
+    const card=question?.closest('.segelCard');
+    const prompt=question?.querySelector('.segelPrompt');
+    const answers=$('segelAnswers');
+    if(!card||!prompt||!answers)return;
+    const promptText=(prompt.textContent||'').replace(/\s+/g,' ').trim();
+    const answerText=(answers.textContent||'').replace(/\s+/g,' ').trim();
+    const hasVisual=!!prompt.querySelector(
+      'img,svg,canvas,table,.fraction-art,.paQuestionChart,.paQuestionPictograph,.paWrittenArithmetic'
+    );
+    const hasInteraction=!!answers.querySelector('input,select,textarea,.paInteraction,.d1-fraction-answer');
+    const compact=!hasVisual&&!hasInteraction&&promptText.length<=90&&answerText.length<=100;
+    card.dataset.questionLayout=compact?'compact':'standard';
   }
 
   function toast(text){
