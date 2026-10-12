@@ -5,6 +5,7 @@
 ## Delivered implementation
 
 - `js/engine/focus-diagnosis-v2.js`: UMD/CommonJS **pure evaluator** (`PAFocusDiagnosisV2.evaluate`) and adapter (`fromReview`) for the actual `PALearnerReview` record shape and explicitly keyed authored question tags.
+- `js/engine/focus-diagnosis-shadow-v1.js`: optional in-memory collector, captured only when a future runtime explicitly passes `beginQuestion` and authored tags. It stores no raw question text and can be erased with `close()`.
 - `audit/focus-v2-diagnosis-shadow.cjs`: executable oracle test + safety/contamination/production-like record assertions.
 - `data/focus-v2/diagnosis-fixtures-v1.json`: 10 specification scenarios; one initially overconfident D6 regroup oracle was revised to `needs_contrast`, as a single regrouping error cannot isolate root cause.
 
@@ -13,7 +14,7 @@
 | Test | Result | Boundary |
 |---|---|---|
 | Ten golden oracle specifications | **10/10 pass** | Expected recommendation, cause candidate and state; fixtures are *authored scenarios*, not real pupil labels |
-| Additional safety and integration assertions | **69 total assertions pass**, counting oracle assertions | Tested by executing checked-in CommonJS test content in V8 with virtual file reads; native `node` execution after a repository checkout remains an independent CI gate |
+| Additional safety and integration assertions | **77 total assertions pass**, counting oracle assertions | Tested by executing checked-in CommonJS test content in V8 with virtual file reads; native `node` execution after a repository checkout remains an independent CI gate |
 | D2 tag pilot | **500** seeded original-versus-feature source question outputs equal after removing optional tag | 250 D2.4.5 and 250 D2.2.4; checks source-generator parity, not all runtime wrappers |
 | Cross-grade D6 example | Two regrouping errors + strong basic division → `candidate: div.regroup` | A single regrouping error → `needs_contrast`, **no rootCause yet** |
 | Safety/abstention | Single repeated item, missing tags, assisted/corrected, whole-profile without scoped keys, unknown domain | No unsupported root diagnosis |
@@ -55,9 +56,9 @@ The learner remains D6; no global grade or unrelated curriculum mastery is reduc
 
 `fromReview(profile, tagsByQuestionKey, {originSkillId, questionKeys})` requires explicit **question-key scope** and an authored `focusDiagnosticV1` tag joined by the key from actual `PALearnerReview.beginQuestion` / `resolve`. If either is missing, the engine **abstains** rather than scanning arbitrary saved encounters or reverse-inferring from a prompt.
 
-In Phase B, source generators tag `D2.2.4` and `D2.4.5`; however, existing `PALearnerReview` persistent encounter fields do **not yet carry those tags**, and the full app runtime has **no live shadow collector**. The adapter was verified with production-shaped review records constructed in the test. **No production pupil histories have been analyzed.**
+In Phase B, source generators tag `D2.2.4` and `D2.4.5`; however, existing `PALearnerReview` persistent encounter fields do **not yet carry those tags**, and the full app runtime has **no live shadow collector**. The adapter and ephemeral collector were verified with real `PALearnerReview.beginQuestion` / `resolve` outputs from generated pilot D2 questions in a test environment. **No production pupil histories have been analyzed.**
 
-The next controlled milestone should build an opt-in shadow collector (per-question tag → encounter key association with privacy boundaries), run representative bank-runtime checks, and expand rich tag coverage to Tambah/Tolak/Darab and topic contexts.
+The next controlled milestone is a **reviewed opt-in runtime wiring** of the existing branch-only collector (not yet present), plus representative bank-runtime checks, and expanded rich tag coverage to Tambah/Tolak/Darab and topic contexts.
 
 ## Explicit GO/NO-GO gates
 
