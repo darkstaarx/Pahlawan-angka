@@ -3,13 +3,13 @@
 "use strict";
 const MODE_IDS={
   1:{bayar:"D1.MONEY"},
-  2:{bayar:"D2.4.1",baki:"D2.4.3"},
+  2:{bayar:"D2.4.1",baki:"D2.4.3",bahagi:"D2.4.5"},
   3:{bayar:"D3.MONEY",baki:"D3.MONEY"},
   4:{bayar:"D4.MONEY",baki:"D4.MONEY"},
   5:{baki:"D5.MONEY",diskaun:"D5.MONEY"},
   6:{diskaun:"D6.MONEY",untung:"D6.MONEY"}
 };
-const gradeModes={1:["bayar"],2:["bayar","baki"],3:["bayar","baki"],4:["bayar","baki"],5:["diskaun","baki"],6:["diskaun","untung"]};
+const gradeModes={1:["bayar"],2:["bayar","baki","bahagi"],3:["bayar","baki"],4:["bayar","baki"],5:["diskaun","baki"],6:["diskaun","untung"]};
 let run=null;
 const css=document.createElement("style");
 css.textContent='#paWirayungOverlay{position:fixed;inset:0;z-index:2147482000;background:#142638;display:flex;flex-direction:column;overscroll-behavior:contain}#paWirayungOverlay .paWirayungNav{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:50px;padding:7px max(12px,env(safe-area-inset-right)) 7px max(12px,env(safe-area-inset-left));background:#1c344d;border-bottom:2px solid #d7a76a;color:#fff;font:700 14px system-ui,sans-serif}#paWirayungOverlay .paWirayungNav b{font-size:clamp(15px,3vw,21px);color:#ffdfa1}#paWirayungOverlay .paWirayungNav small{opacity:.8;margin-right:auto}#paWirayungOverlay #paWirayungExit{border:0;border-radius:10px;background:#fff0d0;padding:9px 13px;color:#4a301c;font-weight:900;cursor:pointer}#paWirayungOverlay iframe{width:100%;flex:1;min-height:0;border:0;background:#203952}body.pa-wirayung-active{overflow:hidden!important}#wirayungLaunch{display:block;width:100%;border:2px solid #bf904e;border-radius:14px;background:linear-gradient(#ffe0a3,#edb764);color:#432e1e;min-height:50px;margin:9px 0;font-size:15px;font-weight:900;cursor:pointer}@media(min-width:800px){#paWirayungOverlay .paWirayungNav{padding-inline:24px}}';
@@ -45,7 +45,7 @@ function close(){
 }
 function records(){
  const events=(typeof db!=="undefined"&&db?.wirayungProgress?.events||[]).filter(e=>Number(e.grade)===activeGrade());
- const rows=[["bayar","Bayar tepat"],["baki","Kira baki"],["diskaun","Diskaun"],["untung","Untung/rugi"]].map(([mode,label])=>{
+ const rows=[["bayar","Bayar tepat"],["baki","Kira baki"],["bahagi","Bahagi wang"],["diskaun","Diskaun"],["untung","Untung/rugi"]].map(([mode,label])=>{
   const items=events.filter(x=>x.mode===mode).slice(-12);
   return {mode,label,total:items.length,independent:items.filter(x=>x.independent).length,hinted:items.filter(x=>x.hints>0).length};
  }).filter(x=>x.total);
@@ -60,6 +60,9 @@ function mountReport(){
  let message="Bukti awal latihan Wang. Teruskan beberapa pesanan berbeza sebelum membuat rumusan.";
  if(weak.length)message=(strong.length?"Anak boleh buat "+strong.map(x=>x.label.toLowerCase()).join(" dan ")+", tetapi ":"Anak ")+"masih memerlukan latihan khusus "+weak.map(x=>x.label.toLowerCase()).join(" dan ")+".";
  else if(eligible.length&&eligible.every(x=>x.independent/x.total>=.8))message="Anak boleh menyelesaikan kemahiran Wang yang diuji tanpa bantuan. Cuba cabaran lebih sukar untuk mengesahkan penguasaan.";
+ const divisionEvents=(db?.wirayungProgress?.events||[]).filter(x=>x.mode==="bahagi"&&Number(x.grade)===activeGrade());
+ const divisionKinds=[["kongsi","kongsi bil"],["tukar","tukar duit kecil"]].map(([kind,label])=>({kind,label,events:divisionEvents.filter(x=>x.variant===kind).slice(-12)})).filter(x=>x.events.length>=3);
+ if(divisionKinds.length){const struggles=divisionKinds.filter(x=>x.events.filter(e=>e.independent).length/x.events.length<.6);if(struggles.length)message+=" Dalam latihan bahagi wang, anak masih memerlukan bantuan untuk "+struggles.map(x=>x.label).join(" dan ")+".";}
  box.innerHTML='<b style="color:#97632e">Gerai Wirayung · Kemajuan Wang</b><p style="margin:8px 0;line-height:1.5">'+escapeHtml(message)+'</p><div style="display:flex;flex-wrap:wrap;gap:7px">'+rows.map(x=>'<span style="padding:7px 9px;background:#f3e1bd;border-radius:9px;font-size:12px">'+escapeHtml(x.label)+' <b>'+x.independent+'/'+x.total+'</b> tanpa bantuan</span>').join("")+'</div><small style="display:block;margin-top:9px">Pemerhatian berdasarkan aktiviti gerai, bukan keputusan peperiksaan. Rumusan khusus hanya selepas sekurang-kurangnya 3 pesanan.</small>';
 }
 function finishRound(e){
@@ -68,17 +71,19 @@ function finishRound(e){
  if(grade!==run.grade||!gradeModes[grade]?.includes(mode)||!key||!at||Math.abs(Date.now()-at)>3600000)return;
  const misses=Math.max(0,Math.min(20,Number(e.misses)||0)),hints=Math.max(0,Math.min(20,Number(e.hints)||0)),independent=misses===0&&hints===0;
  const progress=db.wirayungProgress||(db.wirayungProgress={version:1,events:[]});
- progress.events.push({grade,mode,key,independent,errors:misses,hints,at});
+ const variant=mode==="bahagi"&&["kongsi","tukar"].includes(e.variant)?e.variant:null;
+ if(progress.events.some(x=>x.grade===grade&&x.key===key&&x.at===at))return;
+ progress.events.push({grade,mode,variant,key,independent,errors:misses,hints,at});
  progress.events=progress.events.slice(-250);
  const skill=(run.skillId&&META[run.skillId])?run.skillId:MODE_IDS[grade][mode];
  if(typeof META!=="undefined"&&META[skill]){
   if(!db.skills[skill]&&typeof initSkill==="function")initSkill(skill);
   const s=db.skills[skill];
   if(s){
-   s.evidence=(Number(s.evidence)||0)+1;s.correct=(Number(s.correct)||0)+1;
+   s.evidence=(Number(s.evidence)||0)+1;s.correct=(Number(s.correct)||0)+(mode==="bahagi"?(independent?1:0):1);
    if(misses){s.wrong=(Number(s.wrong)||0)+1;s.mis=s.mis||{};s.mis["wirayung_"+mode]=(Number(s.mis["wirayung_"+mode])||0)+1;}
    if(hints)s.hints=(Number(s.hints)||0)+1;
-   s.mastery=Math.max(0,Math.min(100,(Number(s.mastery)||0)+(independent?2:misses?0:.6)));
+   s.mastery=Math.max(0,Math.min(100,(Number(s.mastery)||0)+(independent?2:mode==="bahagi"?0:misses?0:.6)));
    s.confidence=Math.max(0,Math.min(100,(Number(s.confidence)||0)+(independent?1.5:0)));
    s.lastSeen=Date.now();
   }
