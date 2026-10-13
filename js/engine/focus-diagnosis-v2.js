@@ -81,6 +81,29 @@
   return {probe,family,result,purpose:safe(raw?.purpose||'normal'),originSkillId:safe(raw?.originSkillId),
    contextDomain:safe(raw?.contextDomain),features:raw?.features&&typeof raw.features==='object'?raw.features:null};
  }
+ function buildPracticePlan(report={}){
+  const cause=safe(report.rootCause),items=[];
+  const item=(skillId,operation,filter,purpose)=>({skillId,operation,filter,purpose});
+  if(cause==='number.place_value'){
+   items.push(item('D2.2.1','addition',{maxOperandDigitsAtLeast:3,usesRegrouping:false},'Bina nombor besar tanpa carry dahulu.'));
+   items.push(item('D2.2.2','subtraction',{maxOperandDigitsAtLeast:3,usesRegrouping:false},'Uji nilai tempat pada tolak tanpa pinjam.'));
+  }else if(cause==='add.regroup'){
+   items.push(item('D2.2.1','addition',{maxOperandDigitsAtLeast:2,usesRegrouping:true,regroupingColumnCount:1},'Mulakan dengan carry pada satu lajur.'));
+   items.push(item('D2.2.1','addition',{maxOperandDigitsAtLeast:2,usesRegrouping:true,regroupingColumnCountAtLeast:1,distinctQuestion:true},'Uji satu soalan baharu dengan carry.'));
+  }else if(cause==='sub.regroup'){
+   items.push(item('D2.2.2','subtraction',{maxOperandDigitsAtLeast:2,usesRegrouping:true,zeroCrossingBorrow:false},'Latih pinjam biasa dahulu.'));
+   items.push(item('D2.2.2','subtraction',{maxOperandDigitsAtLeast:2,usesRegrouping:true,zeroCrossingBorrow:true},'Kemudian uji pinjam merentas sifar.'));
+  }else if(cause==='add.facts'||cause==='sub.facts'){
+   const operation=cause==='add.facts'?'addition':'subtraction',skillId=cause==='add.facts'?'D1.ADD20':'D1.SUB20';
+   for(const candidate of Array.isArray(report.factCandidates)?report.factCandidates.slice(0,3):[]){
+    if(candidate?.status==='retest_candidate'&&typeof candidate.fact==='string')items.push(item(skillId,operation,{exactFact:candidate.fact},'Uji semula fakta tepat ini dengan soalan baharu.'));
+   }
+  }else if(cause==='add.place_value'||cause==='sub.place_value'){
+   const addition=cause==='add.place_value';
+   items.push(item(addition?'D2.2.1':'D2.2.2',addition?'addition':'subtraction',{maxOperandDigitsAtLeast:3,usesRegrouping:false},'Bina nilai tempat tanpa regrouping.'));
+  }
+  return {mode:'shadow_only',rootCause:cause||null,items,verification:{requiredIndependentFreshItems:2,preserveOriginalSkill:true}};
+ }
  function evaluate(input={}){
   const originSkillId=safe(input.originSkillId);
   let raw,untagged=0;
@@ -191,7 +214,7 @@
   for(const f of new Set(rows.map(x=>x.family)))byFamily[f]={
    uniqueQuestions:group([f]).length,independent:clean([f]),nonindependent:failed([f])};
   const factFamily=decision.rootCause==='add.facts'?'addition':decision.rootCause==='sub.facts'?'subtraction':null;
-  return {
+  const report={
    version:VERSION,mode:'shadow_read_only',originSkillId,
    ...decision,verification,
    ...(factFamily?{factCandidates:factCandidates(factFamily)}:{}),
@@ -200,6 +223,8 @@
    writes:0,
    note:'Hypothesis, not a learner diagnosis. No mastery, rewards or focus routing modified.'
   };
+  report.practicePlan=buildPracticePlan(report);
+  return report;
  }
- return Object.freeze({version:VERSION,fromReview,evaluate,familyFromTag});
+ return Object.freeze({version:VERSION,fromReview,evaluate,familyFromTag,buildPracticePlan});
 });

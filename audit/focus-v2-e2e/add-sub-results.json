@@ -24,5 +24,24 @@
       "sub:6-4"
     ]
   },
+  "practiceTargets": {
+    "largeDigitsAcrossBothOperations": [
+      "D2.2.1",
+      "D2.2.2"
+    ],
+    "additionRegroup": 2,
+    "subtractionBorrow": [
+      false,
+      true
+    ],
+    "additionFacts": [
+      "add:1+8"
+    ],
+    "subtractionFacts": [
+      "sub:3-2",
+      "sub:6-4"
+    ],
+    "singleFailure": 0
+  },
   "profileRewardsOrMasteryChanged": false
 }

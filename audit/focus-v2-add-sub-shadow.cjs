@@ -79,11 +79,39 @@ assert.equal(subFact.rootCause,'sub.facts');
 assert(subFact.factCandidates.length>=1,'subtraction fact failures should identify exact facts to retest');
 assert(subFact.factCandidates.every(x=>x.fact.startsWith('sub:')&&x.status==='retest_candidate'));
 const notEnough=run([[bigAdd(),'unresolved']]);assert.equal(notEnough.rootCause,null);
+function verifyPracticePlan(report){
+ const plan=engine.buildPracticePlan(report),usedBySkill=new Map();assert.equal(plan.mode,'shadow_only');
+ for(const spec of plan.items){
+  const generated=sample(spec.skillId,gen(spec.skillId.startsWith('D1.')?'d1':'d2t2',spec.skillId), (f,t)=>{
+   if(spec.filter.maxOperandDigitsAtLeast&&f.maxOperandDigits<spec.filter.maxOperandDigitsAtLeast)return false;
+   if(typeof spec.filter.usesRegrouping==='boolean'&&f.usesRegrouping!==spec.filter.usesRegrouping)return false;
+   if(typeof spec.filter.regroupingColumnCount==='number'&&f.regroupingColumns.length!==spec.filter.regroupingColumnCount)return false;
+   if(typeof spec.filter.regroupingColumnCountAtLeast==='number'&&f.regroupingColumns.length<spec.filter.regroupingColumnCountAtLeast)return false;
+   if(typeof spec.filter.regroupingColumnCount==='number'&&f.regroupingColumns.length!==spec.filter.regroupingColumnCount)return false;
+   if(typeof spec.filter.regroupingColumnCountAtLeast==='number'&&f.regroupingColumns.length<spec.filter.regroupingColumnCountAtLeast)return false;
+   if(typeof spec.filter.zeroCrossingBorrow==='boolean'&&f.zeroCrossingBorrow!==spec.filter.zeroCrossingBorrow)return false;
+   if(spec.filter.exactFact&&!f.factDependencies.includes(spec.filter.exactFact))return false;
+   return true;
+  },usedBySkill.get(spec.skillId)||[]);assert(generated?.focusDiagnosticV1,'target plan should resolve to an authored generated question');
+  const used=usedBySkill.get(spec.skillId)||[];used.push(generated.focusDiagnosticV1.evidence.variantFingerprint);usedBySkill.set(spec.skillId,used);
+ }
+ return plan;
+}
+const digitPlan=verifyPracticePlan(digits),addCarryPlan=verifyPracticePlan(addRegroup),subBorrowPlan=verifyPracticePlan(subRegroup),addFactPlan=verifyPracticePlan(addFact),subFactPlan=verifyPracticePlan(subFact);
+assert.deepEqual(digitPlan.items.map(x=>x.skillId),['D2.2.1','D2.2.2']);
+assert.equal(addCarryPlan.items.length,2);
+assert.equal(subBorrowPlan.items[1].filter.zeroCrossingBorrow,true);
+assert(addFactPlan.items.every(x=>x.filter.exactFact.startsWith('add:')));
+assert(subFactPlan.items.every(x=>x.filter.exactFact.startsWith('sub:')));
+assert.equal(engine.buildPracticePlan(notEnough).items.length,0);
 const result={status:'focus_v2_add_sub_shadow_pass',actualGeneratorSources:['D1','D2','D3','D4','kssr-content final wrapper'],
  scenarios:{largeDigitsAcrossBothOperations:digits.rootCause,additionRegroup:addRegroup.rootCause,
   subtractionBorrow:subRegroup.rootCause,additionFacts:addFact.rootCause,subtractionFacts:subFact.rootCause,
   singleFailureAbstains:notEnough.state},
  exactFactsToRetest:{addition:addFact.factCandidates.map(x=>x.fact),subtraction:subFact.factCandidates.map(x=>x.fact)},
+ practiceTargets:{largeDigitsAcrossBothOperations:digitPlan.items.map(x=>x.skillId),additionRegroup:addCarryPlan.items.length,
+  subtractionBorrow:subBorrowPlan.items.map(x=>x.filter.zeroCrossingBorrow),additionFacts:addFactPlan.items.map(x=>x.filter.exactFact),
+  subtractionFacts:subFactPlan.items.map(x=>x.filter.exactFact),singleFailure:engine.buildPracticePlan(notEnough).items.length},
  profileRewardsOrMasteryChanged:false};
 fs.writeFileSync(path.join(root,'audit/focus-v2-e2e/add-sub-results.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));
