@@ -393,6 +393,7 @@ const asset=(key)=>{
 };
 const $=id=>document.getElementById(id);
 const money=v=>'RM'+(v/100).toFixed(2);
+const MONEY_DIAGNOSTIC=new URLSearchParams(location.search).get('pa_focus_diagnostic')==='money';
 
 /* ---------- item art (inline SVG, matches chunky outlined style) ---------- */
 const S='stroke="#4a2a16" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
@@ -770,6 +771,72 @@ function runSim(key){const s=SIMS[key],R=window.PAGeraiWirayung;if(!R){$('simOut
  if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod gerai yang sesuai. Kekal battle biasa.';$('simGo').hidden=true;return}
  $('simOut').innerHTML='<b>'+s.skill+'</b> → mod lemah: <b>'+plan.modes.join(', ')+'</b> · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
 
+/* ---------- Focus Wang shadow pilot ----------
+   This is an opt-in probe route inside the real Gerai scene. It uses a
+   disposable learner-review store and never calls finish(), adapt(), ledger(),
+   localStorage, or the production round bridge. The normal Gerai route is
+   unchanged when pa_focus_diagnostic is absent. */
+function loadFocusScript(src){return new Promise((resolve,reject)=>{
+ const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error('Gagal memuatkan '+src));document.head.appendChild(s);
+})}
+async function runMoneyDiagnostic(){
+ const host=document.createElement('section');host.id='focusDiagnostic';host.setAttribute('aria-live','polite');
+ host.innerHTML='<div class="fd-card"><div class="fd-kicker">GERAI WIRAYUNG · UJIAN KEMAHIRAN FOKUS</div><h1 id="fdTitle">Semak Wang dengan Wira</h1><p id="fdPrompt"></p><div id="fdChoices" class="fd-choices"></div><div class="fd-progress" id="fdProgress"></div><p class="fd-note" id="fdNote">Jawapan ini hanya untuk semakan. Kemajuan latihan dan ganjaran tidak disentuh.</p></div>';
+ document.querySelector('.pa-game').appendChild(host);
+ const style=document.createElement('style');style.textContent=`
+ #focusDiagnostic{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:18px;background:linear-gradient(180deg,#5c3b2b55,#2b4a66dd);overflow:auto}
+ .fd-card{width:min(100%,420px);padding:24px 20px 20px;border:4px solid var(--wood-dk);border-radius:24px;background:linear-gradient(180deg,#fff7e6,#f1dcae);box-shadow:0 14px 32px #17253666;color:var(--ink)}
+ .fd-kicker{font:800 11px/1.2 var(--f-body);letter-spacing:.08em;color:var(--leaf-dk)}
+ .fd-card h1{margin:6px 0 8px;font:800 28px/1.05 var(--f-display)}
+ .fd-card p{margin:0 0 18px;font-weight:800;line-height:1.35}
+ .fd-choices{display:grid;gap:10px}.fd-choice{appearance:none;border:3px solid var(--wood-dk);border-radius:15px;background:#fffdf6;padding:13px 12px;font:800 18px var(--f-display);cursor:pointer;text-align:center;box-shadow:inset 0 -3px 0 #ead7b5}.fd-choice:hover,.fd-choice:focus-visible{border-color:var(--leaf-dk);background:#eff9df}.fd-choice[disabled]{cursor:default}.fd-choice.good{background:#dff3c5;border-color:var(--leaf-dk)}.fd-choice.bad{background:#ffe2db;border-color:var(--berry)}
+ .fd-progress{margin-top:17px;font:800 13px var(--f-body);color:var(--ink-soft)}.fd-note{margin-top:14px!important;margin-bottom:0!important;font-size:12px;color:var(--ink-soft)}
+ `;document.head.appendChild(style);
+ const profile={schoolGrade:2,name:'Focus Wang shadow',skills:{},xp:0,coins:0,learnerReviewV1:{schema:1,encounters:[],updatedAt:0}};
+ const tags={},questionKeys=[],trace=[];
+ let probes=[];
+ function sampleQuestion(make,accept,seen){for(let i=0;i<5000;i++){const q=make(),t=q?.focusDiagnosticV1,fp=t?.evidence?.variantFingerprint;if(t?.tagOrigin==='authored'&&accept(t)&&fp&&!seen.has(fp)){seen.add(fp);return q}}throw new Error('Soalan diagnostik ber-tag tidak dapat dijana.')}
+ function generatedProbes(){const out=[],money=new Set(),small=new Set(),large=new Set();
+  for(let i=0;i<2;i++){const q=sampleQuestion(()=>moneyQ('D2.4.1',false,{mastery:20,evidence:i}),t=>t.originSkillId==='D2.4.1'&&t.diagnosticFamily==='money_unit'&&t.evidence.questionFamilyKey==='d2-money-basic-recognise',money);out.push({id:'money-unit-'+(i+1),q})}
+  for(let i=0;i<2;i++){const q=sampleQuestion(()=>PAQuestionBanks.d1('D1.ADD100',{mastery:20,evidence:i},false),t=>t.originSkillId==='D1.ADD100'&&t.contextDomain==='number'&&t.arithmeticProfile.operandDimensions.maxOperandDigits<=2&&!t.arithmeticProfile.operandDimensions.usesRegrouping,small);out.push({id:'plain-add-'+(i+1),q})}
+  for(let i=0;i<2;i++){const q=sampleQuestion(()=>PAQuestionBanks.d2t2('D2.2.1',{mastery:20,evidence:i},false),t=>t.originSkillId==='D2.2.1'&&t.contextDomain==='number'&&t.arithmeticProfile.operandDimensions.maxOperandDigits>=3&&!t.arithmeticProfile.operandDimensions.usesRegrouping,large);out.push({id:'large-add-'+(i+1),q})}
+  return out;
+ }
+ function showEnd(report){
+  $('fdTitle').textContent=report.state==='candidate'?'Semakan selesai':'Semakan perlukan lebih bukti';
+  $('fdPrompt').textContent=report.parentText||'Ujian selesai.';$('fdChoices').innerHTML='';
+  $('fdProgress').textContent='Selesai · '+trace.length+' probe direkod';
+  $('fdNote').textContent='Laporan read-only dihantar kepada Kemahiran Fokus. writes: 0';
+  const nonce=new URLSearchParams(location.search).get('pa_nonce');
+  try{window.parent.postMessage({type:'PA_FOCUS_MONEY_SHADOW_RESULT',version:1,nonce,report:{state:report.state,rootCause:report.rootCause,nextSkillId:report.nextSkillId,confidence:report.confidence,reasonCode:report.reasonCode,parentText:report.parentText,writes:0,evidence:{trace,diagnostic:report}}},location.origin)}catch(e){console.warn('Focus Wang shadow bridge unavailable',e)}
+ }
+ async function evaluate(){
+  try{
+   const joined=window.PAFocusDiagnosisV2.fromReview(profile,tags,{originSkillId:'D2.4.2',questionKeys});
+   const report=window.PAFocusMoneyDiagnosticV1.evaluate({originSkillId:'D2.4.2',observations:joined.observations,initialMoneyWeak:true,engine:window.PAFocusDiagnosisV2});
+   showEnd(report);
+  }catch(err){$('fdTitle').textContent='Ujian tidak dapat dimulakan';$('fdPrompt').textContent=err.message;$('fdChoices').innerHTML='';console.error(err)}
+ }
+ let index=0;
+ function next(){
+  const p=probes[index];if(!p){evaluate();return}const q=p.q,t=q.focusDiagnosticV1;
+  q.token='focus-money-'+p.id;q.skill=t.originSkillId;q.questionId='focus-money:'+p.id+':'+t.evidence.variantFingerprint;
+  p.entry=window.PALearnerReview.beginQuestion(q,{grade:2,mode:'focus-diagnostic',selectionReason:'focus-money-shadow'});if(!p.entry)throw new Error('Learner-review tidak memulakan probe.');tags[p.entry.questionKey]=t;questionKeys.push(p.entry.questionKey);
+  $('fdProgress').textContent='Probe '+(index+1)+' / '+probes.length+' · '+(t.diagnosticFamily==='money_unit'?'Asas wang':'Operasi tambah');
+  $('fdPrompt').innerHTML=q.prompt;$('fdChoices').innerHTML='';
+  [{v:q.answer,correct:true},...(q.wrong||[]).map(x=>({v:x.label??x.v,correct:false}))].forEach((choice,i)=>{const b=document.createElement('button');b.type='button';b.className='fd-choice';b.innerHTML=choice.v;b.onclick=()=>answer(p,i,b);$('fdChoices').appendChild(b)});
+ }
+ function answer(p,choice,button){
+  const q=p.q;
+  const options=[q.answer,...(q.wrong||[]).map(x=>x.label??x.v)],correct=choice===0;if(!correct){window.PALearnerReview.firstWrong(q,{tag:q.focusDiagnosticV1.diagnosticFamily==='money_unit'?'unit':'place',value:options[choice],seconds:.8})}const row=correct?window.PALearnerReview.resolve(q,{correct:true,seconds:1.2},profile):null;
+  const wrongChoices=()=>[...document.querySelectorAll('.fd-choice')].slice(1);
+  if(!correct){button.disabled=true;$('fdNote').textContent='Belum tepat — cuba pilihan lain. Jawapan akhir akan direkod sebagai dibetulkan atau belum selesai.';if(wrongChoices().every(x=>x.disabled)){const unresolved=window.PALearnerReview.resolve(q,{correct:false,seconds:1.2,tag:q.focusDiagnosticV1.diagnosticFamily==='money_unit'?'unit':'place'},profile);trace.push({probe:p.id,skillId:q.skill,family:q.focusDiagnosticV1.diagnosticFamily,choice:options[choice],correct:false,outcome:unresolved.outcome});document.querySelectorAll('.fd-choice').forEach(x=>x.disabled=true);index++;setTimeout(next,350)}return}
+  trace.push({probe:p.id,skillId:q.skill,family:q.focusDiagnosticV1.diagnosticFamily,choice:String(options[choice]),correct,outcome:row.outcome});button.classList.add('good');document.querySelectorAll('.fd-choice').forEach(x=>x.disabled=true);index++;setTimeout(next,350)
+ }
+ async function init(){try{await loadFocusScript('questions/helpers.js');await loadFocusScript('questions/d1/core.js');await loadFocusScript('questions/d2/topic-2.js');await loadFocusScript('js/engine/learner-review-v1.js');await loadFocusScript('js/engine/focus-diagnosis-v2.js');await loadFocusScript('js/engine/focus-money-diagnostic-v1.js');probes=generatedProbes();next()}catch(err){$('fdTitle').textContent='Ujian tidak dapat dimulakan';$('fdPrompt').textContent=err.message;$('fdChoices').innerHTML='';console.error(err)}}
+ init();
+}
+
 /* ---------- wiring ---------- */
 $('go').onclick=go;
 $('clear').onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSplit]=[];else mat=[];sfx.pop();drawMat()};
@@ -786,7 +853,7 @@ document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.datase
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetProgress();startRound()});
 
 window.__geraiDebug=()=>m&&{target:target(),kind:m.kind,items:m.items,mode:m.mode,tier:m.tierIx}; // ujian sahaja
-resetProgress();startRound();
+if(MONEY_DIAGNOSTIC)runMoneyDiagnostic();else{resetProgress();startRound()}
 })();
 </script>
 </body></html>

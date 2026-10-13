@@ -6,8 +6,13 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  const rows=(profile?.learnerReviewV1?.encounters||[]).filter(e=>Number(e.grade)===grade
   &&['independent','corrected','assisted','unresolved'].includes(e.outcome)
   &&!['demo','dev','dev-test'].includes(e.mode));
+ const moneyReports=(profile?.focusDiagnosticsV1?.reports||[]).filter(r=>Number(r.grade)===grade&&r.skillId==='D2.4.2').sort((a,b)=>Number(a.at||0)-Number(b.at||0));
+ const latestMoneyReport=moneyReports.at(-1)||null;
+ const latestMoneySignalAt=rows.filter(e=>e.skillId==='D2.4.2').reduce((at,e)=>Math.max(at,Number(e.resolvedAt||0)),0);
+ const activeMoneyReport=latestMoneyReport&&Number(latestMoneyReport.at||0)>=latestMoneySignalAt?latestMoneyReport:null;
  let hasEvidence=false;
  const candidates=skills.flatMap(m=>{
+  if(activeMoneyReport&&m.id==='D2.4.2')return [];
   const recent=rows.filter(e=>e.skillId===m.id).slice(-20),unique=new Set(recent.map(e=>e.questionKey).filter(Boolean));
   if(recent.length<5||unique.size<2)return [];
   hasEvidence=true;
@@ -19,6 +24,17 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    independentRate:Math.round(rate*100),priority:(1-rate)*100+unresolved/recent.length*15,
    reason:unresolved?'Ulang latihan untuk kukuhkan asas.':assisted?'Latih menjawab sendiri selepas bantuan.':'Kukuhkan jawapan pada percubaan pertama.'}];
  });
+ if(activeMoneyReport){
+  hasEvidence=true;
+  const nextId=String(activeMoneyReport.nextSkillId||''),next=skills.find(m=>m.id===nextId);
+  if(activeMoneyReport.state==='candidate'&&next&&nextId!=='D2.4.2'
+   &&typeof questionBankFor==='function'&&typeof questionBankFor(nextId)==='function'){
+   const byId=candidates.filter(x=>x.id!==nextId);
+   byId.unshift({id:nextId,title:next.title,chapter:String(next.chapter),attempts:Number(activeMoneyReport.operationEvidence?.tagged)||6,
+    independentRate:0,priority:1000,diagnostic:true,reason:String(activeMoneyReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
+   candidates.splice(0,candidates.length,...byId);
+  }
+ }
  candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));
  return {items:candidates.slice(0,3),hasEvidence};
 }
@@ -44,7 +60,7 @@ function openFocusPicker(){
   const title=document.createElement('b');title.className='focusPickTitle';title.textContent=item.title;
   body.appendChild(title);
   const evidence=document.createElement('span');evidence.className='focusPickEvidence';
-  evidence.textContent='Ketepatan '+item.independentRate+'%';
+  evidence.textContent=item.diagnostic?item.reason:'Ketepatan '+item.independentRate+'%';
   body.appendChild(evidence);
   card.appendChild(body);
   const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih ❯';
