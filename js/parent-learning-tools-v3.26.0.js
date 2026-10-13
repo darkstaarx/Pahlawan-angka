@@ -37,11 +37,13 @@ function applyWorksheetAccessUI(host){
  card.querySelectorAll('.paCountPicker button').forEach(button=>{const n=Number(button.textContent);button.disabled=!full;button.title=button.disabled?'Akses berbayar diperlukan':''});
 }
 function mount(){
+ if(typeof db==='undefined'||!db)return;
  const core=$('coreTab'),head=core?.querySelector('.parentReportHead');
  if(head){let report=$('paParentReports');if(!report){report=document.createElement('div');report.id='paParentReports';report.className='paParentTools';head.after(report)}report.innerHTML=reportMarkup(snapshot())}
  mountWorksheet();
 }
 function mountWorksheet(){
+ if(typeof db==='undefined'||!db)return;
  const host=$('worksheetTab');if(!host)return;host.innerHTML=worksheetMarkup();applyWorksheetAccessUI(host);
  host.querySelectorAll('button,select').forEach(control=>{if(state.busy)control.disabled=true});host.setAttribute('aria-busy',String(state.busy));
  status(state.statusText,state.statusError);

@@ -102,8 +102,42 @@ function addDistractors(a,b,ans){
  let unit=(a%10)+(b%10),partial=a+(b%10);
  return [N(same[R(0,same.length-1)],"same_end"),N(unit,"units_only"),N(partial===ans?ans+1:partial,"place")]
 }
-function addQ(a,b,ans,kind,shift){return Q(`${a} + ${b} = ?`,ans,addDistractors(a,b,ans),"Pisahkan ikut nilai tempat, kemudian gabungkan.",kind,true,shift)}
-function subQ(a,b,ans,kind,shift){return Q(`${a} − ${b} = ?`,ans,[N(ans+10,"same_end"),N(Math.abs((a%10)-(b%10)),"units_only"),N(a+b,"operation")],"Tolak ikut nilai tempat.",kind,true,shift)}
+function addQ(a,b,ans,kind,shift,focus={}){const q=Q(`${a} + ${b} = ?`,ans,addDistractors(a,b,ans),"Pisahkan ikut nilai tempat, kemudian gabungkan.",kind,true,shift);return focus.skillId?attachFoundationQuestionTags(q,addSubFocusMeta(focus.skillId,'addition',[a,b],ans,focus)):q}
+function subQ(a,b,ans,kind,shift,focus={}){const q=Q(`${a} − ${b} = ?`,ans,[N(ans+10,"same_end"),N(Math.abs((a%10)-(b%10)),"units_only"),N(a+b,"operation")],"Tolak ikut nilai tempat.",kind,true,shift);return focus.skillId?attachFoundationQuestionTags(q,addSubFocusMeta(focus.skillId,'subtraction',[a,b],ans,focus)):q}
+
+function addSubFocusMeta(skillId,operation,operands,result,options={}){
+ const values=operands.filter(Number.isFinite).map(Math.trunc),digits=n=>String(Math.abs(n)).length;
+ const columns=Math.max(1,...values.map(digits)),regroupingColumns=[],factDependencies=[];
+ let current=values[0]||0;
+ for(let step=1;step<values.length;step++){
+  const next=values[step],max=Math.max(digits(current),digits(next));let carry=0;
+  const currentDigits=Array.from({length:max},(_,col)=>Math.floor(Math.abs(current)/Math.pow(10,col))%10);
+  for(let col=0;col<max;col++){
+   const right=Math.floor(Math.abs(next)/Math.pow(10,col))%10,left=currentDigits[col];
+   if(operation==='addition'){
+    const raw=left+right+carry;if(raw>=10)regroupingColumns.push(col);carry=raw>=10?1:0;
+    factDependencies.push(`add:${Math.min(left,right)}+${Math.max(left,right)}`);
+   }else{
+    if(left<right){
+     let lender=col+1;while(lender<max&&currentDigits[lender]===0)lender++;
+     if(lender<max){currentDigits[lender]--;for(let k=col+1;k<lender;k++)currentDigits[k]=9;currentDigits[col]+=10;for(let k=col;k<lender;k++)regroupingColumns.push(k)}
+    }
+    factDependencies.push(`sub:${currentDigits[col]}-${right}`);
+   }
+  }
+  current=operation==='addition'?current+next:current-next;
+ }
+ const uniqueColumns=[...new Set(regroupingColumns)].sort((a,b)=>a-b),labels=['ones','tens','hundreds','thousands','ten_thousands','hundred_thousands'];
+ const maxDigits=Math.max(...values.map(digits));
+ const simple=maxDigits===1;
+ const foundations=operation==='addition'?(simple?['add.facts']:['add.facts','add.place_value']):(simple?['sub.facts']:['sub.facts','sub.place_value']);
+ if(uniqueColumns.length)foundations.push(operation==='addition'?'add.regroup':'sub.regroup');
+ const equationOperands=operation==='addition'?{addends:values,sum:result,unit:options.unit||'integer'}:{minuend:values[0],subtrahend:values[1],subsequentSubtrahends:values.slice(2),difference:result,unit:options.unit||'integer'};
+ return {originSkillId:skillId,contextDomain:options.contextDomain||'number',diagnosticFamily:operation,
+  arithmeticProfile:{operationFamilies:[operation],operands:equationOperands,operandDimensions:{operandDigits:values.map(digits),maxOperandDigits:maxDigits,placeValueColumns:labels.slice(0,columns),numberMagnitudeBand:maxDigits===1?'ones':maxDigits===2?'tens':maxDigits===3?'hundreds':'thousands_or_more',usesRegrouping:uniqueColumns.length>0,regroupingColumns:uniqueColumns.map(i=>labels[i]||`column_${i}`),zeroCrossingBorrow:operation==='subtraction'&&uniqueColumns.some(i=>values[0]&&Math.floor(Math.abs(values[0])/Math.pow(10,i))%10===0),decimalPlaces:0,stepCount:Math.max(1,values.length-1),factDependencies:[...new Set(factDependencies)]}},
+  probes:{foundationIds:[...new Set(foundations)],conceptIds:[],diagnosticPurpose:options.diagnosticPurpose||'normal'},
+  evidence:{questionFamilyKey:operation==='addition'?'integer_addition_calculation':'integer_subtraction_calculation',representation:'symbolic',demand:'procedure',difficultyBand:Math.min(4,maxDigits)}};
+}
 
 function moneyFmt(cents){
  cents=Math.round(cents);
@@ -163,24 +197,49 @@ function chooseMoneyValue(mode="mixed",max=10000){
  let pool=mode==="coin"?coin:mode==="ringgit"?ringgit:mixed;
  pool=pool.filter(x=>x<=max);return pick(pool.length?pool:[Math.min(max,100)]);
 }
+/* Focus Diagnosis v2: optional question-instance evidence, not scores/routing. */
+function attachFoundationQuestionTags(q,meta){
+ if(!q)return q;
+ const operands=meta.arithmeticProfile?.operands||{};
+ // Equation identity deliberately excludes wording/representation: showing
+ // the same calculation in a story is not a second independent equation.
+ const operationFamilies=meta.arithmeticProfile?.operationFamilies||[];
+ const expression=Array.isArray(operands.addends)?[...operands.addends].sort((a,b)=>a-b):
+   Array.isArray(operands.valuesMinorUnits)?[...operands.valuesMinorUnits].sort((a,b)=>a-b):
+   operands.minuend!==undefined?[operands.minuend,operands.subtrahend,...(operands.subsequentSubtrahends||[])]:
+   [operands.totalMinorUnits??operands.dividend,operands.divisor,operands.quotientMinorUnits??operands.quotient,operands.remainder??0];
+ const identity=JSON.stringify([operationFamilies,operands.unit||'unknown',expression]);
+ let hash=2166136261;for(const char of identity){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}
+ q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',...meta,
+   evidence:{...meta.evidence,tagRevision:meta.evidence?.tagRevision||(['addition','subtraction'].includes(meta.diagnosticFamily)?'add-sub-features-v1':'d2-pilot-v2'),
+     variantFingerprint:meta.evidence?.variantFingerprint||'eq-'+(hash>>>0).toString(36)}};
+ return q;
+}
 function moneyQ(id,shift,s){
  const difficulty=(s&&s.mastery>=75)?"STRETCH":(s&&s.mastery>=50)?"APPLICATION":(s&&s.mastery>=25)?"CORE":"FOUNDATION";
  if(id==="D2.4.1"){
    const mode=pick(["recognise","total","total","compare"]);
+   const tagMoneyBasics=(q,values,questionMode)=>attachFoundationQuestionTags(q,{
+     originSkillId:id,contextDomain:'money',diagnosticFamily:questionMode==='recognise'?'money_unit':'money',
+     arithmeticProfile:{operationFamilies:[],operands:{valuesMinorUnits:values,unit:'sen'},
+       operandDimensions:{valueCount:values.length,largestValueMinorUnits:Math.max(...values),unit:'sen'}},
+     probes:{foundationIds:['money.denomination','money.ringgit_sen'],conceptIds:['money.ringgit_sen'],diagnosticPurpose:'normal'},
+     evidence:{questionFamilyKey:`d2-money-basic-${questionMode}`,representation:questionMode==='recognise'?'visual':'symbolic',demand:'concept',difficultyBand:1}
+   });
    if(mode==="recognise"){
      const d=pick([5,10,20,50,100,500,1000,2000,5000]);
      const wrong=moneyWrongSet(d,[d<100?d+10:d+100,d<100?Math.max(5,d-10):Math.max(100,d-100),d<100?d*2:Math.min(10000,d*2)]);
-     return Q(`${moneyVisual(d)}Berapakah nilai wang yang ditunjukkan?`,moneyFmt(d),wrong,"Lihat nilai yang tertulis pada syiling atau wang kertas.",`D2 ${difficulty} · Wang`,true,shift);
+     return tagMoneyBasics(Q(`${moneyVisual(d)}Berapakah nilai wang yang ditunjukkan?`,moneyFmt(d),wrong,"Lihat nilai yang tertulis pada syiling atau wang kertas.",`D2 ${difficulty} · Wang`,true,shift),[d],'recognise');
    }
    if(mode==="compare"){
      const a=chooseMoneyValue("mixed",5000),b=chooseMoneyValue("mixed",5000);
      if(a===b)return moneyQ(id,shift,s);
      const ans=Math.max(a,b);
-     return Q(`${moneyVisual(a)}<div style="height:6px"></div>${moneyVisual(b)}Antara dua kumpulan wang ini, yang manakah nilainya lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift);
+     return tagMoneyBasics(Q(`${moneyVisual(a)}<div style="height:6px"></div>${moneyVisual(b)}Antara dua kumpulan wang ini, yang manakah nilainya lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift),[a,b],'compare');
    }
    const total=chooseMoneyValue(pick(["coin","mixed","ringgit"]),10000);
    const wrong=moneyWrongSet(total,[Math.max(0,total-50),Math.min(10000,total+50),total<100?total*10:Math.round(total/10)]);
-   return Q(`${moneyVisual(total)}Berapakah jumlah wang semuanya?`,moneyFmt(total),wrong,"Tambah nilai semua syiling dan wang kertas yang ditunjukkan.",`D2 ${difficulty} · Wang`,true,shift);
+   return tagMoneyBasics(Q(`${moneyVisual(total)}Berapakah jumlah wang semuanya?`,moneyFmt(total),wrong,"Tambah nilai semua syiling dan wang kertas yang ditunjukkan.",`D2 ${difficulty} · Wang`,true,shift),[total],'total');
  }
  if(id==="D2.4.2"){
    const three=Math.random()<0.42;
@@ -193,7 +252,13 @@ function moneyQ(id,shift,s){
    let ans=vals.reduce((a,b)=>a+b,0);if(ans>10000)return moneyQ(id,shift,s);
    const stem=vals.map(moneyFmt).join(' + ');
    const wrong=moneyWrongSet(ans,[ans-100,ans+100,Math.abs(vals[0]-vals[1]),ans-(vals[vals.length-1]||0)]);
-   return Q(`${stem} = ?`,moneyFmt(ans),wrong,"Tambah sen dengan sen dan ringgit dengan ringgit. Jika 100 sen, tukarkan kepada RM1.",`D2 ${difficulty} · Tambah Wang`,true,shift);
+   const q=Q(`${stem} = ?`,moneyFmt(ans),wrong,"Tambah sen dengan sen dan ringgit dengan ringgit. Jika 100 sen, tukarkan kepada RM1.",`D2 ${difficulty} · Tambah Wang`,true,shift);
+   const wholeDigits=Math.max(...vals.map(v=>String(Math.floor(v/100)).length));
+   return attachFoundationQuestionTags(q,{originSkillId:id,contextDomain:'money',diagnosticFamily:'addition',arithmeticProfile:{
+     operationFamilies:['addition'],operands:{addends:vals,unit:'sen',displayUnit:'MYR'},
+     operandDimensions:{maxOperandDigits:wholeDigits,usesRegrouping:false,decimalPlaces:2,stepCount:1,unit:'MYR',factDependencies:[]}
+    },probes:{foundationIds:['add.place_value','money.ringgit_sen'],conceptIds:['money.ringgit_sen'],diagnosticPurpose:'normal'},
+    evidence:{questionFamilyKey:'d2-money-addition',representation:'symbolic',demand:'procedure',difficultyBand:difficulty==='STRETCH'?4:difficulty==='APPLICATION'?3:difficulty==='CORE'?2:1}});
  }
  if(id==="D2.4.3"){
    const three=Math.random()<0.4;
@@ -219,7 +284,19 @@ function moneyQ(id,shift,s){
    const contextual=Math.random()<0.6;
    const prompt=contextual?`Wang sebanyak <b>${moneyFmt(total)}</b> dibahagi sama rata kepada <b>${k}</b> orang. Berapakah setiap orang dapat?`:`${moneyFmt(total)} ÷ ${k} = ?`;
    const wrong=moneyWrongSet(each,[total-k*100,total/k+100,total-k,each+50]);
-   return Q(prompt,moneyFmt(each),wrong,"Bahagi jumlah wang kepada kumpulan yang sama banyak.",`D2 ${difficulty} · Bahagi Wang`,true,shift);
+   return attachFoundationQuestionTags(
+      Q(prompt,moneyFmt(each),wrong,"Bahagi jumlah wang kepada kumpulan yang sama banyak.",`D2 ${difficulty} · Bahagi Wang`,true,shift),
+      {originSkillId:id,contextDomain:'money',arithmeticProfile:{
+        operationFamilies:['division'],
+        operands:{totalMinorUnits:total,divisor:k,quotientMinorUnits:each,unit:'sen'},
+        operandDimensions:{dividendDigits:String(total).length,divisorDigits:String(k).length,quotientDigits:String(each).length,unit:'sen',canHaveRemainder:false,usesRegrouping:'unknown'},
+        steps:['division']
+       },
+       probes:{foundationIds:['div.equal_sharing','div.facts'],conceptIds:['money.ringgit_sen','money.equal_sharing_application'],diagnosticPurpose:'screen'},
+       evidence:{questionFamilyKey:'d2-money-equal-share',representation:contextual?'contextual':'symbolic',demand:contextual?'application':'procedure',
+        difficultyBand:difficulty==='STRETCH'?4:difficulty==='APPLICATION'?3:difficulty==='CORE'?2:1},
+       note:'Money minor-unit digits are NOT equivalent to plain integer division difficulty; contrast before diagnosis.'}
+    );
  }
  if(id==="D2.4.6"){
    const income=chooseMoneyValue("mixed",7000),spend=chooseMoneyValue(pick(["coin","mixed","ringgit"]),Math.max(50,income-5));

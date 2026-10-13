@@ -1,0 +1,63 @@
+{
+  "status": "focus_v2_scenario_a_pass",
+  "actualGeneratedQuestions": 3,
+  "trace": [
+    {
+      "skillId": "D2.4.5",
+      "outcome": "unresolved",
+      "contextDomain": "money",
+      "operationFamilies": [
+        "division"
+      ],
+      "questionFamilyKey": "d2-money-equal-share",
+      "variantFingerprint": "eq-173y9lx"
+    },
+    {
+      "skillId": "D2.2.4",
+      "outcome": "independent",
+      "contextDomain": "operations",
+      "operationFamilies": [
+        "division"
+      ],
+      "questionFamilyKey": "d2-divide-basic-fact",
+      "variantFingerprint": "eq-cp2y0"
+    },
+    {
+      "skillId": "D2.2.4",
+      "outcome": "independent",
+      "contextDomain": "operations",
+      "operationFamilies": [
+        "division"
+      ],
+      "questionFamilyKey": "d2-divide-basic-fact",
+      "variantFingerprint": "eq-hzsamm"
+    }
+  ],
+  "moneyFailPlusPlainDivisionPass": {
+    "state": "needs_contrast",
+    "rootCause": null,
+    "nextProbe": "money.ringgit_sen",
+    "evidence": {
+      "uniqueTaggedQuestions": 3,
+      "duplicatesDiscarded": 0,
+      "untaggedExcluded": 0,
+      "byFamily": {
+        "money": {
+          "uniqueQuestions": 1,
+          "independent": 0,
+          "nonindependent": 1
+        },
+        "division_fact": {
+          "uniqueQuestions": 2,
+          "independent": 2,
+          "nonindependent": 0
+        }
+      }
+    }
+  },
+  "divisionRootCauseFixture": {
+    "state": "candidate",
+    "rootCause": "div.facts"
+  },
+  "profileUnchanged": true
+}

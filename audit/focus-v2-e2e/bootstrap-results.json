@@ -1,0 +1,42 @@
+{
+  "rows": [
+    {
+      "test": "Feature desktop fresh login regression",
+      "grade": "1–6",
+      "expected": "No null/undefined profile exceptions",
+      "actual": [],
+      "status": "PASS",
+      "evidence": "bootstrap-results.json"
+    },
+    {
+      "test": "Feature desktop panel mounts after profile supplied",
+      "grade": 2,
+      "expected": "Worksheet available; profile unchanged",
+      "actual": {
+        "worksheet": true,
+        "integrity": true
+      },
+      "status": "PASS",
+      "evidence": "bootstrap-results.json"
+    },
+    {
+      "test": "Feature android fresh login regression",
+      "grade": "1–6",
+      "expected": "No null/undefined profile exceptions",
+      "actual": [],
+      "status": "PASS",
+      "evidence": "bootstrap-results.json"
+    },
+    {
+      "test": "Feature android panel mounts after profile supplied",
+      "grade": 2,
+      "expected": "Worksheet available; profile unchanged",
+      "actual": {
+        "worksheet": true,
+        "integrity": true
+      },
+      "status": "PASS",
+      "evidence": "bootstrap-results.json"
+    }
+  ]
+}

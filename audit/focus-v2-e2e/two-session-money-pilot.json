@@ -1,0 +1,276 @@
+{
+  "status": "focus_v2_money_two_session_pilot_pass",
+  "sessions": {
+    "session1": {
+      "name": "Kembara Wang · D2.4.2",
+      "unresolved": 5,
+      "focusSignal": "Tambah Wang lemah"
+    },
+    "session2": {
+      "name": "Mini-game diagnostik Wang",
+      "moneyBasics": {
+        "independent": 2,
+        "nonindependent": 0
+      },
+      "smallAdditionIndependent": 2,
+      "largeAdditionUnresolved": 2
+    }
+  },
+  "diagnosis": {
+    "state": "candidate",
+    "rootCause": "add.place_value",
+    "nextSkillId": "D2.2.1",
+    "confidence": "medium",
+    "reasonCode": "MONEY_BASICS_OK_LARGE_ADDITION_WEAK",
+    "parentText": "Pada awalnya, latihan menunjukkan Wang mencabar. Ujian susulan mendapati asas Wang boleh dibuat sendiri, tetapi tambah nombor besar masih mengelirukan. Fokus seterusnya ialah nilai tempat dan tambah nombor besar.",
+    "uniqueTaggedQuestions": 11,
+    "writes": 0
+  },
+  "guardrails": {
+    "noMoneyBasics": "needs_contrast",
+    "oneLargeFailure": "needs_contrast",
+    "moneyBasicsFailure": "money.ringgit_sen",
+    "masteryXpCoinsUnchanged": true,
+    "usesRealQuestionGenerators": true,
+    "productionRouting": "not connected"
+  },
+  "trace": [
+    {
+      "session": "kembara",
+      "skillId": "D2.4.2",
+      "questionKey": "pilot:kembara:1000",
+      "outcome": "unresolved",
+      "family": "addition",
+      "contextDomain": "money",
+      "features": {
+        "maxOperandDigits": 1,
+        "usesRegrouping": false,
+        "decimalPlaces": 2,
+        "stepCount": 1,
+        "unit": "MYR",
+        "factDependencies": []
+      },
+      "variantFingerprint": "eq-b6p0ci"
+    },
+    {
+      "session": "kembara",
+      "skillId": "D2.4.2",
+      "questionKey": "pilot:kembara:1003",
+      "outcome": "unresolved",
+      "family": "addition",
+      "contextDomain": "money",
+      "features": {
+        "maxOperandDigits": 2,
+        "usesRegrouping": false,
+        "decimalPlaces": 2,
+        "stepCount": 1,
+        "unit": "MYR",
+        "factDependencies": []
+      },
+      "variantFingerprint": "eq-13gx73y"
+    },
+    {
+      "session": "kembara",
+      "skillId": "D2.4.2",
+      "questionKey": "pilot:kembara:1006",
+      "outcome": "unresolved",
+      "family": "addition",
+      "contextDomain": "money",
+      "features": {
+        "maxOperandDigits": 2,
+        "usesRegrouping": false,
+        "decimalPlaces": 2,
+        "stepCount": 1,
+        "unit": "MYR",
+        "factDependencies": []
+      },
+      "variantFingerprint": "eq-1dl0fwe"
+    },
+    {
+      "session": "kembara",
+      "skillId": "D2.4.2",
+      "questionKey": "pilot:kembara:1009",
+      "outcome": "unresolved",
+      "family": "addition",
+      "contextDomain": "money",
+      "features": {
+        "maxOperandDigits": 1,
+        "usesRegrouping": false,
+        "decimalPlaces": 2,
+        "stepCount": 1,
+        "unit": "MYR",
+        "factDependencies": []
+      },
+      "variantFingerprint": "eq-9cutz9"
+    },
+    {
+      "session": "kembara",
+      "skillId": "D2.4.2",
+      "questionKey": "pilot:kembara:1012",
+      "outcome": "unresolved",
+      "family": "addition",
+      "contextDomain": "money",
+      "features": {
+        "maxOperandDigits": 2,
+        "usesRegrouping": false,
+        "decimalPlaces": 2,
+        "stepCount": 1,
+        "unit": "MYR",
+        "factDependencies": []
+      },
+      "variantFingerprint": "eq-fvpb1m"
+    },
+    {
+      "session": "mini_game_money_basics",
+      "skillId": "D2.4.1",
+      "questionKey": "pilot:mini_game_money_basics:1015",
+      "outcome": "independent",
+      "family": "money_unit",
+      "contextDomain": "money",
+      "features": {
+        "valueCount": 1,
+        "largestValueMinorUnits": 5000,
+        "unit": "sen"
+      },
+      "variantFingerprint": "eq-tfvtai"
+    },
+    {
+      "session": "mini_game_money_basics",
+      "skillId": "D2.4.1",
+      "questionKey": "pilot:mini_game_money_basics:1017",
+      "outcome": "independent",
+      "family": "money_unit",
+      "contextDomain": "money",
+      "features": {
+        "valueCount": 1,
+        "largestValueMinorUnits": 2000,
+        "unit": "sen"
+      },
+      "variantFingerprint": "eq-1o3affx"
+    },
+    {
+      "session": "mini_game_addition_control",
+      "skillId": "D1.ADD100",
+      "questionKey": "pilot:mini_game_addition_control:1019",
+      "outcome": "independent",
+      "family": "addition",
+      "contextDomain": "number",
+      "features": {
+        "operandDigits": [
+          2,
+          2
+        ],
+        "maxOperandDigits": 2,
+        "placeValueColumns": [
+          "ones",
+          "tens"
+        ],
+        "numberMagnitudeBand": "tens",
+        "usesRegrouping": false,
+        "regroupingColumns": [],
+        "zeroCrossingBorrow": false,
+        "decimalPlaces": 0,
+        "stepCount": 1,
+        "factDependencies": [
+          "add:3+5",
+          "add:4+5"
+        ]
+      },
+      "variantFingerprint": "eq-dbii5g"
+    },
+    {
+      "session": "mini_game_addition_control",
+      "skillId": "D1.ADD100",
+      "questionKey": "pilot:mini_game_addition_control:1021",
+      "outcome": "independent",
+      "family": "addition",
+      "contextDomain": "number",
+      "features": {
+        "operandDigits": [
+          2,
+          2
+        ],
+        "maxOperandDigits": 2,
+        "placeValueColumns": [
+          "ones",
+          "tens"
+        ],
+        "numberMagnitudeBand": "tens",
+        "usesRegrouping": false,
+        "regroupingColumns": [],
+        "zeroCrossingBorrow": false,
+        "decimalPlaces": 0,
+        "stepCount": 1,
+        "factDependencies": [
+          "add:0+6",
+          "add:2+6"
+        ]
+      },
+      "variantFingerprint": "eq-2tsmnb"
+    },
+    {
+      "session": "mini_game_large_addition",
+      "skillId": "D2.2.1",
+      "questionKey": "pilot:mini_game_large_addition:1023",
+      "outcome": "unresolved",
+      "family": "addition",
+      "contextDomain": "number",
+      "features": {
+        "operandDigits": [
+          3,
+          2
+        ],
+        "maxOperandDigits": 3,
+        "placeValueColumns": [
+          "ones",
+          "tens",
+          "hundreds"
+        ],
+        "numberMagnitudeBand": "hundreds",
+        "usesRegrouping": false,
+        "regroupingColumns": [],
+        "zeroCrossingBorrow": false,
+        "decimalPlaces": 0,
+        "stepCount": 1,
+        "factDependencies": [
+          "add:3+4",
+          "add:1+3",
+          "add:0+3"
+        ]
+      },
+      "variantFingerprint": "eq-mvdbb1"
+    },
+    {
+      "session": "mini_game_large_addition",
+      "skillId": "D2.2.1",
+      "questionKey": "pilot:mini_game_large_addition:1026",
+      "outcome": "unresolved",
+      "family": "addition",
+      "contextDomain": "number",
+      "features": {
+        "operandDigits": [
+          3,
+          3
+        ],
+        "maxOperandDigits": 3,
+        "placeValueColumns": [
+          "ones",
+          "tens",
+          "hundreds"
+        ],
+        "numberMagnitudeBand": "hundreds",
+        "usesRegrouping": false,
+        "regroupingColumns": [],
+        "zeroCrossingBorrow": false,
+        "decimalPlaces": 0,
+        "stepCount": 1,
+        "factDependencies": [
+          "add:2+7",
+          "add:1+4",
+          "add:2+3"
+        ]
+      },
+      "variantFingerprint": "eq-106tizc"
+    }
+  ]
+}

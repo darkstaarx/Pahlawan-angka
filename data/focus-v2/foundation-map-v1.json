@@ -1,0 +1,1015 @@
+{
+  "schema": "pa.focus.foundation-map.v1",
+  "phase": "A_B_shadow_design",
+  "source": {
+    "repo": "darkstaarx/Pahlawan-angka",
+    "graph": "data/kssr/knowledge-graph.json",
+    "skillCount": 114
+  },
+  "policy": {
+    "neverDownscoreCrossDomainFromOneError": true,
+    "gradeIsCeilingNotFloor": true,
+    "diagnosticNeedsIndependentContrastingItems": true,
+    "doNotTreatPreGradeAsAutoMastered": true,
+    "legacyMasteryUntouched": true,
+    "foundationPrerequisitesDoNotReplaceCurriculumPrerequisites": true
+  },
+  "operations": [
+    "addition",
+    "subtraction",
+    "multiplication",
+    "division"
+  ],
+  "foundations": [
+    {
+      "id": "number.place_value",
+      "label": "Nilai tempat nombor",
+      "family": "number",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.PV100",
+        "D2.1.4",
+        "D3.PV10000",
+        "D4.PV100000",
+        "D5.PV1000000"
+      ],
+      "notes": "Periksa apabila digit tersusun salah atau perlu pecah nombor",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "number.decimal_place_value",
+      "label": "Nilai tempat perpuluhan",
+      "family": "number",
+      "prerequisites": [
+        "number.place_value"
+      ],
+      "curriculumAnchors": [
+        "D2.3.2",
+        "D3.DEC",
+        "D4.DEC",
+        "D5.DEC",
+        "D6.DEC"
+      ],
+      "notes": "Asas operasi RM/sen dan perpuluhan",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "operation.choose",
+      "label": "Memilih operasi daripada cerita",
+      "family": "reasoning",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D2.2.5",
+        "D5.OPS",
+        "D6.OPS"
+      ],
+      "notes": "Tidak sama dengan kecekapan mengira; uji dengan cerita yang jawapannya melibatkan operasi mudah",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "add.combine",
+      "label": "Makna menggabungkan kuantiti",
+      "family": "addition",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.ADD20"
+      ],
+      "notes": "Peringkat konkrit",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "add.facts",
+      "label": "Fakta tambah dan pasangan nombor",
+      "family": "addition",
+      "prerequisites": [
+        "add.combine"
+      ],
+      "curriculumAnchors": [
+        "D1.ADD20",
+        "D1.ADD100"
+      ],
+      "notes": "Jangan label gagal tambah berbilang digit sebelum semak fakta asas",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "add.place_value",
+      "label": "Tambah pelbagai nilai tempat",
+      "family": "addition",
+      "prerequisites": [
+        "add.facts",
+        "number.place_value"
+      ],
+      "curriculumAnchors": [
+        "D1.ADD100",
+        "D2.2.1",
+        "D3.ADD10000",
+        "D4.ADD",
+        "D5.ADD"
+      ],
+      "notes": "Tag bilangan digit dan jajaran tempat",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "add.regroup",
+      "label": "Tambah dengan pengumpulan semula",
+      "family": "addition",
+      "prerequisites": [
+        "add.place_value"
+      ],
+      "curriculumAnchors": [
+        "D1.ADD100",
+        "D2.2.1",
+        "D3.ADD10000",
+        "D4.ADD",
+        "D5.ADD"
+      ],
+      "notes": "Tag carries dan nilai tempat terlibat",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "sub.take_away_compare",
+      "label": "Makna mengurangkan dan mencari beza",
+      "family": "subtraction",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.SUB20"
+      ],
+      "notes": "Bezakan mengambil keluar dan membanding",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "sub.facts",
+      "label": "Fakta tolak asas",
+      "family": "subtraction",
+      "prerequisites": [
+        "sub.take_away_compare"
+      ],
+      "curriculumAnchors": [
+        "D1.SUB20",
+        "D1.SUB100"
+      ],
+      "notes": "Asas sebelum pengumpulan semula",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "sub.place_value",
+      "label": "Tolak pelbagai nilai tempat",
+      "family": "subtraction",
+      "prerequisites": [
+        "sub.facts",
+        "number.place_value"
+      ],
+      "curriculumAnchors": [
+        "D1.SUB100",
+        "D2.2.2",
+        "D3.SUB10000",
+        "D4.SUB",
+        "D5.SUB"
+      ],
+      "notes": "Tag alignment",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "sub.regroup",
+      "label": "Tolak dengan pengumpulan semula",
+      "family": "subtraction",
+      "prerequisites": [
+        "sub.place_value"
+      ],
+      "curriculumAnchors": [
+        "D1.SUB100",
+        "D2.2.2",
+        "D3.SUB10000",
+        "D4.SUB",
+        "D5.SUB"
+      ],
+      "notes": "Tag borrow dan kes sifar",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "mul.equal_groups",
+      "label": "Kumpulan sama banyak",
+      "family": "multiplication",
+      "prerequisites": [
+        "add.combine"
+      ],
+      "curriculumAnchors": [
+        "D2.2.3"
+      ],
+      "notes": "Makna darab dan tambah berulang",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "mul.facts",
+      "label": "Fakta sifir asas",
+      "family": "multiplication",
+      "prerequisites": [
+        "mul.equal_groups"
+      ],
+      "curriculumAnchors": [
+        "D2.2.3",
+        "D3.MUL"
+      ],
+      "notes": "Semak hubungan sifir dan bahagi",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "mul.multidigit",
+      "label": "Darab lebih satu digit dan pengumpulan semula",
+      "family": "multiplication",
+      "prerequisites": [
+        "mul.facts",
+        "number.place_value"
+      ],
+      "curriculumAnchors": [
+        "D3.MUL",
+        "D4.MUL",
+        "D5.MUL",
+        "D6.OPS"
+      ],
+      "notes": "Tag digit faktor dan carry",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "div.equal_sharing",
+      "label": "Agih kepada kumpulan sama rata",
+      "family": "division",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D2.2.4"
+      ],
+      "notes": "Boleh diuji dengan objek konkrit tanpa RM",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "div.facts",
+      "label": "Fakta bahagi dan hubungan songsang darab",
+      "family": "division",
+      "prerequisites": [
+        "div.equal_sharing",
+        "mul.facts"
+      ],
+      "curriculumAnchors": [
+        "D2.2.4",
+        "D3.DIV"
+      ],
+      "notes": "Contoh 24 ÷ 3 berbanding 3 × 8",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "div.two_digit_one_digit",
+      "label": "Dividend dua digit ÷ pembahagi satu digit",
+      "family": "division",
+      "prerequisites": [
+        "div.facts",
+        "number.place_value"
+      ],
+      "curriculumAnchors": [
+        "D2.2.4",
+        "D3.DIV",
+        "D4.DIV"
+      ],
+      "notes": "Perlu bezakan quotient satu/dua digit dan sifir; curriculumAnchor bukan jaminan bank mempunyai setiap variasi",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "div.regroup",
+      "label": "Bahagi dengan pengagihan nilai tempat",
+      "family": "division",
+      "prerequisites": [
+        "div.two_digit_one_digit"
+      ],
+      "curriculumAnchors": [
+        "D3.DIV",
+        "D4.DIV",
+        "D5.DIV"
+      ],
+      "notes": "Contoh 84 ÷ 4, perlu pecahkan puluh kepada sa",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "div.remainder",
+      "label": "Bahagi dengan baki",
+      "family": "division",
+      "prerequisites": [
+        "div.equal_sharing",
+        "div.facts"
+      ],
+      "curriculumAnchors": [
+        "D2.2.4",
+        "D3.DIV",
+        "D4.DIV"
+      ],
+      "notes": "Contoh 25 ÷ 4; jangan campur ketidakbolehbahagian wang sama rata",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "div.multidigit",
+      "label": "Bahagi dividend lebih besar / pembahagi pelbagai digit",
+      "family": "division",
+      "prerequisites": [
+        "div.regroup",
+        "div.remainder"
+      ],
+      "curriculumAnchors": [
+        "D4.DIV",
+        "D5.DIV",
+        "D6.OPS"
+      ],
+      "notes": "Tag digit dividend, digit pembahagi, remainder dan regroup secara berasingan",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "div.decimal",
+      "label": "Bahagi nombor perpuluhan",
+      "family": "division",
+      "prerequisites": [
+        "div.facts",
+        "number.decimal_place_value"
+      ],
+      "curriculumAnchors": [
+        "D5.DIV",
+        "D6.OPS"
+      ],
+      "notes": "Jangan infer kelemahan konsep RM daripada jawapan decimal salah sahaja",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "money.denominations",
+      "label": "Kenal nilai duit dan gabungan syiling",
+      "family": "money",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.MONEY",
+        "D2.4.1"
+      ],
+      "notes": "Masalah mengenal wang bukan kelemahan operasi; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "money.ringgit_sen",
+      "label": "Hubungan RM dan sen",
+      "family": "money",
+      "prerequisites": [
+        "money.denominations"
+      ],
+      "curriculumAnchors": [
+        "D2.4.1",
+        "D2.4.2",
+        "D2.4.3",
+        "D2.4.5"
+      ],
+      "notes": "Semak 100 sen = RM1, bukan cuma pengiraan simbolik; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "money.transaction",
+      "label": "Maksud bayaran dan baki",
+      "family": "money",
+      "prerequisites": [
+        "money.denominations",
+        "operation.choose"
+      ],
+      "curriculumAnchors": [
+        "D2.4.3",
+        "D2.4.6",
+        "D2.4.7",
+        "D3.MONEY",
+        "D4.MONEY"
+      ],
+      "notes": "Fokus konteks selepas operasi asas sah",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "money.equal_sharing_application",
+      "label": "Agihan wang sama rata",
+      "family": "money",
+      "prerequisites": [
+        "div.equal_sharing",
+        "money.ringgit_sen"
+      ],
+      "curriculumAnchors": [
+        "D2.4.5"
+      ],
+      "notes": "Ujian pindahan dari bahagi nombor kepada wang",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "money.discount",
+      "label": "Konsep diskaun",
+      "family": "money",
+      "prerequisites": [
+        "percent.part_whole",
+        "money.transaction"
+      ],
+      "curriculumAnchors": [
+        "D5.MONEY",
+        "D6.MONEY"
+      ],
+      "notes": "Asingkan faham maksud diskaun daripada kiraan peratus",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "money.profit_loss",
+      "label": "Konsep untung dan rugi",
+      "family": "money",
+      "prerequisites": [
+        "sub.take_away_compare",
+        "money.transaction"
+      ],
+      "curriculumAnchors": [
+        "D5.MONEY",
+        "D6.MONEY"
+      ],
+      "notes": "Bezakan kos, jualan, keuntungan dan kerugian",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "percent.part_whole",
+      "label": "Peratus sebagai bahagian keseluruhan",
+      "family": "percent",
+      "prerequisites": [
+        "fraction.equal_parts"
+      ],
+      "curriculumAnchors": [
+        "D3.PERCENT",
+        "D4.PERCENT",
+        "D5.PERCENT",
+        "D6.PERCENT"
+      ],
+      "notes": "Peratus salah tidak automatik bukti bahagi salah; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "fraction.equal_parts",
+      "label": "Bahagian sama besar dan pecahan",
+      "family": "fraction",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.FRAC",
+        "D2.3.1",
+        "D3.FRAC"
+      ],
+      "notes": "Diagnostik visual berasingan daripada bahagi nombor; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "time.units",
+      "label": "Hubungan jam dan minit",
+      "family": "time",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.TIME",
+        "D2.5.1",
+        "D2.5.2",
+        "D3.TIME",
+        "D4.TIME",
+        "D5.TIME",
+        "D6.TIME"
+      ],
+      "notes": "Kesalahan unit tidak dihukum sebagai tolak",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "measurement.units",
+      "label": "Unit dan penukaran ukuran",
+      "family": "measurement",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.MEASURE",
+        "D2.6.1",
+        "D2.6.2",
+        "D2.6.3",
+        "D2.6.4",
+        "D3.MEASURE",
+        "D4.MEASURE",
+        "D5.MEASURE",
+        "D6.MEASURE"
+      ],
+      "notes": "Bezakan unit berbanding operasi; conceptual prerequisite map, do not require a higher-grade subject to unlock this early concept.",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "ratio.relationship",
+      "label": "Hubungan nisbah/kadaran",
+      "family": "ratio",
+      "prerequisites": [
+        "mul.equal_groups",
+        "div.equal_sharing"
+      ],
+      "curriculumAnchors": [
+        "D4.RATIO",
+        "D4.RATE",
+        "D5.RATIO",
+        "D5.RATE",
+        "D6.RATIO"
+      ],
+      "notes": "Semak konsep nisbah sebelum fakta darab",
+      "status": "proposed_requires_question_level_validation"
+    },
+    {
+      "id": "data.reading",
+      "label": "Membaca carta, skala dan data",
+      "family": "data",
+      "prerequisites": [],
+      "curriculumAnchors": [
+        "D1.DATA",
+        "D2.8.2",
+        "D2.8.3",
+        "D3.DATA",
+        "D4.DATA",
+        "D5.DATA",
+        "D6.DATA"
+      ],
+      "notes": "Kesalahan membaca graf bukan semestinya tambah/tolak",
+      "status": "proposed_requires_question_level_validation"
+    }
+  ],
+  "operationCurriculumCrosswalk": [
+    {
+      "skillId": "D1.ADD20",
+      "grade": 1,
+      "title": "Tambah hingga 20",
+      "possibleOperationFamilies": [
+        "addition"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D1.SUB20",
+      "grade": 1,
+      "title": "Tolak hingga 20",
+      "possibleOperationFamilies": [
+        "subtraction"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D1.ADD100",
+      "grade": 1,
+      "title": "Tambah hingga 100",
+      "possibleOperationFamilies": [
+        "addition"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D1.SUB100",
+      "grade": 1,
+      "title": "Tolak hingga 100",
+      "possibleOperationFamilies": [
+        "subtraction"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D2.2.1",
+      "grade": 2,
+      "title": "Tambah hingga 1000",
+      "possibleOperationFamilies": [
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division"
+      ],
+      "status": "must_use_question_metadata"
+    },
+    {
+      "skillId": "D2.2.2",
+      "grade": 2,
+      "title": "Tolak hingga 1000",
+      "possibleOperationFamilies": [
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division"
+      ],
+      "status": "must_use_question_metadata"
+    },
+    {
+      "skillId": "D2.2.3",
+      "grade": 2,
+      "title": "Darab asas",
+      "possibleOperationFamilies": [
+        "multiplication"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D2.2.4",
+      "grade": 2,
+      "title": "Bahagi asas",
+      "possibleOperationFamilies": [
+        "division"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D2.2.5",
+      "grade": 2,
+      "title": "Masalah operasi",
+      "possibleOperationFamilies": [
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division"
+      ],
+      "status": "must_use_question_metadata"
+    },
+    {
+      "skillId": "D3.ADD10000",
+      "grade": 3,
+      "title": "Tambah hingga 10,000",
+      "possibleOperationFamilies": [
+        "addition"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D3.SUB10000",
+      "grade": 3,
+      "title": "Tolak hingga 10,000",
+      "possibleOperationFamilies": [
+        "subtraction"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D3.MUL",
+      "grade": 3,
+      "title": "Darab",
+      "possibleOperationFamilies": [
+        "multiplication"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D3.DIV",
+      "grade": 3,
+      "title": "Bahagi",
+      "possibleOperationFamilies": [
+        "division"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D4.ADD",
+      "grade": 4,
+      "title": "Tambah nombor besar",
+      "possibleOperationFamilies": [
+        "addition"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D4.SUB",
+      "grade": 4,
+      "title": "Tolak nombor besar",
+      "possibleOperationFamilies": [
+        "subtraction"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D4.MUL",
+      "grade": 4,
+      "title": "Darab nombor",
+      "possibleOperationFamilies": [
+        "multiplication"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D4.DIV",
+      "grade": 4,
+      "title": "Bahagi nombor",
+      "possibleOperationFamilies": [
+        "division"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D5.MUL",
+      "grade": 5,
+      "title": "Darab pelbagai digit",
+      "possibleOperationFamilies": [
+        "multiplication"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D5.DIV",
+      "grade": 5,
+      "title": "Bahagi pelbagai digit",
+      "possibleOperationFamilies": [
+        "division"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D6.OPS",
+      "grade": 6,
+      "title": "Operasi gabungan",
+      "possibleOperationFamilies": [
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division"
+      ],
+      "status": "must_use_question_metadata"
+    },
+    {
+      "skillId": "D5.ADD",
+      "grade": 5,
+      "title": "Tambah nombor besar",
+      "possibleOperationFamilies": [
+        "addition"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D5.SUB",
+      "grade": 5,
+      "title": "Tolak nombor besar",
+      "possibleOperationFamilies": [
+        "subtraction"
+      ],
+      "status": "curriculum_coarse_anchor"
+    },
+    {
+      "skillId": "D5.OPS",
+      "grade": 5,
+      "title": "Operasi bergabung",
+      "possibleOperationFamilies": [
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division"
+      ],
+      "status": "must_use_question_metadata"
+    }
+  ],
+  "topicContexts": {
+    "money": [
+      {
+        "skillId": "D1.MONEY",
+        "possibleOperations": [],
+        "concepts": [
+          "money.denominations"
+        ],
+        "notes": "Nilai wang dahulu; jangan infer tambah automatik",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D2.4.1",
+        "possibleOperations": [],
+        "concepts": [
+          "money.denominations",
+          "money.ringgit_sen"
+        ],
+        "notes": "Semak nilai, gabungan dan perbandingan wang",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D2.4.2",
+        "possibleOperations": [
+          "addition"
+        ],
+        "concepts": [
+          "money.ringgit_sen"
+        ],
+        "notes": "Pisahkan tambah biasa daripada RM/sen",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D2.4.3",
+        "possibleOperations": [
+          "subtraction"
+        ],
+        "concepts": [
+          "money.transaction",
+          "money.ringgit_sen"
+        ],
+        "notes": "Pisahkan tolak biasa daripada pulangkan baki",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D2.4.4",
+        "possibleOperations": [
+          "multiplication"
+        ],
+        "concepts": [
+          "money.ringgit_sen"
+        ],
+        "notes": "Darab biasa tanpa unit dulu",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D2.4.5",
+        "possibleOperations": [
+          "division"
+        ],
+        "concepts": [
+          "money.equal_sharing_application",
+          "money.ringgit_sen"
+        ],
+        "notes": "Bahagi nombor dahulu; nombor digit dan sifir diuji berperingkat",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D2.4.6",
+        "possibleOperations": [
+          "subtraction"
+        ],
+        "concepts": [
+          "money.transaction"
+        ],
+        "notes": "Simpanan/belanja bukan sekadar tolak",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D2.4.7",
+        "possibleOperations": [
+          "addition",
+          "subtraction"
+        ],
+        "concepts": [
+          "operation.choose",
+          "money.transaction",
+          "money.ringgit_sen"
+        ],
+        "notes": "Mesti ditentukan daripada archetype soalan; bank juga ada perbandingan",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D3.MONEY",
+        "possibleOperations": [
+          "addition",
+          "subtraction",
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "money.ringgit_sen",
+          "operation.choose"
+        ],
+        "notes": "Hipotesis luas: perlu tag archetype sebenar",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D4.MONEY",
+        "possibleOperations": [
+          "addition",
+          "subtraction",
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "money.transaction",
+          "operation.choose"
+        ],
+        "notes": "Hipotesis luas: tidak semestinya semua empat operasi",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D5.MONEY",
+        "possibleOperations": [
+          "addition",
+          "subtraction",
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "money.discount",
+          "percent.part_whole",
+          "operation.choose"
+        ],
+        "notes": "Diskaun boleh gagal walaupun operasi kukuh",
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "skillId": "D6.MONEY",
+        "possibleOperations": [
+          "addition",
+          "subtraction",
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "money.discount",
+          "money.profit_loss",
+          "money.transaction",
+          "operation.choose"
+        ],
+        "notes": "Bajet/transaksi heterogen; mesti pilih mengikut item",
+        "routing": "hypothesis_needs_question_tags"
+      }
+    ],
+    "otherExamples": [
+      {
+        "id": "time.duration",
+        "sourceSkillIds": [
+          "D2.5.3",
+          "D3.TIME",
+          "D6.TIME"
+        ],
+        "possibleOperations": [
+          "addition",
+          "subtraction"
+        ],
+        "concepts": [
+          "time.units"
+        ],
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "id": "measurement.problem",
+        "sourceSkillIds": [
+          "D2.6.4",
+          "D3.MEASURE",
+          "D6.MEASURE"
+        ],
+        "possibleOperations": [
+          "addition",
+          "subtraction",
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "measurement.units"
+        ],
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "id": "fraction.problem",
+        "sourceSkillIds": [
+          "D2.3.4",
+          "D5.FRAC",
+          "D6.FRAC"
+        ],
+        "possibleOperations": [
+          "addition",
+          "subtraction",
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "fraction.equal_parts"
+        ],
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "id": "percent.problem",
+        "sourceSkillIds": [
+          "D5.PERCENT",
+          "D6.PERCENT"
+        ],
+        "possibleOperations": [
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "percent.part_whole"
+        ],
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "id": "ratio.problem",
+        "sourceSkillIds": [
+          "D4.RATIO",
+          "D5.RATE",
+          "D6.RATIO"
+        ],
+        "possibleOperations": [
+          "multiplication",
+          "division"
+        ],
+        "concepts": [
+          "ratio.relationship"
+        ],
+        "routing": "hypothesis_needs_question_tags"
+      },
+      {
+        "id": "data.problem",
+        "sourceSkillIds": [
+          "D2.8.3",
+          "D3.DATA",
+          "D6.DATA"
+        ],
+        "possibleOperations": [
+          "addition",
+          "subtraction"
+        ],
+        "concepts": [
+          "data.reading"
+        ],
+        "routing": "hypothesis_needs_question_tags"
+      }
+    ]
+  },
+  "migration": {
+    "doNotReplace": "GRAPH/recovery_map/adaptive live",
+    "consumeAs": "read_only proposed diagnostic dependencies",
+    "requires": "consistent question-level tags and validation before activation"
+  }
+}

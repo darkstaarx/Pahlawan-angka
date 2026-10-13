@@ -2,7 +2,7 @@
 (function(){
   const baseScreen=window.screen;
   window.isDemoStudent=function(){return !!(uiSession&&uiSession.role==='student')};
-  window.updateDevQuickButton=function(){const b=document.getElementById('devQuickBtn');if(!b)return;b.classList.toggle('hidden',!(db&&isDevMode()));};
+  window.updateDevQuickButton=function(){const b=document.getElementById('devQuickBtn');if(!b)return;b.classList.toggle('hidden',!(typeof db!=='undefined'&&db&&isDevMode()));};
   window.updateBottomNav=function(id){
     const nav=document.getElementById('appBottomNav'); if(!nav)return;
     nav.classList.toggle('show',['hub','menuV2','missions','treasure','parent'].includes(id));

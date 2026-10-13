@@ -1,0 +1,1260 @@
+{
+  "rows": [
+    {
+      "test": "production desktop No focus before evidence",
+      "grade": 1,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money card from varied evidence",
+      "grade": 1,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D1.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money route -> Wirayung",
+      "grade": 1,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d1-bayar",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wira asset loaded",
+      "grade": 1,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wirayung exit keeps grade",
+      "grade": 1,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 1,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Recent independent evidence removes card",
+      "grade": 1,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop No focus before evidence",
+      "grade": 2,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money card from varied evidence",
+      "grade": 2,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D2.4.5"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money route -> Wirayung",
+      "grade": 2,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d2-bahagi",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wira asset loaded",
+      "grade": 2,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wirayung exit keeps grade",
+      "grade": 2,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 2,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Recent independent evidence removes card",
+      "grade": 2,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop No focus before evidence",
+      "grade": 3,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money card from varied evidence",
+      "grade": 3,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D3.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money route -> Wirayung",
+      "grade": 3,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d3-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wira asset loaded",
+      "grade": 3,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wirayung exit keeps grade",
+      "grade": 3,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 3,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Recent independent evidence removes card",
+      "grade": 3,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop No focus before evidence",
+      "grade": 4,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money card from varied evidence",
+      "grade": 4,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D4.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money route -> Wirayung",
+      "grade": 4,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d4-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wira asset loaded",
+      "grade": 4,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wirayung exit keeps grade",
+      "grade": 4,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 4,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Recent independent evidence removes card",
+      "grade": 4,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop No focus before evidence",
+      "grade": 5,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money card from varied evidence",
+      "grade": 5,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D5.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money route -> Wirayung",
+      "grade": 5,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d5-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wira asset loaded",
+      "grade": 5,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wirayung exit keeps grade",
+      "grade": 5,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 5,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Recent independent evidence removes card",
+      "grade": 5,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop No focus before evidence",
+      "grade": 6,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money card from varied evidence",
+      "grade": 6,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D6.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Money route -> Wirayung",
+      "grade": 6,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d6-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wira asset loaded",
+      "grade": 6,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Wirayung exit keeps grade",
+      "grade": 6,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 6,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Recent independent evidence removes card",
+      "grade": 6,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production desktop Operations route -> focused battle",
+      "grade": 2,
+      "expected": "Operations route -> focused battle",
+      "actual": {
+        "route": "focus",
+        "pool": [
+          "D2.2.3"
+        ],
+        "grade": 2
+      },
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android No focus before evidence",
+      "grade": 1,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money card from varied evidence",
+      "grade": 1,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D1.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money route -> Wirayung",
+      "grade": 1,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d1-bayar",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wira asset loaded",
+      "grade": 1,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wirayung exit keeps grade",
+      "grade": 1,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 1,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Recent independent evidence removes card",
+      "grade": 1,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android No focus before evidence",
+      "grade": 2,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money card from varied evidence",
+      "grade": 2,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D2.4.5"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money route -> Wirayung",
+      "grade": 2,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d2-bahagi",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wira asset loaded",
+      "grade": 2,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wirayung exit keeps grade",
+      "grade": 2,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 2,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Recent independent evidence removes card",
+      "grade": 2,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android No focus before evidence",
+      "grade": 3,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money card from varied evidence",
+      "grade": 3,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D3.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money route -> Wirayung",
+      "grade": 3,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d3-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wira asset loaded",
+      "grade": 3,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wirayung exit keeps grade",
+      "grade": 3,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 3,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Recent independent evidence removes card",
+      "grade": 3,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android No focus before evidence",
+      "grade": 4,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money card from varied evidence",
+      "grade": 4,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D4.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money route -> Wirayung",
+      "grade": 4,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d4-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wira asset loaded",
+      "grade": 4,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wirayung exit keeps grade",
+      "grade": 4,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 4,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Recent independent evidence removes card",
+      "grade": 4,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android No focus before evidence",
+      "grade": 5,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money card from varied evidence",
+      "grade": 5,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D5.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money route -> Wirayung",
+      "grade": 5,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d5-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wira asset loaded",
+      "grade": 5,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wirayung exit keeps grade",
+      "grade": 5,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 5,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Recent independent evidence removes card",
+      "grade": 5,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android No focus before evidence",
+      "grade": 6,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money card from varied evidence",
+      "grade": 6,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D6.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Money route -> Wirayung",
+      "grade": 6,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d6-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wira asset loaded",
+      "grade": 6,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Wirayung exit keeps grade",
+      "grade": 6,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 6,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Recent independent evidence removes card",
+      "grade": 6,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "production android Operations route -> focused battle",
+      "grade": 2,
+      "expected": "Operations route -> focused battle",
+      "actual": {
+        "route": "focus",
+        "pool": [
+          "D2.2.3"
+        ],
+        "grade": 2
+      },
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop No focus before evidence",
+      "grade": 1,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money card from varied evidence",
+      "grade": 1,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D1.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money route -> Wirayung",
+      "grade": 1,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d1-bayar",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wira asset loaded",
+      "grade": 1,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wirayung exit keeps grade",
+      "grade": 1,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 1,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Recent independent evidence removes card",
+      "grade": 1,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop No focus before evidence",
+      "grade": 2,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money card from varied evidence",
+      "grade": 2,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D2.4.5"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money route -> Wirayung",
+      "grade": 2,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d2-bahagi",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wira asset loaded",
+      "grade": 2,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wirayung exit keeps grade",
+      "grade": 2,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 2,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Recent independent evidence removes card",
+      "grade": 2,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop No focus before evidence",
+      "grade": 3,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money card from varied evidence",
+      "grade": 3,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D3.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money route -> Wirayung",
+      "grade": 3,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d3-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wira asset loaded",
+      "grade": 3,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wirayung exit keeps grade",
+      "grade": 3,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 3,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Recent independent evidence removes card",
+      "grade": 3,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop No focus before evidence",
+      "grade": 4,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money card from varied evidence",
+      "grade": 4,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D4.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money route -> Wirayung",
+      "grade": 4,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d4-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wira asset loaded",
+      "grade": 4,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wirayung exit keeps grade",
+      "grade": 4,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 4,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Recent independent evidence removes card",
+      "grade": 4,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop No focus before evidence",
+      "grade": 5,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money card from varied evidence",
+      "grade": 5,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D5.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money route -> Wirayung",
+      "grade": 5,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d5-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wira asset loaded",
+      "grade": 5,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wirayung exit keeps grade",
+      "grade": 5,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 5,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Recent independent evidence removes card",
+      "grade": 5,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop No focus before evidence",
+      "grade": 6,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money card from varied evidence",
+      "grade": 6,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D6.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Money route -> Wirayung",
+      "grade": 6,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d6-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wira asset loaded",
+      "grade": 6,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Wirayung exit keeps grade",
+      "grade": 6,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 6,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Recent independent evidence removes card",
+      "grade": 6,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature desktop Operations route -> focused battle",
+      "grade": 2,
+      "expected": "Operations route -> focused battle",
+      "actual": {
+        "route": "focus",
+        "pool": [
+          "D2.2.3"
+        ],
+        "grade": 2
+      },
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android No focus before evidence",
+      "grade": 1,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money card from varied evidence",
+      "grade": 1,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D1.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money route -> Wirayung",
+      "grade": 1,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d1-bayar",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wira asset loaded",
+      "grade": 1,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wirayung exit keeps grade",
+      "grade": 1,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 1,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Recent independent evidence removes card",
+      "grade": 1,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android No focus before evidence",
+      "grade": 2,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money card from varied evidence",
+      "grade": 2,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D2.4.5"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money route -> Wirayung",
+      "grade": 2,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d2-bahagi",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wira asset loaded",
+      "grade": 2,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wirayung exit keeps grade",
+      "grade": 2,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 2,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Recent independent evidence removes card",
+      "grade": 2,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android No focus before evidence",
+      "grade": 3,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money card from varied evidence",
+      "grade": 3,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D3.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money route -> Wirayung",
+      "grade": 3,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d3-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wira asset loaded",
+      "grade": 3,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wirayung exit keeps grade",
+      "grade": 3,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 3,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Recent independent evidence removes card",
+      "grade": 3,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android No focus before evidence",
+      "grade": 4,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money card from varied evidence",
+      "grade": 4,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D4.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money route -> Wirayung",
+      "grade": 4,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d4-bayar-baki",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wira asset loaded",
+      "grade": 4,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wirayung exit keeps grade",
+      "grade": 4,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 4,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Recent independent evidence removes card",
+      "grade": 4,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android No focus before evidence",
+      "grade": 5,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money card from varied evidence",
+      "grade": 5,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D5.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money route -> Wirayung",
+      "grade": 5,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d5-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wira asset loaded",
+      "grade": 5,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wirayung exit keeps grade",
+      "grade": 5,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 5,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Recent independent evidence removes card",
+      "grade": 5,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android No focus before evidence",
+      "grade": 6,
+      "expected": "No focus before evidence",
+      "actual": true,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money card from varied evidence",
+      "grade": 6,
+      "expected": "Money card from varied evidence",
+      "actual": [
+        "D6.MONEY"
+      ],
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Money route -> Wirayung",
+      "grade": 6,
+      "expected": "Money route -> Wirayung",
+      "actual": "gerai-wirayung.html?pa_nonce=<ephemeral>#d6-diskaun",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wira asset loaded",
+      "grade": 6,
+      "expected": "Wira asset loaded",
+      "actual": "Loaded original Wira asset",
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Wirayung exit keeps grade",
+      "grade": 6,
+      "expected": "Wirayung exit keeps grade",
+      "actual": 6,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Recent independent evidence removes card",
+      "grade": 6,
+      "expected": "Recent independent evidence removes card",
+      "actual": false,
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    },
+    {
+      "test": "feature android Operations route -> focused battle",
+      "grade": 2,
+      "expected": "Operations route -> focused battle",
+      "actual": {
+        "route": "focus",
+        "pool": [
+          "D2.2.3"
+        ],
+        "grade": 2
+      },
+      "status": "PASS",
+      "evidence": "routing-results.json"
+    }
+  ]
+}

@@ -2,8 +2,8 @@ window.PAQuestionBanks = window.PAQuestionBanks || {};
 window.PAQuestionBanks.d4 = function(id,s,shift){
  if(id==="D4.N100000"){let a=R(10000,99999),b=R(10000,99999);return Q(`Yang manakah lebih besar?<br><b>${a}</b> atau <b>${b}</b>`,Math.max(a,b),[N(Math.min(a,b),"compare"),N(a+b,"operation"),N(Math.abs(a-b),"operation")],"Banding digit dari kiri.","Darjah 4",true,shift)}
  if(id==="D4.PV100000"){let n=uniqueDigitNumber(5),s=String(n),pos=R(0,4),d=+s[pos],pow=4-pos,ans=d*Math.pow(10,pow),place=['puluh ribu','ribu','ratus','puluh','sa'][pos];return Q(`Apakah nilai digit <b>${d}</b> pada tempat <b>${place}</b> dalam <b>${n}</b>?`,ans,[N(d,"digit_value"),N(d*Math.pow(10,Math.max(0,pow-1)),"place"),N(ans+1000,"place")],"Nilai digit ikut tempatnya.","Darjah 4",true,true)}
- if(id==="D4.ADD"){let a=R(10000,60000),b=R(1000,25000),ans=a+b;return addQ(a,b,ans,"Darjah 4",shift)}
- if(id==="D4.SUB"){let a=R(20000,99999),b=R(1000,Math.min(25000,a-1)),ans=a-b;return subQ(a,b,ans,"Darjah 4",shift)}
+ if(id==="D4.ADD"){let a=R(10000,60000),b=R(1000,25000),ans=a+b;return addQ(a,b,ans,"Darjah 4",shift,{skillId:id})}
+ if(id==="D4.SUB"){let a=R(20000,99999),b=R(1000,Math.min(25000,a-1)),ans=a-b;return subQ(a,b,ans,"Darjah 4",shift,{skillId:id})}
  if(id==="D4.MUL"){let a=R(12,99),b=pick([3,4,5,6,7,8,9]),ans=a*b;return Q(`${a} × ${b} = ?`,ans,[N(a+b,"operation"),N(ans+b,"fact"),N(Math.round(ans/10)*10,"fact")],"Darab ikut pecahan nilai tempat atau fakta darab.","Darjah 4",true,true)}
  if(id==="D4.DIV"){let b=pick([3,4,5,6,8,9]),ans=R(12,60),a=b*ans;return Q(`${a} ÷ ${b} = ?`,ans,[N(b,"operation"),N(ans+2,"division"),N(Math.max(1,ans-2),"division")],"Semak berapa kumpulan sama banyak.","Darjah 4",true,true)}
  if(id==="D4.FRAC"){let d=pick([4,5,6,8,10]),n=R(1,d-1),m=R(1,d-n),ans=`${n+m}/${d}`;return Q(`${fractionVisual(n,d)}Tambah pecahan <b>${n}/${d}</b> + <b>${m}/${d}</b> = ?`,ans,[N(`${n+m}/${d+1}`,"fraction"),N(`${n*m}/${d}`,"fraction"),N(`${n+m}/${m}`,"fraction")],"Penyebut sama: tambah pengangka sahaja.","Darjah 4",true,true)}

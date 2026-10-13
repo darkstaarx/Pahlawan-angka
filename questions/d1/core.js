@@ -195,8 +195,8 @@ window.PAQuestionBanks.d1 = function(id,s,shift){
    let ans=Math.round(n/10)*10;return Q(`Bundarkan <b>${n}</b> kepada puluh terdekat.`,ans,[N(Math.floor(n/10)*10,"round"),N(Math.ceil(n/10)*10+10,"round"),N(n,"place")],"Lihat digit sa.","Darjah 1",true,true)
  }
  if(id==="D1.CMP100"){let a=R(1,100),b=R(1,100);return Q(`Pilih nombor lebih kecil: <b>${a}</b> atau <b>${b}</b>`,Math.min(a,b),[N(Math.max(a,b),"compare"),N(a+b,"operation"),N(Math.abs(a-b),"operation")],"Banding puluh dahulu.","Darjah 1",false,shift)}
- if(id==="D1.ADD20"||id==="D1.ADD100"){let max=id==="D1.ADD20"?20:100,a=R(1,Math.floor(max*.6)),b=R(1,Math.max(1,max-a)),ans=a+b;return addQ(a,b,ans,"Darjah 1",shift)}
- if(id==="D1.SUB20"||id==="D1.SUB100"){let max=id==="D1.SUB20"?20:100,a=R(Math.floor(max*.4),max),b=R(1,a),ans=a-b;return subQ(a,b,ans,"Darjah 1",shift)}
+ if(id==="D1.ADD20"||id==="D1.ADD100"){let max=id==="D1.ADD20"?20:100,a=R(1,Math.floor(max*.6)),b=R(1,Math.max(1,max-a)),ans=a+b;return addQ(a,b,ans,"Darjah 1",shift,{skillId:id})}
+ if(id==="D1.SUB20"||id==="D1.SUB100"){let max=id==="D1.SUB20"?20:100,a=R(Math.floor(max*.4),max),b=R(1,a),ans=a-b;return subQ(a,b,ans,"Darjah 1",shift,{skillId:id})}
  if(id==="D1.FRAC")return d1FractionQuestion(s,shift)
  if(id==="D1.MONEY"){let a=R(1,10),b=R(1,10),ans=a+b;return Q(`RM${a} + RM${b} = ?`,`RM${ans}`,[N(`RM${Math.max(0,ans-5)}`,"money"),N(`RM${ans+5}`,"money"),N(`${ans} sen`,"money")],"Tambah nilai dan kekalkan unit RM.","Darjah 1",true,shift)}
  if(id==="D1.TIME"){let h=R(1,12),ans=`${h}:00`;return Q(`${clockSvg(h,0)}Jam menunjukkan pukul?`,ans,[N(`${(h%12)+1}:00`,"time"),N(`${h}:30`,"time"),N(`${Math.max(1,h-1)}:00`,"time")],"Jam tepat mempunyai 00 minit.","Darjah 1",false,shift)}

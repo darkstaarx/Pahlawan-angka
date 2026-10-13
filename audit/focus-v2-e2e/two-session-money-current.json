@@ -1,0 +1,98 @@
+{
+  "status": "two_session_money_baseline_before_pilot",
+  "session1": {
+    "name": "Kembara Wang normal",
+    "encounters": 5,
+    "distinctQuestions": 5,
+    "focusCard": {
+      "id": "D2.4.2",
+      "title": "Tambah wang",
+      "chapter": "4",
+      "attempts": 5,
+      "independent": 0,
+      "independentRate": 0,
+      "priority": 115,
+      "reason": "Ulang latihan untuk kukuhkan asas."
+    },
+    "parentSummary": {
+      "ready": true,
+      "learning": [
+        "Tambah Wang masih mencabar. Latihan akan kembali kepada asas dan menggunakan contoh yang lebih mudah."
+      ],
+      "headline": "Aina sedang membina asas Matematik"
+    }
+  },
+  "session2": {
+    "name": "Mini-game Gerai Wirayung · BAYAR TEPAT",
+    "manualBrowserRounds": [
+      {
+        "order": "Kuih Lapis RM1.90",
+        "firstAttempt": "salah item dan RM1.50",
+        "final": "RM1.90",
+        "outcome": "corrected",
+        "stars": 1
+      },
+      {
+        "order": "Ramuan Wira RM1.50",
+        "firstAttempt": "betul",
+        "final": "RM1.50",
+        "outcome": "independent",
+        "stars": 3
+      }
+    ],
+    "recordsSentToApp": "none; opened as a standalone game page without the production parent bridge",
+    "bridgeReplay": {
+      "recordedUnderSkill": "D2.4.2",
+      "focusCardAfter": "D2.4.2",
+      "parentSummaryAfter": [
+        "Tambah Wang masih mencabar. Latihan akan kembali kepada asas dan menggunakan contoh yang lebih mudah."
+      ]
+    }
+  },
+  "availableShadowProbe": {
+    "source": "browser: Simulate: money context issue",
+    "originSkillId": "D2.4.5",
+    "observed": {
+      "uniqueTaggedQuestions": 7,
+      "money": {
+        "independent": 0,
+        "nonindependent": 2
+      },
+      "plainDivision": {
+        "independent": 2,
+        "nonindependent": 0
+      },
+      "grouping": {
+        "independent": 1,
+        "nonindependent": 0
+      },
+      "regroupDivision": {
+        "independent": 2,
+        "nonindependent": 0
+      }
+    },
+    "diagnosis": {
+      "state": "needs_contrast",
+      "rootCause": null,
+      "nextProbe": "money.ringgit_sen",
+      "confidence": "low",
+      "reasonCode": "MONEY_CONTEXT_VS_DIVISION_CONTRAST"
+    },
+    "parentSummaryAfterProbe": "Belum ada rumusan punca operasi yang dipautkan kepada laporan parent."
+  },
+  "requestedScenario": "Wang asas berjaya; operasi tambah nombor besar gagal; final Focus should move to tambah/nilai tempat.",
+  "requestedScenarioStatus": "BASELINE_NOT_TESTABLE; NOW_COVERED_BY_SHADOW_PILOT",
+  "reason": "This baseline was captured before authored tags were added to D2.4.2/D2.4.1. The separate focus-v2-money-two-session-pilot.cjs now tests the requested pattern with actual question generators, but live production routing/report integration remains disconnected.",
+  "currentParentText": {
+    "afterKembara": [
+      "Tambah Wang masih mencabar. Latihan akan kembali kepada asas dan menggunakan contoh yang lebih mudah."
+    ],
+    "afterGeraiBridgeReplay": [
+      "Tambah Wang masih mencabar. Latihan akan kembali kepada asas dan menggunakan contoh yang lebih mudah."
+    ]
+  },
+  "desiredParentText": "Pada awalnya, latihan menunjukkan Wang mencabar. Ujian susulan mendapati asas Wang boleh dibuat sendiri, tetapi tambah nombor besar masih mengelirukan. Fokus seterusnya ialah nilai tempat dan tambah nombor besar.",
+  "profileMasteryXpCoinsUnchanged": true,
+  "productionIntegration": "NO-GO: diagnosis remains shadow-only; no live Focus route/report update.",
+  "followupPilot": "audit/focus-v2-e2e/two-session-money-pilot.json"
+}

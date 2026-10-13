@@ -7,6 +7,7 @@ assert(/sess\.missionAnswered>=sess\.focusTarget/.test(battle),'focus completion
 assert(/guardianCorrectFeedback/.test(battle)&&/guardianHint/.test(battle),'graduated feedback hooks missing');
 assert(/openGuardianFocus/.test(parent),'parent launch action missing');
 assert(/guardianFocusHistory/.test(focus),'before-after history missing');
-assert(/v3\.9\.0/.test(html)&&/pahlawan-angka-v3\.9\.0/.test(sw),'version/cache not updated');
+const version=read('js/version.js').match(/PA_APP_VERSION='([^']+)'/)[1];
+assert(html.includes('js/version.js?v='+version)&&sw.includes("importScripts('./js/version.js')")&&sw.includes('pahlawan-angka-v${self.PA_APP_VERSION}'),'version/cache wiring inconsistent');
 assert(sw.includes("'./js/guardian-focus.js'")&&sw.includes("'./css/guardian-focus-v3.8.30.css'"),'focus assets absent from app shell');
 console.log('guardian focus audit: 8 checks passed');

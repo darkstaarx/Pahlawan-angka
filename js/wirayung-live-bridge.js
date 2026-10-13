@@ -10,12 +10,35 @@ const MODE_IDS={
   6:{diskaun:"D6.MONEY",untung:"D6.MONEY"}
 };
 const gradeModes={1:["bayar"],2:["bayar","baki","bahagi"],3:["bayar","baki"],4:["bayar","baki"],5:["diskaun","baki"],6:["diskaun","untung"]};
-let run=null;
+let run=null,shadowRun=null;
 const css=document.createElement("style");
 css.textContent='#paWirayungOverlay{position:fixed;inset:0;z-index:2147482000;background:#142638;display:flex;flex-direction:column;overscroll-behavior:contain}#paWirayungOverlay .paWirayungNav{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:50px;padding:7px max(12px,env(safe-area-inset-right)) 7px max(12px,env(safe-area-inset-left));background:#1c344d;border-bottom:2px solid #d7a76a;color:#fff;font:700 14px system-ui,sans-serif}#paWirayungOverlay .paWirayungNav b{font-size:clamp(15px,3vw,21px);color:#ffdfa1}#paWirayungOverlay .paWirayungNav small{opacity:.8;margin-right:auto}#paWirayungOverlay #paWirayungExit{border:0;border-radius:10px;background:#fff0d0;padding:9px 13px;color:#4a301c;font-weight:900;cursor:pointer}#paWirayungOverlay iframe{width:100%;flex:1;min-height:0;border:0;background:#203952}body.pa-wirayung-active{overflow:hidden!important}#wirayungLaunch{display:block;width:100%;border:2px solid #bf904e;border-radius:14px;background:linear-gradient(#ffe0a3,#edb764);color:#432e1e;min-height:50px;margin:9px 0;font-size:15px;font-weight:900;cursor:pointer}@media(min-width:800px){#paWirayungOverlay .paWirayungNav{padding-inline:24px}}';
 document.head.append(css);
 const escapeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const activeGrade=()=>Number(typeof db!=="undefined"&&db&&db.schoolGrade)||0;
+// The opt-in pilot may run on the public demo as well as localhost. Keep it
+// behind an explicit URL flag; the iframe uses only in-memory synthetic data.
+const moneyShadowAllowed=()=>new URLSearchParams(location.search).get("focus-shadow")==="money";
+function openMoneyShadow(skillId="D2.4.2"){
+ if(skillId!=="D2.4.2"||!moneyShadowAllowed())return false;
+ if(run)close();if(shadowRun)closeMoneyShadow();
+ const nonce=(crypto.randomUUID?.()||String(Date.now())+"-"+Math.random().toString(36).slice(2));
+ const node=document.createElement("section");node.id="paWirayungOverlay";node.setAttribute("role","dialog");node.setAttribute("aria-label","Ujian shadow Kemahiran Fokus Wang");node.setAttribute("aria-modal","true");
+ node.innerHTML='<div class="paWirayungNav"><b>Gerai Wirayung · Ujian Fokus Wang</b><small>Shadow sahaja · tiada simpanan profil</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Ujian diagnosis Wang dalam Gerai Wirayung" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
+ document.body.append(node);shadowRun={node,frame:node.querySelector("iframe"),nonce,skillId};
+ node.querySelector("#paWirayungExit").onclick=closeMoneyShadow;
+ const testScenario=new URLSearchParams(location.search).get("autostart")==="1"&&new URLSearchParams(location.search).get("run")==="example";
+ shadowRun.frame.src="audit/focus-v2-money-contrast-harness.html?bridge=1&nonce="+encodeURIComponent(nonce)+(testScenario?"&run=example":"");
+ document.body.classList.add("pa-wirayung-active");window.PAFocusPractice?.close?.();return true;
+}
+function closeMoneyShadow(){if(!shadowRun)return;shadowRun.node.remove();shadowRun=null;document.body.classList.remove("pa-wirayung-active")}
+function receiveMoneyShadow(e){
+ if(!shadowRun||e.origin!==location.origin||e.source!==shadowRun.frame.contentWindow)return false;
+ const m=e.data;if(!m||m.type!=="PA_FOCUS_MONEY_SHADOW_RESULT"||m.version!==1||m.nonce!==shadowRun.nonce||!m.report)return true;
+ const r=m.report,summary=shadowRun.node.querySelector("#paFocusShadowSummary");
+ summary.hidden=false;summary.textContent=(r.state==="candidate"?"Calon fokus: "+String(r.nextSkillId||r.rootCause||"semakan lanjut")+" · ":"Belum cukup bukti · ")+String(r.parentText||"");
+ return true;
+}
 function moneySkill(id){return !!(typeof db!=='undefined'&&db&&window.PAGeraiWirayung?.planFor?.(db,id));}
 function open(skillId){
  if(typeof db==="undefined"||!db||!window.PACommercial?.requireFeature?.("focus"))return false;
@@ -102,11 +125,13 @@ function finishRound(e){
  mountReport();
 }
 window.addEventListener("message",e=>{
+ if(receiveMoneyShadow(e))return;
  if(!run||e.origin!==location.origin||e.source!==run.frame.contentWindow)return;
  finishRound(e.data);
 });
 document.getElementById("wirayungLaunch")?.addEventListener("click",()=>open());
 const original=window.renderParent;
 if(typeof original==="function")window.renderParent=function(){const ret=original.apply(this,arguments);mountReport();return ret;};
-window.PAWirayungLive={open,close,tryStartFocus:id=>moneySkill(id)?open(id):false,insights:records};
+window.PAWirayungLive={open,close,tryStartFocus:id=>openMoneyShadow(id)||moneySkill(id)&&open(id),insights:records,openMoneyShadow};
+if(moneyShadowAllowed()&&new URLSearchParams(location.search).get("autostart")==="1")setTimeout(()=>openMoneyShadow("D2.4.2"),0);
 })();
