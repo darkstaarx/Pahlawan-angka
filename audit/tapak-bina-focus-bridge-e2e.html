@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ms">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/"><title>Arkitek Dimensi Focus bridge test</title></head>
+<body>
+<h1>Arkitek Dimensi · Focus bridge E2E</h1>
+<pre id="result">running</pre>
+<script>
+window.PACommercial={requireFeature:()=>true};
+window.PACloud={scheduleSave:()=>{},syncSaveNow:()=>{}};
+window.enforceRestuLock=()=>false;window.isDemoStudent=()=>false;window.isDevMode=()=>false;window.save=()=>{};
+window.META={'D5.AREA':{id:'D5.AREA',grade:5,title:'Luas'}};
+var db={name:'Disposable Arkitek test',schoolGrade:5,demoMode:false,skills:{'D5.AREA':{mastery:28,evidence:7}},xp:44,coins:12,
+ rewards:{pets:{},auras:{},badges:{}},learnerReviewV1:{schema:1,updatedAt:0,encounters:Array.from({length:5},(_,i)=>({
+  schema:1,encounterId:'seed-'+i,questionKey:'seed-area-'+i,skillId:'D5.AREA',grade:5,mode:'practice',archetypeId:'area_rect',
+  outcome:i===0?'independent':'unresolved',correct:i===0,usedHint:false,resolvedAt:Date.now()-10000+i
+ }))}};
+</script>
+<script src="js/engine/learner-review-v1.js"></script>
+<script src="js/tapak-bina-router.js"></script>
+<script src="js/tapak-bina-live-bridge.js"></script>
+<script>
+(()=>{
+ const result=document.getElementById('result'),before=JSON.stringify({skills:db.skills,xp:db.xp,coins:db.coins,rewards:db.rewards});
+ const started=window.PATapakBinaLive.tryStartFocus('D5.AREA');
+ if(!started){result.textContent='FAIL: router did not start a disposable D5.AREA Focus profile';return}
+ const frame=document.getElementById('paTapakBinaFrame'),url=new URL(frame.src);url.searchParams.set('qa','1');frame.src=url.href;
+ frame.addEventListener('load',()=>setTimeout(()=>{
+  try{
+   const api=frame.contentWindow.__tapak,q=api?.q;
+   if(!q||q.fam!=='luas'||q.arch!=='area_rect')throw new Error('Expected the selected D5 area weakness to open its matching first probe');
+   api.setAns(q.w.val);api.check();
+   setTimeout(()=>{
+    api.check();
+    const next=api.q;
+    api.setAns(Number(next.w.val)+1);api.check();
+    api.setAns(next.w.val);api.check();
+    setTimeout(()=>{
+     const records=db.learnerReviewV1.encounters,added=records.slice(-2),unchanged=before===JSON.stringify({skills:db.skills,xp:db.xp,coins:db.coins,rewards:db.rewards});
+     const ok=records.length===7&&added[0]?.skillId==='D5.AREA'&&added[0]?.outcome==='independent'&&added[1]?.outcome==='corrected'&&added[1]?.misconceptionTag==='generic'&&unchanged;
+     result.textContent=JSON.stringify({status:ok?'PASS':'FAIL',focusRoute:frame.src,firstQuestion:q.arch,
+      recordedOutcomes:added.map(x=>x.outcome),recordsAdded:records.length-5,masteryAndRewardsUnchanged:unchanged},null,2);
+    },30);
+   },30);
+  }catch(error){result.textContent=JSON.stringify({status:'FAIL',error:String(error)},null,2)}
+ },80),{once:true});
+})();
+</script>
+</body></html>

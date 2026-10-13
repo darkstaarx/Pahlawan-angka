@@ -2,6 +2,14 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-variety-v1`;
 const APP_SHELL=[
+  './tapak-bina.html','./js/tapak-bina-router.js','./js/tapak-bina-live-bridge.js',
+  './assets/minigames/tapak-bina/wira-idle.webp','./assets/minigames/tapak-bina/wira-thumb.webp','./assets/minigames/tapak-bina/wira-victory.webp',
+  './assets/minigames/tapak-bina/bintang.webp',
+  './assets/minigames/tapak-bina/arnab-kek-lapis-idle.webp','./assets/minigames/tapak-bina/arnab-kek-lapis-happy.webp','./assets/minigames/tapak-bina/arnab-kek-lapis-sad.webp',
+  './assets/minigames/tapak-bina/durian-kerbau-idle.webp','./assets/minigames/tapak-bina/durian-kerbau-happy.webp','./assets/minigames/tapak-bina/durian-kerbau-sad.webp',
+  './assets/minigames/tapak-bina/harimau-bunga-idle.webp','./assets/minigames/tapak-bina/harimau-bunga-happy.webp','./assets/minigames/tapak-bina/harimau-bunga-sad.webp',
+  './assets/minigames/tapak-bina/ketupat-kura-idle.webp','./assets/minigames/tapak-bina/ketupat-kura-happy.webp','./assets/minigames/tapak-bina/ketupat-kura-sad.webp',
+  './assets/minigames/tapak-bina/kumbang-manggis-idle.webp','./assets/minigames/tapak-bina/kumbang-manggis-happy.webp','./assets/minigames/tapak-bina/kumbang-manggis-sad.webp',
   './gerai-wirayung.html', './js/wirayung-live-bridge.js', './js/gerai-wirayung-router.js',
   './menara-jam.html', './js/menara-jam-router.js', './js/engine/focus-time-diagnostic-v1.js',
   './assets/minigames/tren-jam/train-v1.svg', './assets/battlefields/money-market/arena-v1.webp',

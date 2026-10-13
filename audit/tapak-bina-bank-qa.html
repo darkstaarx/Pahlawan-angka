@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><title>Arkitek Dimensi bank QA</title></head>
+<body><h1>Arkitek Dimensi · bank D1–D6</h1><pre id="result">Sedang semak…</pre>
+<iframe id="game" src="../tapak-bina.html?qa=1#d1-bentuk2d" hidden></iframe>
+<script>
+const result=document.getElementById('result'),frame=document.getElementById('game');
+frame.addEventListener('load',()=>{
+ try{
+  const api=frame.contentWindow.__tapak,failures=[],summary=[];
+  if(!api)throw new Error('QA interface unavailable');
+  for(const [grade,data] of Object.entries(api.GRADES)){
+   let archetypes=0,stimuli=0;
+   for(const [family,list] of Object.entries(data.fams))for(const arch of list){
+    archetypes++;const generate=api.GEN[arch];
+    if(typeof generate!=='function'){failures.push(`D${grade}/${family}/${arch}: generator missing`);continue}
+    const seen=new Set();
+    for(let n=0;n<20;n++){
+     const q=generate(Number(grade));
+     if(!q||!String(q.q||'').trim()||!q.w){failures.push(`D${grade}/${family}/${arch}: empty prompt or interaction`);break}
+     if(typeof q.ok!=='function'&&!('val'in q.w)&&!('correct'in q.w)&&!('cand'in q.w)){failures.push(`D${grade}/${family}/${arch}: no answer validation target`);break}
+     seen.add(JSON.stringify({q:q.q,sub:q.sub,answer:q.ans,widget:q.w}));
+    }
+    stimuli+=seen.size;
+    if(seen.size<2)failures.push(`D${grade}/${family}/${arch}: only ${seen.size} distinct stimulus in 20 samples`);
+   }
+   summary.push({grade:Number(grade),families:Object.keys(data.fams).length,archetypes,distinctStimuliIn20Samples:stimuli});
+  }
+  result.textContent=JSON.stringify({status:failures.length?'FAIL':'PASS',minimumQuestionsPerSet:5,allGeneratedArchetypes:Object.values(api.GRADES).reduce((n,g)=>n+Object.values(g.fams).reduce((m,a)=>m+a.length,0),0),summary,failures},null,2);
+ }catch(error){result.textContent=JSON.stringify({status:'FAIL',error:String(error)},null,2)}
+},{once:true});
+</script></body></html>
