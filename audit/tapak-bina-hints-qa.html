@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><title>Arkitek Dimensi · petunjuk Wira QA</title></head>
+<body><h1>Arkitek Dimensi · petunjuk Wira</h1><pre id="result">Sedang semak…</pre>
+<iframe id="game" src="../tapak-bina.html?qa=1#d1-bentuk2d" hidden></iframe>
+<script>
+const result=document.getElementById('result'),frame=document.getElementById('game');
+frame.addEventListener('load',()=>{
+ const failures=[],types=['pick','seq','pad','grid','lines','angle','compass','circlepick','unknown'];
+ try{
+  const api=frame.contentWindow.__tapak;
+  if(!api?.hintForQuestion)throw new Error('Hint QA interface unavailable');
+  for(const type of types){
+   const q={w:{type},a:'ANSWER_SECRET_8271',ans:'ANSWER_SECRET_8271',s:'EXPLANATION_SECRET_8271'};
+   for(const level of [1,2,3]){
+    const text=api.hintForQuestion(q,level);
+    if(typeof text!=='string'||!text.trim())failures.push(`${type}: empty hint at level ${level}`);
+    if(/ANSWER_SECRET|EXPLANATION_SECRET/.test(text))failures.push(`${type}: leaked answer/explanation at level ${level}`);
+   }
+   if(api.hintForQuestion(q,1)===api.hintForQuestion(q,2))failures.push(`${type}: second hint adds no new guidance`);
+  }
+  result.textContent=JSON.stringify({status:failures.length?'FAIL':'PASS',testedWidgetTypes:types.length,levelsPerType:3,failures},null,2);
+ }catch(error){result.textContent=JSON.stringify({status:'FAIL',error:String(error)},null,2)}
+},{once:true});
+</script></body></html>

@@ -547,6 +547,22 @@ function wrongMsg(){const w=q.w;if(w.type==='pad')return (ans<w.val?'Jawapan kam
  if(w.type==='compass')return 'Bukaan '+ans+' cm belum betul. Ingat: jejari = diameter ÷ 2.';
  return 'Belum tepat. Cuba lagi!'}
 
+function hintForQuestion(question,level){
+ const type=question?.w?.type;
+ const hints={
+  pick:['Perhatikan betul-betul ciri yang diminta dalam soalan.','Bandingkan setiap pilihan dengan ciri itu satu demi satu.'],
+  seq:['Lihat susunan bentuk dari kiri ke kanan.','Cari kumpulan paling pendek yang berulang dengan susunan sama.'],
+  pad:['Baca unit dan maklumat pada rajah sebelum mengira.','Buat kiraan satu langkah demi satu langkah, kemudian semak semula.'],
+  grid:['Ikut petak pada grid dengan teliti.','Semak kedudukan mengufuk dan menegak dari titik mula.'],
+  lines:['Perhatikan bentuk dan kedudukan garis yang ditunjukkan.','Bayangkan lipatan pada garis itu; kedua-dua bahagian patut bertindih.'],
+  angle:['Lihat garis mula pada protraktor.','Mulakan bacaan dari 0 pada garis mula, kemudian ikut garis yang satu lagi.'],
+  compass:['Perhatikan jarak antara pusat dan tepi bulatan pada grid.','Semak ukuran yang diberi dan kira jarak bukaan mengikut petak.'],
+  circlepick:['Perhatikan kedudukan garisan dan titik di dalam bulatan.','Bandingkan setiap tanda dengan kedudukannya: di pusat, dari pusat ke tepi, atau antara dua titik di tepi.']
+ };
+ const pair=hints[type]||['Baca soalan sekali lagi dan perhatikan rajah.','Pecahkan tugasan kepada langkah kecil, kemudian semak pilihan kamu.'];
+ return pair[level>1?1:0];
+}
+
 /* ---------- aliran ---------- */
 function makeQ(){const f=cfg.fams[served%cfg.fams.length],list=GRADES[cfg.grade].fams[f];if(tier[f]==null){tier[f]=Math.min(cfg.start[f]||0,list.length-1);clean[f]=0}
  let ti=tier[f],arch=list[ti];if(arch===lastArch&&list.length>1&&Math.random()<.5){ti=Math.max(0,ti-1);arch=list[ti]}lastArch=arch;
@@ -588,11 +604,11 @@ function setDone(){const got=setLog.reduce((a,l)=>a+l.st,0);$('doneTitle').textC
  $('faces').innerHTML=setLog.map(l=>'<div><img src="'+A+l.q.pet+'-happy.webp" alt="'+l.q.who+'">'+'★'.repeat(l.st)+'</div>').join('');$('complete').hidden=false;$('again').focus()}
 $('again').onclick=()=>{$('complete').hidden=true;$('candi').classList.remove('done');sets++;setLog=[];startRound()};
 $('check').onclick=check;
-$('hint').onclick=()=>{if(solved)return;hints++;hint2++;msg(hint2===1?q.s:q.a,'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Tanya Wira';sfx(620,.1)};
+$('hint').onclick=()=>{if(solved)return;hints++;hint2++;msg(hintForQuestion(q,hint2),'',6500);$('hint').textContent=hint2===1?'Petunjuk lagi':'Baca petunjuk semula';sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1;lastArch=''}
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
-if(new URLSearchParams(location.search).get('qa')==='1')window.__tapak={GEN,GRADES,get q(){return q},setAns:v=>{ans=v},check,reportFocusRound};
+if(new URLSearchParams(location.search).get('qa')==='1')window.__tapak={GEN,GRADES,hintForQuestion,get q(){return q},setAns:v=>{ans=v},check,reportFocusRound};
 resetAll();drawCandi(0);startRound();
 })();
 </script>
