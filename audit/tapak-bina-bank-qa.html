@@ -9,21 +9,24 @@ frame.addEventListener('load',()=>{
   const api=frame.contentWindow.__tapak,failures=[],summary=[];
   if(!api)throw new Error('QA interface unavailable');
   for(const [grade,data] of Object.entries(api.GRADES)){
-   let archetypes=0,stimuli=0;
+   let archetypes=0,stimuli=0,minVariations=Infinity;
    for(const [family,list] of Object.entries(data.fams))for(const arch of list){
     archetypes++;const generate=api.GEN[arch];
     if(typeof generate!=='function'){failures.push(`D${grade}/${family}/${arch}: generator missing`);continue}
-    const seen=new Set();
+    const seen=new Set(),targets=new Set();
     for(let n=0;n<20;n++){
      const q=generate(Number(grade));
      if(!q||!String(q.q||'').trim()||!q.w){failures.push(`D${grade}/${family}/${arch}: empty prompt or interaction`);break}
      if(typeof q.ok!=='function'&&!('val'in q.w)&&!('correct'in q.w)&&!('cand'in q.w)){failures.push(`D${grade}/${family}/${arch}: no answer validation target`);break}
+     if(arch==='circle_part')targets.add(q.w.want);
      seen.add(JSON.stringify({q:q.q,sub:q.sub,answer:q.ans,widget:q.w}));
     }
-    stimuli+=seen.size;
-    if(seen.size<2)failures.push(`D${grade}/${family}/${arch}: only ${seen.size} distinct stimulus in 20 samples`);
+    stimuli+=seen.size;minVariations=Math.min(minVariations,seen.size);
+    const minimum=arch==='circle_part'?3:5;
+    if(seen.size<minimum)failures.push(`D${grade}/${family}/${arch}: only ${seen.size} distinct stimuli in 20 samples (minimum ${minimum})`);
+    if(arch==='circle_part'&&targets.size!==3)failures.push(`D${grade}/${family}/${arch}: missing one or more of the 3 circle-part concepts`);
    }
-   summary.push({grade:Number(grade),families:Object.keys(data.fams).length,archetypes,distinctStimuliIn20Samples:stimuli});
+   summary.push({grade:Number(grade),families:Object.keys(data.fams).length,archetypes,distinctStimuliIn20Samples:stimuli,minimumUniquePerArchetype:minVariations});
   }
   result.textContent=JSON.stringify({status:failures.length?'FAIL':'PASS',minimumQuestionsPerSet:5,allGeneratedArchetypes:Object.values(api.GRADES).reduce((n,g)=>n+Object.values(g.fams).reduce((m,a)=>m+a.length,0),0),summary,failures},null,2);
  }catch(error){result.textContent=JSON.stringify({status:'FAIL',error:String(error)},null,2)}
