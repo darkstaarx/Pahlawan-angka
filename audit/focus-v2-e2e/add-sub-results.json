@@ -43,5 +43,9 @@
     ],
     "singleFailure": 0
   },
+  "verification": {
+    "twoIndependent": "transfer_observed",
+    "oneMiss": "not_yet_verified"
+  },
   "profileRewardsOrMasteryChanged": false
 }

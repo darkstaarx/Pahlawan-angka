@@ -84,6 +84,7 @@ function verifyPracticePlan(report){
  for(const spec of plan.items){
   const generated=sample(spec.skillId,gen(spec.skillId.startsWith('D1.')?'d1':'d2t2',spec.skillId), (f,t)=>{
    if(spec.filter.maxOperandDigitsAtLeast&&f.maxOperandDigits<spec.filter.maxOperandDigitsAtLeast)return false;
+   if(spec.filter.maxOperandDigitsAtMost&&f.maxOperandDigits>spec.filter.maxOperandDigitsAtMost)return false;
    if(typeof spec.filter.usesRegrouping==='boolean'&&f.usesRegrouping!==spec.filter.usesRegrouping)return false;
    if(typeof spec.filter.regroupingColumnCount==='number'&&f.regroupingColumns.length!==spec.filter.regroupingColumnCount)return false;
    if(typeof spec.filter.regroupingColumnCountAtLeast==='number'&&f.regroupingColumns.length<spec.filter.regroupingColumnCountAtLeast)return false;
@@ -98,11 +99,21 @@ function verifyPracticePlan(report){
  return plan;
 }
 const digitPlan=verifyPracticePlan(digits),addCarryPlan=verifyPracticePlan(addRegroup),subBorrowPlan=verifyPracticePlan(subRegroup),addFactPlan=verifyPracticePlan(addFact),subFactPlan=verifyPracticePlan(subFact);
+const transferCheck=engine.evaluate({originSkillId:'D2.2.1',observations:[
+ {family:'addition',probe:'fresh-transfer-1',result:'independent',purpose:'transfer_verify'},
+ {family:'addition',probe:'fresh-transfer-2',result:'independent',purpose:'transfer_verify'}
+]});
+const failedTransferCheck=engine.evaluate({originSkillId:'D2.2.1',observations:[
+ {family:'addition',probe:'fresh-transfer-3',result:'independent',purpose:'transfer_verify'},
+ {family:'addition',probe:'fresh-transfer-4',result:'unresolved',purpose:'transfer_verify'}
+]});
+assert.equal(transferCheck.verification,'transfer_observed','two independent fresh answers should verify transfer');
+assert.equal(failedTransferCheck.verification,'not_yet_verified','a miss must keep verification open');
 assert.deepEqual(digitPlan.items.map(x=>x.skillId),['D2.2.1','D2.2.2']);
 assert.equal(addCarryPlan.items.length,2);
 assert.equal(subBorrowPlan.items[1].filter.zeroCrossingBorrow,true);
-assert(addFactPlan.items.every(x=>x.filter.exactFact.startsWith('add:')));
-assert(subFactPlan.items.every(x=>x.filter.exactFact.startsWith('sub:')));
+assert(addFactPlan.items.every(x=>x.filter.exactFact.startsWith('add:')&&x.filter.maxOperandDigitsAtMost===1));
+assert(subFactPlan.items.every(x=>x.filter.exactFact.startsWith('sub:')&&x.filter.maxOperandDigitsAtMost===1));
 assert.equal(engine.buildPracticePlan(notEnough).items.length,0);
 const result={status:'focus_v2_add_sub_shadow_pass',actualGeneratorSources:['D1','D2','D3','D4','kssr-content final wrapper'],
  scenarios:{largeDigitsAcrossBothOperations:digits.rootCause,additionRegroup:addRegroup.rootCause,
@@ -112,6 +123,7 @@ const result={status:'focus_v2_add_sub_shadow_pass',actualGeneratorSources:['D1'
  practiceTargets:{largeDigitsAcrossBothOperations:digitPlan.items.map(x=>x.skillId),additionRegroup:addCarryPlan.items.length,
   subtractionBorrow:subBorrowPlan.items.map(x=>x.filter.zeroCrossingBorrow),additionFacts:addFactPlan.items.map(x=>x.filter.exactFact),
   subtractionFacts:subFactPlan.items.map(x=>x.filter.exactFact),singleFailure:engine.buildPracticePlan(notEnough).items.length},
+ verification:{twoIndependent:transferCheck.verification,oneMiss:failedTransferCheck.verification},
  profileRewardsOrMasteryChanged:false};
 fs.writeFileSync(path.join(root,'audit/focus-v2-e2e/add-sub-results.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));

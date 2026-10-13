@@ -96,7 +96,7 @@
   }else if(cause==='add.facts'||cause==='sub.facts'){
    const operation=cause==='add.facts'?'addition':'subtraction',skillId=cause==='add.facts'?'D1.ADD20':'D1.SUB20';
    for(const candidate of Array.isArray(report.factCandidates)?report.factCandidates.slice(0,3):[]){
-    if(candidate?.status==='retest_candidate'&&typeof candidate.fact==='string')items.push(item(skillId,operation,{exactFact:candidate.fact},'Uji semula fakta tepat ini dengan soalan baharu.'));
+    if(candidate?.status==='retest_candidate'&&typeof candidate.fact==='string')items.push(item(skillId,operation,{exactFact:candidate.fact,maxOperandDigitsAtMost:1},'Uji semula fakta tepat ini dengan soalan satu digit yang baharu.'));
    }
   }else if(cause==='add.place_value'||cause==='sub.place_value'){
    const addition=cause==='add.place_value';
@@ -207,7 +207,7 @@
   }
   // Verification is of independent *transfer success*, not certainty about
   // the psychological cause of previous errors; report separately.
-  const transfers=group(['transfer_verify']);
+  const transfers=rows.filter(x=>x.family==='transfer_verify'||x.purpose==='transfer_verify');
   const verification=transfers.length>=2&&transfers.every(x=>x.result==='independent')
    ?'transfer_observed':'not_yet_verified';
   const byFamily={};
