@@ -3,6 +3,14 @@ importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-variety-v1`;
 const APP_SHELL=[
   './gerai-wirayung.html', './js/wirayung-live-bridge.js', './js/gerai-wirayung-router.js',
+  './menara-jam.html', './js/menara-jam-router.js', './js/engine/focus-time-diagnostic-v1.js',
+  './assets/minigames/tren-jam/train-v1.svg', './assets/battlefields/money-market/arena-v1.webp',
+  './assets/minigames/menara-jam/arnab-kek-lapis-happy.webp', './assets/minigames/menara-jam/arnab-kek-lapis-idle.webp', './assets/minigames/menara-jam/arnab-kek-lapis-sad.webp',
+  './assets/minigames/menara-jam/bintang.webp', './assets/minigames/menara-jam/durian-kerbau-happy.webp', './assets/minigames/menara-jam/durian-kerbau-idle.webp', './assets/minigames/menara-jam/durian-kerbau-sad.webp',
+  './assets/minigames/menara-jam/harimau-bunga-happy.webp', './assets/minigames/menara-jam/harimau-bunga-idle.webp', './assets/minigames/menara-jam/harimau-bunga-sad.webp',
+  './assets/minigames/menara-jam/ketupat-kura-happy.webp', './assets/minigames/menara-jam/ketupat-kura-idle.webp', './assets/minigames/menara-jam/ketupat-kura-sad.webp',
+  './assets/minigames/menara-jam/kumbang-manggis-happy.webp', './assets/minigames/menara-jam/kumbang-manggis-idle.webp', './assets/minigames/menara-jam/kumbang-manggis-sad.webp',
+  './assets/minigames/menara-jam/wira-idle.webp', './assets/minigames/menara-jam/wira-thumb.webp', './assets/minigames/menara-jam/wira-victory.webp',
   './assets/minigames/kedai-ajaib/wira-idle.webp', './assets/minigames/kedai-ajaib/wira-thumb.webp', './assets/minigames/kedai-ajaib/wira-victory.webp',
   './assets/heroes/wira-chibi/frames/victory-v1.webp',
   './assets/ui/focus-v1/focus-panel-illustrated-v1.webp',

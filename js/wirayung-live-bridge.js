@@ -22,35 +22,57 @@ const focusShadowMode=()=>new URLSearchParams(location.search).get("focus-shadow
 const moneyShadowAllowed=()=>focusShadowMode()==="money";
 const timeShadowAllowed=()=>focusShadowMode()==="time";
 function openFocusShadow(kind,skillId,allowProduction=false){
- const isMoney=kind==="money",moneyPlan=isMoney?window.PAGeraiWirayung?.planFor?.(typeof db!=="undefined"?db:null,skillId):null;
- const production=isMoney&&allowProduction&&!focusShadowMode()&&!!moneyPlan&&(activeGrade()<5||moneyPlan.reason==="archetype");
- const allowed=isMoney?(moneyShadowAllowed()||production):timeShadowAllowed();
- const moneySupported=isMoney&&!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(skillId||"")];
- if(!allowed||(isMoney?!moneySupported:!/^D2\.5\.[123]$/.test(String(skillId||""))))return false;
+ const isMoney=kind==='money',grade=activeGrade(),moneyPlan=isMoney?window.PAGeraiWirayung?.planFor?.(typeof db!=="undefined"?db:null,skillId):null;
+ const timeSupported=!isMoney&&/^D2\.5\.[123]$/.test(String(skillId||''))&&grade===2;
+ const production=allowProduction&&!focusShadowMode()&&(isMoney?!!moneyPlan&&(grade<5||moneyPlan.reason==='archetype'):timeSupported);
+ const allowed=isMoney?(moneyShadowAllowed()||production):(timeShadowAllowed()||production);
+ const moneySupported=isMoney&&!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(skillId||'')];
+ if(!allowed||(isMoney?!moneySupported:!timeSupported))return false;
  if(run)close();if(shadowRun)closeMoneyShadow();
- const nonce=(crypto.randomUUID?.()||String(Date.now())+"-"+Math.random().toString(36).slice(2));
- const label=isMoney?"Wang":"Masa",harness=isMoney?"focus-v2-money-contrast-harness.html":"focus-v2-time-contrast-harness.html";
- const node=document.createElement("section");node.id="paWirayungOverlay";node.setAttribute("role","dialog");node.setAttribute("aria-label",(production?"Semakan":"Ujian shadow")+" Kemahiran Fokus "+label);node.setAttribute("aria-modal","true");
+ const nonce=(crypto.randomUUID?.()||String(Date.now())+'-'+Math.random().toString(36).slice(2));
+ const label=isMoney?'Wang':'Masa';
+ const node=document.createElement('section');node.id='paWirayungOverlay';node.setAttribute('role','dialog');node.setAttribute('aria-label',(production?'Semakan':'Ujian shadow')+' Kemahiran Fokus '+label);node.setAttribute('aria-modal','true');
  node.innerHTML='<div class="paWirayungNav"><b>Mini-game Kemahiran Fokus · '+label+'</b><small>'+(production?'Ujian diagnosis · laporan disimpan':'Shadow sahaja · tiada simpanan profil')+'</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Ujian diagnosis '+label+'" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
- document.body.append(node);shadowRun={node,frame:node.querySelector("iframe"),nonce,skillId,kind,production,profile:typeof db!=="undefined"?db:null};
- node.querySelector("#paWirayungExit").onclick=closeMoneyShadow;
- const testScenario=new URLSearchParams(location.search).get("autostart")==="1"&&new URLSearchParams(location.search).get("run")==="example";
+ document.body.append(node);shadowRun={node,frame:node.querySelector('iframe'),nonce,skillId,kind,production,profile:typeof db!=='undefined'?db:null};
+ node.querySelector('#paWirayungExit').onclick=closeMoneyShadow;
  shadowRun.frame.src=isMoney
-  ?"gerai-wirayung.html?pa_focus_diagnostic=money&pa_origin_skill="+encodeURIComponent(skillId)+"&pa_grade="+encodeURIComponent(activeGrade())+"&pa_focus_modes="+encodeURIComponent((moneyPlan?.modes||[]).join(","))+"&pa_nonce="+encodeURIComponent(nonce)+"#d"+activeGrade()+"-bayar"
-  :"audit/"+harness+"?bridge=1&nonce="+encodeURIComponent(nonce)+(testScenario?"&run=example":"");
- document.body.classList.add("pa-wirayung-active");window.PAFocusPractice?.close?.();return true;
+  ?'gerai-wirayung.html?pa_focus_diagnostic=money&pa_origin_skill='+encodeURIComponent(skillId)+'&pa_grade='+encodeURIComponent(grade)+'&pa_focus_modes='+encodeURIComponent((moneyPlan?.modes||[]).join(','))+'&pa_nonce='+encodeURIComponent(nonce)+'#d'+grade+'-bayar'
+  :'menara-jam.html?pa_focus_diagnostic=time&pa_origin_skill='+encodeURIComponent(skillId)+'&pa_nonce='+encodeURIComponent(nonce)+'#d2-baca-unit-tamat-tempoh';
+ document.body.classList.add('pa-wirayung-active');window.PAFocusPractice?.close?.();return true;
 }
-function openMoneyShadow(skillId="D2.4.2",allowProduction=false){return openFocusShadow("money",skillId,allowProduction)}
-function openTimeShadow(skillId="D2.5.3"){return openFocusShadow("time",skillId)}
+function openMoneyShadow(skillId='D2.4.2',allowProduction=false){return openFocusShadow('money',skillId,allowProduction)}
+function openTimeShadow(skillId='D2.5.3',allowProduction=false){return openFocusShadow('time',skillId,allowProduction)}
+function openTimeMiniGame(skillId,plan,diagnostic=false){
+ if(typeof db==='undefined'||!db||!plan||plan.grade!==activeGrade()||!window.PACommercial?.requireFeature?.('focus'))return false;
+ if(diagnostic&&!/^D2\.5\.[123]$/.test(String(skillId||'')))return false;
+ if(run)close();if(shadowRun)closeMoneyShadow();
+ const nonce=(crypto.randomUUID?.()||String(Date.now())+'-'+Math.random().toString(36).slice(2));
+ const node=document.createElement('section');node.id='paWirayungOverlay';node.setAttribute('role','dialog');node.setAttribute('aria-label','Mini-game Kemahiran Fokus Masa Darjah '+plan.grade);node.setAttribute('aria-modal','true');
+ node.innerHTML='<div class="paWirayungNav"><b>Tren Jam · Darjah '+plan.grade+'</b><small>'+(diagnostic?'Semakan perbandingan masa · laporan disimpan':'Latihan Masa · mod '+plan.modes.join(', '))+'</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Tren Jam Darjah '+plan.grade+'" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
+ document.body.append(node);shadowRun={node,frame:node.querySelector('iframe'),nonce,skillId,kind:'time',production:true,diagnostic,profile:db};node.querySelector('#paWirayungExit').onclick=closeMoneyShadow;
+ const diagnosticQuery=diagnostic?'&pa_focus_diagnostic=time':'';
+ shadowRun.frame.src='menara-jam.html?pa_origin_skill='+encodeURIComponent(skillId)+'&pa_nonce='+encodeURIComponent(nonce)+diagnosticQuery+'#'+plan.hash;
+ document.body.classList.add('pa-wirayung-active');window.PAFocusPractice?.close?.();return true;
+}
 function closeMoneyShadow(){if(!shadowRun)return;shadowRun.node.remove();shadowRun=null;document.body.classList.remove("pa-wirayung-active")}
 function receiveMoneyShadow(e){
  if(!shadowRun||e.origin!==location.origin||e.source!==shadowRun.frame.contentWindow)return false;
- const m=e.data,expectedType=shadowRun.kind==="time"?"PA_FOCUS_TIME_SHADOW_RESULT":"PA_FOCUS_MONEY_SHADOW_RESULT";if(!m||m.type!==expectedType||m.version!==1||m.nonce!==shadowRun.nonce||!m.report)return true;
- const r=m.report;
- if(shadowRun.production&&shadowRun.kind==="money"&&r.reasonCode==="NO_AUTHORED_MATCHED_PROBES"){
-  const skillId=shadowRun.skillId;closeMoneyShadow();return open(skillId);
+ const m=e.data;
+ if(shadowRun.kind==='time'&&m?.type==='PA_TREN_JAM_ROUND'){
+  if(m.version!==1||m.nonce!==shadowRun.nonce||!shadowRun.production||typeof db==='undefined'||db!==shadowRun.profile||Number(m.grade)!==activeGrade()||String(m.skillId||'')!==shadowRun.skillId)return true;
+  const modes={baca:'read_clock',unit:'convert_forward',tamat:'find_end',tempoh:'elapsed_duration',mula:'find_start','24jam':'clock24_convert',zon:'zone_difference'};
+  const mode=String(m.mode||''),skill=shadowRun.skillId,allowed=/^D2\.5\.[123]$/.test(skill)?['baca','unit','tamat','tempoh']:window.PAMenaraJam?.planFor?.(db,skill)?.modes||[];
+  const key=String(m.questionKey||'').slice(0,180),at=Number(m.at);
+  if(!allowed.includes(mode)||modes[mode]!==m.archetypeId||!key||!at||Math.abs(Date.now()-at)>3600000)return true;
+  const ledger=db.learnerReviewV1||(db.learnerReviewV1={schema:1,encounters:[]}),events=ledger.encounters||(ledger.encounters=[]);
+  if(events.some(x=>x.questionKey===key&&x.skillId===skill))return true;
+  const misses=Math.max(0,Math.min(20,Number(m.misses)||0)),hints=Math.max(0,Math.min(20,Number(m.hints)||0)),q={token:'trenjam-'+key,skill,questionId:'trenjam:'+key,archetypeId:modes[mode],representation:'visual',demand:'application',prompt:'Tren Jam '+mode};
+  try{window.PALearnerReview?.beginQuestion?.(q,{grade:activeGrade(),mode:'practice',selectionReason:'focus_time_mini_game',demoMode:false});if(misses)window.PALearnerReview?.firstWrong?.(q,{tag:modes[mode],seconds:1});if(hints)window.PALearnerReview?.hintUsed?.(q,hints);window.PALearnerReview?.resolve?.(q,{correct:true,usedHint:hints>0,hintLevel:hints,seconds:1},db)}catch(err){console.warn('Tren Jam learner record',err)}
+  if(typeof save==='function')save();window.PACloud?.scheduleSave?.();mountReport();return true;
  }
- const summary=shadowRun.node.querySelector("#paFocusShadowSummary");
+ if(shadowRun.kind==='time'&&m?.type==='PA_FOCUS_TIME_CLOSE'&&m.version===1&&m.nonce===shadowRun.nonce){closeMoneyShadow();return true}
+ const expectedType=shadowRun.kind==='time'?'PA_FOCUS_TIME_RESULT':'PA_FOCUS_MONEY_SHADOW_RESULT';if(!m||m.type!==expectedType||m.version!==1||m.nonce!==shadowRun.nonce||!m.report)return true;
+ const r=m.report,summary=shadowRun.node.querySelector('#paFocusShadowSummary');
  summary.hidden=false;summary.textContent=(r.state==="candidate"?"Calon fokus: "+String(r.nextSkillId||r.rootCause||"semakan lanjut")+" · ":"Belum cukup bukti · ")+String(r.parentText||"");
  if(shadowRun.production&&shadowRun.kind==="money"){
   if(typeof db==="undefined"||db!==shadowRun.profile||activeGrade()!==Number(db.schoolGrade)||String(r.originSkillId||"")!==shadowRun.skillId)return true;
@@ -69,6 +91,19 @@ function receiveMoneyShadow(e){
   store.reports.push({diagnosticVersion:"2.0.0-shadow",skillId:shadowRun.skillId,grade:activeGrade(),at:Date.now(),state:String(r.state||"abstain").slice(0,40),
    rootCause:String(r.rootCause||"").slice(0,80),nextSkillId:next||"",confidence:String(r.confidence||"none").slice(0,16),
    reasonCode:String(r.reasonCode||"").slice(0,100),parentText:parentText.slice(0,600),moneyContrastEvidence:evidence});
+  store.reports=store.reports.slice(-30);
+  if(typeof save==="function")save();window.PACloud?.scheduleSave?.();mountReport();
+ }
+ if(shadowRun.production&&shadowRun.kind==="time"){
+  const skill=String(r.originSkillId||"");if(typeof db==="undefined"||db!==shadowRun.profile||activeGrade()!==2||skill!==shadowRun.skillId||!/^D2\.5\.[123]$/.test(skill))return true;
+  const store=db.focusDiagnosticsV1||(db.focusDiagnosticsV1={version:1,reports:[]});
+  store.reports.push({skillId:skill,grade:2,at:Date.now(),state:String(r.state||"insufficient_evidence").slice(0,40),
+   rootCause:String(r.rootCause||"").slice(0,80),nextSkillId:String(r.nextSkillId||"").slice(0,24),confidence:String(r.confidence||"none").slice(0,16),
+   reasonCode:String(r.reasonCode||"").slice(0,100),parentText:String(r.parentText||"").slice(0,600),
+   timeEvidence:{clock:{independent:Number(r.clock?.independent)||0,nonindependent:Number(r.clock?.nonindependent)||0},
+    units:{independent:Number(r.units?.independent)||0,nonindependent:Number(r.units?.nonindependent)||0},
+    elapsed:{independent:Number(r.elapsed?.independent)||0,nonindependent:Number(r.elapsed?.nonindependent)||0},
+    tagged:Number(r.evidence?.uniqueTaggedQuestions)||0}});
   store.reports=store.reports.slice(-30);
   if(typeof save==="function")save();window.PACloud?.scheduleSave?.();mountReport();
  }
@@ -135,7 +170,7 @@ function records(){
 }
 function mountReport(){
  const parent=document.getElementById("coreTab");if(!parent)return;
- const rows=records(),diagnoses=(db?.focusDiagnosticsV1?.reports||[]).filter(x=>Number(x.grade)===activeGrade()&&(/^D[1-6]\.MONEY$/.test(x.skillId||"")||/^D2\.4\.[1-7]$/.test(x.skillId||""))).slice(-3).reverse();let box=parent.querySelector("#paWirayungReport");
+ const rows=records(),diagnoses=(db?.focusDiagnosticsV1?.reports||[]).filter(x=>Number(x.grade)===activeGrade()&&(/^D[1-6]\.MONEY$/.test(x.skillId||'')||/^D2\.4\.[1-7]$/.test(x.skillId||'')||/^D2\.5\.[123]$/.test(x.skillId||''))).slice(-6).reverse();let box=parent.querySelector('#paWirayungReport');
  if(!rows.length&&!diagnoses.length){box?.remove();return;}
  if(!box){box=document.createElement("section");box.id="paWirayungReport";box.className="card";box.style.cssText="margin:14px 0;padding:15px;background:#fff8e7;border:1px solid #d9b481;border-radius:14px;color:#47321f";parent.prepend(box);}
  const eligible=rows.filter(x=>x.total>=3),weak=eligible.filter(x=>x.independent/x.total<.6),strong=eligible.filter(x=>x.independent/x.total>=.8);
@@ -146,7 +181,7 @@ function mountReport(){
  const divisionKinds=[["kongsi","kongsi bil"],["tukar","tukar duit kecil"]].map(([kind,label])=>({kind,label,events:divisionEvents.filter(x=>x.variant===kind).slice(-12)})).filter(x=>x.events.length>=3);
  if(divisionKinds.length){const struggles=divisionKinds.filter(x=>x.events.filter(e=>e.independent).length/x.events.length<.6);if(struggles.length)message+=" Dalam latihan bahagi wang, anak masih memerlukan bantuan untuk "+struggles.map(x=>x.label).join(" dan ")+".";}
  const normalReport=rows.length?'<b style="color:#97632e">Gerai Wirayung · Kemajuan Wang</b><p style="margin:8px 0;line-height:1.5">'+escapeHtml(message)+'</p><div style="display:flex;flex-wrap:wrap;gap:7px">'+rows.map(x=>'<span style="padding:7px 9px;background:#f3e1bd;border-radius:9px;font-size:12px">'+escapeHtml(x.label)+' <b>'+x.independent+'/'+x.total+'</b> tanpa bantuan</span>').join("")+'</div><small style="display:block;margin-top:9px">Pemerhatian berdasarkan aktiviti gerai, bukan keputusan peperiksaan. Rumusan khusus hanya selepas sekurang-kurangnya 3 pesanan.</small>':'';
- const diagnosisReport=diagnoses.length?'<hr style="border:0;border-top:1px solid #d9b481;margin:16px 0"><b style="color:#97632e">Semakan Kemahiran Fokus · Wang</b>'+diagnoses.map(x=>'<p style="margin:8px 0;line-height:1.5"><b>'+(x.state==="candidate"&&x.nextSkillId?'Calon fokus seterusnya: '+escapeHtml(x.nextSkillId):x.state==="candidate"?'Petunjuk awal: kemahiran wang '+escapeHtml(x.skillId):'Belum cukup bukti untuk menetapkan fokus')+'</b><br>'+escapeHtml(x.parentText||'')+'</p><small>Topik: '+escapeHtml(x.skillId||'Wang')+' · Tahap diuji: '+escapeHtml(x.testedDemand||'tidak dinyatakan')+' · Isyarat: '+escapeHtml(x.reasonCode||'')+' · Bukti pasangan berbeza: '+Object.values(x.moneyContrastEvidence||{}).reduce((n,v)=>n+(Number(v.uniquePairs)||0),0)+' · Keyakinan: '+escapeHtml(x.confidence||'none')+'</small>').join('<hr style="border:0;border-top:1px solid #ead8bb;margin:12px 0">')+'<small style="display:block;margin-top:8px">Ini rumusan diagnostik untuk membimbing latihan; ia tidak menukar mastery atau ganjaran.</small>':'';
+ const diagnosisReport=diagnoses.length?'<hr style="border:0;border-top:1px solid #d9b481;margin:16px 0"><b style="color:#97632e">Semakan Kemahiran Fokus</b>'+diagnoses.map(x=>'<p style="margin:8px 0;line-height:1.5"><b>'+(x.state==="candidate"&&x.confidence==="medium"?'Calon fokus seterusnya: '+escapeHtml(x.nextSkillId||'semakan lanjut'):x.state==="candidate"?'Petunjuk awal: '+escapeHtml(x.nextSkillId||'semakan lanjut'):'Belum cukup bukti untuk menetapkan fokus')+'</b><br>'+escapeHtml(x.parentText||'')+'</p><small>Topik: '+(/^D[1-6]\.MONEY$/.test(x.skillId||'')||/^D2\.4\.[1-7]$/.test(x.skillId||'')?'Wang':/^D2\.5\.[123]$/.test(x.skillId||'')?'Masa':'Kemahiran')+' · Kemahiran diuji: '+escapeHtml(x.skillId||'')+' · Tahap diuji: '+escapeHtml(x.testedDemand||'tidak dinyatakan')+' · Isyarat: '+escapeHtml(x.reasonCode||'')+' · Keyakinan: '+escapeHtml(x.confidence||'none')+'</small>').join('<hr style="border:0;border-top:1px solid #ead8bb;margin:12px 0">')+'<small style="display:block;margin-top:8px">Ini rumusan diagnostik untuk membimbing latihan; ia tidak menukar mastery atau ganjaran.</small>':'';
  box.innerHTML=normalReport+diagnosisReport;
 }
 function finishRound(e){
@@ -209,11 +244,11 @@ document.getElementById("wirayungLaunch")?.addEventListener("click",()=>open());
 const original=window.renderParent;
 if(typeof original==="function")window.renderParent=function(){const ret=original.apply(this,arguments);mountReport();return ret;};
 function tryStartFocus(id){
- if(moneySkill(id)){
-  const hasLiveContrast=!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(id||"")];
-  return open(id,hasLiveContrast);
- }
- return openTimeShadow(id);
+ if(moneySkill(id)){const hasLiveContrast=!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(id||'')];return open(id,hasLiveContrast)}
+ const plan=window.PAMenaraJam?.planFor?.(typeof db!=='undefined'?db:null,id);if(!plan||plan.grade!==activeGrade()||!window.PACommercial?.requireFeature?.('focus'))return false;
+ const reports=db?.focusDiagnosticsV1?.reports||[],latest=reports.filter(r=>Number(r.grade)===activeGrade()&&/^D2\.5\.[123]$/.test(r.skillId||'')).sort((a,b)=>Number(a.at||0)-Number(b.at||0)).at(-1);
+ const diagnosedNext=!!latest&&latest.state==='candidate'&&latest.nextSkillId===id;
+ return openTimeMiniGame(id,plan,/^D2\.5\.[123]$/.test(String(id||''))&&!diagnosedNext);
 }
 window.PAWirayungLive={open,close,tryStartFocus,insights:records,openMoneyShadow,openTimeShadow};
 if(new URLSearchParams(location.search).get("autostart")==="1")setTimeout(()=>{if(moneyShadowAllowed())openMoneyShadow("D2.4.2");else if(timeShadowAllowed())openTimeShadow("D2.5.3")},0);

@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tren Jam Focus E2E</title>
+<style>body{margin:0;background:#142638;color:#fff;font:16px system-ui}header{padding:10px 16px;background:#1d3654;border-bottom:2px solid #d3aa58}b{color:#ffdc91}iframe{width:100%;height:calc(100vh - 54px);border:0}pre{position:fixed;right:12px;bottom:12px;max-width:min(38vw,420px);max-height:35vh;overflow:auto;white-space:pre-wrap;padding:12px;background:#fffae8;color:#19334d;border:2px solid #d3aa58;border-radius:12px;display:none}body[data-result] pre{display:block}</style>
+<header><b>Tren Jam · ujian sambungan tempatan</b> <span id="status">Menunggu hasil…</span></header>
+<iframe id="gameFrame" title="Tren Jam" src="../menara-jam.html?pa_focus_diagnostic=time&pa_origin_skill=D2.5.3&pa_nonce=trenjam-e2e#d2-baca-unit-tamat-tempoh"></iframe>
+<pre id="result"></pre>
+<script>
+window.addEventListener('message',e=>{
+ if(e.origin!==location.origin||e.source!==document.getElementById('gameFrame').contentWindow||e.data?.nonce!=='trenjam-e2e')return;
+ if(e.data.type==='PA_FOCUS_TIME_RESULT'){
+  document.body.dataset.result='1';document.getElementById('status').textContent='Laporan diterima daripada enam tren.';
+  document.getElementById('result').textContent=JSON.stringify(e.data.report,null,2);
+ }
+ if(e.data.type==='PA_FOCUS_TIME_CLOSE')document.getElementById('status').textContent='Permainan ditutup seperti biasa.';
+});
+</script>

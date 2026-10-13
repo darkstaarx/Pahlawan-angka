@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400" role="img" aria-labelledby="title desc">
+  <title id="title">Tren Jam Kampung Dimensi</title>
+  <desc id="desc">Gerabak tren kanak-kanak berwarna biru tua, krim, emas dan merah delima.</desc>
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff8df"/>
+      <stop offset=".72" stop-color="#f5e5bd"/>
+      <stop offset=".73" stop-color="#d65367"/>
+      <stop offset="1" stop-color="#a93650"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#355985"/>
+      <stop offset="1" stop-color="#192f55"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#b9eff1"/>
+      <stop offset=".48" stop-color="#6fc5d8"/>
+      <stop offset="1" stop-color="#2d7096"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#152b4d" stroke-width="12" stroke-linejoin="round">
+    <path fill="url(#body)" d="M55 95Q55 62 88 62h505q40 0 40 40v210H55z"/>
+    <path fill="url(#roof)" d="M38 96q10-48 57-48h500q47 0 60 48z"/>
+    <path fill="#f4c64e" stroke-width="8" d="M55 266h578v35H55z"/>
+    <path fill="none" stroke="#f9e8a8" stroke-width="7" d="M73 291h542"/>
+    <path fill="url(#glass)" stroke-width="10" d="M94 105h302v139H94z"/>
+    <path fill="url(#glass)" stroke-width="10" d="M432 105h128v88H432z"/>
+    <path fill="#243f68" d="M505 173h82v137h-82z"/>
+    <path fill="#d65367" stroke-width="8" d="M518 190h56v106h-56z"/>
+    <path fill="#2a4c78" stroke-width="8" d="M24 170h35v96H24z"/>
+    <path fill="#2a4c78" stroke-width="8" d="M635 168h40v98h-40z"/>
+  </g>
+  <g fill="#f4c64e" stroke="#152b4d" stroke-width="10">
+    <circle cx="170" cy="340" r="36"/><circle cx="520" cy="340" r="36"/>
+  </g>
+  <g fill="#d8eaf0" stroke="#152b4d" stroke-width="7">
+    <circle cx="170" cy="340" r="13"/><circle cx="520" cy="340" r="13"/>
+  </g>
+  <path d="M130 72h405" fill="none" stroke="#f4c64e" stroke-width="10" stroke-linecap="round"/>
+  <path d="M105 122h274" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="11" stroke-linecap="round"/>
+</svg>
