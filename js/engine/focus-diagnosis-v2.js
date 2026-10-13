@@ -13,7 +13,7 @@
  const VALID=new Set(['independent','corrected','assisted','unresolved']);
  const IGNORED=new Set(['demo','dev','dev-test']);
  const RECOGNIZED=new Set(['money','money_unit','division_fact','one_digit_div','two_digit_div','regroup_div',
-  'grouping','remainder_div','operation_choice','percent_concept','money_discount','addition',
+  'grouping','remainder_div','operation_choice','percent_concept','money_discount','time_clock','time_units','time_elapsed','addition',
   'subtraction','multiplication','budget','mixed','transfer_verify','unknown']);
  const NONINDEPENDENT=new Set(['unresolved','corrected','assisted']);
  const safe=(x)=>String(x??'').trim();

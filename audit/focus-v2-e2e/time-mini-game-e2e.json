@@ -1,0 +1,470 @@
+{
+  "status": "focus_v2_time_mini_game_e2e_pass",
+  "base": "http://127.0.0.1:8765/audit/focus-v2-time-contrast-harness.html?run=example",
+  "checks": [
+    {
+      "name": "clock weakness maps to D2.5.1",
+      "status": "PASS",
+      "actual": {
+        "version": "1.0.0-shadow",
+        "mode": "shadow_read_only",
+        "state": "candidate",
+        "rootCause": "time.read_clock",
+        "nextSkillId": "D2.5.1",
+        "confidence": "medium",
+        "reasonCode": "CLOCK_READING_WEAK_WITH_UNIT_SUCCESS",
+        "initialTimeWeak": true,
+        "clock": {
+          "independent": 0,
+          "nonindependent": 2
+        },
+        "units": {
+          "independent": 2,
+          "nonindependent": 0
+        },
+        "elapsed": {
+          "independent": 0,
+          "nonindependent": 0
+        },
+        "parentText": "Latihan awal menunjukkan topik Masa mencabar. Ujian susulan mendapati hubungan unit masa boleh dibuat, tetapi membaca jam masih mengelirukan. Calon fokus seterusnya ialah membaca jam dan memadankan frasa masa.",
+        "writes": 0,
+        "evidence": {
+          "uniqueTaggedQuestions": 4,
+          "contrastQuestions": 4
+        },
+        "note": "Calon punca sahaja; tiada penguasaan, ganjaran, simpanan atau routing produksi diubah."
+      }
+    },
+    {
+      "name": "unit weakness maps to D2.5.2",
+      "status": "PASS",
+      "actual": {
+        "version": "1.0.0-shadow",
+        "mode": "shadow_read_only",
+        "state": "candidate",
+        "rootCause": "time.unit_relationship",
+        "nextSkillId": "D2.5.2",
+        "confidence": "medium",
+        "reasonCode": "TIME_UNIT_RELATIONSHIP_WEAK_WITH_CLOCK_SUCCESS",
+        "initialTimeWeak": true,
+        "clock": {
+          "independent": 2,
+          "nonindependent": 0
+        },
+        "units": {
+          "independent": 0,
+          "nonindependent": 2
+        },
+        "elapsed": {
+          "independent": 0,
+          "nonindependent": 0
+        },
+        "parentText": "Latihan awal menunjukkan topik Masa mencabar. Ujian susulan mendapati jam boleh dibaca, tetapi hubungan jam, minit dan unit masa masih mengelirukan. Calon fokus seterusnya ialah memahami dan menukar unit masa.",
+        "writes": 0,
+        "evidence": {
+          "uniqueTaggedQuestions": 4,
+          "contrastQuestions": 4
+        },
+        "note": "Calon punca sahaja; tiada penguasaan, ganjaran, simpanan atau routing produksi diubah."
+      }
+    },
+    {
+      "name": "elapsed operation weakness needs clock and unit success",
+      "status": "PASS",
+      "actual": {
+        "version": "1.0.0-shadow",
+        "mode": "shadow_read_only",
+        "state": "candidate",
+        "rootCause": "time.timeline_operation",
+        "nextSkillId": "D2.5.3",
+        "confidence": "medium",
+        "reasonCode": "ELAPSED_TIME_WEAK_WITH_CLOCK_AND_UNIT_SUCCESS",
+        "initialTimeWeak": true,
+        "clock": {
+          "independent": 2,
+          "nonindependent": 0
+        },
+        "units": {
+          "independent": 2,
+          "nonindependent": 0
+        },
+        "elapsed": {
+          "independent": 0,
+          "nonindependent": 2
+        },
+        "parentText": "Latihan awal menunjukkan topik Masa mencabar. Ujian susulan mendapati bacaan jam dan hubungan unit masa boleh dibuat sendiri, tetapi mencari waktu tamat atau tempoh masih mengelirukan. Calon fokus seterusnya ialah operasi garis masa.",
+        "writes": 0,
+        "evidence": {
+          "uniqueTaggedQuestions": 6,
+          "contrastQuestions": 6
+        },
+        "note": "Calon punca sahaja; tiada penguasaan, ganjaran, simpanan atau routing produksi diubah."
+      }
+    },
+    {
+      "name": "single miss abstains",
+      "status": "PASS",
+      "actual": "needs_contrast"
+    },
+    {
+      "name": "mixed weaknesses abstain",
+      "status": "PASS",
+      "actual": "needs_contrast"
+    },
+    {
+      "name": "no initial Masa signal abstains",
+      "status": "PASS",
+      "actual": "insufficient_evidence"
+    },
+    {
+      "name": "conflicting duplicate probe is discarded",
+      "status": "PASS",
+      "actual": {
+        "uniqueTaggedQuestions": 2,
+        "contrastQuestions": 4
+      }
+    },
+    {
+      "name": "initial Kembara failures do not become root-cause votes",
+      "status": "PASS",
+      "actual": {
+        "uniqueTaggedQuestions": 0,
+        "contrastQuestions": 0
+      }
+    },
+    {
+      "name": "real D2 time generators produce elapsed-operation candidate",
+      "status": "PASS",
+      "actual": {
+        "status": "candidate",
+        "rootCause": "time.timeline_operation",
+        "nextSkillId": "D2.5.3",
+        "confidence": "medium",
+        "reasonCode": "ELAPSED_TIME_WEAK_WITH_CLOCK_AND_UNIT_SUCCESS",
+        "initialSignal": {
+          "source": "simulated_kembara",
+          "nonindependent": 5,
+          "required": 3,
+          "total": 5,
+          "assumedForMiniGame": true
+        },
+        "evidence": {
+          "clock": {
+            "independent": 2,
+            "nonindependent": 0
+          },
+          "units": {
+            "independent": 2,
+            "nonindependent": 0
+          },
+          "elapsed": {
+            "independent": 0,
+            "nonindependent": 2
+          },
+          "uniqueTaggedQuestions": 6
+        },
+        "integrity": {
+          "masteryXpCoinsUnchanged": true,
+          "writes": 0
+        },
+        "trace": [
+          {
+            "session": "Kembara Masa · isyarat awal",
+            "skillId": "D2.5.3",
+            "outcome": "unresolved",
+            "family": "time_elapsed",
+            "mode": "find_duration",
+            "features": {
+              "unit": "minute",
+              "startMinuteOfDay": 705,
+              "durationMinutes": 90,
+              "endMinuteOfDay": 795,
+              "crossesHour": true,
+              "unknown": "duration",
+              "mode": "find_duration"
+            }
+          },
+          {
+            "session": "Kembara Masa · isyarat awal",
+            "skillId": "D2.5.3",
+            "outcome": "unresolved",
+            "family": "time_elapsed",
+            "mode": "find_duration",
+            "features": {
+              "unit": "minute",
+              "startMinuteOfDay": 585,
+              "durationMinutes": 45,
+              "endMinuteOfDay": 630,
+              "crossesHour": true,
+              "unknown": "duration",
+              "mode": "find_duration"
+            }
+          },
+          {
+            "session": "Kembara Masa · isyarat awal",
+            "skillId": "D2.5.3",
+            "outcome": "unresolved",
+            "family": "time_elapsed",
+            "mode": "find_duration",
+            "features": {
+              "unit": "minute",
+              "startMinuteOfDay": 570,
+              "durationMinutes": 30,
+              "endMinuteOfDay": 600,
+              "crossesHour": true,
+              "unknown": "duration",
+              "mode": "find_duration"
+            }
+          },
+          {
+            "session": "Kembara Masa · isyarat awal",
+            "skillId": "D2.5.3",
+            "outcome": "unresolved",
+            "family": "time_elapsed",
+            "mode": "find_duration",
+            "features": {
+              "unit": "minute",
+              "startMinuteOfDay": 420,
+              "durationMinutes": 90,
+              "endMinuteOfDay": 510,
+              "crossesHour": true,
+              "unknown": "duration",
+              "mode": "find_duration"
+            }
+          },
+          {
+            "session": "Kembara Masa · isyarat awal",
+            "skillId": "D2.5.3",
+            "outcome": "unresolved",
+            "family": "time_elapsed",
+            "mode": "find_end",
+            "features": {
+              "unit": "minute",
+              "startMinuteOfDay": 615,
+              "durationMinutes": 30,
+              "endMinuteOfDay": 645,
+              "crossesHour": false,
+              "unknown": "end",
+              "mode": "find_end"
+            }
+          },
+          {
+            "session": "Mini-game · baca jam",
+            "skillId": "D2.5.1",
+            "outcome": "independent",
+            "family": "time_clock",
+            "mode": "read_clock",
+            "features": {
+              "unit": "minute",
+              "minuteOfDay": 465,
+              "minuteHand": 45,
+              "hourHandPosition": 7,
+              "mode": "read_clock"
+            }
+          },
+          {
+            "session": "Mini-game · frasa masa",
+            "skillId": "D2.5.1",
+            "outcome": "independent",
+            "family": "time_clock",
+            "mode": "match_words",
+            "features": {
+              "unit": "minute",
+              "minuteOfDay": 435,
+              "minuteHand": 15,
+              "spokenForm": "suku selepas pukul 7",
+              "mode": "match_words"
+            }
+          },
+          {
+            "session": "Mini-game · jam ke minit",
+            "skillId": "D2.5.2",
+            "outcome": "independent",
+            "family": "time_units",
+            "mode": "convert_forward",
+            "features": {
+              "unit": "jam-minit",
+              "fromUnit": "jam",
+              "toUnit": "minit",
+              "factor": 60,
+              "direction": "forward",
+              "mode": "convert_forward"
+            }
+          },
+          {
+            "session": "Mini-game · minit ke jam",
+            "skillId": "D2.5.2",
+            "outcome": "independent",
+            "family": "time_units",
+            "mode": "convert_reverse",
+            "features": {
+              "unit": "minit-jam",
+              "fromUnit": "minit",
+              "toUnit": "jam",
+              "factor": 60,
+              "direction": "reverse",
+              "mode": "convert_reverse"
+            }
+          },
+          {
+            "session": "Mini-game · waktu tamat merentas jam",
+            "skillId": "D2.5.3",
+            "outcome": "unresolved",
+            "family": "time_elapsed",
+            "mode": "find_end",
+            "features": {
+              "unit": "minute",
+              "startMinuteOfDay": 840,
+              "durationMinutes": 60,
+              "endMinuteOfDay": 900,
+              "crossesHour": true,
+              "unknown": "end",
+              "mode": "find_end"
+            }
+          },
+          {
+            "session": "Mini-game · kira tempoh merentas jam",
+            "skillId": "D2.5.3",
+            "outcome": "unresolved",
+            "family": "time_elapsed",
+            "mode": "find_duration",
+            "features": {
+              "unit": "minute",
+              "startMinuteOfDay": 885,
+              "durationMinutes": 90,
+              "endMinuteOfDay": 975,
+              "crossesHour": true,
+              "unknown": "duration",
+              "mode": "find_duration"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "early weakness signal and contrast pools stay separate",
+      "status": "PASS",
+      "actual": {
+        "clock": {
+          "independent": 2,
+          "nonindependent": 0
+        },
+        "units": {
+          "independent": 2,
+          "nonindependent": 0
+        },
+        "elapsed": {
+          "independent": 0,
+          "nonindependent": 2
+        },
+        "uniqueTaggedQuestions": 6
+      }
+    },
+    {
+      "name": "shadow run leaves mastery, XP and coins untouched",
+      "status": "PASS",
+      "actual": {
+        "masteryXpCoinsUnchanged": true,
+        "writes": 0
+      }
+    },
+    {
+      "name": "harness has no browser runtime errors",
+      "status": "PASS",
+      "actual": []
+    },
+    {
+      "name": "manual mode starts directly at the 6-probe mini-game",
+      "status": "PASS",
+      "actual": "Mini-game · baca jam"
+    },
+    {
+      "name": "Focus route opens the Time mini-game overlay",
+      "status": "PASS",
+      "actual": "audit/focus-v2-time-contrast-harness.html?bridge=1&nonce=<ephemeral>&run=example"
+    },
+    {
+      "name": "Time result returns a parent-facing summary to the app",
+      "status": "PASS",
+      "actual": "Calon fokus: D2.5.3 · Latihan awal menunjukkan topik Masa mencabar. Ujian susulan mendapati bacaan jam dan hubungan unit masa boleh dibuat sendiri, tetapi mencari waktu tamat atau tempoh masih mengelirukan. Calon fokus seterusnya ialah operasi garis masa."
+    },
+    {
+      "name": "Kembara-derived Focus card recommends Masa from its failed practice history",
+      "status": "PASS",
+      "actual": "1\nFokus utama\nMasalah masa\nKetepatan 0%\nLatih ❯"
+    },
+    {
+      "name": "Selecting the Masa Focus card opens the six-probe playable game",
+      "status": "PASS",
+      "actual": "audit/focus-v2-time-contrast-harness.html?bridge=1&nonce=<ephemeral>"
+    },
+    {
+      "name": "Card-launched game starts at the first diagnostic probe",
+      "status": "PASS",
+      "actual": "Mini-game · baca jam"
+    },
+    {
+      "name": "local shadow integration sends no network mutations",
+      "status": "PASS",
+      "actual": []
+    }
+  ],
+  "scenarioResults": {
+    "clock": {
+      "state": "candidate",
+      "rootCause": "time.read_clock",
+      "nextSkillId": "D2.5.1",
+      "reasonCode": "CLOCK_READING_WEAK_WITH_UNIT_SUCCESS",
+      "writes": 0
+    },
+    "units": {
+      "state": "candidate",
+      "rootCause": "time.unit_relationship",
+      "nextSkillId": "D2.5.2",
+      "reasonCode": "TIME_UNIT_RELATIONSHIP_WEAK_WITH_CLOCK_SUCCESS",
+      "writes": 0
+    },
+    "elapsed": {
+      "state": "candidate",
+      "rootCause": "time.timeline_operation",
+      "nextSkillId": "D2.5.3",
+      "reasonCode": "ELAPSED_TIME_WEAK_WITH_CLOCK_AND_UNIT_SUCCESS",
+      "writes": 0
+    },
+    "single": {
+      "state": "needs_contrast",
+      "rootCause": null,
+      "nextSkillId": "D2.5.3",
+      "reasonCode": "NOT_ENOUGH_DISTINCT_CONTRAST_EVIDENCE",
+      "writes": 0
+    },
+    "mixed": {
+      "state": "needs_contrast",
+      "rootCause": null,
+      "nextSkillId": "D2.5.3",
+      "reasonCode": "NOT_ENOUGH_DISTINCT_CONTRAST_EVIDENCE",
+      "writes": 0
+    },
+    "noSignal": {
+      "state": "insufficient_evidence",
+      "rootCause": null,
+      "nextSkillId": "D2.5.3",
+      "reasonCode": "NO_INITIAL_TIME_FOCUS_SIGNAL",
+      "writes": 0
+    },
+    "conflict": {
+      "state": "needs_contrast",
+      "rootCause": null,
+      "nextSkillId": "D2.5.3",
+      "reasonCode": "NOT_ENOUGH_DISTINCT_CONTRAST_EVIDENCE",
+      "writes": 0
+    },
+    "initialOnly": {
+      "state": "needs_contrast",
+      "rootCause": null,
+      "nextSkillId": "D2.5.3",
+      "reasonCode": "NOT_ENOUGH_DISTINCT_CONTRAST_EVIDENCE",
+      "writes": 0
+    }
+  }
+}

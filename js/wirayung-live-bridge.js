@@ -19,22 +19,27 @@ const activeGrade=()=>Number(typeof db!=="undefined"&&db&&db.schoolGrade)||0;
 // The opt-in pilot may run on the public demo as well as localhost. Keep it
 // behind an explicit URL flag; the iframe uses only in-memory synthetic data.
 const moneyShadowAllowed=()=>new URLSearchParams(location.search).get("focus-shadow")==="money";
-function openMoneyShadow(skillId="D2.4.2"){
- if(skillId!=="D2.4.2"||!moneyShadowAllowed())return false;
+const timeShadowAllowed=()=>new URLSearchParams(location.search).get("focus-shadow")==="time";
+function openFocusShadow(kind,skillId){
+ const isMoney=kind==="money",allowed=isMoney?moneyShadowAllowed():timeShadowAllowed();
+ if(!allowed||(isMoney?skillId!=="D2.4.2":!/^D2\.5\.[123]$/.test(String(skillId||""))))return false;
  if(run)close();if(shadowRun)closeMoneyShadow();
  const nonce=(crypto.randomUUID?.()||String(Date.now())+"-"+Math.random().toString(36).slice(2));
- const node=document.createElement("section");node.id="paWirayungOverlay";node.setAttribute("role","dialog");node.setAttribute("aria-label","Ujian shadow Kemahiran Fokus Wang");node.setAttribute("aria-modal","true");
- node.innerHTML='<div class="paWirayungNav"><b>Gerai Wirayung · Ujian Fokus Wang</b><small>Shadow sahaja · tiada simpanan profil</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Ujian diagnosis Wang dalam Gerai Wirayung" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
- document.body.append(node);shadowRun={node,frame:node.querySelector("iframe"),nonce,skillId};
+ const label=isMoney?"Wang":"Masa",harness=isMoney?"focus-v2-money-contrast-harness.html":"focus-v2-time-contrast-harness.html";
+ const node=document.createElement("section");node.id="paWirayungOverlay";node.setAttribute("role","dialog");node.setAttribute("aria-label","Ujian shadow Kemahiran Fokus "+label);node.setAttribute("aria-modal","true");
+ node.innerHTML='<div class="paWirayungNav"><b>Mini-game Kemahiran Fokus · '+label+'</b><small>Shadow sahaja · tiada simpanan profil</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Ujian diagnosis '+label+'" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
+ document.body.append(node);shadowRun={node,frame:node.querySelector("iframe"),nonce,skillId,kind};
  node.querySelector("#paWirayungExit").onclick=closeMoneyShadow;
  const testScenario=new URLSearchParams(location.search).get("autostart")==="1"&&new URLSearchParams(location.search).get("run")==="example";
- shadowRun.frame.src="audit/focus-v2-money-contrast-harness.html?bridge=1&nonce="+encodeURIComponent(nonce)+(testScenario?"&run=example":"");
+ shadowRun.frame.src="audit/"+harness+"?bridge=1&nonce="+encodeURIComponent(nonce)+(testScenario?"&run=example":"");
  document.body.classList.add("pa-wirayung-active");window.PAFocusPractice?.close?.();return true;
 }
+function openMoneyShadow(skillId="D2.4.2"){return openFocusShadow("money",skillId)}
+function openTimeShadow(skillId="D2.5.3"){return openFocusShadow("time",skillId)}
 function closeMoneyShadow(){if(!shadowRun)return;shadowRun.node.remove();shadowRun=null;document.body.classList.remove("pa-wirayung-active")}
 function receiveMoneyShadow(e){
  if(!shadowRun||e.origin!==location.origin||e.source!==shadowRun.frame.contentWindow)return false;
- const m=e.data;if(!m||m.type!=="PA_FOCUS_MONEY_SHADOW_RESULT"||m.version!==1||m.nonce!==shadowRun.nonce||!m.report)return true;
+ const m=e.data,expectedType=shadowRun.kind==="time"?"PA_FOCUS_TIME_SHADOW_RESULT":"PA_FOCUS_MONEY_SHADOW_RESULT";if(!m||m.type!==expectedType||m.version!==1||m.nonce!==shadowRun.nonce||!m.report)return true;
  const r=m.report,summary=shadowRun.node.querySelector("#paFocusShadowSummary");
  summary.hidden=false;summary.textContent=(r.state==="candidate"?"Calon fokus: "+String(r.nextSkillId||r.rootCause||"semakan lanjut")+" · ":"Belum cukup bukti · ")+String(r.parentText||"");
  return true;
@@ -132,6 +137,6 @@ window.addEventListener("message",e=>{
 document.getElementById("wirayungLaunch")?.addEventListener("click",()=>open());
 const original=window.renderParent;
 if(typeof original==="function")window.renderParent=function(){const ret=original.apply(this,arguments);mountReport();return ret;};
-window.PAWirayungLive={open,close,tryStartFocus:id=>openMoneyShadow(id)||moneySkill(id)&&open(id),insights:records,openMoneyShadow};
-if(moneyShadowAllowed()&&new URLSearchParams(location.search).get("autostart")==="1")setTimeout(()=>openMoneyShadow("D2.4.2"),0);
+window.PAWirayungLive={open,close,tryStartFocus:id=>openMoneyShadow(id)||openTimeShadow(id)||moneySkill(id)&&open(id),insights:records,openMoneyShadow,openTimeShadow};
+if(new URLSearchParams(location.search).get("autostart")==="1")setTimeout(()=>{if(moneyShadowAllowed())openMoneyShadow("D2.4.2");else if(timeShadowAllowed())openTimeShadow("D2.5.3")},0);
 })();

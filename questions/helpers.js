@@ -206,9 +206,10 @@ function attachFoundationQuestionTags(q,meta){
  const operationFamilies=meta.arithmeticProfile?.operationFamilies||[];
  const expression=Array.isArray(operands.addends)?[...operands.addends].sort((a,b)=>a-b):
    Array.isArray(operands.valuesMinorUnits)?[...operands.valuesMinorUnits].sort((a,b)=>a-b):
+    Array.isArray(operands.values)?[...operands.values]:
    operands.minuend!==undefined?[operands.minuend,operands.subtrahend,...(operands.subsequentSubtrahends||[])]:
    [operands.totalMinorUnits??operands.dividend,operands.divisor,operands.quotientMinorUnits??operands.quotient,operands.remainder??0];
- const identity=JSON.stringify([operationFamilies,operands.unit||'unknown',expression]);
+ const identity=JSON.stringify([operationFamilies,operands.unit||'unknown',expression,...(meta.evidence?.variantIdentity?[meta.evidence.variantIdentity]:[])]);
  let hash=2166136261;for(const char of identity){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}
  q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',...meta,
    evidence:{...meta.evidence,tagRevision:meta.evidence?.tagRevision||(['addition','subtraction'].includes(meta.diagnosticFamily)?'add-sub-features-v1':'d2-pilot-v2'),
