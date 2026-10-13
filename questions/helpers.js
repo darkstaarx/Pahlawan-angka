@@ -205,6 +205,7 @@ function attachFoundationQuestionTags(q,meta){
  // the same calculation in a story is not a second independent equation.
  const operationFamilies=meta.arithmeticProfile?.operationFamilies||[];
  const expression=Array.isArray(operands.addends)?[...operands.addends].sort((a,b)=>a-b):
+   Array.isArray(operands.valuesMinorUnits)?[...operands.valuesMinorUnits].sort((a,b)=>a-b):
    operands.minuend!==undefined?[operands.minuend,operands.subtrahend,...(operands.subsequentSubtrahends||[])]:
    [operands.totalMinorUnits??operands.dividend,operands.divisor,operands.quotientMinorUnits??operands.quotient,operands.remainder??0];
  const identity=JSON.stringify([operationFamilies,operands.unit||'unknown',expression]);
@@ -218,20 +219,27 @@ function moneyQ(id,shift,s){
  const difficulty=(s&&s.mastery>=75)?"STRETCH":(s&&s.mastery>=50)?"APPLICATION":(s&&s.mastery>=25)?"CORE":"FOUNDATION";
  if(id==="D2.4.1"){
    const mode=pick(["recognise","total","total","compare"]);
+   const tagMoneyBasics=(q,values,questionMode)=>attachFoundationQuestionTags(q,{
+     originSkillId:id,contextDomain:'money',diagnosticFamily:questionMode==='recognise'?'money_unit':'money',
+     arithmeticProfile:{operationFamilies:[],operands:{valuesMinorUnits:values,unit:'sen'},
+       operandDimensions:{valueCount:values.length,largestValueMinorUnits:Math.max(...values),unit:'sen'}},
+     probes:{foundationIds:['money.denomination','money.ringgit_sen'],conceptIds:['money.ringgit_sen'],diagnosticPurpose:'normal'},
+     evidence:{questionFamilyKey:`d2-money-basic-${questionMode}`,representation:questionMode==='recognise'?'visual':'symbolic',demand:'concept',difficultyBand:1}
+   });
    if(mode==="recognise"){
      const d=pick([5,10,20,50,100,500,1000,2000,5000]);
      const wrong=moneyWrongSet(d,[d<100?d+10:d+100,d<100?Math.max(5,d-10):Math.max(100,d-100),d<100?d*2:Math.min(10000,d*2)]);
-     return Q(`${moneyVisual(d)}Berapakah nilai wang yang ditunjukkan?`,moneyFmt(d),wrong,"Lihat nilai yang tertulis pada syiling atau wang kertas.",`D2 ${difficulty} · Wang`,true,shift);
+     return tagMoneyBasics(Q(`${moneyVisual(d)}Berapakah nilai wang yang ditunjukkan?`,moneyFmt(d),wrong,"Lihat nilai yang tertulis pada syiling atau wang kertas.",`D2 ${difficulty} · Wang`,true,shift),[d],'recognise');
    }
    if(mode==="compare"){
      const a=chooseMoneyValue("mixed",5000),b=chooseMoneyValue("mixed",5000);
      if(a===b)return moneyQ(id,shift,s);
      const ans=Math.max(a,b);
-     return Q(`${moneyVisual(a)}<div style="height:6px"></div>${moneyVisual(b)}Antara dua kumpulan wang ini, yang manakah nilainya lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift);
+     return tagMoneyBasics(Q(`${moneyVisual(a)}<div style="height:6px"></div>${moneyVisual(b)}Antara dua kumpulan wang ini, yang manakah nilainya lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift),[a,b],'compare');
    }
    const total=chooseMoneyValue(pick(["coin","mixed","ringgit"]),10000);
    const wrong=moneyWrongSet(total,[Math.max(0,total-50),Math.min(10000,total+50),total<100?total*10:Math.round(total/10)]);
-   return Q(`${moneyVisual(total)}Berapakah jumlah wang semuanya?`,moneyFmt(total),wrong,"Tambah nilai semua syiling dan wang kertas yang ditunjukkan.",`D2 ${difficulty} · Wang`,true,shift);
+   return tagMoneyBasics(Q(`${moneyVisual(total)}Berapakah jumlah wang semuanya?`,moneyFmt(total),wrong,"Tambah nilai semua syiling dan wang kertas yang ditunjukkan.",`D2 ${difficulty} · Wang`,true,shift),[total],'total');
  }
  if(id==="D2.4.2"){
    const three=Math.random()<0.42;
@@ -244,7 +252,13 @@ function moneyQ(id,shift,s){
    let ans=vals.reduce((a,b)=>a+b,0);if(ans>10000)return moneyQ(id,shift,s);
    const stem=vals.map(moneyFmt).join(' + ');
    const wrong=moneyWrongSet(ans,[ans-100,ans+100,Math.abs(vals[0]-vals[1]),ans-(vals[vals.length-1]||0)]);
-   return Q(`${stem} = ?`,moneyFmt(ans),wrong,"Tambah sen dengan sen dan ringgit dengan ringgit. Jika 100 sen, tukarkan kepada RM1.",`D2 ${difficulty} · Tambah Wang`,true,shift);
+   const q=Q(`${stem} = ?`,moneyFmt(ans),wrong,"Tambah sen dengan sen dan ringgit dengan ringgit. Jika 100 sen, tukarkan kepada RM1.",`D2 ${difficulty} · Tambah Wang`,true,shift);
+   const wholeDigits=Math.max(...vals.map(v=>String(Math.floor(v/100)).length));
+   return attachFoundationQuestionTags(q,{originSkillId:id,contextDomain:'money',diagnosticFamily:'addition',arithmeticProfile:{
+     operationFamilies:['addition'],operands:{addends:vals,unit:'sen',displayUnit:'MYR'},
+     operandDimensions:{maxOperandDigits:wholeDigits,usesRegrouping:false,decimalPlaces:2,stepCount:1,unit:'MYR',factDependencies:[]}
+    },probes:{foundationIds:['add.place_value','money.ringgit_sen'],conceptIds:['money.ringgit_sen'],diagnosticPurpose:'normal'},
+    evidence:{questionFamilyKey:'d2-money-addition',representation:'symbolic',demand:'procedure',difficultyBand:difficulty==='STRETCH'?4:difficulty==='APPLICATION'?3:difficulty==='CORE'?2:1}});
  }
  if(id==="D2.4.3"){
    const three=Math.random()<0.4;

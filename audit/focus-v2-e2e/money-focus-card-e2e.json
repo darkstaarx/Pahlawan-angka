@@ -1,0 +1,59 @@
+{
+  "status": "focus_v2_money_focus_card_e2e_pass",
+  "base": "http://127.0.0.1:8765/index.html?focus-shadow=money",
+  "checks": [
+    {
+      "name": "Focus picker exposes Wang card",
+      "status": "PASS",
+      "actual": {
+        "cardCount": 1,
+        "cardIds": [
+          "D2.4.2"
+        ]
+      }
+    },
+    {
+      "name": "Focus card launches isolated Wang shadow overlay",
+      "status": "PASS",
+      "actual": "audit/focus-v2-money-contrast-harness.html?bridge=1&nonce=<ephemeral>"
+    },
+    {
+      "name": "Diagnostic probe uses Gerai visual shell",
+      "status": "PASS",
+      "actual": "Gerai Wirayung · ujian Kemahiran Fokus"
+    },
+    {
+      "name": "Gerai Wira asset is present",
+      "status": "PASS",
+      "actual": "../assets/minigames/kedai-ajaib/wira-idle.webp"
+    },
+    {
+      "name": "Mini-game returns candidate root cause",
+      "status": "PASS",
+      "actual": "{\n  \"status\": \"candidate\",\n  \"rootCause\": \"add.place_value\",\n  \"nextSkillId\": \"D2.2.1\",\n  \"confidence\": \"medium\",\n  \"reasonCode\": \"MONEY_BASICS_OK_LARGE_ADDITION_WEAK\",\n  \"initialMoneyWeak\": true,\n  \"moneyBasics\": {\n    \"independent\": 2,\n    \"nonindependent\": 0\n  },\n  \"evidence\": {\n    \"uniqueTaggedQuestions\": 11,\n    \"duplicatesDiscarded\": 0,\n    \"untaggedExcluded\": 0,\n    \"byFamily\": {\n      \"addition\": {\n        \"uniqueQuestions\": 9,\n        \"independent\": 2,\n        \"nonindependent\": 7\n      },\n      \"money_unit\": {\n        \"uniqueQuestions\": 2,\n        \"independent\": 2,\n        \"nonindependent\": 0\n      }\n    }\n  },\n  \"integrity\": {\n    \"masteryXpCoinsUnchanged\": true,\n    \"writes\": 0\n  },\n  \"trace\": [\n    {\n      \"session\": \"Kembara Wang\",\n      \"skillId\": \"D2.4.2\",\n      \"outcome\": \"unresolved\",\n      \"family\": \"addition\",\n      \"contextDomain\": \"money\",\n      \"features\": {\n        \"maxOperandDigits\": 1,\n        \"usesRegrouping\": false,\n        \"decimalPlaces\": 2,\n        \"stepCount\": 1,\n        \"unit\": \"MYR\",\n        \"factDependencies\": []\n      }\n    },\n    {\n      \"session\": \"Kembara Wang\",\n      \"skillId\": \"D2.4.2\",\n      \"outcome\": \"unresolved\",\n      \"family\": \"additio"
+    },
+    {
+      "name": "Parent summary returns to app overlay",
+      "status": "PASS",
+      "actual": "Calon fokus: D2.2.1 · Pada awalnya, latihan menunjukkan Wang mencabar. Ujian susulan mendapati asas Wang boleh dibuat sendiri, tetapi tambah nombor besar masih mengelirukan. Fokus seterusnya ialah nilai tempat dan tambah nombor besar."
+    },
+    {
+      "name": "Synthetic profile and rewards remain unchanged",
+      "status": "PASS",
+      "actual": {
+        "unchanged": true,
+        "masteryXpCoinsUnchanged": true,
+        "xp": 100,
+        "coins": 55,
+        "encounters": 5
+      }
+    }
+  ],
+  "profileIntegrity": {
+    "unchanged": true,
+    "masteryXpCoinsUnchanged": true,
+    "xp": 100,
+    "coins": 55,
+    "encounters": 5
+  }
+}
