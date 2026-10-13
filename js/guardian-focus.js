@@ -6,13 +6,17 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  const rows=(profile?.learnerReviewV1?.encounters||[]).filter(e=>Number(e.grade)===grade
   &&['independent','corrected','assisted','unresolved'].includes(e.outcome)
   &&!['demo','dev','dev-test'].includes(e.mode));
- const moneyReports=(profile?.focusDiagnosticsV1?.reports||[]).filter(r=>Number(r.grade)===grade&&r.skillId==='D2.4.2').sort((a,b)=>Number(a.at||0)-Number(b.at||0));
+ const moneyReports=(profile?.focusDiagnosticsV1?.reports||[]).filter(r=>Number(r.grade)===grade&&(/^D[1-6]\.MONEY$/.test(r.skillId||'')||/^D2\.4\.[1-7]$/.test(r.skillId||''))).sort((a,b)=>Number(a.at||0)-Number(b.at||0));
  const latestMoneyReport=moneyReports.at(-1)||null;
- const latestMoneySignalAt=rows.filter(e=>e.skillId==='D2.4.2').reduce((at,e)=>Math.max(at,Number(e.resolvedAt||0)),0);
+ const latestMoneySignalAt=latestMoneyReport?rows.filter(e=>e.skillId===latestMoneyReport.skillId).reduce((at,e)=>Math.max(at,Number(e.resolvedAt||0)),0):0;
+ const targetEvidence=latestMoneyReport?.nextSkillId?rows.filter(e=>e.skillId===latestMoneyReport.nextSkillId&&Number(e.resolvedAt||0)>Number(latestMoneyReport.at||0)).slice(-20):[];
+ const targetQuestionKeys=new Set(targetEvidence.map(e=>e.questionKey).filter(Boolean));
+ const targetIndependent=targetEvidence.filter(e=>e.outcome==='independent').length;
+ const targetRecovered=targetEvidence.length>=5&&targetQuestionKeys.size>=2&&targetIndependent/targetEvidence.length>=.8;
  const activeMoneyReport=latestMoneyReport&&Number(latestMoneyReport.at||0)>=latestMoneySignalAt?latestMoneyReport:null;
  let hasEvidence=false;
  const candidates=skills.flatMap(m=>{
-  if(activeMoneyReport&&m.id==='D2.4.2')return [];
+  if(activeMoneyReport&&m.id===activeMoneyReport.skillId&&activeMoneyReport.state==='candidate'&&activeMoneyReport.nextSkillId&&activeMoneyReport.nextSkillId!==activeMoneyReport.skillId)return [];
   const recent=rows.filter(e=>e.skillId===m.id).slice(-20),unique=new Set(recent.map(e=>e.questionKey).filter(Boolean));
   if(recent.length<5||unique.size<2)return [];
   hasEvidence=true;
@@ -27,12 +31,15 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  if(activeMoneyReport){
   hasEvidence=true;
   const nextId=String(activeMoneyReport.nextSkillId||''),next=skills.find(m=>m.id===nextId);
-  if(activeMoneyReport.state==='candidate'&&next&&nextId!=='D2.4.2'
+  if(activeMoneyReport.state==='candidate'&&next&&nextId!==activeMoneyReport.skillId&&!targetRecovered
    &&typeof questionBankFor==='function'&&typeof questionBankFor(nextId)==='function'){
    const byId=candidates.filter(x=>x.id!==nextId);
    byId.unshift({id:nextId,title:next.title,chapter:String(next.chapter),attempts:Number(activeMoneyReport.operationEvidence?.tagged)||6,
     independentRate:0,priority:1000,diagnostic:true,reason:String(activeMoneyReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
    candidates.splice(0,candidates.length,...byId);
+  }else if(activeMoneyReport.state==='candidate'&&(!nextId||nextId===activeMoneyReport.skillId)){
+   const current=candidates.find(x=>x.id===activeMoneyReport.skillId);
+   if(current){current.diagnostic=true;current.priority=1000;current.reason=String(activeMoneyReport.parentText||'Semakan mencadangkan latihan Wang diteruskan.');}
   }
  }
  candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));

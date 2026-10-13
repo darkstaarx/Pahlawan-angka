@@ -335,10 +335,10 @@ const FAMILIES=[
  {mode:'untung', re:/profit|loss|cost_from_selling|selling_price|all_stock/},
  {mode:'baki',   re:/cash_balance|balance|change|budget|multi_step/}
 ];
-/* Skill wang D1–D4 dipetakan ke mod mini-game yang benar-benar menguji skill itu. D2.4.6 kekal dalam battle. */
+/* Skill wang D1–D4 dipetakan ke mod mini-game yang benar-benar menguji skill itu. */
 const DIRECT={
  'D1.MONEY':['bayar'],'D2.4.1':['bayar'],'D2.4.2':['bayar'],'D2.4.3':['baki'],'D2.4.4':['bayar'],'D2.4.5':['bahagi'],
- 'D2.4.7':['bayar','baki'],'D3.MONEY':['bayar','baki'],'D4.MONEY':['bayar','baki']
+ 'D2.4.6':['baki'],'D2.4.7':['bayar','baki'],'D3.MONEY':['bayar','baki'],'D4.MONEY':['bayar','baki']
 };
 const DEFAULT={5:['diskaun','baki'],6:['diskaun','untung']};
 const gradeOf=id=>Number((/^D(\d)/.exec(String(id))||[])[1])||0;
@@ -394,6 +394,21 @@ const asset=(key)=>{
 const $=id=>document.getElementById(id);
 const money=v=>'RM'+(v/100).toFixed(2);
 const MONEY_DIAGNOSTIC=new URLSearchParams(location.search).get('pa_focus_diagnostic')==='money';
+const liveFocusParams=new URLSearchParams(location.search);
+const LIVE_FOCUS_ORIGIN=liveFocusParams.get('pa_focus_live')==='money'?String(liveFocusParams.get('pa_origin_skill')||''):'';
+const LIVE_FOCUS_MODES=(liveFocusParams.get('pa_focus_modes')||'').split(',').filter(Boolean);
+function liveFocusFamilyFor(origin,modes){
+ const first=modes[0]||'';
+ if(origin==='D1.MONEY'||origin==='D2.4.2')return 'money_add';
+ if(origin==='D2.4.3'||origin==='D2.4.6')return 'money_subtract';
+ if(origin==='D2.4.4')return 'money_multiply';
+ if(origin==='D2.4.5')return 'money_divide';
+ if(origin==='D3.MONEY'||origin==='D4.MONEY')return first==='baki'?'money_change':'money_total';
+ if(origin==='D5.MONEY')return first==='baki'?'money_change':first==='diskaun'?'money_discount':'money_budget';
+ if(origin==='D6.MONEY')return first==='untung'?'money_profit':first==='baki'?'money_change':first==='diskaun'?'money_discount':'money_budget';
+ return '';
+}
+let liveFocus=null;
 
 /* ---------- item art (inline SVG, matches chunky outlined style) ---------- */
 const S='stroke="#4a2a16" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
@@ -611,10 +626,37 @@ function rows(o){return '<div class="items">'+o.items.map(id=>'<div class="row">
 function sumline(parts){return '<div class="sumline">'+parts.map(([k,v,c])=>'<span'+(c?' class="'+c+'"':'')+'>'+k+' '+(v==='?'?'<span class="q">?</span>':v)+'</span>').join('')+'</div>'}
 
 function makeOrder(){
+ if(liveFocus&&liveFocus.contexts.length<2)return makeLiveFocusOrder();
  const k=cfg.modes[served%cfg.modes.length],tiers=GRADES[cfg.grade][k];
  if(tier[k]==null){tier[k]=0;clean[k]=0}
  const t=tiers[Math.min(tier[k],tiers.length-1)],pet=choosePet();
  return{mode:k,tierIx:tier[k],nTiers:tiers.length,pet:pet.id,who:pet.who,...MODES[k].make(t)};
+}
+function makeLiveFocusOrder(){
+ const family=liveFocus.family,index=liveFocus.contexts.length,pairId=family+'-live-pair-'+(index+1),pet=choosePet();
+ const one=chooseItems(1)[0],grade=cfg.grade;let order,operation,operands,plainOperands,answer;
+ if(family==='money_add'||family==='money_total'){
+  const pairs=grade<=2?[[200,300,100,400],[400,200,300,500]]:grade===3?[[2300,1400,2400,1700],[3500,2200,3300,2600]]:[[12300,4600,14200,5300],[21400,3500,22100,3600]],pair=pairs[index],items=chooseItems(2);P(items[0]).price=pair[0];P(items[1]).price=pair[1];
+  const values=pair.slice(0,2).map(x=>x/100);order={mode:'bayar',items,qty:1,say:'Dua barang ini, berapa jumlah semuanya?'};operation='addition';operands={addends:values};plainOperands={addends:pair.slice(2).map(x=>x/100)};answer=values[0]+values[1];
+ }else if(family==='money_subtract'||family==='money_change'||family==='money_budget'){
+  const actualPairs=grade<=2?[[500,200],[700,300]]:grade===3?[[8200,3700],[9600,4800]]:[[70400,28600],[93200,45700]],paid=actualPairs[index][0],price=actualPairs[index][1];P(one).price=price;order={mode:'baki',items:[one],qty:1,paid,say:'Aku bayar '+money(paid)+'. Berapa baki?'};operation='subtraction';operands={minuend:paid/100,subtrahend:price/100};answer=(paid-price)/100;
+  const plainPairs=grade<=2?[[9,4],[8,3]]:grade===3?[[91,43],[87,39]]:[[812,347],[963,482]];plainOperands={minuend:plainPairs[index][0],subtrahend:plainPairs[index][1]};
+ }else if(family==='money_multiply'){
+  const price=index?300:200,qty=index?4:3;P(one).price=price;order={mode:'bayar',items:[one],qty,say:'Aku nak '+qty+' barang ini. Berapa jumlahnya?'};operation='multiplication';operands={unitPrice:price/100,quantity:qty};plainOperands={unitPrice:index?6:5,quantity:index?4:3};answer=price/100*qty;
+ }else if(family==='money_divide'){
+  const total=index?1600:1200,people=index?4:3;order={mode:'bahagi',items:[],qty:1,people,total,kind:'tukar',petWord:'sampul',say:'Bahagikan '+money(total)+' sama rata kepada '+people+' sampul.'};operation='division';operands={total:total/100,divisor:people};plainOperands={total:index?24:18,divisor:index?4:3};answer=total/100/people;
+ }else if(family==='money_discount'){
+  const base=index?30000:20000,percent=index?20:10,discount=base*percent/100;P(one).price=base;
+  order={mode:'diskaun',items:[one],qty:1,pct:percent,cut:0,disc:discount,paid:0,coupon:'−'+percent+'%',say:'Harga '+money(base)+'. Kupon diskaun '+percent+'%. Kira harga selepas diskaun.'};
+  operation='discount';operands={base:base/100,percent,result:(base-discount)/100};plainOperands={base:index?400:300,percent:index?20:10};answer=(base-discount)/100;
+ }else{
+  const pairs=grade>=5?[[70400,28600],[93200,45700]]:[[4000,3000],[5000,3200]],sales=pairs[index][0],cost=pairs[index][1],profit=sales-cost;P(one).price=sales;
+  order={mode:'untung',items:[one],qty:1,cost,kind:'untung',reverse:false,sales,say:'Jualan '+money(sales)+', modal '+money(cost)+'. Berapa untung?'};
+  operation=family==='money_profit'?'subtraction':'subtraction';operands={minuend:sales/100,subtrahend:cost/100};plainOperands={minuend:index?730:620,subtrahend:index?280:340};answer=profit/100;
+ }
+ const demandBand=grade<=2?'small-number':grade===3?'two-digit':'three-digit';
+ const fingerprint=family+'-'+JSON.stringify(operands),matchKey=JSON.stringify([family,operation,grade,demandBand]);
+ return{mode:order.mode,tierIx:0,nTiers:1,pet:pet.id,who:pet.who,...order,focusContext:{family,operation,operands,plainOperands,answer,pairId,fingerprint,matchKey,demandBand}};
 }
 const M=()=>MODES[m.mode];
 const target=()=>M().target(m);
@@ -717,6 +759,7 @@ function go(){if(busy)return;const md=M();
 
 function finish(tg){busy=true;step=3;chips();$('go').disabled=true;show($('wsay'),false);$('bubble').classList.remove('dim');clearTimeout(wTimer);
  const md=M(),stars=hints===0&&misses===0?3:(hints+misses<=2?2:1),rev=md.revenue(m);
+ if(liveFocus&&m.focusContext)recordLiveMoneyResult(m.focusContext,misses===0&&hints===0?'independent':misses?'corrected':'assisted');
  log.push({m,stars,target:tg,first:misses===0});
  try{
   const key=[m.mode,m.kind||'',m.people||0,m.total||0,m.qty,m.items.map(id=>id+':'+P(id).price).join(','),m.paid||0,m.pct||0,m.cost||0].join('|');
@@ -727,12 +770,60 @@ function finish(tg){busy=true;step=3;chips();$('go').disabled=true;show($('wsay'
  petFace('happy');$('say').textContent=pick(['Terima kasih, Wira!','Datang lagi nanti!','Tepat sekali!','Kau memang hebat!']);
  $('wiraImg').src=asset(stars===3?'wira-victory.webp':'wira-thumb.webp');$('wira').classList.add('cheer');
  const st=$('stamp'),lbl=stars===3?['HEBAT!','hebat']:stars===2?['BAGUS!','bagus']:['SIAP!','ok'];
- st.className='stamp '+lbl[1];st.innerHTML=lbl[0]+'<small>'+'★'.repeat(stars)+'☆'.repeat(3-stars)+' · '+md.stamp(m,tg)+(streak>=2?' · 🔥'+streak:'')+'</small>';void st.offsetWidth;st.classList.add('show');
+ st.className='stamp '+lbl[1];st.innerHTML=lbl[0]+'<small>'+'★'.repeat(stars)+'☆'.repeat(3-stars)+(liveFocus?' · PESANAN DIREKOD':' · '+md.stamp(m,tg)+(streak>=2?' · 🔥'+streak:''))+'</small>';void st.offsetWidth;st.classList.add('show');
  burst();sfx.win();
- $('bTitle').textContent='Pesanan selesai!';$('bText').textContent=md.answer(m)+' '+money(rev)+' masuk tabung.';
+ $('bTitle').textContent='Pesanan selesai!';$('bText').textContent=liveFocus?'Pesanan direkod. Wira sedia untuk pelanggan seterusnya.':md.answer(m)+' '+money(rev)+' masuk tabung.';
  setTimeout(()=>{setTill(till+rev);sfx.coin()},700);
  setTimeout(()=>{show($('bubble'),false);$('customer').className='customer leave'},2100);
- setTimeout(()=>{if(served%CHECK_EVERY===0)ledger();else startRound()},3000)}
+ setTimeout(()=>{if(liveFocus&&liveFocus.contexts.length>=2)startLivePlainChecks();else if(served%CHECK_EVERY===0)ledger();else startRound()},3000)}
+
+function liveFocusTag(context,side,result){
+ const family=context.family,plainDomain='number';
+ return{schema:'pa.money.contrast.v2',family,side,tagOrigin:side==='money'?'authored':'derived_exact',originSkillId:liveFocus.origin,skillId:liveFocus.origin,
+  contextDomain:side==='money'?'money':plainDomain,operation:context.operation,pairId:context.pairId,matchKey:context.matchKey,probe:(side==='money'?'money-':'plain-')+context.fingerprint,result};
+}
+function recordLiveMoneyResult(context,result){
+ const moneyTag=liveFocusTag(context,'money',result);liveFocus.observations.push(moneyTag);liveFocus.contexts.push({...context});
+}
+function plainExpression(context){
+ const o=context.plainOperands;
+ if(context.family==='money_add'||context.family==='money_total')return{prompt:`${o.addends[0]} + ${o.addends[1]} = ?`,answer:context.answer};
+ if(context.family==='money_subtract'||context.family==='money_profit')return{prompt:`${o.minuend} − ${o.subtrahend} = ?`,answer:context.answer};
+ if(context.family==='money_multiply')return{prompt:`${o.unitPrice} × ${o.quantity} = ?`,answer:context.answer};
+ if(context.family==='money_divide')return{prompt:`${o.total} ÷ ${o.divisor} = ?`,answer:context.answer};
+ return{prompt:`${o.base} − (${o.percent}% × ${o.base}) = ?`,answer:o.base-o.base*o.percent/100};
+}
+function startLivePlainChecks(){
+ if(!liveFocus||liveFocus.complete)return;
+ const host=document.createElement('section');host.id='focusDiagnostic';host.setAttribute('aria-live','polite');
+ host.innerHTML='<div class="fd-card"><div class="fd-kicker">GERAI WIRAYUNG · SEMAKAN KIRAAN</div><h1 id="fdTitle">Kira nombor tanpa wang</h1><p id="fdPrompt"></p><div id="fdChoices" class="fd-choices"></div><div class="fd-progress" id="fdProgress"></div><p class="fd-note" id="fdNote">Jawapan direkod tanpa tunjuk betul atau salah. Keputusan keluar selepas dua soalan.</p></div>';
+ document.querySelector('.pa-game').appendChild(host);
+ const style=document.createElement('style');style.textContent='#focusDiagnostic{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:18px;background:linear-gradient(180deg,#5c3b2b77,#2b4a66e8);overflow:auto}.fd-card{width:min(100%,420px);padding:24px 20px 20px;border:4px solid var(--wood-dk);border-radius:24px;background:linear-gradient(180deg,#fff7e6,#f1dcae);box-shadow:0 14px 32px #17253666;color:var(--ink)}.fd-kicker{font:800 11px/1.2 var(--f-body);letter-spacing:.08em;color:var(--leaf-dk)}.fd-card h1{margin:6px 0 8px;font:800 28px/1.05 var(--f-display)}.fd-card p{margin:0 0 18px;font-weight:800;line-height:1.35}.fd-choices{display:grid;gap:10px}.fd-choice{appearance:none;border:3px solid var(--wood-dk);border-radius:15px;background:#fffdf6;padding:13px 12px;font:800 18px var(--f-display);cursor:pointer;text-align:center;box-shadow:inset 0 -3px 0 #ead7b5}.fd-choice:hover,.fd-choice:focus-visible{border-color:var(--leaf-dk);background:#eff9df}.fd-choice[disabled]{cursor:default}.fd-progress{margin-top:17px;font:800 13px var(--f-body);color:var(--ink-soft)}.fd-note{margin-top:14px!important;margin-bottom:0!important;font-size:12px;color:var(--ink-soft)}';document.head.appendChild(style);
+ liveFocus.index=0;renderLivePlainQuestion();
+}
+function renderLivePlainQuestion(){
+ const context=liveFocus.contexts[liveFocus.index],question=plainExpression(context),answer=Number(question.answer),candidates=[answer,answer+1,Math.max(0,answer-1),answer+10],unique=[...new Set(candidates)];
+ while(unique.length<4)unique.push(answer+unique.length+1);
+ $('fdTitle').textContent='Kira nombor tanpa wang';$('fdPrompt').textContent=question.prompt;$('fdProgress').textContent='Soalan nombor '+(liveFocus.index+1)+' / 2';$('fdChoices').innerHTML='';
+ shuffle(unique.slice(0,4)).forEach(value=>{const b=document.createElement('button');b.type='button';b.className='fd-choice';b.dataset.correct=String(value===answer);b.textContent=String(value);b.onclick=()=>answerLivePlain(context,b,value===answer,value);$('fdChoices').appendChild(b)});
+}
+function answerLivePlain(context,button,correct,value){
+ if(!liveFocus||liveFocus.complete)return;
+ document.querySelectorAll('#focusDiagnostic .fd-choice').forEach(x=>x.disabled=true);
+ liveFocus.observations.push(liveFocusTag(context,'plain',correct?'independent':'unresolved'));
+ $('fdNote').textContent='Jawapan direkod. Keputusan hanya dipaparkan selepas soalan kedua.';
+ liveFocus.index++;if(liveFocus.index<2)setTimeout(renderLivePlainQuestion,350);else setTimeout(finishLiveFocus,350);
+}
+function finishLiveFocus(){
+ if(!liveFocus||liveFocus.complete)return;liveFocus.complete=true;
+ const report=window.PAFocusMoneyDiagnosticV2.evaluate({originSkillId:liveFocus.origin,observations:liveFocus.observations,questionBankSkills:Object.keys(window.PAFocusMoneyDiagnosticV2.skillFamilies),nextSkillId:liveFocus.origin});
+ const family=liveFocus.family,demandBand=liveFocus.contexts[0]?.demandBand||'small-number',bandNames={'small-number':'nombor asas','two-digit':'nombor dua digit','three-digit':'nombor tiga digit'},operationNames={addition:'tambah',subtraction:'tolak',multiplication:'darab',division:'bahagi',discount:'diskaun'},demand=operationNames[window.PAFocusMoneyDiagnosticV2.probeFamilies[family]?.operation]+' '+(bandNames[demandBand]||demandBand);
+ let parentText=report.parentText;
+ if(report.state==='candidate'&&String(report.rootCause||'').startsWith('operation.'))parentText='Pesanan wang yang sepadan boleh dibuat sendiri, tetapi kiraan '+demand+' tanpa konteks wang masih mengelirukan. Fokus seterusnya ialah latihan operasi '+operationNames[window.PAFocusMoneyDiagnosticV2.probeFamilies[family]?.operation]+' pada tahap nombor yang diuji.';
+ if(report.state==='candidate'&&String(report.rootCause||'').startsWith('money.'))parentText='Kiraan nombor '+demand+' boleh dibuat sendiri, tetapi soalan wang yang sepadan masih mencabar. Kekalkan latihan wang pada kemahiran '+liveFocus.origin+'.';
+ $('fdTitle').textContent=report.state==='candidate'?'Semakan selesai':'Belum cukup bukti';$('fdPrompt').textContent=parentText;$('fdChoices').innerHTML='';$('fdProgress').textContent='Selesai · 2 pesanan gerai + 2 kiraan nombor direkod · '+demand;$('fdNote').textContent='Pesanan sebenar Gerai kekal direkod seperti biasa. Semakan ini tidak menambah ganjaran atau mastery.';
+ const nonce=new URLSearchParams(location.search).get('pa_nonce');try{window.parent.postMessage({type:'PA_FOCUS_MONEY_LIVE_RESULT',version:1,nonce,report:{originSkillId:liveFocus.origin,state:report.state,rootCause:report.rootCause,nextSkillId:report.nextSkillId,confidence:report.confidence,reasonCode:report.reasonCode,parentText,testedDemand:demand,evidence:report.evidence}},location.origin)}catch(e){console.warn('Focus Wang live bridge unavailable',e)}
+}
 
 function adapt(stars){const k=m.mode,up=m.nTiers-1;
  if(stars===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>wira('Hebat! Pesanan seterusnya lebih mencabar.',2600),900)}}
@@ -792,28 +883,116 @@ async function runMoneyDiagnostic(){
  .fd-choices{display:grid;gap:10px}.fd-choice{appearance:none;border:3px solid var(--wood-dk);border-radius:15px;background:#fffdf6;padding:13px 12px;font:800 18px var(--f-display);cursor:pointer;text-align:center;box-shadow:inset 0 -3px 0 #ead7b5}.fd-choice:hover,.fd-choice:focus-visible{border-color:var(--leaf-dk);background:#eff9df}.fd-choice[disabled]{cursor:default}.fd-choice.good{background:#dff3c5;border-color:var(--leaf-dk)}.fd-choice.bad{background:#ffe2db;border-color:var(--berry)}
  .fd-progress{margin-top:17px;font:800 13px var(--f-body);color:var(--ink-soft)}.fd-note{margin-top:14px!important;margin-bottom:0!important;font-size:12px;color:var(--ink-soft)}
  `;document.head.appendChild(style);
- const profile={schoolGrade:2,name:'Focus Wang shadow',skills:{},xp:0,coins:0,learnerReviewV1:{schema:1,encounters:[],updatedAt:0}};
- const tags={},questionKeys=[],trace=[];
- let probes=[];
- function sampleQuestion(make,accept,seen){for(let i=0;i<5000;i++){const q=make(),t=q?.focusDiagnosticV1,fp=t?.evidence?.variantFingerprint;if(t?.tagOrigin==='authored'&&accept(t)&&fp&&!seen.has(fp)){seen.add(fp);return q}}throw new Error('Soalan diagnostik ber-tag tidak dapat dijana.')}
- function generatedProbes(){const out=[],money=new Set(),small=new Set(),large=new Set();
-  for(let i=0;i<2;i++){const q=sampleQuestion(()=>moneyQ('D2.4.1',false,{mastery:20,evidence:i}),t=>t.originSkillId==='D2.4.1'&&t.diagnosticFamily==='money_unit'&&t.evidence.questionFamilyKey==='d2-money-basic-recognise',money);out.push({id:'money-unit-'+(i+1),q})}
-  for(let i=0;i<2;i++){const q=sampleQuestion(()=>PAQuestionBanks.d1('D1.ADD100',{mastery:20,evidence:i},false),t=>t.originSkillId==='D1.ADD100'&&t.contextDomain==='number'&&t.arithmeticProfile.operandDimensions.maxOperandDigits<=2&&!t.arithmeticProfile.operandDimensions.usesRegrouping,small);out.push({id:'plain-add-'+(i+1),q})}
-  for(let i=0;i<2;i++){const q=sampleQuestion(()=>PAQuestionBanks.d2t2('D2.2.1',{mastery:20,evidence:i},false),t=>t.originSkillId==='D2.2.1'&&t.contextDomain==='number'&&t.arithmeticProfile.operandDimensions.maxOperandDigits>=3&&!t.arithmeticProfile.operandDimensions.usesRegrouping,large);out.push({id:'large-add-'+(i+1),q})}
-  return out;
- }
+   const qs=new URLSearchParams(location.search),origin=qs.get('pa_origin_skill')||'';
+   const grade=Number(qs.get('pa_grade')||String((/^D([1-6])\./.exec(origin)||[])[1]||0));
+   const profile={schoolGrade:grade,name:'Focus Wang shadow',skills:{},xp:0,coins:0,learnerReviewV1:{schema:1,encounters:[],updatedAt:0}};
+  const tags={},questionKeys=[],trace=[];
+  let probes=[];
+  const routeModes=new Set((qs.get('pa_focus_modes')||'').split(',').map(x=>x.trim()).filter(Boolean));
+  const V2=()=>window.PAFocusMoneyDiagnosticV2;
+  function sourceTag(q){return ['authored','derived_exact'].includes(q?.focusDiagnosticV1?.tagOrigin)?q.focusDiagnosticV1:null}
+   function familyMatch(t,family){const role=String(t?.taskRole||''),key=String(t?.evidence?.questionFamilyKey||'');
+    if(family==='money_unit')return t.diagnosticFamily==='money_unit'||key.includes('d2-money-basic-recognise');
+    if(family==='money_add')return t.diagnosticFamily==='addition'||role==='money_total'||key.includes('money-add')||t.evidence?.variantIdentity?.plainOperation==='addition';
+    if(family==='money_subtract')return t.diagnosticFamily==='subtraction'||role==='money_change'||role==='money_budget';
+    if(family==='money_multiply')return t.diagnosticFamily==='multiplication'||role==='money_unit_price';
+    if(family==='money_divide')return role==='quotient'||key.includes('equal-share');
+    if(family==='money_problem')return role==='operation_choice';
+    if(family==='money_total')return role==='money_total';
+    if(family==='money_change')return role==='money_change';
+    if(family==='money_unit_price')return role==='money_unit_price';
+    if(family==='money_budget')return role==='money_budget';
+    if(family==='money_discount')return role==='money_discount'||key.includes('discount');
+    if(family==='money_profit')return role==='money_profit'||key.includes('profit');
+    return false;
+   }
+  function sampleQuestion(make,accept,seen){for(let i=0;i<5000;i++){const q=make(),t=sourceTag(q),fp=t?.evidence?.variantFingerprint;if(t&&accept(t,q)&&fp&&!seen.has(fp)){seen.add(fp);return q}}return null}
+  function v2Tag(q,side,family,pairId,index,matchKey){
+   const t=sourceTag(q);if(!t)return null;
+   const fp=t.evidence?.variantFingerprint;if(!fp)return null;
+   const operation=V2()?.probeFamilies?.[family]?.operation;if(!operation)return null;
+   const domain=side==='money'?'money':V2().probeFamilies[family].plainDomain;
+   return {schema:'pa.money.contrast.v2',tagOrigin:side==='money'?'authored':'derived_exact',family,side,domain,contextDomain:domain,operation,pairId,matchKey:matchKey||JSON.stringify([family,operation,t.arithmeticProfile?.operands||null]),probe:fp,originSkillId:origin,skillId:origin,demand:t.evidence?.demand||t.demand||null,difficultyBand:t.evidence?.difficultyBand||t.difficultyBand||null,arithmeticProfile:t.arithmeticProfile||null,evidence:{source:t.evidence?.questionSource||'authored',sourceOrigin:t.originSkillId,variantFingerprint:fp,variantIndex:index,demand:t.evidence?.demand||t.demand||null,difficultyBand:t.evidence?.difficultyBand||t.difficultyBand||null},probes:{diagnosticPurpose:'contrast_plain'}};
+  }
+  function authoredMoneyProbe(id,family){
+   const base=pick([80,100,120,160,200,240]),percent=pick([10,20,25]),discount=base*percent/100;
+   let q,operands,operation;
+   if(family==='money_discount'){
+    q=Q(`Harga barang RM${base}. Kupon memberi diskaun ${percent}%. Berapakah harga selepas diskaun dalam ringgit?`,base-discount,[N(discount,'money'),N(base+discount,'money'),N(percent,'percent')],'Tentukan nilai diskaun, kemudian tolak daripada harga asal.','KSSR · Harga Selepas Diskaun',true,true);
+    operands={base,percent,result:base-discount,unit:'RM'};operation='discount';
+   }else{
+    const cost=pick([20,25,30,35,40,45]),profit=pick([10,15,20,25]),sales=cost+profit;
+    q=Q(`Kedai menjual barang dengan harga RM${sales}. Modal barang itu RM${cost}. Berapakah untung dalam ringgit?`,profit,[N(sales+cost,'operation'),N(cost,'money'),N(sales,'money')],'Untung = harga jual − modal.','KSSR · Untung',true,true);
+    operands={minuend:sales,subtrahend:cost,result:profit,unit:'RM'};operation='subtraction';
+   }
+   const fingerprint=family+'-'+String(operands.base??operands.minuend)+'-'+String(operands.percent??operands.subtrahend)+'-'+String(operands.result);
+   q.focusDiagnosticV1={tagOrigin:'authored',originSkillId:id,contextDomain:'money',diagnosticFamily:family,taskRole:family,arithmeticProfile:{operationFamilies:[operation],operands,operandDimensions:{unit:'RM',stepCount:1}},evidence:{questionFamilyKey:`${id.toLowerCase().replace('.','-')}-${family}`,variantFingerprint:fingerprint,representation:'story',demand:'application',difficultyBand:3,questionSource:'gerai-wirayung-focus-bank-v1'}};
+   return q;
+  }
+  const BANKS={
+   'D1.MONEY':()=>PAQuestionBanks.d1('D1.MONEY',{mastery:20,evidence:0},false),
+   'D2.4.1':()=>moneyQ('D2.4.1',false,{mastery:20,evidence:0}),
+   'D2.4.2':()=>PAQuestionBanks.d2t2('D2.4.2',{mastery:20,evidence:0},false),
+   'D2.4.3':()=>PAQuestionBanks.d2t2('D2.4.3',{mastery:20,evidence:0},false),
+   'D2.4.4':()=>PAQuestionBanks.d2t2('D2.4.4',{mastery:20,evidence:0},false),
+   'D2.4.5':()=>PAQuestionBanks.d2t2('D2.4.5',{mastery:20,evidence:0},false),
+   'D2.4.6':()=>PAQuestionBanks.d2t2('D2.4.6',{mastery:20,evidence:0},false),
+   'D2.4.7':()=>moneyQ('D2.4.7',false,{mastery:20,evidence:0}),
+   'D3.MONEY':()=>PAQuestionBanks.d3('D3.MONEY',{mastery:20,evidence:0},false),
+   'D4.MONEY':()=>PAQuestionBanks.d4('D4.MONEY',{mastery:20,evidence:0},false),
+   'D5.MONEY':family=>family==='money_discount'?authoredMoneyProbe('D5.MONEY',family):PAQuestionBanks.d5('D5.MONEY',{mastery:20,evidence:0},false),
+   'D6.MONEY':family=>family==='money_discount'||family==='money_profit'?authoredMoneyProbe('D6.MONEY',family):PAQuestionBanks.d6('D6.MONEY',{mastery:20,evidence:0},false)
+  };
+   function exactPlain(mq,family,pairId,index){
+    const mt=sourceTag(mq),o=mt?.arithmeticProfile?.operands||{},op=V2().probeFamilies[family]?.operation;
+    const decimalSen=o.unit==='sen'&&origin!=='D1.MONEY',display=x=>decimalSen?(Number(x)/100).toFixed(2):String(x);
+    let values=Array.isArray(o.addends)?o.addends:Array.isArray(o.values)?o.values:Array.isArray(o.valuesMinorUnits)?o.valuesMinorUnits:null,answer,expression;
+    if(op==='discount'&&Number.isFinite(Number(o.percent))&&Number.isFinite(Number(o.base))){answer=Number(o.result);expression=display(o.base)+' − ('+String(o.percent)+'% × '+display(o.base)+')'}
+    else if(op==='division'&&o.totalMinorUnits!==undefined){values=[o.totalMinorUnits,o.divisor];answer=o.quotientMinorUnits;expression=display(o.totalMinorUnits)+' ÷ '+String(o.divisor)}
+    else if(op==='addition'&&values?.length){answer=values.reduce((a,b)=>a+b,0);expression=values.map(display).join(' + ')}
+    else if(op==='subtraction'&&o.minuend!==undefined){values=[o.minuend,o.subtrahend];answer=values[0]-values[1];expression=values.map(display).join(' − ')}
+    else if(op==='multiplication'&&o.unitPrice!==undefined){values=[o.unitPrice,o.quantity];answer=values[0]*values[1];expression=display(o.unitPrice)+' × '+String(o.quantity)}
+    else return null;
+    const shownAnswer=decimalSen?display(answer):answer;
+    const q=Q(expression+' = ?',shownAnswer,[N(decimalSen?display(answer+100):answer+1,'operation'),N(decimalSen?display(Math.max(0,answer-100)):Math.max(0,answer-1),'operation'),N(decimalSen?display(answer+1000):answer+10,'operation')],'Gunakan operasi yang sama pada nombor tanpa konteks wang.','Kontras operasi',true,false);
+    const synthetic={tagOrigin:'derived_exact',originSkillId:'plain',contextDomain:op==='percent'?'percent':'number',diagnosticFamily:op,evidence:{variantFingerprint:'plain-'+family+'-'+index,demand:mt.evidence?.demand,difficultyBand:mt.evidence?.difficultyBand,questionSource:'derived-exact-contrast-v2'},arithmeticProfile:{operationFamilies:[op],operands:op==='percent'||op==='discount'?{base:o.base,percent:o.percent,result:answer}:op==='addition'?{addends:values}:op==='subtraction'?{minuend:values[0],subtrahend:values[1]}:op==='multiplication'?{unitPrice:values[0],quantity:values[1]}:{dividend:values[0],divisor:values[1],quotient:answer},operandDimensions:mt.arithmeticProfile?.operandDimensions}};
+    q.focusDiagnosticV1=synthetic;return q;
+   }
+  function generatedProbes(){
+   const spec=V2()?.skillFamilies?.[origin],moneyProbes=[],plainProbes=[];
+   if(!spec)return [];
+   const modeFamilies={bayar:['money_unit','money_add','money_subtract','money_multiply','money_divide','money_problem','money_total','money_change','money_unit_price','money_budget'],baki:['money_subtract','money_change','money_budget'],bahagi:['money_divide'],diskaun:['money_discount'],untung:['money_profit']};
+   const requested=[...routeModes].flatMap(mode=>modeFamilies[mode]||[]);
+   const families=routeModes.size?spec.filter(f=>requested.includes(f)):spec;
+   if(!families.length)return [];
+   for(const family of families){
+    const moneySeen=new Set(),plainSeen=new Set();
+    for(let i=0;i<2;i++){
+    const makeMoney=()=>BANKS[origin](family);
+     if(typeof makeMoney!=='function')return [];
+      const mq=sampleQuestion(makeMoney,(t,q)=>t.originSkillId===origin&&familyMatch(t,family)&&!String(q?.prompt||'').includes('___')&&!(family==='money_multiply'&&t.evidence?.variantIdentity?.mode==='repeated_addition'),moneySeen);
+      const pairId=family+'-pair-'+(i+1),pq=exactPlain(mq,family,pairId,i);
+     if(!mq||!pq)return [];
+      const matchKey=JSON.stringify([family,V2().probeFamilies[family]?.operation,sourceTag(mq)?.arithmeticProfile?.operands||null]),mt=v2Tag(mq,'money',family,pairId,i,matchKey),pt=v2Tag(pq,'plain',family,pairId,i,matchKey);
+     if(!mt||!pt)return [];
+     const md=mt.difficultyBand,pd=pt.difficultyBand,mm=mt.arithmeticProfile?.operandDimensions?.maxOperandDigits,pm=pt.arithmeticProfile?.operandDimensions?.maxOperandDigits;
+     if(mt.operation!==pt.operation||(md&&pd&&md!==pd)||(mm&&pm&&mm!==pm)||(mt.demand&&pt.demand&&mt.demand!==pt.demand))return [];
+     mq.focusDiagnosticV1=mt;pq.focusDiagnosticV1=pt;moneyProbes.push({id:pairId+'-money',q:mq,tag:mt});plainProbes.push({id:pairId+'-plain',q:pq,tag:pt});
+    }
+   }
+   return moneyProbes.concat(plainProbes);
+  }
  function showEnd(report){
   $('fdTitle').textContent=report.state==='candidate'?'Semakan selesai':'Semakan perlukan lebih bukti';
   $('fdPrompt').textContent=report.parentText||'Ujian selesai.';$('fdChoices').innerHTML='';
-  $('fdProgress').textContent='Selesai · '+trace.length+' probe direkod';
-  $('fdNote').textContent='Laporan read-only dihantar kepada Kemahiran Fokus. writes: 0';
+   $('fdProgress').textContent='Selesai · '+trace.length+' probe direkod';
+   $('fdNote').textContent='Laporan read-only dihantar kepada Kemahiran Fokus. writes: 0';
   const nonce=new URLSearchParams(location.search).get('pa_nonce');
-  try{window.parent.postMessage({type:'PA_FOCUS_MONEY_SHADOW_RESULT',version:1,nonce,report:{state:report.state,rootCause:report.rootCause,nextSkillId:report.nextSkillId,confidence:report.confidence,reasonCode:report.reasonCode,parentText:report.parentText,writes:0,evidence:{trace,diagnostic:report}}},location.origin)}catch(e){console.warn('Focus Wang shadow bridge unavailable',e)}
+   try{window.parent.postMessage({type:'PA_FOCUS_MONEY_SHADOW_RESULT',version:1,nonce,report:{originSkillId:origin,state:report.state,rootCause:report.rootCause,nextSkillId:report.nextSkillId,confidence:report.confidence,reasonCode:report.reasonCode,parentText:report.parentText,writes:0,evidence:{trace,diagnostic:report}}},location.origin)}catch(e){console.warn('Focus Wang shadow bridge unavailable',e)}
  }
  async function evaluate(){
   try{
-   const joined=window.PAFocusDiagnosisV2.fromReview(profile,tags,{originSkillId:'D2.4.2',questionKeys});
-   const report=window.PAFocusMoneyDiagnosticV1.evaluate({originSkillId:'D2.4.2',observations:joined.observations,initialMoneyWeak:true,engine:window.PAFocusDiagnosisV2});
+    const report=V2().evaluate({originSkillId:origin,observations:trace,questionBankSkills:Object.keys(BANKS),nextSkillId:origin});
    showEnd(report);
   }catch(err){$('fdTitle').textContent='Ujian tidak dapat dimulakan';$('fdPrompt').textContent=err.message;$('fdChoices').innerHTML='';console.error(err)}
  }
@@ -821,19 +1000,21 @@ async function runMoneyDiagnostic(){
  function next(){
   const p=probes[index];if(!p){evaluate();return}const q=p.q,t=q.focusDiagnosticV1;
   q.token='focus-money-'+p.id;q.skill=t.originSkillId;q.questionId='focus-money:'+p.id+':'+t.evidence.variantFingerprint;
-  p.entry=window.PALearnerReview.beginQuestion(q,{grade:2,mode:'focus-diagnostic',selectionReason:'focus-money-shadow'});if(!p.entry)throw new Error('Learner-review tidak memulakan probe.');tags[p.entry.questionKey]=t;questionKeys.push(p.entry.questionKey);
-  $('fdProgress').textContent='Probe '+(index+1)+' / '+probes.length+' · '+(t.diagnosticFamily==='money_unit'?'Asas wang':'Operasi tambah');
+  p.entry=window.PALearnerReview.beginQuestion(q,{grade,mode:'focus-diagnostic',selectionReason:'focus-money-shadow'});if(!p.entry)throw new Error('Learner-review tidak memulakan probe.');tags[p.entry.questionKey]=t;questionKeys.push(p.entry.questionKey);
+   $('fdProgress').textContent='Probe '+(index+1)+' / '+probes.length+' · '+t.family+' · '+t.side;
   $('fdPrompt').innerHTML=q.prompt;$('fdChoices').innerHTML='';
-  [{v:q.answer,correct:true},...(q.wrong||[]).map(x=>({v:x.label??x.v,correct:false}))].forEach((choice,i)=>{const b=document.createElement('button');b.type='button';b.className='fd-choice';b.innerHTML=choice.v;b.onclick=()=>answer(p,i,b);$('fdChoices').appendChild(b)});
+  shuffle([{v:q.answer,correct:true},...(q.wrong||[]).map(x=>({v:x.label??x.v,correct:false}))]).forEach(choice=>{const b=document.createElement('button');b.type='button';b.className='fd-choice';b.dataset.correct=choice.correct?'true':'false';b.innerHTML=choice.v;b.onclick=()=>answer(p,choice.correct,choice.v,b);$('fdChoices').appendChild(b)});
  }
- function answer(p,choice,button){
+ function answer(p,correct,selected,button){
   const q=p.q;
-  const options=[q.answer,...(q.wrong||[]).map(x=>x.label??x.v)],correct=choice===0;if(!correct){window.PALearnerReview.firstWrong(q,{tag:q.focusDiagnosticV1.diagnosticFamily==='money_unit'?'unit':'place',value:options[choice],seconds:.8})}const row=correct?window.PALearnerReview.resolve(q,{correct:true,seconds:1.2},profile):null;
-  const wrongChoices=()=>[...document.querySelectorAll('.fd-choice')].slice(1);
-  if(!correct){button.disabled=true;$('fdNote').textContent='Belum tepat — cuba pilihan lain. Jawapan akhir akan direkod sebagai dibetulkan atau belum selesai.';if(wrongChoices().every(x=>x.disabled)){const unresolved=window.PALearnerReview.resolve(q,{correct:false,seconds:1.2,tag:q.focusDiagnosticV1.diagnosticFamily==='money_unit'?'unit':'place'},profile);trace.push({probe:p.id,skillId:q.skill,family:q.focusDiagnosticV1.diagnosticFamily,choice:options[choice],correct:false,outcome:unresolved.outcome});document.querySelectorAll('.fd-choice').forEach(x=>x.disabled=true);index++;setTimeout(next,350)}return}
-  trace.push({probe:p.id,skillId:q.skill,family:q.focusDiagnosticV1.diagnosticFamily,choice:String(options[choice]),correct,outcome:row.outcome});button.classList.add('good');document.querySelectorAll('.fd-choice').forEach(x=>x.disabled=true);index++;setTimeout(next,350)
+  if(!correct)window.PALearnerReview.firstWrong(q,{tag:q.focusDiagnosticV1.family,value:String(selected),seconds:.8});
+  const row=window.PALearnerReview.resolve(q,{correct:!!correct,seconds:1.2,tag:q.focusDiagnosticV1.family},profile);
+  trace.push({...q.focusDiagnosticV1,choice:String(selected),correct:!!correct,outcome:row.outcome});
+  button.disabled=true;document.querySelectorAll('.fd-choice').forEach(x=>x.disabled=true);
+  $('fdNote').textContent='Jawapan direkod. Teruskan; keputusan hanya dipaparkan selepas semua soalan selesai.';
+  index++;setTimeout(next,350)
  }
- async function init(){try{await loadFocusScript('questions/helpers.js');await loadFocusScript('questions/d1/core.js');await loadFocusScript('questions/d2/topic-2.js');await loadFocusScript('js/engine/learner-review-v1.js');await loadFocusScript('js/engine/focus-diagnosis-v2.js');await loadFocusScript('js/engine/focus-money-diagnostic-v1.js');probes=generatedProbes();next()}catch(err){$('fdTitle').textContent='Ujian tidak dapat dimulakan';$('fdPrompt').textContent=err.message;$('fdChoices').innerHTML='';console.error(err)}}
+  async function init(){try{if(!grade||grade!==Number((/^D([1-6])\./.exec(origin)||[])[1]))throw new Error('Darjah dan kemahiran tidak sepadan.');await loadFocusScript('questions/helpers.js');await loadFocusScript('questions/d1/core.js');await loadFocusScript('questions/d2/topic-2.js');await loadFocusScript('questions/d2/topic-4.js');await loadFocusScript('questions/d3/core.js');await loadFocusScript('questions/d4/core.js');await loadFocusScript('questions/d5/core.js');await loadFocusScript('questions/d6/core.js');await loadFocusScript('questions/kssr-content-v3.11.js');await loadFocusScript('js/engine/learner-review-v1.js');await loadFocusScript('js/engine/focus-money-diagnostic-v2.js');probes=generatedProbes();if(!probes.length){showEnd({originSkillId:origin,state:'abstain',rootCause:null,nextSkillId:null,confidence:'none',reasonCode:'NO_AUTHORED_MATCHED_PROBES',parentText:'Semakan diagnostik tidak dapat dijalankan dengan selamat untuk kemahiran ini. Kekal pada latihan biasa.'});return}next()}catch(err){$('fdTitle').textContent='Ujian tidak dapat dimulakan';$('fdPrompt').textContent=err.message;$('fdChoices').innerHTML='';console.error(err)}}
  init();
 }
 
@@ -842,7 +1023,8 @@ $('go').onclick=go;
 $('clear').onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSplit]=[];else mat=[];sfx.pop();drawMat()};
 document.querySelectorAll('#signRow button').forEach(b=>b.onclick=()=>{if(busy)return;sign=b.dataset.sign;sfx.pop();drawSign()});
 $('hint').onclick=()=>{if(busy)return;hints++;
- if(step===1){wira('Cari '+m.items.map(name).join(' dan ')+'. Barang itu sedang bercahaya.',4200);document.querySelectorAll('.item').forEach(b=>b.classList.toggle('glow',m.items.includes(b.dataset.id)));setTimeout(()=>document.querySelectorAll('.item').forEach(b=>b.classList.remove('glow')),2600)}
+ if(liveFocus){wira(step===1?'Perhatikan barang dan wang yang digunakan. Cuba kira sendiri dahulu.':'Cuba fikir sendiri dahulu. Jawapan tidak akan diberi semasa semakan.',4200)}
+ else if(step===1){wira('Cari '+m.items.map(name).join(' dan ')+'. Barang itu sedang bercahaya.',4200);document.querySelectorAll('.item').forEach(b=>b.classList.toggle('glow',m.items.includes(b.dataset.id)));setTimeout(()=>document.querySelectorAll('.item').forEach(b=>b.classList.remove('glow')),2600)}
  else{hint2++;wira(hint2===1?M().strategy(m):M().answer(m),6000)}tone(740,.1)};
 $('sound').onclick=()=>{audioOn=!audioOn;$('sound').textContent=audioOn?'🔊':'🔈';$('sound').setAttribute('aria-label',audioOn?'Matikan bunyi':'Hidupkan bunyi');sfx.pop()};
 $('again').onclick=()=>{$('overlay').hidden=true;log=[];startRound()};
@@ -852,8 +1034,18 @@ $('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetProgress();startRound()});
 
-window.__geraiDebug=()=>m&&{target:target(),kind:m.kind,items:m.items,mode:m.mode,tier:m.tierIx}; // ujian sahaja
-if(MONEY_DIAGNOSTIC)runMoneyDiagnostic();else{resetProgress();startRound()}
+window.__geraiDebug=()=>m&&{target:target(),kind:m.kind,items:m.items,mode:m.mode,tier:m.tierIx,focusFamily:m.focusContext?.family,focusOperands:m.focusContext?.operands,focusPlainOperands:m.focusContext?.plainOperands,focusBand:m.focusContext?.demandBand}; // ujian sahaja
+async function startGerai(){
+ try{
+  const family=liveFocusFamilyFor(LIVE_FOCUS_ORIGIN,LIVE_FOCUS_MODES);
+  if(family){
+   await loadFocusScript('js/engine/focus-money-diagnostic-v2.js');
+   if(window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[LIVE_FOCUS_ORIGIN]?.includes(family))liveFocus={origin:LIVE_FOCUS_ORIGIN,family,contexts:[],observations:[],complete:false};
+  }
+  resetProgress();startRound();
+ }catch(error){console.warn('Gerai Fokus Wang diagnostic unavailable; ordinary game continues',error);liveFocus=null;resetProgress();startRound()}
+}
+if(MONEY_DIAGNOSTIC)runMoneyDiagnostic();else startGerai();
 })();
 </script>
 </body></html>

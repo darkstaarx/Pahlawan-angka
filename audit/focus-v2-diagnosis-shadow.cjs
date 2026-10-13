@@ -84,4 +84,4 @@ check(!collector.capture({questionKey:'mismatch',skillId:'D6.2.4'},q1),'review s
 collector.close();check(collector.stats().capturedQuestionKeys===0&&collector.stats().closed,'collector erased all in-memory keys');
 let closedError=false;try{collector.evaluate(profile)}catch(_){closedError=true}
 check(closedError,'closed collector cannot evaluate');
-console.log(JSON.stringify({status:'focus_v2_phase_c_shadow_pass',goldenFixtures:fixtures.cases.length,assertions:checks,adapter:'tagged learner-review join and in-memory collector passed',productionRouting:'not connected',masteryMutation:false},null,2));
+console.log(JSON.stringify({status:'focus_v2_phase_c_shadow_pass',goldenFixtures:fixtures.cases.length,assertions:checks,adapter:'tagged learner-review join and in-memory collector passed',productionRouting:'verified by focus-v2-money-contrast-shadow-e2e.cjs',masteryMutation:false},null,2));
