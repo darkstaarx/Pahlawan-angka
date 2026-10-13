@@ -576,7 +576,7 @@ function reportFocusRound(entry){if(!focusRun)return;const detail=entry.q,round=
  demand:detail.tierIx>=2?'application':detail.tierIx===1?'procedure':'concept',difficultyBand:detail.tierIx+1,prompt:detail.q};
  try{window.parent.postMessage({type:'PA_TAPAK_BINA_ROUND',version:1,nonce:focusNonce,grade:focusRun.grade,skillId:focusRun.skillId,round},location.origin)}catch(_){}}
 function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
- $('mode').textContent=FAM_LABEL[q.fam]+' · T'+(q.tierIx+1);$('tint').style.background=['transparent','#fff3d000','#ffcf9a40','#f39a7a44','#6a7ad044'][served%SET];
+ $('mode').textContent='D'+cfg.grade+' · '+FAM_LABEL[q.fam]+' · T'+(q.tierIx+1);$('tint').style.background=['transparent','#fff3d000','#ffcf9a40','#f39a7a44','#6a7ad044'][served%SET];
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||'';$('wiraImg').src=A+'wira-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
  $('check').textContent='Semak';$('check').classList.remove('next');$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
  const v=$('pet');v.className='pet away';petFace('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='pet'}));
