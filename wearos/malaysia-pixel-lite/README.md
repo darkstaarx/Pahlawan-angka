@@ -94,6 +94,12 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 Then, on the emulator, long-press the watch face, swipe to the end, tap **Add**, and
 choose **Malaysia Pixel Lite**.
 
+> **Big mint "⚡100%" clock instead of the face?** That is the Wear OS **charging
+> screen**: emulators always report that they are plugged in, and Wear OS shows that
+> screen on top of any watch face while charging. Simulate battery power with
+> `adb shell dumpsys battery unplug`, and undo it with `adb shell dumpsys battery reset`.
+> The test script does this for you.
+
 ### Automated emulator test with screenshots
 
 With an emulator running:
