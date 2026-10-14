@@ -101,6 +101,7 @@ jobs:
           RUN=$(ls -d test-output/* 2>/dev/null | tail -1)
           mkdir -p "docs/emulator-run/${{ matrix.name }}"
           if [ -n "$RUN" ]; then cp -r "$RUN"/. "docs/emulator-run/${{ matrix.name }}/"; fi
+          python3 -m pip install --quiet pillow && python3 tools/emulator_contact_sheet.py "docs/emulator-run/${{ matrix.name }}" || true
           ls -la "docs/emulator-run/${{ matrix.name }}"
       - uses: actions/upload-artifact@v4
         if: always()

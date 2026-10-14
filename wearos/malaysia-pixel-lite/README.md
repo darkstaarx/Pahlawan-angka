@@ -5,12 +5,14 @@ asset pack (`design/asset-pack/`). It uses Google's **Watch Face Format (WFF) ve
 a resource-only package (no code) that the Wear OS system renders. It needs Wear OS 4
 (API 33) or newer.
 
-Test status and evidence: see [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md).
+Status: the APK builds, and the face is tested on real Wear OS emulators (Wear OS 5
+at 454 px, Wear OS 4 at 384 px). What is verified, and what is not, is in
+[`docs/TEST_REPORT.md`](docs/TEST_REPORT.md).
 
-![Static layout check](docs/evidence/layout_check_interactive.png)
+![Real emulator screenshots](docs/emulator-run/large-round-api34/contact_sheet.png)
 
-*Above: a Pillow render of `watchface.xml` with the widest test strings. It is a layout
-check, not an emulator screenshot. Real emulator screenshots are in `docs/emulator-run/`.*
+*Above: real `adb screencap` screenshots from the Wear OS 5 emulator (454×454), taken in
+CI by `scripts/emulator-test.ps1`.*
 
 ## What the watch face does
 
