@@ -108,6 +108,7 @@ function startFocusChoice(id){
  if(typeof enforceRestuLock==='function'&&enforceRestuLock())return;
  if(window.PAWirayungLive?.tryStartFocus?.(id))return;
  if(window.PATapakBinaLive?.tryStartFocus?.(id))return;
+ if(window.PAFocusMiniGamesLive?.tryStartFocus?.(id))return;
  closeFocusPicker();
  // Keep the existing production battle/count; only lock the selected skill.
  if(typeof openGembok==='function'&&window.PAProductionJourney)openGembok({focusSkill:id});
