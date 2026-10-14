@@ -150,6 +150,10 @@ try {
     Wait-User "Check the emulator shows 'Malaysia Pixel Lite'. If not: long-press the watch face, swipe to the end, tap 'Add', choose Malaysia Pixel Lite. Press Enter to continue"
 
     Invoke-Adb shell settings put system screen_off_timeout 600000 | Out-Null
+    # While the device reports external power, Wear OS shows a full-screen charging clock
+    # on top of the watch face (emulators are always "plugged in"). Simulate battery power
+    # for the whole test; the finally block resets it.
+    Invoke-Adb shell dumpsys battery unplug | Out-Null
     Wake-Watch
 
     # -------------------------------------------------------------- 1. time advances
@@ -179,14 +183,12 @@ try {
     Expect "04_24h_mode.png" "24-hour digits, no AM/PM (if 03/04 look the same, toggle 'Use 24-hour format' in the watch Settings and compare manually)"
 
     # -------------------------------------------------------------- 3. battery
-    Invoke-Adb shell dumpsys battery unplug | Out-Null
     Invoke-Adb shell dumpsys battery set level 37 | Out-Null
     Wake-Watch
     Save-Screenshot "05_battery_37" | Out-Null
     Invoke-Adb shell dumpsys battery set level 82 | Out-Null
     Wake-Watch
     Save-Screenshot "06_battery_82" | Out-Null
-    Invoke-Adb shell dumpsys battery reset | Out-Null
     Expect "05_battery_37.png" "middle frame shows 37%"
     Expect "06_battery_82.png" "middle frame shows 82%"
 
