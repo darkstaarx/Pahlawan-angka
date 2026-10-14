@@ -479,13 +479,14 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
   </div></div>
 </main>
 
+<script src="js/minigame-dev-gate.js?v=1.0.0"></script>
 <script src="js/bengkel-ajaib-router.js"></script>
 <script>
 (()=>{
 'use strict';
 const A='assets/minigames/bengkel-ajaib/';
 const $=id=>document.getElementById(id);
-const devToolsEnabled=new URLSearchParams(location.search).get('pa_dev')==='1'||new URLSearchParams(location.search).get('qa')==='1';
+const devToolsEnabled=window.PAMiniGameDev?.enabled()===true;
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const r50=(a,b)=>rnd(Math.ceil(a/50),Math.floor(b/50))*50;
@@ -713,7 +714,7 @@ function startRound(){q=makeQ();const base=TOOL[q.mode](cfg.grade);tool=q.tool?{
  const sb=q.kind==='build'?(tool.unit==='pemadam'?'Tekan +1 pemadam untuk menyusun.':tool.unit==='cawan'?'Tekan +1 cawan untuk menuang.':SUB.build[q.mode]):SUB[q.kind];
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<3||q.kind!=='build'?sb:'');
  $('wiraImg').src=A+'wira-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
- $('check').textContent='Semak';$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
+ $('check').textContent='Semak';$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
  setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira, tempakan '+q.piece.n+' untuk aku! '+pick(SAYS[q.mode]);$('bubble').classList.remove('hide');sfx(520,.08)},700);
  if(served%SET===0)drawRack(0);renderTrack();buildTool()}
@@ -769,7 +770,7 @@ function tip2(){const u=tool.unit,K=q.kind,m=q.mode;
  return {panjang:'Seret perlahan-lahan dan lihat nombor di hujung tali.',jisim:'Letak pemberat paling besar yang tidak melebihi sasaran dulu, kemudian yang kecil.',isipadu:'Tuang yang besar dulu, kemudian tambah yang kecil sehingga paras betul.'}[m]}
 const CONV={m:'100 cm = 1 m',kg:'1000 g = 1 kg','ℓ':'1000 mL = 1 ℓ'};
 const hintTwo=()=>q.kind==='read'?tip2()+(q.fields.length>1?' Kemudian tukar: '+CONV[q.fields[0].u]+'.':''):(q.kind==='pick'?'':step2(q.a))||tip2();
-$('hint').onclick=()=>{if(solved)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Tanya Wira';sfx(620,.1)};
+$('hint').onclick=()=>{if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';$('hint').disabled=hints>=2;sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
 

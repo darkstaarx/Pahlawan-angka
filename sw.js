@@ -3,6 +3,7 @@ importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-variety-v1`;
 const APP_SHELL=[
   './kedai-kek.html',
+  './js/minigame-dev-gate.js',
   './js/kedai-kek-router.js',
   './bengkel-ajaib.html',
   './js/bengkel-ajaib-router.js',

@@ -402,7 +402,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <div class="wsay hide" id="wsay"><b id="wsayWho">WIRA</b><span id="wsayTxt"></span></div>
     <div class="stamp" id="stamp"></div>
     <div class="burst" id="burst"></div>
-    <button type="button" class="devbtn" id="devBtn" aria-label="Tukar darjah (ujian)">D3 ▾</button>
+    <button type="button" class="devbtn" id="devBtn" hidden aria-label="Tukar darjah (ujian)">D3 ▾</button>
   </section>
 
   <div class="banner" id="banner"><span class="tag" id="mode">BACA JAM</span>
@@ -433,6 +433,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
   </div></div>
 </main>
 
+<script src="js/minigame-dev-gate.js?v=1.0.0"></script>
 <script src="js/menara-jam-router.js"></script>
 <script src="js/engine/focus-time-diagnostic-v1.js"></script>
 <script>
@@ -440,7 +441,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 'use strict';
 const A='assets/minigames/menara-jam/';
 const focusParams=new URLSearchParams(location.search),focusDiagnosticMode=focusParams.get('pa_focus_diagnostic')==='time';
-const devToolsEnabled=focusParams.get('pa_dev')==='1';
+const devToolsEnabled=window.PAMiniGameDev?.enabled()===true;
 const focusOriginSkill=focusParams.get('pa_origin_skill')||'D2.5.3',focusNonce=focusParams.get('pa_nonce')||'';
 const focusContrastPlan=[
  {id:'clock_quarter',mode:'baca',family:'time_clock',tier:{k:'quarter'}},
@@ -563,16 +564,22 @@ const GEN={
 
 /* ---------- bantuan ---------- */
 const HELP={
- baca:{s:q=>'Jarum pendek tunjuk jam. Jarum panjang tunjuk minit: setiap angka = 5 minit.',a:q=>'Jarum panjang di angka '+(mod(q.target,60)/5||12)+' ('+mod(q.target,60)+' minit). Jarum pendek '+(mod(q.target,60)?'selepas':'tepat di')+' angka '+h12(q.target)+'.'},
- tamat:{s:q=>'Mula pada '+(q.widget==='digital'?f24(q.s):f12(q.s))+'. Tambah jam dulu, kemudian minit.',a:q=>(q.widget==='digital'?f24(q.s)+' + '+fDur(q.d)+' = '+f24(q.target):f12(q.s)+' + '+fDur(q.d)+' = '+f12(q.target))+'.'},
- mula:{s:q=>'Kira ke belakang dari '+f12(q.e)+' sebanyak '+fDur(q.d)+'.',a:q=>f12(q.e)+' − '+fDur(q.d)+' = '+f12(q.target)+'.'},
- tempoh:{s:q=>{const r=Math.ceil((q.s+1)/60)*60;return q.e<=r?'Kira minit dari waktu mula hingga waktu tamat. Lihat lengkok biru pada jam.':'Kira dari mula ke jam bulat seterusnya ('+(r-q.s)+' minit), kemudian terus ke waktu tamat. Lihat lengkok biru pada jam.'},
-  a:q=>{const r=Math.ceil((q.s+1)/60)*60;return q.e<=r?'Dari mula hingga tamat: '+fDur(q.target)+'.':'Hingga jam bulat: '+(r-q.s)+' minit. Selebihnya: '+fDur(q.e-r)+'. Jumlah '+fDur(q.target)+'.'}},
- unit:{s:q=>({fact_jm:'Ingat hubungan asas: 1 jam bersamaan 60 minit.',fact_hj:'Ingat hubungan asas: 1 hari bersamaan 24 jam.',jm:'1 jam = 60 minit.',jm2:'1 jam = 60 minit. Darab jam dengan 60, kemudian tambah minit.',hj:'1 hari = 24 jam.',hj2:'1 hari = 24 jam. ½ hari = 12 jam.',mh:'1 minggu = 7 hari.',mj:'Kumpulkan 60 minit menjadi 1 jam.'})[q.u],
-  a:q=>'Jawapan: '+q.ansText+'.'},
- '24jam':{s:q=>'Waktu pagi kekal. Selepas 1 tengah hari, tambah 12 pada jam. Tengah malam bermula dengan 00.',a:q=>fWords(q.target)+' = '+f24(q.target)+'.'},
- zon:{s:q=>q.fl?'Tambah tempoh penerbangan pada waktu KL dulu, kemudian tukar ke zon '+q.z.c+'.':'Mendahului: tambah jam. Di belakang: tolak jam.',
-  a:q=>q.fl?f24(q.s)+' + '+q.fl/60+' jam = '+f24(q.s+q.fl)+' (waktu KL). Tolak '+(-q.z.d)+' jam untuk '+q.z.c+' = '+f24(q.target)+'.':f24(q.s)+(q.z.d>0?' + ':' − ')+Math.abs(q.z.d)+' jam = '+f24(q.target)+'.'}
+ baca:{s:q=>'Jarum pendek tunjuk jam. Jarum panjang tunjuk minit: setiap angka = 5 minit.'},
+ tamat:{s:q=>'Mula pada '+(q.widget==='digital'?f24(q.s):f12(q.s))+'. Tambah jam dulu, kemudian minit.'},
+ mula:{s:q=>'Kira ke belakang dari '+f12(q.e)+' sebanyak '+fDur(q.d)+'.'},
+ tempoh:{s:q=>{const r=Math.ceil((q.s+1)/60)*60;return q.e<=r?'Kira minit dari waktu mula hingga waktu tamat. Lihat lengkok biru pada jam.':'Kira dari mula ke jam bulat seterusnya ('+(r-q.s)+' minit), kemudian terus ke waktu tamat. Lihat lengkok biru pada jam.'}},
+ unit:q=>'Kenal pasti unit yang ditanya. Pecahkan kuantiti kepada unit besar dan unit kecil sebelum menukar.',
+ '24jam':{s:q=>'Waktu pagi kekal. Selepas 1 tengah hari, tambah 12 pada jam. Tengah malam bermula dengan 00.'},
+ zon:{s:q=>q.fl?'Tambah tempoh penerbangan pada waktu KL dulu, kemudian tukar ke zon '+q.z.c+'.':'Mendahului: tambah jam. Di belakang: tolak jam.'}
+};
+const HELP2={
+ baca:q=>'Kira senggatan jarum panjang satu demi satu, kemudian baca kedudukan jarum pendek.',
+ tamat:q=>'Tambah minit dan jam secara berasingan. Jika minit melepasi satu jam, kumpulkan semula sebelum baca jam akhir.',
+ mula:q=>'Tolak minit dahulu. Jika minit tidak cukup, pecahkan satu jam kepada 60 minit, kemudian tolak jam.',
+ tempoh:q=>'Pecahkan perjalanan masa pada tanda jam bulat: kira bahagian pertama, kemudian sambung hingga waktu tamat.',
+ unit:q=>'Tentukan unit jawapan yang diminta. Pecahkan kuantiti ikut unit besar dan unit kecil sebelum menukar.',
+ '24jam':q=>'Kenal pasti pagi atau petang dahulu. Kemudian gunakan peraturan format 24 jam tanpa mengubah minit.',
+ zon:q=>'Laraskan masa mengikut beza zon dan buat operasi tempoh penerbangan sebagai langkah berasingan.'
 };
 
 /* ---------- keadaan ---------- */
@@ -696,7 +703,7 @@ function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
  el('devBtn').textContent='D'+cfg.grade+' ▾';el('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);el('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a77','#6a7ad055'][served%SET];
  el('question').textContent=plain(q.parts)+(q.ask&&!q.noTime?' '+q.ask:'');el('subtitle').textContent=served<2?SUB[q.widget](q):'';
  el('wiraImg').src=A+'wira-idle.webp';el('wira').classList.remove('cheer');el('stamp').className='stamp';el('stamp').innerHTML='';
- el('check').textContent='Semak';el('check').disabled=false;el('hint').textContent='Tanya Wira';el('bubble').classList.add('hide');
+ el('check').textContent='Semak';el('check').disabled=false;el('hint').disabled=false;el('hint').textContent='Tanya Wira';el('bubble').classList.add('hide');
  el('dest').textContent=pick(DEST);const bs=el('bstat');bs.textContent='TIBA';bs.className='bstat';
  const v=el('visitor');v.className='customer away';pet('idle');el('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer arrive';sfx(330,.3,'triangle')}));
  setTimeout(()=>{if(!solved)el('bstat').textContent='MENUNGGU'},1300);
@@ -736,7 +743,7 @@ function towerDone(){const got=setLog.reduce((a,l)=>a+l.st,0);
  el('complete').hidden=false;el('again').focus()}
 el('again').onclick=()=>{if(focusDiagnosticMode&&served>=focusContrastPlan.length){if(focusNonce&&window.parent!==window)window.parent.postMessage({type:'PA_FOCUS_TIME_CLOSE',version:1,nonce:focusNonce},location.origin);return}el('complete').hidden=true;towers++;setLog=[];startRound()};
 el('check').onclick=check;
-el('hint').onclick=()=>{if(solved)return;hints++;hint2++;msg(hint2===1?HELP[q.mode].s(q):HELP[q.mode].a(q),'',6500);el('hint').textContent=hint2===1?'Lagi bantuan':'Tanya Wira';sfx(610,.12)};
+el('hint').onclick=()=>{if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?HELP[q.mode].s(q):HELP2[q.mode](q),'',6500);el('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';el('hint').disabled=hints>=2;sfx(610,.12)};
 el('sound').onclick=()=>{soundOn=!soundOn;el('sound').textContent=soundOn?'🔊':'🔈';el('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(810,.1)};
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];towers=1}
 

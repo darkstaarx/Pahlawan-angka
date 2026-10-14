@@ -322,6 +322,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
   </div></div>
 </main>
 
+<script src="js/minigame-dev-gate.js?v=1.0.0"></script>
 <script>/* Gerai Wirayung — router Kemahiran Fokus → mini-game wang.
    Membaca encounter learnerReviewV1 yang SAMA digunakan oleh focusPracticeSummary()
    dan memutuskan sama ada skill wang yang lemah sesuai dilatih di gerai.
@@ -715,6 +716,7 @@ function drawOrder(){$('who').textContent=m.who;$('say').textContent=m.say;
 
 /* ---------- flow ---------- */
 function startRound(){roundStartedAt=Date.now();m=makeOrder();const t=times[Math.floor(served/2)%4];step=m.mode==='bahagi'?2:1;picked=[];mat=[];splitPiles=m.mode==='bahagi'?Array.from({length:m.people},()=>[]):[];activeSplit=0;sign=null;misses=0;hints=0;hint2=0;busy=false;
+ $('devBtn').hidden=!(window.PAMiniGameDev?.enabled()===true);$('hint').disabled=false;$('hint').textContent='Tanya Wira';
  $('dial').style.setProperty('--p',t.p);$('dayLbl').textContent='Ke-'+(served+1);$('timeLbl').textContent=t.t;$('dial').title=t.t;$('tint').style.background=t.tint;
  $('devBtn').textContent='D'+cfg.grade+' ▾';
  $('stationShelf').hidden=m.mode==='bahagi';$('stationCount').hidden=m.mode!=='bahagi';$('go').disabled=false;
@@ -1038,13 +1040,14 @@ async function runMoneyDiagnostic(){
 $('go').onclick=go;
 $('clear').onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSplit]=[];else mat=[];sfx.pop();drawMat()};
 document.querySelectorAll('#signRow button').forEach(b=>b.onclick=()=>{if(busy)return;sign=b.dataset.sign;sfx.pop();drawSign()});
-$('hint').onclick=()=>{if(busy)return;hints++;
- if(liveFocus){wira(step===1?'Perhatikan barang dan wang yang digunakan. Cuba kira sendiri dahulu.':'Cuba fikir sendiri dahulu. Jawapan tidak akan diberi semasa semakan.',4200)}
- else if(step===1){wira('Cari '+m.items.map(name).join(' dan ')+'. Barang itu sedang bercahaya.',4200);document.querySelectorAll('.item').forEach(b=>b.classList.toggle('glow',m.items.includes(b.dataset.id)));setTimeout(()=>document.querySelectorAll('.item').forEach(b=>b.classList.remove('glow')),2600)}
- else{hint2++;wira(hint2===1?M().strategy(m):M().answer(m),6000)}tone(740,.1)};
+$('hint').onclick=()=>{if(busy||hints>=2)return;hints++;hint2++;
+ if(step===1&&hints===1){wira('Cari '+m.items.map(name).join(' dan ')+' dalam pesanan.',4200);document.querySelectorAll('.item').forEach(b=>b.classList.toggle('glow',m.items.includes(b.dataset.id)));setTimeout(()=>document.querySelectorAll('.item').forEach(b=>b.classList.remove('glow')),2600)}
+ else if(hints===1){wira(val(M().text,m),5200)}
+ else{wira(val(M().strategy,m),6000)}
+ $('hint').disabled=hints>=2;$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';tone(740,.1)};
 $('sound').onclick=()=>{audioOn=!audioOn;$('sound').textContent=audioOn?'🔊':'🔈';$('sound').setAttribute('aria-label',audioOn?'Matikan bunyi':'Hidupkan bunyi');sfx.pop()};
 $('again').onclick=()=>{$('overlay').hidden=true;log=[];startRound()};
-$('devBtn').onclick=()=>{devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+$('devBtn').onclick=()=>{if(!window.PAMiniGameDev?.enabled?.())return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
 $('devClose').onclick=()=>{$('dev').hidden=true};
 $('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));

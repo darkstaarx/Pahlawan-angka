@@ -406,6 +406,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
   </div></div>
 </main>
 
+<script src="js/minigame-dev-gate.js?v=1.0.0"></script>
 <script src="js/kedai-kek-router.js"></script>
 <script>
 (()=>{
@@ -643,7 +644,7 @@ Object.values(GEN).forEach(g=>Object.values(g).forEach(list=>list.forEach(e=>{co
 /* ---------- enjin Kedai Kek ---------- */
 const A='assets/minigames/kedai-kek/';
 const $=id=>document.getElementById(id);
-const devToolsEnabled=new URLSearchParams(location.search).get('pa_dev')==='1'||new URLSearchParams(location.search).get('qa')==='1';
+const devToolsEnabled=window.PAMiniGameDev?.enabled()===true;
 const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
 const FLS=[{n:'coklat',c:'#9a5634',k:'#5e2f17'},{n:'pandan',c:'#8fd16a',k:'#4f8f35'},{n:'vanila',c:'#f6d28b',k:'#c9963f'},{n:'keladi',c:'#c3a3ec',k:'#8059b8'},{n:'oren',c:'#ffb760',k:'#d0782a'}];
 const PINK='#ff8fb1',PINK_K='#d24f7c',CHOC='#7a4426';
@@ -817,7 +818,7 @@ function startRound(){if(served%SET===0){flOrder=shuffle(FLS);drawShelf(0)}
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
  $('question').innerHTML=T(q.q);$('subtitle').innerHTML=T(q.sub||(served<2?(q.kind==='pad'&&q.form&&(q.form.type==='int'||q.form.type==='dec')?'Tekan nombor untuk isi jawapan.':SUB[q.kind]):''));
  $('wiraImg').src=A+'wira-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';$('stand').className='stand';$('stand').innerHTML=cakeIcon(q.fl);
- $('check').textContent='Semak';$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
+ $('check').textContent='Semak';$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
  setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira, saya nak kek '+q.fl.n+'! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildPanel()}
@@ -840,7 +841,7 @@ function hintTwo(){const K=q.kind;
  if(K==='shade')return q.cut?'Tekan + Potong sehingga bilangan bahagian sama dengan penyebut. Kemudian sentuh kepingan untuk letak krim.':'Sentuh kepingan satu per satu untuk letak krim. Kira sambil sentuh.';
  if(K==='tray')return 'Setiap pinggan ialah satu bahagian sama banyak. Ambil pinggan mengikut pengangka.';
  const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
-$('hint').onclick=()=>{if(solved)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Tanya Wira';sfx(620,.1)};
+$('hint').onclick=()=>{if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';$('hint').disabled=hints>=2;sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if(q.kind==='pad'&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(q.kind==='pad'&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(q.kind==='pad'&&e.key==='Tab'){key('⇥');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}

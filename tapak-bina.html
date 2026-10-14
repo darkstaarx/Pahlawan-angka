@@ -578,7 +578,7 @@ function reportFocusRound(entry){if(!focusRun)return;const detail=entry.q,round=
 function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
  $('mode').textContent='D'+cfg.grade+' · '+FAM_LABEL[q.fam]+' · T'+(q.tierIx+1);$('tint').style.background=['transparent','#fff3d000','#ffcf9a40','#f39a7a44','#6a7ad044'][served%SET];
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||'';$('wiraImg').src=A+'wira-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
- $('check').textContent='Semak';$('check').classList.remove('next');$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
+ $('check').textContent='Semak';$('check').classList.remove('next');$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
  const v=$('pet');v.className='pet away';petFace('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='pet'}));
  setTimeout(()=>{$('who').textContent=q.who;say(SAYS[q.fam])},650);
  if(served%SET===0)drawCandi(0);renderTrack();render()}
@@ -604,7 +604,7 @@ function setDone(){const got=setLog.reduce((a,l)=>a+l.st,0);$('doneTitle').textC
  $('faces').innerHTML=setLog.map(l=>'<div><img src="'+A+l.q.pet+'-happy.webp" alt="'+l.q.who+'">'+'★'.repeat(l.st)+'</div>').join('');$('complete').hidden=false;$('again').focus()}
 $('again').onclick=()=>{$('complete').hidden=true;$('candi').classList.remove('done');sets++;setLog=[];startRound()};
 $('check').onclick=check;
-$('hint').onclick=()=>{if(solved)return;hints++;hint2++;msg(hintForQuestion(q,hint2),'',6500);$('hint').textContent=hint2===1?'Petunjuk lagi':'Baca petunjuk semula';sfx(620,.1)};
+$('hint').onclick=()=>{if(solved||hints>=2)return;hints++;hint2++;msg(hintForQuestion(q,hint2),'',6500);$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';$('hint').disabled=hints>=2;sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1;lastArch=''}
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
