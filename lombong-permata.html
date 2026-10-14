@@ -1,0 +1,730 @@
+<title>Lombong Permata Wira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800;900&display=swap">
+<style>
+/* Layout: one cosy phone-width stall — market scene on top, cooking-game station below that swaps per step (Ambil → Kira → Serah). Single warm daytime look, both host themes. */
+:root{
+  --sky:#2b4a66;         /* page ground behind the stall */
+  --wood:#9a5f34;        /* stall timber */
+  --wood-dk:#5e3519;
+  --wood-lt:#d79a5c;
+  --paper:#fff6e0;       /* parchment panels */
+  --paper-dk:#f1dcae;
+  --ink:#4a2a16;         /* text on parchment */
+  --ink-soft:#8a6142;
+  --leaf:#4f9a4a;        /* go / correct */
+  --leaf-dk:#2f6a2e;
+  --berry:#d2536b;       /* gentle wrong */
+  --gold:#ffc94a;        /* coins, stars */
+  --gold-dk:#b9801c;
+  --ice:#7fd6f0;         /* Wira accent */
+  --cream:#fffdf6;
+  --f-display:"Baloo 2","Trebuchet MS",Verdana,sans-serif;
+  --f-body:"Nunito","Trebuchet MS",Verdana,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse at 50% 0%,#3d6584,var(--sky) 70%);font-family:var(--f-body);color:var(--ink);-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
+.pa-game{position:relative;width:100%;max-width:470px;height:100%;max-height:940px;margin:0 auto;display:flex;flex-direction:column;background:linear-gradient(180deg,#f7e4bd,#ecd09b);overflow:hidden;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 0 40px #0b1a2a88}
+.pa-game>*{flex:none}
+
+/* ---------- HUD: wooden plank ---------- */
+.hud{position:relative;z-index:6;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:7px 10px 8px;background:repeating-linear-gradient(90deg,transparent 0 118px,#00000018 118px 120px),linear-gradient(180deg,var(--wood-lt),var(--wood) 55%,#82491f);border-bottom:4px solid var(--wood-dk);box-shadow:0 3px 0 #0003}
+.clock{display:flex;align-items:center;gap:7px;background:var(--paper);border:2px solid var(--wood-dk);border-radius:14px;padding:3px 9px 3px 4px;box-shadow:inset 0 -3px 0 var(--paper-dk)}
+.dial{width:30px;height:30px;border-radius:50%;background:conic-gradient(var(--gold) var(--p,25%),#e9cf98 0);display:grid;place-items:center;border:2px solid var(--gold-dk)}
+.dial::after{content:"";width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,#fff6b8,#ffb52e);box-shadow:0 0 6px #ffd35a}
+.clock b{display:block;font:800 13px/1 var(--f-display);color:var(--ink)}
+.clock small{display:block;font:800 10px/1.2 var(--f-body);color:var(--ink-soft)}
+.title{text-align:center;min-width:0}
+.title small{display:block;font:900 8px/1 var(--f-body);letter-spacing:1.1px;white-space:nowrap;color:#ffe9bf;opacity:.9}
+.title b{display:block;font:800 clamp(15px,4.4vw,19px)/1.05 var(--f-display);overflow:hidden;text-overflow:ellipsis;color:#fff4d1;text-shadow:0 2px 0 var(--wood-dk),0 0 1px var(--wood-dk);white-space:nowrap}
+.hud-right{display:flex;align-items:center;gap:6px}
+.till{display:flex;align-items:center;gap:5px;background:var(--paper);border:2px solid var(--wood-dk);border-radius:14px;padding:4px 8px 4px 5px;font:800 13px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums;box-shadow:inset 0 -3px 0 var(--paper-dk)}
+.till img{width:22px;height:auto;display:block;margin:-3px 0}
+.till.bump{animation:bump .5s}
+.icon-btn{width:36px;height:36px;border-radius:12px;border:2px solid var(--wood-dk);background:var(--paper);font-size:16px;cursor:pointer;box-shadow:inset 0 -3px 0 var(--paper-dk)}
+
+/* ---------- Scene ---------- */
+.scene{position:relative;flex:1 1 auto!important;min-height:140px;container-type:size;overflow:hidden;background:#cbb49a url("assets/minigames/kedai-ajaib/pasar-bg.webp") 58% 62%/cover no-repeat}
+.scene::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,#0002);pointer-events:none}
+.tint{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;transition:background 1.2s,opacity 1.2s}
+.awning{position:absolute;top:0;left:-6px;right:-6px;height:46px;z-index:4;background:repeating-linear-gradient(90deg,#e8604f 0 34px,#fff1d6 34px 68px);-webkit-mask:radial-gradient(circle 17px at 17px 29px,#000 98%,transparent) 0 0/34px 46px repeat-x,linear-gradient(#000,#000) 0 0/100% 29px no-repeat;mask:radial-gradient(circle 17px at 17px 29px,#000 98%,transparent) 0 0/34px 46px repeat-x,linear-gradient(#000,#000) 0 0/100% 29px no-repeat;filter:drop-shadow(0 4px 0 #0003)}
+.awning-rod{position:absolute;top:0;left:0;right:0;height:9px;z-index:5;background:linear-gradient(180deg,var(--wood-lt),var(--wood-dk))}
+.sign{position:absolute;z-index:5;top:30px;left:12px;padding:4px 10px 5px;background:linear-gradient(180deg,#a9673a,#7a4422);border:2px solid #f6d48d;border-radius:8px;transform:rotate(-4deg);box-shadow:0 3px 0 #0004}
+.sign b{font:800 13px/1 var(--f-display);color:#ffefb8;letter-spacing:.5px}
+.sign::before,.sign::after{content:"";position:absolute;top:-30px;width:2px;height:30px;background:#5e3519}
+.sign::before{left:16px}.sign::after{right:16px}
+
+.wira{position:absolute;z-index:2;left:4px;bottom:44px;width:clamp(92px,50cqh,136px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
+.wira img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 3px #0005)}
+.wira.cheer{animation:hop .55s ease 2}
+.counter{position:absolute;z-index:3;left:0;bottom:0;width:62%;height:56px;background:repeating-linear-gradient(90deg,transparent 0 62px,#0000001f 62px 64px),linear-gradient(180deg,#e2a466 0 10px,var(--wood) 10px,#7b4520);border-top:4px solid #f0bf82;border-right:4px solid var(--wood-dk);border-radius:0 10px 0 0;box-shadow:inset 0 10px 0 #ffffff22,0 -2px 0 #0002}
+.counter::after{content:"";position:absolute;left:10px;right:14px;top:22px;height:2px;background:#0000002a;box-shadow:0 18px #0000002a}
+.basket{position:absolute;z-index:4;left:clamp(98px,48cqh,128px);bottom:32px;width:80px;height:54px}
+.basket .bag{position:absolute;inset:auto 0 0 0;height:44px;border-radius:5px 5px 10px 10px;background:linear-gradient(180deg,#e7c287,#c99a5a);border:2px solid #8a5c2b;box-shadow:inset 0 6px 0 #ffffff33}
+.basket .bag::before{content:"";position:absolute;left:8px;right:8px;top:-1px;height:5px;background:repeating-linear-gradient(90deg,#8a5c2b 0 5px,transparent 5px 9px);opacity:.5}
+.basket .in{position:absolute;z-index:1;left:4px;right:4px;bottom:26px;display:flex;justify-content:center;align-items:flex-end;gap:0}
+.basket .in svg{width:34px;height:34px;margin:0 -5px;filter:drop-shadow(0 2px 1px #0004);animation:plop .35s ease}
+.basket.wiggle{animation:wiggle .4s}
+
+.customer{position:absolute;z-index:3;right:-6px;bottom:4px;width:clamp(118px,60cqh,170px);transition:transform .9s cubic-bezier(.3,1.2,.5,1),opacity .4s}
+.customer img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 4px #0004);animation:bob 1.9s ease-in-out infinite}
+.customer.away{transform:translateX(120%);opacity:0}
+.customer.leave{transform:translateX(130%) translateY(-6px);opacity:0;transition:transform .8s ease-in,opacity .8s}
+.customer.sadshake img{animation:shake .45s}
+
+.bubble{position:absolute;z-index:6;right:10px;top:40px;max-width:56%;background:var(--cream);border:3px solid var(--ink);border-radius:18px;padding:7px 11px 8px;box-shadow:0 4px 0 #0003;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .25s;transform-origin:80% 100%}
+.bubble.dim{opacity:.12}
+.bubble.hide{transform:scale(.4);opacity:0}
+.bubble::after{content:"";position:absolute;right:46px;bottom:-14px;width:18px;height:18px;background:var(--cream);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(45deg) skew(8deg,8deg);border-radius:0 0 5px 0}
+.bubble .who{font:900 9.5px/1 var(--f-body);letter-spacing:1px;color:var(--berry);text-transform:uppercase}
+.bubble .say{font:800 12.5px/1.22 var(--f-body);margin-top:3px;text-wrap:balance}
+.bubble .order{display:flex;gap:4px;margin-top:5px}
+.bubble .order span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#fbeacb;border:2px dashed #d7b47e}
+.bubble .order svg{width:27px;height:27px}
+.bubble .cash{display:inline-flex;margin-top:5px}
+
+.wsay{position:absolute;z-index:7;left:8px;top:58px;max-width:44%;background:#eaf9ff;border:3px solid #24577c;border-radius:16px;padding:7px 10px;font:800 12px/1.3 var(--f-body);color:#173a57;box-shadow:0 4px 0 #0003;transform-origin:20% 100%;transition:transform .3s cubic-bezier(.3,1.5,.5,1),opacity .2s}
+.wsay.hide{transform:scale(.4);opacity:0;pointer-events:none}
+.wsay b{display:block;font:900 9px/1 var(--f-body);letter-spacing:1px;color:#2f7bb0;margin-bottom:3px}
+.wsay::after{content:"";position:absolute;left:34px;bottom:-12px;width:14px;height:14px;background:#eaf9ff;border-right:3px solid #24577c;border-bottom:3px solid #24577c;transform:rotate(45deg)}
+
+.stamp{position:absolute;z-index:9;left:50%;top:52%;transform:translate(-50%,-50%) rotate(-10deg) scale(2.4);opacity:0;pointer-events:none;text-align:center;font:800 44px/0.9 var(--f-display);letter-spacing:1px;color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink)}
+.stamp small{display:block;font:900 14px/1.2 var(--f-body);-webkit-text-stroke:0;text-shadow:none;color:var(--ink);background:var(--gold);border:3px solid var(--ink);border-radius:20px;padding:3px 12px;margin:8px auto 0;width:max-content;letter-spacing:.5px}
+.stamp.show{animation:stampIn .55s cubic-bezier(.2,1.6,.4,1) forwards}
+.stamp.hebat{color:#ffd23f}.stamp.bagus{color:#7fe08a}.stamp.ok{color:#8fd3ff}
+.burst{position:absolute;inset:0;z-index:8;pointer-events:none}
+.burst i{position:absolute;left:50%;top:44%;width:10px;height:10px;border-radius:2px;animation:burst 1s ease-out forwards}
+
+/* ---------- Station ---------- */
+
+.banner{margin:8px 12px 0;position:relative;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:6px 12px 7px 7px;background:var(--berry);color:#fff;border-radius:12px;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.banner>div{min-width:0}
+.disc{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--cream);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:3px 7px 4px}
+.disc b{font:800 9px/1 var(--f-body)!important;letter-spacing:.8px;color:var(--ink-soft)}
+.disc .dots{display:flex;gap:3px}
+.disc .dots i{width:9px;height:9px;border-radius:50%;background:#e6c58c;border:1.5px solid var(--ink)}
+.disc .dots i.done{background:var(--leaf)}
+.disc .dots i.now{background:var(--gold)}
+.disc em{font:800 13px/1 var(--f-display);font-style:normal}
+.banner b{display:block;font:800 16px/1.05 var(--f-display);text-wrap:balance}
+.banner>div>span{display:block;font:700 11.5px/1.3 var(--f-body);opacity:.95;margin-top:2px}
+.banner .tag{position:absolute;right:10px;top:-11px;background:var(--gold);color:var(--ink);border:2px solid var(--ink);border-radius:20px;padding:2px 8px;font:900 9.5px/1.2 var(--f-body);letter-spacing:.8px}
+
+.panel{margin:8px 12px 0;padding:8px 10px 10px;min-height:224px;background:var(--paper);border:3px solid var(--wood-dk);border-radius:16px;box-shadow:inset 0 -5px 0 var(--paper-dk),0 4px 0 #0002}
+.panel-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.panel-h b{font:800 15px/1 var(--f-display)}
+.panel-h small{font:800 10.5px/1.2 var(--f-body);color:var(--ink-soft)}
+
+/* shelf */
+.shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:84px;gap:6px 6px;margin:0 -4px;padding:0 4px;background:repeating-linear-gradient(180deg,transparent 0 40px,var(--wood-lt) 40px 43px,var(--wood) 43px 47px,var(--wood-dk) 47px 49px,transparent 49px 90px)}
+.item{position:relative;z-index:1;appearance:none;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:0;touch-action:manipulation}
+.item .art{width:46px;height:42px;display:grid;place-items:end center;transition:transform .15s}
+.item .art svg{width:42px;height:42px;filter:drop-shadow(0 3px 1px #0003)}
+.item:active .art{transform:scale(.9)}
+.item .tagp{position:relative;font:800 11px/1 var(--f-body);color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:5px 12px 12px 5px;padding:3px 7px 3px 9px;font-variant-numeric:tabular-nums}
+.item .tagp::before{content:"";position:absolute;left:3px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--ink)}
+.item .nm{font:800 10.5px/1.1 var(--f-body);color:var(--ink-soft);text-align:center;white-space:nowrap}
+.item.picked .art{transform:translateY(-4px)}
+.item.picked .art::after{content:"✓";position:absolute;margin:-34px 0 0 38px;width:20px;height:20px;border-radius:50%;background:var(--leaf);color:#fff;font:900 12px/20px var(--f-body);text-align:center;border:2px solid #fff}
+.item.glow .art{animation:glow 1s ease-in-out infinite}
+
+/* receipt + mat */
+.receipt{background:#fff;border-radius:6px;padding:5px 9px 6px;font:700 12px/1.45 var(--f-body);color:var(--ink);border:2px dashed #d9c39a;font-variant-numeric:tabular-nums;position:relative}
+.receipt .row{display:flex;justify-content:space-between;gap:8px}
+.receipt .row svg{width:16px;height:16px;vertical-align:-3px;margin-right:3px}
+.receipt .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));column-gap:14px}
+.receipt .sumline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;border-top:2px dashed #d9c39a;margin-top:3px;padding-top:3px;font-weight:900}
+.receipt .sum{border-top:2px dashed #d9c39a;margin-top:4px;padding-top:4px;font-weight:900}
+.receipt .q{display:inline-block;min-width:44px;text-align:center;background:#fbeacb;border-radius:6px;color:var(--berry)}
+.receipt .paid{color:var(--leaf-dk)}
+.mat{margin-top:7px;min-height:52px;border-radius:12px;background:repeating-linear-gradient(45deg,#3f7d4a 0 6px,#45864f 6px 12px);border:3px solid #2a5a33;box-shadow:inset 0 3px 6px #0004;padding:8px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;position:relative}
+.mat-empty{position:absolute;inset:0;display:grid;place-items:center;color:#cfe8cf;font:800 12px/1.3 var(--f-body);text-align:center;padding:0 20px;pointer-events:none}
+.mat-total{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font:800 12px/1 var(--f-body);color:var(--ink-soft)}
+.mat-total b{font:800 18px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.mat-total button{background:none;border:0;font:800 11.5px/1 var(--f-body);color:var(--ink-soft);text-decoration:underline;cursor:pointer;padding:6px 2px}
+
+.purse{display:flex;justify-content:space-between;align-items:flex-end;gap:4px;margin-top:4px;padding:7px 6px 5px;background:linear-gradient(180deg,#8b5530,#6d3e1f);border-radius:14px;border:3px solid var(--wood-dk);box-shadow:inset 0 4px 0 #ffffff1c}
+.money{appearance:none;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;touch-action:manipulation;flex:1;min-width:0}
+.money small{font:800 10px/1 var(--f-body);color:#ffe7bd;white-space:nowrap}
+.mat .tok{appearance:none;border:0;background:none;padding:0;cursor:pointer;animation:drop .3s cubic-bezier(.3,1.6,.5,1)}
+.cash{display:block;height:auto;max-width:none;filter:drop-shadow(0 2px 1px #0006);transition:transform .1s}
+.money:active .cash{transform:translateY(2px) scale(.94)}
+.cash.c10{width:36px}.cash.c20{width:39px}.cash.c50{width:42px}.cash.n{width:60px}
+.mat .tok .cash.c10{width:30px}.mat .tok .cash.c20{width:33px}.mat .tok .cash.c50{width:36px}.mat .tok .cash.n{width:52px}
+.bubble .order .paid-note{width:auto;padding:0 3px;border-style:solid;border-color:#9fca8e;background:#e6f2d4}
+.bubble .order .paid-note img{width:52px;height:auto;display:block}
+.mat{gap:4px}
+
+.actions{display:flex;gap:9px;margin:9px 12px 0}
+.btn{min-height:48px;border-radius:14px;border:3px solid var(--ink);font:800 16px/1 var(--f-display);cursor:pointer;touch-action:manipulation;box-shadow:0 5px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn.hint{width:34%;background:#eaf9ff;color:#173a57}
+.btn.go{flex:1;background:linear-gradient(180deg,#7ccd6a,var(--leaf));color:#fff;text-shadow:0 2px 0 var(--leaf-dk)}
+.btn.go[disabled]{filter:grayscale(.6) brightness(1.05);opacity:.7;cursor:default}
+
+.devbtn{position:absolute;z-index:7;left:8px;bottom:6px;font:900 11px/1 var(--f-body);color:var(--ink);background:#fff8;border:2px dashed var(--ink);border-radius:10px;padding:5px 8px;cursor:pointer}
+.qtyb{position:absolute;right:-6px;bottom:-6px;background:var(--berry);color:#fff;border:2px solid #fff;border-radius:10px;font:900 10px/1 var(--f-body);padding:2px 4px}
+.bubble .order span{position:relative}
+.basket .in{position:absolute}.basket .qtyb{right:-4px;bottom:-14px;font-size:11px}
+.bubble .order .coupon{width:auto;padding:0 7px;background:#ffe27a;border:2px dashed var(--ink);font:800 15px/1 var(--f-display);color:var(--berry)}
+.receipt .row.dsc{color:var(--berry)}.receipt .row.cost{color:var(--ink-soft)}
+.receipt .items.one{grid-template-columns:1fr}
+.signrow{display:flex;gap:6px;margin:-3px 0 -2px auto}
+.signrow button{min-height:30px;padding:0 10px;border-radius:9px;border:2px solid var(--ink);background:var(--cream);font:800 13px/1 var(--f-display);cursor:pointer;color:var(--ink-soft)}
+.signrow button[data-sign=untung].on{background:var(--leaf);color:#fff;box-shadow:inset 0 -3px 0 var(--leaf-dk)}
+.signrow button[data-sign=rugi].on{background:var(--berry);color:#fff;box-shadow:inset 0 -3px 0 #8f2f43}
+.overlay.dev{z-index:40;align-items:flex-end;padding:0}
+.devsheet{width:100%;background:var(--cream);border-top:4px solid var(--ink);border-radius:18px 18px 0 0;padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:7px;max-height:92%;overflow:auto}
+.devhead{display:flex;justify-content:space-between;align-items:center;font:900 9.5px/1 var(--f-body);letter-spacing:1px;color:var(--berry)}
+.devhead button{border:0;background:none;font-size:18px;cursor:pointer;color:var(--ink)}
+.devsheet>b{font:800 18px/1 var(--f-display)}
+.devsheet>small{font:900 10px/1 var(--f-body);letter-spacing:.8px;color:var(--ink-soft);text-transform:uppercase;margin-top:4px}
+.devrow{display:flex;flex-wrap:wrap;gap:6px}
+.devrow button{flex:1 1 auto;min-height:36px;border-radius:10px;border:2px solid #d7b47e;background:#fbeacb;font:800 13px/1 var(--f-body);cursor:pointer;padding:0 10px;color:var(--ink)}
+.devrow button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.devrow.sims button{font-size:11.5px;flex:1 1 45%}
+.devfoot{display:flex;gap:8px;align-items:center}.devfoot code{flex:1;font:700 12px/1.2 ui-monospace,monospace;color:var(--ink-soft);overflow-wrap:anywhere}.devfoot .btn{min-height:40px;padding:0 18px;font-size:15px}
+.simout{margin:0;font:700 12px/1.4 var(--f-body);color:var(--ink);min-height:1.4em}
+#simGo{min-height:42px;font-size:15px}
+.hearts{display:flex;gap:2px;font-size:13px;letter-spacing:-1px}
+
+/* ---------- Ledger (end of day) ---------- */
+.overlay{position:absolute;inset:0;z-index:30;background:#2a1a0ecc;display:flex;align-items:center;justify-content:center;padding:50px 14px 16px;overflow:auto}
+.ledger{width:100%;background:var(--paper);border:4px solid var(--wood-dk);border-radius:18px;padding:18px 16px 16px;box-shadow:inset 0 -6px 0 var(--paper-dk),0 14px 40px #0008;text-align:center;animation:rise .5s cubic-bezier(.3,1.4,.5,1)}
+.ledger .sun{width:64px;height:64px;margin:-50px auto 4px;border-radius:50%;background:radial-gradient(circle,#ffe58a,#ff9a3d 70%);border:4px solid var(--wood-dk);box-shadow:0 0 0 6px #ffcf7a66}
+.ledger h2{margin:0;font:800 26px/1 var(--f-display);text-wrap:balance}
+.ledger p{margin:6px 0 12px;font:700 12.5px/1.45 var(--f-body);color:var(--ink-soft)}
+.lines{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;border-top:2px dashed #d9c39a;border-bottom:2px dashed #d9c39a;padding:10px 0}
+.tile{display:flex;flex-direction:column;align-items:center;gap:2px;background:#fbeacb;border-radius:12px;padding:6px 2px 4px}
+.tile img{width:44px;height:44px;object-fit:contain}
+.tile .st{font-size:12px;color:var(--gold-dk);letter-spacing:-1px;white-space:nowrap}
+.tile small{font:800 9.5px/1.1 var(--f-body);color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.line{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;padding:7px 2px;border-bottom:2px dashed #d9c39a;font-variant-numeric:tabular-nums}
+.line img{width:42px;height:42px;object-fit:contain}
+.line b{display:block;font:800 13px/1.1 var(--f-display)}
+.line small{display:block;font:700 11px/1.3 var(--f-body);color:var(--ink-soft)}
+.line .st{font-size:15px;color:var(--gold-dk);letter-spacing:-1px;white-space:nowrap}
+.tot{display:flex;justify-content:space-between;gap:10px;margin:12px 2px 14px;font:800 15px/1.2 var(--f-display)}
+.tot span:last-child{font-variant-numeric:tabular-nums}
+.ledger .btn{width:100%}
+
+@keyframes breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.025) translateY(-1px)}}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg)}70%{transform:rotate(5deg)}}
+@keyframes plop{from{transform:translateY(-20px) scale(.6)}to{transform:none}}
+@keyframes drop{from{transform:translateY(-14px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+@keyframes bump{40%{transform:scale(1.18)}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 0 #ffd23f)}50%{filter:drop-shadow(0 0 10px #ffd23f) drop-shadow(0 0 4px #fff)}}
+@keyframes stampIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(2.4)}60%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(1)}}
+@keyframes burst{from{transform:translate(0,0) rotate(0);opacity:1}to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
+@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:380px){.clock>div{display:none}.clock{padding:3px}.icon-btn{width:32px}.cash.n{width:52px}.cash.c50{width:38px}.till{font-size:12px}}
+@media (max-height:700px){.purse small{display:none}.mat{min-height:44px}.panel{min-height:0}}
+@media (max-height:640px){.scene{min-height:126px}.panel{min-height:0;padding-top:6px}.panel-h{margin-bottom:3px}.panel-h small{display:none}.banner>div>span{display:none}.btn{min-height:44px}.mat{min-height:40px;padding:5px}.purse{padding-top:5px}.purse small{display:none}.actions{margin-top:7px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.power{width:32px;height:32px;border-radius:50%;background:conic-gradient(#53c5b6 var(--p,0%),#e9cf98 0);display:grid;place-items:center;border:2px solid #2c877e;transition:background .5s}
+.power::after{content:"✦";width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;background:radial-gradient(#4d678c,#1c2b53)}
+.power.lit{box-shadow:0 0 12px #ffe777}
+.till img{width:20px;margin:-2px 0}
+.bubble .say{font-size:12.5px}
+.banner>div>b{font-size:14.5px;line-height:1.22}
+.scene{min-height:150px!important}
+.disc .dots i{width:7px;height:7px}
+.wsay.good{background:#e6f2d4;border-color:var(--leaf-dk);color:#1f4d1f}.wsay.good::after{background:#e6f2d4;border-color:var(--leaf-dk)}
+.wsay.bad{background:#fde3e6;border-color:#8f2f43;color:#5a1a28}.wsay.bad::after{background:#fde3e6;border-color:#8f2f43}
+.wsay.good b{color:var(--leaf-dk)}.wsay.bad b{color:var(--berry)}
+.panel.set{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:0;padding:6px 10px 8px}
+.inst{width:100%;display:flex;flex-direction:column;align-items:center;gap:5px}
+.readout{display:flex;align-items:baseline;justify-content:center;gap:8px;font:900 10px/1 var(--f-body);color:var(--ink-soft);letter-spacing:.5px}
+.readout b{font:800 22px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.tiles{display:flex;gap:6px;margin:8px 12px 0}
+.tl{flex:1;min-height:42px;border-radius:12px;border:2px solid var(--ink);background:var(--cream);font:800 14px/1 var(--f-display);color:var(--ink);box-shadow:0 3px 0 var(--ink);cursor:pointer;touch-action:manipulation;white-space:nowrap}
+.tl.plus{background:#e6f2d4}.tl:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.aux{display:flex;justify-content:space-between;margin:5px 14px 0}
+.aux button{background:none;border:0;font:900 11.5px/1 var(--f-body);color:var(--ink-soft);text-decoration:underline;cursor:pointer;padding:4px 2px}
+.aux button:disabled{opacity:.35;cursor:default}
+@media (max-height:700px){.tl{min-height:38px}.scale{height:118px}.vol{height:118px}.ruler{height:40px}}
+@keyframes pegpop{0%{transform:translateY(-14px) scale(1.4)}100%{transform:none}}
+.pa-game.noaux .aux{display:none}
+.qcard{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 12px 16px;border-radius:14px;background:radial-gradient(circle at 30% 20%,#2f5b4a,#1f3f35);border:4px solid #8a5530;box-shadow:inset 0 0 0 2px #ffffff22,0 4px 0 #0003;text-align:center}
+.qcard small{font:900 10px/1 var(--f-body);letter-spacing:1.4px;color:#ffd036}
+.qcard b{font:800 clamp(19px,3.4dvh,26px)/1.25 var(--f-display);color:#fffcf0;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansrow{display:flex;gap:8px;justify-content:center;width:100%;margin-top:2px}
+.fld{min-width:92px;display:flex;align-items:baseline;justify-content:center;gap:5px;padding:7px 10px;border-radius:10px;border:2px dashed #c9a46a;background:#fff;cursor:pointer;touch-action:manipulation}
+.fld b{font:900 22px/1 var(--f-display);color:var(--ink);min-width:16px;min-height:22px;font-variant-numeric:tabular-nums}
+.fld span{font:900 12px/1 var(--f-body);color:var(--ink-soft)}
+.fld.on{border:2px solid var(--berry);box-shadow:0 0 0 3px #f28fb055}
+.fld.on b:empty::after,.fld.on b::after{content:"";display:inline-block;width:2px;height:20px;margin-left:2px;vertical-align:-3px;background:var(--berry);animation:blink 1s steps(1) infinite}
+.fld.bad{border:2px solid #c0392b;background:#fde3e6}
+.tiles.kp{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.tiles.kp .tl{min-height:36px;font-size:17px}.tiles.kp .tl.del{background:#fde3e6}
+.tiles.pk{flex-wrap:wrap}.tiles.pk .tl{white-space:normal;line-height:1.1;padding:6px 4px;min-height:44px}
+.tl.sel{background:var(--ink);color:#fff}.tl:disabled{opacity:.55;cursor:default}
+.tl.nope{animation:nope .5s}@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (max-height:700px){.tiles.kp .tl{min-height:32px}.qcard{padding:10px 10px 12px}.fld{padding:5px 10px}}
+/* ---------- Lombong Permata Wira: gua lombong, gaya Gerai Wirayung ---------- */
+@keyframes glint{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes flick{50%{opacity:.8;transform:scale(1.06)}}
+.scene{background:radial-gradient(ellipse 60% 70% at 30% 35%,#7a5a44 0%,transparent 70%),radial-gradient(circle at 75% 30%,#5e4436,transparent 60%),linear-gradient(#4a372c,#33261f)!important}
+.scene::before{display:none}
+.rock{position:absolute;inset:0}
+.rock i{position:absolute;width:22px;height:30px;background:linear-gradient(135deg,#b6f3ff,#4fb8ff 60%,#2a6db0);clip-path:polygon(50% 0,100% 35%,80% 100%,20% 100%,0 35%);animation:glint 2.6s ease-in-out infinite;filter:drop-shadow(0 0 4px #9fe6ff)}
+.rock i:nth-child(1){left:38%;top:10%}.rock i:nth-child(2){left:52%;top:30%;width:14px;height:20px;background:linear-gradient(135deg,#ffd0e6,#ff5a8a 60%,#a3204e);animation-delay:-.8s}
+.rock i:nth-child(3){left:66%;top:8%;width:16px;height:22px;background:linear-gradient(135deg,#d6ffd9,#5ee08a 60%,#1f7a3e);animation-delay:-1.6s}
+.rock i:nth-child(4){left:84%;top:22%;width:12px;height:18px;animation-delay:-.4s}.rock i:nth-child(5){left:30%;top:36%;width:12px;height:16px;background:linear-gradient(135deg,#fff3c4,#ffd23f 60%,#a37b10);animation-delay:-2s}
+.rock i:nth-child(6){left:92%;top:4%;width:14px;height:20px;background:linear-gradient(135deg,#eadcff,#b98bff 60%,#5a2fa0);animation-delay:-1.2s}
+.lamp{position:absolute;top:0;left:22%;width:3px;height:26px;background:#2a1a0e}
+.lamp::after{content:"";position:absolute;left:-9px;top:24px;width:20px;height:22px;border-radius:6px 6px 10px 10px;background:radial-gradient(circle at 50% 60%,#fff6b0,#ffb52e 60%,#9a5f34);box-shadow:0 0 30px 12px #ffcf6a55;animation:flick 1.8s ease-in-out infinite}
+.scene .floor{position:absolute;left:0;right:0;bottom:0;height:22px;background:linear-gradient(#5a4335,#3e2e25);border-top:3px solid #2a1f19}
+.rail{position:absolute;left:0;right:0;bottom:22px;height:6px;background:repeating-linear-gradient(90deg,#6b4a2e 0 6px,transparent 6px 22px),linear-gradient(transparent 0 2px,#9aa3ad 2px 4px,transparent 4px)}
+.cart{position:absolute;z-index:1;left:44%;bottom:26px;width:clamp(120px,40%,170px);height:48px;background:linear-gradient(#7d8894,#4b5560);clip-path:polygon(0 0,100% 0,92% 100%,8% 100%);border-top:4px solid #2c333b;display:flex;align-items:flex-start;justify-content:center;padding-top:0}
+.cart::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 30px,#0003 30px 32px)}
+.gems{position:relative;top:-16px;display:flex;gap:2px;justify-content:center;width:90%}
+.gems .slot{width:22px;height:22px;display:grid;place-items:center}.gems .slot svg{width:100%;height:100%;filter:drop-shadow(0 0 4px #fff8)}
+.gems .slot.pop{animation:pegpop .7s cubic-bezier(.3,1.6,.5,1)}
+.counter{display:none}
+.scene .wira{left:4px;bottom:22px;z-index:2}
+.scene .customer{bottom:2px;z-index:3}
+.scene .bubble{top:auto;bottom:58%;max-width:52%}.scene .wsay{top:40px}
+.scene .devbtn{bottom:auto;top:8px;left:6px;background:#fff8}
+.ledger .faces{display:flex;justify-content:center;gap:4px;margin:4px 0 14px}.ledger .faces div{display:flex;flex-direction:column;align-items:center;font:900 11px/1.2 var(--f-body);color:var(--gold-dk)}.ledger .faces img{width:48px;height:48px;object-fit:contain}
+.burst i{border-radius:2px;transform:rotate(45deg)}
+/* panel */
+.panel.set{gap:5px}.panel.set:empty{display:none}
+.qcard{padding:7px 12px 9px;gap:3px}.qcard b{font-size:clamp(19px,3.2dvh,26px)}
+.qcard.lt{background:#fffcf0;border-color:#d7b47e}.qcard.lt b{color:var(--ink)}.qcard.lt small{color:var(--berry)}
+/* petak seratus */
+.hg{display:grid;grid-template-columns:repeat(10,1fr);gap:1.5px;width:clamp(104px,19dvh,160px);aspect-ratio:1;background:#2a1a3a;border:2px solid #2a1a3a;border-radius:4px}
+.hg .hc{display:block;background:#fff;border:none;padding:0;min-width:0;min-height:0}.hg .hc.on{background:#4fb8ff}
+.hg.live{grid-template-columns:18px repeat(10,1fr);width:clamp(150px,30dvh,226px);aspect-ratio:11/10;background:#2a1a3a}
+.hg.live .hc{cursor:pointer}.hg.live .hc.on{background:#ff5a8a}
+.hg .rw{border:none;background:#ffe9a8;font:900 9px/1 var(--f-body);color:var(--ink);padding:0;cursor:pointer}
+/* garis nombor */
+.nl{width:100%;max-width:360px;height:auto;overflow:visible}
+.nl text{font:800 6px/1 var(--f-display);fill:#2a1a0e;text-anchor:middle}
+.nl .tk{fill:#ffe9a855;cursor:pointer}.nl .tk.on{fill:#ff5a8a55}
+/* bentuk lazim */
+.build.lazim{width:100%;max-width:340px}
+.lz{display:grid;grid-template-columns:52px repeat(var(--n),1fr);gap:3px 3px;align-items:center;width:100%}
+.lz .hd{font:900 8.5px/1 var(--f-body);color:var(--ink-soft);text-align:center;text-transform:uppercase}
+.lz .dt{max-width:14px}
+.lz .rl{font:800 13px/1 var(--f-display);color:var(--ink);text-align:right;padding-right:4px}.lz .rl.op{font-size:22px;color:#2f6f9f}
+.lz .rl.sm{font:900 8px/1.1 var(--f-body);color:var(--ink-soft);text-transform:uppercase}
+.lz .dg{font:800 24px/1.1 var(--f-display);font-style:normal;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums}
+.lz .dg.dt{font-size:24px}
+.lz .ln{grid-column:1/-1;height:3px;background:var(--ink);border-radius:2px}
+.lz .cbox,.lz .abox{border-radius:8px;background:#fff;cursor:pointer;display:grid;place-items:center;padding:0;touch-action:manipulation}
+.lz .cbox{justify-self:center;width:26px;height:22px;border:2px dashed #c9a46a}.lz .cbox b{font:800 14px/1 var(--f-display);color:#2f6f9f}
+.lz .abox{min-height:clamp(34px,6dvh,44px);border:2.5px solid #b9801c}.lz .abox b{font:800 22px/1 var(--f-display);color:var(--ink);min-height:22px}
+.lz .cbox.on,.lz .abox.on{border:2.5px solid var(--berry);box-shadow:0 0 0 3px #f28fb055}
+.lz .abox.on b:empty::after{content:"";display:inline-block;width:2px;height:20px;background:var(--berry);animation:blink 1s steps(1) infinite}
+.lz .abox.bad{background:#fde3e6;border-color:#c0392b}
+/* susun */
+.build.order{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:4px;display:flex}
+.oslot{display:flex;align-items:center;gap:4px;min-width:60px;min-height:30px;padding:3px 7px;border:2px dashed #c9a46a;border-radius:9px;background:#fff;font:800 13px/1.1 var(--f-body);color:var(--ink)}
+.oslot em{font:900 10px/1 var(--f-body);font-style:normal;color:#fff;background:#c9a46a;border-radius:50%;width:16px;height:16px;display:grid;place-items:center;flex:none}
+.oslot.on{border-style:solid;border-color:var(--ink);background:#e3f2ff}.oslot.on em{background:var(--ink)}
+.tiles.ord .tl{flex:1 1 20%}.tiles.ord .tl:disabled{opacity:.3}.tiles.ord .rs{flex:0 0 46px}
+.tiles.sym .tl{font-size:26px}
+.build{display:flex;justify-content:center;width:100%}
+.ansrow.frac .lbl{font-size:30px;color:var(--ink)}.fld.two{min-width:76px}
+.fld{min-width:130px}
+@media (max-height:640px){.tiles.kp{gap:4px}.tiles.kp .tl{min-height:30px;font-size:15px}.qcard{padding:5px 10px 6px}.qcard b{font-size:18px}.banner>div>b{font-size:13px}.lz .dg{font-size:20px}.lz .abox{min-height:30px}.lz .cbox{height:18px}}
+</style>
+
+<main class="pa-game" id="game" aria-label="Lombong Permata Wira">
+  <header class="hud">
+    <div class="clock"><span class="power" id="power"></span><div><b id="setLbl">Hari 1</b></div></div>
+    <div class="title"><small>FOKUS · PERPULUHAN &amp; PERATUS</small><b>Lombong Permata</b></div>
+    <div class="hud-right"><span class="till" aria-label="Bintang dikumpul"><img src="assets/minigames/lombong-permata/bintang.webp" alt=""><span id="stars">0</span></span><button class="icon-btn" id="sound" aria-label="Hidupkan bunyi">🔈</button></div>
+  </header>
+  <section class="scene" aria-label="Lombong permata Wira">
+    <div class="tint" id="tint"></div>
+    <div class="rock" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="lamp" aria-hidden="true"></div>
+    <div class="rail" aria-hidden="true"></div>
+    <div class="cart" aria-label="Troli permata"><div class="gems" id="cart"></div></div>
+    <div class="floor" aria-hidden="true"></div>
+    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/lombong-permata/wira-idle.webp" alt="Wira"></div>
+    <div class="counter" aria-hidden="true"></div>
+
+    <div class="customer away" id="visitor"><img id="petImg" src="assets/minigames/lombong-permata/arnab-kek-lapis-idle.webp" alt=""></div>
+    <div class="bubble hide" id="bubble"><div class="who" id="who"></div><div class="say" id="say"></div></div>
+    <div class="wsay hide" id="wsay"><b>WIRA</b><span id="wsayTxt"></span></div>
+    <div class="stamp" id="stamp"></div>
+    <div class="burst" id="burst"></div>
+    <button type="button" class="devbtn" id="devBtn" aria-label="Tukar darjah (ujian)">D2 ▾</button>
+  </section>
+  <div class="banner"><span class="tag" id="mode">BINA</span>
+    <div class="disc" aria-live="polite"><b id="stageN">PERMATA 1/5</b><span class="dots" id="dots"></span></div>
+    <div><b id="question"></b><span id="subtitle"></span></div></div>
+  <section class="panel set" id="widget"></section>
+  <div class="tiles" id="tiles"></div>
+  <div class="actions"><button class="btn hint" id="hint">Tanya Wira</button><button class="btn go" id="check">Semak</button></div>
+
+  <div class="overlay" id="complete" hidden><div class="ledger">
+    <div class="sun"></div><h2 id="doneTitle">Troli Permata Penuh!</h2><p id="finishText"></p>
+    <div class="faces" id="faces"></div>
+    <button class="btn go" id="again">Hari seterusnya →</button>
+  </div></div>
+
+  <div class="overlay dev" id="dev" hidden><div class="devsheet" role="dialog" aria-labelledby="devTitle">
+    <div class="devhead"><span>UJIAN BANK · DEV SAHAJA</span><button type="button" id="devClose" aria-label="Tutup">✕</button></div>
+    <b id="devTitle">Darjah</b>
+    <div class="devrow" id="devGrades"></div>
+    <small>Mod latihan</small>
+    <div class="devrow" id="devModes"></div>
+    <div class="devfoot"><code id="devHash"></code><button type="button" class="btn go" id="devApply">Guna</button></div>
+    <small>Simulasi router Kemahiran Fokus</small>
+    <div class="devrow sims" id="sims"></div>
+    <p class="simout" id="simOut"></p><button type="button" class="btn go" id="simGo" hidden>Buka lombong ikut pelan →</button>
+  </div></div>
+</main>
+
+<script src="js/minigame-dev-gate.js"></script>
+<script src="js/lombong-permata-router.js"></script>
+<script>
+(()=>{
+'use strict';
+const DEV_ENABLED=window.PAMiniGameDev?.enabled?.()===true;
+/* ---------- pembantu ---------- */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const range=k=>Array.from({length:k},(_,i)=>i);
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1};
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const nf=n=>{const s=String(n);const[a,b]=s.split('.');const w=Math.abs(+a)>=10000?a.replace(/\B(?=(\d{3})+(?!\d))/g,' '):a;return b!=null?w+'.'+b:w};
+/* perpuluhan: integer u dengan dp tempat → teks tetap, dan nilai */
+const DX=(u,dp)=>(u/10**dp).toFixed(dp);
+const tv=x=>+(+x).toFixed(6);               // buang ralat apungan
+const fd=x=>String(tv(x));                  // teks ringkas: 2.50 → 2.5
+function opts(list,correct,max=3){const c=String(correct),L=[...new Set(list.map(String))].filter(x=>x!==c),T=shuffle([c,...shuffle(L).slice(0,max-1)]);return{opts:T.map((l,i)=>({id:'o'+i,label:l})),correct:'o'+T.indexOf(c)}}
+const NUM=(v,o)=>({fields:[{v:tv(v),...(o||{})}]});
+const DEC=(v,o)=>({fields:[{v:tv(v),dec:1,...(o||{})}]});
+const FRF=(n,d)=>({fields:[{v:n},{v:d,pre:'/'}],frac:1});
+const YN=t=>({opts:[{id:'Y',label:'Betul'},{id:'N',label:'Salah'}],correct:t?'Y':'N',ansTxt:t?'Betul':'Salah'});
+const SA=['','satu','dua','tiga','empat','lima','enam','tujuh','lapan','sembilan'];
+function words(n){if(n===100)return 'seratus';if(n<10)return SA[n];if(n===10)return 'sepuluh';if(n===11)return 'sebelas';if(n<20)return SA[n-10]+' belas';const t=Math.floor(n/10),u=n%10;return SA[t]+' puluh'+(u?' '+SA[u]:'')}
+const PLACE=['persepuluh','perseratus','perseribu'];
+const ITEM=[['reben','m'],['tali','m'],['jus','ℓ'],['air','ℓ'],['beras','kg'],['tepung','kg']];
+
+const Fx={
+ /* ================= D3 perpuluhan & peratus asas ================= */
+ gridRead:(arch,pct)=>({arch,f:C=>{const n=R(3,97);return{kind:'pad',vis:{t:'grid',n},form:pct?NUM(n,{post:'%'}):DEC(n/100),
+  q:pct?'Berapakah peratus petak yang berlorek?':'Tulis bahagian berlorek sebagai nombor perpuluhan.',s:pct?'Peratus = bilangan daripada 100. Kira petak berlorek.':'Satu baris penuh = 0.1. Satu petak = 0.01.',a:'',
+  hint2:pct?'Kira baris penuh dahulu (setiap baris = 10%), kemudian tambah petak tunggal.':'Bilangan baris penuh = digit persepuluh. Petak tunggal = digit perseratus.'}}}),
+ gridShade:(arch,pct)=>({arch,f:C=>{const n=R(5,95);return{kind:'grid',need:n,q:'Lorek '+(pct?n+'%':DX(n,2))+' daripada petak seratus.',sub:'Ketik petak, atau ketik nombor baris untuk lorek satu baris.',
+  s:pct?n+'% bermaksud '+n+' petak daripada 100.':'0.1 = satu baris (10 petak). 0.01 = satu petak.',a:'',hint2:pct?'Setiap baris penuh = 10%. Berapa baris penuh dan berapa petak tunggal?':'Digit selepas titik: yang pertama = bilangan baris penuh, yang kedua = petak tunggal.'}}}),
+ fracToDec:(arch)=>({arch,f:C=>{const n=Math.random()<.3?R(1,9):R(11,99);return{kind:'pad',card:n+'/100',form:DEC(n/100),q:'Tulis '+n+'/100 dalam bentuk perpuluhan.',s:'Perseratus: dua digit selepas titik perpuluhan.',a:'',hint2:n<10?'Ingat, '+n+'/100 hanya ada '+n+' perseratus. Tempat persepuluh ialah 0.':n+'/100 dibaca "'+words(n)+' perseratus".'}}}),
+ placeVal:(arch,dp)=>({arch,f:C=>{let u;do{u=R(10**(dp-1)+1,10**dp-1)}while(new Set(String(u).padStart(dp,'0')).size<dp||String(u).includes('0'));const x=(R(0,9)+u/10**dp).toFixed(dp),ds=x.split('.')[1],i=R(0,dp-1),d=ds[i];
+  if(Math.random()<.5)return{kind:'pick',card:x,...opts(['sa',...PLACE.slice(0,dp)].concat(dp<3?['perseribu']:['puluh']),PLACE[i]),q:'Dalam '+x+', digit '+d+' berada pada tempat apa?',s:'Tempat selepas titik: persepuluh, perseratus, perseribu.',a:''};
+  const val=(+d/10**(i+1)).toFixed(i+1);return{kind:'pick',card:x,...opts([d,(+d/10**(i+2)).toFixed(i+2),(+d/10**Math.max(1,i)).toFixed(Math.max(1,i)),d+'0'].filter(v=>v!==val),val),q:'Apakah nilai digit '+d+' dalam '+x+'?',s:'Nilai digit bergantung pada tempatnya. Digit '+d+' di tempat '+PLACE[i]+'.',a:''}}}),
+ lineTap:(arch,dp)=>({arch,f:C=>{const base=R(0,9),k=R(1,9);const lo=dp===2?(base/10).toFixed(1):'0',hi=dp===2?((base+1)/10).toFixed(1):'1',tgt=dp===2?DX(base*10+k,2):DX(k,1);if(hi==='1.0'&&dp===2)return null;
+  return{kind:'line',line:{lo,hi,n:10},need:k,ansTxt:tgt,q:'Letakkan permata pada '+tgt+' di garis nombor.',sub:'Ketik satu tanda pada garis.',s:'Garis dari '+lo+' ke '+hi+' dibahagi kepada 10 sela. Setiap sela = '+(dp===2?'0.01':'0.1')+'.',a:'',hint2:'Kira sela dari '+lo+'. '+tgt+' ialah berapa sela selepas '+lo+'?'}}}),
+ lineRead:(arch)=>({arch,f:C=>{const base=R(0,9),k=R(1,9);return{kind:'pad',vis:{t:'line',lo:(base/10).toFixed(1),hi:base===9?'1':((base+1)/10).toFixed(1),n:10,mark:k},form:DEC((base*10+k)/100),
+  q:'Apakah nilai perpuluhan pada permata?',s:'Setiap sela kecil = 0.01. Kira sela dari '+(base/10).toFixed(1)+'.',a:'',hint2:'Permata berada beberapa sela selepas '+(base/10).toFixed(1)+'. Tambah 0.01 bagi setiap sela.'}}}),
+ cmpSym:(arch)=>({arch,f:C=>{const V=pick([()=>{const a=R(1,9),b=R(10,99);return[DX(a,1),DX(b,2)]},()=>{const a=R(10,99),b=R(10,99);return[DX(a,2),DX(b,2)]},()=>{const a=R(1,9);return[DX(a,1),DX(a*10,2)]},()=>{const a=R(1,9),b=R(1,9);return[DX(a,2),DX(b,1)]}])();const x=+V[0],y=+V[1],c=x>y?'>':x<y?'<':'=';
+  return{kind:'pick',card:V[0]+'  □  '+V[1],opts:['<','=','>'].map((l,i)=>({id:'o'+i,label:l})),correct:'o'+['<','=','>'].indexOf(c),ansTxt:V[0]+' '+c+' '+V[1],q:'Pilih simbol yang betul.',s:'Tambah sifar supaya kedua-dua nombor ada 2 tempat perpuluhan, kemudian banding.',a:''}}}),
+ largest:(arch,dp)=>({arch,f:C=>{const it=pick(ITEM),small=Math.random()<.4;let v=shuffle(range(4).map(()=>R(10**(dp-1),10**dp-1))).map(u=>u);if(new Set(v).size<4)return null;const L=v.map((u,i)=>i===0&&dp===2&&u%10===0?DX(u/10,1):DX(u,dp));const w=small?argmin(v):argmax(v);
+  return{kind:'pick',opts:L.map((l,i)=>({id:'o'+i,label:l+' '+it[1]})),correct:'o'+w,ansTxt:L[w]+' '+it[1],q:'Empat bekas berisi '+it[0]+'. Yang manakah paling '+(small?'sedikit':'banyak')+'?',s:'Banding digit persepuluh dahulu, kemudian perseratus.',a:''}}}),
+ lazimAdd:(arch,dp,iMax,rows=2)=>({arch,f:C=>{const it=pick(ITEM),u=range(rows).map(()=>R(10**dp*0+1,iMax*10**dp+10**dp-1));const s=sum(u);
+  return{kind:'lazim',lz:{rows:u.map(x=>DX(x,dp)),op:'+',ans:DX(s,dp)},q:rows===2?C.who+' ada '+DX(u[0],dp)+' '+it[1]+' dan '+DX(u[1],dp)+' '+it[1]+' '+it[0]+'. Berapakah jumlahnya?':'Hitung dalam bentuk lazim.',
+   sub:'Tambah dari kanan. Taip jawapan dalam kotak.',s:'Susun titik perpuluhan dalam satu lajur. Tambah dari kanan dan kumpul semula jika lebih 9.',a:''}}}),
+ lazimSub:(arch,dp,iMax)=>({arch,f:C=>{const it=pick(ITEM);let a=R(2*10**(dp-1),(iMax+1)*10**dp-1),b=R(1,a-1);const r=a-b;if(r<1)return null;
+  return{kind:'lazim',lz:{rows:[DX(a,dp),DX(b,dp)],op:'−',ans:DX(r,dp)},q:'Ada '+DX(a,dp)+' '+it[1]+' '+it[0]+'. '+DX(b,dp)+' '+it[1]+' digunakan. Berapakah bakinya?',sub:'Tolak dari kanan. Taip jawapan dalam kotak.',s:'Susun titik perpuluhan dalam satu lajur. Tolak dari kanan dan pecahkan jika digit atas lebih kecil.',a:''}}}),
+ missingAdd:(arch)=>({arch,f:C=>{const a=R(10,80),b=R(5,99-a);return{kind:'pad',card:DX(a,2)+' + □ = '+DX(a+b,2),form:DEC(b/100),q:'Apakah nombor dalam kotak?',s:'Gunakan tolak: jumlah tolak nombor yang diketahui.',a:DX(a+b,2)+' − '+DX(a,2)+' = '+DX(b,2)}}}),
+ pctWords:(arch)=>({arch,f:C=>{const n=R(11,99),toSym=Math.random()<.5;if(toSym)return{kind:'pick',...opts([n+'',(n/100).toFixed(2)+'%',n*10+'%',(n%10)*10+Math.floor(n/10)+'%'].filter(x=>x!==n+'%'),n+'%'),q:'Tulis “'+words(n)+' peratus” dalam simbol.',s:'Peratus ditulis dengan simbol %.',a:''};
+  const w=words(n)+' peratus';return{kind:'pick',...opts([words(n)+' perseratus',words(n),words((n%10)*10+Math.floor(n/10)||n+1)+' peratus'],w),q:'Bagaimanakah '+n+'% dibaca?',s:'Simbol % dibaca “peratus”.',a:''}}}),
+ outOf100:(arch)=>({arch,f:C=>{const n=R(2,98),ctx=pick(['petak','murid','guli','biji permata']);return{kind:'pad',card:n+' daripada 100 '+ctx,form:NUM(n,{post:'%'}),q:n+' daripada 100 '+ctx+'. Tulis sebagai peratus.',s:'Peratus bermaksud “daripada 100”.',a:''}}}),
+ unshaded:(arch)=>({arch,f:C=>{const n=R(3,97);return{kind:'pad',vis:{t:'grid',n},form:NUM(100-n,{post:'%'}),q:'Berapakah peratus petak yang BELUM berlorek?',s:'Semua petak = 100%. Tolak peratus yang berlorek.',a:'100 − '+n+' = '+(100-n)}}}),
+ match:(arch)=>({arch,f:C=>{const n=pick([10,20,25,30,40,50,60,70,75,80,90,R(11,99)]);const good=n+'/100 = '+DX(n,2)+' = '+n+'%',bad=[n+'/100 = '+DX(n,1).replace(/^0\./,'0.0')+' = '+n+'%',n+'/10 = '+DX(n,2)+' = '+n+'%',n+'/100 = '+DX(n,2)+' = '+(n/10)+'%'];
+  return{kind:'pick',vis:{t:'grid',n},...opts(bad,good),q:'Set manakah menunjukkan nilai yang sama dengan bahagian berlorek?',s:'Kira petak berlorek daripada 100. Pecahan, perpuluhan dan peratus mesti sama nilai.',a:''}}}),
+ nonEquiv:(arch)=>({arch,f:C=>{const n=pick([10,20,30,40,50,60,70,80,90]),wrong=pick([DX(n+10,2),DX(n,1).replace('0.','0.0'),(n/100+1).toFixed(2)]);return{kind:'pick',...opts([DX(n,2),n+'/100',DX(n/10,1)],wrong,4),
+  q:'Yang manakah TIDAK setara dengan '+n+'%?',s:n+'% = '+n+' daripada 100. Tukar setiap pilihan kepada perseratus.',a:''}}}),
+
+ /* ================= D4 ================= */
+ subTwo:(arch)=>({arch,f:C=>{const a=R(3000,9999),b=R(100,a/2|0),c=R(100,a-b-100);if(a-b-c<1)return null;return{kind:'pad',card:DX(a,3)+' − '+DX(b,3)+' − '+DX(c,3),form:DEC((a-b-c)/1000),q:'Hitung.',s:'Tolak dari kiri ke kanan: tolak nombor kedua dahulu, kemudian nombor ketiga.',a:DX(a,3)+' − '+DX(b,3)+' = '+DX(a-b,3)+'; '+DX(a-b,3)+' − '+DX(c,3)+' = '+DX(a-b-c,3)}}}),
+ mul1:(arch,dp,mx)=>({arch,f:C=>{const u=R(10**dp+1,mx*10**dp),m=R(2,9);return{kind:'pad',card:DX(u,dp)+' × '+m,form:DEC(u*m/10**dp),q:'Hitung.',s:'Darab seperti nombor bulat, kemudian letak titik perpuluhan: bilangan tempat perpuluhan sama dengan nombor asal ('+dp+').',a:u+' × '+m+' = '+u*m+'; letak '+dp+' tempat perpuluhan: '+fd(u*m/10**dp)}}}),
+ div10:(arch)=>({arch,f:C=>{const n=pick([R(2,99),R(100,999),R(1000,9999)]),p=pick([10,100,1000]),z=String(p).length-1;return{kind:'pad',card:nf(n)+' ÷ '+nf(p),form:DEC(n/p),q:'Hitung.',s:'Bahagi dengan '+p+': gerakkan titik perpuluhan '+z+' tempat ke kiri.',a:'Gerak titik '+z+' tempat ke kiri: '+nf(n)+' ÷ '+p+' = '+fd(n/p)}}}),
+ storyD4:(arch)=>({arch,f:C=>{const it=pick(ITEM),a=R(3000,8000),b=R(500,2500),c=R(200,1500);if(a-b+c<1)return null;return{kind:'pad',form:DEC((a-b+c)/1000,{post:it[1]}),
+  q:'Sebuah bekas ada '+DX(a,3)+' '+it[1]+' '+it[0]+'. '+DX(b,3)+' '+it[1]+' digunakan, kemudian '+DX(c,3)+' '+it[1]+' ditambah. Berapakah '+it[0]+' sekarang?',s:'Tolak yang digunakan, kemudian tambah yang ditambah.',a:DX(a,3)+' − '+DX(b,3)+' = '+DX(a-b,3)+'; '+DX(a-b,3)+' + '+DX(c,3)+' = '+DX(a-b+c,3)}}}),
+ fracToPct:(arch)=>({arch,f:C=>{const F=pick([[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,10],[3,10],[7,10],[9,10],[1,20],[7,20],[13,20],[3,25],[12,25],[1,50],[17,50]]),p=F[0]*100/F[1];return{kind:'pad',card:F[0]+'/'+F[1],form:NUM(p,{post:'%'}),
+  q:'Tukarkan '+F[0]+'/'+F[1]+' kepada peratus.',s:'Tukar pecahan kepada perseratus: darab penyebut dan pengangka dengan nombor yang sama.',a:F[0]+'/'+F[1]+' = '+F[0]*100/F[1]+'/100 = '+p}}}),
+ pctToFrac:(arch)=>({arch,f:C=>{const p=pick([10,20,25,30,40,50,60,75,80,5,15,35,45,64,12]),g=gcd(p,100);return{kind:'pad',card:p+'%',form:FRF(p/g,100/g),ansTxt:p/g+'/'+100/g,q:'Tukarkan '+p+'% kepada pecahan dalam bentuk termudah.',s:p+'% = '+p+'/100. Bahagi pengangka dan penyebut dengan faktor sepunya terbesar.',a:'',hint2:p+'/100: cari nombor terbesar yang boleh membahagi '+p+' dan 100 tanpa baki.'}}}),
+ pctOf:(arch,big)=>({arch,f:C=>{const p=big?pick([10,20,25,30,40,60,75,80,90,5,15,35]):pick([10,20,25,50,75]),Q=big?pick([40,60,80,120,200,240,300,400,500,800]):pick([20,40,60,80,100]),v=p*Q/100;if(v%1)return null;
+  return{kind:'pad',card:p+'% daripada '+Q,form:NUM(v),q:'Berapakah '+p+'% daripada '+Q+'?',s:p+'% = '+p+'/100. Darab dengan '+Q+'.',a:p+'/100 × '+Q+' = '+v}}}),
+ pctStory:(arch)=>({arch,f:C=>{const V=pick([['bakul','buah','epal'],['kotak','biji','permata merah'],['kelas','orang','murid lelaki'],['beg','biji','guli biru']]),Q=pick([20,40,50,60,80,120,200]),p=pick([10,20,25,30,40,60,75,80]),v=p*Q/100;if(v%1)return null;const rest=Math.random()<.4;
+  return{kind:'pad',form:NUM(rest?Q-v:v,{post:V[1]}),q:'Dalam sebuah '+V[0]+' ada '+Q+' '+V[1]+'. '+p+'% daripadanya ialah '+V[2]+'. Berapa '+V[1]+' '+(rest?'BUKAN '+V[2]:V[2])+'?',s:rest?'Cari '+V[2]+' dahulu, kemudian tolak daripada '+Q+'. Atau cari '+(100-p)+'% terus.':p+'% daripada '+Q+' = '+p+'/100 × '+Q+'.',a:rest?(100-p)+'/100 × '+Q+' = '+(Q-v):p+'/100 × '+Q+' = '+v}}}),
+
+ /* ================= D5 ================= */
+ round:(arch)=>({arch,f:C=>{const dp=pick([0,1,2,3]),u=R(10001,99999),t=DX(u,4);if(u%10===0)return null;const ans=DX(Math.round(u/10**(4-dp)),dp);
+  return{kind:'pad',card:t,form:DEC(+ans),q:'Bundarkan '+t+' kepada '+(dp===0?'nombor bulat terdekat':dp+' tempat perpuluhan')+'.',s:'Lihat digit selepas tempat yang dibundarkan. 5 atau lebih: tambah 1. Kurang daripada 5: kekal.',a:'',hint2:'Lihat digit di tempat ke-'+(dp+1)+' selepas titik. Adakah ia 5 atau lebih?'}}}),
+ combined:(arch)=>({arch,f:C=>{const a=R(2000,9000),b=R(500,4000),c=R(100,a+b-100);return{kind:'pad',card:DX(a,3)+' + '+DX(b,3)+' − '+DX(c,3),form:DEC((a+b-c)/1000),q:'Hitung.',s:'Kira dari kiri ke kanan.',a:DX(a,3)+' + '+DX(b,3)+' = '+DX(a+b,3)+'; '+DX(a+b,3)+' − '+DX(c,3)+' = '+DX(a+b-c,3)}}}),
+ mulBig:(arch)=>({arch,f:C=>{const dp=pick([2,3]),u=R(10**dp+1,9*10**dp),m=pick([10,100,1000,R(11,40),R(2,9)*10]);return{kind:'pad',card:DX(u,dp)+' × '+nf(m),form:DEC(u*m/10**dp),q:'Hitung.',
+  s:[10,100,1000].includes(m)?'Darab dengan '+m+': gerak titik perpuluhan '+(String(m).length-1)+' tempat ke kanan.':'Darab seperti nombor bulat, kemudian letak '+dp+' tempat perpuluhan.',a:[10,100,1000].includes(m)?'Gerak titik '+(String(m).length-1)+' tempat ke kanan: '+DX(u,dp)+' × '+m+' = '+fd(u*m/10**dp):u+' × '+m+' = '+u*m+'; letak '+dp+' tempat perpuluhan: '+fd(u*m/10**dp)}}}),
+ divD5:(arch)=>({arch,f:C=>{const d=R(2,9),dp=pick([2,2,1]),q3=R(101,Math.floor((dp===2?9999:999)/d));const u=q3*d;const n=u/10**dp,ans=q3/10**dp;if(String(fd(ans)).split('.')[1]?.length>3)return null;return{kind:'pad',card:fd(n)+' ÷ '+d,form:DEC(ans),q:'Hitung.',s:'Bahagi seperti bahagi panjang. Letak titik perpuluhan dalam jawapan tegak di atas titik nombor yang dibahagi.',a:fd(n)+' ÷ '+d+' = '+fd(ans)}}}),
+ storyD5:(arch)=>({arch,f:C=>{const it=pick(ITEM.filter(x=>x[1]!=='m')),each=R(125,980),n=R(3,12);return{kind:'pad',form:DEC(each*n/1000,{post:it[1]}),q:'Setiap bekas berisi '+DX(each,3)+' '+it[1]+' '+it[0]+'. Berapakah jumlah '+it[0]+' dalam '+n+' bekas?',s:'Darab isi setiap bekas dengan bilangan bekas.',a:DX(each,3)+' × '+n+' = '+fd(each*n/1000)}}}),
+ pctToDecV:(arch)=>({arch,f:C=>{const p=pick([R(1,99),R(1,9),50,25,75,R(101,250)]);return{kind:'pad',vis:p<=100?{t:'grid',n:p}:undefined,card:p<=100?undefined:p+'%',form:DEC(p/100),q:'Tulis '+p+'% dalam bentuk perpuluhan.',s:'Peratus ÷ 100: gerak titik perpuluhan 2 tempat ke kiri.',a:p+' ÷ 100 = '+fd(p/100)}}}),
+ mixedPct:(arch)=>({arch,f:C=>{const w=R(1,4),F=pick([[1,2],[1,4],[3,4],[1,5],[2,5],[3,10],[7,10]]),p=w*100+F[0]*100/F[1];return{kind:'pad',card:w+' '+F[0]+'/'+F[1],form:NUM(p,{post:'%'}),q:'Tukar '+w+' '+F[0]+'/'+F[1]+' kepada peratus.',s:'Satu keseluruhan = 100%. Tukar nombor bulat dan pecahan secara berasingan, kemudian tambah.',a:w+' = '+w*100+'%; '+F[0]+'/'+F[1]+' = '+F[0]*100/F[1]+'%; '+w*100+' + '+F[0]*100/F[1]+' = '+p}}}),
+ over100:(arch)=>({arch,f:C=>{const p=pick([110,120,125,150,175,200,250,300]),Q=pick([20,40,60,80,120,160,200,240]),v=p*Q/100;if(v%1)return null;return{kind:'pad',card:p+'% daripada '+Q,form:NUM(v),q:'Berapakah '+p+'% daripada '+Q+'?',s:p+'% lebih daripada 100%, jadi jawapan lebih besar daripada '+Q+'.',a:p+'/100 × '+Q+' = '+v}}}),
+ inverse:(arch)=>({arch,f:C=>{const p=pick([10,20,25,40,50,75,150,200]),Q=pick([40,60,80,120,160,200,240]),v=p*Q/100;if(v%1)return null;return{kind:'pad',card:v+' = '+p+'% daripada ?',form:NUM(Q),q:v+' ialah '+p+'% daripada suatu nilai. Apakah nilai asal?',s:'Cari 1% dahulu (bahagi dengan '+p+'), kemudian darab dengan 100.',a:v+' ÷ '+p+' = '+fd(v/p)+'; '+fd(v/p)+' × 100 = '+Q}}}),
+ pctStoryD5:(arch)=>({arch,f:C=>{const Q=pick([80,120,200,240,300,400]),p=pick([15,20,25,35,40,45,60,65]),v=p*Q/100;if(v%1)return null;return{kind:'pad',form:NUM(Q-v,{post:'biji'}),q:'Wira menjumpai '+Q+' biji permata. '+p+'% daripadanya retak. Berapa biji permata yang elok?',s:'Peratus permata elok = 100% − '+p+'%.',a:(100-p)+'/100 × '+Q+' = '+(Q-v)}}}),
+
+ /* ================= D6 perpuluhan ================= */
+ mulDec:(arch)=>({arch,f:C=>{const a=R(11,99),b=R(11,49);if(b%10===0||a%10===0)return null;const da=pick([1,2]),db=1;const p=a*b,dp=da+db;return{kind:'pad',card:DX(a,da)+' × '+DX(b,db),form:DEC(p/10**dp),q:'Hitung.',s:'Darab tanpa titik perpuluhan. Jumlah tempat perpuluhan jawapan = '+da+' + '+db+' = '+dp+'.',a:a+' × '+b+' = '+p+'; letak '+dp+' tempat perpuluhan: '+fd(p/10**dp)}}}),
+ divDec:(arch)=>({arch,f:C=>{const b=pick([2,4,5,6,8,12,15,25]),db=pick([1,2]),q=R(2,40),qq=q*b;const dvd=qq/10**(db+R(0,1));const dvs=b/10**db;const ans=tv(dvd/dvs);if(String(ans).split('.')[1]?.length>2)return null;
+  return{kind:'pad',card:fd(dvd)+' ÷ '+fd(dvs),form:DEC(ans),q:'Hitung.',s:'Jadikan pembahagi nombor bulat: darab KEDUA-DUA nombor dengan 10 atau 100.',a:fd(dvd)+' ÷ '+fd(dvs)+' = '+fd(dvd*10**db)+' ÷ '+fd(dvs*10**db)+' = '+fd(ans)}}}),
+ missFac:(arch)=>({arch,f:C=>{const a=R(11,49),b=R(2,9);const x=a/10,y=b/10*pick([1,10]);const p=tv(x*y);if(Math.random()<.5)return{kind:'pad',card:'□ × '+fd(y)+' = '+fd(p),form:DEC(x),q:'Apakah nilai □?',s:'Gunakan bahagi: □ = '+fd(p)+' ÷ '+fd(y)+'.',a:fd(p)+' ÷ '+fd(y)+' = '+fd(x)};
+  return{kind:'pad',card:fd(p)+' ÷ □ = '+fd(y),form:DEC(x),q:'Apakah nilai □?',s:'Pembahagi = nombor dibahagi ÷ hasil bahagi.',a:fd(p)+' ÷ '+fd(y)+' = '+fd(x)}}}),
+ estimate:(arch)=>({arch,f:C=>{const a=R(2,9),b=R(2,9),x=tv(a+pick([-.25,.25,-.2,.15,.1])),y=tv(b+pick([-.1,.2,-.2,.4,-.3]));const e=a*b;return{kind:'pick',card:fd(x)+' × '+fd(y),...opts([e*10,tv(e/10),e+a+b,Math.max(1,e-a-b)].map(String),String(e)),q:'Tanpa mengira tepat, jawapan paling hampir kepada…',s:'Bundarkan setiap nombor kepada nombor bulat terdekat, kemudian darab.',a:''}}}),
+ decError:(arch)=>({arch,f:C=>{const V=pick([()=>{const a=R(11,49),b=R(11,29);const p=a*b;return[DX(a,1)+' × '+DX(b,1),fd(p/100),[String(p),fd(p/10),fd(p/1000)]]},()=>{const b=R(2,9),q=R(2,9);return[DX(b*q,1)+' ÷ '+DX(b,1),String(q),[DX(q,1),String(q*10),DX(q,2)]]}])();const tr=Math.random()<.35,said=tr?V[1]:pick(V[2]);
+  return{kind:'pick',card:V[0]+' = '+said,...YN(tr),q:C.who+' menulis '+V[0]+' = '+said+'. Penilaian?',s:'Anggarkan dahulu: bundarkan setiap nombor. Adakah jawapan itu munasabah?',a:''}}}),
+ rateD6:(arch)=>({arch,f:C=>{const V=pick([()=>{const e=pick([1.25,0.75,1.5,2.4,0.8]),n=pick([2.5,3.5,4,1.5,6]);return['Setiap meter kain memerlukan '+fd(e)+' ℓ pewarna. Berapa liter untuk '+fd(n)+' m kain?',tv(e*n),'ℓ',fd(e)+' × '+fd(n)+' = '+fd(e*n)]},()=>{const per=pick([0.8,0.6,1.2,0.75,0.4]),n=pick([4,5,6,8,12]);return[fd(per*n)+' ℓ jus mengisi '+n+' botol sama banyak. Berapakah isi padu setiap botol?',per,'ℓ',fd(per*n)+' ÷ '+n+' = '+fd(per)]},()=>{const b=pick([1.5,0.5,2.5,0.25,1.2]),k=R(3,9);const tot=tv(b*k+pick([0,0.1,0.2]));return[fd(tot)+' kg bahan dibahagi kepada bekas '+fd(b)+' kg. Berapa bekas penuh?',k,'bekas',fd(tot)+' ÷ '+fd(b)+' = '+fd(tot/b)+'; bekas penuh = '+k]}])();
+  return{kind:'pad',form:DEC(V[1],{post:V[2]}),q:V[0],s:'Tentukan sama ada perlu darab atau bahagi. Kemudian kira dengan teliti tempat perpuluhan.',a:V[3]}}}),
+ /* ================= D6 peratus ================= */
+ pctDec6:(arch,toDec)=>({arch,f:C=>{const p=pick([105,110,115,120,125,135,150,175,180,200,225,250,310]);return toDec?{kind:'pad',card:p+'%',form:DEC(p/100),q:p+'% ditulis sebagai perpuluhan ialah…',s:'Bahagi dengan 100: gerak titik 2 tempat ke kiri. 100% = 1.',a:p+' ÷ 100 = '+fd(p/100)}
+  :{kind:'pad',card:fd(p/100),form:NUM(p,{post:'%'}),q:'Tukar '+fd(p/100)+' kepada peratus.',s:'Darab dengan 100. 1 = 100%.',a:fd(p/100)+' × 100 = '+p}}}),
+ pctOrder:(arch)=>({arch,f:C=>{const v=shuffle([105,110,125,135,150,175,120]).slice(0,4);const it=v.map((p,i)=>({id:'o'+i,label:i%2?fd(p/100):p+'%'}));const ord=[...it].sort((x,y)=>v[+x.id.slice(1)]-v[+y.id.slice(1)]).map(x=>x.id);
+  return{kind:'order',items:it,correct:ord,ansTxt:ord.map(id=>it.find(x=>x.id===id).label).join(', '),q:'Susun daripada kecil ke besar.',sub:'Ketik ikut susunan. Tekan ↺ untuk mula semula.',s:'Tukar semua kepada peratus (atau semua kepada perpuluhan) dahulu.',a:'',hint2:'Contoh: 1.5 = 150%. Tukar setiap perpuluhan kepada peratus.'}}}),
+ pctAdd:(arch)=>({arch,f:C=>{const a=R(5,40)*5,b=R(3,30)*5,op=pick(['+','−','?']);if(op==='−'&&a<=b)return null;
+  if(op==='?')return{kind:'pad',card:'□% + '+b+'% = '+(a+b)+'%',form:NUM(a,{post:'%'}),q:'Apakah nilai □?',s:'Gunakan tolak.',a:(a+b)+' − '+b+' = '+a};
+  return{kind:'pad',card:a+'% '+op+' '+b+'%',form:NUM(op==='+'?a+b:a-b,{post:'%'}),q:'Hitung.',s:'Tambah atau tolak nombor peratus. Simbol % kekal.',a:a+' '+op+' '+b+' = '+(op==='+'?a+b:a-b)}}}),
+ points:(arch)=>({arch,f:C=>{const a=R(20,30)*5,b=a+R(2,12)*5;return{kind:'pad',form:NUM(b-a,{post:'mata peratus'}),q:'Kadar kehadiran meningkat daripada '+a+'% kepada '+b+'%. Berapakah peningkatannya?',s:'Beza dua peratus = baru − lama.',a:b+' − '+a+' = '+(b-a)}}}),
+ qtyAsPct:(arch)=>({arch,f:C=>{const Q=pick([40,45,60,80,120,200]),p=pick([110,125,150,175,200,120,135]),v=tv(p*Q/100);if(String(v).split('.')[1]?.length>1)return null;return{kind:'pad',form:NUM(p,{post:'%'}),q:fd(v)+' g ialah berapa peratus daripada '+Q+' g?',s:'Peratus = bahagian ÷ keseluruhan × 100%.',a:fd(v)+'/'+Q+' × 100 = '+p}}}),
+ pctCmp:(arch)=>({arch,f:C=>{const pa=pick([110,120,125,150,175]),Qa=pick([40,60,80,120]),pb=pick([110,120,125,150,175]),Qb=pick([40,60,80,120]);const A=pa*Qa/100,B=pb*Qb/100;if(A===B||A%1||B%1)return null;const w=A>B?'A':'B';
+  return{kind:'pick',card:'A = '+pa+'% daripada '+Qa+' · B = '+pb+'% daripada '+Qb,opts:[{id:'A',label:'A'},{id:'B',label:'B'}],correct:w,ansTxt:w+' lebih besar',q:'Yang manakah lebih besar?',s:'Kira kedua-duanya, kemudian banding.',a:pa+'/100 × '+Qa+' = ?; '+pb+'/100 × '+Qb+' = ?'}}}),
+ reverse6:(arch)=>({arch,f:C=>{const p=pick([10,20,25,40,75]),Q=pick([40,80,120,160,200,240]),left=Q*(100-p)/100;if(left%1)return null;return{kind:'pad',form:NUM(Q,{post:'unit'}),q:'Selepas '+p+'% bekalan digunakan, masih tinggal '+left+' unit. Berapakah bekalan asal?',s:'Baki ialah '+(100-p)+'% daripada bekalan asal.',a:left+' ÷ '+(100-p)+' × 100 = '+Q}}}),
+ multi6:(arch)=>({arch,f:C=>{const Q=pick([40,60,80,120,200]),p=pick([125,150,175,200]),d=pick([25,50]);const v=Q*(p-d)/100;if(v%1)return null;return{kind:'pad',form:NUM(v),q:'Nilai asal '+Q+' dinaikkan kepada '+p+'%, kemudian dikurangkan '+d+' mata peratus. Berapakah nilai akhir?',s:'Peratus akhir = '+p+'% − '+d+'%. Kemudian cari peratus itu daripada '+Q+'.',a:p+' − '+d+' = '+(p-d)+'%; '+(p-d)+'/100 × '+Q+' = '+v}}}),
+ pctClaim:(arch)=>({arch,f:C=>{const V=pick([()=>{const p=pick([125,150,175]);return['kata '+p+'% = '+(p/1000),false]},()=>{const p=pick([125,150]),Q=pick([40,80]);return['kata '+p+'% daripada '+Q+' ialah '+p*Q/100+' kerana '+p+'% = '+p/100,true]},()=>['kata 150% − 25% = 12500%',false],()=>['kata 1.35 lebih besar daripada 125%',true]])();
+  return{kind:'pick',...YN(V[1]),q:C.who+' '+V[0]+'. Penilaian?',s:'Tukar peratus kepada perpuluhan (bahagi 100) untuk menyemak.',a:''}}}),
+ /* ================= D6 operasi bergabung & masalah ================= */
+ bodmas:(arch,kind)=>({arch,f:C=>{if(kind==='simple'){const a=R(5,20),F=pick([[1,2],[1,4],[3,4]]),m=F[1]*R(2,6);const v=a+F[0]*m/F[1];return{kind:'pad',card:a+' + '+F[0]+'/'+F[1]+' × '+m,form:NUM(v),q:'Hitung.',s:'Darab atau bahagi dahulu, kemudian tambah atau tolak.',a:F[0]+'/'+F[1]+' × '+m+' = '+F[0]*m/F[1]+'; '+a+' + '+F[0]*m/F[1]+' = '+v}}
+  if(kind==='bracket'){const a=R(11,45)/10,b=R(11,45)/10,m=R(2,6);const s=tv(a+b);return{kind:'pad',card:'('+fd(a)+' + '+fd(b)+') × '+m,form:DEC(s*m),q:'Hitung.',s:'Kira dalam kurungan dahulu.',a:fd(a)+' + '+fd(b)+' = '+fd(s)+'; '+fd(s)+' × '+m+' = '+fd(s*m)}}
+  if(kind==='unknown'){const F=pick([[1,2],[1,4],[3,4]]),m=F[1]*R(2,5),x=R(3,20),t=x+F[0]*m/F[1];return{kind:'pad',card:'□ + '+F[0]+'/'+F[1]+' × '+m+' = '+t,form:NUM(x),q:'Apakah nilai □?',s:'Kira bahagian darab dahulu, kemudian gunakan tolak.',a:F[0]+'/'+F[1]+' × '+m+' = '+F[0]*m/F[1]+'; '+t+' − '+F[0]*m/F[1]+' = '+x}}
+  const a=R(15,30),F=pick([[3,4],[1,2],[1,4]]),m=F[1]*R(2,4),d=pick([1.5,2.5,0.5]);const v=tv(a-F[0]*m/F[1]+d);return{kind:'pad',card:a+' − '+F[0]+'/'+F[1]+' × '+m+' + '+fd(d),form:DEC(v),q:'Hitung.',s:'Darab dahulu. Kemudian tambah dan tolak dari kiri ke kanan.',a:F[0]+'/'+F[1]+' × '+m+' = '+F[0]*m/F[1]+'; '+a+' − '+F[0]*m/F[1]+' = '+(a-F[0]*m/F[1])+'; '+(a-F[0]*m/F[1])+' + '+fd(d)+' = '+fd(v)}}}),
+ method:(arch)=>({arch,f:C=>{const a=R(5,20),b=pick([0.5,1.5,2.5]),m=R(4,9)*2;const right=tv(a+b*m),wrong=tv((a+b)*m);return{kind:'pick',card:a+' + '+fd(b)+' × '+m,opts:[{id:'A',label:'Murid A: '+fd(right)},{id:'B',label:'Murid B: '+fd(wrong)}],correct:'A',ansTxt:'Murid A',q:'Murid A darab dahulu. Murid B tambah dahulu. Siapa betul?',s:'Peraturan: darab dan bahagi sebelum tambah dan tolak (kecuali ada kurungan).',a:''}}}),
+ opError:(arch)=>({arch,f:C=>{const a=pick([1.5,2.5,3.5]),F=[1,2],m=pick([4,6,8]);const right=tv((a+F[0]/F[1])*m),wrong=tv(a+F[0]/F[1]*m);return{kind:'pick',card:'('+fd(a)+' + 1/2) × '+m+' = '+fd(wrong),...YN(false),q:C.who+' mengira ('+fd(a)+' + 1/2) × '+m+' = '+fd(wrong)+'. Penilaian?',s:'Ada kurungan: kira dalam kurungan dahulu.',a:''}}}),
+ ctx6:(arch,kind)=>({arch,f:C=>{
+  if(kind==='recipe'){const F=pick([[3,4],[1,2],[2,5],[1,4]]),n=pick([2,3,4,6,8]);return{kind:'pad',form:DEC(F[0]*n/F[1],{post:'ℓ'}),q:'Satu resipi ramuan menggunakan '+F[0]+'/'+F[1]+' ℓ susu. Berapa liter untuk '+n+' resipi?',s:'Darab pecahan dengan bilangan resipi. Tulis jawapan sebagai perpuluhan.',a:F[0]+'/'+F[1]+' × '+n+' = '+F[0]*n+'/'+F[1]+' = '+fd(F[0]*n/F[1])}}
+  if(kind==='sharing'){const each=pick([0.8,0.6,1.2,0.75,0.4,1.5]),n=pick([4,5,6,8]);return{kind:'pad',form:DEC(each,{post:'kg'}),q:fd(each*n)+' kg beras dibahagi sama banyak ke dalam '+n+' beg. Berapakah jisim setiap beg?',s:'Bahagi jumlah dengan bilangan beg.',a:fd(each*n)+' ÷ '+n+' = '+fd(each)}}
+  if(kind==='mixed'){const T=pick([8,12,16,20]),F=pick([[1,4],[1,2],[3,4]]),add=pick([1.5,2.5,0.5,3.5]);const v=tv(T-T*F[0]/F[1]+add);return{kind:'pad',form:DEC(v,{post:'ℓ'}),q:'Tangki ada '+T+' ℓ air. '+F[0]+'/'+F[1]+' daripadanya digunakan, kemudian '+fd(add)+' ℓ ditambah. Berapakah baki akhir?',s:'Langkah 1: cari air yang digunakan. Langkah 2: tolak. Langkah 3: tambah.',a:F[0]+'/'+F[1]+' × '+T+' = '+T*F[0]/F[1]+'; '+T+' − '+T*F[0]/F[1]+' = '+(T-T*F[0]/F[1])+'; '+(T-T*F[0]/F[1])+' + '+fd(add)+' = '+fd(v)}}
+  if(kind==='target'){const T=pick([40,64,80,120,160]),p=pick([110,125,150,75,80]),v=T*p/100;if(v%1)return null;return{kind:'pad',form:NUM(v,{post:'orang'}),q:'Sasaran kehadiran ke pesta permata ialah '+T+' orang. Kehadiran sebenar ialah '+p+'% daripada sasaran. Berapa orang hadir?',s:p+'% daripada '+T+' = '+p+'/100 × '+T+'.',a:p+'/100 × '+T+' = '+v}}
+  const tot=pick([2.5,3,3.5,2]),b=pick([0.75,0.5,1.25]),k=Math.floor(tot/b),left=tv(tot-k*b),said=pick([left,tv(left+b/2)]);const tr=said===left;return{kind:'pick',...YN(tr),q:C.who+' kata '+fd(tot)+' ℓ boleh mengisi '+k+' bekas '+fd(b)+' ℓ dan berbaki '+fd(said)+' ℓ. Betulkah?',s:'Darab '+fd(b)+' × '+k+', kemudian tolak daripada '+fd(tot)+'.',a:fd(b)+' × '+k+' = '+fd(b*k)+'; '+fd(tot)+' − '+fd(b*k)+' = ?'}}})
+};
+const argmax=v=>v.indexOf(Math.max(...v)),argmin=v=>v.indexOf(Math.min(...v));
+
+const GEN={
+3:{
+ perpuluhan:[Fx.gridRead('hundred_grid_to_decimal'),Fx.gridShade('hundred_grid_to_decimal'),Fx.fracToDec('hundredths_to_decimal'),Fx.placeVal('decimal_place_value_from_hundredths',2),Fx.lineTap('compare_decimals_number_line',2),Fx.cmpSym('compare_decimal_pair'),Fx.largest('select_largest_decimal',2),Fx.lazimAdd('add_decimals_hundredths',2,0),Fx.lazimSub('subtract_decimals_hundredths',2,0),Fx.missingAdd('missing_addend_decimal')],
+ peratus:[Fx.gridRead('hundred_grid_to_percent',true),Fx.gridShade('percent_to_shaded_count',true),Fx.outOf100('number_out_of_100_to_percent'),Fx.pctWords('percent_words_to_symbol'),Fx.unshaded('infer_unshaded_percent'),Fx.match('match_fraction_decimal_percent'),Fx.nonEquiv('find_non_equivalent_representation')]},
+4:{
+ perpuluhan:[Fx.lazimAdd('decimal_add_three',3,9),Fx.lazimAdd('decimal_add_three',3,5,3),Fx.lazimSub('decimal_subtract_two',3,9),Fx.subTwo('decimal_subtract_two'),Fx.mul1('decimal_multiply',3,9),Fx.div10('decimal_divide'),Fx.storyD4('decimal_subtract_two')],
+ peratus:[Fx.gridRead('hundred_grid_percent',true),Fx.fracToPct('fraction_to_percent'),Fx.pctToFrac('percent_to_fraction'),Fx.pctOf('percent_of_quantity'),Fx.pctOf('percent_of_quantity',true),Fx.pctStory('percent_story')]},
+5:{
+ perpuluhan:[Fx.placeVal('depth_place',3),Fx.round('depth_round3'),Fx.combined('depth_combined'),Fx.mulBig('depth_multiply'),Fx.divD5('depth_divide'),Fx.storyD5('depth_multiply')],
+ peratus:[Fx.pctToDecV('depth_visual'),Fx.mixedPct('depth_mixed_to_percent'),Fx.over100('depth_over100_quantity'),Fx.inverse('depth_inverse'),Fx.pctStoryD5('depth_over100_quantity')]},
+6:{
+ perpuluhan:[Fx.mulDec('y6v2_2_2_1_multiply'),Fx.divDec('y6v2_2_2_2_divide'),Fx.missFac('y6v2_2_2_1_missing_factor'),Fx.estimate('y6v2_2_2_1_estimate'),Fx.decError('y6v2_2_2_1_error'),Fx.rateD6('y6v2_2_2_1_rate')],
+ peratus:[Fx.pctDec6('y6v2_2_3_1_percent_to_decimal',true),Fx.pctDec6('y6v2_2_3_1_decimal_to_percent',false),Fx.pctOrder('y6v2_2_3_1_order'),Fx.pctAdd('y6v2_2_3_2_add'),Fx.points('y6v2_2_3_2_points'),Fx.over100('y6v2_2_3_3_of_quantity'),Fx.qtyAsPct('y6v2_2_3_3_quantity_as_percent'),Fx.pctCmp('y6v2_2_3_3_compare'),Fx.reverse6('y6v2_2_3_3_reverse'),Fx.multi6('y6v2_2_3_3_multi'),Fx.pctClaim('y6v2_2_3_1_claim')],
+ masalah:[Fx.bodmas('y6v2_2_4_1_simple','simple'),Fx.bodmas('y6v2_2_4_1_bracket','bracket'),Fx.bodmas('y6v2_2_4_1_unknown','unknown'),Fx.bodmas('y6v2_2_4_1_fraction_decimal','fd'),Fx.method('y6v2_2_4_1_method'),Fx.opError('y6v2_2_4_1_error'),Fx.ctx6('y6v2_2_5_1_recipe','recipe'),Fx.ctx6('y6v2_2_5_1_sharing','sharing'),Fx.ctx6('y6v2_2_5_1_mixed_context','mixed'),Fx.ctx6('y6v2_2_5_1_percent_context','target'),Fx.reverse6('y6v2_2_5_1_reverse'),Fx.ctx6('y6v2_2_5_1_claim','claim')]}
+};
+Object.values(GEN).forEach(g=>Object.values(g).forEach(list=>list.forEach(e=>{const f=e.f;e.f=C=>{let r;for(let i=0;i<80&&!r;i++)r=f(C);return r}})));
+
+/* ---------- enjin Lombong Permata ---------- */
+const A='assets/minigames/lombong-permata/';
+const $=id=>document.getElementById(id);
+const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
+const MODE_LABEL={perpuluhan:'PERPULUHAN',peratus:'PERATUS',masalah:'MASALAH'};
+const GRADES={3:{title:'Perpuluhan perseratus & peratus asas'},4:{title:'Operasi perpuluhan & peratus'},5:{title:'Perseribu, pembundaran & peratus > 100%'},6:{title:'Darab/bahagi perpuluhan, peratus & masalah'}};
+Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
+const SAYS={perpuluhan:'Tolong sukat permata ini dengan tepat!',peratus:'Berapa peratus permata yang kita jumpa?',masalah:'Bantu saya selesaikan masalah lombong!'};
+const TIP={perpuluhan:'Sejajarkan titik perpuluhan. Kira tempat perpuluhan dengan teliti.',peratus:'Peratus bermaksud “daripada 100”. 100% = 1 keseluruhan.',masalah:'Kurungan dahulu, kemudian darab/bahagi, kemudian tambah/tolak.'};
+const GEM=c=>'<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 13L2 9z" fill="'+c+'" stroke="#2a1a3a" stroke-width="1.6" stroke-linejoin="round"/><path d="M2 9h20M8 3l4 6 4-6M12 9v13" stroke="#fff8" stroke-width="1.1" fill="none"/></svg>';
+const GCOL=['#ff5a8a','#4fb8ff','#5ee08a','#ffd23f','#b98bff'];
+
+/* ---------- hash ---------- */
+function parseHash(raw){const h=String(raw==null?location.hash.slice(1):raw).toLowerCase().split('?')[0],m=/^d([1-6])((?:-[a-z]+(?:@\d+)?)*)$/.exec(h);
+ if(!m)return{grade:4,modes:GRADES[4].modes,start:{}};const gr=GEN[+m[1]]?+m[1]:Math.max(3,Math.min(6,+m[1])),start={},want=[];
+ m[2].split('-').filter(Boolean).forEach(t=>{const[k,n]=t.split('@');if(GEN[gr][k]&&!want.includes(k)){want.push(k);if(n)start[k]=+n}});
+ return{grade:gr,modes:want.length?want:GRADES[gr].modes,start}}
+let cfg=parseHash();
+const SET=5;
+let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,solved=false,misses=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT;
+let inp=[],fk=0,sel=null,seq=[],shade=new Set(),tick=null,lzIn={},lzF='',lzBad=[];
+
+function sfx(f=650,d=.08,type='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),gn=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);gn.gain.setValueAtTime(.07,ac.currentTime);gn.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(gn).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const win=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sfx(f,.18,'triangle'),i*100));
+function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('dim');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
+function hideMsg(){$('wsay').className='wsay hide';$('bubble').classList.remove('dim')}
+function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* ---------- petak seratus ---------- */
+function gridHTML(n,live){let h='<div class="hg'+(live?' live':'')+'">';for(let r=0;r<10;r++){if(live)h+='<button type="button" class="rw" data-row="'+r+'" aria-label="Lorek baris '+(r+1)+'">'+(r+1)+'</button>';
+  for(let c=0;c<10;c++){const i=r*10+c,on=live?shade.has(i):i<n;h+=live?'<button type="button" class="hc'+(on?' on':'')+'" data-c="'+i+'" aria-label="Petak '+(i+1)+'"></button>':'<i class="hc'+(on?' on':'')+'"></i>'}}
+ return h+'</div>'}
+/* ---------- garis nombor ---------- */
+function lineHTML(L,mark,live){const n=L.n;let t='';for(let i=0;i<=n;i++){const x=4+i*92/n;t+='<line x1="'+x+'" x2="'+x+'" y1="'+(i===0||i===n?20:24)+'" y2="'+(i===0||i===n?40:36)+'" stroke="#2a1a0e" stroke-width="'+(i===0||i===n?1.6:1)+'"/>';
+  if(live&&i>0&&i<n)t+='<rect class="tk'+(tick===i?' on':'')+'" data-t="'+i+'" x="'+(x-4)+'" y="12" width="8" height="34" rx="2"/>'}
+ const gx=mark!=null?4+mark*92/n:null;
+ return '<svg class="nl" viewBox="0 0 100 56"><line x1="2" x2="98" y1="30" y2="30" stroke="#2a1a0e" stroke-width="1.6"/>'+t+'<text x="4" y="53">'+L.lo+'</text><text x="96" y="53">'+L.hi+'</text>'+(gx!=null?'<g transform="translate('+(gx-5)+',2) scale(.42)">'+GEM('#ff5a8a').replace(/<\/?svg[^>]*>/g,'')+'</g>':'')+'</svg>'}
+/* ---------- bentuk lazim perpuluhan ---------- */
+const PV=['sa','puluh','ratus','ribu'],PD=['1/10','1/100','1/1000'];
+function lzShape(){const L=q.lz,all=[...L.rows,L.ans],dp=(L.ans.split('.')[1]||'').length,I=Math.max(...all.map(s=>s.split('.')[0].length));return{dp,I}}
+function lazimHTML(){const L=q.lz,{dp,I}=lzShape(),n=I+1+dp;const digs=s=>{const[a,b='']=s.split('.');return [...a.padStart(I,' ')].concat(['.'],[...b.padEnd(dp,'0')])};
+ const hd=range(n).map(k=>k<I?PV[I-1-k]:k===I?'':PD[k-I-1]);
+ let h='<div class="lz" style="--n:'+n+'"><span></span>'+hd.map((x,k)=>'<b class="hd'+(k===I?' dt':'')+'">'+x+'</b>').join('');
+ h+='<span class="rl sm">'+(L.op==='+'?'kumpul<br>semula':'pecah')+'</span>'+range(n).map(k=>k===I||k===n-1?'<span'+(k===I?' class="dt"':'')+'></span>':'<button type="button" class="cbox'+(lzF==='c'+k&&!solved?' on':'')+'" data-z="c'+k+'" aria-label="Catatan"><b>'+(lzIn['c'+k]||'')+'</b></button>').join('');
+ L.rows.forEach((r,j)=>{h+='<span class="rl op">'+(j?L.op:'')+'</span>'+digs(r).map((d,k)=>'<em class="dg'+(k===I?' dt':'')+'">'+(d===' '?'':d)+'</em>').join('')});
+ h+='<i class="ln"></i><span class="rl">'+(L.op==='+'?'Jumlah':'Baki')+'</span>'+range(n).map(k=>k===I?'<em class="dg dt">.</em>':'<button type="button" class="abox'+(lzF==='a'+k&&!solved?' on':'')+(lzBad.includes(k)?' bad':'')+'" data-z="a'+k+'" aria-label="Jawapan lajur '+(k+1)+'"><b>'+(lzIn['a'+k]||'')+'</b></button>').join('');
+ return h+'</div>'}
+function lzKey(k){if(solved)return;const{dp,I}=lzShape(),n=I+1+dp;
+ if(k==='⌫'){lzIn[lzF]='';}else{lzIn[lzF]=k;if(lzF[0]==='a'){let i=+lzF.slice(1)-1;if(i===I)i--;if(i>=0)lzF='a'+i}}
+ lzBad=[];hideMsg();sfx(440,.03);$('build').innerHTML=lazimHTML()}
+
+/* ---------- panel ---------- */
+function visHTML(v){if(!v)return '';if(v.t==='grid')return gridHTML(v.n,false);if(v.t==='line')return lineHTML(v,v.mark,false);return ''}
+function drawBuild(){const box=$('build');if(!box)return;const K=q.kind;
+ if(K==='grid')box.innerHTML=gridHTML(0,true);
+ else if(K==='line')box.innerHTML=lineHTML(q.line,tick,true);
+ else if(K==='lazim')box.innerHTML=lazimHTML();
+ else if(K==='order'){box.innerHTML=q.items.map((_,i)=>'<span class="oslot'+(seq[i]?' on':'')+'"><em>'+(i+1)+'</em>'+(seq[i]?esc(q.items.find(x=>x.id===seq[i]).label):'')+'</span>').join('');$('tiles').querySelectorAll('[data-o]').forEach(b=>b.disabled=solved||seq.includes(b.dataset.o))}}
+$('widget').addEventListener('click',e=>{if(solved)return;let b=e.target.closest('.hc');
+ if(b&&q.kind==='grid'){const i=+b.dataset.c;shade.has(i)?shade.delete(i):shade.add(i);hideMsg();sfx(600,.03);drawBuild();return}
+ b=e.target.closest('[data-row]');if(b){const r=+b.dataset.row,cells=range(10).map(c=>r*10+c),full=cells.every(c=>shade.has(c));cells.forEach(c=>full?shade.delete(c):shade.add(c));hideMsg();sfx(520,.05);drawBuild();return}
+ b=e.target.closest('[data-t]');if(b){tick=+b.dataset.t;hideMsg();sfx(500+tick*30,.05);drawBuild();return}
+ b=e.target.closest('[data-z]');if(b){lzF=b.dataset.z;sfx(500,.03);drawBuild();return}});
+function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className='tiles';box.className='panel set k-'+K;
+ let h='';if(q.card)h+='<div class="qcard'+(q.vis?' lt':'')+'"><small>'+(K==='pick'?'BATU UJIAN':'LOG PERMATA')+'</small><b>'+esc(q.card)+'</b></div>';
+ h+=visHTML(q.vis);
+ if(['grid','line','lazim','order'].includes(K))h+='<div class="build '+K+'" id="build"></div>';
+ if(K==='pad')h+='<div class="ansrow'+(q.form.frac?' frac':'')+'" id="ansrow">'+q.form.fields.map((f,i)=>(f.pre?'<span class="lbl">'+f.pre+'</span>':'')+'<button type="button" class="fld'+(q.form.fields.length>1?' two':'')+'" id="F'+i+'" data-f="'+i+'" aria-label="Jawapan '+(i+1)+'"><b></b>'+(f.post?'<span>'+f.post+'</span>':'')+'</button>').join('')+'</div>';
+ box.innerHTML=h;
+ if(K==='grid'){drawBuild();tl.innerHTML='<button type="button" class="tl" id="bReset">↻ Padam semua lorekan</button>';$('bReset').onclick=()=>{if(solved)return;shade=new Set();hideMsg();drawBuild()}}
+ else if(K==='line'){drawBuild();tl.innerHTML='<button type="button" class="tl" id="bReset">↻ Alih semula permata</button>';$('bReset').onclick=()=>{if(solved)return;tick=null;hideMsg();drawBuild()}}
+ else if(K==='lazim'){const{dp,I}=lzShape();lzF='a'+(I+dp);drawBuild();tl.className='tiles kp';tl.innerHTML=['1','2','3','4','5','⌫','6','7','8','9','0',''].map(k=>k?'<button type="button" class="tl'+(k==='⌫'?' del':'')+'" data-k="'+k+'">'+k+'</button>':'<span></span>').join('');tl.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>lzKey(b.dataset.k))}
+ else if(K==='order'){seq=[];tl.className='tiles pk ord';tl.innerHTML=q.items.map(o=>'<button type="button" class="tl" data-o="'+o.id+'">'+o.label+'</button>').join('')+'<button type="button" class="tl rs" id="oReset" aria-label="Mula semula">↺</button>';
+  tl.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(solved||seq.includes(b.dataset.o))return;seq.push(b.dataset.o);hideMsg();sfx(480+seq.length*40,.05);drawBuild()});$('oReset').onclick=()=>{if(solved)return;seq=[];hideMsg();drawBuild()};drawBuild()}
+ else if(K==='pick'){tl.className='tiles pk'+(q.opts.length===3&&q.opts.every(o=>o.label.length<=2)?' sym':'');tl.innerHTML=q.opts.map(o=>'<button type="button" class="tl" data-o="'+o.id+'">'+esc(o.label)+'</button>').join('');
+  tl.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(solved)return;sel=b.dataset.o;tl.querySelectorAll('[data-o]').forEach(x=>x.classList.toggle('sel',x===b));hideMsg();sfx(480,.05)})}
+ else{const dec=q.form.fields.some(f=>f.dec),multi=q.form.fields.length>1;tl.className='tiles kp';
+  tl.innerHTML=['1','2','3','4','5','⌫','6','7','8','9','0',dec?'.':multi?'⇥':''].map(k=>k?'<button type="button" class="tl'+(k==='⌫'?' del':'')+'" data-k="'+k+'" aria-label="'+(k==='⌫'?'Padam':k==='⇥'?'Kotak seterusnya':k==='.'?'Titik perpuluhan':k)+'">'+k+'</button>':'<span></span>').join('');
+  tl.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>key(b.dataset.k));
+  box.querySelectorAll('.fld').forEach(b=>b.onclick=()=>{if(solved)return;fk=+b.dataset.f;renderFields()});renderFields()}}
+function key(k){if(q.kind==='lazim')return lzKey(k);if(solved||q.kind!=='pad')return;const F=q.form.fields;if(k==='⇥'){fk=(fk+1)%F.length;renderFields();return}
+ let s=inp[fk]||'';if(k==='⌫')s=s.slice(0,-1);else if(k==='.'){if(!F[fk].dec)return;if(!s.includes('.'))s=(s||'0')+'.'}else if(s.replace('.','').length<8)s=s==='0'?k:s+k;
+ inp[fk]=s;$('ansrow').querySelectorAll('.fld').forEach(x=>x.classList.remove('bad'));hideMsg();renderFields();sfx(440,.03)}
+function renderFields(){if(q.kind!=='pad')return;q.form.fields.forEach((f,i)=>{const b=$('F'+i);if(!b)return;b.querySelector('b').textContent=nf(inp[i]||'');b.classList.toggle('on',i===fk&&!solved)})}
+
+/* ---------- semakan ---------- */
+function ansText(){if(q.ansTxt)return q.ansTxt;if(q.kind==='pick')return q.opts.find(o=>o.id===q.correct).label;if(q.kind==='grid')return q.need+' petak berlorek';if(q.kind==='lazim')return q.lz.ans;
+ if(q.kind==='pad'){const f=q.form.fields[0];return (f.pre||'')+nf(String(f.v))+(f.post?(f.post==='%'?'%':' '+f.post):'')}return ''}
+function check(){
+ if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
+ const K=q.kind;let ok=false,note='';
+ if(K==='pick'){if(sel==null){msg('Pilih satu jawapan dulu.','',2400);return}ok=sel===q.correct}
+ else if(K==='order'){if(seq.length<q.items.length){msg('Ketik semua pilihan ikut susunan dulu.','',2400);return}ok=seq.join()===q.correct.join();if(!ok){note='Susunan belum betul. '+q.s;seq=[];drawBuild()}}
+ else if(K==='grid'){if(!shade.size){msg('Lorek petak dulu.','',2400);return}ok=shade.size===q.need;if(!ok)note=shade.size>q.need?'Terlalu banyak petak berlorek. Kira semula.':'Belum cukup petak berlorek. Kira semula.'}
+ else if(K==='line'){if(tick==null){msg('Ketik satu tanda pada garis dulu.','',2400);return}ok=tick===q.need;if(!ok)note=tick<q.need?'Terlalu dekat dengan '+q.line.lo+'. Kira sela semula.':'Terlalu jauh dari '+q.line.lo+'. Kira sela semula.'}
+ else if(K==='lazim'){const{dp,I}=lzShape(),n=I+1+dp,[a,b='']=q.lz.ans.split('.'),want=[...a.padStart(I,' '),'.',...b.padEnd(dp,'0')];
+  if(!range(n).some(k=>k!==I&&lzIn['a'+k])){msg('Taip jawapan dalam kotak dulu.','',2400);return}
+  lzBad=range(n).filter(k=>{if(k===I)return false;const g=lzIn['a'+k]||'',w=want[k];return w===' '?!(g===''||g==='0'):(g!==w&&!(k<I&&w==='0'&&g===''&&k<I-1))});
+  ok=!lzBad.length;if(!ok){const op=q.lz.op;note=op==='+'?'Lajur bertanda merah belum tepat. Semak kumpul semula dari lajur di kanannya.':'Lajur bertanda merah belum tepat. Jika digit atas lebih kecil, pecahkan 1 dari lajur kiri.';lzF='a'+Math.max(...lzBad);$('build').innerHTML=lazimHTML()}}
+ else{if(!inp.some(s=>s)){msg('Tekan nombor untuk isi jawapan dulu.','',2400);return}
+  const F=q.form.fields,bad=F.map((f,i)=>!(inp[i]&&Math.abs(parseFloat(inp[i])-f.v)<1e-9));ok=!bad.includes(true);
+  if(!ok&&q.form.frac&&inp[0]&&inp[1]){const x=+inp[0],y=+inp[1];if(x*F[1].v===y*F[0].v&&x!==F[0].v){msg('Nilainya betul, tetapi belum bentuk termudah. Bahagi lagi.','',4000);sfx(520,.08);return}}
+  if(!ok){bad.forEach((x,i)=>$('F'+i).classList.toggle('bad',x));fk=bad.indexOf(true);renderFields();const g=parseFloat(inp[0]),v=F[0].v;
+   note=F[0].dec&&g&&v&&[10,100,1000,.1,.01,.001].some(m=>Math.abs(g-v*m)<1e-9)?'Digitnya betul, tetapi titik perpuluhan di tempat yang salah. Semak bilangan tempat perpuluhan.':'Belum tepat. Semak semula langkah kamu.'}}
+ if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+  pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Permata berkilau!','Tepat sekali!']);$('wiraImg').src=A+(st===3?'wira-victory.webp':'wira-thumb.webp');$('wira').classList.add('cheer');
+  const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+esc(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
+  renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);$('widget').querySelectorAll('button').forEach(b=>b.disabled=true);
+  const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=GEM(GCOL[(served-1)%SET]);sl.classList.add('on','pop')}
+  $('check').textContent=served%SET===0?'Lihat troli permata ✦':'Seterusnya →';
+  setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
+ misses++;
+ if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
+ msg(note,'bad',4200);
+ pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
+function adapt(st){const k=q.mode,up=q.nTiers-1;
+ if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Lapisan lombong seterusnya lebih dalam.','',2600),2000)}}
+ else{clean[k]=0;if(hints+misses>=2&&tier[k]>0){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
+function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;
+ window.parent.postMessage({type:'PA_LOMBONG_PERMATA_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,index:served,tier:q.tierIx+1,prompt:q.q,stars:st,misses,hints,at:Date.now()},location.origin)}catch(e){}}
+
+/* ---------- aliran ---------- */
+function makeQ(){const k=cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
+ const ti=Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
+ return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch}}
+function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
+ $('stageN').textContent='PERMATA '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Hari '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
+const SUB={pick:'Pilih satu jawapan.',pad:'Tekan nombor untuk isi jawapan.'};
+function startRound(){if(served%SET===0)$('cart').innerHTML=range(SET).map(i=>'<span class="slot" id="slot'+i+'"></span>').join('');
+ q=makeQ();solved=false;misses=0;hints=0;hint2=0;sel=null;inp=q.form?q.form.fields.map(()=>''):[];fk=0;seq=[];shade=new Set();tick=null;lzIn={};lzBad=[];hideMsg();
+ $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
+ $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<2?SUB[q.kind]||'':'');
+ $('wiraImg').src=A+'wira-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
+ $('check').textContent='Semak';$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('bubble').classList.add('hide');
+ const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
+ setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ renderTrack();buildPanel()}
+function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';
+ for(let i=0;i<26;i++){const e=document.createElement('i'),a=Math.random()*Math.PI*2,d=70+Math.random()*120;e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d-30+'px');e.style.background=GCOL[i%5];e.style.animationDelay=(Math.random()*.15)+'s';b.appendChild(e)}}
+function setDone(){const got=setLog.reduce((a,l)=>a+l.st,0);$('doneTitle').textContent='Hari '+sets+': Troli Permata Penuh!';
+ $('finishText').textContent='Kamu menggali '+SET+' permata dan memperoleh '+got+' daripada '+SET*3+' bintang. Markah latihan sahaja, bukan rekod mastery.';
+ $('faces').innerHTML=setLog.map(l=>'<div><img src="'+A+l.q.pet+'-happy.webp" alt="'+l.q.who+'">'+'★'.repeat(l.st)+'</div>').join('');$('complete').hidden=false;$('again').focus()}
+$('again').onclick=()=>{$('complete').hidden=true;sets++;setLog=[];startRound()};
+$('check').onclick=check;
+
+/* ---------- Tanya Wira: klu 1 strategi, klu 2 langkah dengan jawapan disorok ---------- */
+const MASK=t=>t.replace(/\d+(?:[.:]\d+)*(?: \d{3})*/g,'?');
+function hideStep(a){a=String(a||'').trim().replace(/\.$/,'');if(!a)return '';
+ const ss=a.split(/(?<=[;])\s+(?=\S)/),L=ss.pop(),eq=L.split('=');if(eq.length<2)return '';
+ const keep=eq.slice(0,-1);if(keep.length>1&&!/[+−×÷]/.test(keep[keep.length-1]))keep.pop();
+ return [...ss,keep.join('=').trimEnd()+' = '+MASK(eq[eq.length-1].trim())].join(' ')}
+function hintTwo(){if(q.hint2)return q.hint2;if(q.kind==='lazim')return q.lz.op==='+'?'Mula dari lajur paling kanan: '+q.lz.rows.map(r=>r.slice(-1)).join(' + ')+' = ?. Jika 10 atau lebih, kumpul semula 1 ke lajur kiri.':'Mula dari lajur paling kanan: '+q.lz.rows[0].slice(-1)+' − '+q.lz.rows[1].slice(-1)+'. Jika tidak cukup, pecahkan 1 dari lajur kiri.';
+ const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
+$('hint').onclick=()=>{if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Klu habis';if(hint2>=2)$('hint').disabled=true;sfx(620,.1)};
+$('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
+document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;const pk=q.kind==='pad'||q.kind==='lazim';if(pk&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(pk&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
+function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
+
+/* ---------- DEV ---------- */
+let devGrade=cfg.grade,devModes=[...cfg.modes];
+function drawDev(){$('devGrades').innerHTML=[3,4,5,6].map(x=>'<button type="button" data-g="'+x+'" class="'+(x===devGrade?'on':'')+'">D'+x+'</button>').join('');
+ $('devTitle').textContent='Darjah '+devGrade+' · '+GRADES[devGrade].title;
+ $('devModes').innerHTML=GRADES[devGrade].modes.map(k=>'<button type="button" data-k="'+k+'" class="'+(devModes.includes(k)?'on':'')+'">'+MODE_LABEL[k].toLowerCase()+'</button>').join('');
+ $('devGrades').querySelectorAll('button').forEach(b=>b.onclick=()=>{devGrade=+b.dataset.g;devModes=[...GRADES[devGrade].modes];drawDev()});
+ $('devModes').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;devModes=devModes.includes(k)?devModes.filter(x=>x!==k):[...devModes,k];if(!devModes.length)devModes=[k];drawDev()});
+ $('devHash').textContent='#d'+devGrade+'-'+devModes.join('-')}
+function applyDev(hash){const h=hash?hash.replace('#',''):'d'+devGrade+'-'+devModes.join('-');try{history.replaceState(null,'','#'+h)}catch(e){}cfg=parseHash(h);$('dev').hidden=true;$('complete').hidden=true;resetAll();startRound()}
+const SIMS={
+ 'D3 lemah perseratus':{skill:'D3.DEC',rows:[['hundredths_to_decimal','unresolved'],['hundred_grid_to_decimal','assisted'],['compare_decimal_pair','independent']]},
+ 'D4 lemah tolak perpuluhan':{skill:'D4.DEC',rows:[['decimal_subtract_two','unresolved'],['decimal_add_three','independent'],['decimal_subtract_two','assisted']]},
+ 'D5 lemah peratus songsang':{skill:'D5.PERCENT',rows:[['depth_inverse','unresolved'],['depth_over100_quantity','assisted'],['depth_visual','independent']]},
+ 'D6 lemah bahagi perpuluhan':{skill:'D6.DEC',rows:[['y6v2_2_2_2_divide','unresolved'],['y6v2_2_2_2_missing_divisor','assisted'],['y6v2_2_2_1_multiply','independent']]}};
+$('sims').innerHTML=Object.keys(SIMS).map(k=>'<button type="button" data-sim="'+k+'">'+k+'</button>').join('');
+function runSim(k){const s=SIMS[k],Rt=window.PALombongPermata;if(!Rt){$('simOut').textContent='Router tidak dimuatkan.';return}
+ const plan=Rt.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
+ if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod yang sesuai.';$('simGo').hidden=true;return}
+ $('simOut').innerHTML='<b>'+s.skill+'</b> → '+plan.start.map(m=>MODE_LABEL[m.mode].toLowerCase()+' (T'+(m.start+1)+')').join(', ')+' · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
+$('devBtn').onclick=()=>{if(!DEV_ENABLED)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+$('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>applyDev();
+document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
+window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
+window.__lbDebug=()=>q&&{kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,lz:q.lz,correct:q.correct,items:q.items,shade:shade.size,tick}; // ujian sahaja
+window.__lbGen={GEN}; // ujian sahaja
+function focusLaunchAllowed(){try{const p=new URLSearchParams(location.search),skill=p.get('skill'),host=window.parent,game=host.PAFocusMiniGamesLive?.gameFor(skill),plan=game?.router?.()?.planFor(host.db,skill);return host!==window&&p.get('pa_focus_live')==='1'&&!!p.get('pa_nonce')&&game?.id==='lombong-permata'&&!!window.PALombongPermata?.SKILL?.[skill]&&Number(host.db?.schoolGrade)===cfg.grade&&Number(plan?.grade)===cfg.grade&&plan?.hash===location.hash.slice(1)}catch(_){return false}}
+if(!DEV_ENABLED&&!focusLaunchAllowed()){document.body.innerHTML='<main style="min-height:100dvh;display:grid;place-items:center;padding:24px;background:#10263e;color:#fff6e0;font:700 16px system-ui;text-align:center"><section><h1>Lombong Permata Wira</h1><p>Buka latihan ini melalui Kemahiran Fokus untuk profil murid.</p></section></main>';return}
+resetAll();startRound();
+if(!DEV_ENABLED){$('devBtn').hidden=true;$('devBtn').style.display='none';$('dev').hidden=true;$('dev').style.display='none'}
+})();
+</script>
