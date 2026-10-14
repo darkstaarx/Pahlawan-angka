@@ -450,7 +450,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <div class="wsay hide" id="wsay"><b>WIRA</b><span id="wsayTxt"></span></div>
     <div class="stamp" id="stamp"></div>
     <div class="burst" id="burst"></div>
-    <button type="button" class="devbtn" id="devBtn" aria-label="Tukar darjah (ujian)">D2 ▾</button>
+    <button type="button" class="devbtn" id="devBtn" hidden aria-label="Tukar darjah (ujian)">D2 ▾</button>
   </section>
   <div class="banner"><span class="tag" id="mode">PANJANG</span>
     <div class="disc" aria-live="polite"><b id="stageN">TEMPA 1/5</b><span class="dots" id="dots"></span></div>
@@ -485,6 +485,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 'use strict';
 const A='assets/minigames/bengkel-ajaib/';
 const $=id=>document.getElementById(id);
+const devToolsEnabled=new URLSearchParams(location.search).get('pa_dev')==='1'||new URLSearchParams(location.search).get('qa')==='1';
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const r50=(a,b)=>rnd(Math.ceil(a/50),Math.floor(b/50))*50;
@@ -707,6 +708,7 @@ function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots'
  $('stageN').textContent='TEMPA '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Set '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET);$('furnace').style.setProperty('--heat',lit/SET);$('arch').classList.toggle('hot',lit===SET)}
 const SUB={build:{panjang:'Seret slider atau tekan butang cm.',jisim:'Letak pemberat sehingga timbangan seimbang.',isipadu:'Tuang air sehingga paras yang diminta.'},read:'Baca alat, kemudian isi jawapan.',pad:'Tekan nombor untuk isi jawapan.',pick:'Pilih satu jawapan.'};
 function startRound(){q=makeQ();const base=TOOL[q.mode](cfg.grade);tool=q.tool?{...base,...q.tool}:base;val=q.kind==='read'?q.show:0;hist=[];solved=false;misses=0;hints=0;hint2=0;ansIn=q.fields?q.fields.map(()=>''):[];fi=0;sel=null;hideMsg();
+ $('devBtn').hidden=!devToolsEnabled;
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);$('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a55','#ffd7a055'][served%SET];
  const sb=q.kind==='build'?(tool.unit==='pemadam'?'Tekan +1 pemadam untuk menyusun.':tool.unit==='cawan'?'Tekan +1 cawan untuk menuang.':SUB.build[q.mode]):SUB[q.kind];
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<3||q.kind!=='build'?sb:'');
@@ -790,7 +792,7 @@ function runSim(key){const s=SIMS[key],R=window.PABengkelAjaib;if(!R){$('simOut'
  const plan=R.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
  if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod bengkel yang sesuai. Kekal battle biasa.';$('simGo').hidden=true;return}
  $('simOut').innerHTML='<b>'+s.skill+'</b> → mod: <b>'+plan.start.map(m=>m.mode+' (T'+(m.start+1)+')').join(', ')+'</b> · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
-$('devBtn').onclick=()=>{devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+$('devBtn').onclick=()=>{if(!devToolsEnabled)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
 $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if((q.kind==='read'||q.kind==='pad')&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if((q.kind==='read'||q.kind==='pad')&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
