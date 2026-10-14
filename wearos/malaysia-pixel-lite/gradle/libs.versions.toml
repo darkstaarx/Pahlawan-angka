@@ -1,0 +1,7 @@
+[versions]
+# Same toolchain as Google's official Watch Face Format samples
+# (android/wear-os-samples/WatchFaceFormat): AGP 9.0.0 on Gradle 9.2.1.
+androidGradlePlugin = "9.0.0"
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

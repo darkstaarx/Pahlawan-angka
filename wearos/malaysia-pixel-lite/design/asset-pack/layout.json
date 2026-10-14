@@ -1,0 +1,124 @@
+{
+  "project": "Malaysia Pixel Lite V1",
+  "canvas_px": [
+    480,
+    480
+  ],
+  "source_grid_px": [
+    240,
+    240
+  ],
+  "rendering": "nearest-neighbor (pixel art), no smoothing for pixel layers",
+  "screen": "round AMOLED Wear OS watch face",
+  "test_time": "10:08",
+  "safe_circle": {
+    "center": [
+      240,
+      240
+    ],
+    "radius": 204
+  },
+  "asset_rule": "Each PNG 480x480. Place at x=0,y=0 in listed z-order. Transparency already baked; time/data values are NOT in PNG.",
+  "layers_order": [
+    "00_bg_night.png",
+    "01_moon_star.png",
+    "02_star_speckles.png",
+    "03_kl_silhouette.png",
+    "04_heart_blue.png",
+    "05_heart_stripes.png",
+    "06_complication_frames.png",
+    "07_icon_steps.png",
+    "08_icon_battery.png",
+    "09_icon_weather.png",
+    "10_hibiscus_small.png",
+    "11_flag_arcs_optional.png"
+  ],
+  "dynamic_regions": {
+    "date": {
+      "center": [
+        240,
+        138
+      ],
+      "bbox": [
+        90,
+        122,
+        390,
+        155
+      ],
+      "kind": "system-date",
+      "example": "TUE 14 OCT"
+    },
+    "time": {
+      "center": [
+        240,
+        211
+      ],
+      "bbox": [
+        65,
+        167,
+        416,
+        248
+      ],
+      "kind": "system-time",
+      "example": "10:08"
+    },
+    "ampm": {
+      "bbox": [
+        386,
+        230,
+        425,
+        255
+      ],
+      "kind": "optional system AM/PM"
+    },
+    "steps": {
+      "bbox": [
+        62,
+        390,
+        160,
+        422
+      ],
+      "kind": "steps metric when supported",
+      "example": "7842"
+    },
+    "battery": {
+      "bbox": [
+        194,
+        390,
+        290,
+        422
+      ],
+      "kind": "watch battery metric",
+      "example": "86%"
+    },
+    "weather": {
+      "bbox": [
+        322,
+        390,
+        430,
+        422
+      ],
+      "kind": "optional user-selected weather complication",
+      "example": "28C"
+    }
+  },
+  "customization": {
+    "optional_layers": [
+      "02_star_speckles.png",
+      "03_kl_silhouette.png",
+      "11_flag_arcs_optional.png"
+    ],
+    "widgets": "If user-configurable complications overlap any fixed asset icon/label, hide those icons or remove panels in that variant."
+  },
+  "aod": {
+    "base": "12_aod_bg.png",
+    "optional_motif": "13_aod_moon_star_optional.png",
+    "dynamic": "display time only",
+    "no_animations": true
+  },
+  "constraints": [
+    "Never use example date/time/numbers as final fixed text.",
+    "Preview is an illustration, not an installable watch face.",
+    "Run watch face on Wear OS emulator and test complication permissions and pixel burn-in/AOD limits."
+  ]
+}

@@ -1,0 +1,138 @@
+name: Wear OS watch face (Malaysia Pixel Lite)
+
+on:
+  push:
+    paths:
+      - "wearos/malaysia-pixel-lite/**"
+      - "!wearos/malaysia-pixel-lite/docs/emulator-run/**"
+      - ".github/workflows/wearos-watchface.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wearos-watchface-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: wearos/malaysia-pixel-lite
+
+jobs:
+  build:
+    name: Validate and build APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Static checks (resources, layering, round-screen fit, AOD, memory)
+        run: |
+          python -m pip install --quiet pillow
+          python tools/check_watchface.py
+      - name: Official WFF validator (formats 1-5)
+        run: bash tools/validate_wff.sh 1 2 3 4 5
+      - name: Build debug APK
+        run: ./gradlew --no-daemon --stacktrace :watchface:assembleDebug
+      - name: Inspect APK
+        run: |
+          APK=watchface/build/outputs/apk/debug/watchface-debug.apk
+          AAPT2=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt2
+          "$AAPT2" dump badging "$APK" | head -20
+          unzip -l "$APK"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: malaysia-pixel-lite-debug-apk
+          path: wearos/malaysia-pixel-lite/watchface/build/outputs/apk/debug/watchface-debug.apk
+
+  emulator:
+    name: Emulator test (${{ matrix.name }})
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: large-round-api34
+            device: wearos_large_round
+            api: 34
+          - name: small-round-api33
+            device: wearos_small_round
+            api: 33
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: malaysia-pixel-lite-debug-apk
+          path: wearos/malaysia-pixel-lite/watchface/build/outputs/apk/debug
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install emulator and Wear OS system image
+        run: |
+          BIN="$ANDROID_HOME/cmdline-tools/latest/bin"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/emulator" >> "$GITHUB_PATH"
+          echo "$BIN" >> "$GITHUB_PATH"
+          yes | "$BIN/sdkmanager" --licenses > /dev/null || true
+          echo "Available Wear OS images:"
+          "$BIN/sdkmanager" --list 2>/dev/null | grep -o 'system-images;android-[0-9]*;android-wear[^ ]*' | sort -u || true
+          "$BIN/sdkmanager" "emulator" "platform-tools" "system-images;android-${{ matrix.api }};android-wear;x86_64" > /dev/null
+          echo "Wear devices:"
+          "$BIN/avdmanager" list device -c | grep -i wear || true
+      - name: Create and boot AVD
+        run: |
+          DEV="${{ matrix.device }}"
+          avdmanager list device -c | grep -qx "$DEV" || DEV=$(avdmanager list device -c | grep -i 'wear.*round' | head -1)
+          echo "Using device profile: $DEV"
+          echo no | avdmanager create avd -n wear -k "system-images;android-${{ matrix.api }};android-wear;x86_64" -d "$DEV"
+          nohup emulator -avd wear -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/emulator.log 2>&1 &
+          adb wait-for-device
+          timeout 900 bash -c 'until [ "$(adb shell getprop sys.boot_completed | tr -d "\r")" = "1" ]; do sleep 5; done'
+          adb shell settings put global device_provisioned 1 || true
+          adb shell settings put secure user_setup_complete 1 || true
+          sleep 90
+          echo "Display/ambient related settings:"
+          for ns in global secure system; do adb shell settings list $ns | grep -i -E 'ambient|always|aod|doze|screen_off' | sed "s/^/$ns: /" || true; done
+          adb shell pm list packages | grep -i -E 'watchface|wearable' || true
+      - name: Run emulator test script
+        shell: pwsh
+        run: ./scripts/emulator-test.ps1 -SkipBuild -NonInteractive
+      - name: Collect results
+        if: always()
+        run: |
+          RUN=$(ls -d test-output/* 2>/dev/null | tail -1)
+          mkdir -p "docs/emulator-run/${{ matrix.name }}"
+          if [ -n "$RUN" ]; then cp -r "$RUN"/. "docs/emulator-run/${{ matrix.name }}/"; fi
+          cp /tmp/emulator.log "docs/emulator-run/${{ matrix.name }}/emulator.log" 2>/dev/null || true
+          ls -la "docs/emulator-run/${{ matrix.name }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: emulator-run-${{ matrix.name }}
+          path: wearos/malaysia-pixel-lite/docs/emulator-run/${{ matrix.name }}
+      - name: Commit screenshots to this branch (not main)
+        if: always() && github.ref != 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "docs/emulator-run/${{ matrix.name }}"
+          git diff --cached --quiet && exit 0
+          git commit -m "test: Wear OS emulator run ${{ matrix.name }} [skip ci]"
+          for i in 1 2 3 4; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Malaysia Pixel Lite V1 - Watch Face Format version 1 (Wear OS 4+, API 33+).
+
+  Coordinate space is the asset pack's 480x480 canvas. The system scales the whole
+  face to the device (for example 450x450), so no per-size layouts are needed.
+
+  Layering (bottom to top), following design/asset-pack/layout.json:
+    1. interactive_layers  original PNG layers 00-08, 10, 11 at x=0,y=0 (hidden in ambient)
+    2. ambient_layers      12_aod_bg (+ optional 13 motif), shown only in ambient
+    3. interactive_text    date, steps, battery (hidden in ambient)
+    4. ampm                AM/PM, only when the device is in 12-hour mode
+    5. DigitalClock x2     interactive time (with shadow) and ambient time
+    6. ComplicationSlot    user-selected weather provider, draws 09_icon_weather
+
+  Text uses res/font/malaysia_pixel.ttf, built from the asset pack's 5x7 glyph table.
+  Font size N px = N/10 px per source pixel, and the font's line box is exactly the
+  glyph box (0.7 x size high), so every text box height below equals 0.7 x size.
+-->
+<WatchFace width="480" height="480" clipShape="CIRCLE">
+  <Metadata key="CLOCK_TYPE" value="DIGITAL"/>
+  <Metadata key="PREVIEW_TIME" value="10:08:32"/>
+
+  <UserConfigurations>
+    <BooleanConfiguration id="showStars" displayName="cfg_stars"
+        screenReaderText="cfg_stars" defaultValue="TRUE"/>
+    <BooleanConfiguration id="showSkyline" displayName="cfg_skyline"
+        screenReaderText="cfg_skyline" defaultValue="TRUE"/>
+    <BooleanConfiguration id="showFlagArcs" displayName="cfg_flag_arcs"
+        screenReaderText="cfg_flag_arcs" defaultValue="TRUE"/>
+    <BooleanConfiguration id="aodBackground" displayName="cfg_aod_background"
+        screenReaderText="cfg_aod_background" defaultValue="TRUE"/>
+    <BooleanConfiguration id="aodMotif" displayName="cfg_aod_motif"
+        screenReaderText="cfg_aod_motif" defaultValue="FALSE"/>
+  </UserConfigurations>
+
+  <Scene backgroundColor="#FF000000">
+
+    <!-- 1. Interactive background: each asset-pack layer is a full 480x480 canvas at 0,0. -->
+    <Group name="interactive_layers" x="0" y="0" width="480" height="480">
+      <Variant mode="AMBIENT" target="alpha" value="0"/>
+      <PartImage name="layer_00_bg_night" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_00_bg_night"/>
+      </PartImage>
+      <PartImage name="layer_01_moon_star" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_01_moon_star"/>
+      </PartImage>
+      <BooleanConfiguration id="showStars">
+        <BooleanOption id="TRUE">
+          <PartImage name="layer_02_star_speckles" x="0" y="0" width="480" height="480">
+            <Image resource="mpl_02_star_speckles"/>
+          </PartImage>
+        </BooleanOption>
+      </BooleanConfiguration>
+      <BooleanConfiguration id="showSkyline">
+        <BooleanOption id="TRUE">
+          <PartImage name="layer_03_kl_silhouette" x="0" y="0" width="480" height="480">
+            <Image resource="mpl_03_kl_silhouette"/>
+          </PartImage>
+        </BooleanOption>
+      </BooleanConfiguration>
+      <PartImage name="layer_04_heart_blue" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_04_heart_blue"/>
+      </PartImage>
+      <PartImage name="layer_05_heart_stripes" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_05_heart_stripes"/>
+      </PartImage>
+      <PartImage name="layer_06_complication_frames" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_06_complication_frames"/>
+      </PartImage>
+      <PartImage name="layer_07_icon_steps" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_07_icon_steps"/>
+      </PartImage>
+      <PartImage name="layer_08_icon_battery" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_08_icon_battery"/>
+      </PartImage>
+      <!-- Layer 09 (weather icon) is drawn by the weather ComplicationSlot at the end of
+           the Scene, so it only appears when a weather provider is set. -->
+      <PartImage name="layer_10_hibiscus_small" x="0" y="0" width="480" height="480">
+        <Image resource="mpl_10_hibiscus_small"/>
+      </PartImage>
+      <BooleanConfiguration id="showFlagArcs">
+        <BooleanOption id="TRUE">
+          <PartImage name="layer_11_flag_arcs_optional" x="0" y="0" width="480" height="480">
+            <Image resource="mpl_11_flag_arcs_optional"/>
+          </PartImage>
+        </BooleanOption>
+      </BooleanConfiguration>
+    </Group>
+
+    <!-- 2. Always-on (ambient) background. Static, no animation. -->
+    <Group name="ambient_layers" x="0" y="0" width="480" height="480" alpha="0">
+      <Variant mode="AMBIENT" target="alpha" value="255"/>
+      <BooleanConfiguration id="aodBackground">
+        <BooleanOption id="TRUE">
+          <PartImage name="aod_12_bg" x="0" y="0" width="480" height="480">
+            <Image resource="mpl_12_aod_bg"/>
+          </PartImage>
+        </BooleanOption>
+      </BooleanConfiguration>
+      <BooleanConfiguration id="aodMotif">
+        <BooleanOption id="TRUE">
+          <PartImage name="aod_13_moon_star" x="0" y="0" width="480" height="480">
+            <Image resource="mpl_13_aod_moon_star_optional"/>
+          </PartImage>
+        </BooleanOption>
+      </BooleanConfiguration>
+    </Group>
+
+    <!-- 3. Date and live data. Values come only from system data sources. -->
+    <Group name="interactive_text" x="0" y="0" width="480" height="480">
+      <Variant mode="AMBIENT" target="alpha" value="0"/>
+      <PartText name="date" x="92" y="126" width="300" height="28">
+        <Text align="CENTER" ellipsis="TRUE">
+          <Font family="malaysia_pixel" size="40" color="#FFF2D7">
+            <Upper>
+              <Template><![CDATA[%s %s %s]]>
+                <Parameter expression="[DAY_OF_WEEK_S]"/>
+                <Parameter expression="[DAY]"/>
+                <Parameter expression="[MONTH_S]"/>
+              </Template>
+            </Upper>
+          </Font>
+        </Text>
+      </PartText>
+      <PartText name="steps_value" x="74" y="389" width="94" height="21">
+        <Text align="CENTER" ellipsis="TRUE">
+          <Font family="malaysia_pixel" size="30" color="#FFF2D7">
+            <Template><![CDATA[%s]]>
+              <Parameter expression="[STEP_COUNT]"/>
+            </Template>
+          </Font>
+        </Text>
+      </PartText>
+      <PartText name="battery_value" x="194" y="389" width="96" height="21">
+        <Text align="CENTER">
+          <Font family="malaysia_pixel" size="30" color="#FFF2D7">
+            <Template><![CDATA[%s%%]]>
+              <Parameter expression="[BATTERY_PERCENT]"/>
+            </Template>
+          </Font>
+        </Text>
+      </PartText>
+    </Group>
+
+    <!-- 4. AM/PM: shown only when the device uses the 12-hour clock. Kept (dimmed) in
+         ambient because it is part of the time. -->
+    <Group name="ampm" x="392" y="223" width="54" height="21">
+      <Variant mode="AMBIENT" target="alpha" value="170"/>
+      <Condition>
+        <Expressions>
+          <Expression name="is24Hour">[IS_24_HOUR_MODE]</Expression>
+        </Expressions>
+        <Compare expression="is24Hour">
+          <!-- 24-hour mode: nothing to draw. -->
+          <Group name="ampm_hidden_24h" x="0" y="0" width="1" height="1"/>
+        </Compare>
+        <Default>
+          <PartText name="ampm_text" x="0" y="0" width="54" height="21">
+            <Text align="START">
+              <Font family="malaysia_pixel" size="30" color="#7D99BF">
+                <Template><![CDATA[%s]]>
+                  <Parameter expression="[AMPM_STRING]"/>
+                </Template>
+              </Font>
+            </Text>
+          </PartText>
+        </Default>
+      </Condition>
+    </Group>
+
+    <!-- 5a. Interactive time: navy shadow offset 4 px, cream digits on top. hourFormat
+         SYNC_TO_DEVICE follows the watch's 12/24-hour setting. -->
+    <DigitalClock x="95" y="174" width="304" height="74">
+      <Variant mode="AMBIENT" target="alpha" value="0"/>
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER"
+          x="4" y="4" width="300" height="70">
+        <Font family="malaysia_pixel" size="100" color="#030915"/>
+      </TimeText>
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER"
+          x="0" y="0" width="300" height="70">
+        <Font family="malaysia_pixel" size="100" color="#FFF2D7"/>
+      </TimeText>
+    </DigitalClock>
+
+    <!-- 5b. Ambient time: same position, dimmer colour, no shadow. -->
+    <DigitalClock x="95" y="174" width="300" height="70" alpha="0">
+      <Variant mode="AMBIENT" target="alpha" value="255"/>
+      <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" align="CENTER"
+          x="0" y="0" width="300" height="70">
+        <Font family="malaysia_pixel" size="100" color="#B8AD98"/>
+      </TimeText>
+    </DigitalClock>
+
+    <!-- 6. Weather: a user-selected complication in the right-hand frame. Empty by
+         default (no provider is assumed), and nothing is drawn while it is empty.
+         Only one icon is ever shown: the provider's own monochrome icon if it sends
+         one, otherwise the asset pack's 09_icon_weather at its original position. -->
+    <ComplicationSlot slotId="0" name="weather" displayName="weather_slot_label"
+        x="310" y="344" width="120" height="78"
+        supportedTypes="SHORT_TEXT EMPTY" isCustomizable="TRUE">
+      <BoundingBox x="0" y="0" width="120" height="78"/>
+      <Variant mode="AMBIENT" target="alpha" value="0"/>
+      <Complication type="SHORT_TEXT">
+        <Condition>
+          <Expressions>
+            <Expression name="hasProviderIcon"><![CDATA[[COMPLICATION.MONOCHROMATIC_IMAGE] != null]]></Expression>
+          </Expressions>
+          <Compare expression="hasProviderIcon">
+            <PartImage name="weather_provider_icon" x="49" y="6" width="32" height="32"
+                tintColor="#FFF2D7">
+              <Image resource="[COMPLICATION.MONOCHROMATIC_IMAGE]"/>
+            </PartImage>
+          </Compare>
+          <Default>
+            <!-- 09_icon_weather.png cropped losslessly; 310+50=360, 344+6=350 is the
+                 icon's original position on the 480x480 canvas. -->
+            <PartImage name="layer_09_icon_weather" x="50" y="6" width="30" height="32">
+              <Image resource="mpl_09_icon_weather_slot"/>
+            </PartImage>
+          </Default>
+        </Condition>
+        <PartText name="weather_value" x="2" y="45" width="94" height="21">
+          <Text align="CENTER" ellipsis="TRUE">
+            <Font family="malaysia_pixel" size="30" color="#FFF2D7">
+              <Template><![CDATA[%s]]>
+                <Parameter expression="[COMPLICATION.TEXT]"/>
+              </Template>
+            </Font>
+          </Text>
+        </PartText>
+      </Complication>
+      <Complication type="EMPTY"/>
+    </ComplicationSlot>
+
+  </Scene>
+</WatchFace>

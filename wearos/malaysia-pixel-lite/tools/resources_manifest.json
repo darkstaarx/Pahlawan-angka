@@ -1,0 +1,71 @@
+{
+  "layers": {
+    "00_bg_night.png": {
+      "resource": "mpl_00_bg_night",
+      "sha256": "c93a3e3be1c311f204a97bf9dc0e8121ac65b430e0f73c651a1a72ffe78e2edc"
+    },
+    "01_moon_star.png": {
+      "resource": "mpl_01_moon_star",
+      "sha256": "cf2deaf1d553a1b9f7909daa90e25bd651e1c56bd4ed076adf2a810c2601e14b"
+    },
+    "02_star_speckles.png": {
+      "resource": "mpl_02_star_speckles",
+      "sha256": "71d94e76687f1c9d68cd7982981dd577fda40e167309a24bd2323a5d4e0510ed"
+    },
+    "03_kl_silhouette.png": {
+      "resource": "mpl_03_kl_silhouette",
+      "sha256": "b9dd511235f361d18db3115bb4fffb6fc5a5984f3bb2d8eae85ee61d84ad64c4"
+    },
+    "04_heart_blue.png": {
+      "resource": "mpl_04_heart_blue",
+      "sha256": "eeb2a3f564c2f4347d6d31df94682da147bff8ad5c51e80bc918f01f5ff7d743"
+    },
+    "05_heart_stripes.png": {
+      "resource": "mpl_05_heart_stripes",
+      "sha256": "bcb53fa7cd062d5acce920892d10f34ffece5e9af23375312224b9c3952dab02"
+    },
+    "06_complication_frames.png": {
+      "resource": "mpl_06_complication_frames",
+      "sha256": "e631a24176a00030060e79152210b542c9abedc0766ef267599838a3b4013dfd"
+    },
+    "07_icon_steps.png": {
+      "resource": "mpl_07_icon_steps",
+      "sha256": "9034ddd78898b5ee589a7d9d7b8d518297dac9afb4e94f72850be4a2b5cedd57"
+    },
+    "08_icon_battery.png": {
+      "resource": "mpl_08_icon_battery",
+      "sha256": "480ad47845d0bfa388a2aa86fbefaf33c32c3818d3856cc0ec88d839bd0d4f02"
+    },
+    "10_hibiscus_small.png": {
+      "resource": "mpl_10_hibiscus_small",
+      "sha256": "13deefcf0de20b0381c32dbc012e8a4a6975661cac1d3ed7fa434078086c0a78"
+    },
+    "11_flag_arcs_optional.png": {
+      "resource": "mpl_11_flag_arcs_optional",
+      "sha256": "2929962ec035657285e8442f1acc3107c3f71f1f5aceabf09a42024dcb9be062"
+    },
+    "12_aod_bg.png": {
+      "resource": "mpl_12_aod_bg",
+      "sha256": "19afe889d735b177d55d69baebb450c3da9fdfc281f855963f08a5a88565a0e7"
+    },
+    "13_aod_moon_star_optional.png": {
+      "resource": "mpl_13_aod_moon_star_optional",
+      "sha256": "df41cfa67608fb8afcaf985b1f2ac79611c8208e900f14a137bfe838f3461e9f"
+    }
+  },
+  "weather_icon_crop": {
+    "source": "09_icon_weather.png",
+    "resource": "mpl_09_icon_weather_slot",
+    "x": 360,
+    "y": 350,
+    "width": 30,
+    "height": 32,
+    "lossless": true
+  },
+  "font": {
+    "resource": "malaysia_pixel",
+    "glyphs": 52,
+    "codepoints": 84,
+    "sha256": "35f03262acbe4e8f450587c2fbee1287faf6306921dda2e2f1347ec11f75e708"
+  }
+}

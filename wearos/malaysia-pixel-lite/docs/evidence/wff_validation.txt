@@ -1,0 +1,5 @@
+INFO: PASSED : watchface/src/main/res/raw/watchface.xml is valid against watch face format version #1
+INFO: PASSED : watchface/src/main/res/raw/watchface.xml is valid against watch face format version #2
+INFO: PASSED : watchface/src/main/res/raw/watchface.xml is valid against watch face format version #3
+INFO: PASSED : watchface/src/main/res/raw/watchface.xml is valid against watch face format version #4
+INFO: PASSED : watchface/src/main/res/raw/watchface.xml is valid against watch face format version #5

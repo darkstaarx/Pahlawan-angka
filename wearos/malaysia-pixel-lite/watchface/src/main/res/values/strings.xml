@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Malaysia Pixel Lite</string>
+    <string name="cfg_stars">Star speckles</string>
+    <string name="cfg_skyline">KL skyline</string>
+    <string name="cfg_flag_arcs">Flag arcs</string>
+    <string name="cfg_aod_background">Navy always-on background</string>
+    <string name="cfg_aod_motif">Always-on moon &amp; star</string>
+    <string name="weather_slot_label">Weather</string>
+</resources>

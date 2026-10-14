@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cfg_stars">Bintik bintang</string>
+    <string name="cfg_skyline">Latar bangunan KL</string>
+    <string name="cfg_flag_arcs">Lengkung bendera</string>
+    <string name="cfg_aod_background">Latar biru gelap (sentiasa hidup)</string>
+    <string name="cfg_aod_motif">Bulan &amp; bintang (sentiasa hidup)</string>
+    <string name="weather_slot_label">Cuaca</string>
+</resources>
