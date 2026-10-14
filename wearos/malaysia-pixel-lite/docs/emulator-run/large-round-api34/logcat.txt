@@ -1,0 +1,688 @@
+--------- beginning of main
+10-14 15:48:17.596  3775  3775 I tchface.runtime: Using CollectorTypeCMC GC.
+10-14 15:48:17.597  3775  3775 W tchface.runtime: Unexpected CPU variant for x86: x86_64.
+10-14 15:48:17.597  3775  3775 W tchface.runtime: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+10-14 15:48:17.599  3775  3775 E tchface.runtime: Not starting debugger since process cannot load the jdwp agent.
+10-14 15:48:17.601  3775  3775 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+10-14 15:48:17.624  3775  3775 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10057; state: ENABLED
+10-14 15:48:17.624  3775  3775 D CompatibilityChangeReporter: Compat change id reported: 242716250; UID 10057; state: DISABLED
+10-14 15:48:17.635  3775  3775 D nativeloader: Configuring clns-shared-6 for other apk /system/framework/clockwork-ambient.jar. target_sdk_version=33, uses_libraries=ALL, library_path=/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt/lib/x86_64:/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt/DeclarativeWatchFaceRuntimePrebuilt.apk!/lib/x86_64:/system/lib64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.wear.watchface.runtime:/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt:/system/lib64
+10-14 15:48:17.640  3775  3775 D nativeloader: Configuring clns-shared-7 for other apk /system/framework/com.google.android.wearable.jar. target_sdk_version=33, uses_libraries=ALL, library_path=/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt/lib/x86_64:/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt/DeclarativeWatchFaceRuntimePrebuilt.apk!/lib/x86_64:/system/lib64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.wear.watchface.runtime:/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt:/system/lib64
+10-14 15:48:17.640  3775  3775 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+10-14 15:48:17.640  3775  3775 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+10-14 15:48:17.651  3775  3775 D nativeloader: Configuring clns-shared-8 for other apk /system/priv-app/DeclarativeWatchFaceRuntimePrebuilt/DeclarativeWatchFaceRuntimePrebuilt.apk. target_sdk_version=33, uses_libraries=, library_path=/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt/lib/x86_64:/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt/DeclarativeWatchFaceRuntimePrebuilt.apk!/lib/x86_64:/system/lib64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.wear.watchface.runtime:/system/priv-app/DeclarativeWatchFaceRuntimePrebuilt:/system/lib64
+10-14 15:48:17.672  3775  3775 V GraphicsEnvironment: Currently set values for:
+10-14 15:48:17.672  3775  3775 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+10-14 15:48:17.672  3775  3775 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+10-14 15:48:17.672  3775  3775 V GraphicsEnvironment: Global.Settings values are invalid: number of packages: 0, number of values: 0
+10-14 15:48:17.672  3775  3775 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+10-14 15:48:17.755  3775  3786 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:48:17.761  3775  3786 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:48:17.764  3775  3786 D CompatibilityChangeReporter: Compat change id reported: 247079863; UID 10057; state: DISABLED
+10-14 15:48:17.775  3775  3786 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:48:17.775  3775  3786 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:48:17.775  3775  3786 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:48:17.775  3775  3786 I DWF:WatchFaceDocument: s.a@9039a3e
+10-14 15:48:17.775  3775  3786 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:48:17.775  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.775  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.775  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.775  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.775  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.776  3775  3786 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:48:17.798  3775  3786 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:48:17.799  3775  3786 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:48:17.806  3775  3786 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:48:17.806  3775  3786 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:48:17.806  3775  3786 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:48:17.806  3775  3786 I DWF:WatchFaceDocument: s.a@335c58b
+10-14 15:48:17.806  3775  3786 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:48:17.806  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.806  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.806  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.806  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.806  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.806  3775  3786 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:48:17.808  3775  3786 I DWF:DeclarativeWatchFaceRuntime: createComplicationSlotsManager: runtime: x2.e@497a668
+10-14 15:48:17.810  3775  3786 I DWF:WatchFaceDocument: ########### DWF renderer 2.0.1 (20001) ###########
+10-14 15:48:17.810  3775  3786 I DWF:WatchFaceDocument: ## no_name / com.malaysiapixel.lite 0.1.0 (1)
+10-14 15:48:17.810  3775  3786 I DWF:WatchFaceDocument: ## clipShape : CIRCLE
+10-14 15:48:17.810  3775  3786 I DWF:WatchFaceDocument: ## resolution : 480x480
+10-14 15:48:17.810  3775  3786 I DWF:WatchFaceDocument: ## clock type : DIGITAL
+10-14 15:48:17.810  3775  3786 I DWF:WatchFaceDocument: ############################################################
+10-14 15:48:17.811  3775  3786 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.0, defaultProvider : -1
+10-14 15:48:17.811  3775  3786 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.internal_step_complication, defaultProvider : 4
+10-14 15:48:17.813  3775  3786 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:48:17.814  3775  3786 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:48:17.821  3775  3786 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:48:17.821  3775  3786 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:48:17.821  3775  3786 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:48:17.821  3775  3786 I DWF:WatchFaceDocument: s.a@1357998
+10-14 15:48:17.821  3775  3786 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:48:17.821  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.821  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.821  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.821  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.821  3775  3786 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.821  3775  3786 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:48:17.823  3775  3786 I DWF:DeclarativeWatchFaceRuntime: createComplicationSlotsManager: runtime: x2.e@26145f1
+10-14 15:48:17.823  3775  3786 I DWF:WatchFaceDocument: ########### DWF renderer 2.0.1 (20001) ###########
+10-14 15:48:17.823  3775  3786 I DWF:WatchFaceDocument: ## no_name / com.malaysiapixel.lite 0.1.0 (1)
+10-14 15:48:17.823  3775  3786 I DWF:WatchFaceDocument: ## clipShape : CIRCLE
+10-14 15:48:17.823  3775  3786 I DWF:WatchFaceDocument: ## resolution : 480x480
+10-14 15:48:17.823  3775  3786 I DWF:WatchFaceDocument: ## clock type : DIGITAL
+10-14 15:48:17.823  3775  3786 I DWF:WatchFaceDocument: ############################################################
+10-14 15:48:17.823  3775  3786 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.0, defaultProvider : -1
+10-14 15:48:17.823  3775  3786 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.internal_step_complication, defaultProvider : 4
+10-14 15:48:17.837  3775  3794 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:48:17.842  3775  3794 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:48:17.846  3775  3783 W tchface.runtime: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~dTUcUdag2nNNKEJXPrm5Dg==/com.malaysiapixel.lite-gBvBjedzhP5ZKXbda3Bt3Q==/base.apk' with 1 weak references
+10-14 15:48:17.848  3775  3794 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:48:17.848  3775  3794 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:48:17.848  3775  3794 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:48:17.848  3775  3794 I DWF:WatchFaceDocument: s.a@a25e3b0
+10-14 15:48:17.848  3775  3794 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:48:17.848  3775  3794 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.848  3775  3794 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.848  3775  3794 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.848  3775  3794 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.849  3775  3794 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.849  3775  3794 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:48:17.860  3775  3783 W tchface.runtime: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~dTUcUdag2nNNKEJXPrm5Dg==/com.malaysiapixel.lite-gBvBjedzhP5ZKXbda3Bt3Q==/base.apk' with 1 weak references
+10-14 15:48:17.919  3775  3798 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:48:17.922  3775  3798 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:48:17.943  3775  3798 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:48:17.943  3775  3798 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:48:17.943  3775  3798 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:48:17.943  3775  3798 I DWF:WatchFaceDocument: s.a@f19be3f
+10-14 15:48:17.943  3775  3798 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:48:17.943  3775  3798 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.943  3775  3798 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.943  3775  3798 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.943  3775  3798 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.943  3775  3798 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:17.943  3775  3798 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:48:17.950  3775  3775 D CompatibilityChangeReporter: Compat change id reported: 272527315; UID 10057; state: DISABLED
+10-14 15:48:17.951  3775  3798 I DWF:DeclarativeWatchFaceRuntime: createComplicationSlotsManager: runtime: com.google.wear.watchface.runtime.DeclarativeWatchFaceRuntime0@b0ee6a
+10-14 15:48:17.951  3775  3798 I DWF:WatchFaceDocument: ########### DWF renderer 2.0.1 (20001) ###########
+10-14 15:48:17.951  3775  3798 I DWF:WatchFaceDocument: ## no_name / com.malaysiapixel.lite 0.1.0 (1)
+10-14 15:48:17.951  3775  3798 I DWF:WatchFaceDocument: ## clipShape : CIRCLE
+10-14 15:48:17.951  3775  3798 I DWF:WatchFaceDocument: ## resolution : 480x480
+10-14 15:48:17.951  3775  3798 I DWF:WatchFaceDocument: ## clock type : DIGITAL
+10-14 15:48:17.951  3775  3798 I DWF:WatchFaceDocument: ############################################################
+10-14 15:48:17.951  3775  3798 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.0, defaultProvider : -1
+10-14 15:48:17.951  3775  3798 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.internal_step_complication, defaultProvider : 4
+10-14 15:48:17.962  3775  3775 D WallpaperService: reportEngineShown: shouldWait=false
+10-14 15:48:17.962  3775  3775 I DWF:DeclarativeWatchFaceRuntime: CanvasComplication loadData for: com.malaysiapixel.lite
+10-14 15:48:17.963  3775  3775 I DWF:WearComplicationProvider: [11:EMPTY] NoDataSource NoTapAction
+10-14 15:48:17.963  3775  3775 I DWF:WearComplicationProvider: [11:TEXT] "/EMPTY/"
+10-14 15:48:17.963  3775  3775 I DWF:WearComplicationProvider: [11:TITLE] "/EMPTY/"
+10-14 15:48:17.963  3775  3775 I DWF:DeclarativeWatchFaceRuntime: CanvasComplication loadData for: com.malaysiapixel.lite
+10-14 15:48:17.963  3775  3775 I DWF:WearComplicationProvider: [19:NOT_CONFIGURED] NoDataSource NoTapAction
+10-14 15:48:17.963  3775  3775 I DWF:WearComplicationProvider: [19:TEXT] "/EMPTY/"
+10-14 15:48:17.963  3775  3775 I DWF:WearComplicationProvider: [19:TITLE] "/EMPTY/"
+10-14 15:48:17.965  3775  3798 I DWF:DeclarativeWatchFaceRuntime: createWatchFaceFuture: headless(false), runtime: com.google.wear.watchface.runtime.DeclarativeWatchFaceRuntime0@b0ee6a
+10-14 15:48:17.972  3775  3798 I DWF:WatchFaceRenderer: WatchFaceRenderer create: headless(false), renderer: x2.x@960690d
+10-14 15:48:17.972  3775  3798 I DWF:WatchFaceRenderer: WatchFaceRenderer uiThreadInit: headless(false), renderer: x2.x@960690d
+10-14 15:48:17.972  3775  3798 I DWF:DeclarativeWatchFaceRuntime: update pending complication data: headless(false), runtime: androidx.activity.result.c@b1ce0c2
+10-14 15:48:17.972  3775  3798 I DWF:WearComplicationProvider: [19:NOT_CONFIGURED] NoDataSource NoTapAction
+10-14 15:48:17.972  3775  3798 I DWF:WearComplicationProvider: [19:TEXT] "/EMPTY/"
+10-14 15:48:17.972  3775  3798 I DWF:WearComplicationProvider: [19:TITLE] "/EMPTY/"
+10-14 15:48:17.972  3775  3798 I DWF:WearComplicationProvider: [11:EMPTY] NoDataSource NoTapAction
+10-14 15:48:17.972  3775  3798 I DWF:WearComplicationProvider: [11:TEXT] "/EMPTY/"
+10-14 15:48:17.972  3775  3798 I DWF:WearComplicationProvider: [11:TITLE] "/EMPTY/"
+10-14 15:48:17.973  3775  3775 D WallpaperService: Wallpaper has updated the surface:WallpaperInfo{com.google.wear.watchface.runtime.DeclarativeWatchFaceRuntime0, settings: null}
+10-14 15:48:17.994  3775  3798 W Sensors : Cannot get virtualdevice_native service
+10-14 15:48:18.065  3775  3798 D CompatibilityChangeReporter: Compat change id reported: 279646685; UID 10057; state: DISABLED
+10-14 15:48:18.179  3775  3775 I DWF:WearHealthProvider: STEPS check:true, HEART_RATE_BPM check:true
+10-14 15:48:18.179  3775  3775 I DWF:WearHealthProvider: No need to register PassiveMonitoringClient
+10-14 15:48:18.233  3775  3798 I DWF:DrawableNodeFactory: Optimized group : ampm_hidden_24h
+10-14 15:48:18.240  3775  3798 I DWF:ComplicationSlotFactory: Complication Type is changed id[0] : EMPTY
+10-14 15:48:18.240  3775  3798 I DWF:ComplicationSlotNode: [weather] Change touchable : false
+10-14 15:48:18.240  3775  3798 I DWF:Launch: complication: COMPLICATION.0
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: MINUTE_Z
+10-14 15:48:18.242  3775  3798 I DWF:ModelTime: onConnected
+10-14 15:48:18.242  3775  3798 I DWF:ModelTime: registerReceiver
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: DAY_OF_WEEK_S
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: TIMEZONE_ID
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: IS_24HOUR_MODE
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: HEALTH_STEP_COUNT
+10-14 15:48:18.242  3775  3798 I DWF:WearHealthProvider: onDataConnected:SC
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: AMPM_STRING
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: HOUR_1_12_Z
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: MONTH_S
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: DAY
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: LANGUAGE_LOCALE_NAME
+10-14 15:48:18.242  3775  3798 I DWF:ModelLanguage: onConnected
+10-14 15:48:18.242  3775  3798 I DWF:ModelLanguage: registerReceiver
+10-14 15:48:18.242  3775  3798 I DWF:Model: connect: BATTERY_PERCENT
+10-14 15:48:18.242  3775  3798 I DWF:ModelBattery: onConnected
+10-14 15:48:18.242  3775  3798 I DWF:ModelBattery: updateBatteryStatus Intent { act=android.intent.action.BATTERY_CHANGED flg=0x70000010 pkg=com.google.android.apps.wearable.systemui (has extras) }
+10-14 15:48:18.242  3775  3798 I DWF:ModelBattery: registerReceiver
+10-14 15:48:18.243  3775  3798 I DWF:Model: connect: HOUR_0_23_Z
+10-14 15:48:18.243  3775  3798 I DWF:WatchFaceViewer: [96214087] loading time(res://): 190 isAmbient(false)
+10-14 15:48:18.250  3775  3798 I DWF:AmbientController: Can not take offload isPreviewMode: false hasTimeRelatedChange: false
+10-14 15:48:18.252  3775  3775 W HWUI    : Unknown dataspace 0
+10-14 15:48:18.256  3775  3775 I DWF:WatchFaceViewer: [96214087] project 480.0 x 480.0, canvas 454 x 454
+10-14 15:48:18.256  3775  3775 I DWF:WatchFaceViewer: [96214087] draw: update scale: 0.945833/0.945833 translate 0.000000/0.000000
+10-14 15:48:18.274  3775  3842 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+10-14 15:48:18.274  3775  3842 I EGL_emulation: Opening libGLESv2_emulation.so
+10-14 15:48:18.283  3775  3842 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-14 15:48:18.293  3775  3842 I Gralloc4: mapper 4.x is not supported
+10-14 15:48:18.745  3775  3775 I DWF:ModelBattery: updateBatteryStatus Intent { act=android.intent.action.BATTERY_CHANGED flg=0x70000010 pkg=com.google.android.apps.wearable.systemui (has extras) }
+10-14 15:48:18.745  3775  3775 I DWF:ModelBattery: updateBatteryStatus Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }
+10-14 15:48:22.362  3775  3889 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:48:22.363  3775  3889 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:48:22.370  3775  3889 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:48:22.370  3775  3889 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:48:22.370  3775  3889 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:48:22.370  3775  3889 I DWF:WatchFaceDocument: s.a@9557835
+10-14 15:48:22.370  3775  3889 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:48:22.370  3775  3889 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.370  3775  3889 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.370  3775  3889 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.370  3775  3889 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.370  3775  3889 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.370  3775  3889 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:48:22.373  3775  3889 I DWF:DeclarativeWatchFaceRuntime: createComplicationSlotsManager: runtime: x2.e@dc4463b
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceDocument: ########### DWF renderer 2.0.1 (20001) ###########
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceDocument: ## no_name / com.malaysiapixel.lite 0.1.0 (1)
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceDocument: ## clipShape : CIRCLE
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceDocument: ## resolution : 480x480
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceDocument: ## clock type : DIGITAL
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceDocument: ############################################################
+10-14 15:48:22.373  3775  3889 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.0, defaultProvider : -1
+10-14 15:48:22.373  3775  3889 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.internal_step_complication, defaultProvider : 4
+10-14 15:48:22.373  3775  3889 I DWF:DeclarativeWatchFaceRuntime: createWatchFaceFuture: headless(true), runtime: x2.e@dc4463b
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceRenderer: WatchFaceRenderer create: headless(true), renderer: x2.x@2f262b1
+10-14 15:48:22.373  3775  3889 I DWF:WatchFaceRenderer: WatchFaceRenderer uiThreadInit: headless(true), renderer: x2.x@2f262b1
+10-14 15:48:22.375  3775  3889 W Sensors : Cannot get virtualdevice_native service
+10-14 15:48:22.393  3775  3889 I DWF:DrawableNodeFactory: Optimized group : ampm_hidden_24h
+10-14 15:48:22.400  3775  3889 I DWF:ComplicationSlotFactory: Complication Type is changed id[0] : 
+10-14 15:48:22.400  3775  3889 I DWF:ComplicationSlotNode: [weather] Change touchable : true
+10-14 15:48:22.400  3775  3889 I DWF:Launch: complication: COMPLICATION.0
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: MINUTE_Z
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: DAY_OF_WEEK_S
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: HOUR_1_12_Z
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: MONTH_S
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: DAY
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: BATTERY_PERCENT
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: HOUR_0_23_Z
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: IS_24HOUR_MODE
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: HEALTH_STEP_COUNT
+10-14 15:48:22.401  3775  3889 I DWF:Model: connect: AMPM_STRING
+10-14 15:48:22.401  3775  3889 I DWF:WatchFaceViewer: [260158252] loading time(res://): 19 isAmbient(false)
+10-14 15:48:22.408  3775  3889 I DWF:AmbientController: Can not take offload isPreviewMode: true hasTimeRelatedChange: false
+10-14 15:48:22.410  3775  3775 I DWF:WatchFaceRenderer: State changed visible [ true ] ambient [ false ]
+10-14 15:48:22.410  3775  3775 I DWF:WatchFaceTimer: startTimer
+10-14 15:48:22.410  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:48:22.410  3775  3775 I DWF:WatchFaceViewer: [260158252] resume
+10-14 15:48:22.414  3775  3775 I DWF:WatchFaceRenderer: render watch face in headless mode
+10-14 15:48:22.421  3775  3775 I DWF:WatchFaceViewer: [260158252] resume
+10-14 15:48:22.421  3775  3775 I DWF:WatchFaceViewer: [260158252] project 480.0 x 480.0, canvas 280 x 281
+10-14 15:48:22.422  3775  3775 I DWF:WatchFaceViewer: [260158252] draw: update scale: 0.583333/0.583333 translate 0.000000/0.500000
+--------- beginning of system
+10-14 15:48:22.473  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@adb47a that was originally bound here
+10-14 15:48:22.473  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@adb47a that was originally bound here
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1386)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1425)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:514)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.473  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.474  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@1297e1b that was originally bound here
+10-14 15:48:22.474  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@1297e1b that was originally bound here
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1386)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1425)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:514)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.474  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.476  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@5290983 that was originally bound here
+10-14 15:48:22.476  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@5290983 that was originally bound here
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1386)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1425)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:514)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at x2.o.accept(Unknown Source:175)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at java.util.ArrayList.forEach(ArrayList.java:1613)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:1026)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.476  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.479  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@8003b64 that was originally bound here
+10-14 15:48:22.479  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@8003b64 that was originally bound here
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at e2.b0.m1(Unknown Source:10)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2463)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.479  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@96cd8a0 that was originally bound here
+10-14 15:48:22.479  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@96cd8a0 that was originally bound here
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1386)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1425)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:514)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.479  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@a411d34 that was originally bound here
+10-14 15:48:22.479  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@a411d34 that was originally bound here
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1386)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at e2.b0.L(Unknown Source:1425)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:514)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.479  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.480  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@be2240b that was originally bound here
+10-14 15:48:22.480  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@be2240b that was originally bound here
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at e2.b0.m1(Unknown Source:10)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2463)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.480  3775  3775 E ActivityThread: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@c50ddc9 that was originally bound here
+10-14 15:48:22.480  3775  3775 E ActivityThread: android.app.ServiceConnectionLeaked: Service com.google.wear.watchface.runtime.RuntimeControlService has leaked ServiceConnection z1.s@c50ddc9 that was originally bound here
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:2075)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcherCommon(LoadedApk.java:1933)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.LoadedApk.getServiceDispatcher(LoadedApk.java:1919)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindServiceCommon(ContextImpl.java:2112)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.app.ContextImpl.bindService(ContextImpl.java:2005)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.content.ContextWrapper.bindService(ContextWrapper.java:875)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at z1.s.<init>(Unknown Source:42)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at z1.e.a(Unknown Source:31)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at y3.a.e(Unknown Source:25)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at r4.h.E(Unknown Source:50)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at r4.q.G(Unknown Source:82)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at e2.b0.m1(Unknown Source:10)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2463)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at i2.a.n(Unknown Source:2671)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at f3.i0.<init>(Unknown Source:124)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at x2.x.<init>(Unknown Source:927)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at u0.n0.d(Unknown Source:115)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at u0.n1.g(Unknown Source:413)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.480  3775  3775 E ActivityThread: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+10-14 15:48:22.480  3775  3775 I DWF:WatchFaceRenderer: WatchFaceRenderer onDestroy: headless(true), renderer: x2.x@2f262b1
+10-14 15:48:22.480  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:48:22.480  3775  3775 I DWF:WatchFaceViewer: [260158252] destroy
+10-14 15:48:22.482  3775  3775 W DWF:FrameTimerVsync: FrameTimer is reset
+10-14 15:48:22.482  3775  3775 E FontClient: close failed
+10-14 15:48:22.482  3775  3775 E FontClient: java.lang.IllegalArgumentException: Service not registered: z1.s@adb47a
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.app.LoadedApk.forgetServiceDispatcher(LoadedApk.java:2009)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.app.ContextImpl.unbindService(ContextImpl.java:2169)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.content.ContextWrapper.unbindService(ContextWrapper.java:925)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.content.ContextWrapper.unbindService(ContextWrapper.java:925)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at x2.x.a(Unknown Source:252)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at u0.c2.g(Unknown Source:60)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at m5.m0.j(Unknown Source:128)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at i2.a.G(Unknown Source:57)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at u0.i2.onDestroy(Unknown Source:166)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at x0.c.g(Unknown Source:20)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at android.app.ActivityThread.main(ActivityThread.java:8592)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at java.lang.reflect.Method.invoke(Native Method)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-14 15:48:22.482  3775  3775 E FontClient: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:878)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: WatchFace exception observed in onDestroy (may have occurred during init)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: java.lang.IllegalArgumentException: Service not registered: z1.s@adb47a
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.app.LoadedApk.forgetServiceDispatcher(LoadedApk.java:2009)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.app.ContextImpl.unbindService(ContextImpl.java:2169)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.content.ContextWrapper.unbindService(ContextWrapper.java:925)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.content.ContextWrapper.unbindService(ContextWrapper.java:925)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at x2.x.a(Unknown Source:252)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at u0.c2.g(Unknown Source:60)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at m5.m0.j(Unknown Source:128)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at i2.a.G(Unknown Source:57)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at u0.i2.onDestroy(Unknown Source:166)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at x0.c.g(Unknown Source:20)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at z4.a.e(Unknown Source:7)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at m5.c0.run(Unknown Source:104)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.os.Looper.loop(Looper.java:317)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at android.app.ActivityThread.main(ActivityThread.java:8592)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at java.lang.reflect.Method.invoke(Native Method)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-14 15:48:22.482  3775  3775 E WatchFaceService: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:878)
+10-14 15:48:22.963  3775  3909 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:48:22.963  3775  3909 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:48:22.974  3775  3909 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:48:22.974  3775  3909 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:48:22.974  3775  3909 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:48:22.974  3775  3909 I DWF:WatchFaceDocument: s.a@b032ade
+10-14 15:48:22.974  3775  3909 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:48:22.974  3775  3909 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.974  3775  3909 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.974  3775  3909 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.974  3775  3909 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.974  3775  3909 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:48:22.974  3775  3909 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:48:22.976  3775  3909 I DWF:DeclarativeWatchFaceRuntime: createComplicationSlotsManager: runtime: x2.e@2227ed5
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceDocument: ########### DWF renderer 2.0.1 (20001) ###########
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceDocument: ## no_name / com.malaysiapixel.lite 0.1.0 (1)
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceDocument: ## clipShape : CIRCLE
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceDocument: ## resolution : 480x480
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceDocument: ## clock type : DIGITAL
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceDocument: ############################################################
+10-14 15:48:22.977  3775  3909 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.0, defaultProvider : -1
+10-14 15:48:22.977  3775  3909 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.internal_step_complication, defaultProvider : 4
+10-14 15:48:22.977  3775  3909 I DWF:DeclarativeWatchFaceRuntime: createWatchFaceFuture: headless(true), runtime: x2.e@2227ed5
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceRenderer: WatchFaceRenderer create: headless(true), renderer: x2.x@1183ddb
+10-14 15:48:22.977  3775  3909 I DWF:WatchFaceRenderer: WatchFaceRenderer uiThreadInit: headless(true), renderer: x2.x@1183ddb
+10-14 15:48:22.986  3775  3909 W Sensors : Cannot get virtualdevice_native service
+10-14 15:48:23.007  3775  3909 I DWF:DrawableNodeFactory: Optimized group : ampm_hidden_24h
+10-14 15:48:23.018  3775  3909 I DWF:ComplicationSlotFactory: Complication Type is changed id[0] : 
+10-14 15:48:23.018  3775  3909 I DWF:ComplicationSlotNode: [weather] Change touchable : true
+10-14 15:48:23.018  3775  3909 I DWF:Launch: complication: COMPLICATION.0
+10-14 15:48:23.018  3775  3909 I DWF:Model: connect: MINUTE_Z
+10-14 15:48:23.018  3775  3909 I DWF:Model: connect: DAY_OF_WEEK_S
+10-14 15:48:23.018  3775  3909 I DWF:Model: connect: HOUR_1_12_Z
+10-14 15:48:23.019  3775  3909 I DWF:Model: connect: MONTH_S
+10-14 15:48:23.019  3775  3909 I DWF:Model: connect: DAY
+10-14 15:48:23.019  3775  3909 I DWF:Model: connect: BATTERY_PERCENT
+10-14 15:48:23.019  3775  3909 I DWF:Model: connect: HOUR_0_23_Z
+10-14 15:48:23.019  3775  3909 I DWF:Model: connect: IS_24HOUR_MODE
+10-14 15:48:23.019  3775  3909 I DWF:Model: connect: HEALTH_STEP_COUNT
+10-14 15:48:23.019  3775  3909 I DWF:Model: connect: AMPM_STRING
+10-14 15:48:23.019  3775  3909 I DWF:WatchFaceViewer: [111757273] loading time(res://): 23 isAmbient(false)
+10-14 15:48:23.027  3775  3909 I DWF:AmbientController: Can not take offload isPreviewMode: true hasTimeRelatedChange: false
+10-14 15:48:23.028  3775  3775 I DWF:WatchFaceRenderer: State changed visible [ true ] ambient [ false ]
+10-14 15:48:23.028  3775  3775 I DWF:WatchFaceTimer: startTimer
+10-14 15:48:23.028  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:48:23.029  3775  3775 I DWF:WatchFaceViewer: [111757273] resume
+10-14 15:48:23.033  3775  3775 I DWF:WatchFaceRenderer: render watch face in headless mode
+10-14 15:48:23.038  3775  3775 I DWF:WatchFaceViewer: [111757273] resume
+10-14 15:48:23.038  3775  3775 I DWF:WatchFaceViewer: [111757273] project 480.0 x 480.0, canvas 280 x 281
+10-14 15:48:23.038  3775  3775 I DWF:WatchFaceViewer: [111757273] draw: update scale: 0.583333/0.583333 translate 0.000000/0.500000
+10-14 15:48:23.088  3775  3775 I DWF:WatchFaceRenderer: WatchFaceRenderer onDestroy: headless(true), renderer: x2.x@1183ddb
+10-14 15:48:23.088  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:48:23.088  3775  3775 I DWF:WatchFaceViewer: [111757273] destroy
+10-14 15:48:23.089  3775  3775 W DWF:FrameTimerVsync: FrameTimer is reset
+10-14 15:49:34.252  3775  4096 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:49:34.253  3775  4096 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:49:34.267  3775  4096 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:49:34.267  3775  4096 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:49:34.267  3775  4096 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:49:34.267  3775  4096 I DWF:WatchFaceDocument: s.a@9b2c105
+10-14 15:49:34.267  3775  4096 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:49:34.267  3775  4096 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:34.267  3775  4096 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:34.267  3775  4096 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:34.267  3775  4096 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:34.267  3775  4096 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:34.267  3775  4096 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:49:34.269  3775  4096 I DWF:DeclarativeWatchFaceRuntime: createComplicationSlotsManager: runtime: x2.e@7974c68
+10-14 15:49:34.269  3775  4096 I DWF:WatchFaceDocument: ########### DWF renderer 2.0.1 (20001) ###########
+10-14 15:49:34.269  3775  4096 I DWF:WatchFaceDocument: ## no_name / com.malaysiapixel.lite 0.1.0 (1)
+10-14 15:49:34.269  3775  4096 I DWF:WatchFaceDocument: ## clipShape : CIRCLE
+10-14 15:49:34.269  3775  4096 I DWF:WatchFaceDocument: ## resolution : 480x480
+10-14 15:49:34.269  3775  4096 I DWF:WatchFaceDocument: ## clock type : DIGITAL
+10-14 15:49:34.269  3775  4096 I DWF:WatchFaceDocument: ############################################################
+10-14 15:49:34.269  3775  4096 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.0, defaultProvider : -1
+10-14 15:49:34.270  3775  4096 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.internal_step_complication, defaultProvider : 4
+10-14 15:49:34.270  3775  4096 I DWF:DeclarativeWatchFaceRuntime: createWatchFaceFuture: headless(true), runtime: x2.e@7974c68
+10-14 15:49:34.270  3775  4096 I DWF:WatchFaceRenderer: WatchFaceRenderer create: headless(true), renderer: x2.x@eb0fd26
+10-14 15:49:34.270  3775  4096 I DWF:WatchFaceRenderer: WatchFaceRenderer uiThreadInit: headless(true), renderer: x2.x@eb0fd26
+10-14 15:49:34.272  3775  4096 W Sensors : Cannot get virtualdevice_native service
+10-14 15:49:34.290  3775  4096 I DWF:DrawableNodeFactory: Optimized group : ampm_hidden_24h
+10-14 15:49:34.298  3775  4096 I DWF:ComplicationSlotFactory: Complication Type is changed id[0] : 
+10-14 15:49:34.299  3775  4096 I DWF:ComplicationSlotNode: [weather] Change touchable : true
+10-14 15:49:34.299  3775  4096 I DWF:Launch: complication: COMPLICATION.0
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: MINUTE_Z
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: DAY_OF_WEEK_S
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: HOUR_1_12_Z
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: MONTH_S
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: DAY
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: BATTERY_PERCENT
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: HOUR_0_23_Z
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: IS_24HOUR_MODE
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: HEALTH_STEP_COUNT
+10-14 15:49:34.299  3775  4096 I DWF:Model: connect: AMPM_STRING
+10-14 15:49:34.299  3775  4096 I DWF:WatchFaceViewer: [34831045] loading time(res://): 20 isAmbient(false)
+10-14 15:49:34.310  3775  4096 I DWF:AmbientController: Can not take offload isPreviewMode: true hasTimeRelatedChange: false
+10-14 15:49:34.312  3775  3775 I DWF:WatchFaceRenderer: State changed visible [ true ] ambient [ false ]
+10-14 15:49:34.312  3775  3775 I DWF:WatchFaceTimer: startTimer
+10-14 15:49:34.312  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:49:34.312  3775  3775 I DWF:WatchFaceViewer: [34831045] resume
+10-14 15:49:34.320  3775  3775 I DWF:WatchFaceRenderer: render watch face in headless mode
+10-14 15:49:34.327  3775  3775 I DWF:WatchFaceViewer: [34831045] resume
+10-14 15:49:34.327  3775  3775 I DWF:WatchFaceViewer: [34831045] project 480.0 x 480.0, canvas 280 x 281
+10-14 15:49:34.327  3775  3775 I DWF:WatchFaceViewer: [34831045] draw: update scale: 0.583333/0.583333 translate 0.000000/0.500000
+10-14 15:49:34.376  3775  3775 I DWF:WatchFaceRenderer: WatchFaceRenderer onDestroy: headless(true), renderer: x2.x@eb0fd26
+10-14 15:49:34.376  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:49:34.376  3775  3775 I DWF:WatchFaceViewer: [34831045] destroy
+10-14 15:49:34.377  3775  3775 W DWF:FrameTimerVsync: FrameTimer is reset
+10-14 15:49:37.505  3775  4155 I DWF:DeclarativeWatchFaceRuntime: Preparing WatchFaceDocument object for package: com.malaysiapixel.lite
+10-14 15:49:37.506  3775  4155 I DWF:BitmapManager: Using maximum bitmap cache size 200768KB
+10-14 15:49:37.518  3775  4155 I DWF:WatchFaceDocument: ##################### Complication ############################
+10-14 15:49:37.518  3775  4155 I DWF:WatchFaceDocument:   id : COMPLICATION.0 [11] (Customizable)
+10-14 15:49:37.518  3775  4155 I DWF:WatchFaceDocument:   supported types : SHORT_TEXT / EMPTY (EMPTY)
+10-14 15:49:37.518  3775  4155 I DWF:WatchFaceDocument: s.a@16cae04
+10-14 15:49:37.518  3775  4155 I DWF:WatchFaceDocument:   bounds : x[310.000000] y[344.000000] w[120.000000] h[78.000000]
+10-14 15:49:37.518  3775  4155 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:37.518  3775  4155 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:37.518  3775  4155 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:37.519  3775  4155 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:37.519  3775  4155 E DWF:ResourceManager: Path is empty or null : 
+10-14 15:49:37.519  3775  4155 I DWF:DeclarativeWatchFaceRuntime: Found: com.google.android.clockwork.font.sandbox.impl
+10-14 15:49:37.520  3775  4155 I DWF:DeclarativeWatchFaceRuntime: createComplicationSlotsManager: runtime: x2.e@9a20b3
+10-14 15:49:37.520  3775  4155 I DWF:WatchFaceDocument: ########### DWF renderer 2.0.1 (20001) ###########
+10-14 15:49:37.520  3775  4155 I DWF:WatchFaceDocument: ## no_name / com.malaysiapixel.lite 0.1.0 (1)
+10-14 15:49:37.520  3775  4155 I DWF:WatchFaceDocument: ## clipShape : CIRCLE
+10-14 15:49:37.520  3775  4155 I DWF:WatchFaceDocument: ## resolution : 480x480
+10-14 15:49:37.520  3775  4155 I DWF:WatchFaceDocument: ## clock type : DIGITAL
+10-14 15:49:37.520  3775  4155 I DWF:WatchFaceDocument: ############################################################
+10-14 15:49:37.520  3775  4155 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.0, defaultProvider : -1
+10-14 15:49:37.520  3775  4155 I DWF:UserStyleRepositoryHelper: complication id : COMPLICATION.internal_step_complication, defaultProvider : 4
+10-14 15:49:37.522  3775  4155 I DWF:DeclarativeWatchFaceRuntime: createWatchFaceFuture: headless(true), runtime: x2.e@9a20b3
+10-14 15:49:37.522  3775  4155 I DWF:WatchFaceRenderer: WatchFaceRenderer create: headless(true), renderer: x2.x@2052de9
+10-14 15:49:37.522  3775  4155 I DWF:WatchFaceRenderer: WatchFaceRenderer uiThreadInit: headless(true), renderer: x2.x@2052de9
+10-14 15:49:37.524  3775  4155 W Sensors : Cannot get virtualdevice_native service
+10-14 15:49:37.530  3775  4155 I DWF:DrawableNodeFactory: Optimized group : ampm_hidden_24h
+10-14 15:49:37.537  3775  4155 I DWF:ComplicationSlotFactory: Complication Type is changed id[0] : 
+10-14 15:49:37.537  3775  4155 I DWF:ComplicationSlotNode: [weather] Change touchable : true
+10-14 15:49:37.537  3775  4155 I DWF:Launch: complication: COMPLICATION.0
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: MINUTE_Z
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: DAY_OF_WEEK_S
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: HOUR_1_12_Z
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: MONTH_S
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: DAY
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: BATTERY_PERCENT
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: HOUR_0_23_Z
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: IS_24HOUR_MODE
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: HEALTH_STEP_COUNT
+10-14 15:49:37.537  3775  4155 I DWF:Model: connect: AMPM_STRING
+10-14 15:49:37.537  3775  4155 I DWF:WatchFaceViewer: [100794052] loading time(res://): 12 isAmbient(false)
+10-14 15:49:37.545  3775  4155 I DWF:AmbientController: Can not take offload isPreviewMode: true hasTimeRelatedChange: false
+10-14 15:49:37.546  3775  3775 I DWF:WatchFaceRenderer: State changed visible [ true ] ambient [ false ]
+10-14 15:49:37.546  3775  3775 I DWF:WatchFaceTimer: startTimer
+10-14 15:49:37.546  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:49:37.546  3775  3775 I DWF:WatchFaceViewer: [100794052] resume
+10-14 15:49:37.550  3775  3775 I DWF:WatchFaceRenderer: render watch face in headless mode
+10-14 15:49:37.555  3775  3775 I DWF:WatchFaceViewer: [100794052] resume
+10-14 15:49:37.555  3775  3775 I DWF:WatchFaceViewer: [100794052] project 480.0 x 480.0, canvas 280 x 281
+10-14 15:49:37.556  3775  3775 I DWF:WatchFaceViewer: [100794052] draw: update scale: 0.583333/0.583333 translate 0.000000/0.500000
+10-14 15:49:37.610  3775  3775 I DWF:WatchFaceRenderer: WatchFaceRenderer onDestroy: headless(true), renderer: x2.x@2052de9
+10-14 15:49:37.610  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:49:37.610  3775  3775 I DWF:WatchFaceViewer: [100794052] destroy
+10-14 15:49:37.610  3775  3775 W DWF:FrameTimerVsync: FrameTimer is reset
+10-14 15:49:40.962  3775  3775 I DWF:ModelBattery: updateBatteryStatus Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }
+10-14 15:49:42.493  3775  3775 I DWF:WatchFaceRenderer: State changed visible [ true ] ambient [ false ]
+10-14 15:49:42.493  3775  3775 I DWF:WatchFaceTimer: startTimer
+10-14 15:49:42.493  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:49:42.493  3775  3775 I DWF:WatchFaceViewer: [96214087] resume
+10-14 15:49:42.555  3775  3775 I DWF:WearHealthProvider: onResume
+10-14 15:49:42.555  3775  3775 I DWF:WearHealthProvider: No need to register PassiveMonitoringClient
+10-14 15:49:44.494  3775  3775 I DWF:ModelBattery: updateBatteryStatus Intent { act=android.intent.action.BATTERY_CHANGED flg=0x60000010 (has extras) }
+10-14 15:49:44.540  3775  3842 D EGL_emulation: app_time_stats: avg=28517.62ms min=166.44ms max=83617.61ms count=3
+10-14 15:49:47.887  3775  3775 I DWF:WatchFaceRenderer: State changed visible [ false ] ambient [ false ]
+10-14 15:49:47.887  3775  3775 I DWF:WatchFaceTimer: stopTimer
+10-14 15:49:47.887  3775  3775 I DWF:WatchFaceViewer: [96214087] pause
+10-14 15:49:47.887  3775  3775 I DWF:ModelTime: unregisterReceiver
+10-14 15:49:47.902  3775  3775 I DWF:ModelBattery: unregisterReceiver
+10-14 15:49:47.917  3775  3775 I DWF:ModelLanguage: unregisterReceiver
+10-14 15:49:47.923  3775  3775 I DWF:WearHealthProvider: onPause

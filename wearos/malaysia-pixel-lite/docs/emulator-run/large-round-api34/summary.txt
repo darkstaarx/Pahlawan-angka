@@ -1,0 +1,31 @@
+[15:48:17] APK: /home/runner/work/Pahlawan-angka/Pahlawan-angka/wearos/malaysia-pixel-lite/watchface/build/outputs/apk/debug/watchface-debug.apk (43008 bytes, sha256 014A5383F8C45742E6EA42E35D211450C091EF9AA8A79F9876FD1A724F8FAEF8)
+[15:48:17] Device: sdk_gwear_x86_64 | API 34 | emulator,nosdcard,watch | Physical size: 454x454 | Physical density: 320
+[15:48:18] install: Performing Streamed Install
+Success
+[15:48:18] Trying the emulator debug broadcast that selects a watch face (not available on every image)...
+[15:48:18] broadcast: Broadcasting: Intent { act=com.google.android.wearable.app.DEBUG_SURFACE flg=0x400000 (has extras) }
+Broadcast completed: result=1, data="Favorite Id=[9] Runtime=[2]"
+[15:48:18] (non-interactive) skipped manual step: Check the emulator shows 'Malaysia Pixel Lite'. If not: long-press the watch face, swipe to the end, tap 'Add', choose Malaysia Pixel Lite. Press Enter to continue
+[15:48:26] screenshot 01_time_start.png  (device clock 2026-10-14T15:48:25)
+[15:48:26] Waiting 65 s for the minute to change ...
+[15:49:34] screenshot 02_time_after_wait.png  (device clock 2026-10-14T15:49:33)
+[15:49:34] TIME: the two screenshots differ (compare the digits with the device clock logged above).
+[15:49:37] screenshot 03_12h_mode.png  (device clock 2026-10-14T15:49:37)
+[15:49:41] screenshot 04_24h_mode.png  (device clock 2026-10-14T15:49:40)
+[15:49:44] screenshot 05_battery_37.png  (device clock 2026-10-14T15:49:43)
+[15:49:48] screenshot 06_battery_82.png  (device clock 2026-10-14T15:49:47)
+[15:49:53] screenshot 07_ambient.png  (device clock 2026-10-14T15:49:53)
+[15:49:57] (non-interactive) skipped manual step: Optional weather test: long-press the face > Edit/Customise > tap the right-hand frame > choose a weather provider. Press Enter when done (or just Enter to skip)
+[15:50:00] screenshot 08_weather_slot.png  (device clock 2026-10-14T15:49:59)
+[15:50:00] Device settings restored (time_12_24=null, screen_off_timeout=2147483647, battery reset).
+[15:50:00] logcat saved (/home/runner/work/Pahlawan-angka/Pahlawan-angka/wearos/malaysia-pixel-lite/test-output/20261014-154817/logcat.txt); 329 error-looking line(s) from com.google.wear.watchface.runtime
+
+CHECK EACH SCREENSHOT:
+  01/02_time_*.png             HH:MM matches the logged device clock and moved on by >= 1 minute; date line correct
+  03_12h_mode.png              12-hour digits and AM/PM shown right of the time
+  04_24h_mode.png              24-hour digits, no AM/PM (if 03/04 look the same, toggle 'Use 24-hour format' in the watch Settings and compare manually)
+  05_battery_37.png            middle frame shows 37%
+  06_battery_82.png            middle frame shows 82%
+  07_ambient.png               dark 12_aod_bg, time only (no date/data/decorations). If black: enable Settings > Display > Always-on screen and re-run
+  01..06 left frame            number equals the system step count (emulators usually report 0 unless an exercise is simulated)
+  08_weather_slot.png          right frame: empty if no provider; otherwise provider text + ONE icon (provider's or the pack's), never two
