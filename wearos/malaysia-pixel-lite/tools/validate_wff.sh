@@ -34,17 +34,37 @@ if [[ ! -f "$JAR" ]]; then
   for dep in "${DEPS[@]}"; do
     read -r path sha1 <<<"$dep"
     file="$WORK/lib/$(basename "$path")"
-    curl -fsSL -o "$file" "$MAVEN/$path"
+    curl -fsSL --retry 6 -o "$file" "$MAVEN/$path"
     echo "$sha1  $file" | sha1sum -c --quiet -
   done
-  for src in "${SOURCES[@]}"; do
-    curl -fsSL -o "$WORK/src/com/samsung/watchface/$src" \
-      "$RAW/validator/src/main/java/com/samsung/watchface/$src"
-  done
-  # Fetch every XSD reachable from documents/<version>/watchface.xsd.
-  python3 -I - "$RAW/documents" "$WORK/xsd" <<'PY'
-import os, posixpath, re, sys, urllib.request
+  # One tarball of the repository if github.com is reachable; otherwise file by file.
+  if curl -fsSL -o "$WORK/watchface.tar.gz" \
+      "https://codeload.github.com/google/watchface/tar.gz/refs/heads/main" 2>/dev/null; then
+    tar -xzf "$WORK/watchface.tar.gz" -C "$WORK"
+    SPEC="$(echo "$WORK"/watchface-*/third_party/wff/specification)"
+    cp -r "$SPEC/validator/src/main/java/." "$WORK/src/"
+    cp -r "$SPEC/documents/." "$WORK/xsd/"
+  else
+    for src in "${SOURCES[@]}"; do
+      curl -fsSL --retry 6 -o "$WORK/src/com/samsung/watchface/$src" \
+        "$RAW/validator/src/main/java/com/samsung/watchface/$src"
+    done
+    # Fetch every XSD reachable from documents/<version>/watchface.xsd.
+    python3 -I - "$RAW/documents" "$WORK/xsd" <<'PY'
+import os, posixpath, re, sys, time, urllib.error, urllib.request
 base, out = sys.argv[1], sys.argv[2]
+
+
+def fetch(url):
+    for attempt in range(7):
+        try:
+            return urllib.request.urlopen(url, timeout=60).read().decode("utf-8")
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 500, 502, 503) or attempt == 6:
+                raise
+            time.sleep(2 ** attempt)
+
+
 for ver in ("1", "2", "3", "4", "5"):
     todo, seen = ["watchface.xsd"], set()
     while todo:
@@ -52,7 +72,7 @@ for ver in ("1", "2", "3", "4", "5"):
         if rel in seen:
             continue
         seen.add(rel)
-        data = urllib.request.urlopen(f"{base}/{ver}/{rel}", timeout=60).read().decode("utf-8")
+        data = fetch(f"{base}/{ver}/{rel}")
         path = os.path.join(out, ver, rel)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         open(path, "w", encoding="utf-8").write(data)
@@ -60,6 +80,7 @@ for ver in ("1", "2", "3", "4", "5"):
                  for loc in re.findall(r'schemaLocation="([^"]+)"', data)]
     print(f"  XSD version {ver}: {len(seen)} files")
 PY
+  fi
   (cd "$WORK/xsd" && jar cf "$WORK/fat/docs.zip" .)
   javac -d "$WORK/fat" -cp "$WORK/lib/*" $(find "$WORK/src" -name '*.java')
   (cd "$WORK/fat" && for j in "$WORK"/lib/*.jar; do unzip -q -o "$j" -x 'META-INF/MANIFEST.MF'; done)
