@@ -381,6 +381,30 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .btn.go{background:linear-gradient(180deg,#65cfc0,#279b91);text-shadow:0 2px 0 #1d6664}
 .btn.hint{background:#e5f8f8;color:#234d67}
 
+/* Balanced 2.5D station composition: keep the pet comfortably inside its
+   carriage, give Wira a clear foreground silhouette, and add gentle depth. */
+.scene{perspective:1100px;isolation:isolate;background-size:cover;background-position:58% 62%!important}
+.scene::before{z-index:1;background:linear-gradient(180deg,#a8ddf01c 0%,transparent 28%,transparent 74%,#1427444d 100%)}
+.scene::after{z-index:1;background:linear-gradient(105deg,#fff0 0%,#fff0 42%,#d9f8ff12 50%,#fff0 59%),linear-gradient(180deg,transparent 55%,#10243b55)}
+.canopy{transform:translateZ(22px);filter:drop-shadow(0 5px 3px #10233b66)}
+.canopy::before{box-shadow:0 2px 10px #f4c64e55}
+.platform{height:clamp(15px,5cqh,23px);background:linear-gradient(180deg,#f4c64e 0 4px,#aab7bf 4px 7px,#647d91 7px 100%);box-shadow:0 -3px 0 #213b5b88,0 -9px 18px #192d4930;transform:perspective(500px) rotateX(-5deg);transform-origin:bottom}
+.scene .wira{left:clamp(10px,2.2%,22px)!important;bottom:clamp(12px,4cqh,22px)!important;width:clamp(112px,58cqh,164px)!important;z-index:7!important;filter:drop-shadow(0 9px 6px #12223b75);animation:wiraConductor 3.4s ease-in-out infinite;transform-origin:50% 100%}
+.scene .wira img{filter:drop-shadow(0 2px 0 #fff4) drop-shadow(0 4px 2px #10233b66)}
+.scene #visitor{right:clamp(8px,2%,22px);bottom:clamp(13px,4cqh,22px);width:clamp(190px,132cqh,360px);z-index:5;filter:drop-shadow(0 14px 9px #10233b66);transform-origin:78% 100%}
+.car{transform:perspective(900px) rotateY(-4deg) rotateX(1deg);transform-style:preserve-3d;animation:carriageFloat 5.2s ease-in-out infinite;filter:drop-shadow(0 7px 3px #10233b40)}
+.car .train-art{filter:drop-shadow(0 8px 4px #10233b88);transform:translateZ(12px)}
+.car .win.main{box-shadow:inset 0 0 0 2px #e9fbff88,0 4px 0 #11274555,inset 0 -8px 15px #173e5a30}
+.car .win.main img{left:50%!important;bottom:-10%!important;width:86%!important;max-height:92%;object-fit:contain;object-position:center bottom;transform:translateX(-50%) translateZ(20px)!important;filter:drop-shadow(0 5px 3px #17324d55)}
+.car .win.main::after{content:"";position:absolute;inset:-45% -30%;z-index:2;pointer-events:none;background:linear-gradient(115deg,transparent 42%,#fff8 49%,#d7f8ff77 51%,transparent 58%);transform:translateX(-115%);animation:windowGlint 6s ease-in-out infinite}
+.car .win.side{box-shadow:inset 0 0 0 2px #e9fbff88,0 4px 0 #11274555}
+.board{z-index:6;box-shadow:0 5px 0 #10233b88,0 9px 18px #10233b40,inset 0 0 0 1px #fff2}
+@keyframes carriageFloat{0%,100%{transform:perspective(900px) rotateY(-4deg) rotateX(1deg) translateY(0)}50%{transform:perspective(900px) rotateY(-4deg) rotateX(1deg) translateY(-3px)}}
+@keyframes wiraConductor{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(.6deg)}}
+@keyframes windowGlint{0%,58%,100%{transform:translateX(-115%)}72%{transform:translateX(115%)}}
+@media(max-width:520px){.scene #visitor{width:clamp(152px,78cqh,285px);right:5px}.scene .wira{width:clamp(104px,52cqh,138px)!important;left:8px!important}}
+@media(prefers-reduced-motion:reduce){.scene .wira,.car,.car .win.main::after{animation:none!important}.car{transform:perspective(900px) rotateY(-2deg)}}
+
 </style>
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
 
