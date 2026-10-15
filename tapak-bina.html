@@ -220,6 +220,7 @@ button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
   </div></div>
 
 </main>
+<script src="js/minigame-dev-gate.js"></script>
 <script src="js/tapak-bina-router.js"></script>
 <script>
 (()=>{
@@ -452,6 +453,9 @@ const focusParams=new URLSearchParams(location.search),focusGrade=Number(focusPa
 const focusRun=focusParams.get('pa_focus_live')==='ruang'&&focusGrade===cfg.grade&&
  /^D[1-6]\./.test(focusOriginSkill)&&Number((/^D([1-6])\./.exec(focusOriginSkill)||[])[1])===focusGrade&&focusNonce.length>=8
  ?{grade:focusGrade,skillId:focusOriginSkill,nonce:focusNonce}:null;
+const devEnabled=window.PAMiniGameDev?.enabled?.()===true;
+const focusAuthorized=!!focusRun&&window.parent!==window&&window.parent.PATapakBinaLive?.isActiveFrame?.(window,focusNonce,focusOriginSkill)===true;
+if(!devEnabled&&!focusAuthorized){document.body.innerHTML='<main style="min-height:100dvh;display:grid;place-items:center;padding:24px;background:#10263e;color:#fff6e0;font:700 16px system-ui;text-align:center"><section><h1>Arkitek Dimensi</h1><p>Buka latihan ini melalui Kemahiran Fokus untuk profil murid. Panel ujian hanya tersedia dalam DEV mode.</p></section></main>';return}
 
 /* ---------- keadaan ---------- */
 const SET=5,SAYS={bentuk2d:'Pelan aku perlukan bentuk ini!',bentuk3d:'Blok mana satu untuk menara?',corak:'Tolong sambung corak lantai!',prisma:'Aku perlukan blok prisma!',poligon:'Jubin ini bentuk apa?',simetri:'Tingkap mesti simetri!',perimeter:'Berapa panjang pagar?',luas:'Berapa luas lantai?',isipadu:'Berapa kiub dalam kotak?',koordinat:'Di mana aku patut berdiri?',sudut:'Kren perlu sudut tepat!',bulatan:'Kolam bulat di taman menara!'};

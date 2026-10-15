@@ -85,6 +85,7 @@
   const gameQuestionJs=`js/game-question-interactions-v${GAME_QUESTION_VERSION}.js?v=${APP_VERSION}`;
   const profileCss=`css/profile-manager-v${PROFILE_MANAGER_VERSION}.css?v=${PROFILE_MANAGER_VERSION}`;
   const profileJs=`js/profile-manager-v${PROFILE_MANAGER_VERSION}.js?v=${APP_VERSION}`;
+  const devMiniGameJs='js/dev-minigame-launcher-v1.js?v=1.0.0';
 
   if(document.readyState==='loading'){
     if(!document.querySelector(`script[src^="questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js"]`))document.write(`<script src="${guard}"><\/script>`);
@@ -145,9 +146,11 @@
     if(!document.querySelector(`script[src^="js/game-question-interactions-v${GAME_QUESTION_VERSION}.js"]`))document.write(`<script src="${gameQuestionJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/profile-manager-v${PROFILE_MANAGER_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${profileCss}">`);
     if(!document.querySelector(`script[src^="js/profile-manager-v${PROFILE_MANAGER_VERSION}.js"]`))document.write(`<script src="${profileJs}"><\/script>`);
+    if(!document.querySelector('script[src^="js/dev-minigame-launcher-v1.js"]'))document.write(`<script src="${devMiniGameJs}"><\/script>`);
   }else{
     const loadCss=(src,selector)=>{if(document.querySelector(selector))return;const l=document.createElement('link');l.rel='stylesheet';l.href=src;document.head.appendChild(l);};
     const loadScript=(src,selector,onload)=>{if(document.querySelector(selector)){onload?.();return}const s=document.createElement('script');s.src=src;s.async=false;if(onload)s.onload=onload;document.head.appendChild(s);};
+    loadScript(devMiniGameJs,'script[src^="js/dev-minigame-launcher-v1.js"]');
     const loadProfile=()=>{loadCss(profileCss,`link[href^="css/profile-manager-v${PROFILE_MANAGER_VERSION}.css"]`);loadScript(profileJs,`script[src^="js/profile-manager-v${PROFILE_MANAGER_VERSION}.js"]`);};
     const loadGameQuestions=()=>{loadCss(gameQuestionCss,`link[href^="css/game-question-interactions-v${GAME_QUESTION_VERSION}.css"]`);loadScript(gameQuestionJs,`script[src^="js/game-question-interactions-v${GAME_QUESTION_VERSION}.js"]`,loadProfile);};
     const loadTyped=()=>{loadCss(typedCss,`link[href^="css/typed-answer-ui-v${TYPED_UI_VERSION}.css"]`);loadScript(typedJs,`script[src^="js/typed-answer-ui-v${TYPED_UI_VERSION}.js"]`,loadGameQuestions);};

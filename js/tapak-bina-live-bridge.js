@@ -15,6 +15,7 @@ function allowedSession(){
   !(typeof enforceRestuLock==='function'&&enforceRestuLock());
 }
 function close(){if(!run)return;run.node.remove();run=null;document.body.classList.remove('pa-tapak-bina-active');window.PACloud?.syncSaveNow?.()}
+function isActiveFrame(frame,nonce,skillId){return!!run&&run.frame.contentWindow===frame&&run.nonce===nonce&&run.skillId===skillId}
 function tryStartFocus(skillId){
  if(!allowedSession())return false;
  const grade=Number(db.schoolGrade),id=text(skillId),meta=typeof META==='undefined'?null:META[id],router=window.PATapakBina;
@@ -58,5 +59,5 @@ function receive(event){
  if(status)status.textContent='Bukti latihan direkod: '+run.seen.size+' cabaran Ruang. Tiada perubahan mastery daripada bintang permainan.';
 }
 window.addEventListener('message',receive);
-window.PATapakBinaLive={tryStartFocus,close};
+window.PATapakBinaLive={tryStartFocus,close,isActiveFrame};
 })();
