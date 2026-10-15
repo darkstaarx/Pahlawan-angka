@@ -1,0 +1,23 @@
+/* Give standalone Focus mini games a real web layout while preserving their
+   existing full-screen portrait layout on phones and narrow tablets. */
+@media (min-width:720px){
+  html,body{height:100%;min-height:100%}
+  body{
+    display:grid;
+    place-items:center;
+    min-height:100dvh;
+    padding:18px;
+    box-sizing:border-box;
+    background:radial-gradient(ellipse at center,#6d94a6,#14293b 85%);
+  }
+  .pa-game,.game{
+    width:min(100%,850px);
+    max-width:850px;
+    height:min(94dvh,860px);
+    max-height:none;
+    margin:0 auto;
+    border:7px solid #673f25;
+    border-radius:24px;
+    box-shadow:0 24px 70px #0008;
+  }
+}
