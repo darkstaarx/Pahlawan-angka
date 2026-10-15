@@ -687,7 +687,9 @@ function buildWidget(){const w=q.widget,box=el('widget'),ctl=el('controls');box.
  if(w==='analog'){clockMode='set';hour=Math.floor(mod(q.start,720)/60)||12;minute=mod(q.start,60);selHand='m';buildClock(box);
   box.insertAdjacentHTML('beforeend','<div class="clock-info"><span>JAM KAMU</span><b id="digital"></b><span>'+(q.hideRead?'PILIH & SERET JARUM':'↻')+'</span></div><div class="picks"><button class="pick" id="pickH" aria-pressed="false"><span>◆</span> JARUM PENDEK</button><button class="pick selected" id="pickM" aria-pressed="true"><span>◆</span> JARUM PANJANG</button></div>');
   el('pickH').onclick=()=>choose('h');el('pickM').onclick=()=>choose('m');
-  ctl.hidden=true;
+  ctl.innerHTML=adj('ah','PUTAR JAM','1 jam')+adj('am','PUTAR MINIT','5 min');
+  el('ah-').onclick=()=>adjust(-60);el('ah+').onclick=()=>adjust(60);
+  el('am-').onclick=()=>adjust(-5);el('am+').onclick=()=>adjust(5);
   updateAnalog()}
  else if(w==='durasi'){dur={h:0,m:0};
   if(!q.noTime){clockMode='model';buildClock(box);drawHands(Math.floor(mod(q.s,720)/60),mod(q.s,60));
