@@ -60,10 +60,10 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .sign::before{left:16px}.sign::after{right:16px}
 
 /* Cashier stands on the far side of the counter. The wooden fascia masks his lower body. */
-.wira{position:absolute;z-index:2;left:4px;bottom:24px;width:clamp(146px,49cqh,190px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
+.wira{position:absolute;z-index:2;left:4px;bottom:30px;width:clamp(132px,40cqh,160px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
 .wira img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 3px #0005)}
 .wira.cheer{animation:hop .55s ease 2}
-.counter{position:absolute;z-index:4;left:0;bottom:0;width:73%;height:60px;background:repeating-linear-gradient(90deg,transparent 0 62px,#0000001f 62px 64px),linear-gradient(180deg,#e2a466 0 10px,var(--wood) 10px,#7b4520);border-top:4px solid #f0bf82;border-right:4px solid var(--wood-dk);border-radius:0 10px 0 0;box-shadow:inset 0 10px 0 #ffffff22,0 -2px 0 #0002}
+.counter{position:absolute;z-index:4;left:0;bottom:0;width:73%;height:90px;background:repeating-linear-gradient(90deg,transparent 0 62px,#0000001f 62px 64px),linear-gradient(180deg,#e2a466 0 10px,var(--wood) 10px,#7b4520);border-top:4px solid #f0bf82;border-right:4px solid var(--wood-dk);border-radius:0 10px 0 0;box-shadow:inset 0 10px 0 #ffffff22,0 -2px 0 #0002}
 .counter::before{content:"";position:absolute;left:-4px;right:-4px;top:-10px;height:13px;border:2px solid #85502a;border-radius:10px 10px 3px 3px;background:linear-gradient(180deg,#f7ca8d,#c78649);box-shadow:0 3px 4px #33211455}
 .counter::after{content:"";position:absolute;left:10px;right:14px;top:22px;height:2px;background:#0000002a;box-shadow:0 18px #0000002a}
 .basket{position:absolute;z-index:4;left:clamp(98px,48cqh,128px);bottom:32px;width:80px;height:54px}
@@ -238,9 +238,9 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
  body{display:grid;place-items:center;padding:18px;background:radial-gradient(ellipse at center,#6d94a6,#14293b 85%)}
  .pa-game{width:min(100%,850px);max-width:850px;height:min(94dvh,860px);max-height:none;border:7px solid #673f25;border-radius:24px;box-shadow:0 24px 70px #0008}
  .scene{min-height:240px}
- .wira{width:clamp(130px,32cqh,210px)}
+ .wira{width:clamp(120px,28cqh,170px)}
  .customer{width:clamp(155px,38cqh,230px)}
- .counter{width:62%;height:75px}
+ .counter{width:62%;height:104px}
  .basket{left:clamp(160px,38%,300px);bottom:45px}
  .panel{padding-left:25px;padding-right:25px}
  .hud{padding:10px 24px}
@@ -271,7 +271,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <div class="tint" id="tint"></div>
     <div class="awning-rod"></div><div class="awning"></div>
     <div class="sign"><b>Wirayung</b></div>
-    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/kedai-ajaib/wira-idle.webp" alt="Wira menjaga gerai"></div>
+    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/kedai-ajaib/wira-peniaga-idle.webp" alt="Wira menjaga Gerai Wirayung"></div>
     <div class="counter"></div>
     <div class="basket" id="basket" aria-label="Beg pesanan"><div class="in" id="basketIn"></div><div class="bag"></div></div>
     <div class="customer away" id="customer"><img id="petImg" src="assets/pets/collection/durian-kerbau/idle.png" alt=""></div>
@@ -339,7 +339,7 @@ const FAMILIES=[
 /* Skill wang D1–D4 dipetakan ke mod mini-game yang benar-benar menguji skill itu. */
 const DIRECT={
  'D1.MONEY':['bayar'],'D2.4.1':['bayar'],'D2.4.2':['bayar'],'D2.4.3':['baki'],'D2.4.4':['bayar'],'D2.4.5':['bahagi'],
- 'D2.4.6':['baki'],'D2.4.7':['bayar','baki'],'D3.MONEY':['bayar','baki'],'D4.MONEY':['bayar','baki']
+ 'D2.4.6':['simpanan'],'D2.4.7':['bayar','baki'],'D3.MONEY':['bayar','baki'],'D4.MONEY':['bayar','baki']
 };
 const DEFAULT={5:['diskaun','baki'],6:['diskaun','untung']};
 const gradeOf=id=>Number((/^D(\d)/.exec(String(id))||[])[1])||0;
@@ -385,12 +385,12 @@ window.PAGeraiWirayung={planFor,url,weakFamilies,FAMILIES};
 (()=>{
 const asset=(key)=>{
  if(key.startsWith('wang-')){const n=key.slice(5).replace('.webp','');return 'assets/questions/money/money_'+n+'.png'}
- if(key==='wira-idle.webp')return 'assets/minigames/kedai-ajaib/wira-idle.webp';
- if(key==='wira-victory.webp')return 'assets/minigames/kedai-ajaib/wira-victory.webp';
- if(key==='wira-thumb.webp')return 'assets/minigames/kedai-ajaib/wira-thumb.webp';
+ if(key==='wira-idle.webp')return 'assets/minigames/kedai-ajaib/wira-peniaga-idle.webp';
+ if(key==='wira-victory.webp')return 'assets/minigames/kedai-ajaib/wira-peniaga-victory.webp';
+ if(key==='wira-thumb.webp')return 'assets/minigames/kedai-ajaib/wira-peniaga-thumb.webp';
  const pet=/^(durian-kerbau|ketupat-kura|arnab-kek-lapis|harimau-bunga|kumbang-manggis)-(idle|sad|happy)\.webp$/.exec(key);
  if(pet)return 'assets/pets/collection/'+pet[1]+'/'+pet[2]+'.png';
- return 'assets/minigames/kedai-ajaib/wira-idle.webp';
+ return 'assets/minigames/kedai-ajaib/wira-peniaga-idle.webp';
 };
 const $=id=>document.getElementById(id);
 const money=v=>'RM'+(v/100).toFixed(2);
@@ -438,18 +438,19 @@ const rmShort=v=>money(v).replace('.00','');
    Hash: #d<darjah>[-mod-mod]  cth #d6-diskaun-untung, #d2-baki.
    (#bayar / #baki lama = Darjah 3.)  Setiap mod ada 2–3 tahap mengikut
    darjah. 2 pesanan bersih berturut-turut → naik; 2+ bantuan/cubaan → turun. */
-const MODE_LABEL={bayar:'BAYAR TEPAT',baki:'PULANGKAN BAKI',bahagi:'BAHAGI WANG',diskaun:'JUALAN MURAH',untung:'UNTUNG RUGI'};
+const MODE_LABEL={bayar:'BAYAR TEPAT',baki:'PULANGKAN BAKI',bahagi:'BAHAGI WANG',simpanan:'SIMPANAN WANG',diskaun:'JUALAN MURAH',untung:'UNTUNG RUGI'};
 const GRADES={
  1:{title:'Wang asas',modes:['bayar'],
     bayar:[{n:1,min:10,max:100},{n:1,min:50,max:300}]},
- 2:{title:'Tambah, tolak & bahagi wang',modes:['bayar','baki'],
+ 2:{title:'Tambah, tolak, bahagi & simpan wang',modes:['bayar','baki'],
     bahagi:[
       {people:[2,3],shares:[50,100,150,200,250,300],maxTotal:900},
       {people:[2,3,4],shares:[80,100,120,150,180,200,250,300,350],maxTotal:1200},
       {people:[2,3,4],shares:[120,150,160,180,200,220,250,300,350,400,450],maxTotal:1800}
     ],
     bayar:[{n:1,min:50,max:300},{n:2,min:50,max:300}],
-    baki:[{n:1,paid:500,min:100,max:400,whole:true},{n:1,paid:500,min:50,max:490}]},
+    baki:[{n:1,paid:500,min:100,max:400,whole:true},{n:1,paid:500,min:50,max:490}],
+    simpanan:[{incomeMin:500,incomeMax:1200,spendMin:100,spendMax:400,whole:true},{incomeMin:800,incomeMax:2500,spendMin:300,spendMax:1200},{incomeMin:1500,incomeMax:5000,spendMin:500,spendMax:3000}]},
  3:{title:'Operasi wang',modes:['bayar','baki'],
     bayar:[{n:1,min:50,max:300},{n:2,min:50,max:300},{n:2,min:110,max:450}],
     baki:[{n:1,paid:500,min:100,max:400,whole:true},{n:1,paid:500,min:50,max:490},{n:2,paid:1000,min:100,max:450}]},
@@ -570,6 +571,19 @@ const MODES={
   strategy(o){return (o.items.length>1||o.qty>1?'Cari jumlah dulu. ':'')+'Kemudian kira naik dari jumlah ke ringgit bulat, terus ke '+money(o.paid)+'.'},
   answer(o){const t=this.sum(o),up=Math.ceil(t/100)*100;return 'Jumlah '+money(t)+'. Kira naik: '+money(t)+' → '+money(up)+' ('+(up-t)+' sen), kemudian → '+money(o.paid)+'. Baki '+money(o.paid-t)+'.'},
   stamp:(o,v)=>'baki '+money(v),revenue(o){return this.sum(o)}},
+ simpanan:{
+  make(t){const items=chooseItems(1);let income,spent;
+   if(t.whole){income=rnd(Math.ceil(t.incomeMin/100),Math.floor(t.incomeMax/100))*100;spent=rnd(Math.ceil(t.spendMin/100),Math.floor(Math.min(t.spendMax,income-100)/100))*100}
+   else{income=price10(t.incomeMin,t.incomeMax);spent=price10(t.spendMin,Math.min(t.spendMax,income-10))}
+   P(items[0]).price=spent;
+   return{items,qty:1,paid:income,say:'Aina menerima '+money(income)+'. Dia berbelanja '+money(spent)+' untuk '+name(items[0])+'. Berapa wang yang dapat disimpan?'}},
+  sum(o){return o.items.reduce((a,id)=>a+P(id).price,0)*o.qty},
+  target(o){return o.paid-this.sum(o)},
+  ask:'Berapa wang yang dapat disimpan?',title:o=>'Asingkan simpanan daripada '+money(o.paid),text:'Simpanan = wang diterima − wang dibelanjakan. Susun baki untuk disimpan.',goLbl:'Semak simpanan',
+  receipt(o){return rows(o)+sumline([['Wang diterima',money(o.paid),'paid'],['Wang dibelanjakan','?'],['Wang disimpan','?']])},
+  strategy(o){return 'Wang disimpan = wang diterima − wang dibelanjakan: '+money(o.paid)+' − '+money(this.sum(o))+'.'},
+  answer(o){return money(o.paid)+' − '+money(this.sum(o))+' = '+money(this.target(o))+' boleh disimpan.'},
+  stamp:(o,v)=>'simpanan '+money(v),revenue(){return 0}},
  diskaun:{
   make(t){const items=chooseItems(1);let base,pct=0,cut=0;
    if(t.cut){base=rnd(2,8)*100;cut=pick(t.cut.filter(c=>c<base))}
@@ -640,8 +654,16 @@ function makeLiveFocusOrder(){
   const pairs=grade<=2?[[200,300,100,400],[400,200,300,500]]:grade===3?[[2300,1400,2400,1700],[3500,2200,3300,2600]]:[[12300,4600,14200,5300],[21400,3500,22100,3600]],pair=pairs[index],items=chooseItems(2);P(items[0]).price=pair[0];P(items[1]).price=pair[1];
   const values=pair.slice(0,2).map(x=>x/100);order={mode:'bayar',items,qty:1,say:'Dua barang ini, berapa jumlah semuanya?'};operation='addition';operands={addends:values};plainOperands={addends:pair.slice(2).map(x=>x/100)};answer=values[0]+values[1];
  }else if(family==='money_subtract'||family==='money_change'||family==='money_budget'){
-  const actualPairs=grade<=2?[[500,200],[700,300]]:grade===3?[[8200,3700],[9600,4800]]:[[70400,28600],[93200,45700]],paid=actualPairs[index][0],price=actualPairs[index][1];P(one).price=price;order={mode:'baki',items:[one],qty:1,paid,say:'Aku bayar '+money(paid)+'. Berapa baki?'};operation='subtraction';operands={minuend:paid/100,subtrahend:price/100};answer=(paid-price)/100;
-  const plainPairs=grade<=2?[[9,4],[8,3]]:grade===3?[[91,43],[87,39]]:[[812,347],[963,482]];plainOperands={minuend:plainPairs[index][0],subtrahend:plainPairs[index][1]};
+  if(LIVE_FOCUS_ORIGIN==='D2.4.6'){
+   const actualPairs=[[500,200],[700,300]],income=actualPairs[index][0],spent=actualPairs[index][1];P(one).price=spent;
+   order={mode:'simpanan',items:[one],qty:1,paid:income,say:'Aina menerima '+money(income)+'. Dia berbelanja '+money(spent)+' untuk '+name(one)+'. Berapa wang yang dapat disimpan?'};
+   operands={minuend:income/100,subtrahend:spent/100,result:(income-spent)/100,task:'savings',unit:'RM'};answer=(income-spent)/100;
+   const plainPairs=[[9,6],[8,4]];plainOperands={minuend:plainPairs[index][0],subtrahend:plainPairs[index][1]};
+  }else{
+   const actualPairs=grade<=2?[[500,200],[700,300]]:grade===3?[[8200,3700],[9600,4800]]:[[70400,28600],[93200,45700]],paid=actualPairs[index][0],price=actualPairs[index][1];P(one).price=price;order={mode:'baki',items:[one],qty:1,paid,say:'Aku bayar '+money(paid)+'. Berapa baki?'};operation='subtraction';operands={minuend:paid/100,subtrahend:price/100};answer=(paid-price)/100;
+   const plainPairs=grade<=2?[[9,6],[8,4]]:grade===3?[[91,48],[87,43]]:[[812,347],[963,482]];plainOperands={minuend:plainPairs[index][0],subtrahend:plainPairs[index][1]};
+  }
+  operation='subtraction';
  }else if(family==='money_multiply'){
   const price=index?300:200,qty=index?4:3;P(one).price=price;order={mode:'bayar',items:[one],qty,say:'Aku nak '+qty+' barang ini. Berapa jumlahnya?'};operation='multiplication';operands={unitPrice:price/100,quantity:qty};plainOperands={unitPrice:index?6:5,quantity:index?4:3};answer=price/100*qty;
  }else if(family==='money_divide'){
@@ -706,12 +728,12 @@ function drawMat(){if(m.mode==='bahagi'){drawSharePiles();return}const el=$('mat
 function drawSign(){const need=!!(M().needSign&&M().needSign(m));$('signRow').hidden=!need;$('countHint').hidden=need;
  document.querySelectorAll('#signRow button').forEach(b=>{b.classList.toggle('on',b.dataset.sign===sign);b.setAttribute('aria-pressed',b.dataset.sign===sign)})}
 function drawReceipt(){$('receipt').innerHTML=M().receipt(m);
- $('countHint').textContent={bayar:'Kira sendiri, tiada kalkulator',baki:'Baki = dibayar − jumlah',bahagi:'Setiap bahagian mesti sama nilai',diskaun:'Akhir = asal − diskaun',untung:'Untung/rugi = beza jualan & kos'}[m.mode];document.querySelector('.mat-total>span').firstChild.textContent=m.mode==='bahagi'?'Jumlah diagih ':'Atas kaunter '}
+ $('countHint').textContent={bayar:'Kira sendiri, tiada kalkulator',baki:'Baki = dibayar − jumlah',bahagi:'Setiap bahagian mesti sama nilai',simpanan:'Simpanan = wang diterima − belanja',diskaun:'Akhir = asal − diskaun',untung:'Untung/rugi = beza jualan & kos'}[m.mode];document.querySelector('.mat-total>span').firstChild.textContent=m.mode==='bahagi'?'Jumlah diagih ':m.mode==='simpanan'?'Untuk disimpan ':'Atas kaunter '}
 function drawOrder(){$('who').textContent=m.who;$('say').textContent=m.say;
  if(m.mode==='bahagi'){$('order').innerHTML=m.items.map(id=>'<span>'+ART[id]+'</span>').join('')+'<span class="coupon">'+money(m.total)+'</span>';return}
  let h=m.items.map(id=>'<span>'+ART[id]+(m.qty>1?'<b class="qtyb">×'+m.qty+'</b>':'')+'</span>').join('');
  if(m.coupon)h+='<span class="coupon">'+m.coupon+'</span>';
- if(m.paid)h+=`<span class="paid-note"><img src="${asset('wang-'+(m.paid===1000?'rm10':'rm5')+'.webp')}" alt="${money(m.paid)}"></span>`;
+ if(m.paid&&m.mode!=='simpanan')h+=`<span class="paid-note"><img src="${asset('wang-'+(m.paid===1000?'rm10':'rm5')+'.webp')}" alt="${money(m.paid)}"></span>`;
  $('order').innerHTML=h}
 
 /* ---------- flow ---------- */
@@ -821,8 +843,12 @@ function finishLiveFocus(){
  const report=window.PAFocusMoneyDiagnosticV2.evaluate({originSkillId:liveFocus.origin,observations:liveFocus.observations,questionBankSkills:Object.keys(window.PAFocusMoneyDiagnosticV2.skillFamilies),nextSkillId:liveFocus.origin});
  const family=liveFocus.family,demandBand=liveFocus.contexts[0]?.demandBand||'small-number',bandNames={'small-number':'nombor asas','two-digit':'nombor dua digit','three-digit':'nombor tiga digit'},operationNames={addition:'tambah',subtraction:'tolak',multiplication:'darab',division:'bahagi',discount:'diskaun'},demand=operationNames[window.PAFocusMoneyDiagnosticV2.probeFamilies[family]?.operation]+' '+(bandNames[demandBand]||demandBand);
  let parentText=report.parentText;
- if(report.state==='candidate'&&String(report.rootCause||'').startsWith('operation.'))parentText='Pesanan wang yang sepadan boleh dibuat sendiri, tetapi kiraan '+demand+' tanpa konteks wang masih mengelirukan. Fokus seterusnya ialah latihan operasi '+operationNames[window.PAFocusMoneyDiagnosticV2.probeFamilies[family]?.operation]+' pada tahap nombor yang diuji.';
- if(report.state==='candidate'&&String(report.rootCause||'').startsWith('money.'))parentText='Kiraan nombor '+demand+' boleh dibuat sendiri, tetapi soalan wang yang sepadan masih mencabar. Kekalkan latihan wang pada kemahiran '+liveFocus.origin+'.';
+ if(report.state==='candidate'&&String(report.rootCause||'').startsWith('operation.'))parentText=liveFocus.origin==='D2.4.6'
+  ?'Latihan simpanan wang boleh dibuat sendiri, tetapi kiraan tolak nombor tanpa konteks wang masih mengelirukan. Fokus seterusnya ialah latihan tolak pada tahap nombor yang diuji.'
+  :'Pesanan wang yang sepadan boleh dibuat sendiri, tetapi kiraan '+demand+' tanpa konteks wang masih mengelirukan. Fokus seterusnya ialah latihan operasi '+operationNames[window.PAFocusMoneyDiagnosticV2.probeFamilies[family]?.operation]+' pada tahap nombor yang diuji.';
+ if(report.state==='candidate'&&String(report.rootCause||'').startsWith('money.'))parentText=liveFocus.origin==='D2.4.6'
+  ?'Kiraan tolak nombor yang sepadan boleh dibuat sendiri, tetapi soalan tentang wang yang boleh disimpan masih mencabar. Kekalkan latihan pada kemahiran Simpanan Wang.'
+  :'Kiraan nombor '+demand+' boleh dibuat sendiri, tetapi soalan wang yang sepadan masih mencabar. Kekalkan latihan wang pada kemahiran '+liveFocus.origin+'.';
  $('fdTitle').textContent=report.state==='candidate'?'Semakan selesai':'Belum cukup bukti';$('fdPrompt').textContent=parentText;$('fdChoices').innerHTML='';$('fdProgress').textContent='Selesai · 2 pesanan gerai + 2 kiraan nombor direkod · '+demand;$('fdNote').textContent='Pesanan sebenar Gerai kekal direkod seperti biasa. Semakan ini tidak menambah ganjaran atau mastery.';
  const nonce=new URLSearchParams(location.search).get('pa_nonce');try{window.parent.postMessage({type:'PA_FOCUS_MONEY_LIVE_RESULT',version:1,nonce,report:{originSkillId:liveFocus.origin,state:report.state,rootCause:report.rootCause,nextSkillId:report.nextSkillId,confidence:report.confidence,reasonCode:report.reasonCode,parentText,testedDemand:demand,evidence:report.evidence}},location.origin)}catch(e){console.warn('Focus Wang live bridge unavailable',e)}
 }
@@ -979,7 +1005,7 @@ async function runMoneyDiagnostic(){
   function generatedProbes(){
    const spec=V2()?.skillFamilies?.[origin],moneyProbes=[],plainProbes=[];
    if(!spec)return [];
-   const modeFamilies={bayar:['money_unit','money_add','money_subtract','money_multiply','money_divide','money_problem','money_total','money_change','money_unit_price','money_budget'],baki:['money_subtract','money_change','money_budget'],bahagi:['money_divide'],diskaun:['money_discount'],untung:['money_profit']};
+   const modeFamilies={bayar:['money_unit','money_add','money_subtract','money_multiply','money_divide','money_problem','money_total','money_change','money_unit_price','money_budget'],baki:['money_subtract','money_change','money_budget'],bahagi:['money_divide'],simpanan:['money_subtract'],diskaun:['money_discount'],untung:['money_profit']};
    const requested=[...routeModes].flatMap(mode=>modeFamilies[mode]||[]);
    const families=routeModes.size?spec.filter(f=>requested.includes(f)):spec;
    if(!families.length)return [];

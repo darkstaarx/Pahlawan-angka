@@ -14,7 +14,7 @@ const FAMILIES=[
 /* Skill wang D1–D4 dipetakan ke mod yang sepadan. */
 const DIRECT={
  'D1.MONEY':['bayar'],'D2.4.1':['bayar'],'D2.4.2':['bayar'],'D2.4.3':['baki'],'D2.4.4':['bayar'],
- 'D2.4.5':['bahagi'],'D2.4.6':['baki'],'D2.4.7':['bayar','baki'],'D3.MONEY':['bayar','baki'],'D4.MONEY':['bayar','baki']
+ 'D2.4.5':['bahagi'],'D2.4.6':['simpanan'],'D2.4.7':['bayar','baki'],'D3.MONEY':['bayar','baki'],'D4.MONEY':['bayar','baki']
 };
 const DEFAULT={5:['diskaun','baki'],6:['diskaun','untung']};
 const gradeOf=id=>Number((/^D(\d)/.exec(String(id))||[])[1])||0;

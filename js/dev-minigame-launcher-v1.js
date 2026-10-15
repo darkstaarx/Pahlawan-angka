@@ -4,7 +4,7 @@
  const games=[
   {title:'Gerai Wirayung · Wang',page:'gerai-wirayung.html'},
   {title:'Tren Jam · Masa',page:'menara-jam.html'},
-  {title:'Arkitek Dimensi · Ruang',page:'tapak-bina.html',qa:true,gradePicker:true},
+  {title:'Arkitek Dimensi · Ruang',page:'tapak-bina.html',qa:true},
   {title:'Kedai Kek · Pecahan',page:'kedai-kek.html'},
   {title:'Bengkel Ajaib · Ukuran',page:'bengkel-ajaib.html'},
   {title:'Gudang Harta · Operasi',page:'gudang-harta.html'},
@@ -19,7 +19,7 @@
   const section=document.createElement('section');
   section.className='devScenario';
   section.dataset.paDevMinigameLauncher='1';
-  section.innerHTML='<b>Mini Game Lab · '+games.length+' game</b><p class="mut devMiniCopy">Buka setiap game dalam sesi DEV sementara. Pilih darjah dan mod melalui panel ujian di dalam game.</p><div class="paDevMiniGameGrid"></div>';
+  section.innerHTML='<b>Mini Game Lab · '+games.length+' game</b><p class="mut devMiniCopy">Game ikut darjah profil murid yang sedang dipilih. Tukar darjah di sini untuk semak bank D1–D6; mod boleh dipilih dalam game.</p><div class="paDevMiniGameGrid"></div>';
   const grid=section.querySelector('.paDevMiniGameGrid');
   games.forEach((game,index)=>{
    const button=document.createElement('button');
@@ -33,12 +33,14 @@
   document.getElementById('paDevMiniGameOverlay')?.remove();
   const overlay=document.createElement('section');
   overlay.id='paDevMiniGameOverlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label',game.title+' · DEV');
-  overlay.innerHTML='<header><b></b><select data-grade aria-label="Darjah" hidden><option value="1">Darjah 1</option><option value="2">Darjah 2</option><option value="3" selected>Darjah 3</option><option value="4">Darjah 4</option><option value="5">Darjah 5</option><option value="6">Darjah 6</option></select><div class="paDevMiniGameActions"><button type="button" data-back>Senarai Game</button><button type="button" data-close aria-label="Tutup">✕</button></div></header><iframe title=""></iframe>';
+  overlay.innerHTML='<header><b></b><select data-grade aria-label="Darjah"><option value="1">Darjah 1</option><option value="2">Darjah 2</option><option value="3">Darjah 3</option><option value="4">Darjah 4</option><option value="5">Darjah 5</option><option value="6">Darjah 6</option></select><div class="paDevMiniGameActions"><button type="button" data-back>Senarai Game</button><button type="button" data-close aria-label="Tutup">✕</button></div></header><iframe title=""></iframe>';
   overlay.querySelector('header b').textContent=game.title+' · DEV';
   const frame=overlay.querySelector('iframe');frame.title=game.title+' · Ujian DEV';
   const grade=overlay.querySelector('[data-grade]');
-  const frameUrl=()=>game.page+(game.qa?'?qa=1':'')+(game.gradePicker?'#d'+grade.value:'');
-  if(game.gradePicker){grade.hidden=false;grade.addEventListener('change',()=>{frame.src=frameUrl()})}
+  const profileGrade=Number(window.db?.schoolGrade);
+  grade.value=String(profileGrade>=1&&profileGrade<=6?profileGrade:3);
+  const frameUrl=()=>game.page+(game.qa?'?qa=1':'')+'#d'+grade.value;
+  grade.addEventListener('change',()=>{frame.src=frameUrl()});
   frame.src=frameUrl();
   overlay.querySelector('[data-close]').addEventListener('click',()=>overlay.remove());
   overlay.querySelector('[data-back]').addEventListener('click',()=>overlay.remove());

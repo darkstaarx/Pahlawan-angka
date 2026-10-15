@@ -88,7 +88,7 @@ async function smokeRoute(browser,skill,grade,modes,expectedCount){
  await page.locator('#fdTitle').filter({hasText:/Semakan selesai|Semakan perlukan lebih bukti/}).waitFor({timeout:20000});
  const report=await page.evaluate(()=>window.__moneyReport);
  if(!report)throw Error(`${skill} did not produce a diagnostic report after its probes`);
- const expectedFamilies=new Set(modes.split(',').flatMap(mode=>({bayar:['money_unit','money_add','money_subtract','money_multiply','money_divide','money_problem','money_total','money_change','money_unit_price','money_budget'],baki:['money_subtract','money_change','money_budget'],bahagi:['money_divide'],diskaun:['money_discount'],untung:['money_profit']}[mode]||[])));
+ const expectedFamilies=new Set(modes.split(',').flatMap(mode=>({bayar:['money_unit','money_add','money_subtract','money_multiply','money_divide','money_problem','money_total','money_change','money_unit_price','money_budget'],baki:['money_subtract','money_change','money_budget'],bahagi:['money_divide'],simpanan:['money_subtract'],diskaun:['money_discount'],untung:['money_profit']}[mode]||[])));
  for(const family of expectedFamilies){const evidence=report.evidence?.diagnostic?.evidence?.byFamily?.[family];if(evidence&&evidence.uniquePairs!==2)throw Error(`${skill} ${family} produced ${evidence.uniquePairs} unique operand pairs; two are required`)}
  if(errors.length)throw Error(skill+' browser errors: '+errors.join('; '));
  await context.close();return {skill,grade,modes,probes:found,matchedPairs:Object.fromEntries(Object.entries(report.evidence.diagnostic.evidence.byFamily).map(([f,v])=>[f,v.uniquePairs]))};
@@ -160,12 +160,57 @@ async function smokeLiveGeraiDiagnosis(browser){
  await context.close();return {src,actualGeraiRounds:seenDays.length,report:result.report,nextFocus:result.next};
 }
 
+async function smokeLiveSavingsGerai(browser){
+ const context=await browser.newContext({serviceWorkers:'block',viewport:{width:430,height:900}}),page=await context.newPage(),errors=[];
+ await context.route('**/*',route=>['GET','HEAD'].includes(route.request().method())?route.continue():route.abort());page.on('pageerror',e=>errors.push(String(e)));
+ await page.goto(base,{waitUntil:'load'});await page.waitForFunction(()=>window.PAFocusPractice&&window.PAWirayungLive,{timeout:20000});
+ await page.evaluate(()=>{
+  window.PACommercial={requireFeature:()=>true,canUse:()=>true};window.PACloud={state:{},scheduleSave:()=>{},syncSaveNow:()=>{}};window.save=()=>{};window.enforceRestuLock=()=>false;
+  db={schoolGrade:2,name:'Disposable Savings test',hero:'wira',level:1,coins:0,xp:0,skills:{},logs:[],coreFrontier:1,completedMissions:{},rewards:{pets:{},auras:{},badges:{}},learnerReviewV1:{schema:1,encounters:[]}};sess={};initAll();
+  db.learnerReviewV1.encounters=Array.from({length:5},(_,i)=>({grade:2,skillId:'D2.4.6',questionKey:'savings-focus-'+i,outcome:'unresolved',mode:'kembara',archetypeId:'money_subtract'}));
+  window.__savingsStarted=PAWirayungLive.tryStartFocus('D2.4.6');
+ });
+ if(!await page.evaluate(()=>window.__savingsStarted))throw Error('D2.4.6 Focus route failed to launch');
+ const game=page.frameLocator('#paWirayungFrame');await page.locator('#paWirayungFrame').waitFor({timeout:10000});await game.locator('#go').waitFor({timeout:15000});
+ const gameFrame=page.frames().find(frame=>frame.url().includes('gerai-wirayung.html'));if(!gameFrame)throw Error('The live savings Gerai iframe did not load');
+ await gameFrame.waitForFunction(()=>typeof window.__geraiDebug==='function'&&window.__geraiDebug()?.mode==='simpanan',{timeout:15000});const seen=[];
+ for(let round=1;round<=2;round++){
+  await gameFrame.waitForFunction(()=>window.__geraiDebug?.()?.mode==='simpanan',{timeout:15000});
+  const debug=await gameFrame.evaluate(()=>window.__geraiDebug());
+  if(debug.mode!=='simpanan'||debug.focusFamily!=='money_subtract'||debug.focusOperands.task!=='savings'||debug.focusOperands.minuend-debug.focusOperands.subtrahend!==debug.target/100)throw Error('D2.4.6 did not play its tagged savings scenario: '+JSON.stringify(debug));
+  await game.locator('#say').filter({hasText:/menerima|disimpan|simpan/i}).waitFor({timeout:5000});const prompt=await game.locator('#say').innerText();seen.push(prompt);
+  if(!/menerima|disimpan|simpan/i.test(prompt))throw Error('Savings scenario did not use savings context: '+prompt);
+  for(const id of debug.items)await game.locator(`#shelf .item[data-id="${id}"]`).click();
+  await game.locator('#go').click();await game.locator('#stepLbl').filter({hasText:'KIRA'}).waitFor({timeout:5000});
+  let remaining=debug.target;
+  for(const [amount,label] of [[500,'RM5'],[100,'RM1'],[50,'50 sen'],[20,'20 sen'],[10,'10 sen']]){
+   const count=Math.floor(remaining/amount);for(let i=0;i<count;i++)await game.locator(`#purse .money[aria-label="Letak ${label}"]`).click();remaining-=count*amount;
+  }
+  if(remaining)throw Error('Test coin denominations could not represent savings '+debug.target);
+  await game.locator('#go').click();if(round===1)await game.locator('#dayLbl').filter({hasText:'Ke-2'}).waitFor({timeout:12000});
+ }
+ await game.locator('#focusDiagnostic').waitFor({timeout:15000});
+ for(let i=0;i<2;i++){
+  const current=await game.locator('#fdProgress').innerText(),probe=await game.locator('#fdPrompt').innerText();if(!current.includes(`Soalan nombor ${i+1} / 2`)||!/[−-]/.test(probe))throw Error('Expected matched plain subtraction probe after savings: '+JSON.stringify({current,probe}));
+  await game.locator('.fd-choice[data-correct="false"]').first().click();
+  if(i===0)await game.locator('#fdProgress').filter({hasText:'Soalan nombor 2 / 2'}).waitFor({timeout:5000});
+ }
+ await game.locator('#fdTitle').filter({hasText:'Semakan selesai'}).waitFor({timeout:10000});
+ await page.waitForFunction(()=>db.focusDiagnosticsV1?.reports?.length===1,{timeout:10000});
+ const result=await page.evaluate(()=>({events:db.wirayungProgress?.events||[],report:db.focusDiagnosticsV1.reports.at(-1),parent:document.querySelector('#paWirayungReport')?.innerText||'',next:PAFocusPractice.summary().items.map(x=>x.id)}));
+ const savings=result.events.filter(e=>e.grade===2&&e.mode==='simpanan');
+ if(savings.length!==2||result.report.skillId!=='D2.4.6'||result.report.rootCause!=='operation.subtraction'||result.report.nextSkillId!=='D2.2.2'||!result.report.parentText.includes('Latihan simpanan wang boleh dibuat sendiri')||!result.parent.includes('D2.4.6')||!result.parent.includes('kiraan tolak nombor tanpa konteks wang'))throw Error('Savings evidence did not reach its exact skill and parent wording: '+JSON.stringify(result));
+ if(errors.length)throw Error('Savings Gerai page errors: '+errors.join('; '));
+ await context.close();return {playedSavingsRounds:savings.length,scenarios:seen,report:result.report,parentReport:result.parent,nextFocus:result.next};
+}
+
 async function smokeRouterPlans(browser){
  const context=await browser.newContext({serviceWorkers:'block'}),page=await context.newPage();
  await page.goto(base,{waitUntil:'load'});await page.waitForFunction(()=>window.PAGeraiWirayung,{timeout:20000});
  const plans=await page.evaluate(()=>Object.fromEntries(['D1.MONEY','D2.4.2','D2.4.3','D2.4.4','D2.4.5','D2.4.6','D3.MONEY','D4.MONEY','D5.MONEY','D6.MONEY'].map(skill=>[skill,window.PAGeraiWirayung.planFor({schoolGrade:Number((/^D(\d)/.exec(skill)||[])[1]),learnerReviewV1:{encounters:[]}},skill)])));
  for(const skill of Object.keys(plans))if(!plans[skill])throw Error(`${skill} has diagnostic content but no ordinary Gerai plan`);
- if(plans['D2.4.6'].modes.join(',')!=='baki')throw Error('D2.4.6 savings does not route through Gerai baki: '+JSON.stringify(plans['D2.4.6']));
+ if(plans['D2.4.5'].modes.join(',')!=='bahagi')throw Error('D2.4.5 division does not route through Gerai bahagi: '+JSON.stringify(plans['D2.4.5']));
+ if(plans['D2.4.6'].modes.join(',')!=='simpanan')throw Error('D2.4.6 savings does not route through the dedicated savings mode: '+JSON.stringify(plans['D2.4.6']));
  await context.close();return plans;
 }
 
@@ -176,21 +221,24 @@ async function smokeLiveFamilySelection(browser,origin,grade,modes,expectedFamil
  const result=await page.evaluate(()=>window.__geraiDebug());
  if(result.focusFamily!==expectedFamily||result.focusBand!==expectedBand)throw Error(`Live family mismatch for ${origin}/${modes}: `+JSON.stringify(result));
  if(JSON.stringify(result.focusOperands)===JSON.stringify(result.focusPlainOperands))throw Error('Money and plain probes reused the same values: '+JSON.stringify(result));
+ if(origin==='D2.4.6'&&(result.mode!=='simpanan'||result.focusOperands.task!=='savings'||result.focusOperands.minuend-result.focusOperands.subtrahend!==result.focusOperands.result))throw Error('D2.4.6 did not start a correctly tagged savings scenario: '+JSON.stringify(result));
  await context.close();return {origin,modes,family:result.focusFamily,demandBand:result.focusBand,operands:result.focusOperands,plainOperands:result.focusPlainOperands};
 }
 
 (async()=>{
  const browser=await pw.chromium.launch({executablePath:browserPath,headless:true});
  try{
+  if(process.env.FOCUS_SAVINGS_ONLY){const liveSavings=await smokeLiveSavingsGerai(browser);console.log(JSON.stringify({status:'focus_v2_money_savings_e2e_pass',liveSavings},null,2));return}
   const moneyWeak=await playContrast(browser,'money-context-weak',true,false,'money.add');
   const operationWeak=await playContrast(browser,'plain-addition-weak',false,true,'operation.addition','D2.2.1');
   const routes=[];
-  for(const args of [['D1.MONEY',1,'bayar',4],['D2.4.2',2,'bayar',4],['D2.4.3',2,'baki',4],['D2.4.4',2,'bayar',4],['D2.4.5',2,'bahagi',4],['D2.4.6',2,'baki',4],['D3.MONEY',3,'bayar,baki',16],['D4.MONEY',4,'bayar,baki',16],['D5.MONEY',5,'diskaun,baki',12],['D5.MONEY',5,'baki',8],['D6.MONEY',6,'diskaun,untung',8],['D6.MONEY',6,'baki',8]])routes.push(await smokeRoute(browser,...args));
+  for(const args of [['D1.MONEY',1,'bayar',4],['D2.4.2',2,'bayar',4],['D2.4.3',2,'baki',4],['D2.4.4',2,'bayar',4],['D2.4.5',2,'bahagi',4],['D2.4.6',2,'simpanan',4],['D3.MONEY',3,'bayar,baki',16],['D4.MONEY',4,'bayar,baki',16],['D5.MONEY',5,'diskaun,baki',12],['D5.MONEY',5,'baki',8],['D6.MONEY',6,'diskaun,untung',8],['D6.MONEY',6,'baki',8]])routes.push(await smokeRoute(browser,...args));
   const routerPlans=await smokeRouterPlans(browser);
   const liveFamilies=[];
-  for(const args of [['D3.MONEY',3,'baki,bayar','money_change','two-digit'],['D4.MONEY',4,'bayar,baki','money_total','three-digit'],['D5.MONEY',5,'baki,diskaun','money_change','three-digit'],['D6.MONEY',6,'diskaun,untung','money_discount','three-digit'],['D6.MONEY',6,'untung,baki','money_profit','three-digit']])liveFamilies.push(await smokeLiveFamilySelection(browser,...args));
+  for(const args of [['D2.4.6',2,'simpanan','money_subtract','small-number'],['D3.MONEY',3,'baki,bayar','money_change','two-digit'],['D4.MONEY',4,'bayar,baki','money_total','three-digit'],['D5.MONEY',5,'baki,diskaun','money_change','three-digit'],['D6.MONEY',6,'diskaun,untung','money_discount','three-digit'],['D6.MONEY',6,'untung,baki','money_profit','three-digit']])liveFamilies.push(await smokeLiveFamilySelection(browser,...args));
   const fallbacks=[];for(const args of [['D1.MONEY',1],['D2.4.1',2],['D2.4.2',2],['D2.4.3',2],['D2.4.4',2],['D2.4.5',2],['D2.4.6',2],['D2.4.7',2],['D3.MONEY',3],['D4.MONEY',4],['D5.MONEY',5],['D6.MONEY',6]])fallbacks.push(await smokeProductionFallback(browser,...args));
   const liveGerai=await smokeLiveGeraiDiagnosis(browser);
-  console.log(JSON.stringify({status:'focus_v2_money_live_gerai_e2e_pass',scenarios:[moneyWeak,operationWeak],gradeRoutes:routes,routerPlans,liveFamilies,unsupportedRoutes:fallbacks,liveGerai},null,2));
+  const liveSavings=await smokeLiveSavingsGerai(browser);
+  console.log(JSON.stringify({status:'focus_v2_money_live_gerai_e2e_pass',scenarios:[moneyWeak,operationWeak],gradeRoutes:routes,routerPlans,liveFamilies,unsupportedRoutes:fallbacks,liveGerai,liveSavings},null,2));
  }finally{await browser.close()}
 })().catch(e=>{console.error(e.stack||e);process.exitCode=1});

@@ -1,6 +1,6 @@
 // App shell uses PA_APP_VERSION from js/version.js; includes current Focus mini-game banks.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v2`;
 const APP_SHELL=[
   './kedai-kek.html',
   './js/minigame-dev-gate.js',
@@ -131,6 +131,15 @@ const APP_SHELL=[
   './assets/minigames/menara-jam/kumbang-manggis-happy.webp', './assets/minigames/menara-jam/kumbang-manggis-idle.webp', './assets/minigames/menara-jam/kumbang-manggis-sad.webp',
   './assets/minigames/menara-jam/wira-idle.webp', './assets/minigames/menara-jam/wira-thumb.webp', './assets/minigames/menara-jam/wira-victory.webp',
   './assets/minigames/kedai-ajaib/wira-idle.webp', './assets/minigames/kedai-ajaib/wira-thumb.webp', './assets/minigames/kedai-ajaib/wira-victory.webp',
+  './assets/minigames/kedai-ajaib/wira-peniaga-idle.webp','./assets/minigames/kedai-ajaib/wira-peniaga-thumb.webp','./assets/minigames/kedai-ajaib/wira-peniaga-victory.webp',
+  './assets/minigames/menara-jam/wira-konduktor-idle.webp','./assets/minigames/menara-jam/wira-konduktor-thumb.webp','./assets/minigames/menara-jam/wira-konduktor-victory.webp',
+  './assets/minigames/tapak-bina/wira-arkitek-idle.webp','./assets/minigames/tapak-bina/wira-arkitek-thumb.webp','./assets/minigames/tapak-bina/wira-arkitek-victory.webp',
+  './assets/minigames/kedai-kek/wira-baker-idle.webp','./assets/minigames/kedai-kek/wira-baker-thumb.webp','./assets/minigames/kedai-kek/wira-baker-victory.webp',
+  './assets/minigames/bengkel-ajaib/wira-mekanik-idle.webp','./assets/minigames/bengkel-ajaib/wira-mekanik-thumb.webp','./assets/minigames/bengkel-ajaib/wira-mekanik-victory.webp',
+  './assets/minigames/gudang-harta/wira-penjaga-harta-idle.webp','./assets/minigames/gudang-harta/wira-penjaga-harta-thumb.webp','./assets/minigames/gudang-harta/wira-penjaga-harta-victory.webp',
+  './assets/minigames/dapur-ramuan/wira-ahli-ramuan-idle.webp','./assets/minigames/dapur-ramuan/wira-ahli-ramuan-thumb.webp','./assets/minigames/dapur-ramuan/wira-ahli-ramuan-victory.webp',
+  './assets/minigames/pos-peninjau/wira-peninjau-idle.webp','./assets/minigames/pos-peninjau/wira-peninjau-thumb.webp','./assets/minigames/pos-peninjau/wira-peninjau-victory.webp',
+  './assets/minigames/lombong-permata/wira-pelombong-idle.webp','./assets/minigames/lombong-permata/wira-pelombong-thumb.webp','./assets/minigames/lombong-permata/wira-pelombong-victory.webp',
   './assets/heroes/wira-chibi/frames/victory-v1.webp',
   './assets/ui/focus-v1/focus-panel-illustrated-v1.webp',
   './assets/ui/focus-v1/focus-skill-card-clean-v1.svg',

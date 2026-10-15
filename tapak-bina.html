@@ -64,7 +64,7 @@ button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .candi .ghost{opacity:.18}
 .candi.done{animation:glowC 1.4s ease-in-out 2}
 @keyframes glowC{50%{filter:drop-shadow(0 0 16px #ffd24b) drop-shadow(0 6px 4px #0006)}}
-.wira{position:absolute;z-index:4;left:4px;bottom:4px;width:clamp(82px,48cqh,124px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
+.wira{position:absolute;z-index:4;left:4px;bottom:4px;width:clamp(74px,42cqh,110px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
 .wira img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 3px #0007)}
 .wira.cheer{animation:hop .55s ease 2}
 .pet{position:absolute;z-index:3;right:-4px;bottom:2px;width:clamp(96px,56cqh,150px);transition:transform .8s cubic-bezier(.3,1.2,.5,1),opacity .4s}
@@ -196,7 +196,7 @@ button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
     </svg>
     <div class="crane" aria-hidden="true"><svg viewBox="0 0 120 200"><g stroke="#123158" stroke-width="2.5" fill="#ffd24b"><rect x="92" y="40" width="10" height="160"/><path d="M92 40 L102 40 L97 30Z"/><rect x="0" y="34" width="110" height="7"/><rect x="100" y="28" width="16" height="16" fill="#ff8fb1"/></g><g stroke="#123158" stroke-width="1.4" fill="none"><path d="M92 50 L102 62 M102 50 L92 62 M92 74 L102 86 M102 74 L92 86 M92 98 L102 110 M102 98 L92 110 M92 122 L102 134 M102 122 L92 134"/></g><g class="hook"><line x1="16" y1="41" x2="16" y2="70" stroke="#123158" stroke-width="2"/><path d="M11 70 L21 70 L21 76 Q16 84 11 76" fill="#8fa6c4" stroke="#123158" stroke-width="2"/></g></svg></div>
     <div class="candi" id="candi" aria-label="Menara berkembar yang sedang dibina"></div>
-    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/tapak-bina/wira-idle.webp" alt="Wira, Arkitek Dimensi"></div>
+    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/tapak-bina/wira-arkitek-idle.webp" alt="Wira, Arkitek Dimensi"></div>
     <div class="pet away" id="pet"><img id="petImg" src="assets/minigames/tapak-bina/durian-kerbau-idle.webp" alt=""></div>
     <div class="bubble hide" id="bubble"><div class="who" id="who"></div><div class="say" id="say"></div></div>
     <div class="wsay hide" id="wsay"><b>WIRA</b><span id="wsayTxt"></span></div>
@@ -581,7 +581,7 @@ function reportFocusRound(entry){if(!focusRun)return;const detail=entry.q,round=
  try{window.parent.postMessage({type:'PA_TAPAK_BINA_ROUND',version:1,nonce:focusNonce,grade:focusRun.grade,skillId:focusRun.skillId,round},location.origin)}catch(_){}}
 function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
  $('mode').textContent='D'+cfg.grade+' · '+FAM_LABEL[q.fam]+' · T'+(q.tierIx+1);$('tint').style.background=['transparent','#fff3d000','#ffcf9a40','#f39a7a44','#6a7ad044'][served%SET];
- $('question').textContent=q.q;$('subtitle').textContent=q.sub||'';$('wiraImg').src=A+'wira-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
+ $('question').textContent=q.q;$('subtitle').textContent=q.sub||'';$('wiraImg').src=A+'wira-arkitek-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
  $('check').textContent='Semak';$('check').classList.remove('next');$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
  const v=$('pet');v.className='pet away';petFace('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='pet'}));
  setTimeout(()=>{$('who').textContent=q.who;say(SAYS[q.fam])},650);
@@ -591,7 +591,7 @@ function check(){
  const r=isRight();if(r===null){msg('Pilih atau masukkan jawapan dulu.','',2200);return}
  if(!r){misses++;msg(wrongMsg(),'bad',3400);petFace('sad');const v=$('pet');v.classList.remove('shake');void v.offsetWidth;v.classList.add('shake');setTimeout(()=>{if(!solved)petFace('idle')},1300);sfx(250,.12);return}
  solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;const entry={q,st,misses,hints,index:served};setLog.push(entry);reportFocusRound(entry);adapt(st);
- petFace('happy');say(['Terima kasih, Wira!','Tepat sekali!','Menara makin tinggi!'][rnd(0,2)]);$('wiraImg').src=A+(st===3?'wira-victory.webp':'wira-thumb.webp');$('wira').classList.add('cheer');
+ petFace('happy');say(['Terima kasih, Wira!','Tepat sekali!','Menara makin tinggi!'][rnd(0,2)]);$('wiraImg').src=A+(st===3?'wira-arkitek-victory.webp':'wira-arkitek-thumb.webp');$('wira').classList.add('cheer');
  if(q.w.type==='pick')W().querySelector('.pick.on')?.classList.add('right');
  const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+q.ans+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
  raisePart((served-1)%SET);dropHook();if(served%SET===0)setTimeout(()=>$('candi').classList.add('done'),400);

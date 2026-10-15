@@ -3,13 +3,13 @@
 "use strict";
 const MODE_IDS={
   1:{bayar:"D1.MONEY"},
-  2:{bayar:"D2.4.1",baki:"D2.4.3",bahagi:"D2.4.5"},
+  2:{bayar:"D2.4.1",baki:"D2.4.3",bahagi:"D2.4.5",simpanan:"D2.4.6"},
   3:{bayar:"D3.MONEY",baki:"D3.MONEY"},
   4:{bayar:"D4.MONEY",baki:"D4.MONEY"},
   5:{baki:"D5.MONEY",diskaun:"D5.MONEY"},
   6:{diskaun:"D6.MONEY",untung:"D6.MONEY"}
 };
-const gradeModes={1:["bayar"],2:["bayar","baki","bahagi"],3:["bayar","baki"],4:["bayar","baki"],5:["diskaun","baki"],6:["diskaun","untung"]};
+const gradeModes={1:["bayar"],2:["bayar","baki","bahagi","simpanan"],3:["bayar","baki"],4:["bayar","baki"],5:["diskaun","baki"],6:["diskaun","untung"]};
 let run=null,shadowRun=null;
 const css=document.createElement("style");
 css.textContent='#paWirayungOverlay{position:fixed;inset:0;z-index:2147482000;background:#142638;display:flex;flex-direction:column;overscroll-behavior:contain}#paWirayungOverlay .paWirayungNav{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:50px;padding:7px max(12px,env(safe-area-inset-right)) 7px max(12px,env(safe-area-inset-left));background:#1c344d;border-bottom:2px solid #d7a76a;color:#fff;font:700 14px system-ui,sans-serif}#paWirayungOverlay .paWirayungNav b{font-size:clamp(15px,3vw,21px);color:#ffdfa1}#paWirayungOverlay .paWirayungNav small{opacity:.8;margin-right:auto}#paWirayungOverlay #paWirayungExit{border:0;border-radius:10px;background:#fff0d0;padding:9px 13px;color:#4a301c;font-weight:900;cursor:pointer}#paWirayungOverlay iframe{width:100%;flex:1;min-height:0;border:0;background:#203952}body.pa-wirayung-active{overflow:hidden!important}#wirayungLaunch{display:block;width:100%;border:2px solid #bf904e;border-radius:14px;background:linear-gradient(#ffe0a3,#edb764);color:#432e1e;min-height:50px;margin:9px 0;font-size:15px;font-weight:900;cursor:pointer}@media(min-width:800px){#paWirayungOverlay .paWirayungNav{padding-inline:24px}}';
@@ -128,9 +128,12 @@ function moneyParentText(cause,origin,next,nextTitle){
  const code=String(cause||"").split(".").slice(1).join(".");
  const labels={add:"tambah wang",addition:"tambah",subtract:"tolak wang",subtraction:"tolak",multiply:"darab wang",multiplication:"darab",divide:"bahagi wang",division:"bahagi",unit:"kenal nilai wang",recognise:"kenal nilai",problem:"pilih operasi",operation_choice:"pilih operasi",total:"jumlah wang",change:"baki wang",unit_price:"harga seunit",budget:"bajet",discount:"diskaun",percent:"peratus",profit:"untung dan rugi"};
  const label=labels[code]||"pengiraan wang";
- if(String(cause||"").startsWith("money."))return 'Soalan wang untuk '+label+' masih mencabar walaupun soalan nombor yang sepadan boleh dijawab sendiri. Fokus kekal pada kemahiran wang '+origin+'.';
- if(String(cause||"").startsWith("operation."))return next
-  ?'Soalan wang untuk '+label+' boleh dijawab sendiri, tetapi operasi nombor biasa masih mengelirukan. Fokus seterusnya ialah '+String(nextTitle||next)+'.'
+ if(String(cause||"").startsWith("money."))return origin==='D2.4.6'
+  ?'Soalan tentang wang yang boleh disimpan masih mencabar walaupun pengiraan tolak nombor yang sepadan boleh dibuat sendiri. Fokus kekal pada kemahiran Simpanan Wang.'
+  :'Soalan wang untuk '+label+' masih mencabar walaupun soalan nombor yang sepadan boleh dijawab sendiri. Fokus kekal pada kemahiran wang '+origin+'.';
+ if(String(cause||"").startsWith("operation."))return origin==='D2.4.6'&&next
+  ?'Soalan simpanan wang boleh dijawab sendiri, tetapi pengiraan tolak nombor tanpa konteks wang masih mengelirukan. Fokus seterusnya ialah '+String(nextTitle||next)+'.'
+  :next?'Soalan wang untuk '+label+' boleh dijawab sendiri, tetapi operasi nombor biasa masih mengelirukan. Fokus seterusnya ialah '+String(nextTitle||next)+'.'
   :'Soalan wang boleh dibuat, tetapi bukti operasi nombor belum cukup untuk memilih latihan seterusnya.';
  return 'Ujian perbandingan belum menunjukkan punca yang cukup jelas. Teruskan latihan dan kumpul beberapa jawapan berbeza sebelum menetapkan fokus.';
 }
@@ -162,7 +165,7 @@ function close(){
 }
 function records(){
  const events=(typeof db!=="undefined"&&db?.wirayungProgress?.events||[]).filter(e=>Number(e.grade)===activeGrade());
- const rows=[["bayar","Bayar tepat"],["baki","Kira baki"],["bahagi","Bahagi wang"],["diskaun","Diskaun"],["untung","Untung/rugi"]].map(([mode,label])=>{
+ const rows=[["bayar","Bayar tepat"],["baki","Kira baki"],["bahagi","Bahagi wang"],["simpanan","Simpanan wang"],["diskaun","Diskaun"],["untung","Untung/rugi"]].map(([mode,label])=>{
   const items=events.filter(x=>x.mode===mode).slice(-12);
   return {mode,label,total:items.length,independent:items.filter(x=>x.independent).length,hinted:items.filter(x=>x.hints>0).length};
  }).filter(x=>x.total);

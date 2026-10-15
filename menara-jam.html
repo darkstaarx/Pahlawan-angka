@@ -64,7 +64,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .sign::before,.sign::after{content:"";position:absolute;top:-30px;width:2px;height:30px;background:#5e3519}
 .sign::before{left:16px}.sign::after{right:16px}
 
-.wira{position:absolute;z-index:2;left:4px;bottom:44px;width:clamp(92px,50cqh,136px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
+.wira{position:absolute;z-index:2;left:4px;bottom:44px;width:clamp(84px,44cqh,122px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
 .wira img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 3px #0005)}
 .wira.cheer{animation:hop .55s ease 2}
 .counter{position:absolute;z-index:3;left:0;bottom:0;width:62%;height:56px;background:repeating-linear-gradient(90deg,transparent 0 62px,#0000001f 62px 64px),linear-gradient(180deg,#e2a466 0 10px,var(--wood) 10px,#7b4520);border-top:4px solid #f0bf82;border-right:4px solid var(--wood-dk);border-radius:0 10px 0 0;box-shadow:inset 0 10px 0 #ffffff22,0 -2px 0 #0002}
@@ -294,7 +294,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .bstat.go{color:#7fe08a;text-shadow:0 0 6px #7fe08a88}.bstat.late{color:#ff8a8a;animation:blinkB .4s steps(1) 3}
 @keyframes blinkB{50%{opacity:.2}}
 .platform{position:absolute;left:0;right:0;bottom:0;height:18px;z-index:5;background:repeating-linear-gradient(90deg,#8d8f94 0 40px,#7e8085 40px 42px);border-top:5px solid #ffd23f;box-shadow:0 -2px 0 #0003}
-.scene .wira{left:4px!important;bottom:10px!important;width:clamp(86px,50cqh,126px)!important;z-index:6!important}
+.scene .wira{left:4px!important;bottom:10px!important;width:clamp(78px,44cqh,114px)!important;z-index:6!important}
 .scene #visitor{position:absolute;right:-8px;bottom:6px;width:clamp(176px,100cqh,250px);z-index:3;transition:transform 1.1s cubic-bezier(.2,.9,.3,1.06);opacity:1}
 .scene #visitor.away{transform:translateX(115%);opacity:1;transition:none}
 .scene #visitor.leave{transform:translateX(-170%);opacity:1;transition:transform 1.3s cubic-bezier(.55,0,.8,.4)}
@@ -327,7 +327,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .scene #visitor{right:-6px;bottom:8px;width:min(60%,128cqh)}
 .car .win.main{left:7%;width:56%;height:70%;top:9%}
 .car .win.main img{width:112%;bottom:-20%}
-.scene .wira{width:clamp(80px,48cqh,118px)!important}
+.scene .wira{width:clamp(72px,42cqh,106px)!important}
 .scene .bubble{left:8px;right:auto;top:36px;max-width:42%}
 .scene .bubble::after{right:-13px;left:auto;bottom:16px;transform:rotate(-45deg) skew(8deg,8deg)}
 .scene .wsay{left:8px;top:36px;max-width:42%}
@@ -397,7 +397,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
       <div class="car"><img class="train-art" src="assets/minigames/tren-jam/train-v1.svg" alt=""><div class="board" aria-live="polite"><b id="dest">Kampung Dimensi</b><i>·</i><b class="bstat" id="bstat">TIBA</b></div><div class="roof"></div><div class="win main"><img id="petImg" src="assets/minigames/menara-jam/durian-kerbau-idle.webp" alt=""></div><div class="win side"></div><div class="door"></div><div class="stripe"></div><div class="steam" aria-hidden="true"><i></i><i></i><i></i></div></div>
     </div>
     <div class="platform" aria-hidden="true"></div>
-    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/menara-jam/wira-idle.webp" alt="Wira, Ketua Stesen"></div>
+    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/menara-jam/wira-konduktor-idle.webp" alt="Wira, Ketua Stesen"></div>
     <div class="bubble hide" id="bubble"><div class="who" id="who"></div><div class="say" id="say"></div></div>
     <div class="wsay hide" id="wsay"><b id="wsayWho">WIRA</b><span id="wsayTxt"></span></div>
     <div class="stamp" id="stamp"></div>
@@ -702,7 +702,7 @@ function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
  el('devBtn').hidden=!devToolsEnabled;
  el('devBtn').textContent='D'+cfg.grade+' ▾';el('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);el('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a77','#6a7ad055'][served%SET];
  el('question').textContent=plain(q.parts)+(q.ask&&!q.noTime?' '+q.ask:'');el('subtitle').textContent=served<2?SUB[q.widget](q):'';
- el('wiraImg').src=A+'wira-idle.webp';el('wira').classList.remove('cheer');el('stamp').className='stamp';el('stamp').innerHTML='';
+ el('wiraImg').src=A+'wira-konduktor-idle.webp';el('wira').classList.remove('cheer');el('stamp').className='stamp';el('stamp').innerHTML='';
  el('check').textContent='Semak';el('check').disabled=false;el('hint').disabled=false;el('hint').textContent='Tanya Wira';el('bubble').classList.add('hide');
  el('dest').textContent=pick(DEST);const bs=el('bstat');bs.textContent='TIBA';bs.className='bstat';
  const v=el('visitor');v.className='customer away';pet('idle');el('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer arrive';sfx(330,.3,'triangle')}));
@@ -723,7 +723,7 @@ function check(){
    if(focusNonce&&window.parent!==window)window.parent.postMessage({type:'PA_FOCUS_TIME_RESULT',version:1,nonce:focusNonce,report},location.origin);
   }
  }
- pet('happy');el('wiraImg').src=A+(st===3?'wira-victory.webp':'wira-thumb.webp');el('wira').classList.add('cheer');say(pick(['Terima kasih, Wira!','Tepat pada masanya!','Jumpa lagi, Ketua Stesen!']));el('bstat').textContent='BERTOLAK';el('bstat').className='bstat go';
+ pet('happy');el('wiraImg').src=A+(st===3?'wira-konduktor-victory.webp':'wira-konduktor-thumb.webp');el('wira').classList.add('cheer');say(pick(['Terima kasih, Wira!','Tepat pada masanya!','Jumpa lagi, Ketua Stesen!']));el('bstat').textContent='BERTOLAK';el('bstat').className='bstat go';
  const s=el('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+q.ansText+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();
  if(el('clockFrame')){el('clockFrame').classList.remove('pulse');void el('clockFrame').offsetWidth;el('clockFrame').classList.add('pulse')}
  bell();renderTrack(true);el('subtitle').textContent='';hideMsg();

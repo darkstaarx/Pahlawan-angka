@@ -59,7 +59,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .sign::before,.sign::after{content:"";position:absolute;top:-30px;width:2px;height:30px;background:#5e3519}
 .sign::before{left:16px}.sign::after{right:16px}
 
-.wira{position:absolute;z-index:2;left:4px;bottom:44px;width:clamp(92px,50cqh,136px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
+.wira{position:absolute;z-index:2;left:4px;bottom:44px;width:clamp(84px,44cqh,122px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
 .wira img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 3px #0005)}
 .wira.cheer{animation:hop .55s ease 2}
 .counter{position:absolute;z-index:3;left:0;bottom:0;width:62%;height:56px;background:repeating-linear-gradient(90deg,transparent 0 62px,#0000001f 62px 64px),linear-gradient(180deg,#e2a466 0 10px,var(--wood) 10px,#7b4520);border-top:4px solid #f0bf82;border-right:4px solid var(--wood-dk);border-radius:0 10px 0 0;box-shadow:inset 0 10px 0 #ffffff22,0 -2px 0 #0002}
@@ -352,7 +352,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <div class="rail" aria-hidden="true"></div>
     <div class="cart" aria-label="Troli permata"><div class="gems" id="cart"></div></div>
     <div class="floor" aria-hidden="true"></div>
-    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/lombong-permata/wira-idle.webp" alt="Wira"></div>
+    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/lombong-permata/wira-pelombong-idle.webp" alt="Wira"></div>
     <div class="counter" aria-hidden="true"></div>
 
     <div class="customer away" id="visitor"><img id="petImg" src="assets/minigames/lombong-permata/arnab-kek-lapis-idle.webp" alt=""></div>
@@ -644,7 +644,7 @@ function check(){
   if(!ok){bad.forEach((x,i)=>$('F'+i).classList.toggle('bad',x));fk=bad.indexOf(true);renderFields();const g=parseFloat(inp[0]),v=F[0].v;
    note=F[0].dec&&g&&v&&[10,100,1000,.1,.01,.001].some(m=>Math.abs(g-v*m)<1e-9)?'Digitnya betul, tetapi titik perpuluhan di tempat yang salah. Semak bilangan tempat perpuluhan.':'Belum tepat. Semak semula langkah kamu.'}}
  if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
-  pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Permata berkilau!','Tepat sekali!']);$('wiraImg').src=A+(st===3?'wira-victory.webp':'wira-thumb.webp');$('wira').classList.add('cheer');
+  pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Permata berkilau!','Tepat sekali!']);$('wiraImg').src=A+(st===3?'wira-pelombong-victory.webp':'wira-pelombong-thumb.webp');$('wira').classList.add('cheer');
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+esc(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
   renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);$('widget').querySelectorAll('button').forEach(b=>b.disabled=true);
   const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=GEM(GCOL[(served-1)%SET]);sl.classList.add('on','pop')}
@@ -671,7 +671,7 @@ function startRound(){if(served%SET===0)$('cart').innerHTML=range(SET).map(i=>'<
  q=makeQ();solved=false;misses=0;hints=0;hint2=0;sel=null;inp=q.form?q.form.fields.map(()=>''):[];fk=0;seq=[];shade=new Set();tick=null;lzIn={};lzBad=[];hideMsg();
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<2?SUB[q.kind]||'':'');
- $('wiraImg').src=A+'wira-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
+ $('wiraImg').src=A+'wira-pelombong-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
  $('check').textContent='Semak';$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
  setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
