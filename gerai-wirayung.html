@@ -50,27 +50,33 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 /* ---------- Scene ---------- */
 .scene{position:relative;isolation:isolate;flex:1 1 auto!important;min-height:140px;container-type:size;overflow:hidden;background:#cbb49a}
-.scene::before{content:"";position:absolute;z-index:0;inset:-2%;background:url("assets/battlefields/money-market/arena-v1.webp") 58% 62%/cover no-repeat;transform:scale(1.035);animation:marketDrift 28s ease-in-out infinite alternate;pointer-events:none}
-.scene::after{content:"";position:absolute;z-index:1;inset:0;background:radial-gradient(ellipse at 52% 20%,#fff6cf24,transparent 43%),linear-gradient(180deg,#16334a08 24%,#24170b08 62%,#24170b45 100%);mix-blend-mode:screen;pointer-events:none}
+.scene::before{content:"";position:absolute;z-index:0;inset:-3%;background:url("assets/battlefields/money-market/arena-v1.webp") 58% 62%/cover no-repeat;filter:saturate(1.12) brightness(1.035);transform:scale(1.05);animation:marketDrift 18s ease-in-out infinite alternate;pointer-events:none}
+.scene::after{content:"";position:absolute;z-index:1;inset:0;background:radial-gradient(ellipse 54% 72% at 54% 35%,#ffedb74d,transparent 78%),linear-gradient(180deg,#17365000 28%,#37200c16 62%,#20130b70 100%);pointer-events:none}
 .tint{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;transition:background 1.2s,opacity 1.2s}
 .awning{position:absolute;top:0;left:-6px;right:-6px;height:46px;z-index:4;background:repeating-linear-gradient(90deg,#e8604f 0 34px,#fff1d6 34px 68px);-webkit-mask:radial-gradient(circle 17px at 17px 29px,#000 98%,transparent) 0 0/34px 46px repeat-x,linear-gradient(#000,#000) 0 0/100% 29px no-repeat;mask:radial-gradient(circle 17px at 17px 29px,#000 98%,transparent) 0 0/34px 46px repeat-x,linear-gradient(#000,#000) 0 0/100% 29px no-repeat;filter:drop-shadow(0 4px 0 #0003)}
 .awning-rod{position:absolute;top:0;left:0;right:0;height:9px;z-index:5;background:linear-gradient(180deg,var(--wood-lt),var(--wood-dk))}
-.sign{position:absolute;z-index:5;top:30px;left:12px;padding:4px 10px 5px;background:linear-gradient(180deg,#a9673a,#7a4422);border:2px solid #f6d48d;border-radius:8px;transform:rotate(-4deg);box-shadow:0 3px 0 #0004}
+.sign{position:absolute;z-index:5;top:30px;left:12px;padding:5px 12px 6px;background:linear-gradient(180deg,#b97943,#6c351a);border:3px solid #f6d48d;border-radius:9px;transform:rotate(-4deg);box-shadow:inset 0 0 0 1px #fff2b2aa,0 5px 0 #3b2116aa,0 0 18px #ffd87855}
 .sign b{font:800 13px/1 var(--f-display);color:#ffefb8;letter-spacing:.5px}
 .sign::before,.sign::after{content:"";position:absolute;top:-30px;width:2px;height:30px;background:#5e3519}
 .sign::before{left:16px}.sign::after{right:16px}
-.sign{transform-origin:50% -22px;animation:signSway 5.8s ease-in-out infinite}
+.sign{transform-origin:50% -22px;animation:signSway 3.8s ease-in-out infinite}
 
 /* Warm, slow-moving market glints add life without covering the play area. */
 .scene-motes{position:absolute;z-index:3;inset:0;overflow:hidden;pointer-events:none}
-.scene-motes i{position:absolute;left:var(--x);top:var(--y);width:5px;height:5px;border-radius:50%;background:#fff2b4;box-shadow:0 0 8px 2px #ffd76b99;opacity:0;animation:marketMote var(--duration,6s) ease-in-out var(--delay,0s) infinite}
-.scene-motes i:nth-child(2n){width:4px;height:4px;background:#b9f4ef;box-shadow:0 0 8px 2px #8be4de88}
+.scene-motes i{position:absolute;left:var(--x);top:var(--y);width:7px;height:7px;border-radius:50%;background:#fff2b4;box-shadow:0 0 12px 3px #ffd76bcc;opacity:0;animation:marketMote var(--duration,6s) ease-in-out var(--delay,0s) infinite}
+.scene-motes i:nth-child(2n){width:5px;height:5px;background:#b9f4ef;box-shadow:0 0 10px 3px #8be4deaa}
 .scene-motes i:nth-child(3n){width:3px;height:3px}
 .scene-motes i:nth-child(1){--x:17%;--y:58%;--delay:-1s;--duration:7s}
 .scene-motes i:nth-child(2){--x:34%;--y:36%;--delay:-4s;--duration:8s}
 .scene-motes i:nth-child(3){--x:54%;--y:66%;--delay:-2s;--duration:6.5s}
 .scene-motes i:nth-child(4){--x:73%;--y:43%;--delay:-5s;--duration:7.5s}
 .scene-motes i:nth-child(5){--x:88%;--y:61%;--delay:-3s;--duration:8.5s}
+.market-lanterns{position:absolute;z-index:3;inset:0;pointer-events:none}
+.market-lanterns i{position:absolute;top:31px;width:22px;height:34px;border:2px solid #70431e;border-radius:8px 8px 6px 6px;background:linear-gradient(90deg,#b86a2d 0 18%,#ffd36a 27% 72%,#a94c23 82%);box-shadow:inset 0 0 8px #fff3a0,0 0 16px 5px #ffc95a88;transform-origin:50% -18px;animation:lanternSway 3.2s ease-in-out infinite alternate}
+.market-lanterns i::before{content:"";position:absolute;left:8px;top:-21px;width:2px;height:20px;background:#633b20}
+.market-lanterns i::after{content:"✦";position:absolute;inset:5px 0 auto;text-align:center;color:#fff1b0;font:900 13px/1 var(--f-display);text-shadow:0 0 6px #fff2a8}
+.market-lanterns i:first-child{left:27%;animation-delay:-1.1s}
+.market-lanterns i:last-child{right:27%;top:43px;transform:scale(.82);animation-delay:-2s}
 
 /* Cashier stands on the far side of the counter. The wooden fascia masks his lower body. */
 .wira{position:absolute;z-index:2;left:4px;bottom:30px;width:clamp(132px,40cqh,160px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
@@ -242,11 +248,12 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 @keyframes stampIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(2.4)}60%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(1)}}
 @keyframes burst{from{transform:translate(0,0) rotate(0);opacity:1}to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
 @keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-@keyframes marketDrift{0%{transform:scale(1.035) translate3d(-.35%,.15%,0)}100%{transform:scale(1.07) translate3d(.45%,-.2%,0)}}
-@keyframes marketMote{0%,100%{opacity:0;transform:translate3d(0,12px,0) scale(.55)}28%,72%{opacity:.78}50%{opacity:.9;transform:translate3d(10px,-20px,0) scale(1.15)}}
-@keyframes signSway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(-2.7deg) translateY(1px)}}
-@keyframes petBounce3d{0%,100%{transform:translateY(0) rotate(0) scale(1)}50%{transform:translateY(-5px) rotate(.7deg) scale(1.012)}}
-@keyframes wiraGleam{0%,78%,100%{filter:drop-shadow(0 5px 4px #10253688) brightness(1)}87%{filter:drop-shadow(0 5px 7px #d7a93c77) brightness(1.055)}}
+@keyframes marketDrift{0%{transform:scale(1.05) translate3d(-1.1%,.35%,0)}100%{transform:scale(1.105) translate3d(1.1%,-.55%,0)}}
+@keyframes marketMote{0%,100%{opacity:0;transform:translate3d(0,18px,0) scale(.45)}25%,74%{opacity:.88}50%{opacity:1;transform:translate3d(15px,-30px,0) scale(1.25)}}
+@keyframes signSway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(-1.8deg) translateY(2px)}}
+@keyframes lanternSway{from{rotate:-4deg;filter:brightness(.95)}to{rotate:4deg;filter:brightness(1.18)}}
+@keyframes petBounce3d{0%,100%{transform:translateY(0) rotate(0) scale(1)}50%{transform:translateY(-9px) rotate(1.2deg) scale(1.025)}}
+@keyframes wiraGleam{0%,78%,100%{filter:drop-shadow(0 5px 4px #10253688) brightness(1)}87%{filter:drop-shadow(0 8px 9px #f7ca5488) brightness(1.09)}}
 @media (max-width:380px){.clock>div{display:none}.clock{padding:3px}.icon-btn{width:32px}.cash.n{width:52px}.cash.c50{width:38px}.till{font-size:12px}}
 @media (max-height:700px){.purse small{display:none}.mat{min-height:44px}.panel{min-height:0}}
 @media (max-height:640px){.scene{min-height:126px}.panel{min-height:0;padding-top:6px}.panel-h{margin-bottom:3px}.panel-h small{display:none}.banner>div>span{display:none}.btn{min-height:44px}.mat{min-height:40px;padding:5px}.purse{padding-top:5px}.purse small{display:none}.actions{margin-top:7px}}
@@ -289,6 +296,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
   <section class="scene" aria-label="Gerai Wirayung di pasar">
     <div class="tint" id="tint"></div>
     <div class="scene-motes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="market-lanterns" aria-hidden="true"><i></i><i></i></div>
     <div class="awning-rod"></div><div class="awning"></div>
     <div class="sign"><b>Wirayung</b></div>
     <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/kedai-ajaib/wira-peniaga-idle.webp" alt="Wira menjaga Gerai Wirayung"></div>
