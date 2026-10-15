@@ -657,8 +657,8 @@ function buildClock(box){
  svg.append(create('circle',{cx:120,cy:120,r:105,fill:'transparent','pointer-events':'all'}),gh,gm,hm,hh,create('circle',{cx:120,cy:120,r:10,fill:'#4a2a16',stroke:'#ffc94a','stroke-width':4}),create('circle',{cx:120,cy:120,r:3,fill:'#fff6d4'}));
  if(clockMode==='set'){svg.classList.add('drag');
   svg.addEventListener('pointerdown',ev=>{if(solved)return;
-   const hand=ev.target.closest?.('.clock-hand');if(hand)choose(hand.id==='handHour'?'h':'m');
-   dragging=true;svg.setPointerCapture(ev.pointerId);dial(ev)});
+   const hand=ev.target.closest?.('.clock-hand');if(!hand)return;
+   selHand=hand.id==='handHour'?'h':'m';dragging=true;svg.setPointerCapture(ev.pointerId);dial(ev)});
   svg.addEventListener('pointermove',ev=>{if(dragging&&!solved)dial(ev)});
   svg.addEventListener('pointerup',()=>dragging=false);svg.addEventListener('pointercancel',()=>dragging=false)}}
 function rot(id,deg){const n=el(id);if(n)n.setAttribute('transform','rotate('+deg+' 120 120)')}
@@ -674,8 +674,6 @@ function dial(ev){const svg=el('clock'),b=svg.getBoundingClientRect(),x=(ev.clie
 function updateAnalog(){drawHands(hour,minute);if(el('digital'))el('digital').textContent=q.hideRead?'?:??':hour+':'+pad(minute);
  el('clock').setAttribute('aria-label','Jam menunjukkan '+hour+' jam '+minute+' minit')}
 function adjust(d){if(solved)return;const t=mod((hour%12)*60+minute+d,720);hour=Math.floor(t/60)||12;minute=t%60;sfx(440,.045);updateAnalog();hideMsg()}
-function choose(h){selHand=h;el('pickH').classList.toggle('selected',h==='h');el('pickM').classList.toggle('selected',h==='m');el('pickH').setAttribute('aria-pressed',h==='h');el('pickM').setAttribute('aria-pressed',h==='m');sfx(520,.045)}
-
 /* ---------- pembina kawalan ---------- */
 function adj(id,label,unit,minus,plus){return '<div class="adjust"><button class="change" id="'+id+'-" aria-label="Kurang '+label+'">−</button><small>'+label+'<b>'+unit+'</b></small><button class="change" id="'+id+'+" aria-label="Tambah '+label+'">+</button></div>'}
 const arcK=()=>q.target<60?6:.5;
@@ -685,8 +683,7 @@ function updDur(){const tot=dur.h*60+dur.m;el('durVal').textContent=fDur(tot);
  if(el('clock')){const t=q.s+tot;rot('ghostH',(mod(t,720)/60)*30);rot('ghostM',mod(t,60)*6);el('ghostH').setAttribute('opacity',tot?1:0);el('ghostM').setAttribute('opacity',tot?1:0);el('arc').setAttribute('d',arcPath(q.s,q.s+tot,arcK()))}}
 function buildWidget(){const w=q.widget,box=el('widget'),ctl=el('controls');box.innerHTML='';ctl.innerHTML='';ctl.hidden=false;
  if(w==='analog'){clockMode='set';hour=Math.floor(mod(q.start,720)/60)||12;minute=mod(q.start,60);selHand='m';buildClock(box);
-  box.insertAdjacentHTML('beforeend','<div class="clock-info"><span>JAM KAMU</span><b id="digital"></b><span>'+(q.hideRead?'PILIH & SERET JARUM':'↻')+'</span></div><div class="picks"><button class="pick" id="pickH" aria-pressed="false"><span>◆</span> JARUM PENDEK</button><button class="pick selected" id="pickM" aria-pressed="true"><span>◆</span> JARUM PANJANG</button></div>');
-  el('pickH').onclick=()=>choose('h');el('pickM').onclick=()=>choose('m');
+  box.insertAdjacentHTML('beforeend','<div class="clock-info"><span>JAM KAMU</span><b id="digital"></b><span>SENTUH & SERET JARUM</span></div>');
   ctl.innerHTML=adj('ah','PUTAR JAM','1 jam')+adj('am','PUTAR MINIT','5 min');
   el('ah-').onclick=()=>adjust(-60);el('ah+').onclick=()=>adjust(60);
   el('am-').onclick=()=>adjust(-5);el('am+').onclick=()=>adjust(5);
