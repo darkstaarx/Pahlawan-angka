@@ -1,6 +1,6 @@
 // App shell uses PA_APP_VERSION from js/version.js; includes current Focus mini-game banks.
 importScripts('./js/version.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-variety-v1`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-lore-flipbook-v1`;
 const APP_SHELL=[
   './kedai-kek.html',
   './js/minigame-dev-gate.js',
@@ -203,6 +203,7 @@ const APP_SHELL=[
   './js/cikgu-mini-games-v1.0.0.js','./js/dev-coach-games-v1.0.0.js','./css/cikgu-mini-games-v1.0.0.css',
   './assets/coach/time-lab/sidma-push-v1.png',
   './','./index.html','./manifest.webmanifest','./js/version.js',
+  './assets/story/intro-alam-matemagik-v2.png','./assets/story/intro-kabut-lalai.webp','./assets/story/intro-ikrar.webp','./assets/story/intro-ayuh-v2.png',
   './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js','./css/demo-mode-v3.56.0.css','./js/demo-mode-v3.56.0.js','./css/hero-wira-finisher-v1.0.0.css','./js/hero-wira-finisher-v1.0.0.js','./css/hero-bunga-v2.0.0.css','./js/hero-bunga-v2.0.0.js',
   './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js','./css/question-card-theme-v1.0.0.css','./css/written-arithmetic-v1.0.0.css','./js/written-arithmetic-v1.0.0.js',
   './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp','./assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp','./assets/heroes/sidma/frames/skill2-dash-v1.webp','./assets/heroes/sidma/frames/skill2-impact-v1.webp',
