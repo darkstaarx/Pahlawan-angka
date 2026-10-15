@@ -8,15 +8,18 @@
 const FAMILIES=[
  {mode:'zon',   re:/zone/},
  {mode:'24jam', re:/clock24|(^|_)convert$/},
- {mode:'unit',  re:/convert_forward|convert_reverse|compare_units|day_hour|month_day|fraction_convert/},
+ {mode:'operasi',re:/time_operations|time_operation/},
+ {mode:'anggaran',re:/time_estimation|time_estimate/},
+ {mode:'kalendar',re:/calendar|month_day/},
+ {mode:'unit',  re:/convert_forward|convert_reverse|compare_units|day_hour|fraction_convert/},
  {mode:'mula',  re:/find_start/},
  {mode:'tamat', re:/end_time|add_time|later_time|find_end/},
- {mode:'tempoh',re:/elapsed|duration|find_duration|timeline/},
+ {mode:'tempoh',re:/time_duration_days_hours|timetable_read|elapsed|duration|find_duration|timeline/},
  {mode:'baca',  re:/read_clock|match_words|half_hour|(^|_)hour$/}
 ];
 /* Mod yang wujud bagi setiap darjah dalam menara-jam.html */
-const AVAIL={1:['baca'],2:['baca','tamat','tempoh','unit'],3:['tamat','tempoh','mula'],4:['24jam','tamat','tempoh'],5:['unit','tempoh'],6:['zon','tempoh','24jam']};
-const DEFAULT={1:['baca'],2:['baca','tamat','tempoh'],3:['tamat','tempoh','mula'],4:['24jam','tamat','tempoh'],5:['unit','tempoh'],6:['zon']};
+const AVAIL={1:['baca','kalendar'],2:['baca','tamat','tempoh','unit'],3:['tamat','tempoh','mula','unit','operasi','kalendar'],4:['24jam','tamat','tempoh','unit','operasi','anggaran'],5:['unit','tempoh','operasi','kalendar'],6:['zon']};
+const DEFAULT={1:['baca','kalendar'],2:['baca','tamat','tempoh','unit'],3:['tamat','tempoh','mula','unit','operasi','kalendar'],4:['24jam','tamat','tempoh','unit','operasi','anggaran'],5:['unit','tempoh','operasi','kalendar'],6:['zon']};
 const DIRECT={'D1.TIME':1,'D2.5.1':2,'D2.5.2':2,'D2.5.3':2,'D3.TIME':3,'D4.TIME':4,'D5.TIME':5,'D6.TIME':6};
 const DIRECT_MODES={'D2.5.1':['baca'],'D2.5.2':['unit'],'D2.5.3':['tamat','tempoh']};
 

@@ -6,7 +6,9 @@
     const isLocal=['localhost','127.0.0.1','[::1]'].includes(location.hostname);
     try{
       const app=window.parent;
-      if(app!==window&&!!app.db&&typeof app.isDevMode==='function'&&app.isDevMode()===true)return true;
+      // `db` is a top-level lexical binding in the host app, not a window property.
+      // Let the host's own guard decide whether its selected profile has DEV access.
+      if(app!==window&&typeof app.isDevMode==='function'&&app.isDevMode()===true)return true;
     }catch(_){}
     try{if(isLocal&&localStorage.getItem('pa_dev_unlocked')==='1')return true}catch(_){}
     return false;

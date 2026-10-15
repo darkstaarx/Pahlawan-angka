@@ -239,7 +239,8 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .awning{background:repeating-linear-gradient(90deg,#2f8f9a 0 34px,#fff1d6 34px 68px)!important}
 .counter{background:repeating-linear-gradient(90deg,transparent 0 46px,#0000001c 46px 48px),linear-gradient(180deg,#d9cdb4 0 10px,#a99a80 10px,#7c6e58)!important;border-top-color:#efe3c8!important;border-right-color:#5a4d3c!important}
 .power{width:32px;height:32px;border-radius:50%;background:conic-gradient(#53c5b6 var(--p,0%),#e9cf98 0);display:grid;place-items:center;border:2px solid #2c877e;transition:background .5s}
-.power::after{content:"✦";width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;background:radial-gradient(#4d678c,#1c2b53)}
+.power img{width:22px;height:22px;display:block;border-radius:50%;object-fit:contain}
+.power::after{display:none}
 .power.lit{box-shadow:0 0 12px #ffe777}
 .till img{width:20px;margin:-2px 0}
 .bubble .say{font-size:12.5px}
@@ -275,6 +276,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .pad .disp{display:flex;justify-content:space-between;align-items:baseline;background:#fff;border:2px dashed #d9c39a;border-radius:10px;padding:6px 12px}
 .pad .disp b{font:900 26px/1 var(--f-display);font-variant-numeric:tabular-nums}.pad .disp span{font:900 11px/1 var(--f-body);color:var(--ink-soft)}
 .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.keys button{height:clamp(30px,5dvh,40px);border-radius:10px;border:2px solid var(--ink);background:var(--cream);font:900 17px/1 var(--f-display);color:var(--ink);box-shadow:0 2px 0 var(--ink);cursor:pointer}.keys button:active{transform:translateY(2px);box-shadow:none}
+.choices{width:min(100%,390px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choice-option{min-height:46px;padding:8px;border:2px solid var(--ink);border-radius:12px;background:var(--cream);color:var(--ink);font:800 14px/1.2 var(--f-display);box-shadow:0 3px 0 var(--ink);cursor:pointer}.choice-option.selected{background:#dff5f2;border-color:#278f86;box-shadow:0 3px 0 #278f86}.choice-option:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 .ledger .faces{display:flex;justify-content:center;gap:4px;margin:4px 0 14px}.ledger .faces div{display:flex;flex-direction:column;align-items:center;font:900 11px/1.2 var(--f-body);color:var(--gold-dk)}.ledger .faces img{width:48px;height:48px;object-fit:contain}
 @media (max-height:700px){.clock-frame{width:min(21dvh,150px);height:min(21dvh,150px)}.lcd .num{font-size:40px}.change{height:34px}}
 @media (max-height:640px){.clock-frame{width:124px;height:124px;min-width:124px;min-height:124px}.picks .pick{min-height:28px}.durread{padding:6px 0}}
@@ -378,8 +380,6 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .counter{background:linear-gradient(180deg,#8bb6c4 0 10px,#557b95 10px,#34526f)!important;border-right-color:#1b3154!important;border-top-color:#b8e7e6!important}
 .banner{background:var(--berry)}
 .panel,.adjust{border-color:#243b63}
-.btn.go{background:linear-gradient(180deg,#65cfc0,#279b91);text-shadow:0 2px 0 #1d6664}
-.btn.hint{background:#e5f8f8;color:#234d67}
 
 /* Balanced 2.5D station composition: keep the pet comfortably inside its
    carriage, give Wira a clear foreground silhouette, and add gentle depth. */
@@ -421,7 +421,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 <main class="pa-game" id="game" aria-label="Tren Jam">
   <header class="hud">
-    <div class="clock"><span class="power" id="power"></span><div><b id="towerLbl">Syif 1</b></div></div>
+    <div class="clock"><span class="power" id="power"><img src="assets/icons/pahlawan-angka-crest-64.png" alt=""></span><div><b id="towerLbl">Syif 1</b></div></div>
     <div class="title"><small>KEMAHIRAN FOKUS</small><b>Tren Jam</b></div>
     <div class="hud-right"><span class="till" id="till" aria-label="Bintang dikumpul"><img src="assets/minigames/menara-jam/bintang.webp" alt=""><span id="stars">0</span></span><button class="icon-btn" id="sound" aria-label="Hidupkan bunyi">🔈</button></div>
   </header>
@@ -469,7 +469,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
   </div></div>
 </main>
 
-<script src="js/minigame-dev-gate.js?v=1.0.0"></script>
+<script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/menara-jam-router.js"></script>
 <script src="js/engine/focus-time-diagnostic-v1.js"></script>
 <script>
@@ -488,7 +488,7 @@ const focusContrastPlan=[
  {id:'elapsed_find_duration',mode:'tempoh',family:'time_elapsed',tier:{span:[10,45],inHour:1}}
 ];
 const focusObservations=[],focusProbeKeys=new Set();let focusReportSent=false;
-const focusArchetypes={baca:'read_clock',unit:'convert_forward',tamat:'find_end',tempoh:'elapsed_duration',mula:'find_start','24jam':'clock24_convert',zon:'zone_difference'};
+const focusArchetypes={baca:'read_clock',unit:'convert_forward',tamat:'find_end',tempoh:'elapsed_duration',mula:'find_start',operasi:'time_operations',kalendar:'calendar_duration','24jam':'clock24_convert',zon:'zone_difference'};
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const step5=(a,b)=>rnd(Math.ceil(a/5),Math.floor(b/5))*5;
@@ -511,29 +511,36 @@ const ZONES=[{c:'Tokyo',d:1},{c:'Seoul',d:1},{c:'Sydney',d:2},{c:'Dubai',d:-4},{
 
 /* ---------- darjah & mod ----------
    Hash: #d<darjah>[-mod-mod]  cth #d6-zon, #d3-tempoh-mula.  */
-const MODE_LABEL={baca:'BACA JAM',tamat:'WAKTU TAMAT',mula:'WAKTU MULA',tempoh:'TEMPOH',unit:'TUKAR UNIT','24jam':'SISTEM 24 JAM',zon:'ZON MASA'};
+const MODE_LABEL={baca:'BACA JAM',tamat:'WAKTU TAMAT',mula:'WAKTU MULA',tempoh:'TEMPOH',unit:'TUKAR UNIT',operasi:'OPERASI MASA',kalendar:'KALENDAR',anggaran:'ANGGARAN MASA','24jam':'SISTEM 24 JAM',zon:'ZON MASA'};
 const GRADES={
- 1:{title:'Masa asas',modes:['baca'],baca:[{k:'hour'},{k:'half'},{k:'later'}]},
+ 1:{title:'Masa asas',modes:['baca','kalendar'],baca:[{k:'hour',sp:'5.2.3'},{k:'half',sp:'5.2.3'},{k:'quarter',sp:'5.2.3'},{k:'later',sp:'5.3.1'}],kalendar:[{kind:'dayNext',sp:'5.1.3'},{kind:'dayBefore',sp:'5.1.3'},{kind:'monthNext',sp:'5.1.4'},{kind:'dayPart',sp:'5.1.1'},{kind:'event',sp:'5.1.2'}]},
  2:{title:'Jam & minit',modes:['baca','tamat','tempoh','unit'],
-    baca:[{k:'quarter'},{k:'five'}],
-    tamat:[{dur:[10,40]},{dur:[15,55],x:1}],
-    tempoh:[{span:[10,45],inHour:1},{span:[15,55],x:1}],
-    unit:[{u:'jm',n:[1,3]},{u:'hj',n:[1,3]},{u:'mh',n:[1,4]}]},
- 3:{title:'Tempoh masa',modes:['tamat','tempoh','mula'],
-    tamat:[{dur:[20,90]},{dur:[60,170],x:1}],
-    tempoh:[{span:[20,90]},{span:[60,170],x:1}],
-    mula:[{dur:[15,90]},{dur:[60,150],x:1}]},
- 4:{title:'Tempoh & jadual',modes:['24jam','tamat','tempoh'],
-    '24jam':[{r:[13,18]},{r:[18,23]},{edge:1}],
-    tamat:[{dur:[30,150],d24:1},{dur:[60,200],d24:1,x:1}],
-    tempoh:[{span:[60,240],d24:1},{span:[90,330],d24:1,x:1}]},
- 5:{title:'Tempoh lanjutan',modes:['unit','tempoh'],
-    unit:[{u:'jm2'},{u:'mj'},{u:'hj2'}],
-    tempoh:[{span:[240,540],night:1},{span:[300,600],night:1,x:1}]},
- 6:{title:'Zon masa',modes:['zon','tempoh','24jam'],
-    zon:[{dir:1},{dir:-1,x:1},{flight:1,x:1}],
-    tempoh:[{span:[300,600],night:1,x:1}],
-    '24jam':[{edge:1}]}
+    baca:[{k:'quarter',sp:'5.1.2'},{k:'five',sp:'5.1.1/5.1.2'}],
+    tamat:[{dur:[10,40],sp:'5.3.1'},{dur:[15,55],x:1,sp:'5.3.1'}],
+    tempoh:[{span:[10,45],inHour:1,sp:'5.3.1'},{span:[15,55],x:1,sp:'5.3.1'}],
+    unit:[{u:'jm',n:[1,3],sp:'5.2.1'},{u:'hj',n:[1,3],sp:'5.2.1'},{u:'jh',n:[1,3],sp:'5.2.1'},{u:'mj',n:[1,3],sp:'5.2.1'}]},
+ 3:{title:'Masa & operasi',modes:['tamat','tempoh','mula','unit','operasi','kalendar'],
+    tamat:[{dur:[20,90],sp:'5.9.2'},{dur:[60,170],x:1,sp:'5.9.2'}],
+    tempoh:[{span:[20,90],sp:'5.9.2'},{span:[60,170],x:1,sp:'5.9.2'},{timetable:1,sp:'5.1.1/5.1.2'}],
+    mula:[{dur:[15,90],sp:'5.9.2'},{dur:[60,150],x:1,sp:'5.9.2'}],
+    unit:[{u:'jm',n:[1,4],sp:'5.2.2'},{u:'mj',n:[1,4],sp:'5.2.2'},{u:'mh',n:[1,5],sp:'5.2.1'},{u:'ym',n:[1,5],sp:'5.2.1'},{u:'ms',n:[1,5],sp:'5.2.1/5.2.2'},{u:'sm',n:[1,5],sp:'5.2.2'}],
+    operasi:[{ops:['tambah','tolak'],units:['jam','minit','saat'],min:2,max:30,countMax:3,sp:'5.4.1/5.5.1'},{mixedOps:1,sp:'5.6.1'},{ops:['darab','bahagi'],units:['jam','minit','saat'],min:2,max:12,factorMax:9,sp:'5.7.1/5.8.1'}],
+    kalendar:[{sp:'5.3.1',dates:[[2025,8,11,2025,8,15],[2025,1,14,2025,1,22],[2025,4,27,2025,5,3]]}]},
+ 4:{title:'Tempoh & operasi masa',modes:['24jam','tamat','tempoh','unit','operasi','anggaran'],
+    '24jam':[{r:[13,18],sp:'4.1.1'},{r:[18,23],sp:'4.1.1'},{edge:1,sp:'4.1.1'}],
+    tamat:[{dur:[30,150],d24:1,sp:'4.2.1/4.6.1'},{dur:[60,200],d24:1,x:1,sp:'4.2.1/4.6.1'}],
+    tempoh:[{span:[60,240],d24:1,sp:'4.2.1'},{span:[90,330],d24:1,x:1,sp:'4.2.1'}],
+    unit:[{u:'jm',n:[1,3],sp:'4.4.2'},{u:'hj',n:[1,3],sp:'4.4.2'},{u:'jh',n:[1,3],sp:'4.4.2'},{u:'mh',n:[1,4],sp:'4.4.2'},{u:'hm',n:[1,4],sp:'4.4.2'},{u:'ym',n:[1,5],sp:'4.4.2'},{u:'my',n:[1,5],sp:'4.4.2'},{u:'yt',n:[1,5],sp:'4.4.1–4.4.2'},{u:'ty',n:[1,5],sp:'4.4.1–4.4.2'},{u:'dc',n:[1,5],sp:'4.4.1–4.4.2'},{u:'cd',n:[1,5],sp:'4.4.1–4.4.2'},{u:'cy',n:[1,4],sp:'4.4.1–4.4.2'},{u:'yc',n:[1,4],sp:'4.4.1–4.4.2'},{u:'mc',n:[1,4],sp:'4.4.1'}],
+    operasi:[{ops:['tambah','tolak'],units:['jam','hari','minggu','bulan','tahun','dekad','abad'],min:10,max:90,countMax:3,sp:'4.5.1'},{ops:['tambah','tolak'],paired:1,sp:'4.5.1'},{ops:['darab','bahagi'],units:['jam','hari','minggu','bulan','tahun','dekad','abad'],min:10,max:99,factorMax:20,sp:'4.5.2'}],
+    anggaran:[{sp:'4.3.1'}]},
+ 5:{title:'Perkaitan & tempoh lanjutan',modes:['unit','tempoh','operasi','kalendar'],
+    unit:[{u:'frac_jm',sp:'4.2.1'},{u:'dec_jm',sp:'4.2.2'},{u:'frac_hj',sp:'4.2.1'},{u:'dec_hj',sp:'4.2.2'},{u:'frac_ym',sp:'4.2.1'},{u:'dec_ym',sp:'4.2.2'},{u:'ty',n:[1,5],sp:'4.2.1–4.2.2'},{u:'cd',n:[1,5],sp:'4.2.1–4.2.2'},{u:'cy',n:[1,4],sp:'4.2.1–4.2.2'},{u:'frac_ty',sp:'4.2.1'},{u:'dec_ty',sp:'4.2.2'},{u:'frac_cd',sp:'4.2.1'},{u:'dec_cd',sp:'4.2.2'},{u:'frac_cy',sp:'4.2.1'},{u:'dec_cy',sp:'4.2.2'}],
+    tempoh:[{dayHour:1,sp:'4.1.1'}],
+    operasi:[{ops:['tambah','tolak'],values:[.5,.75,1,1.25,1.5,2.25],forms:['fraction','decimal'],sp:'4.3.1/4.3.2'},{ops:['tambah','tolak'],mixed:1,pairs:[['jam','minit',60],['hari','jam',24],['tahun','bulan',12],['dekad','tahun',10],['abad','dekad',10],['abad','tahun',100]],sp:'4.3.1/4.3.2'}],
+    kalendar:[{sp:'4.1.1',dates:[[2024,2,20,2024,3,5],[2023,11,15,2024,1,10],[2024,1,1,2024,12,31]]}]},
+ 6:{title:'Zon masa',modes:['zon'],
+    zon:[{dir:1,sp:'4.1.1–4.1.2'},{dir:-1,x:1,sp:'4.1.1–4.1.2'},{flight:1,x:1,sp:'4.2.1'}],
+    }
 };
 function parseHash(raw){
  const h=String(raw==null?location.hash.slice(1):raw).toLowerCase();
@@ -558,14 +565,17 @@ const GEN={
   else if(t.k==='quarter'){tg=rnd(1,12)*60+pick([15,45]);const w=mod(tg,60)===15?'pukul '+h12(tg)+' suku':'pukul '+h12(tg+60)+' kurang suku';parts=['Persembahan bermula ',chip(w),'. Tunjukkan pada jam.']}
   else{tg=rnd(1,12)*60+step5(5,55);parts=['Bas tiba ',chip('pukul '+f12(tg)),'. Tunjukkan pada jam.']}
   start=mod(tg+pick([-1,1])*step5(65,300),720);
-  return{parts:withDistract(parts,t),widget:'analog',hideRead:true,start,target:tg,ansText:f12(tg)}},
+  return{parts:withDistract(parts,t),widget:'analog',hideRead:true,start,target:tg,ansText:f12(tg),kssrSP:t.sp}},
  tamat(t){const s=t.d24?pick([am(),pm()]):step5(60,660),d=step5(t.dur[0],t.dur[1]),e=s+d,fmt=t.d24?f24:f12;
   const v=pick([['Kereta api bertolak ',' Perjalanan mengambil masa ',' Pukul berapa kereta api sampai?'],['Feri bertolak ',' Feri belayar selama ',' Pukul berapa feri tiba?'],['Kelas silat bermula ',' Kelas itu berlangsung ',' Pukul berapa kelas tamat?']]);
-  return{parts:withDistract([v[0],chip(fmt(s)),'.'+v[1],chip(fDur(d)),'.'],t),ask:v[2],widget:t.d24?'digital':'analog',start:s,target:e,s,d,ansText:fmt(e)}},
+  return{parts:withDistract([v[0],chip(fmt(s)),'.'+v[1],chip(fDur(d)),'.'],t),ask:v[2],widget:t.d24?'digital':'analog',start:s,target:e,s,d,ansText:fmt(e),kssrSP:t.sp}},
  mula(t){const e=step5(150,700),d=step5(t.dur[0],t.dur[1]),s=e-d;
   const v=pick([['Kek siap dibakar ',' Kek dibakar selama ',' Pukul berapa kek mula dibakar?'],['Perlawanan tamat ',' Perlawanan itu berlangsung ',' Pukul berapa perlawanan bermula?']]);
-  return{parts:withDistract([v[0],chip(f12(e)),'.'+v[1],chip(fDur(d)),'.'],t),ask:v[2],widget:'analog',start:e,target:s,s,d,e,ansText:f12(s)}},
- tempoh(t){let s,d;
+  return{parts:withDistract([v[0],chip(f12(e)),'.'+v[1],chip(fDur(d)),'.'],t),ask:v[2],widget:'analog',start:e,target:s,s,d,e,ansText:f12(s),kssrSP:t.sp}},
+ tempoh(t){if(t.calendar){const dates=pick([[2024,2,26,2024,3,3],[2023,12,27,2024,1,4],[2024,12,28,2025,1,5]]),s=new Date(Date.UTC(dates[0],dates[1]-1,dates[2])),e=new Date(Date.UTC(dates[3],dates[4]-1,dates[5])),days=(e-s)/86400000;const months=['','Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'],label=d=>d[2]+' '+months[d[1]]+' '+d[0];return{parts:['Tempoh dari ',chip(label(dates.slice(0,3))),' hingga ',chip(label(dates.slice(3,6))),' ialah berapa hari?'],ask:'',widget:'nombor',target:days,unitLbl:'hari',ansText:days+' hari',noTime:true,kssrSP:t.sp,archetypeId:'calendar_duration'}}
+  if(t.timetable){const s=step5(8*60,9*60+30),d=step5(45,120),e=s+d;return{parts:['Jadual tren KL → Ipoh: bertolak ',chip(f12(s)+' pagi'),' dan tiba ',chip(f12(e)+' pagi'),'. Berapa lama perjalanan?'],ask:'',widget:'durasi',start:s,target:d,s,e,ansText:fDur(d),kssrSP:t.sp,archetypeId:'timetable_read'}}
+  if(t.dayHour){const days=rnd(1,4),hours=rnd(1,23),target=days*24+hours;return{parts:['Tempoh perjalanan ialah ',chip(days+' hari '+hours+' jam'),'. Berapa jam semuanya?'],ask:'',widget:'nombor',target,unitLbl:'jam',ansText:target+' jam',noTime:true,kssrSP:t.sp,archetypeId:'time_duration_days_hours'}}
+  let s,d;
   if(t.night){s=step5(20*60,23*60+30);d=step5(t.span[0],t.span[1])}
   else if(t.d24){s=pick([am(),step5(9*60,12*60)]);d=step5(t.span[0],t.span[1])}
   else if(t.inHour){s=rnd(1,11)*60+step5(0,10);d=step5(t.span[0],Math.min(t.span[1],55-mod(s,60)))}
@@ -573,29 +583,80 @@ const GEN={
   const e=s+d,fmt=t.night?fWords:t.d24?f24:f12;
   const v=pick([['Wayang bermula ',' dan tamat ',' Berapa lama wayang itu?'],['Pasar malam dibuka ',' dan ditutup ',' Berapa lama pasar dibuka?'],['Wira mula tidur ',' dan bangun ',' Berapa lama Wira tidur?']]);
   const vv=t.night?pick([['Wira mula tidur ',' dan bangun ',' Berapa lama Wira tidur?'],['Pesta tanglung bermula ',' dan tamat ',' Berapa lama pesta itu?']]):v;
-  return{parts:withDistract([vv[0],chip(fmt(s)),vv[1],chip(fmt(e)),'.'],t),ask:vv[2],widget:'durasi',start:s,target:d,s,e,ansText:fDur(d)}},
+  return{parts:withDistract([vv[0],chip(fmt(s)),vv[1],chip(fmt(e)),'.'],t),ask:vv[2],widget:'durasi',start:s,target:d,s,e,ansText:fDur(d),kssrSP:t.sp}},
  unit(t){let parts,target,widget='nombor',unitLbl,ansText;
   if(t.u==='fact_jm'){parts=[chip('1 jam'),' = ? minit'];target=60;unitLbl='minit';ansText='60 minit';return{parts:['Lengkapkan: ',...parts],ask:'',widget,target,unitLbl,u:t.u,ansText,noTime:true}}
   if(t.u==='fact_hj'){parts=[chip('1 hari'),' = ? jam'];target=24;unitLbl='jam';ansText='24 jam';return{parts:['Lengkapkan: ',...parts],ask:'',widget,target,unitLbl,u:t.u,ansText,noTime:true}}
   const U={jm:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' jam'),' = ? minit'];target=n*60;unitLbl='minit'},
    hj:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' hari'),' = ? jam'];target=n*24;unitLbl='jam'},
+   jh:()=>{const n=rnd(t.n[0],t.n[1])*24;parts=[chip(n+' jam'),' = ? hari'];target=n/24;unitLbl='hari'},
    mh:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' minggu'),' = ? hari'];target=n*7;unitLbl='hari'},
+   hm:()=>{const n=rnd(t.n[0],t.n[1])*7;parts=[chip(n+' hari'),' = ? minggu'];target=n/7;unitLbl='minggu'},
+   ym:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' tahun'),' = ? bulan'];target=n*12;unitLbl='bulan'},
+   ms:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' minit'),' = ? saat'];target=n*60;unitLbl='saat'},
+   sm:()=>{const n=rnd(t.n[0],t.n[1])*60;parts=[chip(n+' saat'),' = ? minit'];target=n/60;unitLbl='minit'},
+   my:()=>{const n=rnd(t.n[0],t.n[1])*12;parts=[chip(n+' bulan'),' = ? tahun'];target=n/12;unitLbl='tahun'},
+   yt:()=>{const n=rnd(t.n[0],t.n[1])*10;parts=[chip(n+' tahun'),' = ? dekad'];target=n/10;unitLbl='dekad'},
+   ty:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' dekad'),' = ? tahun'];target=n*10;unitLbl='tahun'},
+   frac_ty:()=>{const n=pick([.5,1.5,2.5]);parts=[chip((n===.5?'½':n===1.5?'1 ½':'2 ½')+' dekad'),' = ? tahun'];target=n*10;unitLbl='tahun'},
+   dec_ty:()=>{const n=pick([.5,1.2,1.5,2.5]);parts=[chip(String(n).replace('.',',')+' dekad'),' = ? tahun'];target=n*10;unitLbl='tahun'},
+   dc:()=>{const n=rnd(t.n[0],t.n[1])*10;parts=[chip(n+' dekad'),' = ? abad'];target=n/10;unitLbl='abad'},
+   cd:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' abad'),' = ? dekad'];target=n*10;unitLbl='dekad'},
+   frac_cd:()=>{const n=pick([.5,1.5,2.5]);parts=[chip((n===.5?'½':n===1.5?'1 ½':'2 ½')+' abad'),' = ? dekad'];target=n*10;unitLbl='dekad'},
+   dec_cd:()=>{const n=pick([.5,1.2,1.5,2.5]);parts=[chip(String(n).replace('.',',')+' abad'),' = ? dekad'];target=n*10;unitLbl='dekad'},
+   cy:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' abad'),' = ? tahun'];target=n*100;unitLbl='tahun'},
+   frac_cy:()=>{const n=pick([.25,.5,.75,1.5]);parts=[chip((n===.25?'¼':n===.5?'½':n===.75?'¾':'1 ½')+' abad'),' = ? tahun'];target=n*100;unitLbl='tahun'},
+   dec_cy:()=>{const n=pick([.5,1.2,1.5,2.5]);parts=[chip(String(n).replace('.',',')+' abad'),' = ? tahun'];target=n*100;unitLbl='tahun'},
+   yc:()=>{const n=rnd(t.n[0],t.n[1])*100;parts=[chip(n+' tahun'),' = ? abad'];target=n/100;unitLbl='abad'},
+   mc:()=>{const n=rnd(t.n[0],t.n[1]);parts=[chip(n+' alaf'),' = ? abad'];target=n*10;unitLbl='abad'},
    jm2:()=>{const h=rnd(1,4),m=step5(5,55);parts=[chip(h+' jam '+m+' minit'),' = ? minit'];target=h*60+m;unitLbl='minit'},
-   mj:()=>{const h=rnd(1,4),m=step5(5,55);parts=[chip((h*60+m)+' minit'),' = ? jam ? minit'];target=h*60+m;widget='durasi';unitLbl=''},
+   mj:()=>{const h=rnd(1,t.n?.[1]||4),m=step5(5,55),total=h*60+m;parts=[chip(total+' minit'),' = ? jam ? minit'];target=total;widget='durasi';unitLbl=''},
    hj2:()=>{const n=rnd(1,3),half=pick([0,1]);parts=[chip(half?n+' ½ hari':(n+' hari '+(rnd(1,4)*3)+' jam')),' = ? jam'];target=half?n*24+12:null;
-     if(!half){const extra=+parts[0].c.split(' ')[2];target=n*24+extra}unitLbl='jam'}};
+     if(!half){const extra=+parts[0].c.split(' ')[2];target=n*24+extra}unitLbl='jam'},
+   frac_jm:()=>{const n=pick([.25,.5,.75,1.5]);parts=[chip((n<1?(n===.25?'¼':n===.5?'½':'¾'):(n===1.5?'1 ½':'2') )+' jam'),' = ? minit'];target=n*60;unitLbl='minit'},
+   dec_jm:()=>{const n=pick([.5,1.2,1.5,2.25]);parts=[chip(String(n).replace('.',',')+' jam'),' = ? minit'];target=n*60;unitLbl='minit'},
+   frac_hj:()=>{const n=pick([.25,.5,.75]);parts=[chip((n===.25?'¼':n===.5?'½':'¾')+' hari'),' = ? jam'];target=n*24;unitLbl='jam'},
+   dec_hj:()=>{const n=pick([.5,1.25,1.5,2.5]);parts=[chip(String(n).replace('.',',')+' hari'),' = ? jam'];target=n*24;unitLbl='jam'},
+   frac_ym:()=>{const n=pick([.25,.5,.75]);parts=[chip((n===.25?'¼':n===.5?'½':'¾')+' tahun'),' = ? bulan'];target=n*12;unitLbl='bulan'},
+   dec_ym:()=>{const n=pick([.5,1.25,1.5,2.5]);parts=[chip(String(n).replace('.',',')+' tahun'),' = ? bulan'];target=n*12;unitLbl='bulan'}};
   U[t.u]();ansText=widget==='durasi'?fDur(target):target+' '+unitLbl;
-  return{parts:['Tukar: ',...parts],ask:'Tukar unit masa ini.',widget,target,unitLbl,u:t.u,ansText,noTime:true}},
+  return{parts:['Tukar: ',...parts],ask:'Tukar unit masa ini.',widget,target,unitLbl,u:t.u,ansText,noTime:true,kssrSP:t.sp}},
+ operasi(t){const op=pick(t.ops||['tambah']),unit=pick(t.units||['jam']),unitLbl=unit,sp=t.sp;
+  if(t.mixedOps){const c=rnd(1,3),a=rnd(c,6),b=rnd(1,59),sub=pick([true,false]),total=a*60+b+(sub?-c*60:c*60),target=total;return{parts:['Kira: ',chip(a+' jam '+b+' minit'+(sub?' − ':' + ')+c+' jam'),' = ? minit'],ask:'',widget:'nombor',target,unitLbl:'minit',ansText:target+' minit',archetypeId:'time_operations_combined_add_subtract',kssrSP:sp,noTime:true}}
+  if(t.mixed){const op2=op,p=pick(t.pairs),[big,small,factor]=p,frac={.5:'½',1.5:'1 ½',2.5:'2 ½'},style=pick(t.forms||['fraction','decimal']),format=v=>style==='fraction'?(frac[v]||String(v)):String(v).replace('.',','),x=pick([.5,1,1.5,2,2.5]),y=rnd(1,Math.max(1,Math.floor(x*factor)-1));if(op2==='tolak'&&x*factor<=y){y=1}const total=op2==='tambah'?x*factor+y:x*factor-y,target=total;return{parts:['Kira: ',chip(format(x)+' '+big+(op2==='tambah'?' + ':' − ')+y+' '+small),' = ? '+small],ask:'',widget:'nombor',target,unitLbl:small,ansText:target+' '+small,archetypeId:op2==='tambah'?'time_operations_add':'time_operations_subtract',kssrSP:sp,noTime:true}}
+  if(t.paired){const p=pick([['hari','jam',24],['minggu','hari',7],['tahun','bulan',12],['dekad','tahun',10],['abad','dekad',10],['abad','tahun',100]]),[big,small,factor]=p;let x=rnd(2,8),y=rnd(1,factor-1),isSub=op==='tolak';if(isSub){x=rnd(3,9);y=rnd(1,x*factor-1)}const vals=[x*factor,y],target=isSub?vals[0]-vals[1]:vals[0]+vals[1],sign=isSub?' − ':' + ';return{parts:['Kira: ',chip(x+' '+big+' '+(isSub?sign:' + ')+y+' '+small),' = ? '+small],ask:'',widget:'nombor',target,unitLbl:small,ansText:target+' '+small,archetypeId:isSub?'time_operations_subtract':'time_operations_add',kssrSP:sp,noTime:true}}
+  if(t.values){let x=pick(t.values),y=pick(t.values);if(op==='tolak'){if(x<y)[x,y]=[y,x];if(x===y)y=pick(t.values.filter(v=>v<x))||.5}
+   const frac={.25:'¼',.5:'½',.75:'¾',1.25:'1 ¼',1.5:'1 ½',2.25:'2 ¼'},style=pick(t.forms||['decimal']),format=v=>style==='fraction'?(frac[v]||String(v)):String(v).replace('.',',');
+   const total=op==='tambah'?x+y:x-y,target=Math.round(total*60),sign=op==='tambah'?' + ':' − ';
+   return{parts:['Kira: ',chip(format(x)+' jam'+sign+format(y)+' jam'),' = ? minit'],ask:'',widget:'nombor',target,unitLbl:'minit',ansText:target+' minit',archetypeId:op==='tambah'?'time_operations_add':'time_operations_subtract',kssrSP:sp,noTime:true}}
+  let a,b,c,target,sign,archetypeId;
+  if(op==='tambah'){const n=rnd(2,t.countMax||3),values=Array.from({length:n},()=>rnd(t.min||2,t.max||24));target=values.reduce((x,y)=>x+y,0);sign=' + ';a=values;archetypeId='time_operations_add'}
+  else if(op==='tolak'){a=rnd((t.min||2)+4,t.max||36);b=rnd(t.min||2,a-1);target=a-b;sign=' − ';a=[a,b];archetypeId='time_operations_subtract'}
+  else if(op==='darab'){a=rnd(t.min||2,t.max||12);b=rnd(2,t.factorMax||9);target=a*b;sign=' × ';a=[a,b];archetypeId='time_operations_multiply'}
+  else{b=rnd(2,t.factorMax||9);target=rnd(2,t.max||12);a=target*b;sign=' ÷ ';a=[a,b];archetypeId='time_operations_divide'}
+  const expression=a.map(v=>v+' '+unit).join(sign);
+  return{parts:['Kira: ',chip(expression),' = ? '+unitLbl],ask:'',widget:'nombor',target,unitLbl,ansText:target+' '+unitLbl,archetypeId,kssrSP:sp,noTime:true}},
+ kalendar(t){if(t.kind){const days=['Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu','Ahad'],months=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];let parts,target,options;
+   if(t.kind==='dayNext'||t.kind==='dayBefore'){const i=rnd(0,6),delta=t.kind==='dayNext'?1:-1;target=days[mod(i+delta,7)];parts=['Hari ini ',chip(days[i]),'. ',t.kind==='dayNext'?'Esok hari apa?':'Semalam hari apa?'];options=[target,days[mod(i+delta+1,7)],days[mod(i+delta+2,7)],days[mod(i+delta+6,7)]].sort(()=>Math.random()-.5)}
+   else if(t.kind==='monthNext'){const i=rnd(0,11);target=months[mod(i+1,12)];parts=['Selepas bulan ',chip(months[i]),', bulan apa?'];options=[target,months[mod(i+2,12)],months[mod(i+3,12)],months[mod(i+11,12)]].sort(()=>Math.random()-.5)}
+   else if(t.kind==='dayPart'){const v=pick([['Matahari baru terbit. Waktu ini waktu apa?','Pagi'],['Matahari terbenam. Waktu ini waktu apa?','Petang'],['Masa makan tengah hari. Waktu ini waktu apa?','Tengah hari']]);parts=[v[0]];target=v[1];options=['Pagi','Tengah hari','Petang','Malam'].sort(()=>Math.random()-.5)}
+   else{parts=['Susun peristiwa harian: sarapan berlaku sebelum makan tengah hari. Yang berlaku dahulu ialah…'];target='Sarapan pagi';options=['Sarapan pagi','Makan tengah hari','Makan malam','Tidur malam'].sort(()=>Math.random()-.5)}
+   return{parts,ask:'',widget:'choice',target,options,noTime:true,kssrSP:t.sp,archetypeId:'calendar_sequence'}}
+  const dates=pick(t.dates),s=new Date(Date.UTC(dates[0],dates[1]-1,dates[2])),e=new Date(Date.UTC(dates[3],dates[4]-1,dates[5])),target=(e-s)/86400000;
+  const months=['','Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+  const label=d=>d[2]+' '+months[d[1]]+' '+d[0];
+  return{parts:['Tempoh dari ',chip(label(dates.slice(0,3))),' hingga ',chip(label(dates.slice(3,6))),' ialah berapa hari?'],ask:'',widget:'nombor',target,unitLbl:'hari',ansText:target+' hari',kssrSP:t.sp,noTime:true}},
+ anggaran(t){const refs=pick([[30,'satu waktu kelas',2,'dua waktu kelas'],[15,'satu pusingan latihan',4,'empat pusingan latihan'],[45,'satu sesi bengkel',2,'dua sesi bengkel']]),target=refs[0]*refs[2];return{parts:['Set rujukan: ',chip(refs[1]+' ≈ '+refs[0]+' minit'),'. '+refs[3]+' mengambil kira-kira berapa minit?'],ask:'',widget:'nombor',target,unitLbl:'minit',ansText:'kira-kira '+target+' minit',kssrSP:t.sp,noTime:true,archetypeId:'time_estimation'}},
  '24jam'(t){let tg;
   if(t.edge)tg=pick([step5(12*60,12*60+55),step5(0,55),step5(12*60+5,12*60+55)]);
   else tg=step5(t.r[0]*60,t.r[1]*60+55);
-  return{parts:['Majlis bermula ',chip(fWords(tg)),'. Tulis waktu itu dalam sistem 24 jam.'],ask:'Apakah waktu itu dalam sistem 24 jam?',widget:'digital',start:720,target:tg,ansText:f24(tg)}},
+  return{parts:['Majlis bermula ',chip(fWords(tg)),'. Tulis waktu itu dalam sistem 24 jam.'],ask:'Apakah waktu itu dalam sistem 24 jam?',widget:'digital',start:720,target:tg,ansText:f24(tg),kssrSP:t.sp}},
  zon(t){
   if(t.flight){const z=pick(ZONES.filter(z=>z.d<0)),s=step5(19*60,23*60+30),fl=pick([5,6,7,8,9].filter(h=>h!==-z.d))*60,tg=mod(s+fl+z.d*60,1440);
-   return{parts:['Kapal terbang bertolak dari Kuala Lumpur ',chip(f24(s)),'. Penerbangan ke '+z.c+' mengambil ',chip(fl/60+' jam'),'. '+z.c+' di belakang Malaysia ',chip(-z.d+' jam'),'.'],ask:'Pukul berapa waktu '+z.c+' ketika mendarat?',widget:'digital',start:s,target:tg,z,s,fl,ansText:f24(tg)}}
+   return{parts:['Kapal terbang bertolak dari Kuala Lumpur ',chip(f24(s)),'. Penerbangan ke '+z.c+' mengambil ',chip(fl/60+' jam'),'. '+z.c+' di belakang Malaysia ',chip(-z.d+' jam'),'.'],ask:'Pukul berapa waktu '+z.c+' ketika mendarat?',widget:'digital',start:s,target:tg,z,s,fl,ansText:f24(tg),kssrSP:t.sp}}
   const z=pick(ZONES.filter(z=>t.dir>0?z.d>0:z.d<0)),s=t.dir>0?step5(9*60,23*60):step5(0,7*60+30),tg=mod(s+z.d*60,1440);
   const rel=z.d>0?' mendahului Malaysia ':' di belakang Malaysia ';
-  return{parts:withDistract(['Sekarang ',chip(f24(s)),' di Kuala Lumpur. '+z.c+rel,chip(Math.abs(z.d)+' jam'),'.'],t),ask:'Pukul berapa sekarang di '+z.c+'?',widget:'digital',start:s,target:tg,z,s,ansText:f24(tg)}}
+  return{parts:withDistract(['Sekarang ',chip(f24(s)),' di Kuala Lumpur. '+z.c+rel,chip(Math.abs(z.d)+' jam'),'.'],t),ask:'Pukul berapa sekarang di '+z.c+'?',widget:'digital',start:s,target:tg,z,s,ansText:f24(tg),kssrSP:t.sp}}
 };
 
 /* ---------- bantuan ---------- */
@@ -606,7 +667,10 @@ const HELP={
  tempoh:{s:q=>{const r=Math.ceil((q.s+1)/60)*60;return q.e<=r?'Kira minit dari waktu mula hingga waktu tamat. Lihat lengkok biru pada jam.':'Kira dari mula ke jam bulat seterusnya ('+(r-q.s)+' minit), kemudian terus ke waktu tamat. Lihat lengkok biru pada jam.'}},
  unit:q=>'Kenal pasti unit yang ditanya. Pecahkan kuantiti kepada unit besar dan unit kecil sebelum menukar.',
  '24jam':{s:q=>'Waktu pagi kekal. Selepas 1 tengah hari, tambah 12 pada jam. Tengah malam bermula dengan 00.'},
- zon:{s:q=>q.fl?'Tambah tempoh penerbangan pada waktu KL dulu, kemudian tukar ke zon '+q.z.c+'.':'Mendahului: tambah jam. Di belakang: tolak jam.'}
+ zon:{s:q=>q.fl?'Tambah tempoh penerbangan pada waktu KL dulu, kemudian tukar ke zon '+q.z.c+'.':'Mendahului: tambah jam. Di belakang: tolak jam.'},
+ operasi:{s:q=>'Kenal pasti operasi dahulu. Tulis semula nilai masa dengan unit yang sama, kemudian kira.'},
+ kalendar:{s:q=>q.options?'Gunakan urutan hari atau bulan, kemudian tentukan sebelum, selepas atau waktu harian yang sesuai.':'Kira hari yang berlalu antara tarikh mula dengan tarikh akhir. Tahun 2024 ada 29 hari pada bulan Februari.'}
+ ,anggaran:q=>'Gunakan tempoh rujukan yang diberi. Darabkan tempoh satu sesi dengan bilangan sesi.'
 };
 const HELP2={
  baca:q=>'Kira senggatan jarum panjang satu demi satu, kemudian baca kedudukan jarum pendek.',
@@ -615,13 +679,15 @@ const HELP2={
  tempoh:q=>'Pecahkan perjalanan masa pada tanda jam bulat: kira bahagian pertama, kemudian sambung hingga waktu tamat.',
  unit:q=>'Tentukan unit jawapan yang diminta. Pecahkan kuantiti ikut unit besar dan unit kecil sebelum menukar.',
  '24jam':q=>'Kenal pasti pagi atau petang dahulu. Kemudian gunakan peraturan format 24 jam tanpa mengubah minit.',
- zon:q=>'Laraskan masa mengikut beza zon dan buat operasi tempoh penerbangan sebagai langkah berasingan.'
+ zon:q=>'Laraskan masa mengikut beza zon dan buat operasi tempoh penerbangan sebagai langkah berasingan.',
+ operasi:q=>'Semak simbol operasi dan pastikan jawapan masih dalam unit yang soalan minta.',
+ kalendar:q=>q.options?'Sebut urutan dari hari atau bulan yang diberi, kemudian bergerak satu langkah.':'Tandakan tarikh mula dan akhir pada kalendar. Ambil kira bilangan hari dalam setiap bulan.'
 };
 
 /* ---------- keadaan ---------- */
 const SET=5; // 5 kunci cahaya = satu menara dipulihkan
 let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,setLog=[],towers=1;
-let hour=12,minute=0,selHand='m',dig=0,dur={h:0,m:0},num='',solved=false,misses=0,hints=0,hint2=0,soundOn=false,ac=null,dragging=false;
+let hour=12,minute=0,selHand='m',dig=0,dur={h:0,m:0},num='',choice='',solved=false,misses=0,hints=0,hint2=0,soundOn=false,ac=null,dragging=false;
 const el=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
 const create=(tag,attrs={},text)=>{const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e};
 const plain=parts=>parts.map(p=>typeof p==='string'?p:p.c).join('');
@@ -702,14 +768,16 @@ function buildWidget(){const w=q.widget,box=el('widget'),ctl=el('controls');box.
   const upd=()=>{el('lH').textContent=pad(Math.floor(dig/60));el('lM').textContent=pad(dig%60);el('lcdWord').textContent=f24(dig)};
   const step=d=>{if(solved)return;if(Math.abs(d)===60)dig=mod(dig+d,1440);else{const h=Math.floor(dig/60);dig=h*60+mod(dig%60+d,60)}sfx(430,.045);upd();hideMsg()};
   el('gh-').onclick=()=>step(-60);el('gh+').onclick=()=>step(60);el('gm-').onclick=()=>step(-5);el('gm+').onclick=()=>step(5);upd()}
+ else if(w==='choice'){choice='';ctl.hidden=true;box.innerHTML='<div class="choices">'+q.options.map((v,i)=>'<button type="button" class="choice-option" data-choice="'+i+'">'+v+'</button>').join('')+'</div>';box.querySelectorAll('[data-choice]').forEach((b,i)=>b.onclick=()=>{if(solved)return;choice=q.options[i];box.querySelectorAll('.choice-option').forEach(x=>x.classList.toggle('selected',x===b));sfx(520,.04);hideMsg()})}
  else{num='';ctl.hidden=true;
   box.innerHTML='<div class="pad"><div class="disp"><b id="numD">_</b><span>'+q.unitLbl+'</span></div><div class="keys">'+[1,2,3,4,5,6,7,8,9,'⌫',0,'C'].map(k=>'<button data-k="'+k+'">'+k+'</button>').join('')+'</div></div>';
   box.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{if(solved)return;const k=b.dataset.k;if(k==='⌫')num=num.slice(0,-1);else if(k==='C')num='';else if(num.length<4)num+=k;sfx(500,.04);el('numD').textContent=num||'_';hideMsg()})}}
-function current(){const w=q.widget;return w==='analog'?(hour%12)*60+minute:w==='digital'?dig:w==='durasi'?dur.h*60+dur.m:(num===''?null:+num)}
+function current(){const w=q.widget;return w==='analog'?(hour%12)*60+minute:w==='digital'?dig:w==='durasi'?dur.h*60+dur.m:w==='choice'?(choice||null):(num===''?null:+num)}
 function isRight(){const c=current();return q.widget==='analog'?c===mod(q.target,720):q.widget==='digital'?c===mod(q.target,1440):c===q.target}
 function wrongMsg(){const w=q.widget,c=current();
  if(w==='analog'){const th=h12(q.target),tm=mod(q.target,60);if(hour!==th&&minute!==tm)return 'Periksa kedua-dua jarum. Cuba pusing lagi!';if(hour!==th)return 'Minit sudah tepat. Betulkan jarum pendek.';return 'Jam sudah tepat. Betulkan jarum panjang.'}
  if(w==='digital')return 'Jam digital menunjukkan '+f24(c)+'. Semak semula.';
+ if(w==='choice')return 'Belum tepat. Fikir urutan hari, bulan atau peristiwa dalam sehari.';
  if(w==='durasi')return 'Tempoh kamu '+fDur(c)+'. '+(q.noTime?'Ingat: 60 minit = 1 jam.':(c<q.target?'Lengkok belum sampai tanda ●.':'Lengkok sudah melepasi tanda ●.'));
  return 'Jawapan kamu '+c+' '+q.unitLbl+'. Cuba kira semula.'}
 
@@ -721,6 +789,7 @@ function makeQ(){
  else{k=cfg.modes[served%cfg.modes.length];tiers=GRADES[cfg.grade][k];if(tier[k]==null){tier[k]=0;clean[k]=0}ti=Math.min(tier[k],tiers.length-1)}
  const p=choosePet();generated=GEN[k](tiers[ti]);
  const result={mode:k,tierIx:ti,nTiers:tiers.length,pet:p.id,who:p.who,...generated};
+ if(result.kssrSP)result.kssr={source:'KSSR_SEMAKAN_2017',grade:cfg.grade,standardPembelajaran:result.kssrSP};
  if(spec){
   const detail=k==='baca'?String(result.target):k==='unit'?String(result.target):k==='tamat'?String(result.s)+'+'+String(result.d):String(result.s)+'+'+String(result.target);
   const fingerprint=spec.family+':'+spec.id+':'+detail;
@@ -729,14 +798,14 @@ function makeQ(){
  }
  return result;
 }
-const SUB0={analog:q=>q.hideRead?'Pilih jarum, kemudian seret pada muka jam.':'Kira dulu, pilih jarum, kemudian seret pada muka jam.',digital:()=>'Tekan − + untuk jam dan minit.',durasi:q=>q.noTime?'Tetapkan jam dan minit.':'Tambah tempoh sehingga lengkok sampai tanda ●.',nombor:()=>'Taip jawapan pada pad.'};
+const SUB0={analog:q=>q.hideRead?'Sentuh dan seret jarum pada muka jam.':'Kira dulu, kemudian sentuh dan seret jarum yang betul.',digital:()=>'Tekan − + untuk jam dan minit.',durasi:q=>q.noTime?'Tetapkan jam dan minit.':'Tambah tempoh sehingga lengkok sampai tanda ●.',nombor:()=>'Taip jawapan pada pad.',choice:()=>'Pilih jawapan yang paling tepat.'};
 const SUB=SUB0;
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;el('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  el('stageN').textContent='TREN '+(done?lit:pos+1)+'/'+SET;el('towerLbl').textContent='Syif '+towers;el('stars').textContent=stars;el('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');el('power').classList.toggle('lit',lit===SET)}
 const DEST=['Kampung Dimensi','Kuala Lumpur','Johor Bahru','Ipoh','Kota Bharu','Melaka','Kuantan','Alor Setar','Seremban','Kuching'];
 function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
  el('devBtn').hidden=!devToolsEnabled;
- el('devBtn').textContent='D'+cfg.grade+' ▾';el('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);el('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a77','#6a7ad055'][served%SET];
+ el('devBtn').textContent='D'+cfg.grade+' ▾';el('mode').textContent=(cfg.grade===1&&q.mode==='kalendar'?'HARI & BULAN':MODE_LABEL[q.mode])+' · T'+(q.tierIx+1);el('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a77','#6a7ad055'][served%SET];
  el('question').textContent=plain(q.parts)+(q.ask&&!q.noTime?' '+q.ask:'');el('subtitle').textContent=served<2?SUB[q.widget](q):'';
  el('wiraImg').src=A+'wira-konduktor-idle.webp';el('wira').classList.remove('cheer');el('stamp').className='stamp';el('stamp').innerHTML='';
  el('check').textContent='Semak';el('check').disabled=false;el('hint').disabled=false;el('hint').textContent='Tanya Wira';el('bubble').classList.add('hide');
@@ -750,7 +819,7 @@ function check(){
  if(current()===null){msg('Masukkan jawapan dulu.','',2000);return}
  if(!isRight()){misses++;say(pick(['Belum tepat lagi…','Hmm, cuba semak semula.']));msg(wrongMsg(),'bad',3600);pet('sad');const bs=el('bstat');bs.textContent='TERTUNDA';bs.className='bstat late';setTimeout(()=>{if(!solved){bs.textContent='MENUNGGU';bs.className='bstat'}},1400);const v=el('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(245,.17);return}
  solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);
- if(!focusDiagnosticMode&&focusNonce&&window.parent!==window){const archetypeId=focusArchetypes[q.mode]||'time_practice';window.parent.postMessage({type:'PA_TREN_JAM_ROUND',version:1,nonce:focusNonce,grade:cfg.grade,skillId:focusOriginSkill,mode:q.mode,archetypeId,questionKey:focusNonce+':'+served+':'+q.mode,misses,hints,at:Date.now()},location.origin)}
+ if(!focusDiagnosticMode&&focusNonce&&window.parent!==window){const archetypeId=q.archetypeId||focusArchetypes[q.mode]||'time_practice';window.parent.postMessage({type:'PA_TREN_JAM_ROUND',version:1,nonce:focusNonce,grade:cfg.grade,skillId:focusOriginSkill,mode:q.mode,archetypeId,kssr:q.kssr||null,questionKey:focusNonce+':'+served+':'+q.mode,misses,hints,at:Date.now()},location.origin)}
  if(focusDiagnosticMode&&q.focusDiagnosticV1){
   const tag=q.focusDiagnosticV1,key=tag.evidence.variantFingerprint;
   if(!focusProbeKeys.has(key)){focusProbeKeys.add(key);focusObservations.push({purpose:'contrast',family:tag.diagnosticFamily,probe:key,result:misses===0&&hints===0?'independent':hints>0?'assisted':'corrected'})}
