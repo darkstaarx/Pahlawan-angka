@@ -174,8 +174,11 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .purse{display:flex;justify-content:space-between;align-items:flex-end;gap:4px;margin-top:4px;padding:7px 6px 5px;background:linear-gradient(180deg,#8b5530,#6d3e1f);border-radius:14px;border:3px solid var(--wood-dk);box-shadow:inset 0 4px 0 #ffffff1c}
 .money{appearance:none;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;touch-action:manipulation;flex:1;min-width:0}
 .money small{font:800 10px/1 var(--f-body);color:#ffe7bd;white-space:nowrap}
-.mat .tok{appearance:none;border:0;background:none;padding:0;cursor:pointer;animation:drop .3s cubic-bezier(.3,1.6,.5,1)}
+.mat .tok{appearance:none;border:0;background:none;padding:0;cursor:pointer;animation:coinLand .48s cubic-bezier(.2,1.5,.4,1)}
 .cash{display:block;height:auto;max-width:none;filter:drop-shadow(0 2px 1px #0006);transition:transform .1s}
+.money-flight{position:fixed;z-index:80;pointer-events:none;transform-origin:center;filter:drop-shadow(0 8px 5px #28170c66)}
+.money-flight img{display:block;width:100%;height:100%;object-fit:contain}
+.money-land{animation:coinSettle .42s cubic-bezier(.2,1.5,.4,1)}
 .money:active .cash{transform:translateY(2px) scale(.94)}
 .cash.c10{width:36px}.cash.c20{width:39px}.cash.c50{width:42px}.cash.n{width:60px}
 .mat .tok .cash.c10{width:30px}.mat .tok .cash.c20{width:33px}.mat .tok .cash.c50{width:36px}.mat .tok .cash.n{width:52px}
@@ -243,6 +246,8 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 @keyframes wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg)}70%{transform:rotate(5deg)}}
 @keyframes plop{from{transform:translateY(-20px) scale(.6)}to{transform:none}}
 @keyframes drop{from{transform:translateY(-14px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+@keyframes coinLand{0%{transform:translateY(-34px) scale(.78) rotate(-14deg);opacity:.35}62%{transform:translateY(3px) scale(1.08) rotate(5deg);opacity:1}82%{transform:translateY(-2px) scale(.98) rotate(-2deg)}100%{transform:none}}
+@keyframes coinSettle{0%{transform:scale(.75) rotate(-10deg)}55%{transform:scale(1.16) rotate(5deg)}78%{transform:scale(.94) rotate(-2deg)}100%{transform:none}}
 @keyframes bump{40%{transform:scale(1.18)}}
 @keyframes glow{0%,100%{filter:drop-shadow(0 0 0 #ffd23f)}50%{filter:drop-shadow(0 0 10px #ffd23f) drop-shadow(0 0 4px #fff)}}
 @keyframes stampIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(2.4)}60%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(1)}}
@@ -734,7 +739,7 @@ function banner(){const md=M();
 function drawShelf(){const sh=$('shelf');sh.innerHTML='';products.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='item'+(picked.includes(p.id)?' picked':'');b.dataset.id=p.id;b.setAttribute('aria-pressed',picked.includes(p.id));b.setAttribute('aria-label',p.name+' '+money(p.price));
  b.innerHTML='<span class="art">'+ART[p.id]+'</span><span class="tagp">'+money(p.price)+'</span><span class="nm">'+p.name+'</span>';b.onclick=()=>togglePick(p.id,b);sh.appendChild(b)})}
 function drawBasket(){$('basketIn').innerHTML=picked.map(id=>ART[id]).join('')+(picked.length&&m.qty>1?'<b class="qtyb">×'+m.qty+'</b>':'')}
-function drawPurse(){const pu=$('purse');pu.innerHTML='';denoms.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='money';b.setAttribute('aria-label','Letak '+d.l);b.innerHTML=cash(d)+'<small>'+d.l+'</small>';b.onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSplit].push(d.v);else mat.push(d.v);sfx.coin();drawMat()};pu.appendChild(b)})}
+function drawPurse(){const pu=$('purse');pu.innerHTML='';denoms.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='money';b.setAttribute('aria-label','Letak '+d.l);b.innerHTML=cash(d)+'<small>'+d.l+'</small>';b.onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSplit].push(d.v);else mat.push(d.v);sfx.coin();drawMat();animateMoneyPlacement(b,d.v)};pu.appendChild(b)})}
 function drawSharePiles(){
  const el=$('mat');el.classList.add('split-layout');
  el.querySelectorAll('.tok,.share-trays').forEach(t=>t.remove());
@@ -751,8 +756,26 @@ function drawSharePiles(){
  $('matSum').textContent=money(splitPiles.flat().reduce((a,b)=>a+b,0))
 }
 function drawMat(){if(m.mode==='bahagi'){drawSharePiles();return}const el=$('mat');el.classList.remove('split-layout');el.querySelectorAll('.share-trays,.tok').forEach(t=>t.remove());$('matEmpty').hidden=mat.length>0;
- [...mat].map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v).forEach(({v,i})=>{const d=denoms.find(x=>x.v===v),b=document.createElement('button');b.type='button';b.className='tok';b.title='Sentuh untuk ambil semula';b.setAttribute('aria-label','Ambil semula '+d.l);b.innerHTML=cash(d);b.onclick=()=>{mat.splice(i,1);sfx.pop();drawMat()};el.appendChild(b)});
+ [...mat].map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v).forEach(({v,i})=>{const d=denoms.find(x=>x.v===v),b=document.createElement('button');b.type='button';b.className='tok';b.dataset.value=String(v);b.title='Sentuh untuk ambil semula';b.setAttribute('aria-label','Ambil semula '+d.l);b.innerHTML=cash(d);b.onclick=()=>{mat.splice(i,1);sfx.pop();drawMat()};el.appendChild(b)});
  $('matSum').textContent=money(mat.reduce((a,b)=>a+b,0))}
+function animateMoneyPlacement(source,value){
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const sourceImg=source.querySelector('.cash');
+ const target=m.mode==='bahagi'?$('mat').querySelector('.share-slot.selected .smallcoins img:last-child'):[...$('mat').querySelectorAll('.tok')].reverse().find(token=>token.dataset.value===String(value))?.querySelector('.cash');
+ if(!sourceImg||!target)return;
+ target.classList.remove('money-land');void target.offsetWidth;target.classList.add('money-land');
+ if(reduced||!sourceImg.animate)return;
+ const from=sourceImg.getBoundingClientRect(),to=target.getBoundingClientRect(),ghost=sourceImg.cloneNode(true);
+ const flight=document.createElement('span');flight.className='money-flight';
+ Object.assign(flight.style,{left:from.left+'px',top:from.top+'px',width:from.width+'px',height:from.height+'px'});flight.appendChild(ghost);document.body.appendChild(flight);
+ const dx=to.left+to.width/2-(from.left+from.width/2),dy=to.top+to.height/2-(from.top+from.height/2);
+ const anim=flight.animate([
+  {transform:'translate3d(0,0,0) scale(1) rotate(0deg)',opacity:1,offset:0},
+  {transform:`translate3d(${dx*.45}px,${dy*.45-26}px,0) scale(.82) rotate(185deg)`,opacity:1,offset:.58},
+  {transform:`translate3d(${dx}px,${dy}px,0) scale(.58) rotate(360deg)`,opacity:.12,offset:1}
+ ],{duration:420,easing:'cubic-bezier(.2,.72,.28,1)',fill:'forwards'});
+ anim.onfinish=()=>flight.remove();anim.oncancel=()=>flight.remove();
+}
 function drawSign(){const need=!!(M().needSign&&M().needSign(m));$('signRow').hidden=!need;$('countHint').hidden=need;
  document.querySelectorAll('#signRow button').forEach(b=>{b.classList.toggle('on',b.dataset.sign===sign);b.setAttribute('aria-pressed',b.dataset.sign===sign)})}
 function drawReceipt(){$('receipt').innerHTML=M().receipt(m);
