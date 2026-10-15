@@ -19,7 +19,7 @@ const PA_AUDIO={
 };
 const PA_AUDIO_CACHE={};
 const PA_VOLUME_SCALE=.8;
-const PA_BATTLE_MUSIC_VOLUME=.024; // 70% lower than prior mix
+const PA_BATTLE_MUSIC_VOLUME=.08; // Moderate level; the previous 0.024 mix was barely audible on phones.
 const PA_BATTLE_MUSIC_RATE=1; // PAMusic already authored at the intended slower tempo
 const PA_VICTORY_STINGER_VOLUME=.82;
 const PA_VICTORY_MUSIC_FADE_MS=1200;
@@ -127,8 +127,7 @@ function setBattleAudioMode(mode='off'){
   clearInterval(PA_BATTLE_AUDIO.bossTimer);PA_BATTLE_AUDIO.bossTimer=null;
   if(!paAudioUnlocked)return;
   const ctx=ensureBattleAudio();if(!ctx)return;if(ctx.state==='suspended')ctx.resume().catch(()=>{});
-  /* Battle biasa ialah ambience sahaja: daun, angin dan hidupan hutan jauh.
-     Muzik/synth hanya masuk secara terkawal semasa boss. */
+  /* PAMusic runs through regular and boss battles; the boss layer adds a light synth cue. */
   const activeMode=paMuted?'off':mode,now=ctx.currentTime,fade=1.2,target=(activeMode==='off'?0:.32)*PA_VOLUME_SCALE;PA_BATTLE_AUDIO.master.gain.cancelScheduledValues(now);PA_BATTLE_AUDIO.master.gain.setTargetAtTime(target,now,fade/3);
   if(activeMode==='off'){clearBattleMusicFade();stopBattleVictoryStinger();stopBattleMusic()}else if(!PA_BATTLE_AUDIO.victoryActive&&(previous==='off'||!PA_BATTLE_AUDIO.music?.src||PA_BATTLE_AUDIO.music?.paused)){playNextBattleMusic()}
   fadeForestAmbience(0);
