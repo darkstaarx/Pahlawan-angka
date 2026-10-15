@@ -36,6 +36,7 @@ function next(){
  if(step<4){step++;render()}
 }
 function back(){if(busy)return;if(storyIndex!==null){if(storyIndex>0){storyIndex--;renderLore()}return}if(step>1){step--;render()}else if(draft?.source==='profile-manager')window.PAProfileManager?.open?.();else screen('setup')}
+function setLoreMusic(playing){if(typeof window.setBattleAudioMode==='function')window.setBattleAudioMode(playing?'ambient':'off')}
 function chooseTime(n){draft.daily=n;draft.session=n;render()}
 function customTime(value){const n=Number(value),label=$('obCustomTime')?.closest('.customTimeField');if(Number.isFinite(n)){draft.daily=n;draft.session=n}label?.classList.toggle('active',value!=='')}
 function chooseGoal(id){if(goals[id])draft.goal=id;render()}
@@ -74,13 +75,16 @@ async function finish(){
 function waitForChild(){return new Promise((resolve,reject)=>{let tries=0;const timer=setInterval(()=>{const s=window.PACloud?.state;if(s?.childId&&!s.needsOnboarding){clearInterval(timer);resolve()}else if(++tries>60){clearInterval(timer);reject(new Error('child profile timeout'))}},150)})}
 function renderLore(){
  const scene=loreScenes[storyIndex];if(!scene)return;
+ setLoreMusic(true);
  $('onboardingStepLabel').textContent=`Kisah pembuka · ${storyIndex+1} daripada 4`;
  $('onboardingProgressFill').style.width=`${(storyIndex+1)*25}%`;
  const backButton=document.querySelector('#guardianOnboarding .onboardingHead button');if(backButton)backButton.disabled=storyIndex===0;
  field().innerHTML=`<div class="onboardingLore"><div class="onboardingLoreTag">${scene.tag}</div><img class="onboardingLoreImage" src="${scene.image}" alt="${scene.alt}"><div class="onboardingLoreCopy"><div class="eyebrow">${scene.eyebrow}</div><h1>${scene.title}</h1><p>${scene.text}</p></div><div class="onboardingLoreNav"><button class="btn secondary" onclick="PAOnboarding.back()" ${storyIndex===0?'disabled':''}>Sebelum</button><button class="btn primary" onclick="PAOnboarding.nextLore()">${storyIndex===3?'Teruskan ke Misi':'Seterusnya'}</button></div><div class="onboardingLoreCount">${String(storyIndex+1).padStart(2,'0')} / 04</div></div>`;
 }
-function nextLore(){if(storyIndex===null)return;if(storyIndex<loreScenes.length-1){storyIndex++;renderLore();return}storyIndex=null;$('onboardingStepLabel').textContent='Langkah 4 daripada 4';$('onboardingProgressFill').style.width='100%';const backButton=document.querySelector('#guardianOnboarding .onboardingHead button');if(backButton)backButton.disabled=false;field().innerHTML=`<div class="onboardingIcon heroReady">⚔️</div><div class="eyebrow">UNTUK ${escapeHtml(draft.name).toUpperCase()}</div><h1>Misi Pengenalan menanti!</h1><p>Ini bukan peperiksaan. Cikgu Dimensi akan mencari tahap yang paling sesuai melalui beberapa cabaran ringkas.</p><ul class="introPromises"><li>Jawab ikut kemampuan sendiri</li><li>Petunjuk boleh digunakan</li><li>Tiada markah gagal</li></ul><button class="btn primary" onclick="PAOnboarding.startIntro()">Mulakan Misi Pengenalan</button>`}
-function startIntro(){if(!db)return;db.onboarding.introPending=false;db.onboarding.introActive=true;db.onboarding.introStartedAt=Date.now();save();startMission(null)}
+function nextLore(){if(storyIndex===null)return;if(storyIndex<loreScenes.length-1){setLoreMusic(true);storyIndex++;renderLore();return}storyIndex=null;setLoreMusic(false);$('onboardingStepLabel').textContent='Langkah 4 daripada 4';$('onboardingProgressFill').style.width='100%';const backButton=document.querySelector('#guardianOnboarding .onboardingHead button');if(backButton)backButton.disabled=false;field().innerHTML=`<div class="onboardingIcon heroReady">⚔️</div><div class="eyebrow">UNTUK ${escapeHtml(draft.name).toUpperCase()}</div><h1>Misi Pengenalan menanti!</h1><p>Ini bukan peperiksaan. Cikgu Dimensi akan mencari tahap yang paling sesuai melalui beberapa cabaran ringkas.</p><ul class="introPromises"><li>Jawab ikut kemampuan sendiri</li><li>Petunjuk boleh digunakan</li><li>Tiada markah gagal</li></ul><button class="btn primary" onclick="PAOnboarding.startIntro()">Mulakan Misi Pengenalan</button>`}
+function startIntro(){setLoreMusic(false);if(!db)return;db.onboarding.introPending=false;db.onboarding.introActive=true;db.onboarding.introStartedAt=Date.now();save();startMission(null)}
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 window.PAOnboarding={begin,beginProfile,beginExisting,next,back,chooseTime,customTime,chooseGoal,chooseAvatar,finish,startIntro,nextLore};
+document.addEventListener('visibilitychange',()=>{if(storyIndex!==null)setLoreMusic(!document.hidden)});
+document.addEventListener('pa-audio-mute-change',event=>{if(storyIndex!==null)setLoreMusic(!document.hidden&&!event.detail?.muted)});
 })();

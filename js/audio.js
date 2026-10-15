@@ -214,6 +214,7 @@ function playSidmaSfx(cue){
 function toggleSound(){
   paMuted=!paMuted; localStorage.setItem('pa_muted',paMuted?'1':'0');
   updateSoundButtons();if(paMuted)setBattleAudioMode('off');else{unlockSfx();syncBattleAudio();playSfx('ui');}
+  document.dispatchEvent(new CustomEvent('pa-audio-mute-change',{detail:{muted:paMuted}}));
 }
 function updateSoundButtons(){
   document.querySelectorAll('[data-sound-toggle]').forEach(b=>b.textContent=paMuted?'🔇':'🔊');
