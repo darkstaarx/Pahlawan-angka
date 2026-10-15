@@ -1,0 +1,86 @@
+/* Shared HTML/CSS 2.5D staging for Focus mini-game scenes.
+   Wira reads as the foreground guide; each companion stays visibly smaller. */
+.scene {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+.scene .wira {
+  width: clamp(108px, 40cqh, 150px) !important;
+  left: clamp(8px, 1.5%, 18px) !important;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 8px 5px #10233b55);
+}
+
+.scene .wira,
+.scene .customer,
+.scene .pet {
+  transform-style: preserve-3d;
+}
+
+.scene .customer,
+.scene .pet {
+  width: clamp(70px, 24cqh, 94px) !important;
+  right: clamp(8px, 2%, 20px) !important;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 7px 5px #10233b55);
+}
+
+.scene .wira::before,
+.scene .customer::before,
+.scene .pet::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 14%;
+  right: 14%;
+  bottom: 1px;
+  height: clamp(8px, 8%, 17px);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #15253b66 0%, #15253b2b 48%, transparent 76%);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.scene .wira img,
+.scene .customer img,
+.scene .pet img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.scene .wira img {
+  translate: 0 0 14px;
+  rotate: y -2deg;
+}
+
+.scene .customer img,
+.scene .pet img {
+  translate: 0 0 -10px;
+  rotate: y 3deg;
+}
+
+@media (max-width: 520px) {
+  .scene .wira {
+    width: clamp(98px, 46cqh, 136px) !important;
+    left: 8px !important;
+  }
+
+  .scene .customer,
+  .scene .pet {
+    width: clamp(66px, 24cqh, 84px) !important;
+    right: 5px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene .wira img,
+  .scene .customer img,
+  .scene .pet img {
+    transform: none;
+  }
+}

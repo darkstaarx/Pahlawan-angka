@@ -242,7 +242,7 @@ const APP_SHELL=[
   './css/battlefield-motion-v3.7.2.css','./css/battlefield-depth-v3.7.3.css',
   './css/pet-monster-motion-v3.7.4.css','./css/mobile-battle-v3.7.5.css','./css/combat-fov-v3.7.6.css',
   './css/battle-flow-v3.7.7.css','./css/boss-motion-v3.7.9.css','./css/coach-mascot-v3.8.1.css',
-  './css/responsive-modes-v3.8.2.css','./css/responsive-layout-v1.css','./css/minigame-desktop-shell-v1.css','./css/pet-sizing-v3.8.21.css','./css/battle-polish-v3.8.22.css',
+  './css/responsive-modes-v3.8.2.css','./css/responsive-layout-v1.css','./css/minigame-desktop-shell-v1.css','./css/minigame-scene-depth-v1.css','./css/pet-sizing-v3.8.21.css','./css/battle-polish-v3.8.22.css',
   './css/battle-scene-v3.8.25.css','./css/coach-teaching-v3.8.26.css','./css/battle-scene-v3.8.27.css',
   './css/battle-scene-v3.8.28.css','./css/pwa-v3.8.29.css','./css/guardian-focus-v3.8.30.css','./css/hero-pose-normalization-v3.8.31.css','./css/battle-fix-v3.9.1.css','./css/battle-fix-v3.11.css','./css/pet-staging-v3.14.3.css',
   './css/sensory-learning-v3.19.0.css','./css/cikgu-manipulatives-v3.19.1.css','./css/daily-spaced-review-v3.20.0.css',
