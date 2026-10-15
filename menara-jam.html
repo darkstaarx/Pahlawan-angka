@@ -404,6 +404,16 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 @keyframes windowGlint{0%,58%,100%{transform:translateX(-115%)}72%{transform:translateX(115%)}}
 @media(max-width:520px){.scene #visitor{width:clamp(152px,78cqh,285px);right:5px}.scene .wira{width:clamp(104px,52cqh,138px)!important;left:8px!important}}
 @media(prefers-reduced-motion:reduce){.scene .wira,.car,.car .win.main::after{animation:none!important}.car{transform:perspective(900px) rotateY(-2deg)}}
+/* Keep the illustrated station at one scale across keypad, analogue and
+   duration questions. The analogue hands replace the old +/- adjustment row. */
+.scene{height:clamp(190px,39svh,360px)!important;min-height:clamp(190px,39svh,360px)!important;max-height:clamp(190px,39svh,360px);flex:0 0 clamp(190px,39svh,360px)!important}
+.pick{touch-action:manipulation}
+.clock-hand{pointer-events:stroke;cursor:grab;touch-action:none}
+.clock-hand .hand-hit{pointer-events:all;fill:transparent;stroke:transparent;cursor:grab}
+.clock-hand .hand-tip{pointer-events:all;cursor:grab;filter:drop-shadow(0 1px 1px #0005)}
+.clock-hand:active{cursor:grabbing}
+@media(max-height:700px){.scene{height:clamp(170px,34svh,260px)!important;min-height:clamp(170px,34svh,260px)!important;max-height:clamp(170px,34svh,260px);flex-basis:clamp(170px,34svh,260px)!important}}
+@media(min-width:720px){.scene{height:clamp(250px,39svh,360px)!important;min-height:clamp(250px,39svh,360px)!important;max-height:clamp(250px,39svh,360px);flex-basis:clamp(250px,39svh,360px)!important}}
 
 </style>
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
@@ -640,12 +650,14 @@ function buildClock(box){
  const gh=create('g',{id:'ghostH',opacity:0}),gm=create('g',{id:'ghostM',opacity:0});
  gh.append(create('line',{x1:120,y1:120,x2:120,y2:72,stroke:'#2f8fb0','stroke-width':7,'stroke-linecap':'round','stroke-dasharray':'6 5'}));
  gm.append(create('line',{x1:120,y1:120,x2:120,y2:38,stroke:'#2f8fb0','stroke-width':4,'stroke-linecap':'round','stroke-dasharray':'6 5'}));
- const hh=create('g',{id:'handHour'}),hm=create('g',{id:'handMinute'});
- hh.append(create('line',{x1:120,y1:137,x2:120,y2:72,stroke:'#4a2a16','stroke-width':12,'stroke-linecap':'round'}),create('line',{x1:120,y1:133,x2:120,y2:75,stroke:'#a07454','stroke-width':3,'stroke-linecap':'round'}));
- hm.append(create('line',{x1:120,y1:143,x2:120,y2:36,stroke:'#d2536b','stroke-width':8,'stroke-linecap':'round'}),create('line',{x1:120,y1:138,x2:120,y2:42,stroke:'#ffd0d8','stroke-width':2.5,'stroke-linecap':'round'}));
- svg.append(gh,gm,hh,hm,create('circle',{cx:120,cy:120,r:10,fill:'#4a2a16',stroke:'#ffc94a','stroke-width':4}),create('circle',{cx:120,cy:120,r:3,fill:'#fff6d4'}),create('circle',{cx:120,cy:120,r:105,fill:'transparent','pointer-events':'all'}));
+ const hh=create('g',{id:'handHour',class:'clock-hand hour-hand','aria-label':'Jarum pendek'}),hm=create('g',{id:'handMinute',class:'clock-hand minute-hand','aria-label':'Jarum panjang'});
+ hh.append(create('line',{x1:120,y1:137,x2:120,y2:72,stroke:'#4a2a16','stroke-width':12,'stroke-linecap':'round'}),create('line',{x1:120,y1:133,x2:120,y2:75,stroke:'#a07454','stroke-width':3,'stroke-linecap':'round'}),create('circle',{cx:120,cy:72,r:15,class:'hand-hit'}),create('circle',{cx:120,cy:72,r:6,fill:'#4a2a16',stroke:'#ffc94a','stroke-width':2,class:'hand-tip'}));
+ hm.append(create('line',{x1:120,y1:143,x2:120,y2:36,stroke:'#d2536b','stroke-width':8,'stroke-linecap':'round'}),create('line',{x1:120,y1:138,x2:120,y2:42,stroke:'#ffd0d8','stroke-width':2.5,'stroke-linecap':'round'}),create('circle',{cx:120,cy:36,r:15,class:'hand-hit'}),create('circle',{cx:120,cy:36,r:5,fill:'#d2536b',stroke:'#fff4df','stroke-width':2,class:'hand-tip'}));
+ svg.append(create('circle',{cx:120,cy:120,r:105,fill:'transparent','pointer-events':'all'}),gh,gm,hm,hh,create('circle',{cx:120,cy:120,r:10,fill:'#4a2a16',stroke:'#ffc94a','stroke-width':4}),create('circle',{cx:120,cy:120,r:3,fill:'#fff6d4'}));
  if(clockMode==='set'){svg.classList.add('drag');
-  svg.addEventListener('pointerdown',ev=>{if(solved)return;dragging=true;svg.setPointerCapture(ev.pointerId);dial(ev)});
+  svg.addEventListener('pointerdown',ev=>{if(solved)return;
+   const hand=ev.target.closest?.('.clock-hand');if(hand)choose(hand.id==='handHour'?'h':'m');
+   dragging=true;svg.setPointerCapture(ev.pointerId);dial(ev)});
   svg.addEventListener('pointermove',ev=>{if(dragging&&!solved)dial(ev)});
   svg.addEventListener('pointerup',()=>dragging=false);svg.addEventListener('pointercancel',()=>dragging=false)}}
 function rot(id,deg){const n=el(id);if(n)n.setAttribute('transform','rotate('+deg+' 120 120)')}
@@ -661,7 +673,7 @@ function dial(ev){const svg=el('clock'),b=svg.getBoundingClientRect(),x=(ev.clie
 function updateAnalog(){drawHands(hour,minute);if(el('digital'))el('digital').textContent=q.hideRead?'?:??':hour+':'+pad(minute);
  el('clock').setAttribute('aria-label','Jam menunjukkan '+hour+' jam '+minute+' minit')}
 function adjust(d){if(solved)return;const t=mod((hour%12)*60+minute+d,720);hour=Math.floor(t/60)||12;minute=t%60;sfx(440,.045);updateAnalog();hideMsg()}
-function choose(h){selHand=h;el('pickH').classList.toggle('selected',h==='h');el('pickM').classList.toggle('selected',h==='m');sfx(520,.045)}
+function choose(h){selHand=h;el('pickH').classList.toggle('selected',h==='h');el('pickM').classList.toggle('selected',h==='m');el('pickH').setAttribute('aria-pressed',h==='h');el('pickM').setAttribute('aria-pressed',h==='m');sfx(520,.045)}
 
 /* ---------- pembina kawalan ---------- */
 function adj(id,label,unit,minus,plus){return '<div class="adjust"><button class="change" id="'+id+'-" aria-label="Kurang '+label+'">−</button><small>'+label+'<b>'+unit+'</b></small><button class="change" id="'+id+'+" aria-label="Tambah '+label+'">+</button></div>'}
@@ -672,10 +684,9 @@ function updDur(){const tot=dur.h*60+dur.m;el('durVal').textContent=fDur(tot);
  if(el('clock')){const t=q.s+tot;rot('ghostH',(mod(t,720)/60)*30);rot('ghostM',mod(t,60)*6);el('ghostH').setAttribute('opacity',tot?1:0);el('ghostM').setAttribute('opacity',tot?1:0);el('arc').setAttribute('d',arcPath(q.s,q.s+tot,arcK()))}}
 function buildWidget(){const w=q.widget,box=el('widget'),ctl=el('controls');box.innerHTML='';ctl.innerHTML='';ctl.hidden=false;
  if(w==='analog'){clockMode='set';hour=Math.floor(mod(q.start,720)/60)||12;minute=mod(q.start,60);selHand='m';buildClock(box);
-  box.insertAdjacentHTML('beforeend','<div class="clock-info"><span>JAM KAMU</span><b id="digital"></b><span>'+(q.hideRead?'baca jarum':'↻')+'</span></div><div class="picks"><button class="pick" id="pickH"><span>◆</span> JARUM PENDEK</button><button class="pick selected" id="pickM"><span>◆</span> JARUM PANJANG</button></div>');
+  box.insertAdjacentHTML('beforeend','<div class="clock-info"><span>JAM KAMU</span><b id="digital"></b><span>'+(q.hideRead?'PILIH & SERET JARUM':'↻')+'</span></div><div class="picks"><button class="pick" id="pickH" aria-pressed="false"><span>◆</span> JARUM PENDEK</button><button class="pick selected" id="pickM" aria-pressed="true"><span>◆</span> JARUM PANJANG</button></div>');
   el('pickH').onclick=()=>choose('h');el('pickM').onclick=()=>choose('m');
-  ctl.innerHTML=adj('ah','PUTAR JAM','1 jam')+adj('am','PUTAR MINIT','5 min');
-  el('ah-').onclick=()=>adjust(-60);el('ah+').onclick=()=>adjust(60);el('am-').onclick=()=>adjust(-5);el('am+').onclick=()=>adjust(5);
+  ctl.hidden=true;
   updateAnalog()}
  else if(w==='durasi'){dur={h:0,m:0};
   if(!q.noTime){clockMode='model';buildClock(box);drawHands(Math.floor(mod(q.s,720)/60),mod(q.s,60));
@@ -718,7 +729,7 @@ function makeQ(){
  }
  return result;
 }
-const SUB0={analog:q=>q.hideRead?'Seret jarum atau guna butang di bawah.':'Kira dulu, kemudian laraskan jarum.',digital:()=>'Tekan − + untuk jam dan minit.',durasi:q=>q.noTime?'Tetapkan jam dan minit.':'Tambah tempoh sehingga lengkok sampai tanda ●.',nombor:()=>'Taip jawapan pada pad.'};
+const SUB0={analog:q=>q.hideRead?'Pilih jarum, kemudian seret pada muka jam.':'Kira dulu, pilih jarum, kemudian seret pada muka jam.',digital:()=>'Tekan − + untuk jam dan minit.',durasi:q=>q.noTime?'Tetapkan jam dan minit.':'Tambah tempoh sehingga lengkok sampai tanda ●.',nombor:()=>'Taip jawapan pada pad.'};
 const SUB=SUB0;
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;el('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  el('stageN').textContent='TREN '+(done?lit:pos+1)+'/'+SET;el('towerLbl').textContent='Syif '+towers;el('stars').textContent=stars;el('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');el('power').classList.toggle('lit',lit===SET)}
