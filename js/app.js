@@ -269,9 +269,9 @@ function applyEnemyVariant(forceReset=false){
 function nextEnemy(){ sess.enemy=(sess.enemy||1)+1;applyEnemyVariant(true); }
 function goLogin(){ screen('login'); refreshLoginResume(); if(typeof updateSoundButtons==='function')updateSoundButtons(); }
 // Read the guardian's existing PIN even while the guest demo owns temporary db state.
-function pageLockParentPin(){const pin=db?.parentPin||window.PADemo?.parentPin?.();if(pin)return pin;try{return localStorage.getItem('pa_guardian_pin_v1')||null}catch(_){return null}}
+function pageLockParentPin(){const cloud=window.PACloud,cloudUser=!!cloud?.state?.user,localBelongs=!cloudUser||!!db?.cloudChildId&&!!cloud?.state?.profiles?.some(profile=>profile.id===db.cloudChildId);const pin=(localBelongs?db?.parentPin:null)||cloud?.guardianPin?.()||(!cloudUser?window.PADemo?.parentPin?.():null);if(pin)return pin;if(cloudUser)return null;try{return localStorage.getItem('pa_guardian_pin_v1')||null}catch(_){return null}}
 // First-time setup only. Existing PINs must use the parent recovery flow to change.
-function createPageLockParentPin(pin){if(!/^\d{4}$/.test(pin)||pageLockParentPin())return false;if(db?.demoMode&&window.PADemo?.setParentPin?.(pin))return true;if(db&&!db.demoMode){db.parentPin=pin;save();return true}localStorage.setItem('pa_guardian_pin_v1',pin);return true}
+function createPageLockParentPin(pin){if(!/^\d{4}$/.test(pin)||pageLockParentPin())return false;if(db?.demoMode&&window.PADemo?.setParentPin?.(pin))return true;if(db&&!db.demoMode){db.parentPin=pin;window.PACloud?.setGuardianPin?.(pin);save();return true}localStorage.setItem('pa_guardian_pin_v1',pin);window.PACloud?.setGuardianPin?.(pin);return true}
 function goSetup(){ if(db){ const child=document.getElementById('child'), grade=document.getElementById('gradeSelect'); if(child) child.value=db.name||''; if(grade) grade.value=String(db.schoolGrade||2); selectedHero=db.hero||selectedHero||'wira'; chooseAvatar(db.avatar_id||PA_DEFAULT_AVATAR); } setupAvatarPicker(); screen('setup') }
 function goSetupAsGuest(){ if(typeof playSfx==='function')playSfx('ui'); screen('setup') }
 function setLoginError(msg=''){ const e=document.getElementById('loginError'); if(e){e.textContent=msg;e.classList.toggle('show',!!msg)} }
@@ -325,7 +325,7 @@ async function recoverParentPin(){
   const fail=message=>{if(err){err.textContent=message;err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong')};
   if(!/^\S+@\S+\.\S+$/.test(email))return fail('Masukkan e-mel penjaga yang sah.');if(!/^\d{4}$/.test(pin))return fail('PIN baharu mesti mempunyai 4 digit.');if(pin!==confirmPin)return fail('PIN baharu tidak sepadan.');
   if(button){button.disabled=true;button.textContent='Mengesahkan…'}if(err){err.textContent='';err.classList.remove('show')}
-  try{if(!await window.PACloud?.confirmGuardianEmail?.(email))return fail('E-mel tidak sepadan dengan akaun penjaga yang sedang log masuk.');db.parentPin=pin;save();await window.PACloud?.syncSaveNow?.();hideParentPinRecovery();const main=document.getElementById('parentPinError');if(main){main.textContent='PIN baharu berjaya disimpan. Masukkan PIN untuk meneruskan.';main.classList.add('show','success')}document.getElementById('parentPinInput')?.focus();if(typeof playSfx==='function')playSfx('ui')}catch(error){console.error(error);fail('Pengesahan belum berjaya. Semak sambungan dan cuba semula.')}finally{if(button){button.disabled=false;button.textContent='Simpan PIN baharu'}}
+  try{if(!await window.PACloud?.confirmGuardianEmail?.(email))return fail('E-mel tidak sepadan dengan akaun penjaga yang sedang log masuk.');db.parentPin=pin;window.PACloud?.setGuardianPin?.(pin);save();await window.PACloud?.syncSaveNow?.();hideParentPinRecovery();const main=document.getElementById('parentPinError');if(main){main.textContent='PIN baharu berjaya disimpan. Masukkan PIN untuk meneruskan.';main.classList.add('show','success')}document.getElementById('parentPinInput')?.focus();if(typeof playSfx==='function')playSfx('ui')}catch(error){console.error(error);fail('Pengesahan belum berjaya. Semak sambungan dan cuba semula.')}finally{if(button){button.disabled=false;button.textContent='Simpan PIN baharu'}}
 }
 function verifyParentPin(){
   const input=document.getElementById('parentPinInput'),err=document.getElementById('parentPinError');
@@ -333,7 +333,7 @@ function verifyParentPin(){
   if(!/^\d{4}$/.test(pin)){if(err){err.textContent='Masukkan 4 digit PIN.';err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong');return;}
   const expected=pageLockParentPin();
   if(expected&&pin!==expected){if(err){err.textContent='PIN tidak tepat.';err.classList.add('show')}if(typeof playSfx==='function')playSfx('wrong');return;}
-  if(!db.parentPin){db.parentPin=pin;save();}
+  if(!db.parentPin){db.parentPin=pin;window.PACloud?.setGuardianPin?.(pin);save();}
   uiSession={role:'parent',email:'parent@demo.com',ts:Date.now(),pinVerified:true};localStorage.setItem('pa_dummy_login',JSON.stringify(uiSession));
   if(typeof playSfx==='function')playSfx('ui');renderParent();screen('parent');
 }

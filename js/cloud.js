@@ -4,7 +4,7 @@
   const KEY='sb_publishable_xVRVgrb4EP6RnFv_p6WI_g_u67xGW6C';
   const ACTIVE_SCREENS=new Set(['hub','missions','treasure','game','learning','result']);
   const IDLE_AFTER_MS=120000;
-  const state={client:null,user:null,childId:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
+  const state={client:null,user:null,childId:null,guardianPin:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
   function setAppLoading(on,text){
     const el=$('appLoading');if(!el)return;
@@ -72,7 +72,7 @@
   }
 
   async function signedIn(session){
-    state.user=session?.user||null;if(!state.user)return;
+    const incoming=session?.user||null;if(state.user?.id!==incoming?.id){state.guardianPin=null;state.profiles=[];state.childId=null}state.user=incoming;if(!state.user)return;
     message('');
     try{if(window.PABetaTrust&&!await window.PABetaTrust.ensureConsent(state.client,state.user))return}catch(error){console.warn('Consent check failed',error);message('Persetujuan penjaga belum dapat disahkan. Semak sambungan dan cuba semula.',true);return}
     await resumeAfterConsent();
@@ -94,11 +94,19 @@
     const profiles=result.data||[];
     let saves=[];
     if(profiles.length){
-      const saveResult=await state.client.from('game_saves').select('child_id,avatar_id:state->>avatar_id').in('child_id',profiles.map(p=>p.id));
-      if(saveResult.error)console.warn('Cloud profile avatars unavailable',saveResult.error);
-      else saves=saveResult.data||[];
+      let saveResult=await state.client.from('game_saves').select('child_id,avatar_id:state->>avatar_id,parent_pin:state->>parentPin').in('child_id',profiles.map(p=>p.id));
+      if(saveResult.error){
+        // Older PostgREST schemas may reject JSON selectors; the state column
+        // is stable, so fall back to reading it and extract the same values.
+        saveResult=await state.client.from('game_saves').select('child_id,state').in('child_id',profiles.map(p=>p.id));
+        if(saveResult.error)console.warn('Cloud profile PINs and avatars unavailable',saveResult.error);
+        else saves=(saveResult.data||[]).map(row=>({child_id:row.child_id,avatar_id:row.state?.avatar_id,parent_pin:row.state?.parentPin}));
+      }else saves=saveResult.data||[];
     }
     const saveById=Object.fromEntries(saves.map(save=>[save.child_id,validAvatarId(save.avatar_id)]));
+    const localPin=String(db?.parentPin||'');
+    const localBelongsToFamily=profiles.some(p=>p.id===db?.cloudChildId);
+    state.guardianPin=/^\d{4}$/.test(localPin)&&localBelongsToFamily?localPin:(saves.find(save=>/^\d{4}$/.test(String(save.parent_pin||'')))?.parent_pin||null);
     state.profiles=profiles.map(p=>{
       const profileAvatar=validAvatarId(p.avatar_id);
       const profileHasAvatarField=Object.prototype.hasOwnProperty.call(p,'avatar_id');
@@ -139,6 +147,8 @@
     else if(!localMatches){db=null;}
     if(db){
       db.cloudChildId=childId;db.name=profile.display_name;db.schoolGrade=profile.grade;db.hero=profile.hero_id;
+      if(/^\d{4}$/.test(String(db.parentPin||'')))state.guardianPin=String(db.parentPin);
+      else if(/^\d{4}$/.test(String(state.guardianPin||''))){db.parentPin=String(state.guardianPin);scheduleSave()}
       const explicitProfileAvatar=profile?._avatarSource==='profile'&&validAvatarId(profile.avatar_id);
       if(!keepNewerLocal||explicitProfileAvatar)db.avatar_id=avatarId(profile.avatar_id??db.avatar_id);
       localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));
@@ -150,7 +160,7 @@
   }
 
   async function createBlankLocal(profile){
-    db={name:profile.display_name,schoolGrade:profile.grade,hero:profile.hero_id,avatar_id:avatarId(profile.avatar_id),cloudChildId:profile.id,skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};initAll();ensureProgression();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));await syncSaveNow();
+    db={name:profile.display_name,schoolGrade:profile.grade,hero:profile.hero_id,avatar_id:avatarId(profile.avatar_id),cloudChildId:profile.id,skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};if(/^\d{4}$/.test(String(state.guardianPin||'')))db.parentPin=String(state.guardianPin);initAll();ensureProgression();localStorage.setItem('pa_coach_v6_full',JSON.stringify(db));await syncSaveNow();
   }
 
   async function attachNewChild(){
@@ -299,7 +309,7 @@
     setInterval(tick,1000);document.addEventListener('pointerdown',markInteraction,{passive:true,capture:true});document.addEventListener('keydown',markInteraction,{passive:true,capture:true});document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else{state.lastTick=performance.now();markInteraction()}});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }
 
-  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,resumeAfterConsent,setLoading:setAppLoading,state};
+  window.PACloud={init,setAuthMode,submitAuth,signInGoogle,selectChild,attachNewChild,scheduleSave,syncSaveNow,renderParentControls,saveControls,saveOnboardingControls,confirmGuardianEmail,addChild,logout,resumeAfterConsent,guardianPin:()=>state.guardianPin,setGuardianPin(pin){if(/^\d{4}$/.test(String(pin||'')))state.guardianPin=String(pin)},setLoading:setAppLoading,state};
   init().catch(error=>{setAppLoading(false);console.error('Cloud init failed',error);message('Cloud tidak dapat disambungkan. Progress lokal masih selamat.',true)});
 })();
 

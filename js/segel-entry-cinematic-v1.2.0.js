@@ -1,4 +1,4 @@
-/* Pahlawan Angka — Demo v2 entry cinematic v1.2.0
+/* Pahlawan Angka — Demo v2 entry cinematic v1.3.0
  *
  * v1.1.0 introduced the two-stage bridge:
  * video -> fade to dark -> short dark hold -> fade from dark into battle.
@@ -14,7 +14,7 @@
 (()=>{
   'use strict';
 
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const VIDEO_SRC='assets/cinematics/wira-demo-entry-v1.mp4';
   const FADE_IN_MS=280;
   const VIDEO_TO_DARK_MS=260;
@@ -289,12 +289,50 @@
       };
     }
 
+    async function playEntrance(prepareScene){
+      if(activeGate)return activeGate;
+      playing=true;
+      const {overlay,video,skip}=makeOverlay();
+      let closed=false;
+      let finishCancel;
+      const cancelled=new Promise(resolve=>{finishCancel=resolve});
+      cancelActiveGate=()=>{
+        if(closed)return;
+        closed=true;
+        try{video.pause()}catch(_){}
+        overlay.remove();
+        finishCancel();
+      };
+      activeGate=(async()=>{
+        try{
+          const reason=await Promise.race([waitForVideo(video,skip),cancelled]);
+          if(closed)return false;
+          overlay.classList.add('toDark');
+          await wait(VIDEO_TO_DARK_MS+20);
+          await wait(DARK_HOLD_MS);
+          if(typeof prepareScene==='function')await prepareScene(reason);
+          if(closed)return false;
+          overlay.classList.add('revealBattle');
+          await wait(DARK_TO_BATTLE_MS+40);
+          overlay.remove();
+          return reason;
+        }finally{
+          cancelActiveGate?.();
+          cancelActiveGate=null;
+          activeGate=null;
+          playing=false;
+        }
+      })();
+      return activeGate;
+    }
+
     window.PASegelEntryCinematic={
       version:VERSION,
       video:VIDEO_SRC,
       skipTail:SKIP_TAIL_S,
       playing:()=>playing,
-      close:()=>cancelActiveGate?.()
+      close:()=>cancelActiveGate?.(),
+      playEntrance
     };
   }
 
