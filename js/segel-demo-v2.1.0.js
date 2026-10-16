@@ -2139,6 +2139,8 @@
     // visual prompt and its answer buttons exist. This also covers cached
     // question-bank paths that do not trigger the answer observer in order.
     queueMicrotask(()=>window.PASegelInteractionBridge?.sync?.());
+    // Count entry only after a guest question and its answer surface rendered.
+    if(entryMode?.guestDemo)window.PADemoFunnel?.track('demo_start');
   }
 
   function syncQuestionLayout(){
@@ -2420,6 +2422,7 @@
       return;
     }
 
+    if(entryMode?.guestDemo)window.PADemoFunnel?.track('demo_complete');
     // Bintang ikut Unity RescuePayoff.cs: satu bintang asas, +1 pada 80%, +1 pada 100%.
     const stars=correct===0?0:1+(acc>=80?1:0)+(acc===100?1:0);
 

@@ -2,6 +2,7 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-wirayung-variety-v1`;
 const APP_SHELL=[
+  './js/demo-funnel-v1.js',
   './gerai-wirayung.html', './js/wirayung-live-bridge.js', './js/gerai-wirayung-router.js',
   './assets/minigames/kedai-ajaib/wira-idle.webp', './assets/minigames/kedai-ajaib/wira-thumb.webp', './assets/minigames/kedai-ajaib/wira-victory.webp',
   './assets/heroes/wira-chibi/frames/victory-v1.webp',

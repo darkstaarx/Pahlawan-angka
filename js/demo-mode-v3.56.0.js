@@ -18,10 +18,11 @@ function mount(){
   button.id='paDemoButton';button.className='btn secondary paDemoButton';button.type='button';
   button.innerHTML='<b>⚔ Cuba Demo</b><small>Pilih darjah · terus ke battlefield</small>';
   button.onclick=open;host.appendChild(button);
+  const notice=document.createElement('small');notice.className='paDemoNote';notice.textContent='Statistik sesi tanpa nama direkod untuk menambah baik demo. Nama, jawapan dan markah tidak dihantar.';host.appendChild(notice);
   document.body.insertAdjacentHTML('beforeend',`<div id="paDemoOverlay" class="paDemoOverlay hidden" role="dialog" aria-modal="true" aria-labelledby="paDemoTitle"><section class="paDemoCard"><button class="paDemoClose" type="button" onclick="PADemo.close()" aria-label="Tutup">×</button><div class="eyebrow">DEMO BATTLEFIELD</div><h2 id="paDemoTitle">Pilih Darjah</h2><p>Demo ringkas untuk rasa tahap soalan—bukan ujian penuh. Tiada akaun atau progres diperlukan.</p><div class="paDemoGrades" role="radiogroup" aria-label="Pilih darjah">${grades.map(grade=>`<button class="paDemoGrade${grade===2?' active':''}" type="button" role="radio" aria-checked="${grade===2?'true':'false'}" data-demo-grade="${grade}" onclick="PADemo.selectGrade(${grade})"><b>Darjah ${grade}</b><small>${demoScope(grade)}</small></button>`).join('')}</div><button id="paDemoStart" class="btn primary paDemoStart" type="button" onclick="PADemo.start()">Masuk ke Battlefield</button><small class="paDemoNote">Wira dan Aurora akan menanti di pentas Segel.</small></section></div>`);
 }
 
-function open(){document.getElementById('paDemoOverlay')?.classList.remove('hidden')}
+function open(){document.getElementById('paDemoOverlay')?.classList.remove('hidden');window.PADemoFunnel?.track('demo_open')}
 function close(){document.getElementById('paDemoOverlay')?.classList.add('hidden')}
 function selectGrade(grade){
   st.grade=Number(grade)||2;
