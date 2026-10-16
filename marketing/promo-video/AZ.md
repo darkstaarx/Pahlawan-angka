@@ -1,12 +1,12 @@
-# Promo #5 — "Pahlawan Angka A–Z" (66 s, 9:16)
+# Promo #5 — "Pahlawan Angka A–Z" (64 s, 9:16)
 
 Promo penuh aplikasi yang mengikut perjalanan skrip VO pemilik:
 
 1. hook masalah;
-2. permainan teras;
-3. **9 mini game**;
-4. bukan hentam soalan (adaptive);
-5. Kemahiran Fokus;
+2. **battle biasa** (jadi hero, jawab cabaran, guna kuasa, selamatkan pet);
+3. bukan hentam soalan (adaptive);
+4. **Kemahiran Fokus** kesan bahagian yang belum faham;
+5. **9 mini game sebagai "ubat"**: anak nak improve, tapi nak lebih fun, jadi setiap topik ada dunia sendiri dan "takdelah rasa setiap topik sama je";
 6. petunjuk;
 7. mak ayah;
 8. "Nak main game? Mainlah.";
@@ -47,25 +47,25 @@ Dari kod (`js/dev-minigame-launcher-v1.js`, `js/focus-mini-games-live-bridge.js`
 
 ## Storyboard
 
-| Masa | Visual | Teks skrin | VO (skrip pemilik) | Muzik |
+| Masa | Visual | Teks skrin | VO | Muzik |
 | --- | --- | --- | --- | --- |
-| 0:00–0:02.9 | Teks kinetik atas arena kabur | Anak boleh ulang **game** / banyak kali… (bergema) | Anak boleh ulang game banyak kali… | Intro |
+| 0:00–0:02.9 | Teks kinetik atas arena kabur (Wira menyerang) | Anak boleh ulang **game** / banyak kali… (bergema) | Anak boleh ulang game banyak kali… | Intro |
 | 0:02.9–0:06 | Teks kelabu dan lentur, halaman worksheet pudar | tapi bila buka buku Matematik, terus **hilang semangat?** | tapi bila buka buku Matematik, terus hilang semangat? | Intro |
 | 0:06–0:08 | Teks | **Haa,** cuba tengok ni! | Haa, cuba tengok ni! | Build |
 | 0:08–0:10 | Logo, jubin | MATEMATIK KSSR · DARJAH 1–6 / Dalam Bahasa Melayu | Dalam Pahlawan Angka, | **Drop** |
 | 0:10–0:11 | Sinematik Wira berjalan ke menara | Anak jadi hero… | anak jadi hero, | Drop |
 | 0:11–0:17 | Soalan "Matahari baru terbit…" → tekan pagi → **Jurus Penamat** → KUKUPAT DITEMUI | Jawab cabaran Matematik… / …guna kuasa! / Selamatkan pet! | jawab cabaran Matematik, guna kuasa dan selamatkan pet! | Groove |
-| 0:17–0:18.4 | Teks | Bukan tu je. **9** MINI-GAME! | Bukan tu je. Ada 9 mini-game! | Build |
-| 0:18.4–0:27.4 | Montaj dalam telefon. Label: Jadi cashier, Bina bentuk, Main dengan masa, Cari harta, kemudian 5 lagi pantas | BUKAN TU JE / Ada 9 mini-game! | Jadi cashier, bina bentuk, main dengan masa, cari harta… | **Drop** |
-| 0:27.4–0:30 | **Grid 3×3**: 9 game bermain serentak dengan label topik | 9 MINI-GAME · 9 TOPIK / Macam-macam! | macam-macam! | Groove |
-| 0:30–0:33 | Kad Kembara Dimensi diangkat | YANG BEST / Bukan main hentam soalan. | Yang best, game ni bukan main hentam soalan. | Ringan |
-| 0:33–0:40 | Kemahiran Fokus (20% / 28% / 31%, kad "Fokus utama") → mini game Bengkel Besi | KEMAHIRAN FOKUS / Selalu tersangkut? | Bila anak selalu tersangkut, Kemahiran Fokus bantu dia berlatih dekat bahagian yang belum betul-betul faham. | Ringan |
-| 0:40–0:45 | Jawapan salah → petunjuk diangkat → "Betul! Kunci retak." | TANYA WIRA / Ada petunjuk… …tapi bukan terus bagi jawapan. | Ada petunjuk, tapi bukan terus bagi jawapan. | Ringan |
-| 0:45–0:50 | Ringkasan Anak, Laporan Kemahiran | UNTUK MAK AYAH / Tengok perkembangan anak. | Mak ayah pun boleh tengok perkembangan anak… | Groove |
-| 0:50–0:54 | Latihan + skema → 2 halaman PDF sebenar | LATIHAN TAMBAHAN / Sediakan latihan bercetak. | …dan sediakan latihan tambahan. | Groove |
-| 0:54–0:56 | Teks atas arena kabur | Nak main game? **Mainlah.** | Nak main game? Mainlah. | Build |
-| 0:56–1:00 | Montaj kejayaan: serangan, HEBAT, **Evolusi Bara**, BAGUS, BERJAYA | Kali ni, biar Matematik pun ikut sekali! | Kali ni, biar Matematik pun ikut sekali! | **Drop** |
-| 1:00–1:06 | Kad akhir: logo, Wira, butang | Jom selamatkan semua teman sambil belajar! · Cuba Demo Sekarang | Pahlawan Angka. Jom selamatkan semua teman sambil belajar! | Outro |
+| 0:17–0:20 | Kad Kembara Dimensi diangkat | YANG BEST / Bukan main hentam soalan. | Yang best, game ni bukan main hentam soalan. | Ringan |
+| 0:20–0:23.6 | Kemahiran Fokus: 20% / 28% / 31% disorot, kad "Fokus utama" diangkat | KEMAHIRAN FOKUS / Selalu tersangkut? / Fokus kesan bahagian yang belum betul-betul faham. | Bila anak selalu tersangkut, Kemahiran Fokus kesan bahagian yang belum betul-betul faham. | Ringan |
+| 0:23.6–0:26 | Teks kinetik | Nak improve, tapi nak lebih fun? **Ubatnya: 9 MINI-GAME!** | Nak improve, tapi nak lebih fun? Ubatnya… 9 mini-game! | Build |
+| 0:26–0:35 | Montaj dalam telefon. Label: Jadi cashier, Bina bentuk, Main dengan masa, Cari harta, kemudian 5 lagi pantas | MINI-GAME KEMAHIRAN FOKUS / Setiap topik, dunia sendiri. | Jadi cashier, bina bentuk, main dengan masa, cari harta… setiap topik, dunia sendiri. | **Drop** |
+| 0:35–0:38 | **Grid 3×3**: 9 game bermain serentak dengan label topik | 9 MINI-GAME · 9 TOPIK / **Takdelah rasa setiap topik sama je!** | Takdelah rasa setiap topik sama je! | Groove |
+| 0:38–0:43 | Jawapan salah → petunjuk diangkat → "Betul! Kunci retak." | TANYA WIRA / Ada petunjuk… …tapi bukan terus bagi jawapan. | Ada petunjuk, tapi bukan terus bagi jawapan. | Ringan |
+| 0:43–0:48 | Ringkasan Anak, Laporan Kemahiran | UNTUK MAK AYAH / Tengok perkembangan anak. | Mak ayah pun boleh tengok perkembangan anak… | Groove |
+| 0:48–0:52 | Latihan + skema → 2 halaman PDF sebenar | LATIHAN TAMBAHAN / Sediakan latihan bercetak. | …dan sediakan latihan tambahan. | Groove |
+| 0:52–0:54 | Teks atas arena kabur | Nak main game? **Mainlah.** | Nak main game? Mainlah. | Build |
+| 0:54–0:58 | Montaj kejayaan: serangan, HEBAT, **Evolusi Bara**, BAGUS, BERJAYA | Kali ni, biar Matematik pun ikut sekali! | Kali ni, biar Matematik pun ikut sekali! | **Drop** |
+| 0:58–1:04 | Kad akhir: logo, Wira, butang | Jom selamatkan semua teman sambil belajar! · Cuba Demo Sekarang | Pahlawan Angka. Jom selamatkan semua teman sambil belajar! | Outro |
 
 ## Voice-over
 
@@ -74,7 +74,10 @@ TTS disekat dalam persekitaran render, jadi video bergantung pada teks skrin dan
 1. Rakam ikut `srt/promo-az.srt`. Masa setiap baris sudah selari dengan babak.
 2. Hantar fail audio. VO akan dicampur pada −14 LUFS dengan muzik direndahkan ~8 dB.
 
-Cadangan kecil pada skrip: tukar **"anak pilih hero"** kepada **"anak jadi hero"**, kerana app hanya ada Wira.
+Perubahan daripada skrip asal:
+
+- **"anak pilih hero"** ditukar kepada **"anak jadi hero"**, kerana app hanya ada Wira.
+- Baris 9 mini-game dipindah ke **selepas Kemahiran Fokus**, dengan jambatan *"Nak improve, tapi nak lebih fun? Ubatnya… 9 mini-game!"* dan penutup *"Takdelah rasa setiap topik sama je!"*.
 
 ## Semakan
 
