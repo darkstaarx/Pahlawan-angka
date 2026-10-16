@@ -212,7 +212,7 @@ GRID_LABELS = ['Wang', 'Masa', 'Ruang', 'Pecahan', 'Ukuran', 'Nombor', 'Nisbah',
 
 SPECIALS = [
     # hook: latar gameplay kabur untuk "ulang game", halaman worksheet pudar untuk "buku Matematik"
-    FullClip('src_C.mp4', 0.0, 2.95, [(13.4, 15.2, 2.95)], zoom=(2.35, 2.15), dim=0.42, blur=6, fade=(0.0, 0.3), center=(0.5, 0.19)),
+    FullClip('src_C.mp4', 0.0, 2.95, [(13.9, 15.5, 2.95)], zoom=(2.35, 2.15), dim=0.42, blur=6, fade=(0.0, 0.3), center=(0.5, 0.19)),
     PdfPages(2.95, 5.95, [PDF_A], [[(2.95, R(s=0.3, oy=1400, rz=-20, a=0.0)), (3.4, R(s=1.25, ox=540, oy=980, rz=-6, ry=10, rx=8, a=0.26), 'out'),
                                     (5.5, R(s=1.3, ox=540, oy=1000, rz=-5, ry=8, rx=6, a=0.26)), (5.95, R(s=1.2, oy=1100, a=0.0), 'in')]]),
     FullClip('src_O.mp4', 54.0, 56.0, [(62.2, 64.2, 2.0)], zoom=(2.35, 2.15), dim=0.42, blur=6, fade=(0.2, 0.2), center=(0.5, 0.19)),
