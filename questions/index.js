@@ -1,4 +1,79 @@
 // Question dispatcher. Loads are split by grade/topic.
+
+// v3.86.32 — answer-option integrity for every grade, plus KSSR/UASA digit
+// grouping (7 050 410, 6 000, RM1 302) for Darjah 6. A pupil must never see two
+// identical choices, and the correct answer must never reappear as a wrong one.
+const PAOptionIntegrity=(function(){
+ const VERSION='3.86.32';
+ const strip=v=>String(v??'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ');
+ const key=v=>strip(v).replace(/[\s,]+/g,'').replace(/−/g,'-').toLowerCase();
+ const labelOf=o=>o&&typeof o==='object'?(o.label??o.v):o;
+ // RM prefix, a number (digits may be grouped by spaces/commas), an optional short unit.
+ const NUMERIC=/^(RM)?\s*(-?\d+(?:[ ,]\d{3})*(?:\.\d+)?)(\s*)([A-Za-z%°²³]{1,4})?$/i;
+ function parseNumeric(v){
+  const m=strip(v).replace(/\s+/g,' ').trim().match(NUMERIC);if(!m)return null;
+  const raw=m[2].replace(/[ ,]/g,''),n=Number(raw);
+  if(!Number.isFinite(n))return null;
+  return{prefix:m[1]||'',n,dp:(raw.split('.')[1]||'').length,suffix:m[4]?m[3]+m[4]:''};
+ }
+ function isNegative(v){return /^\s*[-−]\s*\d/.test(strip(v))}
+ function nearValues(spec){
+  const mag=Math.abs(spec.n);
+  const step=spec.prefix?(mag>=100?10:1):spec.dp>0?Math.pow(10,-spec.dp)*(spec.dp>=2?10:1):(mag>=100000?Math.pow(10,String(Math.round(mag)).length-2):mag>=100?10:1);
+  const out=[];
+  [1,-1,2,-2,3,-3,5,-5].forEach(k=>{const v=Number((spec.n+k*step).toFixed(spec.dp));if(v>=0&&v!==spec.n)out.push(spec.prefix+(spec.dp?v.toFixed(spec.dp):String(v))+spec.suffix)});
+  return out;
+ }
+ // Remove duplicates, answer echoes and impossible negatives; refill from the
+ // answer's own numeric shape so the question keeps its usual number of choices.
+ function sanitize(q){
+  if(!q||!Array.isArray(q.wrong))return q;
+  const answerKey=key(q.answer),answerNum=parseNumeric(q.answer),seen=new Set([answerKey]),kept=[];
+  let changed=false;
+  for(const o of q.wrong){
+   const k=key(labelOf(o));
+   if(!k||seen.has(k)||(answerNum&&answerNum.n>=0&&isNegative(labelOf(o)))){changed=true;continue}
+   seen.add(k);kept.push(o);
+  }
+  if(!changed)return q;
+  const target=Math.min(3,q.wrong.length);
+  if(answerNum&&kept.length<target){
+   for(const v of nearValues(answerNum)){
+    if(kept.length>=target)break;
+    const k=key(v);if(seen.has(k))continue;seen.add(k);
+    kept.push({v,label:v,tag:'near_value'});
+   }
+  }
+  return Object.assign({},q,{wrong:kept,optionIntegrity:VERSION});
+ }
+ const group=d=>d.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+ function groupText(str){
+  return String(str).split(/(<[^>]*>)/).map(seg=>seg.startsWith('<')?seg:seg
+   .replace(/RM(\d{4,})(?=[.\s]|$|[^\d:\/])/g,(m,d)=>'RM'+group(d))
+   .replace(/(^|[^\d.,:\/A-Za-z])(\d{1,3}(?:,\d{3})+|\d{4,})(?![\d:\/]|,\d)/g,(m,pre,num)=>pre+group(num.replace(/,/g,'')))
+  ).join('');
+ }
+ // Bare arithmetic prompts are parsed by the written-column renderer; leave them as typed.
+ const bareExpression=p=>/^[\d\s.,()+\-−×÷=?□\/]+$/.test(strip(p).trim());
+ function groupDigits(q,skillId){
+  if(!q||!/^D6\./.test(String(skillId||'')))return q;
+  if(bareExpression(q.prompt))return q;
+  const out=Object.assign({},q);
+  if(typeof out.prompt==='string')out.prompt=groupText(out.prompt);
+  if(typeof out.hint==='string')out.hint=groupText(out.hint);
+  if(typeof out.answer==='number'&&Number.isInteger(out.answer)&&Math.abs(out.answer)>=1000)out.answer=group(String(out.answer));
+  else if(typeof out.answer==='string')out.answer=groupText(out.answer);
+  if(Array.isArray(out.wrong))out.wrong=out.wrong.map(o=>{
+   if(!o||typeof o!=='object')return o;
+   const label=labelOf(o),formatted=typeof label==='number'&&Number.isInteger(label)&&Math.abs(label)>=1000?group(String(label)):typeof label==='string'?groupText(label):label;
+   return formatted===label?o:Object.assign({},o,{label:formatted});
+  });
+  return out;
+ }
+ return{version:VERSION,sanitize,groupDigits,groupText,key};
+})();
+window.PAOptionIntegrity=PAOptionIntegrity;
+
 function questionFingerprint(q){
   const raw=String(q?.prompt||'')+'|'+String(q?.answer??'');
   // Keep visual markup in the fingerprint: two questions with different charts/clocks/rulers are not the same question.
@@ -63,8 +138,11 @@ function generate(id,s,interactionContext={}){
   // A focused run must never substitute an unrelated arithmetic question.
   if(!q&&interactionContext.strictSkill)return null;
   q=q || Q("2 + 2 = ?",4,[N(3,"generic"),N(5,"generic"),N(6,"generic")],"Tambah kedua-dua nombor.","Fallback",false,false);
+  q=PAOptionIntegrity.sanitize(q);
   q=window.PAWrittenArithmetic?.inject?.(q,id,sess)||q;
   q=window.PAGameQuestionInteractions?.prepare?.(q,{skillId:id,state:s,meta:typeof META!=='undefined'?META[id]:null,...interactionContext})||q;
+  // Grouping runs after prepare(): typed-answer specs keep the plain numeric value.
+  q=PAOptionIntegrity.groupDigits(q,id);
   fp=questionFingerprint(q);
   sess.questionFingerprints.push(fp);
   if(sess.questionFingerprints.length>40)sess.questionFingerprints.shift();

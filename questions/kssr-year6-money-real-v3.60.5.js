@@ -137,7 +137,7 @@ function coreQ(s){
     const cost=pick1([120,180,250,320]),profit=pick1([25,40,55,80]),sell=cost+profit;
     return mark(qc(
       'Harga kos sebuah barang ialah '+rm(cost)+' dan harga jual ialah '+rm(sell)+'. Berapakah untung?',
-      rm(profit),[Nq(rm(sell),'profit_loss'),Nq(rm(cost),'profit_loss'),Nq(rm(profit+cost),'operation')],
+      rm(profit),[Nq(rm(sell),'profit_loss'),Nq(rm(cost),'profit_loss'),Nq(rm(sell+cost),'operation')],
       'Untung = harga jual − harga kos.','Tahun 6 · Menentukan Untung'
     ),'3.1.2',mode,'story','application',s,['profit_loss']);
   }
@@ -145,7 +145,7 @@ function coreQ(s){
     const cost=pick1([150,240,360,500]),loss=pick1([20,35,60,90]),sell=cost-loss;
     return mark(qc(
       'Harga kos sebuah barang ialah '+rm(cost)+' tetapi dijual pada '+rm(sell)+'. Berapakah rugi?',
-      rm(loss),[Nq(rm(sell),'profit_loss'),Nq(rm(cost),'profit_loss'),Nq(rm(loss+sell),'operation')],
+      rm(loss),[Nq(rm(sell),'profit_loss'),Nq(rm(cost),'profit_loss'),Nq(rm(cost+sell),'operation')],
       'Rugi = harga kos − harga jual.','Tahun 6 · Menentukan Rugi'
     ),'3.1.2',mode,'story','application',s,['profit_loss']);
   }
