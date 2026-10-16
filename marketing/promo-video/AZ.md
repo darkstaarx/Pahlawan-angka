@@ -99,3 +99,33 @@ python3 engine.py timeline_az --out out/promo5-az.mp4 --workers 4
 PROMO_FORMAT=ads916 python3 engine.py timeline_az --out out/ads-9x16_promo5-az.mp4 --workers 4
 PROMO_FORMAT=feed45 python3 engine.py timeline_az --out out/feed-4x5_promo5-az.mp4 --workers 4
 ```
+
+## Versi B — "Dua-dua" (62 s, `timeline_az_dua.py`)
+
+Hook alternatif:
+
+> **Ibu bapa nak result… Tapi anak nak main? Pahlawan Angka tolong dua-dua!**
+
+Video yang sama disusun semula ikut **dua sisi selang-seli**. Dua telefon sebelah-menyebelah, **MAK AYAH: RESULT | ANAK: MAIN**, muncul di awal dan diulang sebagai rumusan sebelum kad akhir.
+
+| Masa | Sisi | Visual | Teks skrin |
+| --- | --- | --- | --- |
+| 0:00–0:06 | Hook | Teks kinetik atas laporan kabur, kemudian arena kabur | Ibu bapa nak **result…** / Tapi anak nak **main?** / Pahlawan Angka tolong **dua-dua!** |
+| 0:06–0:09.6 | Dua-dua | Dua telefon: Laporan Kemahiran (kiri) dan battle (kanan) | Satu app, dua-dua happy. |
+| 0:09.6–0:16 | Anak | Soalan → Jurus Penamat → KUKUPAT DITEMUI | Main jadi hero… jawab soalan, guna kuasa! Selamatkan pet! |
+| 0:16–0:22 | Mak ayah | Ringkasan Anak, Laporan Kemahiran | Nampak result sebenar. |
+| 0:22–0:25.6 | Titik pertemuan | Kemahiran Fokus (20 / 28 / 31%, Fokus utama) | App kesan bahagian yang belum faham… |
+| 0:25.6–0:28 | Anak | Teks kinetik | …anak latih dengan **9 MINI-GAME!** |
+| 0:28–0:37.6 | Anak | Montaj mini game (cashier, bina bentuk, masa, harta, +5) | Setiap topik, dunia sendiri. |
+| 0:37.6–0:40.4 | Anak | Grid 3×3 hidup | Takdelah rasa setiap topik sama je! |
+| 0:40.4–0:46.5 | Mak ayah | Panel "Laporan yang mudah dikongsi". Butang **Muat turun PDF** dan **Kongsi kad kemajuan** disorot | Result senang dikongsi. |
+| 0:46.5–0:52 | Mak ayah | Latihan + skema → 2 halaman PDF sebenar | Worksheet PDF + skema jawapan. |
+| 0:52–0:56 | Dua-dua | Dua telefon: laporan (kiri) dan Kedai Kek HEBAT (kanan) | Anak dapat main. Mak ayah dapat result. |
+| 0:56–1:02 | Penutup | Wira dan butang | Anak seronok, mak ayah nampak result! · Cuba Demo Sekarang |
+
+- Panduan VO / sari kata: `srt/promo-az-dua.srt`.
+- "Laporan yang mudah dikongsi", "Muat turun PDF" dan "Kongsi kad kemajuan" ialah teks sebenar dalam app (rakaman R).
+
+```bash
+python3 engine.py timeline_az_dua --out out/promo5b-dua.mp4 --workers 4
+```
