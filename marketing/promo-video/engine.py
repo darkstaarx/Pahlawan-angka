@@ -1474,11 +1474,13 @@ class FocusShift:
 class FullClip:
     """Video penuh skrin (cover-fit) dengan zoom perlahan, pudar, malap dan gelang sorotan."""
 
-    def __init__(self, src_path, t0, t1, segs, zoom=(1.0, 1.06), dim=1.0, fade=(0.0, 0.0), scrim=0.0, rings=(), layer='back', blur=0.0):
+    def __init__(self, src_path, t0, t1, segs, zoom=(1.0, 1.06), dim=1.0, fade=(0.0, 0.0), scrim=0.0, rings=(), layer='back', blur=0.0,
+                 center=(0.5, 0.5)):
         self.blur = blur
         self.src = Source(os.path.join(BUILD, src_path))
         self.t0, self.t1, self.segs, self.zoom, self.dim, self.fade, self.scrim, self.rings, self.layer = t0, t1, segs, zoom, dim, fade, scrim, rings, layer
         self.shot = Shot(t0, t1, None, segs)
+        self.center = center   # titik (u, v) rakaman yang dijadikan pusat bingkai (contoh: arena di atas)
 
     def active(self, t):
         return self.t0 <= t < self.t1
@@ -1493,7 +1495,8 @@ class FullClip:
         sc = max(W / fw, H / fh) * z
         nw, nh = int(fw * sc), int(fh * sc)
         img = cv2.resize(f, (nw, nh), interpolation=cv2.INTER_AREA if sc < 1 else cv2.INTER_LINEAR)
-        ox, oy = (nw - W) // 2, (nh - H) // 2
+        ox = int(min(max(self.center[0] * nw - W / 2, 0), nw - W))
+        oy = int(min(max(self.center[1] * nh - H / 2, 0), nh - H))
         img = img[oy:oy + H, ox:ox + W]
         if self.blur > 0:
             img = cv2.GaussianBlur(img, (0, 0), self.blur)
@@ -1649,6 +1652,63 @@ class Chip:
         im = cv2.resize(self.img, None, fx=max(0.05, k), fy=max(0.05, k), interpolation=cv2.INTER_LINEAR)
         over(out, im, int(self.x - im.shape[1] / 2), int(self.y - im.shape[0] / 2), min(1, k * 2) * a)
 
+
+
+class VideoGrid:
+    """Grid klip video hidup (contoh: 9 mini game) yang terbalik masuk satu demi satu dalam 3D, dengan label topik."""
+
+    def __init__(self, t0, t1, clips, cols=3, tile=300, y0=560, gap=(26, 74), rect=(0.0, 0.035, 1.0, 0.518), labels=None):
+        self.t0, self.t1, self.layer = t0, t1, 'front'
+        self.clips = [(Source(os.path.join(BUILD, src)), s0) for src, s0 in clips]
+        self.cols, self.tile, self.y0, self.gap, self.rect = cols, tile, y0, gap, rect
+        ts = tile * 2   # satah = imej / 2
+        m = Image.new('L', (ts, ts), 0)
+        ImageDraw.Draw(m).rounded_rectangle([0, 0, ts - 1, ts - 1], radius=46, fill=255)
+        self.mask = (np.asarray(m, np.float32) / 255)[..., None]
+        b = Image.new('L', (ts, ts), 0)
+        ImageDraw.Draw(b).rounded_rectangle([2, 2, ts - 3, ts - 3], radius=46, outline=255, width=9)
+        self.border = (np.asarray(b, np.float32) / 255)[..., None]
+        self.labels = [self._label(x) for x in labels] if labels else None
+
+    @staticmethod
+    def _label(text):
+        f = font('Inter-ExtraBold.otf', 30)
+        pw, ph = int(f.getlength(text)) + 44, 52
+        im = Image.new('RGBA', (pw + 8, ph + 8), (0, 0, 0, 0))
+        d = ImageDraw.Draw(im)
+        d.rounded_rectangle([4, 4, 4 + pw, 4 + ph], radius=26, fill=(250, 196, 70, 255), outline=(255, 236, 170, 255), width=2)
+        d.text((4 + pw / 2, 4 + ph / 2), text, font=f, fill=(14, 22, 54, 255), anchor='mm')
+        return np.asarray(im, np.float32) / 255
+
+    def active(self, t):
+        return self.t0 - 0.05 <= t <= self.t1 + 0.05
+
+    def draw(self, out, t):
+        ts = self.tile * 2
+        u0, v0, u1, v1 = self.rect
+        for i, (src, s0) in enumerate(self.clips):
+            r, col = divmod(i, self.cols)
+            x = W / 2 + (col - (self.cols - 1) / 2) * (self.tile + self.gap[0])
+            y = self.y0 + r * (self.tile + self.gap[1])
+            k = ease_out((t - self.t0 - 0.07 * i) / 0.5)
+            ko = smooth((t - (self.t1 - 0.3)) / 0.3)
+            if k <= 0:
+                continue
+            f = src.get(int(round((s0 + max(0.0, t - self.t0)) * FPS)))
+            if f is None:
+                continue
+            Hh, Ww = f.shape[:2]
+            c = f[int(v0 * Hh):int(v1 * Hh), int(u0 * Ww):int(u1 * Ww)]
+            c = cv2.resize(c, (ts, ts), interpolation=cv2.INTER_AREA)[..., ::-1].astype(np.float32) / 255
+            c = c * (1 - self.border) + GOLD * self.border
+            rgba = np.concatenate([c, self.mask], 2)
+            a = min(1, k * 1.5) * (1 - ko)
+            pose = dict(REST, s=1.0 - 0.1 * ko, ox=x, oy=y + math.sin(t * 1.2 + i) * 4 + (1 - k) * 60,
+                        ry=(1 - k) * 80 + (col - (self.cols - 1) / 2) * 7, rx=(1 - k) * 12 + 4, rz=0, a=1)
+            warp_plane(out, rgba, pose, alpha=a, shadow=0.4)
+            if self.labels:
+                lb = self.labels[i]
+                over(out, lb, int(x - lb.shape[1] / 2), int(y + self.tile / 2 + 6 + (1 - k) * 60), a)
 
 # ---------------------------------------------------------------- audio
 
