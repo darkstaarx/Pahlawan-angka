@@ -29,8 +29,13 @@ assert.equal(shown.filter(Boolean).length,4,'two of every five eligible direct o
 
 const rendered=written.render({prompt:'408 − 79 = ?'},{});
 assert.match(rendered,/paWrittenArithmetic--stack/);assert.match(rendered,/408/);
+assert.match(rendered,/SELEPAS PECAH/,'subtraction includes an optional regrouping workspace');
+assert.match(rendered,/paWaWorkInput/,'regrouping workspace is directly editable');
+assert.match(rendered,/paWaDigitInput/,'the answer is entered in aligned place-value cells');
+assert.match(rendered,/Bentuk lazim · kira dan isi jawapan/,'the prompt describes writing the result, not choosing an option');
 const divided=written.render({prompt:'156 ÷ 12 = ?'},{});
-assert.match(divided,/paWrittenArithmetic--division/);assert.match(divided,/>12</);
+assert.match(divided,/paWrittenArithmetic--division/);assert.match(divided,/>12 \)/);
+assert.match(divided,/paWaDivisionInput/,'long division has an editable quotient directly in the bracket');
 const threeTerm=written.render({prompt:'356 + 143 + 21 = ?'},{});
 assert.match(threeTerm,/aria-label="Tambah: 356 \+ 143 \+ 21"/);
 const byGrade=[
@@ -38,6 +43,9 @@ const byGrade=[
   ['Darjah 4','78 × 6 = ?'],['Darjah 5','1,200 ÷ 15 = ?'],['Darjah 6','3.45 + 0.55 = ?']
 ];
 byGrade.forEach(([grade,prompt])=>assert.match(written.render({prompt},null),/paWrittenArithmetic/,`${grade} direct operation renders in written form`));
+assert.match(written.render({prompt:'58817 + 14785 = ?',answer:73602},null),/Jawapan tempat sa/);
+assert.match(fs.readFileSync('js/app.js','utf8'),/PAWrittenArithmetic\?\.bind/,'the normal battle binds the in-question answer surface');
+assert.match(fs.readFileSync('js/segel-demo-v2.1.0.js','utf8'),/PAWrittenArithmetic\?\.bind/,'the Segel demo binds the in-question answer surface');
 assert.equal(written.previewQuestion(1,'div'),null,'Darjah 1 preview does not expose division before its curriculum level');
 const operationSession={};
 const operationSlots=[];

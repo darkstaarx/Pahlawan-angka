@@ -1960,6 +1960,8 @@
   }
 
   function setTypedRetryEnabled(clearValue=false){
+    const writtenForm=$('segelQuestion')?.querySelector('.paWaForm');
+    if(writtenForm&&window.PAWrittenArithmetic?.retry?.(writtenForm,clearValue))return;
     const form=$('segelAnswers')?.querySelector('.paTypedAnswer');
     const input=form?.querySelector('.paTypedInput'),button=form?.querySelector('.paTypedSubmit');
     if(!input||!button)return;
@@ -2108,7 +2110,8 @@
        terpapar sebagai tiga baris dengan noktah terpisah. Satu pembalut
        menjadikan grid itu berisi satu item, jadi teks mengalir seperti biasa. */
     $('segelQuestion').innerHTML='<div class="segelPrompt"></div>';
-    $('segelQuestion').firstChild.innerHTML=window.PAWrittenArithmetic?.render?.(q,run)||q.prompt;
+    const promptNode=$('segelQuestion').firstChild,writtenMarkup=window.PAWrittenArithmetic?.render?.(q,run);
+    promptNode.innerHTML=writtenMarkup||q.prompt;
     $('segelQuestion').classList.toggle('hasFractionVisual',!!$('segelQuestion').querySelector('.fraction-art'));
     $('segelFeedback').textContent='';
     run.usedHint=false;
@@ -2124,8 +2127,9 @@
     // skip this shared renderer and always painted four generic buttons, which
     // made "Warnakan ..." impossible to answer and left its picture prompt
     // without the intended A/B/C/D-compatible selection bridge.
-    const fractionRendered=window.PAFractionAnswers?.render?.(box,q,(option,button)=>respond(option,button));
-    if(!fractionRendered&&!renderTypedAnswer(q,box)){
+    const writtenBound=writtenMarkup&&window.PAWrittenArithmetic?.bind?.(promptNode,q,(option,button)=>respond(option,button));
+    const fractionRendered=!writtenBound&&window.PAFractionAnswers?.render?.(box,q,(option,button)=>respond(option,button));
+    if(!writtenBound&&!fractionRendered&&!renderTypedAnswer(q,box)){
       mix([{v:q.answer,tag:'correct',label:q.answer},...(q.wrong||[])]).forEach(o=>{
         const b=document.createElement('button');
         b.className='ans'; b.type='button'; b.textContent=o.label??o.v;

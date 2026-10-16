@@ -262,7 +262,8 @@ function beginHintRetry(o,btn,question){
  const effortLock=!sess.demoMode&&window.PAEffortGuard?.firstWrong?.(question,sec)===true;
  sess.retryState={wrongTag:o.tag,wrongValue:o.v,firstSeconds:sec,streakBefore:sess.streak};
  window.PALearnerReview?.firstWrong?.(question,{tag:o.tag,value:o.v,seconds:sec});
- btn.classList.add('no');btn.disabled=true;
+ const writtenRetry=window.PAWrittenArithmetic?.retry?.(btn,false)===true;
+ if(!writtenRetry){btn.classList.add('no');btn.disabled=true;}
  if(!qsv2Isolated){
   s.wrong++;s.evidence++;s.mis[o.tag]=(s.mis[o.tag]||0)+1;
   s.mastery=Math.max(0,s.mastery-(layerDelta>0?1.2:2.2));s.confidence=Math.max(0,s.confidence-(layerDelta>0?2:4));s.stability=Math.max(0,s.stability-3);if(layerDelta>0)s.probeFail++;
@@ -279,7 +280,7 @@ function resolveAnswer(o,btn,question,ok){
  let responseMotion=null;
  let id=question.skill,s=scoreState(id),beforeMastery=s.mastery,devSnapshot=sess.devBankTest?JSON.parse(JSON.stringify(s)):null,sec=(performance.now()-sess.start)/1000,layerDelta=META[id].grade-coreGrade(),bossStretch=!!(sess.enemyTier==='boss'&&sess.bossStretchCurrent&&layerDelta>0),usedFinisher=false,qsv2Target=window.PAD3Topic7LiveCutover?.isTargetQuestion?.(question)===true,qsv2NonT7Target=!qsv2Target&&window.PAD3NonT7LiveIsolation?.isTargetQuestion?.(question)===true,qsv2Isolated=qsv2Target||qsv2NonT7Target,qsv2LegacySnapshot=qsv2Target?window.PAD3Topic7LiveCutover?.captureLegacyState?.(question,s):(qsv2NonT7Target?window.PAD3NonT7LiveIsolation?.captureLegacyState?.(question,s):null);
  window.PAEffortGuard?.retryResolved?.(question,ok);
- document.querySelectorAll(".ans").forEach(x=>x.disabled=true);window.PAGameQuestionInteractions?.lock?.();
+ document.querySelectorAll(".ans").forEach(x=>x.disabled=true);window.PAWrittenArithmetic?.setDisabled?.(document.querySelector('#question .paWaForm'),true);window.PAGameQuestionInteractions?.lock?.();
  if(ok){
   btn.classList.add("ok");s.correct++;if(!sess.retryState)s.evidence++;if(!sess.retryState)sess.streak++;
   if(typeof playSfx==='function')playSfx('correct');

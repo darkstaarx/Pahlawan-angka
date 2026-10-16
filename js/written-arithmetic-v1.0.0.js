@@ -191,48 +191,176 @@
     };
   }
 
-  function cells(value,layout){
-    const [whole,decimal='']=String(value).split('.');
-    const wholeCells=`${' '.repeat(layout.whole-whole.length)}${whole}`.split('').map(char=>
-      `<span class="paWaCell${char===' ' ? ' isBlank' : ''}"${char===' ' ? ' aria-hidden="true"' : ''}>${char===' ' ? '' : escapeHtml(char)}</span>`
-    );
-    if(!layout.decimal)return wholeCells.join('');
-    const decimalCells=`${decimal}${' '.repeat(layout.decimal-decimal.length)}`.split('').map(char=>
-      `<span class="paWaCell${char===' ' ? ' isBlank' : ''}"${char===' ' ? ' aria-hidden="true"' : ''}>${char===' ' ? '' : escapeHtml(char)}</span>`
-    );
-    return `${wholeCells.join('')}<span class="paWaDecimal">.</span>${decimalCells.join('')}`;
+  const WHOLE_PLACES=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta','puluh juta','ratus juta'];
+  const DECIMAL_PLACES=['persepuluh','perseratus','perseribu','persepuluh ribu','perseratus ribu'];
+
+  function resultFor(arithmetic){
+    const terms=(arithmetic.terms||[arithmetic.left,arithmetic.right]).map(Number);
+    if(arithmetic.operator==='+')return terms.reduce((sum,value)=>sum+value,0);
+    if(arithmetic.operator==='−')return terms.slice(1).reduce((value,next)=>value-next,terms[0]);
+    if(arithmetic.operator==='×')return terms.reduce((product,value)=>product*value,1);
+    if(arithmetic.operator==='÷')return terms.slice(1).reduce((value,next)=>value/next,terms[0]);
+    return NaN;
   }
 
-  function answerCells(layout){
-    const count=layout.whole+layout.decimal+(layout.decimal?1:0);
-    return `<span class="paWaAnswerMark" style="grid-column:${count}">?</span>`;
+  function columnsFor(layout){
+    const columns=[];
+    for(let place=layout.whole-1;place>=0;place--)columns.push({kind:'whole',index:layout.whole-place-1,name:WHOLE_PLACES[place]||`tempat ${place+1}`});
+    if(layout.decimal){columns.push({kind:'decimal',name:'.'});for(let place=0;place<layout.decimal;place++)columns.push({kind:'fraction',index:place,name:DECIMAL_PLACES[place]||`perpuluhan ${place+1}`});}
+    return columns;
   }
 
-  function stackedMarkup(arithmetic){
+  function valueParts(value,layout){
+    const [whole='0',decimal='']=String(value).split('.');
+    return [...`${' '.repeat(Math.max(0,layout.whole-whole.length))}${whole}`.split(''),...(layout.decimal?['.',...`${decimal}${' '.repeat(Math.max(0,layout.decimal-decimal.length))}`.slice(0,layout.decimal).split('')]:[])];
+  }
+
+  function valueCells(value,layout){
+    return valueParts(value,layout).map((char,index)=>char==='.'
+      ? '<span class="paWaDecimal" aria-hidden="true">.</span>'
+      : `<span class="paWaCell${char===' '?' isBlank':''}"${char===' '?' aria-hidden="true"':''}>${char===' '?'' : escapeHtml(char)}</span>`
+    ).join('');
+  }
+
+  function entryCells(layout,kind){
+    return columnsFor(layout).map((column,index)=>{
+      if(column.kind==='decimal')return '<span class="paWaDecimal" aria-hidden="true">.</span>';
+      const label=`${kind==='work'?'Catatan kerja':'Jawapan'} tempat ${column.name}`;
+      if(kind==='work')return `<input class="paWaWorkInput" type="text" inputmode="numeric" maxlength="2" aria-label="${escapeHtml(label)}" autocomplete="off">`;
+      const group=column.kind==='whole'?'whole':'fraction';
+      return `<input class="paWaDigitInput" type="text" inputmode="numeric" maxlength="1" data-group="${group}" aria-label="${escapeHtml(label)}" autocomplete="off">`;
+    }).join('');
+  }
+
+  function labelledRow(layout,label,content,className=''){
+    return `<div class="paWaRow ${className}" style="--pa-wa-cols:${layout.whole+layout.decimal+(layout.decimal?1:0)}"><span class="paWaRowLabel">${label}</span>${content}</div>`;
+  }
+
+  function numberRow(term,operator,index,layout){
+    const op=index?escapeHtml(operator):'';
+    return labelledRow(layout,`<span class="paWaOperator" aria-hidden="true">${op}</span>`,valueCells(term,layout),'paWaNumberRow');
+  }
+
+  function answerRow(layout){
+    return labelledRow(layout,'Jawapan',entryCells(layout,'answer'),'paWaAnswerRow');
+  }
+
+  function stackedMarkup(arithmetic,suppliedAnswer){
     const terms=arithmetic.terms||[arithmetic.left,arithmetic.right];
-    const layout=metrics(terms);
+    const answer=Number.isFinite(numericValue(suppliedAnswer))?numericValue(suppliedAnswer):resultFor(arithmetic);
+    const layout=metrics([...terms,String(answer)]);
     const cellCount=layout.whole+layout.decimal+(layout.decimal?1:0);
     const label={'+':'Tambah','−':'Tolak','×':'Darab'}[arithmetic.operator]||'Pengiraan';
     const expression=terms.join(` ${arithmetic.operator} `);
+    const workLabel=arithmetic.operator==='−'?'SELEPAS PECAH':'SELEPAS BAWA';
+    const workRow=['+','−','×'].includes(arithmetic.operator)
+      ? labelledRow(layout,workLabel,entryCells(layout,'work'),'paWaWorkRow') : '';
     return `<section class="paWrittenArithmetic paWrittenArithmetic--stack" aria-label="${label}: ${escapeHtml(expression)}">
-      <div class="paWaKicker">Bentuk lazim · pilih jawapan yang betul</div>
-      <div class="paWaStack" style="--pa-wa-cells:${cellCount}">
-        ${terms.map((term,index)=>`<span class="paWaOperator" aria-hidden="true">${index ? escapeHtml(arithmetic.operator) : ''}</span><span class="paWaNumber">${cells(term,layout)}</span>`).join('')}
-        <span class="paWaRule" aria-hidden="true"></span>
-        <span class="paWaAnswer">${answerCells(layout)}</span>
-      </div>
+      <div class="paWaKicker">Bentuk lazim · kira dan isi jawapan</div>
+      <form class="paWaForm" autocomplete="off">
+        <div class="paWaStack" style="--pa-wa-cells:${cellCount}">
+          ${labelledRow(layout,'',columnsFor(layout).map(column=>`<span class="paWaPlace">${column.kind==='decimal'?'':escapeHtml(column.name)}</span>`).join(''),'paWaPlaceRow')}
+          ${workRow}
+          ${terms.map((term,index)=>numberRow(term,arithmetic.operator,index,layout)).join('')}
+          ${labelledRow(layout,'',`<span class="paWaRule" aria-hidden="true"></span>`,'paWaRuleRow')}
+          ${answerRow(layout)}
+        </div>
+        <button type="submit" class="paWaSubmit">Semak jawapan</button>
+        <small class="paWaStatus" aria-live="polite">Isi digit jawapan dalam lajur nilai tempat.</small>
+      </form>
     </section>`;
   }
 
   function divisionMarkup(arithmetic){
     return `<section class="paWrittenArithmetic paWrittenArithmetic--division" aria-label="Bahagi: ${escapeHtml(arithmetic.left)} dibahagi ${escapeHtml(arithmetic.right)}">
-      <div class="paWaKicker">Bahagi panjang · pilih jawapan yang betul</div>
-      <div class="paWaDivision" aria-hidden="true">
-        <span class="paWaQuotient">?</span>
-        <span class="paWaDivisor">${escapeHtml(arithmetic.right)}</span>
-        <span class="paWaDividend">${escapeHtml(arithmetic.left)}</span>
-      </div>
+      <div class="paWaKicker">Bahagi panjang · tulis hasil bahagi</div>
+      <form class="paWaForm paWaDivisionForm" autocomplete="off">
+        <div class="paWaDivision">
+          <label class="paWaQuotient">${escapeHtml(arithmetic.right)} ) <input class="paWaDivisionInput" type="text" inputmode="decimal" aria-label="Jawapan hasil bahagi" autocomplete="off"></label>
+          <span class="paWaDividend">${escapeHtml(arithmetic.left)}</span>
+        </div>
+        <button type="submit" class="paWaSubmit">Semak jawapan</button>
+        <small class="paWaStatus" aria-live="polite">Taip hasil bahagi dalam ruang atas.</small>
+      </form>
     </section>`;
+  }
+
+  function numericValue(raw){
+    const text=String(raw??'').trim().replace(/,/g,'');
+    return /^\d+(?:\.\d+)?$/.test(text)?Number(text):NaN;
+  }
+
+  function collectAnswer(form){
+    const division=form.querySelector('.paWaDivisionInput');
+    if(division)return division.value.trim();
+    const groups=['whole','fraction'].map(group=>[...form.querySelectorAll(`.paWaDigitInput[data-group="${group}"]`)]).filter(fields=>fields.length);
+    for(const fields of groups){
+      const first=fields.findIndex(field=>field.value.trim()!=='');
+      if(first<0){fields.at(-1)?.focus();return null;}
+      const gap=fields.slice(first).find(field=>field.value.trim()==='');
+      if(gap){gap.focus();return null;}
+    }
+    const whole=groups.find((_,index)=>index===0)?.map(field=>field.value.trim()).join('')||'0';
+    const fraction=groups[1]?.map(field=>field.value.trim()).join('')||'';
+    return fraction?`${whole}.${fraction}`:whole;
+  }
+
+  function bind(container,question,respond){
+    const form=container?.querySelector?.('.paWaForm');
+    if(!form||form.dataset.bound==='1')return !!form;
+    form.dataset.bound='1';
+    const fields=[...form.querySelectorAll('.paWaDigitInput,.paWaDivisionInput')];
+    const button=form.querySelector('.paWaSubmit');
+    const status=form.querySelector('.paWaStatus');
+    fields.forEach((field,index)=>{
+      field.addEventListener('input',()=>{
+        field.value=field.value.replace(/[^0-9]/g,'').slice(0,field.maxLength||2);
+        if(field.classList.contains('paWaDigitInput')&&field.value&&field.maxLength===1)fields[index+1]?.focus();
+        if(status)status.textContent='Isi digit jawapan dalam lajur nilai tempat.';
+      });
+      field.addEventListener('keydown',event=>{
+        if(event.key==='Backspace'&&!field.value)fields[index-1]?.focus();
+        if(event.key==='ArrowLeft')fields[index-1]?.focus();
+        if(event.key==='ArrowRight')fields[index+1]?.focus();
+      });
+    });
+    form.querySelectorAll('.paWaWorkInput').forEach(field=>field.addEventListener('input',()=>{
+      field.value=field.value.replace(/[^0-9]/g,'').slice(0,2);
+    }));
+    form.addEventListener('submit',event=>{
+      event.preventDefault();
+      if(button?.disabled)return;
+      const raw=collectAnswer(form);
+      if(raw===null||raw===''){if(status)status.textContent='Lengkapkan digit jawapan dahulu.';return;}
+      const value=numericValue(raw),expected=numericValue(question?.answer);
+      if(!Number.isFinite(value)){if(status)status.textContent='Taip nombor sahaja.';return;}
+      const matched=(question?.wrong||[]).find(option=>numericValue(option.v)===value);
+      const option=Number.isFinite(expected)&&value===expected
+        ? {v:question.answer,tag:'correct',label:raw}
+        : matched||{v:raw,tag:(question?.wrong?.[0]?.tag||'place'),label:raw};
+      if(button){button.dataset.questionToken=String(question?.token??'');button.disabled=true;}
+      fields.forEach(field=>{field.disabled=true;});
+      respond?.(option,button);
+    });
+    return true;
+  }
+
+  function retry(target,clearValue=true){
+    const form=target?.matches?.('.paWaForm')?target:target?.closest?.('.paWaForm');
+    if(!form)return false;
+    form.querySelectorAll('.paWaDigitInput,.paWaDivisionInput,.paWaWorkInput').forEach(field=>{field.disabled=false;if(clearValue)field.value='';});
+    const button=form.querySelector('.paWaSubmit');
+    if(button){button.disabled=false;button.classList.remove('no','ok');}
+    form.querySelector('.paWaStatus')?.replaceChildren(document.createTextNode(clearValue?'Cuba kira semula dan isi digit jawapan.':'Semak semula kiraan kamu dan betulkan digit jika perlu.'));
+    form.querySelector('.paWaDigitInput:last-of-type,.paWaDivisionInput')?.focus();
+    return true;
+  }
+
+  function setDisabled(target,disabled=true){
+    const form=target?.matches?.('.paWaForm')?target:target?.closest?.('.paWaForm')||target?.querySelector?.('.paWaForm');
+    if(!form)return false;
+    form.querySelectorAll('input,button').forEach(control=>{control.disabled=disabled;});
+    return true;
   }
 
   function render(question,session){
@@ -240,16 +368,16 @@
     if(question?.writtenArithmeticMode==='required'){
       const arithmetic=directArithmetic(question.prompt);
       if(!arithmetic)return null;
-      return arithmetic.operator==='÷'?divisionMarkup(arithmetic):stackedMarkup(arithmetic);
+      return arithmetic.operator==='÷'?divisionMarkup(arithmetic):stackedMarkup(arithmetic,question?.answer);
     }
     const decision=planFor(question,session);
     if(!decision||!decision.show)return null;
     return decision.arithmetic.operator==='÷'
       ? divisionMarkup(decision.arithmetic)
-      : stackedMarkup(decision.arithmetic);
+      : stackedMarkup(decision.arithmetic,question?.answer);
   }
 
-  const api={CYCLE_LENGTH,DISPLAY_SLOTS,directArithmetic,planFor,operationFor,operationSlotFor,operationQuestion,previewQuestion,inject,render};
+  const api={CYCLE_LENGTH,DISPLAY_SLOTS,directArithmetic,planFor,operationFor,operationSlotFor,operationQuestion,previewQuestion,inject,render,bind,retry,setDisabled,resultFor,columnsFor};
   root.PAWrittenArithmetic=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

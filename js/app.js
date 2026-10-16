@@ -171,10 +171,11 @@ function nextQ(){
  document.getElementById("kind").textContent=sess.bossStretchCurrent?`Cabaran Boss · ${m.title}`:qsv2LearnerTitle(m,q);
  document.getElementById("evidence").textContent=sess.guardianFocus?`Soalan ${(sess.missionAnswered||0)+1}/${sess.focusTarget}`:(sess.devBankTest?`${id} · Test ${(sess.missionAnswered||0)+1}`:(sess.coachAdaptive?`Cabaran Cikgu ${(sess.missionAnswered||0)+1}`:(sess.bossStretchCurrent?'Cabaran Boss +1 Darjah':`Soalan ${(sess.missionAnswered||0)+1}`))); updateMissionHud();
  applyEnemyVariant();
- document.getElementById("question").innerHTML=window.PAWrittenArithmetic?.render?.(q,sess)||q.prompt;document.getElementById("feedback").textContent="";
+ const questionNode=document.getElementById("question"),writtenMarkup=window.PAWrittenArithmetic?.render?.(q,sess);questionNode.innerHTML=writtenMarkup||q.prompt;document.getElementById("feedback").textContent="";
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.remove('needs-help','used');hintButton.disabled=false;hintButton.setAttribute('aria-label','Guna Petunjuk');}
  let e=document.getElementById("answers");e.innerHTML="";
- const gameRendered=window.PAFractionAnswers?.render?.(e,q,respond)||window.PAGameQuestionInteractions?.render?.(q,e,{respond,shuffle});
+ const writtenBound=writtenMarkup&&window.PAWrittenArithmetic?.bind?.(questionNode,q,(option,button)=>respond(option,button,q));
+ const gameRendered=writtenBound||window.PAFractionAnswers?.render?.(e,q,respond)||window.PAGameQuestionInteractions?.render?.(q,e,{respond,shuffle});
  if(!gameRendered)shuffle([{v:q.answer,tag:"correct",label:q.answer},...q.wrong]).forEach(o=>{let b=document.createElement("button");b.className="ans";b.textContent=o.label??o.v;b.dataset.v=String(o.v);b.dataset.questionToken=String(q.token);b.onclick=()=>respond(o,b,q);e.appendChild(b)})
 }
 function log(t){db.logs.unshift({t:Date.now(),text:t});db.logs=db.logs.slice(0,180)}

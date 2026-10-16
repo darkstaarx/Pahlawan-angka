@@ -1,24 +1,49 @@
-/* Written arithmetic question form. It remains compact enough for the battle
-   card, while each digit occupies a fixed place-value cell. */
+/* Interactive written arithmetic: place-value work row, aligned operands and digit-by-digit answer. */
 .paWrittenArithmetic{
-  width:min(100%,390px);
-  margin:4px auto 6px;
-  padding:14px 16px 16px;
-  border:2px solid #d7b56a;
-  border-radius:16px;
+  width:min(100%,470px);margin:4px auto 6px;padding:12px 14px 13px;
+  border:2px solid #d7b56a;border-radius:16px;
   background:linear-gradient(145deg,#fffdf7,#fff3d5);
-  box-shadow:inset 0 1px #fff,0 4px 0 rgba(130,79,16,.13);
-  color:#251808;
+  box-shadow:inset 0 1px #fff,0 4px 0 rgba(130,79,16,.13);color:#251808
 }
-.paWaKicker{margin-bottom:9px;color:#82530e;font-size:11px;font-weight:950;letter-spacing:.035em;text-align:center;text-transform:uppercase}
-.paWaStack{display:grid;grid-template-columns:28px repeat(var(--pa-wa-cells),minmax(30px,36px));justify-content:center;align-items:center;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:clamp(26px,7vw,36px);font-weight:900;line-height:1.1}
-.paWaOperator{grid-column:1;text-align:center;color:#9a5b0d}
-.paWaNumber,.paWaAnswer{grid-column:2/-1;display:grid;grid-template-columns:repeat(var(--pa-wa-cells),minmax(30px,36px));text-align:center}
-.paWaCell,.paWaDecimal{display:grid;min-height:38px;place-items:center}
-.paWaCell.isBlank{opacity:0}.paWaDecimal{width:auto;color:#9a5b0d}
-.paWaRule{grid-column:1/-1;height:3px;margin:2px 0 4px;border-radius:999px;background:#7a4d12}.paWaAnswerMark{color:#b17817;text-align:center}
-.paWaDivision{display:grid;grid-template-columns:auto minmax(138px,auto);grid-template-rows:38px auto;justify-content:center;align-items:end;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:clamp(28px,7.5vw,40px);font-weight:900;line-height:1.1}
-.paWaQuotient{grid-column:2;grid-row:1;padding:0 12px 3px;text-align:left;color:#b17817}.paWaDivisor{grid-column:1;grid-row:2;padding:8px 11px 5px 0;text-align:right;color:#9a5b0d}
-.paWaDividend{grid-column:2;grid-row:2;min-width:138px;padding:7px 12px 5px;border-top:3px solid #7a4d12;border-left:3px solid #7a4d12;border-radius:9px 0 0 0;letter-spacing:.06em}
-#segelDemo .paWrittenArithmetic{margin:0 auto;background:linear-gradient(145deg,#fffefa,#fff4d9)}#segelDemo .paWaKicker{font-size:9px}
-@media(max-width:360px){.paWrittenArithmetic{padding:10px 11px 12px}.paWaKicker{font-size:9px}.paWaStack{grid-template-columns:24px repeat(var(--pa-wa-cells),minmax(25px,30px));font-size:clamp(23px,7vw,30px)}.paWaNumber,.paWaAnswer{grid-template-columns:repeat(var(--pa-wa-cells),minmax(25px,30px))}.paWaCell{min-height:32px}.paWaDivision{grid-template-columns:auto minmax(118px,auto);font-size:clamp(25px,7vw,34px)}.paWaDividend{min-width:118px}}
+.paWaKicker{margin:0 0 10px;color:#82530e;font-size:10px;font-weight:950;letter-spacing:.035em;text-align:center;text-transform:uppercase}
+.paWaForm{display:flex;flex-direction:column;align-items:center;gap:8px}
+.paWaStack{display:flex;flex-direction:column;gap:3px;width:100%;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-variant-numeric:tabular-nums}
+.paWaRow{display:grid;grid-template-columns:58px repeat(var(--pa-wa-cols),minmax(21px,1fr));align-items:center;gap:3px;width:100%;max-width:430px;margin:0 auto}
+.paWaRowLabel{display:flex;align-items:center;justify-content:flex-end;min-width:0;padding-right:3px;color:#72502d;font:900 8px/1.1 system-ui,sans-serif;text-align:right}
+.paWaPlace{min-width:0;color:#82530e;font:950 8px/1.05 system-ui,sans-serif;text-align:center;text-transform:uppercase;overflow-wrap:anywhere}
+.paWaNumberRow{font-size:clamp(20px,5vw,30px);font-weight:950;line-height:1}
+.paWaRowLabel .paWaOperator{display:grid;place-items:center;width:100%;min-height:30px;color:#9a5b0d;font:950 23px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.paWaCell{display:grid;min-width:0;min-height:31px;place-items:center}
+.paWaCell.isBlank{opacity:0}
+.paWaDecimal{display:grid;place-items:center;color:#9a5b0d;font:950 20px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.paWaWorkRow{min-height:24px;margin-bottom:1px}
+.paWaWorkRow .paWaRowLabel{font-size:7px;color:#946b3b}
+.paWaWorkInput{box-sizing:border-box;width:100%;height:23px;min-width:0;padding:0 2px;border:1.5px dashed #d4a34f;border-radius:7px;background:#fffdf8;color:#68410c;text-align:center;font:900 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.paWaWorkInput:focus{outline:2px solid #f3c75b;outline-offset:1px}
+.paWaRuleRow{margin:1px auto 3px}
+.paWaRuleRow .paWaRowLabel{min-height:2px}
+.paWaRule{display:block;grid-column:2/-1;height:3px;border-radius:2px;background:#60401d}
+.paWaAnswerRow{margin-top:1px}
+.paWaAnswerRow .paWaRowLabel{font-size:9px;color:#71451b}
+.paWaDigitInput{box-sizing:border-box;width:100%;height:39px;min-width:0;padding:0;border:2px solid #d58b28;border-radius:8px;background:#fff;color:#172e50;text-align:center;font:950 22px/1 ui-monospace,SFMono-Regular,Consolas,monospace;caret-color:#c94e66;box-shadow:0 2px 0 #ecd6ae}
+.paWaDigitInput:focus,.paWaDivisionInput:focus{outline:3px solid #e75070;outline-offset:1px;border-color:#e75070}
+.paWaSubmit{min-width:138px;min-height:38px;padding:7px 18px;border:2px solid #17335b;border-radius:11px;background:linear-gradient(#2c78a0,#155477);box-shadow:0 3px 0 #10284a;color:#fff;font:900 14px/1 system-ui,sans-serif;cursor:pointer;touch-action:manipulation}
+.paWaSubmit:disabled{opacity:.7;cursor:default}
+.paWaStatus{min-height:12px;color:#596a82;font:700 9px/1.25 system-ui,sans-serif;text-align:center}
+.paWaDivision{display:grid;grid-template-columns:auto minmax(120px,auto);grid-template-rows:42px auto;justify-content:center;align-items:end;font:950 clamp(25px,7vw,38px)/1.1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.paWaQuotient{grid-column:2;grid-row:1;display:flex;align-items:center;gap:7px;padding:0 8px 4px;color:#9a5b0d}
+.paWaDivisionInput{box-sizing:border-box;width:min(150px,55vw);height:38px;border:2px solid #d58b28;border-radius:8px;background:#fff;color:#172e50;text-align:center;font:950 22px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+.paWaDividend{grid-column:2;grid-row:2;min-width:120px;padding:7px 10px 5px;border-top:3px solid #7a4d12;border-left:3px solid #7a4d12;border-radius:9px 0 0 0;letter-spacing:.06em}
+#segelDemo .paWrittenArithmetic{margin:0 auto;background:linear-gradient(145deg,#fffefa,#fff4d9)}
+#segelDemo .paWaKicker{font-size:9px}
+#segelDemo .paWaRow{grid-template-columns:58px repeat(var(--pa-wa-cols),minmax(22px,1fr))}
+#segelDemo .paWaSubmit{border-color:#10284a;background:linear-gradient(#244c7d,#17345b);box-shadow:0 3px 0 #0d1f3d}
+@media(max-width:390px){
+ .paWrittenArithmetic{padding:10px 8px 11px}
+ .paWaRow,#segelDemo .paWaRow{grid-template-columns:48px repeat(var(--pa-wa-cols),minmax(19px,1fr));gap:2px}
+ .paWaRowLabel{font-size:7px;padding-right:2px}
+ .paWaPlace{font-size:7px}
+ .paWaWorkInput{height:21px}
+ .paWaDigitInput{height:36px;font-size:19px}
+}
+@media(prefers-reduced-motion:reduce){.paWaDigitInput,.paWaSubmit{scroll-behavior:auto}}
