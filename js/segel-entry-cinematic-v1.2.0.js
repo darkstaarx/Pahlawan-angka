@@ -16,6 +16,7 @@
 
   const VERSION='1.3.0';
   const VIDEO_SRC='assets/cinematics/wira-demo-entry-v1.mp4';
+  const LORE_ENTRANCE_VIDEO_SRC='assets/cinematics/enter.mp4';
   const FADE_IN_MS=280;
   const VIDEO_TO_DARK_MS=260;
   const DARK_HOLD_MS=150;
@@ -95,13 +96,13 @@
     document.head.appendChild(style);
   }
 
-  function makeOverlay(){
+  function makeOverlay(videoSrc=VIDEO_SRC){
     injectStyle();
     const overlay=document.createElement('div');
     overlay.className='paSegelEntryCinematic';
 
     const video=document.createElement('video');
-    video.src=`${VIDEO_SRC}?v=${encodeURIComponent(globalThis.PA_APP_VERSION||VERSION)}`;
+    video.src=`${videoSrc}?v=${encodeURIComponent(globalThis.PA_APP_VERSION||VERSION)}`;
     video.preload='auto';
     video.playsInline=true;
     video.setAttribute('playsinline','');
@@ -292,7 +293,7 @@
     async function playEntrance(prepareScene){
       if(activeGate)return activeGate;
       playing=true;
-      const {overlay,video,skip}=makeOverlay();
+      const {overlay,video,skip}=makeOverlay(LORE_ENTRANCE_VIDEO_SRC);
       let closed=false;
       let finishCancel;
       const cancelled=new Promise(resolve=>{finishCancel=resolve});
@@ -329,6 +330,7 @@
     window.PASegelEntryCinematic={
       version:VERSION,
       video:VIDEO_SRC,
+      entranceVideo:LORE_ENTRANCE_VIDEO_SRC,
       skipTail:SKIP_TAIL_S,
       playing:()=>playing,
       close:()=>cancelActiveGate?.(),
