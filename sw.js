@@ -2,6 +2,7 @@
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3`;
 const APP_SHELL=[
+  './js/demo-funnel-v1.js',
   './kedai-kek.html',
   './js/minigame-dev-gate.js',
   './js/kedai-kek-router.js',
