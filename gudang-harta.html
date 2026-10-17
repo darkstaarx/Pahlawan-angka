@@ -572,8 +572,8 @@ const Fx={
  twoStory:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3)),v=order==='sa'?a-b+d:a+b-d;if(v<=0||v>=PV[c])return null;
   return{kind:'pad',form:NUM(v),q:order==='sa'?'Gudang ada '+nf(a)+' syiling. '+nf(b)+' syiling dibelanjakan, kemudian '+nf(d)+' syiling baharu disimpan. Berapakah syiling sekarang?':'Wira kumpul '+nf(a)+' permata pada Isnin dan '+nf(b)+' pada Selasa. '+nf(d)+' permata diberi kepada kampung. Berapakah bakinya?',
   s:'Ada dua langkah. Tulis ayat matematik dulu.',a:order==='sa'?nf(a)+' − '+nf(b)+' + '+nf(d)+' = '+nf(v)+'.':nf(a)+' + '+nf(b)+' − '+nf(d)+' = '+nf(v)+'.'}}}),
- chooseOp:(arch)=>({arch,f:C=>{const T=pick([['@ ada 48 syiling dan beri 15 kepada kawan. Operasi untuk mencari baki?','Tolak'],['Wira ada 26 anak panah dan beli 14 lagi. Operasi untuk mencari jumlahnya?','Tambah'],['Ada 5 peti, setiap peti 8 permata. Operasi untuk mencari jumlah permata?','Darab'],['40 syiling dikongsi sama rata oleh 4 pet. Operasi untuk mencari bahagian setiap pet?','Bahagi']]);
-  return{kind:'pick',...opts(['Tambah','Tolak','Darab','Bahagi'],T[1],4),q:story(C,T[0]),s:'Cari kata kunci: jumlah/lagi (tambah), baki/beri (tolak), setiap (darab), kongsi sama rata (bahagi).',a:'Operasi: '+T[1].toLowerCase()+'.'}}}),
+ chooseOp:(arch,young)=>({arch,f:C=>{/* Tahun 1: tambah dan tolak sahaja */const T=pick([['@ ada 48 syiling dan beri 15 kepada kawan. Operasi untuk mencari baki?','Tolak'],['Wira ada 26 anak panah dan beli 14 lagi. Operasi untuk mencari jumlahnya?','Tambah'],['Ada 5 peti, setiap peti 8 permata. Operasi untuk mencari jumlah permata?','Darab'],['40 syiling dikongsi sama rata oleh 4 pet. Operasi untuk mencari bahagian setiap pet?','Bahagi']].slice(0,young?2:4));
+  return{kind:'pick',...opts(young?['Tambah','Tolak']:['Tambah','Tolak','Darab','Bahagi'],T[1],young?2:4),q:story(C,T[0]),s:'Cari kata kunci: jumlah/lagi (tambah), baki/beri (tolak), setiap (darab), kongsi sama rata (bahagi).',a:'Operasi: '+T[1].toLowerCase()+'.'}}}),
  mulArray:(arch)=>({arch,f:C=>{const r=R(2,6),c=pick([2,3,4,5,10]);return{kind:'pad',vis:{t:'array',r,c},form:NUM(r*c),q:'Ada '+r+' uncang, setiap uncang '+c+' syiling. Berapakah jumlah syiling?',s:'Kira dengan langkau '+c+': '+c+', '+2*c+', …',a:r+' × '+c+' = '+r*c+'.'}}}),
  mulFact:(arch,tables)=>({arch,f:C=>{const t=pick(tables),k=R(1,10);return{kind:'pad',card:k+' × '+t+' = ?',form:NUM(k*t),q:'Kira hasil darab.',s:'Ingat sifir '+t+'. Kira langkau '+t+' sebanyak '+k+' kali.',a:k+' × '+t+' = '+k*t+'.'}}}),
  mulMissing:(arch,tables)=>({arch,f:C=>{const t=pick(tables),k=R(2,10);return{kind:'pad',card:t+' × ___ = '+k*t,form:NUM(k),q:'Apakah nombor yang hilang?',s:'Bahagi untuk cari faktor hilang: '+k*t+' ÷ '+t+'.',a:k*t+' ÷ '+t+' = '+k+'.'}}}),
@@ -675,7 +675,7 @@ const GEN={
   {arch:'y1v2_2_3_2_sub_two',f:C=>{let a,b;do{a=R(30,99);b=R(11,a-10)}while(a%10>=b%10);return{kind:'pad',card:a+' − '+b+' = ?',form:NUM(a-b),q:'Kira hasil tolak.',s:'Tolak sa dengan sa. Jika tidak cukup, pecahkan 1 puluh.',a:a+' − '+b+' = '+(a-b)+'.'}}},
   {arch:'y1v2_2_6_2_remaining',f:C=>{const s=pick([2,5,10]),a=s*R(4,10),k=R(2,3);return{kind:'pad',form:NUM(a-s*k),q:'Ada '+a+' syiling. Wira ambil '+s+', kemudian '+s+' lagi'+(k===3?', dan '+s+' lagi':'')+'. Berapa syiling yang tinggal?',s:'Tolak '+s+' sebanyak '+k+' kali.',a:a+' − '+range(k).map(()=>s).join(' − ')+' = '+(a-s*k)+'.'}}},
   {arch:'y1v2_2_4_2_sub_story',f:C=>{const a=R(20,99),b=R(3,a-5);return{kind:'pad',form:NUM(a-b),q:story(C,'@ ada '+a+' anak panah. '+b+' patah semasa latihan. Berapa yang tinggal?'),s:'Yang patah dikeluarkan daripada jumlah asal.',a:a+' − '+b+' = '+(a-b)+'.'}}},
-  {...Fx.chooseOp('y1v2_2_4_2_choose_operation')}]},
+  {...Fx.chooseOp('y1v2_2_4_2_choose_operation',true)}]},
 
 /* ===== DARJAH 2: hingga 1000, sifir ===== */
 2:{

@@ -581,7 +581,7 @@ const Fx={
  missing:(arch)=>({arch,f:C=>{const a=R(2,7),b=R(1,6),P=pick([['karipap','pau'],['epal','oren'],['bola','badminton']]);return{kind:'pad',form:NUM(b),card:P[0]+' + '+P[1]+' = '+(a+b)+' murid',
   q:'Jumlah murid memilih '+P[0]+' dan '+P[1]+' ialah '+(a+b)+'. '+a+' memilih '+P[0]+'. Berapa memilih '+P[1]+'?',s:'Jumlah tolak bahagian yang diketahui.',a:(a+b)+' − '+a+' = '+b}}}),
  reasonData:(arch)=>({arch,f:C=>{const c=cats('kuih',2),a=R(4,8),b=R(1,a-1),truth=Math.random()<.4;return{kind:'pick',vis:{t:'pict',rows:[[c[0][0],c[0][1],a],[c[1][0],c[1][1],b]],key:1},...YN(truth),
-  q:C.who+' kata '+(truth?c[0][0]:c[1][0])+' lebih banyak. Penilaian?',s:'Kira gambar dalam kedua-dua baris dan banding.',a:c[0][0]+' = '+a+', '+c[1][0]+' = '+b+'.'}}}),
+  q:C.who+' kata '+(truth?c[0][0]:c[1][0])+' lebih banyak. Betulkah?',s:'Kira gambar dalam kedua-dua baris dan banding.',a:c[0][0]+' = '+a+', '+c[1][0]+' = '+b+'.'}}}),
 
  /* ---------- D3 carta pai ---------- */
  pieLargest:(arch)=>({arch,f:C=>{const v=shuffle([6,4,3,2,1].slice(0,4)),L=['A','B','C','D'],w=argmax(v);return{kind:'pick',vis:{t:'pie',sec:L.map((n,i)=>[n,v[i],n])},opts:L.map(n=>({id:n,label:n})),correct:L[w],ansTxt:L[w],

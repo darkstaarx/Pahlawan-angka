@@ -513,7 +513,7 @@ const ZONES=[{c:'Tokyo',d:1},{c:'Seoul',d:1},{c:'Sydney',d:2},{c:'Dubai',d:-4},{
    Hash: #d<darjah>[-mod-mod]  cth #d6-zon, #d3-tempoh-mula.  */
 const MODE_LABEL={baca:'BACA JAM',tamat:'WAKTU TAMAT',mula:'WAKTU MULA',tempoh:'TEMPOH',unit:'TUKAR UNIT',operasi:'OPERASI MASA',kalendar:'KALENDAR',anggaran:'ANGGARAN MASA','24jam':'SISTEM 24 JAM',zon:'ZON MASA'};
 const GRADES={
- 1:{title:'Masa asas',modes:['baca','kalendar'],baca:[{k:'hour',sp:'5.2.3'},{k:'half',sp:'5.2.3'},{k:'quarter',sp:'5.2.3'},{k:'later',sp:'5.3.1'}],kalendar:[{kind:'dayNext',sp:'5.1.3'},{kind:'dayBefore',sp:'5.1.3'},{kind:'monthNext',sp:'5.1.4'},{kind:'dayPart',sp:'5.1.1'},{kind:'event',sp:'5.1.2'}]},
+ 1:{title:'Masa asas',modes:['baca','kalendar'],baca:[{k:'hour',sp:'5.2.3'},{k:'half',sp:'5.2.3'},{k:'quarter',sp:'5.2.3',past:1},{k:'later',sp:'5.3.1'}],kalendar:[{kind:'dayNext',sp:'5.1.3'},{kind:'dayBefore',sp:'5.1.3'},{kind:'monthNext',sp:'5.1.4'},{kind:'dayPart',sp:'5.1.1'},{kind:'event',sp:'5.1.2'}]},
  2:{title:'Jam & minit',modes:['baca','tamat','tempoh','unit'],
     baca:[{k:'quarter',sp:'5.1.2'},{k:'five',sp:'5.1.1/5.1.2'}],
     tamat:[{dur:[10,40],sp:'5.3.1'},{dur:[15,55],x:1,sp:'5.3.1'}],
@@ -562,7 +562,7 @@ const GEN={
   if(t.k==='hour'){tg=rnd(1,12)*60;parts=['Tolong laraskan menara jam ke ',chip(pukul(tg)),'.']}
   else if(t.k==='half'){tg=rnd(1,12)*60+30;parts=['Loceng berbunyi ',chip(pukul(tg)),'. Laraskan jarum jam.']}
   else if(t.k==='later'){const s=rnd(1,11)*60;tg=s+60;parts=['Sekarang ',chip(pukul(s)),'. ',chip('Satu jam'),' lagi kami makan. Laraskan ke waktu makan.']}
-  else if(t.k==='quarter'){tg=rnd(1,12)*60+pick([15,45]);const w=mod(tg,60)===15?'pukul '+h12(tg)+' suku':'pukul '+h12(tg+60)+' kurang suku';parts=['Persembahan bermula ',chip(w),'. Tunjukkan pada jam.']}
+  else if(t.k==='quarter'){tg=rnd(1,12)*60+(t.past?15:pick([15,45]));/* D1: suku sahaja; kurang suku dari D2 */const w=mod(tg,60)===15?'pukul '+h12(tg)+' suku':'pukul '+h12(tg+60)+' kurang suku';parts=['Persembahan bermula ',chip(w),'. Tunjukkan pada jam.']}
   else{tg=rnd(1,12)*60+step5(5,55);parts=['Bas tiba ',chip('pukul '+f12(tg)),'. Tunjukkan pada jam.']}
   start=mod(tg+pick([-1,1])*step5(65,300),720);
   return{parts:withDistract(parts,t),widget:'analog',hideRead:true,start,target:tg,ansText:f12(tg),kssrSP:t.sp}},
