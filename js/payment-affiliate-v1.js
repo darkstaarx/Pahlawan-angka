@@ -89,7 +89,7 @@
       const data = await functionCall('create-checkout', payload);
       const url = typeof data === 'string' ? data : data?.live_url || data?.url || data?.payment_url;
       if (!url || !/^https:\/\/(?:dev\.)?toyyibpay\.com\//i.test(url)) throw new Error('Pautan pembayaran tidak tersedia.');
-      const order = data?.order_id || data?.bill_code || data?.id; if (order) localStorage.setItem(ORDER_KEY, JSON.stringify({ order: String(order).slice(0, 100), expires: Date.now() + 86400000 })); overlay.classList.add('hidden'); location.assign(url);
+      const order = data?.order_id || data?.bill_code || data?.id; if (order) { localStorage.setItem(ORDER_KEY, JSON.stringify({ order: String(order).slice(0, 100), expires: Date.now() + 86400000 })); root.PAEntry?.rememberOrder?.(order); } overlay.classList.add('hidden'); location.assign(url);
       if (order) pollOrder(order, (state) => status(message, state === 'paid' ? 'Bayaran disahkan. Akses akan dikemas kini.' : 'Menunggu pengesahan bayaran…', state === 'paid'));
     } catch (error) { status(message, error?.message || 'Pembayaran belum dapat dimulakan. Cuba semula.'); }
     finally { button.disabled = false; button.textContent = 'Teruskan ke ToyyibPay'; }

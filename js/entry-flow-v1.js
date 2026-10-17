@@ -59,6 +59,11 @@
     const saved = read()?.orderId;
     return /^[0-9a-f-]{36}$/i.test(value || '') ? value : /^[0-9a-f-]{36}$/i.test(saved || '') ? saved : '';
   }
+  function rememberOrder(orderId) {
+    const intent = read();
+    if (intent?.kind !== 'purchase' || !/^[0-9a-f-]{36}$/i.test(orderId || '')) return;
+    localStorage.setItem(KEY, JSON.stringify({ ...intent, orderId, userId: cloud()?.user?.id || null }));
+  }
   async function beforeProfiles() {
     const state = cloud();
     if (!state?.user) return false;
@@ -158,6 +163,6 @@
     }));
     document.querySelectorAll('[data-entry-plan]').forEach(button => button.addEventListener('click', () => choose(button.dataset.entryPlan)));
   }
-  window.PAEntry = { beforeProfiles, plans, demo, login, welcome, checkPayment };
+  window.PAEntry = { beforeProfiles, plans, demo, login, welcome, checkPayment, rememberOrder };
   mount();
 })();

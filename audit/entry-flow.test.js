@@ -61,6 +61,14 @@ test('return order survives a second Google sign-in instead of creating a second
 test('existing customers without purchase intent keep their normal profile route', async () => {
   const h = harness({ signed: true, paid: true }); assert.equal(await h.entry.beforeProfiles(), false);
 });
+test('leaving the bank without a return query resumes the same pending order', async () => {
+  const h = harness({ signed: true, intent: { kind: 'purchase', plan: 'premium' } });
+  h.entry.rememberOrder(ORDER);
+  const resumed = harness({ signed: true, storage: h.storage });
+  await resumed.entry.beforeProfiles();
+  assert.ok(resumed.calls.some(c => Array.isArray(c) && c[0] === 'id' && c[1] === ORDER));
+  assert.ok(!resumed.calls.some(c => Array.isArray(c) && c[0] === 'checkout'));
+});
 test('purchase intent from a different account is discarded', async () => {
   const h = harness({ signed: true, intent: { kind: 'purchase', plan: 'premium', userId: 'someone-else' } });
   assert.equal(await h.entry.beforeProfiles(), false); assert.equal(h.storage.has(KEY), false);
