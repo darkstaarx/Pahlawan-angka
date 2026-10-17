@@ -660,7 +660,7 @@ const GEN={
   {...Fx.seq(2,'y1v2_1_5_1_count_next','next',[1,2,5])},
   {...Fx.seq(2,'y1v2_1_5_2_missing_middle','middle',[1,2,5,10])},
   {...Fx.seq(2,'y1v2_1_9_1_identify_step','rule',[1,2,5,10])},
-  {...Fx.seq(2,'y1v2_1_9_2_missing_end','next',[2,4,5,10])}],
+  {...Fx.seq(2,'y1v2_1_9_2_missing_end','next',[2,5,10])}],/* Tahun 1: langkah 1, 2, 5, 10 sahaja; langkah 4 hanya untuk Segel Emas */
  tambah:[
   {arch:'y1v2_1_4_1_make_number',f:C=>{const a=R(1,9),b=R(1,10-a);return{kind:'pad',vis:{t:'groups',a,b,join:1},form:NUM(a+b),q:a+' dan '+b+' membentuk nombor apa?',s:'Kira semua syiling dalam kedua-dua peti.',a:a+' + '+b+' = '+(a+b)+'.'}}},
   {arch:'y1v2_2_2_1_fact_direct',f:C=>{const a=R(3,9),b=R(11-a,9);return{kind:'pad',card:a+' + '+b+' = ?',form:NUM(a+b),q:'Kira hasil tambah.',s:'Buat 10 dulu: '+a+' + '+(10-a)+' = 10, kemudian tambah bakinya.',a:a+' + '+(10-a)+' + '+(b-10+a)+' = '+(a+b)+'.'}}},
