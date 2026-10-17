@@ -72,8 +72,34 @@ function estimateCloud(n){
  for(let i=0;i<n;i++){const x=25+(i%cols)*39+(i%2?4:0),y=24+Math.floor(i/cols)*28+(i%3);s+=`<circle cx="${x}" cy="${y}" r="7" class="kd-fill"/>`}
  return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" aria-label="sekumpulan objek untuk dianggar">${s}</svg></div>`;
 }
-function nonStandard(count,label='klip'){
- return '<div class="kssrDiagram"><div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap">'+Array.from({length:count},()=>'<span style="display:inline-block;border:2px solid currentColor;border-radius:7px;padding:4px 6px">'+label+'</span>').join('')+'</div></div>';
+// Unit bukan piawai: pemadam 2.5D disusun hujung ke hujung di bawah objek yang diukur.
+// Objek pendek satu perkataan sahaja (pemadam), bukan klip kertas yang panjang.
+function nonStandard(count,label='pemadam',object='buku'){
+ const U=34,d=6,x0=22,top=50,h=20,L=count*U,W=x0*2+L+d+4,H=top+h+12,ink='#123158';
+ const objects={
+  buku:`<polygon points="${x0},24 ${x0+d},18 ${x0+L+d},18 ${x0+L},24" fill="#fff6dc" stroke="${ink}" stroke-width="1.6"/>`+
+       `<polygon points="${x0+L},24 ${x0+L+d},18 ${x0+L+d},36 ${x0+L},42" fill="#f1e2b8" stroke="${ink}" stroke-width="1.6"/>`+
+       `<rect x="${x0}" y="24" width="${L}" height="18" rx="2" fill="#4f83d1" stroke="${ink}" stroke-width="1.8"/>`+
+       `<rect x="${x0}" y="24" width="8" height="18" fill="#3a66ad" stroke="${ink}" stroke-width="1.2"/>`,
+  pensel:`<rect x="${x0}" y="26" width="10" height="14" rx="3" fill="#ff8fb1" stroke="${ink}" stroke-width="1.6"/>`+
+       `<rect x="${x0+10}" y="26" width="6" height="14" fill="#c9ced8" stroke="${ink}" stroke-width="1.4"/>`+
+       `<rect x="${x0+16}" y="26" width="${Math.max(8,L-34)}" height="14" fill="#ffd24b" stroke="${ink}" stroke-width="1.6"/>`+
+       `<line x1="${x0+16}" y1="33" x2="${x0+L-18}" y2="33" stroke="#e0a91a" stroke-width="1.5"/>`+
+       `<polygon points="${x0+L-18},26 ${x0+L},33 ${x0+L-18},40" fill="#f3c99a" stroke="${ink}" stroke-width="1.6"/>`+
+       `<polygon points="${x0+L-6},30.7 ${x0+L},33 ${x0+L-6},35.3" fill="${ink}"/>`,
+  reben:`<path d="M${x0} 26 Q${x0+L/4} 20 ${x0+L/2} 26 T${x0+L} 26 L${x0+L} 40 Q${x0+L*3/4} 46 ${x0+L/2} 40 T${x0} 40 Z" fill="#ff6b8a" stroke="${ink}" stroke-width="1.6"/>`
+ };
+ let ers='';
+ for(let i=0;i<count;i++){
+  const x=x0+i*U,body=i%2?'#fff3d6':'#f7a1b5',topc=i%2?'#fffaf0':'#fbc6d3',cut=x+1+(U-2)*0.58;
+  ers+=`<g><polygon points="${x+1},${top} ${x+1+d},${top-d} ${x+U-1+d},${top-d} ${x+U-1},${top}" fill="${topc}" stroke="${ink}" stroke-width="1.4"/>`+
+   `<polygon points="${x+U-1},${top} ${x+U-1+d},${top-d} ${x+U-1+d},${top+h-d} ${x+U-1},${top+h}" fill="#2f8fc4" stroke="${ink}" stroke-width="1.4"/>`+
+   `<rect x="${x+1}" y="${top}" width="${(U-2)*0.58}" height="${h}" rx="3" fill="${body}" stroke="${ink}" stroke-width="1.6"/>`+
+   `<rect x="${cut}" y="${top}" width="${(U-2)*0.42}" height="${h}" fill="#59c8ff" stroke="${ink}" stroke-width="1.6"/></g>`;
+ }
+ const guides=`<line x1="${x0}" y1="12" x2="${x0}" y2="${top+h+8}" stroke="#7b8aa3" stroke-width="1.5" stroke-dasharray="4 3"/>`+
+  `<line x1="${x0+L}" y1="12" x2="${x0+L}" y2="${top+h+8}" stroke="#e8a400" stroke-width="2.5" stroke-dasharray="5 3"/>`;
+ return `<div class="kssrDiagram"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${object} diukur dengan ${count} ${label} yang disusun hujung ke hujung" style="max-width:100%;height:auto">${guides}${objects[object]||objects.buku}${ers}</svg></div>`;
 }
 function tally(n){return '||||| '.repeat(Math.floor(n/5))+'|'.repeat(n%5)}
 function solid(kind){

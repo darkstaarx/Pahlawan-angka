@@ -99,7 +99,7 @@ GEN['6.1.1']=function(id,s){
 GEN['6.1.2']=function(id,s){
  const mode=chooseMode(id,'6.1.2',bandModes(s,['length_units'],['length_units','mass_units','capacity_units'],['length_units','mass_units','capacity_units','choose_unit']));
  if(mode==='length_units'){
-  const count=rand(4,9);return mark(q(`${nonStandard(count,'klip')}Panjang buku diukur menggunakan klip kertas. Berapa unit klip?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan unit bukan piawai dari hujung ke hujung.','Tahun 1 · Ukur dengan Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
+  const count=rand(4,9),obj=choose(['buku','pensel','reben']);return mark(q(`${nonStandard(count,'pemadam',obj)}Panjang ${obj} diukur menggunakan pemadam. Berapa pemadam panjangnya?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan unit bukan piawai dari hujung ke hujung.','Tahun 1 · Ukur dengan Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
  }
  if(mode==='mass_units'){
   const count=rand(3,7);return mark(q(`Satu beg kecil seimbang dengan <b>${count}</b> blok unit pada neraca. Jisim relatif beg ialah berapa blok?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Bilangan blok pada keseimbangan menjadi unit jisim bukan piawai.','Tahun 1 · Jisim Unit Bukan Piawai'),id,'6.1.2',mode,'story','procedure',s,['nonstandard']);
@@ -132,7 +132,7 @@ GEN['6.2.1']=function(id,s){
  const mode=chooseMode(id,'6.2.1',bandModes(s,['one_step'],['one_step','difference'],['difference','missing_measure','reason_measure']));
  if(mode==='one_step'){
   const a=rand(4,8),b=rand(2,5),ans=a+b;
-  return mark(q(`Satu rak panjangnya ${a} unit klip. Rak kedua ${b} unit klip lebih panjang. Panjang rak kedua dalam unit klip?`,ans,[Nq(Math.abs(a-b),'measure_problem'),Nq(a,'measure_problem'),Nq(ans+1,'measure_problem')],'“Lebih panjang” sebanyak b unit bermaksud tambah.','Tahun 1 · Masalah Ukuran Relatif'),id,'6.2.1',mode,'story','application',s,['measure_problem']);
+  return mark(q(`Satu rak panjangnya ${a} pemadam. Rak kedua ${b} pemadam lebih panjang. Berapa pemadam panjang rak kedua?`,ans,[Nq(Math.abs(a-b),'measure_problem'),Nq(a,'measure_problem'),Nq(ans+1,'measure_problem')],'“Lebih panjang” sebanyak b unit bermaksud tambah.','Tahun 1 · Masalah Ukuran Relatif'),id,'6.2.1',mode,'story','application',s,['measure_problem']);
  }
  if(mode==='difference'){
   const a=rand(6,10),b=rand(2,a-1),ans=a-b;
@@ -140,7 +140,7 @@ GEN['6.2.1']=function(id,s){
  }
  if(mode==='missing_measure'){
   const total=rand(7,12),known=rand(2,total-2),ans=total-known;
-  return mark(q(`Dua bahagian meja berjumlah ${total} unit klip. Bahagian pertama ${known} unit. Bahagian kedua?`,ans,[Nq(total,'measure_problem'),Nq(known,'measure_problem'),Nq(ans+1,'measure_problem')],'Cari bahagian yang hilang daripada jumlah.','Tahun 1 · Ukuran Hilang'),id,'6.2.1',mode,'story','reasoning',s,['measure_problem']);
+  return mark(q(`Panjang meja ialah ${total} pemadam. Bahagian pertama ${known} pemadam. Berapa pemadam bahagian kedua?`,ans,[Nq(total,'measure_problem'),Nq(known,'measure_problem'),Nq(ans+1,'measure_problem')],'Cari bahagian yang hilang daripada jumlah.','Tahun 1 · Ukuran Hilang'),id,'6.2.1',mode,'story','reasoning',s,['measure_problem']);
  }
  return mark(q('Meja A = 6 jengkal dan Meja B = 8 jengkal. Seorang murid kata A lebih panjang. Penilaian?','salah',[Nq('betul','compare_measure'),Nq('sama panjang','compare_measure'),Nq('tidak boleh dibanding','compare_measure')],'Kedua-duanya menggunakan unit jengkal yang sama; 8 lebih besar daripada 6.','Tahun 1 · Semak Ukuran'),id,'6.2.1',mode,'story','reasoning',s,['compare_measure']);
 };
