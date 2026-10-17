@@ -815,7 +815,7 @@ function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
  setTimeout(()=>{el('who').textContent=q.who;say(pick(['Ketua Stesen, tolong aku!','Wira, boleh bantu aku?','Aku tak nak terlepas kereta api!']));el('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildWidget()}
 function check(){
- if(solved){if(focusDiagnosticMode&&served>=focusContrastPlan.length)towerDone();else if(served%SET===0)towerDone();else startRound();sfx(820,.12);return}
+ if(solved){if(focusDiagnosticMode&&served===focusContrastPlan.length)towerDone();else if(served%SET===0)towerDone();else startRound();sfx(820,.12);return}
  if(current()===null){msg('Masukkan jawapan dulu.','',2000);return}
  if(!isRight()){misses++;say(pick(['Belum tepat lagi…','Hmm, cuba semak semula.']));msg(wrongMsg(),'bad',3600);pet('sad');const bs=el('bstat');bs.textContent='TERTUNDA';bs.className='bstat late';setTimeout(()=>{if(!solved){bs.textContent='MENUNGGU';bs.className='bstat'}},1400);const v=el('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(245,.17);return}
  solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);
@@ -840,13 +840,13 @@ function adapt(st){const k=q.mode,up=q.nTiers-1;
  if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Soalan seterusnya lebih mencabar.','',2600),2000)}}
  else{clean[k]=0;if(hints+misses>=2&&tier[k]>0){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
 function towerDone(){const got=setLog.reduce((a,l)=>a+l.st,0);
- const diagnosticFinished=focusDiagnosticMode&&served>=focusContrastPlan.length,needFinalProbe=focusDiagnosticMode&&served===SET;
- el('doneTitle').textContent=diagnosticFinished?'Semakan Fokus Selesai':needFinalProbe?'Satu lagi tren untuk lengkapkan semakan':'Syif '+towers+' Selesai!';
- el('finishText').textContent=diagnosticFinished?'Bukti untuk tiga bahagian Masa sudah dihantar kepada penjaga. Latihan ini tidak mengubah mastery atau ganjaran.':needFinalProbe?'Sambung satu syif pendek untuk jawab probe terakhir. Kawalan, bantuan Wira dan cara bermain kekal sama.':'Kamu menghantar '+SET+' kereta api tepat pada masanya dan memperoleh '+got+' daripada '+SET*3+' bintang. Markah latihan sahaja, bukan rekod mastery.';
- el('again').textContent=diagnosticFinished?'Kembali ke Kemahiran Fokus':needFinalProbe?'Teruskan semakan':'Naik syif seterusnya';
+ const diagnosticFinished=focusDiagnosticMode&&served===focusContrastPlan.length,needFinalProbe=focusDiagnosticMode&&served===SET;
+ el('doneTitle').textContent=needFinalProbe?'Satu lagi tren!':'Syif '+towers+' Selesai!';
+ el('finishText').textContent=needFinalProbe?'Ada satu lagi tren menunggu. Jom hantar dia tepat pada masanya!':'Kamu menghantar '+(diagnosticFinished?served:SET)+' kereta api tepat pada masanya dan memperoleh '+got+' daripada '+setLog.length*3+' bintang. Hebat!';try{if(window.parent!==window)window.parent.postMessage({type:'PA_MINIGAME_SET_DONE',version:1},location.origin)}catch(_){}
+ el('again').textContent=needFinalProbe?'Jom!':'Naik syif seterusnya';
  el('faces').innerHTML=setLog.map(l=>'<div><img src="'+A+l.q.pet+'-happy.webp" alt="'+l.q.who+'">'+'★'.repeat(l.st)+'</div>').join('');
  el('complete').hidden=false;el('again').focus()}
-el('again').onclick=()=>{if(focusDiagnosticMode&&served>=focusContrastPlan.length){if(focusNonce&&window.parent!==window)window.parent.postMessage({type:'PA_FOCUS_TIME_CLOSE',version:1,nonce:focusNonce},location.origin);return}el('complete').hidden=true;towers++;setLog=[];startRound()};
+el('again').onclick=()=>{const extra=focusDiagnosticMode&&served===SET;el('complete').hidden=true;if(!extra){towers++;setLog=[]}startRound()};
 el('check').onclick=check;
 el('hint').onclick=()=>{if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?HELP[q.mode].s(q):HELP2[q.mode](q),'',6500);el('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';el('hint').disabled=hints>=2;sfx(610,.12)};
 el('sound').onclick=()=>{soundOn=!soundOn;el('sound').textContent=soundOn?'🔊':'🔈';el('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(810,.1)};

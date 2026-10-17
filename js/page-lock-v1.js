@@ -3,7 +3,7 @@
  'use strict';
  if(window.PAPageLock)return;
  const key='paPageLock';
- let enabled=true, installed=false, restoring=false, previousFocus=null, pendingExit=null, setupMode=false, resultActive=false;
+ let enabled=true, installed=false, restoring=false, previousFocus=null, pendingExit=null, setupMode=false, resultActive=false, custom=null;
  const guardianPin=()=>{
   const pin=String(window.pageLockParentPin?.()||'');
   return /^\d{4}$/.test(pin)?pin:null;
@@ -49,10 +49,10 @@
    installed=true;
   }catch(error){console.warn('Kunci Back tidak tersedia.',error);}
  }
- function close(){if(infoDialog.open)infoDialog.close();pendingExit=null;input.value='';confirmInput.value='';error.textContent='';dialog.close();previousFocus?.focus();}
- function prompt(onExit=null){
+ function close(){if(infoDialog.open)infoDialog.close();pendingExit=null;custom=null;input.value='';confirmInput.value='';error.textContent='';dialog.close();previousFocus?.focus();}
+ function prompt(onExit=null,labels=null){
   if(dialog.open)return;
-  pendingExit=onExit;previousFocus=document.activeElement;
+  pendingExit=onExit;custom=labels;previousFocus=document.activeElement;
   input.value='';confirmInput.value='';error.textContent='';
   if(infoDialog.open)infoDialog.close();
   const configured=!!guardianPin();
@@ -67,6 +67,12 @@
   dialog.querySelector('[data-exit-message]').textContent=configured
    ?(onExit?'Masukkan PIN ibu bapa untuk teruskan keluar.':'Masukkan PIN ibu bapa untuk buka kunci battle.')
    :'Cipta dan sahkan PIN 4 digit.';
+  if(labels){
+   dialog.querySelector('#paExitTitle').textContent=labels.title;
+   dialog.querySelector('[data-exit-message]').textContent=labels.message;
+   dialog.querySelector('[data-stay]').textContent=labels.stay;
+   dialog.querySelector('[data-unlock]').textContent=labels.unlock;
+  }
   dialog.showModal();
  }
  function unlock(event){
@@ -85,6 +91,7 @@
   if(!expected){error.textContent='PIN ibu bapa belum ditetapkan. Tutup dan buka semula untuk mencipta PIN.';return;}
   if(pin!==expected){error.textContent='PIN tidak tepat. Cuba semula.';input.value='';input.focus();return;}
   const onExit=pendingExit;
+  if(custom){close();if(onExit)onExit();return;}
   enabled=false;close();sync();
   if(onExit)onExit();
  }
@@ -130,7 +137,9 @@
   render();arm();
  }
  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
- window.PAPageLock={isLocked:active,refresh:sync,setResultState(value){resultActive=!!value;sync();},requestExit(onExit){if(!active())return true;prompt(onExit);return false;}};
+ window.PAPageLock={isLocked:active,refresh:sync,setResultState(value){resultActive=!!value;sync();},requestExit(onExit){if(!active())return true;prompt(onExit);return false;},
+  // Any screen (e.g. a mini-game overlay): exit only after the parent PIN. No PIN set → exit as before.
+  confirmExit(onExit,labels){if(!guardianPin()){onExit();return true;}prompt(onExit,labels);return false;}};
  sync();
 })();
 

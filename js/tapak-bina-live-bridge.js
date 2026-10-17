@@ -30,7 +30,7 @@ function tryStartFocus(skillId){
   document.head.appendChild(style)}
  document.body.append(node);
  const frame=node.querySelector('#paTapakBinaFrame');run={node,frame,nonce:idNonce,grade,skillId:id,profile:db,plan,seen:new Set()};
- node.querySelector('#paTapakBinaExit').onclick=close;
+ (window.PAMiniGameExit?window.PAMiniGameExit.guard(node.querySelector('#paTapakBinaExit'),node.querySelector('iframe'),close):node.querySelector('#paTapakBinaExit').onclick=close);
  const params=new URLSearchParams({pa_focus_live:'ruang',pa_grade:String(grade),pa_origin_skill:id,pa_nonce:idNonce});
  const [page,hash]=router.url(plan).split('#');frame.src=page+'?'+params.toString()+(hash?'#'+hash:'');
  document.body.classList.add('pa-tapak-bina-active');window.PAFocusPractice?.close?.();

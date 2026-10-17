@@ -32,9 +32,9 @@ function openFocusShadow(kind,skillId,allowProduction=false){
  const nonce=(crypto.randomUUID?.()||String(Date.now())+'-'+Math.random().toString(36).slice(2));
  const label=isMoney?'Wang':'Masa';
  const node=document.createElement('section');node.id='paWirayungOverlay';node.setAttribute('role','dialog');node.setAttribute('aria-label',(production?'Semakan':'Ujian shadow')+' Kemahiran Fokus '+label);node.setAttribute('aria-modal','true');
- node.innerHTML='<div class="paWirayungNav"><b>Mini-game Kemahiran Fokus · '+label+'</b><small>'+(production?'Ujian diagnosis · laporan disimpan':'Shadow sahaja · tiada simpanan profil')+'</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Ujian diagnosis '+label+'" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
+ node.innerHTML='<div class="paWirayungNav"><b>Mini-game Kemahiran Fokus · '+label+'</b><small>'+(production?'Latihan '+label:'Shadow sahaja · tiada simpanan profil')+'</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Ujian diagnosis '+label+'" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
  document.body.append(node);shadowRun={node,frame:node.querySelector('iframe'),nonce,skillId,kind,production,profile:typeof db!=='undefined'?db:null};
- node.querySelector('#paWirayungExit').onclick=closeMoneyShadow;
+ (window.PAMiniGameExit?window.PAMiniGameExit.guard(node.querySelector('#paWirayungExit'),shadowRun.frame,closeMoneyShadow):node.querySelector('#paWirayungExit').onclick=closeMoneyShadow);
  shadowRun.frame.src=isMoney
   ?'gerai-wirayung.html?pa_focus_diagnostic=money&pa_origin_skill='+encodeURIComponent(skillId)+'&pa_grade='+encodeURIComponent(grade)+'&pa_focus_modes='+encodeURIComponent((moneyPlan?.modes||[]).join(','))+'&pa_nonce='+encodeURIComponent(nonce)+'#d'+grade+'-bayar'
   :'menara-jam.html?pa_focus_diagnostic=time&pa_origin_skill='+encodeURIComponent(skillId)+'&pa_nonce='+encodeURIComponent(nonce)+'#d2-baca-unit-tamat-tempoh';
@@ -48,8 +48,8 @@ function openTimeMiniGame(skillId,plan,diagnostic=false){
  if(run)close();if(shadowRun)closeMoneyShadow();
  const nonce=(crypto.randomUUID?.()||String(Date.now())+'-'+Math.random().toString(36).slice(2));
  const node=document.createElement('section');node.id='paWirayungOverlay';node.setAttribute('role','dialog');node.setAttribute('aria-label','Mini-game Kemahiran Fokus Masa Darjah '+plan.grade);node.setAttribute('aria-modal','true');
- node.innerHTML='<div class="paWirayungNav"><b>Tren Jam · Darjah '+plan.grade+'</b><small>'+(diagnostic?'Semakan perbandingan masa · laporan disimpan':'Latihan Masa · mod '+plan.modes.join(', '))+'</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Tren Jam Darjah '+plan.grade+'" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
- document.body.append(node);shadowRun={node,frame:node.querySelector('iframe'),nonce,skillId,kind:'time',production:true,diagnostic,profile:db};node.querySelector('#paWirayungExit').onclick=closeMoneyShadow;
+ node.innerHTML='<div class="paWirayungNav"><b>Tren Jam · Darjah '+plan.grade+'</b><small>Latihan Masa</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Tren Jam Darjah '+plan.grade+'" id="paWirayungFrame"></iframe><div id="paFocusShadowSummary" hidden style="flex:0 0 auto;padding:12px 18px;background:#fff8e7;color:#47321f;font:700 15px/1.5 system-ui,sans-serif"></div>';
+ document.body.append(node);shadowRun={node,frame:node.querySelector('iframe'),nonce,skillId,kind:'time',production:true,diagnostic,profile:db};(window.PAMiniGameExit?window.PAMiniGameExit.guard(node.querySelector('#paWirayungExit'),shadowRun.frame,closeMoneyShadow):node.querySelector('#paWirayungExit').onclick=closeMoneyShadow);
  const diagnosticQuery=diagnostic?'&pa_focus_diagnostic=time':'';
  shadowRun.frame.src='menara-jam.html?pa_origin_skill='+encodeURIComponent(skillId)+'&pa_nonce='+encodeURIComponent(nonce)+diagnosticQuery+'#'+plan.hash;
  document.body.classList.add('pa-wirayung-active');window.PAFocusPractice?.close?.();return true;
@@ -73,7 +73,7 @@ function receiveMoneyShadow(e){
  if(shadowRun.kind==='time'&&m?.type==='PA_FOCUS_TIME_CLOSE'&&m.version===1&&m.nonce===shadowRun.nonce){closeMoneyShadow();return true}
  const expectedType=shadowRun.kind==='time'?'PA_FOCUS_TIME_RESULT':'PA_FOCUS_MONEY_SHADOW_RESULT';if(!m||m.type!==expectedType||m.version!==1||m.nonce!==shadowRun.nonce||!m.report)return true;
  const r=m.report,summary=shadowRun.node.querySelector('#paFocusShadowSummary');
- summary.hidden=false;summary.textContent=(r.state==="candidate"?"Calon fokus: "+String(r.nextSkillId||r.rootCause||"semakan lanjut")+" · ":"Belum cukup bukti · ")+String(r.parentText||"");
+ if(!shadowRun.production)summary.hidden=false;summary.textContent=(r.state==="candidate"?"Calon fokus: "+String(r.nextSkillId||r.rootCause||"semakan lanjut")+" · ":"Belum cukup bukti · ")+String(r.parentText||"");
  if(shadowRun.production&&shadowRun.kind==="money"){
   if(typeof db==="undefined"||db!==shadowRun.profile||activeGrade()!==Number(db.schoolGrade)||String(r.originSkillId||"")!==shadowRun.skillId)return true;
   const diagnostic=window.PAFocusMoneyDiagnosticV2;
@@ -152,7 +152,7 @@ function open(skillId,focusDiagnostic=false){
  node.innerHTML='<div class="paWirayungNav"><b>Gerai Wirayung</b><small>Latihan Wang · Darjah '+grade+'</small><button id="paWirayungExit" type="button">✕ Kembali</button></div><iframe title="Permainan Gerai Wirayung" id="paWirayungFrame" allow="autoplay"></iframe>';
  document.body.append(node);
  run={node,frame:node.querySelector("iframe"),grade,nonce,skillId,focusDiagnostic,profile:db};
- node.querySelector("#paWirayungExit").onclick=close;
+ (window.PAMiniGameExit?window.PAMiniGameExit.guard(node.querySelector('#paWirayungExit'),run.frame,close):node.querySelector('#paWirayungExit').onclick=close);
  run.frame.src="gerai-wirayung.html?pa_nonce="+encodeURIComponent(nonce)+(focusDiagnostic?"&pa_focus_live=money&pa_origin_skill="+encodeURIComponent(skillId)+"&pa_focus_modes="+encodeURIComponent(modes.join(",")):"")+"#d"+grade+"-"+modes.join("-");
  document.body.classList.add("pa-wirayung-active");
  window.PAFocusPractice?.close?.();

@@ -612,7 +612,7 @@ function adapt(st){const f=q.fam,up=q.nTiers-1;
 function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';const cols=['#ffd24b','#ff8fb1','#59c8ff','#55d98a','#fff'];
  for(let i=0;i<26;i++){const e=document.createElement('i'),a=Math.random()*Math.PI*2,d=70+Math.random()*120;e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d-30+'px');e.style.background=cols[i%cols.length];e.style.animationDelay=(Math.random()*.15)+'s';if(i%3===0)e.style.borderRadius='50%';b.appendChild(e)}}
 function setDone(){const got=setLog.reduce((a,l)=>a+l.st,0);$('doneTitle').textContent='Menara '+sets+' Siap!';
- $('finishText').textContent=focusRun?'Kamu menyiapkan '+SET+' cabaran Ruang dan memperoleh '+got+' daripada '+SET*3+' bintang. Bukti jawapan dihantar kepada Kemahiran Fokus; markah permainan tidak mengubah mastery.':'Kamu menyiapkan '+SET+' bahagian menara berkembar dan memperoleh '+got+' daripada '+SET*3+' bintang. Markah latihan sahaja, bukan rekod mastery.';
+ $('finishText').textContent=focusRun?'Kamu menyiapkan '+SET+' cabaran Ruang dan memperoleh '+got+' daripada '+SET*3+' bintang. Hebat!':'Kamu menyiapkan '+SET+' bahagian menara berkembar dan memperoleh '+got+' daripada '+SET*3+' bintang. Hebat!';try{if(window.parent!==window)window.parent.postMessage({type:'PA_MINIGAME_SET_DONE',version:1},location.origin)}catch(_){}
  $('faces').innerHTML=setLog.map(l=>'<div><img src="'+A+l.q.pet+'-happy.webp" alt="'+l.q.who+'">'+'★'.repeat(l.st)+'</div>').join('');$('complete').hidden=false;$('again').focus()}
 $('again').onclick=()=>{$('complete').hidden=true;$('candi').classList.remove('done');sets++;setLog=[];startRound()};
 $('check').onclick=check;

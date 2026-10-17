@@ -925,8 +925,8 @@ function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)retur
 function ledger(){const st=log.reduce((a,l)=>a+l.stars,0),firsts=log.filter(l=>l.first).length;
  $('lines').innerHTML=log.map(l=>`<div class="tile" title="${l.m.who}"><img src="${asset(l.m.pet+'-happy.webp')}" alt="${l.m.who}"><span class="st">${'★'.repeat(l.stars)}${'☆'.repeat(3-l.stars)}</span><small>${MODES[l.m.mode].stamp(l.m,l.target)}</small></div>`).join('');
  $('ledgerSales').textContent=firsts+' / '+log.length;$('ledgerStars').textContent=st+' / '+(log.length*3);
- $('ledgerNote').textContent=served+' pelanggan dilayan. Rehat sekejap, kemudian sambung. Kemajuan latihan direkod untuk laporan ibu bapa.';
- $('overlay').hidden=false;$('again').focus()}
+ $('ledgerNote').textContent=served+' pelanggan dilayan. Rehat sekejap, kemudian sambung.';
+ $('overlay').hidden=false;$('again').focus();try{if(window.parent!==window)window.parent.postMessage({type:'PA_MINIGAME_SET_DONE',version:1},location.origin)}catch(_){}}
 
 /* ---------- DEV: tukar Darjah (sementara) ---------- */
 let devGrade=cfg.grade,devModes=[...cfg.modes];
