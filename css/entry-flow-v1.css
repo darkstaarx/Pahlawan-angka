@@ -15,6 +15,7 @@
 #login[data-entry="welcome"] .cloudLoginCard,#login[data-entry="welcome"] #paDemoMount,#login[data-entry="welcome"] #adminAuth { display:none!important; }
 #login:not([data-entry="welcome"]) .paEntryWelcome { display:none; }
 #login #paDemoMount { display:none!important; }
+.cloudLoginCard.pmSigned #paDemoMount { display:none!important; }
 #login[data-entry="auth"] .cloudLoginCard { margin-top:0; }
 #login .paEntryAuthBack { margin:0; justify-self:start; }
 #login[data-entry="account"] .paEntryAuthBack,#login[data-entry="account"] #paEntryAuthTitle { display:none; }

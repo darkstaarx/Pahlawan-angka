@@ -28,6 +28,7 @@ function syncSignedShell(){
   const card=document.querySelector('.cloudLoginCard');
   if(!card)return;
   card.classList.toggle('pmSigned',signed());
+  const demo=document.getElementById('paDemoMount');if(demo)demo.hidden=signed();
   const head=card.querySelector('.cloudLoginHead span');
   if(head&&signed()){
     const b=head.querySelector('b'),sm=head.querySelector('small');
