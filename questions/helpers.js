@@ -400,9 +400,9 @@ function countingObjects(count,kind=null){
  const names={apple:'epal',orange:'oren',rambutan:'rambutan',watermelon_slice:'potongan tembikai',starfruit_slice:'potongan belimbing',pencil:'pensel',eraser:'pemadam',candy:'gula-gula',balloon:'belon'};
  const keys=Object.keys(names),type=Object.prototype.hasOwnProperty.call(names,kind)?kind:keys[Math.floor(Math.random()*keys.length)];
  const n=Math.max(0,Math.floor(Number(count)||0));
- // Up to 10: rows of 5 at 42px. 11–20: rows of 10 split 5 + 5 (like a ten-frame) at 30px, so 20 objects take
+ // Up to 10: rows of 5 at 42px. 11–20: rows of 10 split 5 + 5 (like a ten-frame) at 34px, so 20 objects take
  // two short rows and the whole question fits on a phone without scrolling.
- const cols=n<=10?5:10,size=n<=10?42:n<=20?30:24,width=n<=10?250:340;
+ const cols=n<=10?5:10,size=n<=10?42:n<=20?34:24,width=n<=10?250:370;
  const img=`<img src="assets/questions/counting/${type}.png" width="${size}" height="${size}" alt="" draggable="false" decoding="async" style="display:block;width:100%;max-width:${size}px;height:auto;aspect-ratio:1/1;object-fit:contain">`;
  return `<div class="paCountingSet" role="img" aria-label="Kumpulan ${names[type]} untuk dikira" style="display:grid;grid-template-columns:${cols===10?'repeat(5,minmax(0,1fr)) 10px repeat(5,minmax(0,1fr))':'repeat(5,minmax(0,1fr))'};justify-items:center;align-items:center;gap:4px 2px;width:min(${width}px,98%);max-width:100%;margin:6px auto 10px">${Array.from({length:n},(_,i)=>(cols===10&&i%10===5?'<span aria-hidden="true"></span>':'')+img).join('')}</div>`;
 }
