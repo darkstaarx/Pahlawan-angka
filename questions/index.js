@@ -72,7 +72,32 @@ const PAOptionIntegrity=(function(){
   });
   return out;
  }
- return{version:VERSION,sanitize,groupDigits,groupText,key};
+ // Darjah 1: Q() fills missing choices with generic values (110, 12, "13" beside betul/salah).
+ // Replace those fillers with choices a seven-year-old would actually consider.
+ function refineYoung(q,skillId){
+  if(!q||!/^D1\./.test(String(skillId||''))||!Array.isArray(q.wrong))return q;
+  const ans=strip(q.answer).trim(),n=/^\d+$/.test(ans)?Number(ans):null;
+  // Year 1 works with numbers up to 100: a choice above 100 is replaced as well.
+  const replace=o=>o&&(o.tag==='generated'||(n!==null&&n<=100&&/^\d+$/.test(strip(labelOf(o)).trim())&&Number(strip(labelOf(o)))>100));
+  if(!q.wrong.some(replace))return q;
+  const seen=new Set([key(ans),...q.wrong.filter(o=>!replace(o)).map(o=>key(labelOf(o)))]);
+  let pool=[];
+  const sen=ans.match(/^(\d+) sen$/),rm=ans.match(/^RM(\d+(?:\.\d{2})?)$/),list=ans.match(/^\d+(?:, \d+)+$/);
+  const W=window.PAY1V2Runtime&&window.PAY1V2Runtime.words,wordN=W?Array.from({length:101},(_,i)=>i).find(i=>String(W(i))===ans):undefined;
+  if(list){const xs=ans.split(', ');const perm=[];const go=(a,rest)=>{if(!rest.length){perm.push(a.join(', '));return}rest.forEach((x,i)=>go([...a,x],rest.filter((_,j)=>j!==i)))};go([],xs);pool=perm.filter(v=>v!==ans).sort(()=>Math.random()-.5)}
+  else if(wordN!==undefined)pool=[wordN+1,wordN-1,wordN+10,wordN-10].filter(v=>v>=0&&v<=100).map(v=>String(W(v)));
+  else if(/^\d\/\d$/.test(ans)){const val=f=>{const[a,b]=f.split('/').map(Number);return a/b};const all=[...seen].filter(x=>/^\d\/\d$/.test(x)).map(val).concat(val(ans));pool=['1/2','1/4','3/4','4/4'].filter(f=>!all.some(v=>Math.abs(v-val(f))<1e-9))}
+  // "Semak kewajaran" items need distractors far from the estimate: keep them ≥30 away, still within 0–100.
+  else if(n!==null&&q.wrong.some(o=>o&&o.tag==='estimate'))pool=[n+30,n-30,n+40,n-40,n+50,n-50,n+60,n-60].filter(v=>v>=0&&v<=100).map(String);
+  else if(n!==null)pool=(n%10===0&&n>=10?[n-10,n+10,n-20,n+20,n+30].filter(v=>v>0&&v<=100):[n+1,n-1,n+2,n-2,n+10,n-10].filter(v=>v>=0&&v<=100)).map(String);
+  else if(sen){const v=Number(sen[1]);pool=[v+10,v-10,v+5,v-5,v+20].filter(x=>x>=5&&x<=95).map(x=>x+' sen')}
+  else if(rm){const v=Number(rm[1]),dp=rm[1].includes('.');pool=[v+1,v-1,v+2,v+0.5,v-0.5].filter(x=>x>0).map(x=>'RM'+(dp||!Number.isInteger(x)?x.toFixed(2):String(x)))}
+  else pool=['tidak pasti','tidak boleh ditentukan','sama banyak','semua betul'];
+  const fresh=pool.filter(v=>!seen.has(key(v)));
+  const wrong=q.wrong.map(o=>{if(!replace(o)||!fresh.length)return o;const v=fresh.shift();seen.add(key(v));return{v,label:v,tag:'young_near'}});
+  return Object.assign({},q,{wrong});
+ }
+ return{version:VERSION,sanitize,refineYoung,groupDigits,groupText,key};
 })();
 window.PAOptionIntegrity=PAOptionIntegrity;
 
@@ -141,6 +166,7 @@ function generate(id,s,interactionContext={}){
   if(!q&&interactionContext.strictSkill)return null;
   q=q || Q("2 + 2 = ?",4,[N(3,"generic"),N(5,"generic"),N(6,"generic")],"Tambah kedua-dua nombor.","Fallback",false,false);
   q=PAOptionIntegrity.sanitize(q);
+  q=PAOptionIntegrity.refineYoung(q,id);
   q=window.PAWrittenArithmetic?.inject?.(q,id,sess)||q;
   q=window.PAGameQuestionInteractions?.prepare?.(q,{skillId:id,state:s,meta:typeof META!=='undefined'?META[id]:null,...interactionContext})||q;
   // Grouping runs after prepare(): typed-answer specs keep the plain numeric value.

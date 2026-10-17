@@ -19,7 +19,7 @@ GEN['1.1.1']=function(id,s){
   return mark(q(`Pola A mempunyai ${a} bulatan. Pola B mempunyai ${b} bulatan. Pernyataan yang betul?`,'Pola B lebih banyak',[Nq('Pola A lebih banyak','compare'),Nq('Kedua-duanya sama banyak','compare'),Nq('Pola B lebih sedikit','compare')],'Banding bilangan objek dalam pola.','Tahun 1 · Pola Kuantiti'),id,'1.1.1',mode,'verbal','application',s,['compare']);
  }
  const a=rand(4,8),b=rand(4,8),c=a+b;
- return mark(q(`Hakim kata kumpulan ${a} objek lebih banyak daripada kumpulan ${b} objek. Bila kenyataan Hakim betul?`,a>b?'apabila bilangan pertama lebih besar':'kenyataan itu tidak betul',[Nq('apabila kedua-dua nombor sama','compare'),Nq('apabila bilangan pertama lebih kecil','compare'),Nq(String(c),'operation')],'Banding nilai, bukan saiz tulisan atau susunan objek.','Tahun 1 · Penaakulan Kuantiti'),id,'1.1.1',mode,'verbal','reasoning',s,['compare']);
+ return mark(q(`Hakim kata kumpulan ${a} objek lebih banyak daripada kumpulan ${b} objek. Betulkah kata Hakim?`,a>b?'betul':'salah',[Nq(a>b?'salah':'betul','compare'),Nq('sama banyak','compare'),Nq('tidak pasti','compare')],'Banding nilai, bukan saiz tulisan atau susunan objek.','Tahun 1 · Penaakulan Kuantiti'),id,'1.1.1',mode,'verbal','reasoning',s,['compare']);
 };
 
 GEN['1.2.1']=function(id,s){
@@ -90,16 +90,16 @@ GEN['1.6.1']=function(id,s){
 
 GEN['1.7.1']=function(id,s){
  const n=rand(12,48),nearest=Math.round(n/10)*10,mode=chooseMode(id,'1.7.1',bandModes(s,['estimate_visual'],['estimate_visual','estimate_reasonable'],['estimate_reasonable','reference_compare']));
- if(mode==='estimate_visual')return mark(q(`${estimateCloud(n)}Tanpa mengira satu demi satu, anggaran paling munasabah?`,nearest,[Nq(Math.max(10,nearest-20),'estimate'),Nq(Math.min(60,nearest+20),'estimate'),Nq(5,'estimate')],'Lihat keseluruhan kumpulan dan banding dengan puluhan terdekat.','Tahun 1 · Anggaran'),id,'1.7.1',mode,'visual','concept',s,['estimate']);
+ if(mode==='estimate_visual')return mark(q(`${estimateCloud(n)}Tanpa mengira satu demi satu, anggaran yang paling dekat?`,nearest,[Nq(Math.max(10,nearest-20),'estimate'),Nq(Math.min(60,nearest+20),'estimate'),Nq(5,'estimate')],'Lihat keseluruhan kumpulan dan banding dengan puluhan terdekat.','Tahun 1 · Anggaran'),id,'1.7.1',mode,'visual','concept',s,['estimate']);
  if(mode==='estimate_reasonable')return mark(q(`Sebuah bakul kelihatan mempunyai lebih kurang <b>${n}</b> rambutan. Anggaran puluh yang sesuai?`,nearest,[Nq(Math.max(0,nearest-10),'estimate'),Nq(nearest+20,'estimate'),Nq(n,'estimate')],'Anggaran tidak perlu sama dengan bilangan tepat.','Tahun 1 · Anggaran Munasabah'),id,'1.7.1',mode,'story','application',s,['estimate']);
- const ref=20,more=n>ref?'lebih daripada 20':'kurang daripada 20';return mark(q(`Banding kumpulan kira-kira ${n} objek dengan set rujukan 20. Pernyataan munasabah?`,more,[Nq(more==='lebih daripada 20'?'kurang daripada 20':'lebih daripada 20','estimate'),Nq('tepat 20','estimate'),Nq('tidak boleh dianggar','estimate')],'Gunakan set rujukan untuk membuat anggaran.','Tahun 1 · Set Rujukan'),id,'1.7.1',mode,'verbal','reasoning',s,['estimate','compare']);
+ const ref=20,more=n>ref?'lebih daripada 20':'kurang daripada 20';return mark(q(`Banding kumpulan kira-kira ${n} objek dengan 20 objek. Pilih ayat yang betul.`,more,[Nq(more==='lebih daripada 20'?'kurang daripada 20':'lebih daripada 20','estimate'),Nq('tepat 20','estimate'),Nq('tidak boleh dianggar','estimate')],'Gunakan set rujukan untuk membuat anggaran.','Tahun 1 · Set Rujukan'),id,'1.7.1',mode,'verbal','reasoning',s,['estimate','compare']);
 };
 
 GEN['1.8.1']=function(id,s){
  const n=rand(11,99),ans=Math.round(n/10)*10,mode=chooseMode(id,'1.8.1',bandModes(s,['round_line'],['round_line','round_direct'],['round_direct','round_reason']));
  if(mode==='round_line'){const lo=Math.floor(n/10)*10,hi=Math.ceil(n/10)*10;return mark(q(`${numLine(lo,hi,n,String(n))}Bundarkan <b>${n}</b> kepada puluh terdekat.`,ans,[Nq(lo===ans?hi:lo,'round'),Nq(n,'round'),Nq(Math.min(100,ans+10),'round')],'Lihat puluh yang paling dekat pada garis nombor.','Tahun 1 · Bundar Garis Nombor'),id,'1.8.1',mode,'visual','concept',s,['round']);}
  if(mode==='round_direct')return mark(q(`<b>${n}</b> dibundarkan kepada puluh terdekat menjadi?`,ans,[Nq(Math.floor(n/10)*10,'round'),Nq(Math.ceil(n/10)*10,'round'),Nq(n,'round')],'Digit sa 5 atau lebih naik ke puluh seterusnya.','Tahun 1 · Bundar Puluh'),id,'1.8.1',mode,'symbolic','procedure',s,['round']);
- const claim=Math.random()<.5?ans:(ans===Math.floor(n/10)*10?ans+10:ans-10);return mark(q(`${name()} membundarkan <b>${n}</b> kepada <b>${claim}</b>. Adakah betul?`,claim===ans?'betul':'salah',[Nq(claim===ans?'salah':'betul','round'),Nq(String(ans),'round'),Nq('tidak pasti','round')],'Banding jarak nombor kepada dua puluh bersebelahan.','Tahun 1 · Semak Bundaran'),id,'1.8.1',mode,'verbal','reasoning',s,['round']);
+ const claim=Math.random()<.5?ans:(ans===Math.floor(n/10)*10?ans+10:ans-10);return mark(q(`${name()} membundarkan <b>${n}</b> kepada <b>${claim}</b>. Adakah betul?`,claim===ans?'betul':'salah',[Nq(claim===ans?'salah':'betul','round'),Nq('tidak boleh dibundarkan','round'),Nq('tidak pasti','round')],'Banding jarak nombor kepada dua puluh bersebelahan.','Tahun 1 · Semak Bundaran'),id,'1.8.1',mode,'verbal','reasoning',s,['round']);
 };
 
 GEN['1.9.1']=function(id,s){
@@ -108,7 +108,7 @@ GEN['1.9.1']=function(id,s){
  const op=down?`tolak ${step}`:`tambah ${step}`;
  if(mode==='identify_step')return mark(q(`Pola: <b>${seq.join(', ')}</b>. Apakah peraturannya?`,op,[Nq(down?`tambah ${step}`:`tolak ${step}`,'pattern'),Nq('tambah 1','pattern'),Nq('tiada pola','pattern')],'Cari beza antara nombor berturutan.','Tahun 1 · Kenal Pola'),id,'1.9.1',mode,'symbolic','concept',s,['pattern']);
  if(mode==='identify_direction')return mark(q(`<b>${seq.join(', ')}</b> bergerak secara?`,down?'menurun':'menaik',[Nq(down?'menaik':'menurun','pattern'),Nq('rawak','pattern'),Nq('sama sahaja','pattern')],'Lihat sama ada nilai bertambah atau berkurang.','Tahun 1 · Arah Pola'),id,'1.9.1',mode,'symbolic','application',s,['pattern']);
- return mark(q(`${name()} kata pola <b>${seq.join(', ')}</b> ialah tambah ${step}. Penilaian?`,down?'salah':'betul',[Nq(down?'betul':'salah','pattern'),Nq(op,'pattern'),Nq('tidak boleh ditentukan','pattern')],'Periksa beza dan arah pada setiap langkah.','Tahun 1 · Semak Pola'),id,'1.9.1',mode,'verbal','reasoning',s,['pattern']);
+ return mark(q(`${name()} kata pola <b>${seq.join(', ')}</b> ialah tambah ${step}. Betulkah?`,down?'salah':'betul',[Nq(down?'betul':'salah','pattern'),Nq('tiada pola','pattern'),Nq('tidak pasti','pattern')],'Periksa beza dan arah pada setiap langkah.','Tahun 1 · Semak Pola'),id,'1.9.1',mode,'verbal','reasoning',s,['pattern']);
 };
 
 GEN['1.9.2']=function(id,s){

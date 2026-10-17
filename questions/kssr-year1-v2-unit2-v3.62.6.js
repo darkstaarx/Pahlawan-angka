@@ -19,7 +19,7 @@ GEN['2.1.1']=function(id,s){
   ]),ans=prompt[1];
   return mark(q(prompt[0]+' Operasi yang sesuai?',ans,[Nq(ans==='tambah'?'tolak':'tambah','operation_language'),Nq('darab','operation_language'),Nq('bahagi','operation_language')],'Kenal perkataan dan perubahan dalam situasi.','Tahun 1 · Kenal Operasi'),id,'2.1.1',mode,'story','application',s,['operation_language']);
  }
- return mark(q(`${name()} kata perkataan <b>“tinggal”</b> sentiasa bermaksud tambah. Penilaian?`,'salah',[Nq('betul','operation_language'),Nq('kadang-kadang darab','operation_language'),Nq('tidak pasti','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
+ return mark(q(`${name()} kata perkataan <b>“tinggal”</b> sentiasa bermaksud tambah. Betulkah?`,'salah',[Nq('betul','operation_language'),Nq('kadang-kadang darab','operation_language'),Nq('tidak pasti','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
 };
 
 GEN['2.1.2']=function(id,s){

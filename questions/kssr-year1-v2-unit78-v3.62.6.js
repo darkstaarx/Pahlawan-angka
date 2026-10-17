@@ -101,7 +101,7 @@ GEN['8.3.1']=function(id,s){
  if(mode==='missing_data'){
   const total=9,known=rand(3,6),ans=total-known;return mark(q(`Jumlah murid memilih karipap dan pau ialah <b>${total}</b>. Jika ${known} memilih karipap, berapa memilih pau?`,ans,[Nq(total,'data'),Nq(known,'data'),Nq(ans+1,'operation')],'Cari bahagian yang hilang daripada jumlah.','Tahun 1 · Data Hilang'),id,'8.3.1',mode,'story','reasoning',s,['data','operation']);
  }
- return mark(q('Piktograf menunjukkan 6 karipap dan 3 pau. Seorang murid kata pau lebih banyak. Penilaian?','salah',[Nq('betul','data'),Nq('sama banyak','data'),Nq('tidak boleh ditentukan','data')],'Banding bilangan gambar bagi kedua-dua kategori.','Tahun 1 · Semak Tafsiran Data'),id,'8.3.1',mode,'verbal','reasoning',s,['data','compare']);
+ return mark(q('Piktograf menunjukkan 6 karipap dan 3 pau. Seorang murid kata pau lebih banyak. Betulkah?','salah',[Nq('betul','data'),Nq('sama banyak','data'),Nq('tidak boleh ditentukan','data')],'Banding bilangan gambar bagi kedua-dua kategori.','Tahun 1 · Semak Tafsiran Data'),id,'8.3.1',mode,'verbal','reasoning',s,['data','compare']);
 };
 
 document.documentElement?.setAttribute('data-y1-v2-unit78','3.62.6');
