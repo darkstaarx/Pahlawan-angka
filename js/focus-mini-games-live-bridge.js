@@ -18,11 +18,11 @@ function gameFor(skillId){const id=text(skillId),meta=typeof META==='undefined'?
  if(window.PAGudangHarta?.SKILL?.[id]&&['Nombor','Operasi'].includes(String(meta?.domain||'')))return GAMES.operations;
  if(/^D[1-6]\.FRAC$|^D2\.3\.(1|3|4)$/.test(id))return GAMES.fraction;
  if(/^D[1-6]\.MEASURE$|^D2\.6\.[1-4]$/.test(id))return GAMES.measure;
- if(window.PADapurRamuan?.SKILL?.[id]&&String(meta?.domain||'')==='Nisbah')return GAMES.ratio;
- if(window.PAPosPeninjau?.SKILL?.[id]&&String(meta?.domain||'')==='Data')return GAMES.data;
+ if(window.PADapurRamuan?.SKILL?.[id]&&['Nisbah','Kadaran'].includes(String(meta?.domain||'')))return GAMES.ratio;
+ if(window.PAPosPeninjau?.SKILL?.[id]&&['Data','Kebolehjadian'].includes(String(meta?.domain||'')))return GAMES.data;
  if(window.PALombongPermata?.SKILL?.[id]&&['Perpuluhan','Peratus'].includes(String(meta?.domain||'')))return GAMES.decimal;
  return null}
-function allowedSession(){return typeof db!=='undefined'&&db&&!db.demoMode&&!(typeof isDemoStudent==='function'&&isDemoStudent())&&!(typeof isDevMode==='function'&&isDevMode())&&!!window.PACommercial?.requireFeature?.('focus')&&!(typeof enforceRestuLock==='function'&&enforceRestuLock())}
+function allowedSession(){return typeof db!=='undefined'&&db&&!db.demoMode&&!!window.PACommercial?.requireFeature?.('focus')&&!(typeof enforceRestuLock==='function'&&enforceRestuLock())}
 function persist(){if(typeof save==='function')save();window.PACloud?.scheduleSave?.()}
 function resolvePending(correct){if(!run?.pending)return null;const p=run.pending,encounter=window.PALearnerReview?.resolve?.(p.q,{correct:!!correct,usedHint:p.hints>0,hintLevel:p.hints,seconds:0},run.profile)||null;run.pending=null;if(encounter)persist();return encounter}
 function close(){if(!run)return;resolvePending(false);run.node.remove();run=null;document.body.classList.remove('pa-focus-minigame-active');window.PACloud?.syncSaveNow?.()}
@@ -88,6 +88,6 @@ function receive(event){
  const domain=run.game===GAMES.operations?'Nombor & Operasi':run.game===GAMES.fraction?'Pecahan':run.game===GAMES.measure?'Ukuran':run.game===GAMES.ratio?'Nisbah & Kadaran':run.game===GAMES.data?'Data':'Perpuluhan & Peratus';
  const status=run.node.querySelector('#paFocusMiniGameStatus');if(status)status.textContent='Bukti latihan direkod: '+run.seen.size+' cabaran '+domain+'. Bintang permainan tidak mengubah mastery.';
 }
-function isActiveFrame(frame,nonce,skillId){return!!run&&run.game.id==='gudang-harta'&&run.frame.contentWindow===frame&&run.nonce===nonce&&run.skillId===skillId}
+function isActiveFrame(frame,nonce,skillId,gameId='gudang-harta'){return!!run&&run.game.id===gameId&&run.frame.contentWindow===frame&&run.nonce===nonce&&run.skillId===skillId}
 window.addEventListener('message',receive);window.PAFocusMiniGamesLive={tryStartFocus,close,gameFor,isActiveFrame};
 })();

@@ -4,9 +4,8 @@
 (function(){
 'use strict';
 const ARCH={"4":{"nisbah":["integrity_ratio_equivalent","integrity_ratio_missing","integrity_ratio_missing","integrity_ratio_equivalent","integrity_ratio_simplify","integrity_ratio_simplify"],"kadaran":["integrity_rate_unit","integrity_rate_scale","integrity_rate_missing","integrity_rate_scale","integrity_rate_missing"]},"5":{"nisbah":["integrity_ratio_missing","integrity_ratio_missing","integrity_ratio_equivalent","integrity_ratio_simplify","integrity_ratio_simplify"],"kadaran":["integrity_rate_unit","integrity_rate_scale","integrity_rate_missing","integrity_rate_scale","integrity_rate_missing"]},"6":{"nisbah":["y6v2_7_2_1_simplify","y6v2_7_2_1_equivalent","y6v2_7_2_1_same_unit","y6v2_7_2_1_ratio_from_total","y6v2_7_2_1_ratio_compare","y6v2_7_2_1_ratio_error"],"kadaran":["y6v2_7_3_1_direct","y6v2_7_3_1_unit_rate","y6v2_7_3_1_recipe","y6v2_7_3_1_table","y6v2_7_3_1_missing","y6v2_7_3_1_reverse","y6v2_7_3_1_compare_rates","y6v2_7_3_1_proportion_error"],"masalah":["y6v2_7_4_1_ratio_problem","y6v2_7_4_1_proportion_problem","y6v2_7_4_1_recipe_route","y6v2_7_4_1_map_budget","y6v2_7_4_1_route_problem","y6v2_7_4_1_compare_plans","y6v2_7_4_1_reverse_problem","y6v2_7_4_1_claim","y6v2_7_4_1_multi_constraint"]}};
-// The app's KSSR graph has a live Nisbah skill only at D6. D4/D5 banks stay
-// available for DEV review, but must not be presented as diagnosed curriculum.
-const SKILL={'D6.RATIO':[6,['nisbah','kadaran','masalah']]};
+// Every Nisbah/Kadaran skill in the app graph has a Focus mini game.
+const SKILL={'D4.RATIO':[4,['nisbah']],'D4.RATE':[4,['kadaran']],'D5.RATIO':[5,['nisbah']],'D5.RATE':[5,['kadaran']],'D6.RATIO':[6,['nisbah','kadaran','masalah']]};
 const ALIAS={y6v2_7_2_1_length_units:'y6v2_7_2_1_same_unit',y6v2_7_2_1_liquid_units:'y6v2_7_2_1_same_unit',y6v2_7_2_1_mass_units:'y6v2_7_2_1_same_unit',y6v2_7_2_1_money_ratio:'y6v2_7_2_1_same_unit'};
 function locate(grade,a,modes){a=String(a||'');const cands=[a,...[].concat(ALIAS[a]||[])],out=[];
  for(const m of modes){const list=(ARCH[grade]||{})[m]||[];const i=cands.map(c=>list.indexOf(c)).find(x=>x>=0);if(i!=null)out.push({mode:m,start:i})}return out}

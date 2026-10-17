@@ -9,8 +9,6 @@ const text=x=>String(x??'').trim();
 function nonce(){return crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`}
 function allowedSession(){
  return typeof db!=='undefined'&&db&&!db.demoMode&&
-  !(typeof isDemoStudent==='function'&&isDemoStudent())&&
-  !(typeof isDevMode==='function'&&isDevMode())&&
   !!window.PACommercial?.requireFeature?.('focus')&&
   !(typeof enforceRestuLock==='function'&&enforceRestuLock());
 }

@@ -420,6 +420,12 @@ const PLACE=['persepuluh','perseratus','perseribu'];
 const ITEM=[['reben','m'],['tali','m'],['jus','ℓ'],['air','ℓ'],['beras','kg'],['tepung','kg']];
 
 const Fx={
+ /* ================= D2 perpuluhan persepuluh (santai, satu tempat perpuluhan) ================= */
+ tenthRead:(arch)=>({arch,f:C=>{const n=R(1,9);return{kind:'pad',vis:{t:'grid',n:n*10},form:DEC(n/10),q:'Tulis bahagian berlorek sebagai nombor perpuluhan.',s:'Satu baris penuh = 0.1 (satu persepuluh).',a:'',hint2:'Kira baris yang berlorek. '+n+' baris = '+DX(n,1)+'.'}}}),
+ tenthShade:(arch)=>({arch,f:C=>{const n=R(1,9);return{kind:'grid',need:n*10,q:'Lorek '+DX(n,1)+' daripada petak.',sub:'Ketik nombor baris untuk lorek satu baris penuh.',s:'0.1 = satu baris penuh.',a:'',hint2:DX(n,1)+' bermaksud '+n+' baris penuh.'}}}),
+ tenthFrac:(arch)=>({arch,f:C=>{const n=R(1,9);return{kind:'pad',card:n+'/10',form:DEC(n/10),q:'Tulis '+n+'/10 dalam bentuk perpuluhan.',s:'Persepuluh: satu digit selepas titik perpuluhan.',a:'',hint2:n+'/10 dibaca "'+words(n)+' persepuluh" = 0.'+n+'.'}}}),
+ tenthBigger:(arch)=>({arch,f:C=>{let a=R(1,9),b=R(1,9);if(a===b)return null;const big=Math.random()<.6,w=big?(a>b?0:1):(a<b?0:1),L=[DX(a,1),DX(b,1)];
+  return{kind:'pick',opts:L.map((l,i)=>({id:'o'+i,label:l})),correct:'o'+w,ansTxt:L[w],q:'Permata manakah '+(big?'lebih berat':'lebih ringan')+'?',s:'Banding digit selepas titik perpuluhan.',a:''}}}),
  /* ================= D3 perpuluhan & peratus asas ================= */
  gridRead:(arch,pct)=>({arch,f:C=>{const n=R(3,97);return{kind:'pad',vis:{t:'grid',n},form:pct?NUM(n,{post:'%'}):DEC(n/100),
   q:pct?'Berapakah peratus petak yang berlorek?':'Tulis bahagian berlorek sebagai nombor perpuluhan.',s:pct?'Peratus = bilangan daripada 100. Kira petak berlorek.':'Satu baris penuh = 0.1. Satu petak = 0.01.',a:'',
@@ -525,6 +531,8 @@ const Fx={
 const argmax=v=>v.indexOf(Math.max(...v)),argmin=v=>v.indexOf(Math.min(...v));
 
 const GEN={
+2:{
+ perpuluhan:[Fx.tenthRead('d2_tenths_grid'),Fx.tenthFrac('d2_tenths_fraction'),Fx.lineTap('d2_tenths_line',1),Fx.tenthShade('d2_tenths_shade'),Fx.tenthBigger('d2_tenths_compare')]},
 3:{
  perpuluhan:[Fx.gridRead('hundred_grid_to_decimal'),Fx.gridShade('hundred_grid_to_decimal'),Fx.fracToDec('hundredths_to_decimal'),Fx.placeVal('decimal_place_value_from_hundredths',2),Fx.lineTap('compare_decimals_number_line',2),Fx.cmpSym('compare_decimal_pair'),Fx.largest('select_largest_decimal',2),Fx.lazimAdd('add_decimals_hundredths',2,0),Fx.lazimSub('subtract_decimals_hundredths',2,0),Fx.missingAdd('missing_addend_decimal')],
  peratus:[Fx.gridRead('hundred_grid_to_percent',true),Fx.gridShade('percent_to_shaded_count',true),Fx.outOf100('number_out_of_100_to_percent'),Fx.pctWords('percent_words_to_symbol'),Fx.unshaded('infer_unshaded_percent'),Fx.match('match_fraction_decimal_percent'),Fx.nonEquiv('find_non_equivalent_representation')]},
@@ -546,7 +554,7 @@ const A='assets/minigames/lombong-permata/';
 const $=id=>document.getElementById(id);
 const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
 const MODE_LABEL={perpuluhan:'PERPULUHAN',peratus:'PERATUS',masalah:'MASALAH'};
-const GRADES={3:{title:'Perpuluhan perseratus & peratus asas'},4:{title:'Operasi perpuluhan & peratus'},5:{title:'Perseribu, pembundaran & peratus > 100%'},6:{title:'Darab/bahagi perpuluhan, peratus & masalah'}};
+const GRADES={2:{title:'Perpuluhan persepuluh'},3:{title:'Perpuluhan perseratus & peratus asas'},4:{title:'Operasi perpuluhan & peratus'},5:{title:'Perseribu, pembundaran & peratus > 100%'},6:{title:'Darab/bahagi perpuluhan, peratus & masalah'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
 const SAYS={perpuluhan:'Tolong sukat permata ini dengan tepat!',peratus:'Berapa peratus permata yang kita jumpa?',masalah:'Bantu saya selesaikan masalah lombong!'};
 const TIP={perpuluhan:'Sejajarkan titik perpuluhan. Kira tempat perpuluhan dengan teliti.',peratus:'Peratus bermaksud “daripada 100”. 100% = 1 keseluruhan.',masalah:'Kurungan dahulu, kemudian darab/bahagi, kemudian tambah/tolak.'};
@@ -555,7 +563,7 @@ const GCOL=['#ff5a8a','#4fb8ff','#5ee08a','#ffd23f','#b98bff'];
 
 /* ---------- hash ---------- */
 function parseHash(raw){const h=String(raw==null?location.hash.slice(1):raw).toLowerCase().split('?')[0],m=/^d([1-6])((?:-[a-z]+(?:@\d+)?)*)$/.exec(h);
- if(!m)return{grade:4,modes:GRADES[4].modes,start:{}};const gr=GEN[+m[1]]?+m[1]:Math.max(3,Math.min(6,+m[1])),start={},want=[];
+ if(!m)return{grade:4,modes:GRADES[4].modes,start:{}};const gr=GEN[+m[1]]?+m[1]:Math.max(2,Math.min(6,+m[1])),start={},want=[];
  m[2].split('-').filter(Boolean).forEach(t=>{const[k,n]=t.split('@');if(GEN[gr][k]&&!want.includes(k)){want.push(k);if(n)start[k]=+n}});
  return{grade:gr,modes:want.length?want:GRADES[gr].modes,start}}
 let cfg=parseHash();
@@ -702,7 +710,7 @@ function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
 
 /* ---------- DEV ---------- */
 let devGrade=cfg.grade,devModes=[...cfg.modes];
-function drawDev(){$('devGrades').innerHTML=[3,4,5,6].map(x=>'<button type="button" data-g="'+x+'" class="'+(x===devGrade?'on':'')+'">D'+x+'</button>').join('');
+function drawDev(){$('devGrades').innerHTML=[2,3,4,5,6].map(x=>'<button type="button" data-g="'+x+'" class="'+(x===devGrade?'on':'')+'">D'+x+'</button>').join('');
  $('devTitle').textContent='Darjah '+devGrade+' · '+GRADES[devGrade].title;
  $('devModes').innerHTML=GRADES[devGrade].modes.map(k=>'<button type="button" data-k="'+k+'" class="'+(devModes.includes(k)?'on':'')+'">'+MODE_LABEL[k].toLowerCase()+'</button>').join('');
  $('devGrades').querySelectorAll('button').forEach(b=>b.onclick=()=>{devGrade=+b.dataset.g;devModes=[...GRADES[devGrade].modes];drawDev()});
@@ -725,7 +733,7 @@ document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.datase
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__lbDebug=()=>q&&{kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,lz:q.lz,correct:q.correct,items:q.items,shade:shade.size,tick}; // ujian sahaja
 window.__lbGen={GEN}; // ujian sahaja
-function focusLaunchAllowed(){try{const p=new URLSearchParams(location.search),skill=p.get('skill'),host=window.parent,game=host.PAFocusMiniGamesLive?.gameFor(skill),plan=game?.router?.()?.planFor(host.db,skill);return host!==window&&p.get('pa_focus_live')==='1'&&!!p.get('pa_nonce')&&game?.id==='lombong-permata'&&!!window.PALombongPermata?.SKILL?.[skill]&&Number(host.db?.schoolGrade)===cfg.grade&&Number(plan?.grade)===cfg.grade&&plan?.hash===location.hash.slice(1)}catch(_){return false}}
+function focusLaunchAllowed(){try{const p=new URLSearchParams(location.search),skill=p.get('skill'),host=window.parent,sk=window.PALombongPermata?.SKILL?.[skill];/* The app's db is a top-level let (not window.db), so ask the bridge whether this frame is the active Focus launch. */return host!==window&&p.get('pa_focus_live')==='1'&&!!p.get('pa_nonce')&&!!sk&&Number(sk[0])===cfg.grade&&host.PAFocusMiniGamesLive?.isActiveFrame?.(window,p.get('pa_nonce'),skill,'lombong-permata')===true}catch(_){return false}}
 if(!DEV_ENABLED&&!focusLaunchAllowed()){document.body.innerHTML='<main style="min-height:100dvh;display:grid;place-items:center;padding:24px;background:#10263e;color:#fff6e0;font:700 16px system-ui;text-align:center"><section><h1>Lombong Permata Wira</h1><p>Buka latihan ini melalui Kemahiran Fokus untuk profil murid.</p></section></main>';return}
 resetAll();startRound();
 if(!DEV_ENABLED){$('devBtn').hidden=true;$('devBtn').style.display='none';$('dev').hidden=true;$('dev').style.display='none'}
