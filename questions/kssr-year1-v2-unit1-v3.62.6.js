@@ -81,9 +81,10 @@ GEN['1.5.2']=function(id,s){
 };
 
 GEN['1.6.1']=function(id,s){
- const n=rand(10,99),t=Math.floor(n/10),o=n%10,mode=chooseMode(id,'1.6.1',bandModes(s,['place_name'],['place_name','digit_value'],['digit_value','missing_place','error_place']));
+ // Dua digit berbeza dan digit sa bukan 0: "digit 6 dalam 66" kabur dan "digit 0" mengelirukan.
+ let t,o;do{t=rand(1,9);o=rand(1,9)}while(t===o);const n=t*10+o,mode=chooseMode(id,'1.6.1',bandModes(s,['place_name'],['place_name','digit_value'],['digit_value','missing_place','error_place']));
  if(mode==='place_name'){const ask=Math.random()<.5?'puluh':'sa',d=ask==='puluh'?t:o;return mark(q(`Dalam <b>${n}</b>, digit <b>${d}</b> berada pada tempat?`,ask,[Nq(ask==='puluh'?'sa':'puluh','place'),Nq('ratus','place'),Nq(String(d),'digit_value')],'Baca tempat dari kanan: sa kemudian puluh.','Tahun 1 · Nilai Tempat'),id,'1.6.1',mode,'symbolic','concept',s,['place']);}
- if(mode==='digit_value'){const ask=Math.random()<.5?'puluh':'sa',d=ask==='puluh'?t:o,ans=ask==='puluh'?t*10:o;return mark(q(`Nilai digit <b>${d}</b> pada tempat <b>${ask}</b> dalam ${n} ialah?`,ans,[Nq(d,'digit_value'),Nq(ask==='puluh'?o*10:t,'place'),Nq(n,'place')],'Nilai digit bergantung pada tempatnya.','Tahun 1 · Nilai Digit'),id,'1.6.1',mode,'symbolic','application',s,['digit_value','place']);}
+ if(mode==='digit_value'){const ask=Math.random()<.5?'puluh':'sa',d=ask==='puluh'?t:o,ans=ask==='puluh'?t*10:o;/* tempat tidak diberitahu: murid mesti kenal pasti sendiri */return mark(q(`Apakah nilai digit <b>${d}</b> dalam <b>${n}</b>?`,ans,ask==='puluh'?[Nq(t,'digit_value'),Nq(o*10,'place'),Nq(n,'place')]:[Nq(o*10,'place'),Nq(t*10,'place'),Nq(n,'place')],'Nilai digit bergantung pada tempatnya.','Tahun 1 · Nilai Digit'),id,'1.6.1',mode,'symbolic','application',s,['digit_value','place']);}
  if(mode==='missing_place'){const ans=t*10;return mark(q(`<b>${n}</b> = ___ + ${o}`,ans,[Nq(t,'digit_value'),Nq(o*10,'place'),Nq(ans+10,'place')],'Bahagian puluh bernilai digit × 10.','Tahun 1 · Nilai Tempat Hilang'),id,'1.6.1',mode,'symbolic','reasoning',s,['place']);}
  return mark(q(`${name()} berkata <b>${n} = ${t} + ${o}</b>. Pembetulan?`,`${t*10} + ${o}`,[Nq(`${t} + ${o}`,'digit_value'),Nq(`${o*10} + ${t}`,'place'),Nq(`${n} + 10`,'place')],'Digit puluh mewakili puluhan.','Tahun 1 · Semak Nilai Tempat'),id,'1.6.1',mode,'verbal','reasoning',s,['place','digit_value']);
 };

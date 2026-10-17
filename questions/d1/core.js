@@ -188,7 +188,7 @@ window.PAQuestionBanks.d1 = function(id,s,shift){
  }
  if(id==="D1.PV100"){
    let n=uniqueDigitNumber(2),str=String(n),tens=+str[0],ones=+str[1],mode=R(0,4);
-   if(mode===0){let pos=R(0,1),d=+str[pos],ans=pos===0?d*10:d,place=pos===0?"puluh":"sa";return Q(`Apakah nilai digit <b>${d}</b> pada tempat <b>${place}</b> dalam <b>${n}</b>?`,ans,[N(d,"digit_value"),N(pos===0?d:d*10,"place"),N(ans+10,"place")],"Lihat kedudukan digit dahulu.","Darjah 1",true,true)}
+   if(mode===0){let pos=ones===0?0:R(0,1),d=+str[pos],ans=pos===0?d*10:d;return Q(`Apakah nilai digit <b>${d}</b> dalam <b>${n}</b>?`,ans,pos===0?[N(d,"digit_value"),N(ones*10,"place"),N(n,"place")]:[N(d*10,"place"),N(tens*10,"place"),N(n,"place")],"Lihat kedudukan digit dahulu.","Darjah 1",true,true)}
    if(mode===1){let pos=R(0,1),d=+str[pos],ans=pos===0?"puluh":"sa";return Q(`Digit <b>${d}</b> dalam <b>${n}</b> berada pada tempat apa?`,ans,[N(pos===0?"sa":"puluh","place"),N("ratus","place"),N("ribuan","place")],"Nama tempat menunjukkan kedudukan digit.","Darjah 1",true,true)}
    if(mode===2){let ans=`${tens*10} + ${ones}`;return Q(`Cerakinkan <b>${n}</b> mengikut nilai digit.`,ans,[N(`${tens} + ${ones}`,"digit_value"),N(`${tens*100} + ${ones}`,"place"),N(`${tens*10} + ${ones*10}`,"place")],"Puluh bernilai ×10, sa kekal nilainya.","Darjah 1",true,true)}
    if(mode===3){let ans=n;return Q(`Puluh = <b>${tens}</b> dan sa = <b>${ones}</b>. Apakah nombornya?`,ans,[N(tens+ones,"digit_value"),N(ones*10+tens,"place"),N(tens*100+ones,"place")],"Gabungkan digit mengikut tempat.","Darjah 1",true,true)}
