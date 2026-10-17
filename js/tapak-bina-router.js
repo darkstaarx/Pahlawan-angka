@@ -20,7 +20,7 @@ const MAP=[
  [/repeating_unit|smallest_unit/,'smallest_unit'],[/pattern/,'continue_pattern'],
  [/polygon_from_sides|infer_polygon|explain_regular_polygon/,'polygon_from_sides'],[/identify_polygon|regular_polygon|polygon_from_picture|named_regular/,'identify_polygon'],
  [/identify_base/,'identify_base'],[/count_faces/,'count_faces'],[/vertices|edges/,'reason_vertices_edges'],[/non_prism|why_not_prism|discriminate|compare_prism/,'prism_vs_non'],[/prism|classify_by_properties|from_picture|from_properties/,'identify_prism'],
- [/polygon_angle|polygon_sum|polygon_compare|straight|missing$/,'polygon_angle',['D6.ANGLE','D6.SPACE_PROBLEM']],
+ [/polygon_angle|polygon_sum|polygon_compare|polygon_interior|polygon_name|straight|missing$/,'polygon_angle',['D6.ANGLE','D6.SPACE_PROBLEM']],
  [/angle_construct|construct|target|combine|turn|tool/,'angle_construct',['D6.ANGLE','D6.SPACE_PROBLEM']],[/angle|read|classify/,'angle_measure',['D6.ANGLE']],
  [/circle_draw|draw_radius|setting|steps|compass/,'circle_draw'],[/circle_part|label|parts/,'circle_part'],[/radius|diameter|two_circle/,'radius_diameter'],
  [/volume/,'volume'],[/composite_area/,'composite_area6'],[/missing_dimension/,'missing_dimension'],[/perimeter_reason/,'perimeter_reason'],
