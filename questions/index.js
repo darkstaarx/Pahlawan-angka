@@ -128,10 +128,13 @@ function questionDepthTarget(id,state){
  return Number(state?.mastery)>=50?3:2;
 }
 function questionDemandLevel(q){return ({foundation:1,concept:1,procedure:2,application:3,reasoning:4,transfer:4})[q?.demand]||2}
-function questionSelectionScore(q,target,recent,last){
- const level=questionDemandLevel(q);
+// Answer key used to avoid the same answer twice in a row (e.g. "kuboid, kuboid, kuboid" or tally answer 2 again).
+function questionAnswerKey(q){return String(q?.answer??'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim().toLowerCase().slice(0,60)}
+function questionSelectionScore(q,target,recent,last,prev2){
+ const level=questionDemandLevel(q),key=questionAnswerKey(q);
  return Math.abs(level-target)*10+(recent.has(questionFingerprint(q))?80:0)
-   +(last&&last.archetypeId===q.archetypeId?20:0);
+   +(last&&last.archetypeId===q.archetypeId?20:0)
+   +(key&&last?.answerKey===key?25:0)+(key&&prev2?.answerKey===key?8:0);
 }
 function generate(id,s,interactionContext={}){
   let shift = s.evidence>=2 && (s.confidence+15<s.mastery || s.correct>=3 && s.wrong===0) && Math.random()<.45;
@@ -149,7 +152,7 @@ function generate(id,s,interactionContext={}){
     }catch(_){q=null}
   }
   if(!q){
-    const target=questionDepthTarget(id,s),last=sess.questionHistory.filter(x=>x.skillId===id).at(-1);
+    const sameSkill=sess.questionHistory.filter(x=>x.skillId===id),target=questionDepthTarget(id,s),last=sameSkill.at(-1),prev2=sameSkill.at(-2);
     let best=null,bestScore=Infinity,node=null;
     for(let i=0;i<attempts;i++){
       const candidate=bank ? bank(id,s,shift || i>7) : null;
@@ -159,7 +162,7 @@ function generate(id,s,interactionContext={}){
       // A narrow learning standard may legitimately have only basic tasks;
       // do not silently replace it with a different standard to inflate difficulty.
       if(node&&candidateNode!==node)continue;
-      const score=questionSelectionScore(candidate,target,recent,last);
+      const score=questionSelectionScore(candidate,target,recent,last,prev2);
       if(score<bestScore){best=candidate;bestScore=score;}
       if(score===0)break;
     }
@@ -177,7 +180,7 @@ function generate(id,s,interactionContext={}){
   fp=questionFingerprint(q);
   sess.questionFingerprints.push(fp);
   if(sess.questionFingerprints.length>40)sess.questionFingerprints.shift();
-  sess.questionHistory.push({skillId:id,competencyId:q.competencyId||null,subcompetencyId:q.subcompetencyId||null,curriculumNode:q.curriculumNode||null,standardRef:q.standardRef||null,templateId:q.templateId||null,source:q.source||'legacy',archetypeId:q.archetypeId||'legacy',representation:q.representation||'symbolic',demand:q.demand||'procedure',contextId:q.contextId||'general',difficultyBand:q.difficultyBand||2,responseType:q.responseType||'mcq',interactionType:q.interaction?.type||null,battleTier:q.responseBattleTier||interactionContext.battleTier||null,fingerprint:fp});
+  sess.questionHistory.push({skillId:id,competencyId:q.competencyId||null,subcompetencyId:q.subcompetencyId||null,curriculumNode:q.curriculumNode||null,standardRef:q.standardRef||null,templateId:q.templateId||null,source:q.source||'legacy',archetypeId:q.archetypeId||'legacy',representation:q.representation||'symbolic',demand:q.demand||'procedure',contextId:q.contextId||'general',difficultyBand:q.difficultyBand||2,responseType:q.responseType||'mcq',interactionType:q.interaction?.type||null,battleTier:q.responseBattleTier||interactionContext.battleTier||null,fingerprint:fp,answerKey:questionAnswerKey(q)});
   if(sess.questionHistory.length>60)sess.questionHistory.shift();
   return q;
 }
