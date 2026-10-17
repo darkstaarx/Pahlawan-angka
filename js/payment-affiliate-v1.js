@@ -208,7 +208,8 @@
     const checkout = $('paCheckoutOverlay'); if (checkout) updateCheckoutOverlay(checkout);
     if (settings) { ensureAffiliateTrigger(settings); ensureAffiliateOverlay(); }
     if (settings && !$('paAffiliateMount')) { const host = document.createElement('section'); host.id = 'paAffiliateMount'; host.className = 'card pa-aff-section'; host.hidden = true; settings.append(host); }
-    if (settings && !$('paAffiliateAdmin')) { const host = document.createElement('section'); host.id = 'paAffiliateAdmin'; host.className = 'card pa-aff-section'; settings.append(host); }
+    // v3.86.57: the affiliate admin review panel is no longer mounted in Tetapan (owner request). Review affiliates in Supabase.
+    $('paAffiliateAdmin')?.remove();
     const changed = currentUser !== lastUser; if (changed && affiliateOverlay && !affiliateOverlay.classList.contains('hidden')) closeAffiliate();
     const adminHost = $('paAffiliateAdmin'); if (adminHost && (changed || currentAdmin !== lastAdmin)) renderAdmin(adminHost);
     lastUser = currentUser; lastAdmin = currentAdmin;
