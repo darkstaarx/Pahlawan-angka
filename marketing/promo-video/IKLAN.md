@@ -34,7 +34,8 @@ Masa render lebih kurang 1.5–2× masa format asal, kerana lapisan dirender dua
 export PROMO_BUILD=/laluan/ke/build
 PROMO_FORMAT=ads916 python3 engine.py timeline_main --out out/ads-9x16_promo-main-64s.mp4 --workers 4
 PROMO_FORMAT=feed45 python3 engine.py timeline_main --out out/feed-4x5_promo-main-64s.mp4 --workers 4
-# sama untuk timeline_platform (promo3-semua-skrin) dan timeline_fokus (promo2-fokus-v3)
+# sama untuk timeline_platform (promo3-semua-skrin), timeline_fokus (promo2-fokus-v3)
+# dan timeline_az_dua (promo5b-dua)
 PROMO_FORMAT=feed45 python3 engine.py timeline_fokus --frames 7.5,26.8 --out semak   # bingkai semakan
 ```
 
@@ -45,4 +46,5 @@ PROMO_FORMAT=feed45 python3 engine.py timeline_fokus --frames 7.5,26.8 --out sem
   - utama 64 s: hook "anak liat";
   - Fokus 50 s: hook "salah sasaran" dan Jurus Penamat;
   - Semua Skrin 32.5 s: hook TV.
+- Promo A–Z versi B "Dua-dua" (62 s) menyasar **ibu bapa** secara terus, dengan hook "Ibu bapa nak result… Tapi anak nak main?". Ia sesuai sebagai kreatif keempat, atau diuji bersendirian dalam ad set yang menyasar ibu bapa. Lihat `AZ.md`.
 - Kapsyen iklan: letakkan [PAUTAN DEMO] dan CTA "Learn more" / "Ketahui lebih lanjut". Jangan tulis harga atau "percuma".

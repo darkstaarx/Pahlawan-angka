@@ -128,4 +128,16 @@ Video yang sama disusun semula ikut **dua sisi selang-seli**. Dua telefon sebela
 
 ```bash
 python3 engine.py timeline_az_dua --out out/promo5b-dua.mp4 --workers 4
+PROMO_FORMAT=ads916 python3 engine.py timeline_az_dua --out out/ads-9x16_promo5b-dua.mp4 --workers 4
+PROMO_FORMAT=feed45 python3 engine.py timeline_az_dua --out out/feed-4x5_promo5b-dua.mp4 --workers 4
 ```
+
+Dalam format iklan, dua telefon dalam babak dua-dua (0:06 dan 0:52) dibesarkan mengikut format (`SPLIT_S, XL, XR` dalam timeline):
+
+| Format | Skala | x kiri / kanan |
+| --- | --- | --- |
+| 9:16 asal | 0.74 | 292 / 788 |
+| `ads916` | 0.8 | 280 / 800 |
+| `feed45` | 0.92 | 272 / 808 |
+
+Ini perlu kerana kumpulan `content` dikecilkan dalam format iklan (0.9 dan 0.72). Tanpa pelarasan ini, telefon menjadi terlalu kecil dalam Feed 4:5. Cip "MAK AYAH: RESULT | ANAK: MAIN" ikut kedudukan telefon yang sama.
