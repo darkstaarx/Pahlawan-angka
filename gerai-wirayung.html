@@ -855,9 +855,9 @@ function finish(tg){busy=true;step=3;chips();$('go').disabled=true;show($('wsay'
  petFace('happy');$('say').textContent=pick(['Terima kasih, Wira!','Datang lagi nanti!','Tepat sekali!','Kau memang hebat!']);
  $('wiraImg').src=asset(stars===3?'wira-victory.webp':'wira-thumb.webp');$('wira').classList.add('cheer');
  const st=$('stamp'),lbl=stars===3?['HEBAT!','hebat']:stars===2?['BAGUS!','bagus']:['SIAP!','ok'];
- st.className='stamp '+lbl[1];st.innerHTML=lbl[0]+'<small>'+'★'.repeat(stars)+'☆'.repeat(3-stars)+(m.focusContext?' · PESANAN DIREKOD':' · '+md.stamp(m,tg)+(streak>=2?' · 🔥'+streak:''))+'</small>';void st.offsetWidth;st.classList.add('show');
+ st.className='stamp '+lbl[1];st.innerHTML=lbl[0]+'<small>'+'★'.repeat(stars)+'☆'.repeat(3-stars)+(' · '+md.stamp(m,tg)+(streak>=2?' · 🔥'+streak:''))+'</small>';void st.offsetWidth;st.classList.add('show');
  burst();sfx.win();
- $('bTitle').textContent='Pesanan selesai!';$('bText').textContent=m.focusContext?'Pesanan direkod. Wira sedia untuk pelanggan seterusnya.':md.answer(m)+' '+money(rev)+' masuk tabung.';
+ $('bTitle').textContent='Pesanan selesai!';$('bText').textContent=md.answer(m)+' '+money(rev)+' masuk tabung.';
  setTimeout(()=>{setTill(till+rev);sfx.coin()},700);
  setTimeout(()=>{show($('bubble'),false);$('customer').className='customer leave'},2100);
  setTimeout(()=>{if(liveFocus&&!liveFocus.complete&&liveFocus.contexts.length>=2)startLivePlainChecks();else if(served%CHECK_EVERY===0)ledger();else startRound()},3000)}
@@ -881,7 +881,7 @@ function plainExpression(context){
 function startLivePlainChecks(){
  if(!liveFocus||liveFocus.complete)return;
  const host=document.createElement('section');host.id='focusDiagnostic';host.setAttribute('aria-live','polite');
- host.innerHTML='<div class="fd-card"><div class="fd-kicker">GERAI WIRAYUNG · SEMAKAN KIRAAN</div><h1 id="fdTitle">Kira nombor tanpa wang</h1><p id="fdPrompt"></p><div id="fdChoices" class="fd-choices"></div><div class="fd-progress" id="fdProgress"></div><p class="fd-note" id="fdNote">Jawapan direkod tanpa tunjuk betul atau salah. Keputusan keluar selepas dua soalan.</p></div>';
+ host.innerHTML='<div class="fd-card"><div class="fd-kicker">GERAI WIRAYUNG · CABARAN WIRA</div><h1 id="fdTitle">Kira cepat!</h1><p id="fdPrompt"></p><div id="fdChoices" class="fd-choices"></div><div class="fd-progress" id="fdProgress"></div><p class="fd-note" id="fdNote">Wira nak tengok kau kira tanpa duit. Pilih satu jawapan.</p></div>';
  document.querySelector('.pa-game').appendChild(host);
  const style=document.createElement('style');style.textContent='#focusDiagnostic{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:18px;background:linear-gradient(180deg,#5c3b2b77,#2b4a66e8);overflow:auto}.fd-card{width:min(100%,420px);padding:24px 20px 20px;border:4px solid var(--wood-dk);border-radius:24px;background:linear-gradient(180deg,#fff7e6,#f1dcae);box-shadow:0 14px 32px #17253666;color:var(--ink)}.fd-kicker{font:800 11px/1.2 var(--f-body);letter-spacing:.08em;color:var(--leaf-dk)}.fd-card h1{margin:6px 0 8px;font:800 28px/1.05 var(--f-display)}.fd-card p{margin:0 0 18px;font-weight:800;line-height:1.35}.fd-choices{display:grid;gap:10px}.fd-choice{appearance:none;border:3px solid var(--wood-dk);border-radius:15px;background:#fffdf6;padding:13px 12px;font:800 18px var(--f-display);cursor:pointer;text-align:center;box-shadow:inset 0 -3px 0 #ead7b5}.fd-choice:hover,.fd-choice:focus-visible{border-color:var(--leaf-dk);background:#eff9df}.fd-choice[disabled]{cursor:default}.fd-progress{margin-top:17px;font:800 13px var(--f-body);color:var(--ink-soft)}.fd-note{margin-top:14px!important;margin-bottom:0!important;font-size:12px;color:var(--ink-soft)}';document.head.appendChild(style);
  liveFocus.index=0;renderLivePlainQuestion();
@@ -889,14 +889,14 @@ function startLivePlainChecks(){
 function renderLivePlainQuestion(){
  const context=liveFocus.contexts[liveFocus.index],question=plainExpression(context),answer=Number(question.answer),candidates=[answer,answer+1,Math.max(0,answer-1),answer+10],unique=[...new Set(candidates)];
  while(unique.length<4)unique.push(answer+unique.length+1);
- $('fdTitle').textContent='Kira nombor tanpa wang';$('fdPrompt').textContent=question.prompt;$('fdProgress').textContent='Soalan nombor '+(liveFocus.index+1)+' / 2';$('fdChoices').innerHTML='';
+ $('fdTitle').textContent='Kira cepat!';$('fdPrompt').textContent=question.prompt;$('fdProgress').textContent='Soalan '+(liveFocus.index+1)+' / 2';$('fdChoices').innerHTML='';
  shuffle(unique.slice(0,4)).forEach(value=>{const b=document.createElement('button');b.type='button';b.className='fd-choice';b.dataset.correct=String(value===answer);b.textContent=String(value);b.onclick=()=>answerLivePlain(context,b,value===answer,value);$('fdChoices').appendChild(b)});
 }
 function answerLivePlain(context,button,correct,value){
  if(!liveFocus||liveFocus.complete)return;
  document.querySelectorAll('#focusDiagnostic .fd-choice').forEach(x=>x.disabled=true);
  liveFocus.observations.push(liveFocusTag(context,'plain',correct?'independent':'unresolved'));
- $('fdNote').textContent='Jawapan direkod. Keputusan hanya dipaparkan selepas soalan kedua.';
+ $('fdNote').textContent=liveFocus.index<1?'Bagus! Satu lagi.':'Siap!';
  liveFocus.index++;if(liveFocus.index<2)setTimeout(renderLivePlainQuestion,350);else setTimeout(finishLiveFocus,350);
 }
 function finishLiveFocus(){
@@ -910,7 +910,7 @@ function finishLiveFocus(){
  if(report.state==='candidate'&&String(report.rootCause||'').startsWith('money.'))parentText=liveFocus.origin==='D2.4.6'
   ?'Kiraan tolak nombor yang sepadan boleh dibuat sendiri, tetapi soalan tentang wang yang boleh disimpan masih mencabar. Kekalkan latihan pada kemahiran Simpanan Wang.'
   :'Kiraan nombor '+demand+' boleh dibuat sendiri, tetapi soalan wang yang sepadan masih mencabar. Kekalkan latihan wang pada kemahiran '+liveFocus.origin+'.';
- $('fdTitle').textContent=report.state==='candidate'?'Semakan selesai':'Belum cukup bukti';$('fdPrompt').textContent=parentText;$('fdChoices').innerHTML='';$('fdProgress').textContent='Selesai · 2 pesanan gerai + 2 kiraan nombor direkod · '+demand;$('fdNote').textContent='Pesanan sebenar Gerai kekal direkod seperti biasa. Semakan ini tidak menambah ganjaran atau mastery.';
+ $('fdTitle').textContent='Terima kasih, Wira!';$('fdPrompt').textContent='Cabaran siap. Jom sambung layan pelanggan.';$('fdChoices').innerHTML='';$('fdProgress').textContent='';$('fdNote').textContent='';
  const go=document.createElement('button');go.type='button';go.className='fd-choice';go.textContent='Sambung berniaga →';go.onclick=()=>{document.getElementById('focusDiagnostic')?.remove();if(served%CHECK_EVERY===0)ledger();else startRound()};$('fdChoices').appendChild(go);go.focus();
  const nonce=new URLSearchParams(location.search).get('pa_nonce');try{window.parent.postMessage({type:'PA_FOCUS_MONEY_LIVE_RESULT',version:1,nonce,report:{originSkillId:liveFocus.origin,state:report.state,rootCause:report.rootCause,nextSkillId:report.nextSkillId,confidence:report.confidence,reasonCode:report.reasonCode,parentText,testedDemand:demand,evidence:report.evidence}},location.origin)}catch(e){console.warn('Focus Wang live bridge unavailable',e)}
 }
