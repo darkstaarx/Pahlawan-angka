@@ -22,7 +22,8 @@ const ctx={console,Math,R,pick,N,Q,tidyNumber,moneyFmtUpper,META,sess,barChart:(
 vm.createContext(ctx);roots.forEach((src,i)=>vm.runInContext(src,ctx,{filename:['depth','space','curriculum','experience','money-real'][i]+'.js'}));
 assert.equal(ctx.window.PAY6MoneyReal?.version,'3.60.5','money real wrapper inactive');
 const states={low:{mastery:15,evidence:2,confidence:20,wrong:1},core:{mastery:55,evidence:4,confidence:55,wrong:0},high:{mastery:90,evidence:10,confidence:85,wrong:0},fresh:{mastery:0,evidence:0,confidence:0,wrong:0}};
-const expected={low:12,core:24,high:20,fresh:24},stats={};let total=0;
+// v3.86.33: low band gained 5 insurance/takaful archetypes for SP 3.2.1 and 3.2.2.
+const expected={low:17,core:24,high:20,fresh:24},stats={};let total=0;
 for(const [level,state] of Object.entries(states)){
  sess.questionHistory=[];const arch=new Set(),prompts=new Set(),reps=new Set();
  for(let i=0;i<4000;i++){

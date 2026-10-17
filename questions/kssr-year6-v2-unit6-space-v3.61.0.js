@@ -8,9 +8,19 @@ GEN['6.3.1']=function(id,s){
  const mode=chooseMode(id,'6.3.1',bandModes(
   s,
   ['radius_path','straight_context','tool_choice','simple_design'],
-  ['radius_path','straight_context','tool_choice','simple_design','polygon_sum','compass_plan'],
-  ['polygon_sum','compass_plan','integrated_design','relevant_info','error_analysis','compare_design','multi_step']
+  ['radius_path','straight_context','tool_choice','simple_design','polygon_sum','compass_plan','polygon_fence'],
+  ['polygon_sum','compass_plan','integrated_design','relevant_info','error_analysis','compare_design','multi_step','fence_compare']
  ));
+ // v3.86.33: regular-polygon perimeter in real contexts (pagar, bingkai), as tested in UASA Ruang.
+ const NAMES={5:'pentagon',6:'heksagon',7:'heptagon',8:'oktagon'},fmt=v=>String(Number(v.toFixed(2)));
+ if(mode==='polygon_fence'){
+  const n=[5,6,8][Math.floor(Math.random()*3)],side=[3,4,5,6.5][Math.floor(Math.random()*4)],ans=n*side,thing=Math.random()<.5?'taman':'kolam';
+  return mark(q('Sebuah '+thing+' berbentuk '+NAMES[n]+' sekata dengan setiap sisi '+fmt(side)+' m. Berapakah panjang pagar yang diperlukan untuk mengelilinginya?',fmt(ans)+' m',[Nq(fmt(side*(n-1))+' m','perimeter'),Nq(fmt(side*(n+1))+' m','perimeter'),Nq(fmt(ans+side*2)+' m','perimeter')],'Panjang pagar = perimeter = bilangan sisi × panjang sisi.','Tahun 6 · Masalah Perimeter Poligon'),id,'6.3.1',mode,'story','application',s,['perimeter','polygon_name']);
+ }
+ if(mode==='fence_compare'){
+  const pair=[[5,8],[6,8],[5,6]][Math.floor(Math.random()*3)],side=[4,5,6][Math.floor(Math.random()*3)],a=pair[0]*side,b=pair[1]*side,dif=b-a;
+  return mark(q('Taman A berbentuk '+NAMES[pair[0]]+' sekata dan taman B berbentuk '+NAMES[pair[1]]+' sekata. Setiap sisi kedua-dua taman ialah '+side+' m. Berapakah beza panjang pagar yang diperlukan?',dif+' m',[Nq(a+' m','perimeter'),Nq((a+b)+' m','perimeter'),Nq((pair[1]-pair[0])+' m','perimeter')],'Kira perimeter setiap taman, kemudian tolak.','Tahun 6 · Banding Perimeter Poligon'),id,'6.3.1',mode,'story','reasoning',s,['perimeter','multi_step']);
+ }
  if(mode==='radius_path')return mark(q('Taman bulatan berdiameter 16 m mempunyai 5 laluan dari pusat ke tepi. Jumlah panjang laluan?','40 m',[Nq('80 m','space'),Nq('16 m','space'),Nq('21 m','space')],'Setiap laluan ialah jejari 8 m; 5 × 8.','Tahun 6 · Masalah Bulatan Harian'),id,'6.3.1',mode,'story','application',s,['radius_diameter','space_reason']);
  if(mode==='straight_context')return mark(q('Dua papan membentuk garis lurus. Satu sudut 68°. Sudut satu lagi?','112°',[Nq('68°','angle'),Nq('122°','angle'),Nq('22°','angle')],'Jumlah sudut pada garis lurus 180°.','Tahun 6 · Masalah Sudut Harian'),id,'6.3.1',mode,'story','application',s,['angle_measure']);
  if(mode==='tool_choice')return mark(q('Untuk menghasilkan reka bentuk yang memerlukan bulatan diameter 12 cm dan sudut 120°, alat yang sesuai?','jangka bukaan 6 cm dan protraktor 120°',[Nq('pembaris sahaja','tool'),Nq('jangka 12 cm sahaja','tool'),Nq('protraktor 60° sahaja','tool')],'Bulatan perlukan jangka; sudut perlukan protraktor.','Tahun 6 · Memilih Alat Ruang'),id,'6.3.1',mode,'verbal',stage(s)===3?'reasoning':'application',s,['circle_draw','angle_construct']);

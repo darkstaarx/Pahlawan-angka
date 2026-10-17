@@ -25,8 +25,13 @@ function rotate(modes){
     .map(x=>String(x.archetypeId||'').replace(/^y6moneyreal_/,'').replace(/^y6kssr_/,'').replace(/^y6x_/,''));
   const last=recent.at(-1);
   const counts=Object.fromEntries(modes.map(m=>[m,recent.filter(x=>x===m).length]));
-  const pool=modes.filter(m=>m!==last);
-  return (pool.length?pool:modes).sort((a,b)=>counts[a]-counts[b]||Math.random()-.5)[0];
+  const pool=(modes.filter(m=>m!==last).length?modes.filter(m=>m!==last):modes);
+  // v3.86.33: pick at random among the least-used modes (+1 slack) rather than
+  // always the single least-used one. The adaptive router resamples this bank
+  // until it hits a target SP; a strict minimum could lock it onto modes from
+  // another SP for all of its attempts.
+  const min=Math.min(...pool.map(m=>counts[m])),near=pool.filter(m=>counts[m]<=min+1);
+  return near[Math.floor(Math.random()*near.length)];
 }
 function mark(q,sp,mode,rep,demand,s,targets=[]){
   if(!q)return q;
@@ -46,10 +51,82 @@ function qc(prompt,answer,wrong,hint,kind){
 const LOW_MODES=[
   'identify_receipt','identify_invoice','identify_bill','identify_voucher',
   'term_profit','term_loss','asset_liability','asset_or_liability_table',
-  'insurance_purpose','insurance_takaful_compare','interest_meaning','dividend_meaning'
+  'insurance_purpose','insurance_takaful_compare','interest_meaning','dividend_meaning',
+  // v3.86.33: SP 3.2.1 and 3.2.2 previously had one fixed item each, so the
+  // adaptive router showed pupils the same insurance question repeatedly.
+  'insurance_term','takaful_concept','protection_match','protection_benefit','protection_claim'
+];
+// Each insurance mode draws from its own scenario pool so repeat visits vary.
+const INSURANCE_TERMS=[
+  ['Bayaran berkala oleh pemegang polisi kepada syarikat insurans untuk mendapat perlindungan disebut...','premium'],
+  ['Dokumen perjanjian antara pemegang polisi dengan syarikat insurans disebut...','polisi'],
+  ['Permohonan untuk mendapat bayaran apabila berlaku kerugian yang dilindungi disebut...','tuntutan'],
+  ['Wang yang disumbang oleh peserta takaful ke dalam dana bersama disebut...','sumbangan']
+];
+const TAKAFUL_ITEMS=[
+  {q:'Dalam takaful, peserta menyumbang ke dalam satu dana bersama untuk membantu peserta lain yang ditimpa musibah. Konsep ini ialah...',
+   a:'saling membantu',w:['pinjaman berfaedah','pelaburan pasti untung','cukai perkhidmatan']},
+  {q:'Antara berikut, yang manakah ciri utama takaful?',
+   a:'berlandaskan prinsip syariah dan saling membantu',w:['tidak memberi sebarang perlindungan','hanya untuk melindungi rumah','menjamin peserta sentiasa untung']},
+  {q:'Antara berikut, yang manakah BUKAN contoh perlindungan insurans atau takaful?',
+   a:'akaun simpanan tetap',w:['perlindungan kenderaan','perlindungan perubatan','perlindungan kebakaran rumah']},
+  {q:'Insurans dan takaful kedua-duanya membantu kita...',
+   a:'mengurus risiko kewangan',w:['mengelak membayar bil','mendapat dividen tetap setiap bulan','menghapuskan semua hutang']}
+];
+const PROTECTION_CASES=[
+  {who:'Kereta Encik Lim rosak teruk dalam satu kemalangan',a:'perlindungan kenderaan',
+   why:'menanggung sebahagian kos membaiki kenderaan selepas kemalangan'},
+  {who:'Rumah Puan Siti terbakar akibat litar pintas',a:'perlindungan kebakaran rumah',
+   why:'membantu menanggung kos membaiki rumah selepas kebakaran'},
+  {who:'Raju dimasukkan ke hospital dan kos rawatannya tinggi',a:'perlindungan perubatan',
+   why:'mengurangkan beban kos rawatan apabila jatuh sakit'},
+  {who:'Bagasi keluarga Mei Ling hilang semasa melancong ke luar negara',a:'perlindungan perjalanan',
+   why:'membantu menanggung kerugian semasa dalam perjalanan'}
+];
+const PROTECTION_CLAIMS=[
+  {c:'Membeli insurans bermaksud kita pasti mendapat lebih banyak wang daripada premium yang dibayar.',
+   a:'salah, insurans memberi perlindungan apabila berlaku risiko yang dilindungi, bukan keuntungan',
+   w:['betul','betul jika premium mahal','salah, insurans hanya untuk syarikat besar']},
+  {c:'Insurans dan takaful menghalang kemalangan daripada berlaku.',
+   a:'salah, ia mengurangkan beban kewangan selepas kemalangan berlaku',
+   w:['betul','betul bagi takaful sahaja','salah, ia hanya untuk rumah']},
+  {c:'Insurans dan takaful kedua-duanya membantu keluarga mengurus risiko kewangan.',
+   a:'betul',
+   w:['salah, hanya insurans yang membantu','salah, hanya takaful yang membantu','salah, kedua-duanya hanya pelaburan']}
 ];
 function lowQ(s){
   const mode=rotate(LOW_MODES);
+  if(mode==='insurance_term'){
+    const x=pick1(INSURANCE_TERMS),others=INSURANCE_TERMS.map(t=>t[1]).filter(t=>t!==x[1]);
+    return mark(qc(x[0],x[1],others.map(t=>Nq(t,'insurance')),
+      'Premium dibayar untuk perlindungan, polisi ialah perjanjian, tuntutan dibuat apabila berlaku kerugian.','Tahun 6 · Istilah Insurans dan Takaful'
+    ),'3.2.1',mode,'verbal','concept',s,['insurance']);
+  }
+  if(mode==='takaful_concept'){
+    const x=pick1(TAKAFUL_ITEMS);
+    return mark(qc(x.q,x.a,x.w.map(t=>Nq(t,'insurance')),
+      'Takaful berlandaskan syariah: peserta saling membantu melalui dana bersama.','Tahun 6 · Insurans dan Takaful'
+    ),'3.2.1',mode,'verbal','concept',s,['insurance']);
+  }
+  if(mode==='protection_match'){
+    const x=pick1(PROTECTION_CASES),others=PROTECTION_CASES.filter(c=>c!==x).map(c=>c.a);
+    return mark(qc(x.who+'. Perlindungan insurans atau takaful manakah paling membantu?',x.a,others.map(t=>Nq(t,'insurance')),
+      'Padankan jenis perlindungan dengan risiko yang berlaku.','Tahun 6 · Tujuan Perlindungan'
+    ),'3.2.2',mode,'story','application',s,['insurance','risk']);
+  }
+  if(mode==='protection_benefit'){
+    const x=pick1(PROTECTION_CASES),others=PROTECTION_CASES.filter(c=>c!==x);
+    return mark(qc('Mengapakah '+x.a+' penting dalam situasi ini? <b>'+x.who+'.</b>',x.why,
+      [Nq('supaya tidak perlu menyimpan wang langsung','insurance'),Nq('untuk mendapat untung setiap bulan','insurance'),Nq(pick1(others).why,'insurance')],
+      'Perlindungan membantu menanggung kerugian kewangan apabila risiko yang dilindungi berlaku.','Tahun 6 · Tujuan Perlindungan'
+    ),'3.2.2',mode,'story','application',s,['insurance','risk']);
+  }
+  if(mode==='protection_claim'){
+    const x=pick1(PROTECTION_CLAIMS);
+    return mark(qc('Seorang murid berkata: "'+x.c+'" Adakah pernyataan itu betul?',x.a,x.w.map(t=>Nq(t,'insurance')),
+      'Insurans dan takaful mengurangkan beban kewangan apabila risiko berlaku; ia bukan pelaburan dan tidak menghalang risiko.','Tahun 6 · Menilai Pernyataan Perlindungan'
+    ),'3.2.2',mode,'verbal','reasoning',s,['insurance','error_analysis']);
+  }
   if(mode==='identify_receipt')return mark(qc(
     'Selepas pelanggan membuat bayaran di sebuah kedai, dokumen manakah menjadi bukti bahawa bayaran telah diterima?',
     'resit',[Nq('invois','document'),Nq('baucar','document'),Nq('bil','document')],
