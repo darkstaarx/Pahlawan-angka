@@ -173,7 +173,7 @@ function records(){
 }
 function mountReport(){
  const parent=document.getElementById("coreTab");if(!parent)return;
- const rows=records(),diagnoses=(db?.focusDiagnosticsV1?.reports||[]).filter(x=>Number(x.grade)===activeGrade()&&(/^D[1-6]\.MONEY$/.test(x.skillId||'')||/^D2\.4\.[1-7]$/.test(x.skillId||'')||/^D2\.5\.[123]$/.test(x.skillId||''))).slice(-6).reverse();let box=parent.querySelector('#paWirayungReport');
+ const rows=records(),diagnoses=(db?.focusDiagnosticsV1?.reports||[]).filter(x=>x.diagnosticVersion!=='2.2.0-live-gerai'&&Number(x.grade)===activeGrade()&&(/^D[1-6]\.MONEY$/.test(x.skillId||'')||/^D2\.4\.[1-7]$/.test(x.skillId||'')||/^D2\.5\.[123]$/.test(x.skillId||''))).slice(-6).reverse();let box=parent.querySelector('#paWirayungReport');
  if(!rows.length&&!diagnoses.length){box?.remove();return;}
  if(!box){box=document.createElement("section");box.id="paWirayungReport";box.className="card";box.style.cssText="margin:14px 0;padding:15px;background:#fff8e7;border:1px solid #d9b481;border-radius:14px;color:#47321f";parent.prepend(box);}
  const eligible=rows.filter(x=>x.total>=3),weak=eligible.filter(x=>x.independent/x.total<.6),strong=eligible.filter(x=>x.independent/x.total>=.8);
@@ -198,7 +198,7 @@ function finishRound(e){
    uniquePairs:Number(value?.uniquePairs)||0,moneyIndependent:Number(value?.contextual?.independent)||0,moneyAssisted:Number(value?.contextual?.nonIndependent)||0,
    plainIndependent:Number(value?.plain?.independent)||0,plainAssisted:Number(value?.plain?.nonIndependent)||0
   }]));
-  store.reports.push({diagnosticVersion:"2.2.0-live-gerai",skillId:run.skillId,grade:run.grade,at:Date.now(),state:r.state,
+  store.reports.push({diagnosticVersion:"2.2.1-live-gerai",skillId:run.skillId,grade:run.grade,at:Date.now(),state:r.state,
    rootCause:String(r.rootCause||"").slice(0,80),nextSkillId:next||"",confidence:String(r.confidence||"none").slice(0,16),
    reasonCode:String(r.reasonCode||"").slice(0,100),parentText:parentText.slice(0,600),testedDemand:String(r.testedDemand||"").slice(0,100),moneyContrastEvidence:evidence});
   store.reports=store.reports.slice(-30);if(typeof save==="function")save();window.PACloud?.scheduleSave?.();mountReport();return;

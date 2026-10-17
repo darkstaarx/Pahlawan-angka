@@ -32,12 +32,11 @@ GEN['2.1.2']=function(id,s){
   const ask=Math.random()<.5?'menggabungkan dua kumpulan':'mengeluarkan sebahagian daripada kumpulan',ans=ask.startsWith('menggabungkan')?'+':'−';
   return mark(q(`Simbol yang sesuai untuk <b>${ask}</b> ialah?`,ans,[Nq(ans==='+'?'−':'+','symbol'),Nq('=','symbol'),Nq('×','symbol')],'Padankan makna operasi dengan simbol.','Tahun 1 · Padan Simbol'),id,'2.1.2',mode,'verbal','application',s,['symbol']);
  }
- /* "hasil operasi" ialah pengganggu, BUKAN jawapan. Ia tepat menangkap
-    pandangan operasi terhadap "=" (tanda yang mengumumkan jawapan). Pandangan
-    itu berfungsi untuk 6 + 3 = 9 tetapi runtuh pada 6 + __ = 9 dan
-    4 + 2 = 3 + 3, jadi ia salah faham yang perlu dikesan, bukan diajar.
-    Ia menggantikan "nilai kanan lebih kecil", yang terlalu mudah ditolak. */
- return mark(q(`Ayat <b>6 + 3 = 9</b>. Simbol “=” menunjukkan apa?`,'kedua-dua nilai adalah sama',[Nq('hasil operasi','symbol'),Nq('mesti tambah lagi','symbol'),Nq('nilai kiri lebih besar','symbol')],'Tanda sama dengan menunjukkan dua nilai yang setara.','Tahun 1 · Makna Sama Dengan'),id,'2.1.2',mode,'symbolic','reasoning',s,['symbol','equality']);
+ /* Pilihan salah mesti jelas salah untuk murid Tahun 1. "hasil operasi"
+    dibuang kerana 9 memang hasil 6 + 3, jadi murid yang memilihnya tidak
+    sepatutnya ditanda salah. */
+ const a=rand(2,7),b=rand(1,9-a),c=a+b;
+ return mark(q(`Ayat <b>${a} + ${b} = ${c}</b>. Simbol “=” menunjukkan apa?`,'kedua-dua nilai adalah sama',[Nq('tanda untuk tolak','symbol'),Nq('mesti tambah lagi','symbol'),Nq('nilai kiri lebih besar','symbol')],`${a} + ${b} dan ${c} sama nilainya. Tanda “=” bermaksud sama dengan.`,'Tahun 1 · Makna Sama Dengan'),id,'2.1.2',mode,'symbolic','reasoning',s,['symbol','equality']);
 };
 
 GEN['2.1.3']=function(id,s){

@@ -6,7 +6,8 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  const rows=(profile?.learnerReviewV1?.encounters||[]).filter(e=>Number(e.grade)===grade
   &&['independent','corrected','assisted','unresolved'].includes(e.outcome)
   &&!['demo','dev','dev-test'].includes(e.mode));
- const moneyReports=(profile?.focusDiagnosticsV1?.reports||[]).filter(r=>Number(r.grade)===grade&&(/^D[1-6]\.MONEY$/.test(r.skillId||'')||/^D2\.4\.[1-7]$/.test(r.skillId||''))).sort((a,b)=>Number(a.at||0)-Number(b.at||0));
+ /* 2.2.0-live-gerai marked a correct plain sum wrong (answer missing from the choices), so its reports are ignored. */
+ const moneyReports=(profile?.focusDiagnosticsV1?.reports||[]).filter(r=>r.diagnosticVersion!=='2.2.0-live-gerai'&&Number(r.grade)===grade&&(/^D[1-6]\.MONEY$/.test(r.skillId||'')||/^D2\.4\.[1-7]$/.test(r.skillId||''))).sort((a,b)=>Number(a.at||0)-Number(b.at||0));
  const latestMoneyReport=moneyReports.at(-1)||null;
  const latestMoneySignalAt=latestMoneyReport?rows.filter(e=>e.skillId===latestMoneyReport.skillId).reduce((at,e)=>Math.max(at,Number(e.resolvedAt||0)),0):0;
  const targetEvidence=latestMoneyReport?.nextSkillId?rows.filter(e=>e.skillId===latestMoneyReport.nextSkillId&&Number(e.resolvedAt||0)>Number(latestMoneyReport.at||0)).slice(-20):[];

@@ -677,7 +677,7 @@ function rows(o){return '<div class="items">'+o.items.map(id=>'<div class="row">
 function sumline(parts){return '<div class="sumline">'+parts.map(([k,v,c])=>'<span'+(c?' class="'+c+'"':'')+'>'+k+' '+(v==='?'?'<span class="q">?</span>':v)+'</span>').join('')+'</div>'}
 
 function makeOrder(){
- if(liveFocus&&liveFocus.contexts.length<2)return makeLiveFocusOrder();
+ if(liveFocus&&!liveFocus.complete&&liveFocus.contexts.length<2&&served>=CHECK_EVERY-2)return makeLiveFocusOrder();
  const k=cfg.modes[served%cfg.modes.length],tiers=GRADES[cfg.grade][k];
  if(tier[k]==null){tier[k]=0;clean[k]=0}
  const t=tiers[Math.min(tier[k],tiers.length-1)],pet=choosePet();
@@ -855,12 +855,12 @@ function finish(tg){busy=true;step=3;chips();$('go').disabled=true;show($('wsay'
  petFace('happy');$('say').textContent=pick(['Terima kasih, Wira!','Datang lagi nanti!','Tepat sekali!','Kau memang hebat!']);
  $('wiraImg').src=asset(stars===3?'wira-victory.webp':'wira-thumb.webp');$('wira').classList.add('cheer');
  const st=$('stamp'),lbl=stars===3?['HEBAT!','hebat']:stars===2?['BAGUS!','bagus']:['SIAP!','ok'];
- st.className='stamp '+lbl[1];st.innerHTML=lbl[0]+'<small>'+'★'.repeat(stars)+'☆'.repeat(3-stars)+(liveFocus?' · PESANAN DIREKOD':' · '+md.stamp(m,tg)+(streak>=2?' · 🔥'+streak:''))+'</small>';void st.offsetWidth;st.classList.add('show');
+ st.className='stamp '+lbl[1];st.innerHTML=lbl[0]+'<small>'+'★'.repeat(stars)+'☆'.repeat(3-stars)+(m.focusContext?' · PESANAN DIREKOD':' · '+md.stamp(m,tg)+(streak>=2?' · 🔥'+streak:''))+'</small>';void st.offsetWidth;st.classList.add('show');
  burst();sfx.win();
- $('bTitle').textContent='Pesanan selesai!';$('bText').textContent=liveFocus?'Pesanan direkod. Wira sedia untuk pelanggan seterusnya.':md.answer(m)+' '+money(rev)+' masuk tabung.';
+ $('bTitle').textContent='Pesanan selesai!';$('bText').textContent=m.focusContext?'Pesanan direkod. Wira sedia untuk pelanggan seterusnya.':md.answer(m)+' '+money(rev)+' masuk tabung.';
  setTimeout(()=>{setTill(till+rev);sfx.coin()},700);
  setTimeout(()=>{show($('bubble'),false);$('customer').className='customer leave'},2100);
- setTimeout(()=>{if(liveFocus&&liveFocus.contexts.length>=2)startLivePlainChecks();else if(served%CHECK_EVERY===0)ledger();else startRound()},3000)}
+ setTimeout(()=>{if(liveFocus&&!liveFocus.complete&&liveFocus.contexts.length>=2)startLivePlainChecks();else if(served%CHECK_EVERY===0)ledger();else startRound()},3000)}
 
 function liveFocusTag(context,side,result){
  const family=context.family,plainDomain='number';
@@ -872,10 +872,10 @@ function recordLiveMoneyResult(context,result){
 }
 function plainExpression(context){
  const o=context.plainOperands;
- if(context.family==='money_add'||context.family==='money_total')return{prompt:`${o.addends[0]} + ${o.addends[1]} = ?`,answer:context.answer};
- if(context.family==='money_subtract'||context.family==='money_profit')return{prompt:`${o.minuend} − ${o.subtrahend} = ?`,answer:context.answer};
- if(context.family==='money_multiply')return{prompt:`${o.unitPrice} × ${o.quantity} = ?`,answer:context.answer};
- if(context.family==='money_divide')return{prompt:`${o.total} ÷ ${o.divisor} = ?`,answer:context.answer};
+ if(o.addends)return{prompt:`${o.addends[0]} + ${o.addends[1]} = ?`,answer:o.addends[0]+o.addends[1]};
+ if(o.minuend!=null)return{prompt:`${o.minuend} − ${o.subtrahend} = ?`,answer:o.minuend-o.subtrahend};
+ if(o.unitPrice!=null)return{prompt:`${o.unitPrice} × ${o.quantity} = ?`,answer:o.unitPrice*o.quantity};
+ if(o.total!=null)return{prompt:`${o.total} ÷ ${o.divisor} = ?`,answer:o.total/o.divisor};
  return{prompt:`${o.base} − (${o.percent}% × ${o.base}) = ?`,answer:o.base-o.base*o.percent/100};
 }
 function startLivePlainChecks(){
@@ -911,6 +911,7 @@ function finishLiveFocus(){
   ?'Kiraan tolak nombor yang sepadan boleh dibuat sendiri, tetapi soalan tentang wang yang boleh disimpan masih mencabar. Kekalkan latihan pada kemahiran Simpanan Wang.'
   :'Kiraan nombor '+demand+' boleh dibuat sendiri, tetapi soalan wang yang sepadan masih mencabar. Kekalkan latihan wang pada kemahiran '+liveFocus.origin+'.';
  $('fdTitle').textContent=report.state==='candidate'?'Semakan selesai':'Belum cukup bukti';$('fdPrompt').textContent=parentText;$('fdChoices').innerHTML='';$('fdProgress').textContent='Selesai · 2 pesanan gerai + 2 kiraan nombor direkod · '+demand;$('fdNote').textContent='Pesanan sebenar Gerai kekal direkod seperti biasa. Semakan ini tidak menambah ganjaran atau mastery.';
+ const go=document.createElement('button');go.type='button';go.className='fd-choice';go.textContent='Sambung berniaga →';go.onclick=()=>{document.getElementById('focusDiagnostic')?.remove();if(served%CHECK_EVERY===0)ledger();else startRound()};$('fdChoices').appendChild(go);go.focus();
  const nonce=new URLSearchParams(location.search).get('pa_nonce');try{window.parent.postMessage({type:'PA_FOCUS_MONEY_LIVE_RESULT',version:1,nonce,report:{originSkillId:liveFocus.origin,state:report.state,rootCause:report.rootCause,nextSkillId:report.nextSkillId,confidence:report.confidence,reasonCode:report.reasonCode,parentText,testedDemand:demand,evidence:report.evidence}},location.origin)}catch(e){console.warn('Focus Wang live bridge unavailable',e)}
 }
 
