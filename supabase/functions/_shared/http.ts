@@ -1,7 +1,8 @@
 const configuredOrigin = (() => {
   try { return new URL(Deno.env.get('APP_URL') ?? 'https://darkstaarx.github.io/Pahlawan-angka/').origin; } catch { return 'https://darkstaarx.github.io'; }
 })();
-const localOrigins = new Set(['http://localhost:8770', 'http://127.0.0.1:8770']);
+// Both public sites may start a checkout: Netlify (users) and GitHub Pages (testing).
+const localOrigins = new Set(['http://localhost:8770', 'http://127.0.0.1:8770', 'https://pahlawanangka.netlify.app', 'https://darkstaarx.github.io']);
 export function corsHeaders(requestOrigin?: string) {
   const origin = requestOrigin && (requestOrigin === configuredOrigin || localOrigins.has(requestOrigin)) ? requestOrigin : configuredOrigin;
   return { 'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', Vary: 'Origin' };
