@@ -198,8 +198,8 @@ function skillHTML(m,allowFocus){
  return `<div class="skill ${cls}"><div class="row"><div class="skillParentCopy"><b>${parentSafe(m.title)}</b><div class="mut">${powerLabel(level)} · ${evidence}${support}</div></div><div class="grow"></div>${powerStars(level)}${allowFocus?`<button class="btn ghost small focusLaunch" onclick="openGuardianFocus('${m.id}')">Latih</button>`:""}</div><div class="meter"><span style="width:${Math.max(3,s.mastery)}%"></span></div></div>`;
 }
 function tab(n){
- const normalized=n==='engine'?'worksheet':n==='levels'?'core':n==='restu'?'restu':['summary','core','worksheet','settings'].includes(n)?n:'summary';
- ["summary","core","levels","worksheet","engine","restu","settings"].forEach(x=>document.getElementById(x+"Tab")?.classList.toggle("hidden",x!==normalized));
+ const normalized=n==='engine'?'worksheet':n==='levels'?'core':n==='restu'?'restu':['summary','core','worksheet','settings','bug'].includes(n)?n:'summary';
+ ["summary","core","levels","worksheet","engine","restu","settings","bug"].forEach(x=>document.getElementById(x+"Tab")?.classList.toggle("hidden",x!==normalized));
  if(normalized==='worksheet')window.PAParentTools?.mountWorksheet?.();
  document.querySelectorAll('#parent .tabs button[data-parent-tab]').forEach(b=>b.classList.toggle('active',b.dataset.parentTab===normalized));
  document.getElementById('parent')?.classList.toggle('restuOpen',normalized==='restu');

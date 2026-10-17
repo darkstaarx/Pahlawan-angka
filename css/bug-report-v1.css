@@ -1,0 +1,29 @@
+/* Lapor Bug tab: Pahlawan Angka dark navy + gold, same family as the pricing panel. */
+#bugTab{display:grid;gap:12px}
+#bugTab.hidden{display:none}
+.paBugEvent{position:relative;overflow:hidden;padding:18px;border:1px solid #d9ad38;border-radius:18px;background:linear-gradient(145deg,#1d2b46,#0d182b 70%);color:#eef3fb}
+.paBugEvent::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(#ffe27e55,transparent 70%);pointer-events:none}
+.paBugEvent.ended{border-color:#526990}
+.paBugBadge{display:inline-block;padding:4px 9px;border-radius:999px;background:#3c3013;color:#ffe27e;font-size:10px;font-weight:950;letter-spacing:.08em}
+.paBugEvent h3{margin:10px 0 4px;color:#fff;font-size:20px}
+.paBugReward{margin:0;color:#c8d5e7}
+.paBugReward strong{color:#ffd24b;font-size:28px;margin-right:4px}
+.paBugDates{margin:4px 0 10px;color:#ffe27e;font-size:12px;font-weight:800}
+.paBugEvent ul{margin:0;padding-left:18px;color:#c8d5e7;font-size:13px;line-height:1.6}
+.paBugNote{margin:10px 0 0;color:#ffe27e;font-size:12px}
+.paBugForm{display:grid;gap:12px;padding:18px;border:1px solid #304b6d;border-radius:18px;background:#0d1b30;color:#eef3fb}
+.paBugForm h3{margin:0;color:#fff}
+.paBugForm label{display:grid;gap:6px;color:#c8d5e7;font-size:13px;font-weight:800}
+.paBugForm label small{font-weight:600;color:#8ea2bd}
+.paBugForm input,.paBugForm select,.paBugForm textarea{box-sizing:border-box;width:100%;min-height:44px;padding:10px 12px;border:1px solid #304b6d;border-radius:12px;background:#081426;color:#fff;font:inherit;font-size:15px}
+.paBugForm textarea{resize:vertical;line-height:1.5}
+.paBugForm input:focus,.paBugForm select:focus,.paBugForm textarea:focus{outline:2px solid #ffd24b;outline-offset:1px;border-color:#d9ad38}
+.paBugHint{margin:0;padding:10px 12px;border-radius:12px;background:#132640;color:#c8d5e7;font-size:12px;line-height:1.5}
+.paBugActions{display:grid;grid-template-columns:1fr auto;gap:10px}
+.paBugActions .btn{min-height:48px;border-radius:12px;font-weight:900}
+.paBugActions .btn.primary{background:linear-gradient(#ffe27e,#f6c23e);color:#14233a;border:0}
+.paBugActions .btn.secondary{background:#0d1b30;color:#ffe27e;border:1px solid #d9ad38}
+.paBugStatus{margin:0;min-height:1em;color:#ffe27e;font-size:13px;line-height:1.5}
+.paBugTo{margin:0;color:#8ea2bd;font-size:12px}
+.paBugTo b{color:#c8d5e7;overflow-wrap:anywhere}
+@media(max-width:480px){.paBugActions{grid-template-columns:1fr}}

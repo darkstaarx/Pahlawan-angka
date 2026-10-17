@@ -3,7 +3,7 @@
 // bundle rolls forward. Fresh builds still use the full parent.js renderer.
 (function(){
   'use strict';
-  const parentTabs=['summary','core','worksheet','settings'];
+  const parentTabs=['summary','core','worksheet','settings','bug'];
 
   function renderFallbackRestu(){
     const restu=document.getElementById('restuTab');
