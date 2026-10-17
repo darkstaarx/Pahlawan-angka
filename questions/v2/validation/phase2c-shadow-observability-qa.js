@@ -18,7 +18,7 @@ eq(status.shadowMetrics.attempts,0,'shadow metrics start empty');
 
 // Successful shadow: return null, generate privately, metadata-only telemetry.
 const out=bridge.tryGenerate('D3.SHAPE',{mastery:50,evidence:4},{history:[],rng:_test.makeRng(202603)});
-eq(out,null,'shadow never returns v2 item to visible dispatcher');
+{const __q=out;ok(__q&&__q.source==='qsv2'&&__q.qsv2Live===false&&!__q.qsv2Pilot,'(v3.86.52) Topic 7 default SHADOW serves a normal D3.SHAPE question (not pilot/live)');}
 ok(bridge.lastShadow&&bridge.lastShadow.question&&bridge.lastShadow.question.source==='qsv2','shadow privately generates v2');
 let m=bridge.getShadowMetrics();
 eq(m.attempts,1,'attempt counter increments');eq(m.generated,1,'generated counter increments');eq(m.fallbacks,0,'no fallback on success');eq(m.errors,0,'no error on success');
@@ -43,7 +43,7 @@ const originals={...rt._generators};Object.keys(rt._generators).forEach(k=>rt._g
 const err0=bridge.getShadowMetrics().errors;eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(5)}),null,'generator exception falls back');eq(bridge.getShadowMetrics().errors,err0+1,'error counter increments');eq(events.at(-1).payload.outcome,'error','error outcome');eq(events.at(-1).payload.reason,'exception','error uses stable reason code');ok(!JSON.stringify(events.at(-1)).includes('SECRET PROMPT DATA'),'raw exception text not emitted');Object.assign(rt._generators,originals);
 
 // Telemetry API missing must never make shadow fail.
-const savedTelemetry=root.PATelemetry;delete root.PATelemetry;eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(6)}),null,'shadow remains safe with telemetry unavailable');root.PATelemetry=savedTelemetry;
+const savedTelemetry=root.PATelemetry;delete root.PATelemetry;{const __q=bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(6)});ok(__q&&__q.source==='qsv2'&&__q.qsv2Live===false&&!__q.qsv2Pilot,'(v3.86.52) Topic 7 default SHADOW serves a normal D3.SHAPE question (not pilot/live)');}root.PATelemetry=savedTelemetry;
 
 // Exact visible-field parity through the production dispatcher fixture.
 function visibleQuestion(mode){
@@ -56,7 +56,7 @@ function visibleQuestion(mode){
   return {visible:{prompt:q.prompt,answer:q.answer,wrong:Array.from(q.wrong,x=>({v:x.v}))},source:q.source||'legacy',history:Array.from(ctx.sess.questionHistory)};
 }
 const off=visibleQuestion('off'),shadow=visibleQuestion('shadow');
-eq(JSON.stringify(shadow.visible),JSON.stringify(off.visible),'shadow visible prompt/answer/options exactly equal OFF legacy output');eq(shadow.source,'legacy','shadow visible source remains legacy');ok(shadow.history.every(x=>x.source!=='qsv2'),'shadow does not write v2 item into visible question history');
+/* v3.86.52: default SHADOW now serves the Topic 7 question to learners (legacy perimeter bank is off-syllabus for Tahun 3). OFF still serves legacy. */ok(JSON.stringify(shadow.visible)!==JSON.stringify(off.visible),'shadow serves the Topic 7 question, not the legacy item');eq(shadow.source,'qsv2','shadow visible source is qsv2');eq(off.source,'legacy','off still serves legacy');
 
 bridge.resetShadowMetrics();m=bridge.getShadowMetrics();eq(m.attempts,0,'session metrics reset');eq(m.generated,0,'generated reset');eq(m.fallbacks,0,'fallback reset');eq(m.errors,0,'errors reset');
 

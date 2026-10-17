@@ -8,7 +8,7 @@
 const GRADES={
  1:{bentuk2d:['identify2d','property2d'],bentuk3d:['identify3d']},
  2:{bentuk3d:['identify3d','faces3d'],bentuk2d:['identify2d','property2d'],corak:['pattern2d']},
- 3:{prisma:['identify_prism','prism_vs_non','identify_base','count_faces','reason_vertices_edges'],poligon:['identify_polygon','polygon_from_sides'],corak:['continue_pattern','smallest_unit'],simetri:['select_axis','axis_count'],perimeter:['perimeter_rect','missing_side'],koordinat:['read_position','locate_after_move']},
+ 3:{prisma:['identify_prism','prism_vs_non','identify_base','count_faces','reason_vertices_edges'],poligon:['identify_polygon','polygon_from_sides'],corak:['continue_pattern','smallest_unit'],simetri:['select_axis','axis_count'],koordinat:['read_position','locate_after_move']},
  4:{perimeter:['perimeter_rect','build_perimeter','missing_side','composite_perimeter'],koordinat:['read_grid','reverse_axes','move_point']},
  5:{luas:['area_rect','build_area','missing_side_area','compare_area','composite_area'],koordinat:['read_point','translate','distance','missing_corner']},
  6:{poligon:['polygon_name6','polygon_perimeter6','polygon_side6'],sudut:['angle_measure','angle_construct','polygon_angle'],bulatan:['circle_part','radius_diameter','circle_draw'],koordinat:['scaled_distance','direction','missing_point']}
@@ -36,7 +36,7 @@ const MAP=[
 ];
 const SKILL_GRADE=s=>{const m=/^D(\d)/.exec(s);return m?+m[1]:0};
 const SKILL_FAMS={'D1.SHAPE':['bentuk2d','bentuk3d'],'D2.7.1':['bentuk3d'],'D2.7.2':['bentuk2d'],'D2.7.3':['bentuk2d','bentuk3d','corak'],
- 'D3.SHAPE':['prisma','poligon','corak','simetri','perimeter'],'D3.POSITION':['koordinat'],
+ 'D3.SHAPE':['prisma','poligon','corak','simetri'],'D3.POSITION':['koordinat'],
  'D4.PERIM':['perimeter'],'D4.COORD':['koordinat'],'D5.AREA':['luas'],'D5.COORD':['koordinat'],'D6.AREA':['poligon'],'D6.ANGLE':['sudut','poligon'],'D6.CIRCLE':['bulatan'],'D6.SPACE_PROBLEM':['sudut','bulatan','poligon'],'D6.COORD':['koordinat'],
  'D3.T7.7.1.1':['prisma'],'D3.T7.7.1.2':['prisma'],'D3.T7.7.1.3':['prisma'],'D3.T7.7.2.1':['poligon'],'D3.T7.7.2.2':['corak'],'D3.T7.7.3.1':['simetri']};
 function locate(grade,arch){for(const[f,list] of Object.entries(GRADES[grade]||{})){const i=list.indexOf(arch);if(i>=0)return{fam:f,start:i}}return null}

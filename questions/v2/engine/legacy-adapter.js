@@ -462,6 +462,10 @@
         var isPilot = legacySkillId === PILOT_LEGACY_SKILL;
         var isD3Shadow = D3_SHADOW_SKILLS[legacySkillId] === true;
         var kill = !!(root.PA_QSV2_FLAGS && root.PA_QSV2_FLAGS.killSwitch);
+        // v3.86.52: D3.SHAPE (Topic 7: prisma, poligon sekata, paksi simetri) is served to every
+        // learner like the other D3 skills. Before, it was off unless a dev/beta flag was set, so
+        // ordinary learners got the legacy perimeter bank (perimeter is not in KSSR Tahun 3).
+        // 'shadow' (the default) now serves the question; 'off' and 'live' behave as before.
         var mode = isPilot ? configuredMode(root) : (isD3Shadow && !kill ? 'shadow' : 'off');
         if (mode === 'off') return null;
         if (mode === 'live' && !isPilot) return null;
@@ -496,6 +500,13 @@
             var generatorParams = Object.assign({}, tpl.params || {});
             if (generatorParams.difficultyBand == null && tpl.difficultyBand != null) generatorParams.difficultyBand = tpl.difficultyBand;
             var raw = generator(generatorParams, rng); q = assembleLegacyQuestion(runtime, tpl, raw);
+            // v3.86.52: KSSR 2.2.1 covers both darab and bahagi, but the app has separate Darab and
+            // Bahagi skills. Keep each skill's questions on its own operation; a missing-factor
+            // sentence ("□ × 6 = 882") fits both skills.
+            var plainPrompt = String(q && q.prompt || '').replace(/<[^>]*>/g, ' ');
+            var opMismatch = (legacySkillId === 'D3.MUL' && /÷/.test(plainPrompt)) ||
+              (legacySkillId === 'D3.DIV' && !/÷/.test(plainPrompt) && !/□\s*×|×\s*□/.test(plainPrompt));
+            if (opMismatch && attempt < 9) continue;
             if (!recent.has(legacyQuestionFingerprint(q)) || attempt === 9) break;
           }
           // Phase 3A-4: for non-pilot D3 shadow skills, a record's mode is
@@ -518,6 +529,9 @@
           q.legacySkillId = legacySkillId;
           q.qsv2Live = (effectiveMode === 'live');
           var details={ reason: 'ok', standardId: tpl.standardId, competencyId: tpl.competencyId, templateId: tpl.templateId, fingerprint: q.qsv2GeneratorFingerprint || null };
+          // v3.86.52: ordinary learners get the Topic 7 question as a normal D3.SHAPE question.
+          // It is not marked as a pilot/live attempt, so the beta-only Topic 7 evidence path is untouched.
+          if (isPilot && effectiveMode === 'shadow') { q.qsv2Live = false; delete q.qsv2Pilot; delete q.qsv2AttemptId; bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q }; shadowEvent(root, bridge, 'generated', details, startedAt); return q; }
           if (effectiveMode === 'shadow') { bridge.lastShadow = { templateId: tpl.templateId, competencyId: tpl.competencyId, question: q }; shadowEvent(root, bridge, 'generated', details, startedAt); return null; }
           liveEvent(root, bridge, 'generated', details, startedAt); return q;
         } catch (err) {

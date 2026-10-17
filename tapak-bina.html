@@ -395,7 +395,7 @@ const GEN={
  perimeter_reason:()=>{let a,b;do{a=[rnd(2,9),rnd(2,7)];b=[rnd(2,9),rnd(2,7)]}while(a[0]+a[1]===b[0]+b[1]);const big=(a[0]+a[1])>(b[0]+b[1])?'A':'B';
   return{q:'Bilik mana yang perlukan lebih banyak bingkai (perimeter lebih besar)?',w:{type:'pick',opts:[{id:'A',html:rectFig(a[0],a[1],a[0]+' m',a[1]+' m'),label:'Bilik A'},{id:'B',html:rectFig(b[0],b[1],b[0]+' m',b[1]+' m'),label:'Bilik B'}],correct:big,n:2},ans:'bilik '+big,s:'Bandingkan perimeter, bukan luas. Perimeter = 2 × (panjang + lebar).',a:'A = '+2*(a[0]+a[1])+' m, B = '+2*(b[0]+b[1])+' m.'}},
  /* koordinat */
- read_position:()=>coordFind(5,4),
+ read_position:()=>coordFind3(5,4),
  locate_after_move:()=>moveQ(5,4,false),
  read_grid:()=>coordPlace(7,5),
  reverse_axes:()=>{let x,y;do{x=rnd(1,6);y=rnd(1,5)}while(x===y);const p=pick(pets);
@@ -437,16 +437,19 @@ function patternQ(pool,S){const P=shuffle(pool).slice(0,3),ty=pick([[0,1],[0,1,2
 function coordFind(W,H){const ps=shuffle(pets).slice(0,3),used=new Set(),m=ps.map(p=>{let x,y;do{x=rnd(0,W);y=rnd(0,H)}while(used.has(x+','+y));used.add(x+','+y);return{x,y,pet:p.id,who:p.who}});const t=pick(m);
  return{q:'Siapa berada di ('+t.x+', '+t.y+')? Sentuh titik itu.',sub:'Nombor pertama: mengufuk. Kedua: mencancang.',w:{type:'grid',W,H,mode:'point',marks:m},ok:p=>p&&p.x===t.x&&p.y===t.y,ans:t.who,s:'Mula dari 0. Gerak ke kanan '+t.x+', kemudian ke atas '+t.y+'.',a:t.who+' di ('+t.x+', '+t.y+').'}}
 function coordPlace(W,H){const x=rnd(0,W),y=rnd(0,H);return{q:'Letak batu asas di ('+x+', '+y+').',sub:'Sentuh titik pada grid.',w:{type:'grid',W,H,mode:'point'},ok:p=>p&&p.x===x&&p.y===y,ans:'('+x+', '+y+')',s:'Mengufuk dulu ('+x+'), kemudian mencancang ('+y+').',a:'Ke kanan '+x+', ke atas '+y+'.'}}
+/* Tahun 3: kedudukan daripada titik rujukan dan arah, bukan pasangan (x, y) (itu Tahun 4). */
+function coordFind3(W,H){const r=coordFind(W,H),t=r.w.marks.find(m=>r.ok(m));
+ return{...r,q:'Mula dari titik 0. Siapa berada '+t.x+' petak ke kanan dan '+t.y+' petak ke atas? Sentuh titik itu.',sub:'Kira ke kanan dahulu, kemudian ke atas.',s:'Dari titik 0, gerak '+t.x+' petak ke kanan, kemudian '+t.y+' petak ke atas.',a:t.who+': '+t.x+' petak ke kanan, '+t.y+' petak ke atas dari titik 0.'}}
 function moveQ(W,H,coord,two){const p=pick(pets);let x0,y0,dx,dy;do{x0=rnd(0,W);y0=rnd(0,H);dx=pick([-3,-2,-1,1,2,3]);dy=two||coord?pick([-2,-1,0,1,2]):0}while(x0+dx<0||x0+dx>W||y0+dy<0||y0+dy>H||(dx===0&&dy===0));
  const mv=(dx?Math.abs(dx)+' unit ke '+(dx>0?'kanan':'kiri'):'')+(dx&&dy?', kemudian ':'')+(dy?Math.abs(dy)+' unit ke '+(dy>0?'atas':'bawah'):'');
- return{q:p.who+(coord?' di ('+x0+', '+y0+')':'')+' bergerak '+mv+'. Sentuh kedudukan barunya.',w:{type:'grid',W,H,mode:'point',marks:[{x:x0,y:y0,pet:p.id,who:p.who}]},ok:q=>q&&q.x===x0+dx&&q.y===y0+dy,ans:'('+(x0+dx)+', '+(y0+dy)+')',s:'Kira satu demi satu petak dari kedudukan '+p.who+'.',a:'Kedudukan baru ('+(x0+dx)+', '+(y0+dy)+').'}}
+ return{q:p.who+(coord?' di ('+x0+', '+y0+')':'')+' bergerak '+mv+'. Sentuh kedudukan barunya.',w:{type:'grid',W,H,mode:'point',marks:[{x:x0,y:y0,pet:p.id,who:p.who}]},ok:q=>q&&q.x===x0+dx&&q.y===y0+dy,ans:coord?'('+(x0+dx)+', '+(y0+dy)+')':'selepas '+mv,s:'Kira satu demi satu petak dari kedudukan '+p.who+'.',a:coord?'Kedudukan baru ('+(x0+dx)+', '+(y0+dy)+').':p.who+' kini berada selepas '+mv+'.'}}
 
 /* ---------- darjah & topik (ikut KSSR + mod bank soalan app) ---------- */
 const FAM_LABEL={bentuk2d:'BENTUK 2D',bentuk3d:'BENTUK 3D',corak:'CORAK',prisma:'PRISMA',poligon:'POLIGON',simetri:'SIMETRI',perimeter:'PERIMETER',luas:'LUAS',isipadu:'ISI PADU',koordinat:'KOORDINAT',sudut:'SUDUT',bulatan:'BULATAN'};
 const GRADES={
  1:{title:'Bentuk asas',fams:{bentuk2d:['identify2d','property2d'],bentuk3d:['identify3d']}},
  2:{title:'Bentuk 2D & 3D',fams:{bentuk3d:['identify3d','faces3d'],bentuk2d:['identify2d','property2d'],corak:['pattern2d']}},
- 3:{title:'Prisma, poligon, simetri',fams:{prisma:['identify_prism','prism_vs_non','identify_base','count_faces','reason_vertices_edges'],poligon:['identify_polygon','polygon_from_sides'],corak:['continue_pattern','smallest_unit'],simetri:['select_axis','axis_count'],perimeter:['perimeter_rect','missing_side'],koordinat:['read_position','locate_after_move']}},
+ 3:{title:'Prisma, poligon, simetri',fams:{prisma:['identify_prism','prism_vs_non','identify_base','count_faces','reason_vertices_edges'],poligon:['identify_polygon','polygon_from_sides'],corak:['continue_pattern','smallest_unit'],simetri:['select_axis','axis_count'],koordinat:['read_position','locate_after_move']}},
  4:{title:'Perimeter & koordinat',fams:{perimeter:['perimeter_rect','build_perimeter','missing_side','composite_perimeter'],koordinat:['read_grid','reverse_axes','move_point']}},
  5:{title:'Luas & koordinat',fams:{luas:['area_rect','build_area','missing_side_area','compare_area','composite_area'],koordinat:['read_point','translate','distance','missing_corner']}},
  6:{title:'Poligon, sudut, bulatan, koordinat',fams:{poligon:['polygon_name6','polygon_perimeter6','polygon_side6'],sudut:['angle_measure','angle_construct','polygon_angle'],bulatan:['circle_part','radius_diameter','circle_draw'],koordinat:['scaled_distance','direction','missing_point']}}

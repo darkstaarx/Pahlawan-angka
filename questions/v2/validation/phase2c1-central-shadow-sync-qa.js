@@ -37,8 +37,8 @@ function fakeRoot(){
 
  // Bridge only forwards centrally when the established PATelemetry gate accepts the event.
  const rt=runtime();let central=[],local=[];const brRoot={document:{},localStorage:storage(),performance:{now:()=>10},PAQuestionSystemV2:rt,PA_QSV2_FLAGS:{d3Topic7:'shadow'},PATelemetry:{record:(type,payload)=>{local.push({type,payload});return true}},PAQSV2ShadowSync:{enqueue:p=>central.push(p)}};const bridge=createBridge(brRoot);
- eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{history:[],rng:_test.makeRng(123)}),null,'shadow remains invisible');eq(local.length,1,'local telemetry accepted');eq(central.length,1,'accepted local event forwarded centrally');eq(JSON.stringify(central[0]),JSON.stringify(local[0].payload),'central payload is same metadata-only payload');
- central=[];brRoot.PATelemetry.record=()=>false;eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{history:[],rng:_test.makeRng(456)}),null,'opted-out shadow still invisible');eq(central.length,0,'rejected local telemetry is not forwarded centrally');
+ {const __q=bridge.tryGenerate('D3.SHAPE',{mastery:50},{history:[],rng:_test.makeRng(123)});ok(__q&&__q.source==='qsv2'&&__q.qsv2Live===false&&!__q.qsv2Pilot,'(v3.86.52) Topic 7 default SHADOW serves a normal D3.SHAPE question (not pilot/live)');}eq(local.length,1,'local telemetry accepted');eq(central.length,1,'accepted local event forwarded centrally');eq(JSON.stringify(central[0]),JSON.stringify(local[0].payload),'central payload is same metadata-only payload');
+ central=[];brRoot.PATelemetry.record=()=>false;{const __q=bridge.tryGenerate('D3.SHAPE',{mastery:50},{history:[],rng:_test.makeRng(456)});ok(__q&&__q.source==='qsv2'&&__q.qsv2Live===false&&!__q.qsv2Pilot,'(v3.86.52) Topic 7 default SHADOW serves a normal D3.SHAPE question (not pilot/live)');}eq(central.length,0,'rejected local telemetry is not forwarded centrally');
 
  console.log(JSON.stringify({status:'pass',checks,table:'qsv2_shadow_events',privacyGate:'PATelemetry.enabled/record',delivery:'fail-open-local-queue',visiblePath:'legacy-shadow-null'},null,2));
 })().catch(e=>{console.error(e);process.exit(1)});

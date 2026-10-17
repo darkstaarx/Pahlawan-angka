@@ -515,7 +515,7 @@ const GEN={
 3:{
  setara:[
   {arch:'equivalent_fraction_area',f:C=>{const[n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5]]),k=pick([2,3,4,5].filter(k=>d*k<=10));const c=fs(n*k,d*k);
-   const bad=[fs(n*k,d*k+1),fs(n+1,d+1),fs(n,d*k),fs(n*k+1,d*k)].filter(x=>x!==c);return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts([c,...shuffle(bad).slice(0,2)],c),
+   const bad=[d*k<10?fs(n*k,d*k+1):fs(n*k,d*k-1),fs(n+1,d+1),fs(n,d*k),fs(n*k+1,d*k)].filter(x=>x!==c);return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts([c,...shuffle(bad).slice(0,2)],c),
    q:'Rajah menunjukkan '+fs(n,d)+' kek berkrim. Pecahan manakah sama nilai dengannya?',s:'Darab pengangka dan penyebut dengan nombor yang sama.',a:fs(n,d)+' = '+fs(n+' × '+k,d+' × '+k).replace(/\[([^\]]*)\]/,'('+n+' × '+k+')/('+d+' × '+k+')')+' = '+c+'.'}}},
   {arch:'equivalent_fraction_area',f:C=>{const[n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5]]),k=pick([2,3,4,5].filter(k=>d*k<=10));return{kind:'shade',vis:[{t:'round',n:d,sh:n,fl:C.fl,lab:'KEK A'},{t:'round',n:d*k,fl:C.fl2,lab:'KEK B',live:1}],need:{k:n*k},ansTxt:fs(n,d)+' = '+fs(n*k,d*k),
    q:'Kek A ada '+fs(n,d)+' berkrim. Letak krim pada kek B supaya sama banyak.',s:'Setiap bahagian kek A sama dengan '+k+' bahagian kek B.',a:n+' × '+k+' = '+n*k+' bahagian.'}}},

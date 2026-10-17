@@ -9,7 +9,7 @@ const probes = {
   'D2.7.1': ['identify3d', 'faces3d'],
   'D2.7.2': ['identify2d', 'property2d'],
   'D2.7.3': ['identify2d', 'identify3d', 'pattern2d'],
-  'D3.SHAPE': ['identify_prism', 'identify_polygon', 'continue_pattern', 'select_axis', 'perimeter_rect'],
+  'D3.SHAPE': ['identify_prism', 'identify_polygon', 'continue_pattern', 'select_axis'],  // v3.86.52: no perimeter in KSSR Tahun 3
   'D3.POSITION': ['read_position'],
   'D4.PERIM': ['perimeter_rect', 'composite_perimeter'],
   'D4.COORD': ['read_grid', 'reverse_axes'],

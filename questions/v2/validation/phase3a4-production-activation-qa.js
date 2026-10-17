@@ -151,7 +151,7 @@ function productionContext(seed){return {history:[],recentFingerprints:[],stateR
   const root=makeRoot();
   const bridge=createBridge(root);
   eq(bridge.getMode(),'shadow','Topic 7 default mode remains SHADOW');
-  eq(bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(1)}),null,'Topic 7 default SHADOW still returns null');
+  {const __q=bridge.tryGenerate('D3.SHAPE',{mastery:50},{rng:_test.makeRng(1)});ok(__q&&__q.source==='qsv2'&&__q.qsv2Live===false&&!__q.qsv2Pilot,'(v3.86.52) Topic 7 default SHADOW serves a normal D3.SHAPE question (not pilot/live)');}
   bridge.setPilotMode('live',false);
   let t7Live=0;
   for(let seed=0;seed<40;seed++){

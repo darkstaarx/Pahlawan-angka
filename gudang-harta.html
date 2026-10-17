@@ -567,7 +567,7 @@ const Fx={
   if(v==='check'){const b=L[0],bad=[D+PV[c-1],D+2*PV[c-1],Math.round(D/10),D>PV[c-1]?D-PV[c-1]:D*10];return{kind:'pick',...opts(bad.filter(x=>x>0&&x!==D).map(nf),nf(D)),q:'Tanpa mengira penuh, jawapan manakah munasabah bagi '+nf(a)+' − '+nf(b)+'?',s:'Bundarkan kedua-dua nombor dulu, kemudian anggarkan.',a:'Anggaran: '+nf(Math.round(a/PV[c-2])*PV[c-2])+' − '+nf(Math.round(b/PV[c-2])*PV[c-2])+' = '+nf((Math.round(a/PV[c-2])-Math.round(b/PV[c-2]))*PV[c-2])+'.'}}
   if(v==='error'){const b=L[0],w=D+pick([10,-10,100]);if(w<0)return null;return{kind:'pad',form:NUM(D),q:C.who+' menulis '+nf(a)+' − '+nf(b)+' = '+nf(w)+'. Apakah jawapan yang betul?',s:'Kira semula. Pecahkan tempat sebelah kiri bila digit atas lebih kecil.',a:nf(a)+' − '+nf(b)+' = '+nf(D)+'.'}}
   return{kind:'pad',card:nf(a)+' − '+L.map(nf).join(' − ')+' = ?',form:NUM(D),q:'Kira hasil tolak.',s:'Tolak dari tempat sa. Pecahkan tempat sebelah kiri jika perlu.',a:nf(a)+' − '+L.map(nf).join(' − ')+' = '+nf(D)+'.'}}}),
- mixed:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3));const v=order==='sa'?a-b+d:a+b-d;if(v<=0||v>=PV[c])return null;
+ mixed:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3));const v=order==='sa'?a-b+d:a+b-d,mid=order==='sa'?a-b:a+b;if(v<=0||v>=PV[c]||mid<=0||mid>PV[c])return null;
   return{kind:'pad',card:nf(a)+(order==='sa'?' − '+nf(b)+' + ':' + '+nf(b)+' − ')+nf(d)+' = ?',form:NUM(v),q:'Kira dari kiri ke kanan.',s:'Tambah dan tolak: kira dari kiri ke kanan.',a:nf(a)+(order==='sa'?' − ':' + ')+nf(b)+' = '+nf(order==='sa'?a-b:a+b)+'; kemudian '+(order==='sa'?'+ ':'− ')+nf(d)+' = '+nf(v)+'.'}}}),
  twoStory:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3)),v=order==='sa'?a-b+d:a+b-d;if(v<=0||v>=PV[c])return null;
   return{kind:'pad',form:NUM(v),q:order==='sa'?'Gudang ada '+nf(a)+' syiling. '+nf(b)+' syiling dibelanjakan, kemudian '+nf(d)+' syiling baharu disimpan. Berapakah syiling sekarang?':'Wira kumpul '+nf(a)+' permata pada Isnin dan '+nf(b)+' pada Selasa. '+nf(d)+' permata diberi kepada kampung. Berapakah bakinya?',
@@ -580,8 +580,8 @@ const Fx={
  mulStory:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',form:NUM(n*k),q:pick(['Ada '+k+' peti. Setiap peti mengandungi '+nf(n)+' syiling. Berapakah jumlah syiling?','Wira buat '+k+' set anak panah, setiap set '+nf(n)+' batang. Berapakah jumlah anak panah?']),s:'“Setiap” bermaksud darab.',a:k+' × '+nf(n)+' = '+nf(n*k)+'.'}}}),
  mulCalc:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',card:nf(n)+' × '+k+' = ?',form:NUM(n*k),q:'Kira hasil darab.',s:'Darab setiap digit '+nf(n)+' dengan '+k+', mula dari tempat sa. Kumpul semula jika perlu.',a:nf(n)+' × '+k+' = '+nf(n*k)+'.'}}}),
  mulMiss:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',card:'___ × '+k+' = '+nf(n*k),form:NUM(n),q:'Apakah nombor yang hilang?',s:'Darab dan bahagi ialah operasi songsang.',a:nf(n*k)+' ÷ '+k+' = '+nf(n)+'.'}}}),
- pow10:(arch,lo,hi,div)=>({arch,f:C=>{const p=pick([10,100,1000]);let n=R(lo,hi);if(div){const v=n*p;if(v>=10000)return null;return{kind:'pad',card:nf(v)+' ÷ '+nf(p)+' = ?',form:NUM(n),q:'Kira.',s:'Bahagi '+nf(p)+': buang '+(String(p).length-1)+' sifar di hujung.',a:nf(v)+' ÷ '+nf(p)+' = '+nf(n)+'.'}}
-  if(n*p>=100000)return null;return{kind:'pad',card:nf(n)+' × '+nf(p)+' = ?',form:NUM(n*p),q:'Kira.',s:'Darab '+nf(p)+': tambah '+(String(p).length-1)+' sifar di hujung.',a:nf(n)+' × '+nf(p)+' = '+nf(n*p)+'.'}}}),
+ pow10:(arch,lo,hi,div,max=99999)=>({arch,f:C=>{const p=pick([10,100,1000]);let n=R(lo,hi);if(div){const v=n*p;if(v>=10000)return null;return{kind:'pad',card:nf(v)+' ÷ '+nf(p)+' = ?',form:NUM(n),q:'Kira.',s:'Bahagi '+nf(p)+': buang '+(String(p).length-1)+' sifar di hujung.',a:nf(v)+' ÷ '+nf(p)+' = '+nf(n)+'.'}}
+  if(n*p>max)return null;return{kind:'pad',card:nf(n)+' × '+nf(p)+' = ?',form:NUM(n*p),q:'Kira.',s:'Darab '+nf(p)+': tambah '+(String(p).length-1)+' sifar di hujung.',a:nf(n)+' × '+nf(p)+' = '+nf(n*p)+'.'}}}),
  mulEst:(arch,lo,hi,mlo,mhi,P)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi),rn=Math.round(n/P)*P,rk=k>=10?Math.round(k/10)*10:k,e=rn*rk;return{kind:'pick',...opts([e*10,Math.round(e/10),e+rn].map(nf),nf(e)),
   q:'Anggaran munasabah bagi '+nf(n)+' × '+k+'?',s:'Bundarkan '+nf(n)+' kepada '+PLACE[String(P).length-1]+' terdekat'+(k>=10?' dan '+k+' kepada puluh terdekat':'')+', kemudian darab.',a:nf(rn)+' × '+rk+' = '+nf(e)+'.'}}}),
  divShare:(arch)=>({arch,f:C=>{const k=pick([2,3,4,5]),q=R(2,6),n=k*q;return{kind:'pad',vis:{t:'share',n,k},form:NUM(q),q:n+' syiling dikongsi sama rata oleh '+k+' pet. Berapa syiling setiap pet dapat?',s:'Tekan “Agih” untuk beri satu syiling kepada setiap pet sehingga habis.',a:n+' ÷ '+k+' = '+q+'.'}}}),
@@ -591,7 +591,7 @@ const Fx={
  divMissing:(arch,lo,hi,dlo,dhi)=>({arch,f:C=>{const d=R(dlo,dhi),q=R(lo,hi);return{kind:'pad',card:nf(d*q)+' ÷ ___ = '+nf(q),form:NUM(d),q:'Apakah nombor yang hilang?',s:'Pembahagi = '+nf(d*q)+' ÷ '+nf(q)+'.',a:nf(d*q)+' ÷ '+nf(q)+' = '+d+'.'}}}),
  divCalc:(arch,lo,hi,dlo,dhi)=>({arch,f:C=>{const d=R(dlo,dhi),q=R(lo,hi);return{kind:'pad',card:nf(d*q)+' ÷ '+d+' = ?',form:NUM(q),q:'Kira hasil bahagi.',s:'Bahagi dari tempat paling kiri. Turunkan digit seterusnya selepas setiap langkah.',a:nf(d*q)+' ÷ '+d+' = '+nf(q)+'.'}}}),
  divStory:(arch,lo,hi,dlo,dhi)=>({arch,f:C=>{const d=R(dlo,dhi),q=R(lo,hi);return{kind:'pad',form:NUM(q),q:pick([nf(d*q)+' syiling emas dibahagi sama rata kepada '+d+' pahlawan. Berapa syiling setiap pahlawan dapat?',nf(d*q)+' anak panah disusun sama banyak dalam '+d+' tabung. Berapa batang setiap tabung?']),s:'“Sama rata” bermaksud bahagi.',a:nf(d*q)+' ÷ '+d+' = '+nf(q)+'.'}}}),
- divInverse:(arch,lo,hi)=>({arch,f:C=>{const k=R(2,9),n=R(lo,hi);return{kind:'pad',card:'□ × '+k+' = '+nf(n*k),form:NUM(n),q:'Apakah nombor dalam kotak?',s:'Darab dan bahagi saling songsang: □ = '+nf(n*k)+' ÷ '+k+'.',a:nf(n*k)+' ÷ '+k+' = '+nf(n)+'.'}}}),
+ divInverse:(arch,lo,hi)=>({arch,f:C=>{const k=R(2,9),n=R(lo,hi);if(n*k>10000)return null;/* KSSR T3: hasil dalam 10 000 */return{kind:'pad',card:'□ × '+k+' = '+nf(n*k),form:NUM(n),q:'Apakah nombor dalam kotak?',s:'Darab dan bahagi saling songsang: □ = '+nf(n*k)+' ÷ '+k+'.',a:nf(n*k)+' ÷ '+k+' = '+nf(n)+'.'}}}),
  ops:(arch,v,big)=>({arch,f:C=>{const L=big?[1000,9999]:[10,99];
   if(v==='mulfirst'){const a=R(...L),b=R(big?100:2,big?999:30),k=R(2,9);return{kind:'pad',card:nf(a)+' + '+nf(b)+' × '+k+' = ?',form:NUM(a+b*k),q:'Kira. Darab dahulu, kemudian tambah.',s:'Tertib: × dan ÷ dahulu, kemudian + dan −.',a:nf(b)+' × '+k+' = '+nf(b*k)+'; '+nf(a)+' + '+nf(b*k)+' = '+nf(a+b*k)+'.'}}
   if(v==='brackets'){const a=R(...L),b=R(big?100:2,big?999:30),k=R(2,9);return{kind:'pad',card:'('+nf(a)+' + '+nf(b)+') × '+k+' = ?',form:NUM((a+b)*k),q:'Kira. Selesaikan dalam kurungan dahulu.',s:'Kurungan dahulu.',a:nf(a)+' + '+nf(b)+' = '+nf(a+b)+'; '+nf(a+b)+' × '+k+' = '+nf((a+b)*k)+'.'}}
@@ -765,7 +765,7 @@ const GEN={
  darab:[
   {...Fx.mulArray('multiply_divide_one_digit')},
   {...Fx.mulCalc('multiply_divide_one_digit',101,999,2,9)},
-  {...Fx.pow10('multiply_divide_powers10',2,99)},
+  {...Fx.pow10('multiply_divide_powers10',2,99,false,10000)},/* KSSR T3: hasil darab dalam 10 000 */
   {...Fx.mulCalc('multiply_divide_one_digit',1001,4999,2,2)},
   {...Fx.divInverse('inverse_missing_factor',101,1999)}],
  bahagi:[
