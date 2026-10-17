@@ -183,10 +183,11 @@ function moneyVisual(cents){
 function priceTag(label,cents){return `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:12px;background:#fff3ca;border:2px solid #d7b657;color:#273149;font-size:12px;font-weight:850"><span>${label}</span><b style="font-size:17px">${moneyFmt(cents)}</b></div>`}
 function moneyWrongSet(ans,values=[]){
  const out=[]; const seen=new Set([ans]);
- for(const v of values){if(v>=0&&v<=10000&&!seen.has(v)){seen.add(v);out.push(moneyChoice(v,"money"))}}
+ /* v3.86.41: no 0 sen, and only amounts payable with Malaysian coins (multiples of 5 sen) */
+ for(const v of values){if(v>0&&v<=10000&&v%5===0&&!seen.has(v)){seen.add(v);out.push(moneyChoice(v,"money"))}}
  let step=ans<100?10:50;
  for(let k=1;out.length<3&&k<10;k++){
-   for(const v of [ans+step*k,ans-step*k]){if(v>=0&&v<=10000&&!seen.has(v)){seen.add(v);out.push(moneyChoice(v,"money"));if(out.length===3)break}}
+   for(const v of [ans+step*k,ans-step*k]){if(v>0&&v<=10000&&v%5===0&&!seen.has(v)){seen.add(v);out.push(moneyChoice(v,"money"));if(out.length===3)break}}
  }
  return out.slice(0,3);
 }
@@ -228,7 +229,8 @@ function moneyQ(id,shift,s){
    });
    if(mode==="recognise"){
      const d=pick([5,10,20,50,100,500,1000,2000,5000]);
-     const wrong=moneyWrongSet(d,[d<100?d+10:d+100,d<100?Math.max(5,d-10):Math.max(100,d-100),d<100?d*2:Math.min(10000,d*2)]);
+     const den=[5,10,20,50,100,500,1000,2000,5000,10000],i=den.indexOf(d);/* wang sebenar sahaja: tiada RM49/RM51 */
+     const wrong=moneyWrongSet(d,[den[i+1]??den[i-2],den[i-1]??den[i+2],d<100?d*100:d/100]);
      return tagMoneyBasics(Q(`${moneyVisual(d)}Berapakah nilai wang yang ditunjukkan?`,moneyFmt(d),wrong,"Lihat nilai yang tertulis pada syiling atau wang kertas.",`D2 ${difficulty} · Wang`,true,shift),[d],'recognise');
    }
    if(mode==="compare"){

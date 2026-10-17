@@ -72,26 +72,29 @@ const PAOptionIntegrity=(function(){
   });
   return out;
  }
- // Darjah 1: Q() fills missing choices with generic values (110, 12, "13" beside betul/salah).
+ // Darjah 1–2: Q() fills missing choices with generic values (110, 12, "13" beside betul/salah).
  // Replace those fillers with choices a seven-year-old would actually consider.
  function refineYoung(q,skillId){
-  if(!q||!/^D1\./.test(String(skillId||''))||!Array.isArray(q.wrong))return q;
+  const g=(String(skillId||'').match(/^D([12])\./)||[])[1];if(!q||!g||!Array.isArray(q.wrong))return q;
+  const MAX=g==='1'?100:1000; // Tahun 1 hingga 100, Tahun 2 hingga 1 000
   const ans=strip(q.answer).trim(),n=/^\d+$/.test(ans)?Number(ans):null;
   // Year 1 works with numbers up to 100: a choice above 100 is replaced as well.
-  const replace=o=>o&&(o.tag==='generated'||(n!==null&&n<=100&&/^\d+$/.test(strip(labelOf(o)).trim())&&Number(strip(labelOf(o)))>100));
+  const replace=o=>o&&(o.tag==='generated'||(n!==null&&n<=MAX&&/^\d+$/.test(strip(labelOf(o)).trim())&&Number(strip(labelOf(o)))>MAX));
   if(!q.wrong.some(replace))return q;
   const seen=new Set([key(ans),...q.wrong.filter(o=>!replace(o)).map(o=>key(labelOf(o)))]);
   let pool=[];
   const sen=ans.match(/^(\d+) sen$/),rm=ans.match(/^RM(\d+(?:\.\d{2})?)$/),list=ans.match(/^\d+(?:, \d+)+$/);
-  const W=window.PAY1V2Runtime&&window.PAY1V2Runtime.words,wordN=W?Array.from({length:101},(_,i)=>i).find(i=>String(W(i))===ans):undefined;
+  const W1=window.PAY1V2Runtime&&window.PAY1V2Runtime.words,W2=typeof numWords==='function'?numWords:null;
+  let W=null,wordN;for(const f of [W1,W2]){if(!f)continue;const hit=Array.from({length:MAX+1},(_,i)=>i).find(i=>{try{return String(f(i))===ans}catch(e){return false}});if(hit!==undefined){W=f;wordN=hit;break}}
   if(list){const xs=ans.split(', ');const perm=[];const go=(a,rest)=>{if(!rest.length){perm.push(a.join(', '));return}rest.forEach((x,i)=>go([...a,x],rest.filter((_,j)=>j!==i)))};go([],xs);pool=perm.filter(v=>v!==ans).sort(()=>Math.random()-.5)}
-  else if(wordN!==undefined)pool=[wordN+1,wordN-1,wordN+10,wordN-10].filter(v=>v>=0&&v<=100).map(v=>String(W(v)));
-  else if(/^\d\/\d$/.test(ans)){const val=f=>{const[a,b]=f.split('/').map(Number);return a/b};const all=[...seen].filter(x=>/^\d\/\d$/.test(x)).map(val).concat(val(ans));pool=['1/2','1/4','3/4','4/4'].filter(f=>!all.some(v=>Math.abs(v-val(f))<1e-9))}
+  else if(wordN!==undefined)pool=[wordN+1,wordN-1,wordN+10,wordN-10].filter(v=>v>=0&&v<=MAX).map(v=>String(W(v)));
+  else if(/^\d{1,2}:\d{2}( [a-z ]+)?$/.test(ans)){const[,hh,mm,suf]=ans.match(/^(\d{1,2}):(\d{2})( [a-z ]+)?$/);const t=Number(hh)*60+Number(mm);pool=[t+5,t-5,t+15,t-15,t+60].filter(x=>x>=60&&x<13*60).map(x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0')+(suf||''))}
+  else if(/^\d+\/\d+$/.test(ans)){const val=f=>{const[a,b]=f.split('/').map(Number);return a/b};const all=[...seen].filter(x=>/^\d+\/\d+$/.test(x)).map(val).concat(val(ans));const[an,ad]=ans.split('/').map(Number);pool=[...new Set([`${an+1}/${ad}`,`${an-1}/${ad}`,`${an+2}/${ad}`,`${an-2}/${ad}`,'1/2','1/4','3/4'])].filter(f=>{const[a,b]=f.split('/').map(Number);return a>0&&a<=b}).filter(f=>!all.some(v=>Math.abs(v-val(f))<1e-9))}
   // "Semak kewajaran" items need distractors far from the estimate: keep them ≥30 away, still within 0–100.
-  else if(n!==null&&q.wrong.some(o=>o&&o.tag==='estimate'))pool=[n+30,n-30,n+40,n-40,n+50,n-50,n+60,n-60].filter(v=>v>=0&&v<=100).map(String);
-  else if(n!==null)pool=(n%10===0&&n>=10?[n-10,n+10,n-20,n+20,n+30].filter(v=>v>0&&v<=100):[n+1,n-1,n+2,n-2,n+10,n-10].filter(v=>v>=0&&v<=100)).map(String);
+  else if(n!==null&&q.wrong.some(o=>o&&o.tag==='estimate'))pool=[n+30,n-30,n+40,n-40,n+50,n-50,n+60,n-60].filter(v=>v>=0&&v<=MAX).map(String);
+  else if(n!==null)pool=(g==='2'&&n%100===0&&n>=100?[n-100,n+100,n-200,n+200,n+10]:n%10===0&&n>=10?[n-10,n+10,n-20,n+20,n+30]:[n+1,n-1,n+10,n-10,n+2,n+100]).filter(v=>v>0&&v<=MAX).map(String);
   else if(sen){const v=Number(sen[1]);pool=[v+10,v-10,v+5,v-5,v+20].filter(x=>x>=5&&x<=95).map(x=>x+' sen')}
-  else if(rm){const v=Number(rm[1]),dp=rm[1].includes('.');pool=[v+1,v-1,v+2,v+0.5,v-0.5].filter(x=>x>0).map(x=>'RM'+(dp||!Number.isInteger(x)?x.toFixed(2):String(x)))}
+  else if(rm){const v=Number(rm[1]),dp=rm[1].includes('.');pool=[v+1,v-1,v+2,v+0.5,v-0.5].filter(x=>x>0&&x<=MAX).map(x=>'RM'+(dp||!Number.isInteger(x)?x.toFixed(2):String(x)))}
   else pool=['tidak pasti','tidak boleh ditentukan','sama banyak','semua betul'];
   const fresh=pool.filter(v=>!seen.has(key(v)));
   const wrong=q.wrong.map(o=>{if(!replace(o)||!fresh.length)return o;const v=fresh.shift();seen.add(key(v));return{v,label:v,tag:'young_near'}});

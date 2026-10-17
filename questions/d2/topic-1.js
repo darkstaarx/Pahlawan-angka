@@ -41,7 +41,7 @@ window.PAQuestionBanks.d2t1 = function(id,s,shift){
    const candidates=[ans-20,ans+20,ans-10,ans+10,ans-30,ans+30]
      .filter(v=>v>=10&&v<=100&&v!==ans);
    const wrong=[];for(const v of candidates){if(!wrong.some(x=>x.v===v))wrong.push(N(v,'estimate'));if(wrong.length===3)break}
-   return Q(`${dotsEstimateVisual(real)}Anggarkan bilangan objek dalam gambar. Pilih anggaran yang paling munasabah.`,ans,wrong,
+   return Q(`${dotsEstimateVisual(real)}Anggarkan bilangan objek dalam gambar. Pilih anggaran yang paling dekat.`,ans,wrong,
      "Anggaran ialah nilai hampir. Lihat keseluruhan kumpulan dan bandingkan dengan kumpulan kira-kira 10 objek; tidak perlu mencari bilangan tepat.",
      "D2 Core · Menganggar Bilangan Objek",true,true);
  }
