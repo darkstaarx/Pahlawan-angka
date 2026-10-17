@@ -39,12 +39,14 @@
     write('purchase');
     showPlans();
   }
+  // The plans are the app's one pricing component (PACommercial.openPricing) in entry mode.
+  // #entryPlans is only the dark backdrop behind it, with a button to reopen the plans.
   function showPlans() {
     window.screen('entryPlans');
     $('paEntryPackages').hidden = false;
     $('paEntryPending').hidden = true;
     message('');
-    window.PAPayments?.refreshCatalog?.().catch(() => message('Harga belum dapat disahkan. Semak sambungan dan cuba semula.'));
+    window.PACommercial?.openPricing?.({ entry: true });
   }
   async function choose(plan) {
     if (!['premium', 'family_plus'].includes(plan)) return;
@@ -160,9 +162,10 @@
       if (action === 'back') welcome();
       if (action === 'check') checkPayment();
       if (action === 'bill') reopenBill();
+      if (action === 'pricing') showPlans();
     }));
     document.querySelectorAll('[data-entry-plan]').forEach(button => button.addEventListener('click', () => choose(button.dataset.entryPlan)));
   }
-  window.PAEntry = { beforeProfiles, plans, demo, login, welcome, checkPayment, rememberOrder };
+  window.PAEntry = { beforeProfiles, plans, choose, demo, login, welcome, checkPayment, rememberOrder };
   mount();
 })();

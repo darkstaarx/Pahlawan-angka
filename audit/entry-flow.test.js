@@ -16,14 +16,17 @@ function harness({ signed = false, paid = false, intent, search = '', row = { st
   const location = { search, href: `https://example.invalid/${search}`, assign: url => calls.push(['assign', url]) };
   const window = {
     screen: id => calls.push(['screen', id]), PACloud: { state, resumeAfterConsent: async () => calls.push('profiles') },
-    PACommercial: { refresh: async () => calls.push('refresh'), isPaid: () => paidAccess, isPremium: () => false, openPricing: () => calls.push('upgrades') },
+    PACommercial: { refresh: async () => calls.push('refresh'), isPaid: () => paidAccess, isPremium: () => false, openPricing: options => calls.push(options?.entry ? 'entry-pricing' : 'upgrades') },
     PAPayments: { refreshCatalog: async () => {}, checkout: plan => calls.push(['checkout', plan]), pollOrder: id => calls.push(['poll', id]) }, PADemo: { open: () => calls.push('demo') }
   };
   vm.runInNewContext(source, { window, document: { getElementById: el, querySelectorAll: selector => selector === '[data-entry-plan]' ? planButtons : [] }, localStorage: { getItem: k => storage.get(k), setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) }, location, history: { replaceState: (_a, _b, url) => { location.search = ''; calls.push(['history', url]); } }, URL, URLSearchParams, Date });
   return { entry: window.PAEntry, state, calls, elements, storage, clickPlan: plan => el(plan).click(), setPaid: value => { paidAccess = value; } };
 }
 test('package selection leads guests to registration and survives the OAuth reload', async () => {
-  const first = harness(); first.entry.plans(); await first.clickPlan('family_plus');
+  const first = harness(); first.entry.plans();
+  // The shared pricing component opens in entry mode (no separate white plans page).
+  assert.ok(first.calls.includes('entry-pricing'));
+  await first.entry.choose('family_plus');
   assert.equal(JSON.parse(first.storage.get(KEY)).plan, 'family_plus');
   assert.equal(first.elements.get('login')['data-entry'], 'auth');
   const returned = harness({ signed: true, storage: first.storage });
@@ -72,4 +75,11 @@ test('leaving the bank without a return query resumes the same pending order', a
 test('purchase intent from a different account is discarded', async () => {
   const h = harness({ signed: true, intent: { kind: 'purchase', plan: 'premium', userId: 'someone-else' } });
   assert.equal(await h.entry.beforeProfiles(), false); assert.equal(h.storage.has(KEY), false);
+});
+test('signed-in buyer with a chosen plan goes straight to checkout over the shared pricing', async () => {
+  const h = harness({ signed: true, intent: { kind: 'purchase', plan: 'premium' } });
+  assert.equal(await h.entry.beforeProfiles(), true);
+  assert.ok(h.calls.includes('entry-pricing'));
+  assert.ok(h.calls.some(c => Array.isArray(c) && c[0] === 'checkout' && c[1] === 'premium'));
+  assert.ok(!h.calls.includes('profiles'));
 });
