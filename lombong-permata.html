@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Lombong Permata Wira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800;900&display=swap">
@@ -481,7 +482,7 @@ const Fx={
  pctStoryD5:(arch)=>({arch,f:C=>{const Q=pick([80,120,200,240,300,400]),p=pick([15,20,25,35,40,45,60,65]),v=p*Q/100;if(v%1)return null;return{kind:'pad',form:NUM(Q-v,{post:'biji'}),q:'Wira menjumpai '+Q+' biji permata. '+p+'% daripadanya retak. Berapa biji permata yang elok?',s:'Peratus permata elok = 100% − '+p+'%.',a:(100-p)+'/100 × '+Q+' = '+(Q-v)}}}),
 
  /* ================= D6 perpuluhan ================= */
- mulDec:(arch)=>({arch,f:C=>{const a=R(11,99),b=R(11,49);if(b%10===0||a%10===0)return null;const da=pick([1,2]),db=1;const p=a*b,dp=da+db;return{kind:'pad',card:DX(a,da)+' × '+DX(b,db),form:DEC(p/10**dp),q:'Hitung.',s:'Darab tanpa titik perpuluhan. Jumlah tempat perpuluhan jawapan = '+da+' + '+db+' = '+dp+'.',a:a+' × '+b+' = '+p+'; letak '+dp+' tempat perpuluhan: '+fd(p/10**dp)}}}),
+ mulDec:(arch)=>({arch,f:C=>{/* faktor kedua mesra: 0.3, 0.5, 1.5, 2.5 ... supaya kira dalam kepala */const a=R(11,99),b=pick([2,3,4,5,15,25]);if(a%10===0)return null;const da=pick([1,2]),db=1;const p=a*b,dp=da+db;return{kind:'pad',card:DX(a,da)+' × '+DX(b,db),form:DEC(p/10**dp),q:'Hitung.',s:'Darab tanpa titik perpuluhan. Jumlah tempat perpuluhan jawapan = '+da+' + '+db+' = '+dp+'.',a:a+' × '+b+' = '+p+'; letak '+dp+' tempat perpuluhan: '+fd(p/10**dp)}}}),
  divDec:(arch)=>({arch,f:C=>{const b=pick([2,4,5,6,8,12,15,25]),db=pick([1,2]),q=R(2,40),qq=q*b;const dvd=qq/10**(db+R(0,1));const dvs=b/10**db;const ans=tv(dvd/dvs);if(String(ans).split('.')[1]?.length>2)return null;
   return{kind:'pad',card:fd(dvd)+' ÷ '+fd(dvs),form:DEC(ans),q:'Hitung.',s:'Jadikan pembahagi nombor bulat: darab KEDUA-DUA nombor dengan 10 atau 100.',a:fd(dvd)+' ÷ '+fd(dvs)+' = '+fd(dvd*10**db)+' ÷ '+fd(dvs*10**db)+' = '+fd(ans)}}}),
  missFac:(arch)=>({arch,f:C=>{const a=R(11,49),b=R(2,9);const x=a/10,y=b/10*pick([1,10]);const p=tv(x*y);if(Math.random()<.5)return{kind:'pad',card:'□ × '+fd(y)+' = '+fd(p),form:DEC(x),q:'Apakah nilai □?',s:'Gunakan bahagi: □ = '+fd(p)+' ÷ '+fd(y)+'.',a:fd(p)+' ÷ '+fd(y)+' = '+fd(x)};

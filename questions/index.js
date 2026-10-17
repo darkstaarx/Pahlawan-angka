@@ -6,7 +6,9 @@
 const PAOptionIntegrity=(function(){
  const VERSION='3.86.32';
  const strip=v=>String(v??'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ');
- const key=v=>strip(v).replace(/[\s,]+/g,'').replace(/−/g,'-').toLowerCase();
+ // Only digit-group separators are ignored (1 250 000 = 1,250,000 = 1250000). Other spaces are
+ // meaningful: "1 1/4" (mixed number) and "11/4" (improper fraction) are different answers.
+ const key=v=>strip(v).trim().replace(/\s+/g,' ').replace(/(\d)[ ,](?=\d{3}(?!\d|\/))/g,'$1').replace(/−/g,'-').toLowerCase();
  const labelOf=o=>o&&typeof o==='object'?(o.label??o.v):o;
  // RM prefix, a number (digits may be grouped by spaces/commas), an optional short unit.
  const NUMERIC=/^(RM)?\s*(-?\d+(?:[ ,]\d{3})*(?:\.\d+)?)(\s*)([A-Za-z%°²³]{1,4})?$/i;

@@ -11,7 +11,7 @@ const GRADES={
  3:{prisma:['identify_prism','prism_vs_non','identify_base','count_faces','reason_vertices_edges'],poligon:['identify_polygon','polygon_from_sides'],corak:['continue_pattern','smallest_unit'],simetri:['select_axis','axis_count'],perimeter:['perimeter_rect','missing_side'],koordinat:['read_position','locate_after_move']},
  4:{perimeter:['perimeter_rect','build_perimeter','missing_side','composite_perimeter'],koordinat:['read_grid','reverse_axes','move_point']},
  5:{luas:['area_rect','build_area','missing_side_area','compare_area','composite_area'],koordinat:['read_point','translate','distance','missing_corner']},
- 6:{luas:['composite_area6','missing_dimension','perimeter_reason'],isipadu:['volume'],sudut:['angle_measure','angle_construct','polygon_angle'],bulatan:['circle_part','radius_diameter','circle_draw'],koordinat:['scaled_distance','direction','missing_point']}
+ 6:{poligon:['polygon_name6','polygon_perimeter6','polygon_side6'],sudut:['angle_measure','angle_construct','polygon_angle'],bulatan:['circle_part','radius_diameter','circle_draw'],koordinat:['scaled_distance','direction','missing_point']}
 };
 /* archetype app (regex) → archetype game. Urutan penting: padanan pertama menang. */
 const MAP=[
@@ -20,7 +20,8 @@ const MAP=[
  [/repeating_unit|smallest_unit/,'smallest_unit'],[/pattern/,'continue_pattern'],
  [/polygon_from_sides|infer_polygon|explain_regular_polygon/,'polygon_from_sides'],[/identify_polygon|regular_polygon|polygon_from_picture|named_regular/,'identify_polygon'],
  [/identify_base/,'identify_base'],[/count_faces/,'count_faces'],[/vertices|edges/,'reason_vertices_edges'],[/non_prism|why_not_prism|discriminate|compare_prism/,'prism_vs_non'],[/prism|classify_by_properties|from_picture|from_properties/,'identify_prism'],
- [/polygon_angle|polygon_sum|polygon_compare|polygon_interior|polygon_name|straight|missing$/,'polygon_angle',['D6.ANGLE','D6.SPACE_PROBLEM']],
+ [/polygon_name/,'polygon_name6',['D6.ANGLE','D6.SPACE_PROBLEM','D6.AREA']],[/polygon_perimeter|polygon_fence|fence_compare/,'polygon_perimeter6',['D6.ANGLE','D6.SPACE_PROBLEM','D6.AREA']],[/perimeter_side/,'polygon_side6',['D6.ANGLE','D6.SPACE_PROBLEM','D6.AREA']],
+ [/polygon_angle|polygon_sum|polygon_compare|polygon_interior|straight|missing$/,'polygon_angle',['D6.ANGLE','D6.SPACE_PROBLEM']],
  [/angle_construct|construct|target|combine|turn|tool/,'angle_construct',['D6.ANGLE','D6.SPACE_PROBLEM']],[/angle|read|classify/,'angle_measure',['D6.ANGLE']],
  [/circle_draw|draw_radius|setting|steps|compass/,'circle_draw'],[/circle_part|label|parts/,'circle_part'],[/radius|diameter|two_circle/,'radius_diameter'],
  [/volume/,'volume'],[/composite_area/,'composite_area6'],[/missing_dimension/,'missing_dimension'],[/perimeter_reason/,'perimeter_reason'],
@@ -36,7 +37,7 @@ const MAP=[
 const SKILL_GRADE=s=>{const m=/^D(\d)/.exec(s);return m?+m[1]:0};
 const SKILL_FAMS={'D1.SHAPE':['bentuk2d','bentuk3d'],'D2.7.1':['bentuk3d'],'D2.7.2':['bentuk2d'],'D2.7.3':['bentuk2d','bentuk3d','corak'],
  'D3.SHAPE':['prisma','poligon','corak','simetri','perimeter'],'D3.POSITION':['koordinat'],
- 'D4.PERIM':['perimeter'],'D4.COORD':['koordinat'],'D5.AREA':['luas'],'D5.COORD':['koordinat'],'D6.AREA':['luas','isipadu'],'D6.ANGLE':['sudut'],'D6.CIRCLE':['bulatan'],'D6.SPACE_PROBLEM':['sudut','bulatan'],'D6.COORD':['koordinat'],
+ 'D4.PERIM':['perimeter'],'D4.COORD':['koordinat'],'D5.AREA':['luas'],'D5.COORD':['koordinat'],'D6.AREA':['poligon'],'D6.ANGLE':['sudut','poligon'],'D6.CIRCLE':['bulatan'],'D6.SPACE_PROBLEM':['sudut','bulatan','poligon'],'D6.COORD':['koordinat'],
  'D3.T7.7.1.1':['prisma'],'D3.T7.7.1.2':['prisma'],'D3.T7.7.1.3':['prisma'],'D3.T7.7.2.1':['poligon'],'D3.T7.7.2.2':['corak'],'D3.T7.7.3.1':['simetri']};
 function locate(grade,arch){for(const[f,list] of Object.entries(GRADES[grade]||{})){const i=list.indexOf(arch);if(i>=0)return{fam:f,start:i}}return null}
 function mapArch(grade,skill,a){a=String(a||'');

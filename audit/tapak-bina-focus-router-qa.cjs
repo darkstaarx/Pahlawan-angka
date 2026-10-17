@@ -15,10 +15,10 @@ const probes = {
   'D4.COORD': ['read_grid', 'reverse_axes'],
   'D5.AREA': ['area_rect', 'build_area', 'composite_area'],
   'D5.COORD': ['read_point', 'translate'],
-  'D6.AREA': ['composite_area6', 'volume'],
-  'D6.ANGLE': ['angle_measure', 'angle_construct', 'polygon_angle'],
+  'D6.AREA': ['polygon_name6', 'polygon_perimeter6'],
+  'D6.ANGLE': ['angle_measure', 'angle_construct', 'polygon_angle', 'y6v2_6_1_1_polygon_interior', 'y6v2_6_1_1_polygon_name', 'y6v2_6_1_1_polygon_perimeter', 'y6v2_6_1_1_perimeter_side'],
   'D6.CIRCLE': ['circle_part', 'radius_diameter', 'circle_draw'],
-  'D6.SPACE_PROBLEM': ['polygon_angle', 'angle_construct', 'circle_part'],
+  'D6.SPACE_PROBLEM': ['polygon_angle', 'angle_construct', 'circle_part', 'y6v2_6_3_1_polygon_fence', 'y6v2_6_3_1_fence_compare'],
   'D6.COORD': ['scaled_distance', 'direction', 'missing_point']
 };
 

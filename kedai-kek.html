@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Kedai Kek Wira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800;900&display=swap">
@@ -611,9 +612,9 @@ const GEN={
    q:'Kira '+W+' ÷ '+fs(n,d)+'.',s:'Bahagi dengan pecahan = darab dengan salingannya, '+fs(d,n)+'.',a:W+' ÷ '+fs(n,d)+' = '+W+' × '+fs(d,n)+' = '+fv(W*d,n)+'.'}}},
   {arch:'y6v2_2_1_1_fraction_div_whole',f:C=>{const[n,d]=propS(2,10),W=R(2,6);return{kind:'pad',card:fs(n,d)+' ÷ '+W+' = ?',form:MX(n,d*W),
    q:'Kira '+fs(n,d)+' ÷ '+W+'.',s:'Bahagi dengan '+W+' sama dengan darab '+fs(1,W)+'.',a:fs(n,d)+' × '+fs(1,W)+' = '+fv(n,d*W)+'.'}}},
-  {arch:'y6v2_2_1_1_fraction_div_fraction',f:C=>{const[a,b]=propS(2,10),[c,d]=propS(2,10);return{kind:'pad',card:fs(a,b)+' ÷ '+fs(c,d)+' = ?',form:MX(a*d,b*c),
+  {arch:'y6v2_2_1_1_fraction_div_fraction',f:C=>{/* jawapan nombor bulat (2 atau 3) supaya santai */let c,d,Q;do{[c,d]=propS(3,10);Q=pick([2,3])}while(c*Q>=d);const g=gcd(c*Q,d),a=c*Q/g,b=d/g;return{kind:'pad',card:fs(a,b)+' ÷ '+fs(c,d)+' = ?',form:MX(a*d,b*c),
    q:'Kira '+fs(a,b)+' ÷ '+fs(c,d)+'.',s:'Tukar ÷ kepada × dan terbalikkan pecahan kedua.',a:fs(a,b)+' × '+fs(d,c)+' = '+fv(a*d,b*c)+'.'}}},
-  {arch:'y6v2_2_1_1_mixed_div_fraction',f:C=>{let w,n,d;do{d=R(2,8);n=R(1,d-1);w=R(1,3)}while(gcd(n,d)>1);const[c,e]=propS(2,8),N=(w*d+n)*e,D=d*c;return{kind:'pad',card:ms(w,n,d)+' ÷ '+fs(c,e)+' = ?',form:MX(N,D),
+  {arch:'y6v2_2_1_1_mixed_div_fraction',f:C=>{/* nombor bercampur ÷ pecahan = nombor bulat */let c,e,Q;do{[c,e]=propS(2,8);Q=pick([2,3,4])}while(c*Q<=e||(c*Q)%e===0);const g0=gcd(c*Q,e),T=c*Q/g0,d=e/g0,w=Math.floor(T/d),n=T%d,N=(w*d+n)*e,D=d*c;return{kind:'pad',card:ms(w,n,d)+' ÷ '+fs(c,e)+' = ?',form:MX(N,D),
    q:'Kira '+ms(w,n,d)+' ÷ '+fs(c,e)+'.',s:'Tukar kepada pecahan tak wajar, kemudian darab dengan salingan.',a:fs(w*d+n,d)+' × '+fs(e,c)+' = '+fv(N,D)+'.'}}},
   {arch:'y6v2_2_1_1_sharing_story',f:C=>{const[n,d]=pick([[1,2],[1,4],[3,4],[1,3],[2,3],[2,5]]),k=R(2,8),W=n*k/d;if(!Number.isInteger(W))return null;return{kind:'pad',form:INT(k,'botol'),
    q:'Wira ada '+W+' ℓ jus oren. Setiap botol memuatkan '+fs(n,d)+' ℓ. Berapa botol penuh boleh diisi?',s:'Bahagi: '+W+' ÷ '+fs(n,d)+'.',a:W+' ÷ '+fs(n,d)+' = '+W+' × '+fs(d,n)+' = '+k+' botol.'}}}],
