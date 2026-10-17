@@ -74,19 +74,32 @@
  }
  const previous=window.PAQuestionBanks.d1;
  function shuffled(items){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
- const decks=new WeakMap(),nextDenominator=new WeakMap(),fallbackSession={};
+ const decks=new WeakMap(),fallbackSession={};
+ /* Rotate by ANSWER, not by denominator. The old denominator rotation made every
+    second question a "d = 2" item, whose only answer is 1/2; with 2/4 and "setengah"
+    almost every answer meant half. The target is worked out from the questions the
+    child actually saw (sess.questionHistory), because generate() may call this bank
+    several times and keep only one candidate. Each target is an answer not used in
+    the last two questions, and never the same value as the previous one (1/2 then 2/4). */
+ const NAME={'satu perdua':'1/2',setengah:'1/2',separuh:'1/2','satu perempat':'1/4',suku:'1/4','dua perempat':'2/4','tiga perempat':'3/4','satu keseluruhan':'1/1'};
+ const keyOf=item=>{const a=String(item.answer).trim(),k=NAME[a.toLowerCase()]||a;return /^\d\/\d$/.test(k)?k:'1/2'};
+ const valueOf=k=>{const [a,b]=k.split('/').map(Number);return a/b};
+ const byId=new Map(bank.map(x=>[x.id,x]));
  window.PAQuestionBanks.d1=function(id,s,shift){
    if(id!=='D1.FRAC')return previous(id,s,shift);
    const hist=typeof sess!=='undefined'?(sess.questionHistory||[]).filter(x=>x.skillId===id):[],recent=new Set(hist.slice(-18).map(x=>x.templateId)),last=hist.at(-1)?.archetypeId;
    const owner=typeof sess!=='undefined'&&sess&&typeof sess==='object'?sess:fallbackSession;
    let deck=decks.get(owner);if(!deck?.length){deck=shuffled(bank);decks.set(owner,deck);}
-   // Alternate halves and quarters whenever both remain in this session's deck.
-   const preferred=nextDenominator.get(owner)||2;
+   const seen=hist.slice(-2).map(x=>byId.get(x.templateId)).filter(Boolean).map(keyOf),prev=seen.at(-1);
+   let options=['1/4','1/2','3/4','2/4'].filter(k=>!seen.includes(k)&&(prev==null||valueOf(k)!==valueOf(prev)));
+   if(!options.length)options=['1/4','3/4'].filter(k=>k!==prev);
+   const target=options[Math.floor(Math.random()*options.length)];
    const eligible=x=>!recent.has(x.id)&&x.mode!==last;
-   let suitable=deck.findIndex(x=>x.model.d===preferred&&eligible(x));
-   if(suitable<0)suitable=deck.findIndex(eligible);
-   const [item]=deck.splice(suitable<0?0:suitable,1);
-   nextDenominator.set(owner,item.model.d===2?4:2);
+   let pick=deck.findIndex(x=>keyOf(x)===target&&eligible(x));
+   if(pick<0)pick=deck.findIndex(x=>keyOf(x)===target&&!recent.has(x.id));
+   // Target used up in this deck: any other answer value, still without repeating a template.
+   if(pick<0)pick=deck.findIndex(x=>prev==null||valueOf(keyOf(x))!==valueOf(prev));
+   const [item]=deck.splice(pick<0?0:pick,1);
    return materialise(item);
  };
  window.PAD1FractionBank={items:bank,materialise,image,shuffled};

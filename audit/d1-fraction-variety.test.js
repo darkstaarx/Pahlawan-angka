@@ -13,14 +13,18 @@ for(const item of items){
  }
  if(q.fractionTask){assert.equal(q.fractionTask.d,item.model.d);assert.equal(q.fractionTask.n,item.model.n);}
 }
-const byId=new Map(items.map(x=>[x.id,x])),seen=new Set(),first=[];
+const byId=new Map(items.map(x=>[x.id,x])),seen=new Set(),first=[],firstItems=[];
 for(let i=0;i<240;i++){
  const q=context.PAQuestionBanks.d1('D1.FRAC',{},false);assert(!seen.has(q.templateId),'repeated template before deck exhausted');seen.add(q.templateId);
- const item=byId.get(q.templateId);if(i<100)first.push(item.model.d);
+ const item=byId.get(q.templateId);if(i<100){first.push(item.model.d);firstItems.push(item);}
  context.sess.questionHistory.push({...q,skillId:'D1.FRAC'});
 }
-assert.equal(first.filter(d=>d===2).length,50);assert.equal(first.filter(d=>d===4).length,50);
-for(let i=0;i<100;i++)assert.equal(first[i],i%2===0?2:4);
-context.sess={questionHistory:[]};const fresh=context.PAQuestionBanks.d1('D1.FRAC',{},false);assert.equal(byId.get(fresh.templateId).model.d,2);
+// Answers rotate by value (v3.86.50): in the first 100, no two neighbours have the same value
+// (so 1/2 is never followed by 1/2, 2/4 or setengah), and each of 1/4, 1/2-or-2/4, 3/4 appears often.
+const value=item=>fraction(materialise(item).answer);
+const vals=firstItems.map(value);
+for(let i=1;i<vals.length;i++)assert.notEqual(vals[i],vals[i-1],'same answer value back to back at '+i);
+for(const v of [.25,.5,.75])assert(vals.filter(x=>x===v).length>=20,'answer '+v+' under-represented');
+context.sess={questionHistory:[]};const fresh=context.PAQuestionBanks.d1('D1.FRAC',{},false);assert(byId.has(fresh.templateId));
 assert.equal(context.PAQuestionBanks.d1('D2.FRAC',{},false).legacy,true);
-console.log('PASS: 240 unique D1 templates; all correct answers/distractors valid; denominators 2/4 only; first 100 alternate 50 halves/50 quarters; no repeats per deck; independent sessions; legacy skills preserved.');
+console.log('PASS: 240 unique D1 templates; all correct answers/distractors valid; denominators 2/4 only; first 100 rotate answers with no same value back to back; no repeats per deck; independent sessions; legacy skills preserved.');
