@@ -10,7 +10,7 @@ di awal dan akhir:
 Sumber & julat dielak sama seperti timeline_az.py (lihat AZ.md). R = laporan ibu bapa (Screen_Recording_20261011_170834).
 """
 import os
-from engine import Shot, Callout, HookText, EndScene, PdfPages, FullClip, Chip, VideoGrid, BUILD
+from engine import Shot, Callout, HookText, EndScene, PdfPages, FullClip, Chip, VideoGrid, BUILD, FMT
 from timeline_main import R, Z, end_sfx
 from timeline_az import _line, whip, HOT, WHITE, GRID, GRID_LABELS, PDF_A, PDF_B, GONE
 
@@ -24,8 +24,13 @@ HIDE = R(s=0.85, oy=1420, ry=-30, rz=-6, rx=12, a=0.0)
 HIDE_L = R(s=0.6, ox=-200, oy=1300, ry=40, rz=6, rx=8, a=0.0)
 HIDE_R = R(s=0.6, ox=1280, oy=1300, ry=-40, rz=-6, rx=8, a=0.0)
 DROP = R(s=0.6, oy=1520, rx=28, a=0.0)
-LEFT = R(s=0.74, ox=292, oy=1180, ry=12, rz=2, rx=3)
-RIGHT = R(s=0.74, ox=788, oy=1180, ry=-12, rz=-2, rx=3)
+# babak dua telefon: format iklan diskala semula oleh enjin, jadi telefon dibesarkan & dijarakkan di kanvas maya
+# supaya tetap besar selepas susun atur Feed 4:5 / Reels selamat. Format organik (916) kekal asal.
+SPLIT_S, XL, XR = {'feed45': (0.92, 272, 808), 'ads916': (0.8, 280, 800)}.get(FMT, (0.74, 292, 788))
+LEFT = R(s=SPLIT_S, ox=XL, oy=1180, ry=12, rz=2, rx=3)
+RIGHT = R(s=SPLIT_S, ox=XR, oy=1180, ry=-12, rz=-2, rx=3)
+LEFT_END = R(s=SPLIT_S + 0.02, ox=XL - 2, oy=1175, ry=10, rz=1.5, rx=2)
+RIGHT_END = R(s=SPLIT_S + 0.02, ox=XR + 2, oy=1175, ry=-10, rz=-1.5, rx=2)
 
 
 # ---------------------------------------------------------------- tipografi kinetik
@@ -100,8 +105,8 @@ CAMERA0 = [
     (0.0, HIDE_L),
     (5.9, HIDE_L),
     (6.45, LEFT, 'out'),
-    (9.2, R(s=0.76, ox=290, oy=1175, ry=10, rz=1.5, rx=2)),
-    (9.6, R(s=0.7, ox=290, oy=1300, a=0.0), 'in'),
+    (9.2, LEFT_END),
+    (9.6, R(s=0.7, ox=XL, oy=1300, a=0.0), 'in'),
     (9.7, R(s=0.85, oy=1420, ry=30, rz=6, rx=12, a=0.0)),
     (10.2, R(s=1.0, oy=1220, ry=8, rz=1.5, rx=3), 'out'),
     (11.4, R(s=1.0, oy=1220, ry=4, rz=1, rx=2)),
@@ -134,7 +139,7 @@ CAMERA0 = [
     (48.7, DROP, 'in'),
     (51.9, HIDE_L),
     (52.45, LEFT, 'out'),
-    (55.6, R(s=0.76, ox=290, oy=1175, ry=10, rz=1.5, rx=2)),
+    (55.6, LEFT_END),
     (56.0, DROP, 'in'),
     (62.0, DROP),
 ]
@@ -157,11 +162,11 @@ CAMERA1 = [
     (0.0, HIDE_R),
     (5.95, HIDE_R),
     (6.55, RIGHT, 'out'),
-    (9.2, R(s=0.76, ox=790, oy=1175, ry=-10, rz=-1.5, rx=2)),
-    (9.6, R(s=0.7, ox=790, oy=1300, a=0.0), 'in'),
+    (9.2, RIGHT_END),
+    (9.6, R(s=0.7, ox=XR, oy=1300, a=0.0), 'in'),
     (51.95, HIDE_R),
     (52.55, RIGHT, 'out'),
-    (55.6, R(s=0.76, ox=790, oy=1175, ry=-10, rz=-1.5, rx=2)),
+    (55.6, RIGHT_END),
     (56.0, DROP, 'in'),
     (62.0, DROP),
 ]
@@ -190,8 +195,8 @@ SPECIALS = [
     FullClip('src_C.mp4', 2.0, 4.0, [(13.9, 15.1, 2.0)], zoom=(2.35, 2.2), dim=0.42, blur=6, fade=(0.15, 0.2), center=(0.5, 0.19)),
     *hooks(),
     # dua-dua: label setiap telefon
-    Chip('MAK AYAH: RESULT', 6.6, 9.4, 292, 520),
-    Chip('ANAK: MAIN', 6.8, 9.4, 788, 520),
+    Chip('MAK AYAH: RESULT', 6.6, 9.4, XL, 520),
+    Chip('ANAK: MAIN', 6.8, 9.4, XR, 520),
     lambda r: Callout(r, 0, 16.6, 18.5, (0.025, 0.628, 0.975, 0.885), 540, 1150, 860, ry=-6),
     lambda r: Callout(r, 0, 19.2, 21.9, (0.04, 0.59, 0.96, 0.715), 540, 1060, 900, ry=6),
     lambda r: Callout(r, 0, 24.6, 25.5, (0.08, 0.29, 0.92, 0.418), 540, 1010, 900, ry=-6, rz=-1),
@@ -214,8 +219,8 @@ SPECIALS = [
          (51.85, R(s=1.3, ox=720, oy=1320, rz=5, ry=-12, rx=5, a=0.0))],
     ]),
     # rumusan dua-dua
-    Chip('MAK AYAH: RESULT', 52.6, 55.8, 292, 520),
-    Chip('ANAK: MAIN', 52.8, 55.8, 788, 520),
+    Chip('MAK AYAH: RESULT', 52.6, 55.8, XL, 520),
+    Chip('ANAK: MAIN', 52.8, 55.8, XR, 520),
     EndScene(56.0, 62.6, lines=[('Anak seronok,', 62, WHITE), ('mak ayah', 62, GOLD), ('nampak result!', 62, WHITE)], box_h=560),
 ]
 
