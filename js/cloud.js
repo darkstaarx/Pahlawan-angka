@@ -80,7 +80,7 @@
 
   async function resumeAfterConsent(){
     if(!state.user)return;message('');setAppLoading(true,'Menyambung profil dan kemajuan kamu…');
-    try{await window.PACommercial?.refresh?.();await loadProfiles();renderAccount()}
+    try{await window.PACommercial?.refresh?.();if(await window.PAEntry?.beforeProfiles?.()){renderAccount();setAppLoading(false);return}await loadProfiles();renderAccount()}
     catch(error){setAppLoading(false);throw error}
     setAppLoading(false)
   }

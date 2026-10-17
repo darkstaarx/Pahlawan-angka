@@ -1,7 +1,7 @@
 // App shell uses PA_APP_VERSION from js/version.js; includes current Focus mini-game banks.
 importScripts('./js/version.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3`;
-const APP_SHELL=[
+const APP_SHELL=['./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './js/demo-funnel-v1.js',
   './kedai-kek.html',
   './js/minigame-dev-gate.js',
