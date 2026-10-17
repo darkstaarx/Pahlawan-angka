@@ -8,7 +8,7 @@ GEN['2.1.1']=function(id,s){
  const mode=chooseMode(id,'2.1.1',bandModes(s,['word_meaning'],['word_meaning','operation_from_word'],['operation_from_word','reason_word']));
  if(mode==='word_meaning'){
   const add=Math.random()<.5,word=add?choose(['lagi','semuanya','jumlah']):choose(['tinggal','baki','beza']);
-  return mark(q(`Perkataan <b>“${word}”</b> biasanya membantu kita fikir operasi apa?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation_language'),Nq('darab','operation_language'),Nq('bahagi','operation_language')],'Fikir perubahan dalam cerita.','Tahun 1 · Bahasa Operasi'),id,'2.1.1',mode,'verbal','concept',s,['operation_language']);
+  return mark(q(`Perkataan <b>“${word}”</b> biasanya membantu kita fikir operasi apa?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation_language'),Nq('banding','operation_language'),Nq('kira satu-satu','operation_language')],'Fikir perubahan dalam cerita.','Tahun 1 · Bahasa Operasi'),id,'2.1.1',mode,'verbal','concept',s,['operation_language']);
  }
  if(mode==='operation_from_word'){
   const prompt=choose([
@@ -17,20 +17,20 @@ GEN['2.1.1']=function(id,s){
    ['Dua kumpulan digabungkan.','tambah'],
    ['Cari beza bilangan dua bakul.','tolak']
   ]),ans=prompt[1];
-  return mark(q(prompt[0]+' Operasi yang sesuai?',ans,[Nq(ans==='tambah'?'tolak':'tambah','operation_language'),Nq('darab','operation_language'),Nq('bahagi','operation_language')],'Kenal perkataan dan perubahan dalam situasi.','Tahun 1 · Kenal Operasi'),id,'2.1.1',mode,'story','application',s,['operation_language']);
+  return mark(q(prompt[0]+' Operasi yang sesuai?',ans,[Nq(ans==='tambah'?'tolak':'tambah','operation_language'),Nq('banding','operation_language'),Nq('kira satu-satu','operation_language')],'Kenal perkataan dan perubahan dalam situasi.','Tahun 1 · Kenal Operasi'),id,'2.1.1',mode,'story','application',s,['operation_language']);
  }
- return mark(q(`${name()} kata perkataan <b>“tinggal”</b> sentiasa bermaksud tambah. Betulkah?`,'salah',[Nq('betul','operation_language'),Nq('kadang-kadang darab','operation_language'),Nq('tidak pasti','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
+ return mark(q(`${name()} kata perkataan <b>“tinggal”</b> sentiasa bermaksud tambah. Betulkah?`,'salah',[Nq('betul','operation_language'),Nq('kadang-kadang tambah','operation_language'),Nq('tidak pasti','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
 };
 
 GEN['2.1.2']=function(id,s){
  const mode=chooseMode(id,'2.1.2',bandModes(s,['name_symbol'],['name_symbol','match_symbol'],['match_symbol','reason_symbol']));
  if(mode==='name_symbol'){
   const x=choose([['+','tambah'],['−','tolak'],['=','sama dengan']]);
-  return mark(q(`Simbol <b>${x[0]}</b> dibaca sebagai?`,x[1],[Nq(x[1]==='tambah'?'tolak':'tambah','symbol'),Nq('lebih besar','symbol'),Nq('darab','symbol')],'Kenal nama simbol operasi asas.','Tahun 1 · Simbol Operasi'),id,'2.1.2',mode,'symbolic','concept',s,['symbol']);
+  return mark(q(`Simbol <b>${x[0]}</b> dibaca sebagai?`,x[1],[Nq(x[1]==='tambah'?'tolak':'tambah','symbol'),Nq('lebih besar','symbol'),Nq('lebih kecil','symbol')],'Kenal nama simbol operasi asas.','Tahun 1 · Simbol Operasi'),id,'2.1.2',mode,'symbolic','concept',s,['symbol']);
  }
  if(mode==='match_symbol'){
   const ask=Math.random()<.5?'menggabungkan dua kumpulan':'mengeluarkan sebahagian daripada kumpulan',ans=ask.startsWith('menggabungkan')?'+':'−';
-  return mark(q(`Simbol yang sesuai untuk <b>${ask}</b> ialah?`,ans,[Nq(ans==='+'?'−':'+','symbol'),Nq('=','symbol'),Nq('×','symbol')],'Padankan makna operasi dengan simbol.','Tahun 1 · Padan Simbol'),id,'2.1.2',mode,'verbal','application',s,['symbol']);
+  return mark(q(`Simbol yang sesuai untuk <b>${ask}</b> ialah?`,ans,[Nq(ans==='+'?'−':'+','symbol'),Nq('=','symbol'),Nq('>','symbol')],'Padankan makna operasi dengan simbol.','Tahun 1 · Padan Simbol'),id,'2.1.2',mode,'verbal','application',s,['symbol']);
  }
  /* Pilihan salah mesti jelas salah untuk murid Tahun 1. "hasil operasi"
     dibuang kerana 9 memang hasil 6 + 3, jadi murid yang memilihnya tidak
@@ -111,7 +111,7 @@ GEN['2.4.2']=function(id,s){
     sendiri, jadi situasi kini diterangkan tanpa menamakan operasi.
     (2.1.1 sengaja dibiarkan memakai kata kunci — di sana mengenal perkataan
     isyarat memang kemahiran yang diuji.) */
- if(mode==='choose_operation')return mark(q(`Situasi: ada ${a} item, kemudian ${b} item lagi ${add?'diletak ke dalam':'diambil keluar'}. Operasi yang sesuai?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation'),Nq('darab','operation'),Nq('bahagi','operation')],'Tentukan sama ada kuantiti bertambah atau berkurang.','Tahun 1 · Pilih Strategi'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
+ if(mode==='choose_operation')return mark(q(`Situasi: ada ${a} item, kemudian ${b} item lagi ${add?'diletak ke dalam':'diambil keluar'}. Operasi yang sesuai?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation'),Nq('banding','operation'),Nq('kira satu-satu','operation')],'Tentukan sama ada kuantiti bertambah atau berkurang.','Tahun 1 · Pilih Strategi'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
  if(mode==='missing_value'){
   const start=add?a:ans,total=add?ans:a;
   return mark(q(add?`Jumlah ${total}. Sebelum menerima ${b} lagi, berapa yang ada?`:`Selepas ${b} dikeluarkan, tinggal ${start}. Berapa jumlah asal?`,add?a:a,[Nq(total,'operation'),Nq(b,'operation'),Nq(Math.max(0,a-1),'operation')],'Gunakan hubungan songsang tambah dan tolak.','Tahun 1 · Masalah Songsang'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
@@ -133,7 +133,7 @@ GEN['2.6.2']=function(id,s){
  const expr=arr[0]+' − '+parts.map(()=>step).join(' − ')+' = '+remaining;
  const mode=chooseMode(id,'2.6.2',bandModes(s,['write_repeat_sub'],['write_repeat_sub','match_remove','remaining'],['match_remove','remaining','missing_sub']));
  if(mode==='write_repeat_sub')return mark(q(`Ada <b>${start}</b> objek. Keluarkan <b>${step}</b> sebanyak <b>${times}</b> kali. Ayat tolak berturut-turut yang betul?`,expr,[Nq(`${start} − ${times} = ${remaining}`,'repeated_sub'),Nq(`${step} + ${step} = ${step*2}`,'operation'),Nq(`${start} − ${step} = ${start-step}`,'repeated_sub')],'Tolak nilai yang sama setiap kali, kemudian semak baki yang tinggal.','Tahun 1 · Tolak Berturut-turut'),id,'2.6.2',mode,'story','procedure',s,['repeated_sub']);
- if(mode==='match_remove')return mark(q(`<b>${expr}</b> bermaksud?`,`keluarkan ${step} sebanyak ${times} kali dan tinggal ${remaining}`,[Nq(`tambah ${step} sebanyak ${times} kali`,'repeated_sub'),Nq(`keluarkan ${times} sekali sahaja`,'repeated_sub'),Nq(`bahagi kepada ${start} kumpulan`,'repeated_sub')],'Setiap tanda tolak menunjukkan satu pengeluaran; jawapan akhir ialah baki.','Tahun 1 · Makna Tolak Berturut-turut'),id,'2.6.2',mode,'verbal','application',s,['repeated_sub']);
+ if(mode==='match_remove')return mark(q(`<b>${expr}</b> bermaksud?`,`keluarkan ${step} sebanyak ${times} kali dan tinggal ${remaining}`,[Nq(`tambah ${step} sebanyak ${times} kali`,'repeated_sub'),Nq(`keluarkan ${times} sekali sahaja`,'repeated_sub'),Nq(`tambah ${start} sekali sahaja`,'repeated_sub')],'Setiap tanda tolak menunjukkan satu pengeluaran; jawapan akhir ialah baki.','Tahun 1 · Makna Tolak Berturut-turut'),id,'2.6.2',mode,'verbal','application',s,['repeated_sub']);
  if(mode==='remaining')return mark(q(`Ada <b>${start}</b> objek. Keluarkan <b>${step}</b>, kemudian <b>${step}</b> lagi. Berapa objek yang tinggal?`,start-step*2,[Nq(start-step,'repeated_sub'),Nq(start-step*3,'repeated_sub'),Nq(step*2,'operation')],'Tolak satu kumpulan pada satu masa dan lihat baki selepas dua langkah.','Tahun 1 · Baki Selepas Tolak Berulang'),id,'2.6.2',mode,'story','application',s,['repeated_sub','operation']);
  return mark(q(`${start} − ${step} − ___ = ${remaining}`,step,[Nq(times,'repeated_sub'),Nq(start-step,'operation'),Nq(step*2,'operation')],'Nilai yang ditolak berulang adalah sama.','Tahun 1 · Tolak Berulang Hilang'),id,'2.6.2',mode,'symbolic','reasoning',s,['repeated_sub']);
 };

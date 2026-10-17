@@ -60,10 +60,10 @@ GEN['3.2.1']=function(id,s){
 GEN['4.1.1']=function(id,s){
  const mode=chooseMode(id,'4.1.1',bandModes(s,['recognise_coin'],['recognise_coin','recognise_note'],['recognise_coin','recognise_note','malaysia_currency']));
  if(mode==='recognise_coin'){
-  const c=choose([5,10,20,50]);return mark(q(`${moneyVis(c)}Nilai duit syiling ini?`,fmt(c),[...[5,10,20,50].filter(x=>x!==c).sort(()=>Math.random()-.5).slice(0,2).map(x=>Nq(fmt(x),'money')),Nq('RM'+c,'sen_ringgit')],'Lihat nilai pada duit syiling Malaysia.','Tahun 1 · Duit Syiling Malaysia'),id,'4.1.1',mode,'visual','concept',s,['money']);
+  const c=choose([5,10,20,50]);return mark(q(`${moneyVis(c)}Nilai duit syiling ini?`,fmt(c),[5,10,20,50].filter(x=>x!==c).map(x=>Nq(fmt(x),'money')),'Lihat nilai pada duit syiling Malaysia.','Tahun 1 · Duit Syiling Malaysia'),id,'4.1.1',mode,'visual','concept',s,['money']);
  }
  if(mode==='recognise_note'){
-  const c=choose([100,500,1000]);return mark(q(`${moneyVis(c)}Nilai wang kertas ini?`,fmt(c),[...[100,500,1000,2000,5000].filter(x=>x!==c).sort(()=>Math.random()-.5).slice(0,2).map(x=>Nq(fmt(x),'money')),Nq((c===100?50:c/100)+' sen','sen_ringgit')],'Kenal nilai wang kertas Malaysia.','Tahun 1 · Wang Kertas Malaysia'),id,'4.1.1',mode,'visual','concept',s,['money']);
+  const c=choose([100,500,1000]);return mark(q(`${moneyVis(c)}Nilai wang kertas ini?`,fmt(c),[...[100,500,1000].filter(x=>x!==c).map(x=>Nq(fmt(x),'money')),Nq((c===100?50:c/100)+' sen','sen_ringgit')],'Kenal nilai wang kertas Malaysia.','Tahun 1 · Wang Kertas Malaysia'),id,'4.1.1',mode,'visual','concept',s,['money']);
  }
  return mark(q('Mata wang yang digunakan di Malaysia ialah?','Ringgit Malaysia',[Nq('Baht','money'),Nq('Yen','money'),Nq('Dolar Singapura','money')],'Mata wang Malaysia ialah Ringgit Malaysia (RM).','Tahun 1 · Mata Wang Malaysia'),id,'4.1.1',mode,'verbal','application',s,['money']);
 };
@@ -104,12 +104,12 @@ GEN['4.2.1']=function(id,s){
 
 GEN['4.2.2']=function(id,s){
  const mode=chooseMode(id,'4.2.2',bandModes(s,['read_record'],['read_record','saving_total'],['saving_total','missing_record']));
- const rows=[['Wang belanja',fmt(300)],['Belanja kantin',fmt(150)],['Simpan',fmt(100)]];
- if(mode==='read_record')return mark(q(`${table(['Catatan','Nilai'],rows)}Berapakah wang yang direkod sebagai simpanan?`,fmt(100),[Nq(fmt(300),'money'),Nq(fmt(150),'money'),Nq(fmt(50),'money')],'Cari baris “Simpan”.','Tahun 1 · Rekod Wang'),id,'4.2.2',mode,'table','concept',s,['money','data']);
+ const rows=[['Wang belanja',fmt(500)],['Belanja kantin',fmt(300)],['Simpan',fmt(200)]];
+ if(mode==='read_record')return mark(q(`${table(['Catatan','Nilai'],rows)}Berapakah wang yang direkod sebagai simpanan?`,fmt(200),[Nq(fmt(500),'money'),Nq(fmt(300),'money'),Nq(fmt(100),'money')],'Cari baris “Simpan”.','Tahun 1 · Rekod Wang'),id,'4.2.2',mode,'table','concept',s,['money','data']);
  if(mode==='saving_total'){
-  const a=choose([50,100,150]),b=choose([50,100]);return mark(q(`${table(['Hari','Simpan'],[['Isnin',fmt(a)],['Selasa',fmt(b)]])}Jumlah simpanan dua hari?`,fmt(a+b),[Nq(fmt(Math.abs(a-b)),'money'),Nq(fmt(a),'money'),Nq(fmt(a+b+50),'money')],'Tambah simpanan kedua-dua hari.','Tahun 1 · Jumlah Simpanan'),id,'4.2.2',mode,'table','application',s,['money','operation']);
+  const sen=Math.random()<.5,a=sen?choose([20,30,40,50]):choose([100,200,300]),b=sen?choose([10,20,30]):choose([100,200]);let w=[a===b?(sen?a+b+10:a+b+100):Math.abs(a-b),a,sen?a+b+10:a+b+100];return mark(q(`${table(['Hari','Simpan'],[['Isnin',fmt(a)],['Selasa',fmt(b)]])}Jumlah simpanan dua hari?`,fmt(a+b),[...new Set(w)].filter(v=>v!==a+b&&v>0).map(v=>Nq(fmt(v),'money')),'Tambah simpanan kedua-dua hari.','Tahun 1 · Jumlah Simpanan'),id,'4.2.2',mode,'table','application',s,['money','operation']);
  }
- const source=300,spend=120,save=source-spend;return mark(q(`Wang belanja ${fmt(source)}. Belanja ${fmt(spend)}. Jika baki direkod sebagai simpanan, berapakah simpanan?`,fmt(save),[Nq(fmt(source),'money'),Nq(fmt(spend),'money'),Nq(fmt(source+spend),'money')],'Simpanan baki = sumber − perbelanjaan.','Tahun 1 · Rekod Hilang'),id,'4.2.2',mode,'story','reasoning',s,['money','operation']);
+ const source=choose([500,1000]),spend=choose([200,300,400]),save=source-spend;return mark(q(`Wang belanja ${fmt(source)}. Belanja ${fmt(spend)}. Jika baki direkod sebagai simpanan, berapakah simpanan?`,fmt(save),[Nq(fmt(source),'money'),Nq(fmt(spend),'money'),Nq(fmt(save+100),'money')],'Simpanan baki = sumber − perbelanjaan.','Tahun 1 · Rekod Hilang'),id,'4.2.2',mode,'story','reasoning',s,['money','operation']);
 };
 
 GEN['4.3.1']=function(id,s){
@@ -119,12 +119,12 @@ GEN['4.3.1']=function(id,s){
   return mark(q(`Di kantin, satu ${food()} berharga ${fmt(a)} dan air ${fmt(b)}. Jumlah harga?`,fmt(ans),[Nq(fmt(Math.abs(a-b)),'money'),Nq(fmt(a),'money'),Nq(fmt(Math.min(100,ans+10)),'money')],'Tambah kedua-dua harga dalam sen.','Tahun 1 · Tambah Wang'),id,'4.3.1',mode,'story','application',s,['money','operation']);
  }
  if(mode==='sub_money'){
-  const have=choose([100,200,500]),price=choose(have===100?[20,50]:[50,100,150]),ans=have-price;
-  return mark(q(`${name()} ada ${fmt(have)} dan membeli makanan ${fmt(price)}. Baki?`,fmt(ans),[Nq(fmt(price),'money'),Nq(fmt(have),'money'),Nq(fmt(Math.min(1000,ans+50)),'money')],'Baki = wang yang ada − harga.','Tahun 1 · Tolak Wang'),id,'4.3.1',mode,'story','application',s,['money','operation']);
+  const have=choose([100,500,1000]),price=choose(have===100?[20,30,50]:[100,200,300]),ans=have-price;
+  return mark(q(`${name()} ada ${fmt(have)} dan membeli makanan ${fmt(price)}. Baki?`,fmt(ans),[Nq(fmt(price),'money'),Nq(fmt(have),'money'),Nq(fmt(have===100?ans+10:ans+100),'money')],'Baki = wang yang ada − harga.','Tahun 1 · Tolak Wang'),id,'4.3.1',mode,'story','application',s,['money','operation']);
  }
  if(mode==='missing_money'){
-  const price=choose([50,100,150]),change=choose([50,100]),paid=price+change;
-  return mark(q(`Harga barang ${fmt(price)}. Baki selepas membayar ialah ${fmt(change)}. Berapakah wang yang dibayar?`,fmt(paid),[Nq(fmt(price),'money'),Nq(fmt(change),'money'),Nq(fmt(paid+50),'money')],'Wang dibayar = harga + baki.','Tahun 1 · Masalah Wang Songsang'),id,'4.3.1',mode,'story','reasoning',s,['money','operation']);
+  const price=choose([30,40,50]),change=choose([10,20,50]),paid=price+change;
+  return mark(q(`Harga barang ${fmt(price)}. Baki selepas membayar ialah ${fmt(change)}. Berapakah wang yang dibayar?`,fmt(paid),[Nq(fmt(price),'money'),Nq(fmt(change),'money'),Nq(fmt(paid+10),'money')],'Wang dibayar = harga + baki.','Tahun 1 · Masalah Wang Songsang'),id,'4.3.1',mode,'story','reasoning',s,['money','operation']);
  }
  return mark(q(`${name()} ada RM5. Harga dua barang ialah RM2 dan RM1. Dia kata baki RM4. Baki sebenar?`,'RM2',[Nq('RM4','money'),Nq('RM3','money'),Nq('RM1','money')],'Tambah belanja dahulu: RM2 + RM1 = RM3, kemudian RM5 − RM3.','Tahun 1 · Semak Belanja'),id,'4.3.1',mode,'story','reasoning',s,['money','operation']);
 };

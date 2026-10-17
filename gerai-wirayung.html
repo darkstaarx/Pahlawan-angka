@@ -429,7 +429,8 @@ const asset=(key)=>{
  return 'assets/minigames/kedai-ajaib/wira-peniaga-idle.webp';
 };
 const $=id=>document.getElementById(id);
-const money=v=>'RM'+(v/100).toFixed(2);
+/* Below RM1 is written in sen (50 sen, not RM0.50); Darjah 1 whole ringgit is RM5, not RM5.00. */
+const money=v=>v<100?v+' sen':(cfg?.grade===1&&v%100===0?'RM'+v/100:'RM'+(v/100).toFixed(2));
 const MONEY_DIAGNOSTIC=new URLSearchParams(location.search).get('pa_focus_diagnostic')==='money';
 const liveFocusParams=new URLSearchParams(location.search);
 const LIVE_FOCUS_ORIGIN=liveFocusParams.get('pa_focus_live')==='money'?String(liveFocusParams.get('pa_origin_skill')||''):'';
@@ -477,7 +478,8 @@ const rmShort=v=>money(v).replace('.00','');
 const MODE_LABEL={bayar:'BAYAR TEPAT',baki:'PULANGKAN BAKI',bahagi:'BAHAGI WANG',simpanan:'SIMPANAN WANG',diskaun:'JUALAN MURAH',untung:'UNTUNG RUGI'};
 const GRADES={
  1:{title:'Wang asas',modes:['bayar'],
-    bayar:[{n:1,min:10,max:100},{n:1,min:50,max:300}]},
+    /* KSSR Tahun 1: sen within RM1, or whole ringgit within RM10 — never RM1.50 */
+    bayar:[{n:1,min:10,max:100},{n:2,min:10,max:50},{n:2,whole:1,min:1,max:5}]},
  2:{title:'Tambah, tolak, bahagi & simpan wang',modes:['bayar','baki'],
     bahagi:[
       {people:[2,3],shares:[50,100,150,200,250,300],maxTotal:900},
@@ -577,7 +579,7 @@ const MODES={
  },
  bayar:{
   make(t){const items=chooseItems(t.n),qty=t.qty?rnd(t.qty[0],t.qty[1]):1;
-   products.forEach(p=>p.price=price10(t.min,t.max));
+   products.forEach(p=>p.price=t.whole?rnd(t.min,t.max)*100:price10(t.min,t.max));
    const nm=items.map(name);
    const say=qty>1?pick(['Aku nak '+qty+' '+nm[0]+'!',nm[0]+' '+qty+' biji, ya!']):t.n===1?pick(['Satu '+nm[0]+', boleh?','Aku nak '+nm[0]+'!']):pick([nm[0]+' dan '+nm[1]+', ya!','Aku nak '+nm[0]+' DAN '+nm[1]+'!']);
    return{items,qty,say}},
