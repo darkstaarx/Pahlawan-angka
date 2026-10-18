@@ -420,23 +420,38 @@ function numberLineSvg(min,max,step,point=null,options={}){
  let marker=''; if(point!=null){const x=Number((left+(point-min)/span*(right-left)).toFixed(2));marker=`<circle cx="${x}" cy="${y}" r="6" fill="#ef6f6c"/><path d="M${x} 8 L${x} 24" stroke="#ef6f6c" stroke-width="3"/><text x="${x}" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="#9c3e3b">${options.hidePointValue?'?':tidyDisplay(point)}</text>`}
  return `<svg viewBox="0 0 ${W} ${H}" width="min(330px,98%)" style="display:block;margin:0 auto 10px"><line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#405072" stroke-width="3"/>${ticks}${marker}</svg>`;
 }
+// Same-sized objects and spacing in both sets make the known ten a useful benchmark.
 function dotsEstimateVisual(count){
- // Tahap 2: show small, visually distinct trays of up to ten dots rather than
- // a scattered cloud. Learners can compare groups at a glance without
- // individually counting 50+ randomly positioned dots.
- const total=Math.max(1,Math.min(60,Math.round(Number(count)||0)));
- const trays=Math.ceil(total/10),parts=[];
- for(let group=0;group<trays;group++){
-   const x=6+(group%3)*98,y=7+Math.floor(group/3)*67;
-   const amount=Math.min(10,total-group*10);
-   parts.push(`<rect x="${x}" y="${y}" width="90" height="60" rx="11" fill="#edf5ff" stroke="#a4c6f4" stroke-width="1.5"/>`);
-   for(let dot=0;dot<amount;dot++){
-     const cx=x+13+(dot%5)*16,cy=y+20+Math.floor(dot/5)*20;
-     parts.push(`<circle cx="${cx}" cy="${cy}" r="5.2" fill="#578fee"/>`);
-   }
- }
- const rows=Math.ceil(trays/3),height=rows*67+7;
- return `<svg role="img" aria-label="Objek disusun dalam kumpulan kecil untuk dianggarkan" viewBox="0 0 300 ${height}" width="min(300px,96%)" style="display:block;margin:4px auto 12px">${parts.join('')}</svg>`;
+ const total=Math.max(1,Math.min(32,Math.round(Number(count)||1)));
+ const panel=(amount,x,label,known)=>{
+  const dots=Array.from({length:amount},(_,i)=>{
+   const row=Math.floor(i/6),col=i%6;
+   const cx=x+19+col*20+(row%2)*4+((i*7)%3-1)*2;
+   const cy=49+row*18+((i*5)%3-1)*2;
+   return `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#3679c9"/>`;
+  }).join('');
+  return `<g data-estimate-set="${label}"><rect x="${x}" y="4" width="148" height="177" rx="12" fill="#edf5ff" stroke="#8cadd0"/><text x="${x+74}" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#243c59">Set ${label}</text>${dots}<text x="${x+74}" y="168" text-anchor="middle" font-size="13" fill="#243c59">${known?'10 objek':'? objek'}</text></g>`;
+ };
+ return `<svg role="img" aria-label="Set A mengandungi 10 objek. Anggarkan bilangan objek dalam Set B dengan membandingkan kedua-dua set." viewBox="0 0 312 186" style="display:block;width:100%;max-width:360px;height:auto;margin:4px auto 12px">${panel(10,3,'A',true)}${panel(total,161,'B',false)}</svg>`;
+}
+// Estimate from a known reference, never from a displayed numeral or a rounding rule.
+function d2ReferenceEstimate(mode){
+ const modes={
+  less:{range:[4,6],answer:5,relation:'kurang',hint:'Set B kelihatan kira-kira separuh daripada Set A.'},
+  near:{range:[8,12],answer:10,relation:'hampir',hint:'Set B kelihatan hampir sama banyak dengan Set A.'},
+  more:{range:[14,16],answer:15,relation:'lebih',hint:'Set B kelihatan kira-kira satu setengah kali Set A.'},
+  double:{range:[18,22],answer:20,relation:'lebih',hint:'Set B kelihatan kira-kira dua kali Set A.'},
+  triple:{range:[28,32],answer:30,relation:'lebih',hint:'Set B kelihatan kira-kira tiga kali Set A.'}
+ };
+ const key=modes[mode]?mode:pick(Object.keys(modes)),spec=modes[key],real=R(...spec.range);
+ const wrong=[5,10,15,20,30,40].filter(v=>v!==spec.answer)
+  .sort((a,b)=>Math.abs(a-spec.answer)-Math.abs(b-spec.answer)).slice(0,3);
+ const q=Q(`${dotsEstimateVisual(real)}Set A mempunyai <b>10 objek</b>. Bandingkan Set B dengan Set A.<br>Anggarkan bilangan objek dalam <b>Set B</b>. Pilih anggaran yang paling munasabah.`,spec.answer,wrong.map(v=>N(v,'estimate')),
+  `Gunakan Set A yang mempunyai 10 objek sebagai rujukan. ${spec.hint} Bandingkan keseluruhan set tanpa mengira satu demi satu.`,
+  'D2 Core · Menganggar dengan Set Rujukan',true,true);
+ q.archetypeId=`estimate_reference_${key}`;q.representation='visual';q.misconceptionTargets=['estimate'];
+ q.estimateSpec={reference:10,target:real,relation:spec.relation,mode:key};
+ return q;
 }
 function decimalTenthsVisual(n){return fractionVisual(n,10)}
 function rulerSvg(cm){

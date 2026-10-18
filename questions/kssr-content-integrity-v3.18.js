@@ -58,12 +58,10 @@
 
   // ---------- D2: restore the actual skill-specific KSSR competency ----------
   function d2Estimate(id){
-    const real=R(23,87),ans=Math.round(real/10)*10,mode=rotate(id,['estimate_quantity','estimate_reasonable']);
-    const visual=typeof dotsEstimateVisual==='function'?dotsEstimateVisual(real):'';
-    if(mode==='estimate_quantity')return mark(Q(`${visual}Anggarkan bilangan objek. Pilih nilai yang paling hampir.`,ans,[N(ans-20,'estimate'),N(ans+20,'estimate'),N(ans+(ans<50?30:-30),'estimate')],'Anggaran ialah nilai hampir; lihat keseluruhan kumpulan, bukan kira tepat.','Tahun 2 · Menganggar',true,true),id,mode,'visual','concept',['estimate']);
-    const choices=[ans,ans+40,Math.max(10,ans-40),real+17];
-    return mark(Q(`Satu bekas kelihatan mempunyai kira-kira <b>${real}</b> manik. Anggaran puluh manakah paling munasabah?`,ans,choices.filter(x=>x!==ans).slice(0,3).map(x=>N(x,'estimate')),'Pilih nombor bulat yang paling dekat dengan kuantiti sebenar.','Tahun 2 · Anggaran Munasabah',true,true),id,mode,'story','application',['estimate']);
+    const mode=rotate(id,['estimate_reference_less','estimate_reference_near','estimate_reference_more','estimate_reference_double','estimate_reference_triple']);
+    return mark(d2ReferenceEstimate(mode.replace('estimate_reference_','')),id,mode,'visual','concept',['estimate']);
   }
+
   function d2Operation(id,s,shift){
     if(id==='D2.2.1'){
       const three=rotate(id,['add_two','add_three'])==='add_three';let a=R(100,650),b=R(20,250),c=three?R(10,100):0;while(a+b+c>1000){a=R(100,550);b=R(20,220);c=three?R(10,90):0}const ans=a+b+c;

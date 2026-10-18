@@ -34,6 +34,8 @@ const skillIds=['D1.N20','D1.ADD20','D1.SUB20','D2.1.5','D2.2.1','D2.2.2','D2.2.
 global.GRAPH={skills:skillIds.map(id=>({id})),recovery_map:{},stretch_map:{}};
 global.PAQuestionBanks={};
 for(const k of ['d1','d2t1','d2t2','d2t3','d2t4','d2t5','d2t6','d2t7','d2t8','d3','d4','d5','d6'])PAQuestionBanks[k]=(id)=>Q('fallback',4,[N(3,'x'),N(5,'x'),N(6,'x')],'h','fallback',false,false);
+const helperSource=require('node:fs').readFileSync('questions/helpers.js','utf8');
+require('node:vm').runInThisContext(helperSource);
 require('../questions/kssr-content-integrity-v3.18.1.js');
 function bankFor(id){if(id.startsWith('D1.'))return PAQuestionBanks.d1;if(id.startsWith('D2.'))return PAQuestionBanks['d2t'+id.split('.')[1]];if(id.startsWith('D3.'))return PAQuestionBanks.d3;if(id.startsWith('D4.'))return PAQuestionBanks.d4;if(id.startsWith('D5.'))return PAQuestionBanks.d5;return PAQuestionBanks.d6}
 let failures=[];

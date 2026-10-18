@@ -1,0 +1,13 @@
+const fs=require('node:fs'),http=require('node:http'),vm=require('node:vm'),assert=require('node:assert/strict');
+const {chromium}=require(process.env.PA_PLAYWRIGHT_PATH||'playwright');
+const ctx={};ctx.window=ctx;vm.createContext(ctx);vm.runInContext(fs.readFileSync('questions/helpers.js','utf8'),ctx);
+const server=http.createServer((req,res)=>{const path='.'+new URL(req.url,'http://localhost').pathname;if(path.startsWith('./css/')&&fs.existsSync(path)){res.setHeader('Content-Type','text/css');res.end(fs.readFileSync(path));}else res.end('<!doctype html><html lang="ms"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/kssr-question-v3.9.0.css"><body style="margin:0;padding:12px;box-sizing:border-box;font:16px sans-serif"><main style="max-width:440px;margin:auto"></main></body></html>');});
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
+try{browser=await chromium.launch({headless:true,channel:process.env.PA_BROWSER_CHANNEL||undefined});const page=await browser.newPage();
+ for(const width of [320,375,390,768]){await page.setViewportSize({width,height:844});await page.goto(`http://127.0.0.1:${server.address().port}`);
+ for(const mode of ['less','near','more','double','triple']){const q=ctx.d2ReferenceEstimate(mode);await page.locator('main').evaluate((el,q)=>{el.innerHTML=q.prompt+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">'+[q.answer,...q.wrong.map(x=>x.v)].map(v=>`<button style="min-height:44px">${v}</button>`).join('')+'</div>';},q);
+ const geometry=await page.evaluate(()=>{const svg=document.querySelector('svg'),r=svg.getBoundingClientRect();return{overflow:document.documentElement.scrollWidth>innerWidth,left:r.left,right:r.right,width:innerWidth,labels:[...svg.querySelectorAll('text')].map(t=>t.getBoundingClientRect().height),buttons:[...document.querySelectorAll('button')].map(b=>b.getBoundingClientRect().height)};});
+ assert(!geometry.overflow&&geometry.left>=0&&geometry.right<=width);assert(geometry.labels.every(n=>n>=11));assert(geometry.buttons.every(n=>n>=44));
+ if(width===320&&mode==='triple'&&process.env.PA_SCREENSHOT)await page.screenshot({path:process.env.PA_SCREENSHOT,fullPage:true});
+ }}console.log('PASS: mobile visual fixture at 320, 375, 390 and 768px, all five modes; no horizontal clipping; readable SVG labels; 44px answer targets.');
+}finally{if(browser)await browser.close();server.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

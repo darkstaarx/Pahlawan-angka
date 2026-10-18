@@ -1,0 +1,23 @@
+name: D2 estimation regression
+on:
+  push:
+    branches: [main]
+    paths: ['questions/**', 'audit/d2-estimation*', 'audit/content-integrity-v3.18.1.js', '.github/workflows/d2-estimation.yml']
+  pull_request:
+    paths: ['questions/**', 'audit/d2-estimation*', 'audit/content-integrity-v3.18.1.js', '.github/workflows/d2-estimation.yml']
+permissions:
+  contents: read
+jobs:
+  estimation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node audit/d2-estimation-reference.test.js
+      - run: node audit/content-integrity-v3.18.1.js
+      - run: node audit/d1-fraction-variety.test.js
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+      - run: npx playwright install --with-deps chromium
+      - run: node audit/d2-estimation-mobile.test.cjs

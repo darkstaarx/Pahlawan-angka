@@ -35,16 +35,7 @@ window.PAQuestionBanks.d2t1 = function(id,s,shift){
    return Q(`${base10Visual(n)}Ratus = <b>${r}</b>, puluh = <b>${t}</b>, sa = <b>${o}</b>.<br>Apakah nombornya?`,n,[N(r+t+o,'digit_value'),N(o*100+t*10+r,'place'),N(r*100+o*10+t,'place')],"Gabungkan nilai tempat mengikut kedudukan.","D2 Core · Nilai Tempat",true,true);
  }
  if(id==="D2.1.5"){
-   // KSSR 1.5 Menganggar: estimate a quantity of objects. Keep this distinct from 1.6 Membundar.
-   // Limit early estimation to an easy-to-scan set of 2–6 small groups.
-   let real=R(22,58);while(real%10===0||real%10===5)real=R(22,58);
-   const ans=Math.round(real/10)*10;
-   const candidates=[ans-20,ans+20,ans-10,ans+10,ans-30,ans+30]
-     .filter(v=>v>=10&&v<=100&&v!==ans);
-   const wrong=[];for(const v of candidates){if(!wrong.some(x=>x.v===v))wrong.push(N(v,'estimate'));if(wrong.length===3)break}
-   return Q(`${dotsEstimateVisual(real)}Anggarkan bilangan objek dalam gambar. Pilih anggaran yang paling dekat.`,ans,wrong,
-     "Lihat setiap petak kecil sebagai kumpulan yang hampir 10 objek. Anggarkan jumlah keseluruhan tanpa perlu kira semua titik satu demi satu.",
-     "D2 Core · Menganggar Bilangan Objek",true,true);
+   return d2ReferenceEstimate();
  }
  if(id==="D2.1.6"){
    const toHundred=mastery>45&&Math.random()<.5;
