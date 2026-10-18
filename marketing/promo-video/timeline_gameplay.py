@@ -54,8 +54,8 @@ SCENES = [
 
 # ---------------------------------------------------------------- telefon
 SHOTS = [
-    # 0 s: JURUS PENAMAT terus (tajuk → serangan kilat → KUKUPAT DITEMUI)
-    Shot(0.0, 4.0, 'C', [(12.68, 16.3, 3.62), (16.3, 16.3, 0.38)], 'jurus-penamat'),
+    # 0 s: JURUS PENAMAT terus — bingkai pertama tajuk terang penuh (tajuk → serangan kilat → KUKUPAT DITEMUI)
+    Shot(0.0, 4.0, 'C', [(12.85, 12.85, 0.25), (12.85, 16.3, 3.45), (16.3, 16.3, 0.3)], 'jurus-penamat'),
     # game ni bijak
     Shot(6.0, 8.6, 'A', [(0.3, 0.3, 0.2), (0.3, 3.1, 2.4)], 'kembara-dimensi'),
     Shot(8.6, 12.0, 'F', [(0.8, 1.4, 0.6), (1.4, 1.4, 2.8)], 'kemahiran-fokus'),
@@ -227,7 +227,7 @@ MUSIC = [('drop', 0, 2), ('groove', 2, 1), ('light', 3, 3), ('build', 6, 2), ('d
 
 SFX = [
     # Jurus Penamat (bunyi asal)
-    ('src', 0.0, 'C', 12.68, 16.3, 0.85), ('whoosh', 3.6, 0.6, 0.8), ('pop', 4.3, 0.6),
+    ('src', 0.0, 'C', 12.6, 16.3, 0.85), ('whoosh', 3.6, 0.6, 0.8), ('pop', 4.3, 0.6),
     # bijak
     ('whoosh', 5.85, 0.6, 0.7), ('pop', 7.05, 0.55), ('whoosh', 8.5, 0.4, 0.4),
     ('pop', 9.45, 0.45), ('pop', 9.95, 0.45), ('pop', 10.45, 0.45), ('pop', 11.25, 0.6),
