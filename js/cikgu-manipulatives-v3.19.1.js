@@ -300,7 +300,6 @@
       <line class="pam-hour-hand" x1="120" y1="120" x2="120" y2="69" stroke="#ffe176" stroke-width="7" stroke-linecap="round"/>
       <line class="pam-minute-hand" x1="120" y1="120" x2="120" y2="47" stroke="#69ddff" stroke-width="5" stroke-linecap="round"/>
       <circle cx="120" cy="120" r="6" fill="#fff"/></svg>
-      <div class="pam-time-orbit"><span class="pam-time-rider"><img src="assets/coach/time-lab/sidma-push-v1.png" alt="Sidma menolak jarum minit" draggable="false"/><i></i></span></div>
       </div><div class="pam-time-readout" aria-live="polite"></div>`;
     updateTimeLab();
   }
@@ -316,7 +315,7 @@
     const status=document.getElementById('timeLabStatus');if(status)status.textContent=model.elapsed>model.target?`Terlebih ${model.elapsed-model.target} minit. Boleh undur.`:`Sudah ${model.elapsed} minit. Baki ${model.target-model.elapsed} minit.`;
     const back=document.getElementById('timeLabBack'),forward=document.getElementById('timeLabForward');
     if(back)back.disabled=model.elapsed===0;if(forward)forward.disabled=model.elapsed===model.target+15;
-    const cue=document.getElementById('visualCoachCue');if(cue)cue.textContent=model.elapsed?'Satu langkah = 5 minit':'Bantu Sidma gerakkan jarum';
+    const cue=document.getElementById('visualCoachCue');if(cue)cue.textContent=model.elapsed?'Satu langkah = 5 minit':'Gerakkan jarum minit';
   }
   function timeLabContent(stage){
     const model=timeModel();
@@ -327,7 +326,7 @@
       const offset=Math.floor(model.start/5)%3;values.push(...values.splice(0,offset));
       return `<div class="visualCoachOnly pam-copy"><div class="stageTag">SEMAK FAHAM</div><h2>Mula ${timeLabel(model.start)}, tambah ${model.target} minit. Waktu tamat?</h2><div class="learningChoices">${values.map(n=>`<button onclick="learningGuidedChoice(this,${n===answer})">${timeLabel(n)}</button>`).join('')}</div><div id="guidedFeedback" class="learningFeedback"></div></div>`;
     }
-    return `<div class="visualCoachOnly pam-copy"><div class="stageTag">${model.fromQuestion?'SOALAN TADI':'CONTOH LATIHAN'}</div><h2>Mula ${timeLabel(model.start)}. Tambah ${model.target} minit.</h2><p>${stage===0?'Cikgu tunjuk satu langkah bersama Sidma. Perhatikan kedua-dua jarum bergerak.':'Tekan +5 minit untuk bantu Sidma. Kamu tentukan bila hendak berhenti.'}</p>
+    return `<div class="visualCoachOnly pam-copy"><div class="stageTag">${model.fromQuestion?'SOALAN TADI':'CONTOH LATIHAN'}</div><h2>Mula ${timeLabel(model.start)}. Tambah ${model.target} minit.</h2><p>${stage===0?'Cikgu tunjuk satu langkah. Perhatikan kedua-dua jarum bergerak.':'Tekan +5 minit untuk gerakkan jarum. Kamu tentukan bila hendak berhenti.'}</p>
       <p id="timeLabStatus" role="status">Sudah 0 minit. Baki ${model.target} minit.</p>
       ${stage===0?'<button class="btn primary learningNext" onclick="PACikguTimeLab.demonstrate(this)">Cikgu, tunjuk satu langkah</button>':`<div class="pam-time-controls"><button id="timeLabBack" disabled onclick="PACikguTimeLab.move(-5)">Undur 5 minit</button><button id="timeLabForward" onclick="PACikguTimeLab.move(5)">Tolak +5 minit</button></div><button class="btn primary learningNext" onclick="PACikguTimeLab.check()">Semak gerakan saya</button><p id="timeLabFeedback" role="status"></p>`}</div>`;
   }

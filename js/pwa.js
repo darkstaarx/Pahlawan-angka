@@ -62,7 +62,7 @@
   const sensoryCss=`css/sensory-learning-v${SENSORY_VERSION}.css?v=${SENSORY_VERSION}`;
   const sensoryJs=`js/sensory-learning-v${SENSORY_VERSION}.js?v=${APP_VERSION}`;
   const manipCss=`css/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.css?v=${MANIPULATIVE_VERSION}-time-lab-1`;
-  const manipJs=`js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js?v=${MANIPULATIVE_VERSION}-time-lab-1`;
+  const manipJs=`js/cikgu-manipulatives-v${MANIPULATIVE_VERSION}.js?v=${MANIPULATIVE_VERSION}-time-lab-2`;
   const gamesCss='css/cikgu-mini-games-v1.0.0.css?v=1.0.0-dev-menu-1';
   const fractionJs='js/fraction-lesson-v1.js?v=3.56.4';
   const gamesJs='js/cikgu-mini-games-v1.0.0.js?v=3.56.4';

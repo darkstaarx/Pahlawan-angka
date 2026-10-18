@@ -46,11 +46,14 @@
  }
  Object.entries(paths).forEach(([key,src])=>art[key]=load(src));
  Object.entries(chibiPaths).forEach(([key,src])=>chibiArt[key]=load(src));
- Object.entries(sidmaPaths).forEach(([key,src])=>sidmaArt[key]=load(src));
+ function ensureSidmaAssets(){
+  if(Object.keys(sidmaArt).length)return;
+  Object.entries(sidmaPaths).forEach(([key,src])=>sidmaArt[key]=load(src));
+  sidmaBolt=load(sidmaBoltPath);
+ }
  // The sheet is already a uniform grid; skip the expensive full-image alpha
  // scan used to normalise irregular standalone poses.
  const chibiAttackSheet=loadSheet(chibiAttackSheetPath);
- sidmaBolt=load(sidmaBoltPath);
  function ensure(){
   const arena=byId('battleArena');if(!arena)return null;
   if(!canvas){canvas=document.createElement('canvas');canvas.className='paCombatMotion';canvas.setAttribute('aria-hidden','true');arena.appendChild(canvas);ctx=canvas.getContext('2d');}
@@ -152,7 +155,9 @@
   ctx.font=`bold ${Math.max(16,30*s)}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#102132';ctx.fillStyle='#fff';const y=py-target.h*.2-(min?0:ease(q)*22);ctx.strokeText('−'+damage,target.x,y);ctx.fillText('−'+damage,target.x,y);ctx.restore();
  }
  function begin(attackerId,targetId,finisher,damageAmount=null){
-  const key=heroKey(),set=heroArt();if(finisher||!['wira','wirachibi','sidma'].includes(key)||active)return null;
+  const key=heroKey();if(finisher||!['wira','wirachibi','sidma'].includes(key)||active)return null;
+  if(key==='sidma')ensureSidmaAssets();
+  const set=heroArt();
   const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet);
   // Wira Chibi's new sheet is the canonical normal attack, including pet-first
   // combinations. The original Wira keeps its established DOM pet sequence.
