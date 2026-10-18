@@ -1,5 +1,8 @@
 [build]
   publish = "."
+  # Git pushes must not publish automatically. Explicit build hooks or a manual
+  # CLI deploy can still be used when a release is authorized.
+  ignore = "exit 0"
   command = "node tools/generate-asset-manifest.cjs && node tools/generate-asset-manifest.cjs --check"
 
 # These versioned URLs must change when the image content changes.
