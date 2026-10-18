@@ -291,6 +291,8 @@ self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin)return;
+  // The admin portal has its own navigation and must never replace the game shell cache.
+  if(url.pathname==='/admin'||url.pathname.startsWith('/admin/'))return;
 
   if(event.request.mode==='navigate'){
     event.respondWith(
