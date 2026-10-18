@@ -1,4 +1,4 @@
-"""Promo #7 "Adaptive" — 45 saat, 9:16, gaya tenang dan sinematik untuk ibu bapa.
+"""Promo #7 "Adaptive" — 54 saat, 9:16, gaya tenang dan sinematik untuk ibu bapa.
 
 Mesej: Pahlawan Angka faham anak. Bila anak salah, app tidak terus tukar topik: kemahiran yang sama
 ditanya semula dengan soalan baharu dan cara yang berbeza, sehingga anak betul sendiri.
@@ -10,7 +10,8 @@ Sumber AD = adaptive.mp4 (rakaman pemilik, 620×1280, dinaikkan ke 1080×2236, 3
   Soalan 12 Pecahan            lorek       betul → Kunci EMAS pecah → Jurus Penamat → AURORA DITEMUI (31.6 s)
 Soalan 9–11 ialah kemahiran yang sama (D2.3.1) — penjana soalan memutar mod
 bar_model → object_set → verbal_part (questions/kssr-content-v3.11.js).
-Kemudian sinematik JATUH → mini game Pecahan (G4 Kedai Kek, ⅓ = 3/9 → HEBAT) → penutup.
+Kemudian sinematik JATUH → mini game Pecahan (G4 Kedai Kek, ⅓ = 3/9 → HEBAT) → 8 mini game lain ikut topik →
+ringkasan pencapaian untuk mak ayah (R: Ringkasan Anak, profil Darjah 2) → penutup.
 """
 import math
 
@@ -18,13 +19,13 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
-from engine import Shot, Callout, EndScene, FullClip, W, font, over, ease_out, ease_back, smooth
+from engine import Shot, Callout, EndScene, FullClip, VideoGrid, W, font, over, ease_out, ease_back, smooth
 from timeline_main import R, Z, end_sfx
 from timeline_az import WHITE
 
-DURATION = 45.0
+DURATION = 54.0
 
-SOURCES = {'AD': 'src_AD.mp4', 'G4': 'src_G4.mp4'}
+SOURCES = {'AD': 'src_AD.mp4', 'G4': 'src_G4.mp4', 'R': 'src_R.mp4'}
 SOURCES_AUDIO = {'AD': 'aud_AD.wav', 'G4': 'aud_G4.wav', 'JATUH': 'aud_JATUH.wav'}
 
 GOLD_TXT = (250, 196, 70)
@@ -160,7 +161,9 @@ SCENES = [
     dict(t0=25.4, bg='navy', wipe=0.45, wipe_tile='+', origin=(540, 1100)),
     dict(t0=31.0, bg='deep'),
     dict(t0=34.0, bg='navy', wipe=0.4, wipe_tile='÷', origin=(940, 1600)),
-    dict(t0=40.0, bg='gold', wipe=0.45, wipe_tile='×', origin=(540, 960),
+    dict(t0=39.4, bg='navy', wipe=0.35, wipe_tile='+', origin=(540, 1100), tiles=[('+', 120, 1720, 100, -10, 0.5), ('×', 960, 1740, 90, 12, 0.6)]),
+    dict(t0=44.0, bg='cream', wipe=0.4, wipe_tile='−', origin=(140, 600), tiles=[('+', 110, 1820, 100, -10, 0.3), ('÷', 990, 1800, 95, 12, 0.4)]),
+    dict(t0=49.0, bg='gold', wipe=0.45, wipe_tile='×', origin=(540, 960),
          tiles=[('+', 150, 300, 140, -14, 0.35), ('−', 930, 330, 120, 10, 0.45), ('×', 160, 1700, 130, 8, 0.55), ('÷', 920, 1680, 150, -8, 0.5)]),
 ]
 
@@ -169,14 +172,16 @@ SEG_Q9 = [(8.7, 8.7, 0.5), (8.7, 14.65, 5.95), (14.65, 14.65, 0.95)]
 SEG_Q10 = [(14.85, 14.85, 0.4), (14.85, 18.75, 4.8)]
 SEG_Q11 = [(18.85, 18.85, 0.4), (18.85, 22.1, 3.9), (22.1, 22.1, 0.7)]
 SEG_Q12 = [(22.3, 24.2, 1.9), (27.4, 32.4, 5.0), (32.4, 32.4, 0.9)]
-SEG_G4 = [(1.8, 7.8, 6.0)]
+SEG_G4 = [(1.8, 7.2, 5.4)]
 
 SHOTS = [
     Shot(0.0, 7.4, 'AD', SEG_Q9, 'q9-model-bar-salah'),
     Shot(7.4, 12.6, 'AD', SEG_Q10, 'q10-set-objek-salah'),
     Shot(12.6, 17.6, 'AD', SEG_Q11, 'q11-ayat-betul'),
     Shot(17.6, 25.4, 'AD', SEG_Q12, 'q12-lorek-jurus-penamat'),
-    Shot(34.0, 40.0, 'G4', SEG_G4, 'kedai-kek-pecahan'),
+    Shot(34.0, 39.4, 'G4', SEG_G4, 'kedai-kek-pecahan'),
+    # ringkasan pencapaian anak (mak ayah): kekuatan, fokus seterusnya
+    Shot(44.0, 49.0, 'R', [(0.3, 0.3, 5.0)], 'ringkasan-anak'),
 ]
 
 CAMERA = [
@@ -200,9 +205,14 @@ CAMERA = [
     # mini game Pecahan
     (34.0, R(s=0.96, oy=1360, ry=-14, rz=-2, rx=6, a=0.0)),
     (34.7, R(s=1.1, oy=1300, ry=-6, rz=-1, rx=2), 'out'),
-    (39.3, R(s=1.17, oy=1285, ry=-2, rz=-0.3, rx=1)),
-    (39.95, R(s=1.25, oy=1260, a=0.0), 'in'),
-    (45.0, R(s=1.25, oy=1260, a=0.0)),
+    (38.85, R(s=1.16, oy=1287, ry=-2, rz=-0.3, rx=1)),
+    (39.35, R(s=1.25, oy=1260, a=0.0), 'in'),
+    # ringkasan pencapaian
+    (44.0, R(s=0.85, oy=1420, ry=30, rz=6, rx=12, a=0.0)),
+    (44.55, R(s=1.0, ox=560, oy=1250, ry=-8, rz=-1.5, rx=3), 'out'),
+    (48.35, R(s=1.04, ox=560, oy=1245, ry=-5, rz=-1, rx=2)),
+    (48.9, R(s=0.6, oy=1520, rx=28, a=0.0), 'in'),
+    (54.0, R(s=0.6, oy=1520, rx=28, a=0.0)),
 ]
 
 HIGHLIGHTS = [
@@ -228,9 +238,18 @@ TEXTS = [
     dict(t0=20.8, t1=25.25, kicker='KUNCI EMAS PECAH', head='Faham dulu… baru menang besar!'),
     dict(t0=25.6, t1=30.85, kicker='CARA PAHLAWAN ANGKA FAHAM ANAK', head='Bukan sekadar betul atau salah.', small=True),
     dict(t0=31.15, t1=34.0, kicker='MASIH BELUM KUKUH?', head='Kemahiran Fokus bawa anak…'),
-    dict(t0=34.25, t1=39.85, kicker='MINI-GAME PECAHAN · KEDAI KEK', head='…ke dunia Pecahan sendiri.',
+    dict(t0=34.25, t1=39.25, kicker='MINI-GAME PECAHAN · KEDAI KEK', head='…ke dunia Pecahan sendiri.',
          sub='Topik sama, cara lebih seronok.', small=True),
+    dict(t0=39.55, t1=43.85, kicker='KEMAHIRAN FOKUS', head='DAN ada lagi 8 mini-game…',
+         sub='…ikut topik yang anak perlu kukuhkan!'),
+    dict(t0=44.2, t1=48.85, kicker='UNTUK MAK AYAH · RINGKASAN', head='Pencapaian anak, sekali pandang.',
+         sub='Yang semakin kuat, dan fokus seterusnya.', small=True),
 ]
+
+# 8 mini game lain (selain Kedai Kek), dengan label topik
+GRID8 = [('src_G1.mp4', 5.4), ('src_G2.mp4', 3.6), ('src_G3.mp4', 3.2), ('src_G5.mp4', 2.6),
+         ('src_G6.mp4', 5.6), ('src_G7.mp4', 3.6), ('src_G8.mp4', 13.2), ('src_G9.mp4', 0.8)]
+GRID8_LABELS = ['Wang', 'Masa', 'Ruang', 'Ukuran', 'Nombor', 'Nisbah', 'Data', 'Perpuluhan']
 
 TRAIL = [('Model bar', 0.7, 3.25, False), ('Set objek', 7.7, 10.95, False),
          ('Ayat', 12.9, 15.85, True), ('Lorek', 17.9, 19.95, True)]
@@ -254,20 +273,24 @@ SPECIALS = [
     _bg('src_AD.mp4', 17.6, 25.4, SEG_Q12, fade_in=0.0),
     # sinematik: Wira jatuh ke pusaran Matematik → bola cahaya
     FullClip('src_JATUH.mp4', 31.0, 34.1, [(0.0, 3.1, 3.1)], zoom=(1.0, 1.06), scrim=0.6, fade=(0.35, 0.0)),
-    FullClip('src_G4.mp4', 34.0, 40.0, SEG_G4, zoom=(1.9, 2.0), dim=0.4, blur=18, scrim=0.0, fade=(0.5, 0.0), center=(0.5, 0.2)),
+    FullClip('src_G4.mp4', 34.0, 39.4, SEG_G4, zoom=(1.9, 2.0), dim=0.4, blur=18, scrim=0.0, fade=(0.5, 0.0), center=(0.5, 0.2)),
     Trail(0.6, 21.0, 565, TRAIL),
     # penerangan app dinaikkan di atas arena supaya boleh dibaca
     lambda r: Callout(r, 0, 3.7, 6.1, (0.03, 0.825, 0.97, 0.885), 540, 935, 960, ry=-4, rz=-0.5),
     lambda r: Callout(r, 0, 11.35, 12.1, (0.03, 0.882, 0.97, 0.92), 540, 935, 960, ry=4, rz=0.5),
     Steps(25.4, 30.95, STEPS, y0=720, gap=236),
-    EndScene(40.0, 45.6, lines=[('Pahlawan Angka', 54, WHITE), ('faham', 76, GOLD_TXT), ('anak anda.', 76, GOLD_TXT)], box_h=580),
+    VideoGrid(39.45, 43.9, GRID8, cols=4, tile=232, y0=900, gap=(18, 92), labels=GRID8_LABELS),
+    # ringkasan: statistik, kemudian "Yang semakin kuat" + "Fokus seterusnya"
+    lambda r: Callout(r, 0, 44.85, 48.85, (0.03, 0.493, 0.97, 0.56), 540, 905, 940, ry=-5, rz=-1),
+    lambda r: Callout(r, 0, 46.0, 48.85, (0.03, 0.64, 0.97, 0.86), 560, 1330, 880, ry=6, rz=1),
+    EndScene(49.0, 54.6, lines=[('Pahlawan Angka', 54, WHITE), ('faham', 76, GOLD_TXT), ('anak anda.', 76, GOLD_TXT)], box_h=580),
 ]
 
-FLASHES = [(20.15, 0.3, 0.3), (22.3, 0.25, 0.25), (33.85, 0.35, 0.6)]
+FLASHES = [(20.15, 0.3, 0.3), (22.3, 0.25, 0.25), (33.85, 0.35, 0.6), (39.45, 0.25, 0.25)]
 
 # ---------------------------------------------------------------- audio
 MUSIC = [('intro', 0, 2), ('light', 2, 6), ('groove', 8, 2), ('drop', 10, 2), ('groove', 12, 1), ('break', 13, 2),
-         ('build', 15, 2), ('groove', 17, 3), ('outro', 20, 3)]
+         ('build', 15, 2), ('groove', 17, 5), ('light', 22, 2), ('outro', 24, 3)]
 
 SFX = [
     ('src', 3.05, 'AD', 11.25, 12.0, 0.6), ('src', 6.05, 'AD', 14.25, 14.65, 0.55),
@@ -278,6 +301,8 @@ SFX = [
     ('src', 19.5, 'AD', 27.4, 32.4, 0.85),
     ('whoosh', 25.2, 0.7, 0.5), ('pop', 26.35, 0.4), ('pop', 27.55, 0.4), ('pop', 28.75, 0.4),
     ('whoosh', 30.8, 0.6, 0.5), ('src', 31.0, 'JATUH', 0.0, 3.1, 0.6),
-    ('src', 34.0, 'G4', 1.8, 7.8, 0.5), ('shimmer', 37.2, 0.4),
-    *end_sfx(40.0),
+    ('src', 34.0, 'G4', 1.8, 7.2, 0.5), ('shimmer', 37.2, 0.4),
+    ('whoosh', 39.25, 0.6, 0.6), *[('pop', 39.55 + 0.07 * i, 0.28) for i in range(8)],
+    ('whoosh', 43.8, 0.6, 0.6), ('pop', 44.9, 0.5), ('pop', 46.05, 0.5),
+    *end_sfx(49.0),
 ]

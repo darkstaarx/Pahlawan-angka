@@ -1,4 +1,4 @@
-# Promo #7 — "Adaptive" (45 s, 9:16)
+# Promo #7 — "Adaptive" (54 s, 9:16)
 
 Video pendek untuk **ibu bapa**: Pahlawan Angka faham anak.
 
@@ -27,7 +27,12 @@ Gaya tenang dan sinematik, dengan ciri-ciri berikut:
 
 Rakaman ini tiada e-mel, PIN atau notifikasi.
 
-Selain AD, video ini guna klip JATUH (sinematik Wira) dan G4, iaitu mini game Kedai Kek (⅓ = 3/9 → HEBAT).
+Selain AD, video ini guna:
+
+- klip JATUH (sinematik Wira);
+- G4, iaitu mini game Kedai Kek (⅓ = 3/9 → HEBAT);
+- 8 mini game lain (G1–G3, G5–G9);
+- R, iaitu Ringkasan Anak untuk profil Darjah 2, sama tahun dengan soalan Pecahan dalam AD.
 
 ## Fakta daripada kod
 
@@ -50,8 +55,10 @@ Selain AD, video ini guna klip JATUH (sinematik Wira) dan G4, iaitu mini game Ke
 | 0:17.6–0:25.4 | Soalan 12 (lorek) betul. Pil keempat ✓. Zoom perlahan ke **Jurus Penamat** → AURORA DITEMUI | Betul lagi, sendiri. → KUNCI EMAS PECAH / **Faham dulu… baru menang besar!** |
 | 0:25.4–0:31 | 3 kad penerangan: ✗ Salah? Topik sama datang balik, dengan soalan baharu · ↻ Cara soalan bertukar · ✓ Betul berturut-turut tanpa petunjuk? Baru naik kemahiran | CARA PAHLAWAN ANGKA FAHAM ANAK / Bukan sekadar betul atau salah. |
 | 0:31–0:34 | **JATUH**: Wira jatuh ke pusaran Matematik → bola cahaya | MASIH BELUM KUKUH? / Kemahiran Fokus bawa anak… |
-| 0:34–0:40 | Mini game **Kedai Kek**: ⅓ = 3/9 → HEBAT | MINI-GAME PECAHAN · KEDAI KEK / …ke dunia Pecahan sendiri. |
-| 0:40–0:45 | Kad akhir: logo, Wira, butang | **Pahlawan Angka faham anak anda.** · Cuba Demo Sekarang |
+| 0:34–0:39.4 | Mini game **Kedai Kek**: ⅓ = 3/9 → HEBAT | MINI-GAME PECAHAN · KEDAI KEK / …ke dunia Pecahan sendiri. |
+| 0:39.4–0:44 | Grid 4×2: **8 mini game lain** hidup, dengan label topik (Wang, Masa, Ruang, Ukuran, Nombor, Nisbah, Data, Perpuluhan) | KEMAHIRAN FOKUS / **DAN ada lagi 8 mini-game…** / …ikut topik yang anak perlu kukuhkan! |
+| 0:44–0:49 | **Ringkasan Anak** (mak ayah). Statistik dinaikkan (600 soalan sebenar · 64% betul sendiri · 6 kemahiran mantap), kemudian kad "Yang semakin kuat: Menulis nombor" dan "Fokus seterusnya: Bahagi wang" | UNTUK MAK AYAH · RINGKASAN / **Pencapaian anak, sekali pandang.** |
+| 0:49–0:54 | Kad akhir: logo, Wira, butang | **Pahlawan Angka faham anak anda.** · Cuba Demo Sekarang |
 
 ## Semakan
 
