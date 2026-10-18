@@ -33,6 +33,12 @@ assert.match(rendered,/SELEPAS PECAH/,'subtraction includes an optional regroupi
 assert.match(rendered,/paWaWorkInput/,'regrouping workspace is directly editable');
 assert.match(rendered,/paWaDigitInput/,'the answer is entered in aligned place-value cells');
 assert.match(rendered,/Bentuk lazim · kira dan isi jawapan/,'the prompt describes writing the result, not choosing an option');
+// Regression: quotient input must accept an unlimited-length answer, and the
+// action must stay beside the input when the mobile keyboard opens.
+const year2Division=written.render({prompt:'21 ÷ 3 = ?',answer:7},{});
+assert.match(year2Division,/paWaDivisionInput[^>]*enterkeyhint="done"/,'mobile keyboard Done is available');
+assert.match(year2Division,/paWaDivisionSubmit/,'division submit button remains above the keyboard');
+assert.match(fs.readFileSync('js/written-arithmetic-v1.0.0.js','utf8'),/field\.maxLength>0\?digits\.slice\(0,field\.maxLength\):digits/,'unbounded division input never loses its last digit');
 const divided=written.render({prompt:'156 ÷ 12 = ?'},{});
 assert.match(divided,/paWrittenArithmetic--division/);assert.match(divided,/>12 \)/);
 assert.match(divided,/paWaDivisionInput/,'long division has an editable quotient directly in the bracket');

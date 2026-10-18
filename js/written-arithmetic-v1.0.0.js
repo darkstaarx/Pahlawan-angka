@@ -276,11 +276,11 @@
       <div class="paWaKicker">Bahagi panjang · tulis hasil bahagi</div>
       <form class="paWaForm paWaDivisionForm" autocomplete="off">
         <div class="paWaDivision">
-          <label class="paWaQuotient">${escapeHtml(arithmetic.right)} ) <input class="paWaDivisionInput" type="text" inputmode="decimal" aria-label="Jawapan hasil bahagi" autocomplete="off"></label>
+          <label class="paWaQuotient">${escapeHtml(arithmetic.right)} ) <input class="paWaDivisionInput" type="text" inputmode="numeric" enterkeyhint="done" aria-label="Jawapan hasil bahagi" autocomplete="off"></label>
+          <button type="submit" class="paWaSubmit paWaDivisionSubmit">Jawab</button>
           <span class="paWaDividend">${escapeHtml(arithmetic.left)}</span>
         </div>
-        <button type="submit" class="paWaSubmit">Semak jawapan</button>
-        <small class="paWaStatus" aria-live="polite">Taip hasil bahagi dalam ruang atas.</small>
+        <small class="paWaStatus" aria-live="polite">Taip hasil bahagi dan tekan Jawab.</small>
       </form>
     </section>`;
   }
@@ -314,11 +314,19 @@
     const status=form.querySelector('.paWaStatus');
     fields.forEach((field,index)=>{
       field.addEventListener('input',()=>{
-        field.value=field.value.replace(/[^0-9]/g,'').slice(0,field.maxLength||2);
+        // Inputs without maxlength return -1. Never pass that to slice(0, -1):
+        // it removes the final typed digit (including the only digit in 21 ÷ 3).
+        const digits=field.value.replace(/[^0-9]/g,'');
+        field.value=field.maxLength>0?digits.slice(0,field.maxLength):digits;
         if(field.classList.contains('paWaDigitInput')&&field.value&&field.maxLength===1)fields[index+1]?.focus();
-        if(status)status.textContent='Isi digit jawapan dalam lajur nilai tempat.';
+        if(status)status.textContent=field.classList.contains('paWaDivisionInput')?'Tekan Jawab untuk semak hasil bahagi.':'Isi digit jawapan dalam lajur nilai tempat.';
       });
       field.addEventListener('keydown',event=>{
+        if(event.key==='Enter'&&!event.isComposing){
+          event.preventDefault();
+          form.requestSubmit?.();
+          return;
+        }
         if(event.key==='Backspace'&&!field.value)fields[index-1]?.focus();
         if(event.key==='ArrowLeft')fields[index-1]?.focus();
         if(event.key==='ArrowRight')fields[index+1]?.focus();

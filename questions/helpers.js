@@ -421,11 +421,22 @@ function numberLineSvg(min,max,step,point=null,options={}){
  return `<svg viewBox="0 0 ${W} ${H}" width="min(330px,98%)" style="display:block;margin:0 auto 10px"><line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#405072" stroke-width="3"/>${ticks}${marker}</svg>`;
 }
 function dotsEstimateVisual(count){
- // Shuffle spaced, jittered positions: no rows of ten and no overlapping dots.
- const slots=[];for(let row=0;row<12;row++)for(let col=0;col<20;col++)slots.push({x:10+col*14+(Math.random()-.5)*4,y:10+row*14+(Math.random()-.5)*4});
- for(let i=slots.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[slots[i],slots[j]]=[slots[j],slots[i]]}
- const dots=slots.slice(0,count).map(p=>`<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4" fill="#78a9ff"/>`).join('');
- return `<svg role="img" aria-label="Kumpulan objek untuk dianggarkan" viewBox="0 0 288 176" width="min(288px,92%)" style="display:block;margin:0 auto 10px">${dots}</svg>`;
+ // Tahap 2: show small, visually distinct trays of up to ten dots rather than
+ // a scattered cloud. Learners can compare groups at a glance without
+ // individually counting 50+ randomly positioned dots.
+ const total=Math.max(1,Math.min(60,Math.round(Number(count)||0)));
+ const trays=Math.ceil(total/10),parts=[];
+ for(let group=0;group<trays;group++){
+   const x=6+(group%3)*98,y=7+Math.floor(group/3)*67;
+   const amount=Math.min(10,total-group*10);
+   parts.push(`<rect x="${x}" y="${y}" width="90" height="60" rx="11" fill="#edf5ff" stroke="#a4c6f4" stroke-width="1.5"/>`);
+   for(let dot=0;dot<amount;dot++){
+     const cx=x+13+(dot%5)*16,cy=y+20+Math.floor(dot/5)*20;
+     parts.push(`<circle cx="${cx}" cy="${cy}" r="5.2" fill="#578fee"/>`);
+   }
+ }
+ const rows=Math.ceil(trays/3),height=rows*67+7;
+ return `<svg role="img" aria-label="Objek disusun dalam kumpulan kecil untuk dianggarkan" viewBox="0 0 300 ${height}" width="min(300px,96%)" style="display:block;margin:4px auto 12px">${parts.join('')}</svg>`;
 }
 function decimalTenthsVisual(n){return fractionVisual(n,10)}
 function rulerSvg(cm){

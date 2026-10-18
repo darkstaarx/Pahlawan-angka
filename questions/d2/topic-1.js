@@ -36,13 +36,14 @@ window.PAQuestionBanks.d2t1 = function(id,s,shift){
  }
  if(id==="D2.1.5"){
    // KSSR 1.5 Menganggar: estimate a quantity of objects. Keep this distinct from 1.6 Membundar.
-   let real=R(23,87);while(real%10===0)real=R(23,87);
+   // Limit early estimation to an easy-to-scan set of 2–6 small groups.
+   let real=R(22,58);while(real%10===0||real%10===5)real=R(22,58);
    const ans=Math.round(real/10)*10;
    const candidates=[ans-20,ans+20,ans-10,ans+10,ans-30,ans+30]
      .filter(v=>v>=10&&v<=100&&v!==ans);
    const wrong=[];for(const v of candidates){if(!wrong.some(x=>x.v===v))wrong.push(N(v,'estimate'));if(wrong.length===3)break}
    return Q(`${dotsEstimateVisual(real)}Anggarkan bilangan objek dalam gambar. Pilih anggaran yang paling dekat.`,ans,wrong,
-     "Anggaran ialah nilai hampir. Lihat keseluruhan kumpulan dan bandingkan dengan kumpulan kira-kira 10 objek; tidak perlu mencari bilangan tepat.",
+     "Lihat setiap petak kecil sebagai kumpulan yang hampir 10 objek. Anggarkan jumlah keseluruhan tanpa perlu kira semua titik satu demi satu.",
      "D2 Core · Menganggar Bilangan Objek",true,true);
  }
  if(id==="D2.1.6"){
