@@ -3,10 +3,10 @@
 let step=1,draft=null,busy=false,storyIndex=null,editingProfile=false,editingPin=false;
 const $=id=>document.getElementById(id);
 const loreScenes=[
- {tag:'BABAK 1 · ALAM MATEMAGIK',eyebrow:'Dulu, semuanya aman',title:'Kuasa Matematik',text:'Di Alam Matemagik, kuasa Matematik buat dunia ni bercahaya. Semua teman ajaib hidup aman dan seronok bersama.',image:'assets/story/intro-alam-matemagik-v2.png',alt:'Wira bermain bersama enam teman ajaib dan dua kawan misteri di Alam Matemagik'},
+ {tag:'BABAK 1 · ALAM MATEMAGIK',eyebrow:'Dulu, semuanya aman',title:'Kuasa Matematik',text:'Di Alam Matemagik, kuasa Matematik buat dunia ni bercahaya. Semua teman ajaib hidup aman dan seronok bersama.',image:'assets/story/intro-alam-matemagik-v2.webp',alt:'Wira bermain bersama enam teman ajaib dan dua kawan misteri di Alam Matemagik'},
  {tag:'BABAK 2 · KABUT LALAI',eyebrow:'Sesuatu berubah',title:'Kabut Lalai menyerang',text:'Tapi bila ilmu Matematik makin dilupakan, Kabut Lalai datang menyerang. Teman ajaib ditangkap dan dibawa ke merata tempat.',image:'assets/story/intro-kabut-lalai.webp',alt:'Kabut Lalai menyelubungi Alam Matemagik dan memisahkan teman-teman ajaib'},
  {tag:'BABAK 3 · SATU IKRAR',eyebrow:'Mereka perlukan bantuan',title:'Wira tak berjuang sendiri',text:'Wira, Cikgu Dimensi dan dua kawan misteri berikrar untuk selamatkan mereka. Tapi mereka perlukan satu lagi sumber kuasa: bantuan kamu!',image:'assets/story/intro-ikrar.webp',alt:'Wira, Cikgu Dimensi dan dua kawan misteri berikrar untuk menyelamatkan teman ajaib'},
- {tag:'BABAK 4 · AYUH!',eyebrow:'Pengembaraan bermula',title:'Dah bersedia?',text:'Terima kasih sebab nak berjuang bersama Wira! Dah bersedia nak selamatkan semua? Satu, dua, tiga… Ayuh!',image:'assets/story/intro-ayuh-v2.png',alt:'Wira dan Cikgu Dimensi bersama dua rakan misteri di atas bukit, memandang Alam Matemagik'}
+ {tag:'BABAK 4 · AYUH!',eyebrow:'Pengembaraan bermula',title:'Dah bersedia?',text:'Terima kasih sebab nak berjuang bersama Wira! Dah bersedia nak selamatkan semua? Satu, dua, tiga… Ayuh!',image:'assets/story/intro-ayuh-v2.webp',alt:'Wira dan Cikgu Dimensi bersama dua rakan misteri di atas bukit, memandang Alam Matemagik'}
 ];
 function needsWizard(){return !!window.PACloud?.state?.user&&window.PACloud.state.needsOnboarding===true}
 function familyPin(){

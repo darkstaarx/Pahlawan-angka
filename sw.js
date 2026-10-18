@@ -1,6 +1,8 @@
 // App shell uses PA_APP_VERSION from js/version.js; includes current Focus mini-game banks.
 importScripts('./js/version.js');
+importScripts('./js/asset-manifest.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3`;
+const ASSET_CACHE_NAME='pahlawan-angka-assets-v1';
 const APP_SHELL=['./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './js/demo-funnel-v1.js',
   './kedai-kek.html',
@@ -155,7 +157,7 @@ const APP_SHELL=['./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './js/parent-live-runtime-v1.js',
   './js/worksheet-graphics-v1.js',
   './css/loading-screen-v1.css',
-  './assets/ui/loading/wira-shield-v1.png',
+  './assets/ui/loading/wira-shield-v1.webp',
   './questions/grade-depth-v1.js',
   './css/teman-evolution-cinematic-v1.css',
  './assets/questions/counting/apple.png','./assets/questions/counting/orange.png','./assets/questions/counting/rambutan.png','./assets/questions/counting/watermelon_slice.png','./assets/questions/counting/starfruit_slice.png','./assets/questions/counting/pencil.png','./assets/questions/counting/eraser.png','./assets/questions/counting/candy.png','./assets/questions/counting/balloon.png',
@@ -188,16 +190,16 @@ const APP_SHELL=['./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './assets/pets/evolution/fire/durianKerbau/happy-v1.webp',
   './assets/pets/evolution/fire/durianKerbau/companion-idle-v1.webp',
   './assets/pets/aurora/standby-v2.webp','./assets/pets/aurora/frames/sad-0-v1.webp','./assets/pets/aurora/frames/sad-1-v1.webp','./assets/pets/aurora/frames/sad-2-v1.webp','./assets/pets/aurora/frames/sad-3-v1.webp','./assets/pets/aurora/frames/sad-4-v1.webp','./assets/pets/aurora/frames/sad-5-v1.webp','./assets/pets/aurora/frames/sad-6-v1.webp','./assets/pets/aurora/frames/sad-7-v1.webp','./assets/pets/aurora/frames/joy-0-v1.webp','./assets/pets/aurora/frames/joy-1-v1.webp',
-  './assets/pets/collection/ketupat-kura/idle.png','./assets/pets/collection/ketupat-kura/sad.png','./assets/pets/collection/ketupat-kura/happy.png',
-  './assets/pets/collection/kumbang-manggis/idle.png','./assets/pets/collection/kumbang-manggis/sad.png','./assets/pets/collection/kumbang-manggis/happy.png',
-  './assets/pets/collection/harimau-bunga/idle.png','./assets/pets/collection/harimau-bunga/sad.png','./assets/pets/collection/harimau-bunga/happy.png',
-  './assets/pets/collection/arnab-kek-lapis/idle.png','./assets/pets/collection/arnab-kek-lapis/sad.png','./assets/pets/collection/arnab-kek-lapis/happy.png',
-  './assets/pets/collection/durian-kerbau/idle.png','./assets/pets/collection/durian-kerbau/sad.png','./assets/pets/collection/durian-kerbau/happy.png',
-  './assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.png','./assets/pets/collection/ketupat-kura/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/kumbang-manggis/sprite-sheets/sad-v1.png','./assets/pets/collection/kumbang-manggis/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/harimau-bunga/sprite-sheets/sad-v1.png','./assets/pets/collection/harimau-bunga/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.png','./assets/pets/collection/arnab-kek-lapis/sprite-sheets/happy-v1.png',
-  './assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.png','./assets/pets/collection/durian-kerbau/sprite-sheets/happy-v1.png',
+  './assets/pets/collection/ketupat-kura/idle.png','./assets/pets/collection/ketupat-kura/sad-v1.webp','./assets/pets/collection/ketupat-kura/happy-v1.webp',
+  './assets/pets/collection/kumbang-manggis/idle.png','./assets/pets/collection/kumbang-manggis/sad-v1.webp','./assets/pets/collection/kumbang-manggis/happy-v1.webp',
+  './assets/pets/collection/harimau-bunga/idle.png','./assets/pets/collection/harimau-bunga/sad-v1.webp','./assets/pets/collection/harimau-bunga/happy-v1.webp',
+  './assets/pets/collection/arnab-kek-lapis/idle.png','./assets/pets/collection/arnab-kek-lapis/sad-v1.webp','./assets/pets/collection/arnab-kek-lapis/happy-v1.webp',
+  './assets/pets/collection/durian-kerbau/idle.png','./assets/pets/collection/durian-kerbau/sad-v1.webp','./assets/pets/collection/durian-kerbau/happy-v1.webp',
+  './assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.webp','./assets/pets/collection/ketupat-kura/sprite-sheets/happy-v1.webp',
+  './assets/pets/collection/kumbang-manggis/sprite-sheets/sad-v1.webp','./assets/pets/collection/kumbang-manggis/sprite-sheets/happy-v1.webp',
+  './assets/pets/collection/harimau-bunga/sprite-sheets/sad-v1.webp','./assets/pets/collection/harimau-bunga/sprite-sheets/happy-v1.webp',
+  './assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.webp','./assets/pets/collection/arnab-kek-lapis/sprite-sheets/happy-v1.webp',
+  './assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.webp','./assets/pets/collection/durian-kerbau/sprite-sheets/happy-v1.webp',
   './css/segel-demo-v2.1.0.css','./js/segel-demo-v2.1.0.js',
   './assets/ui/star-earned-v1.webp','./assets/ui/star-empty-v1.webp','./assets/ui/victory-result/star-earned.png','./assets/ui/victory-result/star-empty.png','./assets/ui/victory-result/crest-frame.png','./assets/ui/victory-result/crest-side-left.png','./assets/ui/victory-result/crest-side-right.png','./assets/ui/victory-result/summary-frame.png','./assets/ui/victory-result/button-navy-rest.png','./assets/ui/victory-result/button-gold-rest.png','./assets/ui/victory-result/button-navy-press.png','./assets/ui/victory-result/button-gold-press.png','./assets/coach/cikgu-dimensi/hub-portrait-v1.webp',
   './assets/ui/khazanah/teman-night-math-v1.webp','./css/khazanah-v2-v1.0.0.css','./js/khazanah-v2-v1.0.0.js','./js/pet-stage-v1.0.0.js',
@@ -213,7 +215,7 @@ const APP_SHELL=['./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './js/cikgu-mini-games-v1.0.0.js','./js/dev-coach-games-v1.0.0.js','./css/cikgu-mini-games-v1.0.0.css',
   './assets/coach/time-lab/sidma-push-v1.png',
   './','./index.html','./manifest.webmanifest','./js/version.js',
-  './assets/story/intro-alam-matemagik-v2.png','./assets/story/intro-kabut-lalai.webp','./assets/story/intro-ikrar.webp','./assets/story/intro-ayuh-v2.png',
+  './assets/story/intro-alam-matemagik-v2.webp','./assets/story/intro-kabut-lalai.webp','./assets/story/intro-ikrar.webp','./assets/story/intro-ayuh-v2.webp',
   './css/action-variety-v3.30.0.css','./js/action-variety-v3.30.0.js','./css/demo-mode-v3.56.0.css','./js/demo-mode-v3.56.0.js','./css/hero-wira-finisher-v1.0.0.css','./js/hero-wira-finisher-v1.0.0.js','./css/hero-bunga-v2.0.0.css','./js/hero-bunga-v2.0.0.js',
   './css/hero-sidma-v1.0.0.css','./js/hero-sidma-v1.0.0.js','./css/hub-hero-switch-v1.0.0.css','./js/hub-hero-switch-v1.0.0.js','./css/question-card-theme-v1.0.0.css','./css/written-arithmetic-v1.0.0.css','./js/written-arithmetic-v1.0.0.js',
   './assets/heroes/sidma/idle.webp','./assets/heroes/sidma/frames/attack-stance-v1.webp','./assets/heroes/sidma/frames/cast-start-v1.webp','./assets/heroes/sidma/frames/release-v1.webp','./assets/heroes/sidma/frames/recovery-v1.webp','./assets/heroes/sidma/frames/finisher-focus-eyes-closed-v1.webp','./assets/heroes/sidma/frames/skill2-dash-v1.webp','./assets/heroes/sidma/frames/skill2-impact-v1.webp',
@@ -229,7 +231,7 @@ const APP_SHELL=['./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp',
   './assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/hurt-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/defeat-v1.webp',
   './assets/icons/pahlawan-angka-app-32.png','./assets/icons/pahlawan-angka-app-64.png','./assets/icons/pahlawan-angka-app-180.png','./assets/icons/pahlawan-angka-app-192.png','./assets/icons/pahlawan-angka-app-512.png','./assets/icons/pahlawan-angka-app-maskable-512.png','./assets/icons/pahlawan-angka-crest-192.png',
-  './assets/branding/login-chibi-math-world-v1.webp','./assets/branding/pahlawan-angka-full-logo-v1.png','./assets/ui/login/guardian-crest.svg',
+  './assets/branding/login-chibi-math-world-v1.webp','./assets/branding/pahlawan-angka-full-logo-v1.webp','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
   './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
   './assets/enemies/minions/askabus.webp','./assets/enemies/minions/syilinggit.webp','./assets/enemies/minions/pigiramid.webp',
@@ -269,10 +271,49 @@ const freshRequest=(input)=>new Request(
   {cache:'reload'}
 );
 
+const shellRequest=(input)=>new Request(input,{cache:'reload'});
+const assetPath=(url)=>{
+  const scope=new URL((self.registration&&self.registration.scope)||self.location.href).pathname.replace(/[^/]*$/,'');
+  const pathname=url.pathname.startsWith(scope)?url.pathname.slice(scope.length):url.pathname.replace(/^\//,'');
+  return `./${pathname.replace(/^\//,'')}`;
+};
+const assetHash=(url)=>self.PA_ASSET_MANIFEST&&self.PA_ASSET_MANIFEST[assetPath(url)];
+const assetKey=(request,hash)=>{
+  const url=new URL(request.url,self.location.origin);url.searchParams.set('__pa_asset_hash',hash);
+  return new Request(url.href,{method:'GET'});
+};
+async function digest(response){
+  const bytes=await response.arrayBuffer();
+  const hash=await crypto.subtle.digest('SHA-256',bytes);
+  return Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function verifiedResponse(response,expected){
+  if(!response||response.status!==200)throw new Error(`Asset fetch failed: ${response&&response.status}`);
+  const copy=response.clone();
+  if(await digest(copy)!==expected)throw new Error('Asset hash mismatch');
+  return response;
+}
+async function installAssets(){
+  const stable=await caches.open(ASSET_CACHE_NAME);
+  const legacyNames=(await caches.keys()).filter(name=>name.startsWith('pahlawan-angka-')&&name!==ASSET_CACHE_NAME);
+  const legacyCaches=await Promise.all(legacyNames.map(name=>caches.open(name)));
+  await Promise.all([...new Set(APP_SHELL.filter(path=>path.startsWith('./assets/')))].map(async path=>{
+    const expected=self.PA_ASSET_MANIFEST[path];if(!expected)throw new Error(`Missing asset hash: ${path}`);
+    const key=new Request(new URL(path,(self.registration&&self.registration.scope)||self.location.href).href);
+    const hashed=assetKey(key,expected);
+    if(await stable.match(hashed))return;
+    let old;for(const legacy of legacyCaches){old=await legacy.match(key);if(old)break;}
+    if(old){try{await verifiedResponse(old,expected);await stable.put(hashed,old);return}catch(_){}}
+    const response=await verifiedResponse(await fetch(new Request(key,{cache:'no-cache'})),expected);
+    await stable.put(hashed,response);
+  }));
+}
+
 self.addEventListener('install',event=>{
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache=>cache.addAll(APP_SHELL.map(freshRequest)))
+      .then(cache=>cache.addAll(APP_SHELL.filter(path=>!path.startsWith('./assets/')).map(shellRequest)))
+      .then(installAssets)
       .then(()=>self.skipWaiting())
   );
 });
@@ -281,7 +322,7 @@ self.addEventListener('activate',event=>{
   event.waitUntil(
     caches.keys()
       .then(keys=>Promise.all(
-        keys.filter(key=>key.startsWith('pahlawan-angka-')&&key!==CACHE_NAME)
+        keys.filter(key=>key.startsWith('pahlawan-angka-')&&key!==CACHE_NAME&&key!==ASSET_CACHE_NAME)
             .map(key=>caches.delete(key))
       ))
   );
@@ -306,6 +347,32 @@ self.addEventListener('fetch',event=>{
     );
     return;
   }
+
+  if(assetHash(url)){
+    if(event.request.headers&&event.request.headers.get('range'))return;
+    const expected=assetHash(url);
+    const key=assetKey(event.request,expected);
+    event.respondWith(
+      caches.open(ASSET_CACHE_NAME).then(async cache=>{
+        const cached=await cache.match(key);if(cached)return cached;
+        const canonical=new URL(event.request.url);canonical.search='';
+        const canonicalKey=assetKey(new Request(canonical.href),expected);
+        const canonicalCached=await cache.match(canonicalKey);
+        if(canonicalCached)return canonicalCached;
+        try{
+          const response=await verifiedResponse(await fetch(new Request(event.request,{cache:'no-cache'})),expected);
+          // Storage can be full or unavailable; a verified online response is
+          // still usable even when opportunistic persistence cannot complete.
+          await cache.put(canonicalKey,response.clone()).catch(()=>{});return response;
+        }catch(error){
+          const fallback=await cache.match(key);if(fallback)return fallback;throw error;
+        }
+      })
+    );
+    return;
+  }
+
+  if(url.pathname.includes('/assets/')){event.respondWith(fetch(event.request));return;}
 
   if(event.request.destination==='script'||event.request.destination==='style'){
     event.respondWith(

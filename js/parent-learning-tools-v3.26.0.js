@@ -56,7 +56,7 @@ function status(text,error=false){state.statusText=text||'';state.statusError=er
 let logoPromise=null;
 function loadLogo(){
  if(logoPromise)return logoPromise;
- logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/branding/pahlawan-angka-full-logo-v1.png?v='+String(window.PA_APP_VERSION||'3.85.48')});return logoPromise;
+  logoPromise=new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src='assets/branding/pahlawan-angka-full-logo-v1.webp'});return logoPromise;
 }
 function roundRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
 function wrap(ctx,text,maxWidth){

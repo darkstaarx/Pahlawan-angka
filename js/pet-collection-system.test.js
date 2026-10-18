@@ -27,7 +27,23 @@ test('all pet gates are exact and all pets remain visible previews',()=>{
  assert.equal(preview.find(p=>p.id==='aurora').species,'Musang Ekor Angka');
  assert.equal(preview.find(p=>p.id==='aurora').assets.idleSprite,null);
  assert.equal(preview.find(p=>p.id==='ketupatKura').name,'Kukupat');
- assert.match(preview.find(p=>p.id==='ketupatKura').assets.sadSprite,/sad-v1\.png$/);
+ assert.match(preview.find(p=>p.id==='ketupatKura').assets.sadSprite,/sad-v1\.webp$/);
+});
+
+test('base pet mood images and sheets exist and share the precached immutable URLs',()=>{
+ const root=path.join(__dirname,'..');
+ const sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
+ const headers=fs.readFileSync(path.join(root,'netlify.toml'),'utf8');
+ const data=fresh();data.level=1;
+ const preview=pets.snapshot(data).pets.filter(p=>p.id!=='aurora');
+ assert.equal(preview.length,5);
+ for(const pet of preview)for(const key of ['sad','happy','sadSprite','happySprite']){
+  const url=pet.assets[key];
+  assert.match(url,/-v1\.webp$/);
+  assert(fs.existsSync(path.join(root,url)),`Missing ${url}`);
+  assert(sw.includes(`'./${url}'`),`Not precached: ${url}`);
+  assert(headers.includes(`for = "/${url}"`),`Missing cache header: ${url}`);
+ }
 });
 
 test('weighted per-grade rotation includes all eligible pets without RNG',()=>{
