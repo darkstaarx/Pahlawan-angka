@@ -2532,7 +2532,8 @@
       speechSynthesis.cancel();
       const holder=document.createElement('div');
       holder.innerHTML=run.q.prompt||'';
-      const text=(holder.textContent||'').replace(/\s+/g,' ').trim();
+      // Spell out zero so Malay device voices consistently say sifar.
+      const text=(holder.textContent||'').replace(/\b0\b/g,'sifar').replace(/\s+/g,' ').trim();
       if(!text)return;
       const say=new SpeechSynthesisUtterance(text);
       say.lang='ms-MY'; say.rate=.9;
