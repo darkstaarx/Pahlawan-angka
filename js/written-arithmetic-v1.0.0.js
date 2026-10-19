@@ -124,7 +124,8 @@
     }
     const delta=Math.max(1,op==='mul'||op==='div'?right:Math.pow(10,Math.max(0,String(Math.floor(answer)).length-2)));
     const question=root.Q(`${left} ${symbol} ${right} = ?`,answer,[
-      root.N(op==='add'?Math.max(0,left-right):op==='sub'?left+right:op==='mul'?left+right:right,'operation'),
+      // Subtracting instead of adding is the operation mistake; Math.abs keeps it from collapsing to 0.
+      root.N(op==='add'?(Math.abs(left-right)||answer+2*delta):op==='sub'?left+right:op==='mul'?left+right:right,'operation'),
       root.N(answer+delta,op==='div'?'division':'place'),root.N(Math.max(0,answer-delta),op==='mul'?'fact':'place')
     ],'Gunakan bentuk lazim dan semak nilai tempat.','Bentuk lazim · operasi',true,true);
     return Object.assign({},baseQuestion,question,{

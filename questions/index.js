@@ -1,7 +1,7 @@
 // Question dispatcher. Loads are split by grade/topic.
 
 // v3.86.32 — answer-option integrity for every grade, plus KSSR/UASA digit
-// grouping (7 050 410, 6 000, RM1 302) for Darjah 6. A pupil must never see two
+// grouping (7 050 410, 6 000, RM1 302) for Darjah 5 and 6. A pupil must never see two
 // identical choices, and the correct answer must never reappear as a wrong one.
 const PAOptionIntegrity=(function(){
  const VERSION='3.86.32';
@@ -58,7 +58,7 @@ const PAOptionIntegrity=(function(){
  // Bare arithmetic prompts are parsed by the written-column renderer; leave them as typed.
  const bareExpression=p=>/^[\d\s.,()+\-−×÷=?□\/]+$/.test(strip(p).trim());
  function groupDigits(q,skillId){
-  if(!q||!/^D6\./.test(String(skillId||'')))return q;
+  if(!q||!/^D[56]\./.test(String(skillId||'')))return q;
   if(bareExpression(q.prompt))return q;
   const out=Object.assign({},q);
   if(typeof out.prompt==='string')out.prompt=groupText(out.prompt);
