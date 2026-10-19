@@ -30,7 +30,7 @@ GEN['1.2.1']=function(id,s){
   const out=mark(q(`${baseTenBlocks(t,o)}Rajah menunjukkan blok puluh dan blok sa. Apakah nombor itu?`,total,[Nq(o*10+t,'place'),Nq(t+o,'place'),Nq(t*10+Math.max(0,o-1),'count')],'Kira nilai blok puluh dahulu, kemudian tambah bilangan blok sa.','Tahun 1 · Blok Puluh dan Sa'),id,'1.2.1',mode,'visual','concept',s,['place','count']);
   out.goldInteraction=true;out.demoInteraction=true;out.baseTenSpec={kind:'base_ten',tens:t,ones:o};return out;
  }
- if(mode==='name_quantity'){const n=rand(10,99);return mark(q(`Apakah nama nombor <b>${n}</b> dalam perkataan?`,words(n),[Nq(words(Math.max(1,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(Math.max(0,Math.floor(n/10)*10-(n%10===0?10:0))),'place')],'Baca puluh dahulu, kemudian sa.','Tahun 1 · Nama Nombor'),id,'1.2.1',mode,'verbal','concept',s,['number_name']);}
+ if(mode==='name_quantity'){const n=rand(10,99);return mark(q(`Apakah nama nombor <b>${n}</b> dalam perkataan?`,words(n),[Nq(words(Math.max(1,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(Math.max(0,Math.floor(n/10)*10+(n%10===1?10:n%10===0?-10:0))),'place')],'Baca puluh dahulu, kemudian sa.','Tahun 1 · Nama Nombor'),id,'1.2.1',mode,'verbal','concept',s,['number_name']);}
  let a=rand(8,30),b=rand(8,30);while(a===b)b=rand(8,30);const ans=a>b?'A':'B';
  return mark(q(`Kumpulan A ada ${a} objek dan Kumpulan B ada ${b}. Kumpulan manakah ada lebih banyak objek?`,ans,[Nq(ans==='A'?'B':'A','compare'),Nq('Sama','compare'),Nq('Tidak pasti','compare')],'Banding bilangan kedua-dua kumpulan.','Tahun 1 · Banding Kuantiti'),id,'1.2.1',mode,'story','application',s,['compare']);
 };
@@ -57,7 +57,7 @@ GEN['1.3.1']=function(id,s){
  const n=rand(1,100);
  if(mode==='number_to_words')return mark(q(`Pilih perkataan yang betul bagi nombor <b>${n}</b>.`,words(n),[Nq(words(Math.max(0,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(n<=10?Math.min(100,n+10):Math.max(0,n-10)),'place')],'Baca nombor mengikut puluh dan sa.','Tahun 1 · Angka ke Perkataan'),id,'1.3.1',mode,'verbal','concept',s,['number_name']);
  if(mode==='words_to_number')return mark(q(`Pilih angka bagi <b>${words(n)}</b>.`,n,[Nq(Math.max(0,n-1),'number_name'),Nq(Math.min(100,n+1),'number_name'),Nq(Number(String(n).split('').reverse().join('')),'place')],'Padankan nama nombor dengan angka.','Tahun 1 · Perkataan ke Angka'),id,'1.3.1',mode,'verbal','application',s,['number_name']);
- const wrong=Math.min(100,n+10);return mark(q(`${name()} menulis <b>${n}</b> sebagai “${words(wrong)}”. Apakah ejaan nombor yang betul?`,words(n),[Nq(words(wrong),'number_name'),Nq(words(Math.max(1,n-10)),'place'),Nq(words(Math.max(0,n-1)),'number_name')],'Semak nilai puluh dan sa.','Tahun 1 · Semak Nama Nombor'),id,'1.3.1',mode,'story','reasoning',s,['number_name','place']);
+ const wrong=n===100?90:Math.min(100,n+10);return mark(q(`${name()} menulis <b>${n}</b> sebagai “${words(wrong)}”. Apakah ejaan nombor yang betul?`,words(n),[Nq(words(wrong),'number_name'),Nq(words(n<=10?Math.min(100,n+2):Math.max(0,n-10)),'place'),Nq(words(Math.max(0,n-1)),'number_name')],'Semak nilai puluh dan sa.','Tahun 1 · Semak Nama Nombor'),id,'1.3.1',mode,'story','reasoning',s,['number_name','place']);
 };
 
 GEN['1.4.1']=function(id,s){
