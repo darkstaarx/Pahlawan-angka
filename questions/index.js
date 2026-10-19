@@ -52,7 +52,8 @@ const PAOptionIntegrity=(function(){
  function groupText(str){
   return String(str).split(/(<[^>]*>)/).map(seg=>seg.startsWith('<')?seg:seg
    .replace(/RM(\d{4,})(?=[.\s]|$|[^\d:\/])/g,(m,d)=>'RM'+group(d))
-   .replace(/(^|[^\d.,:\/A-Za-z])(\d{1,3}(?:,\d{3})+|\d{4,})(?![\d:\/]|,\d)/g,(m,pre,num)=>pre+group(num.replace(/,/g,'')))
+   // "jam 1530" is a 24-hour clock reading, not a quantity: never group it.
+   .replace(/(^|[^\d.,:\/A-Za-z])(?<!jam )(\d{1,3}(?:,\d{3})+|\d{4,})(?![\d:\/]|,\d)/g,(m,pre,num)=>pre+group(num.replace(/,/g,'')))
   ).join('');
  }
  // Bare arithmetic prompts are parsed by the written-column renderer; leave them as typed.
