@@ -1,0 +1,9 @@
+/* Isolate approved landing from game styles; auth and account screens keep existing layout. */
+body[data-screen="login"]:has(#login[data-entry="welcome"]) {background:#fffcf6!important;overflow-y:auto!important;}
+body[data-screen="login"]:has(#login[data-entry="welcome"]) .app{max-width:none!important;width:100%!important;padding:0!important;background:#fffcf6!important;overflow:visible!important;}
+body[data-screen="login"]:has(#login[data-entry="welcome"]) .appHeader{display:none!important;}
+#login[data-entry="welcome"]{padding:0!important;margin:0!important;max-width:none!important;width:100%!important;min-height:100dvh!important;background:#fffcf6!important;overflow:visible!important;}
+#login[data-entry="welcome"]:before,#login[data-entry="welcome"]:after,#login[data-entry="welcome"] .loginShell:before,#login[data-entry="welcome"] .loginShell:after{display:none!important;}
+#login[data-entry="welcome"] .loginShell{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;min-height:0!important;background:none!important;overflow:visible!important;}
+#login[data-entry="welcome"] .loginWorldBrand{display:none!important;}
+#login[data-entry="welcome"] .paApprovedWelcome{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;width:100%!important;max-width:none!important;overflow:visible!important;}
