@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY1V2Runtime;if(!RT)return;
-const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,clock,nonStandard,table,name,balanceBlocks,capacityCups}=RT;
+const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,clock,nonStandard,table,name,balanceBlocks,capacityCups,measureRopes,measureUnits,measureBeakers,measureBalance}=RT;
 const days=['Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu','Ahad'];
 const months=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
 
@@ -90,9 +90,19 @@ GEN['5.3.1']=function(id,s){
 
 GEN['6.1.1']=function(id,s){
  const mode=chooseMode(id,'6.1.1',bandModes(s,['vocab_length'],['vocab_length','vocab_mass','vocab_capacity'],['vocab_mass','vocab_capacity','reason_vocab']));
- if(mode==='vocab_length')return mark(q('Apakah perkataan yang digunakan untuk membanding panjang dua reben?','lebih panjang / lebih pendek',[Nq('lebih berat / lebih ringan','measure_vocab'),Nq('lebih banyak / lebih sedikit','measure_vocab'),Nq('lebih awal / lebih lewat','measure_vocab')],'Panjang: panjang/pendek. Jisim: berat/ringan. Isi padu: banyak/sedikit.','Tahun 1 · Bahasa Panjang'),id,'6.1.1',mode,'verbal','concept',s,['measure_vocab']);
- if(mode==='vocab_mass')return mark(q('Apakah perkataan yang digunakan untuk membanding berat tembikai dan rambutan?','lebih berat / lebih ringan',[Nq('lebih panjang / lebih pendek','measure_vocab'),Nq('lebih penuh / lebih kosong','measure_vocab'),Nq('lebih awal / lebih lewat','measure_vocab')],'Jisim dibanding dengan berat atau ringan.','Tahun 1 · Bahasa Jisim'),id,'6.1.1',mode,'verbal','concept',s,['measure_vocab']);
- if(mode==='vocab_capacity')return mark(q('Apakah perkataan yang digunakan untuk membanding isi padu air?','lebih banyak / lebih sedikit',[Nq('lebih berat / lebih ringan','measure_vocab'),Nq('lebih panjang / lebih pendek','measure_vocab'),Nq('lebih awal / lebih lewat','measure_vocab')],'Isi padu cecair membanding berapa banyak cecair.','Tahun 1 · Bahasa Isi Padu'),id,'6.1.1',mode,'verbal','concept',s,['measure_vocab']);
+ if(mode==='vocab_length'){
+  const base=[rand(3,4),rand(5,6),rand(8,9)],rotation=rand(0,2),lengths=base.slice(rotation).concat(base.slice(0,rotation)),labels=['Tali A','Tali B','Tali C'];
+  const ans=labels[lengths.indexOf(Math.max(...lengths))];
+  return mark(q(`${measureRopes(lengths)}Tali manakah paling panjang?`,ans,[...labels.filter(x=>x!==ans).map(x=>Nq(x,'measure_vocab')),Nq('Semua sama panjang','measure_vocab')],'Banding panjang tiga tali yang bermula pada pangkal yang sama.','Tahun 1 · Banding Panjang Tali'),id,'6.1.1',mode,'visual','concept',s,['measure_vocab']);
+ }
+ if(mode==='vocab_mass'){
+  const heavy=rand(0,1)?'A':'B',ans='Kotak '+heavy;
+  return mark(q(`${measureBalance(heavy)}Kotak manakah lebih berat?`,ans,[Nq('Kotak '+(heavy==='A'?'B':'A'),'measure_vocab'),Nq('Kedua-duanya sama berat','measure_vocab'),Nq('Tidak dapat ditentukan','measure_vocab')],'Bahagian neraca yang turun menunjukkan objek lebih berat.','Tahun 1 · Banding Jisim dengan Neraca'),id,'6.1.1',mode,'visual','concept',s,['measure_vocab']);
+ }
+ if(mode==='vocab_capacity'){
+  const base=[0.25,0.5,1],rotation=rand(0,2),levels=base.slice(rotation).concat(base.slice(0,rotation)),ans='Bekas '+('ABC'[levels.indexOf(1)]);
+  return mark(q(`${measureBeakers(levels)}Bekas manakah paling penuh?`,ans,['Bekas A','Bekas B','Bekas C','Semua sama penuh'].filter(x=>x!==ans).map(x=>Nq(x,'measure_vocab')),'Banding paras air dalam bekas yang sama saiz.','Tahun 1 · Paras Air'),id,'6.1.1',mode,'visual','concept',s,['measure_vocab']);
+ }
  return mark(q(`${name()} berkata “pensel lebih berat daripada meja” ialah ayat tentang <b>panjang</b>. Betul atau salah?`,'salah',[Nq('betul','measure_vocab'),Nq('tidak pasti','measure_vocab'),Nq('semua ukuran sama','measure_vocab')],'Perkataan “berat” berkaitan jisim, bukan panjang.','Tahun 1 · Semak Bahasa Ukuran'),id,'6.1.1',mode,'verbal','reasoning',s,['measure_vocab']);
 };
 
@@ -102,7 +112,7 @@ GEN['6.1.2']=function(id,s){
   const count=rand(4,9),obj=choose(['buku','pensel','reben']);return mark(q(`${nonStandard(count,'pemadam',obj)}Panjang ${obj} diukur menggunakan pemadam. Berapakah bilangan pemadam yang digunakan?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan unit bukan piawai dari hujung ke hujung.','Tahun 1 · Ukur dengan Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
  }
  if(mode==='mass_units'){
-  const count=rand(3,7);return mark(q(`${balanceBlocks(count)}Rajah menunjukkan sebuah beg seimbang dengan beberapa blok pada neraca. Berapakah bilangan blok itu?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Bilangan blok pada keseimbangan menjadi unit jisim bukan piawai.','Tahun 1 · Jisim Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
+  const count=rand(3,7);return mark(q(`${measureBalance('A',count)}Beg itu seimbang dengan berapa blok?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Bilangan blok pada keseimbangan menjadi unit jisim bukan piawai.','Tahun 1 · Jisim Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
  }
  if(mode==='capacity_units'){
   const count=rand(3,8);return mark(q(`${capacityCups(count)}Air dalam jag ini sama banyak dengan air dalam berapa cawan?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Air dalam satu jag sama banyak dengan air dalam semua cawan pada rajah. Kira bilangan cawan satu demi satu.','Tahun 1 · Sukat dengan Cawan'),id,'6.1.2',mode,'visual','application',s,['nonstandard']);
@@ -114,18 +124,18 @@ GEN['6.1.3']=function(id,s){
  const mode=chooseMode(id,'6.1.3',bandModes(s,['compare_length'],['compare_length','compare_mass','compare_capacity'],['compare_mass','compare_capacity','three_compare']));
  if(mode==='compare_length'){
   const a=rand(5,9),b=rand(3,8);if(a===b)return GEN['6.1.3'](id,s);const ans=a>b?'Meja A':'Meja B';
-  return mark(q(`Dua meja diukur menggunakan jengkal orang yang sama. Meja A panjangnya ${a} jengkal dan Meja B ${b} jengkal. Meja manakah lebih panjang?`,ans,[Nq(ans==='Meja A'?'Meja B':'Meja A','compare_measure'),Nq('Sama panjang','compare_measure'),Nq('Tidak boleh dibanding','compare_measure')],'Unit sama: banding bilangan unit.','Tahun 1 · Banding Panjang Relatif'),id,'6.1.3',mode,'story','application',s,['compare_measure']);
+  return mark(q(`${measureUnits('jengkal',[a,b],['Meja A','Meja B'])}Meja manakah lebih panjang?`,ans,[Nq(ans==='Meja A'?'Meja B':'Meja A','compare_measure'),Nq('Sama panjang','compare_measure'),Nq('Tidak boleh dibanding','compare_measure')],'Setiap unit dalam rajah mewakili satu jengkal yang sama. Banding bilangan unit.','Tahun 1 · Banding Panjang Relatif'),id,'6.1.3',mode,'visual','application',s,['compare_measure']);
  }
  if(mode==='compare_mass'){
   const a=rand(3,8),b=rand(3,8);if(a===b)return GEN['6.1.3'](id,s);const ans=a>b?'Beg A':'Beg B';
-  return mark(q(`Beg A seimbang dengan ${a} blok dan Beg B dengan ${b} blok. Yang lebih berat?`,ans,[Nq(ans==='Beg A'?'Beg B':'Beg A','compare_measure'),Nq('Sama berat','compare_measure'),Nq('Tidak boleh dibanding','compare_measure')],'Lebih banyak blok pada neraca bermaksud lebih berat.','Tahun 1 · Banding Jisim Relatif'),id,'6.1.3',mode,'story','application',s,['compare_measure']);
+  return mark(q(`${measureUnits('blok',[a,b],['Beg A','Beg B'])}Setiap beg seimbang dengan bilangan blok yang ditunjukkan. Beg manakah lebih berat?`,ans,[Nq(ans==='Beg A'?'Beg B':'Beg A','compare_measure'),Nq('Sama berat','compare_measure'),Nq('Tidak boleh dibanding','compare_measure')],'Blok mempunyai jisim yang sama. Lebih banyak blok bermaksud lebih berat.','Tahun 1 · Banding Jisim Relatif'),id,'6.1.3',mode,'visual','application',s,['compare_measure']);
  }
  if(mode==='compare_capacity'){
   const a=rand(3,8),b=rand(3,8);if(a===b)return GEN['6.1.3'](id,s);const ans=a>b?'Bekas A':'Bekas B';
-  return mark(q(`Bekas A memuatkan ${a} cawan air dan Bekas B memuatkan ${b} cawan air yang sama saiz. Bekas manakah lebih besar kapasitinya?`,ans,[Nq(ans==='Bekas A'?'Bekas B':'Bekas A','compare_measure'),Nq('Sama banyak','compare_measure'),Nq('Tidak boleh dibanding','compare_measure')],'Unit cawan sama: banding bilangannya.','Tahun 1 · Banding Isi Padu Relatif'),id,'6.1.3',mode,'story','application',s,['compare_measure']);
+  return mark(q(`${measureUnits('cawan',[a,b],['Bekas A','Bekas B'])}Bekas manakah dapat mengisi lebih banyak cawan air yang sama saiz?`,ans,[Nq(ans==='Bekas A'?'Bekas B':'Bekas A','compare_measure'),Nq('Sama banyak','compare_measure'),Nq('Tidak boleh dibanding','compare_measure')],'Semua cawan sama saiz. Banding bilangannya.','Tahun 1 · Banding Isi Padu Relatif'),id,'6.1.3',mode,'visual','application',s,['compare_measure']);
  }
  const vals=[rand(3,9),rand(3,9),rand(3,9)];while(new Set(vals).size<3){vals[1]=rand(3,9);vals[2]=rand(3,9)}const mx=Math.max(...vals),ans=['A','B','C'][vals.indexOf(mx)];
- return mark(q(`${table(['Bekas','Unit cawan'],[['A',vals[0]],['B',vals[1]],['C',vals[2]]])}Bekas manakah dapat mengisi paling banyak air?`,ans,[Nq(ans==='A'?'B':'A','compare_measure'),Nq(ans==='C'?'B':'C','compare_measure'),Nq('Sama semua','compare_measure')],'Banding tiga bilangan unit yang sama.','Tahun 1 · Banding Tiga Ukuran'),id,'6.1.3',mode,'table','reasoning',s,['compare_measure']);
+ return mark(q(`${measureUnits('cawan',vals,['A','B','C'])}Bekas manakah dapat memuatkan paling banyak air?`,ans,[Nq(ans==='A'?'B':'A','compare_measure'),Nq(ans==='C'?'B':'C','compare_measure'),Nq('Sama semua','compare_measure')],'Banding tiga bilangan unit yang sama.','Tahun 1 · Banding Tiga Ukuran'),id,'6.1.3',mode,'visual','reasoning',s,['compare_measure']);
 };
 
 GEN['6.2.1']=function(id,s){
@@ -136,13 +146,13 @@ GEN['6.2.1']=function(id,s){
  }
  if(mode==='difference'){
   const a=rand(6,10),b=rand(2,a-1),ans=a-b;
-  return mark(q(`Air dalam Botol A dapat mengisi ${a} cawan. Air dalam Botol B dapat mengisi ${b} cawan yang sama saiz. Berapakah beza bilangan cawan air?`,ans,[Nq(a+b,'measure_problem'),Nq(a,'measure_problem'),Nq(b,'measure_problem')],'Cari beza dengan menolak nilai kecil daripada nilai besar.','Tahun 1 · Beza Sukatan'),id,'6.2.1',mode,'story','reasoning',s,['measure_problem']);
+  return mark(q(`${measureUnits('cawan',[a,b],['Botol A','Botol B'])}Berapakah beza bilangan cawan air antara kedua-dua botol?`,ans,[Nq(a+b,'measure_problem'),Nq(a,'measure_problem'),Nq(b,'measure_problem')],'Cari beza dengan menolak nilai kecil daripada nilai besar.','Tahun 1 · Beza Sukatan'),id,'6.2.1',mode,'visual','reasoning',s,['measure_problem']);
  }
  if(mode==='missing_measure'){
   const total=rand(7,12),known=rand(2,total-2),ans=total-known;
   return mark(q(`Panjang sebatang kayu bersamaan ${total} pemadam yang sama saiz. Bahagian pertama panjangnya ${known} pemadam. Berapakah panjang bahagian kedua?`,ans,[Nq(total,'measure_problem'),Nq(known,'measure_problem'),Nq(ans+1,'measure_problem')],'Cari bahagian yang hilang daripada jumlah.','Tahun 1 · Ukuran Hilang'),id,'6.2.1',mode,'story','reasoning',s,['measure_problem']);
  }
- return mark(q('Meja A = 6 jengkal dan Meja B = 8 jengkal. Seorang murid kata A lebih panjang. Betulkah?','salah',[Nq('betul','compare_measure'),Nq('sama panjang','compare_measure'),Nq('tidak boleh dibanding','compare_measure')],'Kedua-duanya menggunakan unit jengkal yang sama; 8 lebih besar daripada 6.','Tahun 1 · Semak Ukuran'),id,'6.2.1',mode,'story','reasoning',s,['compare_measure']);
+ return mark(q(`${measureUnits('jengkal',[6,8],['Meja A','Meja B'])}Ali berkata Meja A lebih panjang daripada Meja B. Betulkah?`,'Tidak',[Nq('Ya','compare_measure'),Nq('Kedua-duanya sama panjang','compare_measure'),Nq('Tidak boleh ditentukan','compare_measure')],'Meja A panjangnya 6 jengkal, manakala Meja B panjangnya 8 jengkal. Jadi Ali tidak betul.','Tahun 1 · Semak Ukuran'),id,'6.2.1',mode,'visual','reasoning',s,['compare_measure']);
 };
 
 document.documentElement?.setAttribute('data-y1-v2-unit56','3.62.6');
