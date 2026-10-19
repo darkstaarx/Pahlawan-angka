@@ -55,7 +55,7 @@ GEN['1.2.2']=function(id,s){
 GEN['1.3.1']=function(id,s){
  const mode=chooseMode(id,'1.3.1',bandModes(s,['number_to_words'],['number_to_words','words_to_number'],['words_to_number','spot_wrong_word']));
  const n=rand(1,100);
- if(mode==='number_to_words')return mark(q(`Pilih perkataan yang betul bagi nombor <b>${n}</b>.`,words(n),[Nq(words(Math.max(0,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(n<=10?Math.min(100,n+10):Math.max(0,n-10)),'place')],'Baca nombor mengikut puluh dan sa.','Tahun 1 · Angka ke Perkataan'),id,'1.3.1',mode,'verbal','concept',s,['number_name']);
+ if(mode==='number_to_words')return mark(q(`Pilih perkataan yang betul bagi nombor <b>${n}</b>.`,words(n),[Nq(words(Math.max(0,n-1)),'number_name'),Nq(words(n===100?98:Math.min(100,n+1)),'number_name'),Nq(words(n<=10?Math.min(100,n+10):Math.max(0,n-10)),'place')],'Baca nombor mengikut puluh dan sa.','Tahun 1 · Angka ke Perkataan'),id,'1.3.1',mode,'verbal','concept',s,['number_name']);
  if(mode==='words_to_number')return mark(q(`Pilih angka bagi <b>${words(n)}</b>.`,n,[Nq(Math.max(0,n-1),'number_name'),Nq(Math.min(100,n+1),'number_name'),Nq(Number(String(n).split('').reverse().join('')),'place')],'Padankan nama nombor dengan angka.','Tahun 1 · Perkataan ke Angka'),id,'1.3.1',mode,'verbal','application',s,['number_name']);
  const wrong=n===100?90:Math.min(100,n+10);return mark(q(`${name()} menulis <b>${n}</b> sebagai “${words(wrong)}”. Apakah ejaan nombor yang betul?`,words(n),[Nq(words(wrong),'number_name'),Nq(words(n<=10?Math.min(100,n+2):Math.max(0,n-10)),'place'),Nq(words(Math.max(0,n-1)),'number_name')],'Semak nilai puluh dan sa.','Tahun 1 · Semak Nama Nombor'),id,'1.3.1',mode,'story','reasoning',s,['number_name','place']);
 };
