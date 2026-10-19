@@ -780,3 +780,18 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   flex:1 1 auto;width:100%;max-width:none;min-width:0;min-height:0;max-height:none;margin:0
 }
 #segelDemo.segel-result-active .segelPanel{display:none!important}
+
+/* Darjah 1: sukatan cawan. Rajah dan arahan ringkas mesti muat pada
+   telefon menegak supaya pilihan jawapan tidak menyembunyikan arahan. */
+@media (orientation:portrait){
+  #segelDemo .segelCard .question:has(.paCapacityCups){
+    font-size:clamp(18px,5vw,21px);line-height:1.3;
+    scrollbar-width:thin;scrollbar-color:#a7b5c8 transparent
+  }
+  #segelDemo .segelCard .question .segelPrompt .paCapacityCups{
+    width:min(100%,310px);max-width:310px;margin:4px auto 10px
+  }
+  #segelDemo .segelCard .question .segelPrompt .paCapacityCups svg{
+    width:100%;height:auto;max-height:142px
+  }
+}
