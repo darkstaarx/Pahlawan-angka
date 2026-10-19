@@ -125,9 +125,20 @@ function balanceBlocks(n){
  return `<div class="kssrDiagram"><svg viewBox="0 0 310 140" role="img" aria-label="Neraca dengan sebuah beg dan beberapa blok"><line x1="30" y1="87" x2="284" y2="87" stroke="#aec6e3" stroke-width="4"/><polygon points="154,86 130,124 178,124" fill="#91a9cb"/><rect x="124" y="124" width="60" height="8" rx="3" fill="#6e89ae"/><path d="M55,83 L67,53 L108,53 L119,83 Z" fill="#f7bd78" stroke="#956035" stroke-width="2"/><path d="M76,56 Q85,29 99,56" fill="none" stroke="#956035" stroke-width="4"/><rect x="180" y="83" width="105" height="5" rx="2" fill="#6f93af"/>${blocks}</svg></div>`;
 }
 function capacityCups(n){
- const cups=Array.from({length:n},(_,i)=>{const x=105+(i%5)*37,y=16+Math.floor(i/5)*45;return `<g><path d="M${x} ${y} l25 0 -4 31 -17 0 Z" fill="#c6e3ff" stroke="#4a85ad" stroke-width="2"/><path d="M${x+3} ${y+12} l19 0 -2 16 -15 0 Z" fill="#7dbbdc"/></g>`}).join('');
- return `<div class="kssrDiagram"><svg viewBox="0 0 305 122" role="img" aria-label="Sebuah jag dan cawan penyukat yang sama saiz"><path d="M15 23 L72 23 L67 95 Q46 115 25 95 Z" fill="#a3d5ee" stroke="#3c799d" stroke-width="2"/><path d="M71 36 Q109 31 88 75 L69 86" fill="none" stroke="#3c799d" stroke-width="7"/><path d="M18 56 L69 56 L66 95 Q46 109 25 95 Z" fill="#68b7df" opacity=".9"/>${cups}</svg></div>`;
+ // 1 jag bersamaan n cawan seragam; bukan perbandingan paras separuh penuh.
+ const cups=Array.from({length:n},(_,i)=>{
+  const x=128+(i%4)*40,y=n<=4?47:20+Math.floor(i/4)*51;
+  return `<g class="paCapacityCup"><path d="M${x} ${y} h28 l-4 35 h-20 Z" fill="#eaf7ff" stroke="#347da5" stroke-width="2.2"/><path d="M${x+2} ${y+7} h24 l-4 25 h-16 Z" fill="#66b8dd"/><path d="M${x+2} ${y+7} h24" stroke="#2e8ab8" stroke-width="1.5"/></g>`;
+ }).join("");
+ return `<div class="kssrDiagram paCapacityCups"><svg viewBox="0 0 310 139" role="img" aria-label="Air dalam satu jag bersamaan dengan ${n} cawan air yang sama saiz">
+ <path d="M14 24 H80 L73 110 Q51 129 25 110 Z" fill="#eaf7ff" stroke="#347da5" stroke-width="2.8"/>
+ <path d="M80 37 Q113 35 97 80 L76 88" fill="none" stroke="#347da5" stroke-width="8" stroke-linecap="round"/>
+ <path d="M18 41 H77 L71 108 Q51 124 27 108 Z" fill="#66b8dd"/>
+ <path d="M18 41 H77" stroke="#2e8ab8" stroke-width="2"/>
+ <path d="M103 65 H119 M103 78 H119" stroke="#406d91" stroke-width="4" stroke-linecap="round"/>
+ ${cups}</svg></div>`;
 }
+
 function solid(kind){
  const common='class="kd-shape"';
  const map={
