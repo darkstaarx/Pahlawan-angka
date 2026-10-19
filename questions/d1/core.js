@@ -51,7 +51,7 @@ function d1FracMini(num,den,kind='bar',invalid=false){
 }
 function d1FracChoiceBoard(num,den){
  const correct={n:num,d:den,kind:pick(den===4?['bar','circle','square']:['bar','circle']),ok:true};
- const pool=d1FracTargets().filter(([n,d])=>!(n===num&&d===den));
+ const pool=d1FracTargets().filter(([n,d])=>n*den!==num*d).filter(([n,d],i,all)=>all.findIndex(([a,b])=>a*d===n*b)===i);
  const wrong=shuffle(pool).slice(0,2).map(([n,d])=>({n,d,kind:pick(d===4?['bar','circle','square']:['bar','circle']),ok:false}));
  wrong.push({n:num,d:den,kind:'bar',invalid:true,ok:false});
  const choices=shuffle([correct,...wrong]);
@@ -86,19 +86,19 @@ function d1ChocolateHalfBoard(){
 function d1FractionSynonymQuestion(shift){
  const half=Math.random()<.7;
  if(half){
-  const q=Q(fractionVisual(1,2)+'Rajah di atas mewakili <b>separuh</b>. Apakah perkataan lain yang sama maksud?','setengah',[N('suku','fraction'),N('seluruh','fraction'),N('selari','fraction')],'Separuh dan setengah membawa maksud pecahan yang sama.','Darjah 1 · Pecahan',true,shift);
+  const q=Q(fractionVisual(1,2)+'Rajah di atas menunjukkan separuh. Apakah perkataan lain bagi separuh?','setengah',[N('suku','fraction'),N('seluruh','fraction'),N('tiga suku','fraction')],'Separuh dan setengah membawa maksud pecahan yang sama.','Darjah 1 · Pecahan',true,shift);
   return d1FinalizeFrac(q,'d1_frac_synonym_word','D1.FRAC.3.1.1','language')
  }
- const q=Q(fractionVisual(1,4)+'Rajah di atas mewakili <b>satu perempat</b>. Apakah perkataan lain yang sama maksud?','suku',[N('setengah','fraction'),N('seluruh','fraction'),N('selari','fraction')],'Satu perempat juga disebut suku.','Darjah 1 · Pecahan',true,shift);
+ const q=Q(fractionVisual(1,4)+'Rajah di atas menunjukkan satu perempat. Apakah perkataan lain bagi satu perempat?','suku',[N('setengah','fraction'),N('seluruh','fraction'),N('tiga suku','fraction')],'Satu perempat juga disebut suku.','Darjah 1 · Pecahan',true,shift);
  return d1FinalizeFrac(q,'d1_frac_synonym_word','D1.FRAC.3.1.1','language')
 }
 function d1FractionOddOneOut(shift){
  const half=Math.random()<.7;
  if(half){
-  const q=Q(fractionVisual(1,2)+'Rajah ini mewakili satu jenis pecahan. <b>Pilih yang salah.</b>','suku',[N('separuh','fraction'),N('setengah','fraction'),N('1/2','fraction')],'Separuh, setengah dan 1/2 semuanya sama nilai.','Darjah 1 · Pecahan',true,shift);
+  const q=Q(fractionVisual(1,2)+'Pilih pecahan yang <b>tidak sama nilai</b> dengan rajah.','suku',[N('separuh','fraction'),N('setengah','fraction'),N('1/2','fraction')],'Separuh, setengah dan 1/2 semuanya sama nilai.','Darjah 1 · Pecahan',true,shift);
   return d1FinalizeFrac(q,'d1_frac_odd_one_out','D1.FRAC.3.1.1','equivalence')
  }
- const q=Q(fractionVisual(1,4)+'Rajah ini mewakili satu jenis pecahan. <b>Pilih yang salah.</b>','setengah',[N('suku','fraction'),N('satu perempat','fraction'),N('1/4','fraction')],'Suku, satu perempat dan 1/4 semuanya sama nilai.','Darjah 1 · Pecahan',true,shift);
+ const q=Q(fractionVisual(1,4)+'Pilih pecahan yang <b>tidak sama nilai</b> dengan rajah.','setengah',[N('suku','fraction'),N('satu perempat','fraction'),N('1/4','fraction')],'Suku, satu perempat dan 1/4 semuanya sama nilai.','Darjah 1 · Pecahan',true,shift);
  return d1FinalizeFrac(q,'d1_frac_odd_one_out','D1.FRAC.3.1.1','equivalence')
 }
 function d1FinalizeFrac(q,archetype,competency='D1.FRAC.3.1.1',context='visual'){
@@ -117,7 +117,7 @@ function d1FractionQuestion(s,shift){
 
  if(mode===0){
    const ans=d1FracFormal(num,den);
-   const q=Q(visual()+'Bahagian berlorek menunjukkan pecahan apa?',ans,d1FracDistractors(num,den,true),'Pastikan keseluruhan dibahagi kepada bahagian yang sama besar.','Darjah 1 · Pecahan',true,shift);
+   const q=Q(visual()+'Apakah pecahan bagi bahagian yang berlorek?',ans,d1FracDistractors(num,den,true),'Pastikan keseluruhan dibahagi kepada bahagian yang sama besar.','Darjah 1 · Pecahan',true,shift);
    return d1FinalizeFrac(q,'d1_frac_name_from_picture')
  }
  if(mode===1){
@@ -142,7 +142,7 @@ function d1FractionQuestion(s,shift){
    const target=pick([2,3]),shown=R(0,target-1),need=target-shown;
    const shownHtml=fractionVisual(shown,4);
    const nums=[0,1,2,3,4].filter(v=>v!==need),wrongNums=shuffle(nums).slice(0,3);
-   const q=Q(shownHtml+'Rajah perlu menjadi <b>'+d1FracFormal(target,4)+'</b>. Berapa lagi bahagian perlu dilorek?',need,wrongNums.map(v=>N(v,'fraction')),'Kira bahagian yang masih perlu ditambah sehingga cukup pecahan sasaran.','Darjah 1 · Pecahan',true,shift);
+   const q=Q(shownHtml+'Rajah ini perlu menunjukkan <b>'+d1FracFormal(target,4)+'</b>. Berapa bahagian lagi perlu dilorek?',need,wrongNums.map(v=>N(v,'fraction')),'Kira bahagian yang masih perlu ditambah sehingga cukup pecahan sasaran.','Darjah 1 · Pecahan',true,shift);
    return d1FinalizeFrac(q,'d1_frac_complete_shading','D1.FRAC.3.1.1','shade')
  }
  if(mode===5){
@@ -199,9 +199,9 @@ window.PAQuestionBanks.d1 = function(id,s,shift){
  if(id==="D1.SUB20"||id==="D1.SUB100"){let max=id==="D1.SUB20"?20:100,a=R(Math.floor(max*.4),max),b=R(1,a),ans=a-b;return subQ(a,b,ans,"Darjah 1",shift,{skillId:id})}
  if(id==="D1.FRAC")return d1FractionQuestion(s,shift)
  if(id==="D1.MONEY"){let a=R(1,10),b=R(1,10),ans=a+b;return Q(`RM${a} + RM${b} = ?`,`RM${ans}`,[N(`RM${Math.max(0,ans-5)}`,"money"),N(`RM${ans+5}`,"money"),N(`${ans} sen`,"money")],"Tambah nilai dan kekalkan unit RM.","Darjah 1",true,shift)}
- if(id==="D1.TIME"){let h=R(1,12),ans=`${h}:00`;return Q(`${clockSvg(h,0)}Jam menunjukkan pukul?`,ans,[N(`${(h%12)+1}:00`,"time"),N(`${h}:30`,"time"),N(`${Math.max(1,h-1)}:00`,"time")],"Jam tepat mempunyai 00 minit.","Darjah 1",false,shift)}
- if(id==="D1.MEASURE"){return Q(`Unit sesuai untuk panjang pensel?`,`cm`,[N("kg","unit"),N("L","unit"),N("g","unit")],"Panjang biasanya cm atau m.","Darjah 1",false,shift)}
- if(id==="D1.SHAPE"){let q=pick([["triangle","segi tiga"],["square","segi empat sama"],["circle","bulatan"]]);return Q(`${shapeSvg(q[0])}Ini bentuk apa?`,q[1],[N("segi empat tepat","shape"),N("kubus","shape"),N(q[1]==="bulatan"?"segi tiga":"bulatan","shape")],"Perhatikan ciri bentuk.","Darjah 1",false,true)}
- if(id==="D1.DATA"){let labels=['A','B','C'],vals=[R(2,6),R(2,6),R(2,6)],mx=Math.max(...vals),ans=labels[vals.indexOf(mx)];return Q(`${barChart(labels,vals)}Palang manakah paling tinggi?`,ans,labels.filter(x=>x!==ans).map(x=>N(x,"data")).concat([N(String(vals.reduce((a,b)=>a+b,0)),"operation")]).slice(0,3),"Cari nilai paling besar pada carta.","Darjah 1",false,true)}
+ if(id==="D1.TIME"){let h=R(1,12),ans=`${h}:00`;return Q(`${clockSvg(h,0)}Pukul berapakah waktu yang ditunjukkan oleh jam?`,ans,[N(`${(h%12)+1}:00`,"time"),N(`${h}:30`,"time"),N(`${Math.max(1,h-1)}:00`,"time")],"Jam tepat mempunyai 00 minit.","Darjah 1",false,shift)}
+ if(id==="D1.MEASURE"){return Q(`Apakah unit yang sesuai untuk mengukur panjang pensel?`,`cm`,[N("kg","unit"),N("L","unit"),N("g","unit")],"Panjang biasanya cm atau m.","Darjah 1",false,shift)}
+ if(id==="D1.SHAPE"){let q=pick([["triangle","segi tiga"],["square","segi empat sama"],["circle","bulatan"]]);return Q(`${shapeSvg(q[0])}Apakah nama bentuk ini?`,q[1],[N("segi empat tepat","shape"),N("kubus","shape"),N(q[1]==="bulatan"?"segi tiga":"bulatan","shape")],"Perhatikan ciri bentuk.","Darjah 1",false,true)}
+ if(id==="D1.DATA"){let labels=['A','B','C'],vals=[R(2,6),R(2,6),R(2,6)],mx=Math.max(...vals),ans=labels[vals.indexOf(mx)];return Q(`${barChart(labels,vals)}Palang manakah menunjukkan bilangan paling banyak?`,ans,labels.filter(x=>x!==ans).map(x=>N(x,"data")).concat([N(String(vals.reduce((a,b)=>a+b,0)),"operation")]).slice(0,3),"Cari nilai paling besar pada carta.","Darjah 1",false,true)}
  return null;
 };
