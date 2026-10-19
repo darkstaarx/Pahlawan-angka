@@ -1970,7 +1970,7 @@
       const input=form.querySelector('.paTypedInput');
       input?.setAttribute('aria-invalid','true');
       const note=form.querySelector('.paTypedNote');
-      if(note){note.textContent=`✕ Jawapan kamu: ${option.label??option.v} — belum tepat. Cuba lagi.`;note.setAttribute('role','status');}
+      if(note){note.textContent='✕ Belum tepat. Cuba lagi.';note.setAttribute('role','status');}
       input?.addEventListener('input',()=>{input.removeAttribute('aria-invalid');button.classList.remove('no');},{once:true});
     }else if(button.classList.contains('ans')){
       button.setAttribute('aria-label',`${option.label??option.v} — jawapan salah`);
