@@ -48,6 +48,8 @@ self.PA_ASSET_MANIFEST=Object.freeze({
   "./assets/cinematics/wira-demo-entry-v1.mp4": "267e032189bab540c4da346ba3faa33b528c1f566e8a14c51cd25136de8bfce0",
   "./assets/coach/cikgu-dimensi/dimensional-aura.svg": "3f935367459192558dc215dbd450bfb3f0238116a79c7c136b5b5fb98dae30d9",
   "./assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp": "950701ffa88c0ac21e7bf1b88e0ea6f02e69349505bd71c63a2ee079ec194968",
+  "./assets/coach/cikgu-dimensi/full-body/idle-v1-prompt.md": "6c07f22efe3c169ee506d5601db6a9a71400d3263a804cfc57858216bfd17fd5",
+  "./assets/coach/cikgu-dimensi/full-body/idle-v1.webp": "ab7e7c29d66ad7adeacf3c0d165fd0b48563dd1d810e26488afbd453efa01ae0",
   "./assets/coach/cikgu-dimensi/hub-portrait-v1.webp": "1097804cb16c32d985d953869134d123baadabc8e150427fffa017c38f2a0c7c",
   "./assets/coach/cikgu-dimensi/parent-adviser-v2.png": "8144bb1dcdc7722075c3d3c675c00ca259fb9c36853ac1aaf3a14ae407ae7607",
   "./assets/coach/cikgu-wajar/encourage.webp": "c8c1ab4704212057738a52be892ad1c8876c03210dead38b4fcb6e84ed9e6c4b",
