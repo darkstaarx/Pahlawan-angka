@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY1V2Runtime;if(!RT)return;
-const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,clock,nonStandard,table,name}=RT;
+const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,clock,nonStandard,table,name,balanceBlocks,capacityCups}=RT;
 const days=['Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu','Ahad'];
 const months=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
 
@@ -102,10 +102,10 @@ GEN['6.1.2']=function(id,s){
   const count=rand(4,9),obj=choose(['buku','pensel','reben']);return mark(q(`${nonStandard(count,'pemadam',obj)}Panjang ${obj} diukur menggunakan pemadam. Berapakah bilangan pemadam yang digunakan?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan unit bukan piawai dari hujung ke hujung.','Tahun 1 · Ukur dengan Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
  }
  if(mode==='mass_units'){
-  const count=rand(3,7);return mark(q(`Satu beg kecil seimbang dengan <b>${count}</b> blok pada neraca. Beg itu seberat berapa blok?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Bilangan blok pada keseimbangan menjadi unit jisim bukan piawai.','Tahun 1 · Jisim Unit Bukan Piawai'),id,'6.1.2',mode,'story','procedure',s,['nonstandard']);
+  const count=rand(3,7);return mark(q(`${balanceBlocks(count)}Rajah menunjukkan sebuah beg seimbang dengan beberapa blok pada neraca. Berapakah bilangan blok itu?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Bilangan blok pada keseimbangan menjadi unit jisim bukan piawai.','Tahun 1 · Jisim Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
  }
  if(mode==='capacity_units'){
-  const count=rand(3,8);return mark(q(`Sebuah jag penuh selepas dituangkan <b>${count}</b> cawan air yang sama saiz. Berapakah bilangan cawan air yang boleh memenuhi jag itu?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan cawan yang diperlukan untuk memenuhi jag.','Tahun 1 · Sukat dengan Cawan'),id,'6.1.2',mode,'story','application',s,['nonstandard']);
+  const count=rand(3,8);return mark(q(`${capacityCups(count)}Rajah menunjukkan sebuah jag yang diisi menggunakan cawan yang sama saiz. Berapakah bilangan cawan yang diperlukan untuk memenuhi jag?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan cawan yang diperlukan untuk memenuhi jag.','Tahun 1 · Sukat dengan Cawan'),id,'6.1.2',mode,'visual','application',s,['nonstandard']);
  }
  return mark(q('Untuk mengukur panjang meja tanpa pembaris, unit bukan piawai yang sesuai?','jengkal',[Nq('kilogram','unit'),Nq('liter','unit'),Nq('ringgit','unit')],'Jengkal ialah unit bukan piawai untuk panjang.','Tahun 1 · Pilih Unit Bukan Piawai'),id,'6.1.2',mode,'verbal','reasoning',s,['nonstandard']);
 };
