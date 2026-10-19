@@ -50,6 +50,25 @@ function mark(out,id,node,mode,rep,demand,s,targets=[]){
  out.difficultyBand=stage(s)===3?4:stage(s)===2?3:2;out.misconceptionTargets=targets;out.kssrYear6V2Version=VERSION;
  return out;
 }
-window.PAY6V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,tidy,table,coord,protractor,polygon,circle,pie,bag,gcd,frac,fmtTime,cities,q,recentFor,chooseNode,chooseMode,bandModes,mark};
+// Randomising helpers so each archetype draws fresh names, contexts and values.
+const NAMES=['Aiman','Mei','Ravi','Hana','Lina','Hafiz','Siti','Kumar','Aina','Daniel','Nurul','Farid','Priya','Wei Ling','Iskandar','Zara'];
+const who=(n=1)=>{const a=[...NAMES].sort(()=>Math.random()-.5);return n===1?a[0]:a.slice(0,n)};
+const pickN=(arr,n)=>[...arr].sort(()=>Math.random()-.5).slice(0,n);
+const fmtN=n=>Number(n).toLocaleString('en-US');
+const words=n=>typeof numWords==='function'?numWords(n).replace(/^sejuta/,'satu juta'):fmtN(n);
+const isPrime=n=>{if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i===0)return false;return true};
+// Distinct wrong options: drop anything equal to the answer or to an earlier option, keep order.
+// Distinct wrong options: drop anything equal to the answer or to an earlier option, keep order,
+// then top up with nearby values of the same shape (12 km -> 13 km, 11 km) so there are always three.
+const distinct=(answer,list,tag)=>{
+ const seen=new Set([String(answer)]),out=[];
+ const add=v=>{const k=String(v);if(v==null||Number.isNaN(v)||seen.has(k)||out.length>=3)return;seen.add(k);out.push(Nq(v,tag))};
+ list.forEach(add);
+ const m=String(answer).match(/^(RM)?(-?\d+(?:\.\d+)?)(\D.*)?$/);
+ if(out.length<3&&m){const num=Number(m[2]),dp=(m[2].split('.')[1]||'').length,step=dp?Math.pow(10,-dp):1;
+  for(const d of [1,-1,2,-2,5,-5,10,-10]){const v=Number((num+d*step).toFixed(dp));if(v<0)continue;add(typeof answer==='number'?v:(m[1]||'')+v.toFixed(dp)+(m[3]||''))}}
+ return out;
+};
+window.PAY6V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,tidy,table,coord,protractor,polygon,circle,pie,bag,gcd,frac,fmtTime,cities,q,recentFor,chooseNode,chooseMode,bandModes,mark,who,pickN,fmtN,words,isPrime,distinct};
 document.documentElement?.setAttribute('data-y6-v2-runtime',VERSION);
 })();

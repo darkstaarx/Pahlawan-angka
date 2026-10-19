@@ -111,6 +111,30 @@ function questionFingerprint(q){
   // Keep visual markup in the fingerprint: two questions with different charts/clocks/rulers are not the same question.
   return raw.replace(/\s+/g,' ').trim().toLowerCase();
 }
+// Stable key for "has this pupil seen this item": digit grouping (7 050 410 vs 7050410)
+// and whitespace are ignored so the key is the same before and after display formatting.
+function questionSeenKey(q){
+  const n=v=>String(v??'').replace(/(\d)[ ,](?=\d{3}(?!\d))/g,'$1').replace(/\s+/g,' ').trim().toLowerCase();
+  const s=n(q?.prompt)+'|'+n(q?.answer);let h=5381;
+  for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;
+  return (h>>>0).toString(36);
+}
+// Per-pupil memory of recent items per skill, saved with the profile so it survives new sessions and days.
+const QUESTION_SEEN_LIMIT=150;
+function questionSeenStore(){
+  if(typeof db==='undefined'||!db)return null;
+  const st=db.questionSeenV1;
+  if(!st||st.schema!==1||!st.bySkill||typeof st.bySkill!=='object')db.questionSeenV1={schema:1,bySkill:{}};
+  return db.questionSeenV1;
+}
+function rememberQuestion(id,key){
+  if(!sess.questionKeys)sess.questionKeys=[];
+  sess.questionKeys.push(key);if(sess.questionKeys.length>60)sess.questionKeys.shift();
+  if(sess.demoMode)return;
+  const st=questionSeenStore();if(!st)return;
+  const list=(st.bySkill[id]=(st.bySkill[id]||[]).filter(k=>k!==key));
+  list.push(key);if(list.length>QUESTION_SEEN_LIMIT)list.splice(0,list.length-QUESTION_SEEN_LIMIT);
+}
 function questionBankFor(id){
   if(id.startsWith("D1.")) return window.PAQuestionBanks.d1;
   if(id.startsWith("D3.")) return window.PAQuestionBanks.d3;
@@ -145,6 +169,7 @@ function generate(id,s,interactionContext={}){
   if(!sess.questionFingerprints)sess.questionFingerprints=[];
   if(!sess.questionHistory)sess.questionHistory=[];
   const recent=new Set(sess.questionFingerprints.slice(-18));
+  const recentKeys=new Set((sess.questionKeys||[]).slice(-30)),longSeen=new Set(questionSeenStore()?.bySkill?.[id]||[]);
 
   const attempts=(sess.mode==='confirm'?8:16);
   const v2Bridge=window.PAQuestionSystemV2Bridge;
@@ -164,7 +189,7 @@ function generate(id,s,interactionContext={}){
       // A narrow learning standard may legitimately have only basic tasks;
       // do not silently replace it with a different standard to inflate difficulty.
       if(node&&candidateNode!==node)continue;
-      const score=questionSelectionScore(candidate,target,recent,last,prev2);
+      const ck=questionSeenKey(candidate),score=questionSelectionScore(candidate,target,recent,last,prev2)+(recentKeys.has(ck)?80:0)+(longSeen.has(ck)?40:0);
       if(score<bestScore){best=candidate;bestScore=score;}
       if(score===0)break;
     }
@@ -173,6 +198,7 @@ function generate(id,s,interactionContext={}){
   // A focused run must never substitute an unrelated arithmetic question.
   if(!q&&interactionContext.strictSkill)return null;
   q=q || Q("2 + 2 = ?",4,[N(3,"generic"),N(5,"generic"),N(6,"generic")],"Tambah kedua-dua nombor.","Fallback",false,false);
+  rememberQuestion(id,questionSeenKey(q));
   q=PAOptionIntegrity.sanitize(q);
   q=PAOptionIntegrity.refineYoung(q,id);
   q=window.PAWrittenArithmetic?.inject?.(q,id,sess)||q;
