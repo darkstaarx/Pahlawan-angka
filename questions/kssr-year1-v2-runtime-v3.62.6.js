@@ -139,6 +139,47 @@ function capacityCups(n){
  ${cups}</svg></div>`;
 }
 
+function measureRopes(values){
+ const max=Math.max(...values),bars=values.map((v,i)=>{
+  const x=100,y=26+i*43,w=Math.round(v/max*215);
+  return `<g class="paU6Rope"><text x="48" y="${y+5}">${'ABC'[i]}</text><path d="M${x} ${y+5} h${w}" stroke="#966331" stroke-width="16" stroke-linecap="round" opacity=".3"/><path d="M${x} ${y} h${w}" stroke="#bb8c4e" stroke-width="16" stroke-linecap="round"/><path d="M${x} ${y-3} h${w}" stroke="#f5ce87" stroke-width="6" stroke-linecap="round"/><path d="M${x} ${y-6} h${w}" stroke="#fff4d1" stroke-width="2" stroke-linecap="round"/></g>`;
+ }).join('');
+ return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 144" role="img" aria-label="Tiga tali A B dan C untuk dibandingkan"><rect x="1" y="1" width="338" height="142" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${bars}</svg></div>`;
+}
+
+function measureUnits(kind,values,labels){
+ const h=values.length===3?165:140,step=kind==='cawan'?23:25,ys=values.length===3?[12,63,114]:[17,82];
+ const rows=values.map((n,row)=>{
+  const y=ys[row],units=Array.from({length:n},(_,i)=>{
+   const x=95+i*step;
+   if(kind==='cawan')return `<g class="paU6Unit"><path d="M${x} ${y} h20 l-3 29 h-14 Z" fill="#e3f5ff" stroke="#367b9d" stroke-width="1.7"/><path d="M${x+2} ${y+8} h16 l-3 18 h-10 Z" fill="#65bce4"/><path d="M${x+4} ${y+4} v12" stroke="#fff" stroke-width="2.2" opacity=".8"/></g>`;
+   const light=kind==='jengkal'?'#ffd98b':'#91d8d4',dark=kind==='jengkal'?'#d79747':'#3b9f9a';
+   return `<g class="paU6Unit"><polygon points="${x},${y+5} ${x+4},${y} ${x+step-2},${y} ${x+step-6},${y+5}" fill="#fff3ca" stroke="#55768a" stroke-width="1.1"/><rect x="${x}" y="${y+5}" width="${step-6}" height="24" rx="2" fill="${light}" stroke="#4d6c83" stroke-width="1.3"/><path d="M${x+step-6} ${y+5} l4 -5 v24 l-4 5Z" fill="${dark}" stroke="#4d6c83" stroke-width="1"/><path d="M${x+3} ${y+9} h${step-12}" stroke="#fff" stroke-width="2"/></g>`;
+  }).join('');
+  return `<g class="paU6Row"><text x="42" y="${y+18}">${labels[row]}</text><text x="82" y="${y+18}">=</text>${units}</g>`;
+ }).join('');
+ return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 ${h}" role="img" aria-label="Baris perbandingan menggunakan unit ${kind} yang sama saiz"><rect x="1" y="1" width="338" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${rows}</svg></div>`;
+}
+
+function measureBeakers(levels){
+ const beakers=levels.map((f,i)=>{
+  const x=38+i*101,y=12,w=62,h=91,lh=f*h;
+  return `<g class="paU6Beaker"><path d="M${x} ${y} V${y+h} H${x+w} V${y}" fill="#e8f6fe" stroke="#406f8f" stroke-width="3"/><rect x="${x+3}" y="${y+h-lh}" width="${w-6}" height="${lh}" fill="#72c2ea"/><path d="M${x+3} ${y+h-lh} h${w-6}" stroke="#2686bd" stroke-width="2"/><path d="M${x+8} ${y+9} v${h-19}" stroke="#fff" stroke-width="4" opacity=".7"/><text x="${x+w/2}" y="128">${'ABC'[i]}</text></g>`;
+ }).join('');
+ return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 145" role="img" aria-label="Tiga bekas sama saiz dengan aras air berbeza"><rect x="1" y="1" width="338" height="143" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${beakers}</svg></div>`;
+}
+
+function measureBalance(heavy='A',blocks=0){
+ const pan=(x,y)=>`<g><path d="M${x-34} ${y} Q${x} ${y+17} ${x+34} ${y}" stroke="#567b91" stroke-width="3" fill="none"/><path d="M${x-28} ${y} L${x} ${y-34} L${x+28} ${y}" stroke="#789ab3" stroke-width="1.6" fill="none"/></g>`;
+ if(blocks>0){
+  const cubes=Array.from({length:blocks},(_,i)=>{const x=221+i%4*18,y=110-Math.floor(i/4)*20;return `<g class="paU6Unit"><rect x="${x}" y="${y}" width="16" height="17" rx="2" fill="#86d7c9" stroke="#33776d" stroke-width="1.3"/><path d="M${x} ${y} l4 -4 h16 l-4 4Z" fill="#c8f5e8" stroke="#33776d" stroke-width=".8"/></g>`}).join('');
+  return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 155" role="img" aria-label="Neraca seimbang dengan beg di sebelah kiri dan beberapa blok di sebelah kanan"><rect x="1" y="1" width="338" height="153" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><path d="M170 52 L144 146 H196 Z" fill="#aebed1" stroke="#718ba4" stroke-width="2"/><path d="M66 55 H274" stroke="#536f91" stroke-width="7" stroke-linecap="round"/><circle cx="170" cy="55" r="8" fill="#ffcc77" stroke="#997343" stroke-width="2"/>${pan(65,128)}${pan(274,128)}<path d="M40 128 L48 93 H94 L100 128 Z" fill="#f2c48d" stroke="#9d6333" stroke-width="2"/><path d="M55 94 Q70 73 84 94" stroke="#9d6333" stroke-width="4" fill="none"/>${cubes}</svg></div>`;
+ }
+ const ly=heavy==='A'?88:61,ry=heavy==='A'?61:88;
+ const box=(x,y,label)=>`<g><rect x="${x-19}" y="${y-30}" width="38" height="28" rx="3" fill="#f1bf82" stroke="#9c6230" stroke-width="2"/><path d="M${x-15} ${y-26} h30" stroke="#fff1d0" stroke-width="2"/><text x="${x}" y="${y-10}">${label}</text></g>`;
+ return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 163" role="img" aria-label="Neraca tidak seimbang dengan kotak A dan B"><rect x="1" y="1" width="338" height="161" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><path d="M170 72 L143 153 H197 Z" fill="#aebed1" stroke="#718ba4" stroke-width="2"/><path d="M66 ${ly-34} L274 ${ry-34}" stroke="#536f91" stroke-width="8" stroke-linecap="round"/><circle cx="170" cy="${(ly+ry)/2-34}" r="8" fill="#ffcc77" stroke="#997343" stroke-width="2"/>${pan(66,ly+20)}${pan(274,ry+20)}${box(66,ly+20,'A')}${box(274,ry+20,'B')}</svg></div>`;
+}
+
 function solid(kind){
  const common='class="kd-shape"';
  const map={
@@ -153,6 +194,6 @@ function solid(kind){
 }
 function clock(h,m){return typeof clockSvg==='function'?clockSvg(h,m):`<div class="kssrDiagram">Jam ${h}:${String(m).padStart(2,'0')}</div>`}
 function moneyVis(c){return typeof moneyVisual==='function'?moneyVisual(c):`<div class="kssrDiagram">${c<100?c+' sen':'RM'+(c/100)}</div>`}
-window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,baseTenBlocks,compareDots,shapePatternSvg,balanceBlocks,capacityCups,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place};
+window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,baseTenBlocks,compareDots,shapePatternSvg,balanceBlocks,capacityCups,measureRopes,measureUnits,measureBeakers,measureBalance,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place};
 document.documentElement?.setAttribute('data-y1-v2-runtime',VERSION);
 })();
