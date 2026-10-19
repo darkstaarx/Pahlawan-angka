@@ -1923,6 +1923,9 @@
     let tier=null;
     try{ tier=stage&&stage.activeTier() }catch(_){}
     if(!tier||tier.key!=='emas')return false;
+    // Tugasan interaktif berautor khusus (blok puluh/sa atau pola) menggunakan
+    // jambatan jawapan sedia ada pada Emas, bukan input teks generik.
+    if(q.goldInteraction===true)return false;
     if(!api.typedEligible(q))return false;
 
     const form=document.createElement('form');
