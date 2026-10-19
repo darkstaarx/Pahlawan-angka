@@ -48,6 +48,8 @@
   function explicitSpec(q,engine){
     const optedIn=q?.demoInteraction===true||q?.interactionAuthored===true;
     if(!optedIn)return null;
+    // Soalan bina jawapan yang dikarang untuk Kunci Emas tidak mengubah mod Gangsa/Perak.
+    if(q?.goldInteraction===true&&document.getElementById('segelTag')?.dataset.tier!=='emas')return null;
     if(q?.interaction?.spec&&q.interaction.spec.kind!=='sigil_select')return q.interaction.spec;
     if(typeof engine?.answerSpec!=='function')return null;
     const spec=engine.answerSpec(q,q.skill||'',{});
