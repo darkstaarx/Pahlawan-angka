@@ -32,7 +32,7 @@ function inspect(q){
  }else if(e.domain==='payment'){
   paymentMethods.add(q.answer);ok(['tunai','kad debit','e-dompet','perbankan internet'].every(x=>opts.includes(x)),'one choice for each distinct instrument');
   ok(!t.toLowerCase().includes(String(q.answer).toLowerCase()),'instrument name not copied into question');
-  const wallet=/ditambah nilai/.test(t),bank=/laman bank|laman sesawang bank/.test(t),cash=/wang kertas|syiling|terima baki/.test(t),card=/kad/.test(t)&&/akaun bank/.test(t);
+  const wallet=/ditambah nilai/i.test(t),bank=/laman (?:web |sesawang )?bank/i.test(t),cash=/wang kertas|syiling|terima baki/i.test(t),card=/\bkad\b/i.test(t)&&/akaun bank/i.test(t);
   const inferred=wallet?'e-dompet':bank?'perbankan internet':card?'kad debit':cash?'tunai':null;
   ok(inferred===q.answer,'transaction/process evidence uniquely identifies instrument');ok(e.instrumentId===q.answer,'metadata matches assessed instrument');
  }else{

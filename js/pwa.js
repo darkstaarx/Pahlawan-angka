@@ -41,8 +41,8 @@
   const y1CurriculumV2Js=`questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y1AdaptiveJs=`questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js?v=${APP_VERSION}`;
   const d4CurriculumJs=`questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js?v=${APP_VERSION}-completion-1`;
-  const d4CompletionDataJs='questions/d4/completion-data-money-v1.js?v=1';
-  const d4CompletionMeasuresJs='questions/d4/completion-measures-v1.js?v=1';
+  const d4CompletionDataJs='questions/d4/completion-data-money-v1.js?v=2';
+  const d4CompletionMeasuresJs='questions/d4/completion-measures-v1.js?v=2';
   const d4CompletionJs='questions/d4/completion-v1.js?v=1';
   const y5CurriculumJs=`questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;

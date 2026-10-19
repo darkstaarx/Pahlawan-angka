@@ -30,7 +30,7 @@
   },
   "examples": {
     "identify-instrument": {
-      "prompt": "Pembeli memilih akaun bank dalam laman bank lalu mengesahkan pindahan. Apakah instrumen pembayaran yang digunakan untuk membayar sebakul buah berharga RM42 di gerai buah?",
+      "prompt": "Seorang pembeli membayar RM42 untuk sebakul buah di gerai buah. Dia membuka laman web bank dan membuat pindahan wang kepada penjual. Apakah kaedah pembayaran yang digunakan?",
       "answer": "perbankan internet"
     },
     "pictograph-legend": {
@@ -42,7 +42,7 @@
       "answer": "600 mL"
     },
     "pictograph-read": {
-      "prompt": "roti susu jus air mineral 1 simbol penuh = 2 item; setengah simbol = 1 item Berapakah bilangan susu?",
+      "prompt": "bungkus roti kotak susu kotak jus botol air mineral 1 simbol penuh = 2 item; setengah simbol = 1 item Berapakah bilangan kotak susu?",
       "answer": 2
     },
     "measure_mass_add_sub": {
@@ -50,7 +50,7 @@
       "answer": "3 kg 750 g"
     },
     "read-transaction": {
-      "prompt": "Baca rekod bayaran berikut untuk pembelian set pensel berharga RM8: “Rekod menunjukkan pindahan dibuat melalui laman sesawang bank kepada kedai alat tulis.” Apakah kaedah bayaran yang direkodkan?",
+      "prompt": "Pembeli membeli set pensel berharga RM8 di kedai alat tulis. Baca catatan bayaran ini: “Pembeli membuat pindahan wang kepada penjual melalui laman web bank.” Apakah kaedah pembayaran yang digunakan?",
       "answer": "perbankan internet"
     },
     "pictograph-total": {
@@ -58,11 +58,11 @@
       "answer": 130
     },
     "measure_liquid_multiply": {
-      "prompt": "Setiap botol mengandungi 950 mL air. Berapakah isi padu air dalam 4 botol yang sama? Jawab dalam mL.",
+      "prompt": "Setiap botol mengandungi 950 mL air. Berapakah jumlah isi padu air dalam 4 botol itu? Jawab dalam mL.",
       "answer": "3800 mL"
     },
     "match-process": {
-      "prompt": "Untuk membayar RM12 bagi buku cerita di kedai buku, langkahnya ialah: “Sediakan wang yang cukup, serahkan kepada penjual dan terima baki.” Apakah instrumen pembayaran itu?",
+      "prompt": "Pembeli membayar RM12 untuk buku cerita di kedai buku. Langkah pembayarannya ialah: “Serahkan wang kertas kepada penjual. Terima baki jika ada.” Apakah kaedah pembayaran ini?",
       "answer": "tunai"
     },
     "pictograph-missing-symbol": {
@@ -70,15 +70,15 @@
       "answer": 10
     },
     "measure_mass_missing": {
-      "prompt": "Selepas 1 kg 150 g beras ditambah, jumlahnya menjadi 4 kg 850 g. Berapakah jisim beras sebelum itu? Jawab dalam g.",
+      "prompt": "Selepas 1 kg 150 g beras ditambah, jumlah jisim beras menjadi 4 kg 850 g. Berapakah jisim beras sebelum itu? Jawab dalam g.",
       "answer": "3700 g"
     },
     "decide-acceptance-constraint": {
-      "prompt": "Harga hidangan makanan di kantin sekolah ialah RM4. Terminal hanya menerima kad yang menolak wang terus daripada akaun bank, bukan baki aplikasi telefon. Antara pilihan berikut, instrumen manakah boleh digunakan?",
+      "prompt": "Harga sepinggan nasi di kedai makanan ialah RM4. Mesin pembayaran hanya menerima kad yang menolak wang terus daripada akaun bank pembeli. Kaedah pembayaran manakah yang sesuai?",
       "answer": "kad debit"
     },
     "measure_liquid_missing": {
-      "prompt": "Selepas 1 L 200 mL air dituang masuk, jumlahnya menjadi 5 L 500 mL. Berapakah isi padu air sebelum itu? Jawab dalam mL.",
+      "prompt": "Selepas 1 L 200 mL air dituang masuk, jumlah isi padu air menjadi 5 L 500 mL. Berapakah isi padu air sebelum itu? Jawab dalam mL.",
       "answer": "4300 mL"
     },
     "measure_mass_multiply_divide": {
@@ -86,11 +86,11 @@
       "answer": "2 kg 400 g"
     },
     "pictograph-difference": {
-      "prompt": "epal pisang oren mangga 1 simbol penuh = 5 item Berapakah beza bilangan kategori paling banyak dengan kategori paling sedikit?",
+      "prompt": "epal pisang oren mangga 1 simbol penuh = 5 item Berapakah beza antara bilangan item yang paling banyak dengan bilangan item yang paling sedikit?",
       "answer": 5
     },
     "measure_mass_divide": {
-      "prompt": "Sebanyak 21 kg beras dibahagi sama rata ke dalam 6 beg. Berapakah jisim beras dalam setiap beg? Jawab dalam g.",
+      "prompt": "Sebanyak 21 kg beras dibahagikan sama rata ke dalam 6 beg. Berapakah jisim beras dalam setiap beg? Jawab dalam g.",
       "answer": "3500 g"
     },
     "pictograph-maximum": {
@@ -102,11 +102,11 @@
       "answer": "3400 mL"
     },
     "measure_liquid_divide": {
-      "prompt": "Sebanyak 3 L 900 mL air dibahagi sama rata ke dalam 6 botol. Berapakah isi padu air dalam setiap botol? Jawab dalam mL.",
+      "prompt": "Sebanyak 3 L 900 mL air dibahagikan sama rata ke dalam 6 botol. Berapakah isi padu air dalam setiap botol? Jawab dalam mL.",
       "answer": "650 mL"
     },
     "measure_mass_multiply": {
-      "prompt": "Setiap beg mengandungi 3 kg 50 g beras. Berapakah jisim beras dalam 4 beg yang sama? Jawab dalam g.",
+      "prompt": "Setiap beg mengandungi 3 kg 50 g beras. Berapakah jumlah jisim beras dalam 4 beg itu? Jawab dalam g.",
       "answer": "12200 g"
     },
     "measure_mass_subtract_two": {

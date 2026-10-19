@@ -13,11 +13,11 @@
 
   function paymentQuestion() {
     var scene=pick([
-      {place:'kantin sekolah',item:'hidangan makanan',prices:[4,6,8,10,12]},
+      {place:'kedai makanan',item:'sepinggan nasi',prices:[4,6,8,10,12]},
       {place:'kedai buku',item:'buku cerita',prices:[8,12,15,18,24]},
       {place:'gerai buah',item:'sebakul buah',prices:[12,18,24,35,42]},
       {place:'kedai alat tulis',item:'set pensel',prices:[5,8,12,15,18]},
-      {place:'kaunter bas',item:'tiket bas',prices:[12,18,24,35,56]},
+      {place:'kedai pakaian',item:'sehelai baju',prices:[12,18,24,35,56]},
       {place:'kedai sukan',item:'bola',prices:[24,35,42,56,68]}
     ]);
     var amount=pick(scene.prices),place=scene.place,item=scene.item;
@@ -26,54 +26,54 @@
 
     if (mode === 'identify') {
       var identify = pick([
-        ['Pembeli menyerahkan wang kertas dan menerima baki di kaunter.', 'tunai', 'Kenal pasti wang yang diserahkan dan baki di kaunter.'],
-        ['Pembeli memasukkan kad ke terminal dan nombor rahsia; wang ditolak terus daripada akaun banknya.', 'kad debit', 'Wang ditolak terus daripada akaun bank pembeli melalui kad.'],
-        ['Pembeli mengimbas kod pada kaunter; bayaran ditolak daripada baki aplikasi yang telah ditambah nilai.', 'e-dompet', 'Bayaran menggunakan baki yang disimpan dalam aplikasi.'],
-        ['Pembeli memilih akaun bank dalam laman bank lalu mengesahkan pindahan.', 'perbankan internet', 'Pindahan dibuat melalui laman atau aplikasi bank.']
+        ['Dia menyerahkan wang kertas kepada penjual dan menerima baki.', 'tunai', 'Perhatikan wang kertas yang diserahkan kepada penjual.'],
+        ['Dia memasukkan kad ke dalam mesin pembayaran dan menaip nombor PIN. Wang ditolak terus daripada akaun banknya.', 'kad debit', 'Kad digunakan pada mesin pembayaran. Wang ditolak terus daripada akaun bank.'],
+        ['Dia mengimbas kod menggunakan aplikasi pembayaran. Bayaran ditolak daripada baki aplikasi yang telah ditambah nilai.', 'e-dompet', 'Bayaran menggunakan baki dalam aplikasi yang telah ditambah nilai.'],
+        ['Dia membuka laman web bank dan membuat pindahan wang kepada penjual.', 'perbankan internet', 'Pindahan wang dibuat melalui laman web bank.']
       ]);
       answer = identify[1];
-      prompt = identify[0] + ' Apakah instrumen pembayaran yang digunakan untuk membayar ' + item + ' berharga RM' + amount + ' di ' + place + '?';
+      prompt = 'Seorang pembeli membayar RM' + amount + ' untuk ' + item + ' di ' + place + '. ' + identify[0] + ' Apakah kaedah pembayaran yang digunakan?';
       archetypeId = 'identify-instrument';
       hint = identify[2];
       qaEvidence = { domain: 'payment', mode: mode, instrumentId: answer, answerLabel: answer, anyGivenCapabilities: [identify[0]], context: place, amountRM: amount, item: item };
     } else if (mode === 'process') {
       var process = pick([
-        ['Sediakan wang yang cukup, serahkan kepada penjual dan terima baki.', 'tunai'],
-        ['Masukkan kad, sahkan nombor rahsia dan benarkan wang ditolak terus daripada akaun bank.', 'kad debit'],
-        ['Buka aplikasi yang telah ditambah nilai, imbas kod dan bayar menggunakan baki aplikasi itu.', 'e-dompet'],
-        ['Log masuk ke laman bank, pilih penerima, masukkan jumlah dan sahkan.', 'perbankan internet']
+        ['Serahkan wang kertas kepada penjual. Terima baki jika ada.', 'tunai'],
+        ['Masukkan kad ke dalam mesin pembayaran. Taip nombor PIN. Wang ditolak terus daripada akaun bank.', 'kad debit'],
+        ['Buka aplikasi pembayaran yang telah ditambah nilai. Imbas kod penjual dan bayar menggunakan baki aplikasi itu.', 'e-dompet'],
+        ['Log masuk ke laman web bank. Pilih penerima, masukkan jumlah bayaran dan sahkan pindahan.', 'perbankan internet']
       ]);
       answer = process[1];
-      prompt = 'Untuk membayar RM' + amount + ' bagi ' + item + ' di ' + place + ', langkahnya ialah: “' + process[0] + '” Apakah instrumen pembayaran itu?';
+      prompt = 'Pembeli membayar RM' + amount + ' untuk ' + item + ' di ' + place + '. Langkah pembayarannya ialah: “' + process[0] + '” Apakah kaedah pembayaran ini?';
       archetypeId = 'match-process';
-      hint = 'Padankan urutan tindakan dengan alat pembayaran yang digunakan.';
+      hint = 'Perhatikan cara wang dibayar dalam langkah yang diberikan.';
       qaEvidence = { domain: 'payment', mode: mode, instrumentId: answer, answerLabel: answer, anyGivenCapabilities: [process[0]], context: place, amountRM: amount, item: item };
     } else if (mode === 'record') {
       var record = pick([
-        ['Rekod menunjukkan kad digunakan di terminal dan wang ditolak terus daripada akaun bank.', 'kad debit'],
-        ['Resit menunjukkan bayaran dibuat dengan wang kertas dan baki RM' + pick([2, 5, 8]) + '.', 'tunai'],
-        ['Baki aplikasi yang telah ditambah nilai berkurang selepas kod diimbas.', 'e-dompet'],
-        ['Rekod menunjukkan pindahan dibuat melalui laman sesawang bank kepada ' + place + '.', 'perbankan internet']
+        ['Kad digunakan pada mesin pembayaran. Wang ditolak terus daripada akaun bank pembeli.', 'kad debit'],
+        ['Pembeli membayar dengan wang kertas. Penjual memulangkan baki sebanyak RM' + pick([2, 5, 8]) + '.', 'tunai'],
+        ['Pembeli mengimbas kod penjual. Bayaran ditolak daripada baki aplikasi yang telah ditambah nilai.', 'e-dompet'],
+        ['Pembeli membuat pindahan wang kepada penjual melalui laman web bank.', 'perbankan internet']
       ]);
       answer = record[1];
-      prompt = 'Baca rekod bayaran berikut untuk pembelian ' + item + ' berharga RM' + amount + ': “' + record[0] + '” Apakah kaedah bayaran yang direkodkan?';
+      prompt = 'Pembeli membeli ' + item + ' berharga RM' + amount + ' di ' + place + '. Baca catatan bayaran ini: “' + record[0] + '” Apakah kaedah pembayaran yang digunakan?';
       archetypeId = 'read-transaction';
-      hint = 'Cari petunjuk tempat wang bergerak atau cara bayaran dibuat dalam rekod.';
+      hint = 'Cari maklumat tentang cara pembeli membayar.';
       qaEvidence = { domain: 'payment', mode: mode, instrumentId: answer, answerLabel: answer, anyGivenCapabilities: [record[0]], context: place, amountRM: amount, item: item };
     } else {
       var allowed = pick(paymentMethods);
       var constraint = allowed === 'tunai' ? 'Kaunter ini menerima wang kertas atau syiling sahaja.' :
-        allowed === 'kad debit' ? 'Terminal hanya menerima kad yang menolak wang terus daripada akaun bank, bukan baki aplikasi telefon.' :
-        allowed === 'e-dompet' ? 'Penjual hanya menerima bayaran daripada baki aplikasi telefon yang telah ditambah nilai.' :
-          'Penjual ini meminta bayaran melalui laman bank sebelum menghantar barang.';
+        allowed === 'kad debit' ? 'Mesin pembayaran hanya menerima kad yang menolak wang terus daripada akaun bank pembeli.' :
+        allowed === 'e-dompet' ? 'Penjual hanya menerima bayaran daripada baki aplikasi pembayaran yang telah ditambah nilai.' :
+          'Penjual hanya menerima pindahan wang melalui laman web bank.';
       answer = allowed;
-      prompt = 'Harga ' + item + ' di ' + place + ' ialah RM' + amount + '. ' + constraint + ' Antara pilihan berikut, instrumen manakah boleh digunakan?';
+      prompt = 'Harga ' + item + ' di ' + place + ' ialah RM' + amount + '. ' + constraint + ' Kaedah pembayaran manakah yang sesuai?';
       archetypeId = 'decide-acceptance-constraint';
       hint = 'Pilih kaedah yang sepadan dengan bentuk bayaran yang diterima.';
       qaEvidence = { domain: 'payment', mode: mode, instrumentId: answer, answerLabel: answer, anyGivenCapabilities: [constraint], context: place, amountRM: amount, item: item };
     }
 
-    var q = Q(prompt, answer, methodChoices(answer), hint, 'Tahun 4 · Instrumen Pembayaran', true, true);
+    var q = Q(prompt, answer, methodChoices(answer), hint, 'Tahun 4 · Kaedah Pembayaran', true, true);
     q.source = source;
     q.familyKey = 'D4.MONEY';
     q.competencyId = mode === 'identify' ? '3.6.1' : '3.6.2';
@@ -90,7 +90,7 @@
     ['buku cerita', 'buku sains', 'buku komik', 'majalah'],
     ['epal', 'pisang', 'oren', 'mangga'],
     ['basikal merah', 'basikal biru', 'basikal hijau', 'basikal kuning'],
-    ['roti', 'susu', 'jus', 'air mineral'],
+    ['bungkus roti', 'kotak susu', 'kotak jus', 'botol air mineral'],
     ['ikan emas', 'ikan biru', 'ikan merah', 'ikan belang']
   ];
   var legendText = function (key) { return '1 simbol penuh = ' + key + ' item'; };
@@ -136,7 +136,7 @@
       answer = counts[ri];
       wrong = numericWrong(answer,[counts[(ri+1)%labels.length],answer+key,Math.max(0,answer-key)]);
       prompt = pictographHtml(labels, counts, key) + 'Berapakah bilangan ' + labels[ri] + '?';
-      archetypeId = 'pictograph-read'; hint = 'Kira simbol bagi kategori itu dan darab dengan nilai legenda.';
+      archetypeId = 'pictograph-read'; hint = 'Kira simbol pada baris itu. Gunakan petunjuk untuk mencari bilangannya.';
     } else if (mode === 'total') {
       answer = counts.reduce(function (sum, value) { return sum + value; }, 0);
       wrong = numericWrong(answer,[Math.max.apply(null,counts),answer-counts[0],answer+key]);
@@ -146,7 +146,7 @@
       var hi = Math.max.apply(null, counts), lo = Math.min.apply(null, counts);
       answer = hi - lo;
       wrong = numericWrong(answer,[hi,lo,hi+lo]);
-      prompt = pictographHtml(labels, counts, key) + 'Berapakah beza bilangan kategori paling banyak dengan kategori paling sedikit?';
+      prompt = pictographHtml(labels, counts, key) + 'Berapakah beza antara bilangan item yang paling banyak dengan bilangan item yang paling sedikit?';
       archetypeId = 'pictograph-difference'; hint = 'Tolak nilai paling sedikit daripada nilai paling banyak.';
     } else if (mode === 'missing') {
       missingIndex = R(0, labels.length - 1);

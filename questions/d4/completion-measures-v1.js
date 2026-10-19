@@ -14,16 +14,16 @@
    prompt=mixed(a,c)+(mode==='add_sub'?' + ':' − ')+mixed(b,c)+' − '+mixed(d,c)+' = ?';
   }else if(mode==='multiply'){
    a=R(3,70)*50;factor=R(2,12);answer=a*factor;operands=[a,factor];standard=c.domain==='mass'?'5.2.2':'5.3.2';
-   prompt=`Setiap ${c.container} mengandungi ${mixed(a,c)} ${c.material}. Berapakah ${c.name} ${c.material} dalam ${factor} ${c.container} yang sama?`;
+   prompt=`Setiap ${c.container} mengandungi ${mixed(a,c)} ${c.material}. Berapakah jumlah ${c.name} ${c.material} dalam ${factor} ${c.container} itu?`;
   }else if(mode==='divide'){
    divisor=R(2,12);b=R(3,70)*50;a=b*divisor;answer=b;operands=[a,divisor];standard=c.domain==='mass'?'5.2.2':'5.3.2';
-   prompt=`Sebanyak ${mixed(a,c)} ${c.material} dibahagi sama rata ke dalam ${divisor} ${c.container}. Berapakah ${c.name} ${c.material} dalam setiap ${c.container}?`;
+   prompt=`Sebanyak ${mixed(a,c)} ${c.material} dibahagikan sama rata ke dalam ${divisor} ${c.container}. Berapakah ${c.name} ${c.material} dalam setiap ${c.container}?`;
   }else if(mode==='multiply_divide'){
    divisor=R(2,9);factor=R(2,12);a=R(2,20)*divisor*50;answer=a*factor/divisor;operands=[a,factor,divisor];standard=c.domain==='mass'?'5.2.2':'5.3.2';
    prompt=mixed(a,c)+' × '+factor+' ÷ '+divisor+' = ?';
   }else{
    b=R(5,90)*50;d=R(3,30)*50;a=b+d;answer=b;operands=[a,d];standard=c.domain==='mass'?'5.2.1':'5.3.1';
-   prompt=`Selepas ${mixed(d,c)} ${c.material} ${c.add}, jumlahnya menjadi ${mixed(a,c)}. Berapakah ${c.name} ${c.material} sebelum itu?`;
+   prompt=`Selepas ${mixed(d,c)} ${c.material} ${c.add}, jumlah ${c.name} ${c.material} menjadi ${mixed(a,c)}. Berapakah ${c.name} ${c.material} sebelum itu?`;
   }
   if(style==='minor')prompt+=' Jawab dalam '+c.minor+'.';else prompt+=' Jawab menggunakan '+c.major+' dan '+c.minor+' jika perlu.';
   const values=[answer+100,answer+1000,Math.max(0,answer-100),answer+50],seen=new Set([answer]),wrong=[];
