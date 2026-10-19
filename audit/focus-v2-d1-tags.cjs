@@ -11,7 +11,7 @@ const load=f=>vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),c,{filen
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
 const eager=[...html.matchAll(/src="((?:questions|data\/kssr)\/[^"?]+\.js)/g)].map(m=>m[1]).filter(f=>!/questions\/index\.js|fractions-audit/.test(f));
 const year1=[...sw.matchAll(/'\.\/((?:questions|data\/kssr)\/[^']*year1[^']*\.js)'/g)].map(m=>m[1]);
-[...new Set([...eager,...year1,'questions/index.js','js/engine/learner-review-v1.js','js/engine/focus-foundation-v1.js','js/guardian-focus.js'])].forEach(load);
+[...new Set([...eager,...year1,'questions/index.js','js/written-arithmetic-v1.0.0.js','js/engine/learner-review-v1.js','js/engine/focus-foundation-v1.js','js/guardian-focus.js'])].forEach(load);
 vm.runInContext('globalThis.__generate=generate;globalThis.__summary=focusPracticeSummary;globalThis.__skills=GRAPH.skills',c);
 const foundations=new Set(JSON.parse(fs.readFileSync(path.join(root,'data/focus-v2/foundation-map-v1.json'),'utf8')).foundations.map(f=>f.id));
 const state={mastery:60,evidence:5,confidence:55,correct:4,wrong:1};
@@ -31,6 +31,16 @@ for(const sk of c.__skills.filter(s=>s.grade===1)){
  if(sk.id==='D1.ADD20')assert(tagged>=100,'D1.ADD20 tagged '+tagged);
  if(NONE.includes(sk.id))assert.equal(tagged,0,sk.id+' must abstain');
 }
+// Written-form swaps replace the numbers, so the tag must describe the numbers on screen.
+let written=0;
+for(const id of ['D1.ADD20','D1.SUB20','D1.ADD100','D1.SUB100']){c.sess.questionHistory=[];for(let i=0;i<40;i++){
+ const q=c.__generate(id,state);if(q.writtenArithmeticMode!=='required')continue;written++;
+ const t=q.focusDiagnosticV1,m=String(q.prompt).match(/(\d+) ([+−]) (\d+) = \?/);assert(m,'written prompt '+q.prompt);
+ assert(t,'written question keeps an exact tag');const o=t.arithmeticProfile.operands;
+ if(m[2]==='+')assert.deepEqual([o.addends[0],o.addends[1],o.sum],[+m[1],+m[3],q.answer]);
+ else assert.deepEqual([o.minuend,o.subtrahend,o.difference],[+m[1],+m[3],q.answer]);
+}}
+assert(written>0,'written-form swap sampled');report.writtenChecked=written;
 // Scenario: subtraction facts fail across topics; addition and everything else is fine.
 const review=c.PALearnerReview,finder=c.PAFocusFoundationV1;let clock=1e12;
 const profile={schoolGrade:1,learnerReviewV1:{schema:1,encounters:[]}};

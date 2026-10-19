@@ -130,11 +130,16 @@
       root.N(op==='add'?(Math.abs(left-right)||answer+2*delta):op==='sub'?left+right:op==='mul'?left+right:right,'operation'),
       root.N(answer+delta,op==='div'?'division':'place'),root.N(Math.max(0,answer-delta),op==='mul'?'fact':'place')
     ],'Gunakan bentuk lazim dan semak nilai tempat.','Bentuk lazim · operasi',true,true);
-    return Object.assign({},baseQuestion,question,{
+    const out=Object.assign({},baseQuestion,question,{
       competencyId:baseQuestion?.competencyId||skillId,standardRef:baseQuestion?.standardRef||skillId,
       archetypeId:`${baseQuestion?.archetypeId||skillId}_written`,representation:'symbolic',demand:'procedure',contextId:'written-arithmetic',
       writtenArithmeticMode:'required',writtenArithmeticSkill:skillId
     });
+    // The base question's focus tag describes different numbers: never carry it over.
+    delete out.focusDiagnosticV1;
+    if((op==='add'||op==='sub')&&typeof root.attachAddSubFocusTag==='function')
+      root.attachAddSubFocusTag(out,skillId,op==='add'?'addition':'subtraction',[left,right],answer,'written-arithmetic-v1');
+    return out;
   }
 
   /* Pratonton DEV mesti boleh membuka satu bentuk lazim terus, tanpa bergantung
