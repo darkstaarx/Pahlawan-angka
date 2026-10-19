@@ -264,7 +264,9 @@ function measurementSteps(prompt,answer){
  return null;
 }
 function solutionFor(item){
- const prompt=item.prompt,answer=item.answer,answerNumber=numericValue(answer),numbers=(prompt.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),direct=prompt.match(/(-?\d+(?:\.\d+)?(?:\s*[+−\-×÷]\s*-?\d+(?:\.\d+)?)+)\s*=\s*\?/);
+ // Darjah 5–6 prompts group digits (37 425); parse them as plain numbers.
+ const ungroup=v=>String(v??'').replace(/(\d) (?=\d{3}(?!\d))/g,'$1');
+ const prompt=ungroup(item.prompt),answer=typeof item.answer==='number'?item.answer:ungroup(item.answer),answerNumber=numericValue(answer),numbers=(prompt.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),direct=prompt.match(/(-?\d+(?:\.\d+)?(?:\s*[+−\-×÷]\s*-?\d+(?:\.\d+)?)+)\s*=\s*\?/);
  const missing=missingNumberSteps(prompt,answer);if(missing)return missing;
  const geometry=geometrySteps(prompt,answer,numbers);if(geometry)return geometry;
  const percentage=percentageSteps(prompt,answer,numbers);if(percentage)return percentage;

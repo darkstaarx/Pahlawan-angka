@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const configs=[{domain:'mass',major:'kg',minor:'g',name:'jisim',material:'beras',container:'beg',add:'ditambah',take:'digunakan'},
-  {domain:'liquid',major:'L',minor:'mL',name:'isi padu',material:'air',container:'botol',add:'dituang masuk',take:'digunakan'}];
+  {domain:'liquid',major:'ℓ',minor:'mℓ',name:'isi padu',material:'air',container:'botol',add:'dituang masuk',take:'digunakan'}];
  function mixed(n,c){const major=Math.floor(n/1000),minor=n%1000;return major?(major+' '+c.major+(minor?' '+minor+' '+c.minor:'')):minor+' '+c.minor;}
  function question(){
   const c=pick(configs),mode=pick(['add_sub','subtract_two','multiply','divide','multiply_divide','missing']),style=pick(['minor','mixed']);
