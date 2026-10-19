@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY1V2Runtime;if(!RT)return;
-const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,solid,table,pictograph,tally,name}=RT;
+const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,solid,table,pictograph,tally,name,shapePatternSvg}=RT;
 const shape2d=(kind)=>typeof shapeSvg==='function'?shapeSvg(kind):`<div class="kssrDiagram">${kind}</div>`;
 
 GEN['7.1.1']=function(id,s){
@@ -53,9 +53,9 @@ GEN['7.2.2']=function(id,s){
 
 GEN['7.2.3']=function(id,s){
  const mode=chooseMode(id,'7.2.3',bandModes(s,['pattern_two'],['pattern_two','pattern_three'],['pattern_three','missing_two']));
- if(mode==='pattern_two')return mark(q('Apakah bentuk seterusnya? <b>bulatan, segi tiga, bulatan, segi tiga, ___</b>','bulatan',[Nq('segi tiga','shape_pattern'),Nq('segi empat sama','shape_pattern'),Nq('segi empat tepat','shape_pattern')],'Cari pasangan bentuk yang berulang.','Tahun 1 · Pola Bentuk 2D'),id,'7.2.3',mode,'verbal','concept',s,['shape_pattern']);
- if(mode==='pattern_three')return mark(q('Lengkapkan pola: segi tiga, bulatan, segi empat sama, segi tiga, bulatan, ___','segi empat sama',[Nq('segi tiga','shape_pattern'),Nq('bulatan','shape_pattern'),Nq('segi empat tepat','shape_pattern')],'Tiga bentuk berulang dalam urutan yang sama.','Tahun 1 · Pola Tiga Bentuk 2D'),id,'7.2.3',mode,'verbal','application',s,['shape_pattern']);
- return mark(q('Pola: bulatan, ___, bulatan, segi tiga. Bentuk yang hilang?','segi tiga',[Nq('bulatan','shape_pattern'),Nq('segi empat sama','shape_pattern'),Nq('segi empat tepat','shape_pattern')],'Banding pasangan pertama dengan pasangan kedua.','Tahun 1 · Pola 2D Hilang'),id,'7.2.3',mode,'verbal','reasoning',s,['shape_pattern']);
+ if(mode==='pattern_two')return mark(q(`${shapePatternSvg(['bulatan','segi tiga','bulatan','segi tiga',null])}Apakah bentuk yang perlu diisi pada tempat kosong?`,'bulatan',[Nq('segi tiga','shape_pattern'),Nq('segi empat sama','shape_pattern'),Nq('segi empat tepat','shape_pattern')],'Cari pasangan bentuk yang berulang.','Tahun 1 · Pola Bentuk 2D'),id,'7.2.3',mode,'verbal','concept',s,['shape_pattern']);
+ if(mode==='pattern_three')return mark(q(`${shapePatternSvg(['segi tiga','bulatan','segi empat sama','segi tiga','bulatan',null])}Apakah bentuk yang perlu diisi pada tempat kosong?`,'segi empat sama',[Nq('segi tiga','shape_pattern'),Nq('bulatan','shape_pattern'),Nq('segi empat tepat','shape_pattern')],'Tiga bentuk berulang dalam urutan yang sama.','Tahun 1 · Pola Tiga Bentuk 2D'),id,'7.2.3',mode,'verbal','application',s,['shape_pattern']);
+ return mark(q(`${shapePatternSvg(['bulatan',null,'bulatan','segi tiga'])}Apakah bentuk yang hilang?`,'segi tiga',[Nq('bulatan','shape_pattern'),Nq('segi empat sama','shape_pattern'),Nq('segi empat tepat','shape_pattern')],'Banding pasangan pertama dengan pasangan kedua.','Tahun 1 · Pola 2D Hilang'),id,'7.2.3',mode,'verbal','reasoning',s,['shape_pattern']);
 };
 
 GEN['7.2.4']=function(id,s){
