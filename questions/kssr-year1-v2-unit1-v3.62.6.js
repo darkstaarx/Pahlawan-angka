@@ -16,7 +16,7 @@ GEN['1.1.1']=function(id,s){
  }
  if(mode==='pattern_compare'){
   const a=rand(3,6),b=a+rand(1,3);
-  return mark(q(`Kumpulan A ada ${a} bulatan. Kumpulan B ada ${b} bulatan. Pilih ayat yang betul.`,'Kumpulan B lebih banyak',[Nq('Kumpulan A lebih banyak','compare'),Nq('Kedua-duanya sama banyak','compare'),Nq('Kumpulan B lebih sedikit','compare')],'Banding bilangan objek dalam pola.','Tahun 1 · Pola Kuantiti'),id,'1.1.1',mode,'verbal','application',s,['compare']);
+  return mark(q(`Kumpulan A ada ${a} bulatan. Kumpulan B ada ${b} bulatan. Pilih ayat yang betul.`,'Kumpulan B lebih banyak',[Nq('Kumpulan A lebih banyak','compare'),Nq('Kedua-duanya sama banyak','compare'),Nq('Kumpulan B lebih sedikit','compare')],'Banding bilangan objek dalam kedua-dua kumpulan.','Tahun 1 · Pola Kuantiti'),id,'1.1.1',mode,'verbal','application',s,['compare']);
  }
  const a=rand(4,8),b=rand(4,8),c=a+b;
  return mark(q(`Hakim kata kumpulan ${a} objek lebih banyak daripada kumpulan ${b} objek. Betulkah kata Hakim?`,a>b?'betul':'salah',[Nq(a>b?'salah':'betul','compare'),Nq('sama banyak','compare'),Nq('tidak pasti','compare')],'Banding nilai, bukan saiz tulisan atau susunan objek.','Tahun 1 · Penaakulan Kuantiti'),id,'1.1.1',mode,'verbal','reasoning',s,['compare']);
