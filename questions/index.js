@@ -200,6 +200,7 @@ function generate(id,s,interactionContext={}){
   q=q || Q("2 + 2 = ?",4,[N(3,"generic"),N(5,"generic"),N(6,"generic")],"Tambah kedua-dua nombor.","Fallback",false,false);
   // Focus Diagnosis v2: authored D6 tags ride on the question object (no scoring, no routing).
   if(/^D6\./.test(id))q=window.PAY6V2Runtime?.focusTag?.(q,id)||q;
+  else if(/^D1\./.test(id))q=window.PAY1V2Runtime?.focusTag?.(q,id)||q;
   rememberQuestion(id,questionSeenKey(q));
   q=PAOptionIntegrity.sanitize(q);
   q=PAOptionIntegrity.refineYoung(q,id);
