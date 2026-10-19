@@ -812,3 +812,9 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 @media (prefers-reduced-motion:reduce){
   .paU6Scene svg,.paU6Scene *{animation:none!important;transition:none!important}
 }
+
+/* Persistent, explicit incorrect-answer feedback. */
+#segelAnswers .ans.no{position:relative;padding-right:2.6rem}
+#segelAnswers .ans.no::after{content:'✕';position:absolute;right:.65rem;top:50%;transform:translateY(-50%);font-size:2rem;font-weight:900;color:#fff}
+#segelAnswers .paTypedInput[aria-invalid="true"]{border:3px solid #bb2445;background:#fff0f3;color:#8e1932}
+#segelAnswers .paTypedAnswer:has([aria-invalid="true"]) .paTypedNote{color:#a01936;font-size:1rem;font-weight:800}

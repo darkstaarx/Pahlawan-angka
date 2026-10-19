@@ -91,15 +91,13 @@ function nonStandard(count,label='pemadam',object='buku'){
  };
  let ers='';
  for(let i=0;i<count;i++){
-  const x=x0+i*U,body=i%2?'#fff3d6':'#f7a1b5',topc=i%2?'#fffaf0':'#fbc6d3',cut=x+1+(U-2)*0.58;
-  ers+=`<g><polygon points="${x+1},${top} ${x+1+d},${top-d} ${x+U-1+d},${top-d} ${x+U-1},${top}" fill="${topc}" stroke="${ink}" stroke-width="1.4"/>`+
-   `<polygon points="${x+U-1},${top} ${x+U-1+d},${top-d} ${x+U-1+d},${top+h-d} ${x+U-1},${top+h}" fill="#2f8fc4" stroke="${ink}" stroke-width="1.4"/>`+
-   `<rect x="${x+1}" y="${top}" width="${(U-2)*0.58}" height="${h}" rx="3" fill="${body}" stroke="${ink}" stroke-width="1.6"/>`+
-   `<rect x="${cut}" y="${top}" width="${(U-2)*0.42}" height="${h}" fill="#59c8ff" stroke="${ink}" stroke-width="1.6"/></g>`;
+  const x=x0+i*U;
+  // One solid front per unit; no colour split that looks like two objects.
+  ers+=`<g class="paMeasureEraser"><rect x="${x}" y="${top}" width="${U}" height="${h}" rx="2" fill="#f7a1b5" stroke="${ink}" stroke-width="1.8"/></g>`;
  }
  const guides=`<line x1="${x0}" y1="12" x2="${x0}" y2="${top+h+8}" stroke="#7b8aa3" stroke-width="1.5" stroke-dasharray="4 3"/>`+
   `<line x1="${x0+L}" y1="12" x2="${x0+L}" y2="${top+h+8}" stroke="#e8a400" stroke-width="2.5" stroke-dasharray="5 3"/>`;
- return `<div class="kssrDiagram"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${object} diukur dengan ${count} ${label} yang disusun hujung ke hujung" style="max-width:100%;height:auto">${guides}${objects[object]||objects.buku}${ers}</svg></div>`;
+ return `<div class="kssrDiagram"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${object} diukur dengan ${label} sama saiz yang disusun hujung ke hujung" style="max-width:100%;height:auto">${guides}${objects[object]||objects.buku}${ers}</svg></div>`;
 }
 function tally(n){return '||||| '.repeat(Math.floor(n/5))+'|'.repeat(n%5)}
 // Rajah asli untuk nombor puluh/sa dan perbandingan kuantiti Tahun 1.

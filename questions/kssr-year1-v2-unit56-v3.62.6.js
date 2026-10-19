@@ -109,7 +109,7 @@ GEN['6.1.1']=function(id,s){
 GEN['6.1.2']=function(id,s){
  const mode=chooseMode(id,'6.1.2',bandModes(s,['length_units'],['length_units','mass_units','capacity_units'],['length_units','mass_units','capacity_units','choose_unit']));
  if(mode==='length_units'){
-  const count=rand(4,9),obj=choose(['buku','pensel','reben']);return mark(q(`${nonStandard(count,'pemadam',obj)}Panjang ${obj} diukur menggunakan pemadam. Berapakah bilangan pemadam yang digunakan?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan unit bukan piawai dari hujung ke hujung.','Tahun 1 · Ukur dengan Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
+  const count=rand(4,9),obj=choose(['buku','pensel','reben']);return mark(q(`${nonStandard(count,'pemadam',obj)}Lihat gambar. Panjang ${obj} sama dengan berapa pemadam?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Kira bilangan unit bukan piawai dari hujung ke hujung.','Tahun 1 · Ukur dengan Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
  }
  if(mode==='mass_units'){
   const count=rand(3,7);return mark(q(`${measureBalance('A',count)}Beg itu seimbang dengan berapa blok?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Bilangan blok pada keseimbangan menjadi unit jisim bukan piawai.','Tahun 1 · Jisim Unit Bukan Piawai'),id,'6.1.2',mode,'visual','procedure',s,['nonstandard']);
@@ -117,7 +117,7 @@ GEN['6.1.2']=function(id,s){
  if(mode==='capacity_units'){
   const count=rand(3,8);return mark(q(`${capacityCups(count)}Air dalam jag ini sama banyak dengan air dalam berapa cawan?`,count,[Nq(count-1,'nonstandard'),Nq(count+1,'nonstandard'),Nq(count+2,'nonstandard')],'Air dalam satu jag sama banyak dengan air dalam semua cawan pada rajah. Kira bilangan cawan satu demi satu.','Tahun 1 · Sukat dengan Cawan'),id,'6.1.2',mode,'visual','application',s,['nonstandard']);
  }
- return mark(q('Untuk mengukur panjang meja tanpa pembaris, unit bukan piawai yang sesuai?','jengkal',[Nq('kilogram','unit'),Nq('liter','unit'),Nq('ringgit','unit')],'Jengkal ialah unit bukan piawai untuk panjang.','Tahun 1 · Pilih Unit Bukan Piawai'),id,'6.1.2',mode,'verbal','reasoning',s,['nonstandard']);
+ return mark(q('Kamu mahu mengukur panjang meja tanpa pembaris. Pilih unit yang sesuai.','jengkal',[Nq('kilogram','unit'),Nq('liter','unit'),Nq('ringgit','unit')],'Fikir cara mengukur panjang meja menggunakan tangan.','Tahun 1 · Pilih Unit Bukan Piawai'),id,'6.1.2',mode,'verbal','reasoning',s,['nonstandard']);
 };
 
 GEN['6.1.3']=function(id,s){

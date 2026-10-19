@@ -1962,13 +1962,29 @@
     return true;
   }
 
+  function markWrongAnswer(option,button){
+    try{ if(typeof navigator.vibrate==='function')navigator.vibrate([65,45,65]); }catch(_){}
+    button.classList.add('no');
+    const form=button.closest('.paTypedAnswer');
+    if(form){
+      const input=form.querySelector('.paTypedInput');
+      input?.setAttribute('aria-invalid','true');
+      const note=form.querySelector('.paTypedNote');
+      if(note){note.textContent=`✕ Jawapan kamu: ${option.label??option.v} — belum tepat. Cuba lagi.`;note.setAttribute('role','status');}
+      input?.addEventListener('input',()=>{input.removeAttribute('aria-invalid');button.classList.remove('no');},{once:true});
+    }else if(button.classList.contains('ans')){
+      button.setAttribute('aria-label',`${option.label??option.v} — jawapan salah`);
+    }
+  }
+
   function setTypedRetryEnabled(clearValue=false){
     const writtenForm=$('segelQuestion')?.querySelector('.paWaForm');
     if(writtenForm&&window.PAWrittenArithmetic?.retry?.(writtenForm,clearValue))return;
     const form=$('segelAnswers')?.querySelector('.paTypedAnswer');
     const input=form?.querySelector('.paTypedInput'),button=form?.querySelector('.paTypedSubmit');
     if(!input||!button)return;
-    if(clearValue)input.value='';
+    // Preserve the submitted answer so the learner can see and edit it.
+    if(clearValue)input.select();
     input.disabled=false;button.disabled=false;input.focus();
   }
 
@@ -2200,6 +2216,7 @@
     activeRun.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
+    if(!correct)markWrongAnswer(option,button);
     button.classList.add(correct?'ok':'no');
     const retrying=guestRetry&&!!activeRun.retryOpen;
     const sameWrong=guestRetry&&retrying&&!correct&&String(option.v)===String(activeRun.retryWrongValue);
@@ -2244,6 +2261,7 @@
     const q=run.q,hostRun=run.productionRun;if(!q||!productionCurrent(hostRun,q))return;
     run.locked=true;
     const correct=option.tag==='correct'&&String(option.v)===String(q.answer);
+    if(!correct)markWrongAnswer(option,button);
     if(!correct&&!run.retryOpen){
       const result=window.PAProductionJourney?.firstWrong?.(q,option);
       if(!productionCurrent(hostRun,q))return;
@@ -2267,7 +2285,7 @@
       if(stage.allBroken()){window.PAProductionJourney?.complete?.();if(!productionCurrent(hostRun,q))return;return celebrateProduction(hostRun,q);}
     }else{run.tally.miss++;stage.wrong();$('segelFeedback').textContent=`Belum tepat. ${q_hint(q)}`;}
     if(result?.intervention){window.PAProductionJourney?.pauseForLearning?.(result.intervention);return;}
-    await wait(420);if(!productionCurrent(hostRun,q))return;run.retryOpen=false;run.locked=false;drawQuestion();
+    await wait(correct?420:1800);if(!productionCurrent(hostRun,q))return;run.retryOpen=false;run.locked=false;drawQuestion();
   }
 
   async function celebrateProduction(hostRun,q){
