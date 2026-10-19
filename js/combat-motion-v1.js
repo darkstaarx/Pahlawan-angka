@@ -10,6 +10,8 @@
  // wind-up frame exists.
  const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/idle.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
  const chibiAttackSheetPath='assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp';
+ const chibiShieldReleasePath='assets/heroes/wira-chibi/frames/shield-throw-release-v1.webp';
+ const chibiShieldProjectilePath='assets/heroes/wira-chibi/frames/shield-projectile-v1.webp';
  const chibiAttackGrid={columns:5,rows:4,frames:17,frameMs:70};
  // Character-centre pivots measured per frame. The source sheet shifts Wira
  // inside each cell as the combo advances; anchoring the painted body instead
@@ -17,6 +19,7 @@
  const chibiAttackPivotX=[.455,.42,.449,.458,.472,.471,.444,.461,.476,.494,.458,.437,.465,.502,.54,.579,.583];
  const chibiAttackFootY=[.996,.996,.996,.984,.988,.996,.996,.98,.984,.984,.996,.996,.996,.996,.977,.965,.965];
  const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
+ let chibiNextAttack='slash';
  const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
  // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the
  // projectile only, never the whole attack.
@@ -54,6 +57,9 @@
  // The sheet is already a uniform grid; skip the expensive full-image alpha
  // scan used to normalise irregular standalone poses.
  const chibiAttackSheet=loadSheet(chibiAttackSheetPath);
+ // Keep shield assets separate so a delayed decode falls back to slash.
+ const chibiShieldRelease=load(chibiShieldReleasePath);
+ const chibiShieldProjectile=load(chibiShieldProjectilePath);
  function ensure(){
   const arena=byId('battleArena');if(!arena)return null;
   if(!canvas){canvas=document.createElement('canvas');canvas.className='paCombatMotion';canvas.setAttribute('aria-hidden','true');arena.appendChild(canvas);ctx=canvas.getContext('2d');}
@@ -95,6 +101,36 @@
   const left=p.x-width*chibiAttackPivotX[frame],top=p.y-height*chibiAttackFootY[frame];
   ctx.save();ctx.filter='brightness(1.01) saturate(1.06)';ctx.drawImage(image,sx,sy,sourceWidth,sourceHeight,left,top,width,height);ctx.restore();
   return true;
+ }
+ function groundedChibiShield(p){
+  if(!p)return;const s=p.h/290;
+  shadow(p.x,p.y-3*s,p.h*.35,14*s,.3);
+  shadow(p.x+p.h*.10,p.y+1,p.h*.1,6*s,.85);
+ }
+ function drawChibiShieldRelease(p,flash=false){
+  const a=chibiShieldRelease;if(!a?.ready)return false;
+  const scale=p.h*.87/a.h,fullW=a.img.naturalWidth*scale,fullH=a.img.naturalHeight*scale;
+  const pivotX=fullW*.584,pivotY=fullH*.965;
+  ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.98) saturate(1.02)';
+  ctx.drawImage(a.img,p.x+p.h*.10-pivotX,p.y-pivotY,fullW,fullH);ctx.restore();
+  return true;
+ }
+ function shieldFlight(hero,enemy,t,min){
+  const a=chibiShieldProjectile;if(!a?.ready)return;
+  const fromX=hero.x+hero.h*.64,fromY=hero.y-hero.h*.43;
+  const toX=enemy.x,toY=enemy.y-enemy.h*.5;
+  let x=fromX,y=fromY,alpha=1;
+  if(min){
+   if(t<1015||t>1090)return;
+   x=toX;y=toY;alpha=Math.min(1,(t-1015)/25)*Math.min(1,(1090-t)/25);
+  }else if(t>=250&&t<=1050){
+   const q=clamp((t-250)/800),smooth=q*q*(3-2*q);x=mix(fromX,toX,smooth);y=mix(fromY,toY,smooth);
+  }else if(t>1050&&t<=1240){
+   const q=ease((t-1050)/190);x=mix(toX,fromX,q);y=mix(toY,fromY,q);alpha=1-q*.15;
+  }else return;
+  const h=hero.h*.34,w=h*a.w/a.h;
+  const spin=min?0:(t<=1050?clamp((t-250)/800):1+clamp((t-1050)/190))*Math.PI*2;
+  ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.rotate(spin);ctx.drawImage(a.img,a.x,a.y,a.w,a.h,-w/2,-h/2,w,h);ctx.restore();
  }
  // Source-space foot pivots keep body scale independent of the painted Sigma
  // ring and cape. The artwork is drawn unmodified, including its own trail.
@@ -172,11 +208,13 @@
   // The hero module owns the counter so the DOM fallback stays in step.
   const ranged=heroAttacks&&key==='sidma'&&window.PASidmaBattle?.getNextNormalSkill?.()===1;
   if(heroAttacks&&key==='wirachibi'&&!chibiAttackSheet?.ready)return null;
+  const chibiVariant=key==='wirachibi'&&heroAttacks?(chibiNextAttack==='shield'&&chibiShieldRelease?.ready&&chibiShieldProjectile?.ready?'shield':'slash'):undefined;
   const sidmaContact=ranged?900:650,chibiContact=1050;
   const contactDelay=(heroAttacks?(key==='sidma'?sidmaContact:(key==='wirachibi'?chibiContact:470)):390)+lead;
   const completionDelay=(heroAttacks?(key==='wirachibi'?1320:(ranged?1500:1400)):1100)+lead;
   const min=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set,lead,ranged};
+  const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set,lead,ranged,attackVariant:chibiVariant};
+  if(heroAttacks&&key==='wirachibi'&&(chibiVariant==='shield'||chibiNextAttack==='slash'))chibiNextAttack=chibiVariant==='shield'?'slash':'shield';
   if(heroAttacks&&key==='sidma')window.PASidmaBattle?.advanceNormalSkill?.();
   scene.arena.classList.add('paMotionActive');
   if(lead&&typeof triggerPetFollowUp==='function')triggerPetFollowUp(byId('enemy'),0);
@@ -185,11 +223,11 @@
   window.PABattlePresentation.later(()=>{
    if(!active)return;active.impacted=true;
    if(key==='sidma'&&heroAttacks&&typeof playSidmaSfx==='function')playSidmaSfx('impact');
-   else if(typeof playSfx==='function')playSfx(heroAttacks?'wiraSword':'hit');
+   else if(typeof playSfx==='function')playSfx(heroAttacks&&active?.attackVariant==='shield'?'hit':(heroAttacks?'wiraSword':'hit'));
   },contactDelay);
   window.PABattlePresentation.later(()=>{reset();sync()},completionDelay);
   raf=requestAnimationFrame(render);
-  return {contactDelay,completionDelay,defeatDelay:contactDelay+300,motion:true};
+  return {contactDelay,completionDelay,defeatDelay:contactDelay+300,motion:true,attackVariant:chibiVariant};
  }
  function render(now){
   const a=active;if(!a)return;if(document.body.dataset.screen!=='game'){reset();return}
@@ -217,9 +255,16 @@
    if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
    if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
   }else if(a.heroAttacks&&a.key==='wirachibi'){
-   pose=t<0||t>=1190?'idle':'chibi-combo';
-   if(!a.min&&t>=350&&t<700)hero.x+=travel*ease((t-350)/350);
-   else if(!a.min&&t>=700&&t<1190)hero.x+=travel;
+   if(a.attackVariant==='shield'){
+    pose=t<0?'idle':t<250?'shield-windup':t<1050?'shield-throw':t<1240?'shield-return':'idle';
+    if(!a.min&&t>=0&&t<250)hero.x-=3*s*ease(t/250);
+    else if(!a.min&&t>=250&&t<1050)hero.x-=3*s;
+    else if(!a.min&&t>=1050&&t<1240)hero.x-=3*s*(1-ease((t-1050)/190));
+   }else{
+    pose=t<0||t>=1190?'idle':'chibi-combo';
+    if(!a.min&&t>=350&&t<700)hero.x+=travel*ease((t-350)/350);
+    else if(!a.min&&t>=700&&t<1190)hero.x+=travel;
+   }
    if(hit>=0&&!a.min)enemy.x+=14*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
    if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
   }else if(a.heroAttacks){
@@ -241,13 +286,18 @@
    if(hit>=0&&!a.min)hero.x-=10*s*Math.exp(-hit/180)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
   }
   if(a.pose!==pose){a.pose=pose;canvas.setAttribute('data-phase',pose)}
-  const chibiCombo=a.heroAttacks&&a.key==='wirachibi'&&t>=0&&t<1190;
+  const chibiCombo=a.heroAttacks&&a.key==='wirachibi'&&a.attackVariant==='slash'&&t>=0&&t<1190;
+  const chibiShield=a.heroAttacks&&a.key==='wirachibi'&&a.attackVariant==='shield'&&t>=0&&t<1240;
+  const chibiShieldReleasePose=chibiShield&&t>=250;
   if(chibiCombo)shadow(hero.x,hero.y-2,hero.h*.27,hero.h*.045,.72);
-  else heroShadow(a.key,a.set,pose,hero);
+  else if(chibiShieldReleasePose)groundedChibiShield(hero);
+  else heroShadow(a.key,a.set,pose==='shield-windup'?'idle':pose,hero);
   grounded(enemyArt,enemy);
   sprite(enemyArt,enemy,a.heroAttacks&&hit>=0&&hit<80);
   if(chibiCombo)drawChibiAttack(hero,t,a.min);
-  else drawHero(a.key,a.set,pose,hero,!a.heroAttacks&&hit>=0&&hit<80);
+  else if(chibiShieldReleasePose)drawChibiShieldRelease(hero);
+  else drawHero(a.key,a.set,pose==='shield-windup'?'idle':pose,hero,!a.heroAttacks&&hit>=0&&hit<80);
+  if(chibiShield)shieldFlight(hero,enemy,t,a.min);
   if(a.ranged)bolt(hero,enemy,t,a.min);
   const target=a.heroAttacks?enemy:hero;fx(target,hit,a.heroAttacks?(a.key==='sidma'?'#ffb849':'#a6efff'):'#ffcb9a',a.damage,a.min);
   raf=requestAnimationFrame(render);

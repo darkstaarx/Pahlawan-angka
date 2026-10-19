@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../"><title>Wira · Balingan Perisai</title>
+<link rel="stylesheet" href="css/combat-motion-v1.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#081424;color:#edf6ff;font-family:system-ui,sans-serif}main{max-width:1020px;margin:auto;padding:36px 20px}h1{font-size:28px;margin:0 0 8px}p{color:#b3c5d8;line-height:1.6}#battleArena{height:330px;width:100%;position:relative;overflow:hidden;border:1px solid #31526e;border-radius:20px;background:radial-gradient(ellipse at 50% 90%,#24576a 0,transparent 65%),linear-gradient(#14263c,#0c1e31);margin:24px 0}#battleArena:after{content:"";position:absolute;left:5%;right:5%;bottom:35px;height:1px;background:#79c1c644}.unit{position:absolute;bottom:35px;width:26%;height:235px}#hero{left:7%}#enemy{right:7%}#heroVisual,.enemySpriteWrap{width:100%;height:100%}.unit img{width:100%;height:100%;object-fit:contain;object-position:center bottom}.hidden{display:none}button{background:#f6cd69;color:#182438;border:0;border-radius:12px;padding:13px 22px;font:700 15px system-ui;cursor:pointer}button:disabled{opacity:.5;cursor:default}#status{display:inline-block;margin-left:16px;color:#c8d9e8}.note{font-size:13px}@media(max-width:600px){main{padding:24px 12px}#battleArena{height:260px}.unit{height:175px;width:32%}#hero{left:4%}#enemy{right:4%}#status{display:block;margin:12px 0}}
+</style></head>
+<body data-screen="game"><main><h1>Wira · Balingan Perisai</h1><p>Tebasan pedang dan balingan perisai berselang. Perisai mengenai musuh sekali, kemudian kembali kepada Wira.</p>
+<div id="game"><div id="battleArena"><div id="hero" class="unit"><div id="heroVisual"><img id="heroIdle" src="assets/heroes/wira-chibi/idle.webp" alt="Wira"></div><div id="battlePet" class="hidden"></div></div><div id="enemy" class="unit"><div class="enemySpriteWrap"><img id="enemySprite" src="assets/enemies/minions/askabus.webp" alt="Musuh"></div></div></div></div>
+<button id="play" disabled>Serangan seterusnya</button><span id="status">Memuatkan watak…</span><p class="note">Pratonton menggunakan animasi pertempuran sebenar.</p></main>
+<script>
+window.db={hero:'wirachibi',rewards:{}};let timers=new Set(),generation=0;
+window.PABattlePresentation={later(fn,delay){const g=generation;const timer=setTimeout(()=>{timers.delete(timer);if(g===generation)fn()},delay);timers.add(timer);return timer}};
+window.playSfx=()=>{};
+window.cancelPreview=()=>{generation++;timers.forEach(clearTimeout);timers.clear();window.PACombatMotion?.reset()};
+window.playPreview=()=>{
+ if(window.PACombatMotion?.isActive())return null;
+ const motion=window.PACombatMotion?.begin('hero','enemy',false,4);
+ if(!motion)return null;
+ document.getElementById('play').disabled=true;
+ document.getElementById('status').textContent=motion.attackVariant==='shield'?'Balingan perisai':'Tebasan pedang';
+ window.PABattlePresentation.later(()=>{document.getElementById('play').disabled=false;document.getElementById('status').textContent='Sedia untuk serangan seterusnya'},motion.completionDelay+10);
+ return motion;
+};
+document.getElementById('play').onclick=window.playPreview;
+window.addEventListener('load',async()=>{
+ const paths=['assets/heroes/wira-chibi/idle.webp','assets/heroes/wira-chibi/frames/attack-arc-v2.webp','assets/heroes/wira-chibi/frames/follow-through-v1.webp','assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp','assets/heroes/wira-chibi/frames/shield-throw-release-v1.webp','assets/heroes/wira-chibi/frames/shield-projectile-v1.webp','assets/enemies/minions/askabus.webp'];
+ try{await Promise.all(paths.map(src=>{const img=new Image();img.src=src;return img.decode()}));await new Promise(r=>setTimeout(r,120));window.PACombatMotion.sync();document.getElementById('play').disabled=false;document.getElementById('status').textContent='Sedia — mula dengan tebasan pedang'}catch(error){document.getElementById('status').textContent='Imej belum dapat dimuatkan'}
+});
+</script><script src="js/combat-motion-v1.js?v=3.86.71"></script></body></html>
