@@ -30,7 +30,7 @@ GEN['1.2.1']=function(id,s){
   const out=mark(q(`${baseTenBlocks(t,o)}Rajah menunjukkan blok puluh dan blok sa. Apakah nombor itu?`,total,[Nq(o*10+t,'place'),Nq(t+o,'place'),Nq(t*10+Math.max(0,o-1),'count')],'Kira nilai blok puluh dahulu, kemudian tambah bilangan blok sa.','Tahun 1 · Blok Puluh dan Sa'),id,'1.2.1',mode,'visual','concept',s,['place','count']);
   out.goldInteraction=true;out.demoInteraction=true;out.baseTenSpec={kind:'base_ten',tens:t,ones:o};return out;
  }
- if(mode==='name_quantity'){const n=rand(10,99);return mark(q(`Apakah nama nombor <b>${n}</b> dalam perkataan?`,words(n),[Nq(words(Math.max(1,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(Math.max(1,Math.floor(n/10)*10)),'place')],'Baca puluh dahulu, kemudian sa.','Tahun 1 · Nama Nombor'),id,'1.2.1',mode,'verbal','concept',s,['number_name']);}
+ if(mode==='name_quantity'){const n=rand(10,99);return mark(q(`Apakah nama nombor <b>${n}</b> dalam perkataan?`,words(n),[Nq(words(Math.max(1,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(Math.max(0,Math.floor(n/10)*10-(n%10===0?10:0))),'place')],'Baca puluh dahulu, kemudian sa.','Tahun 1 · Nama Nombor'),id,'1.2.1',mode,'verbal','concept',s,['number_name']);}
  let a=rand(8,30),b=rand(8,30);while(a===b)b=rand(8,30);const ans=a>b?'A':'B';
  return mark(q(`Kumpulan A ada ${a} objek dan Kumpulan B ada ${b}. Kumpulan manakah ada lebih banyak objek?`,ans,[Nq(ans==='A'?'B':'A','compare'),Nq('Sama','compare'),Nq('Tidak pasti','compare')],'Banding bilangan kedua-dua kumpulan.','Tahun 1 · Banding Kuantiti'),id,'1.2.1',mode,'story','application',s,['compare']);
 };
@@ -48,16 +48,16 @@ GEN['1.2.2']=function(id,s){
   const asc=a=>a[0]<a[1]&&a[1]<a[2], desc=a=>a[0]>a[1]&&a[1]>a[2];
   for(let g=0;g<24&&(asc(xs)||desc(xs));g++)xs=[xs[1],xs[2],xs[0]];
   if(asc(xs)||desc(xs))xs=[xs[1],xs[0],xs[2]];
-  const ans=[...xs].sort((a,b)=>a-b).join(', ');return mark(q(`Susun nombor daripada kecil kepada besar: <b>${xs.join(', ')}</b>`,ans,[Nq([...xs].sort((a,b)=>b-a).join(', '),'compare'),Nq(xs.join(', '),'compare'),Nq([xs[1],xs[0],xs[2]].join(', '),'compare')],'Nombor paling kecil ditulis dahulu.','Tahun 1 · Susun Nilai'),id,'1.2.2',mode,'symbolic','procedure',s,['compare']);}
+  const ans=[...xs].sort((a,b)=>a-b).join(', '),perms=[[xs[0],xs[1],xs[2]],[xs[0],xs[2],xs[1]],[xs[1],xs[0],xs[2]],[xs[1],xs[2],xs[0]],[xs[2],xs[0],xs[1]],[xs[2],xs[1],xs[0]]],wrong=[...new Set(perms.map(x=>x.join(', ')))].filter(x=>x!==ans).slice(0,3);return mark(q(`Susun nombor daripada kecil kepada besar: <b>${xs.join(', ')}</b>`,ans,wrong.map(x=>Nq(x,'compare')),'Nombor paling kecil ditulis dahulu.','Tahun 1 · Susun Nilai'),id,'1.2.2',mode,'symbolic','procedure',s,['compare']);}
  const lo=rand(5,95),ans=lo+1,hi=lo+2;return mark(q(`Nombor manakah berada di antara <b>${lo}</b> dan <b>${hi}</b>?`,ans,[Nq(lo,'compare'),Nq(hi,'compare'),Nq(Math.min(100,hi+1),'compare')],'Cari nombor selepas yang kecil dan sebelum yang besar.','Tahun 1 · Di Antara'),id,'1.2.2',mode,'symbolic','reasoning',s,['compare','pattern']);
 };
 
 GEN['1.3.1']=function(id,s){
  const mode=chooseMode(id,'1.3.1',bandModes(s,['number_to_words'],['number_to_words','words_to_number'],['words_to_number','spot_wrong_word']));
  const n=rand(1,100);
- if(mode==='number_to_words')return mark(q(`Pilih perkataan yang betul bagi nombor <b>${n}</b>.`,words(n),[Nq(words(Math.max(1,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(Math.max(1,n-10)),'place')],'Baca nombor mengikut puluh dan sa.','Tahun 1 · Angka ke Perkataan'),id,'1.3.1',mode,'verbal','concept',s,['number_name']);
+ if(mode==='number_to_words')return mark(q(`Pilih perkataan yang betul bagi nombor <b>${n}</b>.`,words(n),[Nq(words(Math.max(0,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(n<=10?Math.min(100,n+10):Math.max(0,n-10)),'place')],'Baca nombor mengikut puluh dan sa.','Tahun 1 · Angka ke Perkataan'),id,'1.3.1',mode,'verbal','concept',s,['number_name']);
  if(mode==='words_to_number')return mark(q(`Pilih angka bagi <b>${words(n)}</b>.`,n,[Nq(Math.max(0,n-1),'number_name'),Nq(Math.min(100,n+1),'number_name'),Nq(Number(String(n).split('').reverse().join('')),'place')],'Padankan nama nombor dengan angka.','Tahun 1 · Perkataan ke Angka'),id,'1.3.1',mode,'verbal','application',s,['number_name']);
- const wrong=Math.min(100,n+10);return mark(q(`${name()} menulis <b>${n}</b> sebagai “${words(wrong)}”. Apakah ejaan nombor yang betul?`,words(n),[Nq(words(wrong),'number_name'),Nq(words(Math.max(1,n-10)),'place'),Nq(words(Math.min(100,n+1)),'number_name')],'Semak nilai puluh dan sa.','Tahun 1 · Semak Nama Nombor'),id,'1.3.1',mode,'story','reasoning',s,['number_name','place']);
+ const wrong=Math.min(100,n+10);return mark(q(`${name()} menulis <b>${n}</b> sebagai “${words(wrong)}”. Apakah ejaan nombor yang betul?`,words(n),[Nq(words(wrong),'number_name'),Nq(words(Math.max(1,n-10)),'place'),Nq(words(Math.max(0,n-1)),'number_name')],'Semak nilai puluh dan sa.','Tahun 1 · Semak Nama Nombor'),id,'1.3.1',mode,'story','reasoning',s,['number_name','place']);
 };
 
 GEN['1.4.1']=function(id,s){
@@ -73,7 +73,7 @@ GEN['1.5.1']=function(id,s){
  const steps=[1,2,4,5,10],step=choose(steps),down=Math.random()<.5,mode=chooseMode(id,'1.5.1',bandModes(s,['count_next'],['count_next','count_direction'],['count_direction','count_far']));
  const start=down?rand(step*4,100):rand(1,Math.max(1,100-step*4)),next=start+(down?-step:step);
  if(mode==='count_next')return mark(q(`Membilang ${down?'menurun':'menaik'} ${step===1?'satu-satu':step+'-'+step}: <b>${start}, ___</b>`,next,wrongNums(next,step,'pattern'),'Gerak mengikut langkah yang sama.','Tahun 1 · Membilang'),id,'1.5.1',mode,'symbolic','procedure',s,['pattern']);
- if(mode==='count_direction')return mark(q(`Apakah perubahan nombor <b>${start}, ${next}</b>?`,down?`tolak ${step}`:`tambah ${step}`,[Nq(down?`tambah ${step}`:`tolak ${step}`,'pattern'),Nq('tambah 1','pattern'),Nq('tiada pola','pattern')],'Banding beza antara dua nombor.','Tahun 1 · Arah Membilang'),id,'1.5.1',mode,'symbolic','concept',s,['pattern']);
+ if(mode==='count_direction')return mark(q(`Apakah perubahan nombor <b>${start}, ${next}</b>?`,down?`tolak ${step}`:`tambah ${step}`,[Nq(down?`tambah ${step}`:`tolak ${step}`,'pattern'),Nq(down?`tambah ${step+1}`:`tolak ${step+1}`,'pattern'),Nq('tiada pola','pattern')],'Banding beza antara dua nombor.','Tahun 1 · Arah Membilang'),id,'1.5.1',mode,'symbolic','concept',s,['pattern']);
  const ans=start+(down?-step*3:step*3);return mark(q(`Mula dengan ${start}. Bilang ${down?'menurun':'menaik'} ${step===1?'satu-satu':step+'-'+step} sebanyak tiga kali. Apakah nombor akhir?`,ans,wrongNums(ans,step,'pattern'),'Gerak tiga kali dengan langkah yang sama.','Tahun 1 · Membilang Berbilang Langkah'),id,'1.5.1',mode,'story','reasoning',s,['pattern']);
 };
 
@@ -112,7 +112,7 @@ GEN['1.9.1']=function(id,s){
  const step=choose([1,2,4,5,10]),down=Math.random()<.5,start=down?rand(step*4,100):rand(1,Math.max(1,100-step*4)),seq=[0,1,2,3].map(i=>start+(down?-step*i:step*i));
  const mode=chooseMode(id,'1.9.1',bandModes(s,['identify_step'],['identify_step','identify_direction'],['identify_direction','explain_pattern']));
  const op=down?`tolak ${step}`:`tambah ${step}`;
- if(mode==='identify_step')return mark(q(`Pola: <b>${seq.join(', ')}</b>. Apakah peraturannya?`,op,[Nq(down?`tambah ${step}`:`tolak ${step}`,'pattern'),Nq('tambah 1','pattern'),Nq('tiada pola','pattern')],'Cari beza antara nombor berturutan.','Tahun 1 · Kenal Pola'),id,'1.9.1',mode,'symbolic','concept',s,['pattern']);
+ if(mode==='identify_step')return mark(q(`Pola: <b>${seq.join(', ')}</b>. Apakah peraturannya?`,op,[Nq(down?`tambah ${step}`:`tolak ${step}`,'pattern'),Nq(down?`tambah ${step+1}`:`tolak ${step+1}`,'pattern'),Nq('tiada pola','pattern')],'Cari beza antara nombor berturutan.','Tahun 1 · Kenal Pola'),id,'1.9.1',mode,'symbolic','concept',s,['pattern']);
  if(mode==='identify_direction')return mark(q(`Adakah urutan nombor <b>${seq.join(', ')}</b> menaik atau menurun?`,down?'menurun':'menaik',[Nq(down?'menaik':'menurun','pattern'),Nq('rawak','pattern'),Nq('sama sahaja','pattern')],'Lihat sama ada nilai bertambah atau berkurang.','Tahun 1 · Arah Pola'),id,'1.9.1',mode,'symbolic','application',s,['pattern']);
  return mark(q(`${name()} kata pola <b>${seq.join(', ')}</b> ialah tambah ${step}. Betulkah?`,down?'salah':'betul',[Nq(down?'betul':'salah','pattern'),Nq('tiada pola','pattern'),Nq('tidak pasti','pattern')],'Periksa beza dan arah pada setiap langkah.','Tahun 1 · Semak Pola'),id,'1.9.1',mode,'verbal','reasoning',s,['pattern']);
 };
