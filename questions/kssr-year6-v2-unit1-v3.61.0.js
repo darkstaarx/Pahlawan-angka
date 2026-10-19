@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY6V2Runtime;if(!RT)return;
-const {GEN,Nq,choose,rand,q,mark,chooseMode,bandModes,stage,recentFor}=RT;
+const {GEN,Nq,choose,rand,q,mark,chooseMode,bandModes,stage,recentFor,table}=RT;
 
 const numberPairs=[
  [1250000,'satu juta dua ratus lima puluh ribu'],
@@ -99,9 +99,9 @@ GEN['1.4.1']=function(id,s){
  const mode=chooseMode(id,'1.4.1',bandModes(s,['total','difference'],['total','difference','million_mix'],['million_mix','reverse','decision','claim']));
  if(mode==='total'){const a=choose([1250000,2400000]),b=choose([350000,480000]),ans=a+b;return mark(q('Sebuah bandar mempunyai '+a.toLocaleString()+' orang penduduk. Seramai '+b.toLocaleString()+' orang lagi berpindah masuk ke bandar itu. Berapakah jumlah penduduk bandar itu sekarang?',ans,[Nq(a-b,'operation'),Nq(a+b+100000,'operation'),Nq(b,'operation')],'Tambah.','Tahun 6 · Masalah Nombor'),id,'1.4.1',mode,'story','application',s,['operation']);}
  if(mode==='difference'){const a=choose([5200000,6800000]),b=choose([1750000,2450000]),ans=a-b;return mark(q('Sebuah kilang menyasarkan '+a.toLocaleString()+' biji butang. Sebanyak '+b.toLocaleString()+' biji butang telah siap. Berapakah bilangan butang lagi yang perlu dihasilkan untuk mencapai sasaran?',ans,[Nq(a+b,'operation'),Nq(b,'operation'),Nq(ans+100000,'operation')],'Sasaran − siap.','Tahun 6 · Masalah Baki'),id,'1.4.1',mode,'story','application',s,['operation']);}
- if(mode==='million_mix')return mark(q('Sebuah bandar mempunyai 2.4 juta orang penduduk. Seramai 0.35 juta orang berpindah keluar dan 125 000 orang berpindah masuk. Berapakah jumlah penduduk bandar itu sekarang?',2175000,[Nq(1925000,'operation'),Nq(2525000,'operation'),Nq(2875000,'operation')],'Samakan unit dahulu.','Tahun 6 · Masalah Juta Pelbagai Bentuk'),id,'1.4.1',mode,'story','reasoning',s,['million','multi_step']);
+ if(mode==='million_mix')return mark(q(table(['Butiran','Bilangan orang'],[['Penduduk asal','2.4 juta'],['Berpindah keluar','0.35 juta'],['Berpindah masuk','125 000']])+'Berapakah jumlah penduduk bandar itu sekarang?',2175000,[Nq(1925000,'operation'),Nq(2525000,'operation'),Nq(2875000,'operation')],'Samakan unit dahulu.','Tahun 6 · Masalah Juta Pelbagai Bentuk'),id,'1.4.1',mode,'story','reasoning',s,['million','multi_step']);
  if(mode==='reverse')return mark(q('Selepas 450 000 biji butang ditambah, jumlah butang di sebuah gudang menjadi 3.2 juta biji. Berapakah bilangan butang asal di gudang itu?',2750000,[Nq(3650000,'operation'),Nq(2450000,'operation'),Nq(3200000,'operation')],'Gunakan operasi songsang.','Tahun 6 · Masalah Songsang'),id,'1.4.1',mode,'story','reasoning',s,['inverse']);
- if(mode==='decision')return mark(q('Sebuah loji air boleh membekalkan air kepada 2.1 juta orang. Bandar A memerlukan bekalan untuk 1.35 juta orang dan Bandar B untuk 0.82 juta orang. Adakah bekalan loji itu mencukupi untuk kedua-dua bandar?','tidak mencukupi',[Nq('mencukupi','estimate'),Nq('tepat-tepat cukup','estimate'),Nq('tidak boleh ditentukan','estimate')],'Jumlah 2.17 juta > 2.1 juta.','Tahun 6 · Keputusan Berdasarkan Anggaran'),id,'1.4.1',mode,'story','reasoning',s,['estimate','decision']);
+ if(mode==='decision')return mark(q(table(['Butiran','Bilangan orang'],[['Bekalan loji air','2.1 juta'],['Keperluan Bandar A','1.35 juta'],['Keperluan Bandar B','0.82 juta']])+'Adakah bekalan loji air itu mencukupi untuk kedua-dua bandar?','tidak mencukupi',[Nq('mencukupi','estimate'),Nq('tepat-tepat cukup','estimate'),Nq('tidak boleh ditentukan','estimate')],'Jumlah 2.17 juta > 2.1 juta.','Tahun 6 · Keputusan Berdasarkan Anggaran'),id,'1.4.1',mode,'story','reasoning',s,['estimate','decision']);
  return mark(q('Mei berkata 3/4 juta + 0.2 juta kurang daripada 1 juta. Adakah Mei betul?','betul, jumlahnya 0.95 juta',[Nq('salah, 1.15 juta','million'),Nq('salah, 0.55 juta','million'),Nq('tidak boleh dibanding','million')],'0.75 + 0.2 = 0.95 juta.','Tahun 6 · Menilai Penyelesaian'),id,'1.4.1',mode,'verbal','reasoning',s,['million','error_analysis']);
 };
 

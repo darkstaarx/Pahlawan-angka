@@ -213,7 +213,7 @@ function coreQ(s){
   if(mode==='profit_value'){
     const cost=pick1([120,180,250,320]),profit=pick1([25,40,55,80]),sell=cost+profit;
     return mark(qc(
-      'Harga kos sebuah barang ialah '+rm(cost)+' dan harga jual ialah '+rm(sell)+'. Berapakah untung?',
+      table(['Harga kos','Harga jual','Untung'],[[rm(cost),rm(sell),'?']])+'Berapakah untung?',
       rm(profit),[Nq(rm(sell),'profit_loss'),Nq(rm(cost),'profit_loss'),Nq(rm(sell+cost),'operation')],
       'Untung = harga jual − harga kos.','Tahun 6 · Menentukan Untung'
     ),'3.1.2',mode,'story','application',s,['profit_loss']);
@@ -221,7 +221,7 @@ function coreQ(s){
   if(mode==='loss_value'){
     const cost=pick1([150,240,360,500]),loss=pick1([20,35,60,90]),sell=cost-loss;
     return mark(qc(
-      'Harga kos sebuah barang ialah '+rm(cost)+' tetapi dijual pada '+rm(sell)+'. Berapakah rugi?',
+      table(['Harga kos','Harga jual','Rugi'],[[rm(cost),rm(sell),'?']])+'Berapakah rugi?',
       rm(loss),[Nq(rm(sell),'profit_loss'),Nq(rm(cost),'profit_loss'),Nq(rm(cost+sell),'operation')],
       'Rugi = harga kos − harga jual.','Tahun 6 · Menentukan Rugi'
     ),'3.1.2',mode,'story','application',s,['profit_loss']);
@@ -229,7 +229,7 @@ function coreQ(s){
   if(mode==='selling_from_cost_profit'){
     const cost=pick1([80,140,260,420]),profit=pick1([15,30,50,75]),ans=cost+profit;
     return mark(qc(
-      'Harga kos '+rm(cost)+'. Peniaga mahu memperoleh untung '+rm(profit)+'. Berapakah harga jual?',
+      table(['Harga kos','Untung','Harga jual'],[[rm(cost),rm(profit),'?']])+'Berapakah harga jual?',
       rm(ans),[Nq(rm(cost-profit),'profit_loss'),Nq(rm(profit),'profit_loss'),Nq(rm(ans+profit),'operation')],
       'Harga jual = harga kos + untung.','Tahun 6 · Harga Jual'
     ),'3.1.2',mode,'story','application',s,['profit_loss','inverse']);
@@ -237,7 +237,7 @@ function coreQ(s){
   if(mode==='cost_from_selling_profit'){
     const cost=pick1([95,175,280,450]),profit=pick1([20,35,60,90]),sell=cost+profit;
     return mark(qc(
-      'Sebuah barang dijual pada '+rm(sell)+' dengan untung '+rm(profit)+'. Berapakah harga kos?',
+      table(['Harga jual','Untung','Harga kos'],[[rm(sell),rm(profit),'?']])+'Berapakah harga kos?',
       rm(cost),[Nq(rm(sell+profit),'profit_loss'),Nq(rm(profit),'profit_loss'),Nq(rm(cost-profit),'operation')],
       'Harga kos = harga jual − untung.','Tahun 6 · Harga Kos'
     ),'3.1.2',mode,'story','application',s,['profit_loss','inverse']);
@@ -245,7 +245,7 @@ function coreQ(s){
   if(mode==='selling_from_cost_loss'){
     const cost=pick1([160,250,390,620]),loss=pick1([25,40,70,120]),sell=cost-loss;
     return mark(qc(
-      'Harga kos '+rm(cost)+'. Peniaga mengalami rugi '+rm(loss)+'. Berapakah harga jual?',
+      table(['Harga kos','Rugi','Harga jual'],[[rm(cost),rm(loss),'?']])+'Berapakah harga jual?',
       rm(sell),[Nq(rm(cost+loss),'profit_loss'),Nq(rm(loss),'profit_loss'),Nq(rm(sell-loss),'operation')],
       'Harga jual = harga kos − rugi.','Tahun 6 · Harga Jual dan Rugi'
     ),'3.1.2',mode,'story','application',s,['profit_loss','inverse']);
@@ -253,7 +253,7 @@ function coreQ(s){
   if(mode==='cost_from_selling_loss'){
     const sell=pick1([120,240,360,480]),loss=pick1([20,35,50,80]),cost=sell+loss;
     return mark(qc(
-      'Sebuah barang dijual pada '+rm(sell)+' dan peniaga rugi '+rm(loss)+'. Berapakah harga kos?',
+      table(['Harga jual','Rugi','Harga kos'],[[rm(sell),rm(loss),'?']])+'Berapakah harga kos?',
       rm(cost),[Nq(rm(sell-loss),'profit_loss'),Nq(rm(sell),'profit_loss'),Nq(rm(loss),'profit_loss')],
       'Harga kos = harga jual + rugi.','Tahun 6 · Harga Kos dan Rugi'
     ),'3.1.2',mode,'story','application',s,['profit_loss','inverse']);
@@ -261,7 +261,7 @@ function coreQ(s){
   if(mode==='profit_percent'){
     const cost=pick1([100,200,400,500]),pct=pick1([10,15,20,25]),profit=cost*pct/100,sell=cost+profit;
     return mark(qc(
-      'Harga kos '+rm(cost)+'. Peniaga mahu untung '+pct+'% daripada harga kos. Berapakah harga jual?',
+      table(['Harga kos','Untung','Harga jual'],[[rm(cost),pct+'% daripada harga kos','?']])+'Berapakah harga jual?',
       rm(sell),[Nq(rm(profit),'percent'),Nq(rm(cost-profit),'profit_loss'),Nq(rm(cost+pct),'operation')],
       'Kira nilai untung mengikut peratus, kemudian tambah kepada harga kos.','Tahun 6 · Untung Peratus'
     ),'3.1.2',mode,'story','application',s,['profit_loss','percent']);
@@ -269,7 +269,7 @@ function coreQ(s){
   if(mode==='discount_amount'){
     const price=pick1([80,120,160,240]),pct=pick1([10,15,20,25]),off=price*pct/100;
     return mark(qc(
-      'Harga asal sebuah barang '+rm(price)+'. Diskaun '+pct+'% diberi. Berapakah nilai diskaun?',
+      table(['Harga asal','Diskaun','Nilai diskaun'],[[rm(price),pct+'%','?']])+'Berapakah nilai diskaun?',
       rm(off),[Nq(rm(price-off),'discount'),Nq(rm(price+pct),'operation'),Nq(rm(pct),'discount')],
       'Diskaun = kadar diskaun × harga asal.','Tahun 6 · Nilai Diskaun'
     ),'3.1.2',mode,'story','application',s,['discount','percent']);
@@ -277,7 +277,7 @@ function coreQ(s){
   if(mode==='discount_final'){
     const price=pick1([100,150,200,320]),pct=pick1([10,20,25]),off=price*pct/100,ans=price-off;
     return mark(qc(
-      'Sebuah beg berharga '+rm(price)+' diberi diskaun '+pct+'%. Berapakah harga selepas diskaun?',
+      table(['Barang','Harga asal','Diskaun'],[['Beg',rm(price),pct+'%']])+'Berapakah harga beg selepas diskaun?',
       rm(ans),[Nq(rm(off),'discount'),Nq(rm(price+off),'discount'),Nq(rm(price-2*off),'discount')],
       'Harga selepas diskaun = harga asal − nilai diskaun.','Tahun 6 · Harga Selepas Diskaun'
     ),'3.1.2',mode,'story','application',s,['discount']);
@@ -285,7 +285,7 @@ function coreQ(s){
   if(mode==='rebate_final'){
     const bill=pick1([120,180,260,400]),rebate=pick1([10,20,30,50]),ans=bill-rebate;
     return mark(qc(
-      'Jumlah bayaran asal '+rm(bill)+'. Rebat tunai '+rm(rebate)+' diberikan. Berapakah bayaran akhir?',
+      table(['Butiran','RM'],[['Jumlah bayaran asal',rm(bill)],['Rebat tunai',rm(rebate)],['Bayaran akhir','?']])+'Berapakah bayaran akhir?',
       rm(ans),[Nq(rm(bill+rebate),'rebate'),Nq(rm(rebate),'rebate'),Nq(rm(bill),'money')],
       'Tolak nilai rebat daripada jumlah asal.','Tahun 6 · Rebat'
     ),'3.1.2',mode,'story','application',s,['rebate']);
@@ -293,7 +293,7 @@ function coreQ(s){
   if(mode==='voucher_balance'){
     const price=pick1([60,90,120,150]),voucher=pick1([10,20,25,30]),ans=price-voucher;
     return mark(qc(
-      'Harga barang '+rm(price)+'. Baucar bernilai '+rm(voucher)+' digunakan sepenuhnya. Berapakah baki bayaran?',
+      table(['Butiran','RM'],[['Harga barang',rm(price)],['Baucar',rm(voucher)],['Baki bayaran','?']])+'Berapakah baki bayaran?',
       rm(ans),[Nq(rm(price+voucher),'voucher'),Nq(rm(voucher),'voucher'),Nq(rm(price),'money')],
       'Baki bayaran = harga − nilai baucar.','Tahun 6 · Baucar'
     ),'3.3.1',mode,'story','application',s,['voucher']);
@@ -302,7 +302,7 @@ function coreQ(s){
     const price=pick1([40,50,80,100]),pct=pick1([10,20]),cash=pick1([50,100,150]),off=price*pct/100,pay=price-off,ans=cash-pay;
     if(ans<0)return coreQ(s);
     return mark(qc(
-      'Harga asal '+rm(price)+', diskaun '+pct+'%. Pembeli membayar dengan '+rm(cash)+'. Berapakah baki wang?',
+      table(['Butiran','Nilai'],[['Harga asal',rm(price)],['Diskaun',pct+'%'],['Wang dibayar',rm(cash)]])+'Berapakah baki wang yang diterima?',
       rm(ans),[Nq(rm(cash-price),'money'),Nq(rm(off),'discount'),Nq(rm(pay),'money')],
       'Cari harga selepas diskaun dahulu, kemudian tolak daripada wang dibayar.','Tahun 6 · Diskaun dan Baki Wang'
     ),'3.3.1',mode,'story','application',s,['discount','multi_step']);
@@ -337,7 +337,7 @@ function coreQ(s){
   if(mode==='service_tax_value'){
     const bill=pick1([50,75,100,125]),pct=pick1([6,8,10]),tax=tidy(bill*pct/100,2);
     return mark(qc(
-      'Bil sebelum cukai ialah '+rm(bill)+'. Cukai perkhidmatan '+pct+'% dikenakan. Berapakah nilai cukai?',
+      table(['Butiran','Nilai'],[['Bil sebelum cukai',rm(bill)],['Cukai perkhidmatan',pct+'%']])+'Berapakah nilai cukai perkhidmatan?',
       rm(tax),[Nq(rm(bill+tax),'tax'),Nq(rm(bill-tax),'tax'),Nq(rm(pct),'tax')],
       'Nilai cukai = kadar cukai × jumlah sebelum cukai.','Tahun 6 · Cukai Perkhidmatan'
     ),'3.1.2',mode,'story','application',s,['tax','percent']);
@@ -345,7 +345,7 @@ function coreQ(s){
   if(mode==='interest_savings'){
     const principal=pick1([500,800,1000,1500]),rate=pick1([2,3,4,5]),interest=principal*rate/100;
     return mark(qc(
-      'Simpanan '+rm(principal)+' menerima faedah '+rate+'% setahun. Berapakah faedah selepas setahun?',
+      table(['Simpanan','Kadar faedah setahun'],[[rm(principal),rate+'%']])+'Berapakah faedah selepas setahun?',
       rm(interest),[Nq(rm(principal+interest),'interest'),Nq(rm(rate),'interest'),Nq(rm(principal-rate),'operation')],
       'Faedah = kadar × jumlah simpanan.','Tahun 6 · Faedah Simpanan'
     ),'3.1.2',mode,'story','application',s,['interest','percent']);
@@ -353,7 +353,7 @@ function coreQ(s){
   if(mode==='interest_loan_years'){
     const principal=pick1([2000,3000,5000,8000]),rate=pick1([2,3,4,5]),years=pick1([2,3,4]),interest=principal*rate/100*years;
     return mark(qc(
-      'Dalam contoh ini, pinjaman '+rm(principal)+' dikenakan faedah mudah '+rate+'% setahun atas pinjaman asal selama '+years+' tahun. Berapakah jumlah faedah?',
+      table(['Pinjaman','Kadar faedah mudah setahun'],[[rm(principal),rate+'%']])+'Faedah dikira atas pinjaman asal selama '+years+' tahun. Berapakah jumlah faedah?',
       rm(interest),[Nq(rm(principal+interest),'interest'),Nq(rm(principal*rate/100),'interest'),Nq(rm(principal-rate*years),'operation')],
       'Kira faedah setahun, kemudian darab bilangan tahun.','Tahun 6 · Faedah Pinjaman'
     ),'3.1.2',mode,'story','application',s,['interest','duration']);
@@ -361,7 +361,7 @@ function coreQ(s){
   if(mode==='dividend_value'){
     const investment=pick1([1000,2000,4000,5000]),rate=pick1([4,5,6,8]),div=investment*rate/100;
     return mark(qc(
-      'Pelaburan '+rm(investment)+' menerima dividen '+rate+'%. Berapakah nilai dividen?',
+      table(['Pelaburan','Kadar dividen'],[[rm(investment),rate+'%']])+'Berapakah nilai dividen?',
       rm(div),[Nq(rm(investment+div),'dividend'),Nq(rm(rate),'dividend'),Nq(rm(investment-rate),'operation')],
       'Dividen = kadar dividen × nilai pelaburan.','Tahun 6 · Nilai Dividen'
     ),'3.1.2',mode,'story','application',s,['dividend','percent']);
@@ -369,7 +369,7 @@ function coreQ(s){
   if(mode==='dividend_rate'){
     const investment=pick1([1000,2000,4000,5000]),rate=pick1([4,5,6,8]),div=investment*rate/100;
     return mark(qc(
-      'Modal pelaburan '+rm(investment)+' menghasilkan dividen '+rm(div)+'. Berapakah kadar dividen?',
+      table(['Modal pelaburan','Dividen'],[[rm(investment),rm(div)]])+'Berapakah kadar dividen?',
       rate+'%',[Nq((rate+1)+'%','dividend'),Nq((rate*10)+'%','dividend'),Nq((div/investment)+'%','dividend')],
       'Kadar dividen = dividen ÷ modal × 100%.','Tahun 6 · Kadar Dividen'
     ),'3.1.2',mode,'story','application',s,['dividend','inverse']);
@@ -386,7 +386,7 @@ function coreQ(s){
   if(mode==='money_sufficient'){
     const shoe=pick1([40,50,60]),disc=pick1([10,20]),sock=pick1([8,10]),cash=pick1([50,60,70,80]),pay=shoe*(100-disc)/100+sock,delta=Math.abs(cash-pay),enough=cash>=pay,ans=(enough?'baki ':'kurang ')+rm(delta);
     return mark(qc(
-      'Kasut berharga '+rm(shoe)+' diberi diskaun '+disc+'%. Stoking berharga '+rm(sock)+'. Murid mempunyai '+rm(cash)+'. Nyatakan baki jika wang cukup, atau kekurangan jika tidak cukup untuk membeli kedua-duanya.',
+      table(['Barang','Harga','Diskaun'],[['Kasut',rm(shoe),disc+'%'],['Stoking',rm(sock),'—']])+'Murid mempunyai '+rm(cash)+' untuk membeli kedua-dua barang. Adakah wangnya cukup? Nyatakan baki atau kekurangannya.',
       ans,[Nq((enough?'kurang ':'baki ')+rm(delta||1),'money'),Nq((enough?'baki ':'kurang ')+rm(delta+1),'money'),Nq('baki '+rm(cash),'money')],
       'Cari harga kasut selepas diskaun, tambah harga stoking, kemudian banding dengan wang yang ada.','Tahun 6 · Kewajaran Bayaran'
     ),'3.3.1',mode,'story','application',s,['discount','compare']);
@@ -394,14 +394,14 @@ function coreQ(s){
   if(mode==='multi_item_discount'){
     const p1=pick1([20,30,40]),p2=pick1([10,15,25]),disc=pick1([10,20]),subtotal=p1+p2,ans=tidy(subtotal*(100-disc)/100,2);
     return mark(qc(
-      'Dua barang berharga '+rm(p1)+' dan '+rm(p2)+'. Kedai memberi diskaun '+disc+'% atas jumlah pembelian. Berapakah bayaran akhir?',
+      table(['Barang','Harga'],[['Barang A',rm(p1)],['Barang B',rm(p2)]])+'Kedai memberi diskaun '+disc+'% atas jumlah pembelian. Berapakah bayaran akhir?',
       rm(ans),[Nq(rm(subtotal),'discount'),Nq(rm(subtotal-subtotal*disc/100+disc),'operation'),Nq(rm(subtotal*disc/100),'discount')],
       'Jumlahkan harga dahulu, kemudian kira diskaun atas jumlah tersebut.','Tahun 6 · Pembelian Berbilang Item'
     ),'3.3.1',mode,'story','application',s,['discount','multi_item']);
   }
   const subtotal=pick1([80,120,160]),taxRate=pick1([6,8,10]),tax=tidy(subtotal*taxRate/100,2),total=subtotal+tax;
   return mark(qc(
-    'Jumlah pada bil sebelum cukai '+rm(subtotal)+'. Cukai perkhidmatan '+taxRate+'% dikenakan. Berapakah jumlah akhir bil?',
+    table(['Butiran','Nilai'],[['Jumlah bil sebelum cukai',rm(subtotal)],['Cukai perkhidmatan',taxRate+'%']])+'Berapakah jumlah akhir bil?',
     rm(total),[Nq(rm(tax),'tax'),Nq(rm(subtotal-tax),'tax'),Nq(rm(subtotal+taxRate),'operation')],
     'Tambah nilai cukai kepada jumlah sebelum cukai.','Tahun 6 · Bil dan Cukai'
   ),'3.3.1',mode,'story','application',s,['tax','multi_step']);
@@ -420,7 +420,7 @@ function highQ(s){
   if(mode==='all_stock_profit'){
     const qty=pick1([12,15,20]),unitCost=pick1([4,6,8]),unitSell=unitCost+pick1([2,3,4]),cost=qty*unitCost,sales=qty*unitSell,profit=sales-cost;
     return mark(qc(
-      'Seorang peniaga membeli '+qty+' unit barang pada '+rm(unitCost)+' seunit dan menjual semuanya pada '+rm(unitSell)+' seunit. Berapakah jumlah untung?',
+      table(['Bilangan unit','Harga kos seunit','Harga jual seunit'],[[qty,rm(unitCost),rm(unitSell)]])+'Peniaga menjual semua barang itu. Berapakah jumlah untung?',
       rm(profit),[Nq(rm(sales),'profit_loss'),Nq(rm(cost),'profit_loss'),Nq(rm(unitSell-unitCost),'profit_loss')],
       'Cari jumlah harga kos dan jumlah hasil jualan sebelum mencari beza.','Tahun 6 · Untung Keseluruhan'
     ),'3.3.1',mode,'story','reasoning',s,['profit_loss','multi_step']);
@@ -428,7 +428,7 @@ function highQ(s){
   if(mode==='discount_then_profit'){
     const list=pick1([120,160,200]),disc=pick1([10,20,25]),cost=pick1([80,100,120]),sell=tidy(list*(100-disc)/100,2),profit=sell-cost,ans=profit===0?'tiada untung atau rugi':profit>0?'untung '+rm(profit):'rugi '+rm(Math.abs(profit));
     return mark(qc(
-      'Harga bertanda '+rm(list)+'. Selepas diskaun '+disc+'%, barang dijual kepada pelanggan. Harga kos peniaga '+rm(cost)+'. Apakah keputusan jualan sebenar?',
+      table(['Harga bertanda','Diskaun','Harga kos'],[[rm(list),disc+'%',rm(cost)]])+'Barang itu dijual selepas diskaun. Apakah keputusan jualan itu?',
       ans,[Nq('untung '+rm(Math.max(1,Math.abs(list-cost))),'profit_loss'),Nq((profit<0?'untung ':'rugi ')+rm(Math.max(1,Math.abs(sell-cost))),'profit_loss'),Nq(profit===0?'untung '+rm(disc):'tiada untung atau rugi','profit_loss')],
       'Cari harga jual sebenar selepas diskaun, kemudian banding dengan harga kos.','Tahun 6 · Diskaun dan Untung/Rugi'
     ),'3.3.1',mode,'story','reasoning',s,['discount','profit_loss','multi_step']);
@@ -436,7 +436,7 @@ function highQ(s){
   if(mode==='compare_discount_rebate'){
     const price=pick1([100,150,200]),disc=pick1([10,20]),reb=pick1([15,25,30]),payA=price*(100-disc)/100,payB=price-reb,ans=payA<payB?'diskaun '+disc+'%':payB<payA?'rebat '+rm(reb):'kedua-duanya sama';
     return mark(qc(
-      'Barang berharga '+rm(price)+'. Pilihan A: diskaun '+disc+'%. Pilihan B: rebat '+rm(reb)+'. Pilihan mana menghasilkan bayaran lebih rendah?',
+      table(['Pilihan','Tawaran'],[['A','Diskaun '+disc+'%'],['B','Rebat '+rm(reb)]])+'Harga barang ialah '+rm(price)+'. Pilihan manakah memberi bayaran lebih rendah?',
       ans,[Nq(ans.startsWith('diskaun')?'rebat '+rm(reb):'diskaun '+disc+'%','discount'),Nq('harga asal','discount'),Nq('tidak boleh dibanding','discount')],
       'Kira bayaran akhir bagi kedua-dua pilihan, kemudian banding.','Tahun 6 · Banding Diskaun dan Rebat'
     ),'3.3.1',mode,'story','reasoning',s,['discount','rebate','compare']);
@@ -444,7 +444,7 @@ function highQ(s){
   if(mode==='compare_two_discount_offers'){
     const price=pick1([120,160,200]),a=pick1([10,15]),b=pick1([20,25]),voucher=pick1([5,10]),payA=price*(100-a)/100-voucher,payB=price*(100-b)/100,ans=payA<payB?'Pakej A':payB<payA?'Pakej B':'kedua-duanya sama';
     return mark(qc(
-      'Harga asal '+rm(price)+'. Pakej A: diskaun '+a+'% dan baucar '+rm(voucher)+'. Pakej B: diskaun '+b+'% sahaja. Pilihan mana lebih murah?',
+      table(['Pakej','Tawaran'],[['A','Diskaun '+a+'% dan baucar '+rm(voucher)],['B','Diskaun '+b+'%']])+'Harga asal ialah '+rm(price)+'. Pakej manakah lebih murah?',
       ans,[Nq(ans==='Pakej A'?'Pakej B':'Pakej A','discount'),Nq('kedua-duanya sama tanpa pengiraan','discount'),Nq('harga asal','discount')],
       'Cari bayaran akhir setiap pakej termasuk baucar, kemudian banding.','Tahun 6 · Membanding Tawaran'
     ),'3.3.1',mode,'story','reasoning',s,['discount','voucher','compare']);
