@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY1V2Runtime;if(!RT)return;
-const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,clock,nonStandard,table,name,balanceBlocks,capacityCups,measureRopes,measureUnits,measureBeakers,measureBalance}=RT;
+const {GEN,Nq,q,mark,chooseMode,bandModes,rand,choose,clock,nonStandard,table,name,balanceBlocks,capacityCups,measureRopes,measureUnits,measureBeakers,measureBalance,wrongNums}=RT;
 const days=['Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu','Ahad'];
 const months=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
 
@@ -146,11 +146,11 @@ GEN['6.2.1']=function(id,s){
  }
  if(mode==='difference'){
   const a=rand(6,10),b=rand(2,a-1),ans=a-b;
-  return mark(q(`${measureUnits('cawan',[a,b],['Botol A','Botol B'])}Berapakah beza bilangan cawan air antara kedua-dua botol?`,ans,[Nq(a+b,'measure_problem'),Nq(a,'measure_problem'),Nq(b,'measure_problem')],'Cari beza dengan menolak nilai kecil daripada nilai besar.','Tahun 1 · Beza Sukatan'),id,'6.2.1',mode,'visual','reasoning',s,['measure_problem']);
+  return mark(q(`${measureUnits('cawan',[a,b],['Botol A','Botol B'])}Berapakah beza bilangan cawan air antara kedua-dua botol?`,ans,[...wrongNums(ans,1,'measure_problem')],'Cari beza dengan menolak nilai kecil daripada nilai besar.','Tahun 1 · Beza Sukatan'),id,'6.2.1',mode,'visual','reasoning',s,['measure_problem']);
  }
  if(mode==='missing_measure'){
   const total=rand(7,12),known=rand(2,total-2),ans=total-known;
-  return mark(q(`Panjang sebatang kayu bersamaan ${total} pemadam yang sama saiz. Bahagian pertama panjangnya ${known} pemadam. Berapakah panjang bahagian kedua?`,ans,[Nq(total,'measure_problem'),Nq(known,'measure_problem'),Nq(ans+1,'measure_problem')],'Cari bahagian yang hilang daripada jumlah.','Tahun 1 · Ukuran Hilang'),id,'6.2.1',mode,'story','reasoning',s,['measure_problem']);
+  return mark(q(`Panjang sebatang kayu bersamaan ${total} pemadam yang sama saiz. Bahagian pertama panjangnya ${known} pemadam. Berapakah panjang bahagian kedua?`,ans,[...wrongNums(ans,1,'measure_problem')],'Cari bahagian yang hilang daripada jumlah.','Tahun 1 · Ukuran Hilang'),id,'6.2.1',mode,'story','reasoning',s,['measure_problem']);
  }
  return mark(q(`${measureUnits('jengkal',[6,8],['Meja A','Meja B'])}Ali berkata Meja A lebih panjang daripada Meja B. Betulkah?`,'Tidak',[Nq('Ya','compare_measure'),Nq('Kedua-duanya sama panjang','compare_measure'),Nq('Tidak boleh ditentukan','compare_measure')],'Meja A panjangnya 6 jengkal, manakala Meja B panjangnya 8 jengkal. Jadi Ali tidak betul.','Tahun 1 · Semak Ukuran'),id,'6.2.1',mode,'visual','reasoning',s,['compare_measure']);
 };
