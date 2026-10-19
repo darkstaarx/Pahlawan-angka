@@ -81,7 +81,7 @@
   const finisherJs=`js/finisher-alpha-hotspots-v${FINISHER_HOTSPOT_VERSION}.js?v=${FINISHER_HOTSPOT_VERSION}`;
   const typedCss=`css/typed-answer-ui-v${TYPED_UI_VERSION}.css?v=${TYPED_UI_VERSION}`;
   const typedJs=`js/typed-answer-ui-v${TYPED_UI_VERSION}.js?v=${APP_VERSION}`;
-  const gameQuestionCss=`css/game-question-interactions-v${GAME_QUESTION_VERSION}.css?v=${GAME_QUESTION_VERSION}`;
+  const gameQuestionCss=`css/game-question-interactions-v${GAME_QUESTION_VERSION}.css?v=${APP_VERSION}`;
   const gameQuestionJs=`js/game-question-interactions-v${GAME_QUESTION_VERSION}.js?v=${APP_VERSION}`;
   const profileCss=`css/profile-manager-v${PROFILE_MANAGER_VERSION}.css?v=${PROFILE_MANAGER_VERSION}`;
   const profileJs=`js/profile-manager-v${PROFILE_MANAGER_VERSION}.js?v=${APP_VERSION}`;
