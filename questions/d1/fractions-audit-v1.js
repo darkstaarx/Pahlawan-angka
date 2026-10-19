@@ -18,16 +18,16 @@
    const v=image(n,d,style,layout),mode=Math.floor(i/12)%4;
    if(i>=44&&i<48){
      const isHalf=i%2===0,den=isHalf?2:4,num=1;m.n=num;m.d=den;m.layout=i>=46?'grid':layout;
-     add('kenal',isHalf?'half_synonyms':'quarter_synonyms',`${image(num,den,style,m.layout)}Yang manakah <b>BUKAN</b> nama bagi bahagian ${style} yang ditanda?`,isHalf?'Suku':'Separuh',isHalf?['Separuh','Setengah','Satu perdua']:['Suku','Satu perempat','1/4'],m);
+     add('kenal',isHalf?'half_synonyms':'quarter_synonyms',`${image(num,den,style,m.layout)}Yang manakah <b>bukan</b> nama pecahan yang ditunjukkan?`,isHalf?'Suku':'Separuh',isHalf?['Separuh','Setengah','Satu perdua']:['Suku','Satu perempat','1/4'],m);
    }else if(mode===0)add('kenal','model_symbol',`${v}Apakah pecahan bahagian yang ditanda?`,f,choices(n,d),m);
    else if(mode===1)add('kenal','model_name',`${v}Apakah nama pecahan bahagian yang ditanda?`,words[f],nameChoices(n,d),m);
-   else if(mode===2){m.answerNumerator=d-n;add('kenal','unmarked_symbol',`${v}Apakah pecahan bahagian ${style} yang <b>tidak ditanda</b>?`,F(d-n,d),choices(d-n,d),m);}
-   else add('kenal','selected_fraction',`${v}Pecahan manakah menunjukkan bahagian ${style} yang dipilih?`,f,choices(n,d),m);
+   else if(mode===2){m.answerNumerator=d-n;add('kenal','unmarked_symbol',`${v}Apakah pecahan bahagian yang <b>tidak ditanda</b>?`,F(d-n,d),choices(d-n,d),m);}
+   else add('kenal','selected_fraction',`${v}Apakah pecahan bahagian yang dipilih?`,f,choices(n,d),m);
  }
  // 50 independent representations, allowing every valid choice of n parts.
  for(let i=0;i<50;i++){
    const [n,d]=values[i%4],style=styles[1+Math.floor(i/4)%5],layout=layouts[Math.floor(i/20)],f=F(n,d),m={n,d,style,layout};
-   const instructions=[`Lorekkan <b>${f}</b> daripada ${style} ini.`,`Warnakan <b>${words[f]}</b> daripada ${style} ini.`,`Pilih ${n} daripada ${d} bahagian ${style} ini untuk dilorek.`];
+   const instructions=[`Lorekkan <b>${f}</b> daripada rajah ini.`,`Warnakan <b>${words[f]}</b> daripada rajah ini.`,`Pilih dan lorekkan ${n} daripada ${d} bahagian yang sama besar.`];
    add('lorek',['shade_symbol','shade_words','shade_parts'][Math.floor(i/20)],instructions[Math.floor(i/20)],f,choices(n,d),m,'shade');
  }
  // 50 daily problems: ten different relationships, five items each.
@@ -41,15 +41,15 @@
    const intro=`${object} dibahagi kepada ${d} bahagian sama besar.`;
    let prompt,mode,answerN=n,asName=false;
    if(kind===0){mode='take_one_action';prompt=`${intro} ${name} mengambil ${n} bahagian. Apakah pecahan yang diambil?`;}
-   else if(kind===1){mode='give_remaining';answerN=d-n;prompt=`${intro} ${name} memberi ${n} bahagian kepada ${other}. Apakah pecahan yang masih ada pada ${name}?`;}
+   else if(kind===1){mode='give_remaining';answerN=d-n;prompt=`${intro} ${name} memberi ${n} bahagian kepada ${other}. Apakah pecahan bahagian yang tinggal pada ${name}?`;}
    else if(kind===2){mode='save_name';asName=true;prompt=`${intro} ${name} menyimpan ${n} bahagian. Apakah nama pecahan yang disimpan?`;}
-   else if(kind===3){mode='picture_unused';answerN=d-n;prompt=`${image(n,d,style,layout)}Bahagian bertanda telah digunakan oleh ${name}. Apakah pecahan ${style} yang belum digunakan?`;}
+   else if(kind===3){mode='picture_unused';answerN=d-n;prompt=`${image(n,d,style,layout)}Bahagian bertanda telah digunakan oleh ${name}. Apakah pecahan bahagian yang belum digunakan?`;}
    else if(kind===4){mode='two_people_eat';const a=1,b=i%2?2:1;answerN=4-a-b;m.steps=[a,b];prompt=`${intro} ${name} makan ${a} bahagian dan ${other} makan ${b} bahagian. Apakah pecahan kek yang tinggal?`;}
    else if(kind===5){mode='eat_then_give';const a=1,b=i%2?1:2;answerN=4-a-b;m.steps=[a,b];prompt=`${intro} ${name} makan ${a} bahagian dan memberi ${b} bahagian kepada ${other}. Apakah pecahan coklat yang masih ada pada ${name}?`;}
-   else if(kind===6){mode='two_people_receive';const a=1,b=i%2?1:2;answerN=a+b;m.steps=[a,b];prompt=`${intro} ${name} mendapat ${a} bahagian. ${other} mendapat ${b} bahagian. Apakah pecahan yang mereka terima semuanya?`;}
-   else if(kind===7){mode='put_back';const taken=i%2?3:2,returned=1;answerN=taken-returned;m.steps=[taken,returned];prompt=`${intro} ${name} mengambil ${taken} bahagian. Dia meletakkan ${returned} bahagian semula. Apakah pecahan yang masih dipegangnya?`;}
-   else if(kind===8){mode='separate_saved_given';const saved=i%2?1:2,given=1;answerN=4-saved-given;m.steps=[saved,given];prompt=`${intro} ${name} menyimpan ${saved} bahagian dalam kotak dan memberi ${given} bahagian kepada ${other}. Apakah pecahan yang belum disimpan atau diberi?`;}
-   else {mode='picture_used_name';asName=true;prompt=`${image(n,d,style,layout)}${name} menggunakan bahagian ${style} yang bertanda. Apakah nama pecahan yang digunakan?`;}
+   else if(kind===6){mode='two_people_receive';const a=1,b=i%2?1:2;answerN=a+b;m.steps=[a,b];prompt=`${intro} ${name} mendapat ${a} bahagian. ${other} mendapat ${b} bahagian. Berapakah jumlah pecahan bahagian yang mereka terima?`;}
+   else if(kind===7){mode='put_back';const taken=i%2?3:2,returned=1;answerN=taken-returned;m.steps=[taken,returned];prompt=`${intro} ${name} mengambil ${taken} bahagian. Dia meletakkan ${returned} bahagian semula. Apakah pecahan bahagian yang masih dipegangnya?`;}
+   else if(kind===8){mode='separate_saved_given';const saved=i%2?1:2,given=1;answerN=4-saved-given;m.steps=[saved,given];prompt=`${intro} ${name} menyimpan ${saved} bahagian dalam kotak dan memberi ${given} bahagian kepada ${other}. Apakah pecahan bahagian yang belum disimpan atau diberikan?`;}
+   else {mode='picture_used_name';asName=true;prompt=`${image(n,d,style,layout)}${name} menggunakan bahagian ${style} yang bertanda. Apakah nama pecahan bagi bahagian yang digunakan?`;}
    m.answerNumerator=answerN;
    add('harian',mode,prompt,asName?words[F(answerN,d)]:F(answerN,d),asName?nameChoices(answerN,d):choices(answerN,d),m);
  }
@@ -58,11 +58,11 @@
  const objects={epal:'Sebiji epal',coklat:'Sekeping coklat',kertas:'Sekeping kertas',reben:'Sehelai reben',kek:'Sebiji kek',kad:'Sekeping kad'};
  for(const style of styles)for(const layout of layouts){
    const m={n:1,d:2,style,layout},visual=image(1,2,style,layout);
-   add('kenal','equal_share_symbol',`${image(0,2,style,layout)}${objects[style]} dikongsi sama rata oleh 2 orang. Apakah pecahan untuk seorang?`,'1/2',choices(1,2),{...m});
-   add('kenal','half_everyday_name',`${visual}Bahagian ${style} yang ditanda ialah separuh. Apakah nama lain bagi separuh?`,'setengah',nameChoices(1,2),{...m});
+   add('kenal','equal_share_symbol',`${image(0,2,style,layout)}${objects[style]} dikongsi sama rata oleh 2 orang. Apakah pecahan bahagian untuk seorang?`,'1/2',choices(1,2),{...m});
+   add('kenal','half_everyday_name',`${visual}Bahagian ${style} yang ditanda ialah separuh. Apakah perkataan lain bagi separuh?`,'setengah',nameChoices(1,2),{...m});
    add('lorek','equal_share_shade',`${objects[style]} dikongsi sama rata oleh 2 orang. Lorekkan bahagian untuk seorang.`,'1/2',choices(1,2),{...m},'shade');
    add('harian','half_remaining_story',`${visual}Satu daripada 2 bahagian ${style} telah digunakan. Apakah pecahan yang masih tinggal?`,'1/2',choices(1,2),{...m,answerNumerator:1});
-   add('kenal','fold_half',`${visual}Satu ${style} dibahagi kepada 2 bahagian sama besar. Satu bahagian ditanda. Apakah pecahannya?`,'1/2',choices(1,2),{...m});
+   add('kenal','fold_half',`${visual}${objects[style]} dibahagi kepada 2 bahagian sama besar. Satu bahagian ditanda. Apakah pecahannya?`,'1/2',choices(1,2),{...m});
  }
  function materialise(item){
    const hint=item.mode==='half_synonyms'?'Separuh, setengah dan satu perdua ialah nama bagi bahagian yang sama. Suku ialah satu perempat.':item.mode==='quarter_synonyms'?'Suku dan satu perempat ialah nama bagi bahagian yang sama. Separuh ialah satu perdua.':['picture_unused','unmarked_symbol'].includes(item.mode)?'Lihat bahagian yang tidak ditanda. Kira bahagian itu.':item.model.steps?'Ikut setiap tindakan dalam cerita. Kira bahagian yang diminta, kemudian bandingkan dengan semua bahagian asal.':'Kira semua bahagian sama besar. Kemudian kira bahagian yang dipilih.';
