@@ -83,3 +83,20 @@ test('signed-in buyer with a chosen plan goes straight to checkout over the shar
   assert.ok(h.calls.some(c => Array.isArray(c) && c[0] === 'checkout' && c[1] === 'premium'));
   assert.ok(!h.calls.includes('profiles'));
 });
+
+test('normal login survives the OAuth return without displaying the public landing', async () => {
+  const first = harness(); await first.entry.login();
+  assert.equal(JSON.parse(first.storage.get(KEY)).kind, 'login');
+  const returned = harness({ signed: true, storage: first.storage });
+  assert.equal(returned.elements.get('login')['data-entry'], 'auth');
+  assert.equal(await returned.entry.beforeProfiles(), false);
+  assert.equal(returned.elements.get('login')['data-entry'], 'account');
+  assert.equal(returned.storage.has(KEY), false);
+});
+
+test('an already signed-in login goes directly to profile restoration', async () => {
+  const h = harness({ signed: true }); await h.entry.login();
+  assert.ok(h.calls.includes('profiles'));
+  assert.equal(h.elements.get('login')['data-entry'], 'account');
+  assert.ok(!h.calls.some(call => Array.isArray(call) && call[0] === 'screen'));
+});

@@ -7,3 +7,8 @@ body[data-screen="login"]:has(#login[data-entry="welcome"]) .appHeader{display:n
 #login[data-entry="welcome"] .loginShell{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;min-height:0!important;background:none!important;overflow:visible!important;}
 #login[data-entry="welcome"] .loginWorldBrand{display:none!important;}
 #login[data-entry="welcome"] .paApprovedWelcome{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;width:100%!important;max-width:none!important;overflow:visible!important;}
+
+/* The returning OAuth/session check owns the loader until cloud init settles. */
+html[data-pa-auth-pending] #appLoading.hidden{display:grid!important}
+html[data-pa-auth-pending] body{overflow:hidden!important}
+html[data-pa-auth-pending] #login[data-entry="welcome"] .paApprovedWelcome{visibility:hidden}

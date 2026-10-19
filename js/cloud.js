@@ -7,6 +7,7 @@
   const state={client:null,user:null,childId:null,guardianPin:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
   function setAppLoading(on,text){
+    if(!on)document.documentElement.removeAttribute('data-pa-auth-pending');
     const el=$('appLoading');if(!el)return;
     el.classList.toggle('hidden',!on);el.setAttribute('aria-busy',on?'true':'false');
     if(text&&$('appLoadingText'))$('appLoadingText').textContent=text;
@@ -58,9 +59,10 @@
   async function signInGoogle(){
     const trust=window.PABetaTrust?.prepareOAuth?.();if(trust&&trust.ok===false)return message(trust.message,true);
     const button=$('googleAuthButton');message('');if(button){button.disabled=true;button.querySelector('span').textContent='Membuka Google…'}
+    try{sessionStorage.setItem('pa_oauth_pending_v1','1')}catch(_){}
     const redirectTo=location.origin+location.pathname;
     const {error}=await state.client.auth.signInWithOAuth({provider:'google',options:{redirectTo,queryParams:{prompt:'select_account'}}});
-    if(error){message('Log masuk Google belum tersedia. Cuba lagi sebentar.',true);if(button){button.disabled=false;button.querySelector('span').textContent='Teruskan dengan Google'}}
+    if(error){try{sessionStorage.removeItem('pa_oauth_pending_v1')}catch(_){}message('Log masuk Google belum tersedia. Cuba lagi sebentar.',true);if(button){button.disabled=false;button.querySelector('span').textContent='Teruskan dengan Google'}}
   }
 
   function authMessage(error){
@@ -72,9 +74,10 @@
   }
 
   async function signedIn(session){
+    setAppLoading(true,'Mengesahkan akaun dan menyediakan pengembaraan…');
     const incoming=session?.user||null;if(state.user?.id!==incoming?.id){state.guardianPin=null;state.profiles=[];state.childId=null}state.user=incoming;if(!state.user)return;
     message('');
-    try{if(window.PABetaTrust&&!await window.PABetaTrust.ensureConsent(state.client,state.user))return}catch(error){console.warn('Consent check failed',error);message('Persetujuan penjaga belum dapat disahkan. Semak sambungan dan cuba semula.',true);return}
+    try{if(window.PABetaTrust&&!await window.PABetaTrust.ensureConsent(state.client,state.user)){setAppLoading(false);return}}catch(error){setAppLoading(false);console.warn('Consent check failed',error);message('Persetujuan penjaga belum dapat disahkan. Semak sambungan dan cuba semula.',true);return}
     await resumeAfterConsent();
   }
 
@@ -302,9 +305,13 @@
   }
 
   async function init(){
-    if(!window.supabase?.createClient){message('Cloud login gagal dimuat. Semak internet dan muat semula.',true);return;}
+    if(document.documentElement.hasAttribute('data-pa-auth-pending'))setAppLoading(true,'Menyambung akaun kamu…');
+    if(!window.supabase?.createClient){setAppLoading(false);message('Cloud login gagal dimuat. Semak internet dan muat semula.',true);return;}
     state.client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});wireLegacy();
-    const {data}=await state.client.auth.getSession();if(data.session)await signedIn(data.session);else renderAccount();
+    const {data,error}=await state.client.auth.getSession();
+    try{sessionStorage.removeItem('pa_oauth_pending_v1')}catch(_){}
+    if(error)throw error;
+    if(data.session)await signedIn(data.session);else{renderAccount();setAppLoading(false)}
     state.client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_IN'&&session&&session.user.id!==state.user?.id)setTimeout(()=>signedIn(session),0);if(event==='SIGNED_OUT'){state.user=null;renderAccount();}});
     setInterval(tick,1000);document.addEventListener('pointerdown',markInteraction,{passive:true,capture:true});document.addEventListener('keydown',markInteraction,{passive:true,capture:true});document.addEventListener('visibilitychange',()=>{tick();if(document.hidden){syncSaveNow();syncDailyTotal('background');}else{state.lastTick=performance.now();markInteraction()}});window.addEventListener('pagehide',()=>{tick();syncSaveNow();syncDailyTotal('pagehide');});window.addEventListener('online',()=>{syncSaveNow();syncDailyTotal('online');if(playing())ensurePlaySession()});state.ready=true;
   }

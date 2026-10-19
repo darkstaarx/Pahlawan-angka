@@ -1,0 +1,2 @@
+/* Presentation hint only; Supabase and the server still verify authentication. */
+(() => {'use strict';try{const callback=new URLSearchParams(location.search).has('code')||/(?:^#|&)access_token=/.test(location.hash);const restoring=!!localStorage.getItem('sb-pxxekdeqlxwqwaqvfbnh-auth-token');const returning=sessionStorage.getItem('pa_oauth_pending_v1')==='1';if(callback||restoring||returning)document.documentElement.setAttribute('data-pa-auth-pending','');}catch(_){} })();

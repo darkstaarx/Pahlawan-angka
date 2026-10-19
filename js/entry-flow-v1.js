@@ -10,7 +10,7 @@
   function read() {
     try {
       const item = JSON.parse(localStorage.getItem(KEY) || 'null');
-      if (item?.expires > Date.now() && ['demo', 'purchase'].includes(item.kind)) return item;
+      if (item?.expires > Date.now() && ['demo', 'purchase', 'login'].includes(item.kind)) return item;
     } catch (_) {}
     return null;
   }
@@ -55,7 +55,14 @@
     await window.PACommercial?.refresh?.();
     if (!await beforeProfiles()) await window.PACloud?.resumeAfterConsent?.();
   }
-  function login() { clear(); showAuth('login'); }
+  async function login() {
+    write('login');
+    if (cloud()?.user) {
+      view('account'); window.PACloud?.setLoading?.(true, 'Menyambung profil dan kemajuan kamu…');
+      await window.PACloud?.resumeAfterConsent?.(); return;
+    }
+    showAuth('login');
+  }
   function returnOrder() {
     const value = new URLSearchParams(location.search).get('payment_order');
     const saved = read()?.orderId;
@@ -87,7 +94,7 @@
       return true;
     }
     const order = returnOrder();
-    if (intent?.kind !== 'purchase' && !order) { view('account'); return false; }
+    if (intent?.kind !== 'purchase' && !order) { if(intent?.kind==='login')clear(); view('account'); return false; }
     state.needsOnboarding = false;
     if (order) {
       window.screen('entryPlans');
