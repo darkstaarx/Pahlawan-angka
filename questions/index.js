@@ -49,10 +49,12 @@ const PAOptionIntegrity=(function(){
   return Object.assign({},q,{wrong:kept,optionIntegrity:VERSION});
  }
  const group=d=>d.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+ // Text inside <span data-no-group> (years such as 2024) is left as written.
  function groupText(str){
-  return String(str).split(/(<[^>]*>)/).map(seg=>seg.startsWith('<')?seg:seg
+  let keep=false;
+  return String(str).split(/(<[^>]*>)/).map(seg=>{if(seg.startsWith('<')){keep=/^<span\b[^>]*\bdata-no-group\b/.test(seg);return seg}return keep?seg:seg
    .replace(/RM(\d{4,})(?=[.\s]|$|[^\d:\/])/g,(m,d)=>'RM'+group(d))
-   .replace(/(^|[^\d.,:\/A-Za-z])(\d{1,3}(?:,\d{3})+|\d{4,})(?![\d:\/]|,\d)/g,(m,pre,num)=>pre+group(num.replace(/,/g,'')))
+   .replace(/(^|[^\d.,:\/A-Za-z])(\d{1,3}(?:,\d{3})+|\d{4,})(?![\d:\/]|,\d)/g,(m,pre,num)=>pre+group(num.replace(/,/g,'')))}
   ).join('');
  }
  // Bare arithmetic prompts are parsed by the written-column renderer; leave them as typed.
