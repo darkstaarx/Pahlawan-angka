@@ -63,6 +63,13 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
   }
  }
  candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));
+ /* Foundation hint: a likely root skill shared across topics. It only explains; order and routing stay as above. */
+ const foundation=globalThis.PAFocusFoundationV1?.evaluate?.(profile,{grade});
+ for(const item of candidates){
+  if(item.diagnostic)continue;
+  const hit=foundation?.candidates?.find(c=>c.skills.includes(item.id));
+  if(hit){item.foundationId=hit.foundationId;item.foundationLabel=hit.label;item.reason='Kemungkinan punca: '+hit.label+'.'}
+ }
  return {items:candidates.slice(0,3),hasEvidence};
 }
 let focusPickerProfile=null,focusPickerTrigger=null;
@@ -87,7 +94,7 @@ function openFocusPicker(){
   const title=document.createElement('b');title.className='focusPickTitle';title.textContent=item.title;
   body.appendChild(title);
   const evidence=document.createElement('span');evidence.className='focusPickEvidence';
-  evidence.textContent=item.diagnostic?item.reason:'Ketepatan '+item.independentRate+'%';
+  evidence.textContent=item.diagnostic?item.reason:'Ketepatan '+item.independentRate+'%'+(item.foundationLabel?' · Kemungkinan punca: '+item.foundationLabel:'');
   body.appendChild(evidence);
   card.appendChild(body);
   const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih ❯';
