@@ -102,6 +102,23 @@ function nonStandard(count,label='pemadam',object='buku'){
  return `<div class="kssrDiagram"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${object} diukur dengan ${count} ${label} yang disusun hujung ke hujung" style="max-width:100%;height:auto">${guides}${objects[object]||objects.buku}${ers}</svg></div>`;
 }
 function tally(n){return '||||| '.repeat(Math.floor(n/5))+'|'.repeat(n%5)}
+// Rajah asli untuk nombor puluh/sa dan perbandingan kuantiti Tahun 1.
+function baseTenBlocks(tens,ones){
+ const rod=Array.from({length:tens},(_,i)=>{const x=18+i*19;return `<g><rect x="${x}" y="15" width="15" height="90" rx="2" fill="#75b7ed" stroke="#315c85" stroke-width="1.3"/>${Array.from({length:9},(_,j)=>`<line x1="${x}" y1="${24+j*9}" x2="${x+15}" y2="${24+j*9}" stroke="#315c85" stroke-width=".6"/>`).join('')}</g>`}).join('');
+ const cubes=Array.from({length:ones},(_,i)=>{const x=205+i%5*18,y=16+Math.floor(i/5)*20;return `<rect x="${x}" y="${y}" width="15" height="15" rx="1.5" fill="#97d5a1" stroke="#287446" stroke-width="1.2"/>`}).join('');
+ return `<div class="kssrDiagram"><svg viewBox="0 0 315 138" role="img" aria-label="Blok puluh dan blok sa"><text x="90" y="127" text-anchor="middle" fill="#ccdafa" font-size="13" font-weight="700">Puluh</text><text x="250" y="127" text-anchor="middle" fill="#ccdafa" font-size="13" font-weight="700">Sa</text>${rod}${cubes}</svg></div>`;
+}
+function compareDots(a,b){
+ const row=(n,y)=>Array.from({length:n},(_,i)=>`<circle cx="${93+i*21}" cy="${y}" r="7" fill="#79d2b6" stroke="#336b63" stroke-width="1.4"/>`).join('');
+ return `<div class="kssrDiagram"><svg viewBox="0 0 315 89" role="img" aria-label="Dua kumpulan objek untuk dibandingkan"><text x="10" y="28" fill="#ccdafa" font-size="13">A</text><text x="10" y="70" fill="#ccdafa" font-size="13">B</text>${row(a,24)}${row(b,66)}</svg></div>`;
+}
+function shapePatternSvg(kinds){
+ const one=(shape,x)=>{if(!shape)return `<rect x="${x}" y="13" width="46" height="46" rx="5" fill="none" stroke="#94a9c8" stroke-dasharray="5 3" stroke-width="2"/><text x="${x+23}" y="44" text-anchor="middle" font-size="24" fill="#eac76f">?</text>`;
+ if(shape==='bulatan')return `<circle cx="${x+23}" cy="36" r="20" fill="#f4b949" stroke="#a36c17" stroke-width="2"/>`;
+ if(shape==='segi tiga')return `<polygon points="${x+23},13 ${x+2},56 ${x+44},56" fill="#6dbda8" stroke="#367463" stroke-width="2"/>`;
+ return `<rect x="${x+4}" y="17" width="38" height="38" fill="#7da7e4" stroke="#416499" stroke-width="2"/>`};
+ return `<div class="kssrDiagram"><svg viewBox="0 0 332 77" role="img" aria-label="Pola bentuk dan satu tempat kosong">${kinds.map((v,i)=>one(v,6+i*55)).join('')}</svg></div>`;
+}
 function solid(kind){
  const common='class="kd-shape"';
  const map={
@@ -116,6 +133,6 @@ function solid(kind){
 }
 function clock(h,m){return typeof clockSvg==='function'?clockSvg(h,m):`<div class="kssrDiagram">Jam ${h}:${String(m).padStart(2,'0')}</div>`}
 function moneyVis(c){return typeof moneyVisual==='function'?moneyVisual(c):`<div class="kssrDiagram">${c<100?c+' sen':'RM'+(c/100)}</div>`}
-window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place};
+window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,baseTenBlocks,compareDots,shapePatternSvg,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place};
 document.documentElement?.setAttribute('data-y1-v2-runtime',VERSION);
 })();
