@@ -795,3 +795,20 @@ body[data-screen="segelDemo"] .appHeader{display:none}
     width:100%;height:auto;max-height:142px
   }
 }
+
+/* Tahun 1 Unit 6: original 2.5D vector scenes, kept readable on mobile. */
+.paU6Scene{width:min(100%,340px);max-width:340px;margin:5px auto 11px}
+.paU6Scene svg{display:block;width:100%;height:auto;max-height:167px;filter:drop-shadow(0 3px 5px rgba(40,77,116,.10))}
+.paU6Scene svg text{font:900 16px "Nunito",system-ui,sans-serif;fill:#243d5e;text-anchor:middle}
+@media (orientation:portrait){
+  #segelDemo .segelCard .question:has(.paU6Scene){
+    font-size:clamp(18px,4.9vw,21px);line-height:1.28;
+    overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain
+  }
+  #segelDemo .segelCard .question .segelPrompt:has(.paU6Scene){padding:7px 12px 9px}
+  #segelDemo .segelCard .question .segelPrompt .paU6Scene{margin:2px auto 9px}
+  #segelDemo .segelCard .question .segelPrompt .paU6Scene svg{max-height:151px}
+}
+@media (prefers-reduced-motion:reduce){
+  .paU6Scene svg,.paU6Scene *{animation:none!important;transition:none!important}
+}
