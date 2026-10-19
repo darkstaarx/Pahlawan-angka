@@ -58,6 +58,14 @@ GEN['7.2.3']=function(id,s){
  return mark(q(`${shapePatternSvg(['bulatan',null,'bulatan','segi tiga'])}Apakah bentuk yang hilang?`,'segi tiga',[Nq('bulatan','shape_pattern'),Nq('segi empat sama','shape_pattern'),Nq('segi empat tepat','shape_pattern')],'Banding pasangan pertama dengan pasangan kedua.','Tahun 1 · Pola 2D Hilang'),id,'7.2.3',mode,'verbal','reasoning',s,['shape_pattern']);
 };
 
+// Pola berbentuk rajah boleh dijawab dengan meletakkan bentuk ke dalam ruang kosong pada Kunci Emas.
+const y1OriginalShapePattern=GEN['7.2.3'];
+GEN['7.2.3']=function(id,s){
+ const out=y1OriginalShapePattern(id,s);
+ if(out){out.demoInteraction=true;out.goldInteraction=true;out.shapeSlotSpec={kind:'shape_slot',choices:['bulatan','segi tiga','segi empat sama','segi empat tepat']};}
+ return out;
+};
+
 GEN['7.2.4']=function(id,s){
  const mode=chooseMode(id,'7.2.4',bandModes(s,['choose_pattern'],['choose_pattern','extend_pattern'],['extend_pattern','reason_pattern']));
  if(mode==='choose_pattern')return mark(q('Corak jubin yang berulang setiap dua bentuk ialah?','segi empat sama, bulatan, segi empat sama, bulatan',[Nq('segi empat sama, bulatan, segi tiga, bulatan','shape_pattern'),Nq('bulatan, bulatan, segi tiga, segi empat sama','shape_pattern'),Nq('segi tiga, bulatan, segi empat sama, segi tiga','shape_pattern')],'Corak berulang perlu mengulangi unit yang sama.','Tahun 1 · Hasilkan Corak 2D'),id,'7.2.4',mode,'verbal','application',s,['shape_pattern']);
