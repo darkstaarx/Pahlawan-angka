@@ -8,7 +8,7 @@ GEN['2.1.1']=function(id,s){
  const mode=chooseMode(id,'2.1.1',bandModes(s,['word_meaning'],['word_meaning','operation_from_word'],['operation_from_word','reason_word']));
  if(mode==='word_meaning'){
   const add=Math.random()<.5,word=add?choose(['lagi','semuanya','jumlah']):choose(['tinggal','baki','beza']);
-  return mark(q(`Perkataan <b>“${word}”</b> biasanya membantu kita fikir operasi apa?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation_language'),Nq('banding','operation_language'),Nq('kira satu-satu','operation_language')],'Fikir perubahan dalam cerita.','Tahun 1 · Bahasa Operasi'),id,'2.1.1',mode,'verbal','concept',s,['operation_language']);
+  return mark(q(`Dalam soalan matematik, perkataan <b>“${word}”</b> biasanya berkaitan dengan operasi apa?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation_language'),Nq('banding','operation_language'),Nq('kira satu-satu','operation_language')],'Baca keseluruhan cerita untuk menentukan operasi yang betul.','Tahun 1 · Bahasa Operasi'),id,'2.1.1',mode,'verbal','concept',s,['operation_language']);
  }
  if(mode==='operation_from_word'){
   const prompt=choose([
@@ -19,7 +19,7 @@ GEN['2.1.1']=function(id,s){
   ]),ans=prompt[1];
   return mark(q(prompt[0]+' Operasi yang sesuai?',ans,[Nq(ans==='tambah'?'tolak':'tambah','operation_language'),Nq('banding','operation_language'),Nq('kira satu-satu','operation_language')],'Kenal perkataan dan perubahan dalam situasi.','Tahun 1 · Kenal Operasi'),id,'2.1.1',mode,'story','application',s,['operation_language']);
  }
- return mark(q(`${name()} kata perkataan <b>“tinggal”</b> sentiasa bermaksud tambah. Betulkah?`,'salah',[Nq('betul','operation_language'),Nq('kadang-kadang tambah','operation_language'),Nq('tidak pasti','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
+ return mark(q(`Aina mempunyai 7 biji gula-gula. Dia makan 2 biji. Adakah bilangan gula-gulanya bertambah?`,'salah',[Nq('betul','operation_language'),Nq('kadang-kadang tambah','operation_language'),Nq('tidak pasti','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
 };
 
 GEN['2.1.2']=function(id,s){
@@ -43,14 +43,14 @@ GEN['2.1.3']=function(id,s){
  const mode=chooseMode(id,'2.1.3',bandModes(s,['write_add'],['write_add','write_sub'],['write_add','write_sub','match_sentence']));
  if(mode==='write_add'){
   const a=rand(2,8),b=rand(1,8),ans=a+b,eq=`${a} + ${b} = ${ans}`;
-  return mark(q(`Di kantin ada <b>${a}</b> pau. Makcik menambah <b>${b}</b> lagi. Ayat matematik yang betul?`,eq,[Nq(`${a} − ${b} = ${Math.max(0,a-b)}`,'operation'),Nq(`${ans} + ${b} = ${a}`,'operation'),Nq(`${a} = ${b} + ${ans}`,'equality')],'Situasi bertambah menggunakan +.','Tahun 1 · Ayat Matematik Tambah'),id,'2.1.3',mode,'story','application',s,['operation','equality']);
+  return mark(q(`Di kantin ada <b>${a}</b> biji pau. Penjual menyediakan <b>${b}</b> biji pau lagi. Pilih ayat matematik yang betul.`,eq,[Nq(`${a} − ${b} = ${Math.max(0,a-b)}`,'operation'),Nq(`${ans} + ${b} = ${a}`,'operation'),Nq(`${a} = ${b} + ${ans}`,'equality')],'Situasi bertambah menggunakan +.','Tahun 1 · Ayat Matematik Tambah'),id,'2.1.3',mode,'story','application',s,['operation','equality']);
  }
  if(mode==='write_sub'){
   const a=rand(6,15),b=rand(1,a-1),ans=a-b,eq=`${a} − ${b} = ${ans}`;
   return mark(q(`Ada <b>${a}</b> biji rambutan. <b>${b}</b> dimakan. Ayat matematik yang betul?`,eq,[Nq(`${a} + ${b} = ${a+b}`,'operation'),Nq(`${ans} − ${b} = ${a}`,'operation'),Nq(`${a} = ${b} − ${ans}`,'equality')],'Yang dimakan dikeluarkan daripada jumlah asal.','Tahun 1 · Ayat Matematik Tolak'),id,'2.1.3',mode,'story','application',s,['operation','equality']);
  }
  const a=rand(3,9),b=rand(1,5),ans=a+b;
- return mark(q(`Ayat matematik <b>${a} + ${b} = ${ans}</b> paling sesuai dengan cerita mana?`,`Ada ${a} buku, kemudian mendapat ${b} buku lagi.`,[Nq(`Ada ${ans} buku, kemudian memberi ${b} buku.`,'operation'),Nq(`Ada ${a} buku dan membuang semuanya.`,'operation'),Nq(`Ada ${b} buku sahaja.`,'operation')],'Cari cerita yang menunjukkan penggabungan dua kuantiti.','Tahun 1 · Padan Cerita dan Ayat'),id,'2.1.3',mode,'verbal','reasoning',s,['operation']);
+ return mark(q(`Cerita manakah sesuai dengan ayat matematik <b>${a} + ${b} = ${ans}</b>?`,`Ada ${a} buku, kemudian mendapat ${b} buku lagi.`,[Nq(`Ada ${ans} buku, kemudian memberi ${b} buku.`,'operation'),Nq(`Ada ${a} buku dan membuang semuanya.`,'operation'),Nq(`Ada ${b} buku sahaja.`,'operation')],'Cari cerita yang menunjukkan penggabungan dua kuantiti.','Tahun 1 · Padan Cerita dan Ayat'),id,'2.1.3',mode,'verbal','reasoning',s,['operation']);
 };
 
 GEN['2.2.1']=function(id,s){
@@ -66,9 +66,9 @@ GEN['2.2.2']=function(id,s){
  const mode=chooseMode(id,'2.2.2',bandModes(s,['add_two'],['add_two','add_story'],['add_story','missing_addend','reason_add']));
  let a=rand(10,70),b=rand(1,Math.min(29,100-a)),ans=a+b;
  if(mode==='add_two')return mark(q(`${a} + ${b} = ?`,ans,[Nq(ans+10,'place'),Nq(Math.max(0,ans-10),'place'),Nq(Math.abs(a-b),'operation')],'Tambah sa dan puluh dengan teliti.','Tahun 1 · Tambah Hingga 100'),id,'2.2.2',mode,'symbolic','procedure',s,['operation','place']);
- if(mode==='add_story')return mark(q(`Di ${choose(['perpustakaan sekolah','kantin sekolah','pasar pagi'])}, ada <b>${a}</b> item. Datang <b>${b}</b> lagi. Berapa semuanya?`,ans,[Nq(Math.abs(a-b),'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],'“Lagi” menambah jumlah.','Tahun 1 · Tambah Harian'),id,'2.2.2',mode,'story','application',s,['operation']);
+ if(mode==='add_story')return mark(q(`Di kedai ada <b>${a}</b> batang pensel. Kedai itu menerima <b>${b}</b> batang pensel lagi. Berapakah jumlah pensel sekarang?`,ans,[Nq(Math.abs(a-b),'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],'“Lagi” menambah jumlah.','Tahun 1 · Tambah Harian'),id,'2.2.2',mode,'story','application',s,['operation']);
  if(mode==='missing_addend')return mark(q(`${name()} ada ${a} buah ${fruit()}. Selepas menerima beberapa lagi, jumlah menjadi <b>${ans}</b>. Berapa diterima?`,b,[Nq(a,'operation'),Nq(ans,'operation'),Nq(b+1,'operation')],'Cari bahagian tambahan: jumlah − jumlah asal.','Tahun 1 · Tambah Nilai Hilang'),id,'2.2.2',mode,'story','reasoning',s,['operation']);
- const claim=ans+10;return mark(q(`Tanpa mengira dua kali, jawapan ${name()} ialah <b>${claim}</b> bagi ${a} + ${b}. Apakah jawapan sebenar?`,ans,[Nq(claim,'place'),Nq(ans+1,'operation'),Nq(Math.abs(a-b),'operation')],'Semak nilai tempat dan anggaran puluh.','Tahun 1 · Semak Tambah'),id,'2.2.2',mode,'symbolic','reasoning',s,['operation','place']);
+ const claim=ans+10;return mark(q(`${name()} mendapat jawapan <b>${claim}</b> bagi <b>${a} + ${b}</b>. Apakah jawapan yang betul?`,ans,[Nq(claim,'place'),Nq(ans+1,'operation'),Nq(Math.abs(a-b),'operation')],'Semak nilai tempat dan anggaran puluh.','Tahun 1 · Semak Tambah'),id,'2.2.2',mode,'symbolic','reasoning',s,['operation','place']);
 };
 
 GEN['2.3.1']=function(id,s){
@@ -83,7 +83,7 @@ GEN['2.3.2']=function(id,s){
  const mode=chooseMode(id,'2.3.2',bandModes(s,['sub_two'],['sub_two','sub_story'],['sub_story','missing_subtrahend','reason_sub']));
  const a=rand(30,99),b=rand(1,Math.min(39,a-1)),ans=a-b;
  if(mode==='sub_two')return mark(q(`${a} − ${b} = ?`,ans,[Nq(ans+10,'place'),Nq(Math.max(0,ans-10),'place'),Nq(a+b,'operation')],'Tolak mengikut nilai tempat.','Tahun 1 · Tolak Hingga 100'),id,'2.3.2',mode,'symbolic','procedure',s,['operation','place']);
- if(mode==='sub_story')return mark(q(`Di kantin ada <b>${a}</b> ${food()}. Sebanyak <b>${b}</b> dibeli. Berapa yang tinggal?`,ans,[Nq(a+b,'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],'Yang dibeli dikeluarkan daripada jumlah asal.','Tahun 1 · Tolak Harian'),id,'2.3.2',mode,'story','application',s,['operation']);
+ if(mode==='sub_story')return mark(q(`Di kantin ada <b>${a}</b> biji kuih. Murid membeli <b>${b}</b> biji kuih. Berapakah baki kuih?`,ans,[Nq(a+b,'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],'Yang dibeli dikeluarkan daripada jumlah asal.','Tahun 1 · Tolak Harian'),id,'2.3.2',mode,'story','application',s,['operation']);
  if(mode==='missing_subtrahend')return mark(q(`Bas sekolah membawa <b>${a}</b> murid. Selepas beberapa murid turun, tinggal <b>${ans}</b>. Berapa murid turun?`,b,[Nq(ans,'operation'),Nq(a,'operation'),Nq(b+1,'operation')],'Cari perubahan: jumlah asal − baki.','Tahun 1 · Tolak Nilai Hilang'),id,'2.3.2',mode,'story','reasoning',s,['operation']);
  const claim=ans+10;return mark(q(`${name()} mengira <b>${a} − ${b} = ${claim}</b>. Jawapan yang betul?`,ans,[Nq(claim,'place'),Nq(ans+1,'operation'),Nq(a+b,'operation')],'Semak nilai tempat dan operasi tolak.','Tahun 1 · Semak Tolak'),id,'2.3.2',mode,'symbolic','reasoning',s,['operation','place']);
 };
@@ -98,23 +98,23 @@ GEN['2.4.1']=function(id,s){
  // 10 − 19 = -9, iaitu nombor negatif dalam soalan Tahun 1.
  const b=add?rand(3,20):rand(3,Math.min(20,a-1));
  const ans=add?a+b:a-b,eq=`${a} ${add?'+':'−'} ${b} = ${ans}`;
- const correct=add?`Di pasar pagi ada ${a} mangga dan ${b} mangga lagi ditambah.`:`Di kantin ada ${a} pau dan ${b} pau dibeli.`;
- return mark(q(`Ayat matematik <b>${eq}</b>. Cerita manakah sepadan?`,correct,[Nq(add?`Ada ${a} mangga dan ${b} mangga dikeluarkan.`:`Ada ${a} pau dan ${b} pau lagi ditambah.`,'story_model'),Nq(`Ada ${ans} barang tanpa sebarang perubahan.`,'story_model'),Nq(`Ada ${b} barang sahaja.`,'story_model')],'Cerita mesti menggambarkan operasi dan nombor yang sama.','Tahun 1 · Mereka Cerita Masalah'),id,'2.4.1',mode,'verbal',stage(s)===3?'reasoning':'application',s,['story_model','operation']);
+ const correct=add?`Di gerai ada ${a} biji mangga. Penjual meletakkan ${b} biji mangga lagi.`:`Di kantin ada ${a} biji pau. Murid membeli ${b} biji pau.`;
+ return mark(q(`Pilih cerita yang sepadan dengan ayat matematik <b>${eq}</b>.`,correct,[Nq(add?`Ada ${a} mangga dan ${b} mangga dikeluarkan.`:`Ada ${a} pau dan ${b} pau lagi ditambah.`,'story_model'),Nq(`Ada ${ans} barang tanpa sebarang perubahan.`,'story_model'),Nq(`Ada ${b} barang sahaja.`,'story_model')],'Cerita mesti menggambarkan operasi dan nombor yang sama.','Tahun 1 · Mereka Cerita Masalah'),id,'2.4.1',mode,'verbal',stage(s)===3?'reasoning':'application',s,['story_model','operation']);
 };
 
 GEN['2.4.2']=function(id,s){
  const mode=chooseMode(id,'2.4.2',bandModes(s,['one_step'],['one_step','choose_operation'],['missing_value','two_clue']));
  const add=Math.random()<.5,a=rand(15,60),b=rand(3,Math.min(20,add?100-a:a-1)),ans=add?a+b:a-b;
- if(mode==='one_step')return mark(q(add?`${name()} ada ${a} buku cerita dan meminjam ${b} lagi. Berapa semuanya?`:`Di kedai runcit ada ${a} botol air. ${b} botol terjual. Berapa tinggal?`,ans,[Nq(add?Math.abs(a-b):a+b,'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],add?'Tambah kuantiti baharu.':'Tolak kuantiti yang keluar.','Tahun 1 · Masalah Harian'),id,'2.4.2',mode,'story','application',s,['operation']);
+ if(mode==='one_step')return mark(q(add?`${name()} mempunyai ${a} buah buku. Dia meminjam ${b} buah buku lagi. Berapakah jumlah bukunya sekarang?`:`Di kedai ada ${a} botol air. Sebanyak ${b} botol telah dijual. Berapakah baki botol air?`,ans,[Nq(add?Math.abs(a-b):a+b,'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],add?'Tambah kuantiti baharu.':'Tolak kuantiti yang keluar.','Tahun 1 · Masalah Harian'),id,'2.4.2',mode,'story','application',s,['operation']);
  /* Kemahiran ini ditanda 'reasoning': murid patut menaakul sama ada kuantiti
     bertambah atau berkurang. Perkataan "ditambah" mengandungi jawapannya
     sendiri, jadi situasi kini diterangkan tanpa menamakan operasi.
     (2.1.1 sengaja dibiarkan memakai kata kunci — di sana mengenal perkataan
     isyarat memang kemahiran yang diuji.) */
- if(mode==='choose_operation')return mark(q(`Situasi: ada ${a} item, kemudian ${b} item lagi ${add?'diletak ke dalam':'diambil keluar'}. Operasi yang sesuai?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation'),Nq('banding','operation'),Nq('kira satu-satu','operation')],'Tentukan sama ada kuantiti bertambah atau berkurang.','Tahun 1 · Pilih Strategi'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
+ if(mode==='choose_operation')return mark(q(`Di dalam kotak ada ${a} biji guli. Kemudian ${b} biji guli ${add?'dimasukkan':'dikeluarkan'}. Operasi manakah sesuai?`,add?'tambah':'tolak',[Nq(add?'tolak':'tambah','operation'),Nq('banding','operation'),Nq('kira satu-satu','operation')],'Tentukan sama ada kuantiti bertambah atau berkurang.','Tahun 1 · Pilih Strategi'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
  if(mode==='missing_value'){
   const start=add?a:ans,total=add?ans:a;
-  return mark(q(add?`Jumlah ${total}. Sebelum menerima ${b} lagi, berapa yang ada?`:`Selepas ${b} dikeluarkan, tinggal ${start}. Berapa jumlah asal?`,add?a:a,[Nq(total,'operation'),Nq(b,'operation'),Nq(Math.max(0,a-1),'operation')],'Gunakan hubungan songsang tambah dan tolak.','Tahun 1 · Masalah Songsang'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
+  return mark(q(add?`Jumlah sekarang ialah ${total}. Sebanyak ${b} ditambah tadi. Berapakah bilangan asal?`:`Selepas ${b} biji dikeluarkan, tinggal ${start} biji. Berapakah bilangan asal?`,add?a:a,[Nq(total,'operation'),Nq(b,'operation'),Nq(Math.max(0,a-1),'operation')],'Gunakan hubungan songsang tambah dan tolak.','Tahun 1 · Masalah Songsang'),id,'2.4.2',mode,'story','reasoning',s,['operation']);
  }
  return mark(q(`Di kantin, ${name()} membeli ${b} ${food()} daripada ${a} yang ada. Kawan berkata baki ialah ${a+b}. Apakah baki sebenar?`,a-b,[Nq(a+b,'operation'),Nq(a,'operation'),Nq(b,'operation')],'Perkataan “baki” selepas membeli memerlukan tolak.','Tahun 1 · Semak Masalah Harian'),id,'2.4.2',mode,'story','reasoning',s,['operation','reasoning']);
 };
@@ -122,8 +122,8 @@ GEN['2.4.2']=function(id,s){
 GEN['2.5.1']=function(id,s){
  const step=choose([2,4,5,10]),groups=rand(2,4),terms=Array.from({length:groups},()=>step),sum=step*groups,expr=terms.join(' + ')+' = '+sum;
  const mode=chooseMode(id,'2.5.1',bandModes(s,['write_repeat'],['write_repeat','match_groups'],['match_groups','missing_repeat']));
- if(mode==='write_repeat')return mark(q(`Ada <b>${groups}</b> kumpulan, setiap kumpulan ada <b>${step}</b> objek. Ayat tambah berulang?`,expr,[Nq(`${groups} + ${step} = ${groups+step}`,'repeated_add'),Nq(`${step} + ${groups} = ${sum}`,'repeated_add'),Nq(`${sum} − ${step} = ${sum-step}`,'operation')],'Ulang nombor dalam setiap kumpulan sebanyak bilangan kumpulan.','Tahun 1 · Tambah Berulang'),id,'2.5.1',mode,'story','procedure',s,['repeated_add']);
- if(mode==='match_groups')return mark(q(`Ayat <b>${expr}</b> mewakili situasi mana?`,`${groups} kumpulan, setiap satu ${step}`,[Nq(`${step} kumpulan, setiap satu ${groups}`,'repeated_add'),Nq(`1 kumpulan berisi ${sum}`,'repeated_add'),Nq(`${groups+step} kumpulan kosong`,'repeated_add')],'Bilangan sebutan menunjukkan bilangan kumpulan.','Tahun 1 · Model Tambah Berulang'),id,'2.5.1',mode,'verbal','application',s,['repeated_add']);
+ if(mode==='write_repeat')return mark(q(`Ada <b>${groups}</b> kumpulan. Setiap kumpulan mempunyai <b>${step}</b> objek. Pilih ayat tambah berulang yang betul.`,expr,[Nq(`${groups} + ${step} = ${groups+step}`,'repeated_add'),Nq(`${step} + ${groups} = ${sum}`,'repeated_add'),Nq(`${sum} − ${step} = ${sum-step}`,'operation')],'Ulang nombor dalam setiap kumpulan sebanyak bilangan kumpulan.','Tahun 1 · Tambah Berulang'),id,'2.5.1',mode,'story','procedure',s,['repeated_add']);
+ if(mode==='match_groups')return mark(q(`Situasi manakah sesuai dengan ayat matematik <b>${expr}</b>?`,`${groups} kumpulan, setiap satu ${step}`,[Nq(`${step} kumpulan, setiap satu ${groups}`,'repeated_add'),Nq(`1 kumpulan berisi ${sum}`,'repeated_add'),Nq(`${groups+step} kumpulan kosong`,'repeated_add')],'Bilangan sebutan menunjukkan bilangan kumpulan.','Tahun 1 · Model Tambah Berulang'),id,'2.5.1',mode,'verbal','application',s,['repeated_add']);
  const missing=step;return mark(q(`${step} + ___ + ${step} = ${step*3}`,missing,[Nq(groups,'repeated_add'),Nq(step*2,'operation'),Nq(sum,'operation')],'Tambah berulang menggunakan nilai yang sama setiap kali.','Tahun 1 · Tambah Berulang Hilang'),id,'2.5.1',mode,'symbolic','reasoning',s,['repeated_add']);
 };
 
@@ -132,10 +132,10 @@ GEN['2.6.2']=function(id,s){
  for(let i=0;i<times;i++){parts.push(step);x-=step;arr.push(x)}
  const expr=arr[0]+' − '+parts.map(()=>step).join(' − ')+' = '+remaining;
  const mode=chooseMode(id,'2.6.2',bandModes(s,['write_repeat_sub'],['write_repeat_sub','match_remove','remaining'],['match_remove','remaining','missing_sub']));
- if(mode==='write_repeat_sub')return mark(q(`Ada <b>${start}</b> objek. Keluarkan <b>${step}</b> sebanyak <b>${times}</b> kali. Ayat tolak berturut-turut yang betul?`,expr,[Nq(`${start} − ${times} = ${remaining}`,'repeated_sub'),Nq(`${step} + ${step} = ${step*2}`,'operation'),Nq(`${start} − ${step} = ${start-step}`,'repeated_sub')],'Tolak nilai yang sama setiap kali, kemudian semak baki yang tinggal.','Tahun 1 · Tolak Berturut-turut'),id,'2.6.2',mode,'story','procedure',s,['repeated_sub']);
+ if(mode==='write_repeat_sub')return mark(q(`Ada <b>${start}</b> objek. Sebanyak <b>${step}</b> objek dikeluarkan setiap kali, sebanyak <b>${times}</b> kali. Pilih ayat matematik yang betul.`,expr,[Nq(`${start} − ${times} = ${remaining}`,'repeated_sub'),Nq(`${step} + ${step} = ${step*2}`,'operation'),Nq(`${start} − ${step} = ${start-step}`,'repeated_sub')],'Tolak nilai yang sama setiap kali, kemudian semak baki yang tinggal.','Tahun 1 · Tolak Berturut-turut'),id,'2.6.2',mode,'story','procedure',s,['repeated_sub']);
  if(mode==='match_remove')return mark(q(`<b>${expr}</b> bermaksud?`,`keluarkan ${step} sebanyak ${times} kali dan tinggal ${remaining}`,[Nq(`tambah ${step} sebanyak ${times} kali`,'repeated_sub'),Nq(`keluarkan ${times} sekali sahaja`,'repeated_sub'),Nq(`tambah ${start} sekali sahaja`,'repeated_sub')],'Setiap tanda tolak menunjukkan satu pengeluaran; jawapan akhir ialah baki.','Tahun 1 · Makna Tolak Berturut-turut'),id,'2.6.2',mode,'verbal','application',s,['repeated_sub']);
  if(mode==='remaining')return mark(q(`Ada <b>${start}</b> objek. Keluarkan <b>${step}</b>, kemudian <b>${step}</b> lagi. Berapa objek yang tinggal?`,start-step*2,[Nq(start-step,'repeated_sub'),Nq(start-step*3,'repeated_sub'),Nq(step*2,'operation')],'Tolak satu kumpulan pada satu masa dan lihat baki selepas dua langkah.','Tahun 1 · Baki Selepas Tolak Berulang'),id,'2.6.2',mode,'story','application',s,['repeated_sub','operation']);
- return mark(q(`${start} − ${step} − ___ = ${remaining}`,step,[Nq(times,'repeated_sub'),Nq(start-step,'operation'),Nq(step*2,'operation')],'Nilai yang ditolak berulang adalah sama.','Tahun 1 · Tolak Berulang Hilang'),id,'2.6.2',mode,'symbolic','reasoning',s,['repeated_sub']);
+ const beforeLast=start-step*(times-1);return mark(q(`Tolak ${step} berulang kali. Lengkapkan ayat matematik: <b>${beforeLast} − ___ = ${remaining}</b>`,step,[Nq(times,'repeated_sub'),Nq(start-step,'operation'),Nq(step*2,'operation')],'Nilai yang ditolak berulang adalah sama.','Tahun 1 · Tolak Berulang Hilang'),id,'2.6.2',mode,'symbolic','reasoning',s,['repeated_sub']);
 };
 
 document.documentElement?.setAttribute('data-y1-v2-unit2','3.62.6');
