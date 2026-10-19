@@ -219,6 +219,31 @@ function attachFoundationQuestionTags(q,meta){
      variantFingerprint:meta.evidence?.variantFingerprint||'eq-'+(hash>>>0).toString(36)}};
  return q;
 }
+/* Focus Diagnosis v2: tag from an authored per-archetype spec
+   [contextDomain, 'op,op', foundationIds, conceptIds, diagnosticFamily?]. Operand values are not
+   structured here, and the fingerprint hashes numbers only, never names or wording. */
+const FOCUS_SPEC_REPRESENTATION={symbolic:'symbolic',story:'contextual',verbal:'contextual',table:'visual',visual:'visual',diagram:'visual',manipulative:'manipulative'};
+function attachSpecFocusTag(q,skillId,spec,revision){
+ if(!q||!spec||q.focusDiagnosticV1)return q;
+ const [domain,steps,foundationIds,conceptIds,family]=spec,ops=steps?steps.split(','):[],arch=String(q.archetypeId||'');
+ const nums=(String(q.prompt||'').replace(/<[^>]*>/g,' ').match(/\d+(?:[.,:\/]\d+)*/g)||[]).join('|')+'#'+String(q.answer??'');
+ let h=2166136261;for(const ch of arch+'|'+nums){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}
+ q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',originSkillId:skillId,contextDomain:domain,
+  ...(family?{diagnosticFamily:family}:{}),
+  arithmeticProfile:{operationFamilies:[...new Set(ops)],operands:{unit:'unknown'},operandDimensions:{stepCount:ops.length||'unknown'},steps:ops},
+  probes:{foundationIds:[...foundationIds],conceptIds:[...conceptIds],diagnosticPurpose:'normal'},
+  evidence:{questionFamilyKey:arch,variantFingerprint:'q-'+(h>>>0).toString(36),representation:FOCUS_SPEC_REPRESENTATION[q.representation]||'other',
+   demand:q.demand||'unknown',misconceptionTargets:Array.isArray(q.misconceptionTargets)?[...q.misconceptionTargets]:[],
+   difficultyBand:q.difficultyBand||'unknown',tagRevision:revision},
+  standardRef:q.standardRef||null,unknownFieldReasons:['operands_not_structured']};
+ return q;
+}
+// Exact add/sub tag from known operands, for generators that hold a and b.
+function attachAddSubFocusTag(q,skillId,operation,operands,result,revision){
+ if(!q||typeof addSubFocusMeta!=='function')return q;
+ const meta=addSubFocusMeta(skillId,operation,operands,result);
+ return attachFoundationQuestionTags(q,{...meta,evidence:{...meta.evidence,questionFamilyKey:q.archetypeId||meta.evidence.questionFamilyKey,tagRevision:revision}});
+}
 function moneyQ(id,shift,s){
  const difficulty=(s&&s.mastery>=75)?"STRETCH":(s&&s.mastery>=50)?"APPLICATION":(s&&s.mastery>=25)?"CORE":"FOUNDATION";
  if(id==="D2.4.1"){

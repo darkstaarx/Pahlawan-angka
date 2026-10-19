@@ -195,6 +195,77 @@ function solid(kind){
 }
 function clock(h,m){return typeof clockSvg==='function'?clockSvg(h,m):`<div class="kssrDiagram">Jam ${h}:${String(m).padStart(2,'0')}</div>`}
 function moneyVis(c){return typeof moneyVisual==='function'?moneyVisual(c):`<div class="kssrDiagram">${c<100?c+' sen':'RM'+(c/100)}</div>`}
-window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,baseTenBlocks,compareDots,shapePatternSvg,balanceBlocks,capacityCups,measureRopes,measureUnits,measureBeakers,measureBalance,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place};
+// Focus Diagnosis v2 tags for D1, authored per archetype (never inferred from answers).
+// Untagged on purpose: counting/comparing small groups, number patterns, estimation,
+// days/months/daily routine, shapes, money-saving habits and measurement vocabulary;
+// the foundation map has no honest foundation for them yet.
+// Entry: [contextDomain, operation steps, foundationIds, conceptIds]
+const FOCUS_REVISION='d1-authored-v1';
+const PV=['number','',['number.place_value'],['number.place_value']];
+const FOCUS_NODE={
+ '1_2_2':PV,'1_3_1':PV,'1_6_1':PV,'1_8_1':PV,
+ '1_4_1':['number','addition',['add.facts'],[]],
+ '2_1_1':['operations','',['operation.choose','add.combine','sub.take_away_compare'],[]],
+ '2_1_3':['operations','',['operation.choose','add.combine','sub.take_away_compare'],[]],
+ '2_2_1':['number','addition',['add.facts'],[]],
+ '2_2_2':['number','addition',['add.place_value'],[]],
+ '2_3_1':['number','subtraction',['sub.facts'],[]],
+ '2_3_2':['number','subtraction',['sub.place_value'],[]],
+ '2_4_1':['operations','',['operation.choose','add.combine','sub.take_away_compare'],[]],
+ '2_4_2':['operations','subtraction',['operation.choose','sub.place_value'],[]],
+ '2_5_1':['number','addition',['mul.equal_groups','add.facts'],[]],
+ '2_6_2':['number','subtraction',['mul.equal_groups','sub.facts'],[]],
+ '3_1_1':['fraction','',['fraction.equal_parts'],['fraction.equal_parts']],
+ '3_2_1':['fraction','',['fraction.equal_parts'],['fraction.equal_parts']],
+ '4_1_1':['money','',['money.denominations'],['money.denominations']],
+ '4_1_2':['money','addition',['money.denominations','add.facts'],['money.denominations']],
+ '4_1_3':['money','',['money.denominations','money.ringgit_sen'],['money.ringgit_sen']],
+ '4_2_2':['money','subtraction',['money.transaction','sub.facts'],['money.transaction']],
+ '4_3_1':['money','addition',['money.transaction','add.facts'],['money.transaction']],
+ '5_2_1':['time','',['time.units'],['time.units']],
+ '5_2_2':['time','',['time.units','fraction.equal_parts'],['time.units']],
+ '5_2_3':['time','',['time.units'],['time.units']],
+ '6_1_2':['measurement','',['measurement.units'],['measurement.units']],
+ '6_1_3':['measurement','',['measurement.units'],['measurement.units']],
+ '6_2_1':['measurement','subtraction',['measurement.units','sub.facts'],['measurement.units']],
+ '8_1_1':['data','',['data.reading'],['data.reading']],
+ '8_2_1':['data','',['data.reading'],['data.reading']],
+ '8_3_1':['data','',['data.reading'],['data.reading']]
+};
+const FOCUS_MODE={
+ '1_2_2_match_value':null,
+ '1_2_1_count_tens_ones':PV,'1_2_1_name_quantity':PV,
+ '1_4_1_missing_part':['number','subtraction',['add.facts','sub.facts'],[]],
+ '2_2_2_missing_addend':['number','subtraction',['sub.place_value','operation.choose'],[]],
+ '2_2_2_add_story':['number','addition',['add.place_value','operation.choose'],[]],
+ '2_3_1_fact_missing':['number','subtraction',['sub.facts'],[]],
+ '2_3_2_sub_story':['number','subtraction',['sub.place_value','operation.choose'],[]],
+ '2_4_1_match_add_story':['operations','',['operation.choose','add.combine'],[]],
+ '2_4_1_match_sub_story':['operations','',['operation.choose','sub.take_away_compare'],[]],
+ '2_4_2_one_step':['operations','addition',['operation.choose','add.place_value'],[]],
+ '2_4_2_two_step':['operations','subtraction,addition',['operation.choose','add.facts','sub.facts'],[]],
+ '4_1_2_choose_representation':['money','',['money.denominations','money.ringgit_sen'],['money.ringgit_sen']],
+ '4_2_2_saving_total':['money','addition',['money.transaction','add.facts'],['money.transaction']],
+ '4_3_1_sub_money':['money','subtraction',['money.transaction','sub.facts'],['money.transaction']],
+ '4_3_1_reason_money':['money','addition,subtraction',['money.transaction','sub.facts'],['money.transaction']],
+ '5_3_1_half_hour_later':['time','addition',['time.units','fraction.equal_parts'],['time.units']],
+ '5_3_1_quarter_hour_later':['time','addition',['time.units','fraction.equal_parts'],['time.units']],
+ '5_3_1_order_clock':['time','',['time.units'],['time.units']],
+ '6_2_1_one_step':['measurement','addition',['measurement.units','add.facts'],['measurement.units']],
+ '6_2_1_reason_measure':['measurement','',['measurement.units'],['measurement.units']],
+ '8_1_1_classify':null,'8_1_1_reason_collect':null,
+ '8_2_1_difference':['data','subtraction',['data.reading','sub.facts'],['data.reading']],
+ '8_3_1_missing_data':['data','subtraction',['data.reading','sub.facts'],['data.reading']],
+ '8_3_1_total_two':['data','addition',['data.reading','add.facts'],['data.reading']]
+};
+function focusTag(q,skillId){
+ if(!q||q.focusDiagnosticV1||!/^D1\./.test(String(skillId||'')))return q;
+ const arch=String(q.archetypeId||'');if(!arch.startsWith('y1v2_'))return q;
+ const key=arch.slice(5),spec=Object.prototype.hasOwnProperty.call(FOCUS_MODE,key)?FOCUS_MODE[key]:FOCUS_NODE[key.split('_').slice(0,3).join('_')];
+ return spec&&typeof attachSpecFocusTag==='function'?attachSpecFocusTag(q,skillId,spec,FOCUS_REVISION):q;
+}
+// Exact add/sub tag for generators that know both operands.
+const exactTag=(out,id,operation,operands,result)=>typeof attachAddSubFocusTag==='function'?attachAddSubFocusTag(out,id,operation,operands,result,FOCUS_REVISION):out;
+window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,baseTenBlocks,compareDots,shapePatternSvg,balanceBlocks,capacityCups,measureRopes,measureUnits,measureBeakers,measureBalance,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place,focusTag,exactTag,FOCUS_NODE,FOCUS_MODE};
 document.documentElement?.setAttribute('data-y1-v2-runtime',VERSION);
 })();

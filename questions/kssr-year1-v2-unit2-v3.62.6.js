@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY1V2Runtime;if(!RT)return;
-const {GEN,Nq,q,mark,chooseMode,bandModes,stage,rand,choose,wrongNums,name,food,fruit}=RT;
+const {GEN,Nq,q,mark,chooseMode,bandModes,stage,rand,choose,wrongNums,name,food,fruit}=RT,exactTag=RT.exactTag||(o=>o);
 
 GEN['2.1.1']=function(id,s){
  const mode=chooseMode(id,'2.1.1',bandModes(s,['word_meaning'],['word_meaning','operation_from_word'],['operation_from_word','reason_word']));
@@ -56,7 +56,7 @@ GEN['2.1.3']=function(id,s){
 GEN['2.2.1']=function(id,s){
  const mode=chooseMode(id,'2.2.1',bandModes(s,['fact_direct'],['fact_direct','fact_missing'],['fact_missing','fact_check']));
  const a=rand(1,9),b=rand(1,9),ans=a+b;
- if(mode==='fact_direct')return mark(q(`${a} + ${b} = ?`,ans,wrongNums(ans,1,'fact'),'Gunakan fakta asas tambah.','Tahun 1 · Fakta Asas Tambah'),id,'2.2.1',mode,'symbolic','procedure',s,['fact']);
+ if(mode==='fact_direct')return exactTag(mark(q(`${a} + ${b} = ?`,ans,wrongNums(ans,1,'fact'),'Gunakan fakta asas tambah.','Tahun 1 · Fakta Asas Tambah'),id,'2.2.1',mode,'symbolic','procedure',s,['fact']),id,'addition',[a,b],ans);
  if(mode==='fact_missing')return mark(q(`${a} + ___ = ${ans}`,b,[Nq(a,'fact'),Nq(ans,'operation'),Nq(Math.max(0,b-1),'fact')],'Cari bahagian yang hilang.','Tahun 1 · Fakta Tambah Hilang'),id,'2.2.1',mode,'symbolic','application',s,['fact']);
  const claim=ans+choose([-1,1]);
  return mark(q(`${name()} kata <b>${a} + ${b} = ${claim}</b>. Jawapan yang betul?`,ans,[Nq(claim,'fact'),Nq(Math.max(0,ans-1),'fact'),Nq(ans+2,'fact')],'Semak fakta asas dengan membilang atau pasangan nombor.','Tahun 1 · Semak Fakta Tambah'),id,'2.2.1',mode,'symbolic','reasoning',s,['fact']);
@@ -65,7 +65,7 @@ GEN['2.2.1']=function(id,s){
 GEN['2.2.2']=function(id,s){
  const mode=chooseMode(id,'2.2.2',bandModes(s,['add_two'],['add_two','add_story'],['add_story','missing_addend','reason_add']));
  let a=rand(10,70),b=rand(1,Math.min(29,100-a)),ans=a+b;
- if(mode==='add_two')return mark(q(`${a} + ${b} = ?`,ans,[Nq(ans+10,'place'),Nq(Math.max(0,ans-10),'place'),Nq(Math.abs(a-b),'operation')],'Tambah sa dan puluh dengan teliti.','Tahun 1 · Tambah Hingga 100'),id,'2.2.2',mode,'symbolic','procedure',s,['operation','place']);
+ if(mode==='add_two')return exactTag(mark(q(`${a} + ${b} = ?`,ans,[Nq(ans+10,'place'),Nq(Math.max(0,ans-10),'place'),Nq(Math.abs(a-b),'operation')],'Tambah sa dan puluh dengan teliti.','Tahun 1 · Tambah Hingga 100'),id,'2.2.2',mode,'symbolic','procedure',s,['operation','place']),id,'addition',[a,b],ans);
  if(mode==='add_story')return mark(q(`Di kedai ada <b>${a}</b> batang pensel. Kedai itu menerima <b>${b}</b> batang pensel lagi. Berapakah jumlah pensel sekarang?`,ans,[Nq(Math.abs(a-b),'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],'“Lagi” menambah jumlah.','Tahun 1 · Tambah Harian'),id,'2.2.2',mode,'story','application',s,['operation']);
  if(mode==='missing_addend')return mark(q(`${name()} ada ${a} buah ${fruit()}. Selepas menerima beberapa lagi, jumlah menjadi <b>${ans}</b>. Berapa diterima?`,b,[Nq(a,'operation'),Nq(ans,'operation'),Nq(b+1,'operation')],'Cari bahagian tambahan: jumlah − jumlah asal.','Tahun 1 · Tambah Nilai Hilang'),id,'2.2.2',mode,'story','reasoning',s,['operation']);
  const claim=ans+10;return mark(q(`${name()} mendapat jawapan <b>${claim}</b> bagi <b>${a} + ${b}</b>. Apakah jawapan yang betul?`,ans,[Nq(claim,'place'),Nq(ans+1,'operation'),Nq(Math.abs(a-b),'operation')],'Semak nilai tempat dan anggaran puluh.','Tahun 1 · Semak Tambah'),id,'2.2.2',mode,'symbolic','reasoning',s,['operation','place']);
@@ -74,7 +74,7 @@ GEN['2.2.2']=function(id,s){
 GEN['2.3.1']=function(id,s){
  const mode=chooseMode(id,'2.3.1',bandModes(s,['fact_direct'],['fact_direct','fact_missing'],['fact_missing','fact_check']));
  const a=rand(2,18),b=rand(1,a-1),ans=a-b;
- if(mode==='fact_direct')return mark(q(`${a} − ${b} = ?`,ans,wrongNums(ans,1,'fact'),'Gunakan fakta asas tolak.','Tahun 1 · Fakta Asas Tolak'),id,'2.3.1',mode,'symbolic','procedure',s,['fact']);
+ if(mode==='fact_direct')return exactTag(mark(q(`${a} − ${b} = ?`,ans,wrongNums(ans,1,'fact'),'Gunakan fakta asas tolak.','Tahun 1 · Fakta Asas Tolak'),id,'2.3.1',mode,'symbolic','procedure',s,['fact']),id,'subtraction',[a,b],ans);
  if(mode==='fact_missing')return mark(q(`${a} − ___ = ${ans}`,b,[Nq(ans,'operation'),Nq(a,'operation'),Nq(Math.max(1,b-1),'fact')],'Cari bahagian yang dikeluarkan.','Tahun 1 · Fakta Tolak Hilang'),id,'2.3.1',mode,'symbolic','application',s,['fact']);
  const claim=Math.max(0,ans-1);return mark(q(`${name()} kata <b>${a} − ${b} = ${claim}</b>. Jawapan sebenar?`,ans,[Nq(claim,'fact'),Nq(ans+1,'fact'),Nq(a+b,'operation')],'Semak fakta asas tolak.','Tahun 1 · Semak Fakta Tolak'),id,'2.3.1',mode,'symbolic','reasoning',s,['fact']);
 };
@@ -82,7 +82,7 @@ GEN['2.3.1']=function(id,s){
 GEN['2.3.2']=function(id,s){
  const mode=chooseMode(id,'2.3.2',bandModes(s,['sub_two'],['sub_two','sub_story'],['sub_story','missing_subtrahend','reason_sub']));
  const a=rand(30,99),b=rand(1,Math.min(39,a-1)),ans=a-b;
- if(mode==='sub_two')return mark(q(`${a} − ${b} = ?`,ans,[Nq(ans+10,'place'),Nq(Math.max(0,ans-10),'place'),Nq(a+b,'operation')],'Tolak mengikut nilai tempat.','Tahun 1 · Tolak Hingga 100'),id,'2.3.2',mode,'symbolic','procedure',s,['operation','place']);
+ if(mode==='sub_two')return exactTag(mark(q(`${a} − ${b} = ?`,ans,[Nq(ans+10,'place'),Nq(Math.max(0,ans-10),'place'),Nq(a+b,'operation')],'Tolak mengikut nilai tempat.','Tahun 1 · Tolak Hingga 100'),id,'2.3.2',mode,'symbolic','procedure',s,['operation','place']),id,'subtraction',[a,b],ans);
  if(mode==='sub_story')return mark(q(`Di kantin ada <b>${a}</b> biji kuih. Murid membeli <b>${b}</b> biji kuih. Berapakah baki kuih?`,ans,[Nq(a+b,'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],'Yang dibeli dikeluarkan daripada jumlah asal.','Tahun 1 · Tolak Harian'),id,'2.3.2',mode,'story','application',s,['operation']);
  if(mode==='missing_subtrahend')return mark(q(`Bas sekolah membawa <b>${a}</b> murid. Selepas beberapa murid turun, tinggal <b>${ans}</b>. Berapa murid turun?`,b,[Nq(ans,'operation'),Nq(a,'operation'),Nq(b+1,'operation')],'Cari perubahan: jumlah asal − baki.','Tahun 1 · Tolak Nilai Hilang'),id,'2.3.2',mode,'story','reasoning',s,['operation']);
  const claim=ans+10;return mark(q(`${name()} mengira <b>${a} − ${b} = ${claim}</b>. Jawapan yang betul?`,ans,[Nq(claim,'place'),Nq(ans+1,'operation'),Nq(a+b,'operation')],'Semak nilai tempat dan operasi tolak.','Tahun 1 · Semak Tolak'),id,'2.3.2',mode,'symbolic','reasoning',s,['operation','place']);

@@ -211,29 +211,12 @@ const FOCUS_MONEY={
  dividend_rate:['division',[PC,'div.multidigit'],[PC]],dividend_rate_reverse:['division',[PC,'div.multidigit'],[PC]],
  net_asset:['subtraction',[RS,'sub.place_value'],[]],asset_liability_change:['subtraction',[RS,'sub.place_value'],[]]
 };
-const REPRESENTATION={symbolic:'symbolic',story:'contextual',verbal:'contextual',table:'visual',visual:'visual',diagram:'visual'};
-function focusFingerprint(q,family){
- // Numeric diversity only: the raw prompt (names, places) never leaves the device.
- const nums=(String(q.prompt||'').replace(/<[^>]*>/g,' ').match(/\d+(?:[.,:\/]\d+)*/g)||[]).join('|')+'#'+String(q.answer??'');
- let h=2166136261;for(const ch of family+'|'+nums){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}
- return 'd6-'+(h>>>0).toString(36);
-}
 function focusTag(q,skillId){
  if(!q||q.focusDiagnosticV1||!/^D6\./.test(String(skillId||'')))return q;
  const arch=String(q.archetypeId||'');let spec=null;
  if(arch.startsWith('y6moneyreal_')){const m=FOCUS_MONEY[arch.slice(12)];if(m)spec=['money',m[0],m[1],m[2],m[3]];}
  else if(arch.startsWith('y6v2_')){const key=arch.slice(5);spec=FOCUS_MODE[key]||FOCUS_NODE[key.split('_').slice(0,3).join('_')]||null;}
- if(!spec)return q;
- const [domain,steps,foundationIds,conceptIds,family]=spec,ops=steps?steps.split(','):[];
- q.focusDiagnosticV1={schema:'pa.focus.question-tag.v1',tagOrigin:'authored',originSkillId:skillId,contextDomain:domain,
-  ...(family?{diagnosticFamily:family}:{}),
-  arithmeticProfile:{operationFamilies:[...new Set(ops)],operands:{unit:'unknown'},operandDimensions:{stepCount:ops.length||'unknown'},steps:ops},
-  probes:{foundationIds:[...foundationIds],conceptIds:[...conceptIds],diagnosticPurpose:'normal'},
-  evidence:{questionFamilyKey:arch,variantFingerprint:focusFingerprint(q,arch),representation:REPRESENTATION[q.representation]||'other',
-   demand:q.demand||'unknown',misconceptionTargets:Array.isArray(q.misconceptionTargets)?[...q.misconceptionTargets]:[],
-   difficultyBand:q.difficultyBand||'unknown',tagRevision:TAG_REVISION},
-  standardRef:q.standardRef||null,unknownFieldReasons:['operands_not_structured']};
- return q;
+ return spec&&typeof attachSpecFocusTag==='function'?attachSpecFocusTag(q,skillId,spec,TAG_REVISION):q;
 }
 window.PAY6V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,tidy,table,coord,protractor,polygon,circle,pie,bag,gcd,frac,fmtTime,cities,q,recentFor,chooseNode,chooseMode,bandModes,mark,who,pickN,fmtN,words,isPrime,distinct,focusTag,FOCUS_NODE,FOCUS_MODE,FOCUS_MONEY};
 document.documentElement?.setAttribute('data-y6-v2-runtime',VERSION);
