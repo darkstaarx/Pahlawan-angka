@@ -19,7 +19,7 @@ GEN['2.1.1']=function(id,s){
   ]),ans=prompt[1];
   return mark(q(prompt[0]+' Operasi yang sesuai?',ans,[Nq(ans==='tambah'?'tolak':'tambah','operation_language'),Nq('banding','operation_language'),Nq('kira satu-satu','operation_language')],'Kenal perkataan dan perubahan dalam situasi.','Tahun 1 · Kenal Operasi'),id,'2.1.1',mode,'story','application',s,['operation_language']);
  }
- return mark(q(`Aina mempunyai 7 biji gula-gula. Dia makan 2 biji. Adakah bilangan gula-gulanya bertambah?`,'salah',[Nq('betul','operation_language'),Nq('kadang-kadang tambah','operation_language'),Nq('tidak pasti','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
+ return mark(q('Aina ada 7 biji gula-gula. Dia makan 2 biji. Apakah yang berlaku pada bilangan gula-gula Aina?','Berkurang',[Nq('Bertambah','operation_language'),Nq('Tidak berubah','operation_language'),Nq('Tidak dapat ditentukan','operation_language')],'Dalam cerita asas, “tinggal” selepas sesuatu dikeluarkan biasanya menunjukkan tolak.','Tahun 1 · Semak Bahasa Operasi'),id,'2.1.1',mode,'verbal','reasoning',s,['operation_language']);
 };
 
 GEN['2.1.2']=function(id,s){
@@ -103,8 +103,9 @@ GEN['2.4.1']=function(id,s){
 };
 
 GEN['2.4.2']=function(id,s){
- const mode=chooseMode(id,'2.4.2',bandModes(s,['one_step'],['one_step','choose_operation'],['missing_value','two_clue']));
+ const mode=chooseMode(id,'2.4.2',bandModes(s,['one_step'],['one_step','choose_operation'],['missing_value','two_clue','two_step']));
  const add=Math.random()<.5,a=rand(15,60),b=rand(3,Math.min(20,add?100-a:a-1)),ans=add?a+b:a-b;
+ if(mode==='two_step'){const start=rand(25,65),lost=rand(6,16),gain=rand(3,14),ans=start-lost+gain;return mark(q(`${name()} ada <b>${start}</b> biji guli. Dia memberikan <b>${lost}</b> biji kepada kawannya. Kemudian, dia mendapat <b>${gain}</b> biji guli lagi. Berapakah bilangan gulinya sekarang?`,ans,[Nq(start-lost,'operation'),Nq(start+lost+gain,'operation'),Nq(start-lost-gain,'operation')],'Tolak guli yang diberikan dahulu. Kemudian, tambah guli yang diterima.','Tahun 1 · Masalah Dua Langkah'),id,'2.4.2',mode,'story','reasoning',s,['operation','two_step']);}
  if(mode==='one_step')return mark(q(add?`${name()} mempunyai ${a} buah buku. Dia meminjam ${b} buah buku lagi. Berapakah jumlah bukunya sekarang?`:`Di kedai ada ${a} botol air. Sebanyak ${b} botol telah dijual. Berapakah baki botol air?`,ans,[Nq(add?Math.abs(a-b):a+b,'operation'),Nq(a,'operation'),Nq(ans+1,'operation')],add?'Tambah kuantiti baharu.':'Tolak kuantiti yang keluar.','Tahun 1 · Masalah Harian'),id,'2.4.2',mode,'story','application',s,['operation']);
  /* Kemahiran ini ditanda 'reasoning': murid patut menaakul sama ada kuantiti
     bertambah atau berkurang. Perkataan "ditambah" mengandungi jawapannya
