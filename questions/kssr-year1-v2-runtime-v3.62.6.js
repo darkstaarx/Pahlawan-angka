@@ -119,6 +119,15 @@ function shapePatternSvg(kinds){
  return `<rect x="${x+4}" y="17" width="38" height="38" fill="#7da7e4" stroke="#416499" stroke-width="2"/>`};
  return `<div class="kssrDiagram"><svg viewBox="0 0 332 77" role="img" aria-label="Pola bentuk dan satu tempat kosong">${kinds.map((v,i)=>one(v,6+i*55)).join('')}</svg></div>`;
 }
+// Gambar asli untuk pengukuran bukan piawai: jawapan dibaca daripada rajah.
+function balanceBlocks(n){
+ const blocks=Array.from({length:n},(_,i)=>{const x=188+(i%4)*22,y=72-Math.floor(i/4)*22;return `<rect x="${x}" y="${y}" width="19" height="19" rx="3" fill="#8fd3be" stroke="#377d65" stroke-width="1.3"/>`}).join('');
+ return `<div class="kssrDiagram"><svg viewBox="0 0 310 140" role="img" aria-label="Neraca dengan sebuah beg dan beberapa blok"><line x1="30" y1="87" x2="284" y2="87" stroke="#aec6e3" stroke-width="4"/><polygon points="154,86 130,124 178,124" fill="#91a9cb"/><rect x="124" y="124" width="60" height="8" rx="3" fill="#6e89ae"/><path d="M55,83 L67,53 L108,53 L119,83 Z" fill="#f7bd78" stroke="#956035" stroke-width="2"/><path d="M76,56 Q85,29 99,56" fill="none" stroke="#956035" stroke-width="4"/><rect x="180" y="83" width="105" height="5" rx="2" fill="#6f93af"/>${blocks}</svg></div>`;
+}
+function capacityCups(n){
+ const cups=Array.from({length:n},(_,i)=>{const x=105+(i%5)*37,y=16+Math.floor(i/5)*45;return `<g><path d="M${x} ${y} l25 0 -4 31 -17 0 Z" fill="#c6e3ff" stroke="#4a85ad" stroke-width="2"/><path d="M${x+3} ${y+12} l19 0 -2 16 -15 0 Z" fill="#7dbbdc"/></g>`}).join('');
+ return `<div class="kssrDiagram"><svg viewBox="0 0 305 122" role="img" aria-label="Sebuah jag dan cawan penyukat yang sama saiz"><path d="M15 23 L72 23 L67 95 Q46 115 25 95 Z" fill="#a3d5ee" stroke="#3c799d" stroke-width="2"/><path d="M71 36 Q109 31 88 75 L69 86" fill="none" stroke="#3c799d" stroke-width="7"/><path d="M18 56 L69 56 L66 95 Q46 109 25 95 Z" fill="#68b7df" opacity=".9"/>${cups}</svg></div>`;
+}
 function solid(kind){
  const common='class="kd-shape"';
  const map={
@@ -133,6 +142,6 @@ function solid(kind){
 }
 function clock(h,m){return typeof clockSvg==='function'?clockSvg(h,m):`<div class="kssrDiagram">Jam ${h}:${String(m).padStart(2,'0')}</div>`}
 function moneyVis(c){return typeof moneyVisual==='function'?moneyVisual(c):`<div class="kssrDiagram">${c<100?c+' sen':'RM'+(c/100)}</div>`}
-window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,baseTenBlocks,compareDots,shapePatternSvg,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place};
+window.PAY1V2Runtime={version:VERSION,C,GEN:{},stage,Nq,choose,rand,q,recentFor,chooseNode,chooseMode,bandModes,mark,words,wrongNums,dots,estimateCloud,nonStandard,tally,baseTenBlocks,compareDots,shapePatternSvg,balanceBlocks,capacityCups,solid,clock,moneyVis,table,pictograph,numLine,fractionStrip,fractionSet,name,food,fruit,place};
 document.documentElement?.setAttribute('data-y1-v2-runtime',VERSION);
 })();
