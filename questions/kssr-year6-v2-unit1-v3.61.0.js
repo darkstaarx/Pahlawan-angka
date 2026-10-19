@@ -122,10 +122,16 @@ GEN['1.2.1']=function(id,s){
  const mode=(slot===0||slot===3)?(slot===0?'written_add':'written_div'):chooseMode(id,'1.2.1',bandModes(s,['order','brackets'],['order','brackets','unknown','story'],['unknown','story','method','error','estimate']));
  if(mode==='written_add'){
   const a=rand(12000,65000),b=rand(1000,Math.min(24000,a-1)),ans=a+b,out=mark(q(a+' + '+b+' = ?',ans,[Nq(a-b,'operation'),Nq(ans+1000,'place'),Nq(ans-1000,'place')],'Selarikan nilai tempat sebelum menambah.','Tahun 6 · Bentuk Lazim Tambah'),id,'1.2.1','written_add','symbolic','procedure',s,['operation']);
+  // Focus v2: exact column features (carry columns, digits) from the shared add/sub tagger.
+  if(typeof addSubFocusMeta==='function'&&typeof attachFoundationQuestionTags==='function'){const meta=addSubFocusMeta(id,'addition',[a,b],ans);attachFoundationQuestionTags(out,{...meta,evidence:{...meta.evidence,questionFamilyKey:out.archetypeId,tagRevision:'d6-authored-v1'}})}
   out.writtenArithmeticMode='required';return out;
  }
  if(mode==='written_div'){
   const divisor=choose([12,15,20,25]),quotient=rand(12,40),dividend=divisor*quotient,out=mark(q(dividend+' ÷ '+divisor+' = ?',quotient,[Nq(divisor,'division'),Nq(quotient+5,'division'),Nq(Math.max(1,quotient-5),'division')],'Gunakan bahagi panjang dan semak dengan darab.','Tahun 6 · Bentuk Lazim Bahagi'),id,'1.2.1','written_div','symbolic','procedure',s,['division']);
+  if(typeof attachFoundationQuestionTags==='function')attachFoundationQuestionTags(out,{originSkillId:id,contextDomain:'number',diagnosticFamily:'two_digit_div',taskRole:'quotient',
+   arithmeticProfile:{operationFamilies:['division'],operands:{dividend,divisor,quotient,remainder:0,unit:'integer'},operandDimensions:{dividendDigits:String(dividend).length,divisorDigits:2,quotientDigits:String(quotient).length,canHaveRemainder:false,decimalPlaces:0,stepCount:1},steps:['division']},
+   probes:{foundationIds:['div.multidigit','div.facts','mul.facts'],conceptIds:[],diagnosticPurpose:'normal'},
+   evidence:{questionFamilyKey:out.archetypeId,representation:'symbolic',demand:'procedure',difficultyBand:out.difficultyBand,misconceptionTargets:['division'],tagRevision:'d6-authored-v1'}});
   out.writtenArithmeticMode='required';return out;
  }
  if(mode==='order'){const a=rand(40,90),b=rand(10,25),c=rand(2,9),ans=a+b*c;return mark(q(a+' + '+b+' × '+c+' = ?',ans,distinct(ans,[(a+b)*c,a+b+c,a*c+b],'operation'),'Darab dahulu.','Tahun 6 · Tertib Operasi'),id,'1.2.1',mode,'symbolic',stage(s)===1?'procedure':'application',s,['operation']);}
