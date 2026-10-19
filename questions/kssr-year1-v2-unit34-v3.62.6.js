@@ -32,7 +32,7 @@ GEN['3.1.1']=function(id,s){
     Keseluruhan boleh diterangkan dalam konteks, tetapi 4/4 bukan sasaran
     pecahan utama dan tidak dijana sebagai pilihan rutin. */
  const cases=[[1,2,'satu perdua'],[1,4,'satu perempat'],[2,4,'dua perempat'],[3,4,'tiga perempat']],x=choose(cases),[n,d,word]=x;
- if(mode==='identify')return mark(q(`${fractionStrip(n,d)}Apakah pecahan bagi bahagian yang berlorek?`,`${n}/${d}`,[Nq(`${d-n}/${d}`,'fraction'),Nq(`${d}/${n}`,'fraction'),Nq(`${n}/${Math.max(2,d+1)}`,'fraction')],'Penyebut ialah semua bahagian sama besar.','Tahun 1 · Kenal Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
+ if(mode==='identify')return mark(q(`${fractionStrip(n,d)}Apakah pecahan bagi bahagian yang berlorek?`,`${n}/${d}`,[Nq(`${d-n===n?d:d-n}/${d}`,'fraction'),Nq(`${d}/${n}`,'fraction'),Nq(`${n}/${Math.max(2,d+1)}`,'fraction')],'Penyebut ialah semua bahagian sama besar.','Tahun 1 · Kenal Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='word_match')return mark(q(`${fractionStrip(n,d)}Apakah nama pecahan bagi bahagian berlorek?`,word,[Nq('satu perdua','fraction'),Nq('satu perempat','fraction'),Nq('dua perempat','fraction'),Nq('tiga perempat','fraction')].filter(o=>o.v!==word).slice(0,3),'Padankan bilangan bahagian berlorek dengan nama pecahan.','Tahun 1 · Nama Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);
  if(mode==='visual_choice'){const board=fractionChoiceBoard(n,d);return mark(q(`${board.html}Rajah manakah menunjukkan <b>${n}/${d}</b>?`,board.answer,['A','B','C','D'].filter(x=>x!==board.answer).map(x=>Nq(x,'fraction_visual')),'Bahagian mesti sama besar dan bilangan bahagian berlorek mesti tepat.','Tahun 1 · Pilih Rajah Pecahan'),id,'3.1.1',mode,'visual','concept',s,['fraction']);}
  if(mode==='equivalent_name'){
@@ -54,12 +54,12 @@ GEN['3.2.1']=function(id,s){
    [`Satu jalur kertas dibahagi kepada <b>${d}</b> bahagian sama besar. <b>${n}</b> bahagian diwarnakan.`, 'Apakah pecahan bagi bahagian yang diwarnakan?']
   ];
   const [story,ask]=choose(scenarios);
-  return mark(q(`${story} ${ask}`,ans,[Nq(`${d}/${n}`,'fraction'),Nq(`${d-n}/${d}`,'fraction'),Nq(`${n}/${d+1}`,'fraction')],'Penyebut ialah jumlah bahagian sama besar; pengangka ialah bahagian yang dipilih.','Tahun 1 · Pecahan dalam Kehidupan'),id,'3.2.1',mode,'story','application',s,['fraction']);
+  return mark(q(`${story} ${ask}`,ans,[Nq(`${d}/${n}`,'fraction'),Nq(`${d-n===n?d:d-n}/${d}`,'fraction'),Nq(`${n}/${d+1}`,'fraction')],'Penyebut ialah jumlah bahagian sama besar; pengangka ialah bahagian yang dipilih.','Tahun 1 · Pecahan dalam Kehidupan'),id,'3.2.1',mode,'story','application',s,['fraction']);
  }
  if(mode==='remaining'){
   const d=4,taken=choose([1,2,3]),left=d-taken,ans=`${left}/4`;
   const item=choose(['kuih','piza','jalur kertas']),verb=item==='jalur kertas'?'diwarnakan':'dimakan';
-  return mark(q(`Satu ${item} dibahagi kepada <b>4</b> bahagian sama besar. <b>${taken}</b> bahagian ${verb}. Apakah pecahan bahagian yang belum ${verb}?`,ans,[Nq(`${taken}/4`,'fraction'),Nq(`4/${left}`,'fraction'),Nq(`${left}/2`,'fraction')],'Bahagian tinggal = semua bahagian − bahagian yang dipilih.','Tahun 1 · Pecahan Tinggal'),id,'3.2.1',mode,'story','application',s,['fraction','operation']);
+  return mark(q(`Satu ${item} dibahagi kepada <b>4</b> bahagian sama besar. <b>${taken}</b> bahagian ${verb}. Apakah pecahan bahagian yang belum ${verb}?`,ans,[Nq(`${taken===left?1:taken}/4`,'fraction'),Nq(`4/${left}`,'fraction'),Nq(`${left}/2`,'fraction')],'Bahagian tinggal = semua bahagian − bahagian yang dipilih.','Tahun 1 · Pecahan Tinggal'),id,'3.2.1',mode,'story','application',s,['fraction','operation']);
  }
  return mark(q(`Sebiji roti dibahagi kepada <b>4 bahagian sama besar</b>. Semua 4 bahagian dipilih. Apakah maksudnya?`,'satu keseluruhan',[Nq('satu perempat','fraction'),Nq('satu perdua','fraction'),Nq('tiada bahagian','fraction')],'Jika semua bahagian sama besar dipilih, kita mempunyai satu keseluruhan.','Tahun 1 · Satu Keseluruhan'),id,'3.2.1',mode,'story','concept',s,['fraction','whole']);
 };
@@ -114,7 +114,7 @@ GEN['4.2.2']=function(id,s){
  const rows=[['Wang belanja',fmt(500)],['Belanja kantin',fmt(300)],['Simpan',fmt(200)]];
  if(mode==='read_record')return mark(q(`${table(['Catatan','Nilai'],rows)}Berapakah wang yang direkod sebagai simpanan?`,fmt(200),[Nq(fmt(500),'money'),Nq(fmt(300),'money'),Nq(fmt(100),'money')],'Cari baris “Simpan”.','Tahun 1 · Rekod Wang'),id,'4.2.2',mode,'table','concept',s,['money','data']);
  if(mode==='saving_total'){
-  const sen=Math.random()<.5,a=sen?choose([20,30,40,50]):choose([100,200,300]),b=sen?choose([10,20,30]):choose([100,200]);let w=[a===b?(sen?a+b+10:a+b+100):Math.abs(a-b),a,sen?a+b+10:a+b+100];return mark(q(`${table(['Hari','Simpan'],[['Isnin',fmt(a)],['Selasa',fmt(b)]])}Jumlah simpanan dua hari?`,fmt(a+b),[...new Set(w)].filter(v=>v!==a+b&&v>0).map(v=>Nq(fmt(v),'money')),'Tambah simpanan kedua-dua hari.','Tahun 1 · Jumlah Simpanan'),id,'4.2.2',mode,'table','application',s,['money','operation']);
+  const sen=Math.random()<.5,a=sen?choose([20,30,40,50]):choose([100,200,300]),b=sen?choose([10,20,30]):choose([100,200]);let w=[Math.abs(a-b),a,b,sen?a+b+10:a+b+100,sen?a+b+20:a+b+200];return mark(q(`${table(['Hari','Simpan'],[['Isnin',fmt(a)],['Selasa',fmt(b)]])}Jumlah simpanan dua hari?`,fmt(a+b),[...new Set(w)].filter(v=>v!==a+b&&v>0).slice(0,3).map(v=>Nq(fmt(v),'money')),'Tambah simpanan kedua-dua hari.','Tahun 1 · Jumlah Simpanan'),id,'4.2.2',mode,'table','application',s,['money','operation']);
  }
  const source=choose([500,1000]),spend=choose([200,300,400]),save=source-spend;return mark(q(`Wang belanja ${fmt(source)}. Belanja ${fmt(spend)}. Jika baki direkod sebagai simpanan, berapakah simpanan?`,fmt(save),[Nq(fmt(source),'money'),Nq(fmt(spend),'money'),Nq(fmt(save+100),'money')],'Simpanan baki = sumber − perbelanjaan.','Tahun 1 · Rekod Hilang'),id,'4.2.2',mode,'story','reasoning',s,['money','operation']);
 };
