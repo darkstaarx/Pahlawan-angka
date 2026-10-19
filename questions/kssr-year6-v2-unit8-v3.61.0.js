@@ -28,7 +28,7 @@ GEN['8.1.1']=function(id,s){
  }
  if(mode==='missing_angle'){
   const known=choose([[120,90,60],[180,72,54],[135,81,54]]),ans=360-known.reduce((a,b)=>a+b,0);
-  return mark(q('Tiga sektor sebuah carta pai berukuran '+known.join('°, ')+'°. Hitung sudut sektor yang keempat.',ans+'°',[Nq((ans+30)+'°','pie_angle'),Nq((ans-30)+'°','pie_angle'),Nq('360°','pie_angle')],'Jumlah semua sektor carta pai ialah 360°.','Tahun 6 · Sudut Hilang Carta Pai'),id,'8.1.1',mode,'symbolic',stage(s)===3?'reasoning':'application',s,['pie_angle']);
+  return mark(q(table(['Sektor','A','B','C','D'],[['Sudut'].concat(known.map(x=>x+'°'),['?'])])+'Hitung sudut sektor D dalam carta pai itu.',ans+'°',[Nq((ans+30)+'°','pie_angle'),Nq((ans-30)+'°','pie_angle'),Nq('360°','pie_angle')],'Jumlah semua sektor carta pai ialah 360°.','Tahun 6 · Sudut Hilang Carta Pai'),id,'8.1.1',mode,'symbolic',stage(s)===3?'reasoning':'application',s,['pie_angle']);
  }
  if(mode==='complete_label'){
   return mark(q(pie([{label:'A',angle:180},{label:'B',angle:90},{label:'?',angle:54},{label:'D',angle:36}])+'Data asal: A = 40, B = 20, C = 12, D = 8. Sektor 54° mewakili kategori yang mana?','C',[Nq('A','pie'),Nq('B','pie'),Nq('D','pie')],'54° ialah 12/80 daripada 360°.','Tahun 6 · Melengkapkan Carta Pai'),id,'8.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['pie_complete']);
@@ -46,7 +46,7 @@ GEN['8.1.1']=function(id,s){
   return mark(q(pie(set)+'Sudut sektor kategori terbesar ialah berapa kali sudut sektor kategori terkecil?',ans,wrong,'Bahagi sudut terbesar dengan sudut terkecil.','Tahun 6 · Membanding Sektor'),id,'8.1.1',mode,'visual',stage(s)===3?'reasoning':'application',s,['pie_angle','compare']);
  }
  if(mode==='validate_chart'){
-  return mark(q('Sebuah carta pai mempunyai sektor 180°, 90°, 60° dan 45°. Adakah carta itu lengkap?','tidak, jumlahnya 375°',[Nq('ya, jumlahnya 360°','pie_angle'),Nq('tidak, jumlahnya 315°','pie_angle'),Nq('tidak boleh ditentukan','pie_angle')],'Carta pai lengkap mesti berjumlah 360°.','Tahun 6 · Semak Carta Pai'),id,'8.1.1',mode,'verbal','reasoning',s,['pie_angle','error_analysis']);
+  return mark(q(table(['Sektor','A','B','C','D'],[['Sudut','180°','90°','60°','45°']])+'Adakah carta pai itu lengkap?','tidak, jumlahnya 375°',[Nq('ya, jumlahnya 360°','pie_angle'),Nq('tidak, jumlahnya 315°','pie_angle'),Nq('tidak boleh ditentukan','pie_angle')],'Carta pai lengkap mesti berjumlah 360°.','Tahun 6 · Semak Carta Pai'),id,'8.1.1',mode,'verbal','reasoning',s,['pie_angle','error_analysis']);
  }
  if(mode==='reverse_sector'){
   return mark(q('Sebuah carta pai mewakili 80 orang murid. Seramai 12 orang murid memilih renang. Hitung sudut sektor renang.', '54°',[Nq('45°','pie_angle'),Nq('72°','pie_angle'),Nq('108°','pie_angle')],'12/80 × 360° = 54°.','Tahun 6 · Sudut daripada Kuantiti'),id,'8.1.1',mode,'story','reasoning',s,['pie_angle','inverse']);

@@ -52,7 +52,7 @@ for(const state of Object.values(states)){
   const q=ctx.window.PAQuestionBanks.d6('D6.MEASURE',state,false);
   assert(!/berjisim\?|memerlukan\?|Jisim bagi 1 m\?|Penilaian\?/.test(q.prompt),'incomplete measurement wording');
   if(q.archetypeId.endsWith('_length_mass_direct')){
-   const m=q.prompt.match(/panjangnya ([\d.]+) m dan jisimnya ([\d.]+) kg.*panjangnya ([\d.]+) m/)||q.prompt.match(/Kabel A: panjang ([\d.]+) m, jisim ([\d.]+) kg.*Kabel B: panjang ([\d.]+) m/);
+   const m=q.prompt.match(/panjangnya ([\d.]+) m dan jisimnya ([\d.]+) kg.*panjangnya ([\d.]+) m/)||q.prompt.match(/Kabel A: panjang ([\d.]+) m, jisim ([\d.]+) kg.*Kabel B: panjang ([\d.]+) m/)||q.prompt.match(/<td>A<\/td><td>([\d.]+) m<\/td><td>([\d.]+) kg<\/td>.*<td>B<\/td><td>([\d.]+) m<\/td>/);
    assert(m,'missing complete cable question');assert.equal(parseFloat(q.answer),Number((Number(m[2])*Number(m[3])/Number(m[1])).toFixed(2)));
   }
   measurementModes.add(q.archetypeId);measurementSamples++;
