@@ -110,7 +110,7 @@ function answer(db,question,{wrong=false,hint=false,correct=true,tag='place',sec
 {
  const root=path.resolve(__dirname,'..'),app=fs.readFileSync(path.join(root,'js/app.js'),'utf8'),battle=fs.readFileSync(path.join(root,'js/battle.js'),'utf8'),parent=fs.readFileSync(path.join(root,'js/parent.js'),'utf8'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
  ok(app.includes('PALearnerReview?.beginQuestion'));ok(battle.includes('PALearnerReview?.firstWrong'));ok(battle.includes('PALearnerReview?.hintUsed'));ok(battle.includes('PALearnerReview?.resolve'));
- ok(parent.includes('PALearnerReview?.parentSummary'));ok(html.includes('learner-review-v1.js?v=3.57.2'));ok(html.includes('learner-review-v1.css?v=3.57.0'));ok(sw.includes("'./css/learner-review-v1.css','./js/engine/learner-review-v1.js'"));
+ ok(parent.includes('PALearnerReview?.parentSummary'));ok(html.includes('learner-review-v1.js?v=3.86.80'));ok(html.includes('learner-review-v1.css?v=3.57.0'));ok(sw.includes("'./css/learner-review-v1.css','./js/engine/learner-review-v1.js'"));
  const moduleSource=fs.readFileSync(path.join(root,'js/engine/learner-review-v1.js'),'utf8');
  for(const forbidden of ['addCoins(','updateFrontier(','scheduleConfirmation(','mastery=','coreFrontier','completedMissions','chapterStars'])ok(!moduleSource.includes(forbidden),`shadow module excludes ${forbidden}`);
 }

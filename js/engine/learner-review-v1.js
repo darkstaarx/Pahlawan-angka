@@ -10,7 +10,7 @@
   if(root)root.PALearnerReview=api;
 })(typeof window!=='undefined'?window:globalThis,function(){
   'use strict';
-  const VERSION='1.0.0',SCHEMA=1,MAX_ENCOUNTERS=600;
+  const VERSION='1.1.0',SCHEMA=1,MAX_ENCOUNTERS=600;
   const FAST_SECONDS=1.15;
   let active=null;
 
@@ -28,6 +28,30 @@
     const prompt=cleanPrompt(q?.prompt);
     return text(q?.itemId||q?.questionId||q?.qsv2AttemptId)||`${text(q?.skill)}:${text(q?.archetypeId||'legacy')}:${hash(prompt)}`;
   }
+  // Focus Diagnosis v2: keep a compact copy of the authored question tag so a later
+  // shadow evaluation can read it from the encounter. Untagged items stay untagged.
+  const strList=(a,n)=>Array.isArray(a)?a.filter(x=>typeof x==='string').slice(0,n):[];
+  const finite=v=>Number.isFinite(v)?v:null;
+  function compactFocusTag(q){
+    const t=q?.focusDiagnosticV1;
+    if(!t||t.schema!=='pa.focus.question-tag.v1'||t.tagOrigin!=='authored')return null;
+    const skill=text(t.originSkillId);
+    if(!skill||skill!==text(q.skill))return null;
+    const d=t.arithmeticProfile?.operandDimensions||{};
+    const dims={maxOperandDigits:finite(d.maxOperandDigits),usesRegrouping:typeof d.usesRegrouping==='boolean'?d.usesRegrouping:null,
+      regroupingColumns:strList(d.regroupingColumns,6),zeroCrossingBorrow:typeof d.zeroCrossingBorrow==='boolean'?d.zeroCrossingBorrow:null,
+      stepCount:finite(d.stepCount),factDependencies:strList(d.factDependencies,12),dividendDigits:finite(d.dividendDigits),
+      divisorDigits:finite(d.divisorDigits),canHaveRemainder:typeof d.canHaveRemainder==='boolean'?d.canHaveRemainder:null};
+    Object.keys(dims).forEach(k=>{if(dims[k]===null||(Array.isArray(dims[k])&&!dims[k].length))delete dims[k]});
+    const out={schema:t.schema,tagOrigin:'authored',originSkillId:skill,contextDomain:text(t.contextDomain),
+      arithmeticProfile:{operationFamilies:strList(t.arithmeticProfile?.operationFamilies,4),operandDimensions:dims},
+      probes:{foundationIds:strList(t.probes?.foundationIds,8),conceptIds:strList(t.probes?.conceptIds,8),diagnosticPurpose:text(t.probes?.diagnosticPurpose||'normal')},
+      evidence:{questionFamilyKey:text(t.evidence?.questionFamilyKey).slice(0,80),variantFingerprint:text(t.evidence?.variantFingerprint).slice(0,40),
+        tagRevision:text(t.evidence?.tagRevision||t.tagRevision).slice(0,40)}};
+    if(t.diagnosticFamily)out.diagnosticFamily=text(t.diagnosticFamily);
+    if(t.taskRole)out.taskRole=text(t.taskRole);
+    return out;
+  }
   function beginQuestion(q,context={}){
     if(!q||context.demoMode||context.devMode){active=null;return null}
     active={
@@ -38,6 +62,8 @@
       demand:text(q.demand||'procedure'),difficultyBand:num(q.difficultyBand,2),formatShift:!!q.formatShift,
       firstWrong:null,hintUsed:false,hintLevel:0
     };
+    const focusTag=compactFocusTag(q);
+    if(focusTag)active.focusDiagnosticV1=focusTag;
     return {...active};
   }
   function firstWrong(q,answer={}){
@@ -139,5 +165,5 @@
       evidence:{encounters:rows.length,independent:a.independent,corrected:a.corrected,assisted:a.assisted,unresolved:a.unresolved}
     };
   }
-  return {VERSION,SCHEMA,beginQuestion,firstWrong,hintUsed,resolve,abandon,encounters,analyse,skillReviews,parentSummary,_test:{questionKey,hash,storeFor}};
+  return {VERSION,SCHEMA,beginQuestion,firstWrong,hintUsed,resolve,abandon,encounters,analyse,skillReviews,parentSummary,_test:{questionKey,hash,storeFor,compactFocusTag}};
 });

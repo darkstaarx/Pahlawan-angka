@@ -60,4 +60,22 @@ assert(addSeen&&divSeen,'written add/div sampled');
 c.sess.questionHistory=[];const q=c.__generate('D6.PERCENT',states[1]);
 const r=engine.evaluate({originSkillId:'D6.PERCENT',profile:{learnerReviewV1:{encounters:[{questionKey:'k1',skillId:'D6.PERCENT',outcome:'unresolved'}]}},questionKeys:['k1'],questionTagsByKey:{k1:q.focusDiagnosticV1}});
 assert.equal(r.rootCause,null,'one miss never yields a root cause');
+// The learner-review ledger keeps a compact tag per encounter, and the shadow engine reads it back.
+const review=require('../js/engine/learner-review-v1.js'),profile={schoolGrade:6};let now=1e12,stored=0,bytes=0;
+const keys=[];
+for(const id of ['D6.OPS','D6.PERCENT','D6.FRAC','D6.ANGLE']){for(let i=0;i<6;i++){
+ const q=c.__generate(id,states[1]);q.skill=id;q.token='t'+(++now);
+ const begin=review.beginQuestion(q,{grade:6,mode:'practice',now});
+ const e=review.resolve(q,{correct:i%2===0,seconds:9,now:now+1},profile);keys.push(begin.questionKey);
+ if(id==='D6.ANGLE'){assert(!e.focusDiagnosticV1,'abstain topics stay untagged');continue}
+ const t=e.focusDiagnosticV1;assert(t&&t.tagOrigin==='authored'&&t.originSkillId===id,id+' encounter lost tag');
+ assert(!('operands' in t.arithmeticProfile),'operand values are not stored on the device ledger');
+ stored++;bytes+=JSON.stringify(t).length;
+}}
+assert(bytes/stored<700,'compact tag too large: '+Math.round(bytes/stored)+' bytes');
+const joined=engine.evaluate({originSkillId:'D6.OPS',profile,questionKeys:keys});
+assert.equal(joined.rootCause,null);
+// A tag whose skill does not match the question is dropped, never re-labelled.
+const wrongSkill=c.__generate('D6.FRAC',states[1]);wrongSkill.skill='D6.DEC';assert.equal(review._test.compactFocusTag(wrongSkill),null);
+report.ledger={stored,avgTagBytes:Math.round(bytes/stored)};
 console.log(JSON.stringify({status:'focus_v2_d6_tags_pass',report,abstainArchetypes:[...abstain].sort()},null,1));

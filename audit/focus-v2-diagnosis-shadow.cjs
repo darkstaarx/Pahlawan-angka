@@ -74,8 +74,12 @@ check(shadow.evidence.uniqueTaggedQuestions===2&&shadow.mode==='shadow_read_only
 check(profile.skills['D2.2.4'].mastery===44&&profile.skills['D2.4.5'].mastery===17,'mastery untouched');
 const withoutScope=engine.evaluate({originSkillId:'D2.4.5',profile,questionTagsByKey:tags});
 check(withoutScope.evidence.uniqueTaggedQuestions===0&&withoutScope.state==='insufficient_evidence','no whole-profile diagnosis without explicit question scope');
-const withoutTags=engine.evaluate({originSkillId:'D2.4.5',profile,questionKeys:keys});
+// Ledger rows written before learner-review 1.1.0 carry no tag of their own.
+const legacyProfile=JSON.parse(JSON.stringify(profile));legacyProfile.learnerReviewV1.encounters.forEach(e=>delete e.focusDiagnosticV1);
+const withoutTags=engine.evaluate({originSkillId:'D2.4.5',profile:legacyProfile,questionKeys:keys});
 check(withoutTags.evidence.uniqueTaggedQuestions===0&&withoutTags.evidence.untaggedExcluded===2,'legacy observations cannot be guessed into tagged evidence');
+const fromLedger=engine.evaluate({originSkillId:'D2.4.5',profile,questionKeys:keys});
+check(fromLedger.evidence.uniqueTaggedQuestions===2,'learner-review 1.1.0 rows carry their own authored tag');
 check(JSON.stringify(profile)===profileSnapshot,'shadow evaluator and adapter must not mutate any profile fields');
 const badQuestion={skill:'D2.4.5',focusDiagnosticV1:{schema:'pa.focus.question-tag.v1',tagOrigin:'guessed',originSkillId:'D2.4.5',evidence:{questionFamilyKey:'d2-money-equal-share'}}};
 check(collector.capture({questionKey:'not-authoritative'},badQuestion)===false,'guessed tags must never enter collector');
