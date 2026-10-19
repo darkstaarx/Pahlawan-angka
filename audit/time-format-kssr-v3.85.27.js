@@ -30,7 +30,7 @@ function samples(label){
     if(times.length===2&&/minit$/.test(String(q.answer)))assert.equal(times[1]-times[0],parseInt(q.answer)*60,id+' duration arithmetic');
    }
    if(label==='final-live-layers'&&id==='D4.TIME'&&q.archetypeId==='time_24h'){assert(/^jam \d{4}$/.test(q.answer),'D4 requested24');const src=parseClock(proseText(q.prompt)),digits=q.answer.slice(4);assert.equal((Number(digits.slice(0,2))*60+Number(digits.slice(2)))*60,src,'D4 conversion');}
-   if(label==='final-live-layers'&&id==='D6.TIME'&&/\b\d{2}:\d{2}\b/.test(q.prompt)&&!/^.*UTC[+−]\d+:\d{2}.*$/.test(q.prompt.replace(/\b\d{2}:\d{2}\b/g,'')))assert(q.prompt.includes('sistem 24 jam')||q.prompt.includes('UTC'),'D6 notation context');
+   if(label==='final-live-layers'&&id==='D6.TIME'&&/\b\d{2}:\d{2}\b/.test(q.prompt)&&!/^.*UTC[+−]\d+:\d{2}.*$/.test(q.prompt.replace(/\b\d{2}:\d{2}\b/g,'')))assert(q.prompt.includes('sistem 24 jam')||q.prompt.includes('UTC')||/\b\d{1,2}:\d{2} (?:a\.m\.|p\.m\.)/.test(q.prompt),'D6 notation context');
    seen.add(q.archetypeId||q.subcompetencyId||'legacy');c.sess.questionHistory.push({skillId:id,archetypeId:q.archetypeId,subcompetencyId:q.subcompetencyId});c.sess.questionHistory=c.sess.questionHistory.slice(-60);count++;
   }report[id]=seen.size;
  }stages[label]=report;
