@@ -222,9 +222,10 @@ function attachFoundationQuestionTags(q,meta){
 /* Focus Diagnosis v2: tag from an authored per-archetype spec
    [contextDomain, 'op,op', foundationIds, conceptIds, diagnosticFamily?]. Operand values are not
    structured here, and the fingerprint hashes numbers only, never names or wording. */
-const FOCUS_SPEC_REPRESENTATION={symbolic:'symbolic',story:'contextual',verbal:'contextual',table:'visual',visual:'visual',diagram:'visual',manipulative:'manipulative'};
+// No top-level const here: app.js loads helpers.js a second time, and a redeclared const aborts that run.
 function attachSpecFocusTag(q,skillId,spec,revision){
  if(!q||!spec||q.focusDiagnosticV1)return q;
+ const FOCUS_SPEC_REPRESENTATION={symbolic:'symbolic',story:'contextual',verbal:'contextual',table:'visual',visual:'visual',diagram:'visual',manipulative:'manipulative'};
  const [domain,steps,foundationIds,conceptIds,family]=spec,ops=steps?steps.split(','):[],arch=String(q.archetypeId||'');
  const nums=(String(q.prompt||'').replace(/<[^>]*>/g,' ').match(/\d+(?:[.,:\/]\d+)*/g)||[]).join('|')+'#'+String(q.answer??'');
  let h=2166136261;for(const ch of arch+'|'+nums){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}

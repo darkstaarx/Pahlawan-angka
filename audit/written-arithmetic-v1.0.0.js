@@ -64,6 +64,13 @@ assert.deepEqual(operationSlots,[undefined,undefined,undefined,undefined,undefin
   assert.equal(q.writtenArithmeticMode,'required',`${grade} operation has a forced written-form slot`);
   assert.match(written.render(q,{}),/paWrittenArithmetic/,`${grade} forced slot visibly renders`);
 });
+{
+  // A swapped-in written question has new numbers, so the base question's focus tag must not ride along.
+  const tagged=written.inject({prompt:'7 + 5 = ?',archetypeId:'base',focusDiagnosticV1:{schema:'pa.focus.question-tag.v1',arithmeticProfile:{operands:{addends:[7,5],sum:12}}}},'D4.SUB',{});
+  assert.equal(tagged.writtenArithmeticMode,'required');
+  const ops=tagged.focusDiagnosticV1?.arithmeticProfile?.operands;
+  assert(!ops||(ops.minuend!==undefined&&ops.difference===tagged.answer),'written swap never keeps the original question tag');
+}
 assert.equal(written.inject({prompt:'asal',subcompetencyId:'2.2.2'},'D3.ADD10000',{}).prompt,'asal','competency-targeted questions keep their original task');
 const y6Runtime={GEN:{},Nq:(v,t)=>({v,t}),choose:a=>a[0],rand:(a,b)=>a,stage:()=>2,q:(prompt,answer,wrong,hint,kind)=>({prompt,answer,wrong,hint,kind}),mark:(out,id,node,mode)=>Object.assign(out,{id,node,mode}),chooseMode:()=>{throw new Error('written slots must not depend on a fallback mode')},bandModes:()=>[],recentFor:()=>[]};
 const y6Context={window:{PAY6V2Runtime:y6Runtime},document:{documentElement:{setAttribute:()=>{}}}};
