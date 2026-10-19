@@ -13,6 +13,9 @@ const num=v=>Number(plain(v).replace(/\s/g,''));
 const grams=v=>{const t=plain(v),k=t.match(/(\d+) kg/),g=t.match(/(\d+) g$/);return (k?+k[1]*1000:0)+(g?+g[1]:0)};
 const minutes=v=>{const m=plain(v).match(/^(\d+) jam (\d+) minit$/);return m&&+m[2]<60?+m[1]*60+ +m[2]:NaN};
 const gcd=(a,b)=>b?gcd(b,a%b):a;
+const measure=v=>Number(plain(v).replace(/\s*(cm²|cm³|cm)$/,'').replace(/\s/g,''));
+// Every item with a picture must draw it as a 2.5D SVG scene, like the Year 1 measurement visuals.
+const graphicModes=/^(area_square_rect|perimeter_square_polygon|volume_cube_cuboid|syrup_share|rate_distance|pictograph_)/;
 const roundTo=(x,u)=>Math.floor(x/u+.5)*u;
 const simplest=(a,b)=>{const g=gcd(a,b);return `${a/g} : ${b/g}`};
 
@@ -53,6 +56,9 @@ function verify(q){
   case 'mean_days':expected=e.v.reduce((x,y)=>x+y,0)/5;got=num(a);ok(Number.isInteger(expected),'whole-number mean',q);break;
   case 'mean_projection':expected=e.v.reduce((x,y)=>x+y,0)/5*e.days;got=num(a);break;
   case 'think_number':{const m=t.replace(/(\d) (?=\d{3}\b)/g,'$1').match(/dengan (\d+), kemudian saya (tolak|tambah) (\d+)\. Jawapannya ialah (\d+)\./);ok(m,'statement is readable',q);if(m){const x=num(a);ok((m[2]==='tolak'?x*+m[1]-+m[3]:x*+m[1]+ +m[3])===+m[4],'the number satisfies Hana\'s statement',q)}return}
+  case 'area_square_rect':expected=e.s*e.s+(e.L-e.s)*e.h;got=measure(a);ok(t.includes(`${e.s*e.s} cm²`)&&t.includes(`${e.L} cm`)&&t.includes(`${e.h} cm`),'diagram carries the givens',q);break;
+  case 'perimeter_square_polygon':expected=(e.n+2)*e.side;got=measure(a);ok(t.includes(`${4*e.side} cm`),'perimeter of P is given',q);break;
+  case 'volume_cube_cuboid':expected=e.e**3+e.l*e.e*e.h;got=measure(a);ok(e.h<e.e&&e.l>e.e,'cuboid is lower and longer than the cube',q);break;
   case 'stock_story':expected=e.c*e.per-e.sat-(e.sat+e.more);got=num(a);ok(expected>0,'stock left is positive',q);break;
   default:ok(false,'unknown mode '+e.mode,q);return;
  }
@@ -65,6 +71,7 @@ function common(q,id){
  ok(!/undefined|NaN|\[object Object\]|(^|[^\d])0 kg /.test(plain(q.prompt)+' '+opts.map(plain).join(' ')),'valid display',q);
  ok(!/(^|[^\d.])\d{5,}(?!\d)/.test(plain(q.prompt).replace(/\b20\d\d\b/g,'')),'UASA digit grouping',q);
  ok(q.familyKey===id&&q.source==='d5-completion-v1','tagged to its skill',q);
+ if(graphicModes.test(q.qaEvidence.mode))ok(/class="kssrDiagram paU6Scene paD5Scene"><svg viewBox="0 0 340 \d+" role="img" aria-label="[^"]+"/.test(q.prompt),'graphic is a labelled 2.5D SVG scene',q);
 }
 // Direct generation of every mode.
 for(const id of Object.keys(PLAN))for(const mode of Object.keys(PLAN[id].modes))for(let i=0;i<250;i++){

@@ -28,9 +28,9 @@
   const PROFILE_MANAGER_VERSION='3.24.2';
 
   const gradeDepthJs=`questions/grade-depth-v1.js?v=${APP_VERSION}`;
-  const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}-d5-uasa-1`;
+  const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}-d5-uasa-3`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;
-  const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${APP_VERSION}-d5-uasa-1`;
+  const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${APP_VERSION}-d5-uasa-3`;
   const y1CompetencyV2Js=`data/kssr/year1-competencies-v2.js?v=${APP_VERSION}`;
   const y1V2RuntimeJs=`questions/kssr-year1-v2-runtime-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y1V2Unit1Js=`questions/kssr-year1-v2-unit1-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
@@ -44,8 +44,8 @@
   const d4CompletionDataJs='questions/d4/completion-data-money-v1.js?v=1';
   const d4CompletionMeasuresJs='questions/d4/completion-measures-v1.js?v=1';
   const d4CompletionJs='questions/d4/completion-v1.js?v=1';
-  const y5CurriculumJs=`questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js?v=${APP_VERSION}-d5-uasa-1`;
-  const d5CompletionJs=`questions/d5/completion-v1.js?v=${APP_VERSION}-d5-uasa-2`;
+  const y5CurriculumJs=`questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js?v=${APP_VERSION}-d5-uasa-3`;
+  const d5CompletionJs=`questions/d5/completion-v1.js?v=${APP_VERSION}-d5-uasa-3`;
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;
   const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}`;
   const y6CurriculumJs=`questions/kssr-year6-curriculum-v${Y6_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;

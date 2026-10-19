@@ -24,4 +24,12 @@ Years such as 2024 are wrapped in `<span data-no-group>`, and `groupText` leaves
 - 5,400 D5 questions sampled in headless Chromium through the full release loader: no runtime errors, no duplicate choices. Eight new diagrams rendered at 390 px with no horizontal overflow.
 - Existing audits: the same pass/fail set as before, except `audit/year45-curriculum-release.cjs`, which now also accepts `d5-completion-v1` as a D5 source. `audit/year6-money-real-v3.60.5.js` fails intermittently on the old code as well.
 
+## Follow-up: space items, 2.5D graphics and planned choices
+
+- D5.AREA gains three item types from the model papers. Area of a square joined to a rectangle, given the square's area (core). Perimeter of a square joined to a regular pentagon, hexagon or octagon, given the square's perimeter (core). Volume of a cube joined to a cuboid whose width equals the cube's edge (secure).
+- Every graphic in the completion layer is a labelled 2.5D SVG scene in the Year 1 measurement style (`kssrDiagram paU6Scene`): raised slabs with side faces, oblique cube/cuboid, bucket, road with map pins, and person tokens for pictographs. Info cards get a raised edge. Each scene carries an `aria-label` with the values needed to solve it.
+- D5 choices no longer fall back to `Q()` padding ("903 010", "13", "Tidak pasti"). Templates whose candidates could collide now carry spare misconceptions. `Q()` keeps the first three unique choices instead of throwing when more than three are supplied.
+
+Validation: `audit/d5-completion-qa.js` (34 item types, 96,161 checks, and every graphic must be a 2.5D SVG scene) and `audit/d5-uasa-language-qa.js` (no filler choices, 218,395 checks) pass. 5,400 D5 questions in headless Chromium: no errors, no duplicate or placeholder choices. All 117 D1–D6 skills generate as before. Existing audits keep the same pass/fail set; `audit/d4-completion-qa.js` passes once `questions/helpers.js` is committed.
+
 A separate production release is required before the live site receives these changes.

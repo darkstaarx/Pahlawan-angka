@@ -73,7 +73,8 @@ function Q(prompt,answer,wrong,hint,kind="Adaptive",diagnostic=false,formatShift
  let seen=new Set([semanticChoiceKey(answer)]),w=[];
  for(let x of wrong){if(x!=null){const key=semanticChoiceKey(x.label??x.v);if(!seen.has(key)){seen.add(key);w.push(x)}}}
  let d=1,guard=0;while(w.length<3&&guard++<20){let v=fallbackChoice(answer,d++),key=semanticChoiceKey(v);if(!seen.has(key)){w.push(N(v,"generated"));seen.add(key)}}
- if(w.length!==3)throw new Error(`Pilihan unik tidak dapat dijana untuk jawapan: ${answer}`);
+ // Extra candidates are spares for when earlier ones collide; the first three unique ones are kept.
+ if(w.length<3)throw new Error(`Pilihan unik tidak dapat dijana untuk jawapan: ${answer}`);
  return{prompt,answer,wrong:w.slice(0,3),hint,kind,diagnostic,formatShift}
 }
 function attachFractionShade(q,numerator,denominator,answerMode='fraction'){

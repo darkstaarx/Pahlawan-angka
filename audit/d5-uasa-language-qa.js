@@ -23,7 +23,9 @@ for(const id of skills){for(let i=0;i<600;i++){
  const q=c.generate(id,states[i%3],{});counts[id]=(counts[id]||0)+1;
  const t=plain(q.prompt),opts=[plain(q.answer),...q.wrong.map(label)],all=t+' '+opts.join(' ')+' '+plain(q.hint);
  ok(q.wrong.length===3&&new Set(opts).size===4,'four distinct choices',q);
- ok(!/undefined|NaN|\[object Object\]|Pilihan \d/.test(all),'no placeholder text',q);
+ ok(!/undefined|NaN|\[object Object\]|Pilihan \d|Tidak pasti/.test(all),'no placeholder text',q);
+ // Q() pads collisions with arbitrary values; every D5 choice must come from a planned slip instead.
+ ok(!q.wrong.some(w=>w.tag==='generated'&&!/order/.test(q.archetypeId||'')),'no filler choices',q);
  for(const re of banned)ok(!re.test(all),'banned wording '+re,q);
  // A question ends in a full sentence, not a note such as "Baki?" or "Koordinat baharu?".
  const last=t.split(/(?<=[.?])\s+/).pop();

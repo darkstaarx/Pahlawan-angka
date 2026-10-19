@@ -21,7 +21,33 @@
  // Years stay as written (2024, not 2 024) when Darjah 5 digit grouping runs.
  const noGroup=v=>`<span data-no-group>${v}</span>`;
  const table=(headers,rows,label)=>`<div class="kssrDiagram" role="group" aria-label="${label}"><table class="kd-table"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>i===0?`<th>${c}</th>`:`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
- const cards=(items,label)=>`<div class="kssrDiagram" role="group" aria-label="${label}" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${items.map(([title,value])=>`<div style="min-width:130px;border:2px solid #2f5ea8;border-radius:10px;overflow:hidden;background:#fff"><div style="background:#2f5ea8;color:#fff;font-weight:800;padding:4px 8px">${title}</div><div style="font-weight:900;font-size:16px;padding:8px">${value}</div></div>`).join('')}</div>`;
+ const cards=(items,label)=>`<div class="kssrDiagram" role="group" aria-label="${label}" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${items.map(([title,value])=>`<div style="min-width:130px;border:2px solid #2f5ea8;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 5px 0 #1f437f,0 9px 14px rgba(40,77,116,.18)"><div style="background:#2f5ea8;color:#fff;font-weight:800;padding:4px 8px">${title}</div><div style="font-weight:900;font-size:16px;padding:8px">${value}</div></div>`).join('')}</div>`;
+ // 2.5D scenes follow the Year 1 measurement visuals (kssrDiagram paU6Scene): inline SVG on a soft panel,
+ // solids drawn as raised slabs — darker side faces under a lighter top face — with a white highlight edge.
+ const f1=n=>Number(n).toFixed(1);
+ const svgText=(x,y,s,size=14,fill='#243d5e',anchor='middle')=>`<text x="${f1(x)}" y="${f1(y)}" style="font:900 ${size}px Nunito,system-ui,sans-serif;fill:${fill};text-anchor:${anchor}">${s}</text>`;
+ const scene=(h,aria,body)=>(h=Math.ceil(h),`<div class="kssrDiagram paU6Scene paD5Scene"><svg viewBox="0 0 340 ${h}" role="img" aria-label="${aria}"><rect x="1" y="1" width="338" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${body}</svg></div>`);
+ const poly=(pts,fill,stroke='#36577a',w=2)=>`<polygon points="${pts.map(([x,y])=>f1(x)+','+f1(y)).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${w}" stroke-linejoin="round"/>`;
+ function slab(pts,top,side,depth=7){
+  const dx=depth*.55,dy=depth;
+  return {sides:pts.map((p,i)=>{const q=pts[(i+1)%pts.length];return poly([p,q,[q[0]+dx,q[1]+dy],[p[0]+dx,p[1]+dy]],side,'#4d6c83',1)}).join(''),face:poly(pts,top)};
+ }
+ function personToken(x,y,size=1){
+  const r=5*size,b=7*size;
+  return `<g><path d="M${f1(x-b+1.5)} ${f1(y+b+1.5)} Q${f1(x-b+1.5)} ${f1(y-2)} ${f1(x+1.5)} ${f1(y-2)} Q${f1(x+b+1.5)} ${f1(y-2)} ${f1(x+b+1.5)} ${f1(y+b+1.5)} Z" fill="#1f437f"/><path d="M${f1(x-b)} ${f1(y+b)} Q${f1(x-b)} ${f1(y-3)} ${f1(x)} ${f1(y-3)} Q${f1(x+b)} ${f1(y-3)} ${f1(x+b)} ${f1(y+b)} Z" fill="#2f5ea8"/><circle cx="${f1(x+1.2)}" cy="${f1(y-9*size+1.2)}" r="${f1(r)}" fill="#1f437f"/><circle cx="${f1(x)}" cy="${f1(y-9*size)}" r="${f1(r)}" fill="#3d6fb6"/><circle cx="${f1(x-1.6*size)}" cy="${f1(y-10.6*size)}" r="${f1(1.6*size)}" fill="#fff" opacity=".75"/></g>`;
+ }
+ function bucketScene(text){
+  const body=`<path d="M108 48 L126 128 Q170 141 214 128 L232 48 Z" fill="#cfe2fb" stroke="#36577a" stroke-width="2.2"/><path d="M232 48 L214 128 Q205 131 198 132 L214 50 Z" fill="#a9c4ea"/><path d="M122 60 L136 122" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/>`;
+  return scene(150,`Baldi berisi ${text} sirap`,`<ellipse cx="170" cy="138" rx="62" ry="7" fill="#2f5ea8" opacity=".12"/><path d="M110 50 Q170 -8 230 50" fill="none" stroke="#4d6c83" stroke-width="3.5" stroke-linecap="round"/>${body}<ellipse cx="170" cy="48" rx="62" ry="12" fill="#eaf3ff" stroke="#36577a" stroke-width="2.2"/><ellipse cx="170" cy="51" rx="54" ry="8.5" fill="#7cc0ea" stroke="#2686bd" stroke-width="1.4"/><path d="M140 49 q12 -4 26 0" stroke="#fff" stroke-width="2" opacity=".75" fill="none"/><rect x="118" y="78" width="104" height="30" rx="9" fill="#fff" stroke="#9fb9de" stroke-width="1.5"/>${svgText(170,99,text,17)}`);
+ }
+ function roadScene(A,B,km){
+  const road=slab([[56,100],[284,100],[294,86],[66,86]],'#c9d3df','#97a6b8',7),pin=x=>`<ellipse cx="${x}" cy="94" rx="11" ry="4" fill="#1f437f" opacity=".25"/><path d="M${x} 93 L${x-8} 76 A9 9 0 1 1 ${x+8} 76 Z" fill="#2f5ea8" stroke="#1f437f" stroke-width="1.5"/><circle cx="${x}" cy="72" r="3.6" fill="#fff"/>`;
+  return scene(148,`Jarak dari ${A} ke ${B} ialah ${km} km`,`${road.sides}${road.face}<path d="M74 93 H286" stroke="#fff" stroke-width="2.4" stroke-dasharray="10 8"/>${pin(68)}${pin(284)}<path d="M74 44 H278" stroke="#36577a" stroke-width="1.8"/><path d="M74 37 v14 M278 37 v14" stroke="#36577a" stroke-width="1.8"/><rect x="138" y="24" width="64" height="26" rx="8" fill="#fff" stroke="#9fb9de" stroke-width="1.5"/>${svgText(170,42,`${km} km`,15,'#2f5ea8')}${svgText(20,132,A,13,'#243d5e','start')}${svgText(320,132,B,13,'#243d5e','end')}`);
+ }
+ function pictographScene(houses,s,key){
+  const rows=houses.map((h,i)=>{const y=30+i*30;return `<path d="M66 ${y+14} H324" stroke="#dbe5f2" stroke-width="1.2"/>${svgText(58,y+5,h,13,'#243d5e','end')}${Array.from({length:s[i]},(_,j)=>personToken(80+j*26,y)).join('')}`}).join('');
+  return scene(166,`Piktograf: ${houses.map((h,i)=>`${h} ${s[i]} simbol`).join(', ')}. Setiap simbol mewakili ${key} orang murid.`,`${rows}${personToken(80,151,.85)}${svgText(96,155,`mewakili ${key} orang murid`,13,'#243d5e','start')}`);
+ }
  const stageOf=s=>Number(s?.mastery||0)<35||Number(s?.evidence||0)<2?1:Number(s?.mastery||0)>=70&&Number(s?.confidence||0)>=55?3:2;
  function recent(id){try{return (sess?.questionHistory||[]).filter(x=>x.skillId===id).slice(-8).map(x=>String(x.archetypeId||''))}catch(_){return []}}
  function rotate(id,modes){const r=recent(id),last=r.at(-1),count=m=>r.filter(a=>a==='d5c_'+m).length,pool=modes.filter(m=>'d5c_'+m!==last);return (pool.length?pool:modes).sort((a,b)=>count(a)-count(b)||Math.random()-.5)[0]}
@@ -85,7 +111,7 @@
  }
  function syrupShare(id,mode){
   const per=R(4,15)*50,n=R(5,12),k=R(2,n-1),total=per*n,who=pick(['Puan Rohani','Encik Lim','Puan Kavitha']),ans=per*k;
-  const bucket=`<div class="kssrDiagram" role="img" aria-label="Baldi berisi ${lMl(total)} sirap"><div style="display:inline-block;padding:14px 22px;border:3px solid #4f83d1;border-radius:6px 6px 22px 22px;background:#e8f1ff;font-weight:900;font-size:18px">${lMl(total)}</div></div>`;
+  const bucket=bucketScene(lMl(total));
   return make(id,mode,'5.1-5.3',`Rajah menunjukkan isi padu sirap di dalam sebuah baldi di kantin sekolah. ${who} menuang sirap itu sama banyak ke dalam ${n} biji botol yang sama.${bucket}Hitung jumlah isi padu, dalam mℓ, sirap di dalam ${k} biji botol itu.`,ans,choices(ans,[per,total-ans,per*(k+1),total,per*(k-1),ans+100],'unit'),'Tukar kepada mℓ, bahagi sama banyak untuk satu botol, kemudian darab dengan bilangan botol.','Isi Padu Cecair','story','application',['unit','operation'],{total,n,k});
  }
  function ropes(id,mode){return attempt(()=>{
@@ -140,7 +166,7 @@
  })}
  function rateDistance(id,mode){
   const k=R(8,15),l1=R(6,20),d1=l1*k,l2=R(l1+2,40),ans=l2*k,[A,B]=pick([['Kota Sinar','Bandar Laut'],['Pekan Lama','Bandar Baru'],['Kampung Indah','Bandar Jaya']]);
-  const line=`<div class="kssrDiagram" role="img" aria-label="Jarak dari ${A} ke ${B} ialah ${d1} km"><div style="display:flex;justify-content:space-between;font-weight:900"><span>${A}</span><span>${B}</span></div><div style="height:4px;background:#2f5ea8;border-radius:2px;margin:6px 4px"></div><div style="font-weight:900;color:#2f5ea8">${d1} km</div></div>`;
+  const line=roadScene(A,B,d1);
   return make(id,mode,'rate_distance',`Rajah menunjukkan jarak perjalanan dari ${A} ke ${B}. Sebuah van menggunakan ${l1} ℓ petrol untuk perjalanan itu.${line}Berapakah jarak, dalam km, yang dapat dilalui oleh van itu dengan menggunakan ${l2} ℓ petrol? Van itu menggunakan petrol pada kadar yang sama.`,ans,choices(ans,[d1+(l2-l1),ans+k,ans-k,ans+2*k],'ratio'),'Cari jarak bagi 1 ℓ petrol dahulu, kemudian darab dengan bilangan liter.','Kadar dan Jarak','story','application',['ratio','division'],{k,l1,l2});
  }
  function rateTime(id,mode){return attempt(()=>{
@@ -148,6 +174,35 @@
   const hundred=T>=100?`${Math.floor(T/100)} jam ${T%100} minit`:null;
   return make(id,mode,'rate_time',`Pada pagi Hari Sukan, sekumpulan sukarelawan ${verb} ${n1} ${unit} dalam ${n1*per} minit. Mereka bekerja pada kadar yang tetap. Berapa lamakah, dalam jam dan minit, mereka memerlukan untuk ${verb} ${n2} ${unit}?`,hm(T),choices(hm(T),[hundred,hm(T+per),hm(T-per),`${T} minit`],'ratio'),`Cari masa untuk satu ${item} dahulu. 60 minit = 1 jam.`,'Kadar dan Masa','story','reasoning',['ratio','time_operation'],{per,n1,n2});
  })}
+
+ // ---------- Ruang (gabungan bentuk) ----------
+ function areaSquareRect(id,mode){
+  const s=R(5,10),h=R(2,s-1),L=s+R(4,12),ans=s*s+(L-s)*h,k=Math.min(230/L,96/s),x0=45,y0=14,sq=s*k,yb=y0+sq,xr=x0+sq,xe=x0+L*k,rh=h*k,dim=yb+26;
+  const A=slab([[x0,y0],[xr,y0],[xr,yb],[x0,yb]],'#dbe8fb','#9fb9de'),B=slab([[xr,yb-rh],[xe,yb-rh],[xe,yb],[xr,yb]],'#ffe3c2','#e0b07c');
+  const art=scene(dim+26,`Segi empat sama dengan luas ${s*s} cm² bercantum dengan segi empat tepat setinggi ${h} cm. Panjang keseluruhan ${L} cm.`,
+   A.sides+B.sides+A.face+B.face+`<path d="M${f1(x0+5)} ${f1(y0+5)} h${f1(sq-10)}" stroke="#fff" stroke-width="2.4" opacity=".85"/><path d="M${f1(xr+5)} ${f1(yb-rh+5)} h${f1(xe-xr-10)}" stroke="#fff" stroke-width="2.4" opacity=".85"/>`
+   +svgText(x0+sq/2,y0+sq/2-3,'Luas',12,'#3d5a80')+svgText(x0+sq/2,y0+sq/2+15,`${s*s} cm²`,15)+svgText(xe+12,yb-rh/2+5,`${h} cm`,13,'#243d5e','start')
+   +`<path d="M${f1(x0)} ${f1(dim)} H${f1(xe)} M${f1(x0)} ${f1(dim-6)} v12 M${f1(xe)} ${f1(dim-6)} v12" stroke="#36577a" stroke-width="1.6"/>`+svgText((x0+xe)/2,dim+17,`${L} cm`,13));
+  return make(id,mode,'6.2.2',`Rajah menunjukkan gabungan sebuah segi empat sama dengan sebuah segi empat tepat. Luas segi empat sama itu ialah ${s*s} cm².${art}Hitung luas, dalam cm², seluruh bentuk itu.`,`${ans} cm²`,choices(`${ans} cm²`,[s*s+L*h,s*s+(L-s)*s,L*s,(L-s)*h,s*s+(L-s)+h].map(v=>`${v} cm²`),'area'),'Cari sisi segi empat sama daripada luasnya dahulu. Kemudian cari panjang segi empat tepat dan tambah kedua-dua luas.','Luas Gabungan','visual','reasoning',['area','composite'],{s,h,L});
+ }
+ function perimeterSquarePolygon(id,mode){
+  const [n,name]=pick([[5,'pentagon sekata'],[6,'heksagon sekata'],[8,'oktagon sekata']]),side=R(3,12),ans=(n+2)*side;
+  const rin=1/(2*Math.tan(Math.PI/n)),Rc=1/(2*Math.sin(Math.PI/n)),above=n%2===0?2*rin:rin+Rc,a=Math.min(44,124/(1+above)),cx=170,ys=12+above*a,yb=ys+a,cy=ys-rin*a;
+  const Q=Array.from({length:n},(_,i)=>{const t=Math.PI/2+Math.PI/n+2*Math.PI*i/n;return [cx+Rc*a*Math.cos(t),cy+Rc*a*Math.sin(t)]}),P=[[cx-a/2,ys],[cx+a/2,ys],[cx+a/2,yb],[cx-a/2,yb]];
+  const q=slab(Q,'#dff3e6','#9fcdb0'),sq=slab(P,'#dbe8fb','#9fb9de');
+  const art=scene(Math.ceil(yb+22),`Segi empat sama P bercantum dengan ${name} Q pada satu sisi.`,q.sides+sq.sides+q.face+sq.face+`<path d="M${f1(cx-a/2+4)} ${f1(ys+4)} h${f1(a-8)}" stroke="#fff" stroke-width="2.2" opacity=".85"/>`+svgText(cx,cy+6,'Q',17)+svgText(cx,ys+a/2+6,'P',16));
+  return make(id,mode,'6.2.1',`Rajah menunjukkan sebuah segi empat sama P dan sebuah ${name} Q yang bercantum pada satu sisi. Perimeter segi empat sama P ialah ${4*side} cm.${art}Hitung perimeter, dalam cm, gabungan bentuk itu.`,`${ans} cm`,choices(`${ans} cm`,[(n+4)*side,(n+3)*side,n*side,(n+1)*side].map(v=>`${v} cm`),'perimeter'),'Sisi segi empat sama dan sisi poligon sekata itu sama panjang. Sisi yang bercantum tidak termasuk dalam perimeter.','Perimeter Gabungan','visual','reasoning',['perimeter','composite'],{n,side});
+ }
+ function volumeCubeCuboid(id,mode){
+  const e=R(3,8),l=R(e+1,12),h=R(2,e-1),ans=e**3+l*e*h,k=Math.min(244/(e+l+.35*e),77/e),E=e*k,Lw=l*k,H=h*k,dx=.35*E,dy=-.35*E,x0=44,yb=32+1.35*E,x1=x0+E;
+  const face=(pts,fill)=>poly(pts,fill,'#36577a',1.8);
+  const cube=face([[x0+E,yb-E],[x0+E+dx,yb-E+dy],[x0+E+dx,yb+dy],[x0+E,yb]],'#b9cdec')+face([[x0,yb-E],[x0+E,yb-E],[x0+E+dx,yb-E+dy],[x0+dx,yb-E+dy]],'#f2f7ff')+face([[x0,yb-E],[x0+E,yb-E],[x0+E,yb],[x0,yb]],'#dfeafb');
+  const cuboid=face([[x1,yb-H],[x1+Lw,yb-H],[x1+Lw+dx,yb-H+dy],[x1+dx,yb-H+dy]],'#f5f9ff')+face([[x1+Lw,yb-H],[x1+Lw+dx,yb-H+dy],[x1+Lw+dx,yb+dy],[x1+Lw,yb]],'#bdd0ee')+face([[x1,yb-H],[x1+Lw,yb-H],[x1+Lw,yb],[x1,yb]],'#e3eefc');
+  const art=scene(Math.ceil(yb+30),`Kubus dengan sisi ${e} cm bercantum dengan kuboid sepanjang ${l} cm dan setinggi ${h} cm. Lebar kuboid sama dengan sisi kubus.`,
+   `<ellipse cx="${f1(x0+(E+Lw)/2+dx/2)}" cy="${f1(yb+4)}" rx="${f1((E+Lw)/2+dx/2)}" ry="5" fill="#2f5ea8" opacity=".10"/>`+cube+cuboid+`<path d="M${f1(x0+4)} ${f1(yb-E+4)} h${f1(E-8)}" stroke="#fff" stroke-width="2.2" opacity=".85"/>`
+   +svgText(x0+E/2+dx/2,yb-E+dy-8,'kubus',12,'#3d5a80')+svgText(x0-6,yb-E/2+5,`${e} cm`,13,'#243d5e','end')+svgText(x1+Lw/2,yb+19,`${l} cm`,13)+svgText(x1+Lw+dx+6,yb+dy/2-H/2+5,`${h} cm`,13,'#243d5e','start'));
+  return make(id,mode,'6.3.1',`Rajah menunjukkan gabungan sebuah kubus dan sebuah kuboid. Kuboid itu bercantum dengan satu muka kubus dan lebarnya sama dengan sisi kubus.${art}Hitung isi padu, dalam cm³, gabungan bentuk itu.`,`${ans} cm³`,choices(`${ans} cm³`,[e**3+l*h,(e+l)*e*e,e**3+l*e*e,l*e*h,e**3+l*h*h].map(v=>`${v} cm³`),'volume'),'Isi padu kubus = sisi × sisi × sisi. Lebar kuboid sama dengan sisi kubus. Tambah kedua-dua isi padu.','Isi Padu Gabungan','visual','reasoning',['volume','composite'],{e,l,h});
+ }
 
  // ---------- Pengurusan data ----------
  function freqMedian(id,mode){return attempt(()=>{
@@ -157,8 +212,7 @@
  })}
  function pictograph(id,mode){return attempt(()=>{
   const houses=['Merah','Biru','Hijau','Kuning'],key=pick([2,4,5,10]),s=houses.map(()=>R(2,9)),sum=s.reduce((a,b)=>a+b,0);if(mode==='pictograph_mean'&&sum*key%4)return null;
-  const rows=houses.map((h,i)=>`<div style="display:flex;align-items:center;gap:8px;justify-content:center;margin:2px 0"><b style="width:58px;text-align:right">${h}</b><span aria-hidden="true" style="width:190px;text-align:left;letter-spacing:3px;color:#2f5ea8;font-size:18px">${'●'.repeat(s[i])}</span></div>`).join('');
-  const pict=`<div class="kssrDiagram" role="img" aria-label="Piktograf: ${houses.map((h,i)=>`${h} ${s[i]} simbol`).join(', ')}. Setiap simbol mewakili ${key} orang murid.">${rows}<div style="margin-top:6px;font-weight:800"><span style="color:#2f5ea8">●</span> mewakili ${key} orang murid</div></div>`;
+  const pict=pictographScene(houses,s,key);
   const intro=`Piktograf menunjukkan bilangan murid empat buah rumah sukan yang menyertai acara lompat jauh.${pict}`;
   if(mode==='pictograph_diff'){const hi=s.indexOf(Math.max(...s)),lo=s.indexOf(Math.min(...s));if(s[hi]===s[lo])return null;const ans=(s[hi]-s[lo])*key;return make(id,mode,'8.1.1',intro+`Berapakah bilangan murid Rumah ${houses[hi]} lebih banyak daripada murid Rumah ${houses[lo]}?`,ans,choices(ans,[s[hi]-s[lo],s[hi]*key,(s[hi]+s[lo])*key,ans+key],'data'),`Setiap simbol mewakili ${key} orang murid. Cari beza bilangan simbol, kemudian darab.`,'Piktograf','visual','application',['data'],{s,key,hi,lo})}
   if(mode==='pictograph_total'){const ans=sum*key;return make(id,mode,'8.1.1',intro+'Hitung jumlah murid yang menyertai acara itu.',ans,choices(ans,[sum,ans+key,ans-key,ans+2*key],'data'),'Kira semua simbol, kemudian darab dengan nilai satu simbol.','Piktograf','visual','application',['data'],{s,key})}
@@ -186,7 +240,7 @@
  const GEN={reverse_round:reverseRound,big_subtract:bigSubtract,big_missing:bigMissing,down_payment:downPayment,interest_year1:interest,interest_year2:interest,receipt,
   mixed_mass_three:mixedMass,mixed_length_three:mixedLength,volume_to_litre:volumeToLitre,syrup_share:syrupShare,rope_total:ropes,rope_left:ropes,packets_kg:packets,packets_left:packets,
   decimal_hour:decimalHour,visit_total:visitTotal,year_fraction:yearFraction,date_duration:dateDuration,ratio_part_total:ratioPartTotal,ratio_count_total:ratioCountTotal,rate_distance:rateDistance,rate_time:rateTime,
-  freq_median:freqMedian,pictograph_diff:pictograph,pictograph_total:pictograph,pictograph_mean:pictograph,mean_days:meanDays,mean_projection:meanDays,think_number:thinkNumber,stock_story:stockStory};
+  area_square_rect:areaSquareRect,perimeter_square_polygon:perimeterSquarePolygon,volume_cube_cuboid:volumeCubeCuboid,freq_median:freqMedian,pictograph_diff:pictograph,pictograph_total:pictograph,pictograph_mean:pictograph,mean_days:meanDays,mean_projection:meanDays,think_number:thinkNumber,stock_story:stockStory};
  // Minimum learner stage per new item (1 beginner, 2 core, 3 secure) and the chance a bank call offers one.
  // generate() keeps the most varied of up to 16 candidates, so the share a learner sees is higher than this chance.
  const PLAN={
@@ -197,6 +251,7 @@
   'D5.RATIO':{share:.25,modes:{ratio_count_total:1,ratio_part_total:2}},
   'D5.RATE':{share:.3,modes:{rate_distance:2,rate_time:3}},
   'D5.DATA':{share:.3,modes:{pictograph_diff:1,pictograph_total:1,pictograph_mean:2,freq_median:2,mean_days:2,mean_projection:3}},
+  'D5.AREA':{share:.3,modes:{area_square_rect:2,perimeter_square_polygon:2,volume_cube_cuboid:3}},
   'D5.OPS':{share:.35,modes:{think_number:2,stock_story:2}}
  };
  function question(id,s,mode){
