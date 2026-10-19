@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const RT=window.PAY1V2Runtime;if(!RT)return;
-const {GEN,Nq,q,mark,chooseMode,bandModes,stage,rand,choose,words,wrongNums,dots,estimateCloud,numLine,name,fruit}=RT;
+const {GEN,Nq,q,mark,chooseMode,bandModes,stage,rand,choose,words,wrongNums,dots,estimateCloud,numLine,name,fruit,baseTenBlocks,compareDots}=RT;
 
 GEN['1.1.1']=function(id,s){
  const mode=chooseMode(id,'1.1.1',bandModes(s,['more_less'],['more_less','same_match'],['same_match','pattern_compare','reason_compare']));
@@ -11,20 +11,25 @@ GEN['1.1.1']=function(id,s){
   return mark(q(`Kumpulan A ada <b>${a}</b> buah ${fruit()}. Kumpulan B ada <b>${b}</b> buah yang sama jenis. Kumpulan manakah ada lebih banyak buah?`,ans,[Nq(ans==='Kumpulan A'?'Kumpulan B':'Kumpulan A','compare'),Nq('Sama banyak','compare'),Nq('Tidak boleh ditentukan','compare')],'Banding bilangan dalam kedua-dua kumpulan.','Tahun 1 · Kuantiti'),id,'1.1.1',mode,'story','concept',s,['compare']);
  }
  if(mode==='same_match'){
-  const n=rand(4,9),other=n+choose([-2,-1,1,2]);const same=Math.random()<.5, b=same?n:Math.max(1,other),ans=same?'sama banyak':'tidak sama banyak';
-  return mark(q(`${dots(n)}Kumpulan A ada ${n} objek. Kumpulan B ada <b>${b}</b> objek. Adakah kedua-dua kumpulan sama banyak?`,ans,[Nq(ans==='sama banyak'?'tidak sama banyak':'sama banyak','compare'),Nq('lebih satu sahaja','compare'),Nq('tidak boleh dibanding','compare')],'Padankan satu-satu atau banding bilangannya.','Tahun 1 · Padanan Satu-satu'),id,'1.1.1',mode,'visual','concept',s,['compare']);
+  const n=rand(4,9),other=n+choose([-2,-1,1,2]);const same=Math.random()<.5,b=same?n:Math.max(1,other),ans=same?'Sama banyak':n>b?'Kumpulan A lebih banyak':'Kumpulan B lebih banyak';
+  return mark(q(`${compareDots(n,b)}Bandingkan bilangan objek dalam kumpulan A dan kumpulan B. Pilih ayat yang betul.`,ans,['Sama banyak','Kumpulan A lebih banyak','Kumpulan B lebih banyak','Tidak dapat dibandingkan'].filter(x=>x!==ans).map(x=>Nq(x,'compare')),'Padankan satu-satu atau banding bilangannya.','Tahun 1 · Padanan Satu-satu'),id,'1.1.1',mode,'visual','concept',s,['compare']);
  }
  if(mode==='pattern_compare'){
   const a=rand(3,6),b=a+rand(1,3);
-  return mark(q(`Kumpulan A ada ${a} bulatan. Kumpulan B ada ${b} bulatan. Pilih ayat yang betul.`,'Pola B lebih banyak',[Nq('Pola A lebih banyak','compare'),Nq('Kedua-duanya sama banyak','compare'),Nq('Pola B lebih sedikit','compare')],'Banding bilangan objek dalam pola.','Tahun 1 · Pola Kuantiti'),id,'1.1.1',mode,'verbal','application',s,['compare']);
+  return mark(q(`Kumpulan A ada ${a} bulatan. Kumpulan B ada ${b} bulatan. Pilih ayat yang betul.`,'Kumpulan B lebih banyak',[Nq('Kumpulan A lebih banyak','compare'),Nq('Kedua-duanya sama banyak','compare'),Nq('Kumpulan B lebih sedikit','compare')],'Banding bilangan objek dalam pola.','Tahun 1 · Pola Kuantiti'),id,'1.1.1',mode,'verbal','application',s,['compare']);
  }
  const a=rand(4,8),b=rand(4,8),c=a+b;
  return mark(q(`Hakim kata kumpulan ${a} objek lebih banyak daripada kumpulan ${b} objek. Betulkah kata Hakim?`,a>b?'betul':'salah',[Nq(a>b?'salah':'betul','compare'),Nq('sama banyak','compare'),Nq('tidak pasti','compare')],'Banding nilai, bukan saiz tulisan atau susunan objek.','Tahun 1 · Penaakulan Kuantiti'),id,'1.1.1',mode,'verbal','reasoning',s,['compare']);
 };
 
 GEN['1.2.1']=function(id,s){
- const mode=chooseMode(id,'1.2.1',bandModes(s,['count_objects'],['count_objects','name_quantity'],['name_quantity','compare_groups']));
+ const mode=chooseMode(id,'1.2.1',bandModes(s,['count_objects'],['count_objects','name_quantity','count_tens_ones'],['name_quantity','compare_groups','count_tens_ones']));
  if(mode==='count_objects'){const n=rand(6,20);return mark(q(`${dots(n)}Berapakah bilangan objek?`,n,wrongNums(n,1,'count'),'Kira setiap objek satu demi satu.','Tahun 1 · Membilang'),id,'1.2.1',mode,'visual','concept',s,['count']);}
+ if(mode==='count_tens_ones'){
+  const t=rand(2,8),o=rand(1,9),total=t*10+o;
+  const out=mark(q(`${baseTenBlocks(t,o)}Rajah menunjukkan blok puluh dan blok sa. Apakah nombor itu?`,total,[Nq(o*10+t,'place'),Nq(t+o,'place'),Nq(t*10+Math.max(0,o-1),'count')],'Kira nilai blok puluh dahulu, kemudian tambah bilangan blok sa.','Tahun 1 · Blok Puluh dan Sa'),id,'1.2.1',mode,'visual','concept',s,['place','count']);
+  out.goldInteraction=true;out.demoInteraction=true;out.baseTenSpec={kind:'base_ten',tens:t,ones:o};return out;
+ }
  if(mode==='name_quantity'){const n=rand(10,99);return mark(q(`Apakah nama nombor <b>${n}</b> dalam perkataan?`,words(n),[Nq(words(Math.max(1,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(Math.max(1,Math.floor(n/10)*10)),'place')],'Baca puluh dahulu, kemudian sa.','Tahun 1 · Nama Nombor'),id,'1.2.1',mode,'verbal','concept',s,['number_name']);}
  let a=rand(8,30),b=rand(8,30);while(a===b)b=rand(8,30);const ans=a>b?'A':'B';
  return mark(q(`Kumpulan A ada ${a} objek dan Kumpulan B ada ${b}. Kumpulan manakah ada lebih banyak objek?`,ans,[Nq(ans==='A'?'B':'A','compare'),Nq('Sama','compare'),Nq('Tidak pasti','compare')],'Banding bilangan kedua-dua kumpulan.','Tahun 1 · Banding Kuantiti'),id,'1.2.1',mode,'story','application',s,['compare']);
