@@ -32,4 +32,22 @@ Years such as 2024 are wrapped in `<span data-no-group>`, and `groupText` leaves
 
 Validation: `audit/d5-completion-qa.js` (34 item types, 96,161 checks, and every graphic must be a 2.5D SVG scene) and `audit/d5-uasa-language-qa.js` (no filler choices, 218,395 checks) pass. 5,400 D5 questions in headless Chromium: no errors, no duplicate or placeholder choices. All 117 D1–D6 skills generate as before. Existing audits keep the same pass/fail set; `audit/d4-completion-qa.js` passes once `questions/helpers.js` is committed.
 
+## Follow-up: balance, varied Year 5 items, grouped sentences and D4 format
+
+Every change is checked against the myUASA Tahun 5 model papers.
+
+- **Balance.** The D5 layer decides once per question slot instead of per bank call. The slot is keyed by the newest history entry. Core and secure learners now see about half Bahagian B-style items (stories with a Rajah) and half existing families, as in the papers; beginners see about 30%. Before this change, `generate()` picked the new item in almost every slot. D4's completion layer had the opposite problem (its new tasks reached learners about once in 6 000 questions) and now uses the same per-slot decision with its original chances.
+- **Varied Year 5 items.** Thirteen Year 5 items that always showed the same numbers are now generated. TIME: missing_duration, compare_duration, time_claim. DATA: pie_read, pie_quantity, pie_compare, pie_claim, stat_claim, range_change. AREA: composite_area, composite_volume, missing_angle, perimeter_claim, volume_claim. MEASURE: claim. Each claim can now be true or false. Beginner pools are wider: polygons with 3–8 sides and more decimal and fraction values.
+- **2.5D graphics.** Year 5 graphics (regular polygon, rectangle + triangle, L-shape, pie chart as a thick disc) come from `questions/d5/scenes-v1.js`, a scene kit shared with the completion layer and loaded before the Year 5 bank.
+- **Number and unit format.**
+  - Bare arithmetic sentences are digit-grouped for Darjah 4–6 (`91 368 ÷ 8 = ?`, as in the papers). The written-column renderer reads grouped operands and answers, and worksheet solutions ignore digit-group spaces.
+  - Darjah 4 joins UASA digit grouping, and its liquid volume uses ℓ and mℓ. The interaction layer accepts ℓ/mℓ answers.
+- **Small fixes.**
+  - Decimal rounding stays within three decimal places (`Bundarkan 4.519 kepada dua tempat perpuluhan`).
+  - Ratio items write masses of 1 000 g or more in kg (`1.5 kg`, `600 g`), as in the papers.
+
+Validation: `audit/d5-completion-qa.js` additionally checks the per-skill share of new items for each learner stage. `audit/d5-uasa-language-qa.js` checks grouping in bare sentences and no filler choices. `audit/d4-completion-qa.js`, `audit/year45-curriculum-release.cjs` and `audit/written-arithmetic-v1.0.0.js` pass. In headless Chromium: D4, D5 and D6 sampled (2 040, 2 160 and 1 920 questions) with no errors or duplicate choices, and column forms render for grouped sentences. All 117 D1–D6 skills generate as before. Existing audits keep the same pass/fail set.
+
+Not covered: Darjah 6 still writes L/mL and has note-style questions. It needs its own pass against Tahun 6 papers.
+
 A separate production release is required before the live site receives these changes.

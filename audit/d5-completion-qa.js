@@ -80,8 +80,11 @@ for(const id of Object.keys(PLAN))for(const mode of Object.keys(PLAN[id].modes))
 // The real dispatcher: new types are reached, learner stages are respected and existing families remain.
 for(const id of Object.keys(PLAN))for(const [name,state] of [['beginner',beginner],['core',core],['secure',secure]]){
  for(let i=0;i<500;i++){const q=c.generate(id,state,{});if(q.source==='d5-completion-v1'){reached[q.qaEvidence.mode]=(reached[q.qaEvidence.mode]||0)+1;common(q,id);verify(q);if(name==='beginner')beginnerModes.add(id+':'+q.qaEvidence.mode)}else existing[id+':'+name]=(existing[id+':'+name]||0)+1;}
- // generate() prefers deeper, unseen items for secure learners, so existing families thin out there but must stay.
- ok((existing[id+':'+name]||0)>=50,`${id}/${name} keeps existing families`);
+ // One decision per question slot keeps the mix near the model papers (about half Bahagian B items for core and
+ // secure learners, fewer for beginners) instead of letting generate() pick the newest item every time.
+ const shown=500-(existing[id+':'+name]||0),eligible=Object.values(PLAN[id].modes).some(st=>st<=(name==='beginner'?1:name==='core'?2:3));
+ if(name==='beginner')ok(shown<=200,`${id}/beginner sees at most 40% new items (${shown}/500)`);
+ else if(eligible)ok(Math.abs(shown/500-PLAN[id].share)<=.15,`${id}/${name} new-item share ${shown/5}% is near ${PLAN[id].share*100}%`);
 }
 const planKey=(id,mode)=>PLAN[id].modes[mode]!==undefined?mode:mode.startsWith('receipt_')?'receipt':null;
 for(const m of beginnerModes){const [id,mode]=m.split(':'),key=planKey(id,mode);ok(key&&PLAN[id].modes[key]===1,'beginner only receives stage-1 items: '+m)}

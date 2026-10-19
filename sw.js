@@ -1,10 +1,10 @@
 // App shell uses PA_APP_VERSION from js/version.js; includes current Focus mini-game banks.
 importScripts('./js/version.js');
 importScripts('./js/asset-manifest.js');
-const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3-d4-completion-currency-1-d5-uasa-3`;
+const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3-d4-completion-currency-1-d5-uasa-4`;
 const ASSET_CACHE_NAME='pahlawan-angka-assets-v1';
 const APP_SHELL=[
-  './questions/d5/completion-v1.js','./questions/d4/completion-data-money-v1.js','./questions/d4/completion-measures-v1.js','./questions/d4/completion-v1.js','./js/entry-flow-v1.js','./css/entry-flow-v1.css',
+  './questions/d5/scenes-v1.js','./questions/d5/completion-v1.js','./questions/d4/completion-data-money-v1.js','./questions/d4/completion-measures-v1.js','./questions/d4/completion-v1.js','./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './js/demo-funnel-v1.js',
   './kedai-kek.html',
   './js/minigame-dev-gate.js',

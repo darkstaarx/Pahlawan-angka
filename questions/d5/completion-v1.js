@@ -5,7 +5,7 @@
  'use strict';
  if(root.PAD5Completion?.installed)return;
  const banks=root.PAQuestionBanks,previous=banks?.d5;
- if(typeof previous!=='function')throw new Error('D5 completion requires the final Year 5 bank');
+ if(typeof previous!=='function'||!root.PAD5Scenes)throw new Error('D5 completion requires the final Year 5 bank and the 2.5D scene kit');
  const VERSION='1.0.0';
  const names=['Aiman','Mei Ling','Devi','Hafiz','Siti','Chong','Farah','Ravi'];
  const months=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
@@ -22,32 +22,8 @@
  const noGroup=v=>`<span data-no-group>${v}</span>`;
  const table=(headers,rows,label)=>`<div class="kssrDiagram" role="group" aria-label="${label}"><table class="kd-table"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>i===0?`<th>${c}</th>`:`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
  const cards=(items,label)=>`<div class="kssrDiagram" role="group" aria-label="${label}" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${items.map(([title,value])=>`<div style="min-width:130px;border:2px solid #2f5ea8;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 5px 0 #1f437f,0 9px 14px rgba(40,77,116,.18)"><div style="background:#2f5ea8;color:#fff;font-weight:800;padding:4px 8px">${title}</div><div style="font-weight:900;font-size:16px;padding:8px">${value}</div></div>`).join('')}</div>`;
- // 2.5D scenes follow the Year 1 measurement visuals (kssrDiagram paU6Scene): inline SVG on a soft panel,
- // solids drawn as raised slabs — darker side faces under a lighter top face — with a white highlight edge.
- const f1=n=>Number(n).toFixed(1);
- const svgText=(x,y,s,size=14,fill='#243d5e',anchor='middle')=>`<text x="${f1(x)}" y="${f1(y)}" style="font:900 ${size}px Nunito,system-ui,sans-serif;fill:${fill};text-anchor:${anchor}">${s}</text>`;
- const scene=(h,aria,body)=>(h=Math.ceil(h),`<div class="kssrDiagram paU6Scene paD5Scene"><svg viewBox="0 0 340 ${h}" role="img" aria-label="${aria}"><rect x="1" y="1" width="338" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${body}</svg></div>`);
- const poly=(pts,fill,stroke='#36577a',w=2)=>`<polygon points="${pts.map(([x,y])=>f1(x)+','+f1(y)).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${w}" stroke-linejoin="round"/>`;
- function slab(pts,top,side,depth=7){
-  const dx=depth*.55,dy=depth;
-  return {sides:pts.map((p,i)=>{const q=pts[(i+1)%pts.length];return poly([p,q,[q[0]+dx,q[1]+dy],[p[0]+dx,p[1]+dy]],side,'#4d6c83',1)}).join(''),face:poly(pts,top)};
- }
- function personToken(x,y,size=1){
-  const r=5*size,b=7*size;
-  return `<g><path d="M${f1(x-b+1.5)} ${f1(y+b+1.5)} Q${f1(x-b+1.5)} ${f1(y-2)} ${f1(x+1.5)} ${f1(y-2)} Q${f1(x+b+1.5)} ${f1(y-2)} ${f1(x+b+1.5)} ${f1(y+b+1.5)} Z" fill="#1f437f"/><path d="M${f1(x-b)} ${f1(y+b)} Q${f1(x-b)} ${f1(y-3)} ${f1(x)} ${f1(y-3)} Q${f1(x+b)} ${f1(y-3)} ${f1(x+b)} ${f1(y+b)} Z" fill="#2f5ea8"/><circle cx="${f1(x+1.2)}" cy="${f1(y-9*size+1.2)}" r="${f1(r)}" fill="#1f437f"/><circle cx="${f1(x)}" cy="${f1(y-9*size)}" r="${f1(r)}" fill="#3d6fb6"/><circle cx="${f1(x-1.6*size)}" cy="${f1(y-10.6*size)}" r="${f1(1.6*size)}" fill="#fff" opacity=".75"/></g>`;
- }
- function bucketScene(text){
-  const body=`<path d="M108 48 L126 128 Q170 141 214 128 L232 48 Z" fill="#cfe2fb" stroke="#36577a" stroke-width="2.2"/><path d="M232 48 L214 128 Q205 131 198 132 L214 50 Z" fill="#a9c4ea"/><path d="M122 60 L136 122" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/>`;
-  return scene(150,`Baldi berisi ${text} sirap`,`<ellipse cx="170" cy="138" rx="62" ry="7" fill="#2f5ea8" opacity=".12"/><path d="M110 50 Q170 -8 230 50" fill="none" stroke="#4d6c83" stroke-width="3.5" stroke-linecap="round"/>${body}<ellipse cx="170" cy="48" rx="62" ry="12" fill="#eaf3ff" stroke="#36577a" stroke-width="2.2"/><ellipse cx="170" cy="51" rx="54" ry="8.5" fill="#7cc0ea" stroke="#2686bd" stroke-width="1.4"/><path d="M140 49 q12 -4 26 0" stroke="#fff" stroke-width="2" opacity=".75" fill="none"/><rect x="118" y="78" width="104" height="30" rx="9" fill="#fff" stroke="#9fb9de" stroke-width="1.5"/>${svgText(170,99,text,17)}`);
- }
- function roadScene(A,B,km){
-  const road=slab([[56,100],[284,100],[294,86],[66,86]],'#c9d3df','#97a6b8',7),pin=x=>`<ellipse cx="${x}" cy="94" rx="11" ry="4" fill="#1f437f" opacity=".25"/><path d="M${x} 93 L${x-8} 76 A9 9 0 1 1 ${x+8} 76 Z" fill="#2f5ea8" stroke="#1f437f" stroke-width="1.5"/><circle cx="${x}" cy="72" r="3.6" fill="#fff"/>`;
-  return scene(148,`Jarak dari ${A} ke ${B} ialah ${km} km`,`${road.sides}${road.face}<path d="M74 93 H286" stroke="#fff" stroke-width="2.4" stroke-dasharray="10 8"/>${pin(68)}${pin(284)}<path d="M74 44 H278" stroke="#36577a" stroke-width="1.8"/><path d="M74 37 v14 M278 37 v14" stroke="#36577a" stroke-width="1.8"/><rect x="138" y="24" width="64" height="26" rx="8" fill="#fff" stroke="#9fb9de" stroke-width="1.5"/>${svgText(170,42,`${km} km`,15,'#2f5ea8')}${svgText(20,132,A,13,'#243d5e','start')}${svgText(320,132,B,13,'#243d5e','end')}`);
- }
- function pictographScene(houses,s,key){
-  const rows=houses.map((h,i)=>{const y=30+i*30;return `<path d="M66 ${y+14} H324" stroke="#dbe5f2" stroke-width="1.2"/>${svgText(58,y+5,h,13,'#243d5e','end')}${Array.from({length:s[i]},(_,j)=>personToken(80+j*26,y)).join('')}`}).join('');
-  return scene(166,`Piktograf: ${houses.map((h,i)=>`${h} ${s[i]} simbol`).join(', ')}. Setiap simbol mewakili ${key} orang murid.`,`${rows}${personToken(80,151,.85)}${svgText(96,155,`mewakili ${key} orang murid`,13,'#243d5e','start')}`);
- }
+ // Graphics come from the shared Darjah 5 2.5D scene kit (questions/d5/scenes-v1.js).
+ const {f1,svgText,scene,poly,slab,personToken,bucket:bucketScene,road:roadScene,pictograph:pictographScene}=root.PAD5Scenes;
  const stageOf=s=>Number(s?.mastery||0)<35||Number(s?.evidence||0)<2?1:Number(s?.mastery||0)>=70&&Number(s?.confidence||0)>=55?3:2;
  function recent(id){try{return (sess?.questionHistory||[]).filter(x=>x.skillId===id).slice(-8).map(x=>String(x.archetypeId||''))}catch(_){return []}}
  function rotate(id,modes){const r=recent(id),last=r.at(-1),count=m=>r.filter(a=>a==='d5c_'+m).length,pool=modes.filter(m=>'d5c_'+m!==last);return (pool.length?pool:modes).sort((a,b)=>count(a)-count(b)||Math.random()-.5)[0]}
@@ -155,9 +131,9 @@
  function ratioPartTotal(id,mode){return attempt(()=>{
   const u=pick([100,150,200,250,300,500]),a=R(1,4),b=R(a+1,8);if(gcdN(a,b)!==1)return null;
   const small=a*u,big=b*u,mass=Math.random()<.5,[bigName,smallName]=mass?pick([['durian','betik'],['tembikai','nanas'],['labu','betik']]):pick([['jus oren','jus epal'],['air sirap','air teh'],['susu','jus mangga']]),[U,u2]=mass?['kg','g']:['ℓ','mℓ'];
-  const bigText=big>=1000&&big%100===0?`${big/1000} ${U}`:`${big} ${u2}`,askSmall=Math.random()<.5,part=askSmall?a:b,other=askSmall?b:a,ask=askSmall?smallName:bigName,ans=ratio(part,a+b);
-  const prompt=mass?`Jisim sebiji ${bigName} ialah ${bigText} dan jisim sebiji ${smallName} ialah ${small} ${u2}. Nyatakan nisbah jisim ${ask} kepada jumlah jisim kedua-dua buah itu dalam bentuk yang termudah.`:`Isi padu sebotol ${bigName} ialah ${bigText} dan isi padu sebotol ${smallName} ialah ${small} ${u2}. Nyatakan nisbah isi padu ${ask} kepada jumlah isi padu kedua-dua botol itu dalam bentuk yang termudah.`;
-  return make(id,mode,'ratio_part_total',prompt,ans,choices(ans,[ratio(part,other),ratio(a+b,part),ratio(other,a+b),`${askSmall?small:bigText.split(' ')[0]} : ${askSmall?bigText.split(' ')[0]:small}`],'ratio'),`Tukar kepada unit yang sama (${u2}), cari jumlah, kemudian ringkaskan nisbah.`,'Nisbah dan Jumlah','story','reasoning',['ratio','unit'],{small,big,askSmall});
+  const asText=v=>v>=1000&&v%100===0?`${v/1000} ${U}`:`${v} ${u2}`,bigText=asText(big),smallText=asText(small),askSmall=Math.random()<.5,part=askSmall?a:b,other=askSmall?b:a,ask=askSmall?smallName:bigName,ans=ratio(part,a+b);
+  const prompt=mass?`Jisim sebiji ${bigName} ialah ${bigText} dan jisim sebiji ${smallName} ialah ${smallText}. Nyatakan nisbah jisim ${ask} kepada jumlah jisim kedua-dua buah itu dalam bentuk yang termudah.`:`Isi padu sebotol ${bigName} ialah ${bigText} dan isi padu sebotol ${smallName} ialah ${smallText}. Nyatakan nisbah isi padu ${ask} kepada jumlah isi padu kedua-dua botol itu dalam bentuk yang termudah.`;
+  return make(id,mode,'ratio_part_total',prompt,ans,choices(ans,[ratio(part,other),ratio(a+b,part),ratio(other,a+b),`${(askSmall?smallText:bigText).split(' ')[0]} : ${(askSmall?bigText:smallText).split(' ')[0]}`],'ratio'),`Tukar kepada unit yang sama (${u2}), cari jumlah, kemudian ringkaskan nisbah.`,'Nisbah dan Jumlah','story','reasoning',['ratio','unit'],{small,big,askSmall});
  })}
  function ratioCountTotal(id,mode){return attempt(()=>{
   const g=R(2,9),a=R(1,5),b=R(1,6);if(a===b||gcdN(a,b)!==1)return null;
@@ -241,26 +217,39 @@
   mixed_mass_three:mixedMass,mixed_length_three:mixedLength,volume_to_litre:volumeToLitre,syrup_share:syrupShare,rope_total:ropes,rope_left:ropes,packets_kg:packets,packets_left:packets,
   decimal_hour:decimalHour,visit_total:visitTotal,year_fraction:yearFraction,date_duration:dateDuration,ratio_part_total:ratioPartTotal,ratio_count_total:ratioCountTotal,rate_distance:rateDistance,rate_time:rateTime,
   area_square_rect:areaSquareRect,perimeter_square_polygon:perimeterSquarePolygon,volume_cube_cuboid:volumeCubeCuboid,freq_median:freqMedian,pictograph_diff:pictograph,pictograph_total:pictograph,pictograph_mean:pictograph,mean_days:meanDays,mean_projection:meanDays,think_number:thinkNumber,stock_story:stockStory};
- // Minimum learner stage per new item (1 beginner, 2 core, 3 secure) and the chance a bank call offers one.
- // generate() keeps the most varied of up to 16 candidates, so the share a learner sees is higher than this chance.
+ // Minimum learner stage per new item (1 beginner, 2 core, 3 secure) and the share of core/secure questions it
+ // should take. The model papers are about half Bahagian B items (stories with a Rajah); beginners get fewer.
  const PLAN={
   'D5.N1000000':{share:.35,modes:{reverse_round:2}},
-  'D5.MONEY':{share:.45,modes:{big_subtract:1,big_missing:2,down_payment:2,receipt:2,interest_year1:2,interest_year2:3}},
-  'D5.MEASURE':{share:.45,modes:{volume_to_litre:1,rope_total:1,packets_kg:1,mixed_mass_three:2,mixed_length_three:2,syrup_share:2,rope_left:3,packets_left:3}},
-  'D5.TIME':{share:.2,modes:{decimal_hour:1,visit_total:2,year_fraction:2,date_duration:2}},
-  'D5.RATIO':{share:.25,modes:{ratio_count_total:1,ratio_part_total:2}},
-  'D5.RATE':{share:.3,modes:{rate_distance:2,rate_time:3}},
-  'D5.DATA':{share:.3,modes:{pictograph_diff:1,pictograph_total:1,pictograph_mean:2,freq_median:2,mean_days:2,mean_projection:3}},
-  'D5.AREA':{share:.3,modes:{area_square_rect:2,perimeter_square_polygon:2,volume_cube_cuboid:3}},
+  'D5.MONEY':{share:.5,modes:{big_subtract:1,big_missing:2,down_payment:2,receipt:2,interest_year1:2,interest_year2:3}},
+  'D5.MEASURE':{share:.5,modes:{volume_to_litre:1,rope_total:1,packets_kg:1,mixed_mass_three:2,mixed_length_three:2,syrup_share:2,rope_left:3,packets_left:3}},
+  'D5.TIME':{share:.45,modes:{decimal_hour:1,visit_total:2,year_fraction:2,date_duration:2}},
+  'D5.RATIO':{share:.5,modes:{ratio_count_total:1,ratio_part_total:2}},
+  'D5.RATE':{share:.5,modes:{rate_distance:2,rate_time:3}},
+  'D5.DATA':{share:.45,modes:{pictograph_diff:1,pictograph_total:1,pictograph_mean:2,freq_median:2,mean_days:2,mean_projection:3}},
+  'D5.AREA':{share:.4,modes:{area_square_rect:2,perimeter_square_polygon:2,volume_cube_cuboid:3}},
   'D5.OPS':{share:.35,modes:{think_number:2,stock_story:2}}
  };
  function question(id,s,mode){
   const plan=PLAN[id];if(!plan)return null;const stage=stageOf(s),eligible=Object.keys(plan.modes).filter(m=>plan.modes[m]<=stage);
   const chosen=mode&&GEN[mode]?mode:eligible.length?rotate(id,eligible):null;return chosen?GEN[chosen](id,chosen):null;
  }
+ // generate() asks the bank for up to 16 candidates per question and keeps the most varied one, so a per-call coin
+ // would hand almost every slot to the new items. Decide once per question slot instead: the slot is keyed by the
+ // session history, which changes only when a question is shown, and the draw leans towards the target share.
+ let slotId=null,slotLast=null,slotLen=-1,slotNew=false;
+ function newItemSlot(id,s,plan){
+  const target=stageOf(s)===1?Math.min(.3,plan.share):plan.share;let h=null;
+  try{h=sess?.questionHistory}catch(_){}
+  if(!Array.isArray(h))return Math.random()<target;
+  // History is capped, so its length can stay the same; the newest entry is a fresh object for every question shown.
+  const last=h.at(-1);
+  if(id!==slotId||last!==slotLast||h.length!==slotLen){const same=h.filter(x=>x.skillId===id).slice(-10),seen=same.length?same.filter(x=>x.source==='d5-completion-v1').length/same.length:target;slotId=id;slotLast=last;slotLen=h.length;slotNew=Math.random()<Math.min(.9,Math.max(.1,2*target-seen))}
+  return slotNew;
+ }
  banks.d5=function(id,s,shift){
   const plan=PLAN[id];
-  if(plan&&Math.random()<plan.share){const q=question(id,s);if(q)return q}
+  if(plan&&newItemSlot(id,s,plan)){const q=question(id,s);if(q)return q}
   return previous.call(this,id,s,shift);
  };
  root.PAD5Completion={version:VERSION,installed:true,plan:PLAN,question};

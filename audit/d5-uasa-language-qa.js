@@ -31,7 +31,7 @@ for(const id of skills){for(let i=0;i<600;i++){
  const last=t.split(/(?<=[.?])\s+/).pop();
  ok(bare(t)||!/\?$/.test(last)||last.split(/\s+/).length>3||/^(Berapakah|Apakah|Adakah|Siapakah|Bilakah)/.test(last),'full-sentence question',q);
  ok(!/\d,\d{3}\b/.test(all),'no comma thousands separator',q);
- ok(bare(t)||!/(^|[^\d.])\d{5,}(?!\d)/.test(t),'UASA digit grouping in sentences',q);
+ ok(!/(^|[^\d.])\d{5,}(?!\d)/.test(t),'UASA digit grouping, including bare sentences (91 368 ÷ 8)',q);
  ok(!/\d\.\d{5,}/.test(opts.join(' ')),'no long recurring decimals in choices',q);
  ok(!/(^|\s)m?L\b/.test(all.replace(/Bentuk L|bentuk L/g,'')),'KSSR uses ℓ and mℓ',q);
  ok(!/bekas[^.]*\bkm\b/.test(t),'containers never measure length',q);

@@ -16,7 +16,8 @@
   }
 
   function normaliseOperand(value){
-    const compact=String(value).replace(/,/g,'');
+    // Darjah 4–6 group digits as UASA does (91 368); spaces and commas are only separators.
+    const compact=String(value).replace(/[\s,]/g,'');
     return /^\d+(?:\.\d+)?$/.test(compact)?compact:null;
   }
 
@@ -32,7 +33,8 @@
     const boldEquation=sentence.match(/^<b>\s*(.+?)\s*<\/b>\s*=\s*\?\s*$/i);
     if(boldEquation)sentence=`${boldEquation[1]} = ?`;
     if(/<\/?[a-z][^>]*>/i.test(sentence))return null;
-    const match=sentence.match(/^([\d,]+(?:\.\d+)?)\s*([+−×÷])\s*([\d,]+(?:\.\d+)?)(?:\s*\2\s*([\d,]+(?:\.\d+)?))?\s*=\s*\?\s*$/);
+    const operand='((?:\\d{1,3}(?:[ ,]\\d{3})+|\\d+)(?:\\.\\d+)?)';
+    const match=sentence.match(new RegExp(`^${operand}\\s*([+−×÷])\\s*${operand}(?:\\s*\\2\\s*${operand})?\\s*=\\s*\\?\\s*$`));
     if(!match)return null;
     const [,rawLeft,operator,rawRight,rawThird]=match;
     const terms=[rawLeft,rawRight,rawThird].filter(Boolean).map(normaliseOperand);
@@ -287,7 +289,7 @@
   }
 
   function numericValue(raw){
-    const text=String(raw??'').trim().replace(/,/g,'');
+    const text=String(raw??'').trim().replace(/[\s,]/g,'');
     return /^\d+(?:\.\d+)?$/.test(text)?Number(text):NaN;
   }
 
