@@ -17,12 +17,12 @@ if(id==="D1.PV100"){
  }
 if(id==="D1.ADD20"||id==="D1.ADD100"){let max=id==="D1.ADD20"?20:100,a=R(1,Math.floor(max*.6)),b=R(1,Math.max(1,max-a)),ans=a+b;return addQ(a,b,ans,"Recovery",shift,{skillId:id})}
 if(id==="D1.SUB20"||id==="D1.SUB100"){let max=id==="D1.SUB20"?20:100,a=R(Math.floor(max*.4),max),b=R(1,a),ans=a-b;return subQ(a,b,ans,"Recovery",shift,{skillId:id})}
-if(id==="D1.FRAC"){let den=[2,4][R(0,1)],num=R(1,den),ans=`${num}/${den}`;return Q(num===den?`Semua ${den} bahagian sama besar dipilih. Pecahan?`:`${num} daripada ${den} bahagian sama besar dipilih. Pecahan?`,ans,[N(`${Math.max(0,den-num)}/${den}`,"fraction"),N(`${den}/${Math.max(1,num-1)}`,"fraction"),N(`${num}/${den+1}`,"fraction")],"Pengangka = bahagian dipilih; penyebut = jumlah bahagian. Semua bahagian bermaksud satu keseluruhan.","Recovery",true,shift)}
+if(id==="D1.FRAC"){let den=[2,4][R(0,1)],num=R(1,den),ans=`${num}/${den}`;return Q(num===den?`Semua ${den} bahagian sama besar dipilih. Apakah pecahannya?`:`${num} daripada ${den} bahagian sama besar dipilih. Apakah pecahannya?`,ans,[N(`${Math.max(0,den-num)}/${den}`,"fraction"),N(`${den}/${Math.max(1,num-1)}`,"fraction"),N(`${num}/${den+1}`,"fraction")],"Pengangka = bahagian dipilih; penyebut = jumlah bahagian. Semua bahagian bermaksud satu keseluruhan.","Recovery",true,shift)}
 if(id==="D1.MONEY"){let a=R(1,10),b=R(1,10),ans=a+b;return Q(`RM${a} + RM${b} = ?`,`RM${ans}`,[N(`RM${Math.max(0,ans-5)}`,"money"),N(`RM${ans+5}`,"money"),N(`${ans} sen`,"money")],"Tambah nilai dan kekalkan unit RM.","Recovery",true,shift)}
 if(id==="D1.TIME"){let h=R(1,12),ans=`${h}:00`;return Q(`Jam tepat menunjukkan pukul ${h}. Pilih waktu.`,ans,[N(`${(h%12)+1}:00`,"time"),N(`${h}:30`,"time"),N(`${Math.max(1,h-1)}:00`,"time")],"Jam tepat mempunyai 00 minit.","Recovery",false,shift)}
-if(id==="D1.MEASURE"){return Q(`Unit sesuai untuk panjang pensel?`,"cm",[N("kg","unit"),N("L","unit"),N("g","unit")],"Panjang biasanya cm atau m.","Recovery",false,shift)}
-if(id==="D1.SHAPE"){return Q(`Bentuk yang mempunyai 3 sisi ialah?`,"segi tiga",[N("bulatan","shape"),N("segi empat","shape"),N("kubus","shape")],"Kira sisi lurus.","Recovery",false,shift)}
-if(id==="D1.DATA"){let a=R(2,8),b=R(2,8);return Q(`Data A=${a}, B=${b}. Mana lebih banyak?`,a>b?"A":"B",[N(a>b?"B":"A","data"),N("Sama","data"),N(String(a+b),"operation")],"Banding bilangan A dan B.","Recovery",false,shift)}
-if(id==="D1.CMP100"){let a=R(1,100),b=R(1,100);return Q(`Pilih nombor lebih kecil: ${a} atau ${b}`,Math.min(a,b),[N(Math.max(a,b),"compare"),N(a+b,"operation"),N(Math.abs(a-b),"operation")],"Banding puluh dahulu.","Recovery",false,shift)}
+if(id==="D1.MEASURE"){return Q(`Apakah unit yang sesuai untuk mengukur panjang pensel?`,"cm",[N("kg","unit"),N("L","unit"),N("g","unit")],"Panjang biasanya cm atau m.","Recovery",false,shift)}
+if(id==="D1.SHAPE"){return Q(`Apakah bentuk yang mempunyai 3 sisi lurus?`,"segi tiga",[N("bulatan","shape"),N("segi empat","shape"),N("kubus","shape")],"Kira sisi lurus.","Recovery",false,shift)}
+if(id==="D1.DATA"){let a=R(2,8),b=R(2,8);while(b===a)b=R(2,8);return Q(`Data A = ${a} dan B = ${b}. Kumpulan manakah lebih banyak?`,a>b?"A":"B",[N(a>b?"B":"A","data"),N("Sama","data"),N(String(a+b),"operation")],"Banding bilangan A dan B.","Recovery",false,shift)}
+if(id==="D1.CMP100"){let a=R(1,100),b=R(1,100);return Q(`Antara ${a} dan ${b}, pilih nombor yang lebih kecil.`,Math.min(a,b),[N(Math.max(a,b),"compare"),N(a+b,"operation"),N(Math.abs(a-b),"operation")],"Banding puluh dahulu.","Recovery",false,shift)}
  return null;
 };
