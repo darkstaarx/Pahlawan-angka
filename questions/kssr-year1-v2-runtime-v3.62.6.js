@@ -125,19 +125,22 @@ function balanceBlocks(n){
  return `<div class="kssrDiagram"><svg viewBox="0 0 310 140" role="img" aria-label="Neraca dengan sebuah beg dan beberapa blok"><line x1="30" y1="87" x2="284" y2="87" stroke="#aec6e3" stroke-width="4"/><polygon points="154,86 130,124 178,124" fill="#91a9cb"/><rect x="124" y="124" width="60" height="8" rx="3" fill="#6e89ae"/><path d="M55,83 L67,53 L108,53 L119,83 Z" fill="#f7bd78" stroke="#956035" stroke-width="2"/><path d="M76,56 Q85,29 99,56" fill="none" stroke="#956035" stroke-width="4"/><rect x="180" y="83" width="105" height="5" rx="2" fill="#6f93af"/>${blocks}</svg></div>`;
 }
 function capacityCups(n){
- // 1 jag bersamaan n cawan seragam; bukan perbandingan paras separuh penuh.
+ const gradientId='paD1Water'+n;
  const cups=Array.from({length:n},(_,i)=>{
-  const x=128+(i%4)*40,y=n<=4?47:20+Math.floor(i/4)*51;
-  return `<g class="paCapacityCup"><path d="M${x} ${y} h28 l-4 35 h-20 Z" fill="#eaf7ff" stroke="#347da5" stroke-width="2.2"/><path d="M${x+2} ${y+7} h24 l-4 25 h-16 Z" fill="#66b8dd"/><path d="M${x+2} ${y+7} h24" stroke="#2e8ab8" stroke-width="1.5"/></g>`;
- }).join("");
- return `<div class="kssrDiagram paCapacityCups"><svg viewBox="0 0 310 139" role="img" aria-label="Satu jag bersamaan dengan beberapa cawan air yang sama saiz. Kira bilangan cawan.">
- <path d="M14 24 H80 L73 110 Q51 129 25 110 Z" fill="#eaf7ff" stroke="#347da5" stroke-width="2.8"/>
- <path d="M79 42 Q101 40 92 69 L76 82" fill="none" stroke="#347da5" stroke-width="8" stroke-linecap="round"/>
- <path d="M18 41 H77 L71 108 Q51 124 27 108 Z" fill="#66b8dd"/>
- <path d="M18 41 H77" stroke="#2e8ab8" stroke-width="2"/>
- <path d="M103 65 H119 M103 78 H119" stroke="#406d91" stroke-width="4" stroke-linecap="round"/>
+  const x=146+(i%4)*43,y=n<=4?56:25+Math.floor(i/4)*55;
+  return `<g class="paCapacityCup"><path d="M${x} ${y} h28 l-4 35 h-20 Z" fill="#effaff" stroke="#417e9b" stroke-width="2.2"/><path d="M${x+2} ${y+5} h24 l-4 27 h-16 Z" fill="url(#${gradientId})"/><path d="M${x+5} ${y+4} l1 18" stroke="#fff" stroke-width="2.3" opacity=".85"/><path d="M${x+2} ${y+6} h23" stroke="#278bbd" stroke-width="1.7"/></g>`;
+ }).join('');
+ return `<div class="kssrDiagram paCapacityCups paU6Scene"><svg viewBox="0 0 340 149" role="img" aria-label="Sebuah jag bersamaan dengan beberapa cawan air sama saiz. Kira cawan.">
+ <defs><linearGradient id="${gradientId}" x1="0" x2="1"><stop offset="0" stop-color="#a1e4fb"/><stop offset=".48" stop-color="#64bee6"/><stop offset="1" stop-color="#369ccd"/></linearGradient></defs>
+ <rect x="1" y="1" width="338" height="147" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>
+ <path d="M22 24 H100 L94 119 Q62 143 32 119 Z" fill="#effaff" stroke="#417e9b" stroke-width="3"/>
+ <path d="M98 39 Q133 32 122 79 L97 93" fill="none" stroke="#417e9b" stroke-width="9" stroke-linecap="round"/>
+ <path d="M26 37 H96 L92 117 Q62 137 36 117 Z" fill="url(#${gradientId})"/>
+ <path d="M26 37 H96" stroke="#2984b3" stroke-width="2"/><path d="M36 42 L39 111" stroke="#fff" stroke-width="4.5" opacity=".58"/>
+ <path d="M118 98 h20 M118 111 h20" stroke="#466989" stroke-width="4" stroke-linecap="round"/>
  ${cups}</svg></div>`;
 }
+
 
 function measureRopes(values){
  const max=Math.max(...values),bars=values.map((v,i)=>{
@@ -170,14 +173,14 @@ function measureBeakers(levels){
 }
 
 function measureBalance(heavy='A',blocks=0){
- const pan=(x,y)=>`<g><path d="M${x-34} ${y} Q${x} ${y+17} ${x+34} ${y}" stroke="#567b91" stroke-width="3" fill="none"/><path d="M${x-28} ${y} L${x} ${y-34} L${x+28} ${y}" stroke="#789ab3" stroke-width="1.6" fill="none"/></g>`;
+ const pan=(x,y,beamY)=>`<g><path d="M${x-34} ${y} Q${x} ${y+17} ${x+34} ${y}" stroke="#567b91" stroke-width="3" fill="none"/><path d="M${x-28} ${y} L${x} ${beamY} L${x+28} ${y}" stroke="#789ab3" stroke-width="1.7" fill="none"/></g>`;
  if(blocks>0){
   const cubes=Array.from({length:blocks},(_,i)=>{const x=221+i%4*18,y=110-Math.floor(i/4)*20;return `<g class="paU6Unit"><rect x="${x}" y="${y}" width="16" height="17" rx="2" fill="#86d7c9" stroke="#33776d" stroke-width="1.3"/><path d="M${x} ${y} l4 -4 h16 l-4 4Z" fill="#c8f5e8" stroke="#33776d" stroke-width=".8"/></g>`}).join('');
-  return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 155" role="img" aria-label="Neraca seimbang dengan beg di sebelah kiri dan beberapa blok di sebelah kanan"><rect x="1" y="1" width="338" height="153" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><path d="M170 52 L144 146 H196 Z" fill="#aebed1" stroke="#718ba4" stroke-width="2"/><path d="M66 55 H274" stroke="#536f91" stroke-width="7" stroke-linecap="round"/><circle cx="170" cy="55" r="8" fill="#ffcc77" stroke="#997343" stroke-width="2"/>${pan(65,128)}${pan(274,128)}<path d="M40 128 L48 93 H94 L100 128 Z" fill="#f2c48d" stroke="#9d6333" stroke-width="2"/><path d="M55 94 Q70 73 84 94" stroke="#9d6333" stroke-width="4" fill="none"/>${cubes}</svg></div>`;
+  return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 155" role="img" aria-label="Neraca seimbang dengan beg di sebelah kiri dan beberapa blok di sebelah kanan"><rect x="1" y="1" width="338" height="153" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><path d="M170 52 L144 146 H196 Z" fill="#aebed1" stroke="#718ba4" stroke-width="2"/><path d="M66 55 H274" stroke="#536f91" stroke-width="7" stroke-linecap="round"/><circle cx="170" cy="55" r="8" fill="#ffcc77" stroke="#997343" stroke-width="2"/>${pan(65,128,55)}${pan(274,128,55)}<path d="M40 128 L48 93 H94 L100 128 Z" fill="#f2c48d" stroke="#9d6333" stroke-width="2"/><path d="M55 94 Q70 73 84 94" stroke="#9d6333" stroke-width="4" fill="none"/>${cubes}</svg></div>`;
  }
  const ly=heavy==='A'?88:61,ry=heavy==='A'?61:88;
  const box=(x,y,label)=>`<g><rect x="${x-19}" y="${y-30}" width="38" height="28" rx="3" fill="#f1bf82" stroke="#9c6230" stroke-width="2"/><path d="M${x-15} ${y-26} h30" stroke="#fff1d0" stroke-width="2"/><text x="${x}" y="${y-10}">${label}</text></g>`;
- return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 163" role="img" aria-label="Neraca tidak seimbang dengan kotak A dan B"><rect x="1" y="1" width="338" height="161" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><path d="M170 72 L143 153 H197 Z" fill="#aebed1" stroke="#718ba4" stroke-width="2"/><path d="M66 ${ly-34} L274 ${ry-34}" stroke="#536f91" stroke-width="8" stroke-linecap="round"/><circle cx="170" cy="${(ly+ry)/2-34}" r="8" fill="#ffcc77" stroke="#997343" stroke-width="2"/>${pan(66,ly+20)}${pan(274,ry+20)}${box(66,ly+20,'A')}${box(274,ry+20,'B')}</svg></div>`;
+ return `<div class="kssrDiagram paU6Scene"><svg viewBox="0 0 340 163" role="img" aria-label="Neraca tidak seimbang dengan kotak A dan B"><rect x="1" y="1" width="338" height="161" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><path d="M170 72 L143 153 H197 Z" fill="#aebed1" stroke="#718ba4" stroke-width="2"/><path d="M66 ${ly-34} L274 ${ry-34}" stroke="#536f91" stroke-width="8" stroke-linecap="round"/><circle cx="170" cy="${(ly+ry)/2-34}" r="8" fill="#ffcc77" stroke="#997343" stroke-width="2"/>${pan(66,ly+20,ly-34)}${pan(274,ry+20,ry-34)}${box(66,ly+20,'A')}${box(274,ry+20,'B')}</svg></div>`;
 }
 
 function solid(kind){
