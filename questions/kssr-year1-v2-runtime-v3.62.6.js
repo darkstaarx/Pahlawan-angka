@@ -130,9 +130,9 @@ function capacityCups(n){
   const x=128+(i%4)*40,y=n<=4?47:20+Math.floor(i/4)*51;
   return `<g class="paCapacityCup"><path d="M${x} ${y} h28 l-4 35 h-20 Z" fill="#eaf7ff" stroke="#347da5" stroke-width="2.2"/><path d="M${x+2} ${y+7} h24 l-4 25 h-16 Z" fill="#66b8dd"/><path d="M${x+2} ${y+7} h24" stroke="#2e8ab8" stroke-width="1.5"/></g>`;
  }).join("");
- return `<div class="kssrDiagram paCapacityCups"><svg viewBox="0 0 310 139" role="img" aria-label="Air dalam satu jag bersamaan dengan ${n} cawan air yang sama saiz">
+ return `<div class="kssrDiagram paCapacityCups"><svg viewBox="0 0 310 139" role="img" aria-label="Satu jag bersamaan dengan beberapa cawan air yang sama saiz. Kira bilangan cawan.">
  <path d="M14 24 H80 L73 110 Q51 129 25 110 Z" fill="#eaf7ff" stroke="#347da5" stroke-width="2.8"/>
- <path d="M80 37 Q113 35 97 80 L76 88" fill="none" stroke="#347da5" stroke-width="8" stroke-linecap="round"/>
+ <path d="M79 42 Q101 40 92 69 L76 82" fill="none" stroke="#347da5" stroke-width="8" stroke-linecap="round"/>
  <path d="M18 41 H77 L71 108 Q51 124 27 108 Z" fill="#66b8dd"/>
  <path d="M18 41 H77" stroke="#2e8ab8" stroke-width="2"/>
  <path d="M103 65 H119 M103 78 H119" stroke="#406d91" stroke-width="4" stroke-linecap="round"/>
