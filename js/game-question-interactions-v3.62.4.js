@@ -70,7 +70,7 @@
   if(id==='D6.ANGLE'&&(m=raw.match(/^(\d+)°$/)))return gated({kind:q?.competencyId==='6.1.2'?'angle_build':'rune_entry',value:Number(m[1]),suffix:'°',min:0,max:180,step:5});
   if(id==='D6.SPACE_PROBLEM'&&(m=raw.match(/^(\d+)°$/)))return gated({kind:'rune_entry',value:Number(m[1]),suffix:'°',dp:0});
   if((id==='D6.CIRCLE'||id==='D6.SPACE_PROBLEM')&&/6\.2\.2|circle_draw/.test(`${q?.competencyId||''} ${(q?.misconceptionTargets||[]).join(' ')}`)&&(m=raw.match(/^(\d+(?:\.\d+)?)\s*cm$/)))return gated({kind:'circle_build',value:Number(m[1]),suffix:'cm',min:1,max:20,step:.5});
-  if((m=raw.match(/^(-?[\d,]+(?:\.\d+)?)\s*(mm|cm|m|km|g|kg|mL|L|cm²|m²|km²|cm³|m³)$/i)))return gated({kind:'rune_entry',value:number(m[1]),suffix:m[2],dp:(m[1].split('.')[1]||'').length});
+  if((m=raw.match(/^(-?[\d,]+(?:\.\d+)?)\s*(mm|cm|m|km|g|kg|mL|L|mℓ|ℓ|cm²|m²|km²|cm³|m³)$/i)))return gated({kind:'rune_entry',value:number(m[1]),suffix:m[2],dp:(m[1].split('.')[1]||'').length});
   if((m=raw.match(/^(-?\d+)\s+(\d+)\/(\d+)$/)))return gated({kind:'fraction_build',whole:Number(m[1]),numerator:Number(m[2]),denominator:Number(m[3]),mixed:true});
   if((m=raw.match(/^(-?\d+)\/(\d+)$/)))return gated({kind:'fraction_build',whole:0,numerator:Number(m[1]),denominator:Number(m[2]),mixed:false});
   if((m=raw.match(/^\((\d+)\s*,\s*(\d+)\)$/)))return gated({kind:'coordinate_plot',x:Number(m[1]),y:Number(m[2])});

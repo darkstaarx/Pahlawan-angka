@@ -26,7 +26,7 @@ for(const [id,group] of [['D4.MONEY','D4'],['D5.MONEY','D5']]){
       assert(m,'all monetary operands need RM'); expected=(+m[1]+(+m[2])*(+m[3])-(+m[4]))*100;
     }
     if(q.archetypeId==='depth_credit_debt')expected=amounts[0]+amounts[1];
-    if(q.archetypeId==='depth_dividend_bonus')expected=Number(p.match(/mempunyai (\d+) unit/)[1])*amounts[0];
+    if(q.archetypeId==='depth_dividend_bonus')expected=Number(p.match(/memiliki (\d+) unit/)[1])*amounts[0];
     if(q.archetypeId==='depth_saving_investment')expected=amounts[0]*Number(p.match(/selama (\d+) bulan/)[1])+amounts[1];
     if(q.archetypeId==='depth_interest_concept'){
       assert.equal(q.answer,'Faedah kompaun');
@@ -35,7 +35,7 @@ for(const [id,group] of [['D4.MONEY','D4'],['D5.MONEY','D5']]){
     if(expected!==undefined){assert.equal(ans,Math.round(expected),p);independentChecks++;}
     if(ans!==null)assert(ans>=0,`${id} negative balance: ${plain(q.prompt)}`);
     if(q.archetypeId==='money_currency_rate')assert(/Kadar latihan/.test(plain(q.prompt))&&/latihan/.test(plain(q.hint||'')),'D4 currency must state hypothetical rate');
-    if(q.archetypeId==='depth_saving_investment')assert(/bonus latihan/.test(plain(q.prompt)),'D5 saving bonus must be hypothetical');
+    if(q.archetypeId==='depth_saving_investment')assert(/menerima bonus RM\d+/.test(plain(q.prompt)),'D5 saving bonus must be stated in the question');
     if(q.archetypeId==='depth_credit_debt')assert(/kredit/.test(plain(q.prompt))&&/caj/.test(plain(q.hint)),'D5 credit/debt comparison missing');
     if(q.archetypeId==='depth_interest_concept')assert(/mudah/.test(plain(q.prompt))&&/kompaun/.test(plain(q.prompt)),'D5 interest comparison missing');
     if(q.archetypeId==='depth_dividend_bonus')assert(/Dividen/.test(plain(q.prompt)),'D5 dividend coverage missing');

@@ -278,7 +278,7 @@ function coreQ(s){
     const price=pick1([100,150,200,320]),pct=pick1([10,20,25]),off=price*pct/100,ans=price-off;
     return mark(qc(
       'Sebuah beg berharga '+rm(price)+' diberi diskaun '+pct+'%. Berapakah harga selepas diskaun?',
-      rm(ans),[Nq(rm(off),'discount'),Nq(rm(price+off),'discount'),Nq(rm(price-pct),'operation')],
+      rm(ans),[Nq(rm(off),'discount'),Nq(rm(price+off),'discount'),Nq(rm(price-2*off),'discount')],
       'Harga selepas diskaun = harga asal − nilai diskaun.','Tahun 6 · Harga Selepas Diskaun'
     ),'3.1.2',mode,'story','application',s,['discount']);
   }

@@ -54,6 +54,8 @@ function fallbackChoice(answer,d){
 function choiceKey(value){return String(tidyDisplay(value)).replace(/\s+/g,' ').trim().toLocaleLowerCase('ms')}
 function semanticChoiceKey(value){
  const raw=choiceKey(value), compact=raw.replace(/\s+/g,'');
+ // A mixed number must not lose its space: "1 1/11" is not "11/11".
+ const mixedNumber=String(raw).trim().match(/^(\d+)\s+(\d+)\/(\d+)$/);if(mixedNumber)return `mixed:${+mixedNumber[1]} ${+mixedNumber[2]}/${+mixedNumber[3]}`;
  if(/^-?\d+(?:\.\d+)?$/.test(compact))return `number:${cleanNumericNoise(Number(compact))}`;
  let m=compact.match(/^rm(-?\d+(?:\.\d+)?)$/);if(m)return `money:${tidyNumber(Number(m[1]))}`;
  m=compact.match(/^(-?\d+(?:\.\d+)?)sen$/);if(m)return `money:${tidyNumber(Number(m[1])/100)}`;
@@ -71,7 +73,8 @@ function Q(prompt,answer,wrong,hint,kind="Adaptive",diagnostic=false,formatShift
  let seen=new Set([semanticChoiceKey(answer)]),w=[];
  for(let x of wrong){if(x!=null){const key=semanticChoiceKey(x.label??x.v);if(!seen.has(key)){seen.add(key);w.push(x)}}}
  let d=1,guard=0;while(w.length<3&&guard++<20){let v=fallbackChoice(answer,d++),key=semanticChoiceKey(v);if(!seen.has(key)){w.push(N(v,"generated"));seen.add(key)}}
- if(w.length!==3)throw new Error(`Pilihan unik tidak dapat dijana untuk jawapan: ${answer}`);
+ // Extra candidates are spares for when earlier ones collide; the first three unique ones are kept.
+ if(w.length<3)throw new Error(`Pilihan unik tidak dapat dijana untuk jawapan: ${answer}`);
  return{prompt,answer,wrong:w.slice(0,3),hint,kind,diagnostic,formatShift}
 }
 function attachFractionShade(q,numerator,denominator,answerMode='fraction'){
@@ -340,7 +343,7 @@ function shape2DQ(shift){let shapes=[["segi tiga",3,"3 sisi lurus"],["segi empat
 function numWords(n){
  const o=["sifar","satu","dua","tiga","empat","lima","enam","tujuh","lapan","sembilan"],t=["sepuluh","sebelas","dua belas","tiga belas","empat belas","lima belas","enam belas","tujuh belas","lapan belas","sembilan belas"];
  function w99(x){if(x<10)return o[x];if(x<20)return t[x-10];let a=Math.floor(x/10),b=x%10;return o[a]+" puluh"+(b?" "+o[b]:"")}
- function w999(x){let h=Math.floor(x/100),r=x%100;return (h?o[h]+" ratus"+(r?" ":""):"")+ (r||!h?w99(r):"")}
+ function w999(x){let h=Math.floor(x/100),r=x%100;return (h?(h===1?"seratus":o[h]+" ratus")+(r?" ":""):"")+ (r||!h?w99(r):"")}
  if(n<1000)return w999(n);
  if(n<1000000){let th=Math.floor(n/1000),r=n%1000;return (th===1?"seribu":w999(th)+" ribu")+(r?" "+w999(r):"")}
  let mil=Math.floor(n/1000000),r=n%1000000;return (mil===1?"sejuta":w999(mil)+" juta")+(r?" "+numWords(r):"")

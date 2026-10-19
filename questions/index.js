@@ -1,7 +1,7 @@
 // Question dispatcher. Loads are split by grade/topic.
 
 // v3.86.32 — answer-option integrity for every grade, plus KSSR/UASA digit
-// grouping (7 050 410, 6 000, RM1 302) for Darjah 6. A pupil must never see two
+// grouping (7 050 410, 6 000, RM1 302) for Darjah 4 to 6. A pupil must never see two
 // identical choices, and the correct answer must never reappear as a wrong one.
 const PAOptionIntegrity=(function(){
  const VERSION='3.86.32';
@@ -49,17 +49,19 @@ const PAOptionIntegrity=(function(){
   return Object.assign({},q,{wrong:kept,optionIntegrity:VERSION});
  }
  const group=d=>d.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+ // Text inside <span data-no-group> (years such as 2024) is left as written.
  function groupText(str){
-  return String(str).split(/(<[^>]*>)/).map(seg=>seg.startsWith('<')?seg:seg
+  let keep=false;
+  return String(str).split(/(<[^>]*>)/).map(seg=>{if(seg.startsWith('<')){keep=/^<span\b[^>]*\bdata-no-group\b/.test(seg);return seg}return keep?seg:seg
    .replace(/RM(\d{4,})(?=[.\s]|$|[^\d:\/])/g,(m,d)=>'RM'+group(d))
-   .replace(/(^|[^\d.,:\/A-Za-z])(\d{1,3}(?:,\d{3})+|\d{4,})(?![\d:\/]|,\d)/g,(m,pre,num)=>pre+group(num.replace(/,/g,'')))
+   // "jam 1530" is a 24-hour clock reading, not a quantity: never group it.
+   .replace(/(^|[^\d.,:\/A-Za-z])(?<!jam )(\d{1,3}(?:,\d{3})+|\d{4,})(?![\d:\/]|,\d)/g,(m,pre,num)=>pre+group(num.replace(/,/g,'')))}
   ).join('');
  }
- // Bare arithmetic prompts are parsed by the written-column renderer; leave them as typed.
- const bareExpression=p=>/^[\d\s.,()+\-−×÷=?□\/]+$/.test(strip(p).trim());
+ // Bare arithmetic prompts are grouped too (91 368 ÷ 8 = ?, as in UASA papers); the written-column renderer
+ // reads grouped operands and answers.
  function groupDigits(q,skillId){
-  if(!q||!/^D6\./.test(String(skillId||'')))return q;
-  if(bareExpression(q.prompt))return q;
+  if(!q||!/^D[4-6]\./.test(String(skillId||'')))return q;
   const out=Object.assign({},q);
   if(typeof out.prompt==='string')out.prompt=groupText(out.prompt);
   if(typeof out.hint==='string')out.hint=groupText(out.hint);

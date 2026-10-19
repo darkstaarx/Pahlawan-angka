@@ -28,9 +28,9 @@
   const PROFILE_MANAGER_VERSION='3.24.2';
 
   const gradeDepthJs=`questions/grade-depth-v1.js?v=${APP_VERSION}`;
-  const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}`;
+  const guard=`questions/kssr-content-integrity-v${INTEGRITY_VERSION}.js?v=${APP_VERSION}-d5-uasa-3`;
   const depthCss=`css/kssr-assessment-depth-v${DEPTH_VERSION}.css?v=${DEPTH_VERSION}`;
-  const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${APP_VERSION}`;
+  const depthJs=`questions/kssr-assessment-depth-v${DEPTH_VERSION}.js?v=${APP_VERSION}-d5-uasa-4`;
   const y1CompetencyV2Js=`data/kssr/year1-competencies-v2.js?v=${APP_VERSION}`;
   const y1V2RuntimeJs=`questions/kssr-year1-v2-runtime-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y1V2Unit1Js=`questions/kssr-year1-v2-unit1-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
@@ -40,11 +40,13 @@
   const y1V2Unit78Js=`questions/kssr-year1-v2-unit78-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y1CurriculumV2Js=`questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y1AdaptiveJs=`questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js?v=${APP_VERSION}`;
-  const d4CurriculumJs=`questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js?v=${APP_VERSION}-completion-1`;
+  const d4CurriculumJs=`questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js?v=${APP_VERSION}-completion-2`;
   const d4CompletionDataJs='questions/d4/completion-data-money-v1.js?v=2';
   const d4CompletionMeasuresJs='questions/d4/completion-measures-v1.js?v=2';
-  const d4CompletionJs='questions/d4/completion-v1.js?v=1';
-  const y5CurriculumJs=`questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;
+  const d4CompletionJs='questions/d4/completion-v1.js?v=2';
+  const d5ScenesJs=`questions/d5/scenes-v1.js?v=${APP_VERSION}-d5-uasa-4`;
+  const y5CurriculumJs=`questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js?v=${APP_VERSION}-d5-uasa-4`;
+  const d5CompletionJs=`questions/d5/completion-v1.js?v=${APP_VERSION}-d5-uasa-4`;
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;
   const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}`;
   const y6CurriculumJs=`questions/kssr-year6-curriculum-v${Y6_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;
@@ -85,7 +87,7 @@
   const typedCss=`css/typed-answer-ui-v${TYPED_UI_VERSION}.css?v=${TYPED_UI_VERSION}`;
   const typedJs=`js/typed-answer-ui-v${TYPED_UI_VERSION}.js?v=${APP_VERSION}`;
   const gameQuestionCss=`css/game-question-interactions-v${GAME_QUESTION_VERSION}.css?v=${APP_VERSION}`;
-  const gameQuestionJs=`js/game-question-interactions-v${GAME_QUESTION_VERSION}.js?v=${APP_VERSION}`;
+  const gameQuestionJs=`js/game-question-interactions-v${GAME_QUESTION_VERSION}.js?v=${APP_VERSION}-d5-uasa-4`;
   const profileCss=`css/profile-manager-v${PROFILE_MANAGER_VERSION}.css?v=${PROFILE_MANAGER_VERSION}`;
   const profileJs=`js/profile-manager-v${PROFILE_MANAGER_VERSION}.js?v=${APP_VERSION}`;
   const devMiniGameJs='js/dev-minigame-launcher-v1.js?v=1.0.1';
@@ -107,7 +109,9 @@
     if(!document.querySelector('script[src^="questions/d4/completion-data-money-v1.js"]'))document.write(`<script src="${d4CompletionDataJs}"><\/script>`);
     if(!document.querySelector('script[src^="questions/d4/completion-measures-v1.js"]'))document.write(`<script src="${d4CompletionMeasuresJs}"><\/script>`);
     if(!document.querySelector('script[src^="questions/d4/completion-v1.js"]'))document.write(`<script src="${d4CompletionJs}"><\/script>`);
+    if(!document.querySelector('script[src^="questions/d5/scenes-v1.js"]'))document.write(`<script src="${d5ScenesJs}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js"]`))document.write(`<script src="${y5CurriculumJs}"><\/script>`);
+    if(!document.querySelector('script[src^="questions/d5/completion-v1.js"]'))document.write(`<script src="${d5CompletionJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${y6Css}">`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`))document.write(`<script src="${y6Js}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-curriculum-v${Y6_CURRICULUM_VERSION}.js"]`))document.write(`<script src="${y6CurriculumJs}"><\/script>`);
@@ -187,7 +191,8 @@
     const loadY6Experience=()=>loadScript(y6ExperienceJs,`script[src^="questions/kssr-year6-experience-v${Y6_EXPERIENCE_VERSION}.js"]`,loadY6MoneyReal);
     const loadY6Curriculum=()=>loadScript(y6CurriculumJs,`script[src^="questions/kssr-year6-curriculum-v${Y6_CURRICULUM_VERSION}.js"]`,loadY6Experience);
     const loadY6Repair=()=>{loadCss(y6Css,`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`);loadScript(y6Js,`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`,loadY6Curriculum);};
-    const loadY5Curriculum=()=>loadScript(y5CurriculumJs,`script[src^="questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js"]`,loadY6Repair);
+    const loadD5Completion=()=>loadScript(d5CompletionJs,'script[src^="questions/d5/completion-v1.js"]',loadY6Repair);
+    const loadY5Curriculum=()=>loadScript(d5ScenesJs,'script[src^="questions/d5/scenes-v1.js"]',()=>loadScript(y5CurriculumJs,`script[src^="questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js"]`,loadD5Completion));
     const loadD4Completion=()=>loadScript(d4CompletionDataJs,'script[src^="questions/d4/completion-data-money-v1.js"]',()=>loadScript(d4CompletionMeasuresJs,'script[src^="questions/d4/completion-measures-v1.js"]',()=>loadScript(d4CompletionJs,'script[src^="questions/d4/completion-v1.js"]',loadY5Curriculum)));
     const loadD4Curriculum=()=>loadScript(d4CurriculumJs,`script[src^="questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js"]`,loadD4Completion);
     const loadY1Adaptive=()=>loadScript(y1AdaptiveJs,`script[src^="questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js"]`,loadD4Curriculum);
