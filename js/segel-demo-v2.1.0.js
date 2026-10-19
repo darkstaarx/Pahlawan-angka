@@ -24,10 +24,12 @@
 (function(){
   // Index lama masih memanggil bundle ini beberapa kali. Selepas bundle live
   // masuk, jangan benarkan salinan legacy overwrite host dan stage semula.
-  const src=String(document.currentScript?.src||'');
-  const canonical=/[?&]v=4\.0\.22(?:[&#]|$)/.test(src);
-  if(window.__PA_SEGEL_CANONICAL__)return;
-  if(canonical)window.__PA_SEGEL_CANONICAL__=true;
+  const runtimeKey='segel-demo-v2.1.0';
+  if(window.__PA_SEGEL_RUNTIME__===runtimeKey)return;
+  window.__PA_SEGEL_RUNTIME__=runtimeKey;
+  // The legacy copies only know this marker, so leave it set even when the
+  // current script was loaded with a different cache-busting query string.
+  window.__PA_SEGEL_CANONICAL__=true;
   'use strict';
 
   /* Tier segel. hits/warna/denyut diambil terus dari kanun di atas. */
@@ -529,6 +531,32 @@
       load(FRAMES.iceBurst), load(FRAMES.iceEnd), load(FRAMES.finalFx)
     ]);
 
+    /* TextureLoader resolves null on an image error. Keep every authored
+       frame slot (and therefore its hold cadence), replacing only failed
+       slots with the nearest available hero frame. The entrance and pose
+       calibration paths must never receive a null hero texture. */
+    const fillHeroFrames=(frames,fallback)=>{
+      const valid=frames.filter(Boolean);
+      if(!valid.length)return fallback?frames.map(()=>fallback):[];
+      return frames.map((tex,i)=>{
+        if(tex)return tex;
+        for(let d=1;d<frames.length;d++){
+          const left=i-d,right=i+d;
+          if(left>=0&&frames[left])return frames[left];
+          if(right<frames.length&&frames[right])return frames[right];
+        }
+        return valid[i%valid.length];
+      });
+    };
+    const idleHeroSeed=heroIdle.find(Boolean)||heroPrepare||heroSlash;
+    const strikeReference=heroPrepare||heroSlash;
+    const happyReference=heroHappy.find(Boolean);
+    if(!idleHeroSeed)throw new Error('Wira hero texture gagal dimuat');
+    heroIdle=fillHeroFrames(heroIdle,idleHeroSeed);
+    heroPrepare=heroPrepare||heroSlash||heroIdle[0];
+    heroSlash=heroSlash||heroPrepare||heroIdle[0];
+    heroHappy=fillHeroFrames(heroHappy,heroIdle[0]);
+
     /* latar: dimuatkan "cover" supaya tiada jalur kosong pada apa-apa bentuk skrin */
     const bg=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
       new THREE.MeshBasicMaterial({map:arenaTex,depthWrite:false}));
@@ -693,8 +721,12 @@
        angka itu yang menjadikan Wira terlalu besar dalam skrin berjaya. */
     const HERO_HAPPY_SCALE=1.08;
     const HERO_UPP=heroCalibratedUpp(heroIdle[0],HERO_CHAR_H);
-    const HERO_HAPPY_UPP=heroCalibratedUpp(heroHappy[0],HERO_CHAR_H*HERO_HAPPY_SCALE);
-    const HERO_STRIKE_UPP=heroCalibratedUpp(heroPrepare,HERO_CHAR_H);
+    const HERO_HAPPY_UPP=happyReference
+      ? heroCalibratedUpp(happyReference,HERO_CHAR_H*HERO_HAPPY_SCALE)
+      : HERO_UPP;
+    const HERO_STRIKE_UPP=strikeReference
+      ? heroCalibratedUpp(strikeReference,HERO_CHAR_H)
+      : HERO_UPP;
     const heroHappyAnchor=entry(heroHappy[0],HERO_HAPPY_UPP);
     const heroIdleE=heroIdle.map(t=>entry(t,HERO_UPP));
     const heroHappyE=heroHappy.map(t=>{
@@ -1084,7 +1116,9 @@
 
     function prepareEntrance(){
       const e=hero.userData.e;
-      const pts=sampleSilhouette(e.tex.image,EN);
+      const img=e&&e.tex&&e.tex.image;
+      if(!img)return false;
+      const pts=sampleSilhouette(img,EN);
       if(!pts.length)return false;
       for(let i=0;i<EN;i++){
         const [u,v]=pts[i];
@@ -1097,6 +1131,18 @@
         enSwirl[i]=(Math.random()-.5)*1.5;
       }
       return true;
+    }
+
+    function restoreHeroAfterEntranceFailure(){
+      S.enterT=-1; S.heroFade=1; S.heroLock=null; S.heroX=HERO_HOME;
+      S.heroFeet=HERO_HOME; S.heroFrames=heroIdleE; S.heroHold=HERO_IDLE_HOLD;
+      S.heroFrameT0=tAcc; swap(hero,heroIdleE[0]);
+      hero.position.x=HERO_HOME+hero.userData.e.offX;
+      hero.position.y=GROUND+hero.userData.e.offY;
+      hero.visible=true; hero.material.opacity=1;
+      enPoints.visible=enHalo.visible=false; enGlow.visible=false;
+      enMat.opacity=enHaloMat.opacity=0;
+      enGlow.material.opacity=0;
     }
 
     const PN=220;
@@ -1692,18 +1738,25 @@
         if(!reduceMotion&&document.querySelector('.paSegelEntryCinematic'))S.heroFade=0;
       },
       enter(){
-        // Production replay has no portal overlay. In that case the reveal
-        // callback may arrive after reset; never fade Wira to zero waiting for
-        // a cinematic that is not mounted.
-        if(!document.querySelector('.paSegelEntryCinematic')){
-          S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME; swap(hero,heroIdleE[0]);
-          return;
+        try{
+          // Production replay has no portal overlay. In that case the reveal
+          // callback may arrive after reset; never fade Wira to zero waiting
+          // for a cinematic that is not mounted.
+          if(!document.querySelector('.paSegelEntryCinematic')){
+            restoreHeroAfterEntranceFailure();
+            return;
+          }
+          if(reduceMotion||!prepareEntrance()){
+            restoreHeroAfterEntranceFailure();
+            return;
+          }
+          S.enterT=0; S.heroFade=0;
+          enPoints.visible=enHalo.visible=true;
+          enMat.opacity=enHaloMat.opacity=0;
+          sfx('auraCharge');
+        }catch(_){
+          restoreHeroAfterEntranceFailure();
         }
-        if(reduceMotion||!prepareEntrance()){ S.heroFade=1; return }
-        S.enterT=0; S.heroFade=0;
-        enPoints.visible=enHalo.visible=true;
-        enMat.opacity=enHaloMat.opacity=0;
-        sfx('auraCharge');
       },
       wrong(){ S.shake=.14 },
       reset(questionTarget=null){

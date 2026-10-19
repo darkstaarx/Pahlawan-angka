@@ -1,0 +1,18 @@
+name: Segel hero and result lifecycle
+on:
+  push:
+    branches: [main]
+    paths: ['js/segel-demo-v2.1.0.js', 'js/engine/production-journey.js', 'audit/segel-*.test.js', '.github/workflows/segel-lifecycle.yml']
+  pull_request:
+    paths: ['js/segel-demo-v2.1.0.js', 'js/engine/production-journey.js', 'audit/segel-*.test.js', '.github/workflows/segel-lifecycle.yml']
+permissions:
+  contents: read
+jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test audit/segel-hero-visibility.test.js audit/segel-result-lifecycle.test.js
