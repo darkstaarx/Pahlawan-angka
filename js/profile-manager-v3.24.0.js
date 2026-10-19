@@ -5,8 +5,9 @@
 'use strict';
 const VERSION='3.24.0';
 const HERO={
-  wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/frames/aura-framing-v1.webp'},
-  bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/profile-happy-v1.webp'}
+  wira:{id:'wira',name:'Wira',power:'Kuasa Ais',src:'assets/heroes/wira/idle.webp'},
+  bunga:{id:'bunga',name:'Bunga',power:'Kuasa Flora',src:'assets/heroes/bunga/idle.webp'},
+  sidma:{id:'sidma',name:'Sidma',power:'Kuasa Sigma',src:'assets/heroes/sidma/idle.webp'}
 };
 let rendering=false, statsLoading=false, editorHero='wira', editorProfileId=null, deleteProfileId=null, emptyPrompted=false;
 const $=id=>document.getElementById(id);
@@ -15,7 +16,8 @@ const cloud=()=>window.PACloud||null;
 const st=()=>cloud()?.state||null;
 const signed=()=>!!st()?.user;
 const profileById=id=>(st()?.profiles||[]).find(p=>p.id===id)||null;
-const heroFor=id=>HERO[id]||HERO.wira;
+const canonical=id=>typeof canonicalHeroId==='function'?canonicalHeroId(id):id==='wirachibi'?'wira':(HERO[id]?id:'wira');
+const heroFor=id=>HERO[canonical(id)]||HERO.wira;
 const nowIso=()=>new Date().toISOString();
 
 function levelOf(p){return Math.max(1,Number(p.level||1))}
@@ -63,7 +65,7 @@ async function refreshProfiles(){
     .select('id,display_name,grade,hero_id,updated_at,created_at')
     .eq('is_active',true).order('created_at');
   if(error)throw error;
-  state.profiles=data||[];
+  state.profiles=(data||[]).map(p=>({...p,hero_id:canonical(p.hero_id)}));
   await hydrateStats();
   return state.profiles;
 }
@@ -132,7 +134,7 @@ function ensureUi(){
           <label class="pmField"><span>Darjah</span><select id="pmChildGrade">${[1,2,3,4,5,6].map(g=>`<option value="${g}">Darjah ${g}</option>`).join('')}</select></label>
           <div class="pmHeroLabel"><span>Pilih pahlawan</span><small>Pilih pahlawan yang akan menemani pengembaraan.</small></div>
           <div class="pmHeroGrid">
-            ${heroChoice('wira')}${heroChoice('bunga')}
+            ${heroChoice('wira')}${heroChoice('bunga')}${heroChoice('sidma')}
           </div>
           <div id="pmEditorError" class="pmError" role="alert"></div>
           <button id="pmSaveProfile" class="pmPrimary" type="button" onclick="PAProfileManager.saveProfile()">Cipta Profil</button>
@@ -170,7 +172,7 @@ function heroChoice(id){
 }
 
 function chooseHero(id){
-  editorHero=HERO[id]?id:'wira';
+  editorHero=canonical(id);
   Object.keys(HERO).forEach(k=>{
     const b=$(`pmHero-${k}`),active=k===editorHero;
     if(b){b.classList.toggle('selected',active);b.setAttribute('aria-pressed',active?'true':'false');const em=b.querySelector('em');if(em)em.textContent=active?'✓ Dipilih':'Pilih';}
@@ -180,7 +182,7 @@ function chooseHero(id){
 function openEditor(id=null){
   ensureUi();if(!signed())return screen('login');
   const p=id?profileById(id):null;
-  editorProfileId=p?.id||null;editorHero=p?.hero_id||'wira';
+  editorProfileId=p?.id||null;editorHero=canonical(p?.hero_id||'wira');
   $('pmEditorTitle').textContent=p?'Edit Profil Anak':'Cipta Profil Anak';
   $('pmChildName').value=p?.display_name||'';
   $('pmChildGrade').value=String(p?.grade||Math.max(1,Math.min(6,Number(db?.schoolGrade||2))));
@@ -327,6 +329,7 @@ async function confirmDelete(){
 async function selectProfile(id){
   if(!profileById(id))await refreshProfiles();
   await cloud()?.selectChild?.(id,true);
+  if(typeof db!=='undefined'&&db&&typeof canonicalHeroId==='function'&&db.hero!==canonicalHeroId(db.hero)){db.hero=canonicalHeroId(db.hero);if(typeof save==='function')save()}
 }
 async function openManager(){
   if(!signed())return screen('login');

@@ -36,7 +36,7 @@
      Untuk Wira Chibi & Pet Aurora di Pentas Menu V2
      ========================================================= */
   const HERO_FRAMES = Array.from({length:24},(_,i)=>
-    `assets/heroes/wira-chibi/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.png`
+    `assets/heroes/wira/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.png`
   );
   const HERO_FRAME_MS = 105;
   const HERO_HEAD_FRAME_MS = 240;

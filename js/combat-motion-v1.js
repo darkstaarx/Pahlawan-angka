@@ -1,313 +1,88 @@
-/* Wira and Sidma motion, rendered over the live arena. Gameplay owns
-   damage; this layer owns only pixels, sound and the displayed HP deadline. */
+/* Canonical-image combat presentation. Gameplay owns damage; this layer owns
+   pixels, sound and the displayed HP deadline. Every hero uses its approved
+   idle image; motion is expressed with transforms and abstract effects. */
 (()=>{
  'use strict';
  const byId=id=>document.getElementById(id),cache=new Map();
- const paths={idle:'assets/heroes/wira/idle.webp',ready:'assets/heroes/wira/frames/anticipation-v1.webp',strike:'assets/heroes/wira/frames/attack-arc-v2.webp',follow:'assets/heroes/wira/frames/follow-through-v1.webp'};
- // The Chibi pack's anticipation-v1 frame is a mid-swing action shot, not a
- // wind-up stance like the original Wira's — using it here reads as two
- // swings per attack. Idle stands in for the ready pose until a true
- // wind-up frame exists.
- const chibiPaths={idle:'assets/heroes/wira-chibi/idle.webp',ready:'assets/heroes/wira-chibi/idle.webp',strike:'assets/heroes/wira-chibi/frames/attack-arc-v2.webp',follow:'assets/heroes/wira-chibi/frames/follow-through-v1.webp'};
- const chibiAttackSheetPath='assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp';
- const chibiShieldReleasePath='assets/heroes/wira-chibi/frames/shield-throw-release-v1.webp';
- const chibiShieldProjectilePath='assets/heroes/wira-chibi/frames/shield-projectile-v1.webp';
- const chibiAttackGrid={columns:5,rows:4,frames:17,frameMs:70};
- // Character-centre pivots measured per frame. The source sheet shifts Wira
- // inside each cell as the combo advances; anchoring the painted body instead
- // of the cell prevents a sideways pop against the live idle pose.
- const chibiAttackPivotX=[.455,.42,.449,.458,.472,.471,.444,.461,.476,.494,.458,.437,.465,.502,.54,.579,.583];
- const chibiAttackFootY=[.996,.996,.996,.984,.988,.996,.996,.98,.984,.984,.996,.996,.996,.996,.977,.965,.965];
- const art={},chibiArt={},sidmaArt={};let canvas,ctx,active=null,raf=0,observer;
- let chibiNextAttack='slash';
- const sidmaPaths={idle:'assets/heroes/sidma/idle.webp',ready:'assets/heroes/sidma/frames/attack-stance-v1.webp',dash:'assets/heroes/sidma/frames/skill2-dash-v1.webp',strike:'assets/heroes/sidma/frames/skill2-impact-v1.webp',follow:'assets/heroes/sidma/frames/recovery-v1.webp',cast:'assets/heroes/sidma/frames/cast-start-v1.webp',release:'assets/heroes/sidma/frames/release-v1.webp'};
- // Rumus Sigma's bolt. Kept out of the pose set so a slow decode delays the
- // projectile only, never the whole attack.
- const sidmaBoltPath='assets/fx/sidma/rumus-sigma/fx_sigma_projectile.webp';
- let sidmaBolt=null;
- const heroKey=()=>typeof db!=='undefined'?db?.hero:null;
- const heroArt=()=>heroKey()==='sidma'?sidmaArt:(heroKey()==='wirachibi'?chibiArt:art);
+ const paths={wira:'assets/heroes/wira/idle.webp',bunga:'assets/heroes/bunga/idle.webp',sidma:'assets/heroes/sidma/idle.webp'};
+ const art={};let canvas,ctx,active=null,raf=0,observer;
  const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>1-Math.pow(1-clamp(x),3),mix=(a,b,t)=>a+(b-a)*t;
+ const heroKey=()=>{const key=typeof db!=='undefined'?db?.hero:null;return key==='wirachibi'?'wira':paths[key]?key:null};
  function load(src){
   if(!src)return null;if(cache.has(src))return cache.get(src);
-  const record={ready:false};cache.set(src,record);
-  const img=new Image();img.src=src;
-  img.decode().then(()=>{
-   const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;
-   const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0);
-   const data=g.getImageData(0,0,c.width,c.height).data;let x=c.width,y=c.height,r=0,b=0;
-   for(let iy=0;iy<c.height;iy++)for(let ix=0;ix<c.width;ix++)if(data[(iy*c.width+ix)*4+3]>25){x=Math.min(x,ix);r=Math.max(r,ix);y=Math.min(y,iy);b=Math.max(b,iy)}
-   Object.assign(record,{img,x,y,w:r-x+1,h:b-y+1,ready:true});sync();
-  }).catch(()=>{record.failed=true});return record;
- }
- function loadSheet(src){
-  if(!src)return null;if(cache.has(src))return cache.get(src);
-  const record={ready:false};cache.set(src,record);
-  const img=new Image();img.src=src;
-  img.decode().then(()=>{Object.assign(record,{img,ready:true});sync()}).catch(()=>{record.failed=true});
-  return record;
+  const record={ready:false};cache.set(src,record);const img=new Image();img.src=src;
+  const decoded=()=>{const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0);const d=g.getImageData(0,0,c.width,c.height).data;let x=c.width,y=c.height,r=-1,b=-1;for(let iy=0;iy<c.height;iy++)for(let ix=0;ix<c.width;ix++)if(d[(iy*c.width+ix)*4+3]>25){x=Math.min(x,ix);r=Math.max(r,ix);y=Math.min(y,iy);b=Math.max(b,iy)}Object.assign(record,{img,x,y,w:Math.max(1,r-x+1),h:Math.max(1,b-y+1),ready:true});sync()};
+  (img.decode?img.decode():Promise.resolve()).then(decoded).catch(()=>{record.failed=true});return record;
  }
  Object.entries(paths).forEach(([key,src])=>art[key]=load(src));
- Object.entries(chibiPaths).forEach(([key,src])=>chibiArt[key]=load(src));
- function ensureSidmaAssets(){
-  if(Object.keys(sidmaArt).length)return;
-  Object.entries(sidmaPaths).forEach(([key,src])=>sidmaArt[key]=load(src));
-  sidmaBolt=load(sidmaBoltPath);
- }
- // The sheet is already a uniform grid; skip the expensive full-image alpha
- // scan used to normalise irregular standalone poses.
- const chibiAttackSheet=loadSheet(chibiAttackSheetPath);
- // Keep shield assets separate so a delayed decode falls back to slash.
- const chibiShieldRelease=load(chibiShieldReleasePath);
- const chibiShieldProjectile=load(chibiShieldProjectilePath);
- function ensure(){
-  const arena=byId('battleArena');if(!arena)return null;
-  if(!canvas){canvas=document.createElement('canvas');canvas.className='paCombatMotion';canvas.setAttribute('aria-hidden','true');arena.appendChild(canvas);ctx=canvas.getContext('2d');}
-  const rect=arena.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,3);
-  const width=arena.clientWidth,height=arena.clientHeight;
-  if(canvas.width!==Math.round(width*ratio)||canvas.height!==Math.round(height*ratio)){canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio)}
-  ctx.setTransform(ratio,0,0,ratio,0,0);ctx.imageSmoothingEnabled=true;if('imageSmoothingQuality' in ctx)ctx.imageSmoothingQuality='high';
-  return {arena,rect,width,height};
- }
+ function ensure(){const arena=byId('battleArena');if(!arena)return null;if(!canvas){canvas=document.createElement('canvas');canvas.className='paCombatMotion';canvas.setAttribute('aria-hidden','true');arena.appendChild(canvas);ctx=canvas.getContext('2d')}const ratio=Math.min(window.devicePixelRatio||1,3),width=arena.clientWidth,height=arena.clientHeight;if(canvas.width!==Math.round(width*ratio)||canvas.height!==Math.round(height*ratio)){canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio)}ctx.setTransform(ratio,0,0,ratio,0,0);ctx.imageSmoothingEnabled=true;if('imageSmoothingQuality' in ctx)ctx.imageSmoothingQuality='high';return {arena,rect:arena.getBoundingClientRect(),width,height}}
  function clear(){if(ctx)ctx.clearRect(0,0,canvas.width,canvas.height)}
- function geometry(img,asset,scene){
-  if(!img||!asset?.ready)return null;
-  const rect=img.getBoundingClientRect();if(rect.width<2||rect.height<2)return null;
-  // All battle frames use contain, centred horizontally and bottom-aligned.
-  const scale=Math.min(rect.width/asset.img.naturalWidth,rect.height/asset.img.naturalHeight);
-  const left=rect.left-scene.rect.left-scene.arena.clientLeft+(rect.width-asset.img.naturalWidth*scale)/2+asset.x*scale;
-  const top=rect.bottom-scene.rect.top-scene.arena.clientTop-asset.img.naturalHeight*scale+asset.y*scale;
-  return {x:left+asset.w*scale/2,y:top+asset.h*scale,h:asset.h*scale,w:asset.w*scale};
- }
+ function geometry(img,a,scene){if(!img||!a?.ready)return null;const rect=img.getBoundingClientRect();if(rect.width<2||rect.height<2)return null;const scale=Math.min(rect.width/a.img.naturalWidth,rect.height/a.img.naturalHeight);const left=rect.left-scene.rect.left-scene.arena.clientLeft+(rect.width-a.img.naturalWidth*scale)/2+a.x*scale;const top=rect.bottom-scene.rect.top-scene.arena.clientTop-a.img.naturalHeight*scale+a.y*scale;return {x:left+a.w*scale/2,y:top+a.h*scale,h:a.h*scale,w:a.w*scale}}
  function shadow(x,y,w,h,opacity){ctx.save();ctx.globalAlpha=opacity;ctx.translate(x,y);ctx.scale(Math.max(1,w),Math.max(1,h));const g=ctx.createRadialGradient(0,0,0,0,0,1);g.addColorStop(0,'#020b12');g.addColorStop(.38,'#020b12b0');g.addColorStop(1,'#020b1200');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore()}
- const feet={idle:[[.19,.96],[.85,.99]],ready:[[.28,.99],[.71,.97]],strike:[[.16,.99],[.77,.98]],follow:[[.05,.99],[.47,.95]]};
- function grounded(a,p,pose){
-  if(!a?.ready||!p)return;const w=p.h*a.w/a.h,s=p.h/290;
-  shadow(p.x,p.y-3*s,w*.42,14*s,.3);
-  if(pose)feet[pose].forEach(([fx,fy])=>shadow(p.x+(fx-.5)*w,p.y-(1-fy)*p.h+1,24*s,6*s,.85));
-  else shadow(p.x,p.y,w*.28,5*s,.7);
+ function grounded(a,p){if(!a?.ready||!p)return;const s=p.h/290;shadow(p.x,p.y-3*s,p.w*.42,14*s,.3);shadow(p.x,p.y+1,Math.max(18,p.w*.28),6*s,.75)}
+ function sprite(a,p,flash=false,scaleX=1){if(!a?.ready||!p)return;ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.96) saturate(.96)';const w=p.h*a.w/a.h*scaleX;ctx.translate(p.x,p.y-p.h);ctx.scale(scaleX,1);ctx.drawImage(a.img,a.x,a.y,a.w,a.h,-w/(2*scaleX),0,w/scaleX,p.h);ctx.restore()}
+ function heroGeometry(scene){const key=heroKey();return key?geometry(byId('heroIdle'),art[key],scene):null}
+ function drawBolt(hero,enemy,t,min,color,contact){
+  const launch=Math.max(0,contact-280),landing=contact;
+  if(min){if(t<contact-30||t>contact+30)return}
+  else if(t<launch||t>landing)return;
+  const q=min?1:clamp((t-launch)/(landing-launch));
+  const x=mix(hero.x+hero.w*.18,enemy.x,q),y=mix(hero.y-hero.h*.58,enemy.y-enemy.h*.52,q),s=hero.h/290;
+  ctx.save();ctx.globalAlpha=min?Math.max(0,1-Math.abs(t-contact)/30):Math.min(1,q*6)*Math.min(1,(1-q)*7+.35);
+  ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=14*s;ctx.beginPath();ctx.arc(x,y,Math.max(5,12*s),0,Math.PI*2);ctx.fill();ctx.restore()
  }
- function sprite(a,p,flash=false){ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.96) saturate(.96)';const w=p.h*a.w/a.h;ctx.drawImage(a.img,a.x,a.y,a.w,a.h,p.x-w/2,p.y-p.h,w,p.h);ctx.restore()}
- function drawChibiAttack(p,t,min=false){
-  if(!chibiAttackSheet?.ready)return false;
-  const image=chibiAttackSheet.img,grid=chibiAttackGrid;
-  const frame=min?(t<grid.frameMs?0:15):Math.min(grid.frames-1,Math.max(0,Math.floor(t/grid.frameMs)));
-  const column=frame%grid.columns,row=Math.floor(frame/grid.columns);
-  const sx=Math.round(column*image.naturalWidth/grid.columns),ex=Math.round((column+1)*image.naturalWidth/grid.columns);
-  const sy=Math.round(row*image.naturalHeight/grid.rows),ey=Math.round((row+1)*image.naturalHeight/grid.rows);
-  const sourceWidth=ex-sx,sourceHeight=ey-sy,height=p.h*1.25,width=height*sourceWidth/sourceHeight;
-  // The cells have transparent padding under the feet. Use the measured foot
-  // line rather than the cell edge so attack and idle share one ground plane.
-  const left=p.x-width*chibiAttackPivotX[frame],top=p.y-height*chibiAttackFootY[frame];
-  ctx.save();ctx.filter='brightness(1.01) saturate(1.06)';ctx.drawImage(image,sx,sy,sourceWidth,sourceHeight,left,top,width,height);ctx.restore();
-  return true;
- }
- function groundedChibiShield(p){
-  if(!p)return;const s=p.h/290;
-  shadow(p.x,p.y-3*s,p.h*.35,14*s,.3);
-  shadow(p.x+p.h*.10,p.y+1,p.h*.1,6*s,.85);
- }
- function drawChibiShieldRelease(p,flash=false){
-  const a=chibiShieldRelease;if(!a?.ready)return false;
-  const scale=p.h*.87/a.h,fullW=a.img.naturalWidth*scale,fullH=a.img.naturalHeight*scale;
-  const pivotX=fullW*.584,pivotY=fullH*.965;
-  ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.98) saturate(1.02)';
-  ctx.drawImage(a.img,p.x+p.h*.10-pivotX,p.y-pivotY,fullW,fullH);ctx.restore();
-  return true;
- }
- function shieldFlight(hero,enemy,t,min){
-  const a=chibiShieldProjectile;if(!a?.ready)return;
-  const fromX=hero.x+hero.h*.64,fromY=hero.y-hero.h*.43;
-  const toX=enemy.x,toY=enemy.y-enemy.h*.5;
-  let x=fromX,y=fromY,alpha=1;
-  if(min){
-   if(t<1015||t>1090)return;
-   x=toX;y=toY;alpha=Math.min(1,(t-1015)/25)*Math.min(1,(1090-t)/25);
-  }else if(t>=250&&t<=1050){
-   const q=clamp((t-250)/800),smooth=q*q*(3-2*q);x=mix(fromX,toX,smooth);y=mix(fromY,toY,smooth);
-  }else if(t>1050&&t<=1240){
-   const q=ease((t-1050)/190);x=mix(toX,fromX,q);y=mix(toY,fromY,q);alpha=1-q*.15;
-  }else return;
-  const h=hero.h*.34,w=h*a.w/a.h;
-  const spin=min?0:(t<=1050?clamp((t-250)/800):1+clamp((t-1050)/190))*Math.PI*2;
-  ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.rotate(spin);ctx.drawImage(a.img,a.x,a.y,a.w,a.h,-w/2,-h/2,w,h);ctx.restore();
- }
- // Source-space foot pivots keep body scale independent of the painted Sigma
- // ring and cape. The artwork is drawn unmodified, including its own trail.
- const sidmaPivots={idle:[632,670],ready:[632,670],dash:[780,660],strike:[700,690],follow:[632,670],cast:[632,670],release:[632,670]};
- function heroGeometry(scene){
-  const source=heroArt().idle,p=geometry(byId('heroIdle'),source,scene);
-  if(p&&heroKey()==='sidma'){const scale=p.h/source.h;p.x+=(632-source.x-source.w/2)*scale;p.y+=(670-source.y-source.h)*scale;p.h=590*scale}
-  return p;
- }
- function drawHero(key,set,pose,p,flash=false){
-  if(key!=='sidma'){sprite(set[pose],p,flash);return}
-  const a=set[pose],pivot=sidmaPivots[pose],scale=p.h/590;
-  ctx.save();ctx.filter=flash?'brightness(2) saturate(.4)':'brightness(.96) saturate(.96)';
-  ctx.drawImage(a.img,a.x,a.y,a.w,a.h,p.x+(a.x-pivot[0])*scale,p.y+(a.y-pivot[1])*scale,a.w*scale,a.h*scale);ctx.restore();
- }
- function heroShadow(key,set,pose,p){
-  if(key!=='sidma'){grounded(set[pose],p,pose);return}
-  const scale=p.h/590,pivot=sidmaPivots[pose];
-  const contacts=pose==='dash'?[[820,660]]:pose==='strike'?[[650,688]]:[[465,666],[790,670]];
-  shadow(p.x,p.y-2,100*scale,16*scale,.32);
-  contacts.forEach(([x,y])=>shadow(p.x+(x-pivot[0])*scale,p.y+(y-pivot[1])*scale+1,45*scale,10*scale,.85));
- }
- function sync(){
-  const arena=byId('battleArena');if(!arena)return;
-  const supported=['wira','wirachibi','sidma'].includes(heroKey());arena.classList.toggle('paGroundedCombat',supported);
-  const enemy=byId('enemySprite');load(enemy?.currentSrc||enemy?.getAttribute('src'));['enemyAnticipation','enemyAttack','enemyFollowThrough'].forEach(id=>{const img=byId(id);load(img?.currentSrc||img?.getAttribute('src'))});
-  if(active||!canvas&&document.body.dataset.screen!=='game')return;
-  const scene=ensure();clear();if(!supported||!scene||document.body.dataset.screen!=='game')return;
-  if(byId('hero')?.classList.contains('attacking')||byId('enemy')?.classList.contains('attacking'))return;
-  const enemyArt=load(enemy?.currentSrc||enemy?.getAttribute('src'));
-  const hero=heroGeometry(scene);if(hero)heroShadow(heroKey(),heroArt(),'idle',hero);
-  if(!byId('enemy')?.classList.contains('paDefeatShatter'))grounded(enemyArt,geometry(enemy,enemyArt,scene));
- }
- function reset(){cancelAnimationFrame(raf);raf=0;active=null;canvas?.setAttribute('data-phase','idle');byId('battleArena')?.classList.remove('paMotionActive');byId('battleArena')?.querySelectorAll?.('.paMotionDamage').forEach(el=>el.remove());clear();}
+ function fx(target,elapsed,color,damage,min){if(elapsed<0||elapsed>500)return;const q=elapsed/500,s=target.h/290,px=target.x-target.w*.18,py=target.y-target.h*.5;ctx.save();ctx.globalAlpha=1-q;ctx.strokeStyle=color;ctx.lineWidth=Math.max(1,9*(1-q)*s);ctx.beginPath();ctx.ellipse(px,py,(min?25:35+q*30)*s,12*s,-.55,-1.5,1.6);ctx.stroke();if(!min)for(let i=0;i<12;i++){const aa=i*2.399,r=(15+q*(35+i%4*13))*s;ctx.fillStyle=color;ctx.fillRect(px+Math.cos(aa)*r,py+Math.sin(aa)*r,2,2)}ctx.font=`bold ${Math.max(16,30*s)}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#102132';ctx.fillStyle='#fff';const yy=py-target.h*.2-(min?0:ease(q)*22);ctx.strokeText('−'+damage,target.x,yy);ctx.fillText('−'+damage,target.x,yy);ctx.restore()}
+ function sync(){const arena=byId('battleArena');if(!arena)return;const supported=!!paths[heroKey()];arena.classList.toggle('paGroundedCombat',supported);const enemy=byId('enemySprite');load(enemy?.currentSrc||enemy?.getAttribute('src'));if(active||!canvas&&document.body.dataset.screen!=='game')return;const scene=ensure();clear();if(!supported||!scene||document.body.dataset.screen!=='game')return;if(byId('hero')?.classList.contains('attacking')||byId('enemy')?.classList.contains('attacking'))return;const enemyArt=load(enemy?.currentSrc||enemy?.getAttribute('src'));const hero=heroGeometry(scene);if(hero)grounded(art[heroKey()],hero);if(!byId('enemy')?.classList.contains('paDefeatShatter'))grounded(enemyArt,geometry(enemy,enemyArt,scene))}
+ function reset(){cancelAnimationFrame(raf);raf=0;active=null;canvas?.setAttribute('data-phase','idle');byId('battleArena')?.classList.remove('paMotionActive');byId('battleArena')?.querySelectorAll?.('.paMotionDamage').forEach(el=>el.remove());clear()}
  function targetGeometry(){const scene=ensure(),img=byId('enemySprite');return scene?geometry(img,load(img?.currentSrc||img?.getAttribute('src')),scene):null}
- function damageAtTarget(amount){
-  const p=targetGeometry(),arena=byId('battleArena');if(!p||!arena)return;
-  const label=document.createElement('span');label.className='paMotionDamage';label.setAttribute('aria-hidden','true');label.textContent='−'+amount;label.style.left=p.x+'px';label.style.top=(p.y-p.h*.72)+'px';arena.appendChild(label);window.PABattlePresentation.later(()=>label.remove(),600);
- }
- // Rumus Sigma's bolt, launched on the release beat and landing on contact.
- function bolt(hero,enemy,t,min){
-  const boltArt=sidmaBolt;if(!boltArt?.ready)return;
-  const launch=620,land=900;if(t<launch||t>land)return;
-  const q=clamp((t-launch)/(land-launch)),travelled=min?1:ease(q);
-  const fromX=hero.x+hero.h*.08,fromY=hero.y-hero.h*.62;
-  const toX=enemy.x,toY=enemy.y-enemy.h*.5;
-  const h=hero.h*.34*(.82+q*.26),w=h*boltArt.w/boltArt.h;
-  const x=mix(fromX,toX,travelled),y=mix(fromY,toY,travelled);
-  ctx.save();ctx.globalAlpha=Math.min(1,q*6)*Math.min(1,(1-q)*7+.35);
-  ctx.drawImage(boltArt.img,boltArt.x,boltArt.y,boltArt.w,boltArt.h,x-w/2,y-h/2,w,h);ctx.restore();
- }
- function fx(target,elapsed,color,damage,min){
-  if(elapsed<0||elapsed>500)return;const q=elapsed/500,s=target.h/290;
-  const px=target.x-target.w*.18,py=target.y-target.h*.5;
-  ctx.save();ctx.globalAlpha=1-q;ctx.strokeStyle=color;ctx.lineWidth=Math.max(1,(9*(1-q))*s);
-  ctx.beginPath();ctx.ellipse(px,py,(min?25:35+q*30)*s,12*s,-.55,-1.5,1.6);ctx.stroke();
-  if(!min)for(let i=0;i<12;i++){const a=i*2.399,r=(15+q*(35+i%4*13))*s;ctx.fillStyle=color;ctx.fillRect(px+Math.cos(a)*r,py+Math.sin(a)*r,2,2)}
-  ctx.font=`bold ${Math.max(16,30*s)}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='#102132';ctx.fillStyle='#fff';const y=py-target.h*.2-(min?0:ease(q)*22);ctx.strokeText('−'+damage,target.x,y);ctx.fillText('−'+damage,target.x,y);ctx.restore();
- }
+ function damageAtTarget(amount){const p=targetGeometry(),arena=byId('battleArena');if(!p||!arena)return;const label=document.createElement('span');label.className='paMotionDamage';label.setAttribute('aria-hidden','true');label.textContent='−'+amount;label.style.left=p.x+'px';label.style.top=(p.y-p.h*.72)+'px';arena.appendChild(label);window.PABattlePresentation?.later?.(()=>label.remove(),600)}
  function begin(attackerId,targetId,finisher,damageAmount=null){
-  const key=heroKey();if(finisher||!['wira','wirachibi','sidma'].includes(key)||active)return null;
-  if(key==='sidma')ensureSidmaAssets();
-  const set=heroArt();
-  const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&db.rewards?.equippedPet);
-  // Wira Chibi's new sheet is the canonical normal attack, including pet-first
-  // combinations. The original Wira keeps its established DOM pet sequence.
-  if(hasPet&&key==='wira')return null;
-  sync();const scene=ensure(),enemyImg=byId('enemySprite'),enemyArt=load(enemyImg?.currentSrc||enemyImg?.getAttribute('src'));
-  if(!scene||!Object.values(set).every(a=>a.ready)||!enemyArt?.ready)return null;
+  const key=heroKey();
+  if(finisher||!key||!paths[key]||active)return null;
+  sync();
+  const scene=ensure(),enemyImg=byId('enemySprite'),enemyArt=load(enemyImg?.currentSrc||enemyImg?.getAttribute('src'));
+  if(!scene||!art[key]?.ready||!enemyArt?.ready)return null;
+  const heroAttacks=attackerId==='hero'&&targetId==='enemy';
+  if(!heroAttacks&&!(attackerId==='enemy'&&targetId==='hero'))return null;
   const hero=heroGeometry(scene),enemy=geometry(enemyImg,enemyArt,scene);if(!hero||!enemy)return null;
-  const heroAttacks=attackerId==='hero'&&targetId==='enemy';if(!heroAttacks&&!(attackerId==='enemy'&&targetId==='hero'))return null;
   const enemyFrames=['enemyAnticipation','enemyAttack','enemyFollowThrough'].map(id=>{const img=byId(id);return load(img?.currentSrc||img?.getAttribute('src'))});
-  const lead=heroAttacks&&hasPet?420:0;
-  // Sidma alternates Rumus Sigma (stationary cast) and Jejak Sigma (dash).
-  // The hero module owns the counter so the DOM fallback stays in step.
-  const ranged=heroAttacks&&key==='sidma'&&window.PASidmaBattle?.getNextNormalSkill?.()===1;
-  if(heroAttacks&&key==='wirachibi'&&!chibiAttackSheet?.ready)return null;
-  const chibiVariant=key==='wirachibi'&&heroAttacks?(chibiNextAttack==='shield'&&chibiShieldRelease?.ready&&chibiShieldProjectile?.ready?'shield':'slash'):undefined;
-  const sidmaContact=ranged?900:650,chibiContact=1050;
-  const contactDelay=(heroAttacks?(key==='sidma'?sidmaContact:(key==='wirachibi'?chibiContact:470)):390)+lead;
-  const completionDelay=(heroAttacks?(key==='wirachibi'?1320:(ranged?1500:1400)):1100)+lead;
-  const min=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const requestedDamage=Number(damageAmount),visualDamage=heroAttacks&&(Number.isFinite(requestedDamage)?Math.max(0,requestedDamage):4);active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay,completionDelay,start:performance.now(),damage:heroAttacks?visualDamage:3,impacted:false,key,set,lead,ranged,attackVariant:chibiVariant};
-  if(heroAttacks&&key==='wirachibi'&&(chibiVariant==='shield'||chibiNextAttack==='slash'))chibiNextAttack=chibiVariant==='shield'?'slash':'shield';
-  if(heroAttacks&&key==='sidma')window.PASidmaBattle?.advanceNormalSkill?.();
+  const pet=byId('battlePet'),hasPet=!!(pet&&!pet.classList.contains('hidden')&&typeof db!=='undefined'&&db.rewards?.equippedPet),lead=heroAttacks&&hasPet?420:0;
+  const contact=heroAttacks?(key==='wira'?470:key==='sidma'?900:620):390,completion=heroAttacks?(key==='sidma'?1500:key==='wira'?1400:1250):1100,min=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const numericDamage=Number(damageAmount),damage=heroAttacks&&damageAmount!=null&&Number.isFinite(numericDamage)?Math.max(0,numericDamage):heroAttacks?4:3;
+  active={hero,enemy,enemyArt,enemyFrames,heroAttacks,scene,min,contactDelay:contact+lead,completionDelay:completion+lead,start:performance.now(),damage,impacted:false,key,lead,contact};
   scene.arena.classList.add('paMotionActive');
   if(lead&&typeof triggerPetFollowUp==='function')triggerPetFollowUp(byId('enemy'),0);
-  if(key==='sidma'&&heroAttacks)window.PABattlePresentation.later(()=>{if(typeof playSidmaSfx==='function')playSidmaSfx('release')},lead+(ranged?620:180));
-  // These timers share the battle journey's cancellation boundary.
-  window.PABattlePresentation.later(()=>{
-   if(!active)return;active.impacted=true;
-   if(key==='sidma'&&heroAttacks&&typeof playSidmaSfx==='function')playSidmaSfx('impact');
-   else if(typeof playSfx==='function')playSfx(heroAttacks&&active?.attackVariant==='shield'?'hit':(heroAttacks?'wiraSword':'hit'));
-  },contactDelay);
-  window.PABattlePresentation.later(()=>{reset();sync()},completionDelay);
+  window.PABattlePresentation?.later?.(()=>{if(active){active.impacted=true;typeof playSfx==='function'&&playSfx(heroAttacks?(key==='wira'?'wiraSword':'hit'):'hit')}},contact+lead);
+  window.PABattlePresentation?.later?.(()=>{reset();sync()},completion+lead);
   raf=requestAnimationFrame(render);
-  return {contactDelay,completionDelay,defeatDelay:contactDelay+300,motion:true,attackVariant:chibiVariant};
+  return {contactDelay:contact+lead,completionDelay:completion+lead,defeatDelay:contact+lead+300,motion:true}
  }
  function render(now){
   const a=active;if(!a)return;if(document.body.dataset.screen!=='game'){reset();return}
-  const elapsed=now-a.start,t=elapsed-a.lead,hit=elapsed-a.contactDelay,hero={...a.hero},enemy={...a.enemy};let pose='idle',enemyArt=a.enemyArt;
-  clear();const travel=Math.max(0,a.enemy.x-a.hero.x-a.enemy.w*.35-a.hero.h*.28);
-  const s=a.hero.h/290;
-  if(a.heroAttacks&&a.key==='sidma'&&a.ranged){
-   // Rumus Sigma is a stationary cast: no travel, the bolt covers the gap.
-   // Every phase is eased so the pose swaps never read as hard cuts.
-   if(t<0)pose='idle';
-   else if(t<200){pose='ready';hero.x-=a.min?0:3*s*ease(t/200)}
-   else if(t<620){pose='cast';hero.x-=a.min?0:3*s;hero.h*=a.min?1:1+.03*Math.sin(clamp((t-200)/420)*Math.PI)}
-   else if(t<800){pose='release';hero.x+=a.min?0:mix(-3*s,6*s,ease((t-620)/180))}
-   else if(t<1150){pose='follow';hero.x+=a.min?0:6*s*(1-ease((t-800)/350))}
-   else pose='follow';
-   if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
-  }else if(a.heroAttacks&&a.key==='sidma'){
-   const sidmaTravel=Math.max(0,a.enemy.x-a.enemy.w*.2-a.hero.x-a.hero.h*.67);
-   if(t<0)pose='idle';
-   else if(t<180){pose='ready';hero.x-=a.min?0:4*s*ease(t/180)}
-   else if(t<530){pose='dash';hero.x+=a.min?0:sidmaTravel*ease((t-180)/350)}
-   else if(t<740){pose='strike';hero.x+=a.min?0:sidmaTravel}
-   else if(t<1120){pose='dash';hero.x+=a.min?0:sidmaTravel*(1-ease((t-740)/380))}
-   else if(t<1320)pose='follow';
-   if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
-   if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
-  }else if(a.heroAttacks&&a.key==='wirachibi'){
-   if(a.attackVariant==='shield'){
-    pose=t<0?'idle':t<250?'shield-windup':t<1050?'shield-throw':t<1240?'shield-return':'idle';
-    if(!a.min&&t>=0&&t<250)hero.x-=3*s*ease(t/250);
-    else if(!a.min&&t>=250&&t<1050)hero.x-=3*s;
-    else if(!a.min&&t>=1050&&t<1240)hero.x-=3*s*(1-ease((t-1050)/190));
-   }else{
-    pose=t<0||t>=1190?'idle':'chibi-combo';
-    if(!a.min&&t>=350&&t<700)hero.x+=travel*ease((t-350)/350);
-    else if(!a.min&&t>=700&&t<1190)hero.x+=travel;
-   }
-   if(hit>=0&&!a.min)enemy.x+=14*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
-   if(a.lead&&elapsed>=360&&elapsed<580&&!a.min)enemy.x+=5*s*Math.exp(-(elapsed-360)/100);
-  }else if(a.heroAttacks){
-   if(t<220){pose='ready';hero.x-=a.min?0:6*s*ease(t/220)}
-   else if(t<470){pose='ready';hero.x+=a.min?0:mix(-6*s,travel,ease((t-220)/250))}
-   else if(t<550){pose='strike';hero.x+=a.min?0:travel}
-   else if(t<850){pose='follow';hero.x+=a.min?0:travel}
-   else hero.x+=a.min?0:travel*(1-ease((t-850)/470));
-   // Squash-emphasis on the strike beat, ramped continuously across a window
-   // straddling the pose cut so the scale never jumps in lockstep with it.
-   const strikeT=clamp((t-420)/180),bump=Math.max(0,1-Math.pow(2*strikeT-1,2));
-   hero.h*=1+(20/290)*bump;
-   if(hit>=0&&!a.min)enemy.x+=12*s*Math.exp(-hit/190)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
+  const elapsed=now-a.start,t=elapsed-a.lead,hit=elapsed-a.contactDelay,hero={...a.hero},enemy={...a.enemy};let enemyArt=a.enemyArt;
+  clear();const travel=Math.max(0,a.enemy.x-a.hero.x-a.enemy.w*.35-a.hero.h*.28),s=a.hero.h/290;
+  if(a.heroAttacks){
+   if(a.key==='wira'){
+    if(t<220)hero.x-=a.min?0:6*s*ease(Math.max(0,t)/220);
+    else if(t<470)hero.x+=a.min?0:mix(-6*s,travel,ease((t-220)/250));
+    else if(t<550)hero.x+=a.min?0:travel;
+    else if(t<1000)hero.x+=a.min?0:travel*(1-ease((t-550)/450));
+   }else if(t>=0&&t<180)hero.x-=a.min?0:4*s*ease(t/180);
+   else if(t>=180&&t<520)hero.x+=a.min?0:2*s*Math.sin(Math.PI*(t-180)/340);
   }else{
    const move=a.min?0:Math.max(0,a.enemy.x-a.hero.x-a.hero.w*.35-a.enemy.h*.28);
-   if(t<170){enemy.x+=5*s*ease(t/170);enemyArt=a.enemyFrames[0]?.ready?a.enemyFrames[0]:enemyArt}
-   else if(t<470){enemy.x-=move*ease((t-170)/220);enemyArt=a.enemyFrames[1]?.ready?a.enemyFrames[1]:enemyArt}
-   else{enemy.x-=move*(1-ease((t-470)/430));enemyArt=t<680&&a.enemyFrames[2]?.ready?a.enemyFrames[2]:enemyArt}
+   if(t<170){enemy.x+=5*s*ease(t/170);if(a.enemyFrames[0]?.ready)enemyArt=a.enemyFrames[0]}
+   else if(t<470){enemy.x-=move*ease((t-170)/220);if(a.enemyFrames[1]?.ready)enemyArt=a.enemyFrames[1]}
+   else{enemy.x-=move*(1-ease((t-470)/430));if(t<680&&a.enemyFrames[2]?.ready)enemyArt=a.enemyFrames[2]}
    if(hit>=0&&!a.min)hero.x-=10*s*Math.exp(-hit/180)*Math.sin(Math.min(hit/60,1)*Math.PI/2);
   }
-  if(a.pose!==pose){a.pose=pose;canvas.setAttribute('data-phase',pose)}
-  const chibiCombo=a.heroAttacks&&a.key==='wirachibi'&&a.attackVariant==='slash'&&t>=0&&t<1190;
-  const chibiShield=a.heroAttacks&&a.key==='wirachibi'&&a.attackVariant==='shield'&&t>=0&&t<1240;
-  const chibiShieldReleasePose=chibiShield&&t>=250;
-  if(chibiCombo)shadow(hero.x,hero.y-2,hero.h*.27,hero.h*.045,.72);
-  else if(chibiShieldReleasePose)groundedChibiShield(hero);
-  else heroShadow(a.key,a.set,pose==='shield-windup'?'idle':pose,hero);
-  grounded(enemyArt,enemy);
-  sprite(enemyArt,enemy,a.heroAttacks&&hit>=0&&hit<80);
-  if(chibiCombo)drawChibiAttack(hero,t,a.min);
-  else if(chibiShieldReleasePose)drawChibiShieldRelease(hero);
-  else drawHero(a.key,a.set,pose==='shield-windup'?'idle':pose,hero,!a.heroAttacks&&hit>=0&&hit<80);
-  if(chibiShield)shieldFlight(hero,enemy,t,a.min);
-  if(a.ranged)bolt(hero,enemy,t,a.min);
-  const target=a.heroAttacks?enemy:hero;fx(target,hit,a.heroAttacks?(a.key==='sidma'?'#ffb849':'#a6efff'):'#ffcb9a',a.damage,a.min);
-  raf=requestAnimationFrame(render);
+  if(a.pose!=='attack'){a.pose='attack';canvas.setAttribute('data-phase',a.heroAttacks?'attack':'enemy-attack')}
+  grounded(art[a.key],hero);grounded(enemyArt,enemy);sprite(enemyArt,enemy,a.heroAttacks&&hit>=0&&hit<80);
+  sprite(art[a.key],hero,!a.heroAttacks&&hit>=0&&hit<80,a.heroAttacks&&a.key==='wira'&&t>250&&t<570?1.04:1);
+  if(a.heroAttacks&&a.key!=='wira')drawBolt(hero,enemy,t,a.min,a.key==='sidma'?'#ffb849':'#b4edff',a.contact);
+  fx(a.heroAttacks?enemy:hero,hit,a.heroAttacks?(a.key==='sidma'?'#ffb849':a.key==='bunga'?'#b4edff':'#a6efff'):'#ffcb9a',a.damage,a.min);
+  raf=requestAnimationFrame(render)
  }
  window.PACombatMotion={begin,reset,sync,targetGeometry,damageAtTarget,isActive:()=>!!active};
- const mount=()=>{
-  observer=new MutationObserver(()=>{if(active&&document.body.dataset.screen!=='game')reset();sync()});observer.observe(document.body,{attributes:true,attributeFilter:['data-screen']});
-  const enemy=byId('enemySprite');if(enemy){enemy.addEventListener('load',sync);new MutationObserver(sync).observe(enemy,{attributes:true,attributeFilter:['src']})}
-  if(typeof ResizeObserver!=='undefined'){const ro=new ResizeObserver(()=>{if(active){const scene=ensure();const hero=heroGeometry(scene),enemy=geometry(byId('enemySprite'),active.enemyArt,scene);if(hero&&enemy)Object.assign(active,{scene,hero,enemy});}else sync()});ro.observe(byId('battleArena'))}
-  sync();
- };
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+ const mount=()=>{observer=new MutationObserver(()=>{if(active&&document.body.dataset.screen!=='game')reset();sync()});observer.observe(document.body,{attributes:true,attributeFilter:['data-screen']});const enemy=byId('enemySprite');if(enemy){enemy.addEventListener('load',sync);new MutationObserver(sync).observe(enemy,{attributes:true,attributeFilter:['src']})}if(typeof ResizeObserver!=='undefined'){const ro=new ResizeObserver(()=>{if(active){const scene=ensure(),hero=heroGeometry(scene),enemy=geometry(byId('enemySprite'),active.enemyArt,scene);if(hero&&enemy)Object.assign(active,{scene,hero,enemy})}else sync()});ro.observe(byId('battleArena'))}sync()};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

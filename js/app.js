@@ -10,6 +10,9 @@ if(!window.PAGameQuestionInteractions){
  document.write('<script src="js/game-question-interactions-v3.62.4.js?v=3.62.26"><\/script>');
 }
 let db=JSON.parse(localStorage.getItem("pa_coach_v6_full")||localStorage.getItem("pa_coach_v5")||"null");
+// Migrate the retired Wira Chibi key in place while preserving every other
+// saved field. This runs before any hero is rendered or selected.
+if(db&&typeof db==='object'&&typeof canonicalHeroId==='function')db.hero=canonicalHeroId(db.hero);
 let uiSession=JSON.parse(localStorage.getItem('pa_dummy_login')||'null');
 const MINION_ENEMIES=[
  {name:'Askabus',image:'assets/enemies/minions/askabus.webp',tone:'minion-a'},
@@ -65,13 +68,14 @@ function initSkill(id){
  if(!db.skills[id]) db.skills[id]={mastery:(META[id].grade===db.schoolGrade?18:0),confidence:8,evidence:0,correct:0,wrong:0,hints:0,mis:{},lastSeen:0,stability:0,probePass:0,probeFail:0};
 }
 function initAll(){GRAPH.skills.forEach(x=>initSkill(x.id));window.PAD3Topic7Evidence?.ensure?.(db)}
-function chooseHero(id){selectedHero=(typeof HEROES!=='undefined'&&HEROES[id])?id:'wira'}
+function chooseHero(id){const heroId=typeof canonicalHeroId==='function'?canonicalHeroId(id):id;selectedHero=(typeof HEROES!=='undefined'&&HEROES[heroId])?heroId:'wira'}
 function applyHeroToBattle(){
- const heroId=(db&&db.hero)||selectedHero||"wira";
+ const heroId=typeof canonicalHeroId==='function'?canonicalHeroId((db&&db.hero)||selectedHero||"wira"):((db&&db.hero)||selectedHero||"wira");
+ if(db&&db.hero!==heroId)db.hero=heroId;
  // Demo and direct mission entry do not pass through renderHub(). Apply the
  // hero's sizing rules here as well, before measuring the battle artwork.
- document.body.classList.toggle('hero-wira',heroId==='wira'||heroId==='wirachibi');
- document.body.classList.toggle('hero-wirachibi',heroId==='wirachibi');
+ document.body.classList.toggle('hero-wira',heroId==='wira');
+ document.body.classList.toggle('hero-wirachibi',false);
  document.body.classList.toggle('hero-bunga',heroId==='bunga');
  document.body.classList.toggle('hero-sidma',heroId==='sidma');
  let h=HEROES[heroId]||HEROES.wira;
@@ -105,7 +109,7 @@ function setupAvatarPicker(){
 }
 function setupHeroPicker(){
  refreshLoginResume();
- selectedHero=(db&&db.hero)||selectedHero||'wira';
+ selectedHero=typeof canonicalHeroId==='function'?canonicalHeroId((db&&db.hero)||selectedHero||'wira'):((db&&db.hero)||selectedHero||'wira');
  setupAvatarPicker();
  if(db){document.getElementById('resume').innerHTML=`<button class=\"btn secondary\" onclick=\"resumeGame()\">Sambung ${db.name} · Darjah ${db.schoolGrade}</button>`} refreshLoginResume();
 }
@@ -117,7 +121,7 @@ function startNew(){
  db={name:document.getElementById("child").value.trim()||"Anak",schoolGrade:g,hero:selectedHero||"wira",avatar_id:normalizeAvatarId(selectedAvatar),skills:{},coreFrontier:1,focus:null,logs:[],created:Date.now(),xp:0,coins:0,level:1,completedMissions:{},chapterStars:{},activeMissionChapter:null,rewards:{pets:{},auras:{},badges:{},equippedPet:null,equippedAura:null,firstMissionDone:false,firstBossDone:false,bossStretchWin:false}};
  initAll();ensureProgression();save();renderHub()
 }
-function resumeGame(){if(db&&db.hero)selectedHero=db.hero;initAll();ensureProgression();if(playSfx)playSfx('ui');renderHub()}
+function resumeGame(){if(db&&db.hero)selectedHero=typeof canonicalHeroId==='function'?canonicalHeroId(db.hero):db.hero;initAll();ensureProgression();if(playSfx)playSfx('ui');renderHub()}
 function resetAll(){if(confirm("Reset semua progress coach?")){localStorage.removeItem("pa_coach_v6_full");location.reload()}}
 function screen(id){
   if(['hub','menuV2','missions','treasure','learning','game'].includes(id)&&!window.PACommercial?.requireFeature?.('missions'))return;

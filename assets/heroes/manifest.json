@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "approvedOn": "2026-10-19",
+  "policy": "One design per hero. New character poses must use the matching canonical base only. Retired designs remain recoverable in Git history.",
+  "characters": [
+    {
+      "id": "wira",
+      "base": "assets/heroes/wira/idle.webp",
+      "sha256": "cc5fd2ce33117240fa9907068398015c890ed45a136ada03e902cc8f7f965e68"
+    },
+    {
+      "id": "bunga",
+      "base": "assets/heroes/bunga/idle.webp",
+      "sha256": "830a0d0afee54e64c2d9a7187831d35abea47fb4e0272a2e3686ab440535e3c7"
+    },
+    {
+      "id": "sidma",
+      "base": "assets/heroes/sidma/idle.webp",
+      "sha256": "af4d2f64b0ace5c67624b0b9aedf4366f29add4bb7f6a06633579fa6775cfc91"
+    }
+  ],
+  "wiraSource": "frames/idle-loop-0-v1.webp",
+  "retiredShieldThrow": "Wrong base; removed pending a redraw from canonical Wira."
+}

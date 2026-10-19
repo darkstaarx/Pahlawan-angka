@@ -10,6 +10,7 @@ function isDevMode(){
 
 function ensureProgression(){
   if(!db)return;
+  if(typeof canonicalHeroId==='function')db.hero=canonicalHeroId(db.hero);
   if(typeof ensureRewards==='function')ensureRewards();
   db.xp=Number.isFinite(db.xp)?db.xp:0;
   db.coins=Number.isFinite(db.coins)?db.coins:0;
@@ -58,13 +59,15 @@ function renderHub(){
   if(cloudState?.user&&!db.onboarding?.completed&&activeProfile&&window.PAOnboarding?.beginExisting){window.PAOnboarding.beginExisting(activeProfile);return;}
   if(typeof enforceRestuLock==='function' && enforceRestuLock())return;
   ensureProgression(); updateFrontier();
-  const h=HEROES[db.hero||'wira']||HEROES.wira;
+  const heroId=typeof canonicalHeroId==='function'?canonicalHeroId(db.hero):db.hero||'wira';
+  if(db.hero!==heroId)db.hero=heroId;
+  const h=HEROES[heroId]||HEROES.wira;
   const levelNeed=xpForLevel(db.level),xpPct=Math.min(100,Math.round((db.levelXp||0)/levelNeed*100));
-  document.body.classList.toggle('hero-wira',['wira','wirachibi'].includes(db.hero||'wira'));
-  document.body.classList.toggle('hero-wirachibi',(db.hero||'wira')==='wirachibi');
-  document.body.classList.toggle('hero-bunga',(db.hero||'wira')==='bunga');
-  document.body.classList.toggle('hero-sidma',(db.hero||'wira')==='sidma');
-  const heroId=db.hero||'wira',hubHero=document.getElementById('hubHeroImg'),hubHeroVideo=document.getElementById('hubHeroVideo'),hubFx=document.getElementById('hubMathFx');
+  document.body.classList.toggle('hero-wira',heroId==='wira');
+  document.body.classList.toggle('hero-wirachibi',false);
+  document.body.classList.toggle('hero-bunga',heroId==='bunga');
+  document.body.classList.toggle('hero-sidma',heroId==='sidma');
+  const hubHero=document.getElementById('hubHeroImg'),hubHeroVideo=document.getElementById('hubHeroVideo'),hubFx=document.getElementById('hubMathFx');
   hubHero.src=h.hub||h.idle; hubHero.alt=h.name;
   if(hubHeroVideo){
     if(h.hubVideo){

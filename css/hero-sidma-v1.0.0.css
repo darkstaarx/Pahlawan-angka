@@ -17,11 +17,10 @@ body.hero-sidma #game #hero #sidmaFrames .sidma-frame{
   left:50%!important;top:auto!important;
   transform:translateX(-50%)!important;
 }
-/* The focus artwork is tightly cropped; only the wide release frame needs
-   the same transparent-canvas compensation as the regular battle poses. */
-.finisherCinematic.release[data-hero="sidma"] .cinematicHero{
-  height:calc(var(--cinematic-hero-h,160px) * 1.220339)!important;
-  bottom:calc(var(--hero-bottom,8px) - var(--cinematic-hero-h,160px) * .084746)!important;
+/* Focus and release share one canonical image and one baseline. */
+.finisherCinematic[data-hero="sidma"] .cinematicHero{
+  height:var(--cinematic-hero-h,160px)!important;
+  bottom:var(--hero-bottom,8px)!important;
 }
 #game #hero .sidma-frames{
   position:absolute;

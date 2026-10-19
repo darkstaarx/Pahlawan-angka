@@ -86,21 +86,21 @@
      Only the current Wira Chibi production hero is valid here.
      Legacy normal-size Wira/Bunga/Sidma assets and hero modules are archive-only
      and must never be selected from db.hero/profile hero values in this renderer. */
-  const LIVE_SEGEL_HERO='wirachibi';
+  const LIVE_SEGEL_HERO='wira';
   const FRAMES={
     arena:ARENA_BY_THEME.number,
-    heroIdle:[0,1,2,3].map(i=>`assets/heroes/wira-chibi/frames/idle-loop-${i}-v1.webp`),
-    heroPrepare:'assets/heroes/wira-chibi/frames/rescue-prepare-v1.webp',
-    heroSlash:'assets/heroes/wira-chibi/frames/rescue-slash-v1.webp',
+    heroIdle:[0,1,2,3].map(i=>`assets/heroes/wira/frames/idle-loop-${i}-v1.webp`),
+    heroPrepare:'assets/heroes/wira/frames/rescue-prepare-v1.webp',
+    heroSlash:'assets/heroes/wira/frames/rescue-slash-v1.webp',
     petSad:[0,1,2,3,4,5,6,7].map(i=>`assets/pets/aurora/frames/sad-${i}-v1.webp`),
     petJoy:[0,1].map(i=>`assets/pets/aurora/frames/joy-${i}-v1.webp`),
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
     /* Winning sheet v6 dibaca kiri-kanan, kemudian turun ke baris seterusnya.
        Semua frame telah di-anchor pada boot kanan yang sama. */
-    heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira-chibi/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.png`),
-    heroVictory:'assets/heroes/wira-chibi/frames/victory-v1.webp',
-    finalmove:'assets/heroes/wira-chibi/frames/finalmove-v1/finalmove.png',
-    finisherVideo:'assets/heroes/wira-chibi/finisher/wira-finisher-v1.mp4?v=3.84.87',
+    heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.png`),
+    heroVictory:'assets/heroes/wira/frames/victory-v1.webp',
+    finalmove:'assets/heroes/wira/frames/finalmove-v1/finalmove.png',
+    finisherVideo:'assets/heroes/wira/finisher/wira-finisher-v1.mp4?v=3.84.87',
     finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.png',
     seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
     // Normal attacks keep their original small ice hit. The glacier sheet is
@@ -291,7 +291,7 @@
     };
     function applyLiveFinisherAssets(){
       const cfg=LIVE_FINISHER;
-      host.dataset.finisherHero='wirachibi';
+      host.dataset.finisherHero='wira';
       host.classList.remove('finisher-impact-end');
       if(finisherChargeHero)finisherChargeHero.style.backgroundImage=`url("${cfg.chargeHero}")`;
       if(finisherChargeAura)finisherChargeAura.style.backgroundImage='';

@@ -59,6 +59,14 @@ async function main() {
     console.log('offline', JSON.stringify(offline));
     assert.equal(offline.controller, true, 'offline reload must remain service-worker controlled');
     assert.ok(offline.imageCount > 0, 'offline reload must decode at least one production image');
+    const offlineHeroes = await page.evaluate(async () => {
+      const sources = [...Object.values(HEROES).map(hero => hero.idle), ...Object.values(HEROES.bunga.fx)];
+      for (const src of sources) { const image = new Image(); image.src = src; await image.decode(); }
+      return { ids: Object.keys(HEROES), decoded: sources.length };
+    });
+    assert.deepEqual(offlineHeroes.ids, ['wira', 'bunga', 'sidma']);
+    assert.equal(offlineHeroes.decoded, 10, 'canonical heroes and relocated Bunga effects must decode offline');
+    console.log('offline heroes', JSON.stringify(offlineHeroes));
   } finally {
     await context.close();
     await browser.close();

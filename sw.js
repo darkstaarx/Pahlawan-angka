@@ -4,6 +4,8 @@ importScripts('./js/asset-manifest.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3-d4-completion-currency-1`;
 const ASSET_CACHE_NAME='pahlawan-angka-assets-v1';
 const APP_SHELL=[
+  './assets/fx/bunga/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/fx/bunga/bulatan-harmoni/fx-enemy-impact-v1.webp','./assets/fx/bunga/finisher.webp','./assets/fx/bunga/kelopak-pecahan/fx-impact-v1.webp','./assets/fx/bunga/kelopak-pecahan/fx-projectile-v1.webp','./assets/fx/bunga/teorem-mekar/fx-charge-aura-v1.webp','./assets/fx/bunga/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/fx/bunga/teorem-mekar/fx-impact-end-v1.webp',
+  './assets/heroes/bunga/idle.webp','./assets/heroes/sidma/idle.webp','./assets/heroes/wira/frames/finalmove-v1/finalmove.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-00-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-01-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-02-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-03-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-04-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-05-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-06-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-07-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-08-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-09-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-10-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-11-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-12-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-13-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-14-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-15-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-16-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-17-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-18-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-19-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-20-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-21-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-22-v1.png','./assets/heroes/wira/frames/hub-happy-v1/hub-happy-23-v1.png','./assets/heroes/wira/frames/idle-loop-0-v1.webp','./assets/heroes/wira/frames/idle-loop-1-v1.webp','./assets/heroes/wira/frames/idle-loop-2-v1.webp','./assets/heroes/wira/frames/idle-loop-3-v1.webp','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-00-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-01-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-02-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-03-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-04-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-05-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-06-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-07-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-08-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-09-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-10-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-11-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-12-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-13-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-14-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-15-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-16-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-17-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-18-v6.png','./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-19-v6.png','./assets/heroes/wira/frames/rescue-prepare-v1.webp','./assets/heroes/wira/frames/rescue-slash-v1.webp','./assets/heroes/wira/frames/victory-v1.webp','./assets/heroes/wira/idle.webp',
   './questions/d4/completion-data-money-v1.js','./questions/d4/completion-measures-v1.js','./questions/d4/completion-v1.js','./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './js/demo-funnel-v1.js',
   './kedai-kek.html',
@@ -144,7 +146,7 @@ const APP_SHELL=[
   './assets/minigames/dapur-ramuan/wira-ahli-ramuan-idle.webp','./assets/minigames/dapur-ramuan/wira-ahli-ramuan-thumb.webp','./assets/minigames/dapur-ramuan/wira-ahli-ramuan-victory.webp',
   './assets/minigames/pos-peninjau/wira-peninjau-idle.webp','./assets/minigames/pos-peninjau/wira-peninjau-thumb.webp','./assets/minigames/pos-peninjau/wira-peninjau-victory.webp',
   './assets/minigames/lombong-permata/wira-pelombong-idle.webp','./assets/minigames/lombong-permata/wira-pelombong-thumb.webp','./assets/minigames/lombong-permata/wira-pelombong-victory.webp',
-  './assets/heroes/wira-chibi/frames/victory-v1.webp',
+
   './assets/ui/focus-v1/focus-panel-illustrated-v1.webp',
   './assets/ui/focus-v1/focus-skill-card-clean-v1.svg',
   './assets/pets/evolution/fire/aurora/happy-sprite-v1.webp',
@@ -208,7 +210,7 @@ const APP_SHELL=[
   './css/menu-v2-v1.0.0.css','./js/menu-v2-v1.0.0.js','./assets/ui/menu-v2/jejak-map-v1.webp','./assets/ui/menu-v2/hero-stage-v1.webp','./assets/ui/menu-v2/stage-aurora-v1.webp','./assets/ui/menu-v2/cikgu-card-v2.webp','./assets/ui/menu-v2/cikgu-dimensi-book-hq-v1.webp','./assets/ui/menu-v2/cikgu-dimensi-book-fixed-v1.webp','./assets/ui/menu-v2/cikgu-dimensi-book-v4.webp','./assets/pets/aurora/frames/happy-v1.webp',
   // three.js dan bingkai sprite demo sengaja TIDAK di-precache: ia dimuat
   // hanya bila demo dibuka, dan runtime cache di bawah menyimpannya selepas itu.
-  './assets/heroes/wira-chibi/hub/idle-loop-v3.webp',
+
   './css/combat-motion-v1.css','./js/combat-motion-v1.js','./css/battle-story-v3.60.0.css','./js/battle-story-v3.60.0.js',
   './css/learner-review-v1.css','./js/engine/learner-review-v1.js',
   './css/demo-result-child-v3.56.6.css',
@@ -223,23 +225,23 @@ const APP_SHELL=[
   './assets/ui/coin-gold.svg',
 
   './css/effort-restu-v3.32.0.css','./js/effort-guard-v3.32.0.js',
-  './assets/heroes/wira/attack.webp','./assets/heroes/wira/frames/attack-dash-v2.webp','./assets/heroes/wira/frames/attack-arc-v2.webp','./assets/heroes/wira/frames/attack-pulse-v2.webp',
-  './assets/heroes/wira-chibi/idle.webp','./assets/heroes/wira-chibi/attack.webp','./assets/heroes/wira-chibi/frames/anticipation-v1.webp','./assets/heroes/wira-chibi/frames/aura-framing-v1.webp','./assets/heroes/wira-chibi/frames/attack-dash-v2.webp','./assets/heroes/wira-chibi/frames/attack-arc-v2.webp','./assets/heroes/wira-chibi/frames/attack-pulse-v2.webp','./assets/heroes/wira-chibi/frames/follow-through-v1.webp','./assets/heroes/wira-chibi/frames/ice-combo-spritesheet-v2.webp',
-  './assets/heroes/wira-chibi/frames/shield-throw-release-v1.webp','./assets/heroes/wira-chibi/frames/shield-projectile-v1.webp',
-  './assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-00-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-01-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-02-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-03-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-04-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-05-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-06-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-07-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-08-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-09-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-10-v4.png','./assets/heroes/wira-chibi/frames/rescue-happy-v4/rescue-happy-11-v4.png',
+
+
+
+
 './assets/fx/wira/final-v2/fx-charge-aura-v1.webp','./assets/fx/wira/final-v2/fx-frost-seal-v1.webp','./assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp','./assets/fx/wira/final-v2/fx-glacier-burst-v2.png','./assets/fx/wira/final-v3/fx-glacier-burst-v3.png','./assets/fx/wira/final-v2/fx-impact-end-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/idle-master-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/idle-breathe-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/profile-happy-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/quick-ready-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/staff-aim-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-projectile-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/kelopak-pecahan/fx-impact-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/cast-start-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/levitate-charge-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/remote-release-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/recovery-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/bulatan-harmoni/fx-enemy-impact-v1.webp',
-  './assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/focus-eyes-closed-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-charge-aura-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/teorem-mekar/fx-impact-end-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/hurt-v1.webp','./assets/heroes/bunga/redesign-v1/runtime/states/defeat-v1.webp',
+
+
+
+
   './assets/icons/pahlawan-angka-app-32.png','./assets/icons/pahlawan-angka-app-64.png','./assets/icons/pahlawan-angka-app-180.png','./assets/icons/pahlawan-angka-app-192.png','./assets/icons/pahlawan-angka-app-512.png','./assets/icons/pahlawan-angka-app-maskable-512.png','./assets/icons/pahlawan-angka-crest-192.png',
   './assets/branding/login-chibi-math-world-v1.webp','./assets/branding/pahlawan-angka-full-logo-v1.webp','./assets/ui/login/guardian-crest.svg',
   './assets/battlefields/forest-temple/arena-v1.webp','./assets/battlefields/cave-temple/arena-depth-v2.webp','./assets/battlefields/nusantara-temple/arena-v1.webp',
   './assets/battlefields/operations-forge/arena-v1.webp','./assets/battlefields/money-market/arena-v1.webp','./assets/battlefields/time-tower/arena-v1.webp','./assets/battlefields/measurement-court/arena-v1.webp','./assets/battlefields/data-observatory/arena-v1.webp',
 
-  './assets/heroes/wira/idle.webp','./assets/heroes/wira/profile-happy-v1.webp',
-  './assets/heroes/switch-cards/wira-v1.webp','./assets/heroes/switch-cards/bunga-v1.webp',
-  './assets/heroes/wira/hub/adventure-v1.webp','./assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
+
+
+  './assets/fx/hub/wira-math-runes-v1.webp','./assets/fx/hub/bunga-fraction-bloom-v1.webp',
   './assets/pets/aurora/hub/adventure-v1.webp','./assets/pets/arif/hub/adventure-v1.webp','./assets/pets/kucing-pembaris/hub/adventure-v1.webp','./assets/pets/tiko/hub/adventure-v1.webp',
   './assets/coach/cikgu-wajar/welcome.webp','./assets/coach/cikgu-dimensi/dimensional-aura.svg','./assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp',
   './css/game.css','./css/login-chibi-world-v1.css','./css/commercial-foundation-v3.25.0.css','./css/guardian-onboarding-v3.25.1.css','./css/parent-pin-recovery-v3.27.3.css','./css/google-auth-v3.25.2.css','./css/parent-dashboard-v3.25.4.css','./css/theme-controls-v3.25.5.css','./css/custom-picker-v3.25.6.css','./css/parent-learning-tools-v3.26.0.css','./css/hint-overlay-v3.28.1.css','./css/beta-trust-v3.29.0.css','./css/cloud-auth-v3.15.0.css','./css/visual-coach-v3.16.0.css','./css/finisher-auras-v3.8.7.css','./css/finisher-cinematic-v3.8.8.css','./css/kssr-question-v3.9.0.css',

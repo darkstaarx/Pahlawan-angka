@@ -12,6 +12,7 @@ const cloud=()=>window.PACloud||null;
 const st=()=>cloud()?.state||null;
 const signed=()=>!!st()?.user;
 const profileById=id=>(st()?.profiles||[]).find(p=>p.id===id)||null;
+const canonical=id=>typeof canonicalHeroId==='function'?canonicalHeroId(id):id==='wirachibi'?'wira':(['wira','bunga','sidma'].includes(id)?id:'wira');
 const avatarFor=id=>AVATAR_IDS.includes(id)?id:DEFAULT_AVATAR;
 const validAvatar=id=>AVATAR_IDS.includes(id)?id:null;
 const avatarSrc=id=>`assets/avatars/pupils/${avatarFor(id)}.png`;
@@ -82,9 +83,9 @@ async function refreshProfiles(){
   state.profiles=(result.data||[]).map(p=>{
     // Keep the distinction between a real avatar_id column and the schema
     // fallback response, which omits that field entirely.
-    if(!Object.prototype.hasOwnProperty.call(p,'avatar_id'))return {...p};
+    if(!Object.prototype.hasOwnProperty.call(p,'avatar_id'))return {...p,hero_id:canonical(p.hero_id)};
     const avatar_id=p.avatar_id?avatarFor(p.avatar_id):null;
-    return {...p,avatar_id,...(avatar_id?{_avatarSource:'profile'}:{})};
+    return {...p,hero_id:canonical(p.hero_id),avatar_id,...(avatar_id?{_avatarSource:'profile'}:{})};
   });
   await hydrateStats();
   return state.profiles;
@@ -188,7 +189,7 @@ function renderAvatarGrid(){const grid=$('pmAvatarGrid');if(!grid)return;grid.in
 function openEditor(id=null){
   ensureUi();if(!signed())return screen('login');
   const p=id?profileById(id):null;
-  editorProfileId=p?.id||null;editorHero=p?.hero_id||'wira';
+  editorProfileId=p?.id||null;editorHero=canonical(p?.hero_id||'wira');
   $('pmEditorTitle').textContent=p?'Edit Profil Anak':'Cipta Profil Anak';
   $('pmChildName').value=p?.display_name||'';
   const gradeSelect=$('pmChildGrade');
@@ -260,7 +261,7 @@ async function mirrorProfileIntoSave(id,{name,grade,hero,avatar_id},oldGrade){
 
 async function saveProfile(){
   const state=st();if(!state?.client||!state.user)return;
-  const name=($('pmChildName')?.value||'').trim(),grade=Number($('pmChildGrade')?.value||0),hero=editorHero,avatar_id=avatarFor($('pmAvatarGrid')?.querySelector('button.selected')?.dataset.avatarId);
+  const name=($('pmChildName')?.value||'').trim(),grade=Number($('pmChildGrade')?.value||0),hero=canonical(editorHero),avatar_id=avatarFor($('pmAvatarGrid')?.querySelector('button.selected')?.dataset.avatarId);
   const errorBox=$('pmEditorError'),button=$('pmSaveProfile');
   if(!name||name.length>40){errorBox.textContent='Masukkan nama anak antara 1 hingga 40 aksara.';return}
   if(grade<1||grade>6){errorBox.textContent='Pilih Darjah 1 hingga Darjah 6.';return}
@@ -360,6 +361,7 @@ async function selectProfile(id){
   profileSelectPromise=(async()=>{
     if(!profileById(id))await refreshProfiles();
     const profile=profileById(id);await cloud()?.selectChild?.(id,false);
+    if(typeof db!=='undefined'&&db&&db.hero!==canonical(db.hero)){db.hero=canonical(db.hero);if(typeof save==='function')save()}
     const mayNavigate=document.body.dataset.screen==='login';
     if(!mayNavigate)return;
     if(!db?.onboarding?.completed&&profile&&window.PAOnboarding?.beginExisting)return window.PAOnboarding.beginExisting(profile);

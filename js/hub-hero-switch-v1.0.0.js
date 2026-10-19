@@ -3,12 +3,11 @@
    existing HEROES registry and db.hero/save() persistence model only;
    no new persistence or database layer. */
 (function(){
-  const ORDER=['wira','wirachibi','bunga','sidma'];
+  const ORDER=['wira','bunga','sidma'];
   const SWITCH_ART={
-    wira:'assets/heroes/switch-cards/wira-v1.webp',
-    wirachibi:'assets/heroes/wira-chibi/idle.webp',
-    bunga:'assets/heroes/switch-cards/bunga-v1.webp',
-    sidma:'assets/heroes/switch-cards/sidma-v1.webp'
+    wira:'assets/heroes/wira/idle.webp',
+    bunga:'assets/heroes/bunga/idle.webp',
+    sidma:'assets/heroes/sidma/idle.webp'
   };
 
   function heroLabel(id){
@@ -23,9 +22,10 @@
 
   function pickHero(id){
     if(typeof db==='undefined'||!db)return;
-    if(!(typeof HEROES!=='undefined'&&HEROES[id]))return;
-    if(db.hero===id){closeSwitcher();return}
-    db.hero=id;
+    const heroId=typeof canonicalHeroId==='function'?canonicalHeroId(id):id;
+    if(!(typeof HEROES!=='undefined'&&HEROES[heroId]))return;
+    if(db.hero===heroId){closeSwitcher();return}
+    db.hero=heroId;
     if(typeof save==='function')save();
     closeSwitcher();
     if(typeof renderHub==='function')renderHub();
@@ -46,7 +46,8 @@
       overlay.setAttribute('aria-labelledby','paHeroSwitchTitle');
       document.body.appendChild(overlay);
     }
-    const current=db.hero||'wira';
+    const current=typeof canonicalHeroId==='function'?canonicalHeroId(db.hero):db.hero||'wira';
+    if(db.hero!==current){db.hero=current;if(typeof save==='function')save()}
     const cards=ORDER.filter(id=>HEROES[id]).map(id=>{
       const h=HEROES[id],active=id===current;
       return `<button type="button" class="paHeroSwitchCard${active?' active':''}" onclick="paSwitchHero('${id}')" aria-pressed="${active?'true':'false'}">
