@@ -26,6 +26,8 @@
   if(q?.shadeSpec?.kind==='fraction')return{kind:'shade_choice',numerator:Number(q.shadeSpec.numerator),denominator:Number(q.shadeSpec.denominator),answerMode:q.shadeSpec.answerMode||'fraction'};
   const boss=(ctx?.isBoss===undefined&&ctx?.battleTier===undefined)?true:(ctx?.isBoss===true||ctx?.battleTier==='boss');
   const gated=spec=>boss?spec:{kind:'sigil_select',grade,gatedFrom:spec.kind,bossOnly:true};
+  if(q?.baseTenSpec?.kind==='base_ten')return gated({kind:'base_ten_build',tens:Number(q.baseTenSpec.tens),ones:Number(q.baseTenSpec.ones)});
+  if(q?.shapeSlotSpec?.kind==='shape_slot')return gated({kind:'shape_slot',choices:q.shapeSlotSpec.choices||[]});
   let m;
   const angleMode=id==='D6.ANGLE'&&q?.competencyId==='6.1.2'?String(q?.archetypeId||'').replace(/^y6v2_6_1_2_/,''):'';
   if(angleMode==='tool')return{kind:'tool_select',options:optionValues(q)};
@@ -146,6 +148,36 @@
  function submitButton(q,label='Lancarkan serangan'){const b=button(label,'paInteractionSubmit');b.dataset.questionToken=String(q.token);return b}
  function numericEqual(a,b){return a!==null&&b!==null&&Math.abs(a-b)<1e-9}
 
+ function renderBaseTen(q,root,ctx,spec){
+  const wrap=document.createElement('div');wrap.className='paBaseTenBuild';
+  const note=document.createElement('p');note.className='paShadeNote';note.textContent='Lihat rajah. Bina nombor dengan memilih bilangan puluh dan sa.';
+  const grid=document.createElement('div');grid.className='paBaseTenGrid';
+  let tens=0,ones=0;const outputs=[];
+  [['Puluh',()=>tens,v=>tens=v],['Sa',()=>ones,v=>ones=v]].forEach(([label,get,set])=>{
+   const card=document.createElement('div');card.className='paBaseTenControl';
+   const title=document.createElement('strong');title.textContent=label;
+   const controls=document.createElement('div');controls.className='paBaseTenButtons';
+   const minus=button('−','paBaseTenStep'),plus=button('+','paBaseTenStep'),value=document.createElement('output');
+   value.className='paBaseTenValue';value.textContent='0';value.setAttribute('aria-label','Bilangan '+label.toLowerCase());
+   minus.setAttribute('aria-label','Kurangkan '+label.toLowerCase());plus.setAttribute('aria-label','Tambah '+label.toLowerCase());
+   const change=by=>{set(Math.min(9,Math.max(0,get()+by)));value.textContent=String(get());refresh()};
+   minus.onclick=()=>change(-1);plus.onclick=()=>change(1);controls.append(minus,value,plus);card.append(title,controls);grid.appendChild(card);outputs.push(value);
+  });
+  const result=document.createElement('output');result.className='paBaseTenTotal';result.setAttribute('aria-live','polite');
+  const refresh=()=>{result.textContent=`${tens} puluh + ${ones} sa = ${tens*10+ones}`};
+  const submit=submitButton(q,'Kunci nombor');submit.onclick=()=>{deliver(q,submit,tens*10+ones,ctx,tens===spec.tens&&ones===spec.ones)};
+  refresh();wrap.append(note,grid,result,submit);root.appendChild(wrap);
+ }
+ function renderShapeSlot(q,root,ctx,spec){
+  const wrap=document.createElement('div');wrap.className='paShapeSlot';
+  const note=document.createElement('p');note.className='paShadeNote';note.textContent='Pilih bentuk untuk mengisi ruang kosong dalam pola.';
+  const slot=document.createElement('output');slot.className='paShapeSlotResult';slot.textContent='?';slot.setAttribute('aria-live','polite');
+  const grid=document.createElement('div');grid.className='paShapeSlotChoices';let selected=null;
+  const shapeSvg=kind=>{let art='';if(kind==='bulatan')art='<circle cx="25" cy="25" r="18" fill="#f4b949" stroke="#a36c17" stroke-width="2"/>';else if(kind==='segi tiga')art='<polygon points="25,6 5,44 45,44" fill="#6dbda8" stroke="#367463" stroke-width="2"/>';else if(kind==='segi empat tepat')art='<rect x="3" y="12" width="44" height="26" fill="#b68cd6" stroke="#775491" stroke-width="2"/>';else art='<rect x="8" y="8" width="34" height="34" fill="#7da7e4" stroke="#416499" stroke-width="2"/>';return '<svg viewBox="0 0 50 50" aria-hidden="true">'+art+'</svg>'};
+  (spec.choices||[]).forEach(kind=>{const b=button('','paShapeSlotChoice');b.setAttribute('aria-label',kind);b.setAttribute('aria-pressed','false');b.innerHTML=shapeSvg(kind)+'<span>'+kind+'</span>';b.onclick=()=>{selected=kind;slot.innerHTML=shapeSvg(kind)+'<span>'+kind+'</span>';grid.querySelectorAll('button').forEach(x=>{x.classList.toggle('selected',x===b);x.setAttribute('aria-pressed',String(x===b))});submit.disabled=false};grid.appendChild(b)});
+  const submit=submitButton(q,'Kunci bentuk');submit.disabled=true;submit.onclick=()=>{if(selected)deliver(q,submit,selected,ctx,text(selected)===text(q.answer))};
+  wrap.append(note,slot,grid,submit);root.appendChild(wrap);
+ }
  function renderRune(q,root,ctx,spec){
   const board=document.createElement('div');board.className='paRuneBoard';
   const display=document.createElement('output');display.className='paRuneDisplay';display.setAttribute('aria-live','polite');
@@ -278,8 +310,8 @@
  }
  function render(q,answers,ctx){
   if(!q||!answers||!ctx?.respond)return false;if(!q.interaction)prepare(q,{skillId:q.skill,meta:typeof META!=='undefined'?META[q.skill]:null});
-  const spec=q.interaction.spec,labels={rune_entry:'Rune nombor',fraction_build:'Tempa pecahan',shade_choice:'Lorek rajah',visual_choice:'Pilih rajah',time_dial:'Dail masa',coordinate_plot:'Peta koordinat',sequence_build:'Rantai urutan',angle_build:'Protraktor kuasa',circle_build:'Jangka bulatan',circle_compare:'Banding jangka',circle_claim:'Semak pembinaan',space_tool_setup:'Panel alat ruang',claim_reason:'Bina hujah',tool_select:'Rak alat',step_sequence:'Susun prosedur',judgement_gate:'Gerbang keputusan',sigil_select:'Pilih sigil tepat'},root=rootFor(q,answers,labels[spec.kind]||'Cabaran interaktif');
-  if(spec.kind==='rune_entry')renderRune(q,root,ctx,spec);else if(spec.kind==='fraction_build')renderFraction(q,root,ctx,spec);else if(spec.kind==='shade_choice')renderShadeChoice(q,root,ctx,spec);else if(spec.kind==='visual_choice')renderVisualChoice(q,root,ctx,spec);else if(spec.kind==='time_dial')renderTime(q,root,ctx,spec);else if(spec.kind==='coordinate_plot')renderCoordinate(q,root,ctx,spec);else if(spec.kind==='sequence_build')renderSequence(q,root,ctx,spec);else if(spec.kind==='angle_build')renderAngle(q,root,ctx,spec);else if(spec.kind==='circle_build')renderCircle(q,root,ctx,spec);else if(spec.kind==='circle_compare')renderCircleCompare(q,root,ctx,spec);else if(spec.kind==='circle_claim')renderCircleClaim(q,root,ctx,spec);else if(spec.kind==='space_tool_setup')renderSpaceToolSetup(q,root,ctx,spec);else if(spec.kind==='claim_reason')renderClaimReason(q,root,ctx,spec);else if(spec.kind==='tool_select')renderToolSelect(q,root,ctx,spec);else if(spec.kind==='step_sequence')renderStepSequence(q,root,ctx,spec);else if(spec.kind==='judgement_gate')renderJudgement(q,root,ctx,spec);else renderSigils(q,root,ctx);return true;
+  const spec=q.interaction.spec,labels={base_ten_build:'Bina puluh dan sa',shape_slot:'Isi pola bentuk',rune_entry:'Rune nombor',fraction_build:'Tempa pecahan',shade_choice:'Lorek rajah',visual_choice:'Pilih rajah',time_dial:'Dail masa',coordinate_plot:'Peta koordinat',sequence_build:'Rantai urutan',angle_build:'Protraktor kuasa',circle_build:'Jangka bulatan',circle_compare:'Banding jangka',circle_claim:'Semak pembinaan',space_tool_setup:'Panel alat ruang',claim_reason:'Bina hujah',tool_select:'Rak alat',step_sequence:'Susun prosedur',judgement_gate:'Gerbang keputusan',sigil_select:'Pilih sigil tepat'},root=rootFor(q,answers,labels[spec.kind]||'Cabaran interaktif');
+  if(spec.kind==='base_ten_build')renderBaseTen(q,root,ctx,spec);else if(spec.kind==='shape_slot')renderShapeSlot(q,root,ctx,spec);else if(spec.kind==='rune_entry')renderRune(q,root,ctx,spec);else if(spec.kind==='fraction_build')renderFraction(q,root,ctx,spec);else if(spec.kind==='shade_choice')renderShadeChoice(q,root,ctx,spec);else if(spec.kind==='visual_choice')renderVisualChoice(q,root,ctx,spec);else if(spec.kind==='time_dial')renderTime(q,root,ctx,spec);else if(spec.kind==='coordinate_plot')renderCoordinate(q,root,ctx,spec);else if(spec.kind==='sequence_build')renderSequence(q,root,ctx,spec);else if(spec.kind==='angle_build')renderAngle(q,root,ctx,spec);else if(spec.kind==='circle_build')renderCircle(q,root,ctx,spec);else if(spec.kind==='circle_compare')renderCircleCompare(q,root,ctx,spec);else if(spec.kind==='circle_claim')renderCircleClaim(q,root,ctx,spec);else if(spec.kind==='space_tool_setup')renderSpaceToolSetup(q,root,ctx,spec);else if(spec.kind==='claim_reason')renderClaimReason(q,root,ctx,spec);else if(spec.kind==='tool_select')renderToolSelect(q,root,ctx,spec);else if(spec.kind==='step_sequence')renderStepSequence(q,root,ctx,spec);else if(spec.kind==='judgement_gate')renderJudgement(q,root,ctx,spec);else renderSigils(q,root,ctx);return true;
  }
  function lock(){document.querySelectorAll('.paInteraction button,.paInteraction input').forEach(x=>x.disabled=true);document.querySelector('.paInteraction')?.classList.add('locked')}
  function unlockRetry(){const root=document.querySelector('.paInteraction');if(!root)return;root.classList.remove('locked');root.querySelectorAll('button:not(.no),input').forEach(x=>x.disabled=false)}
