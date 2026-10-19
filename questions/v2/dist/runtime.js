@@ -4746,7 +4746,7 @@
     "renderers/geometry/prism.js"
   ]
 };
-  var SOURCE_HASH = "10cdb9a3ff429adb345f43b23b2169cf8a2f8312a4396c94a79314940a40e18c";
+  var SOURCE_HASH = "c48329ff962e3c24448edba69d80ed8741bceb4f7cdeb9c993a815e19bb76616";
 
   var generators = Object.create(null);
   var renderers = Object.create(null);
@@ -4979,9 +4979,13 @@ registerGenerator('d3.fullKssr',function(params,rng){
     return{value:{promptMs:qn+' unit barang yang sama berharga '+money(all)+' semuanya. Harga satu unit ialah?',answer:choice(unit2,money(unit2)),visual:{kind:'money_items',amounts:[money(all)],quantity:qn}},distractors:shuffle(rng,moneyWrong(unit2,[Math.floor(all/10),unit2+100,Math.max(0,unit2-100)],'money_operation_confusion')),meta:{archetype:'find_unit_price_from_total',hintMs:'Harga satu unit = jumlah harga ÷ bilangan unit.',semanticProperties:{factor:qn,factorClass:'power10',totalCents:all,unitCents:unit2},fingerprint:fp(m,unit2,[all,qn])}};
   }
   if(m==='currency_country_to_name'||m==='currency_name_to_country'||m==='currency_code_match'){
-    var c=pick(rng,ASEAN),pool=shuffle(rng,ASEAN.filter(function(z){return z.country!==c.country;})).slice(0,3),prompt,answer,ds,visual;
+    // For currency→country, do not print the answer inside a national
+    // currency name. Bare "Dolar" is ambiguous within ASEAN (SG/BN), so
+    // those countries remain in the country→currency and code tasks only.
+    var reversePool=ASEAN.filter(function(z){return z.currency.indexOf(z.country)===-1||z.code==='PHP';});
+    var c=pick(rng,m==='currency_name_to_country'?reversePool:ASEAN),pool=shuffle(rng,ASEAN.filter(function(z){return z.country!==c.country;})).slice(0,3),prompt,answer,ds,visual;
     if(m==='currency_country_to_name'){prompt='Apakah mata wang negara '+c.country+'?';answer=choice(c.currency,c.currency);ds=pool.map(function(z){return choice(z.currency,z.currency,'currency_country_confusion');});visual={kind:'currency_card',shownCountry:c.country};}
-    else if(m==='currency_name_to_country'){prompt='Mata wang '+c.currency+' digunakan oleh negara mana?';answer=choice(c.country,c.country);ds=pool.map(function(z){return choice(z.country,z.country,'currency_country_confusion');});visual={kind:'currency_card',shownCurrency:c.currency};}
+    else if(m==='currency_name_to_country'){var shownName=c.code==='PHP'?'Peso':c.currency;prompt='Dalam kalangan negara ASEAN, negara manakah menggunakan mata wang '+shownName+'?';answer=choice(c.country,c.country);ds=pool.map(function(z){return choice(z.country,z.country,'currency_country_confusion');});visual={kind:'currency_card',shownCurrency:shownName};}
     else{prompt='Kod '+c.code+' merujuk kepada mata wang yang mana?';answer=choice(c.currency,c.currency);ds=pool.map(function(z){return choice(z.currency,z.currency,'currency_country_confusion');});visual={kind:'currency_card',shownCode:c.code};}
     return{value:{promptMs:prompt,answer:answer,visual:visual},distractors:shuffle(rng,ds),meta:{archetype:m==='currency_country_to_name'?'country_to_currency':m==='currency_name_to_country'?'currency_to_country':'match_currency_code_to_name',hintMs:'Padankan negara, nama mata wang dan kod ASEAN yang dipelajari.',semanticProperties:{country:c.country,currency:c.currency,code:c.code,hiddenAnswerField:true},fingerprint:fp(m,answer.id,[c.country,c.currency,c.code])}};
   }

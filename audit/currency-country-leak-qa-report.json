@@ -1,0 +1,57 @@
+{
+  "pass": true,
+  "samples": 3000,
+  "checks": 19129,
+  "examples": {
+    "peso": {
+      "prompt": "Dalam kalangan negara ASEAN, negara manakah menggunakan mata wang Peso?",
+      "card": "Peso",
+      "answer": "Filipina",
+      "wrong": [
+        "Myanmar",
+        "Indonesia",
+        "Laos"
+      ]
+    }
+  },
+  "coverage": {
+    "currency_country_to_name": [
+      "Laos",
+      "Indonesia",
+      "Myanmar",
+      "Filipina",
+      "Singapura",
+      "Thailand",
+      "Malaysia",
+      "Vietnam",
+      "Brunei",
+      "Kemboja"
+    ],
+    "currency_name_to_country": [
+      "Kemboja",
+      "Filipina",
+      "Myanmar",
+      "Vietnam",
+      "Indonesia",
+      "Laos",
+      "Thailand",
+      "Malaysia"
+    ],
+    "currency_code_match": [
+      "Laos",
+      "Indonesia",
+      "Myanmar",
+      "Filipina",
+      "Singapura",
+      "Thailand",
+      "Malaysia",
+      "Vietnam",
+      "Brunei",
+      "Kemboja"
+    ]
+  },
+  "limitations": [
+    "Checks authored and shipped runtime output/HTML, not a live browser cache or layout.",
+    "Reverse Dolar questions intentionally excluded to avoid Singapore/Brunei ambiguity; both countries remain covered by other modes."
+  ]
+}

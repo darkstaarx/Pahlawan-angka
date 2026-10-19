@@ -40,7 +40,10 @@
   const y1V2Unit78Js=`questions/kssr-year1-v2-unit78-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y1CurriculumV2Js=`questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js?v=${APP_VERSION}`;
   const y1AdaptiveJs=`questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js?v=${APP_VERSION}`;
-  const d4CurriculumJs=`questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;
+  const d4CurriculumJs=`questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js?v=${APP_VERSION}-completion-1`;
+  const d4CompletionDataJs='questions/d4/completion-data-money-v1.js?v=1';
+  const d4CompletionMeasuresJs='questions/d4/completion-measures-v1.js?v=1';
+  const d4CompletionJs='questions/d4/completion-v1.js?v=1';
   const y5CurriculumJs=`questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;
   const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}`;
@@ -101,6 +104,9 @@
     if(!document.querySelector(`script[src^="questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js"]`))document.write(`<script src="${y1CurriculumV2Js}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js"]`))document.write(`<script src="${y1AdaptiveJs}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js"]`))document.write(`<script src="${d4CurriculumJs}"><\/script>`);
+    if(!document.querySelector('script[src^="questions/d4/completion-data-money-v1.js"]'))document.write(`<script src="${d4CompletionDataJs}"><\/script>`);
+    if(!document.querySelector('script[src^="questions/d4/completion-measures-v1.js"]'))document.write(`<script src="${d4CompletionMeasuresJs}"><\/script>`);
+    if(!document.querySelector('script[src^="questions/d4/completion-v1.js"]'))document.write(`<script src="${d4CompletionJs}"><\/script>`);
     if(!document.querySelector(`script[src^="questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js"]`))document.write(`<script src="${y5CurriculumJs}"><\/script>`);
     if(!document.querySelector(`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`))document.write(`<link rel="stylesheet" href="${y6Css}">`);
     if(!document.querySelector(`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`))document.write(`<script src="${y6Js}"><\/script>`);
@@ -182,7 +188,8 @@
     const loadY6Curriculum=()=>loadScript(y6CurriculumJs,`script[src^="questions/kssr-year6-curriculum-v${Y6_CURRICULUM_VERSION}.js"]`,loadY6Experience);
     const loadY6Repair=()=>{loadCss(y6Css,`link[href^="css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css"]`);loadScript(y6Js,`script[src^="questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js"]`,loadY6Curriculum);};
     const loadY5Curriculum=()=>loadScript(y5CurriculumJs,`script[src^="questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js"]`,loadY6Repair);
-    const loadD4Curriculum=()=>loadScript(d4CurriculumJs,`script[src^="questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js"]`,loadY5Curriculum);
+    const loadD4Completion=()=>loadScript(d4CompletionDataJs,'script[src^="questions/d4/completion-data-money-v1.js"]',()=>loadScript(d4CompletionMeasuresJs,'script[src^="questions/d4/completion-measures-v1.js"]',()=>loadScript(d4CompletionJs,'script[src^="questions/d4/completion-v1.js"]',loadY5Curriculum)));
+    const loadD4Curriculum=()=>loadScript(d4CurriculumJs,`script[src^="questions/kssr-year4-curriculum-v${D4_CURRICULUM_VERSION}.js"]`,loadD4Completion);
     const loadY1Adaptive=()=>loadScript(y1AdaptiveJs,`script[src^="questions/kssr-year1-adaptive-v${Y1_ADAPTIVE_VERSION}.js"]`,loadD4Curriculum);
     const loadY1V2Final=()=>loadScript(y1CurriculumV2Js,`script[src^="questions/kssr-year1-curriculum-v2-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1Adaptive);
     const loadY1V2Unit78=()=>loadScript(y1V2Unit78Js,`script[src^="questions/kssr-year1-v2-unit78-v${Y1_CURRICULUM_V2_VERSION}.js"]`,loadY1V2Final);

@@ -1,0 +1,196 @@
+{
+  "pass": true,
+  "checks": 114721,
+  "samples": 9000,
+  "liveSamples": 18000,
+  "protectedSamples": 630,
+  "modes": {
+    "identify-instrument": 758,
+    "pictograph-legend": 491,
+    "measure_liquid_multiply_divide": 274,
+    "pictograph-read": 520,
+    "measure_mass_add_sub": 251,
+    "read-transaction": 776,
+    "pictograph-total": 505,
+    "measure_liquid_multiply": 257,
+    "match-process": 737,
+    "pictograph-missing-symbol": 507,
+    "measure_mass_missing": 252,
+    "decide-acceptance-constraint": 729,
+    "measure_liquid_missing": 232,
+    "measure_mass_multiply_divide": 259,
+    "pictograph-difference": 462,
+    "measure_mass_divide": 238,
+    "pictograph-maximum": 515,
+    "measure_liquid_add_sub": 259,
+    "measure_liquid_divide": 254,
+    "measure_mass_multiply": 259,
+    "measure_mass_subtract_two": 240,
+    "measure_liquid_subtract_two": 225
+  },
+  "examples": {
+    "identify-instrument": {
+      "prompt": "Pembeli memilih akaun bank dalam laman bank lalu mengesahkan pindahan. Apakah instrumen pembayaran yang digunakan untuk membayar sebakul buah berharga RM42 di gerai buah?",
+      "answer": "perbankan internet"
+    },
+    "pictograph-legend": {
+      "prompt": "ikan emas ikan biru ikan merah ikan belang Nilai setiap simbol belum ditulis. Pilih petunjuk yang betul berdasarkan piktograf ini. Rekod menunjukkan bilangan ikan emas ialah 25 item.",
+      "answer": "1 simbol penuh = 10 item"
+    },
+    "measure_liquid_multiply_divide": {
+      "prompt": "1 L 400 mL × 3 ÷ 7 = ? Jawab dalam mL.",
+      "answer": "600 mL"
+    },
+    "pictograph-read": {
+      "prompt": "roti susu jus air mineral 1 simbol penuh = 2 item; setengah simbol = 1 item Berapakah bilangan susu?",
+      "answer": 2
+    },
+    "measure_mass_add_sub": {
+      "prompt": "3 kg 900 g + 650 g − 800 g = ? Jawab menggunakan kg dan g jika perlu.",
+      "answer": "3 kg 750 g"
+    },
+    "read-transaction": {
+      "prompt": "Baca rekod bayaran berikut untuk pembelian set pensel berharga RM8: “Rekod menunjukkan pindahan dibuat melalui laman sesawang bank kepada kedai alat tulis.” Apakah kaedah bayaran yang direkodkan?",
+      "answer": "perbankan internet"
+    },
+    "pictograph-total": {
+      "prompt": "buku cerita buku sains buku komik majalah 1 simbol penuh = 10 item; setengah simbol = 5 item Berapakah jumlah semua item dalam piktograf?",
+      "answer": 130
+    },
+    "measure_liquid_multiply": {
+      "prompt": "Setiap botol mengandungi 950 mL air. Berapakah isi padu air dalam 4 botol yang sama? Jawab dalam mL.",
+      "answer": "3800 mL"
+    },
+    "match-process": {
+      "prompt": "Untuk membayar RM12 bagi buku cerita di kedai buku, langkahnya ialah: “Sediakan wang yang cukup, serahkan kepada penjual dan terima baki.” Apakah instrumen pembayaran itu?",
+      "answer": "tunai"
+    },
+    "pictograph-missing-symbol": {
+      "prompt": "buku cerita ? buku sains buku komik majalah 1 simbol penuh = 5 item Jumlah semua item ialah 40. Berapakah bilangan buku cerita pada baris yang belum dilengkapkan?",
+      "answer": 10
+    },
+    "measure_mass_missing": {
+      "prompt": "Selepas 1 kg 150 g beras ditambah, jumlahnya menjadi 4 kg 850 g. Berapakah jisim beras sebelum itu? Jawab dalam g.",
+      "answer": "3700 g"
+    },
+    "decide-acceptance-constraint": {
+      "prompt": "Harga hidangan makanan di kantin sekolah ialah RM4. Terminal hanya menerima kad yang menolak wang terus daripada akaun bank, bukan baki aplikasi telefon. Antara pilihan berikut, instrumen manakah boleh digunakan?",
+      "answer": "kad debit"
+    },
+    "measure_liquid_missing": {
+      "prompt": "Selepas 1 L 200 mL air dituang masuk, jumlahnya menjadi 5 L 500 mL. Berapakah isi padu air sebelum itu? Jawab dalam mL.",
+      "answer": "4300 mL"
+    },
+    "measure_mass_multiply_divide": {
+      "prompt": "4 kg 800 g × 3 ÷ 6 = ? Jawab menggunakan kg dan g jika perlu.",
+      "answer": "2 kg 400 g"
+    },
+    "pictograph-difference": {
+      "prompt": "epal pisang oren mangga 1 simbol penuh = 5 item Berapakah beza bilangan kategori paling banyak dengan kategori paling sedikit?",
+      "answer": 5
+    },
+    "measure_mass_divide": {
+      "prompt": "Sebanyak 21 kg beras dibahagi sama rata ke dalam 6 beg. Berapakah jisim beras dalam setiap beg? Jawab dalam g.",
+      "answer": "3500 g"
+    },
+    "pictograph-maximum": {
+      "prompt": "buku cerita buku sains buku komik majalah 1 simbol penuh = 2 item; setengah simbol = 1 item Pilihan manakah menyenaraikan semua kategori yang mempunyai bilangan item paling banyak?",
+      "answer": "buku komik"
+    },
+    "measure_liquid_add_sub": {
+      "prompt": "2 L 900 mL + 1 L 350 mL − 850 mL = ? Jawab dalam mL.",
+      "answer": "3400 mL"
+    },
+    "measure_liquid_divide": {
+      "prompt": "Sebanyak 3 L 900 mL air dibahagi sama rata ke dalam 6 botol. Berapakah isi padu air dalam setiap botol? Jawab dalam mL.",
+      "answer": "650 mL"
+    },
+    "measure_mass_multiply": {
+      "prompt": "Setiap beg mengandungi 3 kg 50 g beras. Berapakah jisim beras dalam 4 beg yang sama? Jawab dalam g.",
+      "answer": "12200 g"
+    },
+    "measure_mass_subtract_two": {
+      "prompt": "4 kg 250 g − 1 kg 100 g − 750 g = ? Jawab dalam g.",
+      "answer": "2400 g"
+    },
+    "measure_liquid_subtract_two": {
+      "prompt": "5 L 100 mL − 1 L 250 mL − 200 mL = ? Jawab menggunakan L dan mL jika perlu.",
+      "answer": "3 L 650 mL"
+    }
+  },
+  "oldFamilies": [
+    "money_currency_name",
+    "money_divide",
+    "money_add_three",
+    "money_multiply",
+    "money_subtract_two",
+    "money_combined",
+    "money_budget_record",
+    "money_currency_rate",
+    "money_mixed_mul_div",
+    "money_record_income",
+    "money_needs_wants_decision",
+    "money_record_saving",
+    "money_needs_wants",
+    "money_record",
+    "pictograph_key",
+    "read_bar",
+    "pictograph_read",
+    "data_total",
+    "data_difference",
+    "pictograph_total",
+    "construct_bar",
+    "pictograph_claim",
+    "pictograph_difference",
+    "jisim_convert",
+    "isi padu cecair_convert",
+    "panjang_convert",
+    "panjang_add",
+    "isi padu cecair_add",
+    "panjang_subtract",
+    "panjang_multiply",
+    "jisim_subtract",
+    "isi padu cecair_subtract",
+    "isi padu cecair_multiply",
+    "jisim_multiply",
+    "panjang_missing",
+    "jisim_combined",
+    "isi padu cecair_divide",
+    "panjang_combined",
+    "isi padu cecair_missing",
+    "isi padu cecair_combined",
+    "jisim_divide",
+    "panjang_divide",
+    "jisim_missing",
+    "jisim_add"
+  ],
+  "newFamilies": [
+    "identify-instrument",
+    "match-process",
+    "read-transaction",
+    "decide-acceptance-constraint",
+    "pictograph-legend",
+    "pictograph-read",
+    "pictograph-difference",
+    "pictograph-maximum",
+    "pictograph-total",
+    "pictograph-missing-symbol",
+    "measure_mass_add_sub",
+    "measure_liquid_divide",
+    "measure_mass_divide",
+    "measure_liquid_multiply_divide",
+    "measure_mass_multiply_divide",
+    "measure_liquid_subtract_two",
+    "measure_liquid_add_sub",
+    "measure_mass_missing",
+    "measure_mass_subtract_two",
+    "measure_liquid_missing",
+    "measure_mass_multiply",
+    "measure_liquid_multiply"
+  ],
+  "limitations": [
+    "Parameterized prompts are not50 distinct pedagogical approaches.",
+    "Pictograph completion uses objective choices; free drawing is not assessed.",
+    "Loader/HTML checks simulate DOM; no claim of a live browser or deployed cache update."
+  ]
+}
