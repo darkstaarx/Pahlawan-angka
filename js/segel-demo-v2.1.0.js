@@ -156,6 +156,8 @@
   function devSubject(text){ return devPetConfig()?String(text).replace(/Aurora/g,devPetName()):text }
 
   let THREE=null, stage=null, booting=null, run=null, reduceMotion=false;
+  // Guest finished a demo run: closing leads to the rating + package wrap-up.
+  let guestCompleted=false;
 
   const $ = id => document.getElementById(id);
   const wait = ms => new Promise(r=>setTimeout(r,ms));
@@ -2500,6 +2502,7 @@
       $('segelStatCorrect').textContent='—';
       $('segelStatAcc').textContent='—';
       popStars(0);   // tiada bintang, dan `pop` turut dibersihkan
+      guestCompleted=false;setDoneBackLabel(false);
       $('segelCoachSay').textContent='Cuba semula. Progress murid tidak terjejas.';
       $('segelDemoSummary').hidden=true;
       $('segelDone').hidden=false;
@@ -2509,6 +2512,7 @@
     }
 
     if(entryMode?.guestDemo)window.PADemoFunnel?.track('demo_complete');
+    guestCompleted=!!entryMode?.guestDemo;setDoneBackLabel(guestCompleted);
     // Bintang ikut Unity RescuePayoff.cs: satu bintang asas, +1 pada 80%, +1 pada 100%.
     const stars=correct===0?0:1+(acc>=80?1:0)+(acc===100?1:0);
 
@@ -2532,7 +2536,12 @@
   /* =================================================================
      MASUK / KELUAR
      ================================================================= */
+  function setDoneBackLabel(guest){
+    const back=$('segelDone')?.querySelector?.('.rcBtn.navy');
+    if(back)back.textContent=guest?'Seterusnya':'Kembali ke Hub';
+  }
   function startRun(){
+    guestCompleted=false;
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     const pool=skillPool();
     run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],
@@ -2750,10 +2759,14 @@
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
     if(entryMode?.guestDemo){
-      ++demoOpenGeneration;++runGeneration;run=null;entryMode=null;
+      const finished=guestCompleted;
+      const grade=Number((typeof db!=='undefined'&&db&&db.schoolGrade)||0)||null;
+      ++demoOpenGeneration;++runGeneration;run=null;entryMode=null;guestCompleted=false;
+      setDoneBackLabel(false);
       window.PADemo?.restoreGuest?.();
       if(typeof goLogin==='function')goLogin();
       else if(typeof screen==='function')screen('login');
+      if(finished)window.PADemoWrapup?.open?.({grade});
       return;
     }
     if(entryMode?.devBattlefield){ window.PABattlefieldDev?.exit?.({fromSegel:true}); return; }
