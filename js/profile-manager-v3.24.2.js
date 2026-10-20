@@ -15,7 +15,7 @@ const profileById=id=>(st()?.profiles||[]).find(p=>p.id===id)||null;
 const canonical=id=>typeof canonicalHeroId==='function'?canonicalHeroId(id):id==='wirachibi'?'wira':(['wira','bunga','sidma'].includes(id)?id:'wira');
 const avatarFor=id=>AVATAR_IDS.includes(id)?id:DEFAULT_AVATAR;
 const validAvatar=id=>AVATAR_IDS.includes(id)?id:null;
-const avatarSrc=id=>`assets/avatars/pupils/${avatarFor(id)}.png`;
+const avatarSrc=id=>`assets/avatars/pupils/${avatarFor(id)}.webp`;
 const schemaMismatch=error=>{const code=String(error?.code||''),msg=String(error?.message||'').toLowerCase();return ['PGRST202','PGRST204','42703','42883'].includes(code)||/avatar_id.*(column|schema cache)|column.*avatar_id|create_initial_child.*(function|schema cache|not found)/.test(msg)};
 const nowIso=()=>new Date().toISOString();
 

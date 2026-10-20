@@ -36,7 +36,7 @@
      Untuk Wira Chibi & Pet Aurora di Pentas Menu V2
      ========================================================= */
   const HERO_FRAMES = Array.from({length:24},(_,i)=>
-    `assets/heroes/wira/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.png`
+    `assets/heroes/wira/frames/hub-happy-v1/hub-happy-${String(i).padStart(2,'0')}-v1.webp`
   );
   const HERO_FRAME_MS = 105;
   const HERO_HEAD_FRAME_MS = 240;
@@ -333,7 +333,7 @@
     const pbadge = $('mv2AvatarBadge');
     if (pbadge) pbadge.textContent = `Lv. ${db.level || 1}`;
     const pimg = $('mv2AvatarImg');
-    if (pimg) { const avatar=window.PAAvatar?.normalize?.(db.avatar_id)||'avatar-01'; pimg.src=`assets/avatars/pupils/${avatar}.png`; pimg.alt='Avatar profil'; }
+    if (pimg) { const avatar=window.PAAvatar?.normalize?.(db.avatar_id)||'avatar-01'; pimg.src=`assets/avatars/pupils/${avatar}.webp`; pimg.alt='Avatar profil'; }
 
     // syiling: permainan ini tiada mata wang permata, jadi kita papar syiling
     // sebenar dengan ikonnya sendiri dan bukan nombor hiasan.

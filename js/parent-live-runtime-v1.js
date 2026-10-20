@@ -21,7 +21,7 @@
       if(copy&&!copy.querySelector('.parentJourneySignal'))copy.insertAdjacentHTML('beforeend','<div class="parentJourneySignal"><span>✦</span><small>Cikgu Dimensi membaca corak jawapan, bukan sekadar markah.</small></div>');
     }
     const heroImage=document.querySelector('#summaryTab .parentJourney > img');
-    if(heroImage){heroImage.src='assets/coach/cikgu-dimensi/parent-adviser-v2.png';heroImage.alt='Cikgu Dimensi menerangkan kemajuan anak'}
+    if(heroImage){heroImage.src='assets/coach/cikgu-dimensi/parent-adviser-v2.webp';heroImage.alt='Cikgu Dimensi menerangkan kemajuan anak'}
     const coach=document.querySelector('#summaryTab .coachAction img');
     if(coach){coach.src='assets/coach/cikgu-dimensi/hub-portrait-v1.webp';coach.alt='Cikgu Dimensi'}
     renderFallbackRestu();

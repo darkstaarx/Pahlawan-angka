@@ -1,36 +1,36 @@
 const REWARD_PETS={
- aurora:{id:'aurora',name:'Aurora',species:'Musang Ekor Angka',desc:'Teman fantasi dengan kuasa bintang dan kristal.',price:120,battleScale:1,front:'assets/pets/aurora/standby-v2.webp',hub:'assets/pets/aurora/hub/adventure-v1.webp',anticipation:'assets/pets/aurora/frames/anticipation-v1.webp',battle:'assets/pets/aurora/attack-v2.webp',followThrough:'assets/pets/aurora/frames/follow-through-v1.webp',fx:'assets/fx/pets/aurora/impact.png'},
- arif:{id:'arif',name:'Arif Arnab Abakus',desc:'Arnab bijak yang menyerang dengan manik abakus kristal.',price:160,battleScale:1.14,front:'assets/pets/arif/front.png',hub:'assets/pets/arif/hub/adventure-v1.webp',anticipation:'assets/pets/arif/anticipation.png',battle:'assets/pets/arif/battle.png',followThrough:'assets/pets/arif/follow-through.png',fx:'assets/fx/pets/arif/impact.png'},
- pembaris:{id:'pembaris',name:'Kucing Pembaris Ais',desc:'Pahlawan kecil dengan pedang pembaris ais.',price:180,battleScale:1,front:'assets/pets/kucing-pembaris/standby-v2.webp',hub:'assets/pets/kucing-pembaris/hub/adventure-v1.webp',anticipation:'assets/pets/kucing-pembaris/frames/anticipation-v1.webp',battle:'assets/pets/kucing-pembaris/attack-v2.webp',followThrough:'assets/pets/kucing-pembaris/frames/follow-through-v1.webp',fx:'assets/fx/pets/pembaris/impact.png'},
- tiko:{id:'tiko',name:'Tiko Burung Waktu',desc:'Burung waktu yang mengunci musuh dengan gelang jam.',price:200,front:'assets/pets/tiko/front.png',hub:'assets/pets/tiko/hub/adventure-v1.webp',anticipation:'assets/pets/tiko/anticipation.png',battle:'assets/pets/tiko/battle.png',followThrough:'assets/pets/tiko/follow-through.png',fx:'assets/fx/pets/tiko/impact.png'}
+ aurora:{id:'aurora',name:'Aurora',species:'Musang Ekor Angka',desc:'Teman fantasi dengan kuasa bintang dan kristal.',price:120,battleScale:1,front:'assets/pets/aurora/standby-v2.webp',hub:'assets/pets/aurora/hub/adventure-v1.webp',anticipation:'assets/pets/aurora/frames/anticipation-v1.webp',battle:'assets/pets/aurora/attack-v2.webp',followThrough:'assets/pets/aurora/frames/follow-through-v1.webp',fx:'assets/fx/pets/aurora/impact.webp'},
+ arif:{id:'arif',name:'Arif Arnab Abakus',desc:'Arnab bijak yang menyerang dengan manik abakus kristal.',price:160,battleScale:1.14,front:'assets/pets/arif/front.webp',hub:'assets/pets/arif/hub/adventure-v1.webp',anticipation:'assets/pets/arif/anticipation.webp',battle:'assets/pets/arif/battle.webp',followThrough:'assets/pets/arif/follow-through.webp',fx:'assets/fx/pets/arif/impact.webp'},
+ pembaris:{id:'pembaris',name:'Kucing Pembaris Ais',desc:'Pahlawan kecil dengan pedang pembaris ais.',price:180,battleScale:1,front:'assets/pets/kucing-pembaris/standby-v2.webp',hub:'assets/pets/kucing-pembaris/hub/adventure-v1.webp',anticipation:'assets/pets/kucing-pembaris/frames/anticipation-v1.webp',battle:'assets/pets/kucing-pembaris/attack-v2.webp',followThrough:'assets/pets/kucing-pembaris/frames/follow-through-v1.webp',fx:'assets/fx/pets/pembaris/impact.webp'},
+ tiko:{id:'tiko',name:'Tiko Burung Waktu',desc:'Burung waktu yang mengunci musuh dengan gelang jam.',price:200,front:'assets/pets/tiko/front.webp',hub:'assets/pets/tiko/hub/adventure-v1.webp',anticipation:'assets/pets/tiko/anticipation.webp',battle:'assets/pets/tiko/battle.webp',followThrough:'assets/pets/tiko/follow-through.webp',fx:'assets/fx/pets/tiko/impact.webp'}
 };
 const TROPHY_ASSET='assets/ui/trophies-v1/';
 const REWARD_BADGES={
- pemula:{id:'pemula',name:'Langkah Pertama',icon:'⭐',image:TROPHY_ASSET+'langkah-pertama.png',desc:'Tamatkan misi pertama.',target:1,metric:()=>db.rewards.firstMissionDone?1:0,tier:'legacy'},
- rentak5:{id:'rentak5',name:'Rentak Lima',icon:'⚡',image:TROPHY_ASSET+'rentak-lima.png',desc:'Capai 5 jawapan betul berturut-turut.',target:5,metric:()=>db.bestStreak||0},
- tepat50:{id:'tepat50',name:'50 Tepat',icon:'🎯',image:TROPHY_ASSET+'tepat-50.png',desc:'Kumpulkan 50 jawapan betul.',target:50,metric:()=>db.totalCorrect||0},
- bintang3:{id:'bintang3',name:'Bintang Sempurna',icon:'🌟',image:TROPHY_ASSET+'bintang-sempurna.png',desc:'Dapatkan 3 bintang dalam satu misi.',target:3,metric:()=>Math.max(0,...Object.values(db.chapterStars||{}).map(Number))},
- tanpaHint:{id:'tanpaHint',name:'Yakin Sendiri',icon:'💡',image:TROPHY_ASSET+'yakin-sendiri.png',desc:'Tamatkan misi tanpa menggunakan Petunjuk.',target:1,metric:()=>db.rewards.badges.tanpaHint?1:0},
- gigih:{id:'gigih',name:'Gigih Berlatih',icon:'🛡️',image:TROPHY_ASSET+'gigih-berlatih.png',desc:'Jawab 100 soalan sepanjang pengembaraan.',target:100,metric:()=>db.totalQuestions||0},
- cabaran:{id:'cabaran',name:'Penakluk Cabaran',icon:'👑',image:TROPHY_ASSET+'penakluk-cabaran.png',desc:'Jawab betul cabaran tambahan Darjah +1.',target:1,metric:()=>db.rewards.bossStretchWin?1:0,tier:'legacy'},
- dailyHero:{id:'dailyHero',name:'Wira Harian',icon:'☀️',image:TROPHY_ASSET+'wira-harian.png',desc:'Capai sasaran harian 15 jawapan betul.',target:1,metric:()=>db.daily?.claimed&&Number(db.daily.correct)>=15?1:0,tier:'bronze'},
- level5:{id:'level5',name:'Pahlawan Tahap 5',icon:'🛡️',image:TROPHY_ASSET+'pahlawan-tahap-5.png',desc:'Capai Tahap 5.',target:5,metric:()=>Math.min(5,Number(db.level)||0),tier:'bronze'},
- level10:{id:'level10',name:'Juara Tahap 10',icon:'🏅',image:TROPHY_ASSET+'juara-tahap-10.png',desc:'Capai Tahap 10.',target:10,metric:()=>Math.min(10,Number(db.level)||0),tier:'silver'},
- topics3:{id:'topics3',name:'Penjelajah Tiga Topik',icon:'🗺️',image:TROPHY_ASSET+'penjelajah-tiga-topik.png',desc:'Lengkapkan 3 topik.',target:3,metric:()=>Math.min(3,Object.values(db.completedMissions||{}).filter(Number).length),tier:'silver'},
- topics5:{id:'topics5',name:'Penakluk Lima Topik',icon:'🏰',image:TROPHY_ASSET+'penakluk-lima-topik.png',desc:'Lengkapkan 5 topik.',target:5,metric:()=>Math.min(5,Object.values(db.completedMissions||{}).filter(Number).length),tier:'gold'},
- mastery1:{id:'mastery1',name:'Kuasa Dikuasai',icon:'✦',image:TROPHY_ASSET+'kuasa-dikuasai.png',desc:'Kuasai 1 kemahiran dengan sekurang-kurangnya 85% penguasaan.',target:1,metric:()=>Math.min(1,Object.values(db.skills||{}).filter(s=>Number(s?.mastery)>=85).length),tier:'bronze'},
- mastery5:{id:'mastery5',name:'Lima Kuasa Dikuasai',icon:'✧',image:TROPHY_ASSET+'lima-kuasa-dikuasai.png',desc:'Kuasai 5 kemahiran dengan sekurang-kurangnya 85% penguasaan.',target:5,metric:()=>Math.min(5,Object.values(db.skills||{}).filter(s=>Number(s?.mastery)>=85).length),tier:'gold'},
- firstBoss:{id:'firstBoss',name:'Penewas Cabaran',icon:'⚔️',image:TROPHY_ASSET+'penewas-boss.png',desc:'Selesaikan cabaran besar buat kali pertama.',target:1,metric:()=>db.rewards.firstBossDone?1:0,tier:'gold'}
+ pemula:{id:'pemula',name:'Langkah Pertama',icon:'⭐',image:TROPHY_ASSET+'langkah-pertama.webp',desc:'Tamatkan misi pertama.',target:1,metric:()=>db.rewards.firstMissionDone?1:0,tier:'legacy'},
+ rentak5:{id:'rentak5',name:'Rentak Lima',icon:'⚡',image:TROPHY_ASSET+'rentak-lima.webp',desc:'Capai 5 jawapan betul berturut-turut.',target:5,metric:()=>db.bestStreak||0},
+ tepat50:{id:'tepat50',name:'50 Tepat',icon:'🎯',image:TROPHY_ASSET+'tepat-50.webp',desc:'Kumpulkan 50 jawapan betul.',target:50,metric:()=>db.totalCorrect||0},
+ bintang3:{id:'bintang3',name:'Bintang Sempurna',icon:'🌟',image:TROPHY_ASSET+'bintang-sempurna.webp',desc:'Dapatkan 3 bintang dalam satu misi.',target:3,metric:()=>Math.max(0,...Object.values(db.chapterStars||{}).map(Number))},
+ tanpaHint:{id:'tanpaHint',name:'Yakin Sendiri',icon:'💡',image:TROPHY_ASSET+'yakin-sendiri.webp',desc:'Tamatkan misi tanpa menggunakan Petunjuk.',target:1,metric:()=>db.rewards.badges.tanpaHint?1:0},
+ gigih:{id:'gigih',name:'Gigih Berlatih',icon:'🛡️',image:TROPHY_ASSET+'gigih-berlatih.webp',desc:'Jawab 100 soalan sepanjang pengembaraan.',target:100,metric:()=>db.totalQuestions||0},
+ cabaran:{id:'cabaran',name:'Penakluk Cabaran',icon:'👑',image:TROPHY_ASSET+'penakluk-cabaran.webp',desc:'Jawab betul cabaran tambahan Darjah +1.',target:1,metric:()=>db.rewards.bossStretchWin?1:0,tier:'legacy'},
+ dailyHero:{id:'dailyHero',name:'Wira Harian',icon:'☀️',image:TROPHY_ASSET+'wira-harian.webp',desc:'Capai sasaran harian 15 jawapan betul.',target:1,metric:()=>db.daily?.claimed&&Number(db.daily.correct)>=15?1:0,tier:'bronze'},
+ level5:{id:'level5',name:'Pahlawan Tahap 5',icon:'🛡️',image:TROPHY_ASSET+'pahlawan-tahap-5.webp',desc:'Capai Tahap 5.',target:5,metric:()=>Math.min(5,Number(db.level)||0),tier:'bronze'},
+ level10:{id:'level10',name:'Juara Tahap 10',icon:'🏅',image:TROPHY_ASSET+'juara-tahap-10.webp',desc:'Capai Tahap 10.',target:10,metric:()=>Math.min(10,Number(db.level)||0),tier:'silver'},
+ topics3:{id:'topics3',name:'Penjelajah Tiga Topik',icon:'🗺️',image:TROPHY_ASSET+'penjelajah-tiga-topik.webp',desc:'Lengkapkan 3 topik.',target:3,metric:()=>Math.min(3,Object.values(db.completedMissions||{}).filter(Number).length),tier:'silver'},
+ topics5:{id:'topics5',name:'Penakluk Lima Topik',icon:'🏰',image:TROPHY_ASSET+'penakluk-lima-topik.webp',desc:'Lengkapkan 5 topik.',target:5,metric:()=>Math.min(5,Object.values(db.completedMissions||{}).filter(Number).length),tier:'gold'},
+ mastery1:{id:'mastery1',name:'Kuasa Dikuasai',icon:'✦',image:TROPHY_ASSET+'kuasa-dikuasai.webp',desc:'Kuasai 1 kemahiran dengan sekurang-kurangnya 85% penguasaan.',target:1,metric:()=>Math.min(1,Object.values(db.skills||{}).filter(s=>Number(s?.mastery)>=85).length),tier:'bronze'},
+ mastery5:{id:'mastery5',name:'Lima Kuasa Dikuasai',icon:'✧',image:TROPHY_ASSET+'lima-kuasa-dikuasai.webp',desc:'Kuasai 5 kemahiran dengan sekurang-kurangnya 85% penguasaan.',target:5,metric:()=>Math.min(5,Object.values(db.skills||{}).filter(s=>Number(s?.mastery)>=85).length),tier:'gold'},
+ firstBoss:{id:'firstBoss',name:'Penewas Cabaran',icon:'⚔️',image:TROPHY_ASSET+'penewas-boss.webp',desc:'Selesaikan cabaran besar buat kali pertama.',target:1,metric:()=>db.rewards.firstBossDone?1:0,tier:'gold'}
 };
 const TROPHY_TOPIC_FAMILIES=[
- {id:'nombor',label:'Nombor',chapter:'1',image:TROPHY_ASSET+'pakar-nombor.png'},
- {id:'operasi',label:'Operasi',chapter:'2',image:TROPHY_ASSET+'jagoan-operasi.png'},
- {id:'pecahan',label:'Pecahan',chapter:'3',image:TROPHY_ASSET+'wira-pecahan.png'},
- {id:'wang',label:'Wang',chapter:'4',image:TROPHY_ASSET+'tepat-50.png'},
- {id:'masa',label:'Masa',chapter:'5',image:TROPHY_ASSET+'wira-harian.png'},
- {id:'ukuran',label:'Ukuran',chapter:'6',image:TROPHY_ASSET+'kuasa-dikuasai.png'},
- {id:'ruang',label:'Ruang',chapter:'7',image:TROPHY_ASSET+'penjelajah-tiga-topik.png'},
- {id:'data',label:'Data',chapter:'8',image:TROPHY_ASSET+'bintang-sempurna.png'}
+ {id:'nombor',label:'Nombor',chapter:'1',image:TROPHY_ASSET+'pakar-nombor.webp'},
+ {id:'operasi',label:'Operasi',chapter:'2',image:TROPHY_ASSET+'jagoan-operasi.webp'},
+ {id:'pecahan',label:'Pecahan',chapter:'3',image:TROPHY_ASSET+'wira-pecahan.webp'},
+ {id:'wang',label:'Wang',chapter:'4',image:TROPHY_ASSET+'tepat-50.webp'},
+ {id:'masa',label:'Masa',chapter:'5',image:TROPHY_ASSET+'wira-harian.webp'},
+ {id:'ukuran',label:'Ukuran',chapter:'6',image:TROPHY_ASSET+'kuasa-dikuasai.webp'},
+ {id:'ruang',label:'Ruang',chapter:'7',image:TROPHY_ASSET+'penjelajah-tiga-topik.webp'},
+ {id:'data',label:'Data',chapter:'8',image:TROPHY_ASSET+'bintang-sempurna.webp'}
 ];
 const TROPHY_TIERS=[
  {id:'bronze',label:'Gangsa',target:20},

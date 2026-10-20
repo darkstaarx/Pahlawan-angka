@@ -97,16 +97,16 @@
     petHappy:'assets/pets/aurora/frames/happy-v1.webp',
     /* Winning sheet v6 dibaca kiri-kanan, kemudian turun ke baris seterusnya.
        Semua frame telah di-anchor pada boot kanan yang sama. */
-    heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.png`),
+    heroHappy:Array.from({length:20},(_,i)=>`assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-${String(i).padStart(2,'0')}-v6.webp`),
     heroVictory:'assets/heroes/wira/frames/victory-v1.webp',
-    finalmove:'assets/heroes/wira/frames/finalmove-v1/finalmove.png',
+    finalmove:'assets/heroes/wira/frames/finalmove-v1/finalmove.webp',
     finisherVideo:'assets/heroes/wira/finisher/wira-finisher-v1.mp4?v=3.84.87',
-    finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.png',
-    seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.png`),
+    finalFx:'assets/fx/wira/final-v2/fx-math-symbols-sprite-v1.webp',
+    seals:TIERS.map(t=>`assets/fx/segel/${t.key}-v2.webp`),
     // Normal attacks keep their original small ice hit. The glacier sheet is
     // reserved for the final-blow DOM layer below.
     iceBurst:'assets/fx/wira/final-v2/fx-ice-electric-burst-v1.webp',
-    glacierSheet:'assets/fx/wira/final-v5/glacier-clean-sheet-v1.png',
+    glacierSheet:'assets/fx/wira/final-v5/glacier-clean-sheet-v1.webp',
     iceEnd:'assets/fx/wira/final-v2/fx-impact-end-v1.webp',
     coin:'assets/fx/reward/coin-v1.webp',
     trail:'assets/fx/reward/trail-v1.webp',
@@ -283,10 +283,10 @@
     const finisherFocusPortrait=host.querySelector('.finalEyePortrait');
 
     const LIVE_FINISHER={
-      chargeHero:'assets/fx/wira/final-v2/wira-charge-sheet-v3.png',
+      chargeHero:'assets/fx/wira/final-v2/wira-charge-sheet-v3.webp',
       chargeAura:null,
-      focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.png',
-      impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.png',
+      focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.webp',
+      impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.webp',
       color:0xbfe9ff,chargeMs:1000,focusMs:980,impactMs:2400
     };
     function applyLiveFinisherAssets(){
