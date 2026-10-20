@@ -289,6 +289,14 @@
       impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.webp',
       color:0xbfe9ff,chargeMs:1000,focusMs:980,impactMs:2400
     };
+    // Warm finisher images before the cut-in: the eye scene only lasts
+    // ~1s, so an image fetched on demand can miss its window entirely.
+    const finisherWarm=[LIVE_FINISHER.chargeHero,LIVE_FINISHER.focus,LIVE_FINISHER.impact,
+      'assets/fx/wira/final-v5/jurus-penamat-logo-sheet-v1.webp',
+      'assets/fx/wira/final-v5/glacier-clean-sheet-v1.webp',
+      'assets/fx/wira/final-v2/wira-eye-focus-v1.webp'
+    ].filter(Boolean).map(src=>{const img=new Image();img.decoding='async';img.src=src;return img});
+    host._finisherWarm=finisherWarm;
     function applyLiveFinisherAssets(){
       const cfg=LIVE_FINISHER;
       host.dataset.finisherHero='wira';
