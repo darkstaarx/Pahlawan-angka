@@ -8,24 +8,24 @@
 <style>
 /* Layout: one column test bench — question card, three simulated answers, live state, event log. */
 :root{
-  --bg:#f3f5fa; --panel:#ffffff; --ink:#0d1b3d; --muted:#5a6886; --line:#d9e1ee;
-  --gold:#ffc327; --gold-ink:#5b3d00; --fast:#d8434f; --slow:#2f6fd0; --ok:#1f8a52;
+  --bg:#fdfaf2; --panel:#ffffff; --ink:#06164c; --muted:#4d5b82; --line:#dae9f4;
+  --gold:#ffc327; --gold-ink:#805000; --fast:#c9303d; --slow:#0067d9; --ok:#1d7a46;
   --display:Arial,Helvetica,sans-serif; --body:Arial,Helvetica,sans-serif; --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1426;--panel:#13213b;--ink:#eef3fb;--muted:#9fb0cb;--line:#2a3d5e;--gold:#ffcb32;--gold-ink:#ffd970;--fast:#ff7a84;--slow:#7fb0ff;--ok:#5fd394;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0b1426;--panel:#13213b;--ink:#eef3fb;--muted:#9fb0cb;--line:#2a3d5e;--gold:#ffcb32;--gold-ink:#ffd970;--fast:#ff7a84;--slow:#7fb0ff;--ok:#5fd394;color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1630;--panel:#13234a;--ink:#f2f5ff;--muted:#a9b6d6;--line:#2b3f6e;--gold:#ffcb32;--gold-ink:#ffd970;--fast:#ff7a84;--slow:#7fb0ff;--ok:#5fd394;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1630;--panel:#13234a;--ink:#f2f5ff;--muted:#a9b6d6;--line:#2b3f6e;--gold:#ffcb32;--gold-ink:#ffd970;--fast:#ff7a84;--slow:#7fb0ff;--ok:#5fd394;color-scheme:dark}
 body{background:var(--bg);color:var(--ink);font-family:var(--body)}
 .lab{max-width:560px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
-h1{margin:0;font:800 clamp(24px,6vw,30px)/1.1 var(--display);text-wrap:balance}
+h1{margin:0;font:900 clamp(26px,7vw,34px)/1.1 var(--display);letter-spacing:-.5px;text-wrap:balance}
 .lede{margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.55}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:12px}
+.panel{background:var(--panel);border:2px solid var(--line);border-radius:25px;padding:16px;display:grid;gap:12px}
 .label{margin:0;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 .q{margin:0;font:700 19px/1.45 var(--body)}
 .qmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
 .chip{padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--ink)}
 .swap{border:0;background:none;color:var(--slow);font:700 13px var(--body);text-decoration:underline;cursor:pointer;padding:4px}
 .acts{display:grid;gap:8px}
-.act{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:52px;padding:10px 14px;border:2px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);font:700 15px var(--body);cursor:pointer;text-align:left}
+.act{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:56px;padding:10px 18px;border:2px solid var(--line);border-radius:25px;background:var(--panel);color:var(--ink);font:700 15px var(--body);cursor:pointer;text-align:left}
 .act small{font:600 12px var(--mono);color:var(--muted)}
 .act.fast{border-color:color-mix(in srgb,var(--fast) 55%,var(--line))}
 .act.slow{border-color:color-mix(in srgb,var(--slow) 55%,var(--line))}
@@ -39,7 +39,7 @@ h1{margin:0;font:800 clamp(24px,6vw,30px)/1.1 var(--display);text-wrap:balance}
 .statetext{font-size:14px;line-height:1.4;min-width:0;flex:1}
 .tools{display:flex;flex-wrap:wrap;gap:8px}
 .tool{min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:700 13px var(--body);cursor:pointer}
-.tool[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#14233a}
+.tool[aria-pressed="true"]{background:linear-gradient(#ffdd57,#ffc327);border-color:#ffed9c;color:#06214f}
 .log{margin:0;padding:0;list-style:none;display:grid;gap:6px;max-height:260px;overflow-y:auto}
 .log li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:13px;line-height:1.4;padding:8px 10px;border-radius:10px;background:var(--bg)}
 .log b{font-family:var(--mono);font-size:12px}
@@ -99,6 +99,7 @@ function pageLockParentPin(){return db.parentPin||null}
 function createPageLockParentPin(pin){if(db.parentPin)return false;db.parentPin=pin;document.getElementById('pinShow').textContent=pin;return true}
 function save(){}
 </script>
+<script>window.PA_ASSET_BASE="../";</script>
 <script src="../js/rapid-lock-v1.js"></script>
 <script>
 (()=>{
@@ -108,7 +109,8 @@ function save(){}
   ];
   let qi=0,n=0;
   const $=id=>document.getElementById(id);
-  const q=()=>({...QS[qi],token:'lab-'+(++n)});
+  const FACTS=[[7,8],[3,6],[7,4],[3,9],[7,7],[3,8]];
+  const q=()=>{n++;if(qi)return{...QS[1],token:'lab-'+n};const [x,y]=FACTS[n%FACTS.length];return{prompt:`${x} × ${y} = ?`,answer:x*y,wrong:x*y-x,token:'lab-'+n}};
   function paintQ(){const x=QS[qi];$('qText').textContent=x.prompt;$('qFloor').textContent=PARapidLock.floor(x).toFixed(1)+' s';$('swapQ').textContent=qi?'Tukar ke soalan sifir pendek':'Tukar ke soalan cerita panjang'}
   function paintState(){
     const {streak,hasLocked}=PARapidLock.state();
