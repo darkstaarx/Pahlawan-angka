@@ -6,6 +6,7 @@
   const $ = id => document.getElementById(id);
   const cloud = () => window.PACloud?.state;
   let checking = false;
+  let recheck = false;
   let watching = '';
   function read() {
     try {
@@ -119,11 +120,20 @@
     return true;
   }
   async function checkPayment() {
-    if (checking || !cloud()?.user) return;
+    if (!cloud()?.user) { message('Log masuk akaun penjaga untuk menyemak bayaran.'); return; }
+    // A poll result that lands while a check is running must not be dropped.
+    if (checking) { recheck = true; return; }
     checking = true;
     try {
       const state = cloud(); const userId = state.user.id; const orderId = returnOrder();
-      if (!orderId) return;
+      if (!orderId) {
+        // Order already confirmed earlier in this visit: go to the account.
+        await window.PACommercial.refresh();
+        if (cloud()?.user?.id === userId && window.PACommercial.isPaid()) { await openAccount(); return; }
+        message('Pesanan tidak ditemui. Hubungi bantuan jika bayaran telah dibuat.');
+        return;
+      }
+      message('Menyemak bayaran…');
       const result = await state.client.from('payment_orders').select('status,plan').eq('id', orderId).eq('user_id', userId).maybeSingle();
       if (cloud()?.user?.id !== userId) return;
       if (result.error) throw result.error;
@@ -134,12 +144,22 @@
       }
       await window.PACommercial.refresh();
       if (cloud()?.user?.id !== userId || !window.PACommercial.isPaid()) { message('Bayaran diterima. Akses sedang dikemas kini; tekan Semak bayaran sebentar lagi.'); return; }
-      clear(); view('account');
+      clear();
       const url = new URL(location.href); url.searchParams.delete('payment_order');
       history.replaceState(null, '', url.pathname + url.search + url.hash);
-      await window.PACloud.resumeAfterConsent();
+      await openAccount();
     } catch (_) { message('Pengesahan belum dapat dimuat. Semak sambungan dan tekan Semak bayaran.'); }
-    finally { checking = false; }
+    finally {
+      checking = false;
+      if (recheck) { recheck = false; checkPayment(); }
+    }
+  }
+  // The pricing page is its own screen; the account (profiles/onboarding)
+  // lives on the login screen, so switch screens before resuming profiles.
+  async function openAccount() {
+    message('');
+    view('account'); window.screen('login');
+    await window.PACloud.resumeAfterConsent();
   }
   async function reopenBill() {
     const state = cloud(); if (!state?.user || !returnOrder()) return;
