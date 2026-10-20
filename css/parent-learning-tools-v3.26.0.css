@@ -21,3 +21,20 @@
 #worksheetTab .paWorksheetStatus{font-size:12px;line-height:1.5}
 #worksheetTab [aria-busy="true"]{cursor:progress}
 @media(max-width:390px){#parent .parentTabs{gap:5px}#parent .parentTabs button{font-size:12px;padding-inline:3px}}
+/* Ringkasan Cikgu Dimensi — diagnostic brain card (docs/PA-DIAGNOSTIC-BRAIN.md §6). */
+.paDiagCard .paDiagH{position:relative;z-index:1;margin:14px 0 6px;font-size:12px;font-weight:1000;letter-spacing:.06em;text-transform:uppercase;color:#f1c846}
+.paDiagList{position:relative;z-index:1;display:grid;gap:7px;margin:0;padding:0;list-style:none}
+.paDiagList li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:9px;align-items:start;border:1px solid #2f4869;border-radius:13px;background:#0a1b31;padding:10px;color:#e6eefa;font-size:13px;line-height:1.5}
+.paDiagList li b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e0525a;color:#fff;font-size:12px}
+.paDiagList li.good b{background:#2e8a5c}
+.paDiagList.act li b{background:#f1c846;color:#172033}
+.paDiagTip{position:relative;z-index:1;margin:12px 0 0;border-left:3px solid #f1c846;padding:6px 10px;color:#d8e3f2;font-size:12.5px;line-height:1.5}
+.paDiagNote{position:relative;z-index:1;margin:10px 0 0;color:#8fa3bd;font-size:10.5px}
+#parent .paDiagCard{border-color:#caa055;background:linear-gradient(160deg,#fffcf0 0%,#f6ecd2 60%,#eedeb5 100%);color:#123158}
+#parent .paDiagCard .paToolHead h3{color:#123158}
+#parent .paDiagCard .paToolHead small,#parent .paDiagCard .paDiagH{color:#94701f}
+#parent .paDiagCard .paToolIcon{border-color:#caa055;background:linear-gradient(145deg,#24578f,#133863);color:#ffe07b}
+#parent .paDiagCard .paToolCopy{color:#38567c}
+#parent .paDiagCard .paDiagList li{border-color:#d8c48f;background:#fffaf0;color:#123158}
+#parent .paDiagCard .paDiagTip{color:#38567c}
+#parent .paDiagCard .paDiagNote{color:#6b7f99}
