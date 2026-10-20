@@ -773,13 +773,31 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   }
 }
 
-/* Once the result is ready, give the result sheet the entire stage. The
-   question panel must leave the flex layout so it cannot reserve a blank
-   column behind the full-screen result backdrop. */
-#segelDemo.segel-result-active .segelStage{
-  flex:1 1 auto;width:100%;max-width:none;min-width:0;min-height:0;max-height:none;margin:0
-}
+/* Keputusan: arena kekal pada saiz battle supaya Wira dan pet terus
+   bersorak selepas syiling diserap; hanya bar atas disembunyikan. Ringkasan
+   mengambil tempat panel soalan (bawah arena pada potret, sebelah arena pada
+   web/landskap) dan tidak lagi menutup arena sebagai lapisan skrin penuh. */
 #segelDemo.segel-result-active .segelPanel{display:none!important}
+#segelDemo.segel-result-active .segelDone{
+  position:relative;inset:auto;z-index:1;flex:1 1 0;min-width:0;min-height:0;
+  overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;
+  padding:4px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  background:#071222
+}
+#segelDemo.segel-result-active .segelResult{margin-inline:auto}
+@media (min-width:760px) and (orientation:portrait){
+  #segelDemo.segel-result-active .segelDone{width:100%;max-width:720px;margin-inline:auto}
+}
+@media (min-width:760px) and (orientation:landscape) and (min-height:561px){
+  #segelDemo.segel-result-active .segelDone{
+    flex:1 1 62%;min-width:400px;display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(12px,2.5vh,28px) clamp(12px,2.4vw,28px) calc(16px + env(safe-area-inset-bottom,0px))
+  }
+  #segelDemo.segel-result-active .segelResult{width:100%}
+}
+@media (orientation:landscape) and (max-height:560px){
+  #segelDemo.segel-result-active .segelDone{padding-top:calc(4px + env(safe-area-inset-top,0px))}
+}
 
 /* Darjah 1: sukatan cawan. Rajah dan arahan ringkas mesti muat pada
    telefon menegak supaya pilihan jawapan tidak menyembunyikan arahan. */
