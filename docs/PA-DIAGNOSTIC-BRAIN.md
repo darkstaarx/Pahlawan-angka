@@ -185,6 +185,11 @@ Also keep the existing **independence** signal: correct only with hints →
 - On unlock, show the parent the 3 items and the child's answers, then call
   `PAEffortGuard.resetAfterParent()`.
 - Never lock in guest demo.
+- **Phase 2 implementation (done):** `js/rapid-lock-v1.js` (`PARapidLock`),
+  fed from `PATelemetry.response`. 2 rapid wrong first attempts → warning
+  toast; 3 → lock overlay; at most one lock per play session; skipped while
+  the older Restu lock is active. Dev lab: `tools/rapid-lock-lab.html`.
+  Tests: `audit/rapid-lock.test.js`.
 
 ## 6. Parent report output
 
@@ -202,7 +207,7 @@ composition, lock policy.
 | Phase | Scope | Done when |
 |---|---|---|
 | 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
-| 2 | Lock + parent PIN unlock (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; never in demo |
+| 2 ✅ | Lock + parent PIN unlock (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; never in demo |
 | 3 | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets) | Mini game round composition reflects findings; worksheet PDF has the right mix |
 | 4 | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
 | 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
