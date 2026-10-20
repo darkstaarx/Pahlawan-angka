@@ -1,4 +1,4 @@
-/* Pahlawan Angka · ToyyibPay + affiliate UI
+/* Pahlawan Angka · CHIP + affiliate UI
  * Additive browser module. The server remains the source of truth for access,
  * commissions, roles and payout state.
  */
@@ -64,14 +64,14 @@
     const card = document.createElement('section'); card.className = 'pa-aff-dialog';
     const close = text('button', '×', 'pa-aff-close'); close.type = 'button'; close.setAttribute('aria-label', 'Tutup'); close.addEventListener('click', () => overlay.classList.add('hidden'));
     card.append(close, text('p', 'PEMBAYARAN SELAMAT', 'pa-eyebrow'));
-    const heading = text('h2', 'Sambung dengan ToyyibPay'); card.append(heading);
+    const heading = text('h2', 'Sambung dengan CHIP'); card.append(heading);
     const planLine = document.createElement('p'); planLine.dataset.paPlan = '1'; planLine.append(text('span', checkoutLabel(plan))); card.append(planLine);
     const form = document.createElement('form'); form.className = 'pa-aff-form';
     const nameLabel = text('label', 'Nama penjaga'); const name = document.createElement('input'); name.id = 'paCheckoutName'; name.required = true; name.maxLength = 100; name.autocomplete = 'name'; nameLabel.append(name);
     const phoneLabel = text('label', 'Nombor telefon'); const phone = document.createElement('input'); phone.id = 'paCheckoutPhone'; phone.required = true; phone.maxLength = 30; phone.inputMode = 'tel'; phone.autocomplete = 'tel'; phoneLabel.append(phone);
-    const note = text('p', 'Bayaran akan dibuka dalam halaman ToyyibPay. Akses diaktifkan selepas bayaran disahkan oleh pelayan.', 'pa-aff-note');
+    const note = text('p', 'Bayaran akan dibuka dalam halaman selamat CHIP (FPX, kad, e-dompet). Akses diaktifkan selepas bayaran disahkan oleh pelayan.', 'pa-aff-note');
     const upgradeNote = text('p', 'Ini ialah bayaran tambahan untuk upgrade Family Plus. Komisen affiliate tidak dibayar untuk upgrade.', 'pa-aff-note'); upgradeNote.dataset.paUpgradeNote = '1'; upgradeNote.hidden = !upgradeFor(plan);
-    const message = document.createElement('div'); message.id = 'paCheckoutMessage'; message.setAttribute('aria-live', 'polite'); const submit = text('button', 'Teruskan ke ToyyibPay', 'pa-aff-primary'); submit.type = 'submit';
+    const message = document.createElement('div'); message.id = 'paCheckoutMessage'; message.setAttribute('aria-live', 'polite'); const submit = text('button', 'Teruskan ke pembayaran', 'pa-aff-primary'); submit.type = 'submit';
     form.append(nameLabel, phoneLabel, note, upgradeNote, message, submit); form.addEventListener('submit', (event) => beginCheckout(event, overlay)); card.append(form); overlay.append(card); document.body.append(overlay); loadCatalog().then(() => updateCheckoutOverlay(overlay)).catch(() => {});
     if (!loggedIn()) { status(message, 'Log masuk akaun penjaga dahulu.'); submit.disabled = true; }
     return overlay;
@@ -88,11 +88,11 @@
       const payload = { plan, parent_name: details.name, phone: details.phone, expected_price_cents: amountCents(plan) }; if (!upgradeFor(plan)) payload.affiliate_code = referral() || null;
       const data = await functionCall('create-checkout', payload);
       const url = typeof data === 'string' ? data : data?.live_url || data?.url || data?.payment_url;
-      if (!url || !/^https:\/\/(?:dev\.)?toyyibpay\.com\//i.test(url)) throw new Error('Pautan pembayaran tidak tersedia.');
+      if (!url || !/^https:\/\/gate\.chip-in\.asia\//i.test(url)) throw new Error('Pautan pembayaran tidak tersedia.');
       const order = data?.order_id || data?.bill_code || data?.id; if (order) { localStorage.setItem(ORDER_KEY, JSON.stringify({ order: String(order).slice(0, 100), expires: Date.now() + 86400000 })); root.PAEntry?.rememberOrder?.(order); } overlay.classList.add('hidden'); location.assign(url);
       if (order) pollOrder(order, (state) => status(message, state === 'paid' ? 'Bayaran disahkan. Akses akan dikemas kini.' : 'Menunggu pengesahan bayaran…', state === 'paid'));
     } catch (error) { status(message, error?.message || 'Pembayaran belum dapat dimulakan. Cuba semula.'); }
-    finally { button.disabled = false; button.textContent = 'Teruskan ke ToyyibPay'; }
+    finally { button.disabled = false; button.textContent = 'Teruskan ke pembayaran'; }
   }
   async function pollOrder(orderId, onStatus) {
     let attempts = 0; const poll = async () => { if (++attempts > 30) return; try { const c = client(); const uid = user()?.id; if (!c?.from || !uid) {setTimeout(poll,5000);return;} const result = await c.from('payment_orders').select('status').eq('id', String(orderId).slice(0, 100)).eq('user_id', uid).maybeSingle(); const state = result?.data?.status || 'pending'; onStatus?.(state); if (state === 'paid') { localStorage.removeItem(ORDER_KEY); await root.PACommercial?.refresh?.(); if(typeof root.showRewardToast==='function')root.showRewardToast('Bayaran disahkan. Pakej keluarga sudah aktif!'); return; } } catch (_) { onStatus?.('pending'); } setTimeout(poll, 5000); }; poll();

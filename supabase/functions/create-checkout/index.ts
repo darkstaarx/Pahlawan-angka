@@ -1,7 +1,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 import { corsHeaders, json, requireConfig } from '../_shared/http.ts';
+import { CHIP_API, chipPurchaseId, chipRequest } from '../_shared/chip.ts';
 
 const PLAN_SET = new Set(['premium', 'family_plus']);
+const PLAN_LABEL: Record<string, string> = { premium: 'Akses Keluarga', family_plus: 'Family Plus' };
 const CANONICAL_APP_URL = 'https://pahlawanangka.netlify.app/';
 type PaymentOrder = { id: string; external_uuid: string; billcode: string | null; amount_cents: number };
 
@@ -14,9 +16,8 @@ Deno.serve(async (req) => {
     const paymentsEnabled = Deno.env.get('PAYMENTS_ENABLED') === 'true';
     const adminTestMode = Deno.env.get('PAYMENTS_ADMIN_TEST_MODE') === 'true';
     const testUserIds = new Set((Deno.env.get('PAYMENTS_TEST_USER_IDS') ?? '').split(',').map(id => id.trim()).filter(Boolean));
-    if (!paymentsEnabled && !adminTestMode) return json({ error: 'Pembayaran belum dibuka. Konfigurasi gateway sedang disiapkan.' },503,origin);
-    const { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, TOYYIBPAY_SECRET_KEY, CATEGORY_CODE, APP_URL, TOYYIBPAY_BASE_URL } = requireConfig('SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'TOYYIBPAY_SECRET_KEY', 'CATEGORY_CODE', 'APP_URL', 'TOYYIBPAY_BASE_URL');
-    if (!['https://toyyibpay.com', 'https://dev.toyyibpay.com'].includes(TOYYIBPAY_BASE_URL.replace(/\/$/, ''))) return json({ error: 'Payment provider configuration invalid' }, 500, origin);
+    if (!paymentsEnabled && !adminTestMode) return json({ error: 'Pembayaran belum dibuka. Konfigurasi gateway sedang disiapkan.' }, 503, origin);
+    const { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, CHIP_SECRET_KEY, CHIP_BRAND_ID } = requireConfig('SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'CHIP_SECRET_KEY', 'CHIP_BRAND_ID');
     const token = req.headers.get('Authorization');
     if (!token?.startsWith('Bearer ')) return json({ error: 'Authentication required' }, 401, origin);
     const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { global: { headers: { Authorization: token } } });
@@ -38,26 +39,52 @@ Deno.serve(async (req) => {
     const { data: rawOrder, error } = await authClient.rpc('create_payment_order', { p_plan: plan, p_external_uuid: externalUuid, p_affiliate_code: body.affiliate_code ? String(body.affiliate_code) : null, p_expected_price_cents: Number.isInteger(body.expected_price_cents) ? body.expected_price_cents : null }).single();
     const order = rawOrder as PaymentOrder | null;
     if (error || !order) return json({ error: 'Could not create order' }, 400, origin);
-    if (order.billcode) return json({ order_id: order.id, external_uuid: order.external_uuid, bill_code: order.billcode, live_url: `${TOYYIBPAY_BASE_URL.replace(/\/$/, '')}/${order.billcode}` }, 200, origin);
+
+    // The order already has a CHIP purchase: hand back the same checkout page
+    // instead of creating a second purchase for one order.
+    if (order.billcode) {
+      stage = 'existing_purchase';
+      if (!chipPurchaseId(order.billcode)) return json({ error: 'Pesanan ini dibuat dengan sistem bayaran lama. Hubungi bantuan sebelum membuat bayaran baharu.' }, 409, origin);
+      const existing = await chipRequest(CHIP_SECRET_KEY, `/purchases/${order.billcode}/`);
+      if (!existing?.checkout_url) return json({ error: 'Payment provider could not reopen the bill' }, 502, origin);
+      return json({ order_id: order.id, external_uuid: order.external_uuid, bill_code: order.billcode, live_url: existing.checkout_url }, 200, origin);
+    }
+
     stage = 'claim_bill';
     const { data: claimed, error: claimError } = await authClient.rpc('claim_payment_bill', { p_order_id: order.id });
     if (claimError || claimed !== true) return json({ error: 'Pesanan sedang disediakan atau memerlukan semakan. Cuba semula sebentar lagi. Jika masih tersekat, hubungi bantuan sebelum membuat bayaran baharu.' }, 409, origin);
     const amount = Number(order.amount_cents);
+    if (!Number.isInteger(amount) || amount <= 0) return json({ error: 'Order amount invalid' }, 500, origin);
     const appUrl = new URL(CANONICAL_APP_URL).origin;
-    const providerUrl = TOYYIBPAY_BASE_URL.replace(/\/$/, '');
-    const form = new URLSearchParams({ userSecretKey: TOYYIBPAY_SECRET_KEY, categoryCode: CATEGORY_CODE, billName: `Pahlawan Angka ${plan}`, billDescription: `Pahlawan Angka ${plan} order`, billPriceSetting: '1', billPayorInfo: '1', billAmount: String(amount), billReturnUrl: `${appUrl}/?payment_order=${encodeURIComponent(order.id)}`, billCallbackUrl: `${SUPABASE_URL}/functions/v1/toyyibpay-callback`, billExternalReferenceNo: order.external_uuid, billTo: parentName, billEmail: user.email, billPhone: phone, billPaymentChannel: '2' });
+    const returnUrl = `${appUrl}/?payment_order=${encodeURIComponent(order.id)}`;
+
     stage = 'provider_request';
-    const response = await fetch(`${providerUrl}/index.php/api/createBill`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
-    const result = await response.text();
-    let parsed: any;
-    try { parsed = JSON.parse(result); } catch { parsed = null; }
-    const billcode = parsed?.[0]?.BillCode;
-    if (!billcode || !/^[A-Za-z0-9_-]{4,40}$/.test(billcode)) return json({ error: 'Payment provider could not create a bill' }, 502, origin);
-    const { error: updateError } = await service.from('payment_orders').update({ billcode, status: 'pending' }).eq('id', order.id).eq('user_id', user.id);
+    const purchase = await chipRequest(CHIP_SECRET_KEY, '/purchases/', {
+      method: 'POST',
+      body: {
+        brand_id: CHIP_BRAND_ID,
+        reference: order.external_uuid,
+        platform: 'web',
+        client: { email: user.email, full_name: parentName },
+        purchase: {
+          currency: 'MYR',
+          products: [{ name: `Pahlawan Angka · ${PLAN_LABEL[plan]}`, price: amount, quantity: 1 }],
+          metadata: { order_id: order.id, plan },
+        },
+        success_redirect: returnUrl,
+        failure_redirect: returnUrl,
+        cancel_redirect: returnUrl,
+        success_callback: `${SUPABASE_URL}/functions/v1/chip-callback`,
+      },
+    });
+    const purchaseId = String(purchase?.id ?? '');
+    const checkoutUrl = String(purchase?.checkout_url ?? '');
+    if (!chipPurchaseId(purchaseId) || !checkoutUrl.startsWith('https://gate.chip-in.asia/')) return json({ error: 'Payment provider could not create a bill' }, 502, origin);
+    const { error: updateError } = await service.from('payment_orders').update({ billcode: purchaseId, status: 'pending' }).eq('id', order.id).eq('user_id', user.id);
     if (updateError) { console.error('checkout_order_update_failure', { code: updateError.code }); return json({ error: 'Order could not be prepared' }, 500, origin); }
-    return json({ order_id: order.id, external_uuid: order.external_uuid, bill_code: billcode, live_url: `${providerUrl}/${billcode}` }, 200, origin);
+    return json({ order_id: order.id, external_uuid: order.external_uuid, bill_code: purchaseId, live_url: checkoutUrl }, 200, origin);
   } catch (error) {
-    console.error('checkout_failure', { stage, kind: error instanceof Error ? error.name : 'unknown' });
+    console.error('checkout_failure', { stage, provider: CHIP_API, kind: error instanceof Error ? error.name : 'unknown' });
     return json({ error: 'Checkout failed' }, 500, origin);
   }
 });

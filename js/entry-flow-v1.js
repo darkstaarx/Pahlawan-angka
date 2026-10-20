@@ -148,7 +148,9 @@
       if (error) throw error;
       if (data?.status === 'paid') return checkPayment();
       if (!/^[a-z0-9_-]{4,40}$/i.test(data?.billcode || '')) throw new Error('bill missing');
-      location.assign(`https://toyyibpay.com/${data.billcode}`);
+      // CHIP purchase ids are UUIDs; older ToyyibPay bills keep their own page.
+      const chip = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.billcode);
+      location.assign(chip ? `https://gate.chip-in.asia/p/${data.billcode}/` : `https://toyyibpay.com/${data.billcode}`);
     } catch (_) { message('Bil tidak dapat dibuka. Hubungi bantuan sebelum membuat bayaran baharu.'); }
   }
   function mount() {
