@@ -32,9 +32,11 @@
     clear(); view('welcome'); window.screen('login');
   }
   async function demo() {
-    write('demo');
-    if (cloud()?.user) { await beforeProfiles(); return; }
-    showAuth('demo');
+    if (cloud()?.user) { write('demo'); await beforeProfiles(); return; }
+    // Guests try the demo straight away; no account is needed. Nothing is
+    // saved, and registering stays one tap away on the result screen/hub.
+    if (window.PADemo?.open) { window.PADemo.open(); return; }
+    write('demo'); showAuth('demo');
   }
   function plans() {
     write('purchase');

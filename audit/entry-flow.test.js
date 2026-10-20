@@ -123,3 +123,11 @@ test('a check requested while another is running is not dropped', async () => {
   await first; await new Promise(resolve => setTimeout(resolve, 0)); await new Promise(resolve => setTimeout(resolve, 0));
   assert.equal(h.calls.filter(call => call === 'payment_orders').length, 2);
 });
+
+test('guests open the free demo directly without registering', async () => {
+  const h = harness({ signed: false });
+  await h.entry.demo();
+  assert.ok(h.calls.includes('demo'));
+  assert.ok(!h.calls.some(call => Array.isArray(call) && call[0] === 'screen' && call[1] === 'login'));
+  assert.equal(h.storage.has(KEY), false);
+});
