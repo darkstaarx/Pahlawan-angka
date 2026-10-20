@@ -96,7 +96,7 @@ async function renderGraphic(g,width){
   }
  }else if(g.kind==='pictograph'){
   for(let i=0;i<g.rows.length;i++){const row=g.rows[i],y=i*82;box(ctx,0,y,width,76,'#f7f9fc','#d8dfeb',8);ctx.fillStyle='#24334d';ctx.font='bold 22px Arial';ctx.fillText(row.label,16,y+44,180);
-   const size=Math.min(52,(width-215-3*Math.max(0,row.count-1))/Math.max(1,row.count)),source=fruitSource(row.label),image=source?await loadImage('assets/questions/counting/'+source+'.png'):null;
+   const size=Math.min(52,(width-215-3*Math.max(0,row.count-1))/Math.max(1,row.count)),source=fruitSource(row.label),image=source?await loadImage('assets/questions/counting/'+source+'.webp'):null;
    for(let j=0;j<row.count;j++){const x=205+j*(size+3);if(image)contained(ctx,image,x,y+12,size,52);else fruitIcon(ctx,row.label,x,y+12,size)}
   }
   ctx.fillStyle='#536174';ctx.font='19px Arial';ctx.fillText('Petunjuk: setiap gambar = '+g.key+' item',12,height-10);

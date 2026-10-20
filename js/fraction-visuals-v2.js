@@ -9,7 +9,7 @@
  function textures(d,style){
    const [l,t,r,b,cx,cy]=frames[style][d===4?1:0];
    const boxes=d===4?[[l,t,cx,cy],[cx,t,r,cy],[l,cy,cx,b],[cx,cy,r,b]]:[[l,t,cx,b],[cx,t,r,b]];
-   return `<div class="fraction-texture-grid" style="grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(${d===4?2:1},1fr)">${boxes.map(([x,y,x2,y2])=>`<span class="fraction-texture-cell"><img src="${folder}/${style}-sprite.png" alt="" style="width:${1792/(x2-x)*100}%;height:${896/(y2-y)*100}%;left:${-x/(x2-x)*100}%;top:${-y/(y2-y)*100}%"></span>`).join('')}</div>`;
+   return `<div class="fraction-texture-grid" style="grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(${d===4?2:1},1fr)">${boxes.map(([x,y,x2,y2])=>`<span class="fraction-texture-cell"><img src="${folder}/${style}-sprite.webp" alt="" style="width:${1792/(x2-x)*100}%;height:${896/(y2-y)*100}%;left:${-x/(x2-x)*100}%;top:${-y/(y2-y)*100}%"></span>`).join('')}</div>`;
  }
  function markup(n,d,style,layout='h'){
    const angle=angles[layout]||0,cols=layout==='v'&&d===4?2:layout==='v'?1:2,rows=layout==='v'?(d===4?2:d):(d===4?2:1);

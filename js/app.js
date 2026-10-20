@@ -94,7 +94,7 @@ function applyHeroToBattle(){
 const PA_AVATAR_IDS=Array.from({length:8},(_,i)=>`avatar-${String(i+1).padStart(2,'0')}`);
 const PA_DEFAULT_AVATAR='avatar-01';
 function normalizeAvatarId(id){return PA_AVATAR_IDS.includes(id)?id:PA_DEFAULT_AVATAR}
-function avatarSrc(id){return `assets/avatars/pupils/${normalizeAvatarId(id)}.png`}
+function avatarSrc(id){return `assets/avatars/pupils/${normalizeAvatarId(id)}.webp`}
 window.PAAvatar={ids:PA_AVATAR_IDS,defaultId:PA_DEFAULT_AVATAR,normalize:normalizeAvatarId,src:avatarSrc,currentId:PA_DEFAULT_AVATAR};
 let selectedAvatar=PA_DEFAULT_AVATAR;
 function chooseAvatar(id){

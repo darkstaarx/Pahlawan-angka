@@ -17,7 +17,7 @@
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const validAvatarId=value=>/^avatar-0[1-8]$/.test(String(value||''))?String(value):null;
   const avatarId=value=>/^avatar-0[1-8]$/.test(String(value||''))?String(value):'avatar-01';
-  const avatarSrc=value=>`assets/avatars/pupils/${avatarId(value)}.png`;
+  const avatarSrc=value=>`assets/avatars/pupils/${avatarId(value)}.webp`;
   const schemaMismatch=error=>{const code=String(error?.code||''),msg=String(error?.message||'').toLowerCase();return ['PGRST202','PGRST204','42703','42883'].includes(code)||/avatar_id.*(column|schema cache)|column.*avatar_id|create_initial_child.*(function|schema cache|not found)/.test(msg)};
   const currentScreen=()=>document.body.dataset.screen||'';
   const playing=()=>ACTIVE_SCREENS.has(currentScreen())&&!document.hidden&&!state.locked&&(Date.now()-state.lastInteractionAt<IDLE_AFTER_MS);

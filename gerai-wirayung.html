@@ -298,7 +298,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
   <header class="hud">
     <div class="clock" aria-live="polite"><span class="dial" id="dial"></span><div><b id="dayLbl">Ke-1</b><small id="timeLbl" hidden>Pagi</small></div></div>
     <div class="title"><small>KEMAHIRAN FOKUS</small><b>Gerai Wirayung</b></div>
-    <div class="hud-right"><span class="till" id="till" aria-label="Wang dalam tabung"><img src="assets/questions/money/money_rm1.png" alt=""><span id="tillAmt">RM0.00</span></span><button class="icon-btn" id="sound" aria-label="Hidupkan bunyi">🔈</button></div>
+    <div class="hud-right"><span class="till" id="till" aria-label="Wang dalam tabung"><img src="assets/questions/money/money_rm1.webp" alt=""><span id="tillAmt">RM0.00</span></span><button class="icon-btn" id="sound" aria-label="Hidupkan bunyi">🔈</button></div>
   </header>
 
   <section class="scene" aria-label="Gerai Wirayung di pasar">
@@ -310,7 +310,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/kedai-ajaib/wira-peniaga-idle.webp" alt="Wira menjaga Gerai Wirayung"></div>
     <div class="counter"></div>
     <div class="basket" id="basket" aria-label="Beg pesanan"><img class="basket-back" src="assets/minigames/gerai-wirayung/premium/item-bakul-back.webp" alt=""><div class="in" id="basketIn"></div><img class="basket-front" src="assets/minigames/gerai-wirayung/premium/item-bakul-front.webp" alt=""></div>
-    <div class="customer away" id="customer"><img id="petImg" src="assets/pets/collection/durian-kerbau/idle.png" alt=""></div>
+    <div class="customer away" id="customer"><img id="petImg" src="assets/pets/collection/durian-kerbau/idle.webp" alt=""></div>
     <div class="bubble hide" id="bubble"><div class="who" id="who"></div><div class="say" id="say"></div><div class="order" id="order"></div></div>
     <div class="wsay hide" id="wsay"><b>WIRA</b><span id="wsayTxt"></span></div>
     <div class="stamp" id="stamp"></div>
@@ -425,7 +425,7 @@ const asset=(key)=>{
  if(key==='wira-victory.webp')return 'assets/minigames/kedai-ajaib/wira-peniaga-victory.webp';
  if(key==='wira-thumb.webp')return 'assets/minigames/kedai-ajaib/wira-peniaga-thumb.webp';
  const pet=/^(durian-kerbau|ketupat-kura|arnab-kek-lapis|harimau-bunga|kumbang-manggis)-(idle|sad|happy)\.webp$/.exec(key);
- if(pet)return 'assets/pets/collection/'+pet[1]+'/'+pet[2]+'.png';
+ if(pet)return 'assets/pets/collection/'+pet[1]+'/'+pet[2]+'.webp';
  return 'assets/minigames/kedai-ajaib/wira-peniaga-idle.webp';
 };
 const $=id=>document.getElementById(id);

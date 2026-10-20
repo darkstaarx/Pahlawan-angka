@@ -164,7 +164,7 @@ function moneyPieceSvg(cents){
  const asset={5:'5sen',10:'10sen',20:'20sen',50:'50sen',100:'rm1',500:'rm5',1000:'rm10',2000:'rm20',5000:'rm50'}[cents];
  if(asset){
   const coin=cents<100, label=moneyFmt(cents), w=coin?58:92, h=coin?58:48;
-  return `<img class="paMoneyPiece" src="assets/questions/money/money_${asset}.png" alt="${label}" title="${label}" width="${w}" height="${h}" draggable="false" decoding="async" style="display:inline-block;flex:0 0 auto;width:${w}px;height:${h}px;object-fit:contain;vertical-align:middle;filter:drop-shadow(0 2px 2px #0002)" />`;
+  return `<img class="paMoneyPiece" src="assets/questions/money/money_${asset}.webp" alt="${label}" title="${label}" width="${w}" height="${h}" draggable="false" decoding="async" style="display:inline-block;flex:0 0 auto;width:${w}px;height:${h}px;object-fit:contain;vertical-align:middle;filter:drop-shadow(0 2px 2px #0002)" />`;
  }
  return moneyPieceFallback(cents);
 }
@@ -432,7 +432,7 @@ function countingObjects(count,kind=null){
  // Up to 10: rows of 5 at 42px. 11–20: rows of 10 split 5 + 5 (like a ten-frame) at 34px, so 20 objects take
  // two short rows and the whole question fits on a phone without scrolling.
  const cols=n<=10?5:10,size=n<=10?42:n<=20?34:24,width=n<=10?250:370;
- const img=`<img src="assets/questions/counting/${type}.png" width="${size}" height="${size}" alt="" draggable="false" decoding="async" style="display:block;width:100%;max-width:${size}px;height:auto;aspect-ratio:1/1;object-fit:contain">`;
+ const img=`<img src="assets/questions/counting/${type}.webp" width="${size}" height="${size}" alt="" draggable="false" decoding="async" style="display:block;width:100%;max-width:${size}px;height:auto;aspect-ratio:1/1;object-fit:contain">`;
  return `<div class="paCountingSet" role="img" aria-label="Kumpulan ${names[type]} untuk dikira" style="display:grid;grid-template-columns:${cols===10?'repeat(5,minmax(0,1fr)) 10px repeat(5,minmax(0,1fr))':'repeat(5,minmax(0,1fr))'};justify-items:center;align-items:center;gap:4px 2px;width:min(${width}px,98%);max-width:100%;margin:6px auto 10px">${Array.from({length:n},(_,i)=>(cols===10&&i%10===5?'<span aria-hidden="true"></span>':'')+img).join('')}</div>`;
 }
 
