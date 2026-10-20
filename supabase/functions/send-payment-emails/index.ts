@@ -14,10 +14,13 @@ function base64Url(bytes: Uint8Array) {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
-function mimeMessage(to: string, subject: string, text: string, html: string) {
+function mimeMessage(to: string, subject: string, text: string, html: string, copy: { cc?: string[]; bcc?: string[] } = {}) {
   const boundary = `pa-${crypto.randomUUID()}`;
   const message = [
-    `From: Pahlawan Angka <${SENDER}>`, `To: ${to}`, `Subject: ${subject}`, 'MIME-Version: 1.0',
+    `From: Pahlawan Angka <${SENDER}>`, `To: ${to}`,
+    ...(copy.cc?.length ? [`Cc: ${copy.cc.join(', ')}`] : []),
+    ...(copy.bcc?.length ? [`Bcc: ${copy.bcc.join(', ')}`] : []),
+    `Subject: ${subject}`, 'MIME-Version: 1.0',
     `Content-Type: multipart/alternative; boundary="${boundary}"`, '',
     `--${boundary}`, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', text, '',
     `--${boundary}`, 'Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', html, '',
@@ -37,10 +40,10 @@ async function accessToken(clientId: string, clientSecret: string, refreshToken:
   return body.access_token as string;
 }
 
-async function sendGmail(token: string, to: string, subject: string, text: string, html: string) {
+async function sendGmail(token: string, to: string, subject: string, text: string, html: string, copy: { cc?: string[]; bcc?: string[] } = {}) {
   const response = await fetchWithTimeout('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
     method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ raw: mimeMessage(to, subject, text, html) }),
+    body: JSON.stringify({ raw: mimeMessage(to, subject, text, html, copy) }),
   });
   return response;
 }
@@ -57,6 +60,11 @@ async function fetchWithTimeout(input: string, init: RequestInit) {
 
 function validRecipient(value: string) {
   return !/[\r\n]/.test(value) && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value);
+}
+
+/** Owner copies for payment emails, from secrets (comma-separated); invalid entries are dropped. */
+function ownerCopies(name: string) {
+  return (Deno.env.get(name) ?? '').split(',').map(v => v.trim()).filter(validRecipient);
 }
 
 Deno.serve(async (req) => {
@@ -116,7 +124,8 @@ Deno.serve(async (req) => {
         ? paymentEmail({ plan: item.plan, amountCents: item.amount_cents, orderId: item.order_id, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.netlify.app/' })
         : affiliateWelcomeEmail({ affiliateCode: item.affiliate_code, commissionSnapshot: item.commission_snapshot, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.netlify.app/' });
       let response: Response;
-      try { response = await sendGmail(token, recipient, rendered.subject, rendered.text, rendered.html); }
+      const copy = item.kind === 'payment' ? { cc: ownerCopies('PAYMENT_EMAIL_CC'), bcc: ownerCopies('PAYMENT_EMAIL_BCC') } : {};
+      try { response = await sendGmail(token, recipient, rendered.subject, rendered.text, rendered.html, copy); }
       catch { reconciliationRequired++; break outer; }
       if (response.ok) {
         if (await mark(`mark_${prefix}_email_sent`, { p_id: item.id })) sent++;
