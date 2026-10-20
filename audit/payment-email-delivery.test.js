@@ -218,3 +218,24 @@ test('state RPC exception is reported as reconciliation required', async () => {
   const body = await (await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer service-secret' } }))).json();
   assert.equal(body.sent, 0); assert.equal(body.reconciliation_required, 1); assert.equal(body.ok, false);
 });
+
+test('payment email copies the owner via PAYMENT_EMAIL_CC / BCC; affiliate email does not', async () => {
+  const raws = [];
+  let remainingPayment = 1; let remainingAffiliate = 1;
+  const client = { rpc: async (name) => {
+    if (name === 'claim_payment_email_outbox') return { data: remainingPayment-- > 0 ? item() : [], error: null };
+    if (name === 'claim_affiliate_welcome_email_outbox') return { data: remainingAffiliate-- > 0 ? affiliateItem() : [], error: null };
+    return { data: true, error: null };
+  } };
+  const handler = load({ allowAffiliate: true, client, extraEnv: { PAYMENT_EMAIL_CC: ' owner@example.com , bad\r\nBcc: x@evil.com ', PAYMENT_EMAIL_BCC: 'audit@example.com' }, fetchImpl: async (url, options) => {
+    if (url.includes('oauth2')) return new Response(JSON.stringify({ access_token: 'access' }), { status: 200 });
+    raws.push(Buffer.from(JSON.parse(options.body).raw.replace(/-/g, '+').replace(/_/g, '/') + '==', 'base64').toString());
+    return new Response('{}', { status: 200 });
+  } });
+  const response = await handler(new Request('https://example.invalid', { method: 'POST', headers: { authorization: 'Bearer service-secret' } }));
+  assert.equal(response.status, 200);
+  const payment = raws.find(r => /plain 1900/.test(r)); const affiliate = raws.find(r => /affiliate:PA1234ABCD/.test(r));
+  assert.match(payment, /\r\nTo: parent@example\.com\r\nCc: owner@example\.com\r\nBcc: audit@example\.com\r\n/);
+  assert.doesNotMatch(payment, /evil/);
+  assert.doesNotMatch(affiliate, /\r\n(Cc|Bcc):/);
+});

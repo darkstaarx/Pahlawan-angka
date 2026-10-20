@@ -44,3 +44,5 @@ Akaun dummy boleh diuji tanpa diberi role admin: isi PAYMENTS_TEST_USER_IDS deng
 - Admin rekod payout selepas pemindahan sebenar; komisen void tidak dibayar.
 
 Refund dan pembatalan komisen perlu disemak admin sebelum payout; tiada refund automatik dijanjikan.
+
+Salinan email pembayaran kepada pemilik: set secret PAYMENT_EMAIL_CC (pelanggan nampak alamat ini) atau PAYMENT_EMAIL_BCC (tersembunyi). Boleh beberapa alamat dipisahkan koma. Hanya email pembayaran disalin; email welcome affiliate tidak.
