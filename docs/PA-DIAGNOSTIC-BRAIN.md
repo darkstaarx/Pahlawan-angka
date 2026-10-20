@@ -87,6 +87,15 @@ value)`. `analyze()` implements lenses 4.2, 4.3, 4.4, 4.5 and
 operation-within-context; tests in `audit/diagnostic-brain.test.js`. The
 parent dashboard shows the result as the "Ringkasan Cikgu Dimensi" card.
 
+**Phase 1.5 (done):** basic facts to 20 (`fx` add20/sub20, `fk` the fact;
+weak / right-but-slow "masih mengira jari", most-missed facts named),
+regrouping lens (`rg`: right without borrowing/carrying vs wrong with it;
+steps aside when a borrowing bug already explains it), retention lens 4.7
+(mastered before, slipping in the last 3 days, per table / fact family),
+and more bugs: borrow_no_decrement, borrow_from_zero, mul_no_placeholder,
+plus answer-based money_unit (sen vs RM) and place_value_shift using the
+stored correct answer (`x`) on wrong records.
+
 ## 4. The eight lenses
 
 Each lens = input → detection rule → parent sentence → PA action.

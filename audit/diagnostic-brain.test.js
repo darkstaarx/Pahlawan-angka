@@ -114,3 +114,64 @@ test('parent card shows findings, actions and evidence note; escapes names', () 
   const early = B.cardMarkup(B.analyze([], { now: NOW, name: 'Ali' }));
   assert.match(early, /Bukti awal/);
 });
+
+// ---------- Phase 1.5 ----------
+test('facets: basic facts to 20 and regrouping are tagged', () => {
+  assert.deepEqual([B.facets({ prompt: '8 + 7 = ?' }).factFamily, B.facets({ prompt: '8 + 7 = ?' }).fact], ['add20', '8+7']);
+  assert.equal(B.facets({ prompt: '13 − 5 = ?' }).factFamily, 'sub20');
+  assert.equal(B.facets({ prompt: '52 − 38 = ?' }).regroup, true);
+  assert.equal(B.facets({ prompt: '58 − 32 = ?' }).regroup, false);
+  assert.equal(B.facets({ prompt: '47 + 38 = ?' }).regroup, true);
+  assert.equal(B.facets({ prompt: '8 + 7 = ?' }).regroup, null, 'basic facts are not regrouping items');
+});
+
+test('wrong answers keep the correct answer for answer-based bug checks', () => {
+  const log = B.applyResponse([], { q: { token: 'm1', prompt: 'Harga RM2.50. Berapa sen?', answer: '250 sen' }, ok: false, sec: 5, mode: 'x-first-attempt', value: '2.50', at: NOW });
+  assert.equal(log[0].x, '250 sen'); assert.equal(log[0].v, '2.50');
+});
+
+test('basic facts: slow addition to 20 is "masih mengira jari", with the most missed facts named when weak', () => {
+  const slow = many(10, i => rec({ s: 'D1.ADD20', o: 'add', fx: 'add20', fk: `${i % 5 + 5}+${i % 4 + 6}`, k: 1, sec: 5 }));
+  const f1 = B.analyze(slow, { now: NOW }).findings.find(x => x.id === 'basic_facts');
+  assert.ok(f1); assert.match(f1.text, /tambah asas hingga 20 betul tetapi lambat \(purata 5 saat\) — anak masih mengira jari/i);
+  const weak = [...many(6, () => rec({ s: 'D1.SUB20', o: 'sub', fx: 'sub20', fk: '13-5', k: 0, sec: 6 })), ...many(4, () => rec({ s: 'D1.SUB20', o: 'sub', fx: 'sub20', fk: '9-2', k: 1, sec: 4 }))];
+  const f2 = B.analyze(weak, { now: NOW }).findings.find(x => x.id === 'basic_facts');
+  assert.ok(f2); assert.match(f2.text, /Tolak asas hingga 20 belum kukuh \(4\/10 betul, paling kerap salah: 13 − 5\)/);
+});
+
+test('regrouping: right without borrowing, wrong with borrowing', () => {
+  const log = [
+    ...many(6, () => rec({ s: 'D2.2.2', o: 'sub', rg: 0, k: 1, sec: 8 })),
+    ...many(6, i => rec({ s: 'D2.2.2', o: 'sub', rg: 1, k: i < 2 ? 1 : 0, sec: 9 }))
+  ];
+  const f = B.analyze(log, { now: NOW }).findings.find(x => x.id === 'regroup_sub');
+  assert.ok(f); assert.match(f.text, /^Tolak betul bila tidak perlu meminjam \(100%\), tetapi banyak salah bila perlu meminjam \(33%\)\.$/);
+});
+
+test('regrouping finding steps aside when a borrowing bug already explains it', () => {
+  const pairs = [[52, 38], [71, 46], [83, 27]];
+  const log = [
+    ...many(6, () => rec({ s: 'D2.2.2', o: 'sub', rg: 0, k: 1, sec: 8 })),
+    ...pairs.map(([a, b]) => rec({ s: 'D2.2.2', o: 'sub', rg: 1, a: [a, b], k: 0, v: String(Number(String(Math.abs(Math.floor(a / 10) - Math.floor(b / 10))) + String(Math.abs(a % 10 - b % 10)))), sec: 9 })),
+    ...many(3, () => rec({ s: 'D2.2.2', o: 'sub', rg: 1, k: 0, sec: 9 }))
+  ];
+  const ids = B.analyze(log, { now: NOW }).findings.map(x => x.id);
+  assert.ok(ids.includes('bug_smaller_from_larger')); assert.ok(!ids.includes('regroup_sub'));
+});
+
+test('new bugs: borrow without decrement, borrow across zero, missing placeholder, sen vs RM, place value', () => {
+  assert.equal(B.detectBug({ o: 'sub', a: [52, 38], v: '24' }), 'borrow_no_decrement');
+  assert.equal(B.detectBug({ o: 'sub', a: [304, 127], v: '277' }), 'borrow_from_zero');
+  assert.equal(B.detectBug({ o: 'mul', a: [23, 14], v: '115' }), 'mul_no_placeholder');
+  assert.equal(B.detectBug({ o: 'sub', c: 'money', v: 'RM250', x: 'RM2.50' }), 'money_unit');
+  assert.equal(B.detectBug({ o: 'add', c: 'plain', v: '450', x: '45' }), 'place_value_shift');
+  assert.equal(B.detectBug({ o: 'sub', a: [52, 38], v: '14' }), null, 'the right answer is not a bug');
+});
+
+test('retention: mastered before, slipping in the last 3 days', () => {
+  const old = many(8, () => ({ ...rec({ tb: [6], k: 1, sec: 2 }), t: NOW - 6 * DAY }));
+  const fresh = many(5, i => ({ ...rec({ tb: [6], k: i < 2 ? 1 : 0, sec: 4 }), t: NOW - DAY }));
+  const f = B.analyze([...old, ...fresh], { now: NOW }).findings.find(x => x.id === 'retention');
+  assert.ok(f); assert.match(f.text, /^Sifir 6 sudah mantap sebelum ini \(8\/8\), tetapi dalam 3 hari terakhir mula lupa \(2\/5\)\.$/);
+  assert.match(f.action, /berjadual/);
+});
