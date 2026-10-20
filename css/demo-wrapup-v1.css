@@ -1,0 +1,86 @@
+/* Guest demo wrap-up: rating, then package choice.
+   Branding follows the approved landing: ink #06164c, blue #0067d9,
+   gold #ffcb32, cream #fdfaf2, Arial, gold pill buttons. */
+.paWrap{--pw-ink:#06164c;--pw-blue:#0067d9;--pw-gold:#ffcb32;--pw-cream:#fdfaf2;--pw-line:#dae9f4;
+  position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(4,14,44,.72);backdrop-filter:blur(3px);overflow-y:auto}
+.paWrap.hidden{display:none}
+.paWrapCard:focus{outline:none}
+.paWrapCard{position:relative;width:min(100%,460px);box-sizing:border-box;margin:auto;padding:28px 22px 22px;border-radius:25px;
+  background:var(--pw-cream);border:2px solid #ffed9c;box-shadow:0 0 0 5px rgba(255,203,50,.35),0 18px 44px rgba(4,14,44,.45);
+  color:var(--pw-ink);text-align:center;font-family:Arial,Helvetica,sans-serif;animation:paWrapIn .32s cubic-bezier(.2,.9,.3,1.1) both}
+@keyframes paWrapIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+.paWrapClose{position:absolute;top:8px;right:10px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#6b7896;font-size:28px;line-height:1;cursor:pointer}
+.paWrapClose:hover{background:#eef3fa;color:var(--pw-ink)}
+.paWrapKicker{margin:0 0 6px;color:var(--pw-blue);font-size:12px;font-weight:900;letter-spacing:.1em}
+.paWrapCard h2{margin:0 0 8px;font-size:clamp(22px,5.8vw,26px);line-height:1.2;font-weight:900;letter-spacing:-.5px;color:var(--pw-ink)}
+.paWrapSub{margin:0 auto 16px;max-width:360px;color:#45527a;font-size:14.5px;line-height:1.55}
+.paWrapMood{position:relative;width:150px;height:128px;margin:2px auto 0;display:grid;place-items:end center}
+.paWrapAurora{display:block;max-width:100%;max-height:100%;object-fit:contain;transform-origin:50% 100%;filter:drop-shadow(0 6px 8px rgba(6,22,76,.18));transition:filter .2s ease}
+.paWrapMood[data-mood="0"] .paWrapAurora{filter:grayscale(.35) drop-shadow(0 6px 8px rgba(6,22,76,.12));opacity:.9}
+.paWrapMood.pop .paWrapAurora{animation:pwPop .45s cubic-bezier(.3,1.6,.5,1)}
+.paWrapMood[data-mood="4"] .paWrapAurora{animation:pwPop .45s cubic-bezier(.3,1.6,.5,1),pwBob 1.6s ease-in-out .45s infinite}
+.paWrapMood[data-mood="5"] .paWrapAurora{animation:pwPop .45s cubic-bezier(.3,1.6,.5,1),pwHop .9s cubic-bezier(.3,.7,.4,1) .45s infinite}
+@keyframes pwPop{0%{transform:scale(.82)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes pwBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes pwHop{0%,100%{transform:translateY(0) scale(1,1)}15%{transform:translateY(0) scale(1.06,.94)}45%{transform:translateY(-16px) scale(.97,1.04)}70%{transform:translateY(0) scale(1.03,.97)}}
+.paWrapSpark{position:absolute;inset:-6px -18px;pointer-events:none;opacity:0;transition:opacity .25s ease;
+  background:
+    radial-gradient(circle at 12% 30%,#ffcb32 0 3px,transparent 4px),radial-gradient(circle at 88% 22%,#ffcb32 0 4px,transparent 5px),
+    radial-gradient(circle at 20% 78%,#0067d9 0 2.5px,transparent 3.5px),radial-gradient(circle at 84% 70%,#ffcb32 0 3px,transparent 4px),
+    radial-gradient(circle at 50% 6%,#fff 0 3px,transparent 4px)}
+.paWrapMood[data-mood="5"] .paWrapSpark{opacity:1;animation:pwSpark 1.2s ease-in-out infinite}
+@keyframes pwSpark{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.3)}}
+.paWrapStars{display:flex;justify-content:center;gap:4px;margin-top:4px}
+.paWrapStar{color:#dfe5ef;font-size:28px;line-height:1;-webkit-text-stroke:1px #b9c6da;transition:color .15s ease,transform .2s cubic-bezier(.3,1.6,.5,1)}
+.paWrapStar.on{color:var(--pw-gold);-webkit-text-stroke:1px #c28315;text-shadow:0 1px 0 #c28315,0 0 10px rgba(255,203,50,.5);transform:scale(1.12)}
+.paWrapSlider{position:relative;margin:2px 6px 16px}
+.paWrapRange{--pw-fill:50%;-webkit-appearance:none;appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:pointer;touch-action:pan-y}
+.paWrapRange::-webkit-slider-runnable-track{height:12px;border-radius:999px;border:2px solid #c9d7ea;
+  background:linear-gradient(90deg,#ffc327 0 var(--pw-fill),#e8eef6 var(--pw-fill) 100%)}
+.paWrapRange::-moz-range-track{height:12px;border-radius:999px;border:2px solid #c9d7ea;background:#e8eef6}
+.paWrapRange::-moz-range-progress{height:12px;border-radius:999px;background:#ffc327}
+.paWrapRange::-webkit-slider-thumb{-webkit-appearance:none;width:42px;height:42px;margin-top:-17px;border:3px solid #fff;border-radius:50%;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' stroke='%23c28315' stroke-width='1.2' d='M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z'/%3E%3C/svg%3E") center/22px no-repeat,radial-gradient(circle at 35% 30%,#fff3b0,#ffcb32 55%,#e0a000);box-shadow:0 3px 0 #c28315,0 4px 10px rgba(95,64,12,.35);transition:transform .15s ease}
+.paWrapRange::-moz-range-thumb{width:38px;height:38px;border:3px solid #fff;border-radius:50%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' stroke='%23c28315' stroke-width='1.2' d='M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z'/%3E%3C/svg%3E") center/22px no-repeat,radial-gradient(circle at 35% 30%,#fff3b0,#ffcb32 55%,#e0a000);box-shadow:0 3px 0 #c28315}
+.paWrapRange:not(.touched)::-webkit-slider-runnable-track{background:#e8eef6}
+.paWrapRange:not(.touched)::-moz-range-progress{background:transparent}
+.paWrapRange:not(.touched)::-webkit-slider-thumb{animation:pwNudge 1.6s ease-in-out infinite}
+.paWrapRange:active::-webkit-slider-thumb{transform:scale(1.12)}
+@keyframes pwNudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.paWrapRange:focus-visible{outline:3px solid var(--pw-blue);outline-offset:4px;border-radius:12px}
+.paWrapTicks{display:flex;justify-content:space-between;padding:0 6px}
+.paWrapTicks button{width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#7b88a6;font:inherit;font-size:14px;font-weight:900;cursor:pointer}
+.paWrapTicks button.on{background:var(--pw-ink);color:#fff}
+.paWrapOption:focus-visible,.paWrapPrimary:focus-visible,.paWrapClose:focus-visible,.paWrapLink:focus-visible{outline:3px solid var(--pw-blue);outline-offset:2px}
+.paWrapLabel{min-height:22px;margin:6px 0 4px;color:#805000;font-weight:900;font-size:16px}
+.paWrapCommentLabel{display:block;margin:0 0 6px;text-align:left;color:var(--pw-ink);font-size:13.5px;font-weight:700}
+.paWrapCommentLabel span{color:#6b7896;font-weight:400}
+.paWrapComment{width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid var(--pw-line);border-radius:14px;background:#fff;color:var(--pw-ink);font:inherit;font-size:14px;resize:vertical}
+.paWrapComment:focus{outline:none;border-color:var(--pw-blue)}
+.paWrapComment::placeholder{color:#97a3bb}
+.paWrapActions{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:16px}
+/* Same gold pill as the landing's buttons. */
+.paWrapPrimary{width:100%;min-height:56px;border:2px solid #ffed9c;border-radius:25px;background:linear-gradient(#ffdd57,#ffc327);color:#06214f;
+  font:inherit;font-size:19px;font-weight:900;cursor:pointer;box-shadow:0 3px 0 #c28315,0 6px 12px rgba(95,64,12,.22);transition:transform .1s ease,box-shadow .1s ease}
+.paWrapPrimary:active{transform:translateY(3px);box-shadow:0 0 0 #c28315,0 3px 6px rgba(95,64,12,.2)}
+.paWrapPrimary:disabled{background:#e6ebf2;border-color:#e6ebf2;color:#97a3bb;box-shadow:none;cursor:not-allowed}
+.paWrapLink{border:0;background:transparent;color:var(--pw-blue);padding:10px;font:inherit;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.paWrapOptions{display:grid;gap:10px}
+.paWrapOption{display:flex;justify-content:space-between;align-items:center;min-height:58px;padding:12px 18px;border:2px solid var(--pw-line);border-radius:18px;
+  background:linear-gradient(115deg,#fff,#fbfdff);color:var(--pw-ink);font:inherit;cursor:pointer;text-align:left;box-shadow:0 3px 7px rgba(6,22,76,.06);
+  transition:border-color .15s ease,box-shadow .15s ease,transform .1s ease}
+.paWrapOption b{font-size:17px;font-weight:900;letter-spacing:-.3px}
+.paWrapOption span{font-size:22px;font-weight:900;letter-spacing:-.5px;color:var(--pw-ink)}
+.paWrapOption:hover{border-color:#a9c6e6}
+.paWrapOption.plus{border-color:#ffd970;background:linear-gradient(115deg,#fffdf3,#fff7d9)}
+.paWrapOption.on{border-color:var(--pw-blue);box-shadow:0 0 0 3px rgba(0,103,217,.18)}
+.paWrapOption.plus.on{border-color:#e0a800;box-shadow:0 0 0 3px rgba(255,203,50,.4)}
+.paWrapDetail{margin-top:14px;padding:16px;border-radius:18px;background:#fff;border:2px solid var(--pw-line);text-align:left;animation:paWrapIn .25s ease both}
+.paWrapDetailHead{display:flex;justify-content:space-between;align-items:baseline}
+.paWrapDetailHead b{font-size:19px;font-weight:900;color:var(--pw-ink)}
+.paWrapDetailHead span{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--pw-ink)}
+.paWrapNote{margin:2px 0 0;color:#1d8a4a;font-size:13px;font-weight:700}
+.paWrapFeatures{margin:12px 0 16px;padding:0;list-style:none}
+.paWrapFeatures li{position:relative;margin:8px 0;padding-left:28px;color:#26335c;font-size:15px;line-height:1.4}
+.paWrapFeatures li::before{content:"✓";position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--pw-blue);color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center}
+@media (prefers-reduced-motion:reduce){.paWrapCard,.paWrapDetail,.paWrapMood .paWrapAurora,.paWrapSpark{animation:none!important}.paWrapRange:not(.touched)::-webkit-slider-thumb{animation:none}.paWrapStar{transition:none}}

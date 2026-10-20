@@ -24,7 +24,7 @@
   function showAuth(kind) {
     view('auth');
     const title = $('paEntryAuthTitle');
-    if (title) title.textContent = kind === 'demo' ? 'Daftar & cuba demo percuma' : kind === 'purchase' ? 'Daftar untuk teruskan pembayaran' : 'Log masuk akaun penjaga';
+    if (title) title.textContent = kind === 'demo' ? 'Daftar & cuba demo percuma' : kind === 'purchase' ? 'Daftar untuk teruskan pembayaran' : kind === 'free' ? 'Daftar akaun percuma' : 'Log masuk akaun penjaga';
     window.screen('login');
     $('googleAuthButton')?.focus();
   }
@@ -32,9 +32,18 @@
     clear(); view('welcome'); window.screen('login');
   }
   async function demo() {
-    write('demo');
-    if (cloud()?.user) { await beforeProfiles(); return; }
-    showAuth('demo');
+    if (cloud()?.user) { write('demo'); await beforeProfiles(); return; }
+    // Guests try the demo straight away; no account is needed. Nothing is
+    // saved, and registering stays one tap away on the result screen/hub.
+    if (window.PADemo?.open) { window.PADemo.open(); return; }
+    write('demo'); showAuth('demo');
+  }
+  // Free sign-up chosen after the guest demo: register, then the normal
+  // free account route (profile setup) — not the demo again.
+  async function registerFree() {
+    write('login');
+    if (cloud()?.user) return login();
+    showAuth('free');
   }
   function plans() {
     write('purchase');
@@ -195,6 +204,6 @@
     }));
     document.querySelectorAll('[data-entry-plan]').forEach(button => button.addEventListener('click', () => choose(button.dataset.entryPlan)));
   }
-  window.PAEntry = { beforeProfiles, plans, choose, demo, login, welcome, checkPayment, rememberOrder };
+  window.PAEntry = { beforeProfiles, plans, choose, demo, login, registerFree, welcome, checkPayment, rememberOrder };
   mount();
 })();
