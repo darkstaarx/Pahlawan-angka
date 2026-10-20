@@ -25,7 +25,7 @@ Example parent summary the system must be able to produce:
 > 1. Lebih banyak latihan sifir 7 dan 3 (mini game).
 > 2. Fokus latihan operasi tolak dalam wang (mini game).
 > 3. Worksheet soalan berayat (bukan bentuk lazim); ibu bapa semak cara kerja.
-> 4. Game dikunci selepas 3 salah berturut-turut yang terlalu cepat; ibu bapa buka dengan PIN.
+> 4. Portal Restu dibuka selepas 3 tekaan terlalu cepat berturut-turut; ibu bapa buka dengan PIN.
 
 ## 2. Principles (non-negotiable)
 
@@ -176,19 +176,25 @@ Thresholds are **starting values**; calibrate with real data (§7).
 Also keep the existing **independence** signal: correct only with hints →
 "boleh dengan bantuan".
 
-## 5. Lock after repeated wrong answers (parent unlock)
+## 5. Portal Restu (lock after rapid guessing, parent unlock)
 
-- Trigger (default, owner may change): **3 wrong in a row where the answers
-  were faster than the effort floor** (§4.5). Genuine-effort wrong streaks
-  go to Cikgu coaching instead (`js/engine/intervention.js`), not a lock.
-- Unlock: guardian PIN (reuse `js/page-lock-v1.js` PIN, `pageLockParentPin`).
-- On unlock, show the parent the 3 items and the child's answers, then call
-  `PAEffortGuard.resetAfterParent()`.
-- Never lock in guest demo.
-- **Phase 2 implementation (done):** `js/rapid-lock-v1.js` (`PARapidLock`),
-  fed from `PATelemetry.response`. 2 rapid wrong first attempts → warning
-  toast; 3 → lock overlay; at most one lock per play session; skipped while
-  the older Restu lock is active. Dev lab: `tools/rapid-lock-lab.html`.
+- Trigger: **3 wrong first attempts in a row, each faster than the effort
+  floor** (§4.5). 2 in a row → Cikgu Dimensi warning. Genuine-effort wrong
+  streaks go to Cikgu coaching (`js/engine/intervention.js`), never a lock.
+- On lock, Wira falls into the Portal Restu (`assets/cinematics/portal-restu-jatuh-v1.mp4`,
+  ~1 MB, loaded only when it happens; sound follows the game mute), then the
+  Portal Restu card asks for the guardian PIN (reuses `pageLockParentPin`;
+  parents without a PIN create one there).
+- After the PIN the parent sees the 3 items (question, child's answer, right
+  answer, seconds) and chooses:
+  - **Teruskan main** — portal stays armed and re-locks on the next 3 guesses.
+  - **Biar teroka hari ini** (marked not recommended) — portal off until
+    midnight MYT for this child (`db.portalRestu.offUntil`); Cikgu warnings
+    stay; guesses are still logged for the report.
+  The choice is stored in `db.rapidLockLog`.
+- Never in guest demo or dev battlefield; defers to the older Restu lock.
+- Implementation: `js/rapid-lock-v1.js` (`PARapidLock`), fed from
+  `PATelemetry.response`. Dev lab: `tools/rapid-lock-lab.html`.
   Tests: `audit/rapid-lock.test.js`.
 
 ## 6. Parent report output
@@ -207,7 +213,7 @@ composition, lock policy.
 | Phase | Scope | Done when |
 |---|---|---|
 | 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
-| 2 ✅ | Lock + parent PIN unlock (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; never in demo |
+| 2 ✅ | Portal Restu (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; parent can allow exploring for the day; never in demo |
 | 3 | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets) | Mini game round composition reflects findings; worksheet PDF has the right mix |
 | 4 | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
 | 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |

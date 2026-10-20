@@ -1,4 +1,4 @@
-/* "Rehat sekejap dengan ibu bapa" — built from the BERJAYA result kit
+/* Portal Restu — built from the BERJAYA result kit
    (crest frame + wings, summary frame, Cikgu Dimensi bubble, gold button),
    so it reads as part of the battle, not a system dialog. */
 .paRapidLock,.paRapidWarn{--prNavy:#162a47;--prNavyTop:#1b3354;--prGold:#b78b47;--prCream:#fff3d6;--prTitle:#ffe5a6;--prInk:#2b2416}
@@ -68,5 +68,17 @@
 .paRapidItems p{margin:0 0 5px;color:var(--prInk);font-size:14px;font-weight:800;line-height:1.35}
 .paRapidItems div{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;font-weight:700}
 .paRapidItems .no{color:#b4232f}.paRapidItems .ok{color:#1d7a46}.paRapidItems .t{color:#8a5a00}
+
+/* Wira falls into the portal (clip), full screen before the lock card */
+.paRapidFall{position:fixed;inset:0;z-index:2;display:grid;place-items:center;background:#02060f}
+.paRapidVideo{width:100%;height:100%;object-fit:cover}
+@media (min-aspect-ratio:3/4){.paRapidVideo{object-fit:contain}}
+
+/* Parent choices after the review */
+.paRapidChoice{display:grid;justify-items:center;gap:6px;width:100%}
+.paRapidNote{margin:0 0 6px;max-width:300px;color:#c9d6e8;font-size:12px;line-height:1.45;text-align:center}
+.paRapidNote.warn{color:#ffcf8a}
+.paRapidBtn.navy{background-image:var(--pr-navy);color:#fff6df;font-size:16px;width:min(100%,230px)}
+.paRapidBtn.navy:active{background-image:var(--pr-navy-down)}
 
 @media (prefers-reduced-motion:reduce){.paRapidStep,.paRapidPet img,.paRapidSlots.shake{animation:none}.paRapidWarn{transition:none}}

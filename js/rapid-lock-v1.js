@@ -1,11 +1,15 @@
-/* Pahlawan Angka — "Rehat sekejap dengan ibu bapa" (Phase 2, docs/PA-DIAGNOSTIC-BRAIN.md §5).
+/* Pahlawan Angka — Portal Restu (Phase 2, docs/PA-DIAGNOSTIC-BRAIN.md §5).
    Rule (agreed with owner, 21 Oct 2026):
    - Count FIRST attempts only. A wrong first attempt faster than the item's
      reading-load floor (1.8–3.2 s, same as PAEffortGuard.limit) is a rapid guess.
    - Correct answer, or a wrong answer given with real thinking time, resets to 0.
-   - 2 rapid guesses in a row → gentle warning. 3 → lock until a parent enters
-     the 4-digit guardian PIN (or sets one). The parent then sees the 3 items.
-   - At most one lock per play session; never in guest demo / dev battlefield.
+   - 2 rapid guesses in a row → Cikgu warning. 3 → Wira falls into the Portal
+     Restu (clip), locked until a parent enters the guardian PIN (or sets one).
+   - The parent reviews the 3 items, then chooses:
+       "Teruskan main"           → portal stays armed; it re-locks on the next 3 guesses
+       "Biar anak teroka hari ini" (not recommended) → portal off until midnight MYT
+     Guesses are still logged for the parent report either way.
+   - Never in guest demo / dev battlefield.
    Engine (createEngine) is pure and exported for Node tests; UI is browser-only. */
 (function(root,factory){
   'use strict';
@@ -20,7 +24,7 @@
   const floor=q=>Math.min(3.2,Math.max(1.8,1.35+strip(q?.prompt).length*.018));
 
   function createEngine(){
-    let streak=[], seenWrong=new Set(), locked=false;
+    let streak=[], seenWrong=new Set(), locks=0;
     return{
       /* Feed every answer event. Returns 'warn' | 'lock' | null. */
       observe({q,ok,sec,firstAttempt,value}){
@@ -37,18 +41,22 @@
           correct:q?.answer==null?'':strip(q.answer).slice(0,24),sec:Math.round(s*10)/10});
         if(streak.length>=LOCK_AT){
           const items=streak.slice(-LOCK_AT);streak=[];
-          if(locked)return 'warn';                         // one lock per session; afterwards warn only
-          locked=true;this.lastItems=items;return 'lock';
+          locks++;this.lastItems=items;return 'lock';
         }
         return streak.length>=WARN_AT?'warn':null;
       },
       get streak(){return streak.length},
-      get hasLocked(){return locked},
+      get hasLocked(){return locks>0},
+      get locks(){return locks},
       lastItems:[]
     };
   }
 
-  if(!root||typeof document==='undefined')return{createEngine,floor,WARN_AT,LOCK_AT};
+  // "Off for today" ends at the next midnight in Malaysia (UTC+8, no DST).
+  function endOfDayMYT(now){const MYT=8*3600e3,d=new Date((now||Date.now())+MYT);d.setUTCHours(24,0,0,0);return d.getTime()-MYT}
+  const portalOff=(d,now)=>!!d&&Number(d.portalRestu?.offUntil||0)>(now||Date.now());
+
+  if(!root||typeof document==='undefined')return{createEngine,floor,endOfDayMYT,portalOff,WARN_AT,LOCK_AT};
 
   // ---------- browser UI ----------
   const engines=new WeakMap();
@@ -69,7 +77,9 @@
   const ASSET={crest:'assets/ui/victory-result/crest-frame.webp',left:'assets/ui/victory-result/crest-side-left.webp',
     right:'assets/ui/victory-result/crest-side-right.webp',frame:'assets/ui/victory-result/summary-frame.webp',
     gold:'assets/ui/victory-result/button-gold-rest.webp',goldDown:'assets/ui/victory-result/button-gold-press.webp',
-    cikgu:'assets/coach/cikgu-dimensi/hub-portrait-v1.webp',aurora:'assets/pets/aurora/frames/sad-0-v1.webp'};
+    cikgu:'assets/coach/cikgu-dimensi/hub-portrait-v1.webp',aurora:'assets/pets/aurora/frames/sad-0-v1.webp',
+    navy:'assets/ui/victory-result/button-navy-rest.webp',navyDown:'assets/ui/victory-result/button-navy-press.webp',
+    fall:'assets/cinematics/portal-restu-jatuh-v1.mp4'};
   const art=k=>(root.PA_ASSETS&&root.PA_ASSETS[k])||((root.PA_ASSET_BASE||'')+ASSET[k]);
 
   function warn(){
@@ -91,12 +101,14 @@
     el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-labelledby','paRapidTitle');
     el.style.setProperty('--pr-frame',`url("${art('frame')}")`);
     el.style.setProperty('--pr-gold',`url("${art('gold')}")`);el.style.setProperty('--pr-gold-down',`url("${art('goldDown')}")`);
-    el.innerHTML=`<section class="paRapidStage">
+    el.style.setProperty('--pr-navy',`url("${art('navy')}")`);el.style.setProperty('--pr-navy-down',`url("${art('navyDown')}")`);
+    el.innerHTML=`<div class="paRapidFall" data-step="fall" hidden><video class="paRapidVideo" playsinline preload="none" aria-hidden="true"></video></div>
+      <section class="paRapidStage">
       <div class="paRapidStep" data-step="child">
-        <h2 id="paRapidTitle" class="paRapidSr">Rehat sekejap dengan ibu bapa</h2>
-        ${crest('REHAT SEKEJAP')}
+        <h2 id="paRapidTitle" class="paRapidSr">Portal Restu: panggil ibu bapa</h2>
+        ${crest('PORTAL RESTU')}
         <div class="paRapidPet"><img src="${art('aurora')}" alt=""></div>
-        <p class="paRapidLead">Aurora tunggu kamu! Panggil ibu bapa dulu ya.</p>
+        <p class="paRapidLead">Wira terjatuh ke dalam Portal Restu! Panggil ibu bapa untuk buka portal.</p>
         <div class="paRapidFrame">
           <div class="paRapidCoach"><img src="${art('cikgu')}" alt=""><div class="paRapidSay"><span class="paRapidChip">Cikgu Dimensi</span>
             <p>Cikgu nampak 3 jawapan dipilih terlalu cepat. Wira sebenar baca soalan dulu sebelum menyerang!</p></div></div>
@@ -118,12 +130,18 @@
           <div class="paRapidCoach"><img src="${art('cikgu')}" alt=""><div class="paRapidSay"><span class="paRapidChip">Cikgu Dimensi</span>
             <p>Minta anak baca soalan dengan kuat dan sebut jawapan sebelum menekan. Salah tidak mengapa, yang penting dia mencuba.</p></div></div>
         </div>
-        <button type="button" class="paRapidBtn" data-act="resume">Teruskan main</button>
+        <div class="paRapidChoice">
+          <button type="button" class="paRapidBtn" data-act="resume">Teruskan main</button>
+          <p class="paRapidNote">Portal Restu kekal aktif dan akan buka semula jika anak meneka lagi.</p>
+          <button type="button" class="paRapidBtn navy" data-act="explore">Biar teroka hari ini</button>
+          <p class="paRapidNote warn">Tidak disyorkan. Portal Restu ditutup sehingga tengah malam. Tekaan tetap dicatat dalam laporan ibu bapa.</p>
+        </div>
       </div>
     </section>`;
     document.body.append(el);
     el.querySelector('[data-act="unlock"]').addEventListener('click',unlock);
-    el.querySelector('[data-act="resume"]').addEventListener('click',resume);
+    el.querySelector('[data-act="resume"]').addEventListener('click',()=>resume('armed'));
+    el.querySelector('[data-act="explore"]').addEventListener('click',()=>resume('explore'));
     el.querySelectorAll('.paRapidPin').forEach(i=>{
       i.addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
       i.addEventListener('input',()=>{i.value=i.value.replace(/\D/g,'').slice(0,4);paintSlots(i);
@@ -143,10 +161,27 @@
     el.querySelector('[data-act="unlock"]').textContent=create?'Simpan PIN & buka':'Buka';
     el.querySelectorAll('.paRapidPin').forEach(i=>{i.value='';paintSlots(i)});
     el.querySelector('.paRapidError').textContent='';
-    el.querySelector('[data-step="child"]').hidden=false;el.querySelector('[data-step="review"]').hidden=true;
+    el.querySelector('[data-step="child"]').hidden=true;el.querySelector('[data-step="review"]').hidden=true;
     warnEl?.classList.remove('show');
     el.classList.remove('hidden');document.body.classList.add('pa-rapid-locked');
-    setTimeout(()=>el.querySelector('#paRapidPin')?.focus(),150);
+    playFall(()=>{el.querySelector('.paRapidStage').hidden=false;el.querySelector('[data-step="child"]').hidden=false;
+      setTimeout(()=>el.querySelector('#paRapidPin')?.focus(),150);});
+  }
+  /* Wira falls into the portal (3 s). Loaded only now, so players who never
+     trigger the portal never download it. Sound follows the game mute. */
+  function playFall(next){
+    const box=el.querySelector('[data-step="fall"]'),v=el.querySelector('.paRapidVideo');
+    el.querySelector('.paRapidStage').hidden=true;
+    let done=false;const finish=()=>{if(done)return;done=true;clearTimeout(guard);v.pause();box.hidden=true;next()};
+    const reduce=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if(reduce||!art('fall')){finish();return}
+    box.hidden=false;
+    let muted=false;try{muted=typeof paMuted!=='undefined'&&!!paMuted}catch(_){}
+    v.muted=muted;v.onended=finish;v.onerror=finish;
+    if(v.getAttribute('src')!==art('fall'))v.src=art('fall');
+    try{v.currentTime=0}catch(_){}
+    const guard=setTimeout(finish,6000);
+    const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;v.play().catch(finish)});
   }
   function unlock(){
     const a=el.querySelector('#paRapidPin').value.trim(),b=el.querySelector('#paRapidPin2').value.trim(),err=el.querySelector('.paRapidError');
@@ -160,9 +195,16 @@
     el.querySelector('[data-step="child"]').hidden=true;el.querySelector('[data-step="review"]').hidden=false;
     try{root.PAEffortGuard?.resetAfterParent?.()}catch(_){}
   }
-  function resume(){
+  function resume(choice){
+    const d=liveDb();
+    if(d&&!d.demoMode){
+      if(choice==='explore')d.portalRestu={...(d.portalRestu||{}),offUntil:endOfDayMYT(Date.now()),offAt:Date.now()};
+      const log=Array.isArray(d.rapidLockLog)?d.rapidLockLog:[];
+      if(log.length)log[log.length-1].choice=choice;
+      try{typeof save==='function'&&save()}catch(_){}
+    }
     el.classList.add('hidden');document.body.classList.remove('pa-rapid-locked');
-    const done=pending?.onDone;pending=null;try{done?.()}catch(_){}
+    const done=pending?.onDone;pending=null;try{done?.(choice)}catch(_){}
   }
 
   function logLock(items){
@@ -177,13 +219,14 @@
       const d=liveDb(),s=liveSess();
       if(!d||d.demoMode||s?.demoMode||s?.devBattlefield)return null;
       if(d.restuLock?.active)return null;               // the older Restu lock already owns the screen
-      const out=engineFor(s).observe({q,ok,sec,firstAttempt:/first-attempt/.test(String(mode||'')),value});
+      let out=engineFor(s).observe({q,ok,sec,firstAttempt:/first-attempt/.test(String(mode||'')),value});
+      if(out==='lock'&&portalOff(d))out='warn';          // parent allowed exploring today
       if(out==='warn')warn();
       if(out==='lock'){const items=engineFor(s).lastItems;logLock(items);lock(items);}
       return out;
     }catch(_){return null}
   }
 
-  function state(){const e=engineFor(liveSess());return{streak:e.streak,hasLocked:e.hasLocked}}
-  return{createEngine,floor,observe,lock,warn,state,WARN_AT,LOCK_AT,isLocked:()=>!!el&&!el.classList.contains('hidden')};
+  function state(){const e=engineFor(liveSess()),d=liveDb();return{streak:e.streak,hasLocked:e.hasLocked,locks:e.locks,portalOff:portalOff(d),offUntil:Number(d?.portalRestu?.offUntil||0)}}
+  return{createEngine,floor,endOfDayMYT,portalOff,observe,lock,warn,state,WARN_AT,LOCK_AT,isLocked:()=>!!el&&!el.classList.contains('hidden')};
 });

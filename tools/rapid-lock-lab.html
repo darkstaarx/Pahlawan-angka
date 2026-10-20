@@ -3,7 +3,7 @@
 <!-- Dev lab for js/rapid-lock-v1.js. Serve the repo root (e.g. npx serve .) and open /tools/rapid-lock-lab.html. Not linked from the app. -->
 <link rel="stylesheet" href="../css/rapid-lock-v1.css">
 </head><body>
-<title>Makmal Kunci Meneka</title>
+<title>Makmal Portal Restu</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: one column test bench — question card, three simulated answers, live state, event log. */
@@ -43,7 +43,7 @@ h1{margin:0;font:900 clamp(26px,7vw,34px)/1.1 var(--display);letter-spacing:-.5p
 .log{margin:0;padding:0;list-style:none;display:grid;gap:6px;max-height:260px;overflow-y:auto}
 .log li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:13px;line-height:1.4;padding:8px 10px;border-radius:10px;background:var(--bg)}
 .log b{font-family:var(--mono);font-size:12px}
-.log .lock b{color:var(--fast)}.log .warn b{color:var(--gold-ink)}.log .reset b{color:var(--ok)}
+.log .portal b{color:var(--fast)}.log .teroka b{color:var(--slow)}.log .warn b{color:var(--gold-ink)}.log .reset b{color:var(--ok)}
 .rules{margin:0;padding-left:18px;color:var(--muted);font-size:13.5px;line-height:1.6}
 .pin{font-family:var(--mono);font-weight:700;color:var(--ink)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -51,8 +51,8 @@ h1{margin:0;font:900 clamp(26px,7vw,34px)/1.1 var(--display);letter-spacing:-.5p
 
 <main class="lab">
   <header>
-    <h1>Makmal Kunci Meneka</h1>
-    <p class="lede">Uji peraturan "Rehat sekejap dengan ibu bapa" tanpa main game sebenar. Tekan jenis jawapan di bawah dan lihat bila amaran dan kunci muncul. PIN ujian: <span class="pin" id="pinShow">1234</span>.</p>
+    <h1>Makmal Portal Restu</h1>
+    <p class="lede">Uji Portal Restu tanpa main game sebenar. Tekan jenis jawapan di bawah dan lihat bila Cikgu memberi amaran dan bila Wira jatuh ke portal. PIN ujian: <span class="pin" id="pinShow">1234</span>.</p>
   </header>
 
   <section class="panel" aria-labelledby="qLabel">
@@ -70,7 +70,7 @@ h1{margin:0;font:900 clamp(26px,7vw,34px)/1.1 var(--display);letter-spacing:-.5p
     <p class="label" id="stLabel">Keadaan sekarang</p>
     <div class="state"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><p class="statetext" id="stateText" aria-live="polite"></p></div>
     <div class="tools">
-      <button type="button" class="tool" id="newSession">Mula sesi main baharu</button>
+      <button type="button" class="tool" id="newSession">Hari baharu (buka semula portal)</button>
       <button type="button" class="tool" id="noPin" aria-pressed="false">PIN belum diset</button>
     </div>
   </section>
@@ -85,8 +85,8 @@ h1{margin:0;font:900 clamp(26px,7vw,34px)/1.1 var(--display);letter-spacing:-.5p
     <ul class="rules">
       <li>Hanya cubaan pertama dikira. Salah yang lebih cepat daripada had masa (1.8–3.2 s, ikut panjang soalan) dikira meneka.</li>
       <li>Jawapan betul, atau salah yang ambil masa, set semula kiraan ke 0.</li>
-      <li>2 tekaan berturut-turut: amaran. 3 tekaan: kunci, buka dengan PIN ibu bapa.</li>
-      <li>Kunci maksimum sekali satu sesi main. Selepas itu hanya amaran.</li>
+      <li>2 tekaan berturut-turut: amaran Cikgu. 3 tekaan: Wira jatuh ke Portal Restu, buka dengan PIN ibu bapa.</li>
+      <li>Selepas semakan, ibu bapa pilih: <b>Teruskan main</b> (portal kekal aktif, kunci semula jika meneka lagi) atau <b>Biar teroka hari ini</b> (portal ditutup sehingga tengah malam, amaran Cikgu kekal).</li>
     </ul>
   </section>
 </main>
@@ -113,11 +113,10 @@ function save(){}
   const q=()=>{n++;if(qi)return{...QS[1],token:'lab-'+n};const [x,y]=FACTS[n%FACTS.length];return{prompt:`${x} × ${y} = ?`,answer:x*y,wrong:x*y-x,token:'lab-'+n}};
   function paintQ(){const x=QS[qi];$('qText').textContent=x.prompt;$('qFloor').textContent=PARapidLock.floor(x).toFixed(1)+' s';$('swapQ').textContent=qi?'Tukar ke soalan sifir pendek':'Tukar ke soalan cerita panjang'}
   function paintState(){
-    const {streak,hasLocked}=PARapidLock.state();
+    const {streak,portalOff}=PARapidLock.state();
     document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i<streak));
-    $('stateText').textContent=streak===0?(hasLocked?'Tiada tekaan berturut-turut. Kunci sudah digunakan sesi ini.':'Tiada tekaan berturut-turut.')
-      :streak===1?'1 tekaan. Satu lagi akan keluar amaran.'
-      :'2 tekaan. Satu lagi akan '+(hasLocked?'keluar amaran sahaja (kunci sudah digunakan sesi ini).':'kunci game.');
+    const off=portalOff?' Portal Restu ditutup hari ini (ibu bapa benarkan teroka).':'';
+    $('stateText').textContent=(streak===0?'Tiada tekaan berturut-turut.':streak===1?'1 tekaan. Satu lagi, Cikgu beri amaran.':'2 tekaan. Satu lagi, '+(portalOff?'amaran sahaja.':'Wira jatuh ke Portal Restu.'))+off;
   }
   function log(kind,text){const li=document.createElement('li');li.className=kind;li.innerHTML=`<b>${kind.toUpperCase()}</b><span></span>`;li.querySelector('span').textContent=text;$('log').prepend(li)}
   function sim(kind){
@@ -125,16 +124,18 @@ function save(){}
     const out=ok?PARapidLock.observe('LAB',true,'correct',sec,false,item,'gembok',item.answer)
                 :PARapidLock.observe('LAB',false,'lab',sec,false,item,'gembok-first-attempt',item.wrong);
     const s=PARapidLock.state().streak;
-    if(out==='lock')log('lock',`Tekaan ke-3 (${sec} s) — game dikunci. Masukkan PIN untuk buka.`);
-    else if(out==='warn')log('warn',s?`Tekaan ke-${s} (${sec} s) — amaran "Perlahan sikit".`:`Tekaan ke-3 selepas kunci (${sec} s) — amaran sahaja.`);
+    if(out==='lock')log('portal',`Tekaan ke-3 (${sec} s) — Wira jatuh ke Portal Restu. Masukkan PIN untuk buka.`);
+    else if(out==='warn')log('warn',s?`Tekaan ke-${s} (${sec} s) — amaran Cikgu.`:`Tekaan ke-3 (${sec} s) — portal ditutup hari ini, amaran sahaja.`);
     else if(s)log('meneka',`Tekaan ke-${s} (${sec} s, had ${floor.toFixed(1)} s).`);
     else log('reset',ok?`Betul dalam ${sec} s — kiraan kembali 0.`:`Salah tetapi ${sec} s (had ${floor.toFixed(1)} s) — anak mencuba, kiraan kembali 0.`);
     paintState();
   }
   document.querySelectorAll('[data-sim]').forEach(b=>b.addEventListener('click',()=>sim(b.dataset.sim)));
   $('swapQ').addEventListener('click',()=>{qi=1-qi;paintQ()});
-  $('newSession').addEventListener('click',()=>{sess={};log('reset','Sesi main baharu — kunci boleh muncul semula.');paintState()});
+  $('newSession').addEventListener('click',()=>{sess={};delete db.portalRestu;log('reset','Hari baharu — Portal Restu aktif semula.');paintState()});
   $('noPin').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',String(on));db.parentPin=on?null:'1234';$('pinShow').textContent=on?'(belum diset — ibu bapa akan cipta)':'1234';log('reset',on?'PIN dibuang: kunci akan minta ibu bapa cipta PIN.':'PIN ujian 1234 dipulihkan.')});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-act="resume"],[data-act="explore"]');if(!b)return;
+    setTimeout(()=>{log(b.dataset.act==='explore'?'teroka':'reset',b.dataset.act==='explore'?'Ibu bapa pilih "Biar teroka hari ini" — portal ditutup sehingga tengah malam.':'Ibu bapa pilih "Teruskan main" — portal kekal aktif.');paintState()},60)});
   paintQ();paintState();
   log('reset','Sedia. Cuba tekan "Jawab salah, cepat" tiga kali.');
 })();

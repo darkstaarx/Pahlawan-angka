@@ -54,6 +54,7 @@ self.PA_ASSET_MANIFEST=Object.freeze({
   "./assets/cinematics/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "./assets/cinematics/enter.mp4": "bcfe6d53e541793e7b0489321ff54c32d68e8ed4035177ba0aa19379e6cb4c01",
   "./assets/cinematics/jatuh.mp4": "b54e19891a65e43dec66fcf3e63a1e70e455114a74bb81e5ed2569754bee66f6",
+  "./assets/cinematics/portal-restu-jatuh-v1.mp4": "a0e1a941d53e064eb4063ad261db1f1a2bfc5d00be2a5e859f41556aa0f433a6",
   "./assets/cinematics/wira-demo-entry-v1.mp4": "267e032189bab540c4da346ba3faa33b528c1f566e8a14c51cd25136de8bfce0",
   "./assets/coach/cikgu-dimensi/dimensional-aura.svg": "d1a88a29302e194813a2caac6cc42a42db0dd57cdc56a4cfc6dbd0cd4e8e0331",
   "./assets/coach/cikgu-dimensi/dimensional-eye-cutin-v1.webp": "950701ffa88c0ac21e7bf1b88e0ea6f02e69349505bd71c63a2ee079ec194968",

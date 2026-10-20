@@ -54,8 +54,20 @@ test('long questions get more time before a wrong counts as rapid', () => {
   assert.equal(longE.streak, 1, '2.5 s is too fast to read a long story problem');
 });
 
-test('only one lock per session; later rapid streaks only warn', () => {
+test('portal re-arms: after an unlock, the next 3 guesses lock again', () => {
   const e = L.createEngine();
   fastWrong(e); fastWrong(e); assert.equal(fastWrong(e), 'lock');
-  fastWrong(e); fastWrong(e); assert.equal(fastWrong(e), 'warn');
+  fastWrong(e); assert.equal(fastWrong(e), 'warn'); assert.equal(fastWrong(e), 'lock');
+  assert.equal(e.locks, 2);
+});
+
+test('"biar teroka hari ini" ends at the next midnight in Malaysia', () => {
+  const t = Date.UTC(2026, 9, 21, 0, 30);            // 08:30 MYT, 21 Oct
+  assert.equal(new Date(L.endOfDayMYT(t)).toISOString(), '2026-10-21T16:00:00.000Z'); // 00:00 MYT, 22 Oct
+  const late = Date.UTC(2026, 9, 21, 15, 59);        // 23:59 MYT
+  assert.equal(new Date(L.endOfDayMYT(late)).toISOString(), '2026-10-21T16:00:00.000Z');
+  const offDb = { portalRestu: { offUntil: L.endOfDayMYT(t) } };
+  assert.equal(L.portalOff(offDb, t), true);
+  assert.equal(L.portalOff(offDb, Date.UTC(2026, 9, 21, 16, 1)), false, 'back on the next day');
+  assert.equal(L.portalOff({}, t), false);
 });
