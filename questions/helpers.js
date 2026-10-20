@@ -183,6 +183,13 @@ function moneyVisual(cents){
  const ps=moneyPieces(cents);
  return `<div class="moneyVisual" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin:4px auto 12px;max-width:340px">${ps.map(moneyPieceSvg).join('')}</div>`;
 }
+function moneyGroupCard(label,cents){
+ const ps=moneyPieces(cents);
+ return `<div class="moneyGroupCard" style="position:relative;display:flex;flex-direction:column;justify-content:center;flex:1 1 240px;max-width:380px;min-width:0;padding:22px 12px 12px;border:2px solid #c9d4ea;border-radius:16px;background:#fff;box-shadow:0 2px 0 #dfe6f3"><span style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);padding:3px 14px;border-radius:999px;background:#162a47;color:#fff;font-size:13px;font-weight:850;letter-spacing:.04em;white-space:nowrap">${label}</span><div class="moneyVisual" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center">${ps.map(moneyPieceSvg).join('')}</div></div>`;
+}
+function moneyCompare(a,b,labels=['Kumpulan A','Kumpulan B']){
+ return `<div class="moneyCompare" style="display:flex;flex-wrap:wrap;gap:22px 16px;justify-content:center;align-items:stretch;margin:16px auto 16px;max-width:780px">${moneyGroupCard(labels[0],a)}${moneyGroupCard(labels[1],b)}</div>`;
+}
 function priceTag(label,cents){return `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:12px;background:#fff3ca;border:2px solid #d7b657;color:#273149;font-size:12px;font-weight:850"><span>${label}</span><b style="font-size:17px">${moneyFmt(cents)}</b></div>`}
 function moneyWrongSet(ans,values=[]){
  const out=[]; const seen=new Set([ans]);
@@ -266,7 +273,7 @@ function moneyQ(id,shift,s){
      const a=chooseMoneyValue("mixed",5000),b=chooseMoneyValue("mixed",5000);
      if(a===b)return moneyQ(id,shift,s);
      const ans=Math.max(a,b);
-     return tagMoneyBasics(Q(`${moneyVisual(a)}<div style="height:6px"></div>${moneyVisual(b)}Antara dua kumpulan wang ini, yang manakah nilainya lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift),[a,b],'compare');
+     return tagMoneyBasics(Q(`${moneyCompare(a,b)}Antara Kumpulan A dan Kumpulan B, yang manakah nilainya lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift),[a,b],'compare');
    }
    const total=chooseMoneyValue(pick(["coin","mixed","ringgit"]),10000);
    const wrong=moneyWrongSet(total,[Math.max(0,total-50),Math.min(10000,total+50),total<100?total*10:Math.round(total/10)]);
