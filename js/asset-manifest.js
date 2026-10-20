@@ -815,6 +815,7 @@ self.PA_ASSET_MANIFEST=Object.freeze({
   "./assets/ui/victory-result/button-navy-press.webp": "1bf38b858e49a5de5c6f2286ef9de0dac986db71e8572f645f6bed98e2f94072",
   "./assets/ui/victory-result/button-navy-rest.png": "625e1375ca8dadd5863c16e78f801fb75fc9df2e15cb90b27d507305e1a4b991",
   "./assets/ui/victory-result/button-navy-rest.webp": "901deb8ce6bb3567b7c107412074ccd0c840dc531d1da19490a1b1da6ff32242",
+  "./assets/ui/victory-result/celebrate-wira-v1.webp": "906e49b1f2f09b7af0b5183a4b76abbc0af270e9d02a6607a7c391fd76bb1d95",
   "./assets/ui/victory-result/crest-frame.png": "2cf03f09f11302acf0fa087ccc6a496ac57ed11a37305dbc14a28b5dd41bbcba",
   "./assets/ui/victory-result/crest-frame.webp": "9877e5e8dec3387b3efe2f0d094c2e5d51de823975f166ccf17527de9a6c8bb9",
   "./assets/ui/victory-result/crest-side-left.png": "740eab1d6d55584d25c488be7fa8ebe789f83e36910e2604f4571e3ef46f1b61",

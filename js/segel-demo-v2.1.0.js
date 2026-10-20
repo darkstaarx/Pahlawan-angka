@@ -2483,6 +2483,27 @@
     return say.join(' ');
   }
 
+  function rescuedPetArt(){
+    const first=v=>Array.isArray(v)?v[0]:v;
+    const config=run?.productionRun?.rescuePetConfig||devPetConfig();
+    const own=first(config?.happy);
+    if(typeof own==='string'&&own)return own;
+    const id=run?.productionRun?.petAward?.petId;
+    const folder=window.PetCollection?.catalog?.[id]?.folder;
+    if(folder)return `assets/pets/collection/${folder}/happy-v1.webp`;
+    return 'assets/pets/aurora/frames/happy-v1.webp';
+  }
+  function showCelebration(on){
+    const row=$('segelCelebrate'),pet=$('segelCelebratePet');
+    if(!row)return;
+    if(on&&pet){
+      const src=rescuedPetArt();
+      pet.onerror=()=>{pet.onerror=null;pet.src='assets/pets/aurora/frames/happy-v1.webp'};
+      if(pet.getAttribute('src')!==src)pet.src=src;
+    }
+    row.hidden=!on;
+  }
+
   function finishRun(won,note){
     run.locked=true;
     setResultLifecycle(true);
@@ -2500,6 +2521,7 @@
       $('segelStatCorrect').textContent='—';
       $('segelStatAcc').textContent='—';
       popStars(0);   // tiada bintang, dan `pop` turut dibersihkan
+      showCelebration(false);
       $('segelCoachSay').textContent='Cuba semula. Progress murid tidak terjejas.';
       $('segelDemoSummary').hidden=true;
       $('segelDone').hidden=false;
@@ -2517,6 +2539,7 @@
     $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
     $('segelStatAcc').textContent=acc+'%';
     popStars(stars);
+    showCelebration(true);
     $('segelCoachSay').textContent=coachLine(t,acc,run.asked);
     const summary=$('segelDemoSummary');
     if(entryMode?.guestDemo&&summary){

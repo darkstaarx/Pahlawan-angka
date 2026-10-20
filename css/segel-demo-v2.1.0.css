@@ -497,6 +497,17 @@ body[data-screen="segelDemo"] .appHeader{display:none}
 .rcBtn.navy{background-image:url("../assets/ui/victory-result/button-navy-rest.webp")!important;color:#fff6df}
 .rcBtn.gold{background-image:url("../assets/ui/victory-result/button-gold-rest.webp")!important;color:#2a2410}
 .resultCta .rcBtn{min-height:48px;aspect-ratio:auto}
+/* Wira dan pet yang diselamatkan bersorak di atas crest. Arena di belakang
+   tidak lagi kelihatan selepas susun atur skrin penuh (v3.85.46), jadi
+   sorakan itu kini dibawa terus dalam skrin keputusan. Ruang tengah sengaja
+   dikosongkan untuk bintang yang menjulur di atas crest. */
+.resultCelebrate{display:flex;justify-content:center;align-items:flex-end;gap:clamp(84px,30%,128px);height:clamp(92px,15dvh,138px);margin:0 auto -30px;position:relative;z-index:3;pointer-events:none}
+.resultCelebrate[hidden]{display:none}
+.resultCelebrate img{display:block;height:100%;width:auto;max-width:42%;object-fit:contain;object-position:bottom;transform-origin:50% 100%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));animation:rcHop 1.15s cubic-bezier(.3,.7,.4,1) infinite}
+.resultCelebrate .rcPet{height:84%;animation-delay:.38s}
+.resultCelebrate .rcPet:not([src]){visibility:hidden}
+@keyframes rcHop{0%,100%{transform:translateY(0) scale(1,1)}12%{transform:translateY(0) scale(1.06,.94)}40%{transform:translateY(-16%) scale(.97,1.04)}62%{transform:translateY(0) scale(1.04,.96)}76%{transform:translateY(0) scale(1,1)}}
+@media (prefers-reduced-motion:reduce){.resultCelebrate img{animation:none}}
 .segelDone .resultCta{position:sticky;bottom:0;z-index:3;padding:8px 0;background:linear-gradient(180deg,rgba(7,18,34,.9),#071222)}
 .rcBtn.navy:active{background-image:url("../assets/ui/victory-result/button-navy-press.webp")!important}
 .rcBtn.gold:active{background-image:url("../assets/ui/victory-result/button-gold-press.webp")!important}
