@@ -318,7 +318,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #77; shorter Fokus card, PR #78 open). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #77; PR #78 open, owner said do NOT merge yet). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#77. #69 Next item 3 + question-first mini
@@ -331,8 +331,18 @@ Last updated: 2026-10-21 (after PR #77; shorter Fokus card, PR #78 open). Read t
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
    #77 docs: "How it works" under "Kemungkinan punca tags" below.
    **Open: PR #78 short Fokus card line + "Punca utama" for parents (3.87.1),
-   branch `ccr-ed8f705d-ym2tc0`, not merged** — merge when the owner asks.
-2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
+   branch `ccr-ed8f705d-ym2tc0`, NOT merged. The owner said "jangan merge"
+   for now; merge only when the owner asks again.** What it does (owner:
+   "taknak serabut" for the child or the parent): each Fokus card has one
+   short line ("Punca: Nilai tempat", else "Ketepatan N%" or the brain label;
+   money/time checks "Punca: soalan wang / baca jam / ..."), and the parent
+   Ringkasan "Perlu dikuatkan" card adds one sentence "Punca utama: Nilai
+   tempat nombor." (details under "How it works" below). Checked: 220/220
+   tests, real app at 390×844. If main moved before the merge: merge main
+   into the branch, re-run `node --test audit/*.test.js`, then follow the
+   merge convention in item 3.
+2. **Next task (after the owner decides on PR #78): lens 4.6 (interleaving /
+   strategy choice), then full 4.7**
    (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
    full 4.7). Ask the owner before starting. Sketch for 4.6 (§4.6): the
    session tags each answer `interleaved` (a blocked run = the same skill
