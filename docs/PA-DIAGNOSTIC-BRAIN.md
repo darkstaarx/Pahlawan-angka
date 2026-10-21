@@ -364,10 +364,10 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#78, #80, #81 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #69–#78, #80–#82 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
@@ -384,9 +384,9 @@ Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are pic
    money/time checks "Punca: soalan wang / baca jam / ..."), and the parent
    Ringkasan "Perlu dikuatkan" card adds one sentence "Punca utama: Nilai
    tempat nombor." (details under "How it works" below).
-   Open: PR #82, full lens 4.7 retention + 1/3/7/14-day review queue in Kembara
-   Dimensi (3.87.5, see §4.7 "Implemented"), branch
-   `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
+   #82 full lens 4.7 retention + 1/3/7/14-day review queue in Kembara
+   Dimensi (3.87.5, see §4.7 "Implemented"). Nothing is open. Current
+   version 3.87.5.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
@@ -411,7 +411,7 @@ Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are pic
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** PRs #55–#63, #65–#78, #80 and #81 are merged into `main`
+**Status on GitHub.** PRs #55–#63, #65–#78 and #80–#82 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
@@ -692,7 +692,7 @@ unchanged (design values, phase 5 calibrates).
 - ✅ Light lens 4.8 (language load), 3.86.99, PR #75, merged: see §4.8 "Implemented".
 - ✅ Lens 4.6 Strategy choice (interleaving), 3.87.3, PR #81, merged: see §4.6
   "Implemented". Thresholds are the §4.6 defaults (phase 5 calibrates).
-- ✅ Lens 4.7 Retention (full) + spaced review queue, 3.87.5, not merged yet:
+- ✅ Lens 4.7 Retention (full) + spaced review queue, 3.87.5, PR #82, merged:
   see §4.7 "Implemented". Phase 4 has all eight lenses now.
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
