@@ -111,7 +111,7 @@
         <p class="paRapidLead">Wira terjatuh ke dalam Portal Restu! Panggil ibu bapa untuk buka portal.</p>
         <div class="paRapidFrame">
           <div class="paRapidCoach"><img src="${art('cikgu')}" alt=""><div class="paRapidSay"><span class="paRapidChip">Cikgu Dimensi</span>
-            <p>Cikgu nampak 3 jawapan dipilih terlalu cepat. Wira sebenar baca soalan dulu sebelum menyerang!</p></div></div>
+            <p>Cikgu nampak 3 jawapan dipilih terlalu cepat. Wira sebenar baca soalan dulu sebelum menjawab!</p></div></div>
           <div class="paRapidParent">
             <label for="paRapidPin" data-pin-label>Ibu bapa: masukkan PIN Penjaga</label>
             <div class="paRapidSlots" data-slots="a"><input id="paRapidPin" class="paRapidPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-describedby="paRapidErr"><i></i><i></i><i></i><i></i></div>

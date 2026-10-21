@@ -666,7 +666,7 @@ function parseHash(raw){const h=String(raw==null?location.hash.slice(1):raw).toL
  return{grade:g,modes:want.length?want:GRADES[g].modes,start}}
 let cfg=parseHash();
 const SET=5;
-let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,solved=false,misses=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT;
+let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,solved=false,misses=0,paLast=0,paRound=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT;
 let shadeSet=new Set(),cutN=1,inp={},fk='n',sel=null,flOrder=[];
 
 /* ---------- bunyi & mesej ---------- */
@@ -777,6 +777,9 @@ const FORM_MSG={imp:'Nilainya betul! Tetapi soalan minta pecahan tak wajar — k
 function ansText(){if(q.ansTxt)return q.ansTxt;if(q.kind==='pick')return q.opts.find(o=>o.id===q.correct).label;const f=q.form;if(!f)return '';
  if(f.type==='frac')return fs(f.n,f.d);if(f.type==='improper'){const[n,d]=red(f.N,f.D);return fs(n,d)}
  if(f.type==='mixed')return(f.simp===false?vs(f.N,f.D):vs(f.N,f.D))+(f.unit?' '+f.unit:'');return dn(f.v)+(f.unit?' '+f.unit:'')}
+/* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
+function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'kedai-kek',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String(q.q||'').slice(0,200),answer:String(typeof ansText==='function'?ansText():'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms},location.origin)}catch(e){}}
 function check(){
  if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
  const K=q.kind;let ok=false,note='';
@@ -788,14 +791,14 @@ function check(){
   if(r.form){msg(FORM_MSG[r.form],'',4200);sfx(520,.08);return}ok=!!r.ok;
   if(!ok){note=r.swap?'Pengangka dan penyebut tertukar. Penyebut ialah jumlah bahagian sama besar.':r.same?'Nilainya sama, tetapi kira semula bahagian dalam gambar.':'Belum tepat. Semak semula langkah kamu.';
    ORDER().forEach(k=>{const b=$('F_'+k);if(b)b.classList.add('bad')});fk=ORDER()[0];renderFields()}}
- if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+ if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
   pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Sedapnya!','Tepat macam pesanan saya!']);$('wiraImg').src=A+(st===3?'wira-baker-victory.webp':'wira-baker-thumb.webp');$('wira').classList.add('cheer');
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+T(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
   renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);
   const sl=$('slot'+((served-1)%SET));if(sl){sl.classList.add('on','pop')}$('stand').classList.add('done');
   $('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Seterusnya →';
   setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
- misses++;
+ paAttempt(false),misses++;
  if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',3800);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
@@ -815,7 +818,7 @@ function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots'
  $('stageN').textContent='PESANAN '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Hari '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
 const SUB={shade:'Sentuh kepingan kek untuk letak krim.',tray:'Sentuh pinggan untuk ambil tart.',pick:'Pilih satu jawapan.',pad:'Tekan nombor. Sentuh kotak untuk tukar atas/bawah.'};
 function startRound(){if(served%SET===0){flOrder=shuffle(FLS);drawShelf(0)}
- q=makeQ();solved=false;misses=0;hints=0;hint2=0;shadeSet=new Set();cutN=q.cut?1:0;sel=null;inp={};fk=q.form?ORDER()[0]:'n';
+ q=makeQ();solved=false;misses=0;paLast=Date.now();paRound++;hints=0;hint2=0;shadeSet=new Set();cutN=q.cut?1:0;sel=null;inp={};fk=q.form?ORDER()[0]:'n';
  hideMsg();
  $('devBtn').hidden=!devToolsEnabled;
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);

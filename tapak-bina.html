@@ -470,7 +470,7 @@ if(!devEnabled&&!focusAuthorized){document.body.innerHTML='<main style="min-heig
 
 /* ---------- keadaan ---------- */
 const SET=5,SAYS={bentuk2d:'Pelan aku perlukan bentuk ini!',bentuk3d:'Blok mana satu untuk menara?',corak:'Tolong sambung corak lantai!',prisma:'Aku perlukan blok prisma!',poligon:'Jubin ini bentuk apa?',simetri:'Tingkap mesti simetri!',perimeter:'Berapa panjang pagar?',luas:'Berapa luas lantai?',isipadu:'Berapa kiub dalam kotak?',koordinat:'Di mana aku patut berdiri?',sudut:'Kren perlu sudut tepat!',bulatan:'Kolam bulat di taman menara!'};
-let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],lastArch='',q=null,ans=null,solved=false,misses=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT,sayT;
+let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],lastArch='',q=null,ans=null,solved=false,misses=0,paLast=0,paRound=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT,sayT;
 
 /* ---------- bunyi & mesej ---------- */
 function sfx(f=650,d=.08,t='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);g.gain.setValueAtTime(.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
@@ -590,18 +590,21 @@ function reportFocusRound(entry){if(!focusRun)return;const detail=entry.q,round=
  misses:entry.misses,hints:entry.hints,representation:detail.w?.type==='grid'?'grid':detail.w?.type==='pad'?'numeric':detail.w?.type==='lines'?'diagram':'visual',
  demand:detail.tierIx>=2?'application':detail.tierIx===1?'procedure':'concept',difficultyBand:detail.tierIx+1,prompt:detail.q};
  try{window.parent.postMessage({type:'PA_TAPAK_BINA_ROUND',version:1,nonce:focusNonce,grade:focusRun.grade,skillId:focusRun.skillId,round},location.origin)}catch(_){}}
-function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
+function startRound(){q=makeQ();solved=false;misses=0;paLast=Date.now();paRound++;hints=0;hint2=0;hideMsg();
  $('mode').textContent='D'+cfg.grade+' · '+FAM_LABEL[q.fam]+' · T'+(q.tierIx+1);$('tint').style.background=['transparent','#fff3d000','#ffcf9a40','#f39a7a44','#6a7ad044'][served%SET];
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||'';$('wiraImg').src=A+'wira-arkitek-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
  $('check').textContent='Semak';$('check').classList.remove('next');$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
  const v=$('pet');v.className='pet away';petFace('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='pet'}));
  setTimeout(()=>{$('who').textContent=q.who;say(SAYS[q.fam])},650);
  if(served%SET===0)drawCandi(0);renderTrack();render()}
+/* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
+function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'tapak-bina',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String(q.q||q.prompt||'').slice(0,200),answer:String(q.ans??'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms},location.origin)}catch(e){}}
 function check(){
  if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
  const r=isRight();if(r===null){msg('Pilih atau masukkan jawapan dulu.','',2200);return}
- if(!r){misses++;msg(wrongMsg(),'bad',3400);petFace('sad');const v=$('pet');v.classList.remove('shake');void v.offsetWidth;v.classList.add('shake');setTimeout(()=>{if(!solved)petFace('idle')},1300);sfx(250,.12);return}
- solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;const entry={q,st,misses,hints,index:served};setLog.push(entry);reportFocusRound(entry);adapt(st);
+ if(!r){paAttempt(false),misses++;msg(wrongMsg(),'bad',3400);petFace('sad');const v=$('pet');v.classList.remove('shake');void v.offsetWidth;v.classList.add('shake');setTimeout(()=>{if(!solved)petFace('idle')},1300);sfx(250,.12);return}
+ solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;const entry={q,st,misses,hints,index:served};setLog.push(entry);reportFocusRound(entry);adapt(st);
  petFace('happy');say(['Terima kasih, Wira!','Tepat sekali!','Menara makin tinggi!'][rnd(0,2)]);$('wiraImg').src=A+(st===3?'wira-arkitek-victory.webp':'wira-arkitek-thumb.webp');$('wira').classList.add('cheer');
  if(q.w.type==='pick')W().querySelector('.pick.on')?.classList.add('right');
  const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+q.ans+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();

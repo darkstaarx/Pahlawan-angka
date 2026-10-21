@@ -205,6 +205,9 @@ Also keep the existing **independence** signal: correct only with hints →
 - Implementation: `js/rapid-lock-v1.js` (`PARapidLock`), fed from
   `PATelemetry.response`. Dev lab: `tools/rapid-lock-lab.html`.
   Tests: `audit/rapid-lock.test.js`.
+- Covers every mode that takes answers: battle, Gembok, Wirayung and all nine
+  Fokus mini games (see §8, mini game answers). The overlay sits above the
+  full-screen mini game frame.
 
 ## 6. Parent report output
 
@@ -240,6 +243,18 @@ composition, lock policy.
 - Parent report + worksheets: `js/parent-learning-tools-v3.26.0.js`,
   `js/worksheet-graphics-v1.js`.
 - Mini-game routing by skill: `js/focus-mini-games-live-bridge.js` (`gameFor`).
+- Mini game answers: every game page (`gudang-harta`, `kedai-kek`, `bengkel-ajaib`,
+  `dapur-ramuan`, `pos-peninjau`, `lombong-permata`, `tapak-bina`, `menara-jam`,
+  `gerai-wirayung`) posts `PA_MINIGAME_ATTEMPT` for each try via `paAttempt(ok)`
+  ({key, prompt, answer, ok, first, ms, hints}). `js/minigame-telemetry-v1.js`
+  turns these into `PATelemetry.response` with modes `minigame`,
+  `minigame-first-attempt`, `minigame-retry` (same contract as battle). A new
+  mini game must call `paAttempt(false)` before `misses++` and `paAttempt(true)`
+  on success, or the brain and Portal Restu cannot see it.
+  Tests: `audit/minigame-telemetry.test.js`.
+- Targeted practice + worksheet composer: `js/engine/diagnostic-targets-v1.js`
+  (`PATargets`). Dummy children: `tools/diagnostic-sim.js`, lab
+  `tools/diagnostic-sim-lab.html`.
 - PIN lock: `js/page-lock-v1.js`.
 - Cloud tables (schema only, not yet sent): `supabase/schema/adaptive_learner_telemetry_v1.sql`.
 

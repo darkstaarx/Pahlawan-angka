@@ -4,7 +4,7 @@
 .paRapidLock,.paRapidWarn{--prNavy:#162a47;--prNavyTop:#1b3354;--prGold:#b78b47;--prCream:#fff3d6;--prTitle:#ffe5a6;--prInk:#2b2416}
 
 /* Cikgu Dimensi cut-in warning */
-.paRapidWarn{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));z-index:120;display:flex;align-items:flex-start;
+.paRapidWarn{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));z-index:2147483600;display:flex;align-items:flex-start;
   width:min(calc(100% - 24px),380px);transform:translate(-50%,-160%);opacity:0;pointer-events:none;
   transition:transform .45s cubic-bezier(.2,1.25,.35,1),opacity .2s ease;font-family:Arial,Helvetica,sans-serif}
 .paRapidWarn.show{transform:translate(-50%,0);opacity:1}
@@ -18,7 +18,7 @@
 .paRapidSay p{margin:0;font-size:13.5px;line-height:1.45;font-weight:700;color:var(--prInk)}
 
 /* Lock stage */
-.paRapidLock{position:fixed;inset:0;z-index:130;overflow-y:auto;font-family:Arial,Helvetica,sans-serif;
+.paRapidLock{position:fixed;inset:0;z-index:2147483601;overflow-y:auto;font-family:Arial,Helvetica,sans-serif;
   background:radial-gradient(120% 70% at 50% 0%,rgba(30,58,100,.55),rgba(4,10,22,.92) 60%),rgba(4,10,22,.88);backdrop-filter:blur(3px)}
 .paRapidLock.hidden{display:none}
 .paRapidLock [hidden]{display:none!important}
@@ -82,3 +82,5 @@
 .paRapidBtn.navy:active{background-image:var(--pr-navy-down)}
 
 @media (prefers-reduced-motion:reduce){.paRapidStep,.paRapidPet img,.paRapidSlots.shake{animation:none}.paRapidWarn{transition:none}}
+
+/* Mini games run in a full-screen overlay (z 2147483000); Portal Restu must sit above it. */
