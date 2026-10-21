@@ -304,7 +304,7 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    later (spaced, lens 4.7) and let the card show "Semakin baik" or keep the
    focus.
 
-5. ✅ *Done (2026-10-21, branch `ccr-ed8f705d-ym2tc0`): the 12 known failing
+5. ✅ *Done (2026-10-21, PR #66, not merged yet): the 12 known failing
    tests are fixed; `node --test audit/*.test.js` → 158 pass, 0 fail.* What
    changed: `audit/lib/browser.js` resolves `playwright` normally and takes
    the browser from `PA_BROWSER_PATH`, then `$PLAYWRIGHT_BROWSERS_PATH/chromium`,
