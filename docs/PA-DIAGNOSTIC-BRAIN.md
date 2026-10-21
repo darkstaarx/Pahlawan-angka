@@ -392,9 +392,9 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    #83 bug fixes (3.87.7): Menara Jam calendar rounds printed "undefined" on
    the stamp (no `ansText`); a profile saved before newer skills existed
    crashed the parent worksheet tab on load (`snapshot()` read
-   `scoreState(id).correct` before `initAll()`). Nothing is open. Current
-   version 3.87.7. **In progress: "Jom tengok cara"** (guided worked example), branch
-   `claude/compassionate-hypatia-a9xycw`, preview in Gudang Harta only, no PR yet.
+   `scoreState(id).correct` before `initAll()`). Current
+   version 3.87.8. **"Jom tengok cara"** (guided worked example), first part merged as
+   PR #84 (3.87.8, owner: ship now to deploy): Gudang Harta two-number pad rounds only.
    `js/minigame-worked-v1.js` (`PAWorked`: `parse`, `build`, `run`) +
    `css/minigame-worked-v1.css`. After 3 wrong tries (or 2 and both hints) the
    hint button becomes "Jom tengok cara"; Wira walks through the written method

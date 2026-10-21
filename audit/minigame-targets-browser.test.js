@@ -207,6 +207,40 @@ test('a profile saved before newer skills existed opens the app without an error
   assert.deepEqual(errors, []); await context.close();
 });
 
+test('Jom tengok cara: offered after 3 wrong tries, every step tapped, the board ends at the answer, then a similar round', async () => {
+  for (const [hash, story] of [['d3-tambah', false], ['d4-tolak', true]]) {
+    const g = await gudang(null, hash, { width: 390, height: 780 });
+    const r0 = await g.page.evaluate(story => {
+      for (let i = 0; i < 400; i++) { const q = window.__gudangGen.showNormal(i % 6, 0); if (q.kind === 'pad' && q.form && (story ? !q.card : !!q.card) && window.PAWorked.parse(q)) return { mode: q.mode, ans: q.form.fields[0].v, hint: document.getElementById('hint').textContent }; }
+      return null;
+    }, story);
+    assert.ok(r0, hash);
+    for (let i = 0; i < 3; i++) {
+      for (const ch of String(r0.ans + 10 * (i + 1))) await g.page.keyboard.press(ch);
+      await g.page.evaluate(() => document.getElementById('check').click());
+      for (let k = 0; k < 8; k++) await g.page.keyboard.press('Backspace');
+    }
+    assert.equal(await g.page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara');
+    await g.page.evaluate(() => document.getElementById('hint').click());
+    if (story) assert.equal(await g.page.evaluate(() => [document.querySelectorAll('#wkInline .wk-t').length, !!document.querySelector('.wk-board.wk-wait')].join()), '3,true', 'sentence choices first, under Wira\'s line, board waiting');
+    for (let n = 0; n < 20; n++) {
+      const right = await g.page.evaluate(() => window.__wkRight && window.__wkRight());
+      const open = await g.page.evaluate(() => document.querySelectorAll('.wk-t:not([disabled])').length);
+      if (!open) break;
+      await g.page.evaluate(v => [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v).click(), right);
+      await g.page.waitForTimeout(950);
+    }
+    const end = await g.page.evaluate(() => ({ board: [...document.querySelectorAll('.wk-ans .wk-c')].map(c => c.textContent).join(''), check: document.getElementById('check').textContent, stamp: document.querySelector('.stamp').textContent }));
+    assert.equal(Number(end.board), r0.ans, 'the board ends at the round answer');
+    assert.equal(end.check, 'Cuba soalan serupa →');
+    assert.match(end.stamp, /^SIAP!Cara Wira/);
+    await g.page.evaluate(() => document.getElementById('check').click());
+    const next = await g.page.evaluate(() => ({ mode: window.__gudangGen.current().mode, hint: document.getElementById('hint').textContent, kp: !!document.querySelector('#tiles.kp') }));
+    assert.deepEqual(next, { mode: r0.mode, hint: 'Tanya Wira', kp: true }, 'the same kind of question, fresh');
+    assert.deepEqual(g.errors, []); await g.close();
+  }
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');
