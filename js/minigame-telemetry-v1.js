@@ -28,7 +28,8 @@ function receive(e){
  const r=rounds.get(key)||{wrong:false,done:false};if(r.done)return;
  const skill=String(m.skillId||'').slice(0,40)||'MINIGAME.'+game;
  const sec=Math.max(.1,Math.min(600,(Number(m.ms)||0)/1000));
- const q={token:'mg-'+key,skill,questionId:'minigame:'+game,archetypeId:'minigame_'+game,representation:'manipulative',
+ // The brain keeps 40 characters of a token: keep the end, so the round number after a long nonce survives.
+ const q={token:'mg-'+key.slice(-37),skill,questionId:'minigame:'+game,archetypeId:'minigame_'+game,representation:'manipulative',
   prompt:String(m.prompt||'').slice(0,200),answer:m.answer===''||m.answer==null?undefined:String(m.answer).slice(0,40)};
  const facets=cleanFacets(m.facets);if(facets)q.facets=facets;
  const send=(ok,mode,value)=>{try{window.PATelemetry?.response?.(skill,ok,ok?'':'minigame',sec,(m.hints|0)>0,q,mode,value)}catch(_){}};
