@@ -389,7 +389,14 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    now): the BERJAYA victory crest pops in, a light streak sweeps the banner,
    gold stars reveal once then sparkle; all stop under reduced motion (#46
    cheering Wira + pet and #47 arena layout stay closed, owner choice).
-   Nothing is open. Current version 3.87.6.
+   Open: bug fixes (3.87.7), branch `claude/compassionate-hypatia-a9xycw`:
+   Menara Jam calendar rounds printed "undefined" on the stamp (no
+   `ansText`); a profile saved before newer skills existed crashed the parent
+   worksheet tab on load (`snapshot()` read `scoreState(id).correct` before
+   `initAll()`). Merge only when the owner says so. Next after it (owner asked,
+   not started): "Jom tengok cara" worked example after 3 wrong tries in all
+   nine mini games (every kind knows its answer; step text is missing in
+   Menara Jam, most of Pos Peninjau and early Lombong Permata).
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

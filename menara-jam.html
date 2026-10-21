@@ -645,7 +645,7 @@ const GEN={
    else if(t.kind==='monthNext'){const i=rnd(0,11);target=months[mod(i+1,12)];parts=['Selepas bulan ',chip(months[i]),', bulan apa?'];options=[target,months[mod(i+2,12)],months[mod(i+3,12)],months[mod(i+11,12)]].sort(()=>Math.random()-.5)}
    else if(t.kind==='dayPart'){const v=pick([['Matahari baru terbit. Waktu ini waktu apa?','Pagi'],['Matahari terbenam. Waktu ini waktu apa?','Petang'],['Masa makan tengah hari. Waktu ini waktu apa?','Tengah hari']]);parts=[v[0]];target=v[1];options=['Pagi','Tengah hari','Petang','Malam'].sort(()=>Math.random()-.5)}
    else{parts=['Susun peristiwa harian: sarapan berlaku sebelum makan tengah hari. Yang berlaku dahulu ialah…'];target='Sarapan pagi';options=['Sarapan pagi','Makan tengah hari','Makan malam','Tidur malam'].sort(()=>Math.random()-.5)}
-   return{parts,ask:'',widget:'choice',target,options,noTime:true,kssrSP:t.sp,archetypeId:'calendar_sequence'}}
+   return{parts,ask:'',widget:'choice',target,options,ansText:target,noTime:true,kssrSP:t.sp,archetypeId:'calendar_sequence'}}
   const dates=pick(t.dates),s=new Date(Date.UTC(dates[0],dates[1]-1,dates[2])),e=new Date(Date.UTC(dates[3],dates[4]-1,dates[5])),target=(e-s)/86400000;
   const months=['','Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
   const label=d=>d[2]+' '+months[d[1]]+' '+d[0];

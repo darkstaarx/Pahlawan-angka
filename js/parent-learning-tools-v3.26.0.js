@@ -12,7 +12,8 @@ const slug=value=>String(value||'anak').toLowerCase().replace(/[^a-z0-9]+/g,'-')
 const dateLabel=()=>new Date().toLocaleDateString('ms-MY',{day:'numeric',month:'long',year:'numeric'});
 function coreSkills(){const g=typeof coreGrade==='function'?coreGrade():Number(db?.schoolGrade||1);return GRAPH.skills.filter(m=>m.grade===g&&m.role==='core')}
 function snapshot(){
- const skills=coreSkills().map(m=>{const s=scoreState(m.id),attempts=skillAttempts(s),accuracy=skillAccuracy(s),level=powerLevel(s);return{m,s,attempts,accuracy,level}});
+ // A profile saved before a skill was added has no state for it yet (initAll() adds it later): count it as new.
+ const skills=coreSkills().map(m=>{const s=scoreState(m.id)||{mastery:0,confidence:0,evidence:0,correct:0,wrong:0,hints:0,mis:{}},attempts=skillAttempts(s),accuracy=skillAccuracy(s),level=powerLevel(s);return{m,s,attempts,accuracy,level}});
  const attempts=skills.reduce((n,x)=>n+x.attempts,0),correct=skills.reduce((n,x)=>n+Number(x.s.correct||0),0);
  const tested=skills.filter(x=>x.attempts>0),strong=skills.filter(x=>x.level===3).sort((a,b)=>b.s.mastery-a.s.mastery),priority=skills.filter(x=>x.level===1).sort((a,b)=>a.s.mastery-b.s.mastery),developing=skills.filter(x=>x.level===2).sort((a,b)=>a.s.mastery-b.s.mastery);
  return{grade:Number(db.schoolGrade||1),name:String(db.name||'Anak'),skills,attempts,accuracy:attempts?Math.round(correct/attempts*100):0,tested,strong,priority,developing,recommended:[...priority,...developing,...skills.filter(x=>x.level===0),...strong].map(x=>x.m)};
