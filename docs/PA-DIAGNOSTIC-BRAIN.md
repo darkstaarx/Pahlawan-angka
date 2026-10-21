@@ -286,8 +286,8 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
 1. PRs #69 (Next item 3 + question-first mini game layout, 3.86.93) and #70
    (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
    Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71, the question bank
-   repair (3.86.96) as PR #72. Open: bar model for word problems (3.86.97),
-   branch `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
+   repair (3.86.96) as PR #72, the bar model for word problems (3.86.97) as
+   PR #73. Nothing is open.
 2. Then ask the owner what next. Candidates, in order: a bar model (Model
    Method) round for word problems in a mini game (proposed, not started);
    targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
@@ -299,10 +299,10 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
    `audit/lib/browser.js`; mini game pages open standalone on localhost with
    `localStorage.pa_dev_unlocked='1'`).
 
-**Status on GitHub.** PRs #55–#63 and #65–#72 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#73 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-Open: bar model for word problems (3.86.97), base `main`, not merged.
+No PR is open.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -469,7 +469,7 @@ short/long wording pairs yet (lens 4.8).
   "Implemented". Not done: other mini games do not send `rep` yet (only
   Gudang Harta), and only Gudang Harta fades pictures; thresholds are the
   §4.1 defaults, not calibrated on real children (phase 5).
-- ✅ Bar model (Model Method) for word problems, 3.86.97, not merged yet. The
+- ✅ Bar model (Model Method) for word problems, 3.86.97, PR #73, merged. The
   4.4 finding `format_word` → plan step `word` → `PATargets.miniGameTarget` →
   `{kind:'bar'}` → Gudang Harta (`focus_target`): 7 of 10 rounds in any
   operation mode (tambah, tolak, darab, bahagi, gabung, masalah) are word
