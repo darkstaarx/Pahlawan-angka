@@ -23,6 +23,13 @@ function fractionModel(node){
  return match?{kind:'fraction',denominator:Number(match[1]),numerator:Number(match[2])}:null;
 }
 function fromQuestion(q){
+ // Questions from the v2 bank carry their visual as data: paint it in 2.5D instead of rasterising the SVG.
+ const spec=q?.visualSpec,P25=window.PAWorksheet25D;
+ if(spec&&P25?.supports(spec)){
+  const host=document.createElement('div');host.innerHTML=String(q?.prompt||'');const words=host.querySelector('.qsv2-prompt');
+  const prompt=clean((words||host).textContent);
+  return P25.textOnly(spec)?{prompt,graphics:[],plain:true,key:String(q.prompt)}:{prompt,graphics:[{kind:'v25d',spec}],key:String(q.prompt)};
+ }
  const root=document.createElement('div');root.innerHTML=String(q?.prompt||'');
  if(root.querySelector('script,iframe,canvas,video,input,button'))return null;
  const genericPictographs=new Map();
@@ -58,6 +65,7 @@ function fromQuestion(q){
   return{prompt:clean(root.textContent),graphics:[],plain:true,key:String(q.prompt)};
  }
  graphics.splice(0,graphics.length,...useful);
+ if(graphics.length>=2&&graphics.every(g=>g.kind==='svg'||g.kind==='image')){const lead=clean(root.textContent).match(/^((?:[A-H]\s+){2,8})/);if(lead){const letters=lead[1].trim().split(/\s+/);if(letters.length===graphics.length){graphics.letters=letters;root.querySelectorAll('*').forEach(n=>{if(n.children.length===0&&/^[A-H]$/.test(clean(n.textContent)))n.remove()})}}}
  if(q?.visualChoiceSpec?.kind==='fraction'){
   const choices=q.visualChoiceSpec.choices||[];
   if(!choices.length||choices.some(c=>c.invalid)||choices.some(c=>!Number.isFinite(Number(c.denominator??c.den))||!Number.isFinite(Number(c.numerator??c.num))))return null;
@@ -68,7 +76,7 @@ function fromQuestion(q){
  if(!graphics.length)return null;
  root.querySelectorAll('br').forEach(node=>node.replaceWith(document.createTextNode(' ')));
  root.querySelectorAll('div,p,small').forEach(node=>node.appendChild(document.createTextNode(' ')));
- return{prompt:clean(root.textContent),graphics,key:String(q.prompt)+JSON.stringify(q.visualChoiceSpec||null)};
+ return{prompt:clean(root.textContent),graphics,letters:graphics.letters,key:String(q.prompt)+JSON.stringify(q.visualChoiceSpec||null)};
 }
 function box(ctx,x,y,w,h,fill='#f7f9fc',stroke='#bbc6d8',r=10){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}
 function contained(ctx,image,x,y,w,h){const scale=Math.min(w/(image.naturalWidth||image.width),h/(image.naturalHeight||image.height));const dw=(image.naturalWidth||image.width)*scale,dh=(image.naturalHeight||image.height)*scale;ctx.drawImage(image,x+(w-dw)/2,y+(h-dh)/2,dw,dh)}
@@ -82,6 +90,7 @@ function fruitIcon(ctx,label,x,y,size){
 }
 function fruitSource(label){return{epal:'apple',oren:'orange',limau:'orange',rambutan:'rambutan',pensel:'pencil',pemadam:'eraser',belon:'balloon'}[label.toLowerCase()]}
 function fraction(ctx,n,d,x,y,w,h){
+ if(window.PAWorksheet25D?.strip){window.PAWorksheet25D.strip(ctx,n,d,x,y+10,w-14,h-10);return}
  for(let i=0;i<d;i++){box(ctx,x+i*w/d,y,w/d,h,i<n?'#74bba0':'#fff','#4c6488',0)}
 }
 async function renderGraphic(g,width){
@@ -89,13 +98,15 @@ async function renderGraphic(g,width){
  if(g.kind==='svg'||g.kind==='image')height=Math.min(360,Math.round(Math.min(width,680)*g.height/g.width));
  if(g.kind==='collection')height=Math.ceil(g.pieces.length/g.columns)*106+10;
  if(g.kind==='pictograph')height=g.rows.length*82+48;
- if(g.kind==='table')height=g.rows.length*56+8;
+ if(g.kind==='table')height=window.PAWorksheet25D?window.PAWorksheet25D.height({kind:'table',headers:g.rows[0],rows:g.rows.slice(1)},width):g.rows.length*56+8;
  if(g.kind==='grid')height=g.lines.length*35+20;
  if(g.kind==='fraction')height=96;
  if(g.kind==='fractionChoices')height=Math.ceil(g.choices.length/2)*112;
+ if(g.kind==='v25d')height=window.PAWorksheet25D.height(g.spec,width);
  if(!height||height>1200)throw new Error('Rajah ini terlalu besar untuk dicetak dengan jelas. Cuba worksheet lain.');
  canvas.height=height;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);
- if(g.kind==='svg'||g.kind==='image'){const image=await loadImage(g.src);contained(ctx,image,0,0,width,height)}
+ if(g.kind==='v25d')window.PAWorksheet25D.draw(ctx,g.spec,width);
+ else if(g.kind==='svg'||g.kind==='image'){const image=await loadImage(g.src);contained(ctx,image,0,0,width,height)}
  else if(g.kind==='collection'){
   const slot=Math.min(168,width/g.columns),span=Math.min(g.columns,g.pieces.length)*slot,start=(width-span)/2;
   for(let i=0;i<g.pieces.length;i++){const piece=g.pieces[i],x=start+(i%g.columns)*slot,y=Math.floor(i/g.columns)*106;
@@ -108,6 +119,7 @@ async function renderGraphic(g,width){
    for(let j=0;j<row.count;j++){const x=205+j*(size+3);if(image)contained(ctx,image,x,y+12,size,52);else fruitIcon(ctx,row.label,x,y+12,size)}
   }
   ctx.fillStyle='#536174';ctx.font='19px Arial';ctx.fillText('Petunjuk: setiap gambar = '+g.key+' item',12,height-10);
+ }else if(g.kind==='table'&&window.PAWorksheet25D){window.PAWorksheet25D.draw(ctx,{kind:'table',headers:g.rows[0],rows:g.rows.slice(1)},width)
  }else if(g.kind==='table'){
   const columns=Math.max(...g.rows.map(row=>row.length)),cell=width/columns;
   g.rows.forEach((row,i)=>row.forEach((text,j)=>{box(ctx,j*cell,i*56,cell,56,i===0?'#eaf0f8':'#fff','#a9b6ca',0);ctx.fillStyle='#24334d';ctx.font=(i===0?'bold ':'')+'20px Arial';ctx.fillText(text,j*cell+12,i*56+35,cell-24)}));
@@ -116,7 +128,18 @@ async function renderGraphic(g,width){
  else if(g.kind==='fractionChoices')g.choices.forEach((c,i)=>{const x=(i%2)*width/2,y=Math.floor(i/2)*112;ctx.fillStyle='#24334d';ctx.font='bold 22px Arial';ctx.fillText(c.letter,x+12,y+25);fraction(ctx,c.numerator,c.denominator,x+50,y+12,width/2-70,65)});
  return canvas;
 }
+/* Several small figures (choices A–D) sit side by side on raised cards, not stacked full width. */
+async function renderFigureRow(model,width){
+ const n=model.graphics.length,cols=Math.min(4,n),rows=Math.ceil(n/cols),cw=width/cols,ih=Math.min(190,cw-60),ch=ih+70,canvas=document.createElement('canvas');canvas.width=width;canvas.height=rows*ch;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);
+ for(let i=0;i<n;i++){const g=model.graphics[i],x=(i%cols)*cw+18,y=Math.floor(i/cols)*ch+16,w=cw-50,h=ih+10;
+  if(window.PAWorksheet25D?.block)window.PAWorksheet25D.block(ctx,x,y,w,h,'#ffffff',{d:.6,lw:1.5});else box(ctx,x,y,w,h,'#fff');
+  const image=await loadImage(g.src);contained(ctx,image,x+10,y+8,w-20,h-16);
+  ctx.fillStyle='#0e2b4a';ctx.font='900 24px Arial';ctx.textAlign='center';ctx.fillText(model.letters?.[i]||String.fromCharCode(65+i),x+w/2,y+h+36);ctx.textAlign='left'}
+ return canvas;
+}
 async function render(model,width=970){
+ if(model.graphics.length>=2&&model.graphics.every(g=>(g.kind==='svg'||g.kind==='image')&&g.width<=240&&g.height<=240))return renderFigureRow(model,width);
  const graphics=await Promise.all(model.graphics.map(g=>renderGraphic(g,width))),canvas=document.createElement('canvas');canvas.width=width;canvas.height=graphics.reduce((h,g)=>h+g.height+16,0)-16;
  const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,width,canvas.height);let y=0;for(const g of graphics){ctx.drawImage(g,0,y);y+=g.height+16}return canvas;
 }
