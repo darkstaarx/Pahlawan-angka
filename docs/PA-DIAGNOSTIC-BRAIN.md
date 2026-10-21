@@ -318,10 +318,10 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #76; Kemungkinan punca explained to the owner). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #77). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#76. #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #69–#77. #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
@@ -329,9 +329,8 @@ Last updated: 2026-10-21 (after PR #76; Kemungkinan punca explained to the owner
    not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
    speaker signal (3.86.99, see §4.8 "Implemented"); #76 "Kemungkinan
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
-   Current version 3.87.0. Open: PR #77, docs only (branch
-   `ccr-ed8f705d-ym2tc0`) that adds "How it works" under "Kemungkinan punca
-   tags" below; merge when the owner asks.
+   #77 docs: "How it works" under "Kemungkinan punca tags" below.
+   Nothing is open. Current version 3.87.0.
 2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
    (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
    full 4.7). Ask the owner before starting. Sketch for 4.6 (§4.6): the
@@ -351,7 +350,7 @@ Last updated: 2026-10-21 (after PR #76; Kemungkinan punca explained to the owner
    `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
    the real app before reporting.
 
-**Status on GitHub.** PRs #55–#63 and #65–#76 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#77 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 Start new work from `main`, one task per branch and PR, base `main`.
