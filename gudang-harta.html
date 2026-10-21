@@ -384,6 +384,11 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 @media (max-height:640px){.col .pile{height:40px}.col em{font-size:16px}.col .bt button{min-height:25px}.tiles.kp{gap:4px}.tiles.kp .tl{min-height:30px;font-size:15px}.qcard{padding:8px 10px 10px}.qcard b{font-size:18px}.pvt td{font-size:18px;padding:4px 6px}.banner>div>b{font-size:13px}}
 .qcard{padding:9px 12px 11px;gap:4px}.qcard b{font-size:clamp(17px,3.1dvh,24px);word-spacing:1px}
 .qcard.lt{background:#fffcf0;border-color:#d7b47e}.qcard.lt b{color:var(--ink)}.qcard.lt small{color:var(--berry)}
+/* Baca soalan panjang: the story is the question, so it reads like a page (left aligned, calm size).
+   It never takes the panel zoom: enlarged text wraps into more lines and would push the keypad down. */
+.story{width:100%;max-width:640px;box-sizing:border-box;padding:10px 13px;border-radius:14px;background:#fffcf0;border:3px solid #d7b47e;box-shadow:0 3px 0 #0002;color:var(--ink);font:700 clamp(14px,2.1dvh,17px)/1.42 var(--f-body);text-align:left;text-wrap:pretty}
+.pa-game .panel>.story{zoom:1}
+.story mark{background:#ffe27a;color:inherit;border-radius:4px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 @media (max-height:640px){.share{gap:3px}.share .bowl img{width:24px}.share .bowl{padding:2px 5px}.share .act button{min-height:28px}.fld{padding:4px 10px}}
 .share .pool svg{width:18px;height:18px}
 .share .bowl{padding:2px 5px;min-width:46px}.share .bowl img{width:clamp(26px,4.4dvh,36px)}
@@ -505,6 +510,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <script src="js/gudang-harta-router.js"></script>
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
+<script src="js/engine/reading-pairs-v1.js?v=1.0.0"></script>
 <script>
 (()=>{
 'use strict';
@@ -517,6 +523,7 @@ let focusTarget=null;try{const t=JSON.parse(query.get('focus_target')||'null');
  else if(t&&t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))focusTarget={kind:'regroup',op:t.op,zero:t.op==='sub'&&t.zero===true}
  else if(t&&t.kind==='fade')focusTarget={kind:'fade'}
  else if(t&&t.kind==='bar')focusTarget={kind:'bar'}
+ else if(t&&t.kind==='reading')focusTarget={kind:'reading'}
  if(focusTarget&&t.check===true)focusTarget.check=true}catch(_){focusTarget=null}
 if(!devEnabled&&!liveAuthorized){document.body.innerHTML='<main style="box-sizing:border-box;min-height:100%;padding:32px 20px;display:grid;place-items:center;background:#163652;color:#18324b;font:700 16px/1.5 system-ui,sans-serif"><section style="max-width:420px;padding:28px;border:3px solid #7d4a27;border-radius:22px;background:#fff4d9;box-shadow:0 8px 0 #7d4a27;text-align:center"><div style="font-size:42px">🗝️</div><h1 style="margin:8px 0;color:#7d4a27">Gudang Harta Wira</h1><p>Game ini dibuka melalui Kemahiran Fokus berdasarkan profil murid. Panel ujian hanya tersedia dalam DEV mode.</p></section></main>';return}
 /* ---------- pembantu nombor ---------- */
@@ -924,7 +931,8 @@ const needBorrow=(a,b,c)=>range(c).some(i=>dig(a,c)[i]<dig(b,c)[i]),needCarry=(a
 function targetMode(t){return t?TARGET_MODE[t.kind==='tables'?'tables':t.op]:null}
 /* Model bar (soalan berayat, lensa 4.4): any operation mode drills a word problem with its bar model. */
 const BAR_MODES=new Set(['tambah','tolak','darab','bahagi','gabung','masalah']);
-const isTargetMode=(t,k)=>t?.kind==='bar'?BAR_MODES.has(k):targetMode(t)===k;
+const storyTarget=t=>t?.kind==='bar'||t?.kind==='reading';
+const isTargetMode=(t,k)=>storyTarget(t)?BAR_MODES.has(k):targetMode(t)===k;
 const BAR_SCHEMAS={tambah:['total','more'],tolak:['part','diff'],darab:['times'],bahagi:['share']};
 function barGens(g,k){
  const cap={1:99,2:999,3:9999}[g]||99999,lo=Math.max(5,Math.floor(cap/20)),hi=x=>Math.max(lo+1,Math.floor(x));
@@ -960,9 +968,20 @@ function barGens(g,k){
   {arch:'target_bar_sentence',f:C=>{const p=make(C,pickSc());return{kind:'pick',vis:{t:'bar',rows:p.rows,brace:p.brace},...opts(p.bad.map(x=>x+' = ?'),p.ok+' = ?'),q:p.q,card:'Ayat matematik yang sepadan dengan bar?',s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'visual')}}},
   {arch:'target_bar_story',f:C=>{const p=make(C,pickSc());return{kind:'pad',form:NUM(p.ans),q:p.q,s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'word')}}}];
 }
+/* Baca soalan panjang (lens 4.8): the same kind of story in a short wording (one sentence), then the
+   long wording with its question sentence marked, then the long wording alone (js/engine/reading-pairs-v1.js). */
+const READ_FAMS={tambah:['jumlah'],tolak:['beza'],darab:['kali_ganda'],bahagi:['agih']},SIGN={add:' + ',sub:' − ',mul:' × ',div:' ÷ '};
+function readingGens(g,k){
+ const P=window.PAReadingPairs;if(!P)return null;
+ const fams=READ_FAMS[k]||['jumlah','beza','kali_ganda','agih'];let n=0;
+ const make=reading=>{const p=P.pair(fams[n++%fams.length],Math.max(3,g)),x=reading===1?p.short:p.long,v=p.numbers,op=x.facets.op,ask=(x.prompt.match(/[^.?!]+\?\s*$/)||[''])[0].trim();
+  return{kind:'pad',form:NUM(v.ans),q:'Baca cerita, kemudian jawab.',story:x.prompt,mark:reading===2?ask:'',s:x.hint,a:nf(v.a)+SIGN[op]+nf(v.b)+' = '+nf(v.ans)+'.',fx:{op,operands:[v.a,v.b],format:'word',reading}}};
+ return [{arch:'target_read_short',f:()=>make(1)},{arch:'target_read_marked',f:()=>make(2)},{arch:'target_read_long',f:()=>make(3)}];
+}
 function targetGens(t,g,k){
  if(!t)return null;
  if(t.kind==='bar')return barGens(g,k);
+ if(t.kind==='reading')return readingGens(g,k);
  if(t.kind==='tables'){let n=0;const next=()=>t.tables[n++%t.tables.length],fx=(a,b,tb)=>({op:'mul',operands:[a,b],table:tb});
   return [
    {arch:'target_table_groups',f:C=>{const tb=next(),k=R(2,6);return{kind:'pad',vis:{t:'array',r:k,c:tb},form:NUM(k*tb),q:'Ada '+k+' uncang, setiap uncang '+tb+' syiling. Berapakah jumlah syiling?',s:'Kira langkau '+tb+': '+range(3).map(i=>tb*(i+1)).join(', ')+', …',a:k+' × '+tb+' = '+k*tb+'.',fx:fx(k,tb,tb)}}},
@@ -984,7 +1003,7 @@ function targetGens(t,g,k){
    s:sub?'"Baki" bermaksud tolak. Tulis ayat matematik dulu, kemudian pinjam bila perlu.':'"Jumlah" bermaksud tambah. Kumpul semula bila perlu.',a:nf(a)+sign+nf(b)+' = '+nf(v(a,b))+'.',fx:{...fx(a,b),format:'word'}}}}];
 }
 let targetCache=null;
-const targetFor=(g,k)=>{if(!focusTarget)return null;const key=g+'|'+(focusTarget.kind==='bar'?k:'');if(!targetCache||targetCache.key!==key)targetCache={key,gens:targetGens(focusTarget,g,k)};return targetCache.gens};
+const targetFor=(g,k)=>{if(!focusTarget)return null;const key=g+'|'+(storyTarget(focusTarget)?k:'');if(!targetCache||targetCache.key!==key)targetCache={key,gens:targetGens(focusTarget,g,k)};return targetCache.gens};
 const GRADES={1:{title:'Nombor hingga 100'},2:{title:'Nombor hingga 1000 & sifir'},3:{title:'Nombor hingga 10 000'},4:{title:'Nombor hingga 100 000'},5:{title:'Nombor hingga 1 000 000'},6:{title:'Juta, perdana & operasi bergabung'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
 const SAYS={bina:'Tolong susun harta saya ikut nilai tempat!',banding:'Peti mana lebih bernilai?',pola:'Ada permata hilang dalam jejak!',tambah:'Saya nak simpan harta lagi!',tolak:'Saya nak ambil sebahagian harta.',darab:'Saya bawa banyak peti sama!',bahagi:'Kongsi sama rata, ya!',gabung:'Kira ikut tertib, Wira!',juta:'Harta kerajaan berjuta-juta!',perdana:'Nombor ni istimewa ke?',masalah:'Bantu urus harta kerajaan!'};
@@ -1084,7 +1103,8 @@ $('widget').addEventListener('click',e=>{const fb=e.target.closest('[data-f^="a"
 /* ---------- panel ---------- */
 function busyMerge(){const r=$('rack');if(r){r.classList.remove('merge');void r.offsetWidth;r.classList.add('merge')}}
 function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className='tiles';box.classList.toggle('padk',K==='pad');
- let h='';if(q.card)h+='<div class="qcard'+(q.vis?' lt':'')+'"><small>'+(K==='pick'?'PILIH':'GULUNG ARAHAN')+'</small><b>'+q.card+'</b></div>';
+ let h='';if(q.story){const i=q.mark?q.story.lastIndexOf(q.mark):-1;h+='<div class="story">'+(i>=0?esc(q.story.slice(0,i))+'<mark>'+esc(q.mark)+'</mark>':esc(q.story))+'</div>'}
+ if(q.card)h+='<div class="qcard'+(q.vis?' lt':'')+'"><small>'+(K==='pick'?'PILIH':'GULUNG ARAHAN')+'</small><b>'+q.card+'</b></div>';
  h+=visHTML(q.vis);
  if(K==='build')h+=(q.rack.mode==='build'?'<div class="rdout">NILAI HARTA <b id="rv">0</b></div>':'')+'<div class="rack n'+q.rack.cols+'" id="rack" style="--n:'+q.rack.cols+'"></div>'+(q.rack.mode!=='build'?'<div class="rguide" id="rguide"></div>':'');
  if(K==='pad')h+='<div class="ansrow" id="ansrow">'+q.form.fields.map((f,i)=>(f.pre?'<span class="lbl">'+f.pre+'</span>':'')+'<button type="button" class="fld'+(q.form.fields.length>1?' two':'')+'" id="F'+i+'" data-f="'+i+'" aria-label="Jawapan '+(i+1)+'"><b></b></button>'+(f.post?'<span class="lbl">'+f.post+'</span>':'')).join('')+'</div>';
@@ -1113,7 +1133,7 @@ function ansText(){if(q.ansTxt)return q.ansTxt;if(q.kind==='pick')return q.opts.
 // A one-operator card without spaced thousands lets the brain read the sum itself.
 const plainCard=c=>!!c&&(String(c).match(/[+−×÷]/g)||[]).length===1&&!/\d \d/.test(c);
 function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
- window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'gudang-harta',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String((plainCard(q.card)?q.card+' · ':'')+(q.q||'')).slice(0,200),answer:String(typeof ansText==='function'?ansText():'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms,
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'gudang-harta',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String((plainCard(q.card)?q.card+' · ':'')+(q.story||q.q||'')).slice(0,200),answer:String(typeof ansText==='function'?ansText():'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms,
   facets:{...(q.fx||{}),rep:repOf(q)},...(!ok&&q.kind==='pad'&&inp.length===1&&inp[0]!==''?{value:String(inp[0]).slice(0,24)}:{})},location.origin)}catch(e){}}
 function check(){
  if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
@@ -1149,9 +1169,9 @@ function adapt(st){if(q.fade){if(q.fadeAbs)fadeLevel[q.mode]=st===3?Math.min(2,(
  if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Tugasan seterusnya lebih mencabar.','',2600),2000)}}
  else{clean[k]=0;if(hints+misses>=2&&tier[k]>floor){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
 function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;
- window.parent.postMessage({type:'PA_GUDANG_HARTA_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,index:served,tier:q.tierIx+1,prompt:q.q,misses,hints,stars:st,at:Date.now()},location.origin)}catch(e){}}
+ window.parent.postMessage({type:'PA_GUDANG_HARTA_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,index:served,tier:q.tierIx+1,prompt:q.story||q.q,misses,hints,stars:st,at:Date.now()},location.origin)}catch(e){}}
 function reportProgress(action){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;
- window.parent.postMessage({type:'PA_GUDANG_HARTA_PROGRESS',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+(served+1)+':'+q.mode,index:served+1,tier:q.tierIx+1,prompt:q.q,misses,hints,action,at:Date.now()},location.origin)}catch(e){}}
+ window.parent.postMessage({type:'PA_GUDANG_HARTA_PROGRESS',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+(served+1)+':'+q.mode,index:served+1,tier:q.tierIx+1,prompt:q.story||q.q,misses,hints,action,at:Date.now()},location.origin)}catch(e){}}
 
 /* ---------- aliran ---------- */
 /* Semakan semula (check): half the rounds are the target, mixed with normal ones, starting at the abstract step. */
@@ -1172,8 +1192,8 @@ function fadeFor(k,gens,floor,cap){
 }
 function makeQ(){const k=cfg.modes[served%cfg.modes.length],tg=isTargetMode(focusTarget,k)&&!normalTurn(served)?targetFor(cfg.grade,k):null,key=tg?'target:'+k:k,gens=tg||GEN[cfg.grade][k],[floor,cap]=tg?[0,gens.length-1]:focusLimits.get(k)||[0,gens.length-1];
  // A target ladder starts at its concrete/pictorial step (CPA); a re-check starts at the abstract step.
- // A re-check skips the scaffold: sifir/regroup start at the abstract step, a bar model at the story alone.
- if(tier[key]==null){tier[key]=tg?(focusTarget.check?Math.max(0,gens.length-(focusTarget.kind==='bar'?1:2)):0):Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[key]=0}
+ // A re-check skips the scaffold: sifir/regroup start at the abstract step, a bar model or a long wording at the story alone.
+ if(tier[key]==null){tier[key]=tg?(focusTarget.check?Math.max(0,gens.length-(storyTarget(focusTarget)?1:2)):0):Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[key]=0}
  const fade=focusTarget?.kind==='fade'&&!tg?fadeFor(k,gens,floor,cap):null;
  const ti=fade?fade.ti:liveAuthorized?Math.max(floor,Math.min(tier[key],cap,gens.length-1)):Math.min(tier[key],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
  return{mode:k,tierKey:key,target:!!tg,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch,...(fade?{fade:true,fadeAbs:fade.abs}:{})}}

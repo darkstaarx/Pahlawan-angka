@@ -11,6 +11,7 @@
   'use strict';
   const B=root?.PADiagnostic||(typeof require==='function'?require('../js/engine/diagnostic-brain-v1.js'):null);
   const T=root?.PATargets||(typeof require==='function'?require('../js/engine/diagnostic-targets-v1.js'):null);
+  const RP=root?.PAReadingPairs||(typeof require==='function'?require('../js/engine/reading-pairs-v1.js'):null);
   const DOMAIN={money:'Wang',plain:'Operasi'};
 
   // Behaviour models. acc = chance of a right first try; sec = typical seconds.
@@ -29,7 +30,11 @@
       money:()=>({acc:.6,sec:11,bug:'money_unit',bugRate:.9}),word:()=>({acc:.9,sec:12}),guess:.02},
     hana:{name:'Hana',grade:2,label:'Darjah 2 · betul bila ada gambar/blok, lemah bila nombor sahaja (lensa 4.1)',
       rep:r=>r==='abstract'?{acc:.35,sec:9}:{acc:.92,sec:8},
-      table:()=>({acc:.92,sec:2.4}),money:()=>({acc:.85,sec:12}),word:()=>({acc:.8,sec:14}),guess:.03,cpa:true}
+      table:()=>({acc:.92,sec:2.4}),money:()=>({acc:.85,sec:12}),word:()=>({acc:.8,sec:14}),guess:.03,cpa:true},
+    zara:{name:'Zara',grade:4,label:'Darjah 4 · kira betul, tetapi lemah bila soalan berayat panjang (lensa 4.8)',
+      // Long wording read alone is hard; heard read aloud (speaker, 1 in 4 long questions) it is fine.
+      reading:(rd,heard)=>rd===3&&!heard?{acc:.3,sec:24}:{acc:.92,sec:rd===3?18:11},aloud:.25,
+      table:()=>({acc:.95,sec:2.2}),sub:()=>({acc:.92,sec:7}),add:()=>({acc:.94,sec:6}),money:()=>({acc:.9,sec:12}),word:()=>({acc:.85,sec:14}),guess:.02}
   };
 
   function rng(seed){let t=seed>>>0||1;return()=>{t+=0x6D2B79F5;let x=Math.imul(t^t>>>15,1|t);x^=x+Math.imul(x^x>>>7,61|x);return((x^x>>>14)>>>0)/4294967296}}
@@ -41,10 +46,13 @@
   function ordinaryItems(p,r,n){
     const out=[],I=(a,b)=>a+Math.floor(r()*(b-a+1));let k=0;
     while(out.length<n){k++;
-      const pick=p.cpa?['cpa','cpa','cpa','cpa','table','money','word'][k%7]:p.grade===1?['fact','fact','add','sub','money','word'][k%6]:['table','table','sub','add','money','money','word','sub'][k%8];
+      const pick=p.reading?['read','read','table','read','sub','read','add','read'][k%8]:p.cpa?['cpa','cpa','cpa','cpa','table','money','word'][k%7]:p.grade===1?['fact','fact','add','sub','money','word'][k%6]:['table','table','sub','add','money','money','word','sub'][k%8];
       // Same Tambah/Tolak hingga 1000 sums, shown with blocks/pictures or as numbers only.
       if(pick==='cpa'){const add=r()<.5,rep=r()<.5?'pictorial':'abstract',a=I(120,480),b=I(110,add?480:a-1);
         out.push({prompt:`${a} ${add?'+':'−'} ${b} = ?`,answer:add?a+b:a-b,skill:add?'D2.2.1':'D2.2.2',facets:{op:add?'add':'sub',operands:[a,b],format:'symbolic',rep},_k:'cpa'});continue}
+      // Same families in a short or a long wording (js/engine/reading-pairs-v1.js).
+      if(pick==='read'){const fam=['jumlah','beza','kali_ganda','agih'][(k>>1)%4],skill=`D${p.grade}.${{jumlah:'ADD',beza:'SUB',kali_ganda:'MUL',agih:'DIV'}[fam]}`;
+        out.push({...RP.item(fam,p.grade,r()<.5?1:3,r),skill,_k:'read'});continue}
       if(pick==='table'){const a=I(2,9),b=I(2,9);out.push({prompt:`${a} × ${b} = ?`,answer:a*b,facets:{op:'mul',operands:[a,b],format:'symbolic'},_k:'table'})}
       else if(pick==='fact'){const op=r()<.5?'add':'sub';let a,b;if(op==='add'){a=I(2,9);b=I(2,9)}else{b=I(2,9);a=b+I(1,9)}out.push({prompt:`${a} ${op==='add'?'+':'−'} ${b} = ?`,answer:op==='add'?a+b:a-b,facets:{op,operands:[a,b],format:'symbolic'},_k:'fact'})}
       else if(pick==='sub'){const a=I(30,98),b=I(11,a-1);out.push({prompt:`${a} − ${b} = ?`,answer:a-b,facets:{op:'sub',operands:[a,b],format:'lazim'},_k:'sub'})}
@@ -60,6 +68,7 @@
     const f=q.facets||{};let m;
     const ops=f.operands;
     if(p.rep&&f.rep)m=p.rep(f.rep);
+    else if(p.reading&&f.reading)m=p.reading(f.reading,q.readAloud===true);
     else if(f.op==='mul'&&ops)m=p.table?.(Math.max(...ops.filter(x=>[7,3].includes(x)).concat([0]))||ops[0])||{acc:.9,sec:3};
     else if(f.context==='money')m=p.money?.(f.op)||{acc:.8,sec:12};
     else if(f.format==='word')m=p.word?.()||{acc:.8,sec:14};
@@ -79,6 +88,7 @@
 
   function play(p,items,log,r,start,boost){
     items.forEach((q,i)=>{
+      if(p.aloud&&q.facets?.reading===3&&r()<p.aloud)q.readAloud=true;   // pressed the speaker first
       const a=answer(p,q,r,boost),at=start+i*90e3,meta={domain:DOMAIN[q.facets?.context]||'Operasi'};
       if(a.ok)log=B.applyResponse(log,{q,meta,ok:true,sec:a.sec,mode:'gembok',value:a.value,at});
       else{log=B.applyResponse(log,{q,meta,ok:false,sec:a.sec,mode:'gembok-first-attempt',value:a.value,at});
@@ -105,13 +115,14 @@
       if(t.kind==='word')return f.format==='word';
       if(t.kind==='facts')return (f.operands||[]).every(x=>x<=20);
       if(t.kind==='fade')return q.skill===t.skill&&f.rep==='abstract';
+      if(t.kind==='reading')return f.reading===3;
       return false});
     const later=now+8*DAY;let log2=log.slice();
     sets.forEach((s,i)=>{log2=play(p,s.items,log2,r,later-7*DAY+i*3600e3,practised)});
     const guessless={...p,guess:Math.min(p.guess,.03)};             // parent talked to the child after Portal Restu
     for(let d=6;d>=1;d--)log2=play(guessless,ordinaryItems(p,r,25),log2,r,later-d*DAY,practised);
     const week2=B.analyze(log2,{now:later,name:p.name});
-    return{persona:{id,...p},log1:log,week1,plan:pl,sets,worksheet:T.worksheet(pl,{name:p.name},7),week2,answers:{week1:log.length,week2:log2.length}};
+    return{persona:{id,...p},log1:log,log2,week1,plan:pl,sets,worksheet:T.worksheet(pl,{name:p.name},7),week2,answers:{week1:log.length,week2:log2.length}};
   }
 
   return{PERSONAS,simulate};

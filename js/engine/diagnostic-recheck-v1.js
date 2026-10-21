@@ -40,6 +40,9 @@
     if(t.kind==='units')return {key:'units',test:r=>r.c==='money'};
     // Word problems: the check is word problems without a drawn bar model.
     if(t.kind==='word')return {key:'word',test:r=>r.f==='word'};
+    // Long wording (lens 4.8): the check is long questions of the same family read alone (not heard first).
+    if(t.kind==='reading'){const ctx=t.context||'plain';
+      return {key:'reading:'+(t.op||'any')+':'+ctx,test:r=>r.rd===3&&r.ra!==1&&(!t.op||r.o===t.op)&&(r.c||'plain')===ctx}}
     // Fading pictures: the check is the same skill answered with numbers only.
     if(t.kind==='fade'&&t.skill)return {key:'fade:'+t.skill+':'+(t.op||'none'),test:r=>r.s===t.skill&&r.rp==='a'&&(!t.op||t.op==='none'||r.o===t.op)};
     return null;

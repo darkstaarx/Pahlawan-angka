@@ -198,6 +198,38 @@ Thresholds are **starting values**; calibrate with real data (§7).
 - **Parent:** "Matematik anak ok — yang menyukarkan ialah ayat panjang."
 - **Action:** read-aloud (existing speaker), shorter wording first, then
   gradually longer. Important for Malaysian multilingual pupils.
+- **Implemented (3.86.99, PR #75, merged, light version):** facet `reading` (1 short … 3
+  long) is recorded as `rd`; only a generator that wrote both wordings sets it,
+  never inferred from text. `js/engine/reading-pairs-v1.js` (`PAReadingPairs`)
+  has six families: jumlah (tambah), beza (tolak), kali ganda (darab), agih
+  sama rata (bahagi), wang jumlah, wang baki. Each has a short wording (one
+  sentence, ≤12 words) and a long one (2–3 sentences, extra names and detail)
+  from the same numbers and schema, sized per grade (D3 to 10 000, D4 to
+  100 000, D5–D6 to 1 000 000; money D3 to RM100 … D6 to RM100 000; numbers
+  10 000 and up use a no-break space). `generate()` in `questions/index.js`
+  serves one for about 1 in 4 questions of D3–D6 ADD/SUB/MUL/DIV/MONEY (D6:
+  NUMBERS → jumlah/beza, MONEY), short or long at random; not in
+  recover/teach/confirm mode, not for a boss, not below mastery 35. Read aloud: the Segel speaker
+  marks the question (`q.readAloud`) → `ra:1` (heard before answering) or
+  `ra:2` (heard after a wrong first try). Rule per family (operation +
+  context): latest 10 short vs latest 10 long read alone (`ra` not 1), ≥6 each,
+  short ≥80% and long ≤50%, rapid guesses excluded; steps aside when a sifir,
+  basic-fact or bug finding explains half or more of the long misses. Read
+  aloud right (≥2 heard first, or ≥2 misses right after hearing) adds a line
+  and makes it "tinggi". When it fires, 4.4 `format_word` steps aside (short
+  word problems are right, so it is the reading, not the structure). Finding
+  `reading_load` → plan step `reading` ("Baca soalan panjang"): worksheet
+  (short first, then long, Cara kerja box) and Gudang Harta
+  `focus_target {kind:'reading'}`: short wording → long with the question
+  sentence highlighted (`reading: 2`, not evidence) → long alone; a re-check is
+  the long wording alone. A money finding has no mini game target (Gerai
+  Wirayung has no story rounds). Re-check key `reading:<op>:<context>` (long
+  answers read alone). Segel shows a prompt over 150 characters at a calmer
+  size, left aligned. Dummy child: `zara`. Tests:
+  `audit/diagnostic-reading.test.js`; reading rounds and the real-app card in
+  `audit/minigame-targets-browser.test.js`. Not done: mini games have no
+  speaker; bank items other than the pairs stay untagged; thresholds are a
+  design guess until phase 5.
 
 Also keep the existing **independence** signal: correct only with hints →
 "boleh dengan bantuan".
@@ -244,7 +276,7 @@ composition, lock policy.
 | 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
 | 2 ✅ | Portal Restu (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; parent can allow exploring for the day; never in demo |
 | 3 (worksheet ✅, rest: see §8a) | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets). Worksheet done: "Disyorkan" PDF takes ~60% items from `PATargets.worksheetItems` (FOKUS tag, Cara Kerja box for word/money/regroup, "Kenapa latihan ini" box, step-by-step skema from `PATargets.explain`); rest from the bank; falls back to mastery logic without findings | Mini game round composition reflects findings; worksheet PDF has the right mix |
-| 4 (4.1 ✅, rest open) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
+| 4 (4.1 ✅, light 4.8 ✅, rest open) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
 | 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
 
 ## 8. Where things live (current code)
@@ -271,6 +303,9 @@ composition, lock policy.
   mini game must call `paAttempt(false)` before `misses++` and `paAttempt(true)`
   on success, or the brain and Portal Restu cannot see it.
   Tests: `audit/minigame-telemetry.test.js`.
+- Short/long wordings (lens 4.8): `js/engine/reading-pairs-v1.js`
+  (`PAReadingPairs`), served by `generate()` in `questions/index.js`
+  (`READING_PAIR_SKILLS`) and by Gudang Harta reading rounds.
 - Targeted practice + worksheet composer: `js/engine/diagnostic-targets-v1.js`
   (`PATargets`, incl. `skillFor` for Kemahiran Fokus cards in
   `js/guardian-focus.js`). Dummy children: `tools/diagnostic-sim.js`, lab
@@ -280,47 +315,28 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #74). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #75). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#74. #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #69–#75. #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
    for all mini games + one-row number keypad on short web screens so Wira is
-   not cropped (3.86.98). Nothing is open. Current version 3.86.98.
-2. **Next task: light lens 4.8 (language load)** — the owner chose the order
-   bar model → light 4.8 → "Kemungkinan punca" tags for D2–D5 → 4.6 and full
-   4.7 (see "Owner decision" under Phase 4 below). Plan for light 4.8:
-   - Scope: only the common word-problem families of D3–D6 (tambah/tolak
-     jumlah & beza, darab kali ganda, bahagi agih sama rata, wang). Each
-     family gets a short wording (one sentence, ≤12 words) and a long one
-     (2–3 sentences, extra names/detail, same numbers and schema). Tag the
-     question `facets.reading` 1 (short) or 3 (long) at generation (§3);
-     never infer it from text later. The brain record today keeps only `w`
-     (word count, `js/engine/diagnostic-brain-v1.js` facets()/compact());
-     add a compact `rd` field for `reading`.
-   - Rule (§4.8): same family, latest answers, short ≥80% and long ≤50%,
-     at least ~6 each, rapid guesses excluded (as in 4.1) and the finding
-     steps aside when 4.2 fact fluency or 4.3 bugs already explain the
-     misses. Parent line: "Matematik anak ok — yang menyukarkan ialah ayat
-     panjang." Thresholds are a design guess until phase 5.
-   - Read-aloud signal: the Segel battle has a speaker button (`#segelSpk`,
-     `bindSpeaker()` in `js/segel-demo-v2.1.0.js`, `speechSynthesis` ms-MY).
-     It is not recorded today. Record "read aloud before answering" on the
-     response (e.g. `ra:1`); "wrong when read alone, right after read-aloud"
-     on long items supports the reading finding. Battle answers reach the
-     brain through `js/battle.js` → `PATelemetry.response` (check the exact
-     path before changing it). Mini games have no speaker yet; leave them.
-   - Target: plan step kind `reading` (card e.g. "Baca soalan panjang"):
-     short wording first, then longer, speaker on. Mini game target only if
-     cheap (Gudang Harta already has story rounds, `target_bar_story`);
-     otherwise worksheet + battle. Add a re-check matcher (long-wording
-     answers, `rd === 3`) in `js/engine/diagnostic-recheck-v1.js`.
-   - Tests in the style of `audit/diagnostic-cpa.test.js` (facets, finding,
-     no finding below the rule, explain-away, plan card, re-check key, a
-     dummy child in `tools/diagnostic-sim.js`). Update §4.8 with an
-     "Implemented" note like §4.1.
+   not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
+   speaker signal (3.86.99, see §4.8 "Implemented"). Nothing is open.
+   Current version 3.86.99.
+2. **Next task: "Kemungkinan punca" tags for D2–D5** (owner order: bar model →
+   light 4.8 → these tags → 4.6 and full 4.7). The Kemahiran Fokus card shows
+   "Kemungkinan punca: …" from `PAFocusFoundationV1.evaluate()`
+   (`js/engine/focus-foundation-v1.js`), which reads foundation tags that
+   generators attach with `attachFoundationQuestionTags(q, meta)`
+   (`questions/helpers.js`, `probes.foundationIds`). Coverage today: D1 65%,
+   D6 70%, D2 9%, D5 11%, D3–D4 0% (see "Question bank check" below). Measure
+   first (share of generated questions per skill that carry tags), then tag
+   the D2–D5 generators that win in the live app (D3 = v2 runtime; D4/D5 =
+   the wrapper chain listed in `js/pwa.js`), with tests in the style of the
+   existing foundation tests.
 3. Owner style: reply in Bahasa Malaysia, short and plain; one task per
    branch/PR, base `main`; merge only when the owner says so (convention:
    first push a commit marking the PR merged here in §8a, then merge with a
@@ -330,7 +346,7 @@ Last updated: 2026-10-21 (after PR #74). Read this section first if you are pick
    `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
    the real app before reporting.
 
-**Status on GitHub.** PRs #55–#63 and #65–#74 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#75 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 Start new work from `main`, one task per branch and PR, base `main`.
@@ -492,7 +508,7 @@ an "8 lebih banyak daripada 8" claim, D2.5.2 time units (back conversion and
 sides), D5 Peratus (any multiple of 5). Guard: `audit/question-bank-choices.test.js`.
 Still open: tags for "Kemungkinan punca" exist for D1 (65%) and D6 (70%) only
 (D2 9%, D5 11%, D3–D4 0%); few pictures in D4–D6 (13–18%) for lens 4.1; no
-short/long wording pairs yet (lens 4.8).
+short/long wording pairs yet (lens 4.8; ✅ added in 3.86.99 as separate pair items).
 
 **Phase 4 (started 2026-10-21)**
 - ✅ Lens 4.1 Representation (CPA), 3.86.95, PR #71, merged: see §4.1
@@ -538,6 +554,7 @@ short/long wording pairs yet (lens 4.8).
   1366×768 the scene grows from 97 px to 159 px. Phones keep two rows;
   typing on the keyboard works in the six keypad games. Sweep: 9 games ×
   10 sizes (320×500 … 1920×960), no control out of reach.
+- ✅ Light lens 4.8 (language load), 3.86.99, PR #75, merged: see §4.8 "Implemented".
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
   "Kemungkinan punca" tags for D2–D5. 4.6 and full 4.7 after that.
