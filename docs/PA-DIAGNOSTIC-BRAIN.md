@@ -496,8 +496,9 @@ short/long wording pairs yet (lens 4.8).
   the frame (no scroll). ✅ Fixed in 3.86.98 (owner request, not merged yet):
   `css/minigame-question-first-v1.css` lets every mini game scroll when the
   content is taller than the frame and pins the "Tanya Wira / Semak" row to
-  the bottom (sticky, solid backing, no extra padding); the scene is shorter
-  below 620 px; the three bridges (mini games, Tapak Bina, Gerai Wirayung)
+  the bottom (sticky, solid backing, no extra padding); the answer keys and
+  the action row never shrink, so the panel auto-fit only uses free room; the
+  scene is shorter below 620 px (a 1366×768 laptop gives the frame ~568 px); the three bridges (mini games, Tapak Bina, Gerai Wirayung)
   use a compact "Kembali" bar and status line below 700 px. Before: 7 of 9
   games had controls out of reach at 320–375 px, two even at 390 px. Test:
   "small phones" in `audit/minigame-targets-browser.test.js` (all nine games

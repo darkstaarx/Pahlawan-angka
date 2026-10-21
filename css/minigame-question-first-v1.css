@@ -19,6 +19,8 @@
    it never shrinks below its content either (small phones scroll as before). */
 :is(.pa-game,.game) .panel{flex:1 1 0;min-height:min-content!important;justify-content:center}
 :is(.pa-game,.game) .panel>*{zoom:var(--qz,1)}
+/* The answer keys and the action row never shrink: the panel's zoom only uses truly free room. */
+:is(.pa-game,.game) :is(.tiles,.actions){flex-shrink:0}
 
 /* A choice question without a picture: big full-width choices take the room. */
 :is(.pa-game,.game) .panel:empty{display:none}
@@ -32,6 +34,6 @@
 /* No extra padding (the layout above keeps its room); a solid shadow fills the
    row's top margin so scrolled content never shows through behind the buttons. */
 :is(.pa-game,.game) .actions{position:sticky;bottom:0;z-index:20}
-.pa-game .actions{background:#ecd09b;box-shadow:0 -9px 0 #ecd09b,0 4px 0 #ecd09b}
-.game .actions{background:#0f1828;box-shadow:0 -9px 0 #0f1828,0 4px 0 #0f1828}
-@media (max-height:620px){:is(.pa-game,.game) .scene{flex-basis:clamp(110px,22dvh,140px)!important}}
+.pa-game .actions{background:#ecd09b;box-shadow:0 -6px 0 #ecd09b,0 4px 0 #ecd09b}
+.game .actions{background:#0f1828;box-shadow:0 -6px 0 #0f1828,0 4px 0 #0f1828}
+@media (max-height:620px){:is(.pa-game,.game) .scene{flex-basis:clamp(96px,17dvh,130px)!important}}
