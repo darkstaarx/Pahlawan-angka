@@ -366,12 +366,13 @@
     if(fid){
       let title=fid, m=0;
       try{ title=(META[fid]&&META[fid].title)||fid }catch(_){}
-      const recommendation=window.PAFocusPractice?.summary?.().items[0];
+      // A brain-led focus can come from mini game answers with no journey encounters yet.
+      const recommendation=window.PAFocusPractice?.summary?.().items[0],counted=recommendation?.attempts>0?recommendation:null;
       m=recommendation?.independentRate||0;
       if(fname)fname.textContent=title;
       if(fpct)fpct.textContent=m+'%';
       if(ffill)ffill.style.width=Math.max(0,Math.min(100,m))+'%';
-      if(fnote)fnote.textContent=recommendation
+      if(fnote)fnote.textContent=counted
         ?'Betul sendiri: '+recommendation.independent+'/'+recommendation.attempts+' · Pilih fokus'
         :focusNote(fid);
     }else{
