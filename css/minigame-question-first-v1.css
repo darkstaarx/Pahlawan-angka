@@ -37,3 +37,15 @@
 .pa-game .actions{background:#ecd09b;box-shadow:0 -6px 0 #ecd09b,0 4px 0 #ecd09b}
 .game .actions{background:#0f1828;box-shadow:0 -6px 0 #0f1828,0 4px 0 #0f1828}
 @media (max-height:620px){:is(.pa-game,.game) .scene{flex-basis:clamp(96px,17dvh,130px)!important}}
+
+/* Web (a wide but short frame, e.g. a 1366×768 laptop): the number keys fit in
+   one row (1–0, then ⌫), which gives the scene back its room so Wira is not
+   cropped. Phones (< 440 px wide) keep the two-row keypad. Typing on the
+   keyboard works too. */
+@media (min-width:440px) and (max-height:760px){
+  :is(.pa-game,.game) .tiles.kp{grid-template-columns:repeat(12,1fr)!important;gap:4px!important}
+  :is(.pa-game,.game) .tiles.kp>*{min-height:34px!important;padding-left:0!important;padding-right:0!important}
+  :is(.pa-game,.game) .tiles.kp>:nth-child(6){order:1}
+  :is(.pa-game,.game) .tiles.kp>:nth-child(12){order:2}
+  :is(.pa-game,.game) .scene{flex-basis:clamp(130px,28dvh,210px)!important}
+}

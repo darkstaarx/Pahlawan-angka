@@ -287,7 +287,8 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
    (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
    Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71, the question bank
    repair (3.86.96) as PR #72, the bar model for word problems (3.86.97) as
-   PR #73. Open: small-phone fix for all mini games (3.86.98), branch
+   PR #73. Open: small-phone fix for all mini games, plus a one-row number keypad on
+   short web screens so Wira is not cropped (3.86.98), branch
    `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
 2. Then ask the owner what next. Candidates, in order: a bar model (Model
    Method) round for word problems in a mini game (proposed, not started);
