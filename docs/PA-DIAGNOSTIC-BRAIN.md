@@ -278,6 +278,7 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
   "Kenapa latihan ini", step-by-step skema), 2.5D canvas graphics
   (`js/worksheet-2p5d-v1.js`).
 - v2 D3 visuals no longer print answers (grouping, unit meters, number line order).
+- Test suite clean: `node --test audit/*.test.js` → 0 failures (Next item 5).
 
 **Next (phase 3 remainder), in this order**
 1. *Kemahiran Fokus cards show brain findings.* `focusPracticeSummary()` in
@@ -303,8 +304,17 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    later (spaced, lens 4.7) and let the card show "Semakin baik" or keep the
    focus.
 
-5. *Fix the 12 known failing tests (small cleanup PR, can go any time).* They
-   are test problems, not app bugs, but they hide real breakage:
+5. ✅ *Done (2026-10-21, branch `ccr-ed8f705d-ym2tc0`): the 12 known failing
+   tests are fixed; `node --test audit/*.test.js` → 158 pass, 0 fail.* What
+   changed: `audit/lib/browser.js` resolves `playwright` normally and takes
+   the browser from `PA_BROWSER_PATH`, then `$PLAYWRIGHT_BROWSERS_PATH/chromium`,
+   then the old path; `audit/lib/segel-close.js` gives both page-lock tests the
+   real `closeSegelDemo` slice with `guestCompleted`, `$` and
+   `setDoneBackLabel`; the demo harness includes `markWrongAnswer`; stubs and
+   expectations follow the current app (SVG padlock with `data-lock-state`,
+   typed retry keeps the wrong answer selected, WebP avatars, full pricing
+   overlay). No app code changed. Original notes:
+   They are test problems, not app bugs, but they hide real breakage:
    - Environment paths: `audit/affiliate-admin-browser.test.js` requires
      Playwright from a Codex cache path; `audit/page-lock-v1.test.js` launches
      `/usr/bin/chromium`. Resolve `playwright` normally and take the browser
@@ -332,8 +342,9 @@ phase 5 (consented cloud telemetry), see §7.
 
 **How to verify your change**
 - `node --test audit/diagnostic-*.test.js audit/minigame-telemetry.test.js audit/rapid-lock.test.js`
-- `node --test audit/*.test.js` → 12 failures are pre-existing on main (listed in
-  Next item 5); do not count them as yours, but do not add new ones.
+- `node --test audit/*.test.js` → must be 0 failures (Next item 5 cleared the
+  old 12). The two browser tests need Playwright; set `PA_BROWSER_PATH` if
+  your Chromium/Edge is not found automatically.
 - `node questions/v2/build/build.js --check` after touching `questions/v2/`
   (rebuild with `node questions/v2/build/build.js`).
 - Dummy children: `tools/diagnostic-sim-lab.html`; 2.5D graphics:

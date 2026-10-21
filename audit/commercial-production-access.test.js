@@ -14,7 +14,10 @@ test('PDF rendering failure does not consume daily quota',async()=>{const c=work
 test('double click consumes only one claim and downloads once',async()=>{const c=worksheetHarness({data:{allowed:true}});await Promise.all([c.worksheet(false),c.worksheet(true)]);assert.equal(c.claims,1);assert.equal(c.downloads,1)});
 
 test('mission quota blocks concurrent starts',async()=>{const c=harness({plan:'free',status:'inactive',profile_limit:1});await c.window.PACommercial.refresh();let complete,calls=0;c.window.PACloud.state.client.rpc=()=>{calls++;return new Promise(r=>complete=r)};const first=c.window.PACommercial.authorizeMission();assert.equal(await c.window.PACommercial.authorizeMission(),false);complete({data:{allowed:true}});assert.equal(await first,true);assert.equal(calls,1)});
-test('pricing presents Plus then standard then Free',()=>{const c=harness({});const overlay={classList:{remove(){}}};let html='';c.document.body={insertAdjacentHTML:(_,s)=>html=s};let mounted=false;c.document.getElementById=id=>id==='paPricingOverlay'&&mounted?overlay:null;c.document.body.insertAdjacentHTML=(_,s)=>{html=s;mounted=true};c.window.PACommercial.openPricing();assert.ok(html.indexOf('<b>Family Plus</b>')<html.indexOf('<b>Akses Keluarga</b>'));assert.ok(html.indexOf('<b>Akses Keluarga</b>')<html.indexOf('<b>Free</b>'));assert.match(html,/Satu misi sehari/)});
+// A mounted #paPricingOverlay as openPricing() uses it (entry-mode click
+// listener, dataset.mode, free card lookup, show/hide classes).
+function pricingOverlay(){const removed=[];return {removed,dataset:{},addEventListener(){},querySelector(){return null},classList:{remove:x=>removed.push(x),add(){},contains:()=>false}};}
+test('pricing presents Plus then standard then Free',()=>{const c=harness({});const overlay=pricingOverlay();let html='';c.document.body={insertAdjacentHTML:(_,s)=>html=s};let mounted=false;c.document.getElementById=id=>id==='paPricingOverlay'&&mounted?overlay:null;c.document.body.insertAdjacentHTML=(_,s)=>{html=s;mounted=true};c.window.PACommercial.openPricing();assert.ok(html.indexOf('<b>Family Plus</b>')<html.indexOf('<b>Akses Keluarga</b>'));assert.ok(html.indexOf('<b>Akses Keluarga</b>')<html.indexOf('<b>Free</b>'));assert.match(html,/Satu misi sehari/);assert.equal(overlay.dataset.mode,'manage');assert.deepEqual(overlay.removed,['hidden'])});
 
 test('spent free mission shows a reset card before any pricing page',async()=>{
  const c=harness({plan:'free',status:'inactive',profile_limit:1});await c.window.PACommercial.refresh();
@@ -61,8 +64,8 @@ test('hub quota check uses a non consuming RPC',async()=>{
 
 test('Free and RM19 focus entry cannot open the picker',async()=>{
  for(const plan of ['free','premium']){
-  const c=harness({plan,status:'active'});await c.window.PACommercial.refresh();let pricing=0;c.document.body={insertAdjacentHTML(){pricing++}};c.document.getElementById=id=>id==='paPricingOverlay'?{classList:{remove(){}}}:null;
+  const c=harness({plan,status:'active'});await c.window.PACommercial.refresh();let pricing=0;c.document.body={insertAdjacentHTML(){pricing++}};const overlay=pricingOverlay();c.document.getElementById=id=>id==='paPricingOverlay'?overlay:null;
   const source=fs.readFileSync('js/guardian-focus.js','utf8'),start=source.indexOf('function openFocusPicker(){'),end=source.indexOf("if(typeof db",start);
-  vm.runInContext(source.slice(start,end)+'throw Error("picker opened");}',c);c.openFocusPicker();assert.equal(pricing,0);assert.equal(c.window.PACommercial.canUse('focus'),false);
+  vm.runInContext(source.slice(start,end)+'throw Error("picker opened");}',c);c.openFocusPicker();assert.equal(pricing,0);assert.deepEqual(overlay.removed,['hidden'],'pricing shown instead of the picker');assert.equal(c.window.PACommercial.canUse('focus'),false);
  }
 });

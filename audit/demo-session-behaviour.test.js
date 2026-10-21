@@ -3,9 +3,12 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 
+// Choice buttons are built with className='ans' (see paintQuestion).
 function makeButton(label){
-  const classes=new Set();
-  return {label,textContent:label,disabled:false,classList:{add:x=>classes.add(x),remove:x=>classes.delete(x),has:x=>classes.has(x)}};
+  const classes=new Set(['ans']),attributes={};
+  return {label,textContent:label,disabled:false,attributes,
+    classList:{add:x=>classes.add(x),remove:x=>classes.delete(x),has:x=>classes.has(x),contains:x=>classes.has(x)},
+    setAttribute:(k,v)=>{attributes[k]=v},closest:()=>null};
 }
 
 function harness(){
@@ -15,9 +18,14 @@ function harness(){
   let questionDraws=0,celebrations=0;
   const elements={segelAnswers:answers,segelFeedback:feedback,segelHint:{classList:{add(){}}}};
   const source=fs.readFileSync('js/segel-demo-v2.1.0.js','utf8');
-  const start=source.indexOf('  function unlockGuestRetryControls(');
-  const end=source.indexOf('  async function respondProduction(',start);
-  const body=source.slice(start,end);
+  const slice=(from,to)=>{
+    const start=source.indexOf(from),end=source.indexOf(to,start);
+    assert.ok(start>=0&&end>start,from.trim());
+    return source.slice(start,end);
+  };
+  // respond() marks a wrong choice with the real markWrongAnswer() helper.
+  const body=slice('  function markWrongAnswer(','  function setTypedRetryEnabled(')
+    +slice('  function unlockGuestRetryControls(','  async function respondProduction(');
   const c={
     console, setTimeout, clearTimeout,
     run:null, stage:null,
@@ -45,6 +53,7 @@ test('guest demo keeps first wrong attempt on the same question, then resolves a
   const h=harness(),wrong=h.controls[0],correct=h.controls[1];
   const originalQuestion=h.c.run.q;
   await h.c.respond({v:'wrong',tag:'wrong'},wrong);
+  assert.equal(wrong.attributes['aria-label'],'wrong — jawapan salah');
   assert.equal(h.c.run.asked,0);
   assert.equal(h.c.run.tally.miss,0);
   assert.equal(h.c.run.retryOpen,true);
@@ -115,17 +124,18 @@ test('fraction retry helper reopens nested controls and clears response state',(
   assert.equal(nested[0].classList.has('no'),false);
 });
 
-test('typed retry helper clears the rejected value and re-enables input',()=>{
+test('typed retry helper keeps the rejected value selected and re-enables input',()=>{
   const source=fs.readFileSync('js/segel-demo-v2.1.0.js','utf8');
   const start=source.indexOf('  function setTypedRetryEnabled('),end=source.indexOf('  function productionCurrent(',start);
-  const input={value:'bad',disabled:true,focus(){this.focused=true}};
+  // The rejected answer stays visible and selected, so typing replaces it.
+  const input={value:'bad',disabled:true,focus(){this.focused=true},select(){this.selected=true}};
   const button={disabled:true};
   const form={querySelector:s=>s.includes('paTypedInput')?input:button};
   const answers={querySelector:s=>s==='.paTypedAnswer'?form:null};
   const c={$:()=>answers};
   vm.createContext(c);vm.runInContext(source.slice(start,end),c);
   c.setTypedRetryEnabled(true);
-  assert.equal(input.value,'');assert.equal(input.disabled,false);assert.equal(button.disabled,false);assert.equal(input.focused,true);
+  assert.equal(input.value,'bad');assert.equal(input.selected,true);assert.equal(input.disabled,false);assert.equal(button.disabled,false);assert.equal(input.focused,true);
 });
 
 test('guest demo pins the first terrain and resets it for a new run',()=>{
