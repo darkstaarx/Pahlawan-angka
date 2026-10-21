@@ -174,7 +174,7 @@
     return null;
   }
   const CARD={tables:t=>`Sifir ${(t.tables||[]).join(' & ')||'pilihan'}`,facts:()=>'Fakta asas hingga 20',regroup:t=>t.op==='add'?'Tambah, mengumpul semula':'Tolak, meminjam',
-    money:t=>t.op==='mixed'?'Wang: soalan cerita campur':`Wang: operasi ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[t.op]||'tolak'}`,word:()=>'Soalan berayat',units:()=>'Sen dan ringgit',mixed:()=>'Pilih operasi yang betul',review:()=>'Ulang kaji berjadual',fade:()=>'Dari gambar ke nombor',reading:()=>'Baca soalan panjang',choose:()=>'Soalan bercampur: pilih operasi'};
+    money:t=>t.op==='mixed'?'Wang: soalan cerita campur':`Wang: operasi ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[t.op]||'tolak'}`,word:()=>'Soalan berayat',units:()=>'Sen dan ringgit',mixed:()=>'Pilih operasi yang betul',review:()=>'Ulang kaji berjadual',fade:()=>'Dari gambar ke nombor',reading:()=>'Baca soalan panjang',choose:()=>'Soalan bercampur'};
   const merge=(a,b)=>[...new Set([...(a||[]),...(b||[])])];
   /* What PA does next: mini game / Gembok targets and the worksheet sections. */
   function plan(result,ctx={}){

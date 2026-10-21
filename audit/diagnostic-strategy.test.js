@@ -35,13 +35,15 @@ test('blocked 10/10, mixed 3/10: a strategy finding that replaces 4.4 and the wr
   const f = r.findings.find(x => x.id === 'strategy_choice');
   assert.ok(f, JSON.stringify(r.findings.map(x => x.id)));
   assert.equal(f.lens, '4.6');
-  assert.match(f.text, /^Faris tahu cara kira, tetapi keliru memilih operasi bila soalan bercampur\. Soalan cerita dengan operasi yang sama berturut-turut betul 10\/10, tetapi bila tambah, tolak, darab dan bahagi bercampur hanya 3\/10\.$/);
+  // One plain sentence for parents (owner: no clutter); the numbers behind it stay in evidence.
+  assert.equal(f.text, 'Faris keliru memilih operasi bila soalan bercampur (3/10 betul).');
+  assert.deepEqual([f.evidence.blocked, f.evidence.mixed], ['10/10', '3/10']);
   // Wrong mixed answers that used the other operation (e.g. 900 + 300 for 900 − 300) support it.
   const op = runLog(10, 3).map(x => x.il === 1 && x.k === 0 ? { ...x, o: 'sub', a: [900, 300], v: '1200', x: '600' } : x);
   const lazim = many(10, i => rec(i + 30, { f: 'lazim', w: 4, sec: 8, il: undefined }));
   const both = B.analyze([...op, ...lazim], { now: NOW, name: 'Faris' }).findings;
   const g = both.find(x => x.id === 'strategy_choice');
-  assert.match(g.text, / 7 kali Faris guna operasi yang salah\.$/);
+  assert.equal(g.evidence.wrongOp, 7);
   assert.equal(g.confidence, 'tinggi');
   assert.ok(!both.some(x => x.id === 'format_word' || x.id === 'bug_wrong_operation'), both.map(x => x.id).join());
 });
@@ -64,7 +66,7 @@ test('no finding below the rule, for symbolic items, or when something else expl
 test('plan: "Soalan bercampur" card, Gudang choose rounds, a mixed worksheet, re-check on mixed stories', () => {
   const p = T.plan(B.analyze(runLog(10, 3), { now: NOW }), { grade: 4 });
   const step = p.steps.find(s => s.target.kind === 'choose');
-  assert.equal(step.card, 'Soalan bercampur: pilih operasi');
+  assert.equal(step.card, 'Soalan bercampur');
   assert.equal(T.skillFor(step, [{ id: 'D4.SUB', domain: 'Operasi', title: 'Tolak' }]), 'D4.SUB');
   assert.deepEqual(T.miniGameTarget(step), { kind: 'choose' });
   const items = T.practice(step, 12, { grade: 4 }, 5), ops = items.map(x => x.facets.op);
@@ -85,7 +87,7 @@ test('dummy child Faris: week 1 finds the mixed-set gap, practising mixed sets c
   const S = require('../tools/diagnostic-sim.js');
   const r = S.simulate('faris');
   assert.deepEqual(r.week1.findings.map(x => x.id), ['strategy_choice']);
-  assert.equal(r.plan.steps[0].card, 'Soalan bercampur: pilih operasi');
+  assert.equal(r.plan.steps[0].card, 'Soalan bercampur');
   assert.ok(!r.week2.findings.some(x => x.id === 'strategy_choice'), JSON.stringify(r.week2.findings.map(x => x.text)));
   for (const id of Object.keys(S.PERSONAS).filter(x => x !== 'faris')) assert.ok(!S.simulate(id).week1.findings.some(x => x.id === 'strategy_choice'), id);
 });

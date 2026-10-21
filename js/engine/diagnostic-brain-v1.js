@@ -448,10 +448,11 @@
         const explains=r=>{const b=detectBug(r);return(r.tb||[]).some(t=>weakTables.has(t))||weakFacts.has(r.fx)||(reading&&r.rd===3&&r.ra!==1)||(!!b&&b!=='wrong_operation'&&bugs.has(b))};
         if(ba>=80&&ma<=55&&misses.filter(explains).length*2<misses.length){
           findings.push({id:'strategy_choice',lens:'4.6',severity:2,confidence:wrongOp>=2||mixed.length>=10?'tinggi':'sederhana',
-            text:`${name} tahu cara kira, tetapi keliru memilih operasi bila soalan bercampur. Soalan cerita dengan operasi yang sama berturut-turut betul ${bOk}/${blocked.length}, tetapi bila tambah, tolak, darab dan bahagi bercampur hanya ${mOk}/${mixed.length}.${wrongOp>=2?` ${wrongOp} kali ${name} guna operasi yang salah.`:''}`,
+            // One plain sentence for parents; the blocked score and the wrong-operation count stay in evidence.
+            text:`${name} keliru memilih operasi bila soalan bercampur (${mOk}/${mixed.length} betul).`,
             action:'Pahlawan Angka akan beri set soalan cerita bercampur. Anak pilih ayat matematik dahulu, kemudian baru mengira.',
             tip:'Sebelum anak mengira, tanya: "Soalan ini minta kita gabung, ambil, kumpul sama banyak, atau agih sama rata?"',
-            target:{choose:true},skills:skillsOf(mixed),evidence:{blocked:ba,mixed:ma,blockedN:blocked.length,mixedN:mixed.length,wrongOp}});
+            target:{choose:true},skills:skillsOf(mixed),evidence:{blocked:`${bOk}/${blocked.length}`,mixed:`${mOk}/${mixed.length}`,wrongOp}});
           // The finer cause wins: right in a blocked run, so neither the story (4.4) nor a habit of one operation (4.3) is the gap.
           for(const id of ['format_word','bug_wrong_operation']){const i=findings.findIndex(f=>f.id===id);if(i>=0)findings.splice(i,1)}
         }

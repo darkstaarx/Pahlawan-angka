@@ -194,10 +194,12 @@ Thresholds are **starting values**; calibrate with real data (§7).
   blocked vs latest 12 mixed, ≥6 each, blocked ≥80% and mixed ≤55%, rapid
   guesses left out; it steps aside when most mixed misses are explained by a
   weak sifir / basic fact (4.2), a long wording (4.8) or another 4.3 bug.
-  Mixed misses that used the other operation (`wrong_operation`) are counted
-  in the text ("n kali … guna operasi yang salah"). Finding `strategy_choice`
+  Parent text is one sentence: "Faris keliru memilih operasi bila soalan
+  bercampur (6/12 betul)."; the blocked score and the count of mixed misses
+  that used the other operation (`wrong_operation`) stay in `evidence`.
+  Finding `strategy_choice`
   replaces `format_word` (4.4) and `bug_wrong_operation` (4.3) for the same
-  misses. Plan step `choose` ("Soalan bercampur: pilih operasi") → Gudang
+  misses. Plan step `choose` ("Soalan bercampur") → Gudang
   Harta `focus_target {kind:'choose'}` in every operation mode: the story's
   operation changes every round (never twice in a row); first choose the
   number sentence (3 choices, no bar drawn), after two clean answers the story
@@ -377,6 +379,11 @@ Last updated: 2026-10-21 (lens 4.6). Read this section first if you are picking 
    localhost with `localStorage.pa_dev_unlocked='1'`; Chromium is at
    `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
    the real app before reporting.
+   **No clutter (owner, 2026-10-21):** "Aku taknak kat situ serabut dgn info."
+   A Kemahiran Fokus card shows one short line (PR #78, `focusCardLine()`),
+   so a plan step's `card` label is 3 words or fewer. A finding's parent
+   `text` is one plain sentence with at most one score; extra numbers go in
+   `evidence`, not on screen. Every new lens follows this.
 
 **Status on GitHub.** PRs #55–#63 and #65–#77 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a

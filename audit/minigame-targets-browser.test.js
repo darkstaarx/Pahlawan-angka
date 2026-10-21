@@ -315,7 +315,7 @@ test('real app: a mixed-set finding gives a "Soalan bercampur" card that opens G
     return { skill: el.dataset.skill, text: el.textContent.replace(/\s+/g, ' ') };
   }, log);
   assert.match(card.skill, /^D4\./);
-  assert.match(card.text, /Soalan bercampur: pilih operasi/);
+  assert.match(card.text, /Soalan bercampur/);
   const frame = page.locator('#paFocusMiniGameOverlay iframe');
   const src = await frame.getAttribute('src');
   assert.equal(new URLSearchParams(src.split('?')[1].split('#')[0]).get('focus_target'), '{"kind":"choose"}');
