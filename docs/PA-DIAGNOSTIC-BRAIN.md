@@ -264,10 +264,9 @@ composition, lock policy.
 
 Last updated: 2026-10-21. Read this section first if you are picking up the work.
 
-**Status on GitHub.** PRs #55–#63 and #65–#67 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#68 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
-real-device test.
-Open: PR #68 (parent Ringkasan at a glance, 3.86.89), base `main`, not merged.
+real-device test. No PR is open.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -284,7 +283,7 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
 - v2 D3 visuals no longer print answers (grouping, unit meters, number line order).
 - Test suite clean: `node --test audit/*.test.js` → 0 failures (Next item 5).
 - Kemahiran Fokus cards follow the brain (Next item 1, PR #67).
-- Parent Ringkasan tab at a glance (owner request, 3.86.89, PR #68, not merged yet):
+- Parent Ringkasan tab at a glance (owner request, 3.86.89, PR #68):
   `js/parent-glance-v1.js` (`PAParentGlance`) builds two cards on top of the
   first parent tab. *Aktiviti 7 hari*: questions in 7 days / today and active
   days (brain log, journey encounters as fallback), then praise first (effort,
