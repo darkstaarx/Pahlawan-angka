@@ -651,7 +651,7 @@ function parseHash(raw){const h=String(raw==null?location.hash.slice(1):raw).toL
  return{grade:g,modes:want.length?want:GRADES[g].modes,start}}
 let cfg=parseHash();
 const SET=5,SAYS={panjang:['Tolong ukur dengan tepat.','Jangan terlebih potong!'],jisim:['Besi mesti cukup berat.','Timbang betul-betul, ya!'],isipadu:['Besi panas perlu disejukkan!','Hati-hati, wap panas!']};
-let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,tool=null,val=0,hist=[],solved=false,misses=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT;
+let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,tool=null,val=0,hist=[],solved=false,misses=0,paLast=0,paRound=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT;
 
 /* ---------- bunyi & mesej ---------- */
 function sfx(f=650,d=.08,type='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);g.gain.setValueAtTime(.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
@@ -723,7 +723,7 @@ function makeQ(){const k=cfg.modes[served%cfg.modes.length],gens=GEN[k][cfg.grad
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  $('stageN').textContent='TEMPA '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Set '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET);$('furnace').style.setProperty('--heat',lit/SET);$('arch').classList.toggle('hot',lit===SET)}
 const SUB={build:{panjang:'Seret slider atau tekan butang cm.',jisim:'Letak pemberat sehingga timbangan seimbang.',isipadu:'Tuang air sehingga paras yang diminta.'},read:'Baca alat, kemudian isi jawapan.',pad:'Tekan nombor untuk isi jawapan.',pick:'Pilih satu jawapan.'};
-function startRound(){q=makeQ();const base=TOOL[q.mode](cfg.grade);tool=q.tool?{...base,...q.tool}:base;val=q.kind==='read'?q.show:0;hist=[];solved=false;misses=0;hints=0;hint2=0;ansIn=q.fields?q.fields.map(()=>''):[];fi=0;sel=null;hideMsg();
+function startRound(){q=makeQ();const base=TOOL[q.mode](cfg.grade);tool=q.tool?{...base,...q.tool}:base;val=q.kind==='read'?q.show:0;hist=[];solved=false;misses=0;paLast=Date.now();paRound++;hints=0;hint2=0;ansIn=q.fields?q.fields.map(()=>''):[];fi=0;sel=null;hideMsg();
  $('devBtn').hidden=!devToolsEnabled;
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);$('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a55','#ffd7a055'][served%SET];
  const sb=q.kind==='build'?(tool.unit==='pemadam'?'Tekan +1 pemadam untuk menyusun.':tool.unit==='cawan'?'Tekan +1 cawan untuk menuang.':SUB.build[q.mode]):SUB[q.kind];
@@ -734,20 +734,23 @@ function startRound(){q=makeQ();const base=TOOL[q.mode](cfg.grade);tool=q.tool?{
  setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira, tempakan '+q.piece.n+' untuk aku! '+pick(SAYS[q.mode]);$('bubble').classList.remove('hide');sfx(520,.08)},700);
  if(served%SET===0)drawRack(0);renderTrack();buildTool()}
 const near=(s,v)=>{const x=s===''||s==null?0:parseFloat(s);return Number.isFinite(x)&&Math.abs(x-v)<1e-6};
+/* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
+function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'bengkel-ajaib',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String(q.q||'').slice(0,200),answer:String(typeof ansText==='function'?ansText():'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms},location.origin)}catch(e){}}
 function check(){
  if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
  const K=q.kind;
  if(K==='pick'&&sel==null){msg('Pilih satu jawapan dulu.','',2400);return}
  if((K==='read'||K==='pad')&&!ansIn.some(s=>s)){msg('Tekan nombor untuk isi jawapan dulu.','',2400);return}
  const ok=K==='build'?val===q.target:K==='pick'?sel===q.correct:q.fields.every((f,i)=>near(ansIn[i],f.v));
- if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+ if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
   pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Tepat sekali!','Cantik tempaan ni!']);$('wiraImg').src=A+(st===3?'wira-mekanik-victory.webp':'wira-mekanik-thumb.webp');$('wira').classList.add('cheer');
   const lblAns=q.ans||(K==='build'?nf(q.target)+' '+tool.unit:ans(q.fields));
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+lblAns+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
   renderTrack(true);$('subtitle').textContent='';draw();renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);
   clang();forgePiece((served-1)%SET);if(q.mode==='isipadu')steam();$('check').textContent=served%SET===0?'Lihat set perisai ✦':'Seterusnya →';
   setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
- misses++;
+ paAttempt(false),misses++;
  if(K==='build'){if(q.mode==='jisim'&&cfg.grade>2){const d=(q.target-val)/q.target;$('beam').style.setProperty('--a',(Math.max(-1,Math.min(1,d))*-12).toFixed(1)+'deg');setTimeout(()=>{if(!solved)draw()},1600)}
   msg(val<q.target?'Masih kurang daripada sasaran. Cuba tambah lagi.':'Terlebih daripada sasaran. Cuba kurangkan.','bad',3400)}
  else if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;msg('Belum tepat. '+q.s,'bad',3600)}

@@ -232,7 +232,7 @@ function finishRound(e){
    if(hints)window.PALearnerReview?.hintUsed?.(q,hints);
    window.PALearnerReview?.resolve?.(q,{correct:true,usedHint:hints>0,hintLevel:hints,seconds},db);
   }catch(err){console.warn("Wirayung learner record",err);}
-  try{window.PATelemetry?.response?.(skill,independent,independent?"":"wirayung_"+mode,seconds,hints>0,q,"practice");}catch(err){console.warn("Wirayung cloud attempt",err);}
+  // Telemetry for each try now comes from js/minigame-telemetry-v1.js (PA_MINIGAME_ATTEMPT).
  }
  if(typeof save==="function")save();
  window.PACloud?.scheduleSave?.();
