@@ -262,8 +262,10 @@ composition, lock policy.
 
 Last updated: 2026-10-21. Read this section first if you are picking up the work.
 
-**Status on GitHub.** PRs #55–#63 are merged into `main` (2026-10-21) but
-NOT deployed to Netlify yet; the owner deploys after a real-device test.
+**Status on GitHub.** PRs #55–#63 and #65 are merged into `main` (2026-10-21)
+but NOT deployed to Netlify yet; the owner deploys after a real-device test.
+Open: PR #66 (fix the 12 failing tests, Next item 5), base `main`, not merged.
+After it merges, drop "not merged yet" from item 5 and add #66 to the merged list.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
