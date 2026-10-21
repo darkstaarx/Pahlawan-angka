@@ -303,6 +303,25 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    later (spaced, lens 4.7) and let the card show "Semakin baik" or keep the
    focus.
 
+5. *Fix the 12 known failing tests (small cleanup PR, can go any time).* They
+   are test problems, not app bugs, but they hide real breakage:
+   - Environment paths: `audit/affiliate-admin-browser.test.js` requires
+     Playwright from a Codex cache path; `audit/page-lock-v1.test.js` launches
+     `/usr/bin/chromium`. Resolve `playwright` normally and take the browser
+     from `PLAYWRIGHT_BROWSERS_PATH` / an env var, with the old path as fallback.
+   - Stale harness after the guest demo work (#53/#54):
+     `audit/demo-session-behaviour.test.js` (6 tests, `markWrongAnswer is not
+     defined`) and `audit/page-lock-demo-exit.test.js` (`guestCompleted is not
+     defined`) copy slices of `js/segel-demo-v2.1.0.js`; include the new helper
+     and state in the slice.
+   - Old screen stubs: `audit/commercial-production-access.test.js`
+     ("pricing presents Plus then standard then Free" — stub needs
+     `addEventListener`; "Free and RM19 focus entry cannot open the picker" —
+     `Cannot set properties of undefined`) and `audit/onboarding-review.test.js`
+     ("step four keeps the selected avatar…", cause not checked yet).
+   Done when `node --test audit/*.test.js` has 0 failures, without weakening
+   what each test checks.
+
 **Then** phase 4 (lenses 4.1, 4.6, 4.7 full, 4.8 — need item variants) and
 phase 5 (consented cloud telemetry), see §7.
 
@@ -313,8 +332,8 @@ phase 5 (consented cloud telemetry), see §7.
 
 **How to verify your change**
 - `node --test audit/diagnostic-*.test.js audit/minigame-telemetry.test.js audit/rapid-lock.test.js`
-- `node --test audit/*.test.js` → 12 failures are pre-existing on main (entry
-  flow, commercial access, etc.); do not count them as yours, but do not add new ones.
+- `node --test audit/*.test.js` → 12 failures are pre-existing on main (listed in
+  Next item 5); do not count them as yours, but do not add new ones.
 - `node questions/v2/build/build.js --check` after touching `questions/v2/`
   (rebuild with `node questions/v2/build/build.js`).
 - Dummy children: `tools/diagnostic-sim-lab.html`; 2.5D graphics:
