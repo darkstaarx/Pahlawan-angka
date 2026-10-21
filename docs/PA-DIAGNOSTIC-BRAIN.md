@@ -392,9 +392,24 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    #83 bug fixes (3.87.7): Menara Jam calendar rounds printed "undefined" on
    the stamp (no `ansText`); a profile saved before newer skills existed
    crashed the parent worksheet tab on load (`snapshot()` read
-   `scoreState(id).correct` before `initAll()`). Nothing is open. Current
-   version 3.87.7. Next (owner asked; owner wants a preview first, interactive,
-   "taknak nampak mcm slop"): "Jom tengok cara" worked example after 3 wrong tries in all
+   `scoreState(id).correct` before `initAll()`). Current
+   version 3.87.8. **"Jom tengok cara"** (guided worked example), first part merged as
+   PR #84 (3.87.8, owner: ship now to deploy): Gudang Harta two-number pad rounds only.
+   `js/minigame-worked-v1.js` (`PAWorked`: `parse`, `build`, `run`) +
+   `css/minigame-worked-v1.css`. After 3 wrong tries (or 2 and both hints) the
+   hint button becomes "Jom tengok cara"; Wira walks through the written method
+   place by place from the round's own numbers; the pupil taps each step (3
+   tiles = right + real slips; "Pinjam 1"; a lone digit "turun"); a story first
+   asks for the number sentence right under Wira's line, the board comes in
+   after; tiles bounce in; the round ends without stars ("SIAP! Cara Wira") and
+   the next round is the same kind with new numbers; the board runs only when
+   its answer equals the round's answer. **Owner rules:** interactive, not
+   slop; every kind that needs tapping gets proper tap-by-tap steps in its own
+   widget (no text-only fallback in the shipped version); show the preview
+   (video + screenshots) before shipping. Plan: (1) finish Gudang (rack bina /
+   add / sub, pick kinds such as compare / round / place value, two-step), (2)
+   the other eight games with their own widgets, starting where step text is
+   missing (Menara Jam, Pos Peninjau, Lombong Permata). Original request: "Jom tengok cara" worked example after 3 wrong tries in all
    nine mini games (every kind knows its answer; step text is missing in
    Menara Jam, most of Pos Peninjau and early Lombong Permata).
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
