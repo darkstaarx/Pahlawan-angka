@@ -277,12 +277,12 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .scene{background:linear-gradient(180deg,#00000000 70%,#0003),repeating-linear-gradient(0deg,#5a4f6e 0 2px,transparent 2px 26px),repeating-linear-gradient(90deg,#5a4f6e 0 2px,transparent 2px 46px),linear-gradient(#7d6f96,#6a5c84)!important}
 .scene::before{display:none}
 .scene .floor{position:absolute;left:0;right:0;bottom:0;height:30px;background:repeating-linear-gradient(90deg,#8a6a4a 0 40px,#7a5c3e 40px 42px);border-top:3px solid #5e3519}
-.banner-cloth{position:absolute;z-index:1;top:0;left:50%;transform:translateX(-50%);width:120px;height:46px;background:linear-gradient(#b8456a,#8f2f4f);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);display:grid;place-items:center;padding-bottom:8px}
+.banner-cloth{position:absolute;z-index:1;top:0;left:28%;transform:translateX(-50%);width:120px;height:46px;background:linear-gradient(#b8456a,#8f2f4f);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);display:grid;place-items:center;padding-bottom:8px}
 .banner-cloth b{font:800 11px/1.05 var(--f-display);color:#ffd036;text-align:center;letter-spacing:.5px}
 .torch{position:absolute;z-index:1;top:24%;width:12px;height:34px;background:linear-gradient(#8a5530,#5e3519);border-radius:3px}
 .torch::before{content:"";position:absolute;left:-7px;top:-26px;width:26px;height:30px;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 50% 70%,#fff3b0,#ffb02e 45%,#e5562f 75%,transparent 78%);animation:flick .5s ease-in-out infinite;transform-origin:50% 100%}
 .torch::after{content:"";position:absolute;left:-40px;top:-50px;width:92px;height:92px;border-radius:50%;background:radial-gradient(#ffcf6b55,transparent 65%);animation:shine 1.6s ease-in-out infinite;pointer-events:none}
-.torch.l{left:30%}.torch.r{right:6%}
+.torch.l{left:4%}@media (max-height:700px){.torch.l{display:none}}.torch.r{right:6%}
 .shelf{position:absolute;z-index:1;left:36%;right:14%;top:46%;height:40px;display:flex;align-items:flex-end;justify-content:space-around;border-bottom:7px solid #5e3519;box-shadow:0 5px 0 #0002}
 .shelf .slot{width:18%;max-width:40px;aspect-ratio:1;display:grid;place-items:end center;filter:grayscale(1) brightness(.75);transition:filter .5s}
 .shelf .slot svg{width:100%;height:auto}
@@ -294,7 +294,8 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .stand svg{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 2px #0004)}
 .stand.done svg{animation:hop .55s ease 2}
 .scene .customer{bottom:8px;z-index:3}
-.scene .bubble{top:52px}
+/* The scene is short (question first): the visitor's bubble sits at the top so the chest shelf (progress) stays visible. */
+.scene .bubble{top:8px}
 .scene .wsay{top:46px}
 .scene .devbtn{bottom:auto;top:8px;left:6px;background:#fff8}
 .ledger .faces{display:flex;justify-content:center;gap:4px;margin:4px 0 14px}.ledger .faces div{display:flex;flex-direction:column;align-items:center;font:900 11px/1.2 var(--f-body);color:var(--gold-dk)}.ledger .faces img{width:48px;height:48px;object-fit:contain}
@@ -423,7 +424,8 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .lz{gap:2px 4px}.lz .cell .tkn{max-height:clamp(16px,3dvh,26px)}.lz .cell{padding:1px 2px;gap:1px}.lz .cell em{font-size:15px}
 .lz .abox{min-height:clamp(32px,5.4dvh,40px)}.lz .cbox{height:22px}.lz .hd{padding:0}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
-<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1"></head><body>
+<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
+<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.0.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -476,6 +478,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 <script src="js/gudang-harta-router.js"></script>
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-panel-fit-v1.js?v=1.0.0"></script>
 <script>
 (()=>{
 'use strict';

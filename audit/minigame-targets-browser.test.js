@@ -23,8 +23,8 @@ test.before(async () => {
 });
 test.after(async () => { await browser?.close(); server?.close(); });
 
-async function gudang(target, hash) {
-  const context = await browser.newContext({ serviceWorkers: 'block' });
+async function gudang(target, hash, viewport) {
+  const context = await browser.newContext({ serviceWorkers: 'block', ...(viewport ? { viewport } : {}) });
   await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));   // local DEV preview of the page
   const page = await context.newPage(), errors = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -78,6 +78,24 @@ test('carrying target, and no target / a bad target / another mode leave the gam
     const any = await h.page.evaluate(() => window.__gudangGen.sample(10).some(q => q.target));
     assert.equal(any, false, JSON.stringify(target) + ' ' + hash);
     assert.deepEqual(h.errors, []); await h.close();
+  }
+});
+
+test('question first: the question panel is bigger than the scene and nothing is cut off', async () => {
+  for (const [width, height] of [[390, 844], [360, 640], [1280, 900]]) for (const [target, hash] of [[{ kind: 'regroup', op: 'sub' }, 'd3-tolak'], [{ kind: 'tables', tables: [7] }, 'd3-darab'], [null, 'd3-bina']]) {
+    const g = await gudang(target, hash, { width, height });
+    await g.page.waitForFunction(() => document.querySelector('.panel').style.getPropertyValue('--qz'));
+    const m = await g.page.evaluate(() => {
+      const box = s => document.querySelector(s).getBoundingClientRect(), game = box('.pa-game');
+      return { scene: box('.scene').height, panel: box('.panel').height, qz: Number(document.querySelector('.panel').style.getPropertyValue('--qz')),
+        actionsBottom: box('.actions').bottom, gameBottom: game.bottom, wide: document.documentElement.scrollWidth > innerWidth || document.querySelector('.panel').scrollWidth > document.querySelector('.panel').clientWidth + 1 };
+    });
+    const at = `${width}x${height} ${hash}: ${JSON.stringify(m)}`;
+    assert.ok(m.panel > m.scene, at);
+    assert.ok(m.qz >= 1 && m.qz <= 1.6, at);
+    assert.ok(m.actionsBottom <= m.gameBottom + 1, 'Semak button stays on screen: ' + at);
+    assert.equal(m.wide, false, at);
+    assert.deepEqual(g.errors, []); await g.close();
   }
 });
 

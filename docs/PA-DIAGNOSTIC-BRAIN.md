@@ -347,6 +347,13 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
      Gudang Harta also puts one-operator cards in the prompt. So mini game
      answers feed the brain lenses and a cleared bug shows "Semakin baik".
    - Tests: `audit/minigame-targets.test.js`, `audit/minigame-targets-browser.test.js`.
+   - Question first (owner request, 3.86.91): in Gudang Harta the question
+     panel gets more room than the scene. `css/minigame-question-first-v1.css`
+     caps the scene (~30% height, Wira/visitor zoomed in, props kept) and gives
+     the panel the rest; `js/minigame-panel-fit-v1.js` enlarges the panel
+     content to fill it (`--qz`, 1–1.6, 5% spare). A choice question without a
+     picture shows big full-width choices. Other mini games can opt in by
+     linking both files (check their scene props first).
    - Not done: bar model (Model Method) for word problems exists in no mini
      game yet (proposed next); basic facts (D1) are not targeted beyond the
      existing make-ten tiers; other games (pecahan, ukuran, ...) take no target.
