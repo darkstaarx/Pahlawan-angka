@@ -88,3 +88,13 @@ test('Ringkasan tab markup: Restu entry first when needed, then the two cards', 
   assert.match(html, /Syabas, Aisyah!/); assert.match(html, /<li>Sifir 3<\/li>/);
   assert.match(src, /getElementById\("summaryTab"\)\.innerHTML=`\$\{renderParentRestuEntry\(restuFocus\)\}\$\{parentGlanceMarkup\(g,summary\)\}`/);
 });
+
+test('one "Punca utama" sentence next to the list, only when there is something to practise', () => {
+  const v = view('aisyah', { cause: 'Nilai tempat nombor' });
+  assert.equal(v.improve.note, 'Punca utama: Nilai tempat nombor. Latihan khas sudah disediakan dalam Kemahiran Fokus.');
+  assert.equal(v.improve.items.length, 3, 'the list stays at 3 short labels');
+  const calm = G.compose({ name: 'Ali', log: [], result: { enough: true, findings: [], strengths: [] }, plan: { steps: [] }, cause: 'Nilai tempat nombor', now: noon });
+  assert.equal(calm.improve.title, 'Tiada yang membimbangkan');
+  assert.ok(!/Punca/.test(calm.improve.note));
+  assert.match(G.markup(v), /<p class="paGlanceNote">Punca utama: Nilai tempat nombor\./);
+});

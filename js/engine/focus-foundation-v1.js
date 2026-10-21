@@ -20,6 +20,16 @@
   'money.transaction':'Bayaran dan baki','money.equal_sharing_application':'Agihan wang sama rata','money.discount':'Konsep diskaun','money.profit_loss':'Konsep untung dan rugi',
   'percent.part_whole':'Peratus sebagai bahagian keseluruhan','fraction.equal_parts':'Konsep pecahan','time.units':'Hubungan unit masa','measurement.units':'Unit dan penukaran ukuran',
   'ratio.relationship':'Hubungan nisbah dan kadaran','data.reading':'Membaca carta dan data'};
+ // Two or three words for the child's Fokus card ("Punca: Nilai tempat"); parents read LABELS.
+ const SHORT={'number.place_value':'Nilai tempat','number.decimal_place_value':'Nilai tempat perpuluhan','operation.choose':'Pilih operasi',
+  'add.combine':'Makna tambah','add.facts':'Fakta tambah','add.place_value':'Tambah ikut tempat','add.regroup':'Tambah, kumpul semula',
+  'sub.take_away_compare':'Makna tolak','sub.facts':'Fakta tolak','sub.place_value':'Tolak ikut tempat','sub.regroup':'Tolak, meminjam',
+  'mul.equal_groups':'Kumpulan sama','mul.facts':'Sifir','mul.multidigit':'Darab panjang','div.equal_sharing':'Agih sama rata',
+  'div.facts':'Fakta bahagi','div.two_digit_one_digit':'Bahagi dua digit','div.regroup':'Bahagi ikut tempat','div.remainder':'Bahagi dengan baki',
+  'div.multidigit':'Bahagi nombor besar','div.decimal':'Bahagi perpuluhan','money.denominations':'Nilai duit','money.ringgit_sen':'RM dan sen',
+  'money.transaction':'Bayaran dan baki','money.equal_sharing_application':'Agih wang','money.discount':'Diskaun','money.profit_loss':'Untung dan rugi',
+  'percent.part_whole':'Makna peratus','fraction.equal_parts':'Makna pecahan','time.units':'Unit masa','measurement.units':'Unit ukuran',
+  'ratio.relationship':'Nisbah','data.reading':'Baca carta'};
  const OUTCOMES=new Set(['independent','corrected','assisted','unresolved']);
  const IGNORED=new Set(['demo','dev','dev-test']);
  // Thresholds: a foundation is only named when it fails in several distinct
@@ -51,7 +61,7 @@
    if(contrast.length<RULES.minContrast)continue;
    const contrastRate=contrast.filter(r=>r.failed).length/contrast.length;
    if(failRate-contrastRate<RULES.minGap)continue;
-   candidates.push({foundationId:id,label:LABELS[id],failedQuestions:failedF.length,taggedQuestions:withF.length,
+   candidates.push({foundationId:id,label:LABELS[id],short:SHORT[id]||LABELS[id],failedQuestions:failedF.length,taggedQuestions:withF.length,
     failRate:Math.round(failRate*100),contrastFailRate:Math.round(contrastRate*100),contrastQuestions:contrast.length,
     skills:[...skills].sort(),families:families.size});
   }
@@ -60,5 +70,5 @@
    candidates:candidates.slice(0,RULES.maxCandidates),writes:0,
    note:'Hypothesis from tagged questions only. Mastery, rewards and routing are untouched.'};
  }
- return Object.freeze({version:VERSION,RULES,LABELS,evaluate});
+ return Object.freeze({version:VERSION,RULES,LABELS,SHORT,evaluate});
 });

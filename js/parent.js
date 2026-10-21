@@ -104,6 +104,7 @@ function parentGlanceMarkup(g,summary){
  try{result=window.PADiagnostic?.current?.()||null;plan=result&&window.PATargets?.plan?window.PATargets.plan(result,{grade:g}):null}catch(_){}
  const view=G.compose({name:db.name,log:db.diagLog,encounters:learnerRows(),result,plan,
   strongIds:summary.strong.map(m=>m.id),priorityTitles:summary.priority.map(m=>m.title),
+  cause:(()=>{try{return window.PAFocusFoundationV1?.evaluate?.(db,{grade:g})?.candidates?.[0]?.label||null}catch(_){return null}})(),
   skillTitle:id=>META[id]&&Number(META[id].grade)===g?META[id].title:null});
  return G.markup(view,{grade:g});
 }

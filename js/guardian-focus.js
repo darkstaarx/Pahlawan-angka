@@ -17,6 +17,16 @@ function brainFocusSteps(profile,grade,usable,blocked){
 /* Home focus uses actual encounters, not low default mastery or retry counts.
    Five encounters across two distinct questions are a minimum for a suggestion.
    The latest twenty encounters allow a recovering skill to leave the list. */
+/* One short line under the card title (owner: no clutter for the child or a parent glancing at it).
+   Long explanations (money/time checks) stay in item.reason. */
+function moneyCardLine(r){const c=String(r?.rootCause||'');return c.startsWith('money.')?'Punca: soalan wang':c.startsWith('operation.')?'Punca: operasi asas':'Teruskan latihan wang'}
+function timeCardLine(r){return({'time.read_clock':'Punca: baca jam','time.unit_relationship':'Punca: unit masa','time.timeline_operation':'Punca: tempoh masa'})[String(r?.rootCause||'')]||'Teruskan latihan masa'}
+function focusCardLine(item){
+ if(item.short)return item.short;
+ if(item.diagnostic)return item.reason;                     // brain cards: the short practice label, e.g. "Sifir 3"
+ if(item.foundationShort)return 'Punca: '+item.foundationShort;
+ return 'Ketepatan '+item.independentRate+'%';
+}
 function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  const grade=Number(profile?.schoolGrade),skills=typeof GRAPH==='undefined'?[]:GRAPH.skills.filter(m=>Number(m.grade)===grade);
  const rows=(profile?.learnerReviewV1?.encounters||[]).filter(e=>Number(e.grade)===grade
@@ -63,11 +73,11 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    &&typeof questionBankFor==='function'&&typeof questionBankFor(nextId)==='function'){
    const byId=candidates.filter(x=>x.id!==nextId);
    byId.unshift({id:nextId,title:next.title,chapter:String(next.chapter),attempts:Number(activeMoneyReport.operationEvidence?.tagged)||6,
-    independentRate:0,priority:1000,diagnostic:true,reason:String(activeMoneyReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
+    independentRate:0,priority:1000,diagnostic:true,short:moneyCardLine(activeMoneyReport),reason:String(activeMoneyReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
    candidates.splice(0,candidates.length,...byId);
   }else if(activeMoneyReport.state==='candidate'&&(!nextId||nextId===activeMoneyReport.skillId)){
    const current=candidates.find(x=>x.id===activeMoneyReport.skillId);
-   if(current){current.diagnostic=true;current.priority=1000;current.reason=String(activeMoneyReport.parentText||'Semakan mencadangkan latihan Wang diteruskan.');}
+   if(current){current.diagnostic=true;current.priority=1000;current.short=moneyCardLine(activeMoneyReport);current.reason=String(activeMoneyReport.parentText||'Semakan mencadangkan latihan Wang diteruskan.');}
   }
  }
  if(currentTimeReport){
@@ -77,7 +87,7 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    &&typeof questionBankFor==='function'&&typeof questionBankFor(nextId)==='function'){
    const byId=candidates.filter(x=>x.id!==nextId);
    byId.unshift({id:nextId,title:next.title,chapter:String(next.chapter),attempts:Number(currentTimeReport.timeEvidence?.tagged)||6,
-    independentRate:0,priority:1000,diagnostic:true,reason:String(currentTimeReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
+    independentRate:0,priority:1000,diagnostic:true,short:timeCardLine(currentTimeReport),reason:String(currentTimeReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
    candidates.splice(0,candidates.length,...byId);
   }
  }
@@ -117,7 +127,7 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  for(const item of candidates){
   if(item.diagnostic)continue;
   const hit=foundation?.candidates?.find(c=>c.skills.includes(item.id));
-  if(hit){item.foundationId=hit.foundationId;item.foundationLabel=hit.label;item.reason='Kemungkinan punca: '+hit.label+'.'}
+  if(hit){item.foundationId=hit.foundationId;item.foundationLabel=hit.label;item.foundationShort=hit.short||hit.label;item.reason='Kemungkinan punca: '+hit.label+'.'}
  }
  return {items:candidates.slice(0,3),hasEvidence};
 }
@@ -143,7 +153,7 @@ function openFocusPicker(){
   const title=document.createElement('b');title.className='focusPickTitle';title.textContent=item.title;
   body.appendChild(title);
   const evidence=document.createElement('span');evidence.className='focusPickEvidence';
-  evidence.textContent=item.diagnostic?item.reason:'Ketepatan '+item.independentRate+'%'+(item.foundationLabel?' · Kemungkinan punca: '+item.foundationLabel:'');
+  evidence.textContent=focusCardLine(item);
   body.appendChild(evidence);
   card.appendChild(body);
   const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih ❯';
@@ -178,7 +188,7 @@ function startFocusChoice(id){
  else openGuardianFocus(id);
 }
 function continueFocusJourney(){closeFocusPicker();window.PAMenuV2?.kembara?.()}
-window.PAFocusPractice={summary:focusPracticeSummary,open:openFocusPicker,close:closeFocusPicker,start:startFocusChoice};
+window.PAFocusPractice={summary:focusPracticeSummary,open:openFocusPicker,close:closeFocusPicker,start:startFocusChoice,cardLine:focusCardLine};
 function guardianSnapshot(id){const s=scoreState(id);return{mastery:+s.mastery||0,confidence:+s.confidence||0,evidence:+s.evidence||0,correct:+s.correct||0,wrong:+s.wrong||0,hints:+s.hints||0,mis:{...(s.mis||{})}}}
 function openGuardianFocus(id){
  if(!window.PACommercial?.requireFeature?.('focus'))return;

@@ -112,6 +112,21 @@ test('Darjah 4: place value fails across topics → "Kemungkinan punca: Nilai te
   const hinted = c.__summary(p).items.filter(x => x.foundationId === PVF);
   assert.ok(hinted.length >= 1, 'home focus shows the hint');
   assert.ok(hinted.every(x => x.reason === 'Kemungkinan punca: Nilai tempat nombor.'), JSON.stringify(hinted.map(x => x.reason)));
+  // The card itself shows one short line (owner: no clutter for the child or a parent glancing at it).
+  assert.ok(hinted.every(x => c.PAFocusPractice.cardLine(x) === 'Punca: Nilai tempat'), JSON.stringify(hinted.map(c.PAFocusPractice.cardLine)));
+});
+
+test('Fokus card line: one short phrase in every case', () => {
+  const line = c.PAFocusPractice.cardLine;
+  assert.equal(line({ independentRate: 40 }), 'Ketepatan 40%');
+  assert.equal(line({ independentRate: 40, foundationShort: 'Pilih operasi', reason: 'Kemungkinan punca: Memilih operasi daripada cerita.' }), 'Punca: Pilih operasi');
+  assert.equal(line({ diagnostic: true, reason: 'Sifir 3' }), 'Sifir 3');
+  // Money and time checks keep their long parent sentence in reason; the card says it in a few words.
+  assert.equal(line({ diagnostic: true, short: vm.runInContext('moneyCardLine({rootCause:"operation.add"})', c), reason: 'Soalan wang yang sepadan boleh dibuat sendiri, tetapi …' }), 'Punca: operasi asas');
+  assert.equal(vm.runInContext('moneyCardLine({rootCause:"money.transaction"})', c), 'Punca: soalan wang');
+  assert.equal(vm.runInContext('timeCardLine({rootCause:"time.read_clock"})', c), 'Punca: baca jam');
+  assert.equal(vm.runInContext('timeCardLine({})', c), 'Teruskan latihan masa');
+  for (const s of Object.values(finder.SHORT)) assert.ok(s.split(' ').length <= 3, s);
 });
 
 test('Darjah 3: stories fail across topics → "Memilih operasi daripada cerita"; failing everything names nothing', () => {

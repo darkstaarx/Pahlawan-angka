@@ -318,7 +318,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #77). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #77; shorter Fokus card, PR open). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#77. #69 Next item 3 + question-first mini
@@ -330,7 +330,8 @@ Last updated: 2026-10-21 (after PR #77). Read this section first if you are pick
    speaker signal (3.86.99, see §4.8 "Implemented"); #76 "Kemungkinan
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
    #77 docs: "How it works" under "Kemungkinan punca tags" below.
-   Nothing is open. Current version 3.87.0.
+   **Open: short Fokus card line + "Punca utama" for parents (3.87.1),
+   branch `ccr-ed8f705d-ym2tc0`, not merged** — merge when the owner asks.
 2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
    (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
    full 4.7). Ask the owner before starting. Sketch for 4.6 (§4.6): the
@@ -545,10 +546,16 @@ everything fails or only one topic fails). The finder's thresholds are
 unchanged (design values, phase 5 calibrates).
 
 *How it works, as explained to the owner (2026-10-21, with real-app screenshots).*
-- Where it shows: only on the Kemahiran Fokus cards (home screen → "Kemahiran
-  Fokus" tile, a Family Plus feature), as "Ketepatan 20% · Kemungkinan punca:
-  Nilai tempat nombor". The parent tab does not show it yet (candidate: one
-  line under "Perlu dikuatkan" in the Ringkasan glance).
+- Where it shows (owner: "taknak serabut", 3.87.1): the Kemahiran Fokus card
+  (home → "Kemahiran Fokus" tile, Family Plus) has ONE short line under the
+  title: "Punca: Nilai tempat" (`PAFocusFoundationV1.SHORT`, ≤3 words), else
+  "Ketepatan 20%", or the brain card label ("Sifir 3"). Money/time checks say
+  "Punca: soalan wang / operasi asas / baca jam / unit masa / tempoh masa";
+  their long sentence stays in `item.reason` and is not shown
+  (`focusCardLine()` in `js/guardian-focus.js`). Parents get one sentence in
+  the Ringkasan "Perlu dikuatkan" card, only when it lists something:
+  "Punca utama: Nilai tempat nombor." before the usual note
+  (`PAParentGlance.compose({cause})`, `parentGlanceMarkup()` in `js/parent.js`).
 - Step 1: every question carries the foundations it tests. Example, Darjah 4:
   "Apakah nilai digit … 405 6 7?" (Nilai tempat), "Bundarkan 36 651 kepada
   1 000 terdekat" (Nilai tempat), "Bundarkan 357 kepada ratus terdekat,
