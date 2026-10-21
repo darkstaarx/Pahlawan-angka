@@ -226,7 +226,7 @@ composition, lock policy.
 |---|---|---|
 | 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
 | 2 ✅ | Portal Restu (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; parent can allow exploring for the day; never in demo |
-| 3 (worksheet ✅) | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets). Worksheet done: "Disyorkan" PDF takes ~60% items from `PATargets.worksheetItems` (FOKUS tag, Cara Kerja box for word/money/regroup, "Kenapa latihan ini" box, step-by-step skema from `PATargets.explain`); rest from the bank; falls back to mastery logic without findings | Mini game round composition reflects findings; worksheet PDF has the right mix |
+| 3 (worksheet ✅, rest: see §8a) | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets). Worksheet done: "Disyorkan" PDF takes ~60% items from `PATargets.worksheetItems` (FOKUS tag, Cara Kerja box for word/money/regroup, "Kenapa latihan ini" box, step-by-step skema from `PATargets.explain`); rest from the bank; falls back to mastery logic without findings | Mini game round composition reflects findings; worksheet PDF has the right mix |
 | 4 | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
 | 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
 
@@ -257,6 +257,74 @@ composition, lock policy.
   `tools/diagnostic-sim-lab.html`.
 - PIN lock: `js/page-lock-v1.js`.
 - Cloud tables (schema only, not yet sent): `supabase/schema/adaptive_learner_telemetry_v1.sql`.
+
+## 8a. Handoff — current status and next work (update this when you finish a step)
+
+Last updated: 2026-10-21. Read this section first if you are picking up the work.
+
+**Branch stack on GitHub (not yet merged, not deployed).** Each PR is based on
+the one before it; merge in this order, then the owner deploys Netlify:
+#55 docs → #56 phase 1 → #57 Portal Restu → #58 phase 1.5 → #59 targeted
+practice + dummy sim → #60 mini game telemetry → #61 worksheet follows brain →
+#62 visual answer-leak fixes → #63 2.5D worksheet graphics. Work on top of the
+last branch (`claude/worksheet-2p5d`) until they are merged. GitHub is the test
+stage; Netlify is production and only the owner deploys it.
+
+**Done**
+- Brain (`js/engine/diagnostic-brain-v1.js`): lenses 4.2, 4.3, 4.4, 4.5, retention,
+  basic facts, regrouping; latest-N evidence, guesses excluded from bug
+  evidence, "Semakin baik" recovery lines, 4×7 explain-away, Wilson guard.
+- Portal Restu (`js/rapid-lock-v1.js`), fed by battle, Gembok, Wirayung and all
+  nine Fokus mini games (`js/minigame-telemetry-v1.js`).
+- Targeted practice generators + plan (`js/engine/diagnostic-targets-v1.js`).
+- Worksheet "Disyorkan" uses the plan (~60% targeted, FOKUS tags, Cara Kerja box,
+  "Kenapa latihan ini", step-by-step skema), 2.5D canvas graphics
+  (`js/worksheet-2p5d-v1.js`).
+- v2 D3 visuals no longer print answers (grouping, unit meters, number line order).
+
+**Next (phase 3 remainder), in this order**
+1. *Kemahiran Fokus cards show brain findings.* `focusPracticeSummary()` in
+   `js/guardian-focus.js` builds the 3 cards from mastery + foundation hints.
+   Add: when `PADiagnostic.current()` has findings, map them with
+   `PATargets.plan()` and put the finding text as the card reason (e.g.
+   "Sifir 7 belum dikuasai (3/13 betul)"); keep the old order when there are no
+   findings. Done when: dummy children (tools/diagnostic-sim.js) produce the
+   expected first card; no change for profiles without findings.
+2. *Gembok uses targeted items.* `nextQuestion()` in
+   `js/engine/production-journey.js` calls `generate(id,…)`. When the run comes
+   from a brain-backed Fokus card, serve `PATargets.practice(step,…)` items
+   (they already carry facets, choices with bug distractors, hints) for about
+   70% of turns, the normal generator for the rest. Done when: telemetry from
+   those items flows back (facets survive) and a recovered bug shows
+   "Semakin baik".
+3. *Mini game targeting.* Gudang Harta takes `focus_limits` (mode + tier range)
+   from `js/gudang-harta-router.js`. Add target params, e.g. `focus_tables=7,3`
+   for `darab` and "borrow only" for `tolak`, read them in `gudang-harta.html`
+   `makeQ()`. Other games: only where a finding maps to them (money → Gerai
+   Wirayung). Done when: a round for a "sifir 7" finding is ≥70% sifir 7.
+4. *Re-check loop.* After a targeted set, schedule a short mixed check 2–3 days
+   later (spaced, lens 4.7) and let the card show "Semakin baik" or keep the
+   focus.
+
+**Then** phase 4 (lenses 4.1, 4.6, 4.7 full, 4.8 — need item variants) and
+phase 5 (consented cloud telemetry), see §7.
+
+**Not done / owner tasks**
+- Real-device test (iPhone/Android): Portal Restu video and PIN, mini game
+  telemetry, worksheet PDF download.
+- Owner checks the "3 fast wrong answers → lock" rule feels fair for Darjah 1.
+
+**How to verify your change**
+- `node --test audit/diagnostic-*.test.js audit/minigame-telemetry.test.js audit/rapid-lock.test.js`
+- `node --test audit/*.test.js` → 12 failures are pre-existing on main (entry
+  flow, commercial access, etc.); do not count them as yours, but do not add new ones.
+- `node questions/v2/build/build.js --check` after touching `questions/v2/`
+  (rebuild with `node questions/v2/build/build.js`).
+- Dummy children: `tools/diagnostic-sim-lab.html`; 2.5D graphics:
+  `tools/worksheet-2p5d-lab.html`; Portal Restu: `tools/rapid-lock-lab.html`
+  (serve the repo root, open in a browser).
+- Bump `js/version.js` and the `?v=` of every changed script in `index.html`;
+  add new scripts to `APP_SHELL` in `sw.js`.
 
 ## 9. What makes PA different (keep it true)
 
