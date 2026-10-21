@@ -61,7 +61,9 @@
   function add(a,b){
     const A=digits(a),B=digits(b),n=Math.max(A.length,B.length),steps=[];let c=0;
     for(let i=0;i<n;i++){
-      const x=A[i]||0,y=B[i]||0,s=x+y+c,ask=`${x} + ${y}${c?' + 1':''} = ?`;
+      const x=A[i]||0,y=B[i]||0,s=x+y+c,one=A[i]===undefined||B[i]===undefined,ask=one?`${A[i]===undefined?y:x} + 1 = ?`:`${x} + ${y}${c?' + 1':''} = ?`;
+      // Only one number has a digit here and nothing is carried: it just comes down.
+      if((A[i]===undefined||B[i]===undefined)&&!c){steps.push({kind:'show',col:i,say:`Tempat ${PLACE[i]}: hanya ada ${s}. ${s} turun.`,after:{write:{col:i,digit:s},note:`Tulis ${s}.`}});continue}
       steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:s,choices:tiles(s,[c?x+y:s+1,s%10===s?s-1:s%10,Math.abs(x-y)]),
         after:{write:{col:i,digit:s%10},carry:s>=10?{col:i+1}:null,note:s>=10?`Tulis ${s%10}, kumpul semula 1 ke tempat ${PLACE[i+1]}.`:`Tulis ${s}.`}});
       c=s>=10?1:0;
@@ -82,6 +84,7 @@
         top[j]-=1;for(let k=j-1;k>i;k--)top[k]=9;top[i]+=10;
       }
       const d=top[i]-y,ask=`${top[i]} − ${y} = ?`;
+      if(B[i]===undefined){const lead=i===n-1&&d===0&&n>1;steps.push({kind:'show',col:i,say:lead?`Tempat ${PLACE[i]}: tinggal 0. 0 di depan tidak ditulis.`:`Tempat ${PLACE[i]}: tiada nombor untuk ditolak. ${d} turun.`,after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1},note:d===0&&i===n-1&&n>1?'0 di depan tidak ditulis.':`Tulis ${d}.`}});continue}
       steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:d,choices:tiles(d,[Math.abs((A[i])-y),d+1,top[i]+y]),
         after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1},note:`Tulis ${d}.`}});
     }
