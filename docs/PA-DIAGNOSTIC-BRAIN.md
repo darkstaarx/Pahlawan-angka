@@ -342,10 +342,10 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (main merged into PR #78; PR #78 open, owner said do NOT merge yet). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#77. #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #69–#78, #80, #81 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
@@ -356,17 +356,13 @@ Last updated: 2026-10-21 (main merged into PR #78; PR #78 open, owner said do NO
    #77 docs: "How it works" under "Kemungkinan punca tags" below. #80 mini
    game fix: every round gets its own brain record (3.87.2).
    #81 lens 4.6 strategy choice (3.87.3, see §4.6 "Implemented").
-   **Open: PR #78 short Fokus card line + "Punca utama" for parents (3.87.4
-   after `main` was merged in; it was 3.87.1), branch `ccr-ed8f705d-ym2tc0`,
-   NOT merged. The owner said "jangan merge" for now; merge only when the
-   owner asks again.** What it does (owner: "taknak serabut" for the child or
-   the parent): each Fokus card has one short line ("Punca: Nilai tempat",
-   else "Ketepatan N%" or the brain label; money/time checks "Punca: soalan
-   wang / baca jam / ..."), and the parent Ringkasan "Perlu dikuatkan" card
-   adds one sentence "Punca utama: Nilai tempat nombor." (details under "How
-   it works" below). If main moved before the merge: merge main into the
-   branch, re-run `node --test audit/*.test.js`, then follow the merge
-   convention in item 3.
+   #78 short Fokus card line + "Punca utama" for parents (3.87.4; owner:
+   "taknak serabut" for the child or the parent): each Fokus card has one
+   short line ("Punca: Nilai tempat", else "Ketepatan N%" or the brain label;
+   money/time checks "Punca: soalan wang / baca jam / ..."), and the parent
+   Ringkasan "Perlu dikuatkan" card adds one sentence "Punca utama: Nilai
+   tempat nombor." (details under "How it works" below).
+   Nothing is open. Current version 3.87.4.
 2. **Next task: full lens 4.7 (retention), the last lens of phase 4.** Ask
    the owner before starting. Today 4.7 covers only sifir and basic facts
    (mastered earlier, slipping in the last 3 days). Full 4.7 (§4.7): per skill
@@ -387,12 +383,12 @@ Last updated: 2026-10-21 (main merged into PR #78; PR #78 open, owner said do NO
    `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
    the real app before reporting.
    **No clutter (owner, 2026-10-21):** "Aku taknak kat situ serabut dgn info."
-   A Kemahiran Fokus card shows one short line (PR #78 `focusCardLine()`, open),
+   A Kemahiran Fokus card shows one short line (PR #78, `focusCardLine()`),
    so a plan step's `card` label is 3 words or fewer. A finding's parent
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** PRs #55–#63 and #65–#77 are merged into `main`
+**Status on GitHub.** PRs #55–#63, #65–#78, #80 and #81 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
