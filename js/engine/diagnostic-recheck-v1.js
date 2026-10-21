@@ -41,6 +41,8 @@
     // Word problems: the check is word problems without a drawn bar model.
     if(t.kind==='word')return {key:'word',test:r=>r.f==='word'};
     // Long wording (lens 4.8): the check is long questions of the same family read alone (not heard first).
+    // Strategy choice: the check is word problems in a mixed run (another operation just before).
+    if(t.kind==='choose')return {key:'choose',test:r=>r.f==='word'&&r.il===1};
     if(t.kind==='reading'){const ctx=t.context||'plain';
       return {key:'reading:'+(t.op||'any')+':'+ctx,test:r=>r.rd===3&&r.ra!==1&&(!t.op||r.o===t.op)&&(r.c||'plain')===ctx}}
     // Fading pictures: the check is the same skill answered with numbers only.

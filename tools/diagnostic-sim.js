@@ -34,7 +34,11 @@
     zara:{name:'Zara',grade:4,label:'Darjah 4 · kira betul, tetapi lemah bila soalan berayat panjang (lensa 4.8)',
       // Long wording read alone is hard; heard read aloud (speaker, 1 in 4 long questions) it is fine.
       reading:(rd,heard)=>rd===3&&!heard?{acc:.3,sec:24}:{acc:.92,sec:rd===3?18:11},aloud:.25,
-      table:()=>({acc:.95,sec:2.2}),sub:()=>({acc:.92,sec:7}),add:()=>({acc:.94,sec:6}),money:()=>({acc:.9,sec:12}),word:()=>({acc:.85,sec:14}),guess:.02}
+      table:()=>({acc:.95,sec:2.2}),sub:()=>({acc:.92,sec:7}),add:()=>({acc:.94,sec:6}),money:()=>({acc:.9,sec:12}),word:()=>({acc:.85,sec:14}),guess:.02},
+    faris:{name:'Faris',grade:4,label:'Darjah 4 · soalan cerita betul bila operasi sama berturut-turut, keliru bila bercampur (lensa 4.6)',
+      // Mixed stories: picks the operation of the story before about half the time (wrong_operation).
+      choose:mixed=>mixed?{acc:.38,sec:16,bug:'wrong_op',bugRate:.8}:{acc:.93,sec:12},
+      table:()=>({acc:.95,sec:2.2}),sub:()=>({acc:.93,sec:7}),add:()=>({acc:.94,sec:6}),money:()=>({acc:.9,sec:12}),guess:.02}
   };
 
   function rng(seed){let t=seed>>>0||1;return()=>{t+=0x6D2B79F5;let x=Math.imul(t^t>>>15,1|t);x^=x+Math.imul(x^x>>>7,61|x);return((x^x>>>14)>>>0)/4294967296}}
@@ -46,13 +50,16 @@
   function ordinaryItems(p,r,n){
     const out=[],I=(a,b)=>a+Math.floor(r()*(b-a+1));let k=0;
     while(out.length<n){k++;
-      const pick=p.reading?['read','read','table','read','sub','read','add','read'][k%8]:p.cpa?['cpa','cpa','cpa','cpa','table','money','word'][k%7]:p.grade===1?['fact','fact','add','sub','money','word'][k%6]:['table','table','sub','add','money','money','word','sub'][k%8];
+      const pick=p.choose?['blk','blk','blk','blk','mix','mix','mix','mix','table','sub','add','table'][k%12]:p.reading?['read','read','table','read','sub','read','add','read'][k%8]:p.cpa?['cpa','cpa','cpa','cpa','table','money','word'][k%7]:p.grade===1?['fact','fact','add','sub','money','word'][k%6]:['table','table','sub','add','money','money','word','sub'][k%8];
       // Same Tambah/Tolak hingga 1000 sums, shown with blocks/pictures or as numbers only.
       if(pick==='cpa'){const add=r()<.5,rep=r()<.5?'pictorial':'abstract',a=I(120,480),b=I(110,add?480:a-1);
         out.push({prompt:`${a} ${add?'+':'−'} ${b} = ?`,answer:add?a+b:a-b,skill:add?'D2.2.1':'D2.2.2',facets:{op:add?'add':'sub',operands:[a,b],format:'symbolic',rep},_k:'cpa'});continue}
       // Same families in a short or a long wording (js/engine/reading-pairs-v1.js).
       if(pick==='read'){const fam=['jumlah','beza','kali_ganda','agih'][(k>>1)%4],skill=`D${p.grade}.${{jumlah:'ADD',beza:'SUB',kali_ganda:'MUL',agih:'DIV'}[fam]}`;
         out.push({...RP.item(fam,p.grade,r()<.5?1:3,r),skill,_k:'read'});continue}
+      // Short stories (js/engine/reading-pairs-v1.js): a run of one operation, then a run where it changes every item.
+      if(pick==='blk'||pick==='mix'){const fams=['jumlah','beza','kali_ganda','agih'],fam=pick==='blk'?fams[Math.floor(k/12)%4]:fams[k%4];
+        out.push({...RP.item(fam,p.grade,1,r),skill:`D${p.grade}.${{jumlah:'ADD',beza:'SUB',kali_ganda:'MUL',agih:'DIV'}[fam]}`,_k:pick});continue}
       if(pick==='table'){const a=I(2,9),b=I(2,9);out.push({prompt:`${a} × ${b} = ?`,answer:a*b,facets:{op:'mul',operands:[a,b],format:'symbolic'},_k:'table'})}
       else if(pick==='fact'){const op=r()<.5?'add':'sub';let a,b;if(op==='add'){a=I(2,9);b=I(2,9)}else{b=I(2,9);a=b+I(1,9)}out.push({prompt:`${a} ${op==='add'?'+':'−'} ${b} = ?`,answer:op==='add'?a+b:a-b,facets:{op,operands:[a,b],format:'symbolic'},_k:'fact'})}
       else if(pick==='sub'){const a=I(30,98),b=I(11,a-1);out.push({prompt:`${a} − ${b} = ?`,answer:a-b,facets:{op:'sub',operands:[a,b],format:'lazim'},_k:'sub'})}
@@ -60,7 +67,8 @@
       else if(pick==='money'){const op=r()<.55?'sub':'add';out.push({...T.practice({target:{kind:'money',op}},1,{},Math.floor(r()*1e9))[0],_k:'money'})}
       else out.push({...T.practice({target:{kind:'word'}},1,{},Math.floor(r()*1e9))[0],_k:'word'});
     }
-    return out.map((q,i)=>({...q,token:q.token||`sim-${i}-${Math.floor(r()*1e9)}`}));
+    // Blocked or mixed as the brain will see it: the operations of the two items just before (lens 4.6).
+    return out.map((q,i)=>({...q,_il:i<2?null:[out[i-1],out[i-2]].some(x=>x.facets?.op!==q.facets?.op)?1:0,token:q.token||`sim-${i}-${Math.floor(r()*1e9)}`}));
   }
 
   // How the persona answers one item. Returns {ok, sec, value}.
@@ -69,6 +77,7 @@
     const ops=f.operands;
     if(p.rep&&f.rep)m=p.rep(f.rep);
     else if(p.reading&&f.reading)m=p.reading(f.reading,q.readAloud===true);
+    else if(p.choose&&f.format==='word')m=p.choose((q._il??(f.interleaved?1:0))===1);
     else if(f.op==='mul'&&ops)m=p.table?.(Math.max(...ops.filter(x=>[7,3].includes(x)).concat([0]))||ops[0])||{acc:.9,sec:3};
     else if(f.context==='money')m=p.money?.(f.op)||{acc:.8,sec:12};
     else if(f.format==='word')m=p.word?.()||{acc:.8,sec:14};
@@ -81,6 +90,7 @@
     const ok=r()<m.acc,sec=Math.max(.9,m.sec*(.7+r()*.6));
     if(ok)return{ok,sec,value:q.answer};
     if(m.bug==='smaller_from_larger'&&ops&&r()<m.bugRate)return{ok,sec,value:sfl(ops[0],ops[1])};
+    if(m.bug==='wrong_op'&&r()<m.bugRate){const c=(q.choices||q.wrongs)?.find(x=>x.tag==='operation');if(c)return{ok,sec,value:c.v}}
     if(m.bug==='money_unit'&&r()<m.bugRate){const c=q.choices?.find(x=>x.tag==='money_unit');if(c)return{ok,sec,value:c.v}}
     const wrong=q.choices?.find(c=>c.tag==='operation')||q.choices?.find(c=>c.tag!=='correct');
     return{ok,sec,value:wrong?.v??(typeof q.answer==='number'?q.answer+1:'?')};
@@ -116,6 +126,7 @@
       if(t.kind==='facts')return (f.operands||[]).every(x=>x<=20);
       if(t.kind==='fade')return q.skill===t.skill&&f.rep==='abstract';
       if(t.kind==='reading')return f.reading===3;
+      if(t.kind==='choose')return f.format==='word';
       return false});
     const later=now+8*DAY;let log2=log.slice();
     sets.forEach((s,i)=>{log2=play(p,s.items,log2,r,later-7*DAY+i*3600e3,practised)});

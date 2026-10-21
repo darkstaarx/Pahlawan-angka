@@ -185,6 +185,30 @@ Thresholds are **starting values**; calibrate with real data (§7).
 - **Rule:** blocked ≥80% and mixed ≤55% → cannot choose the strategy.
 - **Parent:** "Anak tahu cara kira, tapi keliru memilih operasi bila soalan bercampur."
 - **Action:** mixed sets in worksheets and review; "which operation?" items.
+- **Implemented (3.87.3):** every answer record gets `il` when the brain
+  records it (`applyResponse`): 0 = blocked, the two answers just before (same
+  sitting, ≤15 min) had the same operation; 1 = mixed, at least one had
+  another; no tag with fewer than two answers before. A page that knows its run
+  may set `facets.interleaved` instead. The lens looks at word problems only
+  (`f === 'word'`, a sign is not shown, so the child must choose): latest 12
+  blocked vs latest 12 mixed, ≥6 each, blocked ≥80% and mixed ≤55%, rapid
+  guesses left out; it steps aside when most mixed misses are explained by a
+  weak sifir / basic fact (4.2), a long wording (4.8) or another 4.3 bug.
+  Parent text is one sentence: "Faris keliru memilih operasi bila soalan
+  bercampur (6/12 betul)."; the blocked score and the count of mixed misses
+  that used the other operation (`wrong_operation`) stay in `evidence`.
+  Finding `strategy_choice`
+  replaces `format_word` (4.4) and `bug_wrong_operation` (4.3) for the same
+  misses. Plan step `choose` ("Soalan bercampur") → Gudang
+  Harta `focus_target {kind:'choose'}` in every operation mode: the story's
+  operation changes every round (never twice in a row); first choose the
+  number sentence (3 choices, no bar drawn), after two clean answers the story
+  alone; the mode badge reads "BERCAMPUR" and the pet does not name the
+  operation; a re-check is the story alone. Worksheet section: short stories
+  (`js/engine/reading-pairs-v1.js`) with the operation changing every item and
+  a working box. Re-check key `choose` counts mixed word problems. Dummy child:
+  `faris` (`tools/diagnostic-sim.js`). Tests: `audit/diagnostic-strategy.test.js`,
+  choose rounds and the real-app card in `audit/minigame-targets-browser.test.js`.
 
 ### 4.7 Retention (spaced review)
 - **Input:** skill/fact correct in a past session, wrong now.
@@ -276,7 +300,7 @@ composition, lock policy.
 | 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
 | 2 ✅ | Portal Restu (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; parent can allow exploring for the day; never in demo |
 | 3 (worksheet ✅, rest: see §8a) | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets). Worksheet done: "Disyorkan" PDF takes ~60% items from `PATargets.worksheetItems` (FOKUS tag, Cara Kerja box for word/money/regroup, "Kenapa latihan ini" box, step-by-step skema from `PATargets.explain`); rest from the bank; falls back to mastery logic without findings | Mini game round composition reflects findings; worksheet PDF has the right mix |
-| 4 (4.1 ✅, light 4.8 ✅, rest open) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
+| 4 (4.1 ✅, 4.6 ✅, light 4.8 ✅, rest open) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
 | 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
 
 ## 8. Where things live (current code)
@@ -318,7 +342,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #77). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (lens 4.6). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#77. #69 Next item 3 + question-first mini
@@ -329,18 +353,23 @@ Last updated: 2026-10-21 (after PR #77). Read this section first if you are pick
    not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
    speaker signal (3.86.99, see §4.8 "Implemented"); #76 "Kemungkinan
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
-   #77 docs: "How it works" under "Kemungkinan punca tags" below.
-   Nothing is open. Current version 3.87.0.
-2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
-   (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
-   full 4.7). Ask the owner before starting. Sketch for 4.6 (§4.6): the
-   session tags each answer `interleaved` (a blocked run = the same skill
-   several times in a row, e.g. a Fokus card or a focus Gembok run; mixed =
-   the adaptive journey / review). Rule per skill: blocked ≥80% and mixed ≤55%
-   (≥6 each, guesses excluded) → "tahu cara kira, tetapi keliru memilih
-   operasi bila soalan bercampur"; target = mixed "operasi mana?" sets.
-   Full 4.7: retention per skill (today only sifir and basic facts) feeding a
-   1/3/7/14-day review queue (reuse `daily-spaced-review`).
+   #77 docs: "How it works" under "Kemungkinan punca tags" below. #80 mini
+   game fix: every round gets its own brain record (3.87.2).
+   #81 lens 4.6 strategy choice (3.87.3, see §4.6 "Implemented").
+   Also open from another session: PR #78 (Fokus card one line, "Punca
+   utama", 3.87.1); `js/version.js` and this section may conflict when both
+   merge — keep the higher version.
+2. **Next task: full lens 4.7 (retention), the last lens of phase 4.** Ask
+   the owner before starting. Today 4.7 covers only sifir and basic facts
+   (mastered earlier, slipping in the last 3 days). Full 4.7 (§4.7): per skill
+   (≥2 reversals after ≥3 days: right in a past session, wrong now), feeding a
+   1/3/7/14-day review queue (reuse `daily-spaced-review`), with a re-check
+   like the other targets. After 4.7: phase 5 (consented cloud telemetry, §7),
+   which needs owner decisions (consent, privacy, Supabase) first.
+   Note on 4.6 as built: the sketch said "per skill", but the evidence is
+   pooled across operations (a child chooses among operations, not within
+   one skill), and blocked/mixed is read from the answers before, not from
+   the screen (see §4.6).
 3. Owner style: reply in Bahasa Malaysia, short and plain; one task per
    branch/PR, base `main`; merge only when the owner says so (convention:
    first push a commit marking the PR merged here in §8a, then merge with a
@@ -349,6 +378,11 @@ Last updated: 2026-10-21 (after PR #77). Read this section first if you are pick
    localhost with `localStorage.pa_dev_unlocked='1'`; Chromium is at
    `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
    the real app before reporting.
+   **No clutter (owner, 2026-10-21):** "Aku taknak kat situ serabut dgn info."
+   A Kemahiran Fokus card shows one short line (PR #78, `focusCardLine()`),
+   so a plan step's `card` label is 3 words or fewer. A finding's parent
+   `text` is one plain sentence with at most one score; extra numbers go in
+   `evidence`, not on screen. Every new lens follows this.
 
 **Status on GitHub.** PRs #55–#63 and #65–#77 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
@@ -623,6 +657,8 @@ unchanged (design values, phase 5 calibrates).
   typing on the keyboard works in the six keypad games. Sweep: 9 games ×
   10 sizes (320×500 … 1920×960), no control out of reach.
 - ✅ Light lens 4.8 (language load), 3.86.99, PR #75, merged: see §4.8 "Implemented".
+- ✅ Lens 4.6 Strategy choice (interleaving), 3.87.3, PR #81, merged: see §4.6
+  "Implemented". Thresholds are the §4.6 defaults (phase 5 calibrates).
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
   "Kemungkinan punca" tags for D2–D5. 4.6 and full 4.7 after that.

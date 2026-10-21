@@ -5,7 +5,7 @@
       wrong value, seconds, hint) — on the child's own profile only.
    3) analyze(log): evidence-gated findings for lenses 4.1 (picture vs numbers),
       4.2 (fact fluency), 4.3 (error bugs), 4.4 (lazim vs word), 4.5 (rapid
-      guessing), 4.7 (retention), 4.8 (short vs long wording) plus
+      guessing), 4.6 (blocked vs mixed), 4.7 (retention), 4.8 (short vs long wording) plus
       operation-within-context (e.g. money subtraction). Each finding carries
       parent copy (BM), evidence and the action PA will take.
    Pure functions are exported for Node tests; browser wiring is at the end. */
@@ -16,8 +16,8 @@
   if(root)root.PADiagnostic=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.1.0';
-  const LOG_MAX=500, WINDOW_DAYS=30;
+  const VERSION='1.2.0';
+  const LOG_MAX=500, WINDOW_DAYS=30, RUN_GAP=15*6e4;
   const OP_WORD={add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'};
   const CTX_WORD={money:'wang',time:'masa',measure:'ukuran',fraction:'pecahan',decimal:'perpuluhan',plain:'nombor'};
   const DOMAIN_CTX={Wang:'money',Masa:'time',Ukuran:'measure',Pecahan:'fraction',Perpuluhan:'decimal'};
@@ -81,7 +81,9 @@
     // 4.8 language load: only a generator that wrote the short and the long wording knows it (1 short … 3 long).
     const reading=[1,2,3].includes(given.reading)?given.reading:null;
     return{skill:q?.skill||given.skill||null,op,context,format,tables:tables&&tables.length?tables:null,
-      operands:ops,words,factFamily,fact,regroup,answer,rep,reading,aloud:q?.readAloud===true};
+      operands:ops,words,factFamily,fact,regroup,answer,rep,reading,aloud:q?.readAloud===true,
+      // 4.6: a page that knows its run may say so; otherwise applyResponse() reads it from the answers before.
+      interleaved:typeof given.interleaved==='boolean'?given.interleaved:null};
   }
 
   // ---------- recording ----------
@@ -95,6 +97,7 @@
     if(f.rep)r.rp=f.rep[0];   // c | p | a
     if(f.reading)r.rd=f.reading;
     if(f.aloud)r.ra=1;        // the child had the question read aloud before answering
+    if(f.interleaved!==null)r.il=f.interleaved?1:0;   // 0 same operation as the two answers before (blocked), 1 mixed
     if(!ok&&value!==undefined&&value!==null&&value!==''){r.v=String(value).slice(0,24);if(f.answer)r.x=f.answer}
     return r;
   }
@@ -118,8 +121,14 @@
           return list;}
       }
     }
-    const f=facets(q,meta);
-    return pushRecord(list,compact(f,{ok:first?false:!!ok,sec,hint:!!usedHint,value,at:at||Date.now()}),token);
+    const f=facets(q,meta),t=at||Date.now();
+    // 4.6 blocked or mixed: the operations of the two answers just before (same sitting, 15 minutes).
+    if(f.interleaved===null&&OP_WORD[f.op]){
+      const prev=[];
+      for(let i=list.length-1;i>=0&&prev.length<2;i--){const x=list[i];if(!x||t-x.t>RUN_GAP)break;if(OP_WORD[x.o])prev.push(x.o)}
+      if(prev.length===2)f.interleaved=prev.some(o=>o!==f.op);
+    }
+    return pushRecord(list,compact(f,{ok:first?false:!!ok,sec,hint:!!usedHint,value,at:t}),token);
   }
 
   // ---------- analysis helpers ----------
@@ -419,6 +428,34 @@
           target:{reading:true,op:g.op,context:g.context},skills:skillsOf(g.recs),evidence:{gaps:gaps.map(({recs,...x})=>x)}});
         // Short word problems are right, so the bar-model structure is not the gap (lens 4.4 steps aside).
         const i=findings.findIndex(f=>f.id==='format_word');if(i>=0)findings.splice(i,1);
+      }
+    }
+
+    // 4.6 strategy choice: word problems are right when the same operation comes in a row (blocked) and
+    // wrong when tambah, tolak, darab and bahagi are mixed. In a word problem the sign is not shown, so the
+    // child must choose it; symbolic items are left out.
+    {
+      const weakTables=new Set(findings.filter(f=>f.id==='fact_fluency').flatMap(f=>f.target?.tables||[]));
+      const weakFacts=new Set(findings.filter(f=>f.id==='basic_facts').flatMap(f=>f.target?.factFamilies||[]));
+      const bugs=new Set(findings.filter(f=>f.id.startsWith('bug_')).map(f=>f.id.slice(4)));
+      const reading=findings.some(f=>f.id==='reading_load');
+      const words=scored.filter(r=>r.f==='word'&&OP_WORD[r.o]&&(r.il===0||r.il===1));
+      const blocked=latest(words.filter(r=>r.il===0),12),mixed=latest(words.filter(r=>r.il===1),12);
+      if(blocked.length>=6&&mixed.length>=6){
+        const bOk=blocked.filter(independent).length,mOk=mixed.filter(independent).length,ba=pct(bOk,blocked.length),ma=pct(mOk,mixed.length);
+        // A weak sifir, basic fact, long wording (4.8) or another bug already explains most mixed misses.
+        const misses=mixed.filter(r=>!independent(r)),wrongOp=misses.filter(r=>detectBug(r)==='wrong_operation').length;
+        const explains=r=>{const b=detectBug(r);return(r.tb||[]).some(t=>weakTables.has(t))||weakFacts.has(r.fx)||(reading&&r.rd===3&&r.ra!==1)||(!!b&&b!=='wrong_operation'&&bugs.has(b))};
+        if(ba>=80&&ma<=55&&misses.filter(explains).length*2<misses.length){
+          findings.push({id:'strategy_choice',lens:'4.6',severity:2,confidence:wrongOp>=2||mixed.length>=10?'tinggi':'sederhana',
+            // One plain sentence for parents; the blocked score and the wrong-operation count stay in evidence.
+            text:`${name} keliru memilih operasi bila soalan bercampur (${mOk}/${mixed.length} betul).`,
+            action:'Pahlawan Angka akan beri set soalan cerita bercampur. Anak pilih ayat matematik dahulu, kemudian baru mengira.',
+            tip:'Sebelum anak mengira, tanya: "Soalan ini minta kita gabung, ambil, kumpul sama banyak, atau agih sama rata?"',
+            target:{choose:true},skills:skillsOf(mixed),evidence:{blocked:`${bOk}/${blocked.length}`,mixed:`${mOk}/${mixed.length}`,wrongOp}});
+          // The finer cause wins: right in a blocked run, so neither the story (4.4) nor a habit of one operation (4.3) is the gap.
+          for(const id of ['format_word','bug_wrong_operation']){const i=findings.findIndex(f=>f.id===id);if(i>=0)findings.splice(i,1)}
+        }
       }
     }
 
