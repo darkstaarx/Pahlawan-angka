@@ -355,8 +355,7 @@ Last updated: 2026-10-21 (lens 4.6). Read this section first if you are picking 
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
    #77 docs: "How it works" under "Kemungkinan punca tags" below. #80 mini
    game fix: every round gets its own brain record (3.87.2).
-   Open: lens 4.6 strategy choice (3.87.3, see §4.6 "Implemented"), branch
-   `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
+   #81 lens 4.6 strategy choice (3.87.3, see §4.6 "Implemented").
    Also open from another session: PR #78 (Fokus card one line, "Punca
    utama", 3.87.1); `js/version.js` and this section may conflict when both
    merge — keep the higher version.
@@ -658,7 +657,7 @@ unchanged (design values, phase 5 calibrates).
   typing on the keyboard works in the six keypad games. Sweep: 9 games ×
   10 sizes (320×500 … 1920×960), no control out of reach.
 - ✅ Light lens 4.8 (language load), 3.86.99, PR #75, merged: see §4.8 "Implemented".
-- ✅ Lens 4.6 Strategy choice (interleaving), 3.87.3, not merged yet: see §4.6
+- ✅ Lens 4.6 Strategy choice (interleaving), 3.87.3, PR #81, merged: see §4.6
   "Implemented". Thresholds are the §4.6 defaults (phase 5 calibrates).
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
