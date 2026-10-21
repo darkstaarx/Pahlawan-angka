@@ -103,7 +103,7 @@
     const guessless={...p,guess:Math.min(p.guess,.03)};             // parent talked to the child after Portal Restu
     for(let d=6;d>=1;d--)log2=play(guessless,ordinaryItems(p,r,25),log2,r,later-d*DAY,practised);
     const week2=B.analyze(log2,{now:later,name:p.name});
-    return{persona:{id,...p},week1,plan:pl,sets,worksheet:T.worksheet(pl,{name:p.name},7),week2,answers:{week1:log.length,week2:log2.length}};
+    return{persona:{id,...p},log1:log,week1,plan:pl,sets,worksheet:T.worksheet(pl,{name:p.name},7),week2,answers:{week1:log.length,week2:log2.length}};
   }
 
   return{PERSONAS,simulate};

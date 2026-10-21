@@ -37,9 +37,9 @@
     return shuffle(r,[{v:answer,tag:'correct'},...out]);
   }
   let seq=0;
-  function item(r,{prompt,answer,wrongs,facets,skill,kind,hint}){
+  function item(r,{prompt,answer,wrongs,facets,skill,kind,hint,calc}){
     return{token:`pat-${Date.now().toString(36)}-${(++seq).toString(36)}`,prompt,answer,choices:choices(r,answer,wrongs||[]),
-      facets,skill:skill||null,kind:kind||'Latihan sasaran',hint:hint||'',targeted:true};
+      facets,skill:skill||null,kind:kind||'Latihan sasaran',hint:hint||'',targeted:true,...(calc?{calc}:{})};
   }
 
   // ---------- generators, one per target kind ----------
@@ -99,14 +99,14 @@
         const prompt=pick(r,T[op]||T.sub)(a,op==='mul'||op==='div'?b:b);
         return item(r,{prompt,answer:rm(ans),skill:'D3.MONEY',kind:`Wang, ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[op]}`,
           wrongs:[{v:rm(op==='sub'?a+b:Math.abs(a-b)),tag:'operation'},{v:rm(ans*10),tag:'place_value_shift'},{v:`RM${ans}`,tag:'money_unit'}],
-          facets:{op,context:'money',format:'word'},hint:HINT[op]||HINT.sub});
+          facets:{op,context:'money',format:'word'},hint:HINT[op]||HINT.sub,calc:{op,a,b,ans,unit:'sen'}});
       });
     },
     /* RM <-> sen conversion (money_unit bug). */
     units(r,t,n){
       return Array.from({length:n},()=>{const c=int(r,5,999)*5,toSen=r()<.5;
-        return toSen?item(r,{prompt:`${rm(c)} = berapa sen?`,answer:`${c} sen`,skill:'D2.4.1',kind:'Sen dan ringgit',wrongs:[{v:`${c/100} sen`,tag:'money_unit'},{v:`${c*10} sen`,tag:'place'},{v:`${c/10} sen`,tag:'place'}],facets:{op:'none',context:'money',format:'symbolic'}})
-          :item(r,{prompt:`${c} sen = RM berapa?`,answer:rm(c),skill:'D2.4.1',kind:'Sen dan ringgit',wrongs:[{v:`RM${c}`,tag:'money_unit'},{v:rm(c*10),tag:'place'},{v:rm(c/10),tag:'place'}],facets:{op:'none',context:'money',format:'symbolic'}})});
+        return toSen?item(r,{prompt:`${rm(c)} = berapa sen?`,answer:`${c} sen`,skill:'D2.4.1',kind:'Sen dan ringgit',wrongs:[{v:`${c/100} sen`,tag:'money_unit'},{v:`${c*10} sen`,tag:'place'},{v:`${c/10} sen`,tag:'place'}],facets:{op:'none',context:'money',format:'symbolic'},calc:{op:'toSen',c}})
+          :item(r,{prompt:`${c} sen = RM berapa?`,answer:rm(c),skill:'D2.4.1',kind:'Sen dan ringgit',wrongs:[{v:`RM${c}`,tag:'money_unit'},{v:rm(c*10),tag:'place'},{v:rm(c/10),tag:'place'}],facets:{op:'none',context:'money',format:'symbolic'},calc:{op:'toRM',c}})});
     },
     /* Same arithmetic as story problems, short sentences first. */
     word(r,t,n){
@@ -118,7 +118,7 @@
       ];
       return Array.from({length:n},(_,i)=>{const a=int(r,20,90),b=int(r,5,a-5),s=S[i%S.length](a,b);
         return item(r,{prompt:s.p,answer:s.ans,skill:'D2.2.5',kind:'Soalan berayat',wrongs:[{v:s.op==='sub'?a+b:a-b,tag:'operation'},{v:s.ans+10,tag:'place'},{v:s.ans-1,tag:'counting'}],
-          facets:{op:s.op,format:'word',schema:s.schema},hint:'Lukis bar: mana keseluruhan, mana bahagian?'})});
+          facets:{op:s.op,format:'word',schema:s.schema},hint:'Lukis bar: mana keseluruhan, mana bahagian?',calc:{op:s.op,a,b,ans:s.ans,schema:s.schema}})});
     },
     /* Wrong-operation bug: mixed set where the child must choose the operation first. */
     mixed(r,t,n){const order=['add','sub','mul'];return Array.from({length:n},(_,i)=>{const op=order[i%3];const g=GEN[op==='mul'?'tables':'regroup'];
@@ -183,5 +183,78 @@
       parentNote:hasWord?'Ibu bapa: semak kotak "Cara kerja". Minta anak terangkan langkahnya — kesilapan cara lebih penting daripada jawapan akhir.':'Ibu bapa: biarkan anak menjawab sendiri, kemudian semak bersama.'};
   }
 
-  return{VERSION,plan,practice,worksheet,targetFor,_gen:GEN,_rng:rng};
+  // ---------- answer-key steps (Skema) that teach the exact fix ----------
+  const PLACE=['sa','puluh','ratus','ribu','puluh ribu'];
+  const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+  function borrowSteps(a,b){
+    const A=digits(a),B=digits(b),out=[];let borrow=0;
+    for(let i=0;i<A.length;i++){
+      const y=B[i]||0,was=borrow;let x=A[i]-was,txt='';borrow=0;
+      if(was&&A[i]===0){txt=`${cap(PLACE[i])}: 0 perlu beri 1, jadi pinjam 10 dari ${PLACE[i+1]} → 10 − 1 = 9`;x=9;borrow=1}
+      else if(was)txt=`${cap(PLACE[i])}: ${A[i]} − 1 (sudah dipinjam) = ${x}`;
+      if(x<y){txt=(txt?txt+'; ':`${cap(PLACE[i])}: `)+`${x} tidak cukup untuk tolak ${y}, pinjam 10 dari ${PLACE[i+1]} → ${x+10} − ${y} = ${x+10-y}`;borrow=1}
+      else if(txt||y)txt=(txt?txt+'; ':`${cap(PLACE[i])}: `)+`${x} − ${y} = ${x-y}`;
+      if(txt)out.push(txt);
+    }
+    return out.slice(0,4).join('. ')+'.';
+  }
+  function carrySteps(a,b){
+    const A=digits(a),B=digits(b),n=Math.max(A.length,B.length),out=[];let carry=0;
+    for(let i=0;i<n;i++){const s=(A[i]||0)+(B[i]||0)+carry,was=carry;carry=s>9?1:0;
+      out.push(`${cap(PLACE[i])}: ${A[i]||0} + ${B[i]||0}${was?' + 1':''} = ${s}${s>9?`, tulis ${s%10}, kumpul semula 1 ke ${PLACE[i+1]}`:''}`)}
+    return out.slice(0,4).join('. ')+'.';
+  }
+  function explain(it){
+    const f=it?.facets||{},c=it?.calc,ops=f.operands||[];
+    if(c&&c.op==='toSen')return `RM1 = 100 sen. ${rm(c.c)} = ${c.c} sen (darab 100, bukan tambah sifar sahaja).`;
+    if(c&&c.op==='toRM')return `100 sen = RM1. ${c.c} sen ÷ 100 = ${rm(c.c)}. Dua digit terakhir ialah sen.`;
+    if(c&&f.context==='money'){
+      const t={sub:`Baki: ${rm(c.a)} − ${rm(c.b)}. Tukar ke sen: ${c.a} − ${c.b} = ${c.ans} sen = ${rm(c.ans)}.`,
+        add:`Jumlah: ${rm(c.a)} + ${rm(c.b)}. Tukar ke sen: ${c.a} + ${c.b} = ${c.ans} sen = ${rm(c.ans)}.`,
+        mul:`Harga satu × bilangan: ${rm(c.a)} × ${c.b} = ${c.a*c.b} sen = ${rm(c.ans)}.`,
+        div:`Kongsi sama rata: ${rm(c.a)} ÷ ${c.b} = ${c.a/c.b} sen = ${rm(c.ans)}.`};
+      return t[c.op]||t.sub;
+    }
+    if(c&&c.schema){
+      const t={change:`Ada ${c.a}, kemudian ${c.b} hilang: keseluruhan berkurang, jadi tolak. ${c.a} − ${c.b} = ${c.ans}.`,
+        compare_more:`"Lebih daripada" bermaksud Amin ada lebih: ${c.a} + ${c.b} = ${c.ans}.`,
+        compare_less:`"Kurang daripada" bermaksud Siti ada kurang: ${c.a} − ${c.b} = ${c.ans}.`,
+        part_whole:`Jumlah = bahagian + bahagian: ${c.a} + ${c.b} = ${c.ans}.`};
+      return `${t[c.schema]||''} Lukis bar: keseluruhan di atas, bahagian di bawah.`.trim();
+    }
+    const [a,b]=ops;
+    if(f.op==='mul'&&ops.length===2){
+      const t=f.table||a,k=t===a?b:a;
+      return k>2?`Sifir ${t}: ${t} × ${k-1} = ${t*(k-1)}, tambah ${t} lagi → ${t} × ${k} = ${t*k}.`:`${a} × ${b} = ${a*b}.`;
+    }
+    if(f.op==='sub'&&ops.length===2&&f.format==='lazim')return `${borrowSteps(a,b)} Jawapan: ${a-b}.`;
+    if(f.op==='add'&&ops.length===2&&f.format==='lazim')return `${carrySteps(a,b)} Jawapan: ${a+b}.`;
+    if(f.op==='add'&&ops.length===2&&a+b>10&&a<10&&b<10){const need=10-Math.max(a,b),big=Math.max(a,b),small=Math.min(a,b);
+      return `Cukupkan 10 dulu: ${big} + ${need} = 10, baki ${small-need}. 10 + ${small-need} = ${a+b}.`}
+    if(f.op==='sub'&&ops.length===2&&a>10&&b>a-10){const first=a-10;return `Tolak ke 10 dulu: ${a} − ${first} = 10, kemudian 10 − ${b-first} = ${a-b}.`}
+    if(ops.length===2)return `${a} ${f.op==='add'?'+':f.op==='sub'?'−':'×'} ${b} = ${it.answer}.`;
+    return `Jawapan: ${it.answer}.`;
+  }
+  /* Printable worksheet items for the parent PDF: about 60% targeted, the rest
+     is left for the normal bank so the sheet stays mixed. */
+  function worksheetItems(p,count=10,ctx={},seed=Date.now()){
+    const steps=(p?.steps||[]).slice(0,3);if(!steps.length)return{items:[],focus:[],titles:[]};
+    const total=Math.max(6,Math.round(count*.6)),heavy=s=>['word','money'].includes(s.target.kind);
+    const weight=steps.map(s=>heavy(s)?2:3),sum=weight.reduce((x,y)=>x+y,0);
+    const quota=weight.map(w=>Math.min(8,Math.max(2,Math.floor(total*w/sum))));
+    // One focus never takes more than 8 items: past that it is drill, not practice.
+    for(let i=0,guard=0;quota.reduce((x,y)=>x+y,0)<total&&guard<99;i=(i+1)%quota.length,guard++)if(quota[i]<8)quota[i]++;
+    const items=[];
+    steps.forEach((s,i)=>{
+      const g=GEN[s.target.kind];if(!g)return;
+      const seen=new Set(),out=[];let tries=0;
+      while(out.length<quota[i]&&tries++<6){for(const it of g(rng(seed+i*97+tries),s.target,quota[i]*2,{...ctx,fluentTables:p.fluentTables})){
+        if(out.length>=quota[i])break;if(seen.has(it.prompt))continue;seen.add(it.prompt);out.push(it)}}
+      for(const it of out)items.push({prompt:it.prompt,answer:String(it.answer),hint:it.hint||'',skill:it.skill,choices:null,targeted:true,
+        focus:s.card,showWorking:['word','money','regroup'].includes(s.target.kind),solution:explain(it)});
+    });
+    return{items,focus:steps.map(s=>({card:s.card,why:s.why})),titles:steps.map(s=>s.card)};
+  }
+
+  return{VERSION,plan,practice,worksheet,worksheetItems,explain,targetFor,_gen:GEN,_rng:rng};
 });
