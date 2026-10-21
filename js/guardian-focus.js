@@ -1,3 +1,19 @@
+/* Diagnostic Brain findings lead the cards (docs/PA-DIAGNOSTIC-BRAIN.md §8a):
+   each PATargets plan step names the skill where its evidence came from. The
+   card shows the short practice label; the full finding stays in the parent
+   tab's Ringkasan Cikgu Dimensi. No findings, no change to the order. */
+function brainFocusSteps(profile,grade,usable,blocked){
+ const B=globalThis.PADiagnostic,T=globalThis.PATargets;
+ if(!B?.analyze||!T?.plan||!T?.skillFor||!Array.isArray(profile?.diagLog)||!profile.diagLog.length)return [];
+ const out=[];
+ for(const step of T.plan(B.analyze(profile.diagLog,{name:profile.name}),{grade}).steps){
+  // Evidence from a skill a money/time check moved away from stays with that check's card.
+  const own=step.skills||[];
+  if(own.some(id=>blocked.has(id))&&!own.some(id=>usable.some(m=>m.id===id)))continue;
+  const id=T.skillFor(step,usable);if(id&&!out.some(x=>x.id===id))out.push({id,step});
+ }
+ return out;
+}
 /* Home focus uses actual encounters, not low default mastery or retry counts.
    Five encounters across two distinct questions are a minimum for a suggestion.
    The latest twenty encounters allow a recovering skill to leave the list. */
@@ -23,9 +39,12 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  const timeTargetQuestionKeys=new Set(timeTargetEvidence.map(e=>e.questionKey).filter(Boolean));
  const timeTargetRecovered=timeTargetEvidence.length>=5&&timeTargetQuestionKeys.size>=2&&timeTargetEvidence.filter(e=>e.outcome==='independent').length/timeTargetEvidence.length>=.8;
  let hasEvidence=false;
+ // A money/time check that moved the focus to another skill keeps this one off the cards.
+ const blocked=new Set();
+ if(activeMoneyReport&&activeMoneyReport.state==='candidate'&&activeMoneyReport.nextSkillId&&activeMoneyReport.nextSkillId!==activeMoneyReport.skillId)blocked.add(activeMoneyReport.skillId);
+ if(currentTimeReport&&currentTimeReport.state==='candidate'&&currentTimeReport.nextSkillId&&currentTimeReport.skillId!==currentTimeReport.nextSkillId)blocked.add(currentTimeReport.skillId);
  const candidates=skills.flatMap(m=>{
-  if(activeMoneyReport&&m.id===activeMoneyReport.skillId&&activeMoneyReport.state==='candidate'&&activeMoneyReport.nextSkillId&&activeMoneyReport.nextSkillId!==activeMoneyReport.skillId)return [];
-  if(currentTimeReport&&currentTimeReport.state==='candidate'&&currentTimeReport.nextSkillId&&m.id===currentTimeReport.skillId&&m.id!==currentTimeReport.nextSkillId)return [];
+  if(blocked.has(m.id))return [];
   const recent=rows.filter(e=>e.skillId===m.id).slice(-20),unique=new Set(recent.map(e=>e.questionKey).filter(Boolean));
   if(recent.length<5||unique.size<2)return [];
   hasEvidence=true;
@@ -62,6 +81,17 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    candidates.splice(0,candidates.length,...byId);
   }
  }
+ const usable=skills.filter(m=>!blocked.has(m.id)&&typeof questionBankFor==='function'&&typeof questionBankFor(m.id)==='function');
+ brainFocusSteps(profile,grade,usable,blocked).forEach(({id,step},index)=>{
+  hasEvidence=true;
+  let item=candidates.find(x=>x.id===id);
+  if(!item){
+   const m=usable.find(x=>x.id===id),recent=rows.filter(e=>e.skillId===id).slice(-20),independent=recent.filter(e=>e.outcome==='independent').length;
+   item={id,title:m.title,chapter:String(m.chapter),attempts:recent.length,independent,independentRate:recent.length?Math.round(independent/recent.length*100):0};
+   candidates.push(item);
+  }
+  Object.assign(item,{priority:2000-index,diagnostic:true,brainStep:step,reason:step.card});
+ });
  candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));
  /* Foundation hint: a likely root skill shared across topics. It only explains; order and routing stay as above. */
  const foundation=globalThis.PAFocusFoundationV1?.evaluate?.(profile,{grade});

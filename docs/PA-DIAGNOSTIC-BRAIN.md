@@ -253,7 +253,8 @@ composition, lock policy.
   on success, or the brain and Portal Restu cannot see it.
   Tests: `audit/minigame-telemetry.test.js`.
 - Targeted practice + worksheet composer: `js/engine/diagnostic-targets-v1.js`
-  (`PATargets`). Dummy children: `tools/diagnostic-sim.js`, lab
+  (`PATargets`, incl. `skillFor` for Kemahiran Fokus cards in
+  `js/guardian-focus.js`). Dummy children: `tools/diagnostic-sim.js`, lab
   `tools/diagnostic-sim-lab.html`.
 - PIN lock: `js/page-lock-v1.js`.
 - Cloud tables (schema only, not yet sent): `supabase/schema/adaptive_learner_telemetry_v1.sql`.
@@ -262,7 +263,7 @@ composition, lock policy.
 
 Last updated: 2026-10-21. Read this section first if you are picking up the work.
 
-**Status on GitHub.** PRs #55–#63, #65 and #66 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#67 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test. No PR is open.
 Start new work from `main`, one task per branch and PR, base `main`.
@@ -280,16 +281,31 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
   (`js/worksheet-2p5d-v1.js`).
 - v2 D3 visuals no longer print answers (grouping, unit meters, number line order).
 - Test suite clean: `node --test audit/*.test.js` → 0 failures (Next item 5).
+- Kemahiran Fokus cards follow the brain (Next item 1, PR #67).
 
 **Next (phase 3 remainder), in this order**
-1. *Kemahiran Fokus cards show brain findings.* `focusPracticeSummary()` in
+1. ✅ *Done (2026-10-21, 3.86.88, PR #67, merged).* Each brain finding now
+   carries `skills` (KSSR skill ids of its evidence, most mistakes first).
+   `PATargets.plan()` steps keep `skills`; `PATargets.skillFor(step, gradeSkills)`
+   picks the card skill: the evidence skill if it is in the child's grade,
+   else the grade's skill for that practice kind (tables → Darab, money sub →
+   Tolak wang, ...; word problems in Darjah 3–4 have none, worksheet only).
+   `brainFocusSteps()` in `js/guardian-focus.js` puts those cards first
+   (`diagnostic: true`, reason = the short practice label `step.card`, e.g.
+   "Sifir 3"; the full finding stays in the parent tab's Ringkasan Cikgu
+   Dimensi; `brainStep` = the plan step for item 2), merges with an existing card for the same skill, and leaves a
+   skill to a money/time check that moved the focus away from it. Menu V2
+   tile falls back to the old note when a brain card has no journey answers.
+   Tests: `audit/diagnostic-focus-cards.test.js`. Original notes:
+   *Kemahiran Fokus cards show brain findings.* `focusPracticeSummary()` in
    `js/guardian-focus.js` builds the 3 cards from mastery + foundation hints.
    Add: when `PADiagnostic.current()` has findings, map them with
    `PATargets.plan()` and put the finding text as the card reason (e.g.
    "Sifir 7 belum dikuasai (3/13 betul)"); keep the old order when there are no
    findings. Done when: dummy children (tools/diagnostic-sim.js) produce the
    expected first card; no change for profiles without findings.
-2. *Gembok uses targeted items.* `nextQuestion()` in
+2. *Gembok uses targeted items.* (Start here: a brain card item carries
+   `brainStep`; `startFocusChoice(id)` passes only the id today.) `nextQuestion()` in
    `js/engine/production-journey.js` calls `generate(id,…)`. When the run comes
    from a brain-backed Fokus card, serve `PATargets.practice(step,…)` items
    (they already carry facets, choices with bug distractors, hints) for about

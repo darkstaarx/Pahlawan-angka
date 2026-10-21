@@ -116,6 +116,10 @@
   /* Current state = latest evidence per category (like Kemahiran Fokus uses the
      latest 20 encounters), so a child who has improved leaves the list. */
   const latest=(rs,n)=>rs.length<=n?rs:[...rs].sort((a,b)=>a.t-b.t).slice(-n);
+  /* KSSR skills the evidence came from, most mistakes first, so a finding can
+     open the Kemahiran Fokus card for the skill where the problem showed. */
+  const skillsOf=rs=>{const n=new Map();for(const r of rs){if(!r.s)continue;const x=n.get(r.s)||{s:r.s,bad:0,all:0};x.all++;if(!independent(r))x.bad++;n.set(r.s,x)}
+    return[...n.values()].sort((a,b)=>b.bad-a.bad||b.all-a.all||a.s.localeCompare(b.s)).slice(0,3).map(x=>x.s)};
 
   // ---------- bug detectors (lens 4.3) ----------
   function digits(n){return String(Math.abs(Math.trunc(n))).split('').map(Number).reverse()}
@@ -236,7 +240,7 @@
         text:`${lead}${parts.join('; ')}.`.replace(/^./,c=>c.toUpperCase()),
         action:`Pahlawan Angka akan beri lebih banyak latihan sifir ${joinBM(target)} dalam mini game, bercampur dengan sifir yang sudah dikuasai.`,
         tip:`Uji sifir ${target[0]} secara lisan 2 minit sehari — dalam kereta atau sebelum tidur.`,
-        target:{tables:target},evidence:{weak:weakT,slow:slowT,fluent:fluentT}});
+        target:{tables:target},skills:skillsOf(scored.filter(r=>(r.tb||[]).some(t=>target.includes(t)))),evidence:{weak:weakT,slow:slowT,fluent:fluentT}});
     }else if(fluentT.length>=3){
       findings.push({id:'fact_strength',lens:'4.2',severity:0,confidence:'tinggi',strength:true,
         text:`Hebat dalam sifir ${joinBM(fluentT)} — tepat dan pantas.`,action:'',evidence:{fluent:fluentT}});
@@ -254,7 +258,7 @@
         text:`${CTX_WORD[ctx][0].toUpperCase()+CTX_WORD[ctx].slice(1)}: ${acc}% betul (${okN}/${rs.length})${focus?`, dan hampir semua kesilapan melibatkan operasi ${OP_WORD[focus]}`:''}.`,
         action:focus?`Pahlawan Angka akan fokus latihan operasi ${OP_WORD[focus]} dalam soalan ${CTX_WORD[ctx]}.`:`Pahlawan Angka akan beri lebih banyak latihan ${CTX_WORD[ctx]} bermula dari tahap yang lebih mudah.`,
         tip:ctx==='money'?`Main jual-beli di rumah dengan duit sebenar${focus?` dan minta anak kira ${OP_WORD[focus]==='tolak'?'baki':'jumlah'}`:''}.`:'Kaitkan dengan aktiviti harian anak.',
-        target:{context:ctx,op:focus},evidence:{accuracy:acc,n:rs.length,byOp}});
+        target:{context:ctx,op:focus},skills:skillsOf(rs),evidence:{accuracy:acc,n:rs.length,byOp}});
     }
 
     // 4.4 bentuk lazim vs ayat (same arithmetic skills)
@@ -267,7 +271,7 @@
           text:`Soalan bentuk lazim hampir semua betul (${la}%), tetapi ${name} keliru bila soalan dalam ayat (${wa}%).`,
           action:'Worksheet akan fokus soalan berayat (bukan bentuk lazim); ibu bapa diminta semak cara kerja anak.',
           tip:'Minta anak lukis gambar atau bar ringkas untuk setiap soalan cerita sebelum mengira.',
-          target:{format:'word'},evidence:{lazim:la,word:wa}});
+          target:{format:'word'},skills:skillsOf(word),evidence:{lazim:la,word:wa}});
       }
     }
 
@@ -297,7 +301,7 @@
           text:`${bug.copy} (${rs.length} kali, contoh ${example}).`,
           action:`Pahlawan Angka akan beri ${bug.action.charAt(0).toLowerCase()+bug.action.slice(1)}.`,
           tip:'Minta anak terangkan langkahnya dengan kuat untuk satu soalan — biasanya corak salah akan kelihatan.',
-          target:{bug:id,op:ex.o},evidence:{count:rs.length,distinct}});
+          target:{bug:id,op:ex.o},skills:skillsOf(rs),evidence:{count:rs.length,distinct}});
       }
     }
 
@@ -319,7 +323,7 @@
         text:`${parts.join('; ')}.`.replace(/^./,c=>c.toUpperCase()),
         action:`Pahlawan Angka akan beri latihan ingat pantas ${joinBM(targets.map(f=>FAM[f]))}, sedikit setiap hari.`,
         tip:'Main "cepat sebut" 2 minit: ibu bapa sebut soalan seperti 8 + 7, anak jawab tanpa jari.',
-        target:{factFamilies:targets,facts:hard},evidence:{parts}});
+        target:{factFamilies:targets,facts:hard},skills:skillsOf(scored.filter(r=>targets.includes(r.fx))),evidence:{parts}});
       else if(fluent.length)findings.push({id:'basic_strength',lens:'4.2',severity:0,confidence:'tinggi',strength:true,
         text:`Hebat dalam ${joinBM(fluent)} — tepat dan pantas.`,action:''});
     }
@@ -334,12 +338,12 @@
         text:`${word[0].toUpperCase()+word.slice(1)} betul bila tidak perlu ${gerund} (${na}%), tetapi banyak salah bila perlu ${gerund} (${ra}%).`,
         action:`Pahlawan Angka akan beri latihan ${word} yang perlu ${gerund}, dengan blok nilai tempat ditunjukkan.`,
         tip:`Guna 10 batang aiskrim diikat sebagai "puluh" untuk tunjuk cara ${gerund}.`,
-        target:{op,regroup:true},evidence:{regroup:ra,plain:na}});
+        target:{op,regroup:true},skills:skillsOf(reg),evidence:{regroup:ra,plain:na}});
     }
 
     // 4.7 retention: mastered earlier, slipping in the last 3 days
     {
-      const cut=now-3*864e5,slips=[];
+      const cut=now-3*864e5,slips=[],slipped=[];
       const groups=new Map();
       for(const r of scored){for(const t of(r.tb||[]))(groups.get(`sifir ${t}`)||groups.set(`sifir ${t}`,[]).get(`sifir ${t}`)).push(r);
         if(r.fx){const k=r.fx==='add20'?'tambah asas':'tolak asas';(groups.get(k)||groups.set(k,[]).get(k)).push(r)}}
@@ -347,13 +351,13 @@
         const old=rs.filter(r=>r.t<cut),fresh=rs.filter(r=>r.t>=cut);
         if(old.length<5||fresh.length<4)continue;
         const oa=pct(old.filter(independent).length,old.length),fa=pct(fresh.filter(independent).length,fresh.length);
-        if(oa>=90&&fa<=60)slips.push({label,oa,fa,old:`${old.filter(independent).length}/${old.length}`,fresh:`${fresh.filter(independent).length}/${fresh.length}`});
+        if(oa>=90&&fa<=60){slips.push({label,oa,fa,old:`${old.filter(independent).length}/${old.length}`,fresh:`${fresh.filter(independent).length}/${fresh.length}`});slipped.push(...fresh)}
       }
       if(slips.length)findings.push({id:'retention',lens:'4.7',severity:2,confidence:'sederhana',
         text:`${joinBM(slips.map(x=>x.label))} sudah mantap sebelum ini (${slips.map(x=>x.old).join(', ')}), tetapi dalam 3 hari terakhir mula lupa (${slips.map(x=>x.fresh).join(', ')}).`.replace(/^./,c=>c.toUpperCase()),
         action:`Pahlawan Angka akan ulang kaji ${joinBM(slips.map(x=>x.label))} secara berjadual (selepas 1, 3 dan 7 hari) supaya ingatan kekal.`,
         tip:'Ulang kaji sekejap lebih berkesan daripada latihan panjang sekali-sekala.',
-        target:{review:slips.map(x=>x.label)},evidence:{slips}});
+        target:{review:slips.map(x=>x.label)},skills:skillsOf(slipped),evidence:{slips}});
     }
 
     const strengths=findings.filter(f=>f.strength);

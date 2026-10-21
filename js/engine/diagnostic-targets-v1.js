@@ -150,6 +150,7 @@
   }
   const CARD={tables:t=>`Sifir ${(t.tables||[]).join(' & ')||'pilihan'}`,facts:()=>'Fakta asas hingga 20',regroup:t=>t.op==='add'?'Tambah, mengumpul semula':'Tolak, meminjam',
     money:t=>t.op==='mixed'?'Wang: soalan cerita campur':`Wang: operasi ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[t.op]||'tolak'}`,word:()=>'Soalan berayat',units:()=>'Sen dan ringgit',mixed:()=>'Pilih operasi yang betul',review:()=>'Ulang kaji berjadual'};
+  const merge=(a,b)=>[...new Set([...(a||[]),...(b||[])])];
   /* What PA does next: mini game / Gembok targets and the worksheet sections. */
   function plan(result,ctx={}){
     const findings=(result?.findings||[]).filter(f=>!f.strength);
@@ -161,12 +162,34 @@
       if(t.kind==='tables'&&!(t.tables||[]).length&&f.id.startsWith('bug_')){const m=/(\d+) × (\d+)/.exec(f.text);t.tables=m?[Number(m[1])]:[7]}
       // One step per practice kind: a regroup lens and a borrowing bug want the same drill.
       const same=steps.find(s=>s.target.kind===t.kind&&(s.target.op||'')===(t.op||''));
-      if(same){same.also=[...(same.also||[]),f.id];continue}
-      steps.push({finding:f.id,target:t,card:CARD[t.kind]?.(t)||'Latihan sasaran',why:f.text,where:t.worksheet?'worksheet':'minigame'});
+      if(same){same.also=[...(same.also||[]),f.id];same.skills=merge(same.skills,f.skills);continue}
+      steps.push({finding:f.id,target:t,card:CARD[t.kind]?.(t)||'Latihan sasaran',why:f.text,
+        skills:merge([],f.skills),where:t.worksheet?'worksheet':'minigame'});
     }
     // A sen/RM mix-up explains weak money scores; fix the unit first, not a generic money drill.
-    if(steps.some(s=>s.target.kind==='units')){const i=steps.findIndex(s=>s.target.kind==='money'&&s.target.op==='mixed');if(i>=0){const [m]=steps.splice(i,1);const u=steps.find(s=>s.target.kind==='units');u.also=[...(u.also||[]),m.finding]}}
+    if(steps.some(s=>s.target.kind==='units')){const i=steps.findIndex(s=>s.target.kind==='money'&&s.target.op==='mixed');if(i>=0){const [m]=steps.splice(i,1);const u=steps.find(s=>s.target.kind==='units');u.also=[...(u.also||[]),m.finding];u.skills=merge(u.skills,m.skills)}}
     return{steps,fluentTables:fluent,grade:ctx.grade||2};
+  }
+  /* KSSR skill for a step's Kemahiran Fokus card. skills = the child's grade
+     skills that can be practised ({id,domain,title}). The skill where the
+     evidence came from wins; otherwise the grade's skill for this practice. */
+  const OP_TITLE={add:/^tambah/i,sub:/^tolak/i,mul:/^darab/i,div:/^bahagi/i};
+  function skillFor(step,skills){
+    const list=Array.isArray(skills)?skills:[],t=step?.target||{};
+    const own=(step?.skills||[]).find(id=>list.some(m=>m.id===id));if(own)return own;
+    const all=(domain,re)=>list.filter(m=>m.domain===domain&&re.test(String(m.title||'')));
+    const basic=m=>/hingga 20$/.test(m.title);
+    const ops=(op,small)=>{const xs=all('Operasi',OP_TITLE[op]||/$^/);return(small?xs.find(basic):xs.find(m=>!basic(m)))||xs[0]};
+    const money=op=>(all('Wang',OP_TITLE[op]||/$^/)[0]||all('Wang',/masalah|operasi/i)[0]||all('Wang',/./)[0]);
+    let m=null;
+    if(t.kind==='tables')m=ops('mul');
+    else if(t.kind==='facts')m=ops((t.factFamilies||[])[0]==='sub20'?'sub':'add',true);
+    else if(t.kind==='regroup')m=ops(t.op==='add'?'add':'sub');
+    else if(t.kind==='money')m=money(t.op);
+    else if(t.kind==='units')m=all('Wang',/^nilai wang/i)[0]||money();
+    else if(t.kind==='word'||t.kind==='mixed')m=all('Operasi',/masalah|bergabung|gabungan/i)[0];
+    else if(t.kind==='review'){const r=t.review||[];m=r.some(x=>/^sifir/.test(x))?ops('mul'):ops(r.some(x=>/^tolak/.test(x))?'sub':'add',true)}
+    return m?.id||null;
   }
   function practice(step,n=10,ctx={},seed=Date.now()){
     const r=rng(seed),g=GEN[step?.target?.kind];if(!g)return[];
@@ -256,5 +279,5 @@
     return{items,focus:steps.map(s=>({card:s.card,why:s.why})),titles:steps.map(s=>s.card)};
   }
 
-  return{VERSION,plan,practice,worksheet,worksheetItems,explain,targetFor,_gen:GEN,_rng:rng};
+  return{VERSION,plan,practice,skillFor,worksheet,worksheetItems,explain,targetFor,_gen:GEN,_rng:rng};
 });
