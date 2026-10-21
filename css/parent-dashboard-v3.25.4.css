@@ -292,3 +292,25 @@
 #settingsTab .todayPlayTotal small{color:#38567c}
 #settingsTab .todayPlayTotal b{color:#94701f}
 #settingsTab .paTrustActions button{border-color:#b9a36c;background:#fffaf0;color:#123158}
+
+/* Ringkasan at a glance (js/parent-glance-v1.js): a dark activity anchor with
+   praise first, then a cream card with what to strengthen. */
+#parent .paGlance,#parent .paImprove{padding:17px;margin-bottom:10px;border-radius:19px}
+#parent .paGlance{position:relative;overflow:hidden;border-color:#36749a;background:radial-gradient(circle at 88% 18%,#2a738c 0,#1a425f 24%,transparent 56%),linear-gradient(135deg,#173553,#0a172b)}
+#parent .paGlanceHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+#parent .paGlance h2{margin:4px 0 12px;font-size:22px;line-height:1.1;color:#fff}
+#parent .paGlanceCoach{flex:0 0 auto;width:64px;height:64px;margin:-6px -4px 0 0;object-fit:contain;object-position:center top;filter:drop-shadow(0 6px 8px #0007)}
+#parent .paGlanceStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}
+#parent .paGlanceStats>div{padding:10px 6px;border:1px solid #5f9ca7;border-radius:14px;background:#07182aa8;text-align:center}
+#parent .paGlanceStats b{display:block;font-size:20px;line-height:1;color:#ffe07a}
+#parent .paGlanceStats small{display:block;margin-top:5px;font-size:10px;line-height:1.2;color:#c9f4ee}
+#parent .paGlanceNote{margin:0;font-size:13px;line-height:1.5;color:#d6e2f2}
+#parent .paImprove{border-color:#caa34f;background:linear-gradient(145deg,#fff8e8,#eadbb8);color:#172b47;box-shadow:0 10px 22px #050b151f,inset 0 1px #fff}
+#parent .paImprove .eyebrow{color:#94701f}
+#parent .paImprove h3{margin:4px 0 10px;font-size:17px;color:#123158}
+#parent .paImprove .paGlanceNote{color:#38567c}
+#parent .paImproveList{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px}
+#parent .paImproveList li{position:relative;padding:9px 12px 9px 32px;border:1px solid #dbc27f;border-radius:12px;background:#fffaf0;font-size:13px;font-weight:800;color:#172b47}
+#parent .paImproveList li:before{content:"→";position:absolute;left:12px;color:#c48a1c}
+#parent .paImproveMore{margin-top:12px;border-color:#b9a36c;background:#fffaf0;color:#123158}
+@media(min-width:760px){#summaryTab>.parentRestuEntry{grid-column:1/-1}#parent .paGlance,#parent .paImprove{margin:0}}
