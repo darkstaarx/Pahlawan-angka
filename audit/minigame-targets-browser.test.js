@@ -78,6 +78,40 @@ test('kurangkan gambar (fade, lens 4.1): picture, picture, numbers; level 2 drop
   assert.deepEqual(chk.errors, []); await chk.close();
 });
 
+test('model bar (word problems): read → choose the sentence → story alone; right answers, one scale, nothing clipped', async () => {
+  for (const [hash, ops] of [['d2-tambah', ['add']], ['d3-tolak', ['sub']], ['d2-darab', ['mul']], ['d4-bahagi', ['div']], ['d6-gabung', ['add', 'sub', 'mul', 'div']]]) {
+    const g = await gudang({ kind: 'bar' }, hash, { width: 360, height: 640 });
+    const rounds = await g.page.evaluate(() => window.__gudangGen.sample(10).map(q => ({ target: q.target, arch: q.arch })));
+    assert.ok(rounds.filter(r => r.target).length >= 6, hash + ' 7 in 10 rounds are bar model rounds');
+    const ladder = await g.page.evaluate(() => [0, 1, 2].map(t => { const q = window.__gudangGen.show(t, 0); return { arch: q.arch, vis: q.vis && q.vis.t } }));
+    assert.deepEqual(ladder, [{ arch: 'target_bar_read', vis: 'bar' }, { arch: 'target_bar_sentence', vis: 'bar' }, { arch: 'target_bar_story', vis: undefined }], hash);
+    for (let i = 0; i < 20; i++) {
+      const r = await g.page.evaluate(t => {
+        const q = window.__gudangGen.show(t, 0), fx = q.fx;
+        const rows = [...document.querySelectorAll('.bmrow')].map(row => [...row.querySelectorAll('.bmseg')].map(x => x.getBoundingClientRect().width));
+        return { fx, arch: q.arch, ans: q.form ? q.form.fields[0].v : null, ok: q.opts ? q.opts.find(o => o.id === q.correct).label : null, vis: q.vis, rows,
+          clipped: [...document.querySelectorAll('.bmseg,.bmbrace b')].some(x => x.scrollWidth > x.clientWidth + 1), off: document.documentElement.scrollWidth > innerWidth };
+      }, i % 3);
+      const [a, b] = r.fx.operands, want = { add: a + b, sub: a - b, mul: a * b, div: a / b }[r.fx.op];
+      assert.ok(ops.includes(r.fx.op), hash + ' ' + r.fx.op);
+      assert.ok(Number.isInteger(want) && want > 0, JSON.stringify(r.fx));
+      if (r.ans !== null) assert.equal(r.ans, want, r.arch);
+      if (r.ok) assert.equal(r.ok.replace(/\s/g, ''), (a + { add: '+', sub: '−', mul: '×', div: '÷' }[r.fx.op] + b + '=?').replace(/\s/g, ''), 'the right sentence');
+      assert.equal(r.fx.format, r.arch === 'target_bar_story' ? 'word' : 'visual');
+      if (r.vis) {
+        // Same unit everywhere: equal amounts look equal across rows (Singapore bar model).
+        const ppu = r.vis.rows.flatMap((row, ri) => row.segs.map((s, si) => r.rows[ri][si] / s.v)), small = Math.min(...r.vis.rows.flatMap(x => x.segs.map(s => s.v)));
+        assert.ok((Math.max(...ppu) - Math.min(...ppu)) * small <= 2.5, hash + ' scale ' + JSON.stringify(r.vis.rows));
+        assert.equal(r.clipped, false, hash + ' clipped label'); assert.equal(r.off, false, hash + ' sideways scroll');
+      }
+    }
+    assert.deepEqual(g.errors, []); await g.close();
+  }
+  const chk = await gudang({ kind: 'bar', check: true }, 'd3-tambah');
+  assert.equal((await chk.page.evaluate(() => window.__gudangGen.sample(1)[0])).arch, 'target_bar_story', 'a re-check is the story alone');
+  await chk.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');

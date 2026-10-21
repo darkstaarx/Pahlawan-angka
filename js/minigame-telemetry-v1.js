@@ -15,7 +15,7 @@ function cleanFacets(fx){
  const out={op:fx.op,...(rep?{rep}:{})},ops=fx.operands;
  if(Array.isArray(ops)&&ops.length===2&&ops.every(n=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<1e7))out.operands=[ops[0],ops[1]];
  if(Number.isInteger(fx.table)&&fx.table>=2&&fx.table<=12)out.table=fx.table;
- if(['lazim','word','symbolic'].includes(fx.format))out.format=fx.format;
+ if(['lazim','word','symbolic','visual'].includes(fx.format))out.format=fx.format;
  return out;
 }
 function fromChildFrame(src){if(!src)return false;for(const f of document.querySelectorAll('iframe')){try{if(f.contentWindow===src)return true}catch(_){}}return false}

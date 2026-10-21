@@ -55,7 +55,7 @@ test('a failed check keeps the focus and starts a new set; guesses and other ski
   assert.equal(p.diagRecheckV1.starts['tables:3'].at, T0);
 });
 
-test('targets map to the answers that practise them; word problems are not re-checked', () => {
+test('targets map to the answers that practise them; operation choice is not re-checked', () => {
   const key = target => R.matcher({ target })?.key ?? null;
   assert.equal(key({ kind: 'tables', tables: [7, 3] }), 'tables:3,7');
   assert.equal(key({ kind: 'review', review: ['sifir 6', 'tambah asas'] }), 'tables:6');
@@ -63,7 +63,8 @@ test('targets map to the answers that practise them; word problems are not re-ch
   assert.equal(key({ kind: 'facts', factFamilies: ['sub20', 'add20'] }), 'facts:add20,sub20');
   assert.equal(key({ kind: 'regroup', op: 'sub' }), 'regroup:sub');
   assert.equal(key({ kind: 'money', op: 'sub' }), 'money:sub');
-  for (const t of [{ kind: 'word' }, { kind: 'mixed' }, { kind: 'tables', tables: [] }]) assert.equal(key(t), null, JSON.stringify(t));
+  assert.equal(key({ kind: 'word' }), 'word', 'word problems: checked with word problems without a drawn bar');
+  for (const t of [{ kind: 'mixed' }, { kind: 'tables', tables: [] }]) assert.equal(key(t), null, JSON.stringify(t));
   const borrow = R.matcher({ target: { kind: 'regroup', op: 'sub' } }).test;
   assert.equal(borrow({ o: 'sub', rg: 1 }), true); assert.equal(borrow({ o: 'sub', rg: 0 }), false);
 });
