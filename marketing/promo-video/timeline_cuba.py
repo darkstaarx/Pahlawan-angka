@@ -118,7 +118,7 @@ PHONES = [dict(shots=SHOTS, camera=CAMERA, highlights=[])]
 # ---------------------------------------------------------------- muka: hook → penonton di sudut → penutup
 CORNER = dict(x=952, y=1762, size=160)
 FACE_KEYS = [
-    (0.0, dict(x=540, y=1050, size=40, mood=0.45, eyes=1.0, a=0.0)),
+    (0.0, dict(x=540, y=1050, size=340, mood=0.45, eyes=1.0, a=1.0)),
     (0.35, dict(size=430, a=1.0)),
     (1.25, dict(mood=0.45, eyes=1.0, squash=0.0)),
     (1.5, dict(mood=-0.85, eyes=0.42, look=1.0, squash=0.5)),     # "terus muka berubah?"
@@ -158,7 +158,7 @@ FACE_KEYS = [
 TEXTS = []
 
 RISES = [
-    RiseText(0.15, 3.35, [[('Ajak', WH), ('buat', WH)], [('matematik,', GD)]], y=420, size=118),
+    RiseText(0.02, 3.35, [[('Ajak', WH), ('buat', WH)], [('matematik,', GD)]], y=420, size=118),
     RiseText(1.45, 3.4, [[('terus', WH), ('muka', WH)], [('berubah?', GD)]], y=1560, size=118),
     RiseText(4.05, 6.15, [[('Cuba', WH), ('tunjuk', WH)], [('Pahlawan', GD), ('Angka.', GD)]], y=250, size=96),
     RiseText(6.3, 9.45, [[('Anak', WH), ('main', WH)], [('satu', GD), ('cabaran.', GD)]], y=250, size=104),
