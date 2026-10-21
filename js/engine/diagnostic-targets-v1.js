@@ -241,7 +241,7 @@
     const steps=(p?.steps||[]).slice(0,3);if(!steps.length)return{items:[],focus:[],titles:[]};
     const total=Math.max(6,Math.round(count*.6)),heavy=s=>['word','money'].includes(s.target.kind);
     const weight=steps.map(s=>heavy(s)?2:3),sum=weight.reduce((x,y)=>x+y,0);
-    const quota=weight.map(w=>Math.max(2,Math.floor(total*w/sum)));
+    const quota=weight.map(w=>Math.min(8,Math.max(2,Math.floor(total*w/sum))));
     // One focus never takes more than 8 items: past that it is drill, not practice.
     for(let i=0,guard=0;quota.reduce((x,y)=>x+y,0)<total&&guard<99;i=(i+1)%quota.length,guard++)if(quota[i]<8)quota[i]++;
     const items=[];

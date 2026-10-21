@@ -121,3 +121,8 @@ test('worksheetItems: ~60% targeted, every item has a skema, working box for wor
   for (const it of w.items) { assert.ok(it.solution && it.targeted && it.focus); assert.equal(it.showWorking, it.focus !== 'Sifir 7'); }
   assert.deepEqual(T.worksheetItems({ steps: [] }, 20).items, []);
 });
+
+test('a single focus is capped at 8 items; the bank fills the rest', () => {
+  const p = T.plan({ findings: [{ id: 'bug_money_unit', text: 'u', target: { bug: 'money_unit' } }] }, {});
+  assert.equal(T.worksheetItems(p, 20, {}, 3).items.length, 8);
+});
