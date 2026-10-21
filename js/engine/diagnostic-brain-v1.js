@@ -147,7 +147,7 @@
     if(rapidWrong.length>=5&&rapidWrong.length/wrong.length>=.4){
       findings.push({id:'rapid_guess',lens:'4.5',severity:3,confidence:rapidWrong.length>=10?'tinggi':'sederhana',
         text:`Banyak soalan dijawab terlalu cepat — ${rapidWrong.length} daripada ${wrong.length} jawapan salah diberi dalam beberapa saat sahaja. Kemungkinan ${name} meneka.`,
-        action:'Pahlawan Angka akan minta anak bertenang dan membaca semula; jika meneka berterusan, game dikunci sehingga ibu bapa buka dengan PIN.',
+        action:'Pahlawan Angka akan minta anak bertenang dan membaca semula; jika meneka berterusan, Wira jatuh ke Portal Restu dan ibu bapa membukanya dengan PIN.',
         tip:'Duduk bersama anak untuk 3 soalan pertama dan minta dia sebut jawapan dengan kuat sebelum menekan.',
         evidence:{rapidWrong:rapidWrong.length,wrong:wrong.length}});
     }
