@@ -173,6 +173,40 @@ test('soalan bercampur (choose, lens 4.6): pick the sentence (no bar) → story 
   await chk.close();
 });
 
+test('Menara Jam calendar rounds (hari / bulan / waktu) show the answer on the stamp, not "undefined"', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/menara-jam.html#d1-kalendar`);
+  await page.waitForFunction(() => window.__menaraDebug && window.__menaraDebug());
+  const stamps = [];
+  for (let i = 0; i < 4; i++) {
+    const d = await page.evaluate(() => window.__menaraDebug());
+    if (d.widget !== 'choice') break;
+    await page.evaluate(t => [...document.querySelectorAll('button')].find(x => x.textContent.trim() === t).click(), d.target);
+    await page.evaluate(() => document.getElementById('check').click());
+    stamps.push([d.target, await page.evaluate(() => document.querySelector('.stamp').textContent)]);
+    await page.evaluate(() => document.getElementById('check').click());
+  }
+  assert.ok(stamps.length >= 2, JSON.stringify(stamps));
+  for (const [target, stamp] of stamps) { assert.ok(stamp.includes(target), stamp); assert.ok(!/undefined/.test(stamp), stamp); }
+  assert.deepEqual(errors, []); await context.close();
+});
+
+test('a profile saved before newer skills existed opens the app without an error', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.route('**/*', route => route.request().url().startsWith(base) && ['GET', 'HEAD'].includes(route.request().method()) ? route.continue() : route.abort());
+  await context.addInitScript(() => localStorage.setItem('pa_coach_v6_full', JSON.stringify({ name: 'Lama', schoolGrade: 3, hero: 'wira', level: 2, xp: 0, coins: 0, coreFrontier: 1,
+    petCollectionMigrationVersion: 2, onboarding: { completed: true }, skills: { 'D3.MUL': { mastery: 60, confidence: 50, evidence: 5, correct: 4, wrong: 1, hints: 0, mis: {}, lastSeen: 0, stability: 20 } } })));
+  const page = await context.newPage(), errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto(base + '/index.html');
+  await page.waitForFunction(() => window.PAParentLearningTools || document.getElementById('worksheetTab'), null, { timeout: 30000 }).catch(() => {});
+  await page.waitForTimeout(2500);
+  assert.deepEqual(errors, []); await context.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');
