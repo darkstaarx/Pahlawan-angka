@@ -268,8 +268,8 @@ Last updated: 2026-10-21. Read this section first if you are picking up the work
 **Status on GitHub.** PRs #55–#63 and #65–#68 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-Open: Next item 3, mini games drill the brain finding (3.86.90), branch
-`ccr-ed8f705d-ym2tc0`, base `main`, not merged.
+Open: PR #69 (Next item 3, mini games drill the brain finding, 3.86.90),
+base `main`, not merged.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -330,7 +330,7 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    70% of turns, the normal generator for the rest. Done when: telemetry from
    those items flows back (facets survive) and a recovered bug shows
    "Semakin baik".
-3. ✅ *Done (2026-10-21, 3.86.90, not merged yet), KSSR + Singapore style.*
+3. ✅ *Done (2026-10-21, 3.86.90, PR #69, not merged yet), KSSR + Singapore style.*
    `startFocusChoice()` turns the card's `brainStep` into
    `PATargets.miniGameTarget(step)` and hands it to the bridges.
    - Gudang Harta (`focus_target` URL param, read in `gudang-harta.html`):
