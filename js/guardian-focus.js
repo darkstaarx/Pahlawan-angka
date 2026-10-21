@@ -142,14 +142,16 @@ function openFocusPicker(){
  (deck.firstElementChild||empty.querySelector('button'))?.focus();
 }
 function startFocusChoice(id){
- if(focusPickerProfile!==db||!focusPracticeSummary().items.some(item=>item.id===id)){openFocusPicker();return}
+ const choice=focusPickerProfile===db?focusPracticeSummary().items.find(item=>item.id===id):null;
+ if(!choice){openFocusPicker();return}
  if(typeof enforceRestuLock==='function'&&enforceRestuLock())return;
  if(window.PAWirayungLive?.tryStartFocus?.(id))return;
  if(window.PATapakBinaLive?.tryStartFocus?.(id))return;
  if(window.PAFocusMiniGamesLive?.tryStartFocus?.(id))return;
  closeFocusPicker();
  // Keep the existing production battle/count; only lock the selected skill.
- if(typeof openGembok==='function'&&window.PAProductionJourney)openGembok({focusSkill:id});
+ // A brain-backed card also hands over its plan step for targeted items.
+ if(typeof openGembok==='function'&&window.PAProductionJourney)openGembok({focusSkill:id,brainStep:choice.brainStep||null});
  else openGuardianFocus(id);
 }
 function continueFocusJourney(){closeFocusPicker();window.PAMenuV2?.kembara?.()}
