@@ -38,6 +38,8 @@
     if(t.kind==='regroup'&&(t.op==='add'||t.op==='sub'))return {key:'regroup:'+t.op,test:r=>r.o===t.op&&r.rg===1};
     if(t.kind==='money')return {key:'money:'+(t.op||'mixed'),test:r=>r.c==='money'&&(!t.op||t.op==='mixed'||r.o===t.op)};
     if(t.kind==='units')return {key:'units',test:r=>r.c==='money'};
+    // Fading pictures: the check is the same skill answered with numbers only.
+    if(t.kind==='fade'&&t.skill)return {key:'fade:'+t.skill+':'+(t.op||'none'),test:r=>r.s===t.skill&&r.rp==='a'&&(!t.op||t.op==='none'||r.o===t.op)};
     return null;
   }
   function store(profile){

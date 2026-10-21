@@ -26,7 +26,10 @@
       add:()=>({acc:.9,sec:8}),sub:()=>({acc:.8,sec:9}),money:()=>({acc:.7,sec:12}),word:()=>({acc:.7,sec:14}),guess:.3},
     mei:{name:'Mei Ling',grade:3,label:'Darjah 3 · kuat; cuma keliru sen dan RM',
       table:()=>({acc:.97,sec:1.9}),sub:()=>({acc:.95,sec:6}),add:()=>({acc:.96,sec:6}),
-      money:()=>({acc:.6,sec:11,bug:'money_unit',bugRate:.9}),word:()=>({acc:.9,sec:12}),guess:.02}
+      money:()=>({acc:.6,sec:11,bug:'money_unit',bugRate:.9}),word:()=>({acc:.9,sec:12}),guess:.02},
+    hana:{name:'Hana',grade:2,label:'Darjah 2 · betul bila ada gambar/blok, lemah bila nombor sahaja (lensa 4.1)',
+      rep:r=>r==='abstract'?{acc:.35,sec:9}:{acc:.92,sec:8},
+      table:()=>({acc:.92,sec:2.4}),money:()=>({acc:.85,sec:12}),word:()=>({acc:.8,sec:14}),guess:.03,cpa:true}
   };
 
   function rng(seed){let t=seed>>>0||1;return()=>{t+=0x6D2B79F5;let x=Math.imul(t^t>>>15,1|t);x^=x+Math.imul(x^x>>>7,61|x);return((x^x>>>14)>>>0)/4294967296}}
@@ -38,7 +41,10 @@
   function ordinaryItems(p,r,n){
     const out=[],I=(a,b)=>a+Math.floor(r()*(b-a+1));let k=0;
     while(out.length<n){k++;
-      const pick=p.grade===1?['fact','fact','add','sub','money','word'][k%6]:['table','table','sub','add','money','money','word','sub'][k%8];
+      const pick=p.cpa?['cpa','cpa','cpa','cpa','table','money','word'][k%7]:p.grade===1?['fact','fact','add','sub','money','word'][k%6]:['table','table','sub','add','money','money','word','sub'][k%8];
+      // Same Tambah/Tolak hingga 1000 sums, shown with blocks/pictures or as numbers only.
+      if(pick==='cpa'){const add=r()<.5,rep=r()<.5?'pictorial':'abstract',a=I(120,480),b=I(110,add?480:a-1);
+        out.push({prompt:`${a} ${add?'+':'−'} ${b} = ?`,answer:add?a+b:a-b,skill:add?'D2.2.1':'D2.2.2',facets:{op:add?'add':'sub',operands:[a,b],format:'symbolic',rep},_k:'cpa'});continue}
       if(pick==='table'){const a=I(2,9),b=I(2,9);out.push({prompt:`${a} × ${b} = ?`,answer:a*b,facets:{op:'mul',operands:[a,b],format:'symbolic'},_k:'table'})}
       else if(pick==='fact'){const op=r()<.5?'add':'sub';let a,b;if(op==='add'){a=I(2,9);b=I(2,9)}else{b=I(2,9);a=b+I(1,9)}out.push({prompt:`${a} ${op==='add'?'+':'−'} ${b} = ?`,answer:op==='add'?a+b:a-b,facets:{op,operands:[a,b],format:'symbolic'},_k:'fact'})}
       else if(pick==='sub'){const a=I(30,98),b=I(11,a-1);out.push({prompt:`${a} − ${b} = ?`,answer:a-b,facets:{op:'sub',operands:[a,b],format:'lazim'},_k:'sub'})}
@@ -53,7 +59,8 @@
   function answer(p,q,r,boost){
     const f=q.facets||{};let m;
     const ops=f.operands;
-    if(f.op==='mul'&&ops)m=p.table?.(Math.max(...ops.filter(x=>[7,3].includes(x)).concat([0]))||ops[0])||{acc:.9,sec:3};
+    if(p.rep&&f.rep)m=p.rep(f.rep);
+    else if(f.op==='mul'&&ops)m=p.table?.(Math.max(...ops.filter(x=>[7,3].includes(x)).concat([0]))||ops[0])||{acc:.9,sec:3};
     else if(f.context==='money')m=p.money?.(f.op)||{acc:.8,sec:12};
     else if(f.format==='word')m=p.word?.()||{acc:.8,sec:14};
     else if(ops&&Math.max(...ops)<=20&&p.fact)m=p.fact(f.op);
@@ -97,6 +104,7 @@
       if(t.kind==='units')return f.context==='money';
       if(t.kind==='word')return f.format==='word';
       if(t.kind==='facts')return (f.operands||[]).every(x=>x<=20);
+      if(t.kind==='fade')return q.skill===t.skill&&f.rep==='abstract';
       return false});
     const later=now+8*DAY;let log2=log.slice();
     sets.forEach((s,i)=>{log2=play(p,s.items,log2,r,later-7*DAY+i*3600e3,practised)});

@@ -145,11 +145,12 @@
     if(f.id==='format_word')return{kind:'word',worksheet:true};
     if(f.id.startsWith('regroup_'))return{kind:'regroup',op:t.op,game:'operations'};
     if(f.id==='retention')return{kind:'review',review:t.review,game:'operations'};
+    if(f.id==='rep_cpa')return{kind:'fade',skill:t.skill,op:t.op,game:'operations'};
     if(f.id.startsWith('bug_')){const b=BUG_TARGET[t.bug]||{kind:'mixed'};return{...b,tables:b.kind==='tables'?[]:undefined,game:b.kind==='units'?'money':'operations'}}
     return null;
   }
   const CARD={tables:t=>`Sifir ${(t.tables||[]).join(' & ')||'pilihan'}`,facts:()=>'Fakta asas hingga 20',regroup:t=>t.op==='add'?'Tambah, mengumpul semula':'Tolak, meminjam',
-    money:t=>t.op==='mixed'?'Wang: soalan cerita campur':`Wang: operasi ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[t.op]||'tolak'}`,word:()=>'Soalan berayat',units:()=>'Sen dan ringgit',mixed:()=>'Pilih operasi yang betul',review:()=>'Ulang kaji berjadual'};
+    money:t=>t.op==='mixed'?'Wang: soalan cerita campur':`Wang: operasi ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[t.op]||'tolak'}`,word:()=>'Soalan berayat',units:()=>'Sen dan ringgit',mixed:()=>'Pilih operasi yang betul',review:()=>'Ulang kaji berjadual',fade:()=>'Dari gambar ke nombor'};
   const merge=(a,b)=>[...new Set([...(a||[]),...(b||[])])];
   /* What PA does next: mini game / Gembok targets and the worksheet sections. */
   function plan(result,ctx={}){
@@ -201,6 +202,7 @@
     if((t.kind==='tables'||t.kind==='review')&&tables.length)return{kind:'tables',tables:[...new Set(tables)].slice(0,3)};
     if(t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))return{kind:'regroup',op:t.op,zero:t.op==='sub'&&ids.some(x=>/borrow_from_zero/.test(x))};
     if(t.kind==='money'&&MONEY_MODE[t.op])return{kind:'money',mode:MONEY_MODE[t.op]};
+    if(t.kind==='fade')return{kind:'fade'};   // the game fades its own pictures for the card's skill
     return null;
   }
   function practice(step,n=10,ctx={},seed=Date.now()){
@@ -210,7 +212,7 @@
   /* Worksheet: one section per step; word problems get a working box. */
   function worksheet(p,ctx={},seed=1){
     const r=rng(seed);
-    const sections=(p?.steps||[]).slice(0,3).map((s,i)=>{const n=s.target.kind==='word'||s.target.kind==='money'?4:8;
+    const sections=(p?.steps||[]).filter(s=>GEN[s.target.kind]).slice(0,3).map((s,i)=>{const n=s.target.kind==='word'||s.target.kind==='money'?4:8;
       return{title:s.card,why:s.why,items:GEN[s.target.kind](rng(seed+i+1),s.target,n,{...ctx,fluentTables:p.fluentTables}),
         showWorking:['word','money','regroup'].includes(s.target.kind)}});
     const hasWord=sections.some(x=>x.showWorking);
@@ -273,7 +275,8 @@
   /* Printable worksheet items for the parent PDF: about 60% targeted, the rest
      is left for the normal bank so the sheet stays mixed. */
   function worksheetItems(p,count=10,ctx={},seed=Date.now()){
-    const steps=(p?.steps||[]).slice(0,3);if(!steps.length)return{items:[],focus:[],titles:[]};
+    // A step without a printable generator (e.g. fading pictures) is practised in the mini game only.
+    const steps=(p?.steps||[]).filter(s=>GEN[s.target.kind]).slice(0,3);if(!steps.length)return{items:[],focus:[],titles:[]};
     const total=Math.max(6,Math.round(count*.6)),heavy=s=>['word','money'].includes(s.target.kind);
     const weight=steps.map(s=>heavy(s)?2:3),sum=weight.reduce((x,y)=>x+y,0);
     const quota=weight.map(w=>Math.min(8,Math.max(2,Math.floor(total*w/sum))));

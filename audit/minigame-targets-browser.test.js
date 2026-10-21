@@ -64,6 +64,20 @@ test('re-check (check: true): half the rounds are the target, mixed with normal 
   assert.deepEqual(b.errors, []); await b.close();
 });
 
+test('kurangkan gambar (fade, lens 4.1): picture, picture, numbers; level 2 drops the pictures; a re-check is numbers only', async () => {
+  const g = await gudang({ kind: 'fade' }, 'd3-darab');
+  const seq = await g.page.evaluate(() => window.__gudangGen.sample(9).map(q => (q.fade ? (q.fadeAbs ? 'A' : 'P') : '-') + (q.vis ? 'p' : q.rack ? 'c' : 'a')));
+  // Every round fades; pictures come with a picture, and every 3rd round is numbers only.
+  assert.ok(seq.every(x => x === 'Pp' || x === 'Aa'), seq.join());
+  assert.equal(seq.filter(x => x === 'Aa').length, 3, seq.join());
+  const top = await g.page.evaluate(() => { window.__gudangGen.fadeLevel.darab = 2; return window.__gudangGen.sample(6).map(q => q.fadeAbs) });
+  assert.deepEqual(top, [true, true, true, true, true, true], 'level 2: pictures gone');
+  assert.deepEqual(g.errors, []); await g.close();
+  const chk = await gudang({ kind: 'fade', check: true }, 'd2-tambah');
+  assert.ok((await chk.page.evaluate(() => window.__gudangGen.sample(6))).every(q => q.fadeAbs && !q.rack), 'a re-check is numbers only');
+  assert.deepEqual(chk.errors, []); await chk.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');
