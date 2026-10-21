@@ -266,8 +266,8 @@ Last updated: 2026-10-21. Read this section first if you are picking up the work
 **Status on GitHub.** PRs #55–#63, #65 and #66 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-Open: Next item 1 (Kemahiran Fokus cards follow the brain, 3.86.88), branch
-`ccr-ed8f705d-ym2tc0`, base `main`, not merged.
+Open: PR #67 (Next item 1, Kemahiran Fokus cards follow the brain, 3.86.88),
+base `main`, not merged.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -283,10 +283,10 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
   (`js/worksheet-2p5d-v1.js`).
 - v2 D3 visuals no longer print answers (grouping, unit meters, number line order).
 - Test suite clean: `node --test audit/*.test.js` → 0 failures (Next item 5).
-- Kemahiran Fokus cards follow the brain (Next item 1, not merged yet).
+- Kemahiran Fokus cards follow the brain (Next item 1, PR #67, not merged yet).
 
 **Next (phase 3 remainder), in this order**
-1. ✅ *Done (2026-10-21, 3.86.88, not merged yet).* Each brain finding now
+1. ✅ *Done (2026-10-21, 3.86.88, PR #67, not merged yet).* Each brain finding now
    carries `skills` (KSSR skill ids of its evidence, most mistakes first) and
    fact fluency a `brief` text without the praise lead. `PATargets.plan()`
    steps keep `skills` and `brief`; `PATargets.skillFor(step, gradeSkills)`
