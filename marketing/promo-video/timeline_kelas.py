@@ -31,7 +31,7 @@ GD = (250, 196, 70)
 SOFT = (204, 214, 240)
 
 # DM (capture.js benih 7): mula Jurus Penamat (jawapan soalan terakhir) dan skrin BERJAYA, masa rakaman
-DM_JURUS, DM_DONE = 70.5, 76.7
+DM_JURUS, DM_DONE = 68.73, 74.93
 
 # ---------------------------------------------------------------- rakaman → masa filem
 SHOTS = [

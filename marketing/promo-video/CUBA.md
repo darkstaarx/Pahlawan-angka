@@ -22,7 +22,7 @@ Gaya ini ialah iklan app ala Duolingo (UI sebenar, teks kinetik besar, maskot ya
 
 ## Rakaman Demo (sumber DM)
 
-Demo sebenar (`main` terkini, Darjah 2) dirakam dengan Playwright dan jam maya. Kaedahnya:
+Demo sebenar (`main` 3.87.8, Darjah 2, benih rawak 7 supaya boleh diulang) dirakam dengan Playwright dan jam maya. Kaedahnya:
 
 - `performance.now`, `Date`, timer, `requestAnimationFrame` dan animasi CSS hanya bergerak bila `__advance(1/30 s)` dipanggil;
 - setiap bingkai ditangkap pada 1080×2236 penuh, walaupun render perisian perlahan;
@@ -31,11 +31,11 @@ Demo sebenar (`main` terkini, Darjah 2) dirakam dengan Playwright dan jam maya. 
 | Masa rakaman | Detik |
 | --- | --- |
 | 0–2.4 | Kad **DEMO BATTLEFIELD · Pilih Darjah** ("Demo ringkas untuk rasa tahap soalan — bukan ujian penuh. Tiada akaun atau progres diperlukan."), ketuk Darjah 2, kemudian Masuk ke Battlefield |
-| 2.5–5.3 | Soalan 1, Isi Padu Cecair: betul → serangan |
-| 8.0–13.5 | Soalan 3, Baca Jam: 3:45 salah → "Belum tepat. Jarum pendek menunjukkan jam; jarum panjang menunjukkan minit." → 3:35 betul → KUNCI GANGSA PECAH |
-| 50.5–54 | Soalan 10, Kunci Emas: taip 600 → Jawab |
-| 66.5–76.8 | Soalan 14: taip RM2.60 → **Jurus Penamat** → **AURORA BEBAS!** → syiling |
-| 76.9– | **BERJAYA!** 3 bintang · 14/14 · 100% · "Demo Darjah 2 · 14/14 soalan · 9 topik diteroka. Keputusan ini tidak disimpan." · Cikgu Dimensi |
+| 2.5–5.3 | Soalan 1, Gundalan: betul → serangan |
+| 8.0–13.4 | Soalan 3, Simpanan: RM8.25 salah → "Belum tepat. Wang yang disimpan = wang yang ada − wang yang dibelanjakan." → RM6.25 betul → serangan |
+| 43.5–46.6 | Soalan 8, Kunci Emas: taip 934 → Jawab |
+| 65.4–75.1 | Soalan 14: taip 6 → **Jurus Penamat** → **AURORA BEBAS!** → syiling |
+| 75.1– | **BERJAYA!** 3 bintang · 14/14 · 100% · "Demo Darjah 2 · 14/14 soalan · 8 topik diteroka. Keputusan ini tidak disimpan." · Cikgu Dimensi |
 
 - Sinematik portal ialah `enter.mp4`, iaitu video yang sama dimainkan app semasa masuk battlefield (`js/segel-entry-cinematic-v1.2.0.js`). Chromium tanpa H.264 melangkaunya semasa rakaman, jadi ia disisipkan semula dalam suntingan.
 - Skrin rating dan pakej harga selepas demo (`demo-wrapup-v1.js`) **tidak dirakam**.
@@ -49,9 +49,9 @@ Demo sebenar (`main` terkini, Darjah 2) dirakam dengan Playwright dan jam maya. 
 | 0:03.4–0:06.2 | Muka mengecil ke sudut. Telefon naik dengan kad Pilih Darjah, ketuk Darjah 2 → Masuk ke Battlefield | Cuba tunjuk **Pahlawan Angka.** |
 | 0:06.2–0:09.6 | Portal (skrin penuh) | Anak main **satu cabaran.** |
 | 0:09.6–0:12 | Soalan 1 → ketuk → Wira serang | Jawab soalan **matematik…** |
-| 0:12–0:16.4 | Soalan Jam: salah → petunjuk dinaikkan → betul → Kunci Gangsa pecah | Salah? **Ada petunjuk.** → Cuba lagi… **betul!** |
-| 0:16.4–0:19.6 | Kunci Emas: taip 600 → Jawab → serang | Kunci Emas? **Taip sendiri.** |
-| 0:19.6–0:26.4 | Taip RM2.60 → zoom perlahan ke arena: **Jurus Penamat** → AURORA BEBAS! → syiling | Dan tengok apa **jadi lepas tu…** |
+| 0:12–0:16.4 | Soalan Simpanan: salah → petunjuk dinaikkan → betul → serangan | Salah? **Ada petunjuk.** → Cuba lagi… **betul!** |
+| 0:16.4–0:19.6 | Kunci Emas: taip 934 → Jawab → serang | Kunci Emas? **Taip sendiri.** |
+| 0:19.6–0:26.4 | Taip 6 → zoom perlahan ke arena: **Jurus Penamat** → AURORA BEBAS! → syiling | Dan tengok apa **jadi lepas tu…** |
 | 0:26.4–0:30.2 | **BERJAYA!** Statistik dan ringkasan demo dinaikkan, kemudian pesanan Cikgu Dimensi | Terus nampak **hasilnya.** |
 | 0:30.2–0:32.6 | Muka kembali besar, senyum lebar | Tengok gameplay dulu… **baru decide.** Sesuai ke tak untuk anak. |
 | 0:32.6–0:36 | Kad akhir: logo, Wira, butang | Satu cabaran. **Tiada akaun diperlukan.** · Cuba Demo · Pilih darjah, terus ke battlefield. |
@@ -67,8 +67,8 @@ Demo sebenar (`main` terkini, Darjah 2) dirakam dengan Playwright dan jam maya. 
 
 ```bash
 # 1. pelayan app (worktree main) di 127.0.0.1:8765, kemudian:
-NODE_PATH=$(npm root -g) node capture/capture.js /laluan/rakaman 99 3     # 99 = semua soalan, 3 = soalan dijawab salah dahulu
-ffmpeg -framerate 30 -i /laluan/rakaman/f_%05d.jpg -vf "scale=1080:2236,format=yuv420p" -c:v libx264 -crf 13 $PROMO_BUILD/src_DM.mp4
+NODE_PATH=$(npm root -g) node capture/capture.js /laluan/rakaman 99 3 7   # 99 = semua soalan, 3 = soalan dijawab salah dahulu, 7 = benih
+ffmpeg -framerate 30 -i /laluan/rakaman/f_%05d.jpg -vf format=yuv420p -c:v libx264 -crf 13 $PROMO_BUILD/src_DM.mp4
 # bunyi game: assets/audio/*.wav|mp3 → $PROMO_BUILD/aud_GS_<nama>.wav (48 kHz stereo)
 python3 engine.py timeline_cuba --out out/promo8-cuba-dulu.mp4 --workers 4
 ```

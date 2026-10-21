@@ -4,14 +4,15 @@ Gaya: iklan app gaya Duolingo dengan tatabahasa claude-motion-design: satu bentu
 (ikon muka emas yang menjadi "penonton" di sudut, kemudian kembali besar di penutup), teks naik bertopeng,
 satu warna aksen (emas), satu benda bergerak pada satu masa, UI sebenar dan riak ketukan pada lokasi sebenar.
 
-Sumber DM = rakaman Demo sebenar (main, Darjah 2) bingkai demi bingkai pada 1080×2236 dengan jam maya
-(rec/capture.js): Pilih Darjah → 14 soalan → Jurus Penamat → AURORA BEBAS! → BERJAYA!.
+Sumber DM = rakaman Demo sebenar (main 3.87.8, Darjah 2, benih 7) bingkai demi bingkai pada 1080×2236 dengan jam
+maya (capture/capture.js): Pilih Darjah → 14 soalan → Jurus Penamat → AURORA BEBAS! → BERJAYA!.
   0.0–2.4   kad Demo Battlefield · Pilih Darjah (ketuk Darjah 2 @1.43, Masuk ke Battlefield @2.43)
-  2.5–5.3   S1 Isi Padu Cecair, betul @4.30 → serangan
-  8.0–13.5  S3 Baca Jam: 3:45 salah @9.83 → "Jarum pendek menunjukkan jam…" → 3:35 betul @12.43 → KUNCI GANGSA PECAH
-  50.5–54   S10 Kunci Emas, taip 600 → Jawab @53.30
-  66.5–76.8 S14 taip RM2.60 → Jawab @69.70 → Jurus Penamat → AURORA BEBAS! → syiling
-  76.87–    BERJAYA! 14/14 · 100% · "Demo Darjah 2 · 14/14 soalan · 9 topik diteroka. Keputusan ini tidak disimpan."
+  2.5–5.3   S1 Gundalan, betul @4.27 → serangan
+  8.0–13.4  S3 Simpanan: RM8.25 salah @9.80 → "Wang yang disimpan = wang yang ada − wang yang dibelanjakan." →
+            RM6.25 betul @12.40 → serangan
+  43.5–46.6 S8 Kunci Emas, taip 934 → Jawab @46.27
+  65.4–75.1 S14 taip 6 → Jawab @67.93 → Jurus Penamat → AURORA BEBAS! → syiling
+  75.1–     BERJAYA! 14/14 · 100% · "Demo Darjah 2 · 14/14 soalan · 8 topik diteroka. Keputusan ini tidak disimpan."
 Sinematik ENTER (portal) = video yang sama dimainkan app semasa masuk battlefield (assets/cinematics/enter.mp4).
 Skrin pakej harga selepas demo TIDAK dirakam (tiada harga dalam video).
 """
@@ -34,22 +35,22 @@ SHOTS = [
     Shot(4.0, 6.2, 'DM', [(0.35, 2.55, 2.2)], 'pilih-darjah'),
     Shot(9.6, 12.0, 'DM', [(2.9, 5.3, 2.4)], 's1-jawab-serang'),
     Shot(12.0, 16.4, 'DM', [(8.7, 9.95, 1.25), (9.95, 11.6, 1.65), (11.95, 13.45, 1.5)], 's3-salah-petunjuk-betul'),
-    Shot(16.4, 19.6, 'DM', [(50.9, 53.9, 3.0), (53.9, 53.9, 0.2)], 's10-kunci-emas-taip'),
-    Shot(19.6, 26.4, 'DM', [(68.9, 75.7, 6.8)], 's14-jurus-penamat-aurora'),
-    Shot(26.4, 30.2, 'DM', [(76.7, 80.3, 3.6), (80.3, 80.3, 0.2)], 'berjaya'),
+    Shot(16.4, 19.6, 'DM', [(43.67, 46.67, 3.0), (46.67, 46.67, 0.2)], 's8-kunci-emas-taip'),
+    Shot(19.6, 26.4, 'DM', [(67.13, 73.93, 6.8)], 's14-jurus-penamat-aurora'),
+    Shot(26.4, 30.2, 'DM', [(74.93, 78.53, 3.6), (78.53, 78.53, 0.2)], 'berjaya'),
 ]
 
 # bunyi asal game (dilog semasa rakaman, masa rakaman)
-GAME_SFX = [(1.4, 'ui', 0.0), (4.267, 'correct', 0.52), (4.437, 'sword-slash-v2', 0.52), (4.577, 'hit', 0.52),
+GAME_SFX = [(4.266, 'correct', 0.52), (4.436, 'sword-slash-v2', 0.52), (4.576, 'hit', 0.52),
             (9.8, 'wrong', 0.52), (12.4, 'correct', 0.52), (12.57, 'sword-slash-v2', 0.52), (12.71, 'hit', 0.52),
-            (53.267, 'correct', 0.52), (53.437, 'sword-slash-v2', 0.52), (53.577, 'hit', 0.52),
-            (69.667, 'correct', 0.52), (69.667, 'aura-charge', 0.58), (70.667, 'sword-slash-v2', 0.52),
-            (71.817, 'sword-slash-v2', 0.52), (71.957, 'glacier-thunder', 0.52), (72.067, 'glacier-thunder', 0.4),
-            (72.2, 'glacier-thunder', 0.35), (73.237, 'finisher', 0.64), (75.267, 'coin-pickup', 0.44),
-            (75.367, 'coin-pickup', 0.44), (75.5, 'coin-pickup', 0.44), (75.6, 'coin-pickup', 0.44),
-            (76.827, 'StingerPA', 0.66)]
-TAPS = [(1.433, 540, 1085), (2.433, 540, 1520), (4.3, 782, 2036), (9.833, 782, 1870), (12.433, 298, 1763),
-        (52.3, 422, 1984), (53.3, 902, 1984), (69.7, 902, 1984)]
+            (46.266, 'correct', 0.52), (46.436, 'sword-slash-v2', 0.52), (46.576, 'hit', 0.52),
+            (67.933, 'correct', 0.52), (67.933, 'aura-charge', 0.58), (68.933, 'sword-slash-v2', 0.52),
+            (70.083, 'sword-slash-v2', 0.52), (70.223, 'glacier-thunder', 0.52), (70.333, 'glacier-thunder', 0.4),
+            (70.466, 'glacier-thunder', 0.35), (71.503, 'finisher', 0.64), (73.533, 'coin-pickup', 0.44),
+            (73.633, 'coin-pickup', 0.44), (73.766, 'coin-pickup', 0.44), (73.866, 'coin-pickup', 0.44),
+            (75.093, 'StingerPA', 0.66)]
+TAPS = [(1.433, 540, 1085), (2.433, 540, 1520), (4.267, 782, 2039), (9.8, 298, 1873), (12.4, 298, 1931),
+        (45.267, 422, 1987), (46.267, 902, 1987), (67.933, 902, 1987)]
 
 
 def film_time(c):
@@ -179,7 +180,7 @@ SPECIALS = [
     FullClip('src_ENTER.mp4', 6.2, 9.6, [(0.4, 4.3, 3.4)], zoom=(1.0, 1.06), scrim=0.65, fade=(0.15, 0.2)),
     lambda r: TapRings(r, 0, [(film_time(c), x, y) for c, x, y in TAPS if film_time(c) is not None]),
     # penerangan app selepas jawapan salah, dinaikkan supaya boleh dibaca
-    lambda r: Callout(r, 0, 13.4, 15.15, (0.04, 0.9, 0.96, 0.945), 540, 900, 960, ry=-4, rz=-0.5),
+    lambda r: Callout(r, 0, 13.4, 15.15, (0.04, 0.903, 0.96, 0.948), 540, 900, 960, ry=-4, rz=-0.5),
     # keputusan: statistik + ringkasan demo, kemudian pesanan Cikgu Dimensi
     lambda r: Callout(r, 0, 27.0, 30.05, (0.1, 0.372, 0.9, 0.5), 540, 700, 860, ry=-4, rz=-0.5),
     lambda r: Callout(r, 0, 28.0, 30.05, (0.08, 0.53, 0.92, 0.63), 560, 1620, 900, ry=5, rz=0.5),
