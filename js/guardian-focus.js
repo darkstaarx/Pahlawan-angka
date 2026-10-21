@@ -90,8 +90,27 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    item={id,title:m.title,chapter:String(m.chapter),attempts:recent.length,independent,independentRate:recent.length?Math.round(independent/recent.length*100):0};
    candidates.push(item);
   }
-  Object.assign(item,{priority:2000-index,diagnostic:true,brainStep:step,reason:step.card});
+  // Re-check loop (§8a item 4): practise → wait 2 days → short check → "Semakin baik" or keep.
+  const rc=globalThis.PARecheck?.state?.(profile,step,Date.now())||null;
+  let priority=2000-index,reason=step.card;
+  if(rc?.status==='due'){priority=2600-index;reason='Semakan semula: '+step.card}
+  else if(rc?.status==='waiting'){priority=1500-index;reason=step.card+' · Semakan semula '+rc.dueLabel}
+  else if(rc?.status==='passed'){priority=1100-index;reason='Semakin baik: '+step.card+' ('+rc.score+')'}
+  Object.assign(item,{priority,diagnostic:true,brainStep:step,recheck:rc?.status||null,reason});
  });
+ /* A target in its wait, check or "Semakin baik" phase keeps its card after the brain drops the finding. */
+ const R=globalThis.PARecheck,T=globalThis.PATargets;
+ if(R?.list&&T?.skillFor)for(const {step,state} of R.list(profile,Date.now())){
+  if(!['waiting','due','passed'].includes(state.status)||candidates.some(x=>x.brainStep&&R.matcher(x.brainStep)?.key===state.key))continue;
+  const id=T.skillFor(step,usable);if(!id)continue;
+  let item=candidates.find(x=>x.id===id);
+  if(item?.brainStep)continue;
+  if(!item){const m=usable.find(x=>x.id===id);item={id,title:m.title,chapter:String(m.chapter),attempts:0,independent:0,independentRate:0};candidates.push(item)}
+  hasEvidence=true;
+  const due=state.status==='due',passed=state.status==='passed';
+  Object.assign(item,{priority:due?2600:passed?1100:1500,diagnostic:true,brainStep:step,recheck:state.status,
+   reason:due?'Semakan semula: '+step.card:passed?'Semakin baik: '+step.card+' ('+state.score+')':step.card+' · Semakan semula '+state.dueLabel});
+ }
  candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));
  /* Foundation hint: a likely root skill shared across topics. It only explains; order and routing stay as above. */
  const foundation=globalThis.PAFocusFoundationV1?.evaluate?.(profile,{grade});
@@ -146,7 +165,10 @@ function startFocusChoice(id){
  if(!choice){openFocusPicker();return}
  if(typeof enforceRestuLock==='function'&&enforceRestuLock())return;
  // A brain-backed card tells the mini game what to drill (sifir, meminjam, wang baki).
- const target=choice.brainStep&&window.PATargets?.miniGameTarget?.(choice.brainStep)||null;
+ const base=choice.brainStep&&window.PATargets?.miniGameTarget?.(choice.brainStep)||null;
+ // A due re-check mixes the target with normal questions and skips the concrete start.
+ const target=base&&choice.recheck==='due'?{...base,check:true}:base;
+ if(choice.brainStep&&globalThis.PARecheck?.start){globalThis.PARecheck.start(db,choice.brainStep,Date.now());if(typeof save==='function')save()}
  if(window.PAWirayungLive?.tryStartFocus?.(id,target))return;
  if(window.PATapakBinaLive?.tryStartFocus?.(id))return;
  if(window.PAFocusMiniGamesLive?.tryStartFocus?.(id,target))return;
