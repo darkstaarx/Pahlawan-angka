@@ -353,6 +353,10 @@ Last updated: 2026-10-21 (after PR #77). Read this section first if you are pick
 **Status on GitHub.** PRs #55–#63 and #65–#77 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
+Open: PR #80 (3.87.2), mini game fix: every round now gets its own brain
+record (before, the 40-character token cut the round number, so a session
+kept one answer). Mini game evidence before 3.87.2 is thin. Merge only when
+the owner says so.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
