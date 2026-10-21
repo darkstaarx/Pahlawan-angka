@@ -280,29 +280,59 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (item 4). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #74). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. PRs #69 (Next item 3 + question-first mini game layout, 3.86.93) and #70
-   (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
-   Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71, the question bank
-   repair (3.86.96) as PR #72, the bar model for word problems (3.86.97) as
-   PR #73. Nothing is open.
-2. Then ask the owner what next. Candidates, in order: a bar model (Model
-   Method) round for word problems in a mini game (proposed, not started);
-   targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
-   targeting; the re-check mode for Gerai Wirayung (money targets ignore
-   `check` today).
+1. Merged into `main`: PRs #69–#74. #69 Next item 3 + question-first mini
+   game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
+   (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
+   (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
+   for all mini games + one-row number keypad on short web screens so Wira is
+   not cropped (3.86.98). Nothing is open. Current version 3.86.98.
+2. **Next task: light lens 4.8 (language load)** — the owner chose the order
+   bar model → light 4.8 → "Kemungkinan punca" tags for D2–D5 → 4.6 and full
+   4.7 (see "Owner decision" under Phase 4 below). Plan for light 4.8:
+   - Scope: only the common word-problem families of D3–D6 (tambah/tolak
+     jumlah & beza, darab kali ganda, bahagi agih sama rata, wang). Each
+     family gets a short wording (one sentence, ≤12 words) and a long one
+     (2–3 sentences, extra names/detail, same numbers and schema). Tag the
+     question `facets.reading` 1 (short) or 3 (long) at generation (§3);
+     never infer it from text later. The brain record today keeps only `w`
+     (word count, `js/engine/diagnostic-brain-v1.js` facets()/compact());
+     add a compact `rd` field for `reading`.
+   - Rule (§4.8): same family, latest answers, short ≥80% and long ≤50%,
+     at least ~6 each, rapid guesses excluded (as in 4.1) and the finding
+     steps aside when 4.2 fact fluency or 4.3 bugs already explain the
+     misses. Parent line: "Matematik anak ok — yang menyukarkan ialah ayat
+     panjang." Thresholds are a design guess until phase 5.
+   - Read-aloud signal: the Segel battle has a speaker button (`#segelSpk`,
+     `bindSpeaker()` in `js/segel-demo-v2.1.0.js`, `speechSynthesis` ms-MY).
+     It is not recorded today. Record "read aloud before answering" on the
+     response (e.g. `ra:1`); "wrong when read alone, right after read-aloud"
+     on long items supports the reading finding. Battle answers reach the
+     brain through `js/battle.js` → `PATelemetry.response` (check the exact
+     path before changing it). Mini games have no speaker yet; leave them.
+   - Target: plan step kind `reading` (card e.g. "Baca soalan panjang"):
+     short wording first, then longer, speaker on. Mini game target only if
+     cheap (Gudang Harta already has story rounds, `target_bar_story`);
+     otherwise worksheet + battle. Add a re-check matcher (long-wording
+     answers, `rd === 3`) in `js/engine/diagnostic-recheck-v1.js`.
+   - Tests in the style of `audit/diagnostic-cpa.test.js` (facets, finding,
+     no finding below the rule, explain-away, plan card, re-check key, a
+     dummy child in `tools/diagnostic-sim.js`). Update §4.8 with an
+     "Implemented" note like §4.1.
 3. Owner style: reply in Bahasa Malaysia, short and plain; one task per
-   branch/PR, base `main`; merge only when the owner says so; screenshots
-   of the real app help the owner decide (Playwright via
-   `audit/lib/browser.js`; mini game pages open standalone on localhost with
-   `localStorage.pa_dev_unlocked='1'`).
+   branch/PR, base `main`; merge only when the owner says so (convention:
+   first push a commit marking the PR merged here in §8a, then merge with a
+   merge commit); screenshots of the real app help the owner decide
+   (Playwright via `audit/lib/browser.js`; mini game pages open standalone on
+   localhost with `localStorage.pa_dev_unlocked='1'`; Chromium is at
+   `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
+   the real app before reporting.
 
-**Status on GitHub.** PRs #55–#63 and #65–#73 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#74 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-No PR is open.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -490,10 +520,24 @@ short/long wording pairs yet (lens 4.8).
   `f === 'word'`); a due re-check is the story alone. Tests: model bar test in
   `audit/minigame-targets-browser.test.js` (ladder, answers, right sentence,
   one scale ±2.5 px, no clipped label, no sideways scroll at 360 px).
-  Found while testing (not caused by this change): inside the app the mini
-  game frame is the screen minus the "Kembali" bar and the status line, so on
-  phones 640 px tall or less the lowest keypad buttons of Gudang Harta sit
-  below the frame even for normal questions (no scroll). Needs its own fix.
+  Found while testing: inside the app the mini game frame is the screen minus
+  the "Kembali" bar and the status line, so on short phones buttons sat below
+  the frame (no scroll). ✅ Fixed in 3.86.98 (owner request, PR #74, merged):
+  `css/minigame-question-first-v1.css` lets every mini game scroll when the
+  content is taller than the frame and pins the "Tanya Wira / Semak" row to
+  the bottom (sticky, solid backing, no extra padding); the answer keys and
+  the action row never shrink, so the panel auto-fit only uses free room; the
+  scene is shorter below 620 px (a 1366×768 laptop gives the frame ~568 px); the three bridges (mini games, Tapak Bina, Gerai Wirayung)
+  use a compact "Kembali" bar and status line below 700 px. Before: 7 of 9
+  games had controls out of reach at 320–375 px, two even at 390 px. Test:
+  "small phones" in `audit/minigame-targets-browser.test.js` (all nine games
+  at 320×500 and 360×575).
+  Web (owner: "gambar wira kena potong"): on a wide but short frame
+  (`min-width:440px` and `max-height:760px`) the number keypad is one row of
+  11 keys (1–0, ⌫) and the scene gets `clamp(130px,28dvh,210px)`; at
+  1366×768 the scene grows from 97 px to 159 px. Phones keep two rows;
+  typing on the keyboard works in the six keypad games. Sweep: 9 games ×
+  10 sizes (320×500 … 1920×960), no control out of reach.
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
   "Kemungkinan punca" tags for D2–D5. 4.6 and full 4.7 after that.
