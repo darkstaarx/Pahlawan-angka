@@ -384,7 +384,7 @@ Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are pic
    money/time checks "Punca: soalan wang / baca jam / ..."), and the parent
    Ringkasan "Perlu dikuatkan" card adds one sentence "Punca utama: Nilai
    tempat nombor." (details under "How it works" below).
-   Open: full lens 4.7 retention + 1/3/7/14-day review queue in Kembara
+   Open: PR #82, full lens 4.7 retention + 1/3/7/14-day review queue in Kembara
    Dimensi (3.87.5, see §4.7 "Implemented"), branch
    `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
