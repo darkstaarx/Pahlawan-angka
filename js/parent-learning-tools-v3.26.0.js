@@ -121,16 +121,20 @@ async function shareCard(){
  }catch(error){console.error(error);alert('Kad kemajuan belum dapat disediakan.')}finally{state.busy=false;mountWorksheet()}
 }
 
-function printVisualDependent(raw){return /blok\s+nilai\s+tempat|waktu\s+yang\s+ditunjukkan|bahagian\s+berlorek|berdasarkan\s+(?:rajah|carta|graf)|(?:rajah|carta|graf)\s+(?:di atas|berikut)|paksi[- ]?[xy]\s+(?:di atas|berikut)/i.test(String(raw||''))}
+function printVisualDependent(raw){return /blok\s+nilai\s+tempat|waktu\s+yang\s+ditunjukkan|bahagian\s+berlorek|berdasarkan\s+(?:rajah|carta|graf)|(?:rajah|carta|graf)\s+(?:di atas|berikut)|paksi[- ]?[xy]\s+(?:di atas|berikut)|set\s+sasaran|\bkelihatan\b/i.test(String(raw||''))}
 function plainPrompt(raw){const div=document.createElement('div'),spaced=String(raw||'').replace(/<br\s*\/?\s*>/gi,' ').replace(/<\/(?:div|p|li|section|h[1-6])>/gi,' ');div.innerHTML=spaced;let text=(div.textContent||'').replace(/\s+/g,' ').replace(/([.!?])(?=[A-Za-z])/g,'$1 ').trim();if(/^Mempunyai\b/i.test(text))text='Bentuk ini '+text.charAt(0).toLowerCase()+text.slice(1);return text}
 const optionDependent=prompt=>/\b(?:manakah|yang mana|pilih|antara berikut|jawapan[^.?!]{0,30}munasabah|anggaran[^.?!]{0,25}sesuai)\b/i.test(prompt);
 function printableQuestion(q){
  const raw=String(q?.prompt||'');if(!raw)return null;
- const graphic=window.PAWorksheetGraphics?.fromQuestion(q)||null;
- if(!graphic&&(/aria-label\s*=|role=["']group|[●■□]{2,}|rajah manakah/i.test(raw)||printVisualDependent(raw)||/<(?:svg|img|canvas|table)\b/i.test(raw)||/(moneyVisual|clockFace|barChart|pictureGraph|coordinateGrid|shapeVisual|dataChart|kd-pictograph|paCountingSet|fractionVisual|kssrDiagram)/i.test(raw)||q.visualChoiceSpec))return null;
- const prompt=graphic?graphic.prompt:plainPrompt(raw);if(prompt.length<3||prompt.length>500)return null;
- const answer=String(q.answer??'').replace(/\s+/g,' ').trim(),choices=(optionDependent(prompt)||q.visualChoiceSpec)?shuffle([{value:answer,correct:true},...(q.wrong||[]).map(x=>({value:String(x?.label??x?.v??'').replace(/\s+/g,' ').trim(),correct:false}))]).filter(x=>x.value).slice(0,4):null;
- return{prompt,answer,hint:plainPrompt(q.hint||'Semak langkah pengiraan dengan teliti.'),skill:q.skill,choices,graphic,printKey:graphic?.key};
+ const model=window.PAWorksheetGraphics?.fromQuestion(q)||null;
+ // plain: the only graphic repeated the question text, so print the words alone.
+ const plain=!!model?.plain,graphic=plain?null:model;
+ if(!graphic&&!plain&&(/aria-label\s*=|role=["']group|[●■□]{2,}|rajah manakah/i.test(raw)||printVisualDependent(raw)||/<(?:svg|img|canvas|table)\b/i.test(raw)||/(moneyVisual|clockFace|barChart|pictureGraph|coordinateGrid|shapeVisual|dataChart|kd-pictograph|paCountingSet|fractionVisual|kssrDiagram)/i.test(raw)||q.visualChoiceSpec))return null;
+ const prompt=plain?model.prompt:graphic?graphic.prompt:plainPrompt(raw);if(prompt.length<3||prompt.length>500)return null;
+ let promptText=prompt;
+ const answer=String(q.answer??'').replace(/\s+/g,' ').trim(),choices=(optionDependent(prompt)||q.visualChoiceSpec)?shuffle([{value:answer,correct:true},...(q.wrong||[]).map(x=>({value:String(x?.label??x?.v??'').replace(/\s+/g,' ').trim(),correct:false}))]).filter((x,i,all)=>x.value&&all.findIndex(y=>y.value===x.value)===i).slice(0,4):null;
+ if(choices?.length){const ask=promptText.search(/\b(?:Yang manakah|Manakah|Apakah|Pilih)\b/);if(ask>0){let lead=promptText.slice(0,ask);const labels=[answer,...(q.wrong||[]).map(x=>String(x?.label??x?.v??''))].map(v=>v.replace(/\s+/g,' ').trim()).filter(Boolean).sort((a,b)=>b.length-a.length);for(const v of labels)lead=lead.split(v).join(' ');if(!lead.trim())promptText=promptText.slice(ask)}}
+ return{prompt:promptText,answer,hint:plainPrompt(q.hint||'Semak langkah pengiraan dengan teliti.'),skill:q.skill,choices,graphic,printKey:graphic?.key};
 }
 const wr=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const wp=arr=>arr[wr(0,arr.length-1)];

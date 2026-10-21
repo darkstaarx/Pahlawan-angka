@@ -16,7 +16,7 @@ function svgModel(node){
  const clone=node.cloneNode(true),box=(node.getAttribute('viewBox')||'').split(/[ ,]+/).map(Number),width=box[2]||parseFloat(node.getAttribute('width'))||330,height=box[3]||parseFloat(node.getAttribute('height'))||190;
  clone.setAttribute('xmlns','http://www.w3.org/2000/svg');clone.setAttribute('width',width*4);clone.setAttribute('height',height*4);clone.removeAttribute('style');
  const style=document.createElementNS('http://www.w3.org/2000/svg','style');style.textContent=svgStyle;clone.insertBefore(style,clone.firstChild);
- return{kind:'svg',src:svgUrl(new XMLSerializer().serializeToString(clone)),width,height};
+ return{kind:'svg',src:svgUrl(new XMLSerializer().serializeToString(clone)),width,height,text:clean(node.textContent),shapes:node.querySelectorAll('rect,circle,ellipse,line,path,polygon,polyline').length};
 }
 function fractionModel(node){
  const match=(node.getAttribute('aria-label')||'').match(/(\d+)\s+bahagian sama besar;\s*(\d+)\s+bahagian berlorek/);
@@ -50,6 +50,14 @@ function fromQuestion(q){
   if(!graphic)return null;
   graphics.push(graphic);node.remove();
  }
+ // A box that only repeats the question text (e.g. "19 × 100") adds nothing on paper.
+ const flat=t=>String(t||'').replace(/\s+/g,''),restText=flat(root.textContent);
+ const useful=graphics.filter(g=>!(g.kind==='svg'&&g.shapes<=1&&g.text&&restText.includes(flat(g.text))));
+ if(graphics.length&&!useful.length&&!q?.visualChoiceSpec&&!root.querySelector('[role="img"],.fractionVisual,.kd-pictograph,.paCountingSet')){
+  root.querySelectorAll('br').forEach(node=>node.replaceWith(document.createTextNode(' ')));
+  return{prompt:clean(root.textContent),graphics:[],plain:true,key:String(q.prompt)};
+ }
+ graphics.splice(0,graphics.length,...useful);
  if(q?.visualChoiceSpec?.kind==='fraction'){
   const choices=q.visualChoiceSpec.choices||[];
   if(!choices.length||choices.some(c=>c.invalid)||choices.some(c=>!Number.isFinite(Number(c.denominator??c.den))||!Number.isFinite(Number(c.numerator??c.num))))return null;
