@@ -287,7 +287,8 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
    (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
    Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71, the question bank
    repair (3.86.96) as PR #72, the bar model for word problems (3.86.97) as
-   PR #73. Nothing is open.
+   PR #73. Open: small-phone fix for all mini games (3.86.98), branch
+   `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
 2. Then ask the owner what next. Candidates, in order: a bar model (Model
    Method) round for word problems in a mini game (proposed, not started);
    targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
@@ -302,7 +303,7 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
 **Status on GitHub.** PRs #55–#63 and #65–#73 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-No PR is open.
+Open: small-phone fix for all mini games (3.86.98), base `main`, not merged.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -490,10 +491,17 @@ short/long wording pairs yet (lens 4.8).
   `f === 'word'`); a due re-check is the story alone. Tests: model bar test in
   `audit/minigame-targets-browser.test.js` (ladder, answers, right sentence,
   one scale ±2.5 px, no clipped label, no sideways scroll at 360 px).
-  Found while testing (not caused by this change): inside the app the mini
-  game frame is the screen minus the "Kembali" bar and the status line, so on
-  phones 640 px tall or less the lowest keypad buttons of Gudang Harta sit
-  below the frame even for normal questions (no scroll). Needs its own fix.
+  Found while testing: inside the app the mini game frame is the screen minus
+  the "Kembali" bar and the status line, so on short phones buttons sat below
+  the frame (no scroll). ✅ Fixed in 3.86.98 (owner request, not merged yet):
+  `css/minigame-question-first-v1.css` lets every mini game scroll when the
+  content is taller than the frame and pins the "Tanya Wira / Semak" row to
+  the bottom (sticky, solid backing, no extra padding); the scene is shorter
+  below 620 px; the three bridges (mini games, Tapak Bina, Gerai Wirayung)
+  use a compact "Kembali" bar and status line below 700 px. Before: 7 of 9
+  games had controls out of reach at 320–375 px, two even at 390 px. Test:
+  "small phones" in `audit/minigame-targets-browser.test.js` (all nine games
+  at 320×500 and 360×575).
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
   "Kemungkinan punca" tags for D2–D5. 4.6 and full 4.7 after that.

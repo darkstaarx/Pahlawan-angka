@@ -24,3 +24,14 @@
 :is(.pa-game,.game) .panel:empty{display:none}
 :is(.pa-game,.game) .panel:empty+.tiles{flex:1 1 auto;flex-direction:column;flex-wrap:nowrap;justify-content:center;align-items:stretch}
 :is(.pa-game,.game) .panel:empty+.tiles .tl{flex:0 0 auto;width:100%;min-height:clamp(52px,8.5dvh,76px);font-size:clamp(15px,2.4dvh,20px)}
+
+/* Small phones (inside the app the frame is the screen minus the "Kembali" bar):
+   never cut off the controls. When the content is taller than the frame, the
+   game scrolls, and the "Tanya Wira / Semak" row stays pinned to the bottom. */
+:is(.pa-game,.game){overflow-y:auto!important;overscroll-behavior:contain}
+/* No extra padding (the layout above keeps its room); a solid shadow fills the
+   row's top margin so scrolled content never shows through behind the buttons. */
+:is(.pa-game,.game) .actions{position:sticky;bottom:0;z-index:20}
+.pa-game .actions{background:#ecd09b;box-shadow:0 -9px 0 #ecd09b,0 4px 0 #ecd09b}
+.game .actions{background:#0f1828;box-shadow:0 -9px 0 #0f1828,0 4px 0 #0f1828}
+@media (max-height:620px){:is(.pa-game,.game) .scene{flex-basis:clamp(110px,22dvh,140px)!important}}

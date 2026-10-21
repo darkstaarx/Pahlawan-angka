@@ -160,6 +160,32 @@ test('question first: the question panel is bigger than the scene and nothing is
   }
 });
 
+test('small phones: in every mini game the Tanya Wira / Semak row stays on screen and every other button can be scrolled to', async () => {
+  // Inside the app the frame is the screen minus the "Kembali" bar and the status line.
+  const games = ['gudang-harta', 'kedai-kek', 'dapur-ramuan', 'pos-peninjau', 'lombong-permata', 'bengkel-ajaib', 'tapak-bina', 'menara-jam', 'gerai-wirayung'];
+  for (const game of games) for (const viewport of [{ width: 320, height: 500 }, { width: 360, height: 575 }]) {
+    const context = await browser.newContext({ serviceWorkers: 'block', viewport });
+    await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+    const page = await context.newPage(), errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(`${base}/${game}.html`);
+    await page.waitForTimeout(1500);
+    const r = await page.evaluate(() => {
+      const root = document.querySelector('.pa-game,.game'), shown = el => { const b = el.getBoundingClientRect(), s = getComputedStyle(el); return b.width > 0 && b.height > 0 && s.visibility !== 'hidden' && !el.closest('[hidden],.devfoot') };
+      const acts = [...document.querySelectorAll('.actions button')].filter(shown), inView = acts.length > 0 && acts.every(x => x.getBoundingClientRect().bottom <= innerHeight + 1);
+      root.scrollTop = root.scrollHeight;
+      const top = Math.min(...acts.map(x => x.getBoundingClientRect().top));
+      const hidden = [...document.querySelectorAll('button,[role=button],.tl')].filter(shown).filter(x => !x.closest('.actions')).filter(x => x.getBoundingClientRect().bottom > Math.min(top, innerHeight) + 1).map(x => x.textContent.trim().slice(0, 8));
+      return { inView, hidden, sideways: document.documentElement.scrollWidth > innerWidth + 1 };
+    });
+    assert.ok(r.inView, `${game} ${viewport.width}: Tanya Wira / Semak off screen`);
+    assert.deepEqual(r.hidden, [], `${game} ${viewport.width}: buttons out of reach`);
+    assert.equal(r.sideways, false, `${game} ${viewport.width}: sideways scroll`);
+    assert.deepEqual(errors, [], game);
+    await context.close();
+  }
+});
+
 test('question first in every mini game: bigger panel, waist-up Wira with his head in view', async () => {
   const games = ['gudang-harta', 'kedai-kek', 'bengkel-ajaib', 'dapur-ramuan', 'pos-peninjau', 'lombong-permata', 'tapak-bina', 'menara-jam', 'gerai-wirayung'];
   for (const [width, height] of [[390, 844], [360, 640]]) for (const game of games) {
