@@ -277,24 +277,32 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .scene{background:linear-gradient(180deg,#00000000 70%,#0003),repeating-linear-gradient(0deg,#5a4f6e 0 2px,transparent 2px 26px),repeating-linear-gradient(90deg,#5a4f6e 0 2px,transparent 2px 46px),linear-gradient(#7d6f96,#6a5c84)!important}
 .scene::before{display:none}
 .scene .floor{position:absolute;left:0;right:0;bottom:0;height:30px;background:repeating-linear-gradient(90deg,#8a6a4a 0 40px,#7a5c3e 40px 42px);border-top:3px solid #5e3519}
-.banner-cloth{position:absolute;z-index:1;top:0;left:50%;transform:translateX(-50%);width:120px;height:46px;background:linear-gradient(#b8456a,#8f2f4f);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);display:grid;place-items:center;padding-bottom:8px}
+.banner-cloth{position:absolute;z-index:1;top:0;left:28%;transform:translateX(-50%);width:120px;height:46px;background:linear-gradient(#b8456a,#8f2f4f);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);display:grid;place-items:center;padding-bottom:8px}
 .banner-cloth b{font:800 11px/1.05 var(--f-display);color:#ffd036;text-align:center;letter-spacing:.5px}
 .torch{position:absolute;z-index:1;top:24%;width:12px;height:34px;background:linear-gradient(#8a5530,#5e3519);border-radius:3px}
 .torch::before{content:"";position:absolute;left:-7px;top:-26px;width:26px;height:30px;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 50% 70%,#fff3b0,#ffb02e 45%,#e5562f 75%,transparent 78%);animation:flick .5s ease-in-out infinite;transform-origin:50% 100%}
 .torch::after{content:"";position:absolute;left:-40px;top:-50px;width:92px;height:92px;border-radius:50%;background:radial-gradient(#ffcf6b55,transparent 65%);animation:shine 1.6s ease-in-out infinite;pointer-events:none}
-.torch.l{left:30%}.torch.r{right:6%}
-.shelf{position:absolute;z-index:1;left:36%;right:14%;top:46%;height:40px;display:flex;align-items:flex-end;justify-content:space-around;border-bottom:7px solid #5e3519;box-shadow:0 5px 0 #0002}
+.torch.l{left:4%}@media (max-height:700px){.torch.l,.goldpile{display:none}}.torch.r{right:6%}
+.shelf{position:absolute;z-index:1;left:54%;right:4%;top:46%;height:40px;display:flex;align-items:flex-end;justify-content:space-around;border-bottom:7px solid #5e3519;box-shadow:0 5px 0 #0002}
 .shelf .slot{width:18%;max-width:40px;aspect-ratio:1;display:grid;place-items:end center;filter:grayscale(1) brightness(.75);transition:filter .5s}
 .shelf .slot svg{width:100%;height:auto}
 .shelf .slot.on{filter:drop-shadow(0 0 6px #ffd23f)}.shelf .slot.pop{animation:pegpop .7s cubic-bezier(.3,1.6,.5,1)}
 .goldpile{position:absolute;z-index:1;left:44%;bottom:26px;width:90px;height:34px;border-radius:50% 50% 8px 8px/90% 90% 8px 8px;background:radial-gradient(circle at 30% 40%,#fff6b0 0 3px,transparent 4px),radial-gradient(circle at 65% 30%,#fff6b0 0 2px,transparent 3px),linear-gradient(#ffd23f,#d39b14);box-shadow:inset 0 -6px 0 #b9801c}
 .scene .wira{left:4px;bottom:30px;z-index:2}
+/* Waist-up Wira (css/minigame-question-first-v1.css) behind the counter: the
+   counter top (46px + 7px rim) hides his legs. The chest shelf sits right of him. */
+.pa-game .scene{--waist:53px}
+/* The chest on the counter stands right of his book hand; the counter and the gold pile move along. */
+.pa-game .scene .stand{left:calc(var(--ww) * .93)}
+.pa-game .scene .counter{width:66%}
+.pa-game .scene .goldpile{left:64%}
 .counter{position:absolute;z-index:3;left:0;bottom:0;width:58%;height:46px;border-radius:0 10px 0 0;background:repeating-linear-gradient(90deg,transparent 0 50px,#0000002a 50px 52px),linear-gradient(#a9673a,#7a4422)!important;border-top:7px solid #d39b14!important;border-right:3px solid #5e3519!important}
 .stand{position:absolute;z-index:4;left:clamp(96px,46cqh,128px);bottom:42px;width:58px}
 .stand svg{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 2px #0004)}
 .stand.done svg{animation:hop .55s ease 2}
 .scene .customer{bottom:8px;z-index:3}
-.scene .bubble{top:52px}
+/* The scene is short (question first): the visitor's bubble sits at the top so the chest shelf (progress) stays visible. */
+.scene .bubble{top:8px}
 .scene .wsay{top:46px}
 .scene .devbtn{bottom:auto;top:8px;left:6px;background:#fff8}
 .ledger .faces{display:flex;justify-content:center;gap:4px;margin:4px 0 14px}.ledger .faces div{display:flex;flex-direction:column;align-items:center;font:900 11px/1.2 var(--f-body);color:var(--gold-dk)}.ledger .faces img{width:48px;height:48px;object-fit:contain}
@@ -423,7 +431,8 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .lz{gap:2px 4px}.lz .cell .tkn{max-height:clamp(16px,3dvh,26px)}.lz .cell{padding:1px 2px;gap:1px}.lz .cell em{font-size:15px}
 .lz .abox{min-height:clamp(32px,5.4dvh,40px)}.lz .cbox{height:22px}.lz .hd{padding:0}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
-<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1"></head><body>
+<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
+<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.1.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -476,12 +485,17 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 <script src="js/gudang-harta-router.js"></script>
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script>
 (()=>{
 'use strict';
 const query=new URLSearchParams(location.search),devEnabled=window.PAMiniGameDev?.enabled?.()===true;
 const liveAuthorized=query.get('pa_focus_live')==='1'&&window.parent!==window&&window.parent.PAFocusMiniGamesLive?.isActiveFrame?.(window,query.get('pa_nonce'),query.get('skill'))===true;
 let focusLimits=new Map();try{focusLimits=new Map(JSON.parse(query.get('focus_limits')||'[]').map(x=>[x.mode,[Number(x.min)||0,Number(x.end)]]).filter(x=>Number.isFinite(x[1][1])&&x[1][1]>=x[1][0]))}catch(_){focusLimits=new Map()}
+/* Cikgu Dimensi target (PATargets.miniGameTarget): {kind:'tables',tables:[3,7]} | {kind:'regroup',op:'sub'|'add',zero}. */
+let focusTarget=null;try{const t=JSON.parse(query.get('focus_target')||'null');
+ if(t&&t.kind==='tables'&&Array.isArray(t.tables)){const tb=t.tables.map(Number).filter(n=>Number.isInteger(n)&&n>=2&&n<=12).slice(0,3);if(tb.length)focusTarget={kind:'tables',tables:tb}}
+ else if(t&&t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))focusTarget={kind:'regroup',op:t.op,zero:t.op==='sub'&&t.zero===true}}catch(_){focusTarget=null}
 if(!devEnabled&&!liveAuthorized){document.body.innerHTML='<main style="box-sizing:border-box;min-height:100%;padding:32px 20px;display:grid;place-items:center;background:#163652;color:#18324b;font:700 16px/1.5 system-ui,sans-serif"><section style="max-width:420px;padding:28px;border:3px solid #7d4a27;border-radius:22px;background:#fff4d9;box-shadow:0 8px 0 #7d4a27;text-align:center"><div style="font-size:42px">🗝️</div><h1 style="margin:8px 0;color:#7d4a27">Gudang Harta Wira</h1><p>Game ini dibuka melalui Kemahiran Fokus berdasarkan profil murid. Panel ujian hanya tersedia dalam DEV mode.</p></section></main>';return}
 /* ---------- pembantu nombor ---------- */
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -879,6 +893,37 @@ const $=id=>document.getElementById(id);
 if(devEnabled) $('devBtn').hidden=false;
 const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
 const MODE_LABEL={bina:'NILAI TEMPAT',banding:'BANDING & BUNDAR',pola:'POLA NOMBOR',tambah:'TAMBAH',tolak:'TOLAK',darab:'DARAB',bahagi:'BAHAGI',gabung:'BERGABUNG',juta:'NOMBOR JUTA',perdana:'PERDANA',masalah:'MASALAH'};
+/* ---------- sasaran Kemahiran Fokus (focus_target) ----------
+   7 daripada 10 pusingan menyasar masalah yang Cikgu Dimensi kesan; yang lain
+   soalan biasa mod itu. Tangga CPA gaya Singapura dengan bahasa KSSR:
+   gambar/konkrit (uncang, rak nilai tempat) → strategi → abstrak → songsang. */
+const TARGET_MODE={tables:'darab',sub:'tolak',add:'tambah'},NORMAL_TURNS=new Set([2,5,8]);
+const needBorrow=(a,b,c)=>range(c).some(i=>dig(a,c)[i]<dig(b,c)[i]),needCarry=(a,b,c)=>range(c).some(i=>dig(a,c)[i]+dig(b,c)[i]>9);
+function targetMode(t){return t?TARGET_MODE[t.kind==='tables'?'tables':t.op]:null}
+function targetGens(t,g){
+ if(!t)return null;
+ if(t.kind==='tables'){let n=0;const next=()=>t.tables[n++%t.tables.length],fx=(a,b,tb)=>({op:'mul',operands:[a,b],table:tb});
+  return [
+   {arch:'target_table_groups',f:C=>{const tb=next(),k=R(2,6);return{kind:'pad',vis:{t:'array',r:k,c:tb},form:NUM(k*tb),q:'Ada '+k+' uncang, setiap uncang '+tb+' syiling. Berapakah jumlah syiling?',s:'Kira langkau '+tb+': '+range(3).map(i=>tb*(i+1)).join(', ')+', …',a:k+' × '+tb+' = '+k*tb+'.',fx:fx(k,tb,tb)}}},
+   {arch:'target_table_break_apart',f:C=>{const tb=next(),k=R(6,9);return{kind:'pad',card:k+' × '+tb+' = ?',form:NUM(k*tb),q:'Kira hasil darab.',s:'Pecahkan: 5 × '+tb+' = '+5*tb+', kemudian tambah '+(k-5)+' × '+tb+' = '+(k-5)*tb+'.',a:'5 × '+tb+' + '+(k-5)+' × '+tb+' = '+5*tb+' + '+(k-5)*tb+' = '+k*tb+'.',fx:fx(k,tb,tb)}}},
+   {arch:'target_table_recall',f:C=>{const tb=next(),k=R(2,10),[x,y]=Math.random()<.5?[k,tb]:[tb,k];return{kind:'pad',card:x+' × '+y+' = ?',form:NUM(k*tb),q:'Kira hasil darab.',s:'Ingat sifir '+tb+'.',a:x+' × '+y+' = '+k*tb+'.',fx:fx(x,y,tb)}}},
+   {arch:'target_table_missing',f:C=>{const tb=next(),k=R(2,10);return{kind:'pad',card:tb+' × ___ = '+k*tb,form:NUM(k),q:'Apakah nombor yang hilang?',s:'Kira langkau '+tb+' sehingga '+k*tb+'.',a:tb+' × '+k+' = '+k*tb+'.',fx:{op:'div',operands:[k*tb,tb],table:tb}}}}];
+ }
+ const sub=t.op==='sub',c={1:2,2:3,3:4}[g]||5,word=sub?'tolak':'tambah';
+ // Every pair needs borrowing (or carrying); "zero" puts 0 in the tens of the first number (e.g. 304 − 127).
+ const pair=()=>{let a,b,k=0;do{a=nOf(c);b=sub?R(PV[c-2]||1,a-1):R(PV[c-2]||1,PV[c]-1-a)}while(k++<500&&(b<1||(sub?!needBorrow(a,b,c)||(t.zero&&c>2&&(dig(a,c)[1]!==0||dig(a,c)[0]>=dig(b,c)[0])):!needCarry(a,b,c)||a+b>=PV[c])));return[a,b]};
+ const fx=(a,b)=>({op:sub?'sub':'add',operands:[a,b],format:'lazim'}),v=(a,b)=>sub?a-b:a+b,sign=sub?' − ':' + ';
+ return [
+  {arch:'target_'+(sub?'borrow':'carry')+'_rack',f:C=>{const[a,b]=pair();return{kind:'build',rack:{cols:c,mode:t.op,a:dig(a,c),b:dig(b,c)},need:{v:v(a,b)},ansTxt:nf(a)+sign+nf(b)+' = '+nf(v(a,b)),
+   q:story(C,sub?'Gudang ada '+nf(a)+' harta. @ ambil '+nf(b)+'. Berapakah yang tinggal?':'Gudang ada '+nf(a)+' harta. @ simpan '+nf(b)+' lagi. Berapakah jumlahnya?'),
+   s:sub?'Tolak dari tempat sa. Jika digit atas lebih kecil, pecahkan 1 dari tempat sebelah kiri jadi 10.':'Setiap tempat hanya boleh ada 9 harta. Kalau ada 10 atau lebih, tukar jadi 1 harta di tempat sebelah kiri.',a:nf(a)+sign+nf(b)+' = '+nf(v(a,b))+'.',fx:fx(a,b)}}},
+  {arch:'target_'+(sub?'borrow':'carry')+'_written',f:C=>{const[a,b]=pair();return{kind:'pad',card:nf(a)+sign+nf(b)+' = ?',form:NUM(v(a,b)),q:'Kira hasil '+word+'.',
+   s:sub?(t.zero?'Tempat puluh ialah 0: pinjam dari ratus dulu, 0 jadi 10, kemudian beri 1 kepada sa.':'Tolak dari tempat sa. Pinjam 1 dari tempat sebelah kiri, dan kurangkan tempat itu 1.'):'Tambah dari tempat sa. Kumpul semula 1 ke tempat sebelah kiri bila jumlah 10 atau lebih.',a:nf(a)+sign+nf(b)+' = '+nf(v(a,b))+'.',fx:fx(a,b)}}},
+  {arch:'target_'+(sub?'borrow':'carry')+'_story',f:C=>{const[a,b]=pair();return{kind:'pad',form:NUM(v(a,b)),q:story(C,sub?'@ ada '+nf(a)+' syiling. '+nf(b)+' syiling dibelanjakan. Berapakah baki syiling?':'@ ada '+nf(a)+' syiling. '+nf(b)+' syiling lagi diberi. Berapakah jumlah syiling?'),
+   s:sub?'"Baki" bermaksud tolak. Tulis ayat matematik dulu, kemudian pinjam bila perlu.':'"Jumlah" bermaksud tambah. Kumpul semula bila perlu.',a:nf(a)+sign+nf(b)+' = '+nf(v(a,b))+'.',fx:{...fx(a,b),format:'word'}}}}];
+}
+let targetCache=null;
+const targetFor=g=>{if(!focusTarget)return null;if(!targetCache||targetCache.g!==g)targetCache={g,gens:targetGens(focusTarget,g)};return targetCache.gens};
 const GRADES={1:{title:'Nombor hingga 100'},2:{title:'Nombor hingga 1000 & sifir'},3:{title:'Nombor hingga 10 000'},4:{title:'Nombor hingga 100 000'},5:{title:'Nombor hingga 1 000 000'},6:{title:'Juta, perdana & operasi bergabung'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
 const SAYS={bina:'Tolong susun harta saya ikut nilai tempat!',banding:'Peti mana lebih bernilai?',pola:'Ada permata hilang dalam jejak!',tambah:'Saya nak simpan harta lagi!',tolak:'Saya nak ambil sebahagian harta.',darab:'Saya bawa banyak peti sama!',bahagi:'Kongsi sama rata, ya!',gabung:'Kira ikut tertib, Wira!',juta:'Harta kerajaan berjuta-juta!',perdana:'Nombor ni istimewa ke?',masalah:'Bantu urus harta kerajaan!'};
@@ -997,8 +1042,11 @@ function renderFields(){if(q.kind!=='pad')return;q.form.fields.forEach((f,i)=>{c
 /* ---------- semakan ---------- */
 function ansText(){if(q.ansTxt)return q.ansTxt;if(q.kind==='pick')return q.opts.find(o=>o.id===q.correct).label;if(q.kind==='pad')return q.form.fields.map(f=>(f.pre?f.pre+' ':'')+nf(f.v)+(f.post?' '+f.post:'')).join(' ');return ''}
 /* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
+// A one-operator card without spaced thousands lets the brain read the sum itself.
+const plainCard=c=>!!c&&(String(c).match(/[+−×÷]/g)||[]).length===1&&!/\d \d/.test(c);
 function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
- window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'gudang-harta',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String(q.q||'').slice(0,200),answer:String(typeof ansText==='function'?ansText():'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms},location.origin)}catch(e){}}
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'gudang-harta',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String((plainCard(q.card)?q.card+' · ':'')+(q.q||'')).slice(0,200),answer:String(typeof ansText==='function'?ansText():'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms,
+  ...(q.fx?{facets:q.fx}:{}),...(!ok&&q.kind==='pad'&&inp.length===1&&inp[0]!==''?{value:String(inp[0]).slice(0,24)}:{})},location.origin)}catch(e){}}
 function check(){
  if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
  const K=q.kind;let ok=false,note='';
@@ -1028,7 +1076,7 @@ function check(){
  msg(note,'bad',3800);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-function adapt(st){const k=q.mode,[floor,cap]=focusLimits.get(k)||[0,q.nTiers-1],up=liveAuthorized?Math.min(q.nTiers-1,cap):q.nTiers-1;
+function adapt(st){const k=q.tierKey,[floor,cap]=q.target?[0,q.nTiers-1]:focusLimits.get(q.mode)||[0,q.nTiers-1],up=liveAuthorized?Math.min(q.nTiers-1,cap):q.nTiers-1;
  if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Tugasan seterusnya lebih mencabar.','',2600),2000)}}
  else{clean[k]=0;if(hints+misses>=2&&tier[k]>floor){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
 function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;
@@ -1037,9 +1085,11 @@ function reportProgress(action){try{const p=new URLSearchParams(location.search)
  window.parent.postMessage({type:'PA_GUDANG_HARTA_PROGRESS',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+(served+1)+':'+q.mode,index:served+1,tier:q.tierIx+1,prompt:q.q,misses,hints,action,at:Date.now()},location.origin)}catch(e){}}
 
 /* ---------- aliran ---------- */
-function makeQ(){const k=cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k],[floor,cap]=focusLimits.get(k)||[0,gens.length-1];if(tier[k]==null){tier[k]=Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[k]=0}
- const ti=liveAuthorized?Math.max(floor,Math.min(tier[k],cap,gens.length-1)):Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
- return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch}}
+function makeQ(){const k=cfg.modes[served%cfg.modes.length],tg=targetMode(focusTarget)===k&&!NORMAL_TURNS.has(served%10)?targetFor(cfg.grade):null,key=tg?'target:'+k:k,gens=tg||GEN[cfg.grade][k],[floor,cap]=tg?[0,gens.length-1]:focusLimits.get(k)||[0,gens.length-1];
+ // A target ladder always starts at its concrete/pictorial step (CPA).
+ if(tier[key]==null){tier[key]=tg?0:Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[key]=0}
+ const ti=liveAuthorized?Math.max(floor,Math.min(tier[key],cap,gens.length-1)):Math.min(tier[key],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
+ return{mode:k,tierKey:key,target:!!tg,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch}}
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  $('stageN').textContent='PETI '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Ekspedisi '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
 const SUB={build:{build:'Tekan + dan − pada setiap tempat.',add:'Mula dari tempat sa. Tulis 1 di kotak kecil jika kumpul semula.',sub:'Mula dari tempat sa. Jika pecah, tulis digit baharu di kotak kecil.'},pick:'Pilih satu jawapan.',pad:'Tekan nombor untuk isi jawapan.'};
@@ -1101,7 +1151,7 @@ $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>apply
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__gudangDebug=()=>q&&{phase:rPhase,taken,addIn,kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,rack:q.rack,correct:q.correct,cur:rack,vis:q.vis&&q.vis.t}; // ujian sahaja
-window.__gudangGen={GEN,hideStep,hintTwo:()=>hintTwo()}; // ujian sahaja
+window.__gudangGen={GEN,hideStep,hintTwo:()=>hintTwo(),focusTarget,targets:()=>targetFor(cfg.grade),sample:n=>{const keep=served,out=[];for(let i=0;i<n;i++){served=i;out.push(makeQ())}served=keep;return out}}; // ujian sahaja
 resetAll();startRound();
 })();
 </script>

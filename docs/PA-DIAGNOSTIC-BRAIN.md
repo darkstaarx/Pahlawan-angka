@@ -243,7 +243,8 @@ composition, lock policy.
 - Parent report + worksheets: `js/parent-learning-tools-v3.26.0.js`,
   `js/worksheet-graphics-v1.js`. Ringkasan tab cards: `js/parent-glance-v1.js`
   (rendered by `renderParent()` in `js/parent.js`).
-- Mini-game routing by skill: `js/focus-mini-games-live-bridge.js` (`gameFor`).
+- Mini-game routing by skill: `js/focus-mini-games-live-bridge.js` (`gameFor`);
+  brain targets: `PATargets.miniGameTarget`, `focus_target` in `gudang-harta.html`.
 - Mini game answers: every game page (`gudang-harta`, `kedai-kek`, `bengkel-ajaib`,
   `dapur-ramuan`, `pos-peninjau`, `lombong-permata`, `tapak-bina`, `menara-jam`,
   `gerai-wirayung`) posts `PA_MINIGAME_ATTEMPT` for each try via `paAttempt(ok)`
@@ -264,9 +265,32 @@ composition, lock policy.
 
 Last updated: 2026-10-21. Read this section first if you are picking up the work.
 
+**Start here (next agent, 2026-10-21 evening).**
+1. The owner will ask you to **merge PR #69** (branch `ccr-ed8f705d-ym2tc0`,
+   app 3.86.93). It holds Next item 3 (mini games drill the brain finding)
+   and the owner's layout request (question panel bigger than the scene,
+   waist-up Wira, in all nine mini games). Before merging: check it is still
+   mergeable; CI is only "Supabase Preview" (skipped); run
+   `node --test audit/*.test.js` (expect 180 pass, 0 fail). Then, as done for
+   #66–#68, push one commit to the PR branch that marks #69 merged in this
+   section (status line + item 3), and merge with a merge commit. GitHub
+   Pages (darkstaarx.github.io/Pahlawan-angka/) rebuilds by itself in about
+   a minute; Netlify is NOT touched.
+2. Then ask the owner what next. Candidates, in order: Next item 4
+   (re-check loop); a bar model (Model Method) round for word problems in a
+   mini game (proposed, not started); targets for the other mini games
+   (pecahan, ukuran, ...); D1 basic-fact targeting.
+3. Owner style: reply in Bahasa Malaysia, short and plain; one task per
+   branch/PR, base `main`; merge only when the owner says so; screenshots
+   of the real app help the owner decide (Playwright via
+   `audit/lib/browser.js`; mini game pages open standalone on localhost with
+   `localStorage.pa_dev_unlocked='1'`).
+
 **Status on GitHub.** PRs #55–#63 and #65–#68 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
-real-device test. No PR is open.
+real-device test.
+Open: PR #69 (Next item 3 + question-first layout in all mini games,
+3.86.93), base `main`, not merged — merge when the owner asks (see above).
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -314,7 +338,12 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    "Sifir 7 belum dikuasai (3/13 betul)"); keep the old order when there are no
    findings. Done when: dummy children (tools/diagnostic-sim.js) produce the
    expected first card; no change for profiles without findings.
-2. *Gembok uses targeted items.* (Start here: a brain card item carries
+2. ✖ *Replaced (owner decision 2026-10-21).* Kemahiran Fokus cards open the
+   mini games (Operasi/Nombor → Gudang Harta, Wang → Gerai Wirayung, Masa →
+   Menara Jam, ...), never Gembok, and the owner wants them to stay mini games.
+   So targeted practice lives in the mini games (item 3). A Gembok version was
+   built and dropped (commit 3b3362f, reverted). Original notes:
+   *Gembok uses targeted items.* (A brain card item carries
    `brainStep`; `startFocusChoice(id)` passes only the id today.) `nextQuestion()` in
    `js/engine/production-journey.js` calls `generate(id,…)`. When the run comes
    from a brain-backed Fokus card, serve `PATargets.practice(step,…)` items
@@ -322,7 +351,40 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    70% of turns, the normal generator for the rest. Done when: telemetry from
    those items flows back (facets survive) and a recovered bug shows
    "Semakin baik".
-3. *Mini game targeting.* Gudang Harta takes `focus_limits` (mode + tier range)
+3. ✅ *Done (2026-10-21, 3.86.90, PR #69, not merged yet), KSSR + Singapore style.*
+   `startFocusChoice()` turns the card's `brainStep` into
+   `PATargets.miniGameTarget(step)` and hands it to the bridges.
+   - Gudang Harta (`focus_target` URL param, read in `gudang-harta.html`):
+     7 of 10 rounds (`NORMAL_TURNS` 2, 5, 8 stay normal) drill the target on a
+     CPA ladder that starts concrete/pictorial and climbs with the existing
+     adapt rule. Sifir: uncang array → "Pecahkan: 5 × t + …" → recall →
+     missing factor. Meminjam / kumpul semula: place-value rack → written sum →
+     story; every pair needs borrowing/carrying, `zero` borrows through 0.
+   - Gerai Wirayung: a money finding narrows the modes (sub → `baki`,
+     div → `bahagi`, add → `bayar`); the live money diagnostic reads the same
+     first mode (baki → money_change).
+   - Telemetry: `PA_MINIGAME_ATTEMPT` may carry `facets` (op, operands, table,
+     format; cleaned in `js/minigame-telemetry-v1.js`) and the wrong `value`;
+     Gudang Harta also puts one-operator cards in the prompt. So mini game
+     answers feed the brain lenses and a cleared bug shows "Semakin baik".
+   - Tests: `audit/minigame-targets.test.js`, `audit/minigame-targets-browser.test.js`.
+   - Question first (owner request, 3.86.91): in Gudang Harta the question
+     panel gets more room than the scene. `css/minigame-question-first-v1.css`
+     caps the scene (~30% height, Wira/visitor zoomed in, props kept) and gives
+     the panel the rest; `js/minigame-panel-fit-v1.js` enlarges the panel
+     content to fill it (`--qz`, 1–1.6, 5% spare). A choice question without a
+     picture shows big full-width choices. Wira stands waist-up (about 1.6×
+     bigger): his belt (`--belt`, `--aspect` per image) sits at `--waist` (the
+     counter top, or the scene edge). All nine mini games link both files
+     (3.86.93); each has a small "Question first" style block for its counter
+     height and the props that moved out from behind Wira (e.g. cake stand,
+     cauldron, basket, shield rack, bubble). Tapak Bina shows 4 picture
+     choices as 2×2; Gerai Wirayung lowers its counter on short screens.
+   - Not done: bar model (Model Method) for word problems exists in no mini
+     game yet (proposed next); basic facts (D1) are not targeted beyond the
+     existing make-ten tiers; other games (pecahan, ukuran, ...) take no target.
+   Original notes:
+   *Mini game targeting.* Gudang Harta takes `focus_limits` (mode + tier range)
    from `js/gudang-harta-router.js`. Add target params, e.g. `focus_tables=7,3`
    for `darab` and "borrow only" for `tolak`, read them in `gudang-harta.html`
    `makeQ()`. Other games: only where a finding maps to them (money → Gerai
@@ -364,7 +426,9 @@ phase 5 (consented cloud telemetry), see §7.
 
 **Not done / owner tasks**
 - Real-device test (iPhone/Android): Portal Restu video and PIN, mini game
-  telemetry, worksheet PDF download.
+  telemetry, worksheet PDF download, and the new mini game layout (only the
+  first screen of each game was checked; other question kinds rely on the
+  panel auto-fit).
 - Owner checks the "3 fast wrong answers → lock" rule feels fair for Darjah 1.
 
 **How to verify your change**

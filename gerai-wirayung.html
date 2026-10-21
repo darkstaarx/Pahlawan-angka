@@ -292,7 +292,14 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .share-slot:focus-visible{outline:3px solid #fff;outline-offset:2px}
 @media(max-height:670px){.mat.split-layout{min-height:56px}.share-slot{min-height:48px;font-size:9px}.share-slot b{font-size:11px}.share-slot .smallcoins{height:12px}.share-slot .smallcoins img{height:12px}}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
-<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1"></head><body>
+<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
+<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.1.0">
+<style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
+main.pa-game .scene{--waist:90px;--belt:.55;--aspect:1.5;--ww:clamp(100px,58cqh,150px)}
+.pa-game .scene .basket{left:calc(var(--ww) * .93)}
+@media (min-width:720px){main.pa-game .scene{--waist:104px}}
+/* Short screens: a lower counter keeps Wira in view; the hanging sign would cover his head. */
+@media (max-height:700px){main.pa-game .scene{--waist:58px;--ww:96px}.pa-game .scene .counter{height:58px}.pa-game .scene .basket{bottom:12px}.pa-game .scene .sign{display:none}}</style></head><body>
 
 <main class="pa-game" id="game" aria-label="Gerai Wirayung">
   <header class="hud">
@@ -359,6 +366,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script>/* Gerai Wirayung — router Kemahiran Fokus → mini-game wang.
    Membaca encounter learnerReviewV1 yang SAMA digunakan oleh focusPracticeSummary()
    dan memutuskan sama ada skill wang yang lemah sesuai dilatih di gerai.
