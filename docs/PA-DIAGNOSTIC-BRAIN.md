@@ -285,7 +285,8 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
 **Start here (next agent).**
 1. PRs #69 (Next item 3 + question-first mini game layout, 3.86.93) and #70
    (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
-   Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71. Nothing is open.
+   Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71, the question bank
+   repair (3.86.96) as PR #72. Nothing is open.
 2. Then ask the owner what next. Candidates, in order: a bar model (Model
    Method) round for word problems in a mini game (proposed, not started);
    targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
@@ -297,7 +298,7 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
    `audit/lib/browser.js`; mini game pages open standalone on localhost with
    `localStorage.pa_dev_unlocked='1'`).
 
-**Status on GitHub.** PRs #55–#63 and #65–#71 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#72 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 No PR is open.
@@ -450,14 +451,32 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    Done when `node --test audit/*.test.js` has 0 failures, without weakening
    what each test checks.
 
+**Question bank check (2026-10-21, 3.86.96, PR #72, merged; owner request before 4.8).** 150
+questions per skill for all 117 D1–D6 skills in the real app: no broken text,
+no repeated choice. Repaired: "tidak pasti"/"tidak tahu" filler choices in
+D1–D2 (D2 ukuran now compares three things; D1 betul/salah items carry a
+short reason, e.g. "salah, sepatutnya 60"; tenths use 0.0n as the real slip),
+an "8 lebih banyak daripada 8" claim, D2.5.2 time units (back conversion and
+"1 jam 15 minit"), D2 3D shapes (count faces / tepi / bucu), D2 2D (total
+sides), D5 Peratus (any multiple of 5). Guard: `audit/question-bank-choices.test.js`.
+Still open: tags for "Kemungkinan punca" exist for D1 (65%) and D6 (70%) only
+(D2 9%, D5 11%, D3–D4 0%); few pictures in D4–D6 (13–18%) for lens 4.1; no
+short/long wording pairs yet (lens 4.8).
+
 **Phase 4 (started 2026-10-21)**
 - ✅ Lens 4.1 Representation (CPA), 3.86.95, PR #71, merged: see §4.1
   "Implemented". Not done: other mini games do not send `rep` yet (only
   Gudang Harta), and only Gudang Harta fades pictures; thresholds are the
   §4.1 defaults, not calibrated on real children (phase 5).
-- Next in phase 4, in this order: 4.8 language load (needs short/long BM
-  wording pairs per item family), 4.6 interleaving (needs blocked vs mixed
-  set flags), 4.7 full (spaced schedule beyond the re-check loop).
+- Owner decision (2026-10-21): next is the bar model (Model Method) for word
+  problems in a mini game — the action for the existing 4.4 finding
+  "format_word" — then a light 4.8 (short/long pairs only for the common
+  word-problem families in D3–D6, plus a read-aloud-then-right signal), then
+  "Kemungkinan punca" tags for D2–D5. 4.6 and full 4.7 after that.
+  4.8 research: Abedi et al. (CRESST 1998, 2001) linguistic modification;
+  Daroczy et al. (2015) review; read-aloud effects on maths are small
+  (Elbaum 2007; Buzick & Stone 2014). The 80% / 50% thresholds are a design
+  guess until phase 5 data.
 
 **Then** phase 5 (consented cloud telemetry), see §7.
 
