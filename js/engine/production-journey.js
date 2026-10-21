@@ -89,7 +89,6 @@
     if(active)close(false);
     const id=`gembok-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
     active={id,gembok:true,route:focusSkill?'focus':(options.adaptive?'adaptive':'manual'),chapter,focusSkill,pool,profileDb:db,petConfig:activePetConfig(db),previousSession:sess,session:makeSession(options),
-      brainStep:focusSkill&&options.brainStep?options.brainStep:null,targetQueue:[],
       questionNumber:0,correct:0,completed:false,paused:false,startedAt:Date.now()};
     activateSession(active.session);
     window.PASegelHost.openProduction(active);
@@ -105,35 +104,12 @@
     });
   }
 
-  /* Brain-backed Fokus card (docs/PA-DIAGNOSTIC-BRAIN.md §8a, Next 2): about 70%
-     of turns come from PATargets.practice(step), interleaved with the normal
-     generator so the skill is still checked in its usual forms. The items keep
-     their facets, operands and bug-model wrong answers, so every answer feeds
-     the Diagnostic Brain again (and a cleared bug shows "Semakin baik"). */
-  const NORMAL_TURNS=new Set([2,5,8]);
-  function targetedQuestion(run){
-    const step=run.brainStep,T=window.PATargets;
-    if(!step||!T?.practice||NORMAL_TURNS.has(run.questionNumber%10))return null;
-    const recent=run.session.recentTargets||(run.session.recentTargets=[]);
-    let it=null;
-    for(let refill=0;!it&&refill<3;){
-      if(!run.targetQueue.length){run.targetQueue=T.practice(step,20,{grade:run.profileDb?.schoolGrade},Date.now()+run.questionNumber+refill);refill++}
-      const next=run.targetQueue.shift();if(!next)break;
-      if(!recent.includes(next.prompt))it=next;
-    }
-    if(!it)return null;
-    recent.push(it.prompt);if(recent.length>10)recent.shift();
-    return {prompt:it.prompt,answer:it.answer,hint:it.hint||'',kind:it.kind,facets:{...it.facets},targeted:true,
-      wrong:(it.choices||[]).filter(c=>c.tag!=='correct').map(c=>({v:c.v,tag:c.tag,label:String(c.v)})),
-      archetypeId:`target_${step.target?.kind||'practice'}`,representation:it.facets?.format==='word'?'story':'symbolic'};
-  }
-
   function nextQuestion(run){
     if(!active||active!==run||run.completed||run.paused)return null;
     const s=run.session,id=selectSkill(run),state=realScore(id);
     if(!id||!state)return null;
     return withSession(s,()=>{
-      const q=targetedQuestion(run)||generate(id,state,{battleTier:'gembok',isBoss:false,strictSkill:run.route==='focus'});
+      const q=generate(id,state,{battleTier:'gembok',isBoss:false,strictSkill:run.route==='focus'});
       if(!q)return null;
       q.skill=id;q.token=++s.questionToken;
       s.q=q;s.start=now();s.hint=false;s.hintLevel=0;s.retryState=null;
@@ -256,7 +232,7 @@
   }
   function restart(run){
     if(!active||active!==run)return;
-    open({chapter:run.chapter,adaptive:run.route==='adaptive',focusSkill:run.route==='focus'?run.focusSkill:null,focusTarget:run.session.focusTarget,brainStep:run.brainStep});
+    open({chapter:run.chapter,adaptive:run.route==='adaptive',focusSkill:run.route==='focus'?run.focusSkill:null,focusTarget:run.session.focusTarget});
   }
   function close(renderMenu=true){
     if(!active)return;
