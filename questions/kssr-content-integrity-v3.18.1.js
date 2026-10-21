@@ -83,11 +83,14 @@
   function d2Operation(id,s,shift){
     if(id==='D2.2.1'){
       const three=rotate(id,['add_two','add_three'])==='add_three';let a=R(100,650),b=R(20,250),c=three?R(10,100):0;while(a+b+c>1000){a=R(100,550);b=R(20,220);c=three?R(10,90):0}const ans=a+b+c;
-      return mark(Q(`${a} + ${b}${three?` + ${c}`:''} = ?`,ans,addDistractors(a,b+c,ans),'Tambah mengikut nilai tempat. Jika 10 sa, tukar kepada 1 puluh.','Tahun 2 · Tambah hingga 1000',true,shift),id,three?'add_three':'add_two','symbolic','procedure',['place','operation']);
+      // "Kemungkinan punca": exact tag from the numbers (carrying or not), questions/focus-tags-d2-d5-v1.js.
+      const q=mark(Q(`${a} + ${b}${three?` + ${c}`:''} = ?`,ans,addDistractors(a,b+c,ans),'Tambah mengikut nilai tempat. Jika 10 sa, tukar kepada 1 puluh.','Tahun 2 · Tambah hingga 1000',true,shift),id,three?'add_three':'add_two','symbolic','procedure',['place','operation']);
+      return typeof attachAddSubFocusTag==='function'?attachAddSubFocusTag(q,id,'addition',three?[a,b,c]:[a,b],ans,'d2-d5-authored-v1'):q;
     }
     if(id==='D2.2.2'){
       const multi=rotate(id,['sub_one','sub_two'])==='sub_two';let a=R(300,999),b=R(20,Math.min(400,a-20)),c=multi?R(10,Math.min(180,Math.max(10,a-b))):0;if(a-b-c<0)return d2Operation(id,s,shift);const ans=a-b-c;
-      return mark(Q(`${a} − ${b}${multi?` − ${c}`:''} = ?`,ans,[N(ans+10,'same_end'),N(a+b+c,'operation'),N(Math.max(0,a-b+c),'operation')],'Tolak satu nilai pada satu masa dan semak nilai tempat.','Tahun 2 · Tolak hingga 1000',true,shift),id,multi?'sub_two':'sub_one','symbolic','procedure',['place','operation']);
+      const q=mark(Q(`${a} − ${b}${multi?` − ${c}`:''} = ?`,ans,[N(ans+10,'same_end'),N(a+b+c,'operation'),N(Math.max(0,a-b+c),'operation')],'Tolak satu nilai pada satu masa dan semak nilai tempat.','Tahun 2 · Tolak hingga 1000',true,shift),id,multi?'sub_two':'sub_one','symbolic','procedure',['place','operation']);
+      return typeof attachAddSubFocusTag==='function'?attachAddSubFocusTag(q,id,'subtraction',multi?[a,b,c]:[a,b],ans,'d2-d5-authored-v1'):q;
     }
     if(id==='D2.2.3'){
       const mode=rotate(id,['mul_groups','mul_fact','mul10']);

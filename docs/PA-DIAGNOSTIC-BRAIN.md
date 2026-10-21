@@ -303,6 +303,9 @@ composition, lock policy.
   mini game must call `paAttempt(false)` before `misses++` and `paAttempt(true)`
   on success, or the brain and Portal Restu cannot see it.
   Tests: `audit/minigame-telemetry.test.js`.
+- "Kemungkinan punca" foundation tags: D1/D6 in their v2 runtimes, D2–D5 (and
+  the wording items) in `questions/focus-tags-d2-d5-v1.js`; read by
+  `js/engine/focus-foundation-v1.js`, shown by `js/guardian-focus.js`.
 - Short/long wordings (lens 4.8): `js/engine/reading-pairs-v1.js`
   (`PAReadingPairs`), served by `generate()` in `questions/index.js`
   (`READING_PAIR_SKILLS`) and by Gudang Harta reading rounds.
@@ -315,7 +318,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #75). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #75; Kemungkinan punca tags, PR open). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#75. #69 Next item 3 + question-first mini
@@ -324,19 +327,21 @@ Last updated: 2026-10-21 (after PR #75). Read this section first if you are pick
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
    for all mini games + one-row number keypad on short web screens so Wira is
    not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
-   speaker signal (3.86.99, see §4.8 "Implemented"). Nothing is open.
-   Current version 3.86.99.
-2. **Next task: "Kemungkinan punca" tags for D2–D5** (owner order: bar model →
-   light 4.8 → these tags → 4.6 and full 4.7). The Kemahiran Fokus card shows
-   "Kemungkinan punca: …" from `PAFocusFoundationV1.evaluate()`
-   (`js/engine/focus-foundation-v1.js`), which reads foundation tags that
-   generators attach with `attachFoundationQuestionTags(q, meta)`
-   (`questions/helpers.js`, `probes.foundationIds`). Coverage today: D1 65%,
-   D6 70%, D2 9%, D5 11%, D3–D4 0% (see "Question bank check" below). Measure
-   first (share of generated questions per skill that carry tags), then tag
-   the D2–D5 generators that win in the live app (D3 = v2 runtime; D4/D5 =
-   the wrapper chain listed in `js/pwa.js`), with tests in the style of the
-   existing foundation tests.
+   speaker signal (3.86.99, see §4.8 "Implemented").
+   **Open: "Kemungkinan punca" tags for D2–D5, 3.87.0, branch
+   `ccr-ed8f705d-ym2tc0`, base `main`, not merged** — merge only when the
+   owner asks (convention below). What it does: see "Kemungkinan punca tags"
+   below.
+2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
+   (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
+   full 4.7). Ask the owner before starting. Sketch for 4.6 (§4.6): the
+   session tags each answer `interleaved` (a blocked run = the same skill
+   several times in a row, e.g. a Fokus card or a focus Gembok run; mixed =
+   the adaptive journey / review). Rule per skill: blocked ≥80% and mixed ≤55%
+   (≥6 each, guesses excluded) → "tahu cara kira, tetapi keliru memilih
+   operasi bila soalan bercampur"; target = mixed "operasi mana?" sets.
+   Full 4.7: retention per skill (today only sifir and basic facts) feeding a
+   1/3/7/14-day review queue (reuse `daily-spaced-review`).
 3. Owner style: reply in Bahasa Malaysia, short and plain; one task per
    branch/PR, base `main`; merge only when the owner says so (convention:
    first push a commit marking the PR merged here in §8a, then merge with a
@@ -346,7 +351,8 @@ Last updated: 2026-10-21 (after PR #75). Read this section first if you are pick
    `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
    the real app before reporting.
 
-**Status on GitHub.** PRs #55–#63 and #65–#75 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#75 are merged into `main`; the
+"Kemungkinan punca" tags PR (3.87.0) is open, not merged
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 Start new work from `main`, one task per branch and PR, base `main`.
@@ -506,9 +512,39 @@ short reason, e.g. "salah, sepatutnya 60"; tenths use 0.0n as the real slip),
 an "8 lebih banyak daripada 8" claim, D2.5.2 time units (back conversion and
 "1 jam 15 minit"), D2 3D shapes (count faces / tepi / bucu), D2 2D (total
 sides), D5 Peratus (any multiple of 5). Guard: `audit/question-bank-choices.test.js`.
-Still open: tags for "Kemungkinan punca" exist for D1 (65%) and D6 (70%) only
-(D2 9%, D5 11%, D3–D4 0%); few pictures in D4–D6 (13–18%) for lens 4.1; no
-short/long wording pairs yet (lens 4.8; ✅ added in 3.86.99 as separate pair items).
+Still open: few pictures in D4–D6 (13–18%) for lens 4.1. Done since: tags for
+"Kemungkinan punca" (were D1 65%, D6 70%, D2 9%, D5 11%, D3–D4 0%; now D2 89%,
+D3 80%, D4 91%, D5 94% in 3.87.0, see below); short/long wording pairs (lens
+4.8, 3.86.99, as separate pair items).
+
+**"Kemungkinan punca" tags for D2–D5 (3.87.0, PR open; owner order after 4.8).**
+The Kemahiran Fokus card shows "Kemungkinan punca: …" when
+`PAFocusFoundationV1.evaluate()` (`js/engine/focus-foundation-v1.js`) finds one
+foundation failing in ≥3 questions across ≥2 topics while the same topics'
+other questions go well (rules in that file). It reads only authored
+`focusDiagnosticV1` tags stored on learner-review encounters, and D2–D5 had
+almost none. `questions/focus-tags-d2-d5-v1.js` (`PAFocusTagsD2D5`) now tags
+every live D2–D5 archetype (like the D6 runtime): `SHARED` by archetype name
+(the D3 question system reuses names across skills; the short/long wording
+items of D3–D6), `BY_SKILL` where a name means different things per skill
+(`depth_story`). Entry = [domain, operations, foundations, concepts], ids
+from `data/focus-v2/foundation-map-v1.json`. `generate()` calls it after the
+D1/D6 taggers. Deliberately untagged (`ABSTAIN`): shapes, position and
+coordinates (no foundation in the map), estimating a set against a reference,
+percent notation words, currency names and needs/wants judgements. Where the
+generator knows the numbers, the tag is exact (`attachAddSubFocusTag`):
+D2.2.1/D2.2.2 integrity sums and D4 Tambah/Tolak bentuk lazim and three-step,
+so `add.regroup` / `sub.regroup` appear only when the sum needs carrying or
+borrowing. Also fixed: the D2.4.1 money tag used `money.denomination` (not in
+the map, so the finder ignored it) → `money.denominations`; short/long wording
+items now carry their own `competencyId`, so written arithmetic no longer
+swaps them for a bentuk lazim card. Coverage (all D2–D5 questions, abstain
+topics included): D2 89%, D3 80%, D4 91%, D5 94%. Tests:
+`audit/focus-tags-d2-d5.test.js` (contract per question, no silent gaps, exact
+regrouping, Darjah 4 place value → "Kemungkinan punca: Nilai tempat nombor" on
+the card, Darjah 3 stories → "Memilih operasi daripada cerita", no cause when
+everything fails or only one topic fails). The finder's thresholds are
+unchanged (design values, phase 5 calibrates).
 
 **Phase 4 (started 2026-10-21)**
 - ✅ Lens 4.1 Representation (CPA), 3.86.95, PR #71, merged: see §4.1

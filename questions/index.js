@@ -176,7 +176,8 @@ function readingPairQuestion(id,s,ctx){
  if(!fams||!P||sess.demoMode||ctx.isBoss||['recover','teach','confirm'].includes(sess.mode)||Number(s?.mastery)<35||Math.random()>=READING_PAIR_SHARE)return null;
  const x=P.item(pick(fams),Number(id[1]),Math.random()<.5?1:3);if(!x)return null;
  const long=x.facets.reading===3,q=Q(x.prompt,x.answer,x.wrongs.map(w=>N(w.v,w.tag)),x.hint,long?'Soalan berayat panjang':'Soalan berayat pendek',true,false);
- return Object.assign(q,{facets:x.facets,source:'reading-pairs-v1',archetypeId:'reading_'+x.family,familyKey:'reading:'+x.family,
+ // Its own competency keeps the story as written: js/written-arithmetic-v1.0.0.js inject() leaves it alone.
+ return Object.assign(q,{facets:x.facets,source:'reading-pairs-v1',archetypeId:'reading_'+x.family,familyKey:'reading:'+x.family,competencyId:'reading_'+x.family,
   representation:'story',demand:'application',contextId:x.facets.context==='money'?'money':'daily',difficultyBand:long?3:2});
 }
 function generate(id,s,interactionContext={}){
@@ -219,6 +220,8 @@ function generate(id,s,interactionContext={}){
   // Focus Diagnosis v2: authored D6 tags ride on the question object (no scoring, no routing).
   if(/^D6\./.test(id))q=window.PAY6V2Runtime?.focusTag?.(q,id)||q;
   else if(/^D1\./.test(id))q=window.PAY1V2Runtime?.focusTag?.(q,id)||q;
+  // D2–D5 (and the D3–D6 short/long wording items): authored per archetype, questions/focus-tags-d2-d5-v1.js.
+  if(/^D[2-6]\./.test(id))q=window.PAFocusTagsD2D5?.focusTag?.(q,id)||q;
   rememberQuestion(id,questionSeenKey(q));
   q=PAOptionIntegrity.sanitize(q);
   q=PAOptionIntegrity.refineYoung(q,id);
