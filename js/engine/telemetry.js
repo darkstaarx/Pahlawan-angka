@@ -15,7 +15,9 @@
   localStorage.setItem(KEY,JSON.stringify(events.slice(-MAX)));
   return true;
  }
- function response(skillId,ok,tag,sec,usedHint,q,mode){
+ function response(skillId,ok,tag,sec,usedHint,q,mode,value){
+  // Diagnostic brain keeps its own per-profile log (docs/PA-DIAGNOSTIC-BRAIN.md).
+  try{window.PADiagnostic?.record?.(skillId,ok,tag,sec,usedHint,q,mode,value)}catch(_){}
   return record('response',{
    skillId,correct:!!ok,misconception:ok?'':(tag||'generic'),seconds:Math.round((Number(sec)||0)*10)/10,
    usedHint:!!usedHint,mode:mode||'practice',itemId:String(q?.token||''),archetypeId:q?.archetypeId||'legacy',

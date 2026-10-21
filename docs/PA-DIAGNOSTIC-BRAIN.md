@@ -75,6 +75,18 @@ must keep: `facets`, `correct`, `value` (the actual wrong answer), `seconds`,
 
 The wrong **value** is essential: bug detection (§4.3) needs it.
 
+**Phase 1 implementation (done):** `js/engine/diagnostic-brain-v1.js`
+(`PADiagnostic`). `facets(q)` uses explicit `q.facets` when a generator sets
+them (written arithmetic already does: `op`, `operands`, `format:'lazim'`);
+otherwise it derives them centrally from skill metadata (`META.domain`,
+`title`), `archetypeId`/`familyKey`, `contextId`, `representation` and the
+equation in the prompt. New generators should set `q.facets` explicitly.
+Answers are logged per profile in `db.diagLog` (max 500, first attempt +
+retry outcome, wrong value, seconds, hint) via `PATelemetry.response(...,
+value)`. `analyze()` implements lenses 4.2, 4.3, 4.4, 4.5 and
+operation-within-context; tests in `audit/diagnostic-brain.test.js`. The
+parent dashboard shows the result as the "Ringkasan Cikgu Dimensi" card.
+
 ## 4. The eight lenses
 
 Each lens = input → detection rule → parent sentence → PA action.
@@ -189,7 +201,7 @@ composition, lock policy.
 
 | Phase | Scope | Done when |
 |---|---|---|
-| 1 | Facet tags in generators (§3); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
+| 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
 | 2 | Lock + parent PIN unlock (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; never in demo |
 | 3 | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets) | Mini game round composition reflects findings; worksheet PDF has the right mix |
 | 4 | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |

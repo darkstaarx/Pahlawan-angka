@@ -39,7 +39,7 @@ function applyWorksheetAccessUI(host){
 function mount(){
  if(typeof db==='undefined'||!db)return;
  const core=$('coreTab'),head=core?.querySelector('.parentReportHead');
- if(head){let report=$('paParentReports');if(!report){report=document.createElement('div');report.id='paParentReports';report.className='paParentTools';head.after(report)}report.innerHTML=reportMarkup(snapshot())}
+ if(head){let report=$('paParentReports');if(!report){report=document.createElement('div');report.id='paParentReports';report.className='paParentTools';head.after(report)}report.innerHTML=(window.PADiagnostic?.cardMarkup?window.PADiagnostic.cardMarkup(window.PADiagnostic.current()):'')+reportMarkup(snapshot())}
  mountWorksheet();
 }
 function mountWorksheet(){
