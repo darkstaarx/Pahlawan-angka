@@ -160,6 +160,7 @@ const APP_SHELL=[
 
   './assets/ui/menu-v2/kembara-dimensi-book-v7.webp',
   './js/parent-live-runtime-v1.js',
+  './js/worksheet-2p5d-v1.js',
   './js/worksheet-graphics-v1.js',
   './css/loading-screen-v1.css',
   './assets/ui/loading/wira-shield-v1.webp',

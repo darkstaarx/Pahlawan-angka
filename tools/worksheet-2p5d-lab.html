@@ -1,0 +1,14 @@
+<title>Makmal Grafik 2.5D</title>
+<!-- Dev lab for js/worksheet-2p5d-v1.js. Serve the repo root and open /tools/worksheet-2p5d-lab.html. Not linked from the app. -->
+<body style="margin:0;background:#f7f4ec;font-family:Arial"><div id="o" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px"></div>
+<script src="../js/worksheet-2p5d-v1.js"></script><script>
+const specs=[{kind:'bar_model',parts:[2117,518,442],labels:['2117','+ 518','+ 442']},{kind:'bar_model',parts:[6137,-1038,-875],labels:['6137','− 1038','− 875']},
+{kind:'grouping',groups:9,each:'?'},{kind:'grouping',groups:3,each:'1 L 250 mL',unknownGroups:true},{kind:'number_line',values:[0.3,0.41],marks:['0.30','0.41']},
+{kind:'timeline',start:540,end:690,markers:[585,615],labels:['selepas aktiviti','selepas rehat'],startLabel:'9:00 pagi',endLabel:'?'},
+{kind:'fraction_area',numerator:3,denominator:8,count:1},{kind:'fraction_area_pair',a:{numerator:1,denominator:4},b:{numerator:2,denominator:4},operation:'+'},
+{kind:'mixed_number',whole:2,numerator:3,denominator:4},{kind:'hundred_grid',shaded:37},{kind:'bar_chart',labels:['Isnin','Selasa','Rabu','Khamis'],values:[12,18,9,15]},
+{kind:'pictograph',labels:['Epal','Oren','Pisang'],values:[4,6,3],key:2},{kind:'pie_chart',labels:['Bola','Buku','Lain'],values:[50,30,20],showValues:true},
+{kind:'clock',hour:3,minute:40},{kind:'table',headers:['Wang tersedia','Perbelanjaan'],rows:[['RM2074.69','RM961.10']]},{kind:'calendar',month:'Mac',year:2026,startDay:0,days:31,highlight:17},
+{kind:'classification',items:['Gula-gula','Aksesori hiasan','Beras','Permainan video']},{kind:'ruler',value:65,max:100,label:'cm'},{kind:'container',value:750,max:1000,mixedLabel:'750 mL'},{kind:'scale',value:2,max:5,label:'kg'},{kind:'time_units',value:5,max:8,label:'jam'}];
+const W=970;for(const s of specs){const c=document.createElement('canvas');c.width=W;c.height=PAWorksheet25D.height(s,W);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,c.height);PAWorksheet25D.draw(x,s,W);c.style.width='100%';c.title=s.kind;document.getElementById('o').append(c)}
+</script></body>
