@@ -450,6 +450,8 @@ phase 5 (consented cloud telemetry), see §7.
   your Chromium/Edge is not found automatically.
 - `node questions/v2/build/build.js --check` after touching `questions/v2/`
   (rebuild with `node questions/v2/build/build.js`).
+- Re-check loop without waiting 2 days: `tools/recheck-lab.html` (same site as the
+  app; edits the saved profile, keeps a copy, "Pulihkan profil asal" restores it).
 - Dummy children: `tools/diagnostic-sim-lab.html`; 2.5D graphics:
   `tools/worksheet-2p5d-lab.html`; Portal Restu: `tools/rapid-lock-lab.html`
   (serve the repo root, open in a browser).
