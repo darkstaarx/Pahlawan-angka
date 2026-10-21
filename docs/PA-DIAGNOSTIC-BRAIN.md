@@ -367,7 +367,7 @@ composition, lock policy.
 Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#78, #80–#82 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #48, #69–#78, #80–#82 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
@@ -385,8 +385,11 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    Ringkasan "Perlu dikuatkan" card adds one sentence "Punca utama: Nilai
    tempat nombor." (details under "How it works" below).
    #82 full lens 4.7 retention + 1/3/7/14-day review queue in Kembara
-   Dimensi (3.87.5, see §4.7 "Implemented"). Nothing is open. Current
-   version 3.87.5.
+   Dimensi (3.87.5, see §4.7 "Implemented"). #48 (from 2026-10-20, merged
+   now): the BERJAYA victory crest pops in, a light streak sweeps the banner,
+   gold stars reveal once then sparkle; all stop under reduced motion (#46
+   cheering Wira + pet and #47 arena layout stay closed, owner choice).
+   Nothing is open. Current version 3.87.6.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
@@ -411,7 +414,7 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** PRs #55–#63, #65–#78 and #80–#82 are merged into `main`
+**Status on GitHub.** PRs #48, #55–#63, #65–#78 and #80–#82 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
