@@ -15,7 +15,7 @@
   if(root)root.PADiagnostic=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.0.0';
+  const VERSION='1.1.0';
   const LOG_MAX=500, WINDOW_DAYS=30;
   const OP_WORD={add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'};
   const CTX_WORD={money:'wang',time:'masa',measure:'ukuran',fraction:'pecahan',decimal:'perpuluhan',plain:'nombor'};
@@ -69,8 +69,16 @@
     let regroup=null;
     if(ops&&!factFamily&&Math.max(ops[0],ops[1])>=10){if(op==='add')regroup=needsCarry(ops[0],ops[1]);else if(op==='sub'&&ops[0]>=ops[1])regroup=needsBorrow(ops[0],ops[1])}
     const answer=q?.answer==null?null:strip(q.answer).slice(0,24);
+    // 4.1 CPA: concrete (blocks/rack), pictorial (picture) or abstract (numbers/words only).
+    // Mini games say it explicitly; a table of data is neither, so it stays unknown.
+    let rep=['concrete','pictorial','abstract'].includes(given.rep)?given.rep:null;
+    if(!rep&&!/^minigame_/.test(String(q?.archetypeId||''))&&q?.representation!=='table'){
+      if(q?.representation==='manipulative')rep='concrete';
+      else if(q?.representation==='visual'||/<(svg|img|canvas)\b/i.test(String(q?.prompt||'')))rep='pictorial';
+      else rep='abstract';
+    }
     return{skill:q?.skill||given.skill||null,op,context,format,tables:tables&&tables.length?tables:null,
-      operands:ops,words,factFamily,fact,regroup,answer};
+      operands:ops,words,factFamily,fact,regroup,answer,rep};
   }
 
   // ---------- recording ----------
@@ -81,6 +89,7 @@
     if(hint)r.h=1;
     if(f.factFamily){r.fx=f.factFamily;r.fk=f.fact}
     if(f.regroup!==null&&f.regroup!==undefined)r.rg=f.regroup?1:0;
+    if(f.rep)r.rp=f.rep[0];   // c | p | a
     if(!ok&&value!==undefined&&value!==null&&value!==''){r.v=String(value).slice(0,24);if(f.answer)r.x=f.answer}
     return r;
   }
@@ -120,6 +129,9 @@
      open the Kemahiran Fokus card for the skill where the problem showed. */
   const skillsOf=rs=>{const n=new Map();for(const r of rs){if(!r.s)continue;const x=n.get(r.s)||{s:r.s,bad:0,all:0};x.all++;if(!independent(r))x.bad++;n.set(r.s,x)}
     return[...n.values()].sort((a,b)=>b.bad-a.bad||b.all-a.all||a.s.localeCompare(b.s)).slice(0,3).map(x=>x.s)};
+
+  /* KSSR title for a parent sentence, when the app's META is loaded. */
+  const skillTitle=id=>{try{return(typeof META!=='undefined'&&META&&META[id]&&META[id].title)||''}catch(_){return ''}};
 
   // ---------- bug detectors (lens 4.3) ----------
   function digits(n){return String(Math.abs(Math.trunc(n))).split('').map(Number).reverse()}
@@ -339,6 +351,31 @@
         action:`Pahlawan Angka akan beri latihan ${word} yang perlu ${gerund}, dengan blok nilai tempat ditunjukkan.`,
         tip:`Guna 10 batang aiskrim diikat sebagai "puluh" untuk tunjuk cara ${gerund}.`,
         target:{op,regroup:true},skills:skillsOf(reg),evidence:{regroup:ra,plain:na}});
+    }
+
+    // 4.1 CPA: the same skill is right with a picture (or blocks) and wrong with numbers only.
+    // Steps aside for a skill whose sifir / basic-fact finding already explains it (counting the picture).
+    {
+      const explained=new Set(findings.filter(f=>f.id==='fact_fluency'||f.id==='basic_facts').flatMap(f=>f.skills||[]));
+      const bySkill=new Map();
+      // Same skill and same operation, so "with picture" and "numbers only" ask the same thing.
+      for(const r of scored){if(!r.s||!r.rp||explained.has(r.s))continue;const k=r.s+'|'+(r.o||'none');(bySkill.get(k)||bySkill.set(k,[]).get(k)).push(r)}
+      const gaps=[];
+      for(const [k,rs] of bySkill){const [skill,op]=k.split('|');
+        const pic=latest(rs.filter(r=>r.rp==='p'||r.rp==='c'),10),abs=latest(rs.filter(r=>r.rp==='a'),10);
+        if(pic.length<6||abs.length<6)continue;
+        const pOk=pic.filter(independent).length,aOk=abs.filter(independent).length,pa=pct(pOk,pic.length),aa=pct(aOk,abs.length);
+        if(pa-aa>=25)gaps.push({skill,op,pa,aa,pic:`${pOk}/${pic.length}`,abs:`${aOk}/${abs.length}`,gap:pa-aa});
+      }
+      gaps.sort((a,b)=>b.gap-a.gap);
+      if(gaps.length){
+        const g=gaps[0],title=skillTitle(g.skill);
+        findings.push({id:'rep_cpa',lens:'4.1',severity:2,confidence:gaps.length>1||Number(g.abs.split('/')[1])>=10?'tinggi':'sederhana',
+          text:`${title?title+': ':''}${name} mudah jawab bila ada gambar (${g.pic} betul), tetapi tanpa gambar hanya ${g.abs}.`,
+          action:'Pahlawan Angka akan kurangkan gambar sedikit demi sedikit — gambar, kemudian gambar dengan nombor, kemudian nombor sahaja — dan semak soalan tanpa gambar setiap pusingan ketiga.',
+          tip:'Selepas anak jawab dengan gambar atau benda sebenar, tulis ayat matematiknya bersama (contoh 3 × 4 = 12) supaya anak nampak kaitannya.',
+          target:{rep:'fade',skill:g.skill,op:g.op},skills:[...new Set(gaps.map(x=>x.skill))].slice(0,3),evidence:{gaps}});
+      }
     }
 
     // 4.7 retention: mastered earlier, slipping in the last 3 days

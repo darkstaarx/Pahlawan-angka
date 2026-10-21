@@ -110,6 +110,23 @@ Thresholds are **starting values**; calibrate with real data (§7).
 - **Parent:** "Anak mudah jawab bila ada gambar (8/10), tapi tanpa gambar 3/10."
 - **Action:** fade support: pictorial → pictorial+number → abstract over
   sessions; re-check abstract every 3rd item.
+- **Implemented (3.86.95):** facet `rep` (concrete | pictorial | abstract) is
+  recorded as `rp` (c/p/a). Derived: `representation: 'manipulative'` →
+  concrete, `'visual'` or an svg/img/canvas prompt → pictorial, anything else
+  → abstract; a data `table` and mini game rounds without an explicit `rep`
+  stay unknown. Gudang Harta sends `rep` for every round (rack/build →
+  concrete, picture → pictorial, card/text → abstract). Rule per skill **and
+  operation** (so both sides ask the same thing): latest 10 picture/blocks vs
+  latest 10 numbers-only, ≥6 each, gap ≥25 pts, rapid guesses excluded; steps
+  aside for a skill already explained by a sifir / basic-facts finding.
+  Finding `rep_cpa` → plan step `fade` ("Dari gambar ke nombor", no worksheet
+  section) → Gudang Harta `focus_target {kind:'fade'}`: the mode's own
+  picture/blocks step and its first numbers-only step; level 0 P,P,A →
+  level 1 P,A,A → level 2 A,A,A (clean numbers-only answer up, a miss down);
+  a re-check (`check`) is numbers only. Re-check key `fade:<skill>:<op>`
+  counts numbers-only answers of that skill. Dummy child: `hana`
+  (`tools/diagnostic-sim.js`). Tests: `audit/diagnostic-cpa.test.js`, fade
+  rounds in `audit/minigame-targets-browser.test.js`.
 
 ### 4.2 Fact fluency (sifir, tambah/tolak asas)
 - **Research:** automatic retrieval frees working memory for problem solving
@@ -227,7 +244,7 @@ composition, lock policy.
 | 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
 | 2 ✅ | Portal Restu (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; parent can allow exploring for the day; never in demo |
 | 3 (worksheet ✅, rest: see §8a) | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets). Worksheet done: "Disyorkan" PDF takes ~60% items from `PATargets.worksheetItems` (FOKUS tag, Cara Kerja box for word/money/regroup, "Kenapa latihan ini" box, step-by-step skema from `PATargets.explain`); rest from the bank; falls back to mastery logic without findings | Mini game round composition reflects findings; worksheet PDF has the right mix |
-| 4 | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
+| 4 (4.1 ✅, rest open) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
 | 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
 
 ## 8. Where things live (current code)
@@ -268,7 +285,7 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
 **Start here (next agent).**
 1. PRs #69 (Next item 3 + question-first mini game layout, 3.86.93) and #70
    (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
-   Nothing is open.
+   Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71. Nothing is open.
 2. Then ask the owner what next. Candidates, in order: a bar model (Model
    Method) round for word problems in a mini game (proposed, not started);
    targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
@@ -280,7 +297,7 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
    `audit/lib/browser.js`; mini game pages open standalone on localhost with
    `localStorage.pa_dev_unlocked='1'`).
 
-**Status on GitHub.** PRs #55–#63 and #65–#70 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#71 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 No PR is open.
@@ -433,8 +450,16 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    Done when `node --test audit/*.test.js` has 0 failures, without weakening
    what each test checks.
 
-**Then** phase 4 (lenses 4.1, 4.6, 4.7 full, 4.8 — need item variants) and
-phase 5 (consented cloud telemetry), see §7.
+**Phase 4 (started 2026-10-21)**
+- ✅ Lens 4.1 Representation (CPA), 3.86.95, PR #71, merged: see §4.1
+  "Implemented". Not done: other mini games do not send `rep` yet (only
+  Gudang Harta), and only Gudang Harta fades pictures; thresholds are the
+  §4.1 defaults, not calibrated on real children (phase 5).
+- Next in phase 4, in this order: 4.8 language load (needs short/long BM
+  wording pairs per item family), 4.6 interleaving (needs blocked vs mixed
+  set flags), 4.7 full (spaced schedule beyond the re-check loop).
+
+**Then** phase 5 (consented cloud telemetry), see §7.
 
 **Not done / owner tasks**
 - Real-device test (iPhone/Android): Portal Restu video and PIN, mini game

@@ -8,8 +8,11 @@
 const rounds=new Map();
 /* Optional facets a page knows exactly (e.g. Gudang Harta sifir / meminjam rounds); anything else is dropped. */
 function cleanFacets(fx){
- if(!fx||typeof fx!=='object'||!['add','sub','mul','div'].includes(fx.op))return null;
- const out={op:fx.op},ops=fx.operands;
+ if(!fx||typeof fx!=='object')return null;
+ // CPA (lens 4.1): what the round showed — blocks, a picture, or numbers only.
+ const rep=['concrete','pictorial','abstract'].includes(fx.rep)?fx.rep:null;
+ if(!['add','sub','mul','div'].includes(fx.op))return rep?{rep}:null;
+ const out={op:fx.op,...(rep?{rep}:{})},ops=fx.operands;
  if(Array.isArray(ops)&&ops.length===2&&ops.every(n=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<1e7))out.operands=[ops[0],ops[1]];
  if(Number.isInteger(fx.table)&&fx.table>=2&&fx.table<=12)out.table=fx.table;
  if(['lazim','word','symbolic'].includes(fx.format))out.format=fx.format;
