@@ -285,8 +285,7 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
 **Start here (next agent).**
 1. PRs #69 (Next item 3 + question-first mini game layout, 3.86.93) and #70
    (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
-   Open: phase 4 lens 4.1 (CPA, 3.86.95), branch
-   `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
+   Phase 4 lens 4.1 (CPA, 3.86.95) is merged as PR #71. Nothing is open.
 2. Then ask the owner what next. Candidates, in order: a bar model (Model
    Method) round for word problems in a mini game (proposed, not started);
    targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
@@ -298,10 +297,10 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
    `audit/lib/browser.js`; mini game pages open standalone on localhost with
    `localStorage.pa_dev_unlocked='1'`).
 
-**Status on GitHub.** PRs #55–#63 and #65–#70 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#71 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-Open: phase 4 lens 4.1 (CPA, 3.86.95), base `main`, not merged.
+No PR is open.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -452,7 +451,7 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    what each test checks.
 
 **Phase 4 (started 2026-10-21)**
-- ✅ Lens 4.1 Representation (CPA), 3.86.95, not merged yet: see §4.1
+- ✅ Lens 4.1 Representation (CPA), 3.86.95, PR #71, merged: see §4.1
   "Implemented". Not done: other mini games do not send `rep` yet (only
   Gudang Harta), and only Gudang Harta fades pictures; thresholds are the
   §4.1 defaults, not calibrated on real children (phase 5).
