@@ -28,7 +28,7 @@
     window.addEventListener('resize',run);
     run();
   }
-  function boot(){document.querySelectorAll('.pa-game .panel').forEach(watch)}
+  function boot(){document.querySelectorAll(':is(.pa-game,.game) .panel').forEach(watch)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.PAMiniGamePanelFit={fit};
 })();

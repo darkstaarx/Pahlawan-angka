@@ -289,11 +289,9 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .shelf .slot.on{filter:drop-shadow(0 0 6px #ffd23f)}.shelf .slot.pop{animation:pegpop .7s cubic-bezier(.3,1.6,.5,1)}
 .goldpile{position:absolute;z-index:1;left:44%;bottom:26px;width:90px;height:34px;border-radius:50% 50% 8px 8px/90% 90% 8px 8px;background:radial-gradient(circle at 30% 40%,#fff6b0 0 3px,transparent 4px),radial-gradient(circle at 65% 30%,#fff6b0 0 2px,transparent 3px),linear-gradient(#ffd23f,#d39b14);box-shadow:inset 0 -6px 0 #b9801c}
 .scene .wira{left:4px;bottom:30px;z-index:2}
-/* Waist-up Wira behind the counter (owner request): about 1.6× bigger in the short
-   scene; the belt (≈58% down the image) sits at the counter top (46px + 7px rim),
-   so the counter hides the legs. The chest shelf sits right of him. */
-.pa-game .scene{--ww:clamp(110px,78cqh,200px)}
-.pa-game .scene .wira{width:var(--ww)!important;bottom:calc(53px - .42 * var(--ww))!important}
+/* Waist-up Wira (css/minigame-question-first-v1.css) behind the counter: the
+   counter top (46px + 7px rim) hides his legs. The chest shelf sits right of him. */
+.pa-game .scene{--waist:53px}
 /* The chest on the counter stands right of his book hand; the counter and the gold pile move along. */
 .pa-game .scene .stand{left:calc(var(--ww) * .93)}
 .pa-game .scene .counter{width:66%}
@@ -434,7 +432,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .lz .abox{min-height:clamp(32px,5.4dvh,40px)}.lz .cbox{height:22px}.lz .hd{padding:0}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
-<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.0.0"></head><body>
+<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.1.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -487,7 +485,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 <script src="js/gudang-harta-router.js"></script>
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
-<script src="js/minigame-panel-fit-v1.js?v=1.0.0"></script>
+<script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script>
 (()=>{
 'use strict';

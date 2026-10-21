@@ -100,6 +100,31 @@ test('question first: the question panel is bigger than the scene and nothing is
   }
 });
 
+test('question first in every mini game: bigger panel, waist-up Wira with his head in view', async () => {
+  const games = ['gudang-harta', 'kedai-kek', 'bengkel-ajaib', 'dapur-ramuan', 'pos-peninjau', 'lombong-permata', 'tapak-bina', 'menara-jam', 'gerai-wirayung'];
+  for (const [width, height] of [[390, 844], [360, 640]]) for (const game of games) {
+    const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width, height } });
+    await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+    const page = await context.newPage(), errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(`${base}/${game}.html`);
+    await page.waitForFunction(() => document.querySelector('.panel')?.style.getPropertyValue('--qz'));
+    const m = await page.evaluate(() => {
+      const box = s => document.querySelector(s)?.getBoundingClientRect(), scene = box('.scene'), wira = box('.scene .wira'), counter = box('.scene .counter');
+      return { scene: scene.height, panel: box('.panel').height, headCut: scene.top - wira.top, floor: counter ? counter.top : scene.bottom,
+        wiraBottom: wira.bottom, wiraH: wira.height, actionsBottom: box('.actions').bottom, gameBottom: box(':is(.pa-game,.game)').bottom,
+        wide: document.documentElement.scrollWidth > innerWidth };
+    });
+    const at = `${game} ${width}x${height}: ${JSON.stringify(m)}`;
+    assert.ok(m.panel > m.scene, 'panel bigger than the scene: ' + at);
+    assert.ok(m.headCut <= .08 * m.wiraH, 'Wira\'s head stays in the scene: ' + at);
+    assert.ok(m.wiraBottom - m.floor > .25 * m.wiraH, 'Wira shown from the waist up: ' + at);
+    assert.ok(m.actionsBottom <= m.gameBottom + 1, 'buttons on screen: ' + at);
+    assert.equal(m.wide, false, at);
+    assert.deepEqual(errors, [], game); await context.close();
+  }
+});
+
 test('real app: brain cards open Gudang Harta with the target and Gerai Wirayung on "baki"', async () => {
   const log = S.simulate('aisyah').log1, opened = [];
   for (const index of [0, 1, 2]) {

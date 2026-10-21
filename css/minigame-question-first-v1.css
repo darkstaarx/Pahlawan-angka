@@ -1,19 +1,26 @@
 /* Question first (owner request): our questions carry graphics, so the question
    area gets more room than the scene. The scene is shorter but zoomed in, so
-   Wira, the visitor and the props stay big (like Gerai Wirayung). The panel
-   content is enlarged to fill its room by js/minigame-panel-fit-v1.js (--qz).
+   Wira, the visitor and the props stay big. The panel content is enlarged to
+   fill its room by js/minigame-panel-fit-v1.js (--qz).
    Load after minigame-scene-depth-v1.css. */
-.pa-game .scene{flex:0 0 clamp(150px,30dvh,270px)!important;min-height:0!important}
-@media (max-height:700px){.pa-game .scene{flex-basis:clamp(130px,25dvh,170px)!important}}
-.scene .wira{width:clamp(96px,54cqh,150px)!important}
+:is(.pa-game,.game) .scene{flex:0 0 clamp(150px,30dvh,270px)!important;min-height:0!important}
+@media (max-height:700px){:is(.pa-game,.game) .scene{flex-basis:clamp(130px,25dvh,170px)!important}}
 .scene .customer,.scene .pet{width:clamp(72px,36cqh,112px)!important}
+
+/* Waist-up Wira, about 1.6× bigger. His belt (--belt, share of the image height
+   from the top; --aspect = image height / width) sits --waist above the scene
+   bottom: a game with a counter sets --waist to the counter top so the counter
+   hides the legs; otherwise the scene edge crops them. Each game tunes these in
+   its own "question first" style block. */
+:is(.pa-game,.game) .scene{--ww:clamp(110px,78cqh,200px)}
+:is(.pa-game,.game) .scene .wira{width:var(--ww)!important;bottom:calc(var(--waist,0px) - (1 - var(--belt,.58)) * var(--aspect,1.01) * var(--ww))!important}
 
 /* Basis 0: the panel takes the free room and never grows with its own zoom;
    it never shrinks below its content either (small phones scroll as before). */
-.pa-game .panel{flex:1 1 0;min-height:min-content!important;justify-content:center}
-.pa-game .panel>*{zoom:var(--qz,1)}
+:is(.pa-game,.game) .panel{flex:1 1 0;min-height:min-content!important;justify-content:center}
+:is(.pa-game,.game) .panel>*{zoom:var(--qz,1)}
 
 /* A choice question without a picture: big full-width choices take the room. */
-.pa-game .panel:empty{display:none}
-.pa-game .panel:empty+.tiles{flex:1 1 auto;flex-direction:column;flex-wrap:nowrap;justify-content:center;align-items:stretch}
-.pa-game .panel:empty+.tiles .tl{flex:0 0 auto;width:100%;min-height:clamp(52px,8.5dvh,76px);font-size:clamp(15px,2.4dvh,20px)}
+:is(.pa-game,.game) .panel:empty{display:none}
+:is(.pa-game,.game) .panel:empty+.tiles{flex:1 1 auto;flex-direction:column;flex-wrap:nowrap;justify-content:center;align-items:stretch}
+:is(.pa-game,.game) .panel:empty+.tiles .tl{flex:0 0 auto;width:100%;min-height:clamp(52px,8.5dvh,76px);font-size:clamp(15px,2.4dvh,20px)}
