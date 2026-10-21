@@ -203,6 +203,7 @@
     if(t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))return{kind:'regroup',op:t.op,zero:t.op==='sub'&&ids.some(x=>/borrow_from_zero/.test(x))};
     if(t.kind==='money'&&MONEY_MODE[t.op])return{kind:'money',mode:MONEY_MODE[t.op]};
     if(t.kind==='fade')return{kind:'fade'};   // the game fades its own pictures for the card's skill
+    if(t.kind==='word')return{kind:'bar'};    // word problems: Singapore bar model rounds (lens 4.4)
     return null;
   }
   function practice(step,n=10,ctx={},seed=Date.now()){

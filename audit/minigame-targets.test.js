@@ -21,7 +21,8 @@ test('plan steps map to what the mini game drills', () => {
   assert.deepEqual(T.miniGameTarget({ finding: 'regroup_sub', also: ['bug_borrow_from_zero'], target: { kind: 'regroup', op: 'sub' } }), { kind: 'regroup', op: 'sub', zero: true });
   assert.deepEqual(mg({ kind: 'regroup', op: 'add' }), { kind: 'regroup', op: 'add', zero: false });
   assert.deepEqual(mg({ kind: 'money', op: 'sub' }), { kind: 'money', mode: 'baki' });
-  for (const t of [{ kind: 'money', op: 'mixed' }, { kind: 'word' }, { kind: 'units' }, { kind: 'tables', tables: [] }]) assert.equal(mg(t), null, JSON.stringify(t));
+  assert.deepEqual(mg({ kind: 'word' }), { kind: 'bar' }, 'word problems: bar model rounds');
+  for (const t of [{ kind: 'money', op: 'mixed' }, { kind: 'units' }, { kind: 'tables', tables: [] }]) assert.equal(mg(t), null, JSON.stringify(t));
 });
 
 test('a brain card hands its target to the mini game bridges; other cards hand nothing', () => {

@@ -337,6 +337,25 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .tray .in svg{width:100%;max-width:20px;height:auto}
 .trays .plus{font:800 24px/1 var(--f-display);color:var(--ink)}
 .trail{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:350px}
+/* Model bar: gold / ice bars like the coins and trail stones, berry hatching for the unknown, a gold brace label. */
+/* min-width: the panel auto-fit (js/minigame-panel-fit-v1.js) stops enlarging before the bars get too narrow for their numbers. */
+.bm{width:100%;min-width:270px;max-width:380px;display:grid;gap:7px;padding:6px 8px 4px;background:var(--cream);border:2px solid var(--paper-dk);border-radius:14px}
+.bmcap{justify-self:start;font:900 9.5px/1 var(--f-body);letter-spacing:.8px;color:var(--ink-soft)}
+/* One fixed name column, so every bar starts on the same line (lengths stay comparable). */
+.bmrow{display:grid;grid-template-columns:78px 1fr;align-items:start;gap:8px}
+.bmrow.solo{grid-template-columns:1fr}
+.bmname{min-height:34px;display:flex;align-items:center;justify-content:flex-end;font:800 12px/1.15 var(--f-body);color:var(--ink);text-align:right;overflow-wrap:anywhere}
+.bmtrack{min-width:0}
+.bmbar{display:flex;height:34px;border:2.5px solid var(--wood-dk);border-radius:10px;overflow:hidden;box-shadow:0 3px 0 var(--wood-dk);background:var(--paper)}
+.bmseg{display:flex;align-items:center;justify-content:center;min-width:22px;font:800 15px/1 var(--f-display);font-style:normal;color:var(--ink);font-variant-numeric:tabular-nums;box-shadow:inset -2.5px 0 0 var(--wood-dk);overflow:hidden;white-space:nowrap}
+.bmseg:last-child{box-shadow:none}
+.bmseg.sm{font-size:12.5px;letter-spacing:-.2px}
+.bmseg.a{background:linear-gradient(#ffe9a8,#ffc94a)}
+.bmseg.b{background:linear-gradient(#cfe9ff,#8fc3ef);color:#123158}
+.bmseg.q{background:repeating-linear-gradient(135deg,#fff6e0 0 7px,#ffd9e0 7px 13px);color:var(--berry);font-size:18px}
+.bmbrace{position:relative;height:11px;margin:4px 0 16px;border:2.5px solid var(--ink);border-top:0;border-radius:0 0 12px 12px;min-width:56px}
+@media (max-height:700px){.bm{gap:4px;padding:4px 8px 2px}.bmbar{height:28px}.bmname{min-height:28px}.bmseg{font-size:14px}.bmbrace{height:9px;margin:3px 0 13px}.bmbrace b{font-size:12px}}
+.bmbrace b{position:absolute;left:50%;top:5px;transform:translateX(-50%);background:var(--gold);border:2px solid var(--ink);border-radius:20px;padding:1px 10px;font:800 13px/1.3 var(--f-display);color:var(--ink);white-space:nowrap}
 .trail span{position:relative;padding:8px 10px;border-radius:12px;background:linear-gradient(#cfe9ff,#8fc3ef);border:2px solid #2f6f9f;font:800 15px/1 var(--f-display);color:#123158;box-shadow:0 3px 0 #2f6f9f;font-variant-numeric:tabular-nums}
 .trail span.q{background:linear-gradient(#ffe9a8,#ffc94a);border-color:#b9801c;box-shadow:0 3px 0 #b9801c;min-width:46px;text-align:center}
 .trail span+span::before{content:"›";position:absolute;left:-7px;top:50%;transform:translateY(-50%);font-size:12px;color:#5e3519}
@@ -497,6 +516,7 @@ let focusTarget=null;try{const t=JSON.parse(query.get('focus_target')||'null');
  if(t&&t.kind==='tables'&&Array.isArray(t.tables)){const tb=t.tables.map(Number).filter(n=>Number.isInteger(n)&&n>=2&&n<=12).slice(0,3);if(tb.length)focusTarget={kind:'tables',tables:tb}}
  else if(t&&t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))focusTarget={kind:'regroup',op:t.op,zero:t.op==='sub'&&t.zero===true}
  else if(t&&t.kind==='fade')focusTarget={kind:'fade'}
+ else if(t&&t.kind==='bar')focusTarget={kind:'bar'}
  if(focusTarget&&t.check===true)focusTarget.check=true}catch(_){focusTarget=null}
 if(!devEnabled&&!liveAuthorized){document.body.innerHTML='<main style="box-sizing:border-box;min-height:100%;padding:32px 20px;display:grid;place-items:center;background:#163652;color:#18324b;font:700 16px/1.5 system-ui,sans-serif"><section style="max-width:420px;padding:28px;border:3px solid #7d4a27;border-radius:22px;background:#fff4d9;box-shadow:0 8px 0 #7d4a27;text-align:center"><div style="font-size:42px">🗝️</div><h1 style="margin:8px 0;color:#7d4a27">Gudang Harta Wira</h1><p>Game ini dibuka melalui Kemahiran Fokus berdasarkan profil murid. Panel ujian hanya tersedia dalam DEV mode.</p></section></main>';return}
 /* ---------- pembantu nombor ---------- */
@@ -902,8 +922,47 @@ const MODE_LABEL={bina:'NILAI TEMPAT',banding:'BANDING & BUNDAR',pola:'POLA NOMB
 const TARGET_MODE={tables:'darab',sub:'tolak',add:'tambah'},NORMAL_TURNS=new Set([2,5,8]);
 const needBorrow=(a,b,c)=>range(c).some(i=>dig(a,c)[i]<dig(b,c)[i]),needCarry=(a,b,c)=>range(c).some(i=>dig(a,c)[i]+dig(b,c)[i]>9);
 function targetMode(t){return t?TARGET_MODE[t.kind==='tables'?'tables':t.op]:null}
-function targetGens(t,g){
+/* Model bar (soalan berayat, lensa 4.4): any operation mode drills a word problem with its bar model. */
+const BAR_MODES=new Set(['tambah','tolak','darab','bahagi','gabung','masalah']);
+const isTargetMode=(t,k)=>t?.kind==='bar'?BAR_MODES.has(k):targetMode(t)===k;
+const BAR_SCHEMAS={tambah:['total','more'],tolak:['part','diff'],darab:['times'],bahagi:['share']};
+function barGens(g,k){
+ const cap={1:99,2:999,3:9999}[g]||99999,lo=Math.max(5,Math.floor(cap/20)),hi=x=>Math.max(lo+1,Math.floor(x));
+ const pool=(BAR_SCHEMAS[k]||['total','part','diff','more','times','share']).filter(x=>g>1||!['times','share'].includes(x));
+ const unit=()=>R(2,g<=2?10:g===3?50:200),seg=(v,l,c)=>({v,l:l==null?nf(v):l,c});
+ // Keep the two numbers within a sensible ratio so equal amounts look equal on the scale (no squeezed segments).
+ const within=(a,b)=>R(Math.ceil(Math.min(a,b)),Math.max(Math.ceil(Math.min(a,b)),Math.floor(b)));
+ // One concrete problem: story, bar rows, number sentence, answer, and two wrong sentences (wrong operation / wrong order).
+ function make(C,sc){
+  const who=C.who,W='Wira';
+  if(sc==='total'){const a=R(lo,hi(cap*.55)),b=within(Math.max(lo,a*.3),Math.min(cap-a,a*2));return{op:'add',ops:[a,b],ans:a+b,schema:'part_whole',
+   q:'Gudang ada '+nf(a)+' syiling emas dan '+nf(b)+' syiling perak. Berapakah jumlah syiling?',rows:[{segs:[seg(a,null,'a'),seg(b,null,'b')]}],brace:{row:0,l:'?'},
+   ok:nf(a)+' + '+nf(b),bad:[nf(Math.max(a,b))+' − '+nf(Math.min(a,b)),nf(a)+' + '+nf(a)],s:'Lukis satu bar: bahagian emas dan bahagian perak. Jumlah ialah seluruh bar, jadi tambah.'}}
+  if(sc==='part'){const T=R(hi(cap*.3),cap),A=within(T*.25,T*.75);return{op:'sub',ops:[T,A],ans:T-A,schema:'part_whole',
+   q:story(C,'@ menyimpan '+nf(T)+' permata. '+nf(A)+' permata berwarna merah, selebihnya biru. Berapakah permata biru?'),rows:[{segs:[seg(A,null,'a'),seg(T-A,'?','q')]}],brace:{row:0,l:nf(T)},
+   ok:nf(T)+' − '+nf(A),bad:[nf(T)+' + '+nf(A),nf(A)+' − '+nf(T)],s:'Seluruh bar ialah '+nf(T)+'. Satu bahagian '+nf(A)+' sudah diketahui, jadi tolak untuk cari bahagian lagi satu.'}}
+  if(sc==='diff'){const A=R(hi(cap*.3),cap),B=within(A*.3,A*.8);return{op:'sub',ops:[A,B],ans:A-B,schema:'compare_less',
+   q:story(C,'@ ada '+nf(A)+' syiling. '+W+' ada '+nf(B)+' syiling. Berapakah lebih banyak syiling @ daripada '+W+'?'),rows:[{name:who,segs:[seg(B,'','a'),seg(A-B,'?','q')]},{name:W,segs:[seg(B,null,'b')]}],brace:{row:0,l:nf(A)},
+   ok:nf(A)+' − '+nf(B),bad:[nf(A)+' + '+nf(B),nf(B)+' − '+nf(A)],s:'Lukis dua bar dan selaraskan di kiri. Beza ialah bahagian bar yang lebih panjang, jadi tolak.'}}
+  if(sc==='more'){const B=R(lo,hi(cap*.55)),D=within(Math.max(lo,B*.25),Math.min(cap-B,B*1.2));return{op:'add',ops:[B,D],ans:B+D,schema:'compare_more',
+   q:story(C,W+' ada '+nf(B)+' syiling. @ ada '+nf(D)+' syiling lebih daripada '+W+'. Berapakah syiling @?'),rows:[{name:W,segs:[seg(B,null,'b')]},{name:who,segs:[seg(B,'','b'),seg(D,null,'a')]}],brace:{row:1,l:'?'},
+   ok:nf(B)+' + '+nf(D),bad:[nf(Math.max(B,D))+' − '+nf(Math.min(B,D)),nf(D)+' + '+nf(D)],s:'Bar @ sama panjang dengan bar '+W+', ditambah '+nf(D)+' lagi. Jadi tambah.'}}
+  if(sc==='times'){const U=unit(),k=R(2,5);return{op:'mul',ops:[U,k],ans:U*k,schema:'multiplicative',
+   q:story(C,W+' ada '+nf(U)+' permata. @ ada '+k+' kali ganda permata '+W+'. Berapakah permata @?'),rows:[{name:W,segs:[seg(U,null,'b')]},{name:who,segs:range(k).map(()=>seg(U,'','a'))}],brace:{row:1,l:'?'},
+   ok:nf(U)+' × '+k,bad:[nf(U)+' + '+k,nf(U)+' × '+(k+1)],s:'Bar @ ialah '+k+' unit yang sama dengan bar '+W+'. Jadi darab.'}}
+  const U=unit(),k=R(2,5),T=U*k;return{op:'div',ops:[T,k],ans:U,schema:'multiplicative',
+   q:story(C,'@ membahagikan '+nf(T)+' syiling sama rata ke dalam '+k+' peti. Berapakah syiling dalam setiap peti?'),rows:[{segs:range(k).map(i=>seg(U,i?'':'?',i?'a':'q'))}],brace:{row:0,l:nf(T)},
+   ok:nf(T)+' ÷ '+k,bad:[nf(T)+' × '+k,nf(T)+' − '+k],s:'Seluruh bar '+nf(T)+' dipotong kepada '+k+' unit sama besar. Jadi bahagi.'};
+ }
+ const fx=(p,format)=>({op:p.op,operands:p.ops,format,schema:p.schema}),pickSc=()=>pick(pool);
+ return [
+  {arch:'target_bar_read',f:C=>{const p=make(C,pickSc());return{kind:'pad',vis:{t:'bar',rows:p.rows,brace:p.brace},form:NUM(p.ans),q:p.q,s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'visual')}}},
+  {arch:'target_bar_sentence',f:C=>{const p=make(C,pickSc());return{kind:'pick',vis:{t:'bar',rows:p.rows,brace:p.brace},...opts(p.bad.map(x=>x+' = ?'),p.ok+' = ?'),q:p.q,card:'Ayat matematik yang sepadan dengan bar?',s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'visual')}}},
+  {arch:'target_bar_story',f:C=>{const p=make(C,pickSc());return{kind:'pad',form:NUM(p.ans),q:p.q,s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'word')}}}];
+}
+function targetGens(t,g,k){
  if(!t)return null;
+ if(t.kind==='bar')return barGens(g,k);
  if(t.kind==='tables'){let n=0;const next=()=>t.tables[n++%t.tables.length],fx=(a,b,tb)=>({op:'mul',operands:[a,b],table:tb});
   return [
    {arch:'target_table_groups',f:C=>{const tb=next(),k=R(2,6);return{kind:'pad',vis:{t:'array',r:k,c:tb},form:NUM(k*tb),q:'Ada '+k+' uncang, setiap uncang '+tb+' syiling. Berapakah jumlah syiling?',s:'Kira langkau '+tb+': '+range(3).map(i=>tb*(i+1)).join(', ')+', …',a:k+' × '+tb+' = '+k*tb+'.',fx:fx(k,tb,tb)}}},
@@ -925,7 +984,7 @@ function targetGens(t,g){
    s:sub?'"Baki" bermaksud tolak. Tulis ayat matematik dulu, kemudian pinjam bila perlu.':'"Jumlah" bermaksud tambah. Kumpul semula bila perlu.',a:nf(a)+sign+nf(b)+' = '+nf(v(a,b))+'.',fx:{...fx(a,b),format:'word'}}}}];
 }
 let targetCache=null;
-const targetFor=g=>{if(!focusTarget)return null;if(!targetCache||targetCache.g!==g)targetCache={g,gens:targetGens(focusTarget,g)};return targetCache.gens};
+const targetFor=(g,k)=>{if(!focusTarget)return null;const key=g+'|'+(focusTarget.kind==='bar'?k:'');if(!targetCache||targetCache.key!==key)targetCache={key,gens:targetGens(focusTarget,g,k)};return targetCache.gens};
 const GRADES={1:{title:'Nombor hingga 100'},2:{title:'Nombor hingga 1000 & sifir'},3:{title:'Nombor hingga 10 000'},4:{title:'Nombor hingga 100 000'},5:{title:'Nombor hingga 1 000 000'},6:{title:'Juta, perdana & operasi bergabung'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
 const SAYS={bina:'Tolong susun harta saya ikut nilai tempat!',banding:'Peti mana lebih bernilai?',pola:'Ada permata hilang dalam jejak!',tambah:'Saya nak simpan harta lagi!',tolak:'Saya nak ambil sebahagian harta.',darab:'Saya bawa banyak peti sama!',bahagi:'Kongsi sama rata, ya!',gabung:'Kira ikut tertib, Wira!',juta:'Harta kerajaan berjuta-juta!',perdana:'Nombor ni istimewa ke?',masalah:'Bantu urus harta kerajaan!'};
@@ -959,7 +1018,14 @@ function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
 
 /* ---------- visual ---------- */
 const coin=TOK[0];
+/* Model bar: rows share one scale (longest row = full width), so lengths can be compared. */
+function barHTML(v){const tot=r=>r.segs.reduce((x,y)=>x+y.v,0),max=Math.max(...v.rows.map(tot)),named=v.rows.some(r=>r.name);
+ return '<div class="vis"><div class="bm" role="img" aria-label="Model bar"><small class="bmcap">MODEL BAR</small>'+v.rows.map((r,i)=>'<div class="bmrow'+(named?'':' solo')+'">'+(named?'<span class="bmname">'+esc(r.name||'')+'</span>':'')+
+  // calc keeps the 5px border out of the scale: inner widths are exactly value × the same unit.
+  '<div class="bmtrack"><div class="bmbar" style="width:calc((100% - 5px) * '+(tot(r)/max).toFixed(4)+' + 5px)">'+r.segs.map(x=>'<i class="bmseg '+x.c+(String(x.l).length>=5?' sm':'')+'" style="flex:'+x.v+' 1 0">'+esc(x.l)+'</i>').join('')+'</div>'+
+  (v.brace&&v.brace.row===i?'<div class="bmbrace" style="width:calc((100% - 5px) * '+(tot(r)/max).toFixed(4)+' + 5px)"><b>'+esc(v.brace.l)+'</b></div>':'')+'</div></div>').join('')+'</div></div>'}
 function visHTML(v){if(!v)return '';
+ if(v.t==='bar')return barHTML(v);
  if(v.t==='coins'){const b=Math.floor(v.n/10),c=v.n%10;return '<div class="vis"><div class="coins">'+TOK[1].repeat(b)+'<span class="grp c">'+coin.repeat(c)+'</span></div></div>'}
  if(v.t==='groups')return '<div class="vis"><div class="trays"><div class="tray">'+(v.join?'':'<b>PETI A</b>')+'<div class="in">'+coin.repeat(v.a)+'</div></div>'+(v.join?'<span class="plus">+</span>':'')+'<div class="tray">'+(v.join?'':'<b>PETI B</b>')+'<div class="in">'+coin.repeat(v.b)+'</div></div></div></div>';
  if(v.t==='trail')return '<div class="vis"><div class="trail">'+v.items.map(x=>'<span'+(x==='?'?' class="q"':'')+'>'+x+'</span>').join('')+'</div></div>';
@@ -1104,9 +1170,10 @@ function fadeFor(k,gens,floor,cap){
  const n=fadeTurn[k]=(fadeTurn[k]||0)+1,lv=fadeLevel[k]||0,abs=!!focusTarget.check||lv===2||(n-1)%3>=2-lv;
  return {ti:abs?ft.A:ft.P,abs};
 }
-function makeQ(){const k=cfg.modes[served%cfg.modes.length],tg=targetMode(focusTarget)===k&&!normalTurn(served)?targetFor(cfg.grade):null,key=tg?'target:'+k:k,gens=tg||GEN[cfg.grade][k],[floor,cap]=tg?[0,gens.length-1]:focusLimits.get(k)||[0,gens.length-1];
+function makeQ(){const k=cfg.modes[served%cfg.modes.length],tg=isTargetMode(focusTarget,k)&&!normalTurn(served)?targetFor(cfg.grade,k):null,key=tg?'target:'+k:k,gens=tg||GEN[cfg.grade][k],[floor,cap]=tg?[0,gens.length-1]:focusLimits.get(k)||[0,gens.length-1];
  // A target ladder starts at its concrete/pictorial step (CPA); a re-check starts at the abstract step.
- if(tier[key]==null){tier[key]=tg?(focusTarget.check?Math.max(0,gens.length-2):0):Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[key]=0}
+ // A re-check skips the scaffold: sifir/regroup start at the abstract step, a bar model at the story alone.
+ if(tier[key]==null){tier[key]=tg?(focusTarget.check?Math.max(0,gens.length-(focusTarget.kind==='bar'?1:2)):0):Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[key]=0}
  const fade=focusTarget?.kind==='fade'&&!tg?fadeFor(k,gens,floor,cap):null;
  const ti=fade?fade.ti:liveAuthorized?Math.max(floor,Math.min(tier[key],cap,gens.length-1)):Math.min(tier[key],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
  return{mode:k,tierKey:key,target:!!tg,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch,...(fade?{fade:true,fadeAbs:fade.abs}:{})}}
@@ -1171,7 +1238,7 @@ $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>apply
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__gudangDebug=()=>q&&{phase:rPhase,taken,addIn,kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,rack:q.rack,correct:q.correct,cur:rack,vis:q.vis&&q.vis.t}; // ujian sahaja
-window.__gudangGen={GEN,hideStep,hintTwo:()=>hintTwo(),focusTarget,fadeLevel,targets:()=>targetFor(cfg.grade),sample:n=>{const keep=served,out=[];for(let i=0;i<n;i++){served=i;out.push(makeQ())}served=keep;return out}}; // ujian sahaja
+window.__gudangGen={GEN,hideStep,hintTwo:()=>hintTwo(),focusTarget,fadeLevel,current:()=>q,show:(t,n=0)=>{tier['target:'+cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},targets:()=>targetFor(cfg.grade),sample:n=>{const keep=served,out=[];for(let i=0;i<n;i++){served=i;out.push(makeQ())}served=keep;return out}}; // ujian sahaja
 resetAll();startRound();
 })();
 </script>

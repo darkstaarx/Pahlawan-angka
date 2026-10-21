@@ -21,8 +21,8 @@
   const floor=r=>Math.min(3.2,Math.max(1.8,1.35+(Number(r.w)||0)*5.5*.018));
   const considered=r=>!(r.sec>0&&r.sec<floor(r));
 
-  /* Which answers practise this step. null = not re-checkable (word problems,
-     operation choice: worksheet work, no clean matching rule). */
+  /* Which answers practise this step. null = not re-checkable (operation
+     choice: worksheet work, no clean matching rule). */
   function matcher(step){
     const t=step?.target||{};
     if(t.kind==='tables'||(t.kind==='review'&&(t.review||[]).some(x=>/^sifir \d+$/.test(x)))){
@@ -38,6 +38,8 @@
     if(t.kind==='regroup'&&(t.op==='add'||t.op==='sub'))return {key:'regroup:'+t.op,test:r=>r.o===t.op&&r.rg===1};
     if(t.kind==='money')return {key:'money:'+(t.op||'mixed'),test:r=>r.c==='money'&&(!t.op||t.op==='mixed'||r.o===t.op)};
     if(t.kind==='units')return {key:'units',test:r=>r.c==='money'};
+    // Word problems: the check is word problems without a drawn bar model.
+    if(t.kind==='word')return {key:'word',test:r=>r.f==='word'};
     // Fading pictures: the check is the same skill answered with numbers only.
     if(t.kind==='fade'&&t.skill)return {key:'fade:'+t.skill+':'+(t.op||'none'),test:r=>r.s===t.skill&&r.rp==='a'&&(!t.op||t.op==='none'||r.o===t.op)};
     return null;
