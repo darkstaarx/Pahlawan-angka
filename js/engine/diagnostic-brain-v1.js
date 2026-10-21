@@ -24,6 +24,7 @@
   // ---------- facets ----------
   const strip=html=>String(html??'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
   const num=s=>Number(String(s).replace(/,/g,''));
+  const numIn=s=>{const m=/-?\d+(?:\.\d+)?/.exec(String(s??'').replace(/,/g,''));return m?Number(m[0]):NaN};
   const SYM={'+':'add','−':'sub','-':'sub','×':'mul','x':'mul','X':'mul','*':'mul','÷':'div',':':'div'};
   function equation(text){
     const m=/(\d[\d,]*)\s*([+\-−×xX*÷:])\s*(\d[\d,]*)\s*(?:=|$|\?)/.exec(text);
@@ -59,8 +60,17 @@
     if(eq&&eq.op==='mul'&&eq.a>=1&&eq.b>=1&&eq.a<=12&&eq.b<=12)tables=[...new Set([eq.a,eq.b].filter(n=>n>=2&&n<=12))];
     else if(eq&&eq.op==='div'&&eq.b>=2&&eq.b<=12&&eq.a%eq.b===0&&eq.a/eq.b<=12)tables=[eq.b];
     if(given.table)tables=[given.table];
+    const ops=eq&&eq.op===op?[eq.a,eq.b]:null;
+    // Basic facts (Darjah 1–2): addends to 10 / minuend to 20.
+    let factFamily=null,fact=null;
+    if(ops&&op==='add'&&ops[0]<=10&&ops[1]<=10){factFamily='add20';fact=`${ops[0]}+${ops[1]}`}
+    else if(ops&&op==='sub'&&ops[0]<=20&&ops[1]<=10&&ops[0]-ops[1]>=0&&ops[0]-ops[1]<=10){factFamily='sub20';fact=`${ops[0]}-${ops[1]}`}
+    // Multi-digit add/sub: does it need carrying (mengumpul semula) / borrowing (meminjam)?
+    let regroup=null;
+    if(ops&&!factFamily&&Math.max(ops[0],ops[1])>=10){if(op==='add')regroup=needsCarry(ops[0],ops[1]);else if(op==='sub'&&ops[0]>=ops[1])regroup=needsBorrow(ops[0],ops[1])}
+    const answer=q?.answer==null?null:strip(q.answer).slice(0,24);
     return{skill:q?.skill||given.skill||null,op,context,format,tables:tables&&tables.length?tables:null,
-      operands:eq&&eq.op===op?[eq.a,eq.b]:null,words};
+      operands:ops,words,factFamily,fact,regroup,answer};
   }
 
   // ---------- recording ----------
@@ -69,7 +79,9 @@
     if(f.tables)r.tb=f.tables;
     if(f.operands)r.a=f.operands;
     if(hint)r.h=1;
-    if(!ok&&value!==undefined&&value!==null&&value!=='')r.v=String(value).slice(0,24);
+    if(f.factFamily){r.fx=f.factFamily;r.fk=f.fact}
+    if(f.regroup!==null&&f.regroup!==undefined)r.rg=f.regroup?1:0;
+    if(!ok&&value!==undefined&&value!==null&&value!==''){r.v=String(value).slice(0,24);if(f.answer)r.x=f.answer}
     return r;
   }
   function pushRecord(log,entry,token){
@@ -109,6 +121,14 @@
   function addNoCarry(a,b){const A=digits(a),B=digits(b),n=Math.max(A.length,B.length),out=[];for(let i=0;i<n;i++)out.push(((A[i]||0)+(B[i]||0))%10);return fromDigits(out)}
   function needsBorrow(a,b){const A=digits(a),B=digits(b);return A.some((x,i)=>x<(B[i]||0))}
   function needsCarry(a,b){const A=digits(a),B=digits(b),n=Math.max(A.length,B.length);for(let i=0;i<n;i++)if((A[i]||0)+(B[i]||0)>9)return true;return false}
+  // Column subtraction with one step of the borrowing procedure missing.
+  function borrowNoDecrement(a,b){const A=digits(a),B=digits(b),out=[];for(let i=0;i<A.length;i++){const x=A[i],y=B[i]||0;out.push(x<y?x+10-y:x-y)}return fromDigits(out)}
+  function borrowFromZero(a,b){const A=digits(a),B=digits(b),out=[];
+    for(let i=0;i<A.length;i++){let x=A[i];const y=B[i]||0;
+      if(x<y){x+=10;let j=i+1;if(A[j]===0)A[j]=9;else if(j<A.length)A[j]-=1;}   // bug: 0 becomes 9 but the next column is never decremented
+      out.push(x-y)}
+    return fromDigits(out)}
+  const hasBorrowAcrossZero=(a,b)=>{const A=digits(a),B=digits(b);return A.some((x,i)=>x<(B[i]||0)&&A[i+1]===0)};
   const BUGS={
     smaller_from_larger:{op:'sub',test:(a,b,v)=>a>=10&&needsBorrow(a,b)&&v===smallerFromLarger(a,b)&&v!==a-b,
       copy:'Corak: anak tolak digit kecil daripada digit besar dalam setiap lajur, tanpa meminjam',
@@ -118,6 +138,18 @@
       copy:'Corak: anak terlupa mengumpul semula (bawa 1) bila jumlah lajur lebih 9',
       example:(a,b)=>`${a} + ${b} jadi ${addNoCarry(a,b)}`,
       action:'Latihan tambah yang perlu mengumpul semula, dengan nilai tempat ditunjukkan'},
+    borrow_no_decrement:{op:'sub',test:(a,b,v)=>a>=10&&needsBorrow(a,b)&&v===borrowNoDecrement(a,b)&&v!==a-b,
+      copy:'Corak: anak meminjam 10 tetapi lupa mengurangkan 1 pada lajur sebelah',
+      example:(a,b)=>`${a} − ${b} jadi ${borrowNoDecrement(a,b)}`,
+      action:'Latihan meminjam dengan blok nilai tempat, menekankan lajur yang "memberi" berkurang satu'},
+    borrow_from_zero:{op:'sub',test:(a,b,v)=>a>=100&&hasBorrowAcrossZero(a,b)&&v===borrowFromZero(a,b)&&v!==a-b,
+      copy:'Corak: anak keliru bila perlu meminjam melalui sifar (contoh 304 − 127)',
+      example:(a,b)=>`${a} − ${b} jadi ${borrowFromZero(a,b)}`,
+      action:'Latihan tolak yang ada sifar di tengah, dengan Cikgu tunjuk pinjam berantai'},
+    mul_no_placeholder:{op:'mul',test:(a,b,v)=>a>=10&&b>=10&&v!==a*b&&(v===a*(b%10)+a*Math.floor(b/10)||v===b*(a%10)+b*Math.floor(a/10)),
+      copy:'Corak: dalam darab bentuk lazim, anak lupa letak sifar (nilai tempat) pada baris kedua',
+      example:(a,b)=>`${a} × ${b}`,
+      action:'Latihan darab dua digit dengan baris kedua dimulakan sifar sebagai penanda nilai tempat'},
     times_neighbour:{op:'mul',test:(a,b,v)=>a<=12&&b<=12&&v!==a*b&&(v===a*(b+1)||v===a*(b-1)||v===(a+1)*b||v===(a-1)*b),
       copy:'Corak: jawapan sifir tersasar satu langkah (contoh jawab 7×7 untuk 7×8) — tanda anak mengira dari fakta berdekatan',
       example:(a,b)=>`${a} × ${b}`,
@@ -127,10 +159,27 @@
       example:(a,b,op)=>`${a} ${op==='add'?'+':op==='mul'?'×':'−'} ${b}`,
       action:'Soalan "operasi mana?" sebelum mengira, dan baca semula kata kunci soalan'}
   };
+  // Bugs read from the correct answer alone (no operands needed, e.g. word problems).
+  const ANSWER_BUGS={
+    money_unit:{test:(v,x,r)=>r.c==='money'&&x>0&&v>0&&(Math.abs(v-x*100)<1e-6||Math.abs(v*100-x)<1e-6),
+      copy:'Corak: anak keliru antara sen dan ringgit (jawapan 100 kali terlalu besar atau kecil)',
+      example:(r)=>`jawapan ${r.v} untuk ${r.x}`,
+      action:'Latihan menukar sen kepada RM (RM1 = 100 sen) sebelum mengira'},
+    place_value_shift:{test:(v,x,r)=>['add','sub','mul','div'].includes(r.o)&&x>=1&&v>=1&&(Math.abs(v-x*10)<1e-6||Math.abs(v*10-x)<1e-6),
+      copy:'Corak: jawapan tersasar satu nilai tempat (10 kali terlalu besar atau kecil)',
+      example:(r)=>`jawapan ${r.v} untuk ${r.x}`,
+      action:'Latihan menyusun nombor ikut lajur sa, puluh dan ratus sebelum mengira'}
+  };
   function detectBug(r){
-    if(!r.a||r.v===undefined)return null;
-    const [a,b]=r.a,v=num(r.v);if(!Number.isFinite(v))return null;
-    for(const [id,bug] of Object.entries(BUGS)){if((bug.op===r.o||bug.op==='any')&&bug.test(a,b,v,r.o))return id}
+    if(r.v===undefined)return null;
+    if(r.a){
+      const [a,b]=r.a,v=num(r.v);
+      if(Number.isFinite(v))for(const [id,bug] of Object.entries(BUGS)){if((bug.op===r.o||bug.op==='any')&&bug.test(a,b,v,r.o))return id}
+    }
+    if(r.x!==undefined){
+      const v=numIn(r.v),x=numIn(r.x);
+      if(Number.isFinite(v)&&Number.isFinite(x))for(const [id,bug] of Object.entries(ANSWER_BUGS)){if(bug.test(v,x,r))return id}
+    }
     return null;
   }
 
@@ -213,15 +262,70 @@
       const hits={};
       for(const r of recs.filter(r=>r.k===0)){const b=detectBug(r);if(!b)continue;(hits[b]=hits[b]||[]).push(r)}
       for(const [id,rs] of Object.entries(hits)){
-        const distinct=new Set(rs.map(r=>r.a.join(','))).size;
+        const distinct=new Set(rs.map(r=>r.a?r.a.join(','):`${r.x}|${r.v}`)).size;
         if(rs.length<3||distinct<2)continue;
-        const ex=rs[rs.length-1],bug=BUGS[id];
+        const ex=rs[rs.length-1],bug=BUGS[id]||ANSWER_BUGS[id];
+        const example=BUGS[id]?bug.example(ex.a[0],ex.a[1],ex.o):bug.example(ex);
         findings.push({id:`bug_${id}`,lens:'4.3',severity:3,confidence:rs.length>=5?'tinggi':'sederhana',
-          text:`${bug.copy} (${rs.length} kali, contoh ${bug.example(ex.a[0],ex.a[1],ex.o)}).`,
+          text:`${bug.copy} (${rs.length} kali, contoh ${example}).`,
           action:`Pahlawan Angka akan beri ${bug.action.charAt(0).toLowerCase()+bug.action.slice(1)}.`,
           tip:'Minta anak terangkan langkahnya dengan kuat untuk satu soalan — biasanya corak salah akan kelihatan.',
           target:{bug:id,op:ex.o},evidence:{count:rs.length,distinct}});
       }
+    }
+
+    // basic facts to 20 (Darjah 1–2)
+    {
+      const FAM={add20:'tambah asas hingga 20',sub20:'tolak asas hingga 20'};
+      const parts=[],targets=[];let weakAny=false;const fluent=[];
+      for(const fam of Object.keys(FAM)){
+        const rs=scored.filter(r=>r.fx===fam);if(rs.length<8)continue;
+        const ok=rs.filter(independent),acc=pct(ok.length,rs.length),med=median(ok.map(r=>r.sec));
+        const missed={};for(const r of rs.filter(r=>!independent(r)))missed[r.fk]=(missed[r.fk]||0)+1;
+        const top=Object.entries(missed).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([f])=>f.replace('-',' − ').replace('+',' + '));
+        if(acc<70){weakAny=true;targets.push(fam);parts.push(`${FAM[fam]} belum kukuh (${ok.length}/${rs.length} betul${top.length?`, paling kerap salah: ${top.join(', ')}`:''})`)}
+        else if(acc>=80&&med>3){targets.push(fam);parts.push(`${FAM[fam]} betul tetapi lambat (purata ${Math.round(med)} saat) — anak masih mengira jari`)}
+        else if(acc>=90&&med<=3)fluent.push(FAM[fam]);
+      }
+      if(parts.length)findings.push({id:'basic_facts',lens:'4.2',severity:weakAny?3:2,confidence:'tinggi',
+        text:`${parts.join('; ')}.`.replace(/^./,c=>c.toUpperCase()),
+        action:`Pahlawan Angka akan beri latihan ingat pantas ${joinBM(targets.map(f=>FAM[f]))}, sedikit setiap hari.`,
+        tip:'Main "cepat sebut" 2 minit: ibu bapa sebut soalan seperti 8 + 7, anak jawab tanpa jari.',
+        target:{factFamilies:targets},evidence:{parts}});
+      else if(fluent.length)findings.push({id:'basic_strength',lens:'4.2',severity:0,confidence:'tinggi',strength:true,
+        text:`Hebat dalam ${joinBM(fluent)} — tepat dan pantas.`,action:''});
+    }
+
+    // regrouping (meminjam / mengumpul semula) — skipped when a bug already explains it
+    for(const [op,word,gerund,bugs] of [['sub','tolak','meminjam',['bug_smaller_from_larger','bug_borrow_no_decrement','bug_borrow_from_zero']],['add','tambah','mengumpul semula',['bug_add_no_carry']]]){
+      if(findings.some(f=>bugs.includes(f.id)))continue;
+      const rs=scored.filter(r=>r.o===op&&(r.rg===0||r.rg===1)),reg=rs.filter(r=>r.rg===1),non=rs.filter(r=>r.rg===0);
+      if(reg.length<5||non.length<5)continue;
+      const ra=pct(reg.filter(independent).length,reg.length),na=pct(non.filter(independent).length,non.length);
+      if(na>=80&&ra<=55)findings.push({id:`regroup_${op}`,lens:'4.3',severity:2,confidence:reg.length>=10?'tinggi':'sederhana',
+        text:`${word[0].toUpperCase()+word.slice(1)} betul bila tidak perlu ${gerund} (${na}%), tetapi banyak salah bila perlu ${gerund} (${ra}%).`,
+        action:`Pahlawan Angka akan beri latihan ${word} yang perlu ${gerund}, dengan blok nilai tempat ditunjukkan.`,
+        tip:`Guna 10 batang aiskrim diikat sebagai "puluh" untuk tunjuk cara ${gerund}.`,
+        target:{op,regroup:true},evidence:{regroup:ra,plain:na}});
+    }
+
+    // 4.7 retention: mastered earlier, slipping in the last 3 days
+    {
+      const cut=now-3*864e5,slips=[];
+      const groups=new Map();
+      for(const r of scored){for(const t of(r.tb||[]))(groups.get(`sifir ${t}`)||groups.set(`sifir ${t}`,[]).get(`sifir ${t}`)).push(r);
+        if(r.fx){const k=r.fx==='add20'?'tambah asas':'tolak asas';(groups.get(k)||groups.set(k,[]).get(k)).push(r)}}
+      for(const [label,rs] of groups){
+        const old=rs.filter(r=>r.t<cut),fresh=rs.filter(r=>r.t>=cut);
+        if(old.length<5||fresh.length<4)continue;
+        const oa=pct(old.filter(independent).length,old.length),fa=pct(fresh.filter(independent).length,fresh.length);
+        if(oa>=90&&fa<=60)slips.push({label,oa,fa,old:`${old.filter(independent).length}/${old.length}`,fresh:`${fresh.filter(independent).length}/${fresh.length}`});
+      }
+      if(slips.length)findings.push({id:'retention',lens:'4.7',severity:2,confidence:'sederhana',
+        text:`${joinBM(slips.map(x=>x.label))} sudah mantap sebelum ini (${slips.map(x=>x.old).join(', ')}), tetapi dalam 3 hari terakhir mula lupa (${slips.map(x=>x.fresh).join(', ')}).`.replace(/^./,c=>c.toUpperCase()),
+        action:`Pahlawan Angka akan ulang kaji ${joinBM(slips.map(x=>x.label))} secara berjadual (selepas 1, 3 dan 7 hari) supaya ingatan kekal.`,
+        tip:'Ulang kaji sekejap lebih berkesan daripada latihan panjang sekali-sekala.',
+        target:{review:slips.map(x=>x.label)},evidence:{slips}});
     }
 
     const strengths=findings.filter(f=>f.strength);
