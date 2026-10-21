@@ -23,7 +23,10 @@ function worksheetMarkup(){
  const snap=snapshot(),topics=coreSkills(),limit=worksheetLimit();if(!topics.some(m=>m.id===state.topic))state.topic=topics[0]?.id||'';if(state.count>limit)state.count=limit;if(limit>0&&state.count<10)state.count=10;
  return `<section class="card parentReportHead"><div class="eyebrow">LATIHAN ANAK</div><h2>Latihan untuk dicetak</h2><p>Pilih latihan, muat turun PDF dan cetak untuk ${safe(snap.name)} · Darjah ${snap.grade}.</p></section><div class="paParentTools"><section class="paWorksheetCard"><div class="paToolHead"><span class="paToolIcon">✎</span><div><small>MUAT TURUN LATIHAN</small><h3>Sediakan latihan anak</h3></div><span class="paProPill">PLUS</span></div><p class="paToolCopy">Pilih latihan mengikut satu topik, campuran Darjah ${snap.grade}, atau fokus yang dikenal pasti oleh Cikgu Dimensi.</p><div class="paWorksheetModes"><button class="paWorksheetMode ${state.mode==='topic'?'active':''}" onclick="PAParentTools.mode('topic')"><span>◎</span><b>Topik</b><small>Satu kemahiran</small></button><button class="paWorksheetMode ${state.mode==='grade'?'active':''}" onclick="PAParentTools.mode('grade')"><span>▦</span><b>Darjah</b><small>Latihan campuran</small></button><button class="paWorksheetMode ${state.mode==='recommended'?'active':''}" onclick="PAParentTools.mode('recommended')"><span>✦</span><b>Disyorkan</b><small>Ikut bukti anak</small></button></div><div class="paWorksheetOptions"><label>Fokus latihan<select id="paWorksheetTopic" ${state.mode==='topic'?'':'disabled'} onchange="PAParentTools.topic(this.value)">${topics.map(m=>`<option value="${m.id}" ${m.id===state.topic?'selected':''}>${safe(m.title)}</option>`).join('')}</select></label><label>Bilangan soalan<div class="paCountPicker">${[10,20,30,40].map(n=>`<button class="${state.count===n?'active':''}" onclick="PAParentTools.count(${n})">${n}</button>`).join('')}</div></label></div><div class="paWorksheetHint"><span>✦</span><span><b>Cadangan Cikgu Dimensi</b><br>${safe(recommendationCopy(snap))}</span></div><div class="paToolActions"><button class="paToolBtn" onclick="PAParentTools.worksheet(false)">Muat turun latihan</button><button class="paToolBtn primary" onclick="PAParentTools.worksheet(true)">Latihan + skema</button></div><div id="paWorksheetStatus" class="paWorksheetStatus" role="status" aria-live="polite"></div></section></div>`;
 }
+/* Diagnostic Brain findings → worksheet focus (docs/PA-DIAGNOSTIC-BRAIN.md §7 phase 3). */
+function brainFocus(snap){try{if(!window.PADiagnostic?.current||!window.PATargets?.plan)return null;const res=window.PADiagnostic.current();if(!res?.enough)return null;const plan=window.PATargets.plan(res,{grade:snap.grade});return plan.steps.length?plan:null}catch(_){return null}}
 function recommendationCopy(snap){
+ const plan=brainFocus(snap);if(plan)return `Fokus: ${plan.steps.slice(0,3).map(s=>s.card).join(', ')}. Baki soalan campuran supaya anak tetap seimbang.`;
  const lead=snap.priority[0]||snap.developing[0];
  if(lead)return `Mulakan dengan ${lead.m.title}, kemudian selang-selikan satu kemahiran yang lebih stabil.`;
  if(!snap.tested.length)return 'Belum cukup bukti. Latihan akan menggunakan campuran asas pada darjah semasa.';
@@ -198,9 +201,13 @@ function acceptDiverseItem(item,counts,limits){
  for(const [bucket,key] of [['skill',skill],['format',keys.format],['operation',keys.operation]])counts[bucket][key]=(counts[bucket][key]||0)+1;if(keys.concept)counts.concept[keys.concept]=(counts.concept[keys.concept]||0)+1;return true;
 }
 function makeQuestions(){
- const snap=snapshot(),pool=worksheetSkills(snap);if(!pool.length)throw new Error('Tiada kemahiran tersedia.');const originalSess=typeof sess!=='undefined'?sess:null,items=[],seen=new Set(),mixed=state.mode!=='topic',counts={skill:{},format:{},operation:{},concept:{}},limits={skill:Math.max(3,Math.ceil(state.count/pool.length)+1),format:Math.max(3,Math.ceil(state.count/7)),operation:Math.max(4,Math.ceil(state.count/5))};
+ const snap=snapshot(),pool=worksheetSkills(snap);if(!pool.length)throw new Error('Tiada kemahiran tersedia.');
+ const plan=state.mode==='recommended'?brainFocus(snap):null,target=plan?window.PATargets.worksheetItems(plan,state.count,{grade:snap.grade,name:snap.name},Date.now()):null;
+ const originalSess=typeof sess!=='undefined'?sess:null,items=[],seen=new Set(),mixed=state.mode!=='topic',counts={skill:{},format:{},operation:{},concept:{}},limits={skill:Math.max(3,Math.ceil(state.count/pool.length)+1),format:Math.max(3,Math.ceil(state.count/7)),operation:Math.max(4,Math.ceil(state.count/5))};
+ // Targeted items first (exact weak tables, borrowing, money, word problems); the bank fills the rest.
+ for(const it of target?.items||[]){const key=it.prompt.toLowerCase();if(items.length>=state.count||seen.has(key))continue;seen.add(key);it.title=it.focus;items.push(it)}
  try{sess={mode:'practice',questionFingerprints:[],questionHistory:[],recent:[],hint:false};let guard=0;while(items.length<state.count&&guard++<state.count*90){const m=pool[guard%pool.length],s=scoreState(m.id);let q=null;try{q=generate(m.id,s);q.skill=m.id}catch(_){}const item=(q&&printableQuestion(q))||worksheetFallback(m),key=item&&(item.printKey||item.prompt.toLowerCase());if(item&&!seen.has(key)){item.skill=item.skill||m.id;const relaxed=guard>state.count*55,activeLimits=relaxed?{skill:limits.skill+Math.ceil(state.count/10),format:limits.format+1,operation:limits.operation+Math.ceil(state.count/10)}:limits;if(mixed&&!acceptDiverseItem(item,counts,activeLimits))continue;seen.add(key);item.title=m.title;items.push(item)}}}finally{sess=originalSess}
- if(items.length<Math.min(10,state.count))throw new Error('Bank soalan bercetak belum cukup untuk pilihan ini.');return{snap,items,title:state.mode==='topic'?(pool[0]?.title||'Latihan Topikal'):state.mode==='grade'?`Latihan Campuran Darjah ${snap.grade}`:'Latihan Disyorkan Cikgu Dimensi'};
+ if(items.length<Math.min(10,state.count))throw new Error('Bank soalan bercetak belum cukup untuk pilihan ini.');return{snap,items,focus:target?.focus||[],title:state.mode==='topic'?(pool[0]?.title||'Latihan Topikal'):state.mode==='grade'?`Latihan Campuran Darjah ${snap.grade}`:target?.titles?.length?`Latihan Disyorkan: ${target.titles.slice(0,2).join(', ')}`:'Latihan Disyorkan Cikgu Dimensi'};
 }
 function numericValue(value){const raw=String(value??'');if(/\d\s*[/:]\s*\d/.test(raw))return null;const match=raw.replace(/,/g,'').match(/-?\d+(?:\.\d+)?/);return match?Number(match[0]):null}
 function almost(a,b){return Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)<1e-8}
@@ -264,6 +271,7 @@ function measurementSteps(prompt,answer){
  return null;
 }
 function solutionFor(item){
+ if(item?.solution)return item.solution;
  // Darjah 5–6 prompts group digits (37 425); parse them as plain numbers.
  const ungroup=v=>String(v??'').replace(/(\d) (?=\d{3}(?!\d))/g,'$1');
  const prompt=ungroup(item.prompt),answer=typeof item.answer==='number'?item.answer:ungroup(item.answer),answerNumber=numericValue(answer),numbers=(prompt.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),direct=prompt.match(/(-?\d+(?:\.\d+)?(?:\s*[+−\-×÷]\s*-?\d+(?:\.\d+)?)+)\s*=\s*\?/);
@@ -295,22 +303,30 @@ function studentLayout(ctx,item){
  let content=30+graphicHeight+(graphicHeight?20:0)+lines.length*30;
  const choices=(item.choices||[]).map(choice=>{ctx.font='18px Arial';return wrap(ctx,choice.value,405)});
  const choiceRows=[];for(let i=0;i<choices.length;i+=2)choiceRows.push(Math.max(choices[i].length,choices[i+1]?.length||0)*24+18);
- const height=Math.max(190,content+16+(choices.length?choiceRows.reduce((n,h)=>n+h+10,0):75)+20);
+ const height=Math.max(190,content+16+(choices.length?choiceRows.reduce((n,h)=>n+h+10,0):item.showWorking?150:75)+20);
  return{lines,content,height,choices,choiceRows};
 }
 function drawStudentItem(ctx,item,number,y,layout){
- roundRect(ctx,78,y,1084,layout.height,18,'#ffffff','#ddd8cc');ctx.fillStyle='#0e2b4a';ctx.font='900 22px Arial';ctx.fillText(`${number}.`,102,y+37);
+ roundRect(ctx,78,y,1084,layout.height,18,'#ffffff',item.targeted?'#d4aa35':'#ddd8cc');ctx.fillStyle='#0e2b4a';ctx.font='900 22px Arial';ctx.fillText(`${number}.`,102,y+37);
+ if(item.focus){ctx.save();ctx.font='900 13px Arial';const tag=`FOKUS · ${String(item.focus).toUpperCase()}`,w=Math.min(420,ctx.measureText(tag).width+24);roundRect(ctx,1162-w-16,y+12,w,26,13,'#fff6d6','#d4aa35');ctx.fillStyle='#805000';ctx.textAlign='center';ctx.fillText(tag,1162-16-w/2,y+30,w-16);ctx.restore()}
  let top=y+30;if(item.graphicCanvas){ctx.drawImage(item.graphicCanvas,147,top);top+=item.graphicCanvas.height+20}
  ctx.fillStyle='#17263a';ctx.font='23px Arial';layout.lines.forEach((line,i)=>ctx.fillText(line,147,top+24+i*30));top+=layout.lines.length*30+16;
  if(layout.choices.length){
   let offset=0;layout.choiceRows.forEach((height,row)=>{for(let col=0;col<2;col++){const lines=layout.choices[row*2+col];if(!lines)continue;const x=147+col*470;roundRect(ctx,x,top+offset,440,height,9,'#f4f6f8','#c9cfd4');ctx.fillStyle='#26364a';ctx.font='18px Arial';ctx.fillText('○',x+12,top+offset+26);lines.forEach((line,i)=>ctx.fillText(line,x+35,top+offset+26+i*24))}offset+=height+10});
+ }else if(item.showWorking){
+  ctx.save();ctx.setLineDash([9,7]);ctx.strokeStyle='#9aa6bf';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(147,top+4,943,104,10);ctx.stroke();ctx.restore();
+  ctx.fillStyle='#6b7590';ctx.font='900 14px Arial';ctx.fillText('CARA KERJA',162,top+26);
+  ctx.strokeStyle='#bfc5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(760,top+138);ctx.lineTo(1090,top+138);ctx.stroke();ctx.fillStyle='#8993a0';ctx.font='16px Arial';ctx.fillText('Jawapan:',680,top+136);
  }else{ctx.strokeStyle='#bfc5c9';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(147,top+28);ctx.lineTo(1090,top+28);ctx.stroke();ctx.fillStyle='#8993a0';ctx.font='16px Arial';ctx.fillText('Jawapan / ruang kerja',147,top+54)}
 }
 async function studentPages(items,title,subtitle,options={}){
  const pages=[];let current=null,y=0;
  for(let i=0;i<items.length;i++){
   const item=items[i];if(item.graphic)item.graphicCanvas=await window.PAWorksheetGraphics.render(item.graphic);
-  if(!current){current=await page(title,subtitle);y=270;if(!pages.length){current.ctx.fillStyle='#526173';current.ctx.font='20px Arial';current.ctx.fillText('Nama: ______________________________',78,y);current.ctx.fillText(`Tarikh: ${dateLabel()}`,720,y);y+=62}}
+  if(!current){current=await page(title,subtitle);y=270;if(!pages.length){current.ctx.fillStyle='#526173';current.ctx.font='20px Arial';current.ctx.fillText('Nama: ______________________________',78,y);current.ctx.fillText(`Tarikh: ${dateLabel()}`,720,y);y+=62;
+   if(options.focus?.length){const c=current.ctx;c.font='16px Arial';const rows=options.focus.slice(0,3).map(f=>wrap(c,String(f.why||f.card),990).slice(0,2));const h=56+rows.reduce((n,l)=>n+l.length*22+6,0);
+    roundRect(c,78,y-34,1084,h,16,'#fff6d6','#d4aa35');c.fillStyle='#805000';c.font='900 15px Arial';c.fillText('KENAPA LATIHAN INI · dikesan oleh Pahlawan Angka',102,y-8);let ly=y+20;c.fillStyle='#3b3220';c.font='16px Arial';
+    rows.forEach(lines=>{lines.forEach((line,j)=>c.fillText((j?'   ':'• ')+line,102,ly+j*22));ly+=lines.length*22+6});c.fillStyle='#6b5a2e';c.font='italic 14px Arial';c.fillText('Soalan bertanda FOKUS dijana khas. Kotak Cara Kerja: minta anak tunjuk langkah.',102,ly+4);y+=h+8}}}
   const layout=studentLayout(current.ctx,item);
   if(layout.height>1270)throw new Error('Satu rajah terlalu tinggi untuk halaman A4. Cuba soalan lain.');
   if(y+layout.height>1610){finishStudentPage(current,pages,options);current=await page(title,subtitle);y=270}
@@ -337,7 +353,7 @@ async function worksheet(includeAnswers){
  if(!window.PACommercial?.requireFeature?.('worksheet'))return;
  if(state.busy)return;state.count=Math.max(10,Math.min(state.count,worksheetLimit()));state.busy=true;status('Cikgu Dimensi sedang menyusun latihan...');mountWorksheet();
  try{
-  const pack=makeQuestions(),pages=await studentPages(pack.items,pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`);
+  const pack=makeQuestions(),pages=await studentPages(pack.items,pack.title,`${pack.snap.name} | Darjah ${pack.snap.grade} | ${pack.items.length} soalan`,{focus:pack.focus});
   if(includeAnswers)pages.push(...await answerPages(pack.items,'Skema dan Cara Menjawab',`${pack.title} | Untuk ibu bapa / penjaga`,pages.length));
   const pdf=pdfFromCanvases(pages);
   const client=window.PACloud?.state?.client;
