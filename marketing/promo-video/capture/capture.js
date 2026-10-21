@@ -1,11 +1,14 @@
 // Rakam satu pusingan Demo (Darjah 2) bingkai demi bingkai pada 1080×2236 menggunakan jam maya.
-// node capture.js <outdir> [maxQ=99] [wrongAt=3]
+// node capture.js <outdir> [maxQ=99] [wrongAt=3] [seed=7]   (benih Math.random tetap → rakaman boleh diulang)
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
 const out = process.argv[2];
 const MAXQ = parseInt(process.argv[3] || '99', 10);
 const WRONG_AT = parseInt(process.argv[4] || '3', 10);
+const SEED = parseInt(process.argv[5] || '7', 10);
+const SEED_JS = s => `(()=>{if(window!==window.top)return;let a=${s}>>>0;Math.random=function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};})();`;
+
 const FPS = 30, DT = 1000 / FPS, DPR = 1080 / 412;
 fs.mkdirSync(out, { recursive: true });
 const log = { events: [], frames: 0 };
@@ -15,6 +18,7 @@ const ev = (type, extra = {}) => { const e = { type, frame: log.frames, t: +(log
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required', '--hide-scrollbars'] });
   const ctx = await b.newContext({ viewport: { width: 412, height: 853 }, deviceScaleFactor: DPR, isMobile: true, hasTouch: true });
   await ctx.route('**/*', r => r.request().url().startsWith('http://127.0.0.1:8765/') ? r.continue() : r.abort());
+  await ctx.addInitScript({ content: SEED_JS(SEED) });
   await ctx.addInitScript({ path: path.join(__dirname, 'vtime-shim.js') });
   const p = await ctx.newPage();
   p.on('pageerror', e => console.log('pageerror', e.message.slice(0, 200)));
@@ -22,7 +26,7 @@ const ev = (type, extra = {}) => { const e = { type, frame: log.frames, t: +(log
 
   const adv = () => p.evaluate(dt => window.__advance(dt), DT);
   async function shot() {
-    const r = await cdp.send('Page.captureScreenshot', { format: 'jpeg', quality: 92, captureBeyondViewport: false });
+    const r = await cdp.send('Page.captureScreenshot', { format: 'jpeg', quality: 92, clip: { x: 0, y: 0, width: 412, height: 853, scale: 1080 / 412 } });
     fs.writeFileSync(path.join(out, `f_${String(log.frames).padStart(5, '0')}.jpg`), Buffer.from(r.data, 'base64'));
     log.frames++;
   }
