@@ -31,7 +31,7 @@ function moneyLog(skill, now = Date.now()) {
 }
 const encounter = (skillId, i, outcome) => ({ skillId, grade: 2, questionKey: `${skillId}#${i % 3}`, outcome, mode: 'gembok', resolvedAt: Date.now() - (10 - i) * 6e5 });
 
-test('dummy children: the first card is the first brain finding, with the finding as the reason', () => {
+test('dummy children: the first card is the first brain finding, with its short practice label', () => {
   for (const id of ['aisyah', 'mei', 'adam']) {
     const r = S.simulate(id), p = r.persona;
     const usable = GRAPH.skills.filter(m => m.grade === p.grade);
@@ -39,35 +39,36 @@ test('dummy children: the first card is the first brain finding, with the findin
     assert.equal(out.hasEvidence, true, id);
     const first = out.items[0], step = r.plan.steps[0];
     assert.equal(first.id, T.skillFor(step, usable), id);
-    assert.equal(first.reason, step.brief, id);
+    assert.equal(first.reason, step.card, id);
     assert.equal(first.diagnostic, true, id);
     assert.equal(first.brainStep.finding, step.finding, id);
     assert.ok(out.items.length <= 3 && new Set(out.items.map(x => x.id)).size === out.items.length, id);
+    // Short on the card; the full finding is in the parent tab's Ringkasan Cikgu Dimensi.
+    for (const x of out.items.filter(x => x.brainStep)) assert.ok(x.reason.length <= 30, `${id}: ${x.reason}`);
   }
   const aisyah = summary({ name: 'Aisyah', schoolGrade: 3, diagLog: S.simulate('aisyah').log1 }).items[0];
-  assert.equal(aisyah.id, 'D3.MUL'); assert.match(aisyah.reason, /^Sifir \d.* belum dikuasai \(\d+\/\d+/);
-  assert.doesNotMatch(aisyah.reason, /^Hebat/, 'the card names the problem, not the praise lead');
+  assert.equal(aisyah.id, 'D3.MUL'); assert.match(aisyah.reason, /^Sifir \d+( & \d+)?$/);
   const mei = summary({ name: 'Mei Ling', schoolGrade: 3, diagLog: S.simulate('mei').log1 }).items[0];
-  assert.equal(mei.id, 'D3.MONEY'); assert.match(mei.reason, /sen dan ringgit/);
+  assert.equal(mei.id, 'D3.MONEY'); assert.equal(mei.reason, 'Sen dan ringgit');
   const adam = summary({ name: 'Adam', schoolGrade: 1, diagLog: S.simulate('adam').log1 }).items;
-  assert.ok(adam.some(x => x.id === 'D1.SUB20' && /^Tolak asas hingga 20/.test(x.reason)), JSON.stringify(adam.map(x => x.id)));
+  assert.ok(adam.some(x => x.id === 'D1.SUB20' && x.reason === 'Fakta asas hingga 20'), JSON.stringify(adam.map(x => [x.id, x.reason])));
 });
 
 test('the card goes to the skill where the evidence came from, not only the grade default', () => {
   const out = summary({ name: 'Aina', schoolGrade: 2, diagLog: moneyLog('D2.4.7') });
   assert.equal(out.items[0].id, 'D2.4.7', 'Masalah wang, where the mistakes were');
-  assert.match(out.items[0].reason, /^Wang: \d+% betul .*operasi tolak/);
+  assert.equal(out.items[0].reason, 'Wang: operasi tolak');
   // The same answers without a usable skill id fall back to the grade's subtraction money skill.
   assert.equal(summary({ name: 'Aina', schoolGrade: 2, diagLog: moneyLog('D9.X') }).items[0].id, 'D2.4.3');
 });
 
-test('a brain finding on an existing card keeps its numbers and takes the finding as reason', () => {
+test('a brain finding on an existing card keeps its numbers and takes the practice label as reason', () => {
   const encounters = [0, 1, 2, 3, 4, 5].map(i => encounter('D2.4.7', i, i < 2 ? 'independent' : 'unresolved'));
   const old = summary({ schoolGrade: 2, learnerReviewV1: { encounters } }, { brain: false }).items;
   assert.deepEqual(old.map(x => [x.id, x.attempts, x.independent]), [['D2.4.7', 6, 2]]);
   const out = summary({ name: 'Aina', schoolGrade: 2, learnerReviewV1: { encounters }, diagLog: moneyLog('D2.4.7') }).items;
   assert.deepEqual(out.map(x => [x.id, x.attempts, x.independent, x.diagnostic]), [['D2.4.7', 6, 2, true]]);
-  assert.match(out[0].reason, /^Wang:/);
+  assert.equal(out[0].reason, 'Wang: operasi tolak');
 });
 
 test('a money check that moved the focus wins over brain evidence on the skill it moved away from', () => {

@@ -1,6 +1,7 @@
 /* Diagnostic Brain findings lead the cards (docs/PA-DIAGNOSTIC-BRAIN.md §8a):
-   each PATargets plan step names the skill where its evidence came from, and
-   the finding becomes the card reason. No findings, no change to the order. */
+   each PATargets plan step names the skill where its evidence came from. The
+   card shows the short practice label; the full finding stays in the parent
+   tab's Ringkasan Cikgu Dimensi. No findings, no change to the order. */
 function brainFocusSteps(profile,grade,usable,blocked){
  const B=globalThis.PADiagnostic,T=globalThis.PATargets;
  if(!B?.analyze||!T?.plan||!T?.skillFor||!Array.isArray(profile?.diagLog)||!profile.diagLog.length)return [];
@@ -89,7 +90,7 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    item={id,title:m.title,chapter:String(m.chapter),attempts:recent.length,independent,independentRate:recent.length?Math.round(independent/recent.length*100):0};
    candidates.push(item);
   }
-  Object.assign(item,{priority:2000-index,diagnostic:true,brainStep:step,reason:step.brief});
+  Object.assign(item,{priority:2000-index,diagnostic:true,brainStep:step,reason:step.card});
  });
  candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));
  /* Foundation hint: a likely root skill shared across topics. It only explains; order and routing stay as above. */

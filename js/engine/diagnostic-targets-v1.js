@@ -163,7 +163,7 @@
       // One step per practice kind: a regroup lens and a borrowing bug want the same drill.
       const same=steps.find(s=>s.target.kind===t.kind&&(s.target.op||'')===(t.op||''));
       if(same){same.also=[...(same.also||[]),f.id];same.skills=merge(same.skills,f.skills);continue}
-      steps.push({finding:f.id,target:t,card:CARD[t.kind]?.(t)||'Latihan sasaran',why:f.text,brief:f.brief||f.text,
+      steps.push({finding:f.id,target:t,card:CARD[t.kind]?.(t)||'Latihan sasaran',why:f.text,
         skills:merge([],f.skills),where:t.worksheet?'worksheet':'minigame'});
     }
     // A sen/RM mix-up explains weak money scores; fix the unit first, not a generic money drill.

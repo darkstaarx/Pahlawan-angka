@@ -287,15 +287,15 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
 
 **Next (phase 3 remainder), in this order**
 1. ✅ *Done (2026-10-21, 3.86.88, PR #67, not merged yet).* Each brain finding now
-   carries `skills` (KSSR skill ids of its evidence, most mistakes first) and
-   fact fluency a `brief` text without the praise lead. `PATargets.plan()`
-   steps keep `skills` and `brief`; `PATargets.skillFor(step, gradeSkills)`
+   carries `skills` (KSSR skill ids of its evidence, most mistakes first).
+   `PATargets.plan()` steps keep `skills`; `PATargets.skillFor(step, gradeSkills)`
    picks the card skill: the evidence skill if it is in the child's grade,
    else the grade's skill for that practice kind (tables → Darab, money sub →
    Tolak wang, ...; word problems in Darjah 3–4 have none, worksheet only).
    `brainFocusSteps()` in `js/guardian-focus.js` puts those cards first
-   (`diagnostic: true`, reason = finding, `brainStep` = the plan step for
-   item 2), merges with an existing card for the same skill, and leaves a
+   (`diagnostic: true`, reason = the short practice label `step.card`, e.g.
+   "Sifir 3"; the full finding stays in the parent tab's Ringkasan Cikgu
+   Dimensi; `brainStep` = the plan step for item 2), merges with an existing card for the same skill, and leaves a
    skill to a money/time check that moved the focus away from it. Menu V2
    tile falls back to the old note when a brain card has no journey answers.
    Tests: `audit/diagnostic-focus-cards.test.js`. Original notes:

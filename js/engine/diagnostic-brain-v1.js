@@ -238,7 +238,6 @@
       const target=[...weakT,...slowT].map(x=>x.t);
       findings.push({id:'fact_fluency',lens:'4.2',severity:weakT.length?3:2,confidence:'tinggi',
         text:`${lead}${parts.join('; ')}.`.replace(/^./,c=>c.toUpperCase()),
-        brief:`${parts.join('; ')}.`.replace(/^./,c=>c.toUpperCase()),
         action:`Pahlawan Angka akan beri lebih banyak latihan sifir ${joinBM(target)} dalam mini game, bercampur dengan sifir yang sudah dikuasai.`,
         tip:`Uji sifir ${target[0]} secara lisan 2 minit sehari — dalam kereta atau sebelum tidur.`,
         target:{tables:target},skills:skillsOf(scored.filter(r=>(r.tb||[]).some(t=>target.includes(t)))),evidence:{weak:weakT,slow:slowT,fluent:fluentT}});
