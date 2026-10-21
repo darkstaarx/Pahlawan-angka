@@ -37,6 +37,7 @@ function durationChoices(answerSec,candidates,tag){var seen=Object.create(null),
 function unitVisual(kind,value,max,label,extra){var v={kind:kind,value:value,max:max||value,label:label||''};if(extra)for(var k in extra)v[k]=extra[k];return v;}
 function barVisual(parts,labels){return{kind:'bar_model',parts:parts,labels:labels||[]};}
 function groupingVisual(groups,each,label){return{kind:'grouping',groups:groups,each:each,label:label||''};}
+function unknownGroupsVisual(each){return{kind:'grouping',groups:3,each:each,unknownGroups:true};}
 function fractionVisual(n,d,count){return{kind:'fraction_area',numerator:n,denominator:d,count:count||1};}
 function fractionPairVisual(aN,aD,bN,bD,op){return{kind:'fraction_area_pair',a:{numerator:aN,denominator:aD},b:{numerator:bN,denominator:bD},operation:op};}
 function mixedNumberVisual(whole,rem,den){return{kind:'mixed_number',whole:whole,numerator:rem,denominator:den};}
@@ -66,7 +67,7 @@ registerGenerator('d3.p0Kssr',function(params,rng){
       var add=rng()<0.5,a=ri(rng,1200,4200),b=ri(rng,300,1800),d=ri(rng,200,1300),ans,p;
       if(add){while(a+b+d>10000){a-=100;b=Math.max(100,b-50);d=Math.max(100,d-50);}ans=a+b+d;p='Perpustakaan mempunyai '+a+' buku. Sebanyak '+b+' buku baharu diterima pada Isnin dan '+d+' lagi pada Selasa. Berapakah jumlah buku sekarang?';}
       else{var total=ri(rng,4500,9800);b=ri(rng,400,1800);d=ri(rng,200,Math.min(1400,total-b-100));ans=total-b-d;a=total;p='Sebuah stor mempunyai '+a+' kotak. '+b+' kotak dihantar pada pagi dan '+d+' kotak lagi pada petang. Berapakah kotak yang tinggal?';}
-      return numPack(p,ans,[add?a+b-d:a-b+d,add?a+b:a-b,ans+100],barVisual([a,add?b:-b,add?d:-d],['mula','langkah 1','langkah 2']),'word_problem_result','Jejak ketiga-tiga nilai dalam cerita mengikut tanda operasi.',['operation_selection'],null,{values:3,result:ans,operation:add?'add3':'sub3'},0,10000);
+      return numPack(p,ans,[add?a+b-d:a-b+d,add?a+b:a-b,ans+100],barVisual([a,add?b:-b,add?d:-d],[String(a),(add?'+ ':'− ')+b,(add?'+ ':'− ')+d]),'word_problem_result','Jejak ketiga-tiga nilai dalam cerita mengikut tanda operasi.',['operation_selection'],null,{values:3,result:ans,operation:add?'add3':'sub3'},0,10000);
     }
     if(m==='missing_part_bar'){
       var whole=ri(rng,3500,9000),part=ri(rng,800,whole-800),ans2=whole-part;
@@ -111,7 +112,7 @@ registerGenerator('d3.p0Kssr',function(params,rng){
     if(m==='one_digit'){
       var mult=rng()<0.5,f=ri(rng,2,9),n=ri(rng,12,Math.floor(10000/f)),prod=f*n;
       if(mult)return numPack(n+' × '+f+' = ?',prod,[n+f,n*(f-1),Math.min(10000,prod+f)],groupingVisual(f,n),'multiply_divide_one_digit','Darab ialah kumpulan sama banyak.',['multiply_divide_inverse'],null,{n:n,factor:f,operation:'mul',result:prod},0,10000);
-      var q=ri(rng,12,Math.floor(10000/f)),total2=q*f;return numPack(total2+' ÷ '+f+' = ?',q,[f,q+1,Math.max(1,q-1)],groupingVisual(f,q),'multiply_divide_one_digit','Gunakan hubungan darab dan bahagi.',['multiply_divide_inverse'],null,{total:total2,factor:f,operation:'div',result:q},0,10000);
+      var q=ri(rng,12,Math.floor(10000/f)),total2=q*f;return numPack(total2+' ÷ '+f+' = ?',q,[f,q+1,Math.max(1,q-1)],groupingVisual(f,'?'),'multiply_divide_one_digit','Gunakan hubungan darab dan bahagi.',['multiply_divide_inverse'],null,{total:total2,factor:f,operation:'div',result:q},0,10000);
     }
     if(m==='powers10'){
       var pow=pick(rng,[10,100,1000]),mul=rng()<0.5,base=ri(rng,1,Math.max(1,Math.floor(10000/pow))),an=base;
@@ -120,7 +121,7 @@ registerGenerator('d3.p0Kssr',function(params,rng){
     }
     if(m==='missing_factor'){
       var g=ri(rng,2,9),each=ri(rng,20,Math.floor(10000/g)),tot=g*each;
-      return numPack('□ × '+g+' = '+tot+'. Apakah nombor dalam kotak?',each,[g,tot,each+g],groupingVisual(g,each),'inverse_missing_factor','Gunakan bahagi untuk mencari faktor yang hilang.',['multiply_divide_inverse'],null,{g:g,each:each,total:tot},0,10000);
+      return numPack('□ × '+g+' = '+tot+'. Apakah nombor dalam kotak?',each,[g,tot,each+g],groupingVisual(g,'?'),'inverse_missing_factor','Gunakan bahagi untuk mencari faktor yang hilang.',['multiply_divide_inverse'],null,{g:g,each:each,total:tot},0,10000);
     }
   }
 
@@ -173,7 +174,7 @@ registerGenerator('d3.p0Kssr',function(params,rng){
   if(c==='compare_decimals_to_hundredths'){
     var ca=ri(rng,1,98),cb=ri(rng,1,98);while(ca===cb)cb=ri(rng,1,98);var sa=(ca/100).toFixed(2),sb=(cb/100).toFixed(2),sign=ca>cb?'>':'<';
     if(m==='compare_pair')return pack(sa+' □ '+sb+'. Simbol manakah betul?',ch('a',sign),[ch('w1',sign==='>'?'<':'>','compare_decimal_digits'),ch('w2','=','compare_decimal_digits'),ch('w3','≈','compare_decimal_digits')],null,'compare_decimal_pair','Banding nilai persepuluh dahulu, kemudian perseratus.',['compare_decimal_digits'],{a:ca,b:cb});
-    if(m==='number_line')return pack('Pada garis nombor, nilai manakah lebih besar?',ch('a',ca>cb?sa:sb),[ch('w1',ca>cb?sb:sa,'compare_decimal_digits'),ch('w2','Kedua-duanya sama','compare_decimal_digits'),ch('w3','Tidak boleh ditentukan','compare_decimal_digits')],lineVisual([Math.min(ca,cb)/100,Math.max(ca,cb)/100],[sa,sb]),'compare_decimals_number_line','Nombor yang lebih ke kanan pada garis nombor adalah lebih besar.',['compare_decimal_digits'],{a:ca,b:cb});
+    if(m==='number_line')return pack('Pada garis nombor, nilai manakah lebih besar?',ch('a',ca>cb?sa:sb),[ch('w1',ca>cb?sb:sa,'compare_decimal_digits'),ch('w2','Kedua-duanya sama','compare_decimal_digits'),ch('w3','Tidak boleh ditentukan','compare_decimal_digits')],lineVisual([Math.min(ca,cb)/100,Math.max(ca,cb)/100],ca<=cb?[sa,sb]:[sb,sa]),'compare_decimals_number_line','Nombor yang lebih ke kanan pada garis nombor adalah lebih besar.',['compare_decimal_digits'],{a:ca,b:cb});
     if(m==='largest'){
       var cents=[];while(cents.length<4){var cv=ri(rng,1,99);if(cents.indexOf(cv)<0)cents.push(cv);}var maxCents=Math.max.apply(null,cents),max=(maxCents/100).toFixed(2),ws=cents.filter(function(v){return v!==maxCents;}).map(function(v){return (v/100).toFixed(2);});
       return pack('Empat botol berisi '+cents.map(function(v){return (v/100).toFixed(2)+' L';}).join(', ')+'. Isipadu manakah paling besar?',ch('a',max+' L'),ws.map(function(v,i){return ch('w'+i,v+' L','compare_decimal_digits');}),null,'select_largest_decimal','Banding semua nilai hingga perseratus.',['compare_decimal_digits'],{values:cents.join(',')});
@@ -261,7 +262,7 @@ registerGenerator('d3.p0Kssr',function(params,rng){
     if(m==='share_duration'){
       var gr=ri(rng,2,6),eaSec=unit==='seconds'?pick(rng,[15,20,30,45]):unit==='minutes'?pick(rng,[600,900,1200]):pick(rng,[3600,7200]),tt=gr*eaSec;
       var shareWrong=durationChoices(eaSec,[gr,eaSec+(unit==='hours'?3600:unit==='minutes'?300:5),tt,Math.max(1,eaSec-(unit==='hours'?1800:unit==='minutes'?300:5))],'time_division');
-      return pack(durationLabel(tt)+' dibahagi sama rata kepada '+gr+' aktiviti. Setiap aktiviti berapa lama?',ch('a',durationLabel(eaSec)),shareWrong,groupingVisual(gr,durationLabel(eaSec),'masa'),'divide_time_duration','Bahagi jumlah masa dengan bilangan aktiviti.',['time_division'],{groups:gr,eachSeconds:eaSec,totalSeconds:tt,unitDomain:unit});
+      return pack(durationLabel(tt)+' dibahagi sama rata kepada '+gr+' aktiviti. Setiap aktiviti berapa lama?',ch('a',durationLabel(eaSec)),shareWrong,groupingVisual(gr,'?','masa'),'divide_time_duration','Bahagi jumlah masa dengan bilangan aktiviti.',['time_division'],{groups:gr,eachSeconds:eaSec,totalSeconds:tt,unitDomain:unit});
     }
     if(m==='divide_then_multiply'){
       var allGroups=pick(rng,[4,5,6]),targetGroups=pick(rng,[2,3]),one=pick(rng,[600,900,1200,1800]),totalAll=allGroups*one,answerChain=targetGroups*one;
@@ -303,7 +304,7 @@ registerGenerator('d3.p0Kssr',function(params,rng){
   if(c==='multiply_divide_masses'){
     var mg=ri(rng,2,9),me=pick(rng,[250,500,750,1250,1500]),mtt=mg*me;
     if(m==='repeat_mass')return pack(mg+' pek, setiap satu '+mixedUnit(me,1000,'kg','g')+'. Jumlah jisim?',ch('a',mixedUnit(mtt,1000,'kg','g')),[ch('w1',mixedUnit(me+mg,1000,'kg','g'),'multiply_divide_inverse'),ch('w2',mixedUnit(mtt+me,1000,'kg','g'),'multiply_divide_inverse'),ch('w3',mixedUnit(Math.max(1,mtt-me),1000,'kg','g'),'multiply_divide_inverse')],groupingVisual(Math.min(mg,8),mixedUnit(me,1000,'kg','g')),'multiply_mass','Darab bilangan pek dengan jisim setiap pek.',['multiply_divide_inverse'],{factor:mg,mixedUnits:true,totalG:mtt});
-    if(m==='share_mass')return pack(mixedUnit(mtt,1000,'kg','g')+' dibahagi sama rata kepada '+mg+' bekas. Setiap bekas?',ch('a',mixedUnit(me,1000,'kg','g')),[ch('w1',mixedUnit(mg,1000,'kg','g'),'multiply_divide_inverse'),ch('w2',mixedUnit(me+100,1000,'kg','g'),'multiply_divide_inverse'),ch('w3',mixedUnit(mtt,1000,'kg','g'),'multiply_divide_inverse')],groupingVisual(Math.min(mg,8),mixedUnit(me,1000,'kg','g')),'divide_mass','Bahagi jumlah jisim dengan bilangan bekas.',['multiply_divide_inverse'],{factor:mg,mixedUnits:true,totalG:mtt});
+    if(m==='share_mass')return pack(mixedUnit(mtt,1000,'kg','g')+' dibahagi sama rata kepada '+mg+' bekas. Setiap bekas?',ch('a',mixedUnit(me,1000,'kg','g')),[ch('w1',mixedUnit(mg,1000,'kg','g'),'multiply_divide_inverse'),ch('w2',mixedUnit(me+100,1000,'kg','g'),'multiply_divide_inverse'),ch('w3',mixedUnit(mtt,1000,'kg','g'),'multiply_divide_inverse')],groupingVisual(mg,'?'),'divide_mass','Bahagi jumlah jisim dengan bilangan bekas.',['multiply_divide_inverse'],{factor:mg,mixedUnits:true,totalG:mtt});
     if(m==='inverse_mass')return numPack('□ × '+mixedUnit(me,1000,'kg','g')+' = '+mixedUnit(mtt,1000,'kg','g')+'. Berapakah □?',mg,[me,mtt,mg+1],unitVisual('scale',mtt,15000,'g',{mixedLabel:mixedUnit(mtt,1000,'kg','g')}),'inverse_mass_factor','Gunakan bahagi untuk mencari bilangan kumpulan.',['multiply_divide_inverse'],null,{factor:mg,mixedUnits:true,totalG:mtt},1,20);
   }
   if(c==='convert_litres_millilitres'){
@@ -321,8 +322,8 @@ registerGenerator('d3.p0Kssr',function(params,rng){
   if(c==='multiply_divide_liquid_volumes'){
     var vg=ri(rng,2,9),ve=pick(rng,[250,500,750,1250,1500]),vtt=vg*ve;
     if(m==='repeat_volume')return pack(vg+' botol, setiap satu '+mixedUnit(ve,1000,'L','mL')+'. Jumlah isipadu?',ch('a',mixedUnit(vtt,1000,'L','mL')),[ch('w1',mixedUnit(ve+vg,1000,'L','mL'),'multiply_divide_inverse'),ch('w2',mixedUnit(vtt+ve,1000,'L','mL'),'multiply_divide_inverse'),ch('w3',mixedUnit(Math.max(1,vtt-ve),1000,'L','mL'),'multiply_divide_inverse')],unitVisual('container',ve,2000,'mL',{mixedLabel:mixedUnit(ve,1000,'L','mL')}),'multiply_liquid_volume','Darab bilangan botol dengan isipadu setiap botol.',['multiply_divide_inverse'],{factor:vg,mixedUnits:true,totalMl:vtt});
-    if(m==='share_volume')return pack(mixedUnit(vtt,1000,'L','mL')+' dibahagi sama rata kepada '+vg+' cawan. Setiap cawan?',ch('a',mixedUnit(ve,1000,'L','mL')),[ch('w1',mixedUnit(vg,1000,'L','mL'),'multiply_divide_inverse'),ch('w2',mixedUnit(ve+100,1000,'L','mL'),'multiply_divide_inverse'),ch('w3',mixedUnit(vtt,1000,'L','mL'),'multiply_divide_inverse')],groupingVisual(Math.min(vg,8),mixedUnit(ve,1000,'L','mL')),'divide_liquid_volume','Bahagi jumlah isipadu dengan bilangan cawan.',['multiply_divide_inverse'],{factor:vg,mixedUnits:true,totalMl:vtt});
-    if(m==='inverse_volume')return numPack('□ × '+mixedUnit(ve,1000,'L','mL')+' = '+mixedUnit(vtt,1000,'L','mL')+'. Berapakah □?',vg,[ve,vtt,vg+1],groupingVisual(Math.min(vg,8),mixedUnit(ve,1000,'L','mL')),'inverse_liquid_volume_factor','Gunakan bahagi untuk mencari bilangan kumpulan.',['multiply_divide_inverse'],null,{factor:vg,mixedUnits:true,totalMl:vtt},1,20);
+    if(m==='share_volume')return pack(mixedUnit(vtt,1000,'L','mL')+' dibahagi sama rata kepada '+vg+' cawan. Setiap cawan?',ch('a',mixedUnit(ve,1000,'L','mL')),[ch('w1',mixedUnit(vg,1000,'L','mL'),'multiply_divide_inverse'),ch('w2',mixedUnit(ve+100,1000,'L','mL'),'multiply_divide_inverse'),ch('w3',mixedUnit(vtt,1000,'L','mL'),'multiply_divide_inverse')],groupingVisual(vg,'?'),'divide_liquid_volume','Bahagi jumlah isipadu dengan bilangan cawan.',['multiply_divide_inverse'],{factor:vg,mixedUnits:true,totalMl:vtt});
+    if(m==='inverse_volume')return numPack('□ × '+mixedUnit(ve,1000,'L','mL')+' = '+mixedUnit(vtt,1000,'L','mL')+'. Berapakah □?',vg,[ve,vtt,vg+1],unknownGroupsVisual(mixedUnit(ve,1000,'L','mL')),'inverse_liquid_volume_factor','Gunakan bahagi untuk mencari bilangan kumpulan.',['multiply_divide_inverse'],null,{factor:vg,mixedUnits:true,totalMl:vtt},1,20);
   }
 
   // D3.T9 — Pengurusan Data
