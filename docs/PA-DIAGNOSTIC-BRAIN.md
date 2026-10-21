@@ -262,13 +262,10 @@ composition, lock policy.
 
 Last updated: 2026-10-21. Read this section first if you are picking up the work.
 
-**Branch stack on GitHub (not yet merged, not deployed).** Each PR is based on
-the one before it; merge in this order, then the owner deploys Netlify:
-#55 docs → #56 phase 1 → #57 Portal Restu → #58 phase 1.5 → #59 targeted
-practice + dummy sim → #60 mini game telemetry → #61 worksheet follows brain →
-#62 visual answer-leak fixes → #63 2.5D worksheet graphics. Work on top of the
-last branch (`claude/worksheet-2p5d`) until they are merged. GitHub is the test
-stage; Netlify is production and only the owner deploys it.
+**Status on GitHub.** PRs #55–#63 are merged into `main` (2026-10-21) but
+NOT deployed to Netlify yet; the owner deploys after a real-device test.
+Start new work from `main`, one task per branch and PR, base `main`.
+GitHub is the test stage; Netlify is production and only the owner deploys it.
 
 **Done**
 - Brain (`js/engine/diagnostic-brain-v1.js`): lenses 4.2, 4.3, 4.4, 4.5, retention,
