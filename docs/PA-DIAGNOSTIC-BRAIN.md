@@ -266,9 +266,9 @@ composition, lock policy.
 Last updated: 2026-10-21 (item 4). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. PR #69 (Next item 3 + question-first mini game layout, 3.86.93) is merged.
-   Next item 4 (re-check loop, 3.86.94) is in the PR from branch
-   `claude/compassionate-hypatia-a9xycw`; merge only when the owner says so.
+1. PRs #69 (Next item 3 + question-first mini game layout, 3.86.93) and #70
+   (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
+   Nothing is open.
 2. Then ask the owner what next. Candidates, in order: a bar model (Model
    Method) round for word problems in a mini game (proposed, not started);
    targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
@@ -280,10 +280,10 @@ Last updated: 2026-10-21 (item 4). Read this section first if you are picking up
    `audit/lib/browser.js`; mini game pages open standalone on localhost with
    `localStorage.pa_dev_unlocked='1'`).
 
-**Status on GitHub.** PRs #55–#63 and #65–#69 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#70 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-Open: Next item 4 (re-check loop, 3.86.94), base `main`, not merged.
+No PR is open.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -382,7 +382,7 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    for `darab` and "borrow only" for `tolak`, read them in `gudang-harta.html`
    `makeQ()`. Other games: only where a finding maps to them (money → Gerai
    Wirayung). Done when: a round for a "sifir 7" finding is ≥70% sifir 7.
-4. ✅ *Done (2026-10-21, 3.86.94, not merged yet).* `js/engine/diagnostic-recheck-v1.js`
+4. ✅ *Done (2026-10-21, 3.86.94, PR #70, merged).* `js/engine/diagnostic-recheck-v1.js`
    (`PARecheck`). Opening a brain-backed Fokus card calls `PARecheck.start()`,
    which stores only `db.diagRecheckV1.starts[key] = {at, step}` (key from
    the target: `tables:3,7`, `facts:sub20`, `regroup:sub`, `money:sub`,
