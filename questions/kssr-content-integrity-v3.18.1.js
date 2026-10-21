@@ -134,10 +134,13 @@
       return mark(Q(`${clockSvg(h,m)}Apakah waktu yang ditunjukkan oleh jam?`,ans,[N(`${h}:${String((m+5)%60).padStart(2,'0')}`,'time'),N(`${(h%12)+1}:${String(m).padStart(2,'0')}`,'time'),N(`${h}:${String((m+10)%60).padStart(2,'0')}`,'time')],'Jarum pendek menunjukkan jam; jarum panjang menunjukkan minit.','Tahun 2 · Baca Jam',true,true),id,'read_clock','visual','concept',['time']);
     }
     if(id==='D2.5.2'){
-      const rel=rotate(id,['hour_minute','day_hour','week_day']);
-      if(rel==='hour_minute'){const h=R(1,4),ans=h*60;return mark(Q(`${h} jam = ? minit`,ans,[N(h*30,'time'),N(h*24,'time'),N(ans+60,'time')],'1 jam = 60 minit.','Tahun 2 · Jam dan Minit',true,true),id,rel,'symbolic','procedure',['time']);}
-      if(rel==='day_hour'){const d=R(1,4),ans=d*24;return mark(Q(`${d} hari = ? jam`,ans,[N(d*12,'time'),N(d*60,'time'),N(ans+24,'time')],'1 hari = 24 jam.','Tahun 2 · Hari dan Jam',true,true),id,rel,'symbolic','procedure',['time']);}
-      const w=R(1,4),ans=w*7;return mark(Q(`${w} minggu = ? hari`,ans,[N(w*5,'time'),N(w*10,'time'),N(ans+7,'time')],'1 minggu = 7 hari.','Tahun 2 · Minggu dan Hari',true,true),id,rel,'symbolic','procedure',['time']);
+      const rel=rotate(id,['hour_minute','day_hour','week_day','minute_hour','hour_minute_mix']);
+      // Back again (120 minit = ? jam) and mixed units (1 jam 15 minit = ? minit), KSSR Tahun 2.
+      if(rel==='minute_hour'){const [unit,big,per]=pick([['minit','jam',60],['jam','hari',24],['hari','minggu',7]]),k=R(1,5),v=k*per;return mark(Q(`${v} ${unit} = ? ${big}`,k,[N(v/10,'time'),N(k+1,'time'),N(per,'time')],`1 ${big} = ${per} ${unit}.`,'Tahun 2 · Perkaitan Masa',true,true),id,rel,'symbolic','procedure',['time']);}
+      if(rel==='hour_minute_mix'){const h=R(1,3),m=pick([10,15,20,30,45]),ans=h*60+m;return mark(Q(`${h} jam ${m} minit = ? minit`,ans,[N(h+m,'time'),N(h*100+m,'time'),N(h*60,'time')],'Tukar jam kepada minit dahulu, kemudian tambah minit.','Tahun 2 · Jam dan Minit',true,true),id,rel,'symbolic','procedure',['time']);}
+      if(rel==='hour_minute'){const h=R(1,5),ans=h*60;return mark(Q(`${h} jam = ? minit`,ans,[N(h*30,'time'),N(h*24,'time'),N(ans+60,'time')],'1 jam = 60 minit.','Tahun 2 · Jam dan Minit',true,true),id,rel,'symbolic','procedure',['time']);}
+      if(rel==='day_hour'){const d=R(1,5),ans=d*24;return mark(Q(`${d} hari = ? jam`,ans,[N(d*12,'time'),N(d*60,'time'),N(ans+24,'time')],'1 hari = 24 jam.','Tahun 2 · Hari dan Jam',true,true),id,rel,'symbolic','procedure',['time']);}
+      const w=R(1,6),ans=w*7;return mark(Q(`${w} minggu = ? hari`,ans,[N(w*5,'time'),N(w*10,'time'),N(ans+7,'time')],'1 minggu = 7 hari.','Tahun 2 · Minggu dan Hari',true,true),id,rel,'symbolic','procedure',['time']);
     }
     if(id==='D2.5.3'){
       const startH=R(7,15),startM=pick([0,15,30,45]),dur=pick([15,30,45,60,90,120]),total=startH*60+startM+dur,endH=Math.floor(total/60),endM=total%60,fmt=x=>formatClockTime(x,'12','bm'),ans=fmt(total);
@@ -147,23 +150,26 @@
   }
   function d2Measure(id,s,shift){
     if(!['D2.6.1','D2.6.2','D2.6.3','D2.6.4'].includes(id))return null;
+    // Three things to compare: every choice is a real one (or "sama"), never a filler.
+    const threeOf=xs=>{const p=[...xs].sort(()=>Math.random()-.5);return p.slice(0,3)},topOf=(a,b,c)=>a>b&&a>c?'A':b>c?'B':'C';
+    const abcWrong=(a,b,c,same)=>['A','B','C'].filter(x=>x!==topOf(a,b,c)).map(x=>N(x,'compare')).concat([N(same,'compare')]);
     if(id==='D2.6.1'){
       const mode=rotate(id,['read_ruler','unit_length','compare_length']);
       if(mode==='read_ruler'){const cm=R(2,19);return mark(Q(`${rulerSvg(cm)}Berapakah panjang garisan merah?`,`${cm} cm`,[N(`${cm+1} cm`,'unit'),N(`${Math.max(1,cm-1)} cm`,'unit'),N(`${cm} m`,'unit')],'Mula pada 0 dan baca hujung garisan.','Tahun 2 · Panjang',true,true),id,mode,'visual','concept',['unit']);}
       if(mode==='unit_length'){const item=pick([['pensel','cm'],['meja','cm'],['bilik darjah','m'],['koridor','m']]);return mark(Q(`Unit sesuai untuk mengukur ${item[0]}?`,item[1],[N(item[1]==='cm'?'m':'cm','unit'),N('kg','unit'),N('mL','unit')],'Objek pendek biasanya cm; jarak panjang biasanya m.','Tahun 2 · Unit Panjang',true,true),id,mode,'story','concept',['unit']);}
-      const a=R(3,18),b=R(3,18);if(a===b)return d2Measure(id,s,shift);return mark(Q(`Pita A ${a} cm dan Pita B ${b} cm. Yang manakah lebih panjang?`,a>b?'A':'B',[N(a>b?'B':'A','compare'),N('Sama','compare'),N('Tidak tahu','generated')],'Banding nilai dalam unit yang sama.','Tahun 2 · Banding Panjang',true,true),id,mode,'story','application',['unit']);
+      const [a,b,c]=threeOf([...Array(16)].map((_,i)=>i+3));return mark(Q(`Pita A ${a} cm, Pita B ${b} cm dan Pita C ${c} cm. Yang manakah paling panjang?`,topOf(a,b,c),abcWrong(a,b,c,'Sama panjang'),'Banding nilai dalam unit yang sama.','Tahun 2 · Banding Panjang',true,true),id,mode,'story','application',['unit']);
     }
     if(id==='D2.6.2'){
       const mode=rotate(id,['read_scale','unit_mass','compare_mass']);
       if(mode==='read_scale'){const g=pick([100,200,300,400,500,600,700,800,900]);return mark(Q(`${scaleSvg(g)}Jarum penimbang menunjukkan berapa gram?`,`${g} g`,[N(`${Math.max(0,g-100)} g`,'unit'),N(`${Math.min(1000,g+100)} g`,'unit'),N(`${g} kg`,'unit')],'Baca senggatan pada skala dalam gram.','Tahun 2 · Jisim',true,true),id,mode,'visual','concept',['unit']);}
       if(mode==='unit_mass'){const item=pick([['pemadam','g'],['epal','g'],['beg beras','kg'],['beg sekolah','kg']]);return mark(Q(`Unit sesuai untuk jisim ${item[0]}?`,item[1],[N(item[1]==='g'?'kg':'g','unit'),N('cm','unit'),N('L','unit')],'Benda ringan biasanya g; benda lebih berat biasanya kg.','Tahun 2 · Unit Jisim',true,true),id,mode,'story','concept',['unit']);}
-      const a=pick([100,200,300,400,500,600,700,800,900]),b=pick([100,200,300,400,500,600,700,800,900]);if(a===b)return d2Measure(id,s,shift);return mark(Q(`Bungkusan A ${a} g dan B ${b} g. Yang manakah lebih berat?`,a>b?'A':'B',[N(a>b?'B':'A','compare'),N('Sama','compare'),N('Tidak tahu','generated')],'Banding nilai dalam gram.','Tahun 2 · Banding Jisim',true,true),id,mode,'story','application',['unit']);
+      const [a,b,c]=threeOf([100,200,300,400,500,600,700,800,900]);return mark(Q(`Bungkusan A ${a} g, B ${b} g dan C ${c} g. Yang manakah paling berat?`,topOf(a,b,c),abcWrong(a,b,c,'Sama berat'),'Banding nilai dalam gram.','Tahun 2 · Banding Jisim',true,true),id,mode,'story','application',['unit']);
     }
     if(id==='D2.6.3'){
       const mode=rotate(id,['read_jug','unit_volume','compare_volume']);
       if(mode==='read_jug'){const ml=pick([100,200,300,400,500,600,700,800,900]);return mark(Q(`${cylinderSvg(ml)}Berapakah isi padu air?`,`${ml} mL`,[N(`${Math.max(0,ml-100)} mL`,'unit'),N(`${Math.min(1000,ml+100)} mL`,'unit'),N(`${ml} L`,'unit')],'Baca paras air pada senggatan silinder penyukat.','Tahun 2 · Isi Padu Cecair',true,true),id,mode,'visual','concept',['unit']);}
       if(mode==='unit_volume'){const item=pick([['ubat dalam sudu','mL'],['kotak jus kecil','mL'],['baldi air','L'],['botol air besar','L']]);return mark(Q(`Unit sesuai untuk isi padu ${item[0]}?`,item[1],[N(item[1]==='mL'?'L':'mL','unit'),N('kg','unit'),N('cm','unit')],'Jumlah kecil biasanya mL; bekas besar biasanya L.','Tahun 2 · Unit Cecair',true,true),id,mode,'story','concept',['unit']);}
-      const a=pick([100,200,300,400,500,600,700,800,900]),b=pick([100,200,300,400,500,600,700,800,900]);if(a===b)return d2Measure(id,s,shift);return mark(Q(`Bekas A ${a} mL dan Bekas B ${b} mL. Yang manakah lebih banyak air?`,a>b?'A':'B',[N(a>b?'B':'A','compare'),N('Sama','compare'),N('Tidak tahu','generated')],'Banding nilai mL.','Tahun 2 · Banding Isi Padu',true,true),id,mode,'story','application',['unit']);
+      const [a,b,c]=threeOf([100,200,300,400,500,600,700,800,900]);return mark(Q(`Bekas A ${a} mL, Bekas B ${b} mL dan Bekas C ${c} mL. Yang manakah paling banyak air?`,topOf(a,b,c),abcWrong(a,b,c,'Sama banyak'),'Banding nilai mL.','Tahun 2 · Banding Isi Padu',true,true),id,mode,'story','application',['unit']);
     }
     const domain=pick(['length','mass','volume']),op=Math.random()<.5?'add':'sub',unit=domain==='length'?'cm':domain==='mass'?'g':'mL',noun=domain==='length'?'pita':domain==='mass'?'bungkusan':'air';let a=R(30,120),b=R(10,Math.min(70,a));const ans=op==='add'?a+b:a-b;
     return mark(Q(`${noun} mempunyai ${a} ${unit}. ${op==='add'?`${b} ${unit} lagi ditambah`:`${b} ${unit} digunakan`}. Berapakah ${op==='add'?'jumlah':'baki'}?`,`${ans} ${unit}`,[N(`${op==='add'?a-b:a+b} ${unit}`,'operation'),N(`${a} ${unit}`,'unit'),N(`${ans} ${unit==='g'?'mL':'g'}`,'unit')],'Pilih operasi yang sesuai dan kekalkan unit.','Tahun 2 · Masalah Ukuran',true,true),id,'measure_problem','story','application',['unit','operation']);
@@ -189,7 +195,8 @@
   }
   function d2Repair(id,s,shift){
       if(id==='D2.3.2'){
-        const n=R(1,9),dec=(n/10).toFixed(1),wrong=[N(`0.${Math.max(0,n-1)}`,'decimal'),N(`${n}.0`,'decimal'),N(`0.${Math.min(9,n+1)}`,'decimal')];
+        // A neighbouring tenth (never the answer, also at 0.1 / 0.9), n.0, and the hundredths slip 0.0n.
+        const n=R(1,9),dec=(n/10).toFixed(1),near=n<9?n+1:n-1,wrong=[N(`0.${near}`,'decimal'),N(`${n}.0`,'decimal'),N(`0.0${n}`,'decimal')];
         return mark(Q(`${numberLineSvg(0,1,0.1,n/10,{hidePointValue:true,endpointLabelsOnly:true})}Apakah nilai perpuluhan pada titik merah?`,dec,wrong,'Garis nombor ini dibahagi kepada 10 bahagian sama besar; setiap bahagian bernilai 0.1.','Tahun 2 · Garis Perpuluhan',true,true),id,'number_line','visual','application',['decimal']);
       }
       if(id==='D2.1.5')return d2Estimate(id);

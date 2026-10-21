@@ -10,7 +10,14 @@ window.PAQuestionBanks.d2t7 = function(id,s,shift){
     {key:'cylinder',name:'silinder',clue:'Mempunyai dua permukaan bulat.'},
     {key:'cone',name:'kon',clue:'Mempunyai satu puncak dan satu tapak bulat.'}
    ];
-   const x=pick(shapes),others=shapes.filter(y=>y.name!==x.name),mode=pick(mastery>50?['visual','clue','net','object']:['visual','clue','object']);
+   const x=pick(shapes),others=shapes.filter(y=>y.name!==x.name),mode=pick(mastery>50?['visual','clue','net','object','count']:['visual','clue','object','count']);
+   // KSSR Tahun 2: count flat faces, edges (tepi) and corners (bucu) of a pictured 3D shape.
+   if(mode==='count'){
+     const F={cube:[6,12,8],cuboid:[6,12,8],pyramid:[5,8,5]},k=pick(['cube','cuboid','pyramid','cylinder','cone']),nm=shapes.find(y=>y.key===k).name;
+     if(k==='cylinder'||k==='cone'){const flat=k==='cylinder'?2:1;return Q(`${shape3DSvg(k)}Berapakah bilangan permukaan rata ${nm} ini?`,flat,[N(flat+1,'shape'),N(0,'shape'),N(flat===1?2:3,'shape')],"Permukaan rata ialah bahagian yang leper, bukan yang melengkung.","D2 Core · Ciri Bentuk 3D",true,true)}
+     const [face,edge,corner]=F[k],ask=pick([['permukaan rata',face],['tepi',edge],['bucu',corner]]);
+     return Q(`${shape3DSvg(k)}Berapakah bilangan ${ask[0]} ${nm} ini?`,ask[1],[face,edge,corner,4,6,8,12].filter((v,i,l)=>v!==ask[1]&&l.indexOf(v)===i).slice(0,3).map(v=>N(v,'shape')),"Kira satu demi satu dan tanda yang sudah dikira.","D2 Core · Ciri Bentuk 3D",true,true);
+   }
    if(mode==='visual')return Q(`${shape3DSvg(x.key)}Apakah nama bentuk 3D ini?`,x.name,shuffle(others).slice(0,3).map(y=>N(y.name,'shape')),"Perhatikan tapak, permukaan dan puncaknya.","D2 Core · Bentuk 3D",true,true);
    if(mode==='clue')return Q(`${x.clue}<br><b>Apakah bentuk 3D itu?</b>`,x.name,shuffle(others).slice(0,3).map(y=>N(y.name,'shape')),"Padankan ciri dengan bentuk 3D.","D2 Core · Ciri Bentuk 3D",true,shift);
    if(mode==='net'){
@@ -21,7 +28,12 @@ window.PAQuestionBanks.d2t7 = function(id,s,shift){
  }
  if(id==="D2.7.2"){
    const shapes=[{key:'triangle',name:'segi tiga',sides:3,corners:3},{key:'square',name:'segi empat sama',sides:4,corners:4},{key:'rectangle',name:'segi empat tepat',sides:4,corners:4},{key:'circle',name:'bulatan',sides:0,corners:0}];
-   const x=pick(shapes),others=shapes.filter(y=>y.name!==x.name),mode=pick(['visual','property','compare']);
+   const x=pick(shapes),others=shapes.filter(y=>y.name!==x.name),mode=pick(['visual','property','compare','total']);
+   // Total straight sides of a small set of shapes (e.g. 2 segi tiga dan 1 segi empat sama).
+   if(mode==='total'){
+     const a=pick(shapes.filter(y=>y.sides)),b=pick(shapes.filter(y=>y.sides&&y.name!==a.name)),m=R(2,3),n=R(1,2),ans=m*a.sides+n*b.sides;
+     return Q(`${shapeSvg(a.key)}${shapeSvg(b.key)}Ali melukis <b>${m} ${a.name}</b> dan <b>${n} ${b.name}</b>. Berapakah jumlah sisi lurus semuanya?`,ans,[N(a.sides+b.sides,'shape'),N(m+n,'shape'),N(ans+(a.sides===b.sides?1:Math.abs(a.sides-b.sides)),'shape')],"Darab bilangan bentuk dengan sisinya, kemudian tambah.","D2 Application · Bentuk 2D",true,true);
+   }
    if(mode==='visual'){const stem=pick(['Apakah nama bentuk 2D ini?','Bentuk 2D yang ditunjukkan ialah?','Pilih nama yang betul bagi bentuk ini.','Kenal pasti bentuk 2D ini.']);return Q(`${shapeSvg(x.key)}${stem}`,x.name,shuffle(others).slice(0,3).map(y=>N(y.name,'shape')),"Perhatikan sisi lurus dan bucu.","D2 Core · Bentuk 2D",true,true)}
    if(mode==='property'){
      const cases=[

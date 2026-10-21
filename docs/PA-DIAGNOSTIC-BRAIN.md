@@ -450,6 +450,18 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    Done when `node --test audit/*.test.js` has 0 failures, without weakening
    what each test checks.
 
+**Question bank check (2026-10-21, 3.86.96, owner request before 4.8).** 150
+questions per skill for all 117 D1–D6 skills in the real app: no broken text,
+no repeated choice. Repaired: "tidak pasti"/"tidak tahu" filler choices in
+D1–D2 (D2 ukuran now compares three things; D1 betul/salah items carry a
+short reason, e.g. "salah, sepatutnya 60"; tenths use 0.0n as the real slip),
+an "8 lebih banyak daripada 8" claim, D2.5.2 time units (back conversion and
+"1 jam 15 minit"), D2 3D shapes (count faces / tepi / bucu), D2 2D (total
+sides), D5 Peratus (any multiple of 5). Guard: `audit/question-bank-choices.test.js`.
+Still open: tags for "Kemungkinan punca" exist for D1 (65%) and D6 (70%) only
+(D2 9%, D5 11%, D3–D4 0%); few pictures in D4–D6 (13–18%) for lens 4.1; no
+short/long wording pairs yet (lens 4.8).
+
 **Phase 4 (started 2026-10-21)**
 - ✅ Lens 4.1 Representation (CPA), 3.86.95, PR #71, merged: see §4.1
   "Implemented". Not done: other mini games do not send `rep` yet (only
