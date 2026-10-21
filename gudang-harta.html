@@ -495,7 +495,8 @@ let focusLimits=new Map();try{focusLimits=new Map(JSON.parse(query.get('focus_li
 /* Cikgu Dimensi target (PATargets.miniGameTarget): {kind:'tables',tables:[3,7]} | {kind:'regroup',op:'sub'|'add',zero}. */
 let focusTarget=null;try{const t=JSON.parse(query.get('focus_target')||'null');
  if(t&&t.kind==='tables'&&Array.isArray(t.tables)){const tb=t.tables.map(Number).filter(n=>Number.isInteger(n)&&n>=2&&n<=12).slice(0,3);if(tb.length)focusTarget={kind:'tables',tables:tb}}
- else if(t&&t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))focusTarget={kind:'regroup',op:t.op,zero:t.op==='sub'&&t.zero===true}}catch(_){focusTarget=null}
+ else if(t&&t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))focusTarget={kind:'regroup',op:t.op,zero:t.op==='sub'&&t.zero===true}
+ if(focusTarget&&t.check===true)focusTarget.check=true}catch(_){focusTarget=null}
 if(!devEnabled&&!liveAuthorized){document.body.innerHTML='<main style="box-sizing:border-box;min-height:100%;padding:32px 20px;display:grid;place-items:center;background:#163652;color:#18324b;font:700 16px/1.5 system-ui,sans-serif"><section style="max-width:420px;padding:28px;border:3px solid #7d4a27;border-radius:22px;background:#fff4d9;box-shadow:0 8px 0 #7d4a27;text-align:center"><div style="font-size:42px">🗝️</div><h1 style="margin:8px 0;color:#7d4a27">Gudang Harta Wira</h1><p>Game ini dibuka melalui Kemahiran Fokus berdasarkan profil murid. Panel ujian hanya tersedia dalam DEV mode.</p></section></main>';return}
 /* ---------- pembantu nombor ---------- */
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -1085,9 +1086,11 @@ function reportProgress(action){try{const p=new URLSearchParams(location.search)
  window.parent.postMessage({type:'PA_GUDANG_HARTA_PROGRESS',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+(served+1)+':'+q.mode,index:served+1,tier:q.tierIx+1,prompt:q.q,misses,hints,action,at:Date.now()},location.origin)}catch(e){}}
 
 /* ---------- aliran ---------- */
-function makeQ(){const k=cfg.modes[served%cfg.modes.length],tg=targetMode(focusTarget)===k&&!NORMAL_TURNS.has(served%10)?targetFor(cfg.grade):null,key=tg?'target:'+k:k,gens=tg||GEN[cfg.grade][k],[floor,cap]=tg?[0,gens.length-1]:focusLimits.get(k)||[0,gens.length-1];
- // A target ladder always starts at its concrete/pictorial step (CPA).
- if(tier[key]==null){tier[key]=tg?0:Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[key]=0}
+/* Semakan semula (check): half the rounds are the target, mixed with normal ones, starting at the abstract step. */
+const normalTurn=n=>focusTarget?.check?n%2===1:NORMAL_TURNS.has(n%10);
+function makeQ(){const k=cfg.modes[served%cfg.modes.length],tg=targetMode(focusTarget)===k&&!normalTurn(served)?targetFor(cfg.grade):null,key=tg?'target:'+k:k,gens=tg||GEN[cfg.grade][k],[floor,cap]=tg?[0,gens.length-1]:focusLimits.get(k)||[0,gens.length-1];
+ // A target ladder starts at its concrete/pictorial step (CPA); a re-check starts at the abstract step.
+ if(tier[key]==null){tier[key]=tg?(focusTarget.check?Math.max(0,gens.length-2):0):Math.max(floor,Math.min(cfg.start[k]||0,cap,gens.length-1));clean[key]=0}
  const ti=liveAuthorized?Math.max(floor,Math.min(tier[key],cap,gens.length-1)):Math.min(tier[key],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
  return{mode:k,tierKey:key,target:!!tg,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch}}
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');

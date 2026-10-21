@@ -52,6 +52,18 @@ test('sifir target: 7 in 10 rounds drill the weak table, interleaved, starting w
   assert.deepEqual(g.errors, []); await g.close();
 });
 
+test('re-check (check: true): half the rounds are the target, mixed with normal ones, from the abstract step', async () => {
+  const g = await gudang({ kind: 'tables', tables: [7], check: true }, 'd3-darab');
+  const rounds = await g.page.evaluate(() => window.__gudangGen.sample(10).map(q => ({ target: q.target, arch: q.arch, fx: q.fx })));
+  assert.equal(rounds.map(r => r.target ? 'T' : 'N').join(''), 'TNTNTNTNTN');
+  assert.equal(rounds[0].arch, 'target_table_recall', 'no picture scaffold in a check');
+  assert.ok(rounds.filter(r => r.target).every(r => r.fx.table === 7));
+  assert.deepEqual(g.errors, []); await g.close();
+  const b = await gudang({ kind: 'regroup', op: 'sub', check: true }, 'd3-tolak');
+  assert.equal((await b.page.evaluate(() => window.__gudangGen.sample(1)[0])).arch, 'target_borrow_written');
+  assert.deepEqual(b.errors, []); await b.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');

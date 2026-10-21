@@ -263,34 +263,27 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21. Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (item 4). Read this section first if you are picking up the work.
 
-**Start here (next agent, 2026-10-21 evening).**
-1. The owner will ask you to **merge PR #69** (branch `ccr-ed8f705d-ym2tc0`,
-   app 3.86.93). It holds Next item 3 (mini games drill the brain finding)
-   and the owner's layout request (question panel bigger than the scene,
-   waist-up Wira, in all nine mini games). Before merging: check it is still
-   mergeable; CI is only "Supabase Preview" (skipped); run
-   `node --test audit/*.test.js` (expect 180 pass, 0 fail). Then, as done for
-   #66–#68, push one commit to the PR branch that marks #69 merged in this
-   section (status line + item 3), and merge with a merge commit. GitHub
-   Pages (darkstaarx.github.io/Pahlawan-angka/) rebuilds by itself in about
-   a minute; Netlify is NOT touched.
-2. Then ask the owner what next. Candidates, in order: Next item 4
-   (re-check loop); a bar model (Model Method) round for word problems in a
-   mini game (proposed, not started); targets for the other mini games
-   (pecahan, ukuran, ...); D1 basic-fact targeting.
+**Start here (next agent).**
+1. PRs #69 (Next item 3 + question-first mini game layout, 3.86.93) and #70
+   (Next item 4, re-check loop + `tools/recheck-lab.html`, 3.86.94) are merged.
+   Nothing is open.
+2. Then ask the owner what next. Candidates, in order: a bar model (Model
+   Method) round for word problems in a mini game (proposed, not started);
+   targets for the other mini games (pecahan, ukuran, ...); D1 basic-fact
+   targeting; the re-check mode for Gerai Wirayung (money targets ignore
+   `check` today).
 3. Owner style: reply in Bahasa Malaysia, short and plain; one task per
    branch/PR, base `main`; merge only when the owner says so; screenshots
    of the real app help the owner decide (Playwright via
    `audit/lib/browser.js`; mini game pages open standalone on localhost with
    `localStorage.pa_dev_unlocked='1'`).
 
-**Status on GitHub.** PRs #55–#63 and #65–#68 are merged into `main`
+**Status on GitHub.** PRs #55–#63 and #65–#70 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-Open: PR #69 (Next item 3 + question-first layout in all mini games,
-3.86.93), base `main`, not merged — merge when the owner asks (see above).
+No PR is open.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -351,7 +344,7 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    70% of turns, the normal generator for the rest. Done when: telemetry from
    those items flows back (facets survive) and a recovered bug shows
    "Semakin baik".
-3. ✅ *Done (2026-10-21, 3.86.90, PR #69, not merged yet), KSSR + Singapore style.*
+3. ✅ *Done (2026-10-21, 3.86.90–3.86.93, PR #69, merged), KSSR + Singapore style.*
    `startFocusChoice()` turns the card's `brainStep` into
    `PATargets.miniGameTarget(step)` and hands it to the bridges.
    - Gudang Harta (`focus_target` URL param, read in `gudang-harta.html`):
@@ -389,7 +382,26 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
    for `darab` and "borrow only" for `tolak`, read them in `gudang-harta.html`
    `makeQ()`. Other games: only where a finding maps to them (money → Gerai
    Wirayung). Done when: a round for a "sifir 7" finding is ≥70% sifir 7.
-4. *Re-check loop.* After a targeted set, schedule a short mixed check 2–3 days
+4. ✅ *Done (2026-10-21, 3.86.94, PR #70, merged).* `js/engine/diagnostic-recheck-v1.js`
+   (`PARecheck`). Opening a brain-backed Fokus card calls `PARecheck.start()`,
+   which stores only `db.diagRecheckV1.starts[key] = {at, step}` (key from
+   the target: `tables:3,7`, `facts:sub20`, `regroup:sub`, `money:sub`,
+   `units`; word problems and operation choice are not re-checked). Every
+   state is derived from `db.diagLog` (non-rapid answers that practise the
+   target): *practising* until 8 answers → *waiting* 2 days → *due* until 6
+   answers after the due time, from any source → 5/6 right on the first try
+   = *passed* ("Semakin baik", shown 7 days, then *settled*), else back to
+   practising (round 2, ...). Cards in `js/guardian-focus.js`: waiting
+   "Sifir 3 · Semakan semula lusa" (below other brain cards), due
+   "Semakan semula: Sifir 3" (first card; the game gets `check: true`),
+   passed "Semakin baik: Sifir 3 (5/6)" (below the open focus). The stored
+   step keeps waiting/due/passed cards alive after the brain drops the
+   finding. Gudang Harta `check`: target on every other round, starting at
+   the abstract step (recall / written), no picture scaffold. Gerai Wirayung
+   ignores `check` (narrowed money mode only). Tests:
+   `audit/diagnostic-recheck.test.js`, check mode in
+   `audit/minigame-targets-browser.test.js`. Original notes:
+   *Re-check loop.* After a targeted set, schedule a short mixed check 2–3 days
    later (spaced, lens 4.7) and let the card show "Semakin baik" or keep the
    focus.
 
@@ -438,6 +450,8 @@ phase 5 (consented cloud telemetry), see §7.
   your Chromium/Edge is not found automatically.
 - `node questions/v2/build/build.js --check` after touching `questions/v2/`
   (rebuild with `node questions/v2/build/build.js`).
+- Re-check loop without waiting 2 days: `tools/recheck-lab.html` (same site as the
+  app; edits the saved profile, keeps a copy, "Pulihkan profil asal" restores it).
 - Dummy children: `tools/diagnostic-sim-lab.html`; 2.5D graphics:
   `tools/worksheet-2p5d-lab.html`; Portal Restu: `tools/rapid-lock-lab.html`
   (serve the repo root, open in a browser).
