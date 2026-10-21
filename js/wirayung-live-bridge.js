@@ -137,15 +137,18 @@ function moneyParentText(cause,origin,next,nextTitle){
   :'Soalan wang boleh dibuat, tetapi bukti operasi nombor belum cukup untuk memilih latihan seterusnya.';
  return 'Ujian perbandingan belum menunjukkan punca yang cukup jelas. Teruskan latihan dan kumpul beberapa jawapan berbeza sebelum menetapkan fokus.';
 }
-function open(skillId,focusDiagnostic=false){
+function open(skillId,focusDiagnostic=false,target=null){
  if(typeof db==="undefined"||!db||!window.PACommercial?.requireFeature?.("focus"))return false;
  if(typeof enforceRestuLock==="function"&&enforceRestuLock())return false;
  const grade=activeGrade();if(!gradeModes[grade])return false;
  // Original Gerai Wirayung router decides which Focus skill belongs here.
  const plan=skillId&&window.PAGeraiWirayung?.planFor?.(db,skillId);
  if(!plan||Number(plan.grade)!==grade||typeof META==='undefined'||!META[skillId]||Number(META[skillId].grade)!==grade)return false;
- const modes=plan.modes.filter(mode=>gradeModes[grade].includes(mode));
+ let modes=plan.modes.filter(mode=>gradeModes[grade].includes(mode));
  if(!modes.length)return false;
+ // A brain finding (e.g. "Wang: operasi tolak") narrows the stall to that mode; the live money
+ // diagnostic reads its first mode too (baki → money_change), so it probes the same operation.
+ if(target?.kind==='money'&&modes.includes(target.mode))modes=[target.mode];
  if(run)close();
  const nonce=(crypto.randomUUID?.()||String(Date.now())+"-"+Math.random().toString(36).slice(2));
  const node=document.createElement("section");node.id="paWirayungOverlay";node.setAttribute("role","dialog");node.setAttribute("aria-label","Gerai Wirayung");node.setAttribute("aria-modal","true");
@@ -246,8 +249,8 @@ window.addEventListener("message",e=>{
 document.getElementById("wirayungLaunch")?.addEventListener("click",()=>open());
 const original=window.renderParent;
 if(typeof original==="function")window.renderParent=function(){const ret=original.apply(this,arguments);mountReport();return ret;};
-function tryStartFocus(id){
- if(moneySkill(id)){const hasLiveContrast=!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(id||'')];return open(id,hasLiveContrast)}
+function tryStartFocus(id,target=null){
+ if(moneySkill(id)){const hasLiveContrast=!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(id||'')];return open(id,hasLiveContrast,target)}
  const plan=window.PAMenaraJam?.planFor?.(typeof db!=='undefined'?db:null,id);if(!plan||plan.grade!==activeGrade()||!window.PACommercial?.requireFeature?.('focus'))return false;
  const reports=db?.focusDiagnosticsV1?.reports||[],latest=reports.filter(r=>Number(r.grade)===activeGrade()&&/^D2\.5\.[123]$/.test(r.skillId||'')).sort((a,b)=>Number(a.at||0)-Number(b.at||0)).at(-1);
  const diagnosedNext=!!latest&&latest.state==='candidate'&&latest.nextSkillId===id;

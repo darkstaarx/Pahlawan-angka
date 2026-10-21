@@ -191,6 +191,18 @@
     else if(t.kind==='review'){const r=t.review||[];m=r.some(x=>/^sifir/.test(x))?ops('mul'):ops(r.some(x=>/^tolak/.test(x))?'sub':'add',true)}
     return m?.id||null;
   }
+  /* What a Kemahiran Fokus mini game should drill for a plan step (the card
+     opens the mini game, not Gembok). Gudang Harta: sifir tables, borrowing or
+     carrying; Gerai Wirayung: one money mode for the weak operation. */
+  const MONEY_MODE={sub:'baki',div:'bahagi',add:'bayar'};
+  function miniGameTarget(step){
+    const t=step?.target||{},ids=[step?.finding,...(step?.also||[])].map(String);
+    const tables=(t.kind==='review'?(t.review||[]).map(x=>Number((/^sifir (\d+)$/.exec(x)||[])[1])):t.tables||[]).filter(n=>Number.isInteger(n)&&n>=2&&n<=12);
+    if((t.kind==='tables'||t.kind==='review')&&tables.length)return{kind:'tables',tables:[...new Set(tables)].slice(0,3)};
+    if(t.kind==='regroup'&&(t.op==='sub'||t.op==='add'))return{kind:'regroup',op:t.op,zero:t.op==='sub'&&ids.some(x=>/borrow_from_zero/.test(x))};
+    if(t.kind==='money'&&MONEY_MODE[t.op])return{kind:'money',mode:MONEY_MODE[t.op]};
+    return null;
+  }
   function practice(step,n=10,ctx={},seed=Date.now()){
     const r=rng(seed),g=GEN[step?.target?.kind];if(!g)return[];
     return g(r,step.target,n,ctx);
@@ -279,5 +291,5 @@
     return{items,focus:steps.map(s=>({card:s.card,why:s.why})),titles:steps.map(s=>s.card)};
   }
 
-  return{VERSION,plan,practice,skillFor,worksheet,worksheetItems,explain,targetFor,_gen:GEN,_rng:rng};
+  return{VERSION,plan,practice,skillFor,miniGameTarget,worksheet,worksheetItems,explain,targetFor,_gen:GEN,_rng:rng};
 });

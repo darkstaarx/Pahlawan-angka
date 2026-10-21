@@ -6,6 +6,15 @@
 (function(){
 'use strict';
 const rounds=new Map();
+/* Optional facets a page knows exactly (e.g. Gudang Harta sifir / meminjam rounds); anything else is dropped. */
+function cleanFacets(fx){
+ if(!fx||typeof fx!=='object'||!['add','sub','mul','div'].includes(fx.op))return null;
+ const out={op:fx.op},ops=fx.operands;
+ if(Array.isArray(ops)&&ops.length===2&&ops.every(n=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<1e7))out.operands=[ops[0],ops[1]];
+ if(Number.isInteger(fx.table)&&fx.table>=2&&fx.table<=12)out.table=fx.table;
+ if(['lazim','word','symbolic'].includes(fx.format))out.format=fx.format;
+ return out;
+}
 function fromChildFrame(src){if(!src)return false;for(const f of document.querySelectorAll('iframe')){try{if(f.contentWindow===src)return true}catch(_){}}return false}
 function receive(e){
  const m=e.data;
@@ -16,8 +25,9 @@ function receive(e){
  const sec=Math.max(.1,Math.min(600,(Number(m.ms)||0)/1000));
  const q={token:'mg-'+key,skill,questionId:'minigame:'+game,archetypeId:'minigame_'+game,representation:'manipulative',
   prompt:String(m.prompt||'').slice(0,200),answer:m.answer===''||m.answer==null?undefined:String(m.answer).slice(0,40)};
- const send=(ok,mode)=>{try{window.PATelemetry?.response?.(skill,ok,ok?'':'minigame',sec,(m.hints|0)>0,q,mode)}catch(_){}};
- if(!m.ok){if(m.first&&!r.wrong){r.wrong=true;send(false,'minigame-first-attempt')}}
+ const facets=cleanFacets(m.facets);if(facets)q.facets=facets;
+ const send=(ok,mode,value)=>{try{window.PATelemetry?.response?.(skill,ok,ok?'':'minigame',sec,(m.hints|0)>0,q,mode,value)}catch(_){}};
+ if(!m.ok){if(m.first&&!r.wrong){r.wrong=true;send(false,'minigame-first-attempt',m.value==null?undefined:String(m.value).slice(0,24))}}
  else{r.done=true;send(true,r.wrong?'minigame-retry':'minigame')}
  rounds.set(key,r);if(rounds.size>300)rounds.delete(rounds.keys().next().value);
 }
