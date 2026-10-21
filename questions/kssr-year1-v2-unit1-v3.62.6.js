@@ -18,8 +18,9 @@ GEN['1.1.1']=function(id,s){
   const a=rand(3,6),b=a+rand(1,3);
   return mark(q(`Kumpulan A ada ${a} bulatan. Kumpulan B ada ${b} bulatan. Pilih ayat yang betul.`,'Kumpulan B lebih banyak',[Nq('Kumpulan A lebih banyak','compare'),Nq('Kedua-duanya sama banyak','compare'),Nq('Kumpulan B lebih sedikit','compare')],'Banding bilangan objek dalam kedua-dua kumpulan.','Tahun 1 · Pola Kuantiti'),id,'1.1.1',mode,'verbal','application',s,['compare']);
  }
- const a=rand(4,8),b=rand(4,8),c=a+b;
- return mark(q(`Hakim kata kumpulan ${a} objek lebih banyak daripada kumpulan ${b} objek. Betulkah kata Hakim?`,a>b?'betul':'salah',[Nq(a>b?'salah':'betul','compare'),Nq('sama banyak','compare'),Nq('tidak pasti','compare')],'Banding nilai, bukan saiz tulisan atau susunan objek.','Tahun 1 · Penaakulan Kuantiti'),id,'1.1.1',mode,'verbal','reasoning',s,['compare']);
+ // Two different counts: "8 lebih banyak daripada 8" has no right answer.
+ const a=rand(4,8);let b=rand(4,8);while(b===a)b=rand(4,8);
+ return mark(q(`Hakim kata kumpulan ${a} objek lebih banyak daripada kumpulan ${b} objek. Betulkah kata Hakim?`,a>b?`betul, ${a} lebih banyak`:`salah, ${b} lebih banyak`,[Nq(a>b?`salah, ${b} lebih banyak`:`betul, ${a} lebih banyak`,'compare'),Nq('salah, sama banyak','compare'),Nq(a>b?`betul, ${b} lebih banyak`:`salah, ${a} lebih banyak`,'compare')],'Banding nilai, bukan saiz tulisan atau susunan objek.','Tahun 1 · Penaakulan Kuantiti'),id,'1.1.1',mode,'verbal','reasoning',s,['compare']);
 };
 
 GEN['1.2.1']=function(id,s){
@@ -31,8 +32,9 @@ GEN['1.2.1']=function(id,s){
   out.goldInteraction=true;out.demoInteraction=true;out.baseTenSpec={kind:'base_ten',tens:t,ones:o};return out;
  }
  if(mode==='name_quantity'){const n=rand(10,99);return mark(q(`Apakah nama nombor <b>${n}</b> dalam perkataan?`,words(n),[Nq(words(Math.max(1,n-1)),'number_name'),Nq(words(Math.min(100,n+1)),'number_name'),Nq(words(Math.max(0,Math.floor(n/10)*10+(n%10===1?10:n%10===0?-10:0))),'place')],'Baca puluh dahulu, kemudian sa.','Tahun 1 · Nama Nombor'),id,'1.2.1',mode,'verbal','concept',s,['number_name']);}
- let a=rand(8,30),b=rand(8,30);while(a===b)b=rand(8,30);const ans=a>b?'A':'B';
- return mark(q(`Kumpulan A ada ${a} objek dan Kumpulan B ada ${b}. Kumpulan manakah ada lebih banyak objek?`,ans,[Nq(ans==='A'?'B':'A','compare'),Nq('Sama','compare'),Nq('Tidak pasti','compare')],'Banding bilangan kedua-dua kumpulan.','Tahun 1 · Banding Kuantiti'),id,'1.2.1',mode,'story','application',s,['compare']);
+ // Three groups: every choice is a real group (or "sama banyak"), no filler.
+ const pool=new Set();while(pool.size<3)pool.add(rand(8,30));const [a,b,c]=[...pool],top=Math.max(a,b,c),ans=a===top?'A':b===top?'B':'C';
+ return mark(q(`Kumpulan A ada ${a} objek, Kumpulan B ada ${b} dan Kumpulan C ada ${c}. Kumpulan manakah ada paling banyak objek?`,ans,['A','B','C'].filter(x=>x!==ans).map(x=>Nq(x,'compare')).concat([Nq('Sama banyak','compare')]),'Banding bilangan kedua-dua kumpulan.','Tahun 1 · Banding Kuantiti'),id,'1.2.1',mode,'story','application',s,['compare']);
 };
 
 GEN['1.2.2']=function(id,s){
@@ -102,10 +104,11 @@ GEN['1.7.1']=function(id,s){
 };
 
 GEN['1.8.1']=function(id,s){
- const n=rand(11,99),ans=Math.round(n/10)*10,mode=chooseMode(id,'1.8.1',bandModes(s,['round_line'],['round_line','round_direct'],['round_direct','round_reason']));
+ // Not a multiple of 10: rounding 60 to the nearest ten is no question, and its choices collide.
+ let n=rand(11,99);while(n%10===0)n=rand(11,99);const ans=Math.round(n/10)*10,mode=chooseMode(id,'1.8.1',bandModes(s,['round_line'],['round_line','round_direct'],['round_direct','round_reason']));
  if(mode==='round_line'){const lo=Math.floor(n/10)*10,hi=Math.ceil(n/10)*10;return mark(q(`${numLine(lo,hi,n,String(n))}Bundarkan <b>${n}</b> kepada puluh terdekat.`,ans,[Nq(lo===ans?hi:lo,'round'),Nq(n,'round'),Nq(Math.min(100,ans+10),'round')],'Lihat puluh yang paling dekat pada garis nombor.','Tahun 1 · Bundar Garis Nombor'),id,'1.8.1',mode,'visual','concept',s,['round']);}
  if(mode==='round_direct')return mark(q(`Apakah hasil pembundaran <b>${n}</b> kepada puluh terdekat?`,ans,[Nq(Math.floor(n/10)*10,'round'),Nq(Math.ceil(n/10)*10,'round'),Nq(n,'round')],'Digit sa 5 atau lebih naik ke puluh seterusnya.','Tahun 1 · Bundar Puluh'),id,'1.8.1',mode,'symbolic','procedure',s,['round']);
- const claim=Math.random()<.5?ans:(ans===Math.floor(n/10)*10?ans+10:ans-10);return mark(q(`${name()} membundarkan <b>${n}</b> kepada <b>${claim}</b>. Adakah betul?`,claim===ans?'betul':'salah',[Nq(claim===ans?'salah':'betul','round'),Nq('tidak boleh dibundarkan','round'),Nq('tidak pasti','round')],'Banding jarak nombor kepada dua puluh bersebelahan.','Tahun 1 · Semak Bundaran'),id,'1.8.1',mode,'verbal','reasoning',s,['round']);
+ const claim=Math.random()<.5?ans:(ans===Math.floor(n/10)*10?ans+10:ans-10);return mark(q(`${name()} membundarkan <b>${n}</b> kepada <b>${claim}</b>. Adakah betul?`,claim===ans?'betul':`salah, sepatutnya ${ans}`,claim===ans?[Nq(`salah, sepatutnya ${ans===Math.floor(n/10)*10?ans+10:ans-10}`,'round'),Nq(`salah, sepatutnya ${n}`,'round'),Nq('tidak boleh dibundarkan','round')]:[Nq('betul','round'),Nq(`salah, sepatutnya ${n}`,'round'),Nq('tidak boleh dibundarkan','round')],'Banding jarak nombor kepada dua puluh bersebelahan.','Tahun 1 · Semak Bundaran'),id,'1.8.1',mode,'verbal','reasoning',s,['round']);
 };
 
 GEN['1.9.1']=function(id,s){
@@ -114,7 +117,7 @@ GEN['1.9.1']=function(id,s){
  const op=down?`tolak ${step}`:`tambah ${step}`;
  if(mode==='identify_step')return mark(q(`Pola: <b>${seq.join(', ')}</b>. Apakah peraturannya?`,op,[Nq(down?`tambah ${step}`:`tolak ${step}`,'pattern'),Nq(down?`tambah ${step+1}`:`tolak ${step+1}`,'pattern'),Nq('tiada pola','pattern')],'Cari beza antara nombor berturutan.','Tahun 1 · Kenal Pola'),id,'1.9.1',mode,'symbolic','concept',s,['pattern']);
  if(mode==='identify_direction')return mark(q(`Adakah urutan nombor <b>${seq.join(', ')}</b> menaik atau menurun?`,down?'menurun':'menaik',[Nq(down?'menaik':'menurun','pattern'),Nq('rawak','pattern'),Nq('sama sahaja','pattern')],'Lihat sama ada nilai bertambah atau berkurang.','Tahun 1 · Arah Pola'),id,'1.9.1',mode,'symbolic','application',s,['pattern']);
- return mark(q(`${name()} kata pola <b>${seq.join(', ')}</b> ialah tambah ${step}. Betulkah?`,down?'salah':'betul',[Nq(down?'betul':'salah','pattern'),Nq('tiada pola','pattern'),Nq('tidak pasti','pattern')],'Periksa beza dan arah pada setiap langkah.','Tahun 1 · Semak Pola'),id,'1.9.1',mode,'verbal','reasoning',s,['pattern']);
+ return mark(q(`${name()} kata pola <b>${seq.join(', ')}</b> ialah tambah ${step}. Betulkah?`,down?`salah, tolak ${step}`:'betul',[Nq(down?'betul':`salah, tolak ${step}`,'pattern'),Nq(`salah, tambah ${step+1}`,'pattern'),Nq('tiada pola','pattern')],'Periksa beza dan arah pada setiap langkah.','Tahun 1 · Semak Pola'),id,'1.9.1',mode,'verbal','reasoning',s,['pattern']);
 };
 
 GEN['1.9.2']=function(id,s){

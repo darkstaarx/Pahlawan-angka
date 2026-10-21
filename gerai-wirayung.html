@@ -292,7 +292,14 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .share-slot:focus-visible{outline:3px solid #fff;outline-offset:2px}
 @media(max-height:670px){.mat.split-layout{min-height:56px}.share-slot{min-height:48px;font-size:9px}.share-slot b{font-size:11px}.share-slot .smallcoins{height:12px}.share-slot .smallcoins img{height:12px}}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
-<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1"></head><body>
+<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
+<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
+<style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
+main.pa-game .scene{--waist:90px;--belt:.55;--aspect:1.5;--ww:clamp(100px,58cqh,150px)}
+.pa-game .scene .basket{left:calc(var(--ww) * .93)}
+@media (min-width:720px){main.pa-game .scene{--waist:104px}}
+/* Short screens: a lower counter keeps Wira in view; the hanging sign would cover his head. */
+@media (max-height:700px){main.pa-game .scene{--waist:58px;--ww:96px}.pa-game .scene .counter{height:58px}.pa-game .scene .basket{bottom:12px}.pa-game .scene .sign{display:none}}</style></head><body>
 
 <main class="pa-game" id="game" aria-label="Gerai Wirayung">
   <header class="hud">
@@ -359,6 +366,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script>/* Gerai Wirayung — router Kemahiran Fokus → mini-game wang.
    Membaca encounter learnerReviewV1 yang SAMA digunakan oleh focusPracticeSummary()
    dan memutuskan sama ada skill wang yang lemah sesuai dilatih di gerai.
@@ -517,7 +525,7 @@ let cfg=parseHash();
 const CHECK_EVERY=8;
 let roundStartedAt=Date.now();
 let lastItems=[],tier={},clean={},served=0,streak=0,lastPet=[],m=null,sign=null;
-let step=1,picked=[],mat=[],splitPiles=[],activeSplit=0,misses=0,hints=0,hint2=0,till=0,log=[],audioOn=false,ac,busy=false;
+let step=1,picked=[],mat=[],splitPiles=[],activeSplit=0,misses=0,paLast=0,paRound=0,hints=0,hint2=0,till=0,log=[],audioOn=false,ac,busy=false;
 function resetProgress(){tier={};clean={};cfg.modes.forEach(k=>{tier[k]=0;clean[k]=0});served=0;streak=0;log=[];setTill(0)}
 
 function choosePet(){const p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];return p}
@@ -800,7 +808,7 @@ function drawOrder(){$('who').textContent=m.who;$('say').textContent=m.say;
  $('order').innerHTML=h}
 
 /* ---------- flow ---------- */
-function startRound(){roundStartedAt=Date.now();m=makeOrder();const t=times[Math.floor(served/2)%4];step=m.mode==='bahagi'?2:1;picked=[];mat=[];splitPiles=m.mode==='bahagi'?Array.from({length:m.people},()=>[]):[];activeSplit=0;sign=null;misses=0;hints=0;hint2=0;busy=false;
+function startRound(){roundStartedAt=paLast=Date.now();paRound++;m=makeOrder();const t=times[Math.floor(served/2)%4];step=m.mode==='bahagi'?2:1;picked=[];mat=[];splitPiles=m.mode==='bahagi'?Array.from({length:m.people},()=>[]):[];activeSplit=0;sign=null;misses=0;hints=0;hint2=0;busy=false;
  $('devBtn').hidden=!(window.PAMiniGameDev?.enabled()===true);$('hint').disabled=false;$('hint').textContent='Tanya Wira';
  $('dial').style.setProperty('--p',t.p);$('dayLbl').textContent='Ke-'+(served+1);$('timeLbl').textContent=t.t;$('dial').title=t.t;$('tint').style.background=t.tint;
  $('devBtn').textContent='D'+cfg.grade+' ▾';
@@ -825,14 +833,14 @@ function fly(src,done){const r=src.getBoundingClientRect(),t=$('basket').getBoun
 
 function go(){if(busy)return;const md=M();
  if(step===1){const ok=picked.length===m.items.length&&picked.every(id=>m.items.includes(id));
-  if(!ok){misses++;sad();$('say').textContent=picked.length<m.items.length?'Eh, ada yang belum masuk beg…':'Hmm, itu bukan pesanan aku.';return}
+  if(!ok){paAttempt(false),misses++;sad();$('say').textContent=picked.length<m.items.length?'Eh, ada yang belum masuk beg…':'Hmm, itu bukan pesanan aku.';return}
   step=2;chips();banner();$('say').textContent=val(md.ask,m);
   $('stationShelf').hidden=true;$('stationCount').hidden=false;drawReceipt();drawSign();drawPurse();drawMat();return}
  if(step===2){
   if(m.mode==='bahagi'){
    const per=target(),amounts=splitPiles.map(p=>p.reduce((a,b)=>a+b,0)),total=amounts.reduce((a,b)=>a+b,0);
    if(amounts.every(n=>n===per)&&total===m.total){finish(per);return}
-   misses++;sad();
+   paAttempt(false),misses++;sad();
    $('say').textContent=amounts.some(n=>n===0)?'Ada '+m.petWord+' yang masih kosong!':'Bahagian belum sama banyak, cuba semula!';
    wira('Pastikan semua '+m.petWord+' mendapat jumlah yang sama. Jumlah keseluruhan mesti '+money(m.total)+'.',3800);
    return
@@ -840,11 +848,14 @@ function go(){if(busy)return;const md=M();
   const tg=target(),cur=mat.reduce((a,b)=>a+b,0);
   if(md.needSign&&md.needSign(m)){
    if(!sign){wira('Pilih dulu: untung atau rugi?',2600);sfx.bad();return}
-   if(sign!==m.kind){misses++;sad();$('say').textContent='Betul ke? Banding jualan dengan kos semula.';return}}
-  if(cur!==tg){misses++;sad();$('say').textContent=cur<tg?'Macam kurang sikit…':'Banyak sangat tu!';wira('Atas kaunter ada '+money(cur)+'. Cuba kira semula.',3200);return}
+   if(sign!==m.kind){paAttempt(false),misses++;sad();$('say').textContent='Betul ke? Banding jualan dengan kos semula.';return}}
+  if(cur!==tg){paAttempt(false),misses++;sad();$('say').textContent=cur<tg?'Macam kurang sikit…':'Banyak sangat tu!';wira('Atas kaunter ada '+money(cur)+'. Cuba kira semula.',3200);return}
   finish(tg)}}
 
-function finish(tg){busy=true;step=3;chips();$('go').disabled=true;show($('wsay'),false);$('bubble').classList.remove('dim');clearTimeout(wTimer);
+/* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
+function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=m;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'gerai-wirayung',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String('Gerai Wirayung '+(m.mode||'')).slice(0,200),answer:String('').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms},location.origin)}catch(e){}}
+function finish(tg){paAttempt(true);busy=true;step=3;chips();$('go').disabled=true;show($('wsay'),false);$('bubble').classList.remove('dim');clearTimeout(wTimer);
  const md=M(),stars=hints===0&&misses===0?3:(hints+misses<=2?2:1),rev=md.revenue(m);
  if(liveFocus&&m.focusContext)recordLiveMoneyResult(m.focusContext,misses===0&&hints===0?'independent':misses?'corrected':'assisted');
  log.push({m,stars,target:tg,first:misses===0});

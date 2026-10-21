@@ -6,6 +6,7 @@
   const $ = id => document.getElementById(id);
   const cloud = () => window.PACloud?.state;
   let checking = false;
+  let recheck = false;
   let watching = '';
   function read() {
     try {
@@ -23,7 +24,7 @@
   function showAuth(kind) {
     view('auth');
     const title = $('paEntryAuthTitle');
-    if (title) title.textContent = kind === 'demo' ? 'Daftar & cuba demo percuma' : kind === 'purchase' ? 'Daftar untuk teruskan pembayaran' : 'Log masuk akaun penjaga';
+    if (title) title.textContent = kind === 'demo' ? 'Daftar & cuba demo percuma' : kind === 'purchase' ? 'Daftar untuk teruskan pembayaran' : kind === 'free' ? 'Daftar akaun percuma' : 'Log masuk akaun penjaga';
     window.screen('login');
     $('googleAuthButton')?.focus();
   }
@@ -31,9 +32,18 @@
     clear(); view('welcome'); window.screen('login');
   }
   async function demo() {
-    write('demo');
-    if (cloud()?.user) { await beforeProfiles(); return; }
-    showAuth('demo');
+    if (cloud()?.user) { write('demo'); await beforeProfiles(); return; }
+    // Guests try the demo straight away; no account is needed. Nothing is
+    // saved, and registering stays one tap away on the result screen/hub.
+    if (window.PADemo?.open) { window.PADemo.open(); return; }
+    write('demo'); showAuth('demo');
+  }
+  // Free sign-up chosen after the guest demo: register, then the normal
+  // free account route (profile setup) — not the demo again.
+  async function registerFree() {
+    write('login');
+    if (cloud()?.user) return login();
+    showAuth('free');
   }
   function plans() {
     write('purchase');
@@ -119,11 +129,20 @@
     return true;
   }
   async function checkPayment() {
-    if (checking || !cloud()?.user) return;
+    if (!cloud()?.user) { message('Log masuk akaun penjaga untuk menyemak bayaran.'); return; }
+    // A poll result that lands while a check is running must not be dropped.
+    if (checking) { recheck = true; return; }
     checking = true;
     try {
       const state = cloud(); const userId = state.user.id; const orderId = returnOrder();
-      if (!orderId) return;
+      if (!orderId) {
+        // Order already confirmed earlier in this visit: go to the account.
+        await window.PACommercial.refresh();
+        if (cloud()?.user?.id === userId && window.PACommercial.isPaid()) { await openAccount(); return; }
+        message('Pesanan tidak ditemui. Hubungi bantuan jika bayaran telah dibuat.');
+        return;
+      }
+      message('Menyemak bayaran…');
       const result = await state.client.from('payment_orders').select('status,plan').eq('id', orderId).eq('user_id', userId).maybeSingle();
       if (cloud()?.user?.id !== userId) return;
       if (result.error) throw result.error;
@@ -134,12 +153,22 @@
       }
       await window.PACommercial.refresh();
       if (cloud()?.user?.id !== userId || !window.PACommercial.isPaid()) { message('Bayaran diterima. Akses sedang dikemas kini; tekan Semak bayaran sebentar lagi.'); return; }
-      clear(); view('account');
+      clear();
       const url = new URL(location.href); url.searchParams.delete('payment_order');
       history.replaceState(null, '', url.pathname + url.search + url.hash);
-      await window.PACloud.resumeAfterConsent();
+      await openAccount();
     } catch (_) { message('Pengesahan belum dapat dimuat. Semak sambungan dan tekan Semak bayaran.'); }
-    finally { checking = false; }
+    finally {
+      checking = false;
+      if (recheck) { recheck = false; checkPayment(); }
+    }
+  }
+  // The pricing page is its own screen; the account (profiles/onboarding)
+  // lives on the login screen, so switch screens before resuming profiles.
+  async function openAccount() {
+    message('');
+    view('account'); window.screen('login');
+    await window.PACloud.resumeAfterConsent();
   }
   async function reopenBill() {
     const state = cloud(); if (!state?.user || !returnOrder()) return;
@@ -148,7 +177,9 @@
       if (error) throw error;
       if (data?.status === 'paid') return checkPayment();
       if (!/^[a-z0-9_-]{4,40}$/i.test(data?.billcode || '')) throw new Error('bill missing');
-      location.assign(`https://toyyibpay.com/${data.billcode}`);
+      // CHIP purchase ids are UUIDs; older ToyyibPay bills keep their own page.
+      const chip = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.billcode);
+      location.assign(chip ? `https://gate.chip-in.asia/p/${data.billcode}/` : `https://toyyibpay.com/${data.billcode}`);
     } catch (_) { message('Bil tidak dapat dibuka. Hubungi bantuan sebelum membuat bayaran baharu.'); }
   }
   function mount() {
@@ -173,6 +204,6 @@
     }));
     document.querySelectorAll('[data-entry-plan]').forEach(button => button.addEventListener('click', () => choose(button.dataset.entryPlan)));
   }
-  window.PAEntry = { beforeProfiles, plans, choose, demo, login, welcome, checkPayment, rememberOrder };
+  window.PAEntry = { beforeProfiles, plans, choose, demo, login, registerFree, welcome, checkPayment, rememberOrder };
   mount();
 })();

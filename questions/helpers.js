@@ -253,7 +253,7 @@ function moneyQ(id,shift,s){
      originSkillId:id,contextDomain:'money',diagnosticFamily:questionMode==='recognise'?'money_unit':'money',
      arithmeticProfile:{operationFamilies:[],operands:{valuesMinorUnits:values,unit:'sen'},
        operandDimensions:{valueCount:values.length,largestValueMinorUnits:Math.max(...values),unit:'sen'}},
-     probes:{foundationIds:['money.denomination','money.ringgit_sen'],conceptIds:['money.ringgit_sen'],diagnosticPurpose:'normal'},
+     probes:{foundationIds:['money.denominations','money.ringgit_sen'],conceptIds:['money.ringgit_sen'],diagnosticPurpose:'normal'},
      evidence:{questionFamilyKey:`d2-money-basic-${questionMode}`,representation:questionMode==='recognise'?'visual':'symbolic',demand:'concept',difficultyBand:1}
    });
    if(mode==="recognise"){

@@ -222,6 +222,9 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   align-items:stretch;justify-items:stretch
 }
 .segelCard .question .segelPrompt{min-height:0;width:100%;box-sizing:border-box;display:block;padding:10px 12px}
+/* Cerita panjang (cth. ayat panjang lensa 4.8): saiz lebih tenang dan rata kiri, supaya seluruh soalan muat. */
+.segelCard[data-question-layout="long"] .question{font-size:clamp(16px,2.3dvh,20px)}
+.segelCard[data-question-layout="long"] .question .segelPrompt{text-align:left;line-height:1.4}
 .segelCard .answers{flex:0 0 auto}
 .segelCard .feedback{flex:0 0 auto;min-height:32px}
 

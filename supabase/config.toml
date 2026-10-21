@@ -1,2 +1,7 @@
 [functions.send-payment-emails]
 verify_jwt = true
+
+# CHIP posts the paid purchase without a Supabase JWT; the function verifies
+# CHIP's RSA X-Signature instead.
+[functions.chip-callback]
+verify_jwt = false

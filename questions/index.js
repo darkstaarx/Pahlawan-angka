@@ -162,6 +162,24 @@ function questionSelectionScore(q,target,recent,last,prev2){
    +(last&&last.archetypeId===q.archetypeId?20:0)
    +(key&&last?.answerKey===key?25:0)+(key&&prev2?.answerKey===key?8:0);
 }
+// Lens 4.8 language load (docs/PA-DIAGNOSTIC-BRAIN.md §4.8): about one in four questions of the common
+// D3–D6 word-problem skills is a story in a short wording (one sentence) or a long one (2–3 sentences,
+// same kind of numbers and schema, js/engine/reading-pairs-v1.js), tagged facets.reading so Cikgu
+// Dimensi can compare the two. Not while the child is still building the skill (mastery below 35),
+// nor in a mastery check (confirm), which keeps the skill's own questions.
+const READING_PAIR_SKILLS={'D3.ADD10000':['jumlah'],'D3.SUB10000':['beza'],'D3.MUL':['kali_ganda'],'D3.DIV':['agih'],'D3.MONEY':['wang_jumlah','wang_baki'],
+ 'D4.ADD':['jumlah'],'D4.SUB':['beza'],'D4.MUL':['kali_ganda'],'D4.DIV':['agih'],'D4.MONEY':['wang_jumlah','wang_baki'],
+ 'D5.ADD':['jumlah'],'D5.SUB':['beza'],'D5.MUL':['kali_ganda'],'D5.DIV':['agih'],'D5.MONEY':['wang_jumlah','wang_baki'],
+ 'D6.NUMBERS':['jumlah','beza'],'D6.MONEY':['wang_jumlah','wang_baki']},READING_PAIR_SHARE=.25;
+function readingPairQuestion(id,s,ctx){
+ const fams=READING_PAIR_SKILLS[id],P=window.PAReadingPairs;
+ if(!fams||!P||sess.demoMode||ctx.isBoss||['recover','teach','confirm'].includes(sess.mode)||Number(s?.mastery)<35||Math.random()>=READING_PAIR_SHARE)return null;
+ const x=P.item(pick(fams),Number(id[1]),Math.random()<.5?1:3);if(!x)return null;
+ const long=x.facets.reading===3,q=Q(x.prompt,x.answer,x.wrongs.map(w=>N(w.v,w.tag)),x.hint,long?'Soalan berayat panjang':'Soalan berayat pendek',true,false);
+ // Its own competency keeps the story as written: js/written-arithmetic-v1.0.0.js inject() leaves it alone.
+ return Object.assign(q,{facets:x.facets,source:'reading-pairs-v1',archetypeId:'reading_'+x.family,familyKey:'reading:'+x.family,competencyId:'reading_'+x.family,
+  representation:'story',demand:'application',contextId:x.facets.context==='money'?'money':'daily',difficultyBand:long?3:2});
+}
 function generate(id,s,interactionContext={}){
   let shift = s.evidence>=2 && (s.confidence+15<s.mastery || s.correct>=3 && s.wrong===0) && Math.random()<.45;
   const bank=questionBankFor(id);
@@ -173,7 +191,8 @@ function generate(id,s,interactionContext={}){
 
   const attempts=(sess.mode==='confirm'?8:16);
   const v2Bridge=window.PAQuestionSystemV2Bridge;
-  if(v2Bridge&&typeof v2Bridge.tryGenerate==='function'){
+  try{q=readingPairQuestion(id,s,interactionContext)}catch(_){q=null}
+  if(!q&&v2Bridge&&typeof v2Bridge.tryGenerate==='function'){
     try{
       q=v2Bridge.tryGenerate(id,s,{history:sess.questionHistory,recentFingerprints:sess.questionFingerprints,stateRoot:(typeof db!=='undefined'?db:null)});
     }catch(_){q=null}
@@ -201,6 +220,8 @@ function generate(id,s,interactionContext={}){
   // Focus Diagnosis v2: authored D6 tags ride on the question object (no scoring, no routing).
   if(/^D6\./.test(id))q=window.PAY6V2Runtime?.focusTag?.(q,id)||q;
   else if(/^D1\./.test(id))q=window.PAY1V2Runtime?.focusTag?.(q,id)||q;
+  // D2–D5 (and the D3–D6 short/long wording items): authored per archetype, questions/focus-tags-d2-d5-v1.js.
+  if(/^D[2-6]\./.test(id))q=window.PAFocusTagsD2D5?.focusTag?.(q,id)||q;
   rememberQuestion(id,questionSeenKey(q));
   q=PAOptionIntegrity.sanitize(q);
   q=PAOptionIntegrity.refineYoung(q,id);

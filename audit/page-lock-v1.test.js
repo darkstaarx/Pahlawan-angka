@@ -1,13 +1,14 @@
-const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const {loadPlaywright,browserPath}=require('./lib/browser');
+const {segelCloseSource}=require('./lib/segel-close');
+const {chromium}=loadPlaywright();
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const script=fs.readFileSync('js/page-lock-v1.js','utf8');
 const css=fs.readFileSync('css/page-lock-v1.css','utf8');
-const segel=fs.readFileSync('js/segel-demo-v2.1.0.js','utf8');
-const closeSource=segel.slice(segel.indexOf('window.closeSegelDemo=function(){'),segel.indexOf('\n  window.restartSegelDemo='));
+const closeSource=segelCloseSource();
 const fixture=`function pageLockParentPin(){return '4826'};let entryMode={guestDemo:true},demoOpenGeneration=0,runGeneration=0,run={answer:42};const stage={pause(){window.stagePaused=true}};window.PADemo={restoreGuest(){window.guestRestored=true}};function goLogin(){document.body.dataset.screen='login'};${closeSource}`;
 (async()=>{
- const browser=await chromium.launch({headless:true,executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+ const browser=await chromium.launch({headless:true,executablePath:browserPath('/usr/bin/chromium'),args:['--no-sandbox']});
  try{
   const page=await browser.newPage({viewport:{width:390,height:844},hasTouch:true});
   const root='https://page-lock.test';
@@ -21,7 +22,11 @@ const fixture=`function pageLockParentPin(){return '4826'};let entryMode={guestD
   }
   await page.evaluate(()=>document.body.dataset.screen='segelDemo');
   await page.waitForFunction(()=>history.state?.paPageLock==='guard');
-  assert.equal((await page.locator('[data-page-lock]').first().innerText()).trim(),'🔒');
+  // Icon-only control: an SVG padlock, no text; the shackle follows the state.
+  const lockControl=page.locator('[data-page-lock]').first();
+  assert.equal((await lockControl.innerText()).trim(),'');
+  assert.equal(await lockControl.locator('svg').count(),1);
+  assert.equal(await lockControl.getAttribute('data-lock-state'),'locked');
   assert.equal(await page.locator('[data-page-lock]').count(),2);
   const count=await page.evaluate(()=>history.length);
   for(const screen of ['game','segelDemo']){
@@ -47,6 +52,7 @@ const fixture=`function pageLockParentPin(){return '4826'};let entryMode={guestD
   await page.locator('[data-page-lock]').first().click();
   await page.locator('[data-exit-pin]').fill('4826');await page.locator('[data-unlock]').click();
   assert.equal(await page.evaluate(()=>PAPageLock.isLocked()),false);
+  assert.equal(await lockControl.getAttribute('data-lock-state'),'unlocked');
   await page.locator('[data-page-lock]').first().click();
   assert.equal(await page.evaluate(()=>PAPageLock.isLocked()),true);
   assert.equal(await page.evaluate(()=>{const e=new Event('beforeunload',{cancelable:true});window.dispatchEvent(e);return e.defaultPrevented;}),true);

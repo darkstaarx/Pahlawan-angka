@@ -418,6 +418,9 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 </style>
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
+<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
+<style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
+.pa-game .scene{--belt:.6;--waist:18px}.pa-game .scene .bubble{left:auto;right:8px}</style>
 
 <main class="pa-game" id="game" aria-label="Tren Jam">
   <header class="hud">
@@ -470,6 +473,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/menara-jam-router.js"></script>
 <script src="js/engine/focus-time-diagnostic-v1.js"></script>
 <script>
@@ -687,7 +691,7 @@ const HELP2={
 /* ---------- keadaan ---------- */
 const SET=5; // 5 kunci cahaya = satu menara dipulihkan
 let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,setLog=[],towers=1;
-let hour=12,minute=0,selHand='m',dig=0,dur={h:0,m:0},num='',choice='',solved=false,misses=0,hints=0,hint2=0,soundOn=false,ac=null,dragging=false;
+let hour=12,minute=0,selHand='m',dig=0,dur={h:0,m:0},num='',choice='',solved=false,misses=0,paLast=0,paRound=0,hints=0,hint2=0,soundOn=false,ac=null,dragging=false;
 const el=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
 const create=(tag,attrs={},text)=>{const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e};
 const plain=parts=>parts.map(p=>typeof p==='string'?p:p.c).join('');
@@ -803,7 +807,7 @@ const SUB=SUB0;
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;el('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  el('stageN').textContent='TREN '+(done?lit:pos+1)+'/'+SET;el('towerLbl').textContent='Syif '+towers;el('stars').textContent=stars;el('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');el('power').classList.toggle('lit',lit===SET)}
 const DEST=['Kampung Dimensi','Kuala Lumpur','Johor Bahru','Ipoh','Kota Bharu','Melaka','Kuantan','Alor Setar','Seremban','Kuching'];
-function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
+function startRound(){q=makeQ();solved=false;misses=0;paLast=Date.now();paRound++;hints=0;hint2=0;hideMsg();
  el('devBtn').hidden=!devToolsEnabled;
  el('devBtn').textContent='D'+cfg.grade+' ▾';el('mode').textContent=(cfg.grade===1&&q.mode==='kalendar'?'HARI & BULAN':MODE_LABEL[q.mode])+' · T'+(q.tierIx+1);el('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a77','#6a7ad055'][served%SET];
  el('question').textContent=plain(q.parts)+(q.ask&&!q.noTime?' '+q.ask:'');el('subtitle').textContent=served<2?SUB[q.widget](q):'';
@@ -814,11 +818,14 @@ function startRound(){q=makeQ();solved=false;misses=0;hints=0;hint2=0;hideMsg();
  setTimeout(()=>{if(!solved)el('bstat').textContent='MENUNGGU'},1300);
  setTimeout(()=>{el('who').textContent=q.who;say(pick(['Ketua Stesen, tolong aku!','Wira, boleh bantu aku?','Aku tak nak terlepas kereta api!']));el('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildWidget()}
+/* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
+function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'menara-jam',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String(q.q||((q.parts||[]).map(x=>typeof x==='string'?x:(x&&x.c)||'').join('')+' '+(q.ask||''))).slice(0,200),answer:String(q.ansText??q.ans??'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms},location.origin)}catch(e){}}
 function check(){
  if(solved){if(focusDiagnosticMode&&served===focusContrastPlan.length)towerDone();else if(served%SET===0)towerDone();else startRound();sfx(820,.12);return}
  if(current()===null){msg('Masukkan jawapan dulu.','',2000);return}
- if(!isRight()){misses++;say(pick(['Belum tepat lagi…','Hmm, cuba semak semula.']));msg(wrongMsg(),'bad',3600);pet('sad');const bs=el('bstat');bs.textContent='TERTUNDA';bs.className='bstat late';setTimeout(()=>{if(!solved){bs.textContent='MENUNGGU';bs.className='bstat'}},1400);const v=el('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(245,.17);return}
- solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);
+ if(!isRight()){paAttempt(false),misses++;say(pick(['Belum tepat lagi…','Hmm, cuba semak semula.']));msg(wrongMsg(),'bad',3600);pet('sad');const bs=el('bstat');bs.textContent='TERTUNDA';bs.className='bstat late';setTimeout(()=>{if(!solved){bs.textContent='MENUNGGU';bs.className='bstat'}},1400);const v=el('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(245,.17);return}
+ solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);
  if(!focusDiagnosticMode&&focusNonce&&window.parent!==window){const archetypeId=q.archetypeId||focusArchetypes[q.mode]||'time_practice';window.parent.postMessage({type:'PA_TREN_JAM_ROUND',version:1,nonce:focusNonce,grade:cfg.grade,skillId:focusOriginSkill,mode:q.mode,archetypeId,kssr:q.kssr||null,questionKey:focusNonce+':'+served+':'+q.mode,misses,hints,at:Date.now()},location.origin)}
  if(focusDiagnosticMode&&q.focusDiagnosticV1){
   const tag=q.focusDiagnosticV1,key=tag.evidence.variantFingerprint;

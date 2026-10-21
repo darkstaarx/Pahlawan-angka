@@ -1,0 +1,143 @@
+<title>Makmal Otak Diagnostik</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- Dev lab for the Diagnostic Brain + targeted practice. Serve the repo root and open
+     /tools/diagnostic-sim-lab.html. Not linked from the app. A dummy child plays two weeks;
+     the real PADiagnostic + PATargets modules must discover what the child struggles with. -->
+<style>
+/* Layout: one reading column — dummy child picker, then the two-week story top to bottom:
+   what the child really is → week 1 report → PA plan + sample practice → worksheet → week 2 compare. */
+:root{
+  --bg:#fdfaf2; --panel:#ffffff; --ink:#06164c; --muted:#4d5b82; --line:#dae9f4; --wash:#eef5fb;
+  --blue:#0067d9; --gold:#ffcb32; --gold-ink:#805000; --bad:#c9303d; --ok:#1d7a46; --okwash:#e6f4ec; --badwash:#fbeaec;
+  --display:Arial,Helvetica,sans-serif; --body:Arial,Helvetica,sans-serif; --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1630;--panel:#13234a;--ink:#f2f5ff;--muted:#a9b6d6;--line:#2b3f6e;--wash:#182c58;--blue:#7fb0ff;--gold:#ffcb32;--gold-ink:#ffd970;--bad:#ff7a84;--ok:#5fd394;--okwash:#143a2a;--badwash:#3d1a24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1630;--panel:#13234a;--ink:#f2f5ff;--muted:#a9b6d6;--line:#2b3f6e;--wash:#182c58;--blue:#7fb0ff;--gold:#ffcb32;--gold-ink:#ffd970;--bad:#ff7a84;--ok:#5fd394;--okwash:#143a2a;--badwash:#3d1a24;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.lab{max-width:720px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+h1{font:900 26px/1.15 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2{font:800 13px/1 var(--display);text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 10px}
+.lede{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.picker{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 14px var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--blue);background:var(--wash)}
+.chip:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.seed{margin-left:auto;display:flex;gap:6px;align-items:center;color:var(--muted);font-size:13px}
+.seed button{border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;font:700 13px var(--body);cursor:pointer}
+.truth{background:var(--wash);border-radius:12px;padding:12px 14px;font-size:14px}
+.truth b{color:var(--blue)}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px}
+.step>.n{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font:900 15px var(--display)}
+.step>div{min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:10px}
+.crest{font:900 12px var(--display);letter-spacing:.12em;color:var(--gold-ink);text-transform:uppercase}
+.row{display:grid;grid-template-columns:18px 1fr;gap:8px;align-items:start}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:6px;background:var(--bad)}
+.dot.good{background:var(--ok)}
+.act{color:var(--muted);font-size:13.5px;margin-top:2px}
+.tag{font:600 11px var(--mono);color:var(--muted)}
+.plan{display:grid;gap:12px}
+.fokus{border-left:5px solid var(--gold);background:var(--panel);border-radius:4px 12px 12px 4px;padding:12px 14px;display:grid;gap:8px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fokus h3{margin:0;font:800 16px var(--display)}
+.where{display:inline-block;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--wash);color:var(--blue);margin-left:6px;vertical-align:2px}
+.why{color:var(--muted);font-size:13.5px}
+.items{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.items li{background:var(--wash);border-radius:10px;padding:8px 10px;font-size:14px}
+.choices{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.choices span{font:600 12px var(--mono);padding:2px 7px;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.choices span.c{border-color:var(--ok);color:var(--ok)}
+.choices small{color:var(--muted);font-weight:400}
+.sheet{background:#fff;color:#111;border:1px solid #cfd6e4;border-radius:6px;padding:20px 22px;font-family:Arial,Helvetica,sans-serif;display:grid;gap:14px;box-shadow:0 1px 0 #cfd6e4}
+.sheet h4{margin:0;font-size:17px}
+.sheet .sec{display:grid;gap:8px}
+.sheet .sec b{font-size:14px}
+.sheet ol{margin:0;padding-left:22px;display:grid;gap:8px;font-size:14px}
+.sheet .box{border:1.5px dashed #9aa6bf;border-radius:6px;height:46px;margin-top:4px;padding:4px 8px;font-size:11px;color:#6b7590}
+.sheet .note{font-size:12.5px;background:#fff7d6;border-radius:6px;padding:8px 10px}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.cmp>div{border-radius:12px;padding:12px;display:grid;gap:6px;align-content:start;font-size:14px}
+.cleared{background:var(--okwash)}.left{background:var(--badwash)}.fresh{background:var(--wash)}
+.cmp h3{margin:0;font:800 13px var(--display);text-transform:uppercase;letter-spacing:.06em}
+.verdict{font:800 15px var(--display);padding:12px 14px;border-radius:12px;border:2px solid var(--ok);color:var(--ok)}
+.verdict.mixed{border-color:var(--gold-ink);color:var(--gold-ink)}
+.stat{font:600 12px var(--mono);color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.card,.fokus,.cmp>div{animation:in .25s ease-out both}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
+</style>
+
+<main class="lab">
+  <header>
+    <h1>Makmal Otak Diagnostik</h1>
+    <p class="lede">Anak dummy main 2 minggu. Otak PA tak tahu kelemahan sebenar anak — dia kena kesan sendiri dari jawapan, pilih latihan, dan semak semula selepas seminggu.</p>
+  </header>
+  <div class="picker" role="group" aria-label="Pilih anak dummy" id="picker"></div>
+  <div class="truth" id="truth"></div>
+  <section class="step"><span class="n">1</span><div><h2>Minggu 1 · laporan ibu bapa</h2><div id="w1"></div></div></section>
+  <section class="step"><span class="n">2</span><div><h2>PA pilih latihan (Kemahiran Fokus)</h2><div class="plan" id="plan"></div></div></section>
+  <section class="step"><span class="n">3</span><div><h2>Lembaran kerja dicetak</h2><div id="sheet"></div></div></section>
+  <section class="step"><span class="n">4</span><div><h2>Minggu 2 · selepas latihan</h2><div id="w2"></div></div></section>
+</main>
+
+<!--MODULES-->
+<script src="../js/engine/diagnostic-brain-v1.js"></script>
+<script src="../js/engine/reading-pairs-v1.js"></script>
+<script src="../js/engine/diagnostic-targets-v1.js"></script>
+<script src="diagnostic-sim.js"></script>
+<!--/MODULES-->
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+  const NOW=Date.UTC(2026,9,20,4);
+  const TAG={correct:'betul',smaller_from_larger:'kecil-dari-besar',borrow_no_decrement:'lupa kurang',operation:'salah operasi',money_unit:'sen/RM',place_value_shift:'nilai tempat',times_neighbour:'sifir jiran',add_no_carry:'tak kumpul',counting:'kira lebih/kurang',place:'nilai tempat'};
+  let who='aisyah',seed=1;
+  try{const s=JSON.parse(localStorage.getItem('pa-sim')||'{}');if(PASim.PERSONAS[s.who])who=s.who;if(s.seed)seed=s.seed}catch(e){}
+
+  function picker(){
+    $('picker').innerHTML=Object.entries(PASim.PERSONAS).map(([id,p])=>`<button class="chip" id="p-${id}" aria-pressed="${id===who}" data-id="${id}">${esc(p.name)}</button>`).join('')+
+      `<span class="seed">Ujian ke-<b id="seedv">${seed}</b><button id="reroll">Main semula</button></span>`;
+  }
+  function report(r){
+    const rows=[...r.strengths.slice(0,2).map(s=>`<div class="row"><span class="dot good"></span><div>${esc(s.text)}</div></div>`),
+      ...r.findings.map(f=>`<div class="row"><span class="dot"></span><div>${esc(f.text)}${f.action?`<div class="act">${esc(f.action)}</div>`:''}<div class="tag">${esc(f.id)} · keyakinan ${esc(f.confidence||'-')}</div></div></div>`)];
+    return `<div class="card"><span class="crest">Ringkasan untuk ibu bapa · ${r.total} jawapan</span>${rows.join('')||'<div>Tiada isu ketara.</div>'}</div>`;
+  }
+  function item(it){
+    const ch=(it.choices||[]).map(c=>`<span class="${c.tag==='correct'?'c':''}">${esc(c.v)} <small>${esc(TAG[c.tag]||c.tag)}</small></span>`).join('');
+    return `<li>${esc(it.prompt)}${ch?`<div class="choices">${ch}</div>`:''}</li>`;
+  }
+  function render(){
+    try{localStorage.setItem('pa-sim',JSON.stringify({who,seed}))}catch(e){}
+    picker();
+    const s=PASim.simulate(who,{now:NOW,seed});
+    $('truth').innerHTML=`<b>Rahsia anak dummy (otak PA tak nampak ini):</b> ${esc(s.persona.label)}.`;
+    $('w1').innerHTML=report(s.week1);
+    $('plan').innerHTML=s.plan.steps.length?s.plan.steps.map(st=>{
+      const set=s.sets.find(x=>x.finding===st.finding);
+      return `<article class="fokus"><h3>${esc(st.card)}<span class="where">${st.where==='worksheet'?'Lembaran':'Mini game / Gembok'}</span></h3>
+        <div class="why">Sebab: ${esc(st.why)}${st.also?` <span class="tag">(+ ${esc(st.also.join(', '))})</span>`:''}</div>
+        <ul class="items">${set.items.slice(0,3).map(item).join('')}</ul>
+        <div class="stat">${set.items.length} soalan dijana · pilihan salah = corak kesilapan sebenar</div></article>`}).join('')
+      :'<div class="card">Tiada latihan khas diperlukan.</div>';
+    const w=s.worksheet;
+    $('sheet').innerHTML=w.sections.length?`<div class="sheet"><h4>${esc(w.title)}</h4>${w.sections.map(sec=>`<div class="sec"><b>${esc(sec.title)}</b><ol>${sec.items.slice(0,3).map(i=>`<li>${esc(i.prompt)}${sec.showWorking?'<div class="box">Cara kerja</div>':''}</li>`).join('')}</ol></div>`).join('')}<div class="note">${esc(w.parentNote)}</div></div>`:'<div class="card">Tiada lembaran.</div>';
+    const ids=r=>new Set(r.findings.map(f=>f.id));
+    const a=ids(s.week1),b=ids(s.week2);
+    const cleared=s.week1.findings.filter(f=>!b.has(f.id)),left=s.week2.findings.filter(f=>a.has(f.id)),fresh=s.week2.findings.filter(f=>!a.has(f.id));
+    const improved=s.week2.strengths.filter(x=>/^improved_/.test(x.id));
+    const li=(xs,empty)=>xs.length?xs.map(f=>`<div>${esc(f.text)}</div>`).join(''):`<div class="stat">${empty}</div>`;
+    const good=!left.length;
+    $('w2').innerHTML=`<div style="display:grid;gap:10px">
+      <div class="verdict ${good?'':'mixed'}">${good?'Semua isu minggu 1 yang dilatih sudah hilang.':`${cleared.length} isu hilang, ${left.length} masih ada — PA teruskan latihan.`}</div>
+      <div class="cmp"><div class="cleared"><h3>Hilang</h3>${li(cleared,'—')}${improved.map(x=>`<div><b>${esc(x.text)}</b></div>`).join('')}</div>
+      <div class="left"><h3>Masih ada</h3>${li(left,'Tiada')}</div>
+      <div class="fresh"><h3>Baru dikesan</h3>${li(fresh,'Tiada')}</div></div>
+      ${report(s.week2)}
+      <div class="stat">${s.answers.week1} rekod minggu 1 → ${s.answers.week2} rekod selepas minggu 2 · tarikh ujian 20 Okt 2026</div></div>`;
+  }
+  document.addEventListener('click',e=>{
+    const c=e.target.closest('.chip');if(c){who=c.dataset.id;render();return}
+    if(e.target.id==='reroll'){seed=seed%9+1;render()}
+  });
+  render();
+})();
+</script>

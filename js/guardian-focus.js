@@ -1,6 +1,32 @@
+/* Diagnostic Brain findings lead the cards (docs/PA-DIAGNOSTIC-BRAIN.md §8a):
+   each PATargets plan step names the skill where its evidence came from. The
+   card shows the short practice label; the full finding stays in the parent
+   tab's Ringkasan Cikgu Dimensi. No findings, no change to the order. */
+function brainFocusSteps(profile,grade,usable,blocked){
+ const B=globalThis.PADiagnostic,T=globalThis.PATargets;
+ if(!B?.analyze||!T?.plan||!T?.skillFor||!Array.isArray(profile?.diagLog)||!profile.diagLog.length)return [];
+ const out=[];
+ for(const step of T.plan(B.analyze(profile.diagLog,{name:profile.name}),{grade}).steps){
+  // Evidence from a skill a money/time check moved away from stays with that check's card.
+  const own=step.skills||[];
+  if(own.some(id=>blocked.has(id))&&!own.some(id=>usable.some(m=>m.id===id)))continue;
+  const id=T.skillFor(step,usable);if(id&&!out.some(x=>x.id===id))out.push({id,step});
+ }
+ return out;
+}
 /* Home focus uses actual encounters, not low default mastery or retry counts.
    Five encounters across two distinct questions are a minimum for a suggestion.
    The latest twenty encounters allow a recovering skill to leave the list. */
+/* One short line under the card title (owner: no clutter for the child or a parent glancing at it).
+   Long explanations (money/time checks) stay in item.reason. */
+function moneyCardLine(r){const c=String(r?.rootCause||'');return c.startsWith('money.')?'Punca: soalan wang':c.startsWith('operation.')?'Punca: operasi asas':'Teruskan latihan wang'}
+function timeCardLine(r){return({'time.read_clock':'Punca: baca jam','time.unit_relationship':'Punca: unit masa','time.timeline_operation':'Punca: tempoh masa'})[String(r?.rootCause||'')]||'Teruskan latihan masa'}
+function focusCardLine(item){
+ if(item.short)return item.short;
+ if(item.diagnostic)return item.reason;                     // brain cards: the short practice label, e.g. "Sifir 3"
+ if(item.foundationShort)return 'Punca: '+item.foundationShort;
+ return 'Ketepatan '+item.independentRate+'%';
+}
 function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  const grade=Number(profile?.schoolGrade),skills=typeof GRAPH==='undefined'?[]:GRAPH.skills.filter(m=>Number(m.grade)===grade);
  const rows=(profile?.learnerReviewV1?.encounters||[]).filter(e=>Number(e.grade)===grade
@@ -23,9 +49,12 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  const timeTargetQuestionKeys=new Set(timeTargetEvidence.map(e=>e.questionKey).filter(Boolean));
  const timeTargetRecovered=timeTargetEvidence.length>=5&&timeTargetQuestionKeys.size>=2&&timeTargetEvidence.filter(e=>e.outcome==='independent').length/timeTargetEvidence.length>=.8;
  let hasEvidence=false;
+ // A money/time check that moved the focus to another skill keeps this one off the cards.
+ const blocked=new Set();
+ if(activeMoneyReport&&activeMoneyReport.state==='candidate'&&activeMoneyReport.nextSkillId&&activeMoneyReport.nextSkillId!==activeMoneyReport.skillId)blocked.add(activeMoneyReport.skillId);
+ if(currentTimeReport&&currentTimeReport.state==='candidate'&&currentTimeReport.nextSkillId&&currentTimeReport.skillId!==currentTimeReport.nextSkillId)blocked.add(currentTimeReport.skillId);
  const candidates=skills.flatMap(m=>{
-  if(activeMoneyReport&&m.id===activeMoneyReport.skillId&&activeMoneyReport.state==='candidate'&&activeMoneyReport.nextSkillId&&activeMoneyReport.nextSkillId!==activeMoneyReport.skillId)return [];
-  if(currentTimeReport&&currentTimeReport.state==='candidate'&&currentTimeReport.nextSkillId&&m.id===currentTimeReport.skillId&&m.id!==currentTimeReport.nextSkillId)return [];
+  if(blocked.has(m.id))return [];
   const recent=rows.filter(e=>e.skillId===m.id).slice(-20),unique=new Set(recent.map(e=>e.questionKey).filter(Boolean));
   if(recent.length<5||unique.size<2)return [];
   hasEvidence=true;
@@ -44,11 +73,11 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    &&typeof questionBankFor==='function'&&typeof questionBankFor(nextId)==='function'){
    const byId=candidates.filter(x=>x.id!==nextId);
    byId.unshift({id:nextId,title:next.title,chapter:String(next.chapter),attempts:Number(activeMoneyReport.operationEvidence?.tagged)||6,
-    independentRate:0,priority:1000,diagnostic:true,reason:String(activeMoneyReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
+    independentRate:0,priority:1000,diagnostic:true,short:moneyCardLine(activeMoneyReport),reason:String(activeMoneyReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
    candidates.splice(0,candidates.length,...byId);
   }else if(activeMoneyReport.state==='candidate'&&(!nextId||nextId===activeMoneyReport.skillId)){
    const current=candidates.find(x=>x.id===activeMoneyReport.skillId);
-   if(current){current.diagnostic=true;current.priority=1000;current.reason=String(activeMoneyReport.parentText||'Semakan mencadangkan latihan Wang diteruskan.');}
+   if(current){current.diagnostic=true;current.priority=1000;current.short=moneyCardLine(activeMoneyReport);current.reason=String(activeMoneyReport.parentText||'Semakan mencadangkan latihan Wang diteruskan.');}
   }
  }
  if(currentTimeReport){
@@ -58,9 +87,39 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
    &&typeof questionBankFor==='function'&&typeof questionBankFor(nextId)==='function'){
    const byId=candidates.filter(x=>x.id!==nextId);
    byId.unshift({id:nextId,title:next.title,chapter:String(next.chapter),attempts:Number(currentTimeReport.timeEvidence?.tagged)||6,
-    independentRate:0,priority:1000,diagnostic:true,reason:String(currentTimeReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
+    independentRate:0,priority:1000,diagnostic:true,short:timeCardLine(currentTimeReport),reason:String(currentTimeReport.parentText||'Semakan diagnostik mencadangkan kemahiran ini sebagai fokus seterusnya.')});
    candidates.splice(0,candidates.length,...byId);
   }
+ }
+ const usable=skills.filter(m=>!blocked.has(m.id)&&typeof questionBankFor==='function'&&typeof questionBankFor(m.id)==='function');
+ brainFocusSteps(profile,grade,usable,blocked).forEach(({id,step},index)=>{
+  hasEvidence=true;
+  let item=candidates.find(x=>x.id===id);
+  if(!item){
+   const m=usable.find(x=>x.id===id),recent=rows.filter(e=>e.skillId===id).slice(-20),independent=recent.filter(e=>e.outcome==='independent').length;
+   item={id,title:m.title,chapter:String(m.chapter),attempts:recent.length,independent,independentRate:recent.length?Math.round(independent/recent.length*100):0};
+   candidates.push(item);
+  }
+  // Re-check loop (§8a item 4): practise → wait 2 days → short check → "Semakin baik" or keep.
+  const rc=globalThis.PARecheck?.state?.(profile,step,Date.now())||null;
+  let priority=2000-index,reason=step.card;
+  if(rc?.status==='due'){priority=2600-index;reason='Semakan semula: '+step.card}
+  else if(rc?.status==='waiting'){priority=1500-index;reason=step.card+' · Semakan semula '+rc.dueLabel}
+  else if(rc?.status==='passed'){priority=1100-index;reason='Semakin baik: '+step.card+' ('+rc.score+')'}
+  Object.assign(item,{priority,diagnostic:true,brainStep:step,recheck:rc?.status||null,reason});
+ });
+ /* A target in its wait, check or "Semakin baik" phase keeps its card after the brain drops the finding. */
+ const R=globalThis.PARecheck,T=globalThis.PATargets;
+ if(R?.list&&T?.skillFor)for(const {step,state} of R.list(profile,Date.now())){
+  if(!['waiting','due','passed'].includes(state.status)||candidates.some(x=>x.brainStep&&R.matcher(x.brainStep)?.key===state.key))continue;
+  const id=T.skillFor(step,usable);if(!id)continue;
+  let item=candidates.find(x=>x.id===id);
+  if(item?.brainStep)continue;
+  if(!item){const m=usable.find(x=>x.id===id);item={id,title:m.title,chapter:String(m.chapter),attempts:0,independent:0,independentRate:0};candidates.push(item)}
+  hasEvidence=true;
+  const due=state.status==='due',passed=state.status==='passed';
+  Object.assign(item,{priority:due?2600:passed?1100:1500,diagnostic:true,brainStep:step,recheck:state.status,
+   reason:due?'Semakan semula: '+step.card:passed?'Semakin baik: '+step.card+' ('+state.score+')':step.card+' · Semakan semula '+state.dueLabel});
  }
  candidates.sort((a,b)=>b.priority-a.priority||b.attempts-a.attempts||a.id.localeCompare(b.id));
  /* Foundation hint: a likely root skill shared across topics. It only explains; order and routing stay as above. */
@@ -68,7 +127,7 @@ function focusPracticeSummary(profile=typeof db==='undefined'?null:db){
  for(const item of candidates){
   if(item.diagnostic)continue;
   const hit=foundation?.candidates?.find(c=>c.skills.includes(item.id));
-  if(hit){item.foundationId=hit.foundationId;item.foundationLabel=hit.label;item.reason='Kemungkinan punca: '+hit.label+'.'}
+  if(hit){item.foundationId=hit.foundationId;item.foundationLabel=hit.label;item.foundationShort=hit.short||hit.label;item.reason='Kemungkinan punca: '+hit.label+'.'}
  }
  return {items:candidates.slice(0,3),hasEvidence};
 }
@@ -94,7 +153,7 @@ function openFocusPicker(){
   const title=document.createElement('b');title.className='focusPickTitle';title.textContent=item.title;
   body.appendChild(title);
   const evidence=document.createElement('span');evidence.className='focusPickEvidence';
-  evidence.textContent=item.diagnostic?item.reason:'Ketepatan '+item.independentRate+'%'+(item.foundationLabel?' · Kemungkinan punca: '+item.foundationLabel:'');
+  evidence.textContent=focusCardLine(item);
   body.appendChild(evidence);
   card.appendChild(body);
   const cta=document.createElement('span');cta.className='focusPickCta';cta.textContent='Latih ❯';
@@ -112,18 +171,24 @@ function openFocusPicker(){
  (deck.firstElementChild||empty.querySelector('button'))?.focus();
 }
 function startFocusChoice(id){
- if(focusPickerProfile!==db||!focusPracticeSummary().items.some(item=>item.id===id)){openFocusPicker();return}
+ const choice=focusPickerProfile===db?focusPracticeSummary().items.find(item=>item.id===id):null;
+ if(!choice){openFocusPicker();return}
  if(typeof enforceRestuLock==='function'&&enforceRestuLock())return;
- if(window.PAWirayungLive?.tryStartFocus?.(id))return;
+ // A brain-backed card tells the mini game what to drill (sifir, meminjam, wang baki).
+ const base=choice.brainStep&&window.PATargets?.miniGameTarget?.(choice.brainStep)||null;
+ // A due re-check mixes the target with normal questions and skips the concrete start.
+ const target=base&&choice.recheck==='due'?{...base,check:true}:base;
+ if(choice.brainStep&&globalThis.PARecheck?.start){globalThis.PARecheck.start(db,choice.brainStep,Date.now());if(typeof save==='function')save()}
+ if(window.PAWirayungLive?.tryStartFocus?.(id,target))return;
  if(window.PATapakBinaLive?.tryStartFocus?.(id))return;
- if(window.PAFocusMiniGamesLive?.tryStartFocus?.(id))return;
+ if(window.PAFocusMiniGamesLive?.tryStartFocus?.(id,target))return;
  closeFocusPicker();
  // Keep the existing production battle/count; only lock the selected skill.
  if(typeof openGembok==='function'&&window.PAProductionJourney)openGembok({focusSkill:id});
  else openGuardianFocus(id);
 }
 function continueFocusJourney(){closeFocusPicker();window.PAMenuV2?.kembara?.()}
-window.PAFocusPractice={summary:focusPracticeSummary,open:openFocusPicker,close:closeFocusPicker,start:startFocusChoice};
+window.PAFocusPractice={summary:focusPracticeSummary,open:openFocusPicker,close:closeFocusPicker,start:startFocusChoice,cardLine:focusCardLine};
 function guardianSnapshot(id){const s=scoreState(id);return{mastery:+s.mastery||0,confidence:+s.confidence||0,evidence:+s.evidence||0,correct:+s.correct||0,wrong:+s.wrong||0,hints:+s.hints||0,mis:{...(s.mis||{})}}}
 function openGuardianFocus(id){
  if(!window.PACommercial?.requireFeature?.('focus'))return;

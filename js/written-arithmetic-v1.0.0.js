@@ -133,6 +133,7 @@
     const out=Object.assign({},baseQuestion,question,{
       competencyId:baseQuestion?.competencyId||skillId,standardRef:baseQuestion?.standardRef||skillId,
       archetypeId:`${baseQuestion?.archetypeId||skillId}_written`,representation:'symbolic',demand:'procedure',contextId:'written-arithmetic',
+      facets:{op,operands:[left,right],format:'lazim'},
       writtenArithmeticMode:'required',writtenArithmeticSkill:skillId
     });
     // The base question's focus tag describes different numbers: never carry it over.

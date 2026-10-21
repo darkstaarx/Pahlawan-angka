@@ -12,7 +12,7 @@ const MODE_IDS={
 const gradeModes={1:["bayar"],2:["bayar","baki","bahagi","simpanan"],3:["bayar","baki"],4:["bayar","baki"],5:["diskaun","baki"],6:["diskaun","untung"]};
 let run=null,shadowRun=null;
 const css=document.createElement("style");
-css.textContent='#paWirayungOverlay{position:fixed;inset:0;z-index:2147482000;background:#142638;display:flex;flex-direction:column;overscroll-behavior:contain}#paWirayungOverlay .paWirayungNav{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:50px;padding:7px max(12px,env(safe-area-inset-right)) 7px max(12px,env(safe-area-inset-left));background:#1c344d;border-bottom:2px solid #d7a76a;color:#fff;font:700 14px system-ui,sans-serif}#paWirayungOverlay .paWirayungNav b{font-size:clamp(15px,3vw,21px);color:#ffdfa1}#paWirayungOverlay .paWirayungNav small{opacity:.8;margin-right:auto}#paWirayungOverlay #paWirayungExit{border:0;border-radius:10px;background:#fff0d0;padding:9px 13px;color:#4a301c;font-weight:900;cursor:pointer}#paWirayungOverlay iframe{width:100%;flex:1;min-height:0;border:0;background:#203952}body.pa-wirayung-active{overflow:hidden!important}#wirayungLaunch{display:block;width:100%;border:2px solid #bf904e;border-radius:14px;background:linear-gradient(#ffe0a3,#edb764);color:#432e1e;min-height:50px;margin:9px 0;font-size:15px;font-weight:900;cursor:pointer}@media(min-width:800px){#paWirayungOverlay .paWirayungNav{padding-inline:24px}}';
+css.textContent='#paWirayungOverlay{position:fixed;inset:0;z-index:2147482000;background:#142638;display:flex;flex-direction:column;overscroll-behavior:contain}#paWirayungOverlay .paWirayungNav{flex:0 0 auto;display:flex;align-items:center;gap:10px;min-height:50px;padding:7px max(12px,env(safe-area-inset-right)) 7px max(12px,env(safe-area-inset-left));background:#1c344d;border-bottom:2px solid #d7a76a;color:#fff;font:700 14px system-ui,sans-serif}#paWirayungOverlay .paWirayungNav b{font-size:clamp(15px,3vw,21px);color:#ffdfa1}#paWirayungOverlay .paWirayungNav small{opacity:.8;margin-right:auto}#paWirayungOverlay #paWirayungExit{border:0;border-radius:10px;background:#fff0d0;padding:9px 13px;color:#4a301c;font-weight:900;cursor:pointer}#paWirayungOverlay iframe{width:100%;flex:1;min-height:0;border:0;background:#203952}body.pa-wirayung-active{overflow:hidden!important}#wirayungLaunch{display:block;width:100%;border:2px solid #bf904e;border-radius:14px;background:linear-gradient(#ffe0a3,#edb764);color:#432e1e;min-height:50px;margin:9px 0;font-size:15px;font-weight:900;cursor:pointer}@media(min-width:800px){#paWirayungOverlay .paWirayungNav{padding-inline:24px}}@media (max-height:700px){#paWirayungOverlay .paWirayungNav{min-height:42px;padding-top:3px;padding-bottom:3px}}';
 document.head.append(css);
 const escapeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const activeGrade=()=>Number(typeof db!=="undefined"&&db&&db.schoolGrade)||0;
@@ -137,15 +137,18 @@ function moneyParentText(cause,origin,next,nextTitle){
   :'Soalan wang boleh dibuat, tetapi bukti operasi nombor belum cukup untuk memilih latihan seterusnya.';
  return 'Ujian perbandingan belum menunjukkan punca yang cukup jelas. Teruskan latihan dan kumpul beberapa jawapan berbeza sebelum menetapkan fokus.';
 }
-function open(skillId,focusDiagnostic=false){
+function open(skillId,focusDiagnostic=false,target=null){
  if(typeof db==="undefined"||!db||!window.PACommercial?.requireFeature?.("focus"))return false;
  if(typeof enforceRestuLock==="function"&&enforceRestuLock())return false;
  const grade=activeGrade();if(!gradeModes[grade])return false;
  // Original Gerai Wirayung router decides which Focus skill belongs here.
  const plan=skillId&&window.PAGeraiWirayung?.planFor?.(db,skillId);
  if(!plan||Number(plan.grade)!==grade||typeof META==='undefined'||!META[skillId]||Number(META[skillId].grade)!==grade)return false;
- const modes=plan.modes.filter(mode=>gradeModes[grade].includes(mode));
+ let modes=plan.modes.filter(mode=>gradeModes[grade].includes(mode));
  if(!modes.length)return false;
+ // A brain finding (e.g. "Wang: operasi tolak") narrows the stall to that mode; the live money
+ // diagnostic reads its first mode too (baki → money_change), so it probes the same operation.
+ if(target?.kind==='money'&&modes.includes(target.mode))modes=[target.mode];
  if(run)close();
  const nonce=(crypto.randomUUID?.()||String(Date.now())+"-"+Math.random().toString(36).slice(2));
  const node=document.createElement("section");node.id="paWirayungOverlay";node.setAttribute("role","dialog");node.setAttribute("aria-label","Gerai Wirayung");node.setAttribute("aria-modal","true");
@@ -232,7 +235,7 @@ function finishRound(e){
    if(hints)window.PALearnerReview?.hintUsed?.(q,hints);
    window.PALearnerReview?.resolve?.(q,{correct:true,usedHint:hints>0,hintLevel:hints,seconds},db);
   }catch(err){console.warn("Wirayung learner record",err);}
-  try{window.PATelemetry?.response?.(skill,independent,independent?"":"wirayung_"+mode,seconds,hints>0,q,"practice");}catch(err){console.warn("Wirayung cloud attempt",err);}
+  // Telemetry for each try now comes from js/minigame-telemetry-v1.js (PA_MINIGAME_ATTEMPT).
  }
  if(typeof save==="function")save();
  window.PACloud?.scheduleSave?.();
@@ -246,8 +249,8 @@ window.addEventListener("message",e=>{
 document.getElementById("wirayungLaunch")?.addEventListener("click",()=>open());
 const original=window.renderParent;
 if(typeof original==="function")window.renderParent=function(){const ret=original.apply(this,arguments);mountReport();return ret;};
-function tryStartFocus(id){
- if(moneySkill(id)){const hasLiveContrast=!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(id||'')];return open(id,hasLiveContrast)}
+function tryStartFocus(id,target=null){
+ if(moneySkill(id)){const hasLiveContrast=!!window.PAFocusMoneyDiagnosticV2?.skillFamilies?.[String(id||'')];return open(id,hasLiveContrast,target)}
  const plan=window.PAMenaraJam?.planFor?.(typeof db!=='undefined'?db:null,id);if(!plan||plan.grade!==activeGrade()||!window.PACommercial?.requireFeature?.('focus'))return false;
  const reports=db?.focusDiagnosticsV1?.reports||[],latest=reports.filter(r=>Number(r.grade)===activeGrade()&&/^D2\.5\.[123]$/.test(r.skillId||'')).sort((a,b)=>Number(a.at||0)-Number(b.at||0)).at(-1);
  const diagnosedNext=!!latest&&latest.state==='candidate'&&latest.nextSkillId===id;
