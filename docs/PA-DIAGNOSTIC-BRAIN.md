@@ -318,20 +318,18 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #75; Kemungkinan punca tags, PR #76 open). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #76). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#75. #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #69–#76. #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
    for all mini games + one-row number keypad on short web screens so Wira is
    not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
-   speaker signal (3.86.99, see §4.8 "Implemented").
-   **Open: PR #76 "Kemungkinan punca" tags for D2–D5, 3.87.0, branch
-   `ccr-ed8f705d-ym2tc0`, base `main`, not merged** — merge only when the
-   owner asks (convention below). What it does: see "Kemungkinan punca tags"
-   below.
+   speaker signal (3.86.99, see §4.8 "Implemented"); #76 "Kemungkinan
+   punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
+   Nothing is open. Current version 3.87.0.
 2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
    (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
    full 4.7). Ask the owner before starting. Sketch for 4.6 (§4.6): the
@@ -351,8 +349,7 @@ Last updated: 2026-10-21 (after PR #75; Kemungkinan punca tags, PR #76 open). Re
    `/opt/pw-browsers`). The owner often asks "kau dah semak sendiri?" — run
    the real app before reporting.
 
-**Status on GitHub.** PRs #55–#63 and #65–#75 are merged into `main`; the
-"Kemungkinan punca" tags PR #76 (3.87.0) is open, not merged
+**Status on GitHub.** PRs #55–#63 and #65–#76 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 Start new work from `main`, one task per branch and PR, base `main`.
@@ -517,7 +514,7 @@ Still open: few pictures in D4–D6 (13–18%) for lens 4.1. Done since: tags fo
 D3 80%, D4 91%, D5 94% in 3.87.0, see below); short/long wording pairs (lens
 4.8, 3.86.99, as separate pair items).
 
-**"Kemungkinan punca" tags for D2–D5 (3.87.0, PR #76 open; owner order after 4.8).**
+**"Kemungkinan punca" tags for D2–D5 (3.87.0, PR #76, merged; owner order after 4.8).**
 The Kemahiran Fokus card shows "Kemungkinan punca: …" when
 `PAFocusFoundationV1.evaluate()` (`js/engine/focus-foundation-v1.js`) finds one
 foundation failing in ≥3 questions across ≥2 topics while the same topics'
