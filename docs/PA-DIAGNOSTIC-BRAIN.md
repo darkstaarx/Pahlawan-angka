@@ -318,7 +318,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #77; shorter Fokus card, PR open). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #77; shorter Fokus card, PR #78 open). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#77. #69 Next item 3 + question-first mini
@@ -330,7 +330,7 @@ Last updated: 2026-10-21 (after PR #77; shorter Fokus card, PR open). Read this 
    speaker signal (3.86.99, see §4.8 "Implemented"); #76 "Kemungkinan
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
    #77 docs: "How it works" under "Kemungkinan punca tags" below.
-   **Open: short Fokus card line + "Punca utama" for parents (3.87.1),
+   **Open: PR #78 short Fokus card line + "Punca utama" for parents (3.87.1),
    branch `ccr-ed8f705d-ym2tc0`, not merged** — merge when the owner asks.
 2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
    (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
