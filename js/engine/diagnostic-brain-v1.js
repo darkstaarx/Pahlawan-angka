@@ -3,8 +3,9 @@
       otherwise derived from skill metadata, archetype, context and the equation).
    2) record(...): keeps a compact per-answer log in db.diagLog (first attempt,
       wrong value, seconds, hint) — on the child's own profile only.
-   3) analyze(log): evidence-gated findings for lenses 4.2 (fact fluency),
-      4.3 (error bugs), 4.4 (lazim vs word), 4.5 (rapid guessing) plus
+   3) analyze(log): evidence-gated findings for lenses 4.1 (picture vs numbers),
+      4.2 (fact fluency), 4.3 (error bugs), 4.4 (lazim vs word), 4.5 (rapid
+      guessing), 4.7 (retention), 4.8 (short vs long wording) plus
       operation-within-context (e.g. money subtraction). Each finding carries
       parent copy (BM), evidence and the action PA will take.
    Pure functions are exported for Node tests; browser wiring is at the end. */
@@ -77,8 +78,10 @@
       else if(q?.representation==='visual'||/<(svg|img|canvas)\b/i.test(String(q?.prompt||'')))rep='pictorial';
       else rep='abstract';
     }
+    // 4.8 language load: only a generator that wrote the short and the long wording knows it (1 short … 3 long).
+    const reading=[1,2,3].includes(given.reading)?given.reading:null;
     return{skill:q?.skill||given.skill||null,op,context,format,tables:tables&&tables.length?tables:null,
-      operands:ops,words,factFamily,fact,regroup,answer,rep};
+      operands:ops,words,factFamily,fact,regroup,answer,rep,reading,aloud:q?.readAloud===true};
   }
 
   // ---------- recording ----------
@@ -90,6 +93,8 @@
     if(f.factFamily){r.fx=f.factFamily;r.fk=f.fact}
     if(f.regroup!==null&&f.regroup!==undefined)r.rg=f.regroup?1:0;
     if(f.rep)r.rp=f.rep[0];   // c | p | a
+    if(f.reading)r.rd=f.reading;
+    if(f.aloud)r.ra=1;        // the child had the question read aloud before answering
     if(!ok&&value!==undefined&&value!==null&&value!==''){r.v=String(value).slice(0,24);if(f.answer)r.x=f.answer}
     return r;
   }
@@ -107,7 +112,10 @@
     const list=Array.isArray(log)?log:[];
     if(!first&&token){
       for(let i=list.length-1;i>=Math.max(0,list.length-6);i--){
-        if(list[i].id===token){list[i].r=ok?1:0;if(usedHint)list[i].h=1;return list;}
+        if(list[i].id===token){list[i].r=ok?1:0;if(usedHint)list[i].h=1;
+          // Read aloud only after the first try: "wrong read alone, then heard it" (lens 4.8).
+          if(q?.readAloud===true&&!list[i].ra)list[i].ra=2;
+          return list;}
       }
     }
     const f=facets(q,meta);
@@ -375,6 +383,42 @@
           action:'Pahlawan Angka akan kurangkan gambar sedikit demi sedikit — gambar, kemudian gambar dengan nombor, kemudian nombor sahaja — dan semak soalan tanpa gambar setiap pusingan ketiga.',
           tip:'Selepas anak jawab dengan gambar atau benda sebenar, tulis ayat matematiknya bersama (contoh 3 × 4 = 12) supaya anak nampak kaitannya.',
           target:{rep:'fade',skill:g.skill,op:g.op},skills:[...new Set(gaps.map(x=>x.skill))].slice(0,3),evidence:{gaps}});
+      }
+    }
+
+    // 4.8 language load: the same family (operation + context) is right in a short wording and wrong in a long one.
+    // Only a generator that wrote both wordings tags rd (1 short, 3 long). A long question heard read aloud
+    // first (ra 1) is not "read alone"; it and a miss put right after hearing it (ra 2) support the finding.
+    {
+      const weakTables=new Set(findings.filter(f=>f.id==='fact_fluency').flatMap(f=>f.target?.tables||[]));
+      const weakFacts=new Set(findings.filter(f=>f.id==='basic_facts').flatMap(f=>f.target?.factFamilies||[]));
+      const bugs=new Set(findings.filter(f=>f.id.startsWith('bug_')).map(f=>f.id.slice(4)));
+      const explains=r=>(r.tb||[]).some(t=>weakTables.has(t))||weakFacts.has(r.fx)||bugs.has(detectBug(r));
+      const byFam=new Map();
+      for(const r of scored){if(!OP_WORD[r.o]||(r.rd!==1&&r.rd!==3))continue;const k=r.o+'|'+(r.c||'plain');(byFam.get(k)||byFam.set(k,[]).get(k)).push(r)}
+      const gaps=[];
+      for(const [k,rs] of byFam){const [op,context]=k.split('|');
+        const short=latest(rs.filter(r=>r.rd===1),10),long=latest(rs.filter(r=>r.rd===3&&r.ra!==1),10);
+        if(short.length<6||long.length<6)continue;
+        const sOk=short.filter(independent).length,lOk=long.filter(independent).length,sa=pct(sOk,short.length),la=pct(lOk,long.length);
+        if(sa<80||la>50)continue;
+        // A weak sifir, basic fact or a known bug already explains most long misses: not a reading problem.
+        const misses=long.filter(r=>!independent(r));
+        if(misses.filter(explains).length*2>=misses.length)continue;
+        const heard=latest(rs.filter(r=>r.rd===3&&r.ra===1),10),hOk=heard.filter(independent).length,rescued=long.filter(r=>r.ra===2&&r.r===1).length;
+        gaps.push({op,context,short:`${sOk}/${short.length}`,long:`${lOk}/${long.length}`,gap:sa-la,heard:heard.length?`${hOk}/${heard.length}`:null,rescued,recs:long});
+      }
+      gaps.sort((a,b)=>b.gap-a.gap);
+      if(gaps.length){
+        const g=gaps[0],fam=`${OP_WORD[g.op]}${g.context==='money'?' wang':''}`,hOk=g.heard?Number(g.heard.split('/')[0]):0;
+        const support=[hOk>=2?` Bila soalan dibacakan, ${name} betul ${g.heard}.`:'',g.rescued>=2?` ${g.rescued} kali ${name} betul selepas mendengar soalan.`:''].join('');
+        findings.push({id:'reading_load',lens:'4.8',severity:2,confidence:support||gaps.length>1?'tinggi':'sederhana',
+          text:`Matematik ${name} ok — yang menyukarkan ialah ayat panjang. Soalan ${fam} dengan ayat pendek betul ${g.short}, tetapi dengan ayat panjang hanya ${g.long}.${support}`,
+          action:'Pahlawan Angka akan beri soalan berayat pendek dahulu, kemudian ayat yang lebih panjang sedikit demi sedikit. Butang speaker boleh membacakan soalan.',
+          tip:'Bila membaca soalan panjang bersama anak, minta dia tunjuk nombor dan perkataan penting (jumlah, beza, kali ganda, sama rata) sebelum mengira.',
+          target:{reading:true,op:g.op,context:g.context},skills:skillsOf(g.recs),evidence:{gaps:gaps.map(({recs,...x})=>x)}});
+        // Short word problems are right, so the bar-model structure is not the gap (lens 4.4 steps aside).
+        const i=findings.findIndex(f=>f.id==='format_word');if(i>=0)findings.splice(i,1);
       }
     }
 

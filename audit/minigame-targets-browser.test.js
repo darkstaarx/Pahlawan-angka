@@ -112,6 +112,41 @@ test('model bar (word problems): read → choose the sentence → story alone; r
   await chk.close();
 });
 
+test('baca soalan panjang (lens 4.8): short wording → long with the question marked → long alone; keypad stays in reach', async () => {
+  // Common phones and a laptop: the keypad is in view. A 320 px phone scrolls to it, as every mini game does (small phones test).
+  for (const [hash, op, viewport, scroll] of [['d4-tolak', 'sub', { width: 390, height: 844 }], ['d3-darab', 'mul', { width: 360, height: 640 }], ['d5-bahagi', 'div', { width: 375, height: 667 }], ['d6-gabung', null, { width: 1366, height: 768 }], ['d3-tolak', 'sub', { width: 320, height: 500 }, true]]) {
+    const g = await gudang({ kind: 'reading' }, hash, viewport);
+    const rounds = await g.page.evaluate(() => window.__gudangGen.sample(10).map(q => q.target));
+    assert.ok(rounds.filter(Boolean).length >= 6, hash + ' 7 in 10 rounds');
+    for (let i = 0; i < 9; i++) {
+      const r = await g.page.evaluate(async ([t, scroll]) => {
+        const q = window.__gudangGen.show(t, 0);
+        await new Promise(res => setTimeout(res, 300));   // the panel fit settles (js/minigame-panel-fit-v1.js)
+        if (scroll) document.querySelector('.pa-game').scrollTop = 1e5;
+        const keys = [...document.querySelectorAll('#tiles .tl')].map(k => k.getBoundingClientRect().bottom), act = document.querySelector('.actions').getBoundingClientRect().top;
+        return { arch: q.arch, fx: q.fx, ans: q.form.fields[0].v, story: document.querySelector('.story')?.textContent, mark: document.querySelector('.story mark')?.textContent || '',
+          keysOk: Math.max(...keys) <= act + 1, off: document.documentElement.scrollWidth > innerWidth };
+      }, [i % 3, !!scroll]);
+      assert.equal(r.arch, ['target_read_short', 'target_read_marked', 'target_read_long'][i % 3]);
+      assert.equal(r.fx.reading, [1, 2, 3][i % 3]);
+      assert.equal(r.fx.format, 'word');
+      if (op) assert.equal(r.fx.op, op, hash);
+      const [a, b] = r.fx.operands;
+      assert.equal(r.ans, { add: a + b, sub: a - b, mul: a * b, div: a / b }[r.fx.op], r.story);
+      const words = r.story.replace(/(\d)[ \u00a0](?=\d{3}\b)/g, '$1').trim().split(/\s+/).length;
+      assert.ok(i % 3 === 0 ? words <= 12 : words >= 25, r.story);
+      // The marked step highlights the question sentence (the last one), nothing else.
+      assert.equal(r.mark, i % 3 === 1 ? (r.story.match(/[^.?!]+\?\s*$/) || [''])[0].trim() : '');
+      assert.equal(r.keysOk, true, `${hash} ${viewport.width}×${viewport.height}: keypad under the action row`);
+      assert.equal(r.off, false, hash + ' sideways scroll');
+    }
+    assert.deepEqual(g.errors, []); await g.close();
+  }
+  const chk = await gudang({ kind: 'reading', check: true }, 'd4-tolak');
+  assert.equal((await chk.page.evaluate(() => window.__gudangGen.sample(1)[0])).arch, 'target_read_long', 'a re-check is the long wording alone');
+  await chk.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');
@@ -235,4 +270,32 @@ test('real app: brain cards open Gudang Harta with the target and Gerai Wirayung
     ['D3.MUL', 'gudang-harta.html', '{"kind":"tables","tables":[3]}', 'd3-darab'],
     ['D3.MONEY', 'gerai-wirayung.html', null, 'd3-baki'],
     ['D3.SUB10000', 'gudang-harta.html', '{"kind":"regroup","op":"sub","zero":false}', 'd3-tolak']]);
+});
+
+test('real app: a long-wording finding gives a "Baca soalan panjang" card that opens Gudang Harta story rounds', async () => {
+  const log = S.simulate('zara').log1;
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.route('**/*', route => route.request().url().startsWith(base) && ['GET', 'HEAD'].includes(route.request().method()) ? route.continue() : route.abort());
+  const page = await context.newPage(), errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto(base + '/index.html');
+  await page.waitForFunction(() => window.PAFocusPractice && window.PATargets && window.PAReadingPairs && window.PAFocusMiniGamesLive, null, { timeout: 30000 });
+  const card = await page.evaluate(log => {
+    window.PACommercial = { requireFeature: () => true, canUse: () => true, authorizeMission: async () => true };
+    window.PACloud = { state: {}, scheduleSave() {}, syncSaveNow() {} }; window.save = () => {};
+    db = { schoolGrade: 4, name: 'Zara', hero: 'wira', level: 1, coins: 0, xp: 0, skills: {}, logs: [], coreFrontier: 1, completedMissions: {}, rewards: { pets: {}, auras: {}, badges: {} }, learnerReviewV1: { schema: 1, encounters: [] }, diagLog: log };
+    sess = {}; initAll(); PAFocusPractice.open();
+    const el = document.querySelector('.focusPickCard'); el.click();
+    return { skill: el.dataset.skill, text: el.textContent.replace(/\s+/g, ' ') };
+  }, log);
+  assert.equal(card.skill, 'D4.SUB');
+  assert.match(card.text, /Baca soalan panjang/);
+  const frame = page.locator('#paFocusMiniGameOverlay iframe');
+  const src = await frame.getAttribute('src');
+  assert.equal(new URLSearchParams(src.split('?')[1].split('#')[0]).get('focus_target'), '{"kind":"reading"}');
+  assert.equal(src.split('#')[1], 'd4-tolak');
+  const first = await (await frame.elementHandle()).contentFrame();
+  await first.waitForFunction(() => document.querySelector('.story'), null, { timeout: 15000 });
+  assert.match(await first.evaluate(() => document.querySelector('.story').textContent), /beza|bezanya/);
+  assert.deepEqual(errors, []); await context.close();
 });

@@ -2242,7 +2242,9 @@
     );
     const hasInteraction=!!answers.querySelector('input,select,textarea,.paInteraction,.d1-fraction-answer');
     const compact=!hasVisual&&!hasInteraction&&promptText.length<=90&&answerText.length<=100;
-    card.dataset.questionLayout=compact?'compact':'standard';
+    // A long story (e.g. the long wording of lens 4.8) reads at a calmer size, left aligned.
+    const long=!hasVisual&&!hasInteraction&&promptText.length>150;
+    card.dataset.questionLayout=compact?'compact':long?'long':'standard';
   }
 
   function toast(text){
@@ -2626,6 +2628,8 @@
       // Spell out zero so Malay device voices consistently say sifar.
       const text=(holder.textContent||'').replace(/\b0\b/g,'sifar').replace(/\s+/g,' ').trim();
       if(!text)return;
+      // Cikgu Dimensi (lens 4.8): this answer is given after hearing the question.
+      run.q.readAloud=true;
       const say=new SpeechSynthesisUtterance(text);
       say.lang='ms-MY'; say.rate=.9;
       spk.setAttribute('aria-pressed','true');

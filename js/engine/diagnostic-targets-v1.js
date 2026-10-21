@@ -14,6 +14,9 @@
   'use strict';
   const VERSION='1.0.0';
 
+  // Short/long wording pairs: a browser global, or the sibling module in Node.
+  const readingPairs=()=>{try{return(typeof PAReadingPairs!=='undefined'&&PAReadingPairs)||(typeof require==='function'?require('./reading-pairs-v1.js'):null)}catch(_){return null}};
+
   // ---------- deterministic random (seeded so a worksheet can be reprinted) ----------
   function rng(seed){let t=(Number(seed)>>>0)||0x9e3779b9;return()=>{t+=0x6D2B79F5;let x=Math.imul(t^t>>>15,1|t);x^=x+Math.imul(x^x>>>7,61|x);return((x^x>>>14)>>>0)/4294967296}}
   const int=(r,a,b)=>a+Math.floor(r()*(b-a+1));
@@ -123,6 +126,15 @@
     /* Wrong-operation bug: mixed set where the child must choose the operation first. */
     mixed(r,t,n){const order=['add','sub','mul'];return Array.from({length:n},(_,i)=>{const op=order[i%3];const g=GEN[op==='mul'?'tables':'regroup'];
       return g(r,op==='mul'?{tables:[int(r,3,9)]}:{op},1,{grade:3})[0]})},
+    /* Long wording (lens 4.8): the same problems, short wording first, then the long one
+       (js/engine/reading-pairs-v1.js); every item says which it is (facets.reading). */
+    reading(r,t,n,ctx){
+      const P=readingPairs(),fams=t.op?[P?.familyFor(t.op,t.context)].filter(Boolean):['jumlah','beza','kali_ganda','agih'];
+      if(!P||!fams.length)return[];
+      const firstShort=Math.ceil(n/3);
+      return Array.from({length:n},(_,i)=>{const x=P.item(fams[i%fams.length],Math.max(3,ctx.grade||3),i<firstShort?1:3,r);
+        return item(r,{prompt:x.prompt,answer:x.answer,wrongs:x.wrongs,facets:x.facets,kind:i<firstShort?'Soalan berayat pendek':'Soalan berayat panjang',hint:x.hint,calc:x.calc})});
+    },
     /* Retention: short review of what is slipping. */
     review(r,t,n,ctx){
       const tables=(t.review||[]).map(s=>/^sifir (\d+)$/.exec(s)).filter(Boolean).map(m=>Number(m[1]));
@@ -146,11 +158,12 @@
     if(f.id.startsWith('regroup_'))return{kind:'regroup',op:t.op,game:'operations'};
     if(f.id==='retention')return{kind:'review',review:t.review,game:'operations'};
     if(f.id==='rep_cpa')return{kind:'fade',skill:t.skill,op:t.op,game:'operations'};
+    if(f.id==='reading_load')return{kind:'reading',op:t.op,context:t.context||'plain',game:t.context==='money'?'money':'operations'};
     if(f.id.startsWith('bug_')){const b=BUG_TARGET[t.bug]||{kind:'mixed'};return{...b,tables:b.kind==='tables'?[]:undefined,game:b.kind==='units'?'money':'operations'}}
     return null;
   }
   const CARD={tables:t=>`Sifir ${(t.tables||[]).join(' & ')||'pilihan'}`,facts:()=>'Fakta asas hingga 20',regroup:t=>t.op==='add'?'Tambah, mengumpul semula':'Tolak, meminjam',
-    money:t=>t.op==='mixed'?'Wang: soalan cerita campur':`Wang: operasi ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[t.op]||'tolak'}`,word:()=>'Soalan berayat',units:()=>'Sen dan ringgit',mixed:()=>'Pilih operasi yang betul',review:()=>'Ulang kaji berjadual',fade:()=>'Dari gambar ke nombor'};
+    money:t=>t.op==='mixed'?'Wang: soalan cerita campur':`Wang: operasi ${({add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'})[t.op]||'tolak'}`,word:()=>'Soalan berayat',units:()=>'Sen dan ringgit',mixed:()=>'Pilih operasi yang betul',review:()=>'Ulang kaji berjadual',fade:()=>'Dari gambar ke nombor',reading:()=>'Baca soalan panjang'};
   const merge=(a,b)=>[...new Set([...(a||[]),...(b||[])])];
   /* What PA does next: mini game / Gembok targets and the worksheet sections. */
   function plan(result,ctx={}){
@@ -189,6 +202,7 @@
     else if(t.kind==='money')m=money(t.op);
     else if(t.kind==='units')m=all('Wang',/^nilai wang/i)[0]||money();
     else if(t.kind==='word'||t.kind==='mixed')m=all('Operasi',/masalah|bergabung|gabungan/i)[0];
+    else if(t.kind==='reading')m=t.context==='money'?money(t.op):ops(t.op);
     else if(t.kind==='review'){const r=t.review||[];m=r.some(x=>/^sifir/.test(x))?ops('mul'):ops(r.some(x=>/^tolak/.test(x))?'sub':'add',true)}
     return m?.id||null;
   }
@@ -204,6 +218,7 @@
     if(t.kind==='money'&&MONEY_MODE[t.op])return{kind:'money',mode:MONEY_MODE[t.op]};
     if(t.kind==='fade')return{kind:'fade'};   // the game fades its own pictures for the card's skill
     if(t.kind==='word')return{kind:'bar'};    // word problems: Singapore bar model rounds (lens 4.4)
+    if(t.kind==='reading'&&t.context!=='money')return{kind:'reading'};   // story rounds: short wording, then long (lens 4.8)
     return null;
   }
   function practice(step,n=10,ctx={},seed=Date.now()){
@@ -213,9 +228,9 @@
   /* Worksheet: one section per step; word problems get a working box. */
   function worksheet(p,ctx={},seed=1){
     const r=rng(seed);
-    const sections=(p?.steps||[]).filter(s=>GEN[s.target.kind]).slice(0,3).map((s,i)=>{const n=s.target.kind==='word'||s.target.kind==='money'?4:8;
+    const sections=(p?.steps||[]).filter(s=>GEN[s.target.kind]).slice(0,3).map((s,i)=>{const n=['word','money','reading'].includes(s.target.kind)?4:8;
       return{title:s.card,why:s.why,items:GEN[s.target.kind](rng(seed+i+1),s.target,n,{...ctx,fluentTables:p.fluentTables}),
-        showWorking:['word','money','regroup'].includes(s.target.kind)}});
+        showWorking:['word','money','regroup','reading'].includes(s.target.kind)}});
     const hasWord=sections.some(x=>x.showWorking);
     return{title:`Latihan Pahlawan Angka${ctx.name?` · ${ctx.name}`:''}`,sections,
       parentNote:hasWord?'Ibu bapa: semak kotak "Cara kerja". Minta anak terangkan langkahnya — kesilapan cara lebih penting daripada jawapan akhir.':'Ibu bapa: biarkan anak menjawab sendiri, kemudian semak bersama.'};
@@ -244,6 +259,8 @@
   }
   function explain(it){
     const f=it?.facets||{},c=it?.calc,ops=f.operands||[];
+    if(c&&c.family){const P=readingPairs(),show=c.unit==='sen'?rm:x=>P?P._nf(x):String(x),sign={add:'+',sub:'−',mul:'×',div:'÷'}[c.op];
+      return `Cari nombor dan soalan dulu. ${show(c.a)} ${sign} ${c.op==='mul'||c.op==='div'?c.b:show(c.b)} = ${show(c.ans)}.`}
     if(c&&c.op==='toSen')return `RM1 = 100 sen. ${rm(c.c)} = ${c.c} sen (darab 100, bukan tambah sifar sahaja).`;
     if(c&&c.op==='toRM')return `100 sen = RM1. ${c.c} sen ÷ 100 = ${rm(c.c)}. Dua digit terakhir ialah sen.`;
     if(c&&f.context==='money'){
@@ -278,7 +295,7 @@
   function worksheetItems(p,count=10,ctx={},seed=Date.now()){
     // A step without a printable generator (e.g. fading pictures) is practised in the mini game only.
     const steps=(p?.steps||[]).filter(s=>GEN[s.target.kind]).slice(0,3);if(!steps.length)return{items:[],focus:[],titles:[]};
-    const total=Math.max(6,Math.round(count*.6)),heavy=s=>['word','money'].includes(s.target.kind);
+    const total=Math.max(6,Math.round(count*.6)),heavy=s=>['word','money','reading'].includes(s.target.kind);
     const weight=steps.map(s=>heavy(s)?2:3),sum=weight.reduce((x,y)=>x+y,0);
     const quota=weight.map(w=>Math.min(8,Math.max(2,Math.floor(total*w/sum))));
     // One focus never takes more than 8 items: past that it is drill, not practice.
@@ -290,7 +307,7 @@
       while(out.length<quota[i]&&tries++<6){for(const it of g(rng(seed+i*97+tries),s.target,quota[i]*2,{...ctx,fluentTables:p.fluentTables})){
         if(out.length>=quota[i])break;if(seen.has(it.prompt))continue;seen.add(it.prompt);out.push(it)}}
       for(const it of out)items.push({prompt:it.prompt,answer:String(it.answer),hint:it.hint||'',skill:it.skill,choices:null,targeted:true,
-        focus:s.card,showWorking:['word','money','regroup'].includes(s.target.kind),solution:explain(it)});
+        focus:s.card,showWorking:['word','money','regroup','reading'].includes(s.target.kind),solution:explain(it)});
     });
     return{items,focus:steps.map(s=>({card:s.card,why:s.why})),titles:steps.map(s=>s.card)};
   }
