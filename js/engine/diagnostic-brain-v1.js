@@ -325,7 +325,7 @@
         tip:'Main "cepat sebut" 2 minit: ibu bapa sebut soalan seperti 8 + 7, anak jawab tanpa jari.',
         target:{factFamilies:targets,facts:hard},skills:skillsOf(scored.filter(r=>targets.includes(r.fx))),evidence:{parts}});
       else if(fluent.length)findings.push({id:'basic_strength',lens:'4.2',severity:0,confidence:'tinggi',strength:true,
-        text:`Hebat dalam ${joinBM(fluent)} — tepat dan pantas.`,action:''});
+        text:`Hebat dalam ${joinBM(fluent)} — tepat dan pantas.`,action:'',evidence:{facts:fluent}});
     }
 
     // regrouping (meminjam / mengumpul semula) — skipped when a bug already explains it

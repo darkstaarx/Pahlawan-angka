@@ -241,7 +241,8 @@ composition, lock policy.
 - Coaching / intervention: `js/engine/intervention.js` (wrong-window, guessSec),
   `js/effort-guard-v3.32.0.js`.
 - Parent report + worksheets: `js/parent-learning-tools-v3.26.0.js`,
-  `js/worksheet-graphics-v1.js`.
+  `js/worksheet-graphics-v1.js`. Ringkasan tab cards: `js/parent-glance-v1.js`
+  (rendered by `renderParent()` in `js/parent.js`).
 - Mini-game routing by skill: `js/focus-mini-games-live-bridge.js` (`gameFor`).
 - Mini game answers: every game page (`gudang-harta`, `kedai-kek`, `bengkel-ajaib`,
   `dapur-ramuan`, `pos-peninjau`, `lombong-permata`, `tapak-bina`, `menara-jam`,
@@ -265,7 +266,9 @@ Last updated: 2026-10-21. Read this section first if you are picking up the work
 
 **Status on GitHub.** PRs #55–#63 and #65–#67 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
-real-device test. No PR is open.
+real-device test.
+Open: parent Ringkasan at a glance (3.86.89), branch `ccr-ed8f705d-ym2tc0`,
+base `main`, not merged.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -282,6 +285,15 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
 - v2 D3 visuals no longer print answers (grouping, unit meters, number line order).
 - Test suite clean: `node --test audit/*.test.js` → 0 failures (Next item 5).
 - Kemahiran Fokus cards follow the brain (Next item 1, PR #67).
+- Parent Ringkasan tab at a glance (owner request, 3.86.89, not merged yet):
+  `js/parent-glance-v1.js` (`PAParentGlance`) builds two cards on top of the
+  first parent tab. *Aktiviti 7 hari*: questions in 7 days / today and active
+  days (brain log, journey encounters as fallback), then praise first (effort,
+  fluent sifir / basic facts, comfortable skills, "semakin baik" for cleared
+  bugs). *Perlu dikuatkan*: up to 3 short plan labels ("Menjawab terlalu
+  cepat" first when guessing), one note, "Lihat butiran" → Kemahiran tab
+  (full Ringkasan Cikgu Dimensi). Replaces the old hero, all-time stats and
+  strong/next insight boxes. Tests: `audit/parent-glance.test.js`.
 
 **Next (phase 3 remainder), in this order**
 1. ✅ *Done (2026-10-21, 3.86.88, PR #67, merged).* Each brain finding now

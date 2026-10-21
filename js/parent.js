@@ -98,11 +98,14 @@ function parentLogText(raw){
  return text.replace(/Parent Focus:/gi,"Fokus ibu bapa:").replace(/Coach/gi,"Cikgu Dimensi").replace(/Cikgu Wajar/gi,"Cikgu Dimensi");
 }
 
-function parentInsightItem(m,type){
- if(!m)return `<div class="parentInsightEmpty">Belum cukup latihan untuk membuat rumusan.</div>`;
- const s=scoreState(m.id),clean=learnerDisplayStats(m.id),attempts=clean?.attempts||skillAttempts(s),accuracy=clean?.independentRate??skillAccuracy(s);
- const label=clean?'betul sendiri':'jawapan betul';
- return `<article class="parentInsightItem ${type}"><span>${type==='strong'?'✓':'→'}</span><div><b>${parentSafe(m.title)}</b><small>${attempts?`${accuracy}% ${label} daripada ${attempts} soalan`:'Masih diteroka'}</small></div></article>`;
+function parentGlanceMarkup(g,summary){
+ const G=window.PAParentGlance;if(!G)return '';
+ let result=null,plan=null;
+ try{result=window.PADiagnostic?.current?.()||null;plan=result&&window.PATargets?.plan?window.PATargets.plan(result,{grade:g}):null}catch(_){}
+ const view=G.compose({name:db.name,log:db.diagLog,encounters:learnerRows(),result,plan,
+  strongIds:summary.strong.map(m=>m.id),priorityTitles:summary.priority.map(m=>m.title),
+  skillTitle:id=>META[id]&&Number(META[id].grade)===g?META[id].title:null});
+ return G.markup(view,{grade:g});
 }
 function learnerReviewCard(){
  const report=window.PALearnerReview?.parentSummary?.(db,META,{name:db?.name,grade:coreGrade()});
@@ -173,16 +176,11 @@ function renderParentRestuEntry(focus){
 function renderParent(){
  updateFrontier();
  const g=coreGrade(),prev=Math.max(1,g-1),next=Math.min(6,g+1),core=GRAPH.skills.filter(x=>x.grade===g);
- const clean=learnerDisplayStats(),legacyAttempts=core.reduce((z,m)=>z+skillAttempts(scoreState(m.id)),0),legacyCorrect=core.reduce((z,m)=>z+Number(scoreState(m.id).correct||0),0),attempts=clean?.attempts||legacyAttempts,accuracy=clean?.independentRate??(legacyAttempts?Math.round(legacyCorrect/legacyAttempts*100):0);
+ const clean=learnerDisplayStats(),legacyAttempts=core.reduce((z,m)=>z+skillAttempts(scoreState(m.id)),0),attempts=clean?.attempts||legacyAttempts;
  const recovering=GRAPH.skills.filter(x=>x.grade===prev&&scoreState(x.id).evidence>0),stretching=GRAPH.skills.filter(x=>x.grade===next&&scoreState(x.id).evidence>0),summary=parentPowerSummary(core,attempts);
- const strongCount=clean&&window.PALearnerReview?.skillReviews?window.PALearnerReview.skillReviews(learnerRows(),META).filter(x=>x.state==='strong').length:summary.strong.length;
- const strongLead=summary.strong[0]||null,priorityLead=summary.priority[0]||summary.mission||null,restuFocus=parentRestuFocus(core,summary);
- document.getElementById("summaryTab").innerHTML=`
-  <section class="parentJourney card"><div class="parentJourneyCopy"><div class="eyebrow">DEK IBU BAPA · DARJAH ${g}</div><h2>${parentSafe(summary.headline)}</h2><p>${parentSafe(summary.intro)}</p><div class="parentJourneySignal"><span>✦</span><small>Cikgu Dimensi membaca corak jawapan, bukan sekadar markah.</small></div></div><img src="assets/coach/cikgu-dimensi/parent-adviser-v2.webp" alt="Cikgu Dimensi menerangkan kemajuan anak"></section>
-  <div class="parentStats"><div><span>✎</span><b>${attempts}</b><small>${clean?'Soalan sebenar':'Cubaan direkod'}</small></div><div><span>🎯</span><b>${attempts?accuracy+'%':'—'}</b><small>${clean?'Betul sendiri':'Jawapan betul'}</small></div><div><span>✓</span><b>${strongCount}</b><small>Kemahiran mantap</small></div></div>
-  ${clean?'<p class="parentEvidenceNote">Ringkasan cara belajar menggunakan rekod baharu sejak kemas kini.</p>':''}
-  <section class="card parentInsights"><div class="parentInsightColumn"><div class="eyebrow">YANG SEMAKIN KUAT</div>${parentInsightItem(strongLead,'strong')}</div><div class="parentInsightColumn"><div class="eyebrow">FOKUS SETERUSNYA</div>${parentInsightItem(priorityLead,'priority')}</div></section>
-  ${renderParentRestuEntry(restuFocus)}`;
+ const restuFocus=parentRestuFocus(core,summary);
+ // Ringkasan at a glance: activity and praise first, then what to strengthen (details in Kemahiran).
+ document.getElementById("summaryTab").innerHTML=`${renderParentRestuEntry(restuFocus)}${parentGlanceMarkup(g,summary)}`;
  let byCh={};core.forEach(m=>(byCh[m.chapter]??=[]).push(m));
  const levelMarkup=`<section class="card parentReportHead embeddedLevelsHead"><div class="eyebrow">JULAT PEMBELAJARAN</div><h2>Asas dan cabaran</h2><p>Cikgu Dimensi turun kepada asas atau naik kepada cabaran apabila bukti pembelajaran memerlukannya.</p></section><div class="parentLevelGrid"><div class="card"><h3>Pengukuhan asas</h3><small>${gradeLabel(prev)}</small>${recovering.length?recovering.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Tiada pengukuhan tambahan diperlukan sekarang.</p>"}</div><div class="card"><h3>Cabaran lanjutan</h3><small>${gradeLabel(next)}</small>${stretching.length?stretching.map(m=>skillHTML(m,false)).join(""):"<p class='mut'>Belum ada cabaran lanjutan yang disahkan.</p>"}</div></div>`;
  document.getElementById("coreTab").innerHTML=`<section class="card parentReportHead"><div class="eyebrow">LAPORAN KEMAHIRAN</div><h2>Matematik Darjah ${g}</h2><p>Lihat kemahiran, bukti dan julat latihan anak dalam satu tempat.</p></section><div class="card parentSkillReport">${Object.keys(byCh).sort((a,b)=>a-b).map(ch=>`<h3>Topik ${ch} · ${parentSafe(chapterTitle(ch))}</h3>`+byCh[ch].map(m=>skillHTML(m,true)).join("")).join("")}</div>${levelMarkup}`;
