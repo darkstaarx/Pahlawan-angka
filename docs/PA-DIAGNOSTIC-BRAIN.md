@@ -318,7 +318,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #75; Kemungkinan punca tags, PR open). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #75; Kemungkinan punca tags, PR #76 open). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#75. #69 Next item 3 + question-first mini
@@ -328,7 +328,7 @@ Last updated: 2026-10-21 (after PR #75; Kemungkinan punca tags, PR open). Read t
    for all mini games + one-row number keypad on short web screens so Wira is
    not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
    speaker signal (3.86.99, see §4.8 "Implemented").
-   **Open: "Kemungkinan punca" tags for D2–D5, 3.87.0, branch
+   **Open: PR #76 "Kemungkinan punca" tags for D2–D5, 3.87.0, branch
    `ccr-ed8f705d-ym2tc0`, base `main`, not merged** — merge only when the
    owner asks (convention below). What it does: see "Kemungkinan punca tags"
    below.
@@ -352,7 +352,7 @@ Last updated: 2026-10-21 (after PR #75; Kemungkinan punca tags, PR open). Read t
    the real app before reporting.
 
 **Status on GitHub.** PRs #55–#63 and #65–#75 are merged into `main`; the
-"Kemungkinan punca" tags PR (3.87.0) is open, not merged
+"Kemungkinan punca" tags PR #76 (3.87.0) is open, not merged
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 Start new work from `main`, one task per branch and PR, base `main`.
@@ -517,7 +517,7 @@ Still open: few pictures in D4–D6 (13–18%) for lens 4.1. Done since: tags fo
 D3 80%, D4 91%, D5 94% in 3.87.0, see below); short/long wording pairs (lens
 4.8, 3.86.99, as separate pair items).
 
-**"Kemungkinan punca" tags for D2–D5 (3.87.0, PR open; owner order after 4.8).**
+**"Kemungkinan punca" tags for D2–D5 (3.87.0, PR #76 open; owner order after 4.8).**
 The Kemahiran Fokus card shows "Kemungkinan punca: …" when
 `PAFocusFoundationV1.evaluate()` (`js/engine/focus-foundation-v1.js`) finds one
 foundation failing in ≥3 questions across ≥2 topics while the same topics'
