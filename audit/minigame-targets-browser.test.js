@@ -88,13 +88,14 @@ test('question first: the question panel is bigger than the scene and nothing is
     const m = await g.page.evaluate(() => {
       const box = s => document.querySelector(s).getBoundingClientRect(), game = box('.pa-game');
       return { scene: box('.scene').height, panel: box('.panel').height, qz: Number(document.querySelector('.panel').style.getPropertyValue('--qz')),
-        actionsBottom: box('.actions').bottom, gameBottom: game.bottom, wide: document.documentElement.scrollWidth > innerWidth || document.querySelector('.panel').scrollWidth > document.querySelector('.panel').clientWidth + 1 };
+        actionsBottom: box('.actions').bottom, gameBottom: game.bottom, legsHidden: box('.scene .wira').bottom - box('.scene .counter').top > .35 * box('.scene .wira').height, wide: document.documentElement.scrollWidth > innerWidth || document.querySelector('.panel').scrollWidth > document.querySelector('.panel').clientWidth + 1 };
     });
     const at = `${width}x${height} ${hash}: ${JSON.stringify(m)}`;
     assert.ok(m.panel > m.scene, at);
     assert.ok(m.qz >= 1 && m.qz <= 1.6, at);
     assert.ok(m.actionsBottom <= m.gameBottom + 1, 'Semak button stays on screen: ' + at);
     assert.equal(m.wide, false, at);
+    assert.ok(m.legsHidden, 'waist-up Wira behind the counter: ' + at);
     assert.deepEqual(g.errors, []); await g.close();
   }
 });

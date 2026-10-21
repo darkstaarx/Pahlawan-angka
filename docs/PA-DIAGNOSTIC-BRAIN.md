@@ -352,8 +352,10 @@ GitHub is the test stage; Netlify is production and only the owner deploys it.
      caps the scene (~30% height, Wira/visitor zoomed in, props kept) and gives
      the panel the rest; `js/minigame-panel-fit-v1.js` enlarges the panel
      content to fill it (`--qz`, 1–1.6, 5% spare). A choice question without a
-     picture shows big full-width choices. Other mini games can opt in by
-     linking both files (check their scene props first).
+     picture shows big full-width choices. Wira stands waist-up behind the
+     counter (about 1.6× bigger, belt at the counter top), the chest on the
+     counter and the chest shelf sit to his right. Other mini games can opt in
+     by linking both files (check their scene props first).
    - Not done: bar model (Model Method) for word problems exists in no mini
      game yet (proposed next); basic facts (D1) are not targeted beyond the
      existing make-ten tiers; other games (pecahan, ukuran, ...) take no target.
