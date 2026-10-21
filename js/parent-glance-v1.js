@@ -2,8 +2,10 @@
    Two short cards on top of the parent tab:
    1) Aktiviti 7 hari: questions this week / today, active days, then praise
       first (effort, then what the child is good at).
-   2) Perlu dikuatkan: up to 3 short labels from the Diagnostic Brain plan;
-      the full findings stay in the Kemahiran tab (Ringkasan Cikgu Dimensi).
+   2) Perlu dikuatkan: up to 3 short labels from the Diagnostic Brain plan,
+      and one "Punca utama" line when one foundation explains misses in several
+      topics (js/engine/focus-foundation-v1.js); the full findings stay in the
+      Kemahiran tab (Ringkasan Cikgu Dimensi).
    Pure module; Node-testable. */
 (function(root,factory){
   'use strict';
@@ -36,7 +38,7 @@
     return[...by].filter(([id,x])=>x.n>=8&&x.ok/x.n>=.9&&skillTitle(id)).sort((a,b)=>b[1].n-a[1].n).map(([id])=>id);
   }
 
-  function compose({name,log,encounters,result,plan,strongIds=[],priorityTitles=[],skillTitle=()=>null,now=Date.now()}={}){
+  function compose({name,log,encounters,result,plan,strongIds=[],priorityTitles=[],cause=null,skillTitle=()=>null,now=Date.now()}={}){
     const who=String(name||'').trim()||'Anak';
     const times=(log||[]).length?log.map(r=>r.t):(encounters||[]).map(e=>e.resolvedAt);
     const act=activity(times,now);
@@ -56,6 +58,9 @@
     }else{
       improve={title:'Belum cukup bukti',items:[],note:`Cikgu Dimensi perlukan lebih banyak jawapan sebelum membuat rumusan (${result?.total||0}/20).`,detail:false};
     }
+
+    // One short sentence, only next to things to practise.
+    if(cause&&improve.items.length)improve.note=`Punca utama: ${cause}. ${improve.note}`;
 
     // 1) Aktiviti + pujian
     const fluent=[...new Set([...strengths,...findings].flatMap(f=>f.id==='fact_fluency'||f.id==='fact_strength'?f.evidence?.fluent||[]:[]))].sort((a,b)=>a-b);

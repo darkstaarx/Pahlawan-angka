@@ -342,10 +342,10 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (lens 4.6). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#77. #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #69–#78, #80, #81 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
@@ -356,9 +356,13 @@ Last updated: 2026-10-21 (lens 4.6). Read this section first if you are picking 
    #77 docs: "How it works" under "Kemungkinan punca tags" below. #80 mini
    game fix: every round gets its own brain record (3.87.2).
    #81 lens 4.6 strategy choice (3.87.3, see §4.6 "Implemented").
-   Also open from another session: PR #78 (Fokus card one line, "Punca
-   utama", 3.87.1); `js/version.js` and this section may conflict when both
-   merge — keep the higher version.
+   #78 short Fokus card line + "Punca utama" for parents (3.87.4; owner:
+   "taknak serabut" for the child or the parent): each Fokus card has one
+   short line ("Punca: Nilai tempat", else "Ketepatan N%" or the brain label;
+   money/time checks "Punca: soalan wang / baca jam / ..."), and the parent
+   Ringkasan "Perlu dikuatkan" card adds one sentence "Punca utama: Nilai
+   tempat nombor." (details under "How it works" below).
+   Nothing is open. Current version 3.87.4.
 2. **Next task: full lens 4.7 (retention), the last lens of phase 4.** Ask
    the owner before starting. Today 4.7 covers only sifir and basic facts
    (mastered earlier, slipping in the last 3 days). Full 4.7 (§4.7): per skill
@@ -384,7 +388,7 @@ Last updated: 2026-10-21 (lens 4.6). Read this section first if you are picking 
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** PRs #55–#63 and #65–#77 are merged into `main`
+**Status on GitHub.** PRs #55–#63, #65–#78, #80 and #81 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
@@ -582,10 +586,16 @@ everything fails or only one topic fails). The finder's thresholds are
 unchanged (design values, phase 5 calibrates).
 
 *How it works, as explained to the owner (2026-10-21, with real-app screenshots).*
-- Where it shows: only on the Kemahiran Fokus cards (home screen → "Kemahiran
-  Fokus" tile, a Family Plus feature), as "Ketepatan 20% · Kemungkinan punca:
-  Nilai tempat nombor". The parent tab does not show it yet (candidate: one
-  line under "Perlu dikuatkan" in the Ringkasan glance).
+- Where it shows (owner: "taknak serabut", 3.87.1): the Kemahiran Fokus card
+  (home → "Kemahiran Fokus" tile, Family Plus) has ONE short line under the
+  title: "Punca: Nilai tempat" (`PAFocusFoundationV1.SHORT`, ≤3 words), else
+  "Ketepatan 20%", or the brain card label ("Sifir 3"). Money/time checks say
+  "Punca: soalan wang / operasi asas / baca jam / unit masa / tempoh masa";
+  their long sentence stays in `item.reason` and is not shown
+  (`focusCardLine()` in `js/guardian-focus.js`). Parents get one sentence in
+  the Ringkasan "Perlu dikuatkan" card, only when it lists something:
+  "Punca utama: Nilai tempat nombor." before the usual note
+  (`PAParentGlance.compose({cause})`, `parentGlanceMarkup()` in `js/parent.js`).
 - Step 1: every question carries the foundations it tests. Example, Darjah 4:
   "Apakah nilai digit … 405 6 7?" (Nilai tempat), "Bundarkan 36 651 kepada
   1 000 terdekat" (Nilai tempat), "Bundarkan 357 kepada ratus terdekat,
