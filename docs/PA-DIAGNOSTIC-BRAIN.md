@@ -265,11 +265,32 @@ composition, lock policy.
 
 Last updated: 2026-10-21. Read this section first if you are picking up the work.
 
+**Start here (next agent, 2026-10-21 evening).**
+1. The owner will ask you to **merge PR #69** (branch `ccr-ed8f705d-ym2tc0`,
+   app 3.86.93). It holds Next item 3 (mini games drill the brain finding)
+   and the owner's layout request (question panel bigger than the scene,
+   waist-up Wira, in all nine mini games). Before merging: check it is still
+   mergeable; CI is only "Supabase Preview" (skipped); run
+   `node --test audit/*.test.js` (expect 180 pass, 0 fail). Then, as done for
+   #66–#68, push one commit to the PR branch that marks #69 merged in this
+   section (status line + item 3), and merge with a merge commit. GitHub
+   Pages (darkstaarx.github.io/Pahlawan-angka/) rebuilds by itself in about
+   a minute; Netlify is NOT touched.
+2. Then ask the owner what next. Candidates, in order: Next item 4
+   (re-check loop); a bar model (Model Method) round for word problems in a
+   mini game (proposed, not started); targets for the other mini games
+   (pecahan, ukuran, ...); D1 basic-fact targeting.
+3. Owner style: reply in Bahasa Malaysia, short and plain; one task per
+   branch/PR, base `main`; merge only when the owner says so; screenshots
+   of the real app help the owner decide (Playwright via
+   `audit/lib/browser.js`; mini game pages open standalone on localhost with
+   `localStorage.pa_dev_unlocked='1'`).
+
 **Status on GitHub.** PRs #55–#63 and #65–#68 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
-Open: PR #69 (Next item 3, mini games drill the brain finding, 3.86.90),
-base `main`, not merged.
+Open: PR #69 (Next item 3 + question-first layout in all mini games,
+3.86.93), base `main`, not merged — merge when the owner asks (see above).
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -405,7 +426,9 @@ phase 5 (consented cloud telemetry), see §7.
 
 **Not done / owner tasks**
 - Real-device test (iPhone/Android): Portal Restu video and PIN, mini game
-  telemetry, worksheet PDF download.
+  telemetry, worksheet PDF download, and the new mini game layout (only the
+  first screen of each game was checked; other question kinds rely on the
+  panel auto-fit).
 - Owner checks the "3 fast wrong answers → lock" rule feels fair for Darjah 1.
 
 **How to verify your change**
