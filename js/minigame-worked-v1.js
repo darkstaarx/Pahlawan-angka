@@ -141,6 +141,8 @@
     const q=s=>el.board.querySelector(s);let k=0,busy=false;
     const story=plan.steps[0]?.sentence===true;
     el.board.innerHTML=boardHTML(plan,{hideSign:story});
+    // A story asks for the number sentence first, with no board in the way; the board comes in after.
+    const boardEl=el.board.querySelector('.wk-board');if(story&&boardEl)boardEl.classList.add('wk-wait');
     const focus=col=>el.board.querySelectorAll('.wk-c').forEach(c=>c.classList.toggle('wk-on',Number(c.dataset.col)===col));
     const apply=a=>{
       if(!a)return;
@@ -148,29 +150,32 @@
       const swap=(col,from,to)=>{const c=topCell(col);if(c){c.innerHTML=`<s class="wk-old">${from}</s>${to}`;c.classList.add('wk-pop','wk-changed')}};
       if(a.borrow)for(const x of a.borrow)swap(x.col,x.from,x.to);
       if(a.gain)swap(a.gain.col,a.gain.from,a.gain.to);
-      if(a.sign){const g=el.board.querySelector('.wk-sign');if(g){g.textContent=a.sign;g.classList.add('wk-pop')}}
+      if(a.sign){const g=el.board.querySelector('.wk-sign');if(g){g.textContent=a.sign;g.classList.add('wk-pop')}
+        const bd=el.board.querySelector('.wk-board');if(bd){bd.classList.remove('wk-wait');bd.classList.add('wk-in')}}
       if(a.write&&a.write.digit!==null&&a.write.digit!==undefined&&!a.write.lead){const c=q(`.wk-ans [data-col="${a.write.col}"]`);if(c){c.textContent=a.write.digit;c.classList.add('wk-drop')}}
       if(a.carry){const c=q(`.wk-carry [data-col="${a.carry.col}"]`);if(c){c.textContent=a.carry.digit||1;c.classList.add('wk-fly')}}
       if(a.rem!==undefined){const r=q('.wk-rem');if(r)r.textContent=a.rem?`baki ${a.rem}`:''}
     };
     const show=()=>{
       busy=false;
-      if(k>=plan.steps.length){focus(-1);el.say.innerHTML=`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';onDone&&onDone(plan);return}
+      if(k>=plan.steps.length){focus(-1);el.say.innerHTML=`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
       const s=plan.steps[k];focus(s.col);el.say.textContent=s.say;opt.onShow&&opt.onShow(k,plan.steps.length);
-      el.tiles.classList.toggle('wk-one',!!s.sentence||s.kind!=='pick');
-      if(s.kind==='pick')el.tiles.innerHTML=s.choices.map(v=>`<button type="button" class="tl wk-t${s.sentence?' wk-s':''}" data-v="${esc(v)}">${esc(v)}</button>`).join('');
-      else el.tiles.innerHTML=`<button type="button" class="tl wk-t wk-go" data-v="go">${s.kind==='borrow'?'Pinjam 1':'Teruskan'}</button>`;
-      el.tiles.querySelectorAll('.wk-t').forEach(btn=>btn.onclick=()=>pick(btn));
-      try{el.tiles.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(_){}
+      // The story's sentence choices sit right under Wira's question (el.inline) when the page gives a place for them.
+      const T=s.sentence&&el.inline?el.inline:el.tiles;if(T!==el.tiles)el.tiles.innerHTML='';if(el.inline&&T!==el.inline)el.inline.innerHTML='';
+      T.classList.toggle('wk-one',!!s.sentence||s.kind!=='pick');
+      if(s.kind==='pick')T.innerHTML=s.choices.map(v=>`<button type="button" class="tl wk-t${s.sentence?' wk-s':''}" data-v="${esc(v)}">${esc(v)}</button>`).join('');
+      else T.innerHTML=`<button type="button" class="tl wk-t wk-go" data-v="go">${s.kind==='borrow'?'Pinjam 1':'Teruskan'}</button>`;
+      T.querySelectorAll('.wk-t').forEach((btn,i)=>{btn.onclick=()=>pick(btn);btn.style.setProperty('--i',i);btn.classList.add('wk-enter')});
+      try{T.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(_){}
     };
     let misses=0;
     const pick=btn=>{
       if(busy)return;const s=plan.steps[k];
       if(s.kind==='pick'&&String(btn.dataset.v)!==String(s.right)){
         misses++;btn.classList.remove('wk-no');void btn.offsetWidth;btn.classList.add('wk-no');btn.disabled=true;
-        [...el.tiles.querySelectorAll('.wk-t')].find(b=>b.dataset.v===String(s.right))?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
+        [...btn.parentNode.querySelectorAll('.wk-t')].find(b=>b.dataset.v===String(s.right))?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
       }
-      busy=true;btn.classList.add('wk-yes');el.tiles.querySelectorAll('.wk-t').forEach(b=>b.disabled=true);
+      busy=true;btn.classList.add('wk-yes');btn.parentNode.querySelectorAll('.wk-t').forEach(b=>b.disabled=true);
       apply(s.after);if(s.after?.note)el.say.textContent=s.after.note;opt.onStep&&opt.onStep(s);
       k++;setTimeout(show,opt.pace??900);
     };
