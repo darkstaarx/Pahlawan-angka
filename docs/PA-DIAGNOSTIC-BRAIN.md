@@ -367,7 +367,7 @@ composition, lock policy.
 Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #48, #69–#78, #80–#82 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #48, #69–#78, #80–#83 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
@@ -389,12 +389,12 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    now): the BERJAYA victory crest pops in, a light streak sweeps the banner,
    gold stars reveal once then sparkle; all stop under reduced motion (#46
    cheering Wira + pet and #47 arena layout stay closed, owner choice).
-   Open: bug fixes (3.87.7), branch `claude/compassionate-hypatia-a9xycw`:
-   Menara Jam calendar rounds printed "undefined" on the stamp (no
-   `ansText`); a profile saved before newer skills existed crashed the parent
-   worksheet tab on load (`snapshot()` read `scoreState(id).correct` before
-   `initAll()`). Merge only when the owner says so. Next after it (owner asked,
-   not started): "Jom tengok cara" worked example after 3 wrong tries in all
+   #83 bug fixes (3.87.7): Menara Jam calendar rounds printed "undefined" on
+   the stamp (no `ansText`); a profile saved before newer skills existed
+   crashed the parent worksheet tab on load (`snapshot()` read
+   `scoreState(id).correct` before `initAll()`). Nothing is open. Current
+   version 3.87.7. Next (owner asked; owner wants a preview first, interactive,
+   "taknak nampak mcm slop"): "Jom tengok cara" worked example after 3 wrong tries in all
    nine mini games (every kind knows its answer; step text is missing in
    Menara Jam, most of Pos Peninjau and early Lombong Permata).
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
@@ -421,7 +421,7 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** PRs #48, #55–#63, #65–#78 and #80–#82 are merged into `main`
+**Status on GitHub.** PRs #48, #55–#63, #65–#78 and #80–#83 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
