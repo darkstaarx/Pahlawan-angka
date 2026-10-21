@@ -318,7 +318,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after PR #76). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after PR #76; Kemungkinan punca explained to the owner). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#76. #69 Next item 3 + question-first mini
@@ -329,7 +329,9 @@ Last updated: 2026-10-21 (after PR #76). Read this section first if you are pick
    not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
    speaker signal (3.86.99, see §4.8 "Implemented"); #76 "Kemungkinan
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
-   Nothing is open. Current version 3.87.0.
+   Current version 3.87.0. Open: a docs-only PR (branch
+   `ccr-ed8f705d-ym2tc0`) that adds "How it works" under "Kemungkinan punca
+   tags" below; merge when the owner asks.
 2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
    (owner order: bar model → light 4.8 → Kemungkinan punca tags → 4.6 and
    full 4.7). Ask the owner before starting. Sketch for 4.6 (§4.6): the
@@ -542,6 +544,37 @@ regrouping, Darjah 4 place value → "Kemungkinan punca: Nilai tempat nombor" on
 the card, Darjah 3 stories → "Memilih operasi daripada cerita", no cause when
 everything fails or only one topic fails). The finder's thresholds are
 unchanged (design values, phase 5 calibrates).
+
+*How it works, as explained to the owner (2026-10-21, with real-app screenshots).*
+- Where it shows: only on the Kemahiran Fokus cards (home screen → "Kemahiran
+  Fokus" tile, a Family Plus feature), as "Ketepatan 20% · Kemungkinan punca:
+  Nilai tempat nombor". The parent tab does not show it yet (candidate: one
+  line under "Perlu dikuatkan" in the Ringkasan glance).
+- Step 1: every question carries the foundations it tests. Example, Darjah 4:
+  "Apakah nilai digit … 405 6 7?" (Nilai tempat), "Bundarkan 36 651 kepada
+  1 000 terdekat" (Nilai tempat), "Bundarkan 357 kepada ratus terdekat,
+  kemudian anggarkan hasil darab dengan 3" (Nilai tempat + Fakta sifir), but
+  "278 × 4" (Fakta sifir + Darab lebih satu digit, no place value).
+- Step 2: the finder compares the child's first tries. Dummy child Danial: 42
+  of 53 place-value questions wrong (79%) across 3 topics, while the other
+  questions in the same topics were 5% wrong (19 questions). Plain
+  multiplication right, the rounding-then-multiply item wrong → the cause is
+  place value, not multiplication.
+- Step 3: the two weakest Fokus cards (Nombor hingga 100,000; Nilai tempat
+  hingga 100,000) show "Kemungkinan punca: Nilai tempat nombor". Order, marks
+  and routing do not change; it only explains.
+- It shows when one foundation is wrong in ≥3 questions, in ≥2 topics and ≥2
+  question kinds, wrong ≥50% of the time, and ≥30 points more often than the
+  other questions of those topics (`RULES` in `js/engine/focus-foundation-v1.js`,
+  latest 150 tagged answers of the child's grade, demo answers ignored). It
+  does not show when the child gets almost everything wrong (no contrast),
+  when it is one topic only, or after 1–2 slips.
+- Reproduce the screenshots: serve the repo, open `index.html` in Playwright
+  (`audit/lib/browser.js`), stub `PACommercial`, set a Darjah 4 `db`, play
+  ~150 generated D4 questions through `PALearnerReview.beginQuestion/resolve`
+  with place-value items mostly wrong, then `renderHub()` and
+  `PAFocusPractice.open()` (same steps as the scenarios in
+  `audit/focus-tags-d2-d5.test.js`).
 
 **Phase 4 (started 2026-10-21)**
 - ✅ Lens 4.1 Representation (CPA), 3.86.95, PR #71, merged: see §4.1
