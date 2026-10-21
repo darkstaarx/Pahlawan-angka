@@ -329,7 +329,7 @@ Last updated: 2026-10-21 (after PR #76; Kemungkinan punca explained to the owner
    not cropped (3.86.98); #75 light lens 4.8, short vs long wording + Segel
    speaker signal (3.86.99, see §4.8 "Implemented"); #76 "Kemungkinan
    punca" tags for D2–D5 (3.87.0, see "Kemungkinan punca tags" below).
-   Current version 3.87.0. Open: a docs-only PR (branch
+   Current version 3.87.0. Open: PR #77, docs only (branch
    `ccr-ed8f705d-ym2tc0`) that adds "How it works" under "Kemungkinan punca
    tags" below; merge when the owner asks.
 2. **Next task: lens 4.6 (interleaving / strategy choice), then full 4.7**
