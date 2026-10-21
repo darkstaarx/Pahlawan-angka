@@ -40,6 +40,16 @@ test('wrong first try → first-attempt, later right → retry; extra wrong trie
   assert.equal(calls[0][5].token, 'mg-n:1'); assert.equal(calls[0][5].prompt, '52 − 27 = ?');
 });
 
+test('a real session nonce (UUID) still gives every round its own brain record', () => {
+  const B = require('../js/engine/diagnostic-brain-v1.js');
+  const { calls, send } = load(), nonce = '0c4aaffa-3987-4688-b159-bd954ff9d657';
+  for (let i = 1; i <= 12; i++) send({ key: `${nonce}:${i}`, prompt: `${i} + 5 = ?`, answer: String(i + 5), ok: true, first: true, ms: 4000 });
+  let log = [];
+  for (const c of calls) log = B.applyResponse(log, { q: c[5], ok: c[1], sec: c[3], mode: c[6], at: 1e12 });
+  assert.equal(log.length, 12, 'the brain keeps 40 characters of a token; the round number must survive');
+  assert.equal(new Set(log.map(r => r.id)).size, 12);
+});
+
 test('messages from outside a child frame or another origin are ignored', () => {
   const { calls, send } = load();
   send({ key: 'f:1', ok: false, first: true, ms: 300 }, { id: 'stranger' });

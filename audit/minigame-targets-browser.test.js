@@ -147,6 +147,32 @@ test('baca soalan panjang (lens 4.8): short wording → long with the question m
   await chk.close();
 });
 
+test('soalan bercampur (choose, lens 4.6): pick the sentence (no bar) → story alone; the operation never repeats', async () => {
+  for (const hash of ['d4-tambah', 'd3-tolak', 'd5-gabung']) {
+    const g = await gudang({ kind: 'choose' }, hash, { width: 360, height: 640 });
+    const rounds = await g.page.evaluate(() => window.__gudangGen.sample(10).map(q => ({ target: q.target, arch: q.arch, op: q.fx && q.fx.op })));
+    const tg = rounds.filter(r => r.target);
+    assert.ok(tg.length >= 6, hash + ' 7 in 10 rounds are mixed story rounds');
+    assert.equal(tg[0].arch, 'target_choose_sentence', hash + ' starts by choosing the sentence');
+    assert.ok(tg.every((r, i) => i === 0 || r.op !== tg[i - 1].op), hash + ' ops ' + tg.map(r => r.op).join());
+    for (let i = 0; i < 12; i++) {
+      const r = await g.page.evaluate(t => { const q = window.__gudangGen.show(t, 0);
+        return { arch: q.arch, fx: q.fx, vis: !!q.vis, ans: q.form ? q.form.fields[0].v : null, ok: q.opts ? q.opts.find(o => o.id === q.correct).label : null, n: q.opts ? q.opts.length : 0, badge: document.getElementById('mode').textContent };
+      }, i % 2);
+      const [a, b] = r.fx.operands, want = { add: a + b, sub: a - b, mul: a * b, div: a / b }[r.fx.op];
+      assert.equal(r.vis, false, 'no bar drawn: the child chooses alone');
+      assert.match(r.badge, /^BERCAMPUR · T\d$/, 'the mode badge must not give the operation away');
+      assert.equal(r.fx.format, 'word');
+      if (r.arch === 'target_choose_sentence') { assert.equal(r.n, 3); assert.equal(r.ok.replace(/\s/g, ''), (a + { add: '+', sub: '−', mul: '×', div: '÷' }[r.fx.op] + b + '=?').replace(/\s/g, '')) }
+      else assert.equal(r.ans, want);
+    }
+    assert.deepEqual(g.errors, []); await g.close();
+  }
+  const chk = await gudang({ kind: 'choose', check: true }, 'd4-tolak');
+  assert.equal((await chk.page.evaluate(() => window.__gudangGen.sample(1)[0])).arch, 'target_choose_story', 'a re-check is the story alone');
+  await chk.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');
@@ -270,6 +296,33 @@ test('real app: brain cards open Gudang Harta with the target and Gerai Wirayung
     ['D3.MUL', 'gudang-harta.html', '{"kind":"tables","tables":[3]}', 'd3-darab'],
     ['D3.MONEY', 'gerai-wirayung.html', null, 'd3-baki'],
     ['D3.SUB10000', 'gudang-harta.html', '{"kind":"regroup","op":"sub","zero":false}', 'd3-tolak']]);
+});
+
+test('real app: a mixed-set finding gives a "Soalan bercampur" card that opens Gudang Harta choose rounds', async () => {
+  const log = S.simulate('faris').log1;
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.route('**/*', route => route.request().url().startsWith(base) && ['GET', 'HEAD'].includes(route.request().method()) ? route.continue() : route.abort());
+  const page = await context.newPage(), errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto(base + '/index.html');
+  await page.waitForFunction(() => window.PAFocusPractice && window.PATargets && window.PAReadingPairs && window.PAFocusMiniGamesLive, null, { timeout: 30000 });
+  const card = await page.evaluate(log => {
+    window.PACommercial = { requireFeature: () => true, canUse: () => true, authorizeMission: async () => true };
+    window.PACloud = { state: {}, scheduleSave() {}, syncSaveNow() {} }; window.save = () => {};
+    db = { schoolGrade: 4, name: 'Faris', hero: 'wira', level: 1, coins: 0, xp: 0, skills: {}, logs: [], coreFrontier: 1, completedMissions: {}, rewards: { pets: {}, auras: {}, badges: {} }, learnerReviewV1: { schema: 1, encounters: [] }, diagLog: log };
+    sess = {}; initAll(); PAFocusPractice.open();
+    const el = document.querySelector('.focusPickCard'); el.click();
+    return { skill: el.dataset.skill, text: el.textContent.replace(/\s+/g, ' ') };
+  }, log);
+  assert.match(card.skill, /^D4\./);
+  assert.match(card.text, /Soalan bercampur/);
+  const frame = page.locator('#paFocusMiniGameOverlay iframe');
+  const src = await frame.getAttribute('src');
+  assert.equal(new URLSearchParams(src.split('?')[1].split('#')[0]).get('focus_target'), '{"kind":"choose"}');
+  const first = await (await frame.elementHandle()).contentFrame();
+  await first.waitForFunction(() => window.__gudangGen && window.__gudangGen.current(), null, { timeout: 15000 });
+  assert.equal(await first.evaluate(() => window.__gudangGen.current().arch), 'target_choose_sentence');
+  assert.deepEqual(errors, []); await context.close();
 });
 
 test('real app: a long-wording finding gives a "Baca soalan panjang" card that opens Gudang Harta story rounds', async () => {
