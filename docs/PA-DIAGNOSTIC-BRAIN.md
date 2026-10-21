@@ -198,7 +198,7 @@ Thresholds are **starting values**; calibrate with real data (§7).
 - **Parent:** "Matematik anak ok — yang menyukarkan ialah ayat panjang."
 - **Action:** read-aloud (existing speaker), shorter wording first, then
   gradually longer. Important for Malaysian multilingual pupils.
-- **Implemented (3.86.99, light version):** facet `reading` (1 short … 3
+- **Implemented (3.86.99, PR #75, light version):** facet `reading` (1 short … 3
   long) is recorded as `rd`; only a generator that wrote both wordings sets it,
   never inferred from text. `js/engine/reading-pairs-v1.js` (`PAReadingPairs`)
   has six families: jumlah (tambah), beza (tolak), kali ganda (darab), agih
@@ -315,7 +315,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (after light lens 4.8, PR open). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (after light lens 4.8, PR #75 open). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #69–#74. #69 Next item 3 + question-first mini
@@ -324,7 +324,7 @@ Last updated: 2026-10-21 (after light lens 4.8, PR open). Read this section firs
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
    for all mini games + one-row number keypad on short web screens so Wira is
    not cropped (3.86.98).
-   **Open: light lens 4.8 (language load), 3.86.99, branch
+   **Open: PR #75 light lens 4.8 (language load), 3.86.99, branch
    `ccr-ed8f705d-ym2tc0`, base `main`, not merged** — merge only when the
    owner asks (convention below). What it does: see §4.8 "Implemented".
 2. **Next task: "Kemungkinan punca" tags for D2–D5** (owner order: bar model →
@@ -349,7 +349,7 @@ Last updated: 2026-10-21 (after light lens 4.8, PR open). Read this section firs
 
 **Status on GitHub.** PRs #55–#63 and #65–#74 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
-real-device test. Open: light lens 4.8 (3.86.99), not merged.
+real-device test. Open: PR #75 (light lens 4.8, 3.86.99), not merged.
 Start new work from `main`, one task per branch and PR, base `main`.
 GitHub is the test stage; Netlify is production and only the owner deploys it.
 
@@ -555,7 +555,7 @@ short/long wording pairs yet (lens 4.8; ✅ added in 3.86.99 as separate pair it
   1366×768 the scene grows from 97 px to 159 px. Phones keep two rows;
   typing on the keyboard works in the six keypad games. Sweep: 9 games ×
   10 sizes (320×500 … 1920×960), no control out of reach.
-- ✅ Light lens 4.8 (language load), 3.86.99, PR open: see §4.8 "Implemented".
+- ✅ Light lens 4.8 (language load), 3.86.99, PR #75 (open): see §4.8 "Implemented".
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
   "Kemungkinan punca" tags for D2–D5. 4.6 and full 4.7 after that.
