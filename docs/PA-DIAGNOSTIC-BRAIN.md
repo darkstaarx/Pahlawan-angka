@@ -215,6 +215,28 @@ Thresholds are **starting values**; calibrate with real data (§7).
 - **Rule:** ≥2 such reversals after ≥3 days.
 - **Parent:** "Sifir 6 dah dikuasai minggu lepas, tapi mula lupa."
 - **Action:** spaced review queue (1, 3, 7, 14 days); reuse `daily-spaced-review`.
+- **Implemented (3.87.5):** groups = each sifir, each basic-fact family, and
+  every other answer by its KSSR skill (an answer with a sifir or basic fact
+  counts only there). Rule: latest 10 answers from before the last 3 days ≥85%
+  right (≥5 answers, "mastered"), and in the last 3 days ≥4 answers, ≤50% right,
+  ≥2 misses; rapid guesses left out. Parent text is one sentence, one score:
+  "Tolak hingga 10,000 sudah dikuasai sebelum ini, tetapi mula lupa (2/18 betul
+  dalam 3 hari)." (several slips: no score). `target.slips` lists each slip
+  (`key`, `label`, `tables` / `facts` / `skills`). Review queue
+  `js/engine/review-queue-v1.js` (`PAReviewQueue`, stored as
+  `db.diagReviewV1.items[key] = {at, label, tables, facts, skills}`, every state
+  derived from `db.diagLog`): steps at 1, 3, 7 and 14 days; a step is passed by
+  the first matching answer on or after its due time, right on the first try
+  without a hint; a miss starts again at 1 day; earlier answers and guesses do
+  not move it; done after the 14-day step (a slip that comes back starts a new
+  schedule). Not `daily-spaced-review`: the Ulang Kaji Harian card is no longer
+  on the Menu V2 home, so the queue feeds **Kembara Dimensi** instead
+  (`js/engine/production-journey.js`, adaptive route): every 4th question from
+  the 2nd is a due review skill the run has not asked yet. Plan step `review`
+  ("Ulang kaji berjadual") carries `skills`; the re-check key for a skill-only
+  review is `review:<skills>`; a skill review has no worksheet section. Dummy
+  child: `nadia` (`tools/diagnostic-sim.js`). Tests:
+  `audit/diagnostic-retention.test.js`.
 
 ### 4.8 Language load (BM reading)
 - **Input:** same item family at `reading: 1` vs `reading: 3`.
@@ -300,7 +322,7 @@ composition, lock policy.
 | 1 ✅ | Facet tags (§3, central derivation + explicit for written arithmetic); response records keep facets + wrong value + seconds; finding engine for lenses 4.2, 4.3, 4.4, 4.5; new report sections (§6) | Unit tests for each rule with synthetic answer logs; report shows the 4-line summary from real play; no finding below threshold |
 | 2 ✅ | Portal Restu (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; parent can allow exploring for the day; never in demo |
 | 3 (worksheet ✅, rest: see §8a) | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets). Worksheet done: "Disyorkan" PDF takes ~60% items from `PATargets.worksheetItems` (FOKUS tag, Cara Kerja box for word/money/regroup, "Kenapa latihan ini" box, step-by-step skema from `PATargets.explain`); rest from the bank; falls back to mastery logic without findings | Mini game round composition reflects findings; worksheet PDF has the right mix |
-| 4 (4.1 ✅, 4.6 ✅, light 4.8 ✅, rest open) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
+| 4 ✅ (4.1, 4.6, 4.7, light 4.8; thresholds not calibrated) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
 | 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
 
 ## 8. Where things live (current code)
@@ -342,10 +364,10 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are picking up the work.
+Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first if you are picking up the work.
 
 **Start here (next agent).**
-1. Merged into `main`: PRs #69–#78, #80, #81 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
+1. Merged into `main`: PRs #69–#78, #80–#82 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
    game layout (3.86.93); #70 re-check loop + `tools/recheck-lab.html`
    (3.86.94); #71 lens 4.1 CPA (3.86.95); #72 question bank repair
    (3.86.96); #73 bar model for word problems (3.86.97); #74 small-phone fix
@@ -362,14 +384,15 @@ Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are pic
    money/time checks "Punca: soalan wang / baca jam / ..."), and the parent
    Ringkasan "Perlu dikuatkan" card adds one sentence "Punca utama: Nilai
    tempat nombor." (details under "How it works" below).
-   Nothing is open. Current version 3.87.4.
-2. **Next task: full lens 4.7 (retention), the last lens of phase 4.** Ask
-   the owner before starting. Today 4.7 covers only sifir and basic facts
-   (mastered earlier, slipping in the last 3 days). Full 4.7 (§4.7): per skill
-   (≥2 reversals after ≥3 days: right in a past session, wrong now), feeding a
-   1/3/7/14-day review queue (reuse `daily-spaced-review`), with a re-check
-   like the other targets. After 4.7: phase 5 (consented cloud telemetry, §7),
-   which needs owner decisions (consent, privacy, Supabase) first.
+   #82 full lens 4.7 retention + 1/3/7/14-day review queue in Kembara
+   Dimensi (3.87.5, see §4.7 "Implemented"). Nothing is open. Current
+   version 3.87.5.
+2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
+   (consented cloud telemetry for calibration, §7). It needs owner decisions
+   first (guardian consent, privacy, which Supabase tables), so ask before
+   any code. Smaller leftovers the owner may pick instead: other mini games
+   send `rep` (4.1, only Gudang Harta today); more pictures in D4–D6; 4.8 for
+   D3 and D6; a speaker in mini games.
    Note on 4.6 as built: the sketch said "per skill", but the evidence is
    pooled across operations (a child chooses among operations, not within
    one skill), and blocked/mixed is read from the answers before, not from
@@ -388,7 +411,7 @@ Last updated: 2026-10-21 (PR #78 merged). Read this section first if you are pic
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** PRs #55–#63, #65–#78, #80 and #81 are merged into `main`
+**Status on GitHub.** PRs #55–#63, #65–#78 and #80–#82 are merged into `main`
 (2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
 real-device test.
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
@@ -669,6 +692,8 @@ unchanged (design values, phase 5 calibrates).
 - ✅ Light lens 4.8 (language load), 3.86.99, PR #75, merged: see §4.8 "Implemented".
 - ✅ Lens 4.6 Strategy choice (interleaving), 3.87.3, PR #81, merged: see §4.6
   "Implemented". Thresholds are the §4.6 defaults (phase 5 calibrates).
+- ✅ Lens 4.7 Retention (full) + spaced review queue, 3.87.5, PR #82, merged:
+  see §4.7 "Implemented". Phase 4 has all eight lenses now.
 - Owner decision (2026-10-21): after the bar model, a light 4.8 (short/long pairs only for the common
   word-problem families in D3–D6, plus a read-aloud-then-right signal), then
   "Kemungkinan punca" tags for D2–D5. 4.6 and full 4.7 after that.

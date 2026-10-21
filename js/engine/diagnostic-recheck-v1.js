@@ -30,6 +30,11 @@
       if(!tables.length)return null;
       return {key:'tables:'+[...new Set(tables)].sort((a,b)=>a-b).join(','),test:r=>(r.tb||[]).some(x=>tables.includes(Number(x)))};
     }
+    // A slipping KSSR skill (lens 4.7) with no sifir or basic fact in it: answers of that skill.
+    if(t.kind==='review'&&!(t.review||[]).some(x=>/^sifir \d+$|asas$/.test(x))&&(t.skills||[]).length){
+      const skills=[...new Set(t.skills.map(String))].sort();
+      return {key:'review:'+skills.join(','),test:r=>skills.includes(r.s)&&!(r.tb||[]).length&&!r.fx};
+    }
     if(t.kind==='facts'||t.kind==='review'){
       const fams=t.kind==='facts'?(t.factFamilies||[]):(t.review||[]).map(x=>/^tambah asas$/.test(x)?'add20':/^tolak asas$/.test(x)?'sub20':null).filter(Boolean);
       if(!fams.length)return null;

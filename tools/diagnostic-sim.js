@@ -38,7 +38,11 @@
     faris:{name:'Faris',grade:4,label:'Darjah 4 · soalan cerita betul bila operasi sama berturut-turut, keliru bila bercampur (lensa 4.6)',
       // Mixed stories: picks the operation of the story before about half the time (wrong_operation).
       choose:mixed=>mixed?{acc:.38,sec:16,bug:'wrong_op',bugRate:.8}:{acc:.93,sec:12},
-      table:()=>({acc:.95,sec:2.2}),sub:()=>({acc:.93,sec:7}),add:()=>({acc:.94,sec:6}),money:()=>({acc:.9,sec:12}),guess:.02}
+      table:()=>({acc:.95,sec:2.2}),sub:()=>({acc:.93,sec:7}),add:()=>({acc:.94,sec:6}),money:()=>({acc:.9,sec:12}),guess:.02},
+    nadia:{name:'Nadia',grade:3,label:'Darjah 3 · tolak dah dikuasai minggu lepas, mula lupa 3 hari ini (lensa 4.7)',
+      // late = the last 3 days of week 1
+      sub:(borrow,late)=>late?{acc:.3,sec:9}:{acc:.95,sec:7},slip:'D3.SUB10000',
+      table:()=>({acc:.95,sec:2.2}),add:()=>({acc:.94,sec:6}),money:()=>({acc:.88,sec:12}),word:()=>({acc:.85,sec:14}),guess:.02}
   };
 
   function rng(seed){let t=seed>>>0||1;return()=>{t+=0x6D2B79F5;let x=Math.imul(t^t>>>15,1|t);x^=x+Math.imul(x^x>>>7,61|x);return((x^x>>>14)>>>0)/4294967296}}
@@ -62,7 +66,7 @@
         out.push({...RP.item(fam,p.grade,1,r),skill:`D${p.grade}.${{jumlah:'ADD',beza:'SUB',kali_ganda:'MUL',agih:'DIV'}[fam]}`,_k:pick});continue}
       if(pick==='table'){const a=I(2,9),b=I(2,9);out.push({prompt:`${a} × ${b} = ?`,answer:a*b,facets:{op:'mul',operands:[a,b],format:'symbolic'},_k:'table'})}
       else if(pick==='fact'){const op=r()<.5?'add':'sub';let a,b;if(op==='add'){a=I(2,9);b=I(2,9)}else{b=I(2,9);a=b+I(1,9)}out.push({prompt:`${a} ${op==='add'?'+':'−'} ${b} = ?`,answer:op==='add'?a+b:a-b,facets:{op,operands:[a,b],format:'symbolic'},_k:'fact'})}
-      else if(pick==='sub'){const a=I(30,98),b=I(11,a-1);out.push({prompt:`${a} − ${b} = ?`,answer:a-b,facets:{op:'sub',operands:[a,b],format:'lazim'},_k:'sub'})}
+      else if(pick==='sub'){const a=I(30,98),b=I(11,a-1);out.push({prompt:`${a} − ${b} = ?`,answer:a-b,...(p.slip?{skill:p.slip}:{}),facets:{op:'sub',operands:[a,b],format:'lazim'},_k:'sub'})}
       else if(pick==='add'){const a=I(11,60),b=I(11,39);out.push({prompt:`${a} + ${b} = ?`,answer:a+b,facets:{op:'add',operands:[a,b],format:'lazim'},_k:'add'})}
       else if(pick==='money'){const op=r()<.55?'sub':'add';out.push({...T.practice({target:{kind:'money',op}},1,{},Math.floor(r()*1e9))[0],_k:'money'})}
       else out.push({...T.practice({target:{kind:'word'}},1,{},Math.floor(r()*1e9))[0],_k:'word'});
@@ -82,7 +86,7 @@
     else if(f.context==='money')m=p.money?.(f.op)||{acc:.8,sec:12};
     else if(f.format==='word')m=p.word?.()||{acc:.8,sec:14};
     else if(ops&&Math.max(...ops)<=20&&p.fact)m=p.fact(f.op);
-    else if(f.op==='sub'&&ops)m=p.sub?.(borrow(ops[0],ops[1]))||{acc:.9,sec:8};
+    else if(f.op==='sub'&&ops)m=p.sub?.(borrow(ops[0],ops[1]),p.late)||{acc:.9,sec:8};
     else if(f.op==='add')m=p.add?.()||{acc:.9,sec:8};
     else m={acc:.85,sec:6};
     if(boost&&boost(q))m={...m,acc:Math.min(.95,m.acc+.6),sec:Math.min(m.sec,2.6),bugRate:(m.bugRate||0)*.1};
@@ -112,7 +116,7 @@
     const r=rng(opts.seed||2026),now=opts.now||Date.now(),DAY=864e5;
     let log=[];
     // Week 1: ordinary play spread over 6 days.
-    for(let d=6;d>=1;d--)log=play(p,ordinaryItems(p,r,25),log,r,now-d*DAY);
+    for(let d=6;d>=1;d--)log=play({...p,late:d<=3},ordinaryItems(p,r,25),log,r,now-d*DAY);
     const week1=B.analyze(log,{now,name:p.name});
     const pl=T.plan(week1,{grade:p.grade});
     const sets=pl.steps.map((s,i)=>({...s,items:T.practice(s,10,{grade:p.grade,fluentTables:pl.fluentTables},1000+i)}));
@@ -127,6 +131,7 @@
       if(t.kind==='fade')return q.skill===t.skill&&f.rep==='abstract';
       if(t.kind==='reading')return f.reading===3;
       if(t.kind==='choose')return f.format==='word';
+      if(t.kind==='review'&&(t.skills||[]).length)return (t.skills||[]).includes(q.skill);
       return false});
     const later=now+8*DAY;let log2=log.slice();
     sets.forEach((s,i)=>{log2=play(p,s.items,log2,r,later-7*DAY+i*3600e3,practised)});

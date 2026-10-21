@@ -98,7 +98,14 @@
     const s=run.session;
     return withSession(s,()=>{
       if(run.route==='focus')return run.focusSkill;
-      if(run.route==='adaptive')return chooseModeAndSkill();
+      if(run.route==='adaptive'){
+        // Lens 4.7: a due spaced review (js/engine/review-queue-v1.js) comes in now and then.
+        const Q=window.PAReviewQueue;
+        // The queue is stored on the profile and saved with the next answer.
+        if(Q&&!run.reviewSynced){run.reviewSynced=true;try{Q.sync(db,window.PADiagnostic?.current?.(),Date.now())}catch(_){}}
+        const due=Q?.nextForRun?.(db,run,Date.now(),id=>!!realScore(id));
+        return due||chooseModeAndSkill();
+      }
       const unseen=run.pool.filter(id=>!s.recent.slice(-Math.min(3,run.pool.length)).includes(id));
       return (unseen.length?unseen:run.pool)[run.questionNumber%(unseen.length||run.pool.length)];
     });

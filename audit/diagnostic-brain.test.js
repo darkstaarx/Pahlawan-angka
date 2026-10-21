@@ -172,6 +172,8 @@ test('retention: mastered before, slipping in the last 3 days', () => {
   const old = many(8, () => ({ ...rec({ tb: [6], k: 1, sec: 2 }), t: NOW - 6 * DAY }));
   const fresh = many(5, i => ({ ...rec({ tb: [6], k: i < 2 ? 1 : 0, sec: 4 }), t: NOW - DAY }));
   const f = B.analyze([...old, ...fresh], { now: NOW }).findings.find(x => x.id === 'retention');
-  assert.ok(f); assert.match(f.text, /^Sifir 6 sudah mantap sebelum ini \(8\/8\), tetapi dalam 3 hari terakhir mula lupa \(2\/5\)\.$/);
+  // One plain sentence with one score (owner: no clutter); the earlier score stays in evidence.
+  assert.ok(f); assert.equal(f.text, 'Sifir 6 sudah dikuasai sebelum ini, tetapi mula lupa (2/5 betul dalam 3 hari).');
+  assert.equal(f.evidence.slips[0].old, '8/8');
   assert.match(f.action, /berjadual/);
 });

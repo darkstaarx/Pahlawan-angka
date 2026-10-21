@@ -166,7 +166,7 @@
     if(f.id.startsWith('context_money'))return{kind:'money',op:t.op||'mixed',game:'money'};
     if(f.id==='format_word')return{kind:'word',worksheet:true};
     if(f.id.startsWith('regroup_'))return{kind:'regroup',op:t.op,game:'operations'};
-    if(f.id==='retention')return{kind:'review',review:t.review,game:'operations'};
+    if(f.id==='retention')return{kind:'review',review:t.review,skills:t.skills,game:'operations'};
     if(f.id==='rep_cpa')return{kind:'fade',skill:t.skill,op:t.op,game:'operations'};
     if(f.id==='strategy_choice')return{kind:'choose',game:'operations'};
     if(f.id==='reading_load')return{kind:'reading',op:t.op,context:t.context||'plain',game:t.context==='money'?'money':'operations'};
@@ -243,7 +243,7 @@
     const r=rng(seed);
     const sections=(p?.steps||[]).filter(s=>GEN[s.target.kind]).slice(0,3).map((s,i)=>{const n=['word','money','reading','choose'].includes(s.target.kind)?4:8;
       return{title:s.card,why:s.why,items:GEN[s.target.kind](rng(seed+i+1),s.target,n,{...ctx,fluentTables:p.fluentTables}),
-        showWorking:['word','money','regroup','reading','choose'].includes(s.target.kind)}});
+        showWorking:['word','money','regroup','reading','choose'].includes(s.target.kind)}}).filter(x=>x.items.length);   // e.g. a skill review has no printable set
     const hasWord=sections.some(x=>x.showWorking);
     return{title:`Latihan Pahlawan Angka${ctx.name?` · ${ctx.name}`:''}`,sections,
       parentNote:hasWord?'Ibu bapa: semak kotak "Cara kerja". Minta anak terangkan langkahnya — kesilapan cara lebih penting daripada jawapan akhir.':'Ibu bapa: biarkan anak menjawab sendiri, kemudian semak bersama.'};
