@@ -16,7 +16,7 @@
   if(root)root.PADiagnostic=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const LOG_MAX=500, WINDOW_DAYS=30, RUN_GAP=15*6e4;
   const OP_WORD={add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'};
   const CTX_WORD={money:'wang',time:'masa',measure:'ukuran',fraction:'pecahan',decimal:'perpuluhan',plain:'nombor'};
@@ -459,23 +459,36 @@
       }
     }
 
-    // 4.7 retention: mastered earlier, slipping in the last 3 days
+    // 4.7 retention: mastered earlier, slipping now. Mastered = latest 10 answers from before the last
+    // 3 days ≥85% right (≥5); slipping = ≥4 answers in the last 3 days, ≤50% right, ≥2 misses.
+    // Sifir and basic facts are grouped by table / fact family; every other answer by its KSSR skill
+    // (an answer with a sifir or basic fact counts only in that group).
     {
-      const cut=now-3*864e5,slips=[],slipped=[];
-      const groups=new Map();
-      for(const r of scored){for(const t of(r.tb||[]))(groups.get(`sifir ${t}`)||groups.set(`sifir ${t}`,[]).get(`sifir ${t}`)).push(r);
-        if(r.fx){const k=r.fx==='add20'?'tambah asas':'tolak asas';(groups.get(k)||groups.set(k,[]).get(k)).push(r)}}
-      for(const [label,rs] of groups){
-        const old=rs.filter(r=>r.t<cut),fresh=rs.filter(r=>r.t>=cut);
-        if(old.length<5||fresh.length<4)continue;
-        const oa=pct(old.filter(independent).length,old.length),fa=pct(fresh.filter(independent).length,fresh.length);
-        if(oa>=90&&fa<=60){slips.push({label,oa,fa,old:`${old.filter(independent).length}/${old.length}`,fresh:`${fresh.filter(independent).length}/${fresh.length}`});slipped.push(...fresh)}
+      const cut=now-3*864e5,groups=new Map();
+      const put=(key,label,scope,r)=>{const g=groups.get(key)||groups.set(key,{key,label,...scope,rs:[]}).get(key);g.rs.push(r)};
+      for(const r of scored){
+        for(const t of(r.tb||[]))put(`sifir:${t}`,`sifir ${t}`,{tables:[t]},r);
+        if(r.fx)put(`facts:${r.fx}`,r.fx==='add20'?'tambah asas':'tolak asas',{facts:[r.fx]},r);
+        if(!(r.tb||[]).length&&!r.fx&&r.s)put(`skill:${r.s}`,(skillTitle(r.s)||(OP_WORD[r.o]?`${OP_WORD[r.o]} nombor`:r.s)).toLowerCase(),{skills:[r.s]},r);
       }
-      if(slips.length)findings.push({id:'retention',lens:'4.7',severity:2,confidence:'sederhana',
-        text:`${joinBM(slips.map(x=>x.label))} sudah mantap sebelum ini (${slips.map(x=>x.old).join(', ')}), tetapi dalam 3 hari terakhir mula lupa (${slips.map(x=>x.fresh).join(', ')}).`.replace(/^./,c=>c.toUpperCase()),
-        action:`Pahlawan Angka akan ulang kaji ${joinBM(slips.map(x=>x.label))} secara berjadual (selepas 1, 3 dan 7 hari) supaya ingatan kekal.`,
-        tip:'Ulang kaji sekejap lebih berkesan daripada latihan panjang sekali-sekala.',
-        target:{review:slips.map(x=>x.label)},skills:skillsOf(slipped),evidence:{slips}});
+      const slips=[];
+      for(const g of groups.values()){
+        const old=latest(g.rs.filter(r=>r.t<cut),10),fresh=g.rs.filter(r=>r.t>=cut);
+        if(old.length<5||fresh.length<4)continue;
+        const oOk=old.filter(independent).length,fOk=fresh.filter(independent).length;
+        if(pct(oOk,old.length)>=85&&pct(fOk,fresh.length)<=50&&fresh.length-fOk>=2)
+          slips.push({key:g.key,label:g.label,tables:g.tables||[],facts:g.facts||[],skills:g.skills||skillsOf(fresh),old:`${oOk}/${old.length}`,fresh:`${fOk}/${fresh.length}`,recs:fresh});
+      }
+      if(slips.length){
+        const labels=slips.map(x=>x.label),cap=t=>t.replace(/^./,c=>c.toUpperCase());
+        // One plain sentence with at most one score (owner: no clutter); the rest is in evidence.
+        findings.push({id:'retention',lens:'4.7',severity:2,confidence:slips.some(x=>x.recs.length>=6)?'tinggi':'sederhana',
+          text:slips.length===1?`${cap(labels[0])} sudah dikuasai sebelum ini, tetapi mula lupa (${slips[0].fresh} betul dalam 3 hari).`:`${cap(joinBM(labels))} sudah dikuasai sebelum ini, tetapi mula lupa dalam 3 hari terakhir.`,
+          action:`Pahlawan Angka akan ulang kaji ${joinBM(labels)} secara berjadual (selepas 1, 3, 7 dan 14 hari) supaya ingatan kekal.`,
+          tip:'Ulang kaji sekejap lebih berkesan daripada latihan panjang sekali-sekala.',
+          target:{review:labels,skills:[...new Set(slips.flatMap(x=>x.tables.length||x.facts.length?[]:x.skills))],slips:slips.map(({recs,old,fresh,...x})=>x)},
+          skills:skillsOf(slips.flatMap(x=>x.recs)),evidence:{slips:slips.map(({recs,...x})=>x)}});
+      }
     }
 
     const strengths=findings.filter(f=>f.strength);
