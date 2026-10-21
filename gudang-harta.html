@@ -957,7 +957,7 @@ function barGens(g,k){
  const fx=(p,format)=>({op:p.op,operands:p.ops,format,schema:p.schema}),pickSc=()=>pick(pool);
  return [
   {arch:'target_bar_read',f:C=>{const p=make(C,pickSc());return{kind:'pad',vis:{t:'bar',rows:p.rows,brace:p.brace},form:NUM(p.ans),q:p.q,s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'visual')}}},
-  {arch:'target_bar_sentence',f:C=>{const p=make(C,pickSc());return{kind:'pick',vis:{t:'bar',rows:p.rows,brace:p.brace},...opts(p.bad.map(x=>x+' = ?'),p.ok+' = ?'),q:p.q,card:'Pilih ayat matematik bagi model bar ini.',s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'visual')}}},
+  {arch:'target_bar_sentence',f:C=>{const p=make(C,pickSc());return{kind:'pick',vis:{t:'bar',rows:p.rows,brace:p.brace},...opts(p.bad.map(x=>x+' = ?'),p.ok+' = ?'),q:p.q,card:'Ayat matematik yang sepadan dengan bar?',s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'visual')}}},
   {arch:'target_bar_story',f:C=>{const p=make(C,pickSc());return{kind:'pad',form:NUM(p.ans),q:p.q,s:p.s,a:p.ok+' = '+nf(p.ans)+'.',fx:fx(p,'word')}}}];
 }
 function targetGens(t,g,k){
