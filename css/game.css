@@ -707,19 +707,20 @@ body[data-screen="login"] .app{
 .badgeCard.tier-legacy .badgeMedal{background:linear-gradient(145deg,#ffe58a,#a96a08 70%);border-color:#f4c83e;color:#fff8c6}
 .badgeCard.locked[class*="tier-"] .badgeMedal{background:#1c2737;border-color:#516078;filter:grayscale(.7);opacity:.85}
 
-/* Money comparison (questions/helpers.js moneyCompare): on a phone the two groups sit side by side with
-   smaller notes and coins, so both groups and the question stay above the answer buttons. */
+/* Money comparison (questions/helpers.js moneyCompare): on a phone the two groups sit side by side;
+   notes in one row, coins in another, and pieces of the same value overlap in one pile (owner:
+   save space, colour and value are enough). Each piece in a pile leaves a 10 px edge showing so
+   the child can still count it; the top piece shows its value in full. */
+.moneyStack,.moneyPile{display:contents}
 @media (max-width:560px){
   .moneyCompare{gap:16px 8px!important;margin:12px auto 10px!important}
-  .moneyCompare .moneyGroupCard{flex:1 1 0!important;padding:18px 6px 8px!important}
+  .moneyCompare .moneyGroupCard{flex:1 1 0!important;padding:18px 6px 10px!important;justify-content:flex-start!important}
   .moneyCompare .moneyGroupCard>span{font-size:11px!important;padding:2px 9px!important;top:-11px!important}
-  .moneyCompare .moneyVisual{gap:4px!important}
-  .moneyCompare .moneyGroupCard{justify-content:flex-start!important}
-  .moneyCompare .paMoneyPiece{width:50px!important;height:26px!important}
-  .moneyCompare .paMoneyPiece[width="58"]{width:30px!important;height:30px!important}
-}
-@media (max-width:400px){
-  .moneyCompare .paMoneyPiece{width:40px!important;height:21px!important}
-  .moneyCompare .paMoneyPiece[width="58"]{width:25px!important;height:25px!important}
-  .moneyCompare .moneyVisual{gap:3px!important}
+  .moneyCompare .moneyVisual{flex-direction:column!important;flex-wrap:nowrap!important;gap:6px!important}
+  .moneyCompare .moneyStack{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;width:100%}
+  .moneyCompare .moneyPile{display:flex}
+  .moneyCompare .paMoneyPiece{width:52px!important;height:28px!important}
+  .moneyCompare .paMoneyPiece[width="58"]{width:32px!important;height:32px!important}
+  .moneyCompare .moneyPile .paMoneyPiece+.paMoneyPiece{margin-left:-42px}
+  .moneyCompare .moneyPile .paMoneyPiece[width="58"]+.paMoneyPiece{margin-left:-23px}
 }

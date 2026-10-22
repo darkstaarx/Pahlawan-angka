@@ -185,7 +185,16 @@ function moneyVisual(cents){
 }
 function moneyGroupCard(label,cents){
  const ps=moneyPieces(cents);
- return `<div class="moneyGroupCard" style="position:relative;display:flex;flex-direction:column;justify-content:center;flex:1 1 240px;max-width:380px;min-width:0;padding:22px 12px 12px;border:2px solid #c9d4ea;border-radius:16px;background:#fff;box-shadow:0 2px 0 #dfe6f3"><span style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);padding:3px 14px;border-radius:999px;background:#162a47;color:#fff;font-size:13px;font-weight:850;letter-spacing:.04em;white-space:nowrap">${label}</span><div class="moneyVisual" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center">${ps.map(moneyPieceSvg).join('')}</div></div>`;
+ return `<div class="moneyGroupCard" style="position:relative;display:flex;flex-direction:column;justify-content:center;flex:1 1 240px;max-width:380px;min-width:0;padding:22px 12px 12px;border:2px solid #c9d4ea;border-radius:16px;background:#fff;box-shadow:0 2px 0 #dfe6f3"><span style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);padding:3px 14px;border-radius:999px;background:#162a47;color:#fff;font-size:13px;font-weight:850;letter-spacing:.04em;white-space:nowrap">${label}</span><div class="moneyVisual" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center">${moneyStacks(ps)}</div></div>`;
+}
+/* Notes and coins in two rows; pieces of the same value form one pile. On a wide screen the
+   wrappers vanish (display:contents) and the pieces sit side by side; on a phone css/game.css
+   overlaps each pile so its edges still show (the child counts them) and the top piece shows
+   its colour and value in full, so the group takes little space. */
+function moneyStacks(ps){
+ const piles=list=>{const out=[];list.forEach(c=>{const last=out[out.length-1];if(last&&last[0]===c)last.push(c);else out.push([c])});return out};
+ const row=(kind,list)=>list.length?`<span class="moneyStack ${kind}">${piles(list).map(p=>`<span class="moneyPile">${p.map(moneyPieceSvg).join('')}</span>`).join('')}</span>`:'';
+ return row('notes',ps.filter(c=>c>=100))+row('coins',ps.filter(c=>c<100));
 }
 function moneyCompare(a,b,labels=['Kumpulan A','Kumpulan B']){
  return `<div class="moneyCompare" style="display:flex;flex-wrap:wrap;gap:22px 16px;justify-content:center;align-items:stretch;margin:16px auto 16px;max-width:780px">${moneyGroupCard(labels[0],a)}${moneyGroupCard(labels[1],b)}</div>`;
