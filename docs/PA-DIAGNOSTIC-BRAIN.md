@@ -437,7 +437,10 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    **Owner (2026-10-22), all nine mini games:** the pet speaks once a round;
    when Wira talks (a hint or "Belum tepat"), the pet's line goes and does not
    come back. Pets use their short names (Kukupat, Kumbis, Riya, Bunnis,
-   Keryan, as in js/pet-collection-system.js), not the species names. Next in
+   Keryan, as in js/pet-collection-system.js), not the species names.
+   #88 (3.87.14) loading screen: only the shield with + − × ÷, the bar and
+   one line "Menyambung profil dan kemajuan kamu…" (owner: too much to read;
+   no kicker, title, tagline, tip, motto or frame). Next in
    Gudang: rack bina / add / sub, two-step and mixed, order, expanded / words.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
