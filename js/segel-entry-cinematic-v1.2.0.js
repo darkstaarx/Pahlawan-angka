@@ -10,11 +10,16 @@
  * particles and the handoff into the arena stays intact — they simply skip the
  * build-up they have already watched. Cutting straight to the arena would drop
  * the one beat the whole entrance is built around.
+ *
+ * v1.4.0: the battle video ends on Wira's big close-up. Its last 1.6 s is a
+ * wide shot of the tower where Wira is tiny; straight after it the arena
+ * Wira appeared full size, so children saw a small Wira, then a big one.
+ * Playback now goes to dark at CUT_AT_S, and Langkau seeks to just before it.
  */
 (()=>{
   'use strict';
 
-  const VERSION='1.3.0';
+  const VERSION='1.4.0';
   const VIDEO_SRC='assets/cinematics/wira-demo-entry-v1.mp4';
   const LORE_ENTRANCE_VIDEO_SRC='assets/cinematics/enter.mp4';
   const FADE_IN_MS=280;
@@ -27,6 +32,8 @@
   /* Ekor yang dikekalkan bila murid menekan Langkau: cukup untuk menangkap
      Wira larut menjadi zarah, tidak cukup untuk terasa menunggu. */
   const SKIP_TAIL_S=1;
+  /* Video battle: titik potong sebelum syot menara (Wira kecil). */
+  const CUT_AT={[VIDEO_SRC]:6.4};
   const SKIP_SHOW_MS=600;       // jeda sebelum butang muncul, elak tersentuh
   const SKIP_GIVE_UP_MS=3500;   // kalau pencarian gagal, tamatkan juga
 
@@ -110,6 +117,7 @@
     video.setAttribute('aria-hidden','true');
     video.controls=false;
     video.loop=false;
+    video.dataset.cutAt=CUT_AT[videoSrc]||'';
     try{video.muted=(typeof paMuted!=='undefined')?!!paMuted:false}catch(_){video.muted=false}
 
     const skip=document.createElement('button');
@@ -128,10 +136,16 @@
   /* Langkau = cari ke ekor, bukan tamat serta-merta. Kalau video belum boleh
      dicari (metadata belum ada, tempoh tidak terhingga, pencarian ditolak),
      barulah kita tamatkan babak supaya murid tidak tersekat. */
+  /* Penghujung yang dimainkan: titik potong kalau ada, jika tidak tempoh penuh. */
+  function endOf(video){
+    const d=video.duration,cut=Number(video.dataset.cutAt);
+    if(!Number.isFinite(d))return d;
+    return cut>0&&cut<d?cut:d;
+  }
   function bindSkip(video,skip,finish){
     let used=false;
     const seekable=()=>{
-      const d=video.duration;
+      const d=endOf(video);
       return Number.isFinite(d)&&d>SKIP_TAIL_S+.35;
     };
     const reveal=()=>{ if(!used)skip.classList.add('ready') };
@@ -144,7 +158,7 @@
       skip.classList.remove('ready');
       if(!seekable()){ finish('skip-unseekable'); return }
       try{
-        video.currentTime=Math.max(0,video.duration-SKIP_TAIL_S);
+        video.currentTime=Math.max(0,endOf(video)-SKIP_TAIL_S);
         const resume=video.play();
         if(resume&&resume.catch)resume.catch(()=>{});
       }catch(_){ finish('skip-seek-failed'); return }
@@ -159,6 +173,7 @@
       const finish=reason=>{
         if(done)return;done=true;
         clearTimeout(watchdog);
+        cancelAnimationFrame(cutRaf);
         video.removeEventListener('ended',onEnded);
         video.removeEventListener('error',onError);
         resolve(reason);
@@ -168,6 +183,14 @@
       const watchdog=setTimeout(()=>finish('timeout'),12000);
       video.addEventListener('ended',onEnded,{once:true});
       video.addEventListener('error',onError,{once:true});
+      // Titik potong: semak setiap bingkai, 'timeupdate' terlalu jarang (~250 ms).
+      let cutRaf=0;
+      const watchCut=()=>{
+        const end=endOf(video);
+        if(Number.isFinite(end)&&end<video.duration&&video.currentTime>=end){finish('ended');return}
+        cutRaf=requestAnimationFrame(watchCut);
+      };
+      if(Number(video.dataset.cutAt)>0)cutRaf=requestAnimationFrame(watchCut);
 
       if(skip)bindSkip(video,skip,finish);
 
