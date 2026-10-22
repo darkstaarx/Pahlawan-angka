@@ -2271,6 +2271,32 @@
     // A long story (e.g. the long wording of lens 4.8) reads at a calmer size, left aligned.
     const long=!hasVisual&&!hasInteraction&&promptText.length>150;
     card.dataset.questionLayout=compact?'compact':long?'long':'standard';
+    fitPrompt();
+    prompt.querySelectorAll('img').forEach(img=>{if(!img.complete)img.addEventListener('load',fitPrompt,{once:true})});
+    if(!promptFitObserver&&typeof ResizeObserver==='function'){
+      promptFitObserver=new ResizeObserver(()=>fitPrompt());
+      promptFitObserver.observe(question);
+    }
+  }
+  /* Telefon kecil (360 px): soalan bergambar (contoh dua kumpulan wang) boleh
+     lebih tinggi daripada kotak soalan, dan baris terakhir tersorok di bawah
+     butang jawapan. Murid tidak tahu kotak itu boleh diskrol. Jadi kecilkan
+     teks soalan 1 px demi 1 px sehingga muat, paling kecil 75% saiz asal.
+     Kalau masih tidak muat (telefon pendek, 360×640), gambar soalan pula
+     dikecilkan, paling kecil 65% — kecuali yang ada kotak isian, supaya
+     sasaran sentuh kekal besar. Selepas itu barulah kotak diskrol. */
+  let promptFitObserver=null;
+  function fitPrompt(){
+    const question=$('segelQuestion'),prompt=question?.querySelector('.segelPrompt');
+    if(!prompt||!question.clientHeight)return;
+    const visuals=[...prompt.children].filter(el=>!el.querySelector('input,select,textarea,button'));
+    prompt.style.fontSize='';visuals.forEach(el=>{el.style.zoom=''});
+    const over=()=>question.scrollHeight>question.clientHeight+1;
+    if(!over())return;
+    let size=parseFloat(getComputedStyle(prompt).fontSize)||0;
+    const min=Math.max(14,Math.round(size*.75));
+    while(size>min&&over()){size-=1;prompt.style.fontSize=size+'px'}
+    for(let zoom=.95;zoom>=.649&&over()&&visuals.length;zoom-=.05)visuals.forEach(el=>{el.style.zoom=zoom.toFixed(2)});
   }
 
   function toast(text){
