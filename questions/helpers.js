@@ -282,7 +282,7 @@ function moneyQ(id,shift,s){
      const a=chooseMoneyValue("mixed",5000),b=chooseMoneyValue("mixed",5000);
      if(a===b)return moneyQ(id,shift,s);
      const ans=Math.max(a,b);
-     return tagMoneyBasics(Q(`${moneyCompare(a,b)}Antara Kumpulan A dan Kumpulan B, yang manakah nilainya lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift),[a,b],'compare');
+     return tagMoneyBasics(Q(`${moneyCompare(a,b)}Berapakah nilai kumpulan yang lebih besar?`,moneyFmt(ans),[moneyChoice(Math.min(a,b)),moneyChoice(Math.abs(a-b)),moneyChoice(Math.min(10000,a+b))],"Kira nilai setiap kumpulan dahulu, kemudian bandingkan.",`D2 ${difficulty} · Wang`,true,shift),[a,b],'compare');
    }
    const total=chooseMoneyValue(pick(["coin","mixed","ringgit"]),10000);
    const wrong=moneyWrongSet(total,[Math.max(0,total-50),Math.min(10000,total+50),total<100?total*10:Math.round(total/10)]);
