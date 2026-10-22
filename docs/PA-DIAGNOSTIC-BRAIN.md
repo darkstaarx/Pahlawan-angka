@@ -418,6 +418,12 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    tower wide shot with a tiny Wira. #45 (3.87.11) money comparison cards:
    at ≤560 px and ≤400 px the notes and coins shrink so both groups fit side
    by side, and each group starts at the top.
+   #86 (3.87.12) battle questions fit small phones: on ≤560 px money of the
+   same value forms one overlapping pile (edges countable, top piece shows
+   value; owner: colour and value are enough), notes and coins in two rows;
+   `fitPrompt()` shrinks prompt text to 75% then pictures to 65% before the
+   box scrolls. Money compare now asks "Berapakah nilai kumpulan yang lebih
+   besar?" (choices are values, as before).
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
