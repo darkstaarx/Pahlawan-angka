@@ -496,7 +496,7 @@ Object.values(GEN).forEach(g=>Object.values(g).forEach(list=>list.forEach(e=>{co
 /* ---------- enjin Dapur Ramuan ---------- */
 const A='assets/minigames/dapur-ramuan/';
 const $=id=>document.getElementById(id);
-const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
+const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
 const MODE_LABEL={nisbah:'NISBAH',kadaran:'KADARAN',masalah:'MASALAH'};
 const GRADES={4:{title:'Nisbah & kadaran asas'},5:{title:'Nisbah & kadaran'},6:{title:'Nisbah, kadaran & skala'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
@@ -526,8 +526,8 @@ let inp=[],fk=0,sel=null,mixA=0,mixB=0;
 
 function sfx(f=650,d=.08,type='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);g.gain.setValueAtTime(.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 const win=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sfx(f,.18,'triangle'),i*100));
-function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('dim');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
-function hideMsg(){$('wsay').className='wsay hide';$('bubble').classList.remove('dim')}
+function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('hide');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
+function hideMsg(){$('wsay').className='wsay hide'}   // the pet speaks once a round: its line does not come back
 function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
 
 /* ---------- visual: model bar nisbah & jadual kadaran ---------- */

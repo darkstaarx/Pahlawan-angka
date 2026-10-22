@@ -457,7 +457,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.0.0"></head><body>
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.1.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -512,7 +512,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/engine/reading-pairs-v1.js?v=1.0.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.0.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.1.0"></script>
 <script>
 (()=>{
 'use strict';
@@ -560,9 +560,9 @@ const story=(C,s)=>s.replace(/@/g,C.who);
 const Fx={
  build:(c,arch,how='num')=>({arch,f:C=>{const n=nOf(c);return{kind:'build',rack:{cols:c,mode:'build'},need:{v:n},ansTxt:nf(n),
   q:'Bina nombor '+(how==='words'?'“'+words(n)+'”':nf(n))+' dengan harta di rak.',s:'Mula dari tempat paling kiri. Setiap digit = bilangan harta di tempat itu.',a:nf(n)+' = '+expd(n,c)+'.'}}}),
- placeName:(c,arch)=>({arch,f:C=>{let n,i;do{n=nOf(c);i=uniq(n,c)}while(i==null);const d=dig(n,c)[i];return{kind:'pick',...opts(PLACE.slice(0,c),PLACE[i],Math.min(4,c)),
+ placeName:(c,arch)=>({arch,f:C=>{let n,i;do{n=nOf(c);i=uniq(n,c)}while(i==null);const d=dig(n,c)[i];return{kind:'pick',wk:{t:'placeName',n,i},...opts(PLACE.slice(0,c),PLACE[i],Math.min(4,c)),
   q:'Digit '+d+' dalam '+nf(n)+' berada pada tempat apa?',s:'Kira tempat dari kanan: sa, puluh, ratus, ribu…',a:'Digit '+d+' di tempat '+PLACE[i]+'.'}}}),
- digitValue:(c,arch)=>({arch,f:C=>{let n,i;do{n=nOf(c);i=uniq(n,c)}while(i==null);const d=dig(n,c)[i];return{kind:'pad',form:NUM(d*PV[i]),
+ digitValue:(c,arch)=>({arch,f:C=>{let n,i;do{n=nOf(c);i=uniq(n,c)}while(i==null);const d=dig(n,c)[i];return{kind:'pad',wk:{t:'digitValue',n,i},form:NUM(d*PV[i]),
   q:'Apakah nilai digit '+d+' dalam '+nf(n)+'?',s:'Cari tempat digit itu dulu. Nilai = digit × nilai tempat.',a:d+' di tempat '+PLACE[i]+' = '+d+' × '+nf(PV[i])+' = '+nf(d*PV[i])+'.'}}}),
  missingPart:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);const parts=dig(n,c).map((d,i)=>d*PV[i]).reverse().filter(x=>x),k=R(0,parts.length-1),miss=parts[k];
   return{kind:'pad',card:nf(n)+' = '+parts.map((p,i)=>i===k?'___':nf(p)).join(' + '),form:NUM(miss),q:'Apakah nilai yang hilang?',s:'Cerakinkan '+nf(n)+' ikut nilai tempat.',a:'Bahagian yang hilang = '+nf(miss)+'.'}}}),
@@ -571,16 +571,16 @@ const Fx={
   const d=dig(n,c),sw=d.map((x,i)=>x*PV[Math.min(c-1,i+1)]).reverse().filter(x=>x).map(nf).join(' + ');return{kind:'pick',...opts([sw,...bad],ok),q:'Cerakinkan '+nf(n)+' mengikut nilai tempat.',s:'Setiap digit didarab dengan nilai tempatnya.',a:nf(n)+' = '+ok+'.'}}}),
  toWords:(c,arch)=>({arch,f:C=>{const n=nOf(c);return{kind:'pick',...opts(nears(n,c,4).map(words),words(n)),q:'Pilih perkataan bagi '+nf(n)+'.',s:'Baca ikut kumpulan dari kiri: ribu, kemudian ratus, puluh, sa.',a:nf(n)+' dibaca “'+words(n)+'”.'}}}),
  fromWords:(c,arch)=>({arch,f:C=>{const n=nOf(c);return{kind:'pick',...opts(nears(n,c,4).map(nf),nf(n)),q:'Pilih angka bagi “'+words(n)+'”.',s:'Tulis setiap bahagian pada tempatnya. Tempat yang tiada disebut ialah 0.',a:'“'+words(n)+'” = '+nf(n)+'.'}}}),
- bigger:(c,arch,small)=>({arch,f:C=>{const a=nOf(c),b=pick(nears(a,c,3));const big=!small||Math.random()<.5,ans=big?Math.max(a,b):Math.min(a,b);return{kind:'pick',...opts([nf(a),nf(b)],nf(ans)),
+ bigger:(c,arch,small)=>({arch,f:C=>{const a=nOf(c),b=pick(nears(a,c,3));const big=!small||Math.random()<.5,ans=big?Math.max(a,b):Math.min(a,b);return{kind:'pick',wk:{t:'compare',a,b,ask:big?'big':'small'},...opts([nf(a),nf(b)],nf(ans)),
   q:'Yang manakah lebih '+(big?'besar':'kecil')+': '+nf(a)+' atau '+nf(b)+'?',s:'Banding digit dari tempat paling kiri. Digit pertama yang berbeza menentukan.',a:'Banding digit dari kiri: '+nf(ans)+' lebih '+(big?'besar':'kecil')+'.'}}}),
- symbol:(c,arch)=>({arch,f:C=>{const a=nOf(c),b=Math.random()<.12?a:pick(nears(a,c,3)),s=a>b?'>':a<b?'<':'=';return{kind:'pick',card:nf(a)+' ___ '+nf(b),opts:['<','>','='].map(x=>({id:x,label:x})),correct:s,ansTxt:nf(a)+' '+s+' '+nf(b),
+ symbol:(c,arch)=>({arch,f:C=>{const a=nOf(c),b=Math.random()<.12?a:pick(nears(a,c,3)),s=a>b?'>':a<b?'<':'=';return{kind:'pick',wk:{t:'compare',a,b,ask:'symbol'},card:nf(a)+' ___ '+nf(b),opts:['<','>','='].map(x=>({id:x,label:x})),correct:s,ansTxt:nf(a)+' '+s+' '+nf(b),
   q:'Simbol manakah betul?',s:'Mulut buaya terbuka ke arah nombor yang lebih besar.',a:nf(a)+' '+s+' '+nf(b)+'.'}}}),
  order:(c,arch,desc)=>({arch,f:C=>{const a=nOf(c),L=[a,...nears(a,c,3)].slice(0,4),asc=[...L].sort((x,y)=>x-y),T=(desc?[...asc].reverse():asc).map(nf).join(', '),w1=(desc?asc:[...asc].reverse()).map(nf).join(', '),w2=[asc[1],asc[0],...asc.slice(2)].map(nf).join(', ');
   return{kind:'pick',...opts([w1,w2],T),q:'Susun '+shuffle(L).map(nf).join(', ')+' secara '+(desc?'menurun (besar → kecil)':'menaik (kecil → besar)')+'.',s:'Banding digit dari kiri. Cari yang paling '+(desc?'besar':'kecil')+' dulu.',a:(desc?'Menurun':'Menaik')+': '+T+'.'}}}),
  round:(c,arch,place,line)=>({arch,f:C=>{let n;do{n=nOf(c)}while(n%PV[place+1]===0);const P=PV[place+1],lo=Math.floor(n/P)*P,hi=lo+P,r=n-lo>=P/2?hi:lo,lab=nf(P);
-  return line?{kind:'pick',vis:{t:'line',lo,hi,v:n},opts:[{id:'L',label:nf(lo)},{id:'H',label:nf(hi)}],correct:r===lo?'L':'H',ansTxt:nf(r),
+  return line?{kind:'pick',wk:{t:'round',n,place},vis:{t:'line',lo,hi,v:n},opts:[{id:'L',label:nf(lo)},{id:'H',label:nf(hi)}],correct:r===lo?'L':'H',ansTxt:nf(r),
    q:'Bundarkan '+nf(n)+' kepada '+PLACE[place+1]+' terdekat.',s:'Nombor itu lebih hampir ke hujung mana? Separuh jalan dibundar naik.',a:'Lihat digit '+PLACE[place]+': '+dig(n,7)[place]+'. Jadi '+nf(n)+' ≈ '+nf(r)+'.'}
-   :{kind:'pad',form:NUM(r),q:'Bundarkan '+nf(n)+' kepada '+PLACE[place+1]+' terdekat.',s:'Lihat digit di tempat '+PLACE[place]+'. 5 atau lebih: bundar naik. Kurang daripada 5: kekal.',a:'Digit '+PLACE[place]+' ialah '+dig(n,7)[place]+'. '+nf(n)+' ≈ '+nf(r)+'.'}}}),
+   :{kind:'pad',wk:{t:'round',n,place},form:NUM(r),q:'Bundarkan '+nf(n)+' kepada '+PLACE[place+1]+' terdekat.',s:'Lihat digit di tempat '+PLACE[place]+'. 5 atau lebih: bundar naik. Kurang daripada 5: kekal.',a:'Digit '+PLACE[place]+' ialah '+dig(n,7)[place]+'. '+nf(n)+' ≈ '+nf(r)+'.'}}}),
  clues:(c,arch)=>({arch,f:C=>{const top=R(1,9)*PV[c-1],ans=top+R(1,PV[c-1]/10-1)*10+R(0,9),lo=ans-R(5,15),hi=ans+R(5,15);
   const cand=[ans+R(20,40),ans-R(20,40),ans+(Math.floor(ans/PV[c-1])<9?PV[c-1]:-PV[c-1])].filter(x=>x>0);
   return{kind:'pick',...opts(cand.map(nf),nf(ans)),q:'Saya lebih daripada '+nf(lo)+', kurang daripada '+nf(hi)+', dan digit terbesar saya bernilai '+nf(top)+'. Siapakah saya?',s:'Buang pilihan yang di luar julat dulu.',a:'Cari nombor antara '+nf(lo)+' dan '+nf(hi)+'.'}}}),
@@ -923,7 +923,7 @@ Object.values(GEN).forEach(g=>Object.values(g).forEach(list=>list.forEach(e=>{co
 const A='assets/minigames/gudang-harta/';
 const $=id=>document.getElementById(id);
 if(devEnabled) $('devBtn').hidden=false;
-const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
+const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
 const MODE_LABEL={bina:'NILAI TEMPAT',banding:'BANDING & BUNDAR',pola:'POLA NOMBOR',tambah:'TAMBAH',tolak:'TOLAK',darab:'DARAB',bahagi:'BAHAGI',gabung:'BERGABUNG',juta:'NOMBOR JUTA',perdana:'PERDANA',masalah:'MASALAH'};
 /* ---------- sasaran Kemahiran Fokus (focus_target) ----------
    7 daripada 10 pusingan menyasar masalah yang Cikgu Dimensi kesan; yang lain
@@ -1048,8 +1048,8 @@ let rack=[],inp=[],fk=0,sel=null,shareSt=null;
 
 function sfx(f=650,d=.08,type='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);g.gain.setValueAtTime(.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 const win=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sfx(f,.18,'triangle'),i*100));
-function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('dim');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
-function hideMsg(){$('wsay').className='wsay hide';$('bubble').classList.remove('dim')}
+function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('hide');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
+function hideMsg(){$('wsay').className='wsay hide'}   // the pet speaks once a round: its line does not come back
 function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
 
 /* ---------- visual ---------- */
@@ -1187,11 +1187,14 @@ const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[
    step. The round counts as done without stars (the brain already has the first
    try as wrong), and the next round is the same kind of question with new numbers. */
 let workedOffer=false,repeatNext=null;
-function offerWorked(){if(workedOffer||solved||!(misses>=3||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
+/* A place-value pick with 2 choices is offered after 1 miss (the next try is a coin toss), with 3 after 2. */
+function workedNeed(){const n=q.kind==='pick'&&q.wk?q.opts.length:0;return n&&n<=2?1:n===3?2:3}
+function offerWorked(){if(workedOffer||solved||!(misses>=workedNeed()||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
 function startWorked(){
  // Only when the written method ends at this round's answer (not a two-step sum, not a remainder field).
- const P=window.PAWorked,par=P&&q.kind==='pad'&&q.form?.fields?.length===1&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card}),
-  plan=built&&built.answer===q.form.fields[0].v&&!built.rem?built:null;
+ // Place-value rounds (round, compare, place name, digit value) bring their own board spec (q.wk).
+ const P=window.PAWorked,pv=P&&q.wk&&P.buildPV?.(q.wk),par=!pv&&P&&q.kind==='pad'&&q.form?.fields?.length===1&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card}),
+  plan=pv&&String(pv.answer)===String(pvAnswer())?pv:built&&built.answer===q.form.fields[0].v&&!built.rem?built:null;
  q.worked=true;workedOffer=false;hints++;reportProgress('worked');hideMsg();
  const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
  const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
@@ -1202,6 +1205,8 @@ function startWorked(){
  box.innerHTML='<div class="wk-wrap"><div class="wk-say">'+esc(q.a||q.s||'')+'</div><div class="wk-say"><b>Jawapan: '+esc(ansText())+'</b></div></div>';
  tl.innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';tl.querySelector('button').onclick=finishWorked;
 }
+/* The round's own answer, in the form a place-value plan ends with. */
+function pvAnswer(){if(q.kind==='pad')return q.form.fields[0].v;const t=ansText();if(q.wk?.t==='compare'&&q.wk.ask==='symbol')return q.correct;return/^[\d\s\u00a0 ]+$/.test(t)?Number(t.replace(/\D/g,'')):t}
 function finishWorked(){
  if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);report(0);
  repeatNext={mode:q.mode,target:q.target,ti:q.tierIx};
@@ -1254,7 +1259,8 @@ function startRound(){if(served%SET===0)$('shelf').innerHTML=range(SET).map(i=>'
  $('wiraImg').src=A+'wira-penjaga-harta-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';$('stand').className='stand';$('stand').innerHTML=chestIcon(false);
  $('check').textContent='Semak';$('check').disabled=false;$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('hint').classList.remove('wk-offer');workedOffer=false;$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
- setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira! '+(mixedRound(q)?'Soalan bercampur. Pilih operasi dulu!':SAYS[q.mode]);$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ setTimeout(()=>{$('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
+ $('say').textContent='Wira! '+(mixedRound(q)?'Soalan bercampur. Pilih operasi dulu!':SAYS[q.mode]);$('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildPanel()}
 function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';const cols=['#ffd23f','#fff6b0','#59c8ff','#f2799c','#fff'];
  for(let i=0;i<26;i++){const e=document.createElement('i'),a=Math.random()*Math.PI*2,d=70+Math.random()*120;e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d-30+'px');e.style.background=cols[i%cols.length];e.style.animationDelay=(Math.random()*.15)+'s';e.style.borderRadius='50%';b.appendChild(e)}}

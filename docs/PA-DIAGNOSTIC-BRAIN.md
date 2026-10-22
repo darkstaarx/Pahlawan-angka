@@ -424,6 +424,21 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    `fitPrompt()` shrinks prompt text to 75% then pictures to 65% before the
    box scrolls. Money compare now asks "Berapakah nilai kumpulan yang lebih
    besar?" (choices are values, as before).
+   **Deployed:** 3.87.12 is live on Netlify (2026-10-22, owner checked on a
+   phone; the laptop size was not checked).
+   **"Jom tengok cara" part 2 (3.87.13, PR #87 merged):** a place-value board in
+   `PAWorked.buildPV` for round, compare (bigger/smaller/symbol), place name
+   and digit value (Gudang D1–D5 bina and banding). The pupil taps the digit on
+   the board (a wrong digit shakes, the right one glows), then picks.
+   Generators pass the board spec as `q.wk`. A pick with 2 choices is offered
+   after 1 miss, with 3 after 2 (the next try would be a guess). Compare:
+   the places that match go grey, the first place that differs gets a pulsing
+   red frame ("sini yang tak sama"), then "Mana lebih besar? Tekan digit itu."
+   **Owner (2026-10-22), all nine mini games:** the pet speaks once a round;
+   when Wira talks (a hint or "Belum tepat"), the pet's line goes and does not
+   come back. Pets use their short names (Kukupat, Kumbis, Riya, Bunnis,
+   Keryan, as in js/pet-collection-system.js), not the species names. Next in
+   Gudang: rack bina / add / sub, two-step and mixed, order, expanded / words.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

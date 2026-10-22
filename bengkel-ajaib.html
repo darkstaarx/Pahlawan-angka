@@ -499,7 +499,7 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 const r50=(a,b)=>rnd(Math.ceil(a/50),Math.floor(b/50))*50;
 const S='stroke="#4a2a16" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
 const KRISTAL_UNUSED=`<svg viewBox="0 0 64 64"><path d="M32 4l16 18-16 38L16 22z" fill="#8fe3f6" ${S}/><path d="M16 22h32M32 4l-6 18 6 38 6-38z" fill="none" stroke="#2f8fb8" stroke-width="2.5" stroke-linejoin="round"/><path d="M26 22l6-18" stroke="#fff" stroke-width="3" opacity=".8"/><path d="M50 8l2 4 4 2-4 2-2 4-2-4-4-2 4-2z" fill="#fff" stroke="#2f8fb8" stroke-width="1.5"/></svg>`;
-const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
+const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
 const dec=v=>String(v);  // titik perpuluhan: 1.25 kg
 const kgg=g=>(Math.floor(g/1000)?Math.floor(g/1000)+' kg ':'')+(g%1000?g%1000+' g':'').trim();
 const lml=m=>(Math.floor(m/1000)?Math.floor(m/1000)+' ℓ ':'')+(m%1000?m%1000+' mL':'').trim();
@@ -660,8 +660,8 @@ let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,tool=null,val=0
 /* ---------- bunyi & mesej ---------- */
 function sfx(f=650,d=.08,type='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);g.gain.setValueAtTime(.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 const win=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sfx(f,.18,'triangle'),i*100));
-function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('dim');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
-function hideMsg(){$('wsay').className='wsay hide';$('bubble').classList.remove('dim')}
+function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('hide');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
+function hideMsg(){$('wsay').className='wsay hide'}   // the pet speaks once a round: its line does not come back
 function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
 
 /* ---------- alat ----------

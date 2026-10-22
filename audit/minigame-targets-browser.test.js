@@ -241,6 +241,46 @@ test('Jom tengok cara: offered after 3 wrong tries, every step tapped, the board
   }
 });
 
+test('Jom tengok cara on the place-value board: a 2-choice round is offered after 1 miss, the pupil taps the digit', async () => {
+  for (const [hash, t, kind] of [['d4-banding', 'round', 'pick'], ['d4-banding', 'compare', 'pick'], ['d4-bina', 'digitValue', 'pad']]) {
+    const g = await gudang(null, hash, { width: 390, height: 780 });
+    const r0 = await g.page.evaluate(([t, kind]) => {
+      for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (q.wk && q.wk.t === t && q.kind === kind && (kind !== 'pick' || q.opts.length <= 3)) return { mode: q.mode, n: q.opts ? q.opts.length : 0, correct: q.correct, ans: q.form && q.form.fields[0].v, ansText: kind === 'pick' ? q.opts.find(o => o.id === q.correct).label : null }; }
+      return null;
+    }, [t, kind]);
+    assert.ok(r0, hash + ' ' + t);
+    const miss = async i => {
+      if (kind === 'pick') await g.page.evaluate(c => { [...document.querySelectorAll('#tiles [data-o]')].find(x => x.dataset.o !== c).click(); document.getElementById('check').click(); }, r0.correct);
+      else { for (const ch of String(r0.ans + 10 * (i + 1))) await g.page.keyboard.press(ch); await g.page.evaluate(() => document.getElementById('check').click()); for (let k = 0; k < 8; k++) await g.page.keyboard.press('Backspace'); }
+    };
+    const need = kind === 'pick' ? (r0.n <= 2 ? 1 : 2) : 3;
+    for (let i = 0; i < need - 1; i++) await miss(i);
+    assert.notEqual(await g.page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', 'not yet');
+    await miss(need - 1);
+    assert.equal(await g.page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara');
+    await g.page.evaluate(() => document.getElementById('hint').click());
+    let taps = 0;
+    for (let n = 0; n < 10; n++) {
+      const right = await g.page.evaluate(() => window.__wkRight && window.__wkRight());
+      if (await g.page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      if (right.startsWith('tap:')) {
+        const [, row, col] = right.split(':'); taps++;
+        // A wrong digit shakes and the right one glows; then the right one.
+        await g.page.evaluate(([row, col]) => { const all = [...document.querySelectorAll('.wk-board.wk-tapnow .wk-c.wk-can')]; all.find(c => c.dataset.row !== row || c.dataset.col !== col).click(); }, [row, col]);
+        assert.ok(await g.page.evaluate(([row, col]) => document.querySelector(`.wk-pvrow[data-row="${row}"] [data-col="${col}"]`).classList.contains('wk-hint'), [row, col]));
+        await g.page.evaluate(([row, col]) => document.querySelector(`.wk-pvrow[data-row="${row}"] [data-col="${col}"]`).click(), [row, col]);
+      } else await g.page.evaluate(v => [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v).click(), right);
+      await g.page.waitForTimeout(950);
+    }
+    assert.ok(taps >= 1, 'the pupil taps a digit on the board');
+    const stamp = await g.page.evaluate(() => document.querySelector('.stamp').textContent);
+    assert.match(stamp, /^SIAP!Cara Wira/);
+    if (r0.ansText) assert.ok(stamp.includes(r0.ansText), stamp + ' / ' + r0.ansText);
+    assert.equal(await g.page.evaluate(() => document.getElementById('check').textContent), 'Cuba soalan serupa →');
+    assert.deepEqual(g.errors, []); await g.close();
+  }
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');
