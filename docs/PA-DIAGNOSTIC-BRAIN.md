@@ -440,8 +440,14 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    Keryan, as in js/pet-collection-system.js), not the species names.
    #88 (3.87.14) loading screen: only the shield with + − × ÷, the bar and
    one line "Menyambung profil dan kemajuan kamu…" (owner: too much to read;
-   no kicker, title, tagline, tip, motto or frame). Next in
-   Gudang: rack bina / add / sub, two-step and mixed, order, expanded / words.
+   no kicker, title, tagline, tip, motto or frame).
+   **"Jom tengok cara" part 3 (3.87.15):** rack "bina": Wira lights one place
+   at a time (biggest first) and only its + works, up to that digit; a 0
+   place is left empty. Rack add/sub rounds use the written board (the rack
+   already lays them out in columns). Two-step and mixed (`q.wk.t='chain'`):
+   `PAWorked.buildChain`/`runChain`, two boards left to right; a story first
+   asks for the whole sentence (a − b + d). Next in Gudang: order,
+   expanded / words, ops with × first or brackets.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

@@ -281,6 +281,35 @@ test('Jom tengok cara on the place-value board: a 2-choice round is offered afte
   }
 });
 
+test('Jom tengok cara on the rack and for two steps: + in one place at a time; two boards end at the answer', async () => {
+  for (const [hash, cond] of [['d3-bina', "q.kind==='build'&&q.rack.mode==='build'"], ['d3-tambah', "q.kind==='build'&&q.rack.mode==='add'"], ['d3-tolak', "!!q.wk&&q.wk.t==='chain'&&!q.card"]]) {
+    const g = await gudang(null, hash, { width: 390, height: 780 });
+    const r0 = await g.page.evaluate(cond => { const ok = new Function('q', 'return ' + cond); for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (ok(q)) return { kind: q.kind, mode: q.rack && q.rack.mode, v: q.form ? q.form.fields[0].v : q.need.v }; } return null; }, cond);
+    assert.ok(r0, hash);
+    await g.page.waitForTimeout(800);
+    for (let i = 0; i < 3; i++) {
+      if (r0.mode === 'build') await g.page.evaluate(() => document.getElementById('check').click());
+      else { await g.page.keyboard.press('1'); await g.page.evaluate(() => document.getElementById('check').click()); await g.page.keyboard.press('Backspace'); }
+    }
+    assert.equal(await g.page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', hash);
+    await g.page.evaluate(() => document.getElementById('hint').click());
+    if (r0.mode === 'build') {
+      // Only the lit place takes a harta; the other places' buttons wait.
+      assert.deepEqual(await g.page.evaluate(() => [document.querySelectorAll('.col.wk-colon').length, document.querySelectorAll('.col:not(.wk-colon) button:not([disabled])').length]), [1, 0]);
+    }
+    for (let s = 0; s < 80; s++) {
+      if (await g.page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      const did = await g.page.evaluate(() => { const pl = document.querySelector('.col.wk-colon button.pl:not([disabled])'); if (pl) { pl.click(); return 'plus'; } const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); if (x) { x.click(); return 'tile'; } return null; });
+      await g.page.waitForTimeout(did === 'plus' ? 120 : 1000);
+    }
+    const stamp = await g.page.evaluate(() => document.querySelector('.stamp.show') && document.querySelector('.stamp').textContent);
+    assert.match(String(stamp), /^SIAP!Cara Wira/, hash);
+    if (r0.mode === 'build') assert.equal(await g.page.evaluate(() => document.getElementById('rv').textContent.replace(/\D/g, '')), String(r0.v));
+    else assert.equal(Number(await g.page.evaluate(() => [...document.querySelectorAll('.wk-ans .wk-c')].map(c => c.textContent).join(''))), r0.v, hash + ' the last board ends at the answer');
+    assert.deepEqual(g.errors, []); await g.close();
+  }
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');

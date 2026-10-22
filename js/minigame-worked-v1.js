@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.1.0';
+  const VERSION='1.2.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'];
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   const digits=n=>String(Math.abs(Math.trunc(n))).split('').map(Number).reverse();
@@ -113,6 +113,32 @@
       r=nr;
     });
     return{op:'div',rows:[a,b],answer:Math.floor(a/b),rem:r,cols:D.length,steps};
+  }
+
+  /* Two steps, left to right (a op1 b op2 d): two boards, one after the other.
+     A story first asks for the whole number sentence. */
+  function buildChain(spec,opt={}){
+    if(!spec||!Array.isArray(spec.ops)||spec.ops.length!==2)return null;
+    const{a,b,d}=spec,[o1,o2]=spec.ops,mid=o1==='add'?a+b:o1==='sub'?a-b:NaN;
+    if(!Number.isInteger(mid)||mid<0)return null;
+    const p1=build(o1,a,b),p2=build(o2,mid,d);if(!p1||!p2)return null;
+    if(opt.story){
+      const S=(x,y)=>`${nf(a)} ${SIGN[x]} ${nf(b)} ${SIGN[y]} ${nf(d)}`,flip={add:'sub',sub:'add'};
+      const right=S(o1,o2);
+      p1.steps.unshift({kind:'pick',col:-1,say:'Ayat matematik mana yang sepadan dengan cerita?',right,choices:order(right,[S(flip[o1],flip[o2]),S(o1,o1)]),sentence:true,
+        after:{sign:SIGN[o1],note:`Betul: ${right}. Kira dari kiri: langkah pertama ${nf(a)} ${SIGN[o1]} ${nf(b)}.`}});
+    }
+    return{chain:[p1,p2],mid,answer:p2.answer};
+  }
+  /* Run the two boards: the first, a short pause with its result, then the second. */
+  function runChain(c,el,onDone,opt={}){
+    const total=c.chain[0].steps.length+c.chain[1].steps.length;
+    run(c.chain[0],el,()=>{
+      setTimeout(()=>{
+        el.say.innerHTML=`<span>Langkah pertama siap: <b>${esc(nf(c.mid))}</b>. Sekarang ${esc(nf(c.mid))} ${SIGN[c.chain[1].op]} ${esc(nf(c.chain[1].rows[1]))}.</span>`;
+        setTimeout(()=>run(c.chain[1],el,onDone,{...opt,onShow:(i)=>opt.onShow&&opt.onShow(c.chain[0].steps.length+i,total)}),opt.pause??1600);
+      },opt.pace??900);
+    },{...opt,onShow:(i)=>opt.onShow&&opt.onShow(i,total)});
   }
 
   /* ---------- place value (papan nilai tempat) ----------
@@ -283,5 +309,5 @@
     if(typeof window!=='undefined')window.__wkRight=()=>{const s=plan.steps[k];return s&&s.kind==='pick'?String(s.right):s&&s.kind==='tap'?`tap:${s.row}:${s.col}`:'go'};   // tests only
     return{get step(){return k},get misses(){return misses},plan};
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,boardHTML,run,_digits:digits,_nf:nf});
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildChain,runChain,boardHTML,run,_digits:digits,_nf:nf});
 });

@@ -76,3 +76,12 @@ test('place-value board: round, compare, place name, digit value end at the roun
   }
   assert.equal(W.buildPV({ t: 'nope' }), null);
 });
+
+test('two steps: two boards left to right; a story asks for the whole sentence first', () => {
+  const c = W.buildChain({ a: 3657, b: 417, d: 125, ops: ['sub', 'add'] }, { story: true });
+  assert.deepEqual([c.mid, c.answer, c.chain[0].rows, c.chain[1].rows], [3240, 3365, [3657, 417], [3240, 125]]);
+  assert.equal(c.chain[0].steps[0].right, '3657 − 417 + 125');
+  assert.deepEqual([...c.chain[0].steps[0].choices].sort(), ['3657 + 417 − 125', '3657 − 417 + 125', '3657 − 417 − 125']);
+  assert.equal(W.buildChain({ a: 900, b: 50, d: 70, ops: ['add', 'sub'] }).answer, 880);
+  assert.equal(W.buildChain({ a: 10, b: 50, d: 1, ops: ['sub', 'add'] }), null, 'a negative first step');
+});

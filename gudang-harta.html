@@ -457,7 +457,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.1.0"></head><body>
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.2.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -512,7 +512,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/engine/reading-pairs-v1.js?v=1.0.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.1.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.2.0"></script>
 <script>
 (()=>{
 'use strict';
@@ -614,9 +614,9 @@ const Fx={
   if(v==='error'){const b=L[0],w=D+pick([10,-10,100]);if(w<0)return null;return{kind:'pad',form:NUM(D),q:C.who+' menulis '+nf(a)+' − '+nf(b)+' = '+nf(w)+'. Apakah jawapan yang betul?',s:'Kira semula. Pecahkan tempat sebelah kiri bila digit atas lebih kecil.',a:nf(a)+' − '+nf(b)+' = '+nf(D)+'.'}}
   return{kind:'pad',card:nf(a)+' − '+L.map(nf).join(' − ')+' = ?',form:NUM(D),q:'Kira hasil tolak.',s:'Tolak dari tempat sa. Pecahkan tempat sebelah kiri jika perlu.',a:nf(a)+' − '+L.map(nf).join(' − ')+' = '+nf(D)+'.'}}}),
  mixed:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3));const v=order==='sa'?a-b+d:a+b-d,mid=order==='sa'?a-b:a+b;if(v<=0||v>=PV[c]||mid<=0||mid>PV[c])return null;
-  return{kind:'pad',card:nf(a)+(order==='sa'?' − '+nf(b)+' + ':' + '+nf(b)+' − ')+nf(d)+' = ?',form:NUM(v),q:'Kira dari kiri ke kanan.',s:'Tambah dan tolak: kira dari kiri ke kanan.',a:nf(a)+(order==='sa'?' − ':' + ')+nf(b)+' = '+nf(order==='sa'?a-b:a+b)+'; kemudian '+(order==='sa'?'+ ':'− ')+nf(d)+' = '+nf(v)+'.'}}}),
+  return{kind:'pad',wk:{t:'chain',a,b,d,ops:order==='sa'?['sub','add']:['add','sub']},card:nf(a)+(order==='sa'?' − '+nf(b)+' + ':' + '+nf(b)+' − ')+nf(d)+' = ?',form:NUM(v),q:'Kira dari kiri ke kanan.',s:'Tambah dan tolak: kira dari kiri ke kanan.',a:nf(a)+(order==='sa'?' − ':' + ')+nf(b)+' = '+nf(order==='sa'?a-b:a+b)+'; kemudian '+(order==='sa'?'+ ':'− ')+nf(d)+' = '+nf(v)+'.'}}}),
  twoStory:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3)),v=order==='sa'?a-b+d:a+b-d;if(v<=0||v>=PV[c])return null;
-  return{kind:'pad',form:NUM(v),q:order==='sa'?'Gudang ada '+nf(a)+' syiling. '+nf(b)+' syiling dibelanjakan, kemudian '+nf(d)+' syiling baharu disimpan. Berapakah syiling sekarang?':'Wira kumpul '+nf(a)+' permata pada Isnin dan '+nf(b)+' pada Selasa. '+nf(d)+' permata diberi kepada kampung. Berapakah bakinya?',
+  return{kind:'pad',wk:{t:'chain',a,b,d,ops:order==='sa'?['sub','add']:['add','sub']},form:NUM(v),q:order==='sa'?'Gudang ada '+nf(a)+' syiling. '+nf(b)+' syiling dibelanjakan, kemudian '+nf(d)+' syiling baharu disimpan. Berapakah syiling sekarang?':'Wira kumpul '+nf(a)+' permata pada Isnin dan '+nf(b)+' pada Selasa. '+nf(d)+' permata diberi kepada kampung. Berapakah bakinya?',
   s:'Ada dua langkah. Tulis ayat matematik dulu.',a:order==='sa'?nf(a)+' − '+nf(b)+' + '+nf(d)+' = '+nf(v)+'.':nf(a)+' + '+nf(b)+' − '+nf(d)+' = '+nf(v)+'.'}}}),
  chooseOp:(arch,young)=>({arch,f:C=>{/* Tahun 1: tambah dan tolak sahaja */const T=pick([['@ ada 48 syiling dan beri 15 kepada kawan. Operasi untuk mencari baki?','Tolak'],['Wira ada 26 anak panah dan beli 14 lagi. Operasi untuk mencari jumlahnya?','Tambah'],['Ada 5 peti, setiap peti 8 permata. Operasi untuk mencari jumlah permata?','Darab'],['40 syiling dikongsi sama rata oleh 4 pet. Operasi untuk mencari bahagian setiap pet?','Bahagi']].slice(0,young?2:4));
   return{kind:'pick',...opts(young?['Tambah','Tolak']:['Tambah','Tolak','Darab','Bahagi'],T[1],young?2:4),q:story(C,T[0]),s:'Cari kata kunci: jumlah/lagi (tambah), baki/beri (tolak), setiap (darab), kongsi sama rata (bahagi).',a:'Operasi: '+T[1].toLowerCase()+'.'}}}),
@@ -1110,13 +1110,13 @@ function drawRack(){const R_=q.rack,n=R_.cols,box=$('rack');if(!box)return;
  let h='';for(let i=n-1;i>=0;i--){const c=rack[i],tk=TOK[Math.min(i,5)];
   const bt='<button type="button" data-a="-" data-i="'+i+'"'+(c<=0?' disabled':'')+' aria-label="Kurang '+LAB[i]+'">−</button><button type="button" class="pl" data-a="+" data-i="'+i+'"'+(c>=9?' disabled':'')+' aria-label="Tambah '+LAB[i]+'">+</button>';
   h+='<div class="col"><b class="lab">'+LAB[i]+'</b><div class="pile">'+tk.repeat(Math.min(c,9))+'</div><em>'+c+'</em><div class="bt">'+bt+'</div></div>'}
- box.innerHTML=h;if($('rv'))$('rv').textContent=nf(rackVal())}
+ box.innerHTML=h;if($('rv'))$('rv').textContent=nf(rackVal());rackWkMark()}
 $('widget').addEventListener('click',e=>{const fb=e.target.closest('[data-f^="a"],[data-f^="c"]');if(fb&&(q.rack&&(q.rack.mode==='add'||q.rack.mode==='sub'))&&!solved){afk=fb.dataset.f;sfx(500,.03);drawRack();return}const b=e.target.closest('[data-a]');if(!b||solved||!q.rack)return;const i=+b.dataset.i,a=b.dataset.a,M=q.rack.mode;
  if(a==='+'&&rack[i]<9)rack[i]++;
  else if(a==='-'&&rack[i]>0){if(M==='sub'){if(taken[i]>=q.rack.take[i])return;taken[i]++}rack[i]--}
  else if(a==='up'&&rack[i]>=10){rack[i]-=10;rack[i+1]++;sfx(780,.1,'triangle')}
  else if(a==='down'&&rack[i]>0){rack[i]--;rack[i-1]+=10;sfx(330,.1,'triangle')}
- hideMsg();sfx(480,.04);drawRack()});
+ hideMsg();sfx(480,.04);drawRack();rackWkTick()});
 /* ---------- panel ---------- */
 function busyMerge(){const r=$('rack');if(r){r.classList.remove('merge');void r.offsetWidth;r.classList.add('merge')}}
 function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className='tiles';box.classList.toggle('padk',K==='pad');
@@ -1193,17 +1193,50 @@ function offerWorked(){if(workedOffer||solved||!(misses>=workedNeed()||(misses>=
 function startWorked(){
  // Only when the written method ends at this round's answer (not a two-step sum, not a remainder field).
  // Place-value rounds (round, compare, place name, digit value) bring their own board spec (q.wk).
- const P=window.PAWorked,pv=P&&q.wk&&P.buildPV?.(q.wk),par=!pv&&P&&q.kind==='pad'&&q.form?.fields?.length===1&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card}),
-  plan=pv&&String(pv.answer)===String(pvAnswer())?pv:built&&built.answer===q.form.fields[0].v&&!built.rem?built:null;
+ // Two-step rounds run two boards; the rack's add/sub rounds use the written board (the rack already lays them out that way).
+ const P=window.PAWorked,rackOp=q.kind==='build'&&(q.rack.mode==='add'||q.rack.mode==='sub'),want=q.kind==='pad'?q.form.fields[0].v:q.need?.v,
+  chain=P&&q.wk?.t==='chain'&&P.buildChain?.(q.wk,{story:!q.card}),pv=!chain&&P&&q.wk&&P.buildPV?.(q.wk),
+  par=!pv&&!chain&&P&&(rackOp||q.kind==='pad'&&q.form?.fields?.length===1)&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card&&!rackOp}),
+  plan=pv&&String(pv.answer)===String(pvAnswer())?pv:built&&built.answer===want&&!built.rem?built:null;
  q.worked=true;workedOffer=false;hints++;reportProgress('worked');hideMsg();
  const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
  const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
  $('wsayTxt').textContent='Jom kira sama-sama, satu langkah demi satu.';$('wsay').classList.remove('hide');
- if(plan){box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
-  P.run(plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});return}
+ if(q.kind==='build'&&q.rack.mode==='build')return startRackWorked();
+ if(chain&&chain.answer===want||plan){box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
+  (chain&&chain.answer===want?P.runChain:P.run)(chain&&chain.answer===want?chain:plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});return}
  // No written method for this kind yet: the worked line, then the right answer.
  box.innerHTML='<div class="wk-wrap"><div class="wk-say">'+esc(q.a||q.s||'')+'</div><div class="wk-say"><b>Jawapan: '+esc(ansText())+'</b></div></div>';
  tl.innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';tl.querySelector('button').onclick=finishWorked;
+}
+/* Rack "bina": Wira walks the rack itself, biggest place first. In each place the pupil taps +
+   until the pile holds that digit; the other places wait. A 0 place is left empty. */
+let rackWk=null;
+function startRackWorked(){
+ const n=q.rack.cols,want=dig(q.need.v,n),order=range(n).reverse();
+ rack=range(n).map(()=>0);rackWk={want,order,k:0};
+ $('widget').insertAdjacentHTML('afterbegin','<div class="wk-say" id="wkSay"></div>');
+ $('tiles').innerHTML='';$('tiles').className='tiles wk';$('game').classList.add('wk-on');
+ rackWkStep();
+}
+function rackWkStep(){
+ const W=rackWk,h=$('hint');if(!W)return;
+ while(W.k<W.order.length&&W.want[W.order[W.k]]===0&&W.order[W.k]!==W.order[0]){const i=W.order[W.k];W.k++;W.zero=(W.zero||[]).concat(i)}
+ drawRack();
+ if(W.k>=W.order.length){$('wkSay').innerHTML='<b>Siap!</b> '+esc(nf(q.need.v))+' = '+esc(expd(q.need.v,q.rack.cols))+'.';rackWk=null;setTimeout(finishWorked,900);return}
+ const i=W.order[W.k],d=W.want[i];h.textContent='Langkah '+(W.k+1)+'/'+W.order.length;
+ const zeros=(W.zero||[]).filter(z=>z>i);
+ $('wkSay').textContent=(zeros.length?'Tempat '+zeros.map(z=>PLACE[z]).join(', ')+': 0, biar kosong. ':'')+'Tempat '+PLACE[i]+': digit '+d+'. Tekan + '+d+' kali.';
+}
+/* After drawRack, in a rack walkthrough: only the current place can take a harta, and only up to its digit. */
+function rackWkMark(){
+ const W=rackWk;if(!W)return;const i=W.order[W.k],n=q.rack.cols;
+ $('rack').querySelectorAll('.col').forEach((col,j)=>{const c=n-1-j;col.classList.toggle('wk-colon',c===i);col.classList.toggle('wk-coldone',W.order.indexOf(c)<W.k);
+  col.querySelectorAll('button').forEach(b=>{b.disabled=c!==i||b.dataset.a!=='+'||rack[c]>=W.want[c]})});
+}
+function rackWkTick(){
+ const W=rackWk;if(!W)return;const i=W.order[W.k];
+ if(rack[i]>=W.want[i]){sfx(700,.06);$('wkSay').textContent='Bagus! '+W.want[i]+' di tempat '+PLACE[i]+'.';W.k++;setTimeout(rackWkStep,900)}
 }
 /* The round's own answer, in the form a place-value plan ends with. */
 function pvAnswer(){if(q.kind==='pad')return q.form.fields[0].v;const t=ansText();if(q.wk?.t==='compare'&&q.wk.ask==='symbol')return q.correct;return/^[\d\s\u00a0 ]+$/.test(t)?Number(t.replace(/\D/g,'')):t}
@@ -1252,7 +1285,7 @@ function makeQ(){const rep=repeatNext;repeatNext=null;   // after "Jom tengok ca
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  $('stageN').textContent='PETI '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Ekspedisi '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
 const SUB={build:{build:'Tekan + dan − pada setiap tempat.',add:'Mula dari tempat sa. Tulis 1 di kotak kecil jika kumpul semula.',sub:'Mula dari tempat sa. Jika pecah, tulis digit baharu di kotak kecil.'},pick:'Pilih satu jawapan.',pad:'Tekan nombor untuk isi jawapan.'};
-function startRound(){if(served%SET===0)$('shelf').innerHTML=range(SET).map(i=>'<span class="slot" id="slot'+i+'">'+chestIcon(false)+'</span>').join('');
+function startRound(){rackWk=null;if(served%SET===0)$('shelf').innerHTML=range(SET).map(i=>'<span class="slot" id="slot'+i+'">'+chestIcon(false)+'</span>').join('');
  q=makeQ();solved=false;misses=0;paLast=Date.now();paRound++;hints=0;hint2=0;sel=null;inp=q.form?q.form.fields.map(()=>''):[];fk=0;hideMsg();
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=(mixedRound(q)?'BERCAMPUR':MODE_LABEL[q.mode])+' · T'+(q.tierIx+1);
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<2||(q.kind==='build'&&q.rack.mode==='build')?(q.kind==='build'?SUB.build[q.rack.mode]:SUB[q.kind]):'');
