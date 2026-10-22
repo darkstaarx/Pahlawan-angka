@@ -457,7 +457,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.2.0"></head><body>
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.3.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -512,7 +512,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/engine/reading-pairs-v1.js?v=1.0.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.2.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.3.0"></script>
 <script>
 (()=>{
 'use strict';
@@ -565,8 +565,8 @@ const Fx={
  digitValue:(c,arch)=>({arch,f:C=>{let n,i;do{n=nOf(c);i=uniq(n,c)}while(i==null);const d=dig(n,c)[i];return{kind:'pad',wk:{t:'digitValue',n,i},form:NUM(d*PV[i]),
   q:'Apakah nilai digit '+d+' dalam '+nf(n)+'?',s:'Cari tempat digit itu dulu. Nilai = digit × nilai tempat.',a:d+' di tempat '+PLACE[i]+' = '+d+' × '+nf(PV[i])+' = '+nf(d*PV[i])+'.'}}}),
  missingPart:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);const parts=dig(n,c).map((d,i)=>d*PV[i]).reverse().filter(x=>x),k=R(0,parts.length-1),miss=parts[k];
-  return{kind:'pad',card:nf(n)+' = '+parts.map((p,i)=>i===k?'___':nf(p)).join(' + '),form:NUM(miss),q:'Apakah nilai yang hilang?',s:'Cerakinkan '+nf(n)+' ikut nilai tempat.',a:'Bahagian yang hilang = '+nf(miss)+'.'}}}),
- compose:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);return{kind:'pad',card:expd(n,c)+' = ?',form:NUM(n),q:'Nilai-nilai tempat ini membentuk nombor apa?',s:'Letak setiap nilai pada tempatnya. Tempat kosong ditulis 0.',a:expd(n,c)+' = '+nf(n)+'.'}}}),
+  return{kind:'pad',wk:{t:'missingPart',n,i:String(miss).length-1},card:nf(n)+' = '+parts.map((p,i)=>i===k?'___':nf(p)).join(' + '),form:NUM(miss),q:'Apakah nilai yang hilang?',s:'Cerakinkan '+nf(n)+' ikut nilai tempat.',a:'Bahagian yang hilang = '+nf(miss)+'.'}}}),
+ compose:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);return{kind:'pad',wk:{t:'compose',n},card:expd(n,c)+' = ?',form:NUM(n),q:'Nilai-nilai tempat ini membentuk nombor apa?',s:'Letak setiap nilai pada tempatnya. Tempat kosong ditulis 0.',a:expd(n,c)+' = '+nf(n)+'.'}}}),
  expanded:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);const ok=expd(n,c),bad=nears(n,c,4).map(m=>expd(m,c));
   const d=dig(n,c),sw=d.map((x,i)=>x*PV[Math.min(c-1,i+1)]).reverse().filter(x=>x).map(nf).join(' + ');return{kind:'pick',...opts([sw,...bad],ok),q:'Cerakinkan '+nf(n)+' mengikut nilai tempat.',s:'Setiap digit didarab dengan nilai tempatnya.',a:nf(n)+' = '+ok+'.'}}}),
  toWords:(c,arch)=>({arch,f:C=>{const n=nOf(c);return{kind:'pick',...opts(nears(n,c,4).map(words),words(n)),q:'Pilih perkataan bagi '+nf(n)+'.',s:'Baca ikut kumpulan dari kiri: ribu, kemudian ratus, puluh, sa.',a:nf(n)+' dibaca “'+words(n)+'”.'}}}),
@@ -589,8 +589,8 @@ const Fx={
   if(kind==='rule'){const T=(st>0?'Tambah ':'Tolak ')+nf(Math.abs(st));return{kind:'pick',vis:{t:'trail',items:L.map(nf)},...opts([(st>0?'Tolak ':'Tambah ')+nf(Math.abs(st)),(st>0?'Tambah ':'Tolak ')+nf(Math.abs(st)*10),(st>0?'Tambah ':'Tolak ')+nf(Math.max(1,Math.abs(st)/10))],T),
    q:'Apakah peraturan pola nombor ini?',s:'Banding dua nombor bersebelahan: bertambah atau berkurang? Berapa banyak?',a:(st>0?nf(L[1])+' − '+nf(L[0])+' = '+nf(st):nf(L[0])+' − '+nf(L[1])+' = '+nf(-st))+'. Peraturan: '+T.toLowerCase()+'.'}}
   const k=kind==='next'?len-1:kind==='begin'?0:R(1,len-2),items=L.map((x,i)=>i===k?'?':nf(x));
-  return{kind:'pad',vis:{t:'trail',items},form:NUM(L[k]),q:'Apakah nombor yang hilang dalam pola ini?',s:'Cari beza antara dua nombor bersebelahan dulu.',a:'Pola '+(st>0?'tambah ':'tolak ')+nf(Math.abs(st))+'. Nombor hilang = '+nf(L[k])+'.'}}}),
- apply:(c,arch,steps)=>({arch,f:C=>{const st=pick(steps),add=Math.random()<.5,s0=add?R(PV[c-1],PV[c]-1-st*4):R(PV[c-1]+st*4,PV[c]-1),v=add?s0+3*st:s0-3*st;return{kind:'pad',form:NUM(v),
+  return{kind:'pad',wk:{t:'seq',list:L,k},vis:{t:'trail',items},form:NUM(L[k]),q:'Apakah nombor yang hilang dalam pola ini?',s:'Cari beza antara dua nombor bersebelahan dulu.',a:'Pola '+(st>0?'tambah ':'tolak ')+nf(Math.abs(st))+'. Nombor hilang = '+nf(L[k])+'.'}}}),
+ apply:(c,arch,steps)=>({arch,f:C=>{const st=pick(steps),add=Math.random()<.5,s0=add?R(PV[c-1],PV[c]-1-st*4):R(PV[c-1]+st*4,PV[c]-1),v=add?s0+3*st:s0-3*st;return{kind:'pad',wk:{t:'apply',s0,st:add?st:-st,n:3},form:NUM(v),
   q:'Bermula dengan '+nf(s0)+', '+(add?'tambah':'tolak')+' '+nf(st)+' setiap kali. Apakah nombor keempat?',s:'Nombor pertama ialah '+nf(s0)+'. Buat 3 langkah.',a:nf(s0)+(add?' + ':' − ')+'3 × '+nf(st)+' = '+nf(v)+'.'}}}),
  /* operasi */
  addExch:(c,arch)=>({arch,f:C=>{let a,b;do{a=nOf(c);b=R(PV[c-2]||1,PV[c]-1-a)}while(b<1||a+b>=PV[c]||range(c).every(i=>dig(a,c)[i]+dig(b,c)[i]<10));
@@ -606,13 +606,13 @@ const Fx={
   if(v==='story'){const[a,b]=L;return{kind:'pad',form:NUM(S),q:story(C,pick(['Gudang ada '+nf(a)+' syiling emas. @ simpan '+nf(b)+' syiling lagi. Berapakah jumlah syiling sekarang?','Wira kumpul '+nf(a)+' permata di gua dan '+nf(b)+' permata di sungai. Berapakah jumlah permata?','@ jual '+nf(a)+' anak panah pada pagi dan '+nf(b)+' pada petang. Berapakah jumlahnya?'])),s:'“Jumlah”, “lagi”, “semuanya” bermaksud tambah.',a:nf(a)+' + '+nf(b)+' = '+nf(S)+'.'}}
   if(v==='check'){const[a,b]=L,bad=[S+PV[c-1],S-PV[c-1],S+2*PV[c-1],Math.round(S/10)];return{kind:'pick',...opts(bad.filter(x=>x>0).map(nf),nf(S)),q:'Tanpa mengira penuh, jawapan manakah munasabah bagi '+nf(a)+' + '+nf(b)+'?',s:'Bundarkan kedua-dua nombor dulu, kemudian anggarkan.',a:'Anggaran: '+nf(Math.round(a/PV[c-2])*PV[c-2])+' + '+nf(Math.round(b/PV[c-2])*PV[c-2])+' = '+nf((Math.round(a/PV[c-2])+Math.round(b/PV[c-2]))*PV[c-2])+'.'}}
   if(v==='error'){const[a,b]=L,w=S+pick([10,-10,PV[c-2]]);return{kind:'pad',form:NUM(S),q:C.who+' menulis '+nf(a)+' + '+nf(b)+' = '+nf(w)+'. Apakah jawapan yang betul?',s:'Kira semula. Ingat kumpul semula bila jumlah satu tempat 10 atau lebih.',a:nf(a)+' + '+nf(b)+' = '+nf(S)+'.'}}
-  return{kind:'pad',card:L.map(nf).join(' + ')+' = ?',form:NUM(S),q:'Kira hasil tambah.',s:'Tambah dari tempat sa. Kumpul semula setiap 10.',a:L.map(nf).join(' + ')+' = '+nf(S)+'.'}}}),
+  return{kind:'pad',wk:L.length===3?{t:'chain',a:L[0],b:L[1],d:L[2],ops:['add','add']}:undefined,card:L.map(nf).join(' + ')+' = ?',form:NUM(S),q:'Kira hasil tambah.',s:'Tambah dari tempat sa. Kumpul semula setiap 10.',a:L.map(nf).join(' + ')+' = '+nf(S)+'.'}}}),
  sub:(c,arch,v='direct',n=1)=>({arch,f:C=>{let a=nOf(c),L=range(n).map(()=>R(PV[c-2]||1,Math.floor(a/(n+1))));const D=a-L.reduce((x,y)=>x+y);if(D<1)return null;
   if(v==='missing'){return{kind:'pad',card:nf(a)+' − ___ = '+nf(D),form:NUM(L[0]),q:'Apakah nombor yang hilang?',s:'Nombor hilang = '+nf(a)+' − '+nf(D)+'.',a:nf(a)+' − '+nf(D)+' = '+nf(L[0])+'.'}}
   if(v==='story'){const b=L[0];return{kind:'pad',form:NUM(D),q:story(C,pick(['Gudang ada '+nf(a)+' syiling. @ ambil '+nf(b)+' syiling untuk beli perisai. Berapa syiling yang tinggal?','Ada '+nf(a)+' anak panah. '+nf(b)+' digunakan semasa latihan. Berapakah bakinya?','Peti A ada '+nf(a)+' permata dan peti B ada '+nf(b)+'. Berapakah beza bilangan permata?'])),s:'“Tinggal”, “baki” dan “beza” bermaksud tolak.',a:nf(a)+' − '+nf(b)+' = '+nf(D)+'.'}}
   if(v==='check'){const b=L[0],bad=[D+PV[c-1],D+2*PV[c-1],Math.round(D/10),D>PV[c-1]?D-PV[c-1]:D*10];return{kind:'pick',...opts(bad.filter(x=>x>0&&x!==D).map(nf),nf(D)),q:'Tanpa mengira penuh, jawapan manakah munasabah bagi '+nf(a)+' − '+nf(b)+'?',s:'Bundarkan kedua-dua nombor dulu, kemudian anggarkan.',a:'Anggaran: '+nf(Math.round(a/PV[c-2])*PV[c-2])+' − '+nf(Math.round(b/PV[c-2])*PV[c-2])+' = '+nf((Math.round(a/PV[c-2])-Math.round(b/PV[c-2]))*PV[c-2])+'.'}}
   if(v==='error'){const b=L[0],w=D+pick([10,-10,100]);if(w<0)return null;return{kind:'pad',form:NUM(D),q:C.who+' menulis '+nf(a)+' − '+nf(b)+' = '+nf(w)+'. Apakah jawapan yang betul?',s:'Kira semula. Pecahkan tempat sebelah kiri bila digit atas lebih kecil.',a:nf(a)+' − '+nf(b)+' = '+nf(D)+'.'}}
-  return{kind:'pad',card:nf(a)+' − '+L.map(nf).join(' − ')+' = ?',form:NUM(D),q:'Kira hasil tolak.',s:'Tolak dari tempat sa. Pecahkan tempat sebelah kiri jika perlu.',a:nf(a)+' − '+L.map(nf).join(' − ')+' = '+nf(D)+'.'}}}),
+  return{kind:'pad',wk:L.length===2?{t:'chain',a,b:L[0],d:L[1],ops:['sub','sub']}:undefined,card:nf(a)+' − '+L.map(nf).join(' − ')+' = ?',form:NUM(D),q:'Kira hasil tolak.',s:'Tolak dari tempat sa. Pecahkan tempat sebelah kiri jika perlu.',a:nf(a)+' − '+L.map(nf).join(' − ')+' = '+nf(D)+'.'}}}),
  mixed:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3));const v=order==='sa'?a-b+d:a+b-d,mid=order==='sa'?a-b:a+b;if(v<=0||v>=PV[c]||mid<=0||mid>PV[c])return null;
   return{kind:'pad',wk:{t:'chain',a,b,d,ops:order==='sa'?['sub','add']:['add','sub']},card:nf(a)+(order==='sa'?' − '+nf(b)+' + ':' + '+nf(b)+' − ')+nf(d)+' = ?',form:NUM(v),q:'Kira dari kiri ke kanan.',s:'Tambah dan tolak: kira dari kiri ke kanan.',a:nf(a)+(order==='sa'?' − ':' + ')+nf(b)+' = '+nf(order==='sa'?a-b:a+b)+'; kemudian '+(order==='sa'?'+ ':'− ')+nf(d)+' = '+nf(v)+'.'}}}),
  twoStory:(c,arch,order)=>({arch,f:C=>{const a=nOf(c),b=R(PV[c-2],Math.floor(a/3)),d=R(PV[c-2],Math.floor(a/3)),v=order==='sa'?a-b+d:a+b-d;if(v<=0||v>=PV[c])return null;
@@ -674,7 +674,7 @@ const D6={
  compare:{arch:'y6v2_1_1_4_compare',f:C=>{const v=R(201,899)/100,n=Math.round(v*1e6)+pick([-1,1])*R(1,9)*pick([1000,10000]);const big=v*1e6>n?jt(v):nf(n);return{kind:'pick',...opts([jt(v),nf(n)],big,2),q:'Yang manakah lebih besar: '+jt(v)+' atau '+nf(n)+'?',s:'Tukar '+jt(v)+' kepada nombor penuh dulu.',a:jt(v)+' = '+nf(Math.round(v*1e6))+'. Banding dengan '+nf(n)+'.'}}},
  order:{arch:'y6v2_1_1_1_order_numbers',f:C=>{const b=R(2,9)*1e6,L=shuffle([b+150000,b+105000,b+51000,b+510000]).slice(0,3),asc=[...L].sort((x,y)=>x-y),T=asc.map(nf).join(' < ');
   return{kind:'pick',...opts([[...asc].reverse().map(nf).join(' < '),[asc[1],asc[0],asc[2]].map(nf).join(' < ')],T),q:'Susun dari kecil ke besar: '+L.map(nf).join(', ')+'.',s:'Juta sama. Banding digit ratus ribu, kemudian puluh ribu.',a:'Menaik: '+T+'.'}}},
- next:{arch:'y6v2_1_1_5_next',f:C=>{const st=pick([125000,250000,75000,200000,150000])*(Math.random()<.7?1:-1),s0=R(2,6)*1e6+R(0,9)*1e5,L=range(4).map(i=>s0+i*st);return{kind:'pad',vis:{t:'trail',items:[...L.slice(0,3).map(nf),'?']},form:NUM(L[3]),q:'Apakah sebutan seterusnya?',s:'Cari beza dua sebutan bersebelahan.',a:'Beza '+nf(st)+'. '+nf(L[2])+(st>0?' + ':' − ')+nf(Math.abs(st))+' = '+nf(L[3])+'.'}}},
+ next:{arch:'y6v2_1_1_5_next',f:C=>{const st=pick([125000,250000,75000,200000,150000])*(Math.random()<.7?1:-1),s0=R(2,6)*1e6+R(0,9)*1e5,L=range(4).map(i=>s0+i*st);return{kind:'pad',wk:{t:'seq',list:L,k:3},vis:{t:'trail',items:[...L.slice(0,3).map(nf),'?']},form:NUM(L[3]),q:'Apakah sebutan seterusnya?',s:'Cari beza dua sebutan bersebelahan.',a:'Beza '+nf(st)+'. '+nf(L[2])+(st>0?' + ':' − ')+nf(Math.abs(st))+' = '+nf(L[3])+'.'}}},
  rule:{arch:'y6v2_1_1_5_rule',f:C=>{const st=pick([.25,.15,.2,.5,.05]),s0=R(10,30)/10,L=range(4).map(i=>+(s0+i*st).toFixed(2));const T='Tambah '+dn(st)+' juta';return{kind:'pick',vis:{t:'trail',items:L.map(jt)},...opts(['Tambah '+dn(st*10)+' juta','Tambah '+dn(st/5)+' juta','Tolak '+dn(st)+' juta'],T),
   q:'Apakah peraturan pola ini?',s:'Tolak sebutan pertama daripada sebutan kedua.',a:dn(L[1])+' − '+dn(L[0])+' = '+dn(st)+' juta.'}}},
  total:{arch:'y6v2_1_4_1_total',f:C=>{const a=R(12,48)*1e5,b=R(12,90)*1e4;return{kind:'pad',form:NUM(a+b),q:'Kerajaan Dimensi ada '+nf(a)+' penduduk. '+nf(b)+' orang lagi berpindah masuk. Berapakah jumlah baharu?',s:'Tambah. Selaraskan nilai tempat.',a:nf(a)+' + '+nf(b)+' = '+nf(a+b)+'.'}}},
@@ -692,7 +692,7 @@ const GEN={
   {...Fx.build(2,'y1v2_1_2_2_match_value')},
   {...Fx.placeName(2,'y1v2_1_6_1_place_name')},
   {...Fx.digitValue(2,'y1v2_1_6_1_digit_value')},
-  {arch:'y1v2_1_6_1_missing_place',f:C=>{const n=R(21,99);if(n%10===0)return null;const t=n-n%10,miss=Math.random()<.5;return{kind:'pad',card:n+' = '+(miss?'___ + '+n%10:t+' + ___'),form:NUM(miss?t:n%10),q:'Apakah nombor yang hilang?',s:'Cerakinkan: puluh + sa.',a:n+' = '+t+' + '+n%10+'.'}}},
+  {arch:'y1v2_1_6_1_missing_place',f:C=>{const n=R(21,99);if(n%10===0)return null;const t=n-n%10,miss=Math.random()<.5;return{kind:'pad',wk:{t:'missingPart',n,i:miss?1:0},card:n+' = '+(miss?'___ + '+n%10:t+' + ___'),form:NUM(miss?t:n%10),q:'Apakah nombor yang hilang?',s:'Cerakinkan: puluh + sa.',a:n+' = '+t+' + '+n%10+'.'}}},
   {...Fx.toWords(2,'y1v2_1_3_1_number_to_words')}],
  banding:[
   {arch:'y1v2_1_1_1_more_less',f:C=>{let a,b;do{a=R(3,15);b=R(3,15)}while(a===b);const more=Math.random()<.5;return{kind:'pick',vis:{t:'groups',a,b},opts:[{id:'A',label:'Peti A'},{id:'B',label:'Peti B'}],correct:(more?a>b:a<b)?'A':'B',ansTxt:'Peti '+((more?a>b:a<b)?'A':'B'),
@@ -1195,7 +1195,7 @@ function startWorked(){
  // Place-value rounds (round, compare, place name, digit value) bring their own board spec (q.wk).
  // Two-step rounds run two boards; the rack's add/sub rounds use the written board (the rack already lays them out that way).
  const P=window.PAWorked,rackOp=q.kind==='build'&&(q.rack.mode==='add'||q.rack.mode==='sub'),want=q.kind==='pad'?q.form.fields[0].v:q.need?.v,
-  chain=P&&q.wk?.t==='chain'&&P.buildChain?.(q.wk,{story:!q.card}),pv=!chain&&P&&q.wk&&P.buildPV?.(q.wk),
+  chain=P&&q.wk?.t==='chain'&&P.buildChain?.(q.wk,{story:!q.card}),pv=!chain&&P&&q.wk&&((q.wk.t==='seq'||q.wk.t==='apply')?P.buildSeq?.(q.wk):P.buildPV?.(q.wk)),
   par=!pv&&!chain&&P&&(rackOp||q.kind==='pad'&&q.form?.fields?.length===1)&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card&&!rackOp}),
   plan=pv&&String(pv.answer)===String(pvAnswer())?pv:built&&built.answer===want&&!built.rem?built:null;
  q.worked=true;workedOffer=false;hints++;reportProgress('worked');hideMsg();

@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.2.0';
+  const VERSION='1.3.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'];
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   const digits=n=>String(Math.abs(Math.trunc(n))).split('').map(Number).reverse();
@@ -141,6 +141,31 @@
     },{...opt,onShow:(i)=>opt.onShow&&opt.onShow(i,total)});
   }
 
+  /* Number patterns (pola): a trail of boxes. {t:'seq', list, k} asks for list[k]: two
+     neighbours light up, then "bertambah atau berkurang?", "berapa beza?", and a hop from
+     the neighbour to the missing box. {t:'apply', s0, st, n} states the rule: n hops from s0. */
+  function buildSeq(spec){
+    if(!spec)return null;
+    if(spec.t==='apply'){
+      const{s0,st}=spec,n=spec.n||3;if(!Number.isInteger(s0)||!Number.isInteger(st)||!st)return null;
+      const list=[s0];for(let i=1;i<=n;i++)list.push(s0+i*st);if(list.some(x=>x<0))return null;
+      const steps=list.slice(1).map((v,i)=>{const from=list[i],ask=`${nf(from)} ${st>0?'+':'−'} ${nf(Math.abs(st))} = ?`;
+        return{kind:'pick',col:i+1,say:`Nombor ke-${i+2}: ${ask}`,right:nf(v),choices:order(nf(v),[nf(from-st),nf(v+st),nf(from)]),after:{fill:{i:i+1,v},note:`Tulis ${nf(v)}.`}}});
+      return{op:'seq',rows:[],items:list.map((v,i)=>i===0?v:null),steps,done:`Nombor keempat ialah ${nf(list[n])}.`,answer:list[n]};
+    }
+    const L=spec.list,k=spec.k;if(!Array.isArray(L)||L.length<3||!(k>=0&&k<L.length)||L.some(x=>!Number.isInteger(x)))return null;
+    const st=L[1]-L[0];if(!st||L.some((x,i)=>i&&x-L[i-1]!==st))return null;
+    // A known pair, as close to the missing box as possible.
+    const pairs=[];for(let i=0;i<L.length-1;i++)if(i!==k&&i+1!==k)pairs.push(i);
+    const p=pairs.sort((x,y)=>Math.abs(x-k)-Math.abs(y-k))[0],a=L[p],b=L[p+1],up=st>0,big=Math.max(a,b),small=Math.min(a,b),gap=Math.abs(st);
+    const back=k===0,from=back?L[1]:L[k-1],v=L[k],ask=`${nf(from)} ${up!==back?'+':'−'} ${nf(gap)} = ?`;
+    const steps=[
+      {kind:'pick',col:-1,pre:{pair:[p,p+1]},say:`Lihat ${nf(a)} dan ${nf(b)}. Nombor bertambah atau berkurang?`,right:up?'Bertambah':'Berkurang',choices:['Bertambah','Berkurang'],after:{note:up?'Bertambah: setiap nombor lebih besar.':'Berkurang: setiap nombor lebih kecil.'}},
+      {kind:'pick',col:-1,say:`Berapa bezanya? ${nf(big)} − ${nf(small)} = ?`,right:nf(gap),choices:order(nf(gap),[nf(gap*10),nf(gap+1),nf(Math.max(1,gap-1))]),after:{note:`Peraturan: ${up?'tambah':'tolak'} ${nf(gap)}.`}},
+      {kind:'pick',col:-1,pre:{pair:back?[1]:[k-1],hop:k},say:back?`Nombor pertama: undur dari ${nf(from)}. ${ask}`:`Dari ${nf(from)}: ${ask}`,right:nf(v),choices:order(nf(v),[nf(back?from+st:from-st),nf(v+st),nf(v+(up?1:-1))].filter(x=>!/^-/.test(x))),after:{fill:{i:k,v},note:`Nombor yang hilang ialah ${nf(v)}.`}}];
+    return{op:'seq',rows:[],items:L.map((x,i)=>i===k?null:x),steps,done:`Pola ${up?'tambah':'tolak'} ${nf(gap)}: nombor yang hilang ialah ${nf(v)}.`,answer:v};
+  }
+
   /* ---------- place value (papan nilai tempat) ----------
      For rounds that are about places, not sums: round, compare, place name, digit value.
      The board shows the number(s) digit by digit under sa / puluh / ratus …; a 'tap' step
@@ -154,6 +179,7 @@
     const out=[right];for(const w of wrongs)if(w!==undefined&&w!==null&&!out.includes(w)&&out.length<max)out.push(w);
     const k=(String(right).length+out.length)%out.length;return[...out.slice(1,1+k),out[0],...out.slice(1+k)];
   }
+  const expandStr=n=>digits(n).map((d,i)=>d*PV[i]).reverse().filter(x=>x).map(nf).join(' + ');
   function buildPV(spec){
     if(!spec||typeof spec!=='object')return null;
     const t=spec.t;
@@ -194,6 +220,26 @@
       steps.push({kind:'pick',col:-1,say:`Jadi yang lebih ${spec.ask==='small'?'kecil':'besar'}?`,right:nf(want),choices:order(nf(want),[nf(want===a?b:a)],2),after:{note:''}});
       return{op:'pv',rows:[a,b],labels:['',''],cols,steps,done:`${nf(want)} lebih ${spec.ask==='small'?'kecil':'besar'}.`,answer:want};
     }
+    if(t==='compose'){
+      // 600 + 70 + 2: each part goes to its place on an empty row; a place with no part gets 0.
+      const n=spec.n,D=digits(n);if(!Number.isInteger(n)||n<10)return null;
+      const steps=[];
+      for(let i=D.length-1;i>=0;i--){
+        const d=D[i];
+        if(d)steps.push({kind:'tap',row:0,col:i,blank:true,say:`${nf(d*PV[i])}: digit ${d} di tempat ${PLACE[i]}. Tekan tempat ${PLACE[i]}.`,after:{fill:{row:0,col:i,digit:d},note:`Tulis ${d} di tempat ${PLACE[i]}.`}});
+        else steps.push({kind:'show',col:i,say:`Tiada bahagian untuk tempat ${PLACE[i]}. Tulis 0.`,after:{fill:{row:0,col:i,digit:0},note:'Tempat kosong ditulis 0.'}});
+      }
+      return{op:'pv',rows:[n],blank:[0],cols:D.length,steps,done:`${expandStr(n)} = ${nf(n)}.`,answer:n};
+    }
+    if(t==='missingPart'){
+      // 9041 = 9000 + ___ + 1: the places already written go grey; the pupil finds the one left.
+      const n=spec.n,i=spec.i,D=digits(n);if(!Number.isInteger(n)||!(i>=0&&i<D.length)||!D[i])return null;
+      const known=D.map((d,j)=>d&&j!==i?j:-1).filter(j=>j>=0),v=D[i]*PV[i];
+      const steps=[
+        {kind:'tap',row:0,col:i,pre:{same:known},say:`Tempat yang sudah ada dalam ayat jadi kelabu. Digit mana belum ada? Tekan digit itu.`,after:{mark:{row:0,col:i},reveal:true,note:`Digit ${D[i]} di tempat ${PLACE[i]}.`}},
+        {kind:'pick',col:i,say:`Nilai = ${D[i]} × ${nf(PV[i])} = ?`,right:nf(v),choices:order(nf(v),[nf(D[i]),nf(v*10),nf(v/10)].filter(x=>x!==nf(v)&&!/\./.test(x))),after:{note:`Bahagian yang hilang ialah ${nf(v)}.`}}];
+      return{op:'pv',rows:[n],cols:D.length,hideHead:true,steps,done:`${nf(n)} = ${expandStr(n)}.`,answer:v};
+    }
     if(t==='placeName'||t==='digitValue'){
       const n=spec.n,i=spec.i,D=digits(n);if(!Number.isInteger(n)||!(i>=0&&i<D.length))return null;
       const d=D[i],names=PLACE.slice(0,Math.max(D.length,3)).map((x,j)=>[x,Math.abs(j-i)]).filter(x=>x[1]).sort((x,y)=>x[1]-y[1]).map(x=>x[0]);   // the places next to it first
@@ -214,9 +260,12 @@
     const n=plan.cols,[a,b]=plan.rows,A=digits(a),B=digits(b),cell=(cls,txt,col,extra='')=>`<span class="wk-c ${cls}" data-col="${col}"${extra}>${txt}</span>`;
     const cols=[...Array(n).keys()].reverse();
     const head=cols.map(i=>cell('wk-h',PLACE[i]==='puluh ribu'?'p.ribu':PLACE[i]==='ratus ribu'?'r.ribu':PLACE[i],i)).join('');
+    if(plan.op==='seq'){
+      return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?'<i class="wk-hop" aria-hidden="true">›</i>':''}<span class="wk-c wk-box${v===null?' wk-q':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
+    }
     if(plan.op==='pv'){
       const head2=cols.map(i=>cell('wk-h'+(opt.hideHead?' wk-hide':''),opt.hideHead?'?':(PLACE[i]==='puluh ribu'?'p.ribu':PLACE[i]==='ratus ribu'?'r.ribu':PLACE[i]==='juta'?'juta':PLACE[i]),i,` data-name="${esc(PLACE[i])}"`)).join('');
-      const rowPV=(v,r)=>{const D=digits(v);return`<div class="wk-row wk-pvrow" data-row="${r}"><span class="wk-op"></span>${cols.map(i=>cell('wk-d wk-tap',D[i]===undefined?'':D[i],i,` data-row="${r}"`)).join('')}</div>`};
+      const rowPV=(v,r)=>{const D=digits(v),blank=(plan.blank||[]).includes(r);return`<div class="wk-row wk-pvrow${blank?' wk-blank':''}" data-row="${r}"><span class="wk-op"></span>${cols.map(i=>cell('wk-d wk-tap'+(blank?' wk-empty':''),blank||D[i]===undefined?'':D[i],i,` data-row="${r}"`)).join('')}</div>`};
       const sym=plan.rows.length===2&&plan.steps.some(s=>s.after&&s.after.sym)?'<div class="wk-sym" aria-live="polite"></div>':'';
       return `<div class="wk-board wk-pv" style="--n:${n}"><div class="wk-row wk-head"><span class="wk-op"></span>${head2}</div>
         ${rowPV(plan.rows[0],0)}${sym}${plan.rows[1]!==undefined?rowPV(plan.rows[1],1):''}
@@ -260,12 +309,15 @@
       if(a.reveal)el.board.querySelectorAll('.wk-head .wk-hide').forEach(c=>{c.textContent=c.dataset.name==='puluh ribu'?'p.ribu':c.dataset.name==='ratus ribu'?'r.ribu':c.dataset.name;c.classList.remove('wk-hide');c.classList.add('wk-pop')});
       if(a.answer!==undefined){const D=digits(a.answer);el.board.querySelectorAll('.wk-ans .wk-a').forEach(c=>{const v=D[Number(c.dataset.col)];if(v!==undefined){c.textContent=v;c.classList.add('wk-drop')}})}
       if(a.sym){const g=q('.wk-sym');if(g){g.textContent=a.sym;g.classList.add('wk-pop')}}
+      if(a.fill&&a.fill.i!==undefined){const c=q(`.wk-box[data-i="${a.fill.i}"]`);if(c){c.textContent=nf(a.fill.v);c.classList.remove('wk-q');c.classList.add('wk-drop')}}
+      else if(a.fill){const c=q(`.wk-pvrow[data-row="${a.fill.row}"] [data-col="${a.fill.col}"]`);if(c){c.textContent=a.fill.digit;c.classList.remove('wk-empty');c.classList.add('wk-drop')}}
     };
-    const tapCells=on=>el.board.querySelectorAll('.wk-tap').forEach(c=>{c.classList.toggle('wk-can',on&&c.textContent!=='');c.onclick=on?()=>tap(c):null});
+    const tapCells=on=>el.board.querySelectorAll('.wk-tap').forEach(c=>{c.classList.toggle('wk-can',on&&(c.textContent!==''||c.classList.contains('wk-empty')));c.onclick=on?()=>tap(c):null});
     const show=()=>{
       busy=false;
       if(k>=plan.steps.length){focus(-1);tapCells(false);el.say.innerHTML=plan.done?`<b>Siap!</b> ${esc(plan.done)}`:`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
       const s=plan.steps[k];focus(s.kind==='tap'?-1:s.col);el.say.textContent=s.say;opt.onShow&&opt.onShow(k,plan.steps.length);
+      if(s.pre&&s.pre.pair){el.board.querySelectorAll('.wk-box').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('wk-pair',s.pre.pair.includes(i));c.classList.toggle('wk-target',i===s.pre.hop)})}
       if(s.pre){const cells=col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`);
         if(s.pre.same)s.pre.same.forEach(c=>cells(c).forEach(x=>x.classList.add('wk-same')));
         if(s.pre.diff!==undefined)cells(s.pre.diff).forEach(x=>x.classList.add('wk-diff'))}
@@ -309,5 +361,5 @@
     if(typeof window!=='undefined')window.__wkRight=()=>{const s=plan.steps[k];return s&&s.kind==='pick'?String(s.right):s&&s.kind==='tap'?`tap:${s.row}:${s.col}`:'go'};   // tests only
     return{get step(){return k},get misses(){return misses},plan};
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildChain,runChain,boardHTML,run,_digits:digits,_nf:nf});
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildSeq,buildChain,runChain,boardHTML,run,_digits:digits,_nf:nf});
 });

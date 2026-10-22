@@ -281,8 +281,8 @@ test('Jom tengok cara on the place-value board: a 2-choice round is offered afte
   }
 });
 
-test('Jom tengok cara on the rack and for two steps: + in one place at a time; two boards end at the answer', async () => {
-  for (const [hash, cond] of [['d3-bina', "q.kind==='build'&&q.rack.mode==='build'"], ['d3-tambah', "q.kind==='build'&&q.rack.mode==='add'"], ['d3-tolak', "!!q.wk&&q.wk.t==='chain'&&!q.card"]]) {
+test('Jom tengok cara on the rack, two steps, patterns and compose: every step done, ends at the answer', async () => {
+  for (const [hash, cond] of [['d3-bina', "q.kind==='build'&&q.rack.mode==='build'"], ['d3-tambah', "q.kind==='build'&&q.rack.mode==='add'"], ['d3-tolak', "!!q.wk&&q.wk.t==='chain'&&!q.card"], ['d2-pola', "!!q.wk&&q.wk.t==='seq'"], ['d4-bina', "!!q.wk&&q.wk.t==='compose'"]]) {
     const g = await gudang(null, hash, { width: 390, height: 780 });
     const r0 = await g.page.evaluate(cond => { const ok = new Function('q', 'return ' + cond); for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (ok(q)) return { kind: q.kind, mode: q.rack && q.rack.mode, v: q.form ? q.form.fields[0].v : q.need.v }; } return null; }, cond);
     assert.ok(r0, hash);
@@ -299,13 +299,15 @@ test('Jom tengok cara on the rack and for two steps: + in one place at a time; t
     }
     for (let s = 0; s < 80; s++) {
       if (await g.page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
-      const did = await g.page.evaluate(() => { const pl = document.querySelector('.col.wk-colon button.pl:not([disabled])'); if (pl) { pl.click(); return 'plus'; } const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); if (x) { x.click(); return 'tile'; } return null; });
+      const did = await g.page.evaluate(() => { const pl = document.querySelector('.col.wk-colon button.pl:not([disabled])'); if (pl) { pl.click(); return 'plus'; } const v = window.__wkRight && window.__wkRight();
+        if (v && v.startsWith('tap:')) { const [, r, c] = v.split(':'); document.querySelector(`.wk-pvrow[data-row="${r}"] [data-col="${c}"]`).click(); return 'tap'; }
+        const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v || (v === 'go' && b.dataset.v === 'go')); if (x) { x.click(); return 'tile'; } return null; });
       await g.page.waitForTimeout(did === 'plus' ? 120 : 1000);
     }
     const stamp = await g.page.evaluate(() => document.querySelector('.stamp.show') && document.querySelector('.stamp').textContent);
     assert.match(String(stamp), /^SIAP!Cara Wira/, hash);
     if (r0.mode === 'build') assert.equal(await g.page.evaluate(() => document.getElementById('rv').textContent.replace(/\D/g, '')), String(r0.v));
-    else assert.equal(Number(await g.page.evaluate(() => [...document.querySelectorAll('.wk-ans .wk-c')].map(c => c.textContent).join(''))), r0.v, hash + ' the last board ends at the answer');
+    else assert.ok(String(stamp).replace(/\D/g, '').endsWith(String(r0.v)), hash + ' ' + stamp + ' ends at ' + r0.v);
     assert.deepEqual(g.errors, []); await g.close();
   }
 });

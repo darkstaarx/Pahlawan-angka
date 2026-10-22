@@ -64,6 +64,17 @@
 /* The button that opens it. */
 .btn.hint.wk-offer{background:var(--gold,#ffc94a);animation:wkGlow 1.6s ease-in-out infinite}
 /* Place-value board (round, compare, place name, digit value): the pupil taps a digit. */
+/* Number pattern trail (pola): boxes with a hop mark between them. */
+.wk-seq{padding:10px 6px}
+.wk-trail{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 2px}
+.wk-trail .wk-box{min-width:calc(var(--cw) * 1.05);height:calc(var(--cw) * .9);padding:0 4px;background:#fff9;border:2px solid var(--ink-soft,#8a6142);font-size:clamp(15px,4.4vw,22px)}
+.wk-trail .wk-box.wk-q{border-style:dashed;color:var(--berry,#d2536b)}
+.wk-trail .wk-box.wk-pair{background:#ffe9a6;box-shadow:0 0 0 3px var(--gold,#ffc94a)}
+.wk-trail .wk-box.wk-target{animation:wkDiff 1s ease-in-out infinite}
+.wk-step{display:inline-flex;align-items:center;gap:2px}
+.wk-hop{font:900 15px/1 var(--f-display,system-ui);color:var(--ink-soft,#8a6142);font-style:normal}
+/* Compose: an empty row the pupil fills place by place. */
+.wk-pv .wk-c.wk-empty{background:#fff9;border:2px dashed var(--ink-soft,#8a6142)}
 /* Compare: the places that match go quiet; the first place that differs gets a red frame. */
 .wk-c.wk-same{color:var(--ink-soft,#8a6142);opacity:.55}
 .wk-c.wk-diff{box-shadow:0 0 0 3px var(--berry,#d2536b)!important;animation:wkDiff 1s ease-in-out infinite!important}
@@ -81,4 +92,4 @@
 .tiles.wk.wk-wide{grid-template-columns:1fr}
 .tiles.wk.wk-wide .wk-t{font-size:19px;min-height:46px}
 @keyframes wkTapMe{0%,100%{box-shadow:0 0 0 2px var(--gold,#ffc94a)}50%{box-shadow:0 0 0 4px var(--gold,#ffc94a)}}
-@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer,.wk-board.wk-tapnow .wk-c.wk-can,.wk-c.wk-hint,.wk-c.wk-diff,.rack .col.wk-colon{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer,.wk-board.wk-tapnow .wk-c.wk-can,.wk-c.wk-hint,.wk-c.wk-diff,.rack .col.wk-colon,.wk-trail .wk-box.wk-target{animation:none!important}}

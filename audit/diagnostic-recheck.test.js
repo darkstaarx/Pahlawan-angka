@@ -97,7 +97,9 @@ test('Aisyah: the Fokus card walks practise → wait → due check → Semakin b
   profile.diagLog.push(...answers(t0 + 1e3, [1, 0, 1, 0, 1, 0, 1, 1]));
   a.c.now = t0 + 1e6;
   let card = a.cards().find(x => x.id === 'D3.MUL');
-  assert.equal(card.recheck, 'waiting'); assert.equal(card.reason, 'Sifir 3 · Semakan semula lusa');
+  // The label counts calendar days: run just before midnight, "now" (t0 + 17 min) is already tomorrow.
+  const sameDay = new Date(t0).toDateString() === new Date(a.c.now).toDateString();
+  assert.equal(card.recheck, 'waiting'); assert.equal(card.reason, 'Sifir 3 · Semakan semula ' + (sameDay ? 'lusa' : 'esok'));
   // Two days later the check is due: first card, and the game gets a mixed check target.
   a.c.now = t0 + 2 * DAY + 1e6;
   card = a.cards()[0];
