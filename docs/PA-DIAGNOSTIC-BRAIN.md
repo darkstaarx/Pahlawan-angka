@@ -415,7 +415,9 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    #85 (3.87.10) battle stage: on a tall arena (laptop, aspect < 1) Wira and
    the seal move closer and the camera zooms ~1.28x (phones unchanged); the
    battle entry video goes to dark at 6.4 s on Wira's close-up, before the
-   tower wide shot with a tiny Wira. Open: #45 (money compare groups).
+   tower wide shot with a tiny Wira. #45 (3.87.11) money comparison cards:
+   at ≤560 px and ≤400 px the notes and coins shrink so both groups fit side
+   by side, and each group starts at the top.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

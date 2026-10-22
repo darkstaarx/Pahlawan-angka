@@ -706,3 +706,20 @@ body[data-screen="login"] .app{
 .badgeCard.tier-gold .badgeMedal{background:linear-gradient(145deg,#fff09a,#a96a08 70%);border-color:#f4c83e;color:#fff8c6}
 .badgeCard.tier-legacy .badgeMedal{background:linear-gradient(145deg,#ffe58a,#a96a08 70%);border-color:#f4c83e;color:#fff8c6}
 .badgeCard.locked[class*="tier-"] .badgeMedal{background:#1c2737;border-color:#516078;filter:grayscale(.7);opacity:.85}
+
+/* Money comparison (questions/helpers.js moneyCompare): on a phone the two groups sit side by side with
+   smaller notes and coins, so both groups and the question stay above the answer buttons. */
+@media (max-width:560px){
+  .moneyCompare{gap:16px 8px!important;margin:12px auto 10px!important}
+  .moneyCompare .moneyGroupCard{flex:1 1 0!important;padding:18px 6px 8px!important}
+  .moneyCompare .moneyGroupCard>span{font-size:11px!important;padding:2px 9px!important;top:-11px!important}
+  .moneyCompare .moneyVisual{gap:4px!important}
+  .moneyCompare .moneyGroupCard{justify-content:flex-start!important}
+  .moneyCompare .paMoneyPiece{width:50px!important;height:26px!important}
+  .moneyCompare .paMoneyPiece[width="58"]{width:30px!important;height:30px!important}
+}
+@media (max-width:400px){
+  .moneyCompare .paMoneyPiece{width:40px!important;height:21px!important}
+  .moneyCompare .paMoneyPiece[width="58"]{width:25px!important;height:25px!important}
+  .moneyCompare .moneyVisual{gap:3px!important}
+}
