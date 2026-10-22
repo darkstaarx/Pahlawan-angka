@@ -441,7 +441,7 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    #88 (3.87.14) loading screen: only the shield with + − × ÷, the bar and
    one line "Menyambung profil dan kemajuan kamu…" (owner: too much to read;
    no kicker, title, tagline, tip, motto or frame).
-   **"Jom tengok cara" part 3 (3.87.15):** rack "bina": Wira lights one place
+   **"Jom tengok cara" part 3 (3.87.15, PR #89 merged):** rack "bina": Wira lights one place
    at a time (biggest first) and only its + works, up to that digit; a 0
    place is left empty. Rack add/sub rounds use the written board (the rack
    already lays them out in columns). Two-step and mixed (`q.wk.t='chain'`):
