@@ -74,7 +74,7 @@
   }
 
   async function signedIn(session){
-    setAppLoading(true,'Mengesahkan akaun dan menyediakan pengembaraan…');
+    setAppLoading(true,'Menyambung profil dan kemajuan kamu…');
     const incoming=session?.user||null;if(state.user?.id!==incoming?.id){state.guardianPin=null;state.profiles=[];state.childId=null}state.user=incoming;if(!state.user)return;
     message('');
     try{if(window.PABetaTrust&&!await window.PABetaTrust.ensureConsent(state.client,state.user)){setAppLoading(false);return}}catch(error){setAppLoading(false);console.warn('Consent check failed',error);message('Persetujuan penjaga belum dapat disahkan. Semak sambungan dan cuba semula.',true);return}
@@ -128,7 +128,7 @@
   }
 
   async function selectChild(childId,navigate=true){
-    setAppLoading(true,'Memuatkan profil kamu…');
+    setAppLoading(true,'Menyambung profil dan kemajuan kamu…');
     try{return await selectChildCore(childId,navigate)}finally{setAppLoading(false)}
   }
 
@@ -305,7 +305,7 @@
   }
 
   async function init(){
-    if(document.documentElement.hasAttribute('data-pa-auth-pending'))setAppLoading(true,'Menyambung akaun kamu…');
+    if(document.documentElement.hasAttribute('data-pa-auth-pending'))setAppLoading(true,'Menyambung profil dan kemajuan kamu…');
     if(!window.supabase?.createClient){setAppLoading(false);message('Cloud login gagal dimuat. Semak internet dan muat semula.',true);return;}
     state.client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});wireLegacy();
     const {data,error}=await state.client.auth.getSession();
