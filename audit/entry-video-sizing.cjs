@@ -13,7 +13,7 @@ try{for(const viewport of [{width:1264,height:629},{width:1440,height:900},{widt
  assert.equal(box.w,viewport.width);assert.equal(box.h,viewport.height);assert.equal(box.fit,'contain');assert.deepEqual(box.natural,[720,1280]);
  await page.screenshot({path:path.join(root,'audit',`entry-video-${viewport.width}.png`)});
  const skip=page.locator('.paSegelSkip.ready');await skip.waitFor();await skip.click();
- await page.waitForFunction(()=>{const v=document.querySelector('.paSegelEntryCinematic video');return v&&v.currentTime>=v.duration-1.1},{},{timeout:2000});
+ await page.waitForFunction(()=>{const v=document.querySelector('.paSegelEntryCinematic video');const end=Number(v?.dataset.cutAt)||v?.duration;return v&&v.currentTime>=end-1.1},{},{timeout:2000});
  await page.waitForSelector('.paSegelEntryCinematic',{state:'detached',timeout:15000});
  await page.waitForFunction(()=>document.querySelector('#segelQuestion').innerText.trim().length>5);
  assert.deepEqual(errors,[]);console.log('PASS',viewport,box,'skip and battlefield question');await page.close();

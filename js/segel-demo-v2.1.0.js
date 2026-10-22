@@ -626,7 +626,11 @@
     const PET_UPP=1.22/400;
     const GROUND=-1.92, HERO_GROUND=GROUND, PET_FEET=GROUND;
     // Companion stands behind Wira; draw its art in front to keep it readable.
-    const SEAL_X=1.52, HERO_HOME=-1.62, COMPANION_HOME=HERO_HOME-.52;
+    /* Kedudukan x dalam dunia. Pentas yang tinggi dan sempit (laptop: arena
+       separuh kiri, ~520×768) merapatkan Wira dan segel supaya kamera boleh
+       zum masuk; lihat stageSpan() dalam resize(). Telefon kekal 1. */
+    const BASE_SEAL_X=1.52, BASE_HERO_HOME=-1.62, BASE_SLASH_X=-0.30;
+    let SEAL_X=BASE_SEAL_X, HERO_HOME=BASE_HERO_HOME, COMPANION_HOME=HERO_HOME-.52, SLASH_X=BASE_SLASH_X;
     const PET_FACE_Y=.74;          // paras muka Aurora di atas lantai
     const probe=document.createElement('canvas'); probe.width=probe.height=96;
     const probeCtx=probe.getContext('2d',{willReadFrequently:true});
@@ -916,7 +920,7 @@
       const faceV=.5+((GROUND+PET_FACE_Y)-(GROUND+e.offY))/e.h;
       m.material.uniforms.uClear.value.set(.5, faceV, .19);
       m.renderOrder=3; m.visible=(i===0); scene.add(m);
-      return {tier, front:m, base:{w:e.w,h:e.h}, visW:e.visW,
+      return {tier, front:m, offX:e.offX, base:{w:e.w,h:e.h}, visW:e.visW,
               damage:0, broken:false, breakT:-1};
     });
     pet.renderOrder=1;
@@ -1532,6 +1536,27 @@
        yang lebih besar yang menang, jadi satu kod melayan telefon menegak,
        telefon melintang dan tablet. */
     const WORLD_W=6.0, MIN_H=5.2, FLOOR_MARGIN=.30;
+    /* Pentas tinggi (aspek < 1) mengecilkan lebar dunia sehingga 0.78, jadi
+       watak membesar ~1.28× di laptop. Segel dan Wira dirapatkan, tetapi
+       segel EMAS (paling besar) dan peneman di belakang Wira masih muat. */
+    const SPAN_MIN=.78, SPAN_FROM=.68, SEAL_EDGE=1.32, HERO_EDGE=.90;
+    function stageSpan(aspect){
+      if(!(aspect<1))return 1;
+      return Math.max(SPAN_MIN, SPAN_MIN+(aspect-SPAN_FROM)/(1-SPAN_FROM)*(1-SPAN_MIN));
+    }
+    let span=1;
+    function setSpan(k){
+      if(Math.abs(k-span)<.002)return;
+      const half=WORLD_W*k/2, hero=Math.max(BASE_HERO_HOME,-(half-HERO_EDGE)), d=hero-HERO_HOME;
+      span=k; SEAL_X=Math.min(BASE_SEAL_X,half-SEAL_EDGE); HERO_HOME=hero; COMPANION_HOME=HERO_HOME-.52;
+      SLASH_X=SEAL_X-(BASE_SEAL_X-BASE_SLASH_X);
+      // Objek yang diletak sekali sahaja semasa bina pentas.
+      petShadow.position.x=backGlow.position.x=floorGlow.position.x=SEAL_X;
+      wave.position.x=flash.position.x=shell.position.x=SEAL_X;
+      seals.forEach(s=>{s.front.position.x=SEAL_X+s.offX});
+      // Wira dan peneman ikut pindah serta-merta, tanpa berjalan.
+      S.heroX+=d; S.heroFeet+=d; S.companionFeet+=d;
+    }
     const HIT_REBOUND=.42;         // tempoh lantunan hentaman, saat
     function portraitCropPx(){
       const raw=getComputedStyle(host).getPropertyValue('--segel-stage-bottom-crop');
@@ -1555,7 +1580,8 @@
       canvas.style.width=w+'px';canvas.style.height=renderH+'px';
       renderer.setSize(w,renderH,false);
       camera.aspect=w/renderH;
-      const visH=Math.max(WORLD_W/camera.aspect, MIN_H);
+      setSpan(stageSpan(camera.aspect));
+      const visH=Math.max(WORLD_W*span/camera.aspect, MIN_H);
       camera.fov=2*Math.atan(visH/2/camera.position.z)*180/Math.PI;
       camera.updateProjectionMatrix();
       S.camY=GROUND+FLOOR_MARGIN*visH;
@@ -1608,7 +1634,7 @@
           S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
           if(lifecycle!==S.lifecycle)return;
           sfx('swordSlash');
-          S.heroLock=heroSlashE; S.heroX=-0.30; await wait(140);
+          S.heroLock=heroSlashE; S.heroX=SLASH_X; await wait(140);
           if(lifecycle!==S.lifecycle)return;
           sfx('glacierThunder'); glacierThunderCount=1; clearNormalIceFx();
           finalImpactActive=true; finalImpactPending=true;
@@ -1631,7 +1657,7 @@
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
-        S.heroLock=heroSlashE;  S.heroX=-0.30; await wait(140);
+        S.heroLock=heroSlashE;  S.heroX=SLASH_X; await wait(140);
         if(lifecycle!==S.lifecycle)return;
         sfx('hit');
         clearNormalIceFx();
