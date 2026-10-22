@@ -103,7 +103,7 @@ GEN['6.1.1']=function(id,s){
   const base=[0.25,0.5,1],rotation=rand(0,2),levels=base.slice(rotation).concat(base.slice(0,rotation)),ans='Bekas '+('ABC'[levels.indexOf(1)]);
   return mark(q(`${measureBeakers(levels)}Bekas manakah paling penuh?`,ans,['Bekas A','Bekas B','Bekas C','Semua sama penuh'].filter(x=>x!==ans).map(x=>Nq(x,'measure_vocab')),'Banding paras air dalam bekas yang sama saiz.','Tahun 1 · Paras Air'),id,'6.1.1',mode,'visual','concept',s,['measure_vocab']);
  }
- return mark(q(`${name()} berkata “pensel lebih berat daripada meja” ialah ayat tentang <b>panjang</b>. Betul atau salah?`,'salah',[Nq('betul','measure_vocab'),Nq('tidak pasti','measure_vocab'),Nq('semua ukuran sama','measure_vocab')],'Perkataan “berat” berkaitan jisim, bukan panjang.','Tahun 1 · Semak Bahasa Ukuran'),id,'6.1.1',mode,'verbal','reasoning',s,['measure_vocab']);
+ return mark(q(`${name()} berkata “pensel lebih berat daripada meja” ialah ayat tentang <b>panjang</b>. Betul atau salah?`,'salah, ia tentang jisim',[Nq('betul','measure_vocab'),Nq('salah, ia tentang isi padu','measure_vocab'),Nq('semua ukuran sama','measure_vocab')],'Perkataan “berat” berkaitan jisim, bukan panjang.','Tahun 1 · Semak Bahasa Ukuran'),id,'6.1.1',mode,'verbal','reasoning',s,['measure_vocab']);
 };
 
 GEN['6.1.2']=function(id,s){

@@ -54,7 +54,7 @@ assert.match(html,/PAFocusMiniGamesLive\?\.isActiveFrame/);
 assert.match(html,/hint2>=2/,'Tanya Wira is limited to two clues');
 assert.match(html,/window\.parent\.postMessage\(\{type:'PA_GUDANG_HARTA_ROUND'/,'completed rounds send learner evidence');
 assert.match(html,/PA_GUDANG_HARTA_PROGRESS/,'wrong answers and clue use send evidence to the live Focus bridge');
-assert.match(html,/liveAuthorized\?Math\.max\(floor,Math\.min\(tier\[k\],cap/,'live tier escalation remains inside the tagged focus skill range');
+assert.match(html,/liveAuthorized\?Math\.max\(floor,Math\.min\(tier\[key\],cap/,'live tier escalation remains inside the tagged focus skill range');
 const bridge=require('node:fs').readFileSync('js/focus-mini-games-live-bridge.js','utf8');
 assert.match(bridge,/operations:\{id:'gudang-harta'/);
 assert.match(bridge,/function isActiveFrame\(/);

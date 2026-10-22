@@ -98,7 +98,14 @@
     const s=run.session;
     return withSession(s,()=>{
       if(run.route==='focus')return run.focusSkill;
-      if(run.route==='adaptive')return chooseModeAndSkill();
+      if(run.route==='adaptive'){
+        // Lens 4.7: a due spaced review (js/engine/review-queue-v1.js) comes in now and then.
+        const Q=window.PAReviewQueue;
+        // The queue is stored on the profile and saved with the next answer.
+        if(Q&&!run.reviewSynced){run.reviewSynced=true;try{Q.sync(db,window.PADiagnostic?.current?.(),Date.now())}catch(_){}}
+        const due=Q?.nextForRun?.(db,run,Date.now(),id=>!!realScore(id));
+        return due||chooseModeAndSkill();
+      }
       const unseen=run.pool.filter(id=>!s.recent.slice(-Math.min(3,run.pool.length)).includes(id));
       return (unseen.length?unseen:run.pool)[run.questionNumber%(unseen.length||run.pool.length)];
     });
@@ -134,7 +141,7 @@
     s.stability=Math.max(0,s.stability-3);if(delta>0)s.probeFail++;
     recordCoachResponse(q.skill,false,option.tag,seconds,false,q.token);
     recordFrontierResponse(q.skill,false,seconds,false,q);
-    window.PATelemetry?.response?.(q.skill,false,option.tag,seconds,false,q,'gembok-first-attempt');
+    window.PATelemetry?.response?.(q.skill,false,option.tag,seconds,false,q,'gembok-first-attempt',option.v);
     window.PALearnerReview?.firstWrong?.(q,{tag:option.tag,value:option.v,seconds});
   }
 
@@ -155,7 +162,7 @@
     recordCoachResponse(q.skill,ok,option.tag,seconds,g.hint,q.token);
     recordFrontierResponse(q.skill,ok,seconds,g.hint,q);
     updateConfirmationAfterEncounter(q.skill,{correct:ok,hadRetry:!!g.retryState,usedHint:!!g.hint});
-    window.PATelemetry?.response?.(q.skill,ok,option.tag,seconds,g.hint,q,g.retryState?'gembok-retry':'gembok');
+    window.PATelemetry?.response?.(q.skill,ok,option.tag,seconds,g.hint,q,g.retryState?'gembok-retry':'gembok',option.v);
     window.PALearnerReview?.resolve?.(q,{correct:ok,tag:option.tag,seconds,usedHint:!!g.hint,hintLevel:g.hintLevel||0},db);
     updateFrontier();realSave();
     // Cikgu Dimensi is globally paused for the current release. Keep the

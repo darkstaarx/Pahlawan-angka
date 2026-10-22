@@ -3,6 +3,7 @@
 const fs=require('node:fs');
 const vm=require('node:vm');
 const assert=require('node:assert/strict');
+const {segelCloseSource}=require('./lib/segel-close');
 class Element{
  constructor(){this.listeners={};this.open=false;this.attributes={};}
  setAttribute(k,v){this.attributes[k]=v;}
@@ -32,11 +33,7 @@ context.PADemo.start();
 assert.equal(context.db.parentPin,undefined);
 assert.equal(context.pageLockParentPin(),'4826','demo retains original guardian PIN');
 vm.runInContext(fs.readFileSync('js/page-lock-v1.js','utf8'),context);
-const segel=fs.readFileSync('js/segel-demo-v2.1.0.js','utf8');
-const start=segel.indexOf('window.closeSegelDemo=function(){');
-const end=segel.indexOf('\n  window.restartSegelDemo=',start);
-assert.ok(start>=0&&end>start,'real Segel close function located');
-vm.runInContext(segel.slice(start,end),context);
+vm.runInContext(segelCloseSource(),context);
 context.closeSegelDemo();
 assert.equal(dialog.open,true);
 assert.deepEqual(calls,{paused:0,restored:0,login:0,hub:0});

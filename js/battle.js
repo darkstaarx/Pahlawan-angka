@@ -269,7 +269,7 @@ function beginHintRetry(o,btn,question){
   s.mastery=Math.max(0,s.mastery-(layerDelta>0?1.2:2.2));s.confidence=Math.max(0,s.confidence-(layerDelta>0?2:4));s.stability=Math.max(0,s.stability-3);if(layerDelta>0)s.probeFail++;
   recordCoachResponse(id,false,o.tag,sec,false,question.token);recordFrontierResponse(id,false,sec,false,question);
  }
- if(window.PATelemetry)PATelemetry.response(id,false,o.tag,sec,false,question,sess.mode+'-first-attempt');
+ if(window.PATelemetry)PATelemetry.response(id,false,o.tag,sec,false,question,sess.mode+'-first-attempt',o.v);
  const hintButton=document.querySelector('.hintBtn');if(hintButton){hintButton.classList.add('needs-help');hintButton.setAttribute('aria-label','Petunjuk tersedia. Tekan untuk bantuan Cikgu Dimensi');}
  document.getElementById('feedback').innerHTML='<b>Belum tepat.</b> Cuba sekali lagi. Petunjuk tersedia jika perlu.';
  if(question.hintSteps?.length){const note=document.createElement('div');note.textContent=question.hintSteps[0];document.getElementById('feedback').appendChild(note);}
@@ -317,7 +317,7 @@ function resolveAnswer(o,btn,question,ok){
   recordFrontierResponse(id,ok,sec,sess.hint,question);
   if(!bossStretch)updateConfirmationAfterEncounter(id,{correct:ok,hadRetry:!!sess.retryState,usedHint:!!sess.hint});
  }
- if(window.PATelemetry)PATelemetry.response(id,ok,o.tag,sec,sess.hint,question,sess.retryState?sess.mode+'-retry':sess.mode);
+ if(window.PATelemetry)PATelemetry.response(id,ok,o.tag,sec,sess.hint,question,sess.retryState?sess.mode+'-retry':sess.mode,o.v);
  window.PALearnerReview?.resolve?.(question,{correct:ok,tag:o.tag,seconds:sec,usedHint:!!sess.hint,hintLevel:sess.hintLevel||0},db);
  const intervention=(bossStretch||qsv2Isolated)?null:evaluateIntervention(id);
  if(sess.enemyTier==='boss'&&!sess.coachAdaptive&&!sess.devBankTest)sess.bossQuestionsAnswered=(sess.bossQuestionsAnswered||0)+1;

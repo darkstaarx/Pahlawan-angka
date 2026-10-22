@@ -7,7 +7,7 @@ test('step four keeps the selected avatar and exposes the final save action',()=
  c.window.PAOnboarding.next();c.window.PAOnboarding.next();c.window.PAOnboarding.next();
  const html=elements.onboardingBody.innerHTML;
  assert.match(elements.onboardingStepLabel.textContent,/4 daripada 4/);
- assert.match(html,/avatar-07.png/);assert.doesNotMatch(html,/PAOnboarding.chooseAvatar/);
+ assert.match(html,/src="assets\/avatars\/pupils\/avatar-07\.webp"/);assert.doesNotMatch(html,/PAOnboarding.chooseAvatar/);
  assert.match(html,/class="onboardingAction"/);assert.match(html,/PAOnboarding.finish()/);
  assert.match(html,/Simpan & serahkan kepada anak/);
  assert.doesNotMatch(html,/Langkau kisah pembuka/);

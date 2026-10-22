@@ -1,0 +1,86 @@
+/* Portal Restu — built from the BERJAYA result kit
+   (crest frame + wings, summary frame, Cikgu Dimensi bubble, gold button),
+   so it reads as part of the battle, not a system dialog. */
+.paRapidLock,.paRapidWarn{--prNavy:#162a47;--prNavyTop:#1b3354;--prGold:#b78b47;--prCream:#fff3d6;--prTitle:#ffe5a6;--prInk:#2b2416}
+
+/* Cikgu Dimensi cut-in warning */
+.paRapidWarn{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));z-index:2147483600;display:flex;align-items:flex-start;
+  width:min(calc(100% - 24px),380px);transform:translate(-50%,-160%);opacity:0;pointer-events:none;
+  transition:transform .45s cubic-bezier(.2,1.25,.35,1),opacity .2s ease;font-family:Arial,Helvetica,sans-serif}
+.paRapidWarn.show{transform:translate(-50%,0);opacity:1}
+.paRapidWarn img{width:64px;height:64px;flex:none;object-fit:contain;margin:2px -14px 0 0;position:relative;z-index:2;filter:drop-shadow(0 4px 8px #000a)}
+
+/* Speech bubble — same recipe as the result screen's coach row */
+.paRapidSay{position:relative;flex:1;min-width:0;padding:15px 12px 11px 22px;border-radius:12px;background:var(--prCream);border:2px solid var(--prGold);
+  box-shadow:0 8px 20px #0008;text-align:left}
+.paRapidChip{position:absolute;top:-12px;left:18px;padding:3px 10px;border-radius:9px;white-space:nowrap;background:var(--prNavy);border:2px solid var(--prGold);
+  font-size:11px;font-weight:800;color:#fff6df}
+.paRapidSay p{margin:0;font-size:13.5px;line-height:1.45;font-weight:700;color:var(--prInk)}
+
+/* Lock stage */
+.paRapidLock{position:fixed;inset:0;z-index:2147483601;overflow-y:auto;font-family:Arial,Helvetica,sans-serif;
+  background:radial-gradient(120% 70% at 50% 0%,rgba(30,58,100,.55),rgba(4,10,22,.92) 60%),rgba(4,10,22,.88);backdrop-filter:blur(3px)}
+.paRapidLock.hidden{display:none}
+.paRapidLock [hidden]{display:none!important}
+.paRapidStage{width:min(100%,390px);box-sizing:border-box;margin:0 auto;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.paRapidStep{display:grid;justify-items:center;gap:10px;animation:paRapidIn .45s cubic-bezier(.2,1.1,.3,1) both}
+@keyframes paRapidIn{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+.paRapidSr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.paRapidCrest{position:relative;width:calc(100% - 56px);aspect-ratio:4/1;margin-top:8px;display:grid;place-items:center;isolation:isolate}
+.paRapidCrestFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1}
+.paRapidCrestSide{position:absolute;top:53.5%;width:40%;transform:translateY(-50%);z-index:-2;pointer-events:none}
+.paRapidCrestSide.l{right:76%}.paRapidCrestSide.r{left:76%}
+.paRapidCrest b{padding:0 12%;font-size:clamp(19px,6vw,25px);font-weight:950;letter-spacing:1px;color:#fff7da;text-align:center;line-height:1.1;
+  text-shadow:0 3px 0 #71420a,0 6px 14px #000b}
+
+.paRapidPet img{display:block;height:96px;width:auto;filter:drop-shadow(0 6px 10px #0009);animation:paRapidSigh 3.2s ease-in-out infinite}
+@keyframes paRapidSigh{0%,100%{transform:translateY(0)}50%{transform:translateY(3px) scale(1.01,.99)}}
+.paRapidLead{margin:0;font-size:15px;font-weight:800;color:#f2f6fb;text-align:center;text-shadow:0 2px 7px #000b}
+
+.paRapidFrame{position:relative;width:100%;box-sizing:border-box;display:grid;gap:14px;padding:30px 24px 22px;
+  background:var(--pr-frame) center/100% 100% no-repeat}
+.paRapidCoach{display:flex;align-items:flex-start}
+.paRapidCoach img{width:62px;height:62px;flex:none;object-fit:contain;margin:4px -14px 0 -4px;position:relative;z-index:2;filter:drop-shadow(0 4px 10px #0009)}
+
+.paRapidParent{display:grid;gap:8px;padding-top:12px;border-top:1px solid #b78b4755}
+.paRapidParent label{color:#d6e3f4;font-size:12.5px;font-weight:800;text-align:center}
+.paRapidSlots{position:relative;display:flex;justify-content:center;gap:12px;padding:6px 0}
+.paRapidSlots i{width:44px;height:52px;border-radius:12px;border:2px solid var(--prGold);background:linear-gradient(#0b1a31,#081428);
+  box-shadow:inset 0 2px 6px #0009;display:grid;place-items:center}
+.paRapidSlots i::after{content:"";width:14px;height:14px;border-radius:50%;background:transparent;transition:transform .15s cubic-bezier(.3,1.6,.5,1),background .15s}
+.paRapidSlots i.on::after{background:radial-gradient(circle at 35% 30%,#fff3b0,#ffcb32 60%,#e0a000);transform:scale(1.15)}
+.paRapidPin{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;cursor:text}
+.paRapidSlots:focus-within i{border-color:#ffd970}
+.paRapidSlots.shake{animation:paRapidShake .4s}
+@keyframes paRapidShake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.paRapidError{min-height:18px;margin:0;color:#ff9aa3;font-size:12.5px;font-weight:800;text-align:center}
+
+/* Gold button art from the result kit */
+.paRapidBtn{width:min(100%,250px);aspect-ratio:512/192;border:0;background:var(--pr-gold) center/100% 100% no-repeat;color:#2a2410;
+  font:900 18px Arial,Helvetica,sans-serif;cursor:pointer;filter:drop-shadow(0 4px 8px #0008)}
+.paRapidBtn:active{background-image:var(--pr-gold-down)}
+.paRapidBtn:focus-visible{outline:3px solid #ffd970;outline-offset:3px;border-radius:14px}
+.paRapidSlots:focus-within{outline:2px dashed #ffd97088;outline-offset:4px;border-radius:14px}
+
+.paRapidItems{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.paRapidItems li{padding:10px 12px;border-radius:12px;background:var(--prCream);border:2px solid var(--prGold);text-align:left}
+.paRapidItems p{margin:0 0 5px;color:var(--prInk);font-size:14px;font-weight:800;line-height:1.35}
+.paRapidItems div{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;font-weight:700}
+.paRapidItems .no{color:#b4232f}.paRapidItems .ok{color:#1d7a46}.paRapidItems .t{color:#8a5a00}
+
+/* Wira falls into the portal (clip), full screen before the lock card */
+.paRapidFall{position:fixed;inset:0;z-index:2;display:grid;place-items:center;background:#02060f}
+.paRapidVideo{width:100%;height:100%;object-fit:cover}
+@media (min-aspect-ratio:3/4){.paRapidVideo{object-fit:contain}}
+
+/* Parent choices after the review */
+.paRapidChoice{display:grid;justify-items:center;gap:6px;width:100%}
+.paRapidNote{margin:0 0 6px;max-width:300px;color:#c9d6e8;font-size:12px;line-height:1.45;text-align:center}
+.paRapidNote.warn{color:#ffcf8a}
+.paRapidBtn.navy{background-image:var(--pr-navy);color:#fff6df;font-size:16px;width:min(100%,230px)}
+.paRapidBtn.navy:active{background-image:var(--pr-navy-down)}
+
+@media (prefers-reduced-motion:reduce){.paRapidStep,.paRapidPet img,.paRapidSlots.shake{animation:none}.paRapidWarn{transition:none}}
+
+/* Mini games run in a full-screen overlay (z 2147483000); Portal Restu must sit above it. */

@@ -299,6 +299,8 @@
     var prompt = (visualHtml ? visualHtml : '') + '<div class="qsv2-prompt">' + htmlEscape(raw.value.promptMs) + '</div>';
     return {
       prompt: prompt,
+      // Semantic visual spec for print (js/worksheet-2p5d-v1.js); the app keeps using the SVG in prompt.
+      visualSpec: tpl.renderer === 'd3p0' && raw.value.visual ? raw.value.visual : null,
       answer: answer,
       wrong: wrong,
       hint: (raw.meta && raw.meta.hintMs) || hintFor(tpl.competencyId),

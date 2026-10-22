@@ -1,0 +1,62 @@
+/* "Jom tengok cara" (js/minigame-worked-v1.js): the written method on a parchment
+   board, one column at a time. Uses each game's palette tokens (--paper, --ink,
+   --gold, --leaf, --berry, --ice, --f-display) with fallbacks. */
+.wk-wrap{display:grid;gap:8px;justify-items:center;width:100%}
+.wk-say{width:100%;padding:8px 12px;border-radius:14px;background:var(--cream,#fffdf6);border:2px solid var(--ink,#4a2a16);
+  font:800 15px/1.3 var(--f-body,system-ui);color:var(--ink,#4a2a16);text-align:center;box-shadow:0 3px 0 var(--ink,#4a2a16);min-height:44px;display:grid;place-items:center}
+.wk-say b{color:var(--leaf-dk,#2f6a2e)}
+.wk-board{--cw:clamp(30px,min(11vw,6.2dvh),46px);display:grid;gap:2px;padding:10px 14px 12px;border-radius:16px;
+  background:linear-gradient(180deg,var(--paper,#fff6e0),var(--paper-dk,#f1dcae));border:3px solid var(--wood-dk,#5e3519);
+  box-shadow:inset 0 0 0 3px #fff8,0 4px 0 var(--wood-dk,#5e3519)}
+.wk-row{display:grid;grid-template-columns:var(--cw) repeat(var(--n),var(--cw));align-items:center}
+.wk-op{font:800 26px/1 var(--f-display,system-ui);color:var(--ink,#4a2a16);text-align:center}
+.wk-c{position:relative;height:calc(var(--cw) * .98);display:grid;place-items:center;border-radius:10px;
+  font:800 clamp(24px,7.4vw,32px)/1 var(--f-display,system-ui);color:var(--ink,#4a2a16);transition:background .25s,box-shadow .25s}
+.wk-head .wk-c{height:auto;font:900 10px/1.1 var(--f-body,system-ui);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft,#8a6142)}
+.wk-carry .wk-c{height:22px;font-size:16px;color:var(--berry,#d2536b)}
+.wk-ans .wk-c{background:#fff9;border:2px dashed var(--ink-soft,#8a6142);margin:2px}
+.wk-line{height:3px;margin:2px 0 2px var(--cw);background:var(--ink,#4a2a16);border-radius:2px}
+.wk-c.wk-on{background:#ffe9a6;box-shadow:0 0 0 3px var(--gold,#ffc94a)}
+.wk-head .wk-c.wk-on,.wk-carry .wk-c.wk-on{background:transparent;box-shadow:none;color:var(--gold-dk,#b9801c)}
+.wk-ans .wk-c.wk-on{border-style:solid;border-color:var(--gold-dk,#b9801c)}
+.wk-c.wk-changed{color:var(--berry,#d2536b)}
+.wk-c .wk-old{position:absolute;top:-2px;right:2px;font-size:.5em;color:var(--ink-soft,#8a6142);text-decoration-thickness:2px;text-decoration-color:var(--berry,#d2536b)}
+.wk-sign{font-style:normal;color:var(--berry,#d2536b)}
+.wk-div .wk-bracket .wk-c{border-top:3px solid var(--ink,#4a2a16)}
+.wk-div .wk-bracket .wk-c[data-col]:first-of-type{border-left:3px solid var(--ink,#4a2a16);border-top-left-radius:12px}
+.wk-dv{color:var(--ink,#4a2a16)}
+.wk-rem{min-height:18px;font:900 14px/1.2 var(--f-body,system-ui);color:var(--berry,#d2536b);text-align:right}
+.wk-drop{animation:wkDrop .42s cubic-bezier(.2,1.4,.4,1) both;background:#eaffde!important;border-color:var(--leaf,#4f9a4a)!important;border-style:solid!important}
+.wk-fly{animation:wkFly .55s cubic-bezier(.2,.9,.3,1) both}
+.wk-pop{animation:wkPop .45s ease both}
+@keyframes wkDrop{0%{transform:translateY(-26px) scale(.6);opacity:0}100%{transform:none;opacity:1}}
+@keyframes wkFly{0%{transform:translate(var(--cw),40px) scale(.5);opacity:0}100%{transform:none;opacity:1}}
+@keyframes wkPop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:none}}
+/* Step tiles: big, three of them; a wrong one shakes, the right one starts to glow. */
+.tiles.wk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tiles.wk .wk-t{min-height:54px;font-size:24px}
+.tiles.wk.wk-one{grid-template-columns:1fr}
+.wk-wrap>.tiles.wk{width:100%;margin:0}
+.wk-wrap>.tiles.wk:empty{display:none}
+.tiles.wk .wk-s{font-size:18px;white-space:nowrap;min-height:46px}
+.tiles.wk .wk-go{grid-column:1/-1;background:var(--gold,#ffc94a);font-size:19px}
+.wk-t.wk-no{animation:wkNo .4s ease;background:#fde3e6;opacity:.55}
+.wk-t.wk-hint{animation:wkGlow 1.2s ease-in-out infinite}
+.wk-t.wk-yes{background:#d9f5c9;border-color:var(--leaf-dk,#2f6a2e);box-shadow:0 3px 0 var(--leaf-dk,#2f6a2e)}
+@keyframes wkNo{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes wkGlow{0%,100%{box-shadow:0 3px 0 var(--ink,#4a2a16)}50%{box-shadow:0 0 0 4px var(--gold,#ffc94a),0 3px 0 var(--ink,#4a2a16)}}
+/* A story's board waits until the number sentence is chosen, then slides in. */
+.wk-board.wk-wait{display:none}
+.wk-board.wk-in{animation:wkIn .45s cubic-bezier(.2,1.2,.4,1) both}
+@keyframes wkIn{0%{opacity:0;transform:translateY(-12px) scale(.96)}100%{opacity:1;transform:none}}
+/* New tiles bounce in one after another, so the eye goes to them. */
+.wk-t.wk-enter{animation:wkEnter .5s cubic-bezier(.2,1.5,.4,1) both;animation-delay:calc(var(--i,0) * 90ms)}
+@keyframes wkEnter{0%{opacity:0;transform:translateY(18px) scale(.85)}70%{opacity:1;transform:translateY(-4px) scale(1.03)}100%{opacity:1;transform:none}}
+.wk-t.wk-enter.wk-no{animation:wkNo .4s ease}
+.wk-t.wk-enter.wk-hint{animation:wkGlow 1.2s ease-in-out infinite}
+/* While Wira walks through it the scene steps back, so the board and the tiles fit. */
+:is(.pa-game,.game).wk-on .scene{flex-basis:clamp(86px,15dvh,140px)!important;min-height:0!important}
+:is(.pa-game,.game).wk-on #subtitle{display:none}
+/* The button that opens it. */
+.btn.hint.wk-offer{background:var(--gold,#ffc94a);animation:wkGlow 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer{animation:none}}

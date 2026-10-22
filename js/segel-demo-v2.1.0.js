@@ -156,6 +156,8 @@
   function devSubject(text){ return devPetConfig()?String(text).replace(/Aurora/g,devPetName()):text }
 
   let THREE=null, stage=null, booting=null, run=null, reduceMotion=false;
+  // Guest finished a demo run: closing leads to the rating + package wrap-up.
+  let guestCompleted=false;
 
   const $ = id => document.getElementById(id);
   const wait = ms => new Promise(r=>setTimeout(r,ms));
@@ -2240,7 +2242,9 @@
     );
     const hasInteraction=!!answers.querySelector('input,select,textarea,.paInteraction,.d1-fraction-answer');
     const compact=!hasVisual&&!hasInteraction&&promptText.length<=90&&answerText.length<=100;
-    card.dataset.questionLayout=compact?'compact':'standard';
+    // A long story (e.g. the long wording of lens 4.8) reads at a calmer size, left aligned.
+    const long=!hasVisual&&!hasInteraction&&promptText.length>150;
+    card.dataset.questionLayout=compact?'compact':long?'long':'standard';
   }
 
   function toast(text){
@@ -2500,6 +2504,7 @@
       $('segelStatCorrect').textContent='—';
       $('segelStatAcc').textContent='—';
       popStars(0);   // tiada bintang, dan `pop` turut dibersihkan
+      guestCompleted=false;setDoneBackLabel(false);
       $('segelCoachSay').textContent='Cuba semula. Progress murid tidak terjejas.';
       $('segelDemoSummary').hidden=true;
       $('segelDone').hidden=false;
@@ -2509,6 +2514,7 @@
     }
 
     if(entryMode?.guestDemo)window.PADemoFunnel?.track('demo_complete');
+    guestCompleted=!!entryMode?.guestDemo;setDoneBackLabel(guestCompleted);
     // Bintang ikut Unity RescuePayoff.cs: satu bintang asas, +1 pada 80%, +1 pada 100%.
     const stars=correct===0?0:1+(acc>=80?1:0)+(acc===100?1:0);
 
@@ -2532,7 +2538,12 @@
   /* =================================================================
      MASUK / KELUAR
      ================================================================= */
+  function setDoneBackLabel(guest){
+    const back=$('segelDone')?.querySelector?.('.rcBtn.navy');
+    if(back)back.textContent=guest?'Seterusnya':'Kembali ke Hub';
+  }
   function startRun(){
+    guestCompleted=false;
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     const pool=skillPool();
     run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],
@@ -2617,6 +2628,8 @@
       // Spell out zero so Malay device voices consistently say sifar.
       const text=(holder.textContent||'').replace(/\b0\b/g,'sifar').replace(/\s+/g,' ').trim();
       if(!text)return;
+      // Cikgu Dimensi (lens 4.8): this answer is given after hearing the question.
+      run.q.readAloud=true;
       const say=new SpeechSynthesisUtterance(text);
       say.lang='ms-MY'; say.rate=.9;
       spk.setAttribute('aria-pressed','true');
@@ -2750,10 +2763,14 @@
     try{ window.speechSynthesis&&speechSynthesis.cancel() }catch(_){}
     stage&&stage.pause();
     if(entryMode?.guestDemo){
-      ++demoOpenGeneration;++runGeneration;run=null;entryMode=null;
+      const finished=guestCompleted;
+      const grade=Number((typeof db!=='undefined'&&db&&db.schoolGrade)||0)||null;
+      ++demoOpenGeneration;++runGeneration;run=null;entryMode=null;guestCompleted=false;
+      setDoneBackLabel(false);
       window.PADemo?.restoreGuest?.();
       if(typeof goLogin==='function')goLogin();
       else if(typeof screen==='function')screen('login');
+      if(finished)window.PADemoWrapup?.open?.({grade});
       return;
     }
     if(entryMode?.devBattlefield){ window.PABattlefieldDev?.exit?.({fromSegel:true}); return; }
