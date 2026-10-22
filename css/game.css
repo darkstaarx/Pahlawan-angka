@@ -714,6 +714,12 @@ body[data-screen="login"] .app{
   .moneyCompare .moneyGroupCard{flex:1 1 0!important;padding:18px 6px 8px!important}
   .moneyCompare .moneyGroupCard>span{font-size:11px!important;padding:2px 9px!important;top:-11px!important}
   .moneyCompare .moneyVisual{gap:4px!important}
-  .moneyCompare .paMoneyPiece{width:56px!important;height:29px!important}
-  .moneyCompare .paMoneyPiece[width="58"]{width:34px!important;height:34px!important}
+  .moneyCompare .moneyGroupCard{justify-content:flex-start!important}
+  .moneyCompare .paMoneyPiece{width:50px!important;height:26px!important}
+  .moneyCompare .paMoneyPiece[width="58"]{width:30px!important;height:30px!important}
+}
+@media (max-width:400px){
+  .moneyCompare .paMoneyPiece{width:40px!important;height:21px!important}
+  .moneyCompare .paMoneyPiece[width="58"]{width:25px!important;height:25px!important}
+  .moneyCompare .moneyVisual{gap:3px!important}
 }
