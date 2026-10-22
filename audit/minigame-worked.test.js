@@ -49,3 +49,30 @@ test('a story first asks for the number sentence; parse takes the round numbers 
   assert.deepEqual(W.parse({ fx: { op: 'sub', operands: [9, 4] } }), { op: 'sub', a: 9, b: 4 });
   assert.equal(W.parse({ a: 'Cari nombor antara 3 dan 9.' }), null);
 });
+
+test('place-value board: round, compare, place name, digit value end at the round answer', () => {
+  const r = W.buildPV({ t: 'round', n: 5898, place: 2 });
+  assert.deepEqual(r.steps.map(s => s.kind), ['tap', 'pick', 'pick']);
+  assert.deepEqual([r.steps[0].row, r.steps[0].col, r.steps[1].say, r.answer], [0, 2, 'Digit 8: 5 atau lebih?', 6000]);
+  assert.ok(r.steps[2].choices.includes('5900'), 'rounded at the wrong place');
+  assert.equal(W.buildPV({ t: 'round', n: 4321, place: 1 }).answer, 4300);
+  const c = W.buildPV({ t: 'compare', a: 4728, b: 4758, ask: 'small' });
+  assert.deepEqual(c.steps.map(s => s.kind), ['show', 'tap', 'pick']);
+  assert.deepEqual([c.steps[1].row, c.steps[1].col, c.answer], [1, 1, 4728], 'tap the bigger digit, answer the smaller number');
+  assert.equal(W.buildPV({ t: 'compare', a: 95406, b: 15406, ask: 'symbol' }).answer, '>');
+  assert.equal(W.buildPV({ t: 'compare', a: 312, b: 312, ask: 'symbol' }).answer, '=');
+  assert.equal(W.buildPV({ t: 'compare', a: 1312, b: 999, ask: 'big' }).steps[0].say, 'Nombor mana ada lebih banyak digit? Tekan digit pertamanya.');
+  const n = W.buildPV({ t: 'placeName', n: 38709, i: 0 });
+  assert.deepEqual([n.hideHead, n.answer, n.steps[1].choices.length], [true, 'sa', 3]);
+  const v = W.buildPV({ t: 'digitValue', n: 34470, i: 1 });
+  assert.deepEqual([v.answer, v.steps.at(-1).right], [70, '70']);
+  // Every pick has its right answer among distinct choices, over many numbers.
+  for (let k = 0; k < 400; k++) {
+    const x = 10 + ((k * 7919) % 99990), i = k % String(x).length;
+    for (const spec of [{ t: 'round', n: x, place: Math.min(i, String(x).length - 2) }, { t: 'compare', a: x, b: x + (k % 3) * 10 ** (k % 4), ask: ['big', 'small', 'symbol'][k % 3] }, { t: 'digitValue', n: x, i }]) {
+      const p = W.buildPV(spec); if (!p) continue;
+      for (const s of p.steps.filter(s => s.kind === 'pick')) { assert.ok(s.choices.includes(s.right), JSON.stringify(spec)); assert.equal(new Set(s.choices).size, s.choices.length, JSON.stringify(spec)); }
+    }
+  }
+  assert.equal(W.buildPV({ t: 'nope' }), null);
+});

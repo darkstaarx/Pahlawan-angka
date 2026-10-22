@@ -59,4 +59,17 @@
 :is(.pa-game,.game).wk-on #subtitle{display:none}
 /* The button that opens it. */
 .btn.hint.wk-offer{background:var(--gold,#ffc94a);animation:wkGlow 1.6s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer{animation:none}}
+/* Place-value board (round, compare, place name, digit value): the pupil taps a digit. */
+.wk-pv .wk-pvrow .wk-c{border-radius:10px}
+.wk-pv .wk-head .wk-hide{color:var(--berry,#d2536b)}
+.wk-board.wk-tapnow .wk-c.wk-can{cursor:pointer;background:#fff9;box-shadow:0 0 0 2px var(--gold,#ffc94a);animation:wkTapMe 1.4s ease-in-out infinite}
+.wk-c.wk-mark{background:#ffe9a6;box-shadow:0 0 0 3px var(--gold-dk,#b9801c);color:var(--ink,#4a2a16)}
+.wk-c.wk-no{animation:wkNo .4s ease;background:#fde3e6!important}
+.wk-c.wk-hint{animation:wkGlow 1.2s ease-in-out infinite!important;background:#fff4c2!important}
+.wk-sym{min-height:30px;margin-left:var(--cw);font:900 28px/1 var(--f-display,system-ui);color:var(--berry,#d2536b);text-align:center}
+.wk-sym:empty{min-height:6px}
+.tiles.wk.wk-two{grid-template-columns:repeat(2,1fr)}
+.tiles.wk.wk-wide{grid-template-columns:1fr}
+.tiles.wk.wk-wide .wk-t{font-size:19px;min-height:46px}
+@keyframes wkTapMe{0%,100%{box-shadow:0 0 0 2px var(--gold,#ffc94a)}50%{box-shadow:0 0 0 4px var(--gold,#ffc94a)}}
+@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer,.wk-board.wk-tapnow .wk-c.wk-can,.wk-c.wk-hint{animation:none!important}}
