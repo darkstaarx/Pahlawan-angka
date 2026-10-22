@@ -426,7 +426,7 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    besar?" (choices are values, as before).
    **Deployed:** 3.87.12 is live on Netlify (2026-10-22, owner checked on a
    phone; the laptop size was not checked).
-   **"Jom tengok cara" part 2 (3.87.13):** a place-value board in
+   **"Jom tengok cara" part 2 (3.87.13, PR #87 merged):** a place-value board in
    `PAWorked.buildPV` for round, compare (bigger/smaller/symbol), place name
    and digit value (Gudang D1–D5 bina and banding). The pupil taps the digit on
    the board (a wrong digit shakes, the right one glows), then picks.
