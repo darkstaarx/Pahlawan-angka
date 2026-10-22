@@ -57,6 +57,10 @@
 /* While Wira walks through it the scene steps back, so the board and the tiles fit. */
 :is(.pa-game,.game).wk-on .scene{flex-basis:clamp(86px,15dvh,140px)!important;min-height:0!important}
 :is(.pa-game,.game).wk-on #subtitle{display:none}
+/* Gudang rack walkthrough: the current place is lit, the done ones are quiet. */
+.rack .col.wk-colon{box-shadow:0 0 0 3px var(--gold,#ffc94a);border-radius:12px;animation:wkTapMe 1.4s ease-in-out infinite}
+.rack .col.wk-coldone{opacity:.8}
+#widget>.wk-say{margin-bottom:8px}
 /* The button that opens it. */
 .btn.hint.wk-offer{background:var(--gold,#ffc94a);animation:wkGlow 1.6s ease-in-out infinite}
 /* Place-value board (round, compare, place name, digit value): the pupil taps a digit. */
@@ -77,4 +81,4 @@
 .tiles.wk.wk-wide{grid-template-columns:1fr}
 .tiles.wk.wk-wide .wk-t{font-size:19px;min-height:46px}
 @keyframes wkTapMe{0%,100%{box-shadow:0 0 0 2px var(--gold,#ffc94a)}50%{box-shadow:0 0 0 4px var(--gold,#ffc94a)}}
-@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer,.wk-board.wk-tapnow .wk-c.wk-can,.wk-c.wk-hint,.wk-c.wk-diff{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer,.wk-board.wk-tapnow .wk-c.wk-can,.wk-c.wk-hint,.wk-c.wk-diff,.rack .col.wk-colon{animation:none!important}}
