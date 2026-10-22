@@ -448,6 +448,9 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    `PAWorked.buildChain`/`runChain`, two boards left to right; a story first
    asks for the whole sentence (a − b + d). Next in Gudang: order,
    expanded / words, ops with × first or brackets.
+   #90 (3.87.16) D1 "X menulis 100 sebagai …": n − 10 equalled the wrong
+   spelling, so one choice became "Tidak pasti"; now n − 20. This was the rare
+   failure of the "Darjah 1–2: every choice is real" test.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

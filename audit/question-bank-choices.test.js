@@ -41,6 +41,21 @@ test('Darjah 1–2: every choice is real and the four choices differ', () => {
   assert.deepEqual([...new Set(bad)].slice(0, 10), []);
 });
 
+test('"X menulis 100 sebagai …": three different wrong spellings, never "Tidak pasti"', () => {
+  // n = 100 once gave "sembilan puluh" twice (the wrong spelling and 100 − 10), so one became "Tidak pasti".
+  const c = app(), seen = new Set();
+  for (let i = 0; i < 6000 && !seen.size; i++) {
+    c.sess.questionHistory = []; c.sess.questionFingerprints = []; c.sess.questionKeys = [];
+    const q = c.__generate('D1.N100', states[2]);
+    if (q.archetypeId !== 'y1v2_1_3_1_spot_wrong_word' || strip(q.answer) !== 'seratus') continue;
+    const opts = [strip(q.answer), ...(q.wrong || []).map(w => strip(w && typeof w === 'object' ? (w.label ?? w.v) : w))];
+    seen.add(opts.join(' / '));
+    assert.equal(new Set(opts).size, 4, opts.join(' / '));
+    assert.ok(!opts.some(o => /tidak pasti/i.test(o)), opts.join(' / '));
+  }
+  assert.ok(seen.size > 0, 'the n = 100 spelling round came up');
+});
+
 test('repaired items keep a right answer that matches the question', () => {
   const c = app(), seen = {};
   for (const id of ['D1.N20', 'D1.N100', 'D2.6.1', 'D2.6.2', 'D2.6.3', 'D2.3.3', 'D2.5.2']) {
