@@ -153,9 +153,11 @@
       }else if(j<0){
         steps.push({kind:'show',col:-1,say:'Banding dari kiri: semua digit sama.',after:{note:'Kedua-dua nombor sama.'}});
       }else{
-        if(same.length)steps.push({kind:'show',col:cols-1,say:`Banding dari kiri. Tempat ${same.join(', ')}: digit sama.`,after:{note:'Lihat tempat seterusnya.'}});
+        const sameCols=[];for(let i=cols-1;i>j;i--)sameCols.push(i);
+        if(same.length)steps.push({kind:'show',col:-1,pre:{same:sameCols},say:`Banding dari kiri. Tempat ${same.join(', ')}: digit sama.`,after:{note:'Lihat tempat seterusnya.'}});
         const big=(A[j]||0)>(B[j]||0)?0:1,hi=Math.max(A[j]||0,B[j]||0),lo=Math.min(A[j]||0,B[j]||0);
-        steps.push({kind:'tap',row:big,col:j,say:`Tempat ${PLACE[j]}: ${A[j]||0} dan ${B[j]||0}. Tekan digit yang lebih besar.`,after:{mark:{row:big,col:j},note:`${hi} lebih besar daripada ${lo}.`}});
+        // The first place that differs gets a red frame: "here they are not the same".
+        steps.push({kind:'tap',row:big,col:j,pre:{diff:j},say:`Tempat ${PLACE[j]} tidak sama: ${A[j]||0} dan ${B[j]||0}. Mana lebih besar? Tekan digit itu.`,after:{mark:{row:big,col:j},note:`${hi} lebih besar daripada ${lo}.`}});
       }
       const bigN=Math.max(a,b),smallN=Math.min(a,b);
       if(spec.ask==='symbol'){const sym=a>b?'>':a<b?'<':'=';
@@ -238,8 +240,13 @@
       busy=false;
       if(k>=plan.steps.length){focus(-1);tapCells(false);el.say.innerHTML=plan.done?`<b>Siap!</b> ${esc(plan.done)}`:`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
       const s=plan.steps[k];focus(s.kind==='tap'?-1:s.col);el.say.textContent=s.say;opt.onShow&&opt.onShow(k,plan.steps.length);
+      if(s.pre){const cells=col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`);
+        if(s.pre.same)s.pre.same.forEach(c=>cells(c).forEach(x=>x.classList.add('wk-same')));
+        if(s.pre.diff!==undefined)cells(s.pre.diff).forEach(x=>x.classList.add('wk-diff'))}
       // A tap step: the pupil touches the digit on the board; no tiles.
       tapCells(s.kind==='tap');
+      // Where a place differs, only that place glows; the other digits stay quiet.
+      if(s.kind==='tap'&&s.pre?.diff!==undefined)el.board.querySelectorAll('.wk-can').forEach(c=>{if(Number(c.dataset.col)!==s.pre.diff)c.classList.remove('wk-can')});
       if(s.kind==='tap'){el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';el.board.querySelector('.wk-board')?.classList.add('wk-tapnow');return}
       el.board.querySelector('.wk-board')?.classList.remove('wk-tapnow');
       // The story's sentence choices sit right under Wira's question (el.inline) when the page gives a place for them.

@@ -469,7 +469,7 @@ const ART={
  const products=[{id:'bandung',name:'Air Bandung'},{id:'karipap',name:'Karipap'},{id:'pisang',name:'Pisang Emas'},
  {id:'lapis',name:'Kuih Lapis'},{id:'kristal',name:'Kristal Ais'},{id:'ramuan',name:'Ramuan Wira'}];
 const P=id=>products.find(p=>p.id===id);
-const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
+const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
 const denoms=[{v:10,cls:'c10',img:'10sen',l:'10 sen'},{v:20,cls:'c20',img:'20sen',l:'20 sen'},{v:50,cls:'c50',img:'50sen',l:'50 sen'},{v:100,cls:'n',img:'rm1',l:'RM1'},{v:500,cls:'n',img:'rm5',l:'RM5'}];
 const cash=d=>`<img class="cash ${d.cls}" src="${asset('wang-'+d.img+'.webp')}" alt="" draggable="false">`;
 const times=[{t:'Pagi',p:'18%',tint:'transparent'},{t:'Tengah hari',p:'42%',tint:'#fff3d000'},{t:'Petang',p:'66%',tint:'#ffcf9a55'},{t:'Senja',p:'90%',tint:'#f39a7a77'}];
@@ -738,7 +738,7 @@ const sfx={pick:()=>{tone(660,.08);tone(880,.1,'triangle',.06,.06)},coin:()=>{to
 /* ---------- helpers ---------- */
 function show(el,on){el.classList.toggle('hide',!on)}
 let wTimer;
-function wira(text,ms=3600){$('wsayTxt').textContent=text;show($('wsay'),true);$('bubble').classList.add('dim');clearTimeout(wTimer);if(ms)wTimer=setTimeout(()=>{show($('wsay'),false);$('bubble').classList.remove('dim')},ms)}
+function wira(text,ms=3600){$('wsayTxt').textContent=text;show($('wsay'),true);show($('bubble'),false);clearTimeout(wTimer);if(ms)wTimer=setTimeout(()=>{show($('wsay'),false)},ms)}   // the pet speaks once a round; once Wira talks its line goes
 function petFace(state){$('petImg').src=asset(m.pet+'-'+state+'.webp')}
 function sad(){const c=$('customer');petFace('sad');c.classList.remove('sadshake');void c.offsetWidth;c.classList.add('sadshake');sfx.bad();setTimeout(()=>{if(step<3)petFace('idle')},1300)}
 function setTill(v){till=v;$('tillAmt').textContent=money(v);const t=$('till');t.classList.remove('bump');void t.offsetWidth;t.classList.add('bump')}

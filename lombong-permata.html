@@ -556,7 +556,7 @@ Object.values(GEN).forEach(g=>Object.values(g).forEach(list=>list.forEach(e=>{co
 /* ---------- enjin Lombong Permata ---------- */
 const A='assets/minigames/lombong-permata/';
 const $=id=>document.getElementById(id);
-const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
+const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
 const MODE_LABEL={perpuluhan:'PERPULUHAN',peratus:'PERATUS',masalah:'MASALAH'};
 const GRADES={2:{title:'Perpuluhan persepuluh'},3:{title:'Perpuluhan perseratus & peratus asas'},4:{title:'Operasi perpuluhan & peratus'},5:{title:'Perseribu, pembundaran & peratus > 100%'},6:{title:'Darab/bahagi perpuluhan, peratus & masalah'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
@@ -577,8 +577,8 @@ let inp=[],fk=0,sel=null,seq=[],shade=new Set(),tick=null,lzIn={},lzF='',lzBad=[
 
 function sfx(f=650,d=.08,type='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),gn=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);gn.gain.setValueAtTime(.07,ac.currentTime);gn.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(gn).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 const win=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sfx(f,.18,'triangle'),i*100));
-function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('dim');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
-function hideMsg(){$('wsay').className='wsay hide';$('bubble').classList.remove('dim')}
+function msg(t,k='',ms=0){$('wsayTxt').textContent=t;$('wsay').className='wsay '+k;$('bubble').classList.add('hide');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
+function hideMsg(){$('wsay').className='wsay hide'}   // the pet speaks once a round: its line does not come back
 function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 

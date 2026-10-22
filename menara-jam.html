@@ -508,7 +508,7 @@ const fDig=t=>pad(Math.floor(mod(t,1440)/60))+':'+pad(mod(t,60));
 const fDur=m=>{const h=Math.floor(m/60),mm=m%60;return (h?h+' jam':'')+(h&&mm?' ':'')+(mm||!h?mm+' minit':'')};
 const pukul=t=>{const m=mod(t,60),h=h12(t);return m===0?'pukul '+h:m===30?'pukul '+h+' setengah':'pukul '+f12(t)};
 
-const pets=[{id:'durian-kerbau',who:'Durian Kerbau'},{id:'ketupat-kura',who:'Ketupat Kura'},{id:'arnab-kek-lapis',who:'Arnab Kek Lapis'},{id:'harimau-bunga',who:'Harimau Bunga'},{id:'kumbang-manggis',who:'Kumbang Manggis'}];
+const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
 const times=[{t:'Pagi',p:'18%',tint:'transparent'},{t:'Tengah hari',p:'42%',tint:'#fff3d000'},{t:'Petang',p:'66%',tint:'#ffcf9a55'},{t:'Senja',p:'90%',tint:'#f39a7a77'}];
 const DISTRACT=['platform 3','tiket RM2','4 gerabak','pintu 5','tempat duduk 12','bas nombor 7'];
 const ZONES=[{c:'Tokyo',d:1},{c:'Seoul',d:1},{c:'Sydney',d:2},{c:'Dubai',d:-4},{c:'Kaherah',d:-6},{c:'Paris',d:-7},{c:'London',d:-8}];
@@ -702,8 +702,8 @@ const bell=()=>[784,988,1175].forEach((f,i)=>setTimeout(()=>sfx(f,.3),i*160));
 
 /* ---------- maklum balas ---------- */
 let fbTimer;
-function msg(t,k='',ms=0){el('wsayTxt').textContent=t;el('wsay').className='wsay '+k;el('bubble').classList.add('dim');clearTimeout(fbTimer);if(ms)fbTimer=setTimeout(hideMsg,ms)}
-function hideMsg(){el('wsay').className='wsay hide';el('bubble').classList.remove('dim')}
+function msg(t,k='',ms=0){el('wsayTxt').textContent=t;el('wsay').className='wsay '+k;el('bubble').classList.add('hide');clearTimeout(fbTimer);if(ms)fbTimer=setTimeout(hideMsg,ms)}
+function hideMsg(){el('wsay').className='wsay hide'}   // the pet speaks once a round: its line does not come back
 let sayT;function say(t){el('say').textContent=t;el('bubble').classList.remove('hide');clearTimeout(sayT);sayT=setTimeout(()=>el('bubble').classList.add('hide'),2800)}
 function pet(state){el('petImg').src=A+q.pet+'-'+state+'.webp'}
 
