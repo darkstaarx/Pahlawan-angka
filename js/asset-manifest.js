@@ -319,6 +319,7 @@ self.PA_ASSET_MANIFEST=Object.freeze({
   "./assets/landing-approved-v1/fantasy-background.webp": "d8d9da6682394a8ee24140ad38a2e730740cb080a65b20ece6e9ffe6344dff11",
   "./assets/landing-approved-v1/harimau-bunga.webp": "0c95d47714ce5b2253b567cff757085a00437ee321f1e3bad9c9f660741b7e30",
   "./assets/landing-approved-v1/logo.webp": "a125c3e08e84666a144fbc41a6a5a4f55b03abc9b415aeb67436f911636da9de",
+  "./assets/landing-approved-v1/pahlawan-squad.webp": "e61f26e7b9f5a714a62809adf6cb247447fe32a177ab770416420e8c6f35c7ae",
   "./assets/landing-approved-v1/parent-adviser.webp": "6672b773b6caf3d645ef3a11728ad2c79f603912607b3c8a0770a1ebd8a4e73f",
   "./assets/landing-approved-v1/wira-warrior.webp": "ab4f5bd1792012b49740ceeefc1efaddedf979d95a523926ef0c4ed4cfcda909",
   "./assets/minigames/bengkel-ajaib/arnab-kek-lapis-happy.webp": "2a4f984711dea944e095a64990c1c1fb79ec5d8eef0083dd0b990bbb819bbc30",

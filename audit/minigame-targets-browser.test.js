@@ -210,6 +210,7 @@ test('a profile saved before newer skills existed opens the app without an error
 test('Jom tengok cara: offered after 3 wrong tries, every step tapped, the board ends at the answer, then a similar round', async () => {
   for (const [hash, story] of [['d3-tambah', false], ['d4-tolak', true]]) {
     const g = await gudang(null, hash, { width: 390, height: 780 });
+    // Equal numbers (answer "=") have no differing digit to tap, so skip them here.
     const r0 = await g.page.evaluate(story => {
       for (let i = 0; i < 400; i++) { const q = window.__gudangGen.showNormal(i % 6, 0); if (q.kind === 'pad' && q.form && (story ? !q.card : !!q.card) && window.PAWorked.parse(q)) return { mode: q.mode, ans: q.form.fields[0].v, hint: document.getElementById('hint').textContent }; }
       return null;
@@ -245,7 +246,7 @@ test('Jom tengok cara on the place-value board: a 2-choice round is offered afte
   for (const [hash, t, kind] of [['d4-banding', 'round', 'pick'], ['d4-banding', 'compare', 'pick'], ['d4-bina', 'digitValue', 'pad']]) {
     const g = await gudang(null, hash, { width: 390, height: 780 });
     const r0 = await g.page.evaluate(([t, kind]) => {
-      for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (q.wk && q.wk.t === t && q.kind === kind && (kind !== 'pick' || q.opts.length <= 3)) return { mode: q.mode, n: q.opts ? q.opts.length : 0, correct: q.correct, ans: q.form && q.form.fields[0].v, ansText: kind === 'pick' ? q.opts.find(o => o.id === q.correct).label : null }; }
+      for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (q.wk && q.wk.t === t && q.kind === kind && (kind !== 'pick' || q.opts.length <= 3) && !(t === 'compare' && q.wk.a === q.wk.b)) return { mode: q.mode, n: q.opts ? q.opts.length : 0, correct: q.correct, ans: q.form && q.form.fields[0].v, ansText: kind === 'pick' ? q.opts.find(o => o.id === q.correct).label : null }; }
       return null;
     }, [t, kind]);
     assert.ok(r0, hash + ' ' + t);

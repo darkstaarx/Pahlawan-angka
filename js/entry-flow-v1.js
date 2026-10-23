@@ -24,7 +24,7 @@
   function showAuth(kind) {
     view('auth');
     const title = $('paEntryAuthTitle');
-    if (title) title.textContent = kind === 'demo' ? 'Daftar & cuba demo percuma' : kind === 'purchase' ? 'Daftar untuk teruskan pembayaran' : kind === 'free' ? 'Daftar akaun percuma' : 'Log masuk akaun penjaga';
+    if (title) title.textContent = kind === 'demo' ? 'Daftar & cuba demo percuma' : kind === 'purchase' ? 'Daftar untuk teruskan pembayaran' : kind === 'free' ? 'Daftar Akses Mesra' : 'Log masuk akaun penjaga';
     window.screen('login');
     $('googleAuthButton')?.focus();
   }
