@@ -340,6 +340,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.10.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .pa-game .scene{--waist:40px;--belt:.6}
 .pa-game .scene .cauldron{left:calc(var(--ww) * .93)}.pa-game .scene .counter{width:66%}.pa-game .scene .shelf{left:54%;right:4%}</style>
@@ -390,10 +391,13 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <small>Simulasi router Kemahiran Fokus</small>
     <div class="devrow sims" id="sims"></div>
     <p class="simout" id="simOut"></p><button type="button" class="btn go" id="simGo" hidden>Buka dapur ikut pelan →</button>
+    <small>Cuba “Jom tengok cara” (terus ke soalan yang ada langkah)</small>
+    <div class="devrow sims" id="wkTry"></div>
   </div></div>
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-worked-v1.js?v=1.10.0"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/dapur-ramuan-router.js"></script>
 <script>
@@ -418,65 +422,73 @@ const base=(max=9)=>{let a,b;do{a=R(1,max);b=R(1,max)}while(a===b||gcd(a,b)>1);r
 const PAIRS=[['herba','air','leaf','drop'],['kristal biru','kristal merah','gemB','gemR'],['madu','susu','honey','milk'],['cendawan','embun','shroom','drop']];
 const pp=()=>pick(PAIRS);
 
+/* "Jom tengok cara" lines (PAWorked.buildList): each step is one small pick, written on the work card. */
+const WL=(say,right,wrongs,line,o={})=>({say,right,wrongs,line,...o});
+const fx=(op,a,b)=>({fact:{op,a,b}});
+const NF=n=>Math.abs(n)>=10000?String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '):String(n);
+const addW=(xs,lab)=>{const t=xs.reduce((a,b)=>a+b,0);return WL(xs.map(NF).join(' + ')+' = ?',t,[t+1,t-1,t+2],(lab?lab+' = ':'')+NF(t),xs.length===2?fx('add',xs[0],xs[1]):{})};
+const mulW=(a,b,lab)=>WL(NF(a)+' × '+NF(b)+' = ?',a*b,[a*b+a,a+b,a*b+b],(lab?lab+' = ':'')+NF(a*b),fx('mul',a,b));
+const divW=(a,b,lab)=>WL(NF(a)+' ÷ '+NF(b)+' = ?',a/b,[a/b+1,a/b>1?a/b-1:a/b+2,a-b],(lab?lab+' = ':'')+NF(a/b),fx('div',a,b));
+const gcfW=(x,y,g)=>WL('Faktor sepunya terbesar bagi '+x+' dan '+y+'?',g,[...[2,3,4,5,6].filter(f=>f!==g&&x%f===0&&y%f===0),g+1,g*2,g>2?g-1:3],'Bahagi kedua-dua bahagian dengan '+g);
 const Fx={
  /* ---- nisbah ---- */
  mixEq:(arch,max,kmax)=>({arch,f:C=>{const[a,b]=base(max),P=pp();return{kind:'mix',mix:{pair:P,a,b,mode:'eq',max:a*kmax>b*kmax?a*kmax:b*kmax},ansTxt:a+':'+b+' setara',
   q:'Ramuan asas '+P[0]+' : '+P[1]+' = '+a+' : '+b+'. Buat ramuan LEBIH BESAR dengan nisbah yang sama.',s:'Darab kedua-dua bahagian nisbah dengan nombor yang sama.',a:'Contoh: '+a+' × 2 : '+b+' × 2.'}}}),
- mixFix:(arch,max,kmax)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),P=pp();return{kind:'mix',mix:{pair:P,a,b,mode:'fix',fixA:a*k,max:Math.max(a*k,b*k)+6},need:{v:b*k},ansTxt:a*k+' : '+b*k,
+ mixFix:(arch,max,kmax)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),P=pp();return{wk:{lines:[divW(a*k,a,'Pendarab'),mulW(b,k,P[1])],value:b*k},kind:'mix',mix:{pair:P,a,b,mode:'fix',fixA:a*k,max:Math.max(a*k,b*k)+6},need:{v:b*k},ansTxt:a*k+' : '+b*k,
   q:'Nisbah '+P[0]+' : '+P[1]+' = '+a+' : '+b+'. Wira sudah masukkan '+a*k+' '+P[0]+'. Masukkan '+P[1]+' yang betul.',s:a+' '+P[0]+' didarab berapa untuk jadi '+a*k+'? Darab '+P[1]+' dengan nombor yang sama.',a:a*k+' ÷ '+a+' = '+k+'; '+b+' × '+k+' = '+b*k+'.'}}}),
- missing:(arch,max,kmax)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),right=Math.random()<.6;return{kind:'pad',card:a+' : '+b+' = '+(right?a*k+' : ___':'___ : '+b*k),form:NUM(right?b*k:a*k),
+ missing:(arch,max,kmax)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),right=Math.random()<.6;return{wk:{lines:right?[divW(a*k,a,'Pendarab'),mulW(b,k,'Nombor hilang')]:[divW(b*k,b,'Pendarab'),mulW(a,k,'Nombor hilang')],value:right?b*k:a*k},kind:'pad',card:a+' : '+b+' = '+(right?a*k+' : ___':'___ : '+b*k),form:NUM(right?b*k:a*k),
   q:'Apakah nombor yang hilang?',s:'Cari nombor pendarab dahulu.',a:(right?a*k+' ÷ '+a:b*k+' ÷ '+b)+' = '+k+'; '+(right?b:a)+' × '+k+' = '+(right?b*k:a*k)+'.'}}}),
- equiv:(arch,max,kmax)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),c=a*k+':'+b*k;const bad=[(a+k)+':'+(b+k),a*k+':'+(b*k+1),b*k+':'+a*k,(a*k)+':'+(b+k)];return{kind:'pick',...opts(bad,c),
+ equiv:(arch,max,kmax)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),c=a*k+':'+b*k;const bad=[(a+k)+':'+(b+k),a*k+':'+(b*k+1),b*k+':'+a*k,(a*k)+':'+(b+k)];return{wk:{lines:[WL('Nisbah setara: darab kedua-dua bahagian dengan nombor yang sama. Cuba × '+k+'. '+a+' × '+k+' = ?',a*k,[a+k,a*k+1,a*k+a],a+' × '+k+' = '+a*k,fx('mul',a,k)),mulW(b,k,b+' × '+k)],finSay:'Jadi nisbah manakah setara?'},kind:'pick',...opts(bad,c),
   q:'Nisbah manakah setara dengan '+a+' : '+b+'?',s:'Nisbah setara: darab (atau bahagi) kedua-dua bahagian dengan nombor yang SAMA. Tambah tidak boleh.',a:a+' × '+k+' : '+b+' × '+k+' = '+c.replace(':',' : ')+'.'}}}),
- simplify:(arch,max,kmax,vis)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),P=pp();return{kind:'pad',vis:vis?{t:'bar',a:a*k,b:b*k,pair:P}:undefined,card:vis?undefined:'Ringkaskan '+a*k+' : '+b*k,form:RF(a,b),
+ simplify:(arch,max,kmax,vis)=>({arch,f:C=>{const[a,b]=base(max),k=R(2,kmax),P=pp();return{wk:{lines:[gcfW(a*k,b*k,k),divW(a*k,k,'Kiri'),divW(b*k,k,'Kanan')],value:[a,b]},kind:'pad',vis:vis?{t:'bar',a:a*k,b:b*k,pair:P}:undefined,card:vis?undefined:'Ringkaskan '+a*k+' : '+b*k,form:RF(a,b),
   q:vis?'Ramuan ada '+a*k+' '+P[0]+' dan '+b*k+' '+P[1]+'. Tulis nisbah '+P[0]+' : '+P[1]+' dalam bentuk termudah.':'Tulis nisbah '+a*k+' : '+b*k+' dalam bentuk termudah.',s:'Bahagi kedua-dua bahagian dengan faktor sepunya terbesar.',a:a*k+' ÷ '+k+' : '+b*k+' ÷ '+k+' = '+a+' : '+b+'.'}}}),
  /* ---- kadaran ---- */
- unit:(arch,umax,kmax,thing)=>({arch,f:C=>{const u=R(2,umax),k=R(2,kmax),T=thing||pick([['kotak','botol ramuan'],['dulang','biji roti herba'],['bakul','herba']]);return{kind:'pad',vis:{t:'table',h:[T[0],T[1]],rows:[[k,k*u],[1,'?']]},form:NUM(u,{post:T[1]}),
+ unit:(arch,umax,kmax,thing)=>({arch,f:C=>{const u=R(2,umax),k=R(2,kmax),T=thing||pick([['kotak','botol ramuan'],['dulang','biji roti herba'],['bakul','herba']]);return{wk:{lines:[divW(k*u,k,'1 '+T[0])],value:u},kind:'pad',vis:{t:'table',h:[T[0],T[1]],rows:[[k,k*u],[1,'?']]},form:NUM(u,{post:T[1]}),
   q:k*u+' '+T[1]+' disusun sama rata dalam '+k+' '+T[0]+'. Berapa '+T[1]+' dalam 1 '+T[0]+'?',s:'Cari nilai bagi SATU dahulu: bahagi.',a:k*u+' ÷ '+k+' = '+u+'.'}}}),
  scale:(arch,umax,kmax,story)=>({arch,f:C=>{const u=R(2,umax),k1=R(2,kmax),k2=R(2,kmax+4);if(k1===k2)return null;const T=pick([['kotak','botol ramuan'],['periuk','cawan sup'],['resipi','helai daun herba']]);
-  return{kind:'pad',vis:story?undefined:{t:'table',h:[T[0],T[1]],rows:[[k1,k1*u],[k2,'?']]},form:NUM(k2*u),
+  return{wk:{lines:[divW(k1*u,k1,'1 '+T[0]),mulW(u,k2,k2+' '+T[0])],value:k2*u},kind:'pad',vis:story?undefined:{t:'table',h:[T[0],T[1]],rows:[[k1,k1*u],[k2,'?']]},form:NUM(k2*u),
   q:k1+' '+T[0]+' mengandungi '+k1*u+' '+T[1]+'. Pada kadar sama, berapa '+T[1]+' dalam '+k2+' '+T[0]+'?',s:'Cari bilangan bagi 1 '+T[0]+' dahulu, kemudian darab.',a:k1*u+' ÷ '+k1+' = '+u+'; '+u+' × '+k2+' = '+k2*u+'.'}}}),
  rmiss:(arch,umax,kmax,story)=>({arch,f:C=>{const u=R(2,umax),k1=R(2,kmax),k2=R(2,kmax+6);if(k1===k2)return null;const T=pick([['kotak','botol ramuan'],['dulang','biji roti herba']]);
-  return{kind:'pad',vis:story?undefined:{t:'table',h:[T[0],T[1]],rows:[[k1,k1*u],['?',k2*u]]},form:NUM(k2,{post:T[0]}),
+  return{wk:{lines:[divW(k1*u,k1,'1 '+T[0]),divW(k2*u,u,T[0]+' diperlukan')],value:k2},kind:'pad',vis:story?undefined:{t:'table',h:[T[0],T[1]],rows:[[k1,k1*u],['?',k2*u]]},form:NUM(k2,{post:T[0]}),
   q:k1+' '+T[0]+' mengandungi '+k1*u+' '+T[1]+'. Jika ada '+k2*u+' '+T[1]+' pada kadar sama, berapa '+T[0]+' diperlukan?',s:'Cari bilangan bagi 1 '+T[0]+', kemudian bahagi.',a:k1*u+' ÷ '+k1+' = '+u+'; '+k2*u+' ÷ '+u+' = '+k2+'.'}}})
 };
 
 const D6={
- simplify:{arch:'y6v2_7_2_1_simplify',f:C=>{const[a,b]=base(9),k=R(2,8);return{kind:'pad',card:'Ringkaskan '+a*k+' : '+b*k,form:RF(a,b),q:'Tulis nisbah dalam bentuk termudah.',s:'Bahagi dengan faktor sepunya terbesar.',a:a*k+' ÷ '+k+' : '+b*k+' ÷ '+k+' = '+a+' : '+b+'.'}}},
+ simplify:{arch:'y6v2_7_2_1_simplify',f:C=>{const[a,b]=base(9),k=R(2,8);return{wk:{lines:[gcfW(a*k,b*k,k),divW(a*k,k,'Kiri'),divW(b*k,k,'Kanan')],value:[a,b]},kind:'pad',card:'Ringkaskan '+a*k+' : '+b*k,form:RF(a,b),q:'Tulis nisbah dalam bentuk termudah.',s:'Bahagi dengan faktor sepunya terbesar.',a:a*k+' ÷ '+k+' : '+b*k+' ÷ '+k+' = '+a+' : '+b+'.'}}},
  equiv:Fx.equiv('y6v2_7_2_1_equivalent',9,6),
  units:{arch:'y6v2_7_2_1_same_unit',f:C=>{const[a,b]=base(6),v=pick([['kg','g',1000,250],['m','cm',100,25],['ℓ','mL',1000,250],['RM','sen',100,50]]);
   /* sebelah kiri unit besar, sebelah kanan unit kecil */
   const step=v[3],L=a*step,Rv=b*step;if(L%v[2]&&v[0]!=='RM'&&L/v[2]!==+dn(L/v[2]))return null;const left=v[0]==='RM'?rm(L/100):dn(L/v[2])+' '+v[0],right=v[0]==='RM'?Rv+' sen':Rv+' '+v[1];
-  return{kind:'pad',form:RF(a,b),q:'Tulis nisbah '+left+' : '+right+' dalam bentuk termudah.',s:'Tukar kepada unit yang sama dahulu ('+v[1]+'), kemudian ringkaskan.',a:left+' = '+L+' '+v[1]+'. '+L+' : '+Rv+' = '+a+' : '+b+'.'}}},
- fromTotal:{arch:'y6v2_7_2_1_ratio_from_total',f:C=>{const[a,b]=base(7),u=R(2,9),P=pp();return{kind:'pad',vis:{t:'bar',a,b,pair:P,total:(a+b)*u},form:NUM(a*u,{post:P[0]}),
+  return{wk:{lines:[WL(left+' = ? '+v[1],L,[L*10,L/10,L+v[2]],left+' = '+L+' '+v[1]),gcfW(L,Rv,step),divW(L,step,'Kiri'),divW(Rv,step,'Kanan')],value:[a,b]},kind:'pad',form:RF(a,b),q:'Tulis nisbah '+left+' : '+right+' dalam bentuk termudah.',s:'Tukar kepada unit yang sama dahulu ('+v[1]+'), kemudian ringkaskan.',a:left+' = '+L+' '+v[1]+'. '+L+' : '+Rv+' = '+a+' : '+b+'.'}}},
+ fromTotal:{arch:'y6v2_7_2_1_ratio_from_total',f:C=>{const[a,b]=base(7),u=R(2,9),P=pp();return{wk:{lines:[addW([a,b],'Jumlah bahagian'),divW((a+b)*u,a+b,'1 bahagian'),mulW(a,u,P[0])],value:a*u},kind:'pad',vis:{t:'bar',a,b,pair:P,total:(a+b)*u},form:NUM(a*u,{post:P[0]}),
   q:P[0]+' : '+P[1]+' = '+a+' : '+b+'. Jumlah ramuan ialah '+(a+b)*u+'. Berapa '+P[0]+'?',s:'Jumlah bahagian = '+a+' + '+b+'. Cari nilai 1 bahagian dahulu.',a:(a+b)*u+' ÷ '+(a+b)+' = '+u+'; '+a+' × '+u+' = '+a*u+'.'}}},
- compare:{arch:'y6v2_7_2_1_ratio_compare',f:C=>{let a,b,c,d;do{[a,b]=base(6);[c,d]=base(6)}while(a*(c+d)===c*(a+b));const A=a/(a+b)>c/(c+d);return{kind:'pick',opts:[{id:'A',label:'Ramuan A'},{id:'B',label:'Ramuan B'}],correct:A?'A':'B',ansTxt:A?'Ramuan A':'Ramuan B',
+ compare:{arch:'y6v2_7_2_1_ratio_compare',f:C=>{let a,b,c,d;do{[a,b]=base(6);[c,d]=base(6)}while(a*(c+d)===c*(a+b));const A=a/(a+b)>c/(c+d);return{wk:{lines:[mulW(a,c+d,'A: '+a+' × '+(c+d)),mulW(c,a+b,'B: '+c+' × '+(a+b)),WL('Banding '+a*(c+d)+' dan '+c*(a+b)+'. Yang lebih besar?',Math.max(a*(c+d),c*(a+b)),[Math.min(a*(c+d),c*(a+b))],'Lebih pekat: yang lebih besar')],finSay:'Jadi ramuan manakah lebih pekat?'},kind:'pick',opts:[{id:'A',label:'Ramuan A'},{id:'B',label:'Ramuan B'}],correct:A?'A':'B',ansTxt:A?'Ramuan A':'Ramuan B',
   q:'Ramuan A sirap : air = '+a+' : '+b+'. Ramuan B = '+c+' : '+d+'. Ramuan manakah lebih pekat (bahagian sirap lebih besar)?',s:'Banding pecahan sirap: sirap ÷ jumlah bahagian.',a:'A: '+a+'/'+(a+b)+', B: '+c+'/'+(c+d)+'. Samakan penyebut untuk banding.'}}},
  error:{arch:'y6v2_7_2_1_ratio_error',f:C=>{const[a,b]=base(6),k=R(1,4),truth=Math.random()<.35,m=R(2,3),c=truth?[a*m,b*m]:[a+k,b+k];return{kind:'pick',opts:[{id:'Y',label:'Betul'},{id:'N',label:'Salah'}],correct:truth?'Y':'N',ansTxt:truth?'Betul':'Salah',
   q:C.who+' kata '+a+' : '+b+' setara dengan '+c[0]+' : '+c[1]+'. Penilaian?',s:'Nisbah setara mesti didarab (bukan ditambah) dengan nombor yang sama.',a:'Semak: '+c[0]+' ÷ '+a+' dan '+c[1]+' ÷ '+b+' sama atau tidak?'}}},
- direct:{arch:'y6v2_7_3_1_direct',f:C=>{const[a,b]=base(6),k=R(2,6),P=pp();return{kind:'mix',mix:{pair:P,a,b,mode:'fix',fixA:a*k,max:Math.max(a*k,b*k)+6},need:{v:b*k},ansTxt:a*k+' : '+b*k,
+ direct:{arch:'y6v2_7_3_1_direct',f:C=>{const[a,b]=base(6),k=R(2,6),P=pp();return{wk:{lines:[divW(a*k,a,'Pendarab'),mulW(b,k,P[1])],value:b*k},kind:'mix',mix:{pair:P,a,b,mode:'fix',fixA:a*k,max:Math.max(a*k,b*k)+6},need:{v:b*k},ansTxt:a*k+' : '+b*k,
   q:'Nisbah '+P[0]+' : '+P[1]+' = '+a+' : '+b+'. Jika '+P[0]+' = '+a*k+', masukkan '+P[1]+'.',s:'Cari pendarab: '+a*k+' ÷ '+a+'.',a:a*k+' ÷ '+a+' = '+k+'; '+b+' × '+k+' = '+b*k+'.'}}},
- unitRate:{arch:'y6v2_7_3_1_unit_rate',f:C=>{const n1=pick([2,4,5]),u=pick([1.5,2,2.5,3]),n2=R(3,12);if(n1===n2)return null;const v=+(u*n2).toFixed(2);return{kind:'pad',vis:{t:'table',h:['botol','air (ℓ)'],rows:[[n1,dn(u*n1)],[n2,'?']]},form:NUM(v,{dec:1,post:'ℓ'}),
+ unitRate:{arch:'y6v2_7_3_1_unit_rate',f:C=>{const n1=pick([2,4,5]),u=pick([1.5,2,2.5,3]),n2=R(3,12);if(n1===n2)return null;const v=+(u*n2).toFixed(2);return{wk:{lines:[WL(dn(u*n1)+' ÷ '+n1+' = ?',dn(u),[dn(u+0.5),dn(u*2),dn(u*n1)],'1 botol = '+dn(u)+' ℓ'),WL(dn(u)+' × '+n2+' = ?',dn(v),[dn(v+u),dn(u+n2),dn(v-u)],n2+' botol = '+dn(v)+' ℓ')],value:v},kind:'pad',vis:{t:'table',h:['botol','air (ℓ)'],rows:[[n1,dn(u*n1)],[n2,'?']]},form:NUM(v,{dec:1,post:'ℓ'}),
   q:n1+' botol ramuan menggunakan '+dn(u*n1)+' ℓ air. Pada kadar sama, '+n2+' botol menggunakan berapa liter?',s:'Cari isi padu bagi 1 botol dahulu.',a:dn(u*n1)+' ÷ '+n1+' = '+dn(u)+'; '+dn(u)+' × '+n2+' = '+dn(v)+' ℓ.'}}},
- recipe:{arch:'y6v2_7_3_1_recipe',f:C=>{const p1=pick([2,4,5]),g=pick([50,75,100,150]),p2=R(3,12);if(p1===p2)return null;return{kind:'pad',form:NUM(g*p2,{post:'g'}),
+ recipe:{arch:'y6v2_7_3_1_recipe',f:C=>{const p1=pick([2,4,5]),g=pick([50,75,100,150]),p2=R(3,12);if(p1===p2)return null;return{wk:{lines:[divW(g*p1,p1,'1 orang (g)'),mulW(g,p2,p2+' orang (g)')],value:g*p2},kind:'pad',form:NUM(g*p2,{post:'g'}),
   q:'Resipi sup untuk '+p1+' orang menggunakan '+g*p1+' g herba. Untuk '+p2+' orang pada kadar sama, berapa gram herba?',s:'Cari herba untuk 1 orang dahulu.',a:g*p1+' ÷ '+p1+' = '+g+'; '+g+' × '+p2+' = '+g*p2+' g.'}}},
- table:{arch:'y6v2_7_3_1_table',f:C=>{const[a,b]=base(7),k=R(2,6),k2=R(2,6);if(k===k2)return null;return{kind:'pad',vis:{t:'table',h:['A','B'],rows:[[a*k,b*k],[a*k2,'?']]},form:NUM(b*k2),q:'Lengkapkan jadual kadaran.',s:'Cari nilai B bagi 1 unit A, atau cari nisbah termudah dahulu.',a:a*k+' : '+b*k+' = '+a+' : '+b+'; '+a*k2+' : ? → ? = '+b*k2+'.'}}},
- missing:{arch:'y6v2_7_3_1_missing',f:C=>{const n=R(3,8),p=R(3,9),m=R(4,15);if(n===m)return null;return{kind:'pad',form:NUM(m,{post:'botol'}),q:n+' botol ramuan berharga '+rm(n*p)+'. Pada kadar sama, berapa botol boleh dibeli dengan '+rm(m*p)+'?',s:'Cari harga 1 botol dahulu.',a:rm(n*p)+' ÷ '+n+' = '+rm(p)+'; '+rm(m*p)+' ÷ '+rm(p)+' = '+m+'.'}}},
- reverse:{arch:'y6v2_7_3_1_reverse',f:C=>{const n=pick([4,6,8,10]),t=pick([10,15,20,30]),k=R(2,5),T=t*k;return{kind:'pad',form:NUM(n*k,{post:'botol'}),q:'Wira siapkan '+n+' botol ramuan dalam '+t+' minit. Pada kadar sama, berapa botol siap dalam '+T+' minit?',s:T+' minit ialah berapa kali '+t+' minit?',a:T+' ÷ '+t+' = '+k+'; '+n+' × '+k+' = '+n*k+'.'}}},
- compareRates:{arch:'y6v2_7_3_1_compare_rates',f:C=>{const a=R(4,8),pa=R(2,5),b=R(6,12),pb=pa+pick([-0.5,0.5,1]);if(a===b||pb<=0)return null;const A=pa<pb;return{kind:'pick',opts:[{id:'A',label:'Pakej A'},{id:'B',label:'Pakej B'}],correct:A?'A':'B',ansTxt:A?'Pakej A':'Pakej B',
+ table:{arch:'y6v2_7_3_1_table',f:C=>{const[a,b]=base(7),k=R(2,6),k2=R(2,6);if(k===k2)return null;return{wk:{lines:[WL(a*k+' : '+b*k+' = '+a+' : '+b+'. '+a*k2+' ÷ '+a+' = ?',k2,[k2+1,k2>1?k2-1:k2+2,a*k2-a],'Pendarab = '+k2,fx('div',a*k2,a)),mulW(b,k2,'B')],value:b*k2},kind:'pad',vis:{t:'table',h:['A','B'],rows:[[a*k,b*k],[a*k2,'?']]},form:NUM(b*k2),q:'Lengkapkan jadual kadaran.',s:'Cari nilai B bagi 1 unit A, atau cari nisbah termudah dahulu.',a:a*k+' : '+b*k+' = '+a+' : '+b+'; '+a*k2+' : ? → ? = '+b*k2+'.'}}},
+ missing:{arch:'y6v2_7_3_1_missing',f:C=>{const n=R(3,8),p=R(3,9),m=R(4,15);if(n===m)return null;return{wk:{lines:[divW(n*p,n,'1 botol (RM)'),divW(m*p,p,'Botol')],value:m},kind:'pad',form:NUM(m,{post:'botol'}),q:n+' botol ramuan berharga '+rm(n*p)+'. Pada kadar sama, berapa botol boleh dibeli dengan '+rm(m*p)+'?',s:'Cari harga 1 botol dahulu.',a:rm(n*p)+' ÷ '+n+' = '+rm(p)+'; '+rm(m*p)+' ÷ '+rm(p)+' = '+m+'.'}}},
+ reverse:{arch:'y6v2_7_3_1_reverse',f:C=>{const n=pick([4,6,8,10]),t=pick([10,15,20,30]),k=R(2,5),T=t*k;return{wk:{lines:[divW(T,t,'Berapa kali'),mulW(n,k,'Botol')],value:n*k},kind:'pad',form:NUM(n*k,{post:'botol'}),q:'Wira siapkan '+n+' botol ramuan dalam '+t+' minit. Pada kadar sama, berapa botol siap dalam '+T+' minit?',s:T+' minit ialah berapa kali '+t+' minit?',a:T+' ÷ '+t+' = '+k+'; '+n+' × '+k+' = '+n*k+'.'}}},
+ compareRates:{arch:'y6v2_7_3_1_compare_rates',f:C=>{const a=R(4,8),pa=R(2,5),b=R(6,12),pb=pa+pick([-0.5,0.5,1]);if(a===b||pb<=0)return null;const A=pa<pb;return{wk:{lines:[WL(rm(a*pa)+' ÷ '+a+' = ?',rm(pa),[rm(pa+0.5),rm(pa*2),rm(a*pa)],'A: 1 botol = '+rm(pa)),WL(rm(b*pb)+' ÷ '+b+' = ?',rm(pb),[rm(pb+0.5),rm(pb*2),rm(b*pb)],'B: 1 botol = '+rm(pb))],finSay:'Jadi pakej manakah lebih murah sebotol?'},kind:'pick',opts:[{id:'A',label:'Pakej A'},{id:'B',label:'Pakej B'}],correct:A?'A':'B',ansTxt:A?'Pakej A':'Pakej B',
   q:'Pakej A: '+a+' botol '+rm(a*pa)+'. Pakej B: '+b+' botol '+rm(b*pb)+'. Pakej manakah lebih murah sebotol?',s:'Cari harga 1 botol bagi setiap pakej.',a:'A: '+rm(a*pa)+' ÷ '+a+' = ?. B: '+rm(b*pb)+' ÷ '+b+' = ?.'}}},
  propError:{arch:'y6v2_7_3_1_proportion_error',f:C=>{const n=R(2,4),p=R(4,9),m=n*2;return{kind:'pick',...opts(['Betul','Salah, '+m+' m berharga '+rm(m*p+n)],'Salah, '+m+' m berharga '+rm(m*p),3),q:C.who+' kata '+n+' m kain berharga '+rm(n*p)+', jadi '+m+' m berharga '+rm(n*p+n)+' kerana tambah '+n+'. Penilaian?',s:'Kadaran: '+m+' m ialah 2 kali '+n+' m, jadi harga juga 2 kali.',a:rm(n*p)+' × 2 = ?'}}},
- rProblem:{arch:'y6v2_7_4_1_ratio_problem',f:C=>{const[a,b]=base(6),u=R(2,8);return{kind:'pad',vis:{t:'bar',a,b,pair:['jus','air','drop','drop'],total:(a+b)*u,unit:'ℓ'},form:NUM(a*u,{post:'ℓ'}),q:'Jus : air = '+a+' : '+b+'. Jumlah campuran '+(a+b)*u+' ℓ. Berapa liter jus?',s:'Jumlah bahagian = '+(a+b)+'. Cari 1 bahagian dahulu.',a:(a+b)*u+' ÷ '+(a+b)+' = '+u+'; '+a+' × '+u+' = '+a*u+' ℓ.'}}},
- pProblem:{arch:'y6v2_7_4_1_proportion_problem',f:C=>{const n=R(3,6),p=R(3,9),m=R(7,15);return{kind:'pad',form:NUM(m*p,{pre:'RM'}),q:n+' tiket ke Kota Dimensi berharga '+rm(n*p)+'. Berapakah harga '+m+' tiket pada kadar sama?',s:'Cari harga 1 tiket dahulu.',a:rm(n*p)+' ÷ '+n+' = '+rm(p)+'; '+rm(p)+' × '+m+' = '+rm(m*p)+'.'}}},
- route:{arch:'y6v2_7_4_1_recipe_route',f:C=>{const s=pick([2,3,4,5]),w=R(2,4),k=R(2,5);return{kind:'pad',form:NUM(w*k,{post:'botol'}),q:'Pasukan Wira berjalan '+s*k+' km. Setiap '+s+' km memerlukan '+w+' botol air. Berapa botol perlu dibawa?',s:s*k+' km ialah berapa kali '+s+' km?',a:s*k+' ÷ '+s+' = '+k+'; '+w+' × '+k+' = '+w*k+'.'}}},
- map:{arch:'y6v2_7_4_1_map_budget',f:C=>{const d=R(3,9),s=pick([2,3,5]),c=pick([1,2,3]);return{kind:'pad',form:NUM(d*s*c,{pre:'RM'}),q:'Jarak di peta '+d+' cm. Skala 1 cm = '+s+' km. Kos kereta kuda RM'+c+' setiap km. Berapakah jumlah kos?',s:'Tukar jarak peta kepada km dahulu.',a:d+' × '+s+' = '+d*s+' km; '+d*s+' × RM'+c+' = RM'+d*s*c+'.'}}},
- grid:{arch:'y6v2_7_4_1_route_problem',f:C=>{const a=R(2,6),b=R(2,6),s=pick([2,3,5]);return{kind:'pad',form:NUM((a+b)*s,{post:'km'}),q:'Di peta, A→B = '+a+' petak dan B→C = '+b+' petak. Skala 1 petak = '+s+' km. Berapakah jumlah perjalanan?',s:'Jumlahkan petak dahulu, kemudian darab dengan skala.',a:a+' + '+b+' = '+(a+b)+' petak; '+(a+b)+' × '+s+' = '+(a+b)*s+' km.'}}},
- plans:{arch:'y6v2_7_4_1_compare_plans',f:C=>{const da=R(12,20),ca=pick([2,2.5,3]),db=R(10,18),cb=pick([2,2.5,3,3.5]);const A=da*ca,B=db*cb;if(A===B)return null;return{kind:'pick',opts:[{id:'A',label:'Laluan A'},{id:'B',label:'Laluan B'}],correct:A<B?'A':'B',ansTxt:(A<B?'Laluan A, ':'Laluan B, ')+rm(Math.min(A,B)),
+ rProblem:{arch:'y6v2_7_4_1_ratio_problem',f:C=>{const[a,b]=base(6),u=R(2,8);return{wk:{lines:[addW([a,b],'Jumlah bahagian'),divW((a+b)*u,a+b,'1 bahagian (ℓ)'),mulW(a,u,'Jus (ℓ)')],value:a*u},kind:'pad',vis:{t:'bar',a,b,pair:['jus','air','drop','drop'],total:(a+b)*u,unit:'ℓ'},form:NUM(a*u,{post:'ℓ'}),q:'Jus : air = '+a+' : '+b+'. Jumlah campuran '+(a+b)*u+' ℓ. Berapa liter jus?',s:'Jumlah bahagian = '+(a+b)+'. Cari 1 bahagian dahulu.',a:(a+b)*u+' ÷ '+(a+b)+' = '+u+'; '+a+' × '+u+' = '+a*u+' ℓ.'}}},
+ pProblem:{arch:'y6v2_7_4_1_proportion_problem',f:C=>{const n=R(3,6),p=R(3,9),m=R(7,15);return{wk:{lines:[divW(n*p,n,'1 tiket (RM)'),mulW(p,m,m+' tiket (RM)')],value:m*p},kind:'pad',form:NUM(m*p,{pre:'RM'}),q:n+' tiket ke Kota Dimensi berharga '+rm(n*p)+'. Berapakah harga '+m+' tiket pada kadar sama?',s:'Cari harga 1 tiket dahulu.',a:rm(n*p)+' ÷ '+n+' = '+rm(p)+'; '+rm(p)+' × '+m+' = '+rm(m*p)+'.'}}},
+ route:{arch:'y6v2_7_4_1_recipe_route',f:C=>{const s=pick([2,3,4,5]),w=R(2,4),k=R(2,5);return{wk:{lines:[divW(s*k,s,'Berapa kali'),mulW(w,k,'Botol')],value:w*k},kind:'pad',form:NUM(w*k,{post:'botol'}),q:'Pasukan Wira berjalan '+s*k+' km. Setiap '+s+' km memerlukan '+w+' botol air. Berapa botol perlu dibawa?',s:s*k+' km ialah berapa kali '+s+' km?',a:s*k+' ÷ '+s+' = '+k+'; '+w+' × '+k+' = '+w*k+'.'}}},
+ map:{arch:'y6v2_7_4_1_map_budget',f:C=>{const d=R(3,9),s=pick([2,3,5]),c=pick([1,2,3]);return{wk:{lines:[mulW(d,s,'Jarak (km)'),mulW(d*s,c,'Kos (RM)')],value:d*s*c},kind:'pad',form:NUM(d*s*c,{pre:'RM'}),q:'Jarak di peta '+d+' cm. Skala 1 cm = '+s+' km. Kos kereta kuda RM'+c+' setiap km. Berapakah jumlah kos?',s:'Tukar jarak peta kepada km dahulu.',a:d+' × '+s+' = '+d*s+' km; '+d*s+' × RM'+c+' = RM'+d*s*c+'.'}}},
+ grid:{arch:'y6v2_7_4_1_route_problem',f:C=>{const a=R(2,6),b=R(2,6),s=pick([2,3,5]);return{wk:{lines:[addW([a,b],'Petak'),mulW(a+b,s,'Jarak (km)')],value:(a+b)*s},kind:'pad',form:NUM((a+b)*s,{post:'km'}),q:'Di peta, A→B = '+a+' petak dan B→C = '+b+' petak. Skala 1 petak = '+s+' km. Berapakah jumlah perjalanan?',s:'Jumlahkan petak dahulu, kemudian darab dengan skala.',a:a+' + '+b+' = '+(a+b)+' petak; '+(a+b)+' × '+s+' = '+(a+b)*s+' km.'}}},
+ plans:{arch:'y6v2_7_4_1_compare_plans',f:C=>{const da=R(12,20),ca=pick([2,2.5,3]),db=R(10,18),cb=pick([2,2.5,3,3.5]);const A=da*ca,B=db*cb;if(A===B)return null;return{wk:{lines:[WL(da+' × '+rm(ca)+' = ?',rm(A),[rm(A+da),rm(da+ca),rm(A-ca)],'A = '+rm(A)),WL(db+' × '+rm(cb)+' = ?',rm(B),[rm(B+db),rm(db+cb),rm(B-cb)],'B = '+rm(B))],finSay:'Jadi laluan manakah lebih murah?'},kind:'pick',opts:[{id:'A',label:'Laluan A'},{id:'B',label:'Laluan B'}],correct:A<B?'A':'B',ansTxt:(A<B?'Laluan A, ':'Laluan B, ')+rm(Math.min(A,B)),
   q:'Laluan A: '+da+' km, '+rm(ca)+' setiap km. Laluan B: '+db+' km, '+rm(cb)+' setiap km. Laluan manakah lebih murah?',s:'Kira jumlah kos setiap laluan: jarak × kos per km.',a:'A: '+da+' × '+rm(ca)+' = ?. B: '+db+' × '+rm(cb)+' = ?.'}}},
- scaleRev:{arch:'y6v2_7_4_1_reverse_problem',f:C=>{const cm=R(3,9),s=pick([2,3,4,5]);return{kind:'pad',form:NUM(s,{pre:'1 cm =',post:'km'}),q:'Laluan sebenar '+cm*s+' km dilukis '+cm+' cm di peta. Berapa km diwakili oleh 1 cm?',s:'Bahagi jarak sebenar dengan jarak peta.',a:cm*s+' ÷ '+cm+' = '+s+' km.'}}},
+ scaleRev:{arch:'y6v2_7_4_1_reverse_problem',f:C=>{const cm=R(3,9),s=pick([2,3,4,5]);return{wk:{lines:[divW(cm*s,cm,'1 cm (km)')],value:s},kind:'pad',form:NUM(s,{pre:'1 cm =',post:'km'}),q:'Laluan sebenar '+cm*s+' km dilukis '+cm+' cm di peta. Berapa km diwakili oleh 1 cm?',s:'Bahagi jarak sebenar dengan jarak peta.',a:cm*s+' ÷ '+cm+' = '+s+' km.'}}},
  claim:{arch:'y6v2_7_4_1_claim',f:C=>{const v=pick([[100000,'1 km','100 km'],[10000,'100 m','10 km'],[50000,'500 m','50 km']]),truth=Math.random()<.4;return{kind:'pick',opts:[{id:'Y',label:'Betul'},{id:'N',label:'Salah'}],correct:truth?'Y':'N',ansTxt:truth?'Betul':'Salah',
   q:C.who+' kata skala 1 : '+nf(v[0])+' bermaksud 1 cm di peta = '+(truth?v[1]:v[2])+' sebenar. Penilaian?',s:'1 cm × '+nf(v[0])+' = '+nf(v[0])+' cm. Tukar cm kepada m atau km.',a:nf(v[0])+' cm = ?'}}},
- multi:{arch:'y6v2_7_4_1_multi_constraint',f:C=>{const[a,b]=base(4),u=R(2,5),cap=(a+b)*u,red=a*u*R(2,5);return{kind:'pad',form:NUM(red/(a*u),{post:'bekas'}),q:'Ramuan merah : biru = '+a+' : '+b+'. Ada '+red+' ℓ merah. Setiap bekas memuatkan '+cap+' ℓ campuran. Berapa bekas penuh boleh dihasilkan?',s:'Satu bekas perlukan berapa liter merah? '+cap+' ℓ dibahagi '+(a+b)+' bahagian.',a:cap+' ÷ '+(a+b)+' × '+a+' = '+a*u+' ℓ merah setiap bekas; '+red+' ÷ '+a*u+' = '+red/(a*u)+'.'}}}
+ multi:{arch:'y6v2_7_4_1_multi_constraint',f:C=>{const[a,b]=base(4),u=R(2,5),cap=(a+b)*u,red=a*u*R(2,5);return{wk:{lines:[divW(cap,a+b,'1 bahagian (ℓ)'),mulW(a,u,'Merah setiap bekas (ℓ)'),divW(red,a*u,'Bekas')],value:red/(a*u)},kind:'pad',form:NUM(red/(a*u),{post:'bekas'}),q:'Ramuan merah : biru = '+a+' : '+b+'. Ada '+red+' ℓ merah. Setiap bekas memuatkan '+cap+' ℓ campuran. Berapa bekas penuh boleh dihasilkan?',s:'Satu bekas perlukan berapa liter merah? '+cap+' ℓ dibahagi '+(a+b)+' bahagian.',a:cap+' ÷ '+(a+b)+' × '+a+' = '+a*u+' ℓ merah setiap bekas; '+red+' ÷ '+a*u+' = '+red/(a*u)+'.'}}}
 };
 
 const GEN={
@@ -587,11 +599,41 @@ function check(){
   const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=potion(PCOL[(served-1)%SET],true);sl.classList.add('on','pop')}$('cauldron').classList.add('boil');
   $('check').textContent=served%SET===0?'Lihat rak ramuan ✦':'Seterusnya →';
   setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
- paAttempt(false),misses++;
+ paAttempt(false),misses++;offerWorked();
  if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',4000);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+/* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in pos-peninjau.html ----------
+   After 3 wrong tries (2 with both hints; fewer for a 2- or 3-choice pick) the hint button
+   offers a worked example: the pupil picks each small step (the multiplier, one part, × or ÷)
+   on a work card. The round ends without stars; the next one is the same kind. */
+let workedOffer=false,repeatNext=null;
+function workedNeed(){const n=q.kind==='pick'&&q.wk?q.opts.length:0;return n&&n<=2?1:n===3?2:3}
+function offerWorked(){if(workedOffer||solved||!workedPlan()||!(misses>=workedNeed()||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
+/* The worked plan for this round, or null: it must end at the round's own answer. */
+function workedPlan(){const P=window.PAWorked;if(!P||!q.wk)return null;
+ const lab=q.kind==='pick'?q.opts.find(o=>o.id===q.correct).label:null;
+ const plan=P.buildList(q.wk,{final:lab!==null?{choices:q.opts.map(o=>o.label),right:lab}:null});if(!plan)return null;
+ if(lab!==null)return plan.finalLabel===lab?plan:null;
+ if(q.kind==='mix')return q.need&&Number(plan.value)===q.need.v?plan:null;
+ const v=[].concat(plan.value),F=q.form&&q.form.fields;return F&&v.length===F.length&&F.every((f,i)=>Math.abs(Number(v[i])-f.v)<1e-9)?plan:null}
+function startWorked(){
+ const P=window.PAWorked,plan=workedPlan();if(!plan)return;
+ q.worked=true;workedOffer=false;hints++;hideMsg();$('bubble').classList.add('hide');
+ const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
+ const box=$('widget'),tl=$('tiles');tl.className='tiles wk';$('game').classList.add('wk-on');
+ msg('Jom kira sama-sama, satu langkah demi satu.');
+ $('ansrow')?.remove();box.querySelectorAll('button,input').forEach(b=>b.disabled=true);
+ box.insertAdjacentHTML('beforeend','<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>');
+ P.run(plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onFact:f=>P.reportFact('dapur-ramuan',f,paRound),onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}})}
+function finishWorked(){
+ if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);report(0);
+ repeatNext={mode:q.mode,ti:q.tierIx};
+ hideMsg();$('game').classList.remove('wk-on');pet('happy');$('say').textContent='Sekarang kamu cuba yang serupa!';$('bubble').classList.remove('hide');
+ const s=$('stamp');s.className='stamp ok';s.innerHTML='SIAP!<small>Cara Wira · '+esc(ansText())+'</small>';void s.offsetWidth;s.classList.add('show');
+ renderTrack(true);const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=potion(PCOL[(served-1)%SET],true);sl.classList.add('on')}
+ $('hint').textContent='Tanya Wira';$('check').disabled=false;$('check').textContent=served%SET===0?'Lihat rak ramuan ✦':'Cuba soalan serupa →'}
 function adapt(st){const k=q.mode,up=q.nTiers-1;
  if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Tempahan seterusnya lebih mencabar.','',2600),2000)}}
  else{clean[k]=0;if(hints+misses>=2&&tier[k]>0){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
@@ -599,8 +641,11 @@ function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get
  window.parent.postMessage({type:'PA_DAPUR_RAMUAN_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,index:served,tier:q.tierIx+1,prompt:q.q,stars:st,misses,hints,at:Date.now()},location.origin)}catch(e){}}
 
 /* ---------- aliran ---------- */
-function makeQ(){const k=cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
- const ti=Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
+/* DEV: a round picked by the 'Cuba Jom tengok cara' buttons is served next. */
+let forcedQ=null;
+function makeQ(){if(forcedQ){const x=forcedQ;forcedQ=null;return x}const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind with new numbers
+ const k=rep?rep.mode:cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
+ const ti=rep?Math.min(rep.ti,gens.length-1):Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
  return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch}}
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  $('stageN').textContent='RAMUAN '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Hari '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
@@ -610,9 +655,10 @@ function startRound(){if(served%SET===0)$('shelf').innerHTML=range(SET).map(i=>'
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<2||q.kind==='mix'?SUB[q.kind]:'');
  $('wiraImg').src=A+'wira-ahli-ramuan-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
- $('check').textContent='Semak';$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('bubble').classList.add('hide');
+ $('check').textContent='Semak';$('check').disabled=false;$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('hint').classList.remove('wk-offer');workedOffer=false;$('game').classList.remove('wk-on');$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
- setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ setTimeout(()=>{$('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
+ $('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildPanel()}
 function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';const cols=['#7ccd6a','#59c8ff','#ff6f8a','#ffc94a','#b79be0'];
  for(let i=0;i<26;i++){const e=document.createElement('i'),a=Math.random()*Math.PI*2,d=70+Math.random()*120;e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d-30+'px');e.style.background=cols[i%cols.length];e.style.animationDelay=(Math.random()*.15)+'s';e.style.borderRadius='50%';b.appendChild(e)}}
@@ -630,7 +676,7 @@ function hideStep(a){a=String(a||'').trim().replace(/\.$/,'');if(!a)return '';
  return [...ss,keep.join('=').trimEnd()+' = '+MASK(eq[eq.length-1].trim())].join(' ')+'.'}
 function hintTwo(){if(q.kind==='mix'){const M=q.mix;return M.mode==='fix'?q.mix.fixA+' '+M.pair[0]+' ialah '+M.a+' didarab berapa? Darab '+M.b+' dengan nombor yang sama.':'Cuba darab '+M.a+' dan '+M.b+' dengan 2. Masukkan bilangan itu.'}
  const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
- $('hint').onclick=()=>{if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Klu habis';if(hint2>=2)$('hint').disabled=true;sfx(620,.1)};
+ $('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Klu habis';if(hint2>=2)$('hint').disabled=true;sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if(q.kind==='pad'&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(q.kind==='pad'&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(q.kind==='pad'&&e.key==='Tab'){key('⇥');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
@@ -654,12 +700,38 @@ function runSim(key){const s=SIMS[key],Rt=window.PADapurRamuan;if(!Rt){$('simOut
  const plan=Rt.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
  if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod dapur yang sesuai.';$('simGo').hidden=true;return}
 $('simOut').innerHTML='<b>'+s.skill+'</b> → '+plan.start.map(m=>MODE_LABEL[m.mode].toLowerCase()+' (T'+(m.start+1)+')').join(', ')+' · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
-$('devBtn').onclick=()=>{if(!DEV_ENABLED)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+/* DEV: jump straight to a round of one worked-example kind and offer "Jom tengok cara" at once. */
+const WK_TRY=[
+ ['Masukkan bahan (nisbah)','d4-nisbah',c=>c.kind==='mix'],
+ ['Nombor hilang','d4-nisbah',c=>c.arch==='integrity_ratio_missing'&&c.kind==='pad'],
+ ['Nisbah setara','d5-nisbah',c=>c.arch==='integrity_ratio_equivalent'],
+ ['Ringkaskan nisbah','d5-nisbah',c=>c.arch==='integrity_ratio_simplify'],
+ ['Nilai satu unit','d4-kadaran',c=>c.arch==='integrity_rate_unit'],
+ ['Kadaran (darab)','d5-kadaran',c=>c.arch==='integrity_rate_scale'],
+ ['Kadaran (bahagi)','d5-kadaran',c=>c.arch==='integrity_rate_missing'],
+ ['Nisbah unit berbeza','d6-nisbah',c=>c.arch==='y6v2_7_2_1_same_unit'],
+ ['Dari jumlah','d6-nisbah',c=>c.arch==='y6v2_7_2_1_ratio_from_total'],
+ ['Lebih pekat','d6-nisbah',c=>c.arch==='y6v2_7_2_1_ratio_compare'],
+ ['Kadar perpuluhan','d6-kadaran',c=>c.arch==='y6v2_7_3_1_unit_rate'],
+ ['Lebih murah','d6-kadaran',c=>c.arch==='y6v2_7_3_1_compare_rates'],
+ ['Peta & kos','d6-masalah',c=>c.arch==='y6v2_7_4_1_map_budget'],
+ ['Berbilang syarat','d6-masalah',c=>c.arch==='y6v2_7_4_1_multi_constraint']];
+function drawWkTry(){const box=$('wkTry');if(!box)return;box.innerHTML=WK_TRY.map((k,i)=>'<button type="button" data-i="'+i+'">'+k[0]+'</button>').join('');
+ box.querySelectorAll('button').forEach(b=>b.onclick=()=>tryWorked(WK_TRY[+b.dataset.i]))}
+function tryWorked([label,hash,test]){
+ try{history.replaceState(null,'','#'+hash)}catch(e){}cfg=parseHash(hash);resetAll();
+ let found=null;
+ for(let i=0;i<3000&&!found;i++){const k=cfg.modes[i%cfg.modes.length],n=GEN[cfg.grade][k].length;served=i%cfg.modes.length;tier[k]=Math.floor(i/cfg.modes.length)%n;clean[k]=0;
+  const c=makeQ(),keep=q;q=c;let ok=false;try{ok=!!workedPlan()&&test(c)}catch(_){}q=keep;if(ok)found=c}
+ $('dev').hidden=true;$('complete').hidden=true;served=0;
+ if(!found){msg('DEV: tiada soalan "'+label+'" dijumpai.','bad',3000);return}
+ forcedQ=found;startRound();misses=3;offerWorked();setTimeout(()=>msg('DEV · '+label+': tekan “Jom tengok cara”.','',3500),800)}
+$('devBtn').onclick=()=>{if(!DEV_ENABLED)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();drawWkTry();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
 $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__dapurDebug=()=>q&&{kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,mix:q.mix,correct:q.correct,mixA,mixB}; // ujian sahaja
-window.__dapurGen={GEN}; // ujian sahaja
+window.__dapurGen={GEN,current:()=>q,planFor:x=>{const keep=q;q=x;try{return workedPlan()}finally{q=keep}},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q}}; // ujian sahaja
 function focusLaunchAllowed(){try{const p=new URLSearchParams(location.search),skill=p.get('skill'),host=window.parent,sk=window.PADapurRamuan?.SKILL?.[skill];/* The app's db is a top-level let (not window.db), so ask the bridge whether this frame is the active Focus launch. */return host!==window&&p.get('pa_focus_live')==='1'&&!!p.get('pa_nonce')&&!!sk&&Number(sk[0])===cfg.grade&&host.PAFocusMiniGamesLive?.isActiveFrame?.(window,p.get('pa_nonce'),skill,'dapur-ramuan')===true}catch(_){return false}}
 if(!DEV_ENABLED&&!focusLaunchAllowed()){document.body.innerHTML='<main style="min-height:100dvh;display:grid;place-items:center;padding:24px;background:#10263e;color:#fff6e0;font:700 16px system-ui;text-align:center"><section><h1>Dapur Ramuan Wira</h1><p>Buka latihan ini melalui Kemahiran Fokus untuk profil murid.</p></section></main>';return}
 resetAll();startRound();

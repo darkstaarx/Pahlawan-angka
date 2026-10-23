@@ -581,6 +581,13 @@ digit, then the round's choices.
    compare). A build round's plan ends at `q.target`; read / pad rounds at
    every field (m and cm). Plans cover D1 67%, D2 40%, D3–D5 100%, D6 94%;
    left: plain tool tasks (measure 7 cm) and estimates. DEV sheet: 13 buttons.
+   **Dapur Ramuan (3.87.33).** `buildList`: ratio lines (the multiplier, × it;
+   simplest form by the biggest common factor; units made the same first; a
+   share from the total via one part), rate lines (one unit first, then × or ÷),
+   compare (cross-multiply, or the price of one), map scale and costs. The
+   cauldron (`mix` fix) ends at `need.v`. Plans cover D4 91%, D5 100%, D6 87%;
+   left: "make it bigger" mixes (no single answer) and the true/false claims.
+   DEV sheet: 14 buttons.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
