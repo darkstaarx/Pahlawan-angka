@@ -30,6 +30,8 @@ async function gudang(target, hash, viewport) {
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(`${base}/gudang-harta.html?${target ? 'focus_target=' + encodeURIComponent(JSON.stringify(target)) : ''}#${hash}`);
   await page.waitForFunction(() => window.__gudangGen);
+  // Measure with the real fonts: Google Fonts swap in late, and the fallback font is wider.
+  await page.evaluate(() => document.fonts.ready);
   return { page, errors, close: () => context.close() };
 }
 const digits = (n, c) => Array.from({ length: c }, (_, i) => Math.floor(n / 10 ** i) % 10);
