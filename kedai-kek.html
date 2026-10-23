@@ -418,7 +418,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
-<script src="js/minigame-worked-v1.js?v=1.9.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.9.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/kedai-kek-router.js"></script>
 <script>
@@ -839,7 +839,7 @@ function startWorked(){
  const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
  msg('Jom kira sama-sama, satu langkah demi satu.');
  box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
- P.run(plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{html:KK_HTML,onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}})}
+ P.run(plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{html:KK_HTML,onFact:f=>P.reportFact('kedai-kek',f,paRound),onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}})}
 function finishWorked(){
  if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);report(0);
  repeatNext={mode:q.mode,ti:q.tierIx};

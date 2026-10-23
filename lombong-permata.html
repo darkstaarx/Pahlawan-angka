@@ -399,7 +399,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.9.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.9.1"></script>
 <script src="js/lombong-permata-router.js"></script>
 <script>
 (()=>{
@@ -708,7 +708,7 @@ function startWorked(){
  const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
  $('wsayTxt').textContent='Jom kira sama-sama, satu langkah demi satu.';$('wsay').classList.remove('hide');
  if(wp){box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
-  (wp.chain?P.runChain:P.run)(wp.chain||wp.plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});return}
+  (wp.chain?P.runChain:P.run)(wp.chain||wp.plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onFact:f=>P.reportFact('lombong-permata',f,paRound),onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});return}
  // No steps for this kind yet: the worked line, then the right answer.
  box.innerHTML='<div class="wk-wrap"><div class="wk-say">'+esc(q.a||q.s||'')+'</div><div class="wk-say"><b>Jawapan: '+esc(ansText())+'</b></div></div>';
  tl.innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';tl.querySelector('button').onclick=finishWorked;
