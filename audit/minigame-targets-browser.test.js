@@ -282,13 +282,14 @@ test('Jom tengok cara on the place-value board: a 2-choice round is offered afte
 });
 
 test('Jom tengok cara on the rack, two steps, patterns and compose: every step done, ends at the answer', async () => {
-  for (const [hash, cond] of [['d3-bina', "q.kind==='build'&&q.rack.mode==='build'"], ['d3-tambah', "q.kind==='build'&&q.rack.mode==='add'"], ['d3-tolak', "!!q.wk&&q.wk.t==='chain'&&!q.card"], ['d2-pola', "!!q.wk&&q.wk.t==='seq'"], ['d4-bina', "!!q.wk&&q.wk.t==='compose'"]]) {
+  for (const [hash, cond] of [['d3-bina', "q.kind==='build'&&q.rack.mode==='build'"], ['d3-tambah', "q.kind==='build'&&q.rack.mode==='add'"], ['d3-tolak', "!!q.wk&&q.wk.t==='chain'&&!q.card"], ['d2-pola', "!!q.wk&&q.wk.t==='seq'"], ['d4-bina', "!!q.wk&&q.wk.t==='compose'"], ['d3-banding', "!!q.wk&&q.wk.t==='order'"], ['d3-bina', "!!q.wk&&q.wk.t==='fromWords'"]]) {
     const g = await gudang(null, hash, { width: 390, height: 780 });
-    const r0 = await g.page.evaluate(cond => { const ok = new Function('q', 'return ' + cond); for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (ok(q)) return { kind: q.kind, mode: q.rack && q.rack.mode, v: q.form ? q.form.fields[0].v : q.need.v }; } return null; }, cond);
+    const r0 = await g.page.evaluate(cond => { const ok = new Function('q', 'return ' + cond); for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (ok(q)) return { kind: q.kind, mode: q.rack && q.rack.mode, v: q.form ? q.form.fields[0].v : q.need ? q.need.v : q.opts.find(o => o.id === q.correct).label.replace(/\D/g, '') }; } return null; }, cond);
     assert.ok(r0, hash);
     await g.page.waitForTimeout(800);
     for (let i = 0; i < 3; i++) {
-      if (r0.mode === 'build') await g.page.evaluate(() => document.getElementById('check').click());
+      if (r0.kind === 'pick') await g.page.evaluate(() => { const q = window.__gudangGen.current(); [...document.querySelectorAll('#tiles [data-o]')].find(x => x.dataset.o !== q.correct).click(); document.getElementById('check').click(); });
+      else if (r0.mode === 'build') await g.page.evaluate(() => document.getElementById('check').click());
       else { await g.page.keyboard.press('1'); await g.page.evaluate(() => document.getElementById('check').click()); await g.page.keyboard.press('Backspace'); }
     }
     assert.equal(await g.page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', hash);

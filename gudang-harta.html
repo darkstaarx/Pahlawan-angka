@@ -457,7 +457,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.3.0"></head><body>
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.4.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -512,7 +512,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/engine/reading-pairs-v1.js?v=1.0.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.3.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.4.0"></script>
 <script>
 (()=>{
 'use strict';
@@ -567,16 +567,16 @@ const Fx={
  missingPart:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);const parts=dig(n,c).map((d,i)=>d*PV[i]).reverse().filter(x=>x),k=R(0,parts.length-1),miss=parts[k];
   return{kind:'pad',wk:{t:'missingPart',n,i:String(miss).length-1},card:nf(n)+' = '+parts.map((p,i)=>i===k?'___':nf(p)).join(' + '),form:NUM(miss),q:'Apakah nilai yang hilang?',s:'Cerakinkan '+nf(n)+' ikut nilai tempat.',a:'Bahagian yang hilang = '+nf(miss)+'.'}}}),
  compose:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);return{kind:'pad',wk:{t:'compose',n},card:expd(n,c)+' = ?',form:NUM(n),q:'Nilai-nilai tempat ini membentuk nombor apa?',s:'Letak setiap nilai pada tempatnya. Tempat kosong ditulis 0.',a:expd(n,c)+' = '+nf(n)+'.'}}}),
- expanded:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);const ok=expd(n,c),bad=nears(n,c,4).map(m=>expd(m,c));
-  const d=dig(n,c),sw=d.map((x,i)=>x*PV[Math.min(c-1,i+1)]).reverse().filter(x=>x).map(nf).join(' + ');return{kind:'pick',...opts([sw,...bad],ok),q:'Cerakinkan '+nf(n)+' mengikut nilai tempat.',s:'Setiap digit didarab dengan nilai tempatnya.',a:nf(n)+' = '+ok+'.'}}}),
- toWords:(c,arch)=>({arch,f:C=>{const n=nOf(c);return{kind:'pick',...opts(nears(n,c,4).map(words),words(n)),q:'Pilih perkataan bagi '+nf(n)+'.',s:'Baca ikut kumpulan dari kiri: ribu, kemudian ratus, puluh, sa.',a:nf(n)+' dibaca “'+words(n)+'”.'}}}),
- fromWords:(c,arch)=>({arch,f:C=>{const n=nOf(c);return{kind:'pick',...opts(nears(n,c,4).map(nf),nf(n)),q:'Pilih angka bagi “'+words(n)+'”.',s:'Tulis setiap bahagian pada tempatnya. Tempat yang tiada disebut ialah 0.',a:'“'+words(n)+'” = '+nf(n)+'.'}}}),
+ expanded:(c,arch)=>({arch,f:C=>{let n;do{n=nOf(c)}while(dig(n,c).filter(x=>x).length<3);const ok=expd(n,c),bad=nears(n,c,4).map(m=>expd(m,c)),wk={t:'expanded',n};
+  const d=dig(n,c),sw=d.map((x,i)=>x*PV[Math.min(c-1,i+1)]).reverse().filter(x=>x).map(nf).join(' + ');return{kind:'pick',wk,...opts([sw,...bad],ok),q:'Cerakinkan '+nf(n)+' mengikut nilai tempat.',s:'Setiap digit didarab dengan nilai tempatnya.',a:nf(n)+' = '+ok+'.'}}}),
+ toWords:(c,arch)=>({arch,f:C=>{const n=nOf(c);return{kind:'pick',wk:{t:'toWords',n},...opts(nears(n,c,4).map(words),words(n)),q:'Pilih perkataan bagi '+nf(n)+'.',s:'Baca ikut kumpulan dari kiri: ribu, kemudian ratus, puluh, sa.',a:nf(n)+' dibaca “'+words(n)+'”.'}}}),
+ fromWords:(c,arch)=>({arch,f:C=>{const n=nOf(c);return{kind:'pick',wk:{t:'fromWords',n},...opts(nears(n,c,4).map(nf),nf(n)),q:'Pilih angka bagi “'+words(n)+'”.',s:'Tulis setiap bahagian pada tempatnya. Tempat yang tiada disebut ialah 0.',a:'“'+words(n)+'” = '+nf(n)+'.'}}}),
  bigger:(c,arch,small)=>({arch,f:C=>{const a=nOf(c),b=pick(nears(a,c,3));const big=!small||Math.random()<.5,ans=big?Math.max(a,b):Math.min(a,b);return{kind:'pick',wk:{t:'compare',a,b,ask:big?'big':'small'},...opts([nf(a),nf(b)],nf(ans)),
   q:'Yang manakah lebih '+(big?'besar':'kecil')+': '+nf(a)+' atau '+nf(b)+'?',s:'Banding digit dari tempat paling kiri. Digit pertama yang berbeza menentukan.',a:'Banding digit dari kiri: '+nf(ans)+' lebih '+(big?'besar':'kecil')+'.'}}}),
  symbol:(c,arch)=>({arch,f:C=>{const a=nOf(c),b=Math.random()<.12?a:pick(nears(a,c,3)),s=a>b?'>':a<b?'<':'=';return{kind:'pick',wk:{t:'compare',a,b,ask:'symbol'},card:nf(a)+' ___ '+nf(b),opts:['<','>','='].map(x=>({id:x,label:x})),correct:s,ansTxt:nf(a)+' '+s+' '+nf(b),
   q:'Simbol manakah betul?',s:'Mulut buaya terbuka ke arah nombor yang lebih besar.',a:nf(a)+' '+s+' '+nf(b)+'.'}}}),
  order:(c,arch,desc)=>({arch,f:C=>{const a=nOf(c),L=[a,...nears(a,c,3)].slice(0,4),asc=[...L].sort((x,y)=>x-y),T=(desc?[...asc].reverse():asc).map(nf).join(', '),w1=(desc?asc:[...asc].reverse()).map(nf).join(', '),w2=[asc[1],asc[0],...asc.slice(2)].map(nf).join(', ');
-  return{kind:'pick',...opts([w1,w2],T),q:'Susun '+shuffle(L).map(nf).join(', ')+' secara '+(desc?'menurun (besar → kecil)':'menaik (kecil → besar)')+'.',s:'Banding digit dari kiri. Cari yang paling '+(desc?'besar':'kecil')+' dulu.',a:(desc?'Menurun':'Menaik')+': '+T+'.'}}}),
+  const sh=shuffle(L);return{kind:'pick',wk:{t:'order',list:sh,desc:!!desc},...opts([w1,w2],T),q:'Susun '+sh.map(nf).join(', ')+' secara '+(desc?'menurun (besar → kecil)':'menaik (kecil → besar)')+'.',s:'Banding digit dari kiri. Cari yang paling '+(desc?'besar':'kecil')+' dulu.',a:(desc?'Menurun':'Menaik')+': '+T+'.'}}}),
  round:(c,arch,place,line)=>({arch,f:C=>{let n;do{n=nOf(c)}while(n%PV[place+1]===0);const P=PV[place+1],lo=Math.floor(n/P)*P,hi=lo+P,r=n-lo>=P/2?hi:lo,lab=nf(P);
   return line?{kind:'pick',wk:{t:'round',n,place},vis:{t:'line',lo,hi,v:n},opts:[{id:'L',label:nf(lo)},{id:'H',label:nf(hi)}],correct:r===lo?'L':'H',ansTxt:nf(r),
    q:'Bundarkan '+nf(n)+' kepada '+PLACE[place+1]+' terdekat.',s:'Nombor itu lebih hampir ke hujung mana? Separuh jalan dibundar naik.',a:'Lihat digit '+PLACE[place]+': '+dig(n,7)[place]+'. Jadi '+nf(n)+' ≈ '+nf(r)+'.'}
@@ -666,14 +666,14 @@ const ops6=(arch,v)=>({arch,f:C=>{
 /* ---------- D6: nombor hingga juta ---------- */
 const jt=v=>dn(v)+' juta';
 const D6={
- write:{arch:'y6v2_1_1_1_word_write',f:C=>{const n=R(1,9)*1e6+R(0,9)*1e5*R(0,1)+R(0,99)*1000+R(0,9)*100*R(0,1)+R(0,99);return{kind:'pad',form:NUM(n),q:'Tulis dalam angka: “'+words(n)+'”.',s:'Juta, ribu, kemudian ratus. Setiap kumpulan ada 3 digit — isi 0 jika tiada.',a:'“'+words(n)+'” = '+nf(n)+'.'}}},
+ write:{arch:'y6v2_1_1_1_word_write',f:C=>{const n=R(1,9)*1e6+R(0,9)*1e5*R(0,1)+R(0,99)*1000+R(0,9)*100*R(0,1)+R(0,99);return{kind:'pad',wk:{t:'fromWords',n},form:NUM(n),q:'Tulis dalam angka: “'+words(n)+'”.',s:'Juta, ribu, kemudian ratus. Setiap kumpulan ada 3 digit — isi 0 jika tiada.',a:'“'+words(n)+'” = '+nf(n)+'.'}}},
  digit:{arch:'y6v2_1_1_2_digit_value',f:C=>{let n,i;do{n=R(1e6,9999999);i=uniq(n,7)}while(i==null);const d=dig(n,7)[i];return{kind:'pad',form:NUM(d*PV[i]),q:'Apakah nilai digit '+d+' dalam '+nf(n)+'?',s:'Kira tempat dari kanan: sa, puluh, ratus, ribu, puluh ribu, ratus ribu, juta.',a:d+' × '+nf(PV[i])+' = '+nf(d*PV[i])+'.'}}},
  dec2num:{arch:'y6v2_1_1_4_decimal_to_number',f:C=>{const v=R(11,99)/pick([10,100]);return{kind:'pad',form:NUM(Math.round(v*1e6)),q:jt(v)+' bersamaan berapa?',s:'1 juta = 1 000 000. Darab dengan 1 000 000.',a:dn(v)+' × 1 000 000 = '+nf(Math.round(v*1e6))+'.'}}},
  num2dec:{arch:'y6v2_1_1_4_number_to_decimal',f:C=>{const n=R(11,99)*pick([1e5,1e4]);return{kind:'pad',form:NUM(n/1e6,{dec:1,post:'juta'}),q:'Tulis '+nf(n)+' dalam unit juta.',s:'Bahagi dengan 1 000 000: alihkan titik perpuluhan 6 tempat ke kiri.',a:nf(n)+' ÷ 1 000 000 = '+dn(n/1e6)+' juta.'}}},
  frac:{arch:'y6v2_1_1_3_fraction_to_number',f:C=>{const[a,b]=pick([[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[1,10],[7,10]]);return{kind:'pad',form:NUM(1e6*a/b),q:a+'/'+b+' juta bersamaan berapa?',s:'Cari 1/'+b+' daripada 1 000 000 dulu, kemudian darab '+a+'.',a:'1 000 000 ÷ '+b+' × '+a+' = '+nf(1e6*a/b)+'.'}}},
  compare:{arch:'y6v2_1_1_4_compare',f:C=>{const v=R(201,899)/100,n=Math.round(v*1e6)+pick([-1,1])*R(1,9)*pick([1000,10000]);const big=v*1e6>n?jt(v):nf(n);return{kind:'pick',...opts([jt(v),nf(n)],big,2),q:'Yang manakah lebih besar: '+jt(v)+' atau '+nf(n)+'?',s:'Tukar '+jt(v)+' kepada nombor penuh dulu.',a:jt(v)+' = '+nf(Math.round(v*1e6))+'. Banding dengan '+nf(n)+'.'}}},
  order:{arch:'y6v2_1_1_1_order_numbers',f:C=>{const b=R(2,9)*1e6,L=shuffle([b+150000,b+105000,b+51000,b+510000]).slice(0,3),asc=[...L].sort((x,y)=>x-y),T=asc.map(nf).join(' < ');
-  return{kind:'pick',...opts([[...asc].reverse().map(nf).join(' < '),[asc[1],asc[0],asc[2]].map(nf).join(' < ')],T),q:'Susun dari kecil ke besar: '+L.map(nf).join(', ')+'.',s:'Juta sama. Banding digit ratus ribu, kemudian puluh ribu.',a:'Menaik: '+T+'.'}}},
+  return{kind:'pick',wk:{t:'order',list:L},...opts([[...asc].reverse().map(nf).join(' < '),[asc[1],asc[0],asc[2]].map(nf).join(' < ')],T),q:'Susun dari kecil ke besar: '+L.map(nf).join(', ')+'.',s:'Juta sama. Banding digit ratus ribu, kemudian puluh ribu.',a:'Menaik: '+T+'.'}}},
  next:{arch:'y6v2_1_1_5_next',f:C=>{const st=pick([125000,250000,75000,200000,150000])*(Math.random()<.7?1:-1),s0=R(2,6)*1e6+R(0,9)*1e5,L=range(4).map(i=>s0+i*st);return{kind:'pad',wk:{t:'seq',list:L,k:3},vis:{t:'trail',items:[...L.slice(0,3).map(nf),'?']},form:NUM(L[3]),q:'Apakah sebutan seterusnya?',s:'Cari beza dua sebutan bersebelahan.',a:'Beza '+nf(st)+'. '+nf(L[2])+(st>0?' + ':' − ')+nf(Math.abs(st))+' = '+nf(L[3])+'.'}}},
  rule:{arch:'y6v2_1_1_5_rule',f:C=>{const st=pick([.25,.15,.2,.5,.05]),s0=R(10,30)/10,L=range(4).map(i=>+(s0+i*st).toFixed(2));const T='Tambah '+dn(st)+' juta';return{kind:'pick',vis:{t:'trail',items:L.map(jt)},...opts(['Tambah '+dn(st*10)+' juta','Tambah '+dn(st/5)+' juta','Tolak '+dn(st)+' juta'],T),
   q:'Apakah peraturan pola ini?',s:'Tolak sebutan pertama daripada sebutan kedua.',a:dn(L[1])+' − '+dn(L[0])+' = '+dn(st)+' juta.'}}},
@@ -1195,9 +1195,9 @@ function startWorked(){
  // Place-value rounds (round, compare, place name, digit value) bring their own board spec (q.wk).
  // Two-step rounds run two boards; the rack's add/sub rounds use the written board (the rack already lays them out that way).
  const P=window.PAWorked,rackOp=q.kind==='build'&&(q.rack.mode==='add'||q.rack.mode==='sub'),want=q.kind==='pad'?q.form.fields[0].v:q.need?.v,
-  chain=P&&q.wk?.t==='chain'&&P.buildChain?.(q.wk,{story:!q.card}),pv=!chain&&P&&q.wk&&((q.wk.t==='seq'||q.wk.t==='apply')?P.buildSeq?.(q.wk):P.buildPV?.(q.wk)),
+  chain=P&&q.wk?.t==='chain'&&P.buildChain?.(q.wk,{story:!q.card}),pv=!chain&&P&&q.wk&&((q.wk.t==='seq'||q.wk.t==='apply')?P.buildSeq?.(q.wk):P.buildPV?.(q.wk,{final:q.kind==='pick'?{choices:q.opts.map(o=>o.label),right:ansText()}:null})),
   par=!pv&&!chain&&P&&(rackOp||q.kind==='pad'&&q.form?.fields?.length===1)&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card&&!rackOp}),
-  plan=pv&&String(pv.answer)===String(pvAnswer())?pv:built&&built.answer===want&&!built.rem?built:null;
+  plan=pv&&(pv.finalLabel!==undefined?pv.finalLabel===ansText():String(pv.answer)===String(pvAnswer()))?pv:built&&built.answer===want&&!built.rem?built:null;
  q.worked=true;workedOffer=false;hints++;reportProgress('worked');hideMsg();
  const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
  const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');

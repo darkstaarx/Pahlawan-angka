@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.3.0';
+  const VERSION='1.4.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'];
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   const digits=n=>String(Math.abs(Math.trunc(n))).split('').map(Number).reverse();
@@ -179,8 +179,32 @@
     const out=[right];for(const w of wrongs)if(w!==undefined&&w!==null&&!out.includes(w)&&out.length<max)out.push(w);
     const k=(String(right).length+out.length)%out.length;return[...out.slice(1,1+k),out[0],...out.slice(1+k)];
   }
+  /* Malay number words: the same rules as the games (gudang-harta.html words()). */
+  const ONE=['','satu','dua','tiga','empat','lima','enam','tujuh','lapan','sembilan'];
+  function w999(n){const h=Math.floor(n/100),t=Math.floor(n%100/10),u=n%10,r=n%100,p=[];if(h)p.push(h===1?'seratus':ONE[h]+' ratus');
+   if(r){if(r<10)p.push(ONE[r]);else if(r===10)p.push('sepuluh');else if(r===11)p.push('sebelas');else if(r<20)p.push(ONE[u]+' belas');else p.push(ONE[t]+' puluh'+(u?' '+ONE[u]:''))}return p.join(' ')}
+  function words(n){if(!n)return 'sifar';const j=Math.floor(n/1e6),k=Math.floor(n%1e6/1000),r=n%1000,p=[];if(j)p.push(w999(j)+' juta');if(k)p.push(k===1?'seribu':w999(k)+' ribu');if(r)p.push(w999(r));return p.join(' ')}
+  // Word chunks of n, biggest first: [{w, cols}] — juta, ribu, ratus, then puluh+sa together.
+  function chunks(n){
+    const j=Math.floor(n/1e6),k=Math.floor(n%1e6/1000),r=n%1000,h=Math.floor(r/100),t=r%100,out=[];
+    if(j)out.push({w:w999(j)+' juta',cols:[6,7,8].filter(c=>c<digits(n).length),kind:'juta',v:j});
+    if(k)out.push({w:k===1?'seribu':w999(k)+' ribu',cols:[3,4,5].filter(c=>c<digits(n).length),kind:'ribu',v:k});
+    if(h)out.push({w:h===1?'seratus':ONE[h]+' ratus',cols:[2],kind:'ratus',v:h});
+    if(t)out.push({w:w999(t),cols:t>=10?[0,1]:[0],kind:'puluh',v:t});
+    return out;
+  }
+  function chunkWrongs(c){
+    const nm=(d,p)=>d===1?{puluh:'sepuluh',ratus:'seratus',ribu:'seribu'}[p]:ONE[d]+' '+p;   // seratus, not "satu ratus"
+    if(c.kind==='ratus')return[nm(c.v,'puluh'),nm(c.v,'ribu')];
+    // Slips a child makes: the digits read the other way round, a place too high.
+    if(c.kind==='puluh'){const a=Math.floor(c.v/10),b=c.v%10,sw=b*10+a;return[sw!==c.v&&b?w999(sw):w999(c.v+10<100?c.v+10:c.v-10),a?w999(a*100+b):(b===1?'sepuluh':ONE[b]+' puluh')]}
+    if(c.kind==='ribu'){const rev=Number(String(c.v).split('').reverse().join(''));
+      const R=x=>x===1?'seribu':w999(x)+' ribu';
+      return c.v<10?[nm(c.v,'ratus'),R(c.v*10)]:[rev!==c.v&&rev>0?R(rev):R(c.v+10<1000?c.v+10:c.v-10),c.v*10<1000?R(c.v*10):R(c.v-1)]}
+    return[w999(c.v)+' ribu',w999(c.v)+' ratus'];
+  }
   const expandStr=n=>digits(n).map((d,i)=>d*PV[i]).reverse().filter(x=>x).map(nf).join(' + ');
-  function buildPV(spec){
+  function buildPV(spec,opt={}){
     if(!spec||typeof spec!=='object')return null;
     const t=spec.t;
     if(t==='round'){
@@ -231,6 +255,50 @@
       }
       return{op:'pv',rows:[n],blank:[0],cols:D.length,steps,done:`${expandStr(n)} = ${nf(n)}.`,answer:n};
     }
+    // The round's own last choice (a pick round): {choices, right}.
+    const fin=opt.final&&Array.isArray(opt.final.choices)&&opt.final.choices.includes(opt.final.right)?opt.final:null;
+    const finalStep=say=>fin?[{kind:'pick',col:-1,say,right:fin.right,choices:fin.choices.length>4?fin.choices.slice(0,4):fin.choices,after:{note:''}}]:[];
+    if(t==='order'){
+      const L=spec.list;if(!Array.isArray(L)||L.length<2||L.some(x=>!Number.isInteger(x)||x<0)||new Set(L).size!==L.length)return null;
+      const cols=Math.max(...L.map(x=>digits(x).length)),R=L.map((_,i)=>i),steps=[],small=!spec.desc;let rank=1;
+      while(R.length>1){
+        const D=R.map(r=>digits(L[r]));let j=cols-1;while(j>0&&D.every(d=>(d[j]||0)===(D[0][j]||0)))j--;
+        const pickRow=R.reduce((a,b)=>small?(L[b]<L[a]?b:a):(L[b]>L[a]?b:a));
+        steps.push({kind:'tap',row:pickRow,col:j,anyCol:true,pre:{diff:j,diffRows:[...R]},say:`Cari nombor paling ${small?'kecil':'besar'}. Banding tempat ${PLACE[j]}, kemudian tekan nombor itu.`,
+          after:{done:{row:pickRow,rank},note:`${nf(L[pickRow])} ialah ${rank===1?'pertama':'ke-'+rank}.`}});
+        R.splice(R.indexOf(pickRow),1);rank++;
+      }
+      steps.push({kind:'show',col:-1,say:`Tinggal ${nf(L[R[0]])}: ia ${'ke-'+rank}.`,after:{done:{row:R[0],rank},note:'Semua sudah tersusun.'}});
+      steps.push(...finalStep(`Jadi susunan ${small?'menaik':'menurun'} ialah?`));
+      return{op:'pv',rows:L,cols,steps,done:`${small?'Menaik':'Menurun'}: ${[...L].sort((a,b)=>small?a-b:b-a).map(nf).join(', ')}.`,answer:fin?fin.right:null,finalLabel:fin?fin.right:undefined};
+    }
+    if(t==='toWords'){
+      const n=spec.n;if(!Number.isInteger(n)||n<1)return null;
+      const C=chunks(n),steps=[];let said=[];
+      for(const c of C){said=said.concat(c.w);
+        steps.push({kind:'pick',col:-1,pre:{group:c.cols},say:`${c.cols.length>1?'Digit ':'Digit '}${c.cols.slice().reverse().map(i=>digits(n)[i]).join('')} di sini dibaca?`,right:c.w,choices:order(c.w,chunkWrongs(c)),after:{note:`Setakat ini: ${said.join(' ')}.`}});
+      }
+      steps.push(...finalStep('Jadi perkataan yang betul ialah?'));
+      return{op:'pv',rows:[n],cols:digits(n).length,steps,done:`${nf(n)} dibaca “${words(n)}”.`,answer:fin?fin.right:words(n),finalLabel:fin?fin.right:undefined};
+    }
+    if(t==='fromWords'){
+      const n=spec.n,D=digits(n);if(!Number.isInteger(n)||n<10)return null;
+      const C=chunks(n),word=i=>(C.find(c=>c.cols.includes(i))||{}).w,steps=[];
+      for(let i=D.length-1;i>=0;i--){
+        if(D[i])steps.push({kind:'tap',row:0,col:i,blank:true,say:`“${word(i)}”: digit ${D[i]} di tempat ${PLACE[i]}. Tekan tempat itu.`,after:{fill:{row:0,col:i,digit:D[i]},note:`Tulis ${D[i]}.`}});
+        else steps.push({kind:'show',col:i,say:`Tempat ${PLACE[i]} tidak disebut. Tulis 0.`,after:{fill:{row:0,col:i,digit:0},note:'Tempat yang tiada disebut ialah 0.'}});
+      }
+      steps.push(...finalStep('Jadi angka yang betul ialah?'));
+      return{op:'pv',rows:[n],blank:[0],cols:D.length,steps,done:`“${words(n)}” = ${nf(n)}.`,answer:n,finalLabel:fin?fin.right:undefined};
+    }
+    if(t==='expanded'){
+      const n=spec.n,D=digits(n);if(!Number.isInteger(n)||n<10)return null;
+      const steps=[];
+      for(let i=D.length-1;i>=0;i--){if(!D[i])continue;const v=D[i]*PV[i];
+        steps.push({kind:'pick',col:i,say:`Digit ${D[i]} di tempat ${PLACE[i]}: nilainya?`,right:nf(v),choices:order(nf(v),[nf(D[i]),nf(v*10)].filter(x=>x!==nf(v))),after:{mark:{row:0,col:i},note:`${D[i]} × ${nf(PV[i])} = ${nf(v)}.`}})}
+      steps.push(...finalStep('Jadi cerakinan yang betul ialah?'));
+      return{op:'pv',rows:[n],cols:D.length,steps,done:`${nf(n)} = ${expandStr(n)}.`,answer:fin?fin.right:expandStr(n),finalLabel:fin?fin.right:undefined};
+    }
     if(t==='missingPart'){
       // 9041 = 9000 + ___ + 1: the places already written go grey; the pupil finds the one left.
       const n=spec.n,i=spec.i,D=digits(n);if(!Number.isInteger(n)||!(i>=0&&i<D.length)||!D[i])return null;
@@ -268,7 +336,7 @@
       const rowPV=(v,r)=>{const D=digits(v),blank=(plan.blank||[]).includes(r);return`<div class="wk-row wk-pvrow${blank?' wk-blank':''}" data-row="${r}"><span class="wk-op"></span>${cols.map(i=>cell('wk-d wk-tap'+(blank?' wk-empty':''),blank||D[i]===undefined?'':D[i],i,` data-row="${r}"`)).join('')}</div>`};
       const sym=plan.rows.length===2&&plan.steps.some(s=>s.after&&s.after.sym)?'<div class="wk-sym" aria-live="polite"></div>':'';
       return `<div class="wk-board wk-pv" style="--n:${n}"><div class="wk-row wk-head"><span class="wk-op"></span>${head2}</div>
-        ${rowPV(plan.rows[0],0)}${sym}${plan.rows[1]!==undefined?rowPV(plan.rows[1],1):''}
+        ${plan.rows.length>2?plan.rows.map((v,r)=>rowPV(v,r)).join(''):rowPV(plan.rows[0],0)+sym+(plan.rows[1]!==undefined?rowPV(plan.rows[1],1):'')}
         ${plan.answerRow?`<div class="wk-line"></div><div class="wk-row wk-ans"><span class="wk-op">${esc(plan.answerRow)}</span>${cols.map(i=>cell('wk-a','',i)).join('')}</div>`:''}</div>`;
     }
     if(plan.op==='div'){
@@ -309,6 +377,7 @@
       if(a.reveal)el.board.querySelectorAll('.wk-head .wk-hide').forEach(c=>{c.textContent=c.dataset.name==='puluh ribu'?'p.ribu':c.dataset.name==='ratus ribu'?'r.ribu':c.dataset.name;c.classList.remove('wk-hide');c.classList.add('wk-pop')});
       if(a.answer!==undefined){const D=digits(a.answer);el.board.querySelectorAll('.wk-ans .wk-a').forEach(c=>{const v=D[Number(c.dataset.col)];if(v!==undefined){c.textContent=v;c.classList.add('wk-drop')}})}
       if(a.sym){const g=q('.wk-sym');if(g){g.textContent=a.sym;g.classList.add('wk-pop')}}
+      if(a.done){const r=q(`.wk-pvrow[data-row="${a.done.row}"]`);if(r){r.classList.add('wk-rowdone');const b=r.querySelector('.wk-op');if(b){b.textContent=a.done.rank;b.classList.add('wk-rank','wk-pop')}}}
       if(a.fill&&a.fill.i!==undefined){const c=q(`.wk-box[data-i="${a.fill.i}"]`);if(c){c.textContent=nf(a.fill.v);c.classList.remove('wk-q');c.classList.add('wk-drop')}}
       else if(a.fill){const c=q(`.wk-pvrow[data-row="${a.fill.row}"] [data-col="${a.fill.col}"]`);if(c){c.textContent=a.fill.digit;c.classList.remove('wk-empty');c.classList.add('wk-drop')}}
     };
@@ -318,13 +387,16 @@
       if(k>=plan.steps.length){focus(-1);tapCells(false);el.say.innerHTML=plan.done?`<b>Siap!</b> ${esc(plan.done)}`:`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
       const s=plan.steps[k];focus(s.kind==='tap'?-1:s.col);el.say.textContent=s.say;opt.onShow&&opt.onShow(k,plan.steps.length);
       if(s.pre&&s.pre.pair){el.board.querySelectorAll('.wk-box').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('wk-pair',s.pre.pair.includes(i));c.classList.toggle('wk-target',i===s.pre.hop)})}
-      if(s.pre){const cells=col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`);
+      el.board.querySelectorAll('.wk-diff,.wk-grp').forEach(c=>c.classList.remove('wk-diff','wk-grp'));
+      if(s.pre&&s.pre.group)s.pre.group.forEach(col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`).forEach(c=>c.classList.add('wk-grp')));
+      if(s.pre&&s.pre.diffRows){s.pre.diffRows.forEach(r=>{const c=q(`.wk-pvrow[data-row="${r}"] [data-col="${s.pre.diff}"]`);if(c)c.classList.add('wk-diff')})}
+      else if(s.pre){const cells=col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`);
         if(s.pre.same)s.pre.same.forEach(c=>cells(c).forEach(x=>x.classList.add('wk-same')));
         if(s.pre.diff!==undefined)cells(s.pre.diff).forEach(x=>x.classList.add('wk-diff'))}
       // A tap step: the pupil touches the digit on the board; no tiles.
       tapCells(s.kind==='tap');
       // Where a place differs, only that place glows; the other digits stay quiet.
-      if(s.kind==='tap'&&s.pre?.diff!==undefined)el.board.querySelectorAll('.wk-can').forEach(c=>{if(Number(c.dataset.col)!==s.pre.diff)c.classList.remove('wk-can')});
+      if(s.kind==='tap'&&s.pre?.diff!==undefined)el.board.querySelectorAll('.wk-can').forEach(c=>{if(Number(c.dataset.col)!==s.pre.diff||(s.pre.diffRows&&!s.pre.diffRows.includes(Number(c.dataset.row))))c.classList.remove('wk-can')});
       if(s.kind==='tap'){el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';el.board.querySelector('.wk-board')?.classList.add('wk-tapnow');return}
       el.board.querySelector('.wk-board')?.classList.remove('wk-tapnow');
       // The story's sentence choices sit right under Wira's question (el.inline) when the page gives a place for them.
@@ -339,7 +411,7 @@
     let misses=0;
     const tap=c=>{
       if(busy)return;const s=plan.steps[k];if(!s||s.kind!=='tap')return;
-      if(Number(c.dataset.row)!==s.row||Number(c.dataset.col)!==s.col){
+      if(Number(c.dataset.row)!==s.row||(!s.anyCol&&Number(c.dataset.col)!==s.col)){
         misses++;c.classList.remove('wk-no');void c.offsetWidth;c.classList.add('wk-no');
         q(`.wk-pvrow[data-row="${s.row}"] [data-col="${s.col}"]`)?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
       }
