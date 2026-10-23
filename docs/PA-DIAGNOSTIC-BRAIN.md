@@ -508,7 +508,7 @@ digit, then the round's choices.
    **DEV shortcut (3.87.22, PR #96 merged):** the mini game DEV sheet (Gudang, Lombong) has
    "Cuba Jom tengok cara": one button per worked-example kind; it finds a
    round of that kind (`forcedQ`) and offers "Jom tengok cara" at once.
-   **Gerai Wirayung (3.87.23; owner: used in every demo, so it jumped the
+   **Gerai Wirayung (3.87.23, PR #97 merged; owner: used in every demo, so it jumped the
    queue).** At KIRA, after 3 wrong counts (2 + both hints) "Jom tengok cara":
    money boards (`PAWorked.build(op,a,b,{money:true})`: columns RM10 / RM1 /
    10 sen / 1 sen, RM text, the multiplier a whole number) chained per order:
