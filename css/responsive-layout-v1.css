@@ -170,3 +170,6 @@ body[data-screen="treasure"] #treasure.on[data-kz-tab="pets"]{
   #treasure[data-kz-tab="pets"] .kzPanel,#treasure[data-kz-tab="pets"] #kzPetGallery{flex:none}
   #treasure[data-kz-tab="pets"] .kzDeck{flex:none;height:350px}
 }
+
+/* No grey/blue box on tap in Android Chrome; buttons have their own :active press. */
+html{-webkit-tap-highlight-color:transparent}
