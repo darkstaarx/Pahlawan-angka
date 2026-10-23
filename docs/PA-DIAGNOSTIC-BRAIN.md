@@ -460,7 +460,7 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    Missing part (`'missingPart'`, incl. D1 "34 = ___ + 4"): the written places
    go grey, tap the digit left, pick its value. Three numbers (126 + 183 +
    233, 439 − 96 − 139): two boards via `chain`.
-   **Part 5 (3.87.18):** order (`'order'`): all numbers on the board; the first
+   **Part 5 (3.87.18, PR #92 merged):** order (`'order'`): all numbers on the board; the first
    place that differs among the numbers left gets the red frame, the pupil taps
    the smallest (or biggest), it gets a green rank and goes quiet; last, the
    round's own choices. Number → words (`'toWords'`): one word group at a time
