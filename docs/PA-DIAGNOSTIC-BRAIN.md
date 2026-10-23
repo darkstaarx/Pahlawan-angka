@@ -508,6 +508,18 @@ digit, then the round's choices.
    **DEV shortcut (3.87.22, PR #96 merged):** the mini game DEV sheet (Gudang, Lombong) has
    "Cuba Jom tengok cara": one button per worked-example kind; it finds a
    round of that kind (`forcedQ`) and offers "Jom tengok cara" at once.
+   **Gerai Wirayung (3.87.23, PR #97 merged; owner: used in every demo, so it jumped the
+   queue).** At KIRA, after 3 wrong counts (2 + both hints) "Jom tengok cara":
+   money boards (`PAWorked.build(op,a,b,{money:true})`: columns RM10 / RM1 /
+   10 sen / 1 sen, RM text, the multiplier a whole number) chained per order:
+   bayar (2 items: add; × quantity: mul), baki (total then paid − total),
+   simpanan, bahagi bil (÷), diskaun (% via 10%/5% `pctOf{money}`, or RM cut;
+   then the change), untung/rugi (sales = price × qty, then "Untung atau
+   rugi?" and the difference; or cost = sales − profit). After the board the
+   pupil lays the amount on the counter (SERAH) with "Jawapan Wira: RMx" as a
+   reminder; the round ends without stars and the next is the same kind. DEV
+   sheet: 9 "Cuba Jom tengok cara" buttons. A one-item bayar (read the tag)
+   has no board.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
