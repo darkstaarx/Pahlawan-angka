@@ -107,4 +107,25 @@
 .tiles.wk.wk-wide{grid-template-columns:1fr}
 .tiles.wk.wk-wide .wk-t{font-size:19px;min-height:46px}
 @keyframes wkTapMe{0%,100%{box-shadow:0 0 0 2px var(--gold,#ffc94a)}50%{box-shadow:0 0 0 4px var(--gold,#ffc94a)}}
-@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer,.wk-board.wk-tapnow .wk-c.wk-can,.wk-c.wk-hint,.wk-c.wk-diff,.rack .col.wk-colon,.wk-trail .wk-box.wk-target{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.wk-drop,.wk-fly,.wk-pop,.wk-in,.wk-t.wk-enter,.wk-t.wk-no,.wk-t.wk-hint,.btn.hint.wk-offer,.wk-board.wk-tapnow .wk-c.wk-can,.wk-c.wk-hint,.wk-c.wk-diff,.rack .col.wk-colon,.wk-trail .wk-box.wk-target,.wk-model i.wk-glow{animation:none!important}}
+/* Fractions (Kedai Kek): a working line, one row at a time; the numbers are slots the steps fill. */
+.wk-frac{display:grid;gap:8px;justify-items:center;padding:12px 14px 14px;width:min(100%,340px);box-sizing:border-box}
+.wk-frow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;width:100%}
+.wk-frow.wk-hide{display:none}
+.wk-fr{display:inline-grid;justify-items:center;gap:3px}
+.wk-fr>i{display:block;width:100%;min-width:calc(var(--cw) * .8);height:3px;border-radius:2px;background:var(--ink,#4a2a16)}
+.wk-frac .wk-c{min-width:calc(var(--cw) * .8);height:calc(var(--cw) * .8);padding:0 4px;font-size:clamp(22px,6.4vw,28px)}
+.wk-frac .wk-c.wk-empty{background:#fff9;border:2px dashed var(--ink-soft,#8a6142)}
+.wk-mx{display:inline-flex;align-items:center;gap:4px}
+.wk-mx>.wk-c{font-size:clamp(28px,8vw,36px)}
+.wk-ft{font:800 clamp(18px,5.6vw,24px)/1 var(--f-display,system-ui);color:var(--ink,#4a2a16);white-space:nowrap}
+.wk-tag .wk-c{min-width:0;height:auto;padding:3px 10px;font-size:18px;color:var(--berry,#d2536b)}
+.wk-tag .wk-c.wk-empty{border:0;background:none}
+.wk-model{display:grid;grid-template-columns:repeat(var(--p),1fr);width:100%;height:34px;border:3px solid var(--wood-dk,#5e3519);border-radius:8px;overflow:hidden;background:#fff}
+.wk-model i+i{border-left:2px solid var(--wood-dk,#5e3519)}
+.wk-model i.on{background:var(--berry-lt,#ff8fb1)}
+.wk-model i.eat{background:repeating-linear-gradient(45deg,#fffaf0 0 4px,#e9d7b4 4px 7px)}
+.wk-model i.wk-glow{box-shadow:inset 0 0 0 3px var(--gold-dk,#b9801c);animation:wkPart 1s ease-in-out infinite alternate}
+@keyframes wkPart{from{filter:none}to{filter:brightness(1.12) saturate(1.2)}}
+.wk-say .fr,.wk-t .fr{vertical-align:middle}
+.wk-wrap>#wkBoard:has(.wk-frac){width:100%;display:grid;justify-items:center}
