@@ -459,8 +459,17 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    pupil taps each part's place on an empty row; a place with no part gets 0.
    Missing part (`'missingPart'`, incl. D1 "34 = ___ + 4"): the written places
    go grey, tap the digit left, pick its value. Three numbers (126 + 183 +
-   233, 439 − 96 − 139): two boards via `chain`. Still text-only in Gudang
-   (62 generators): order, words ↔ number, expanded (pick), estimate/check,
+   233, 439 − 96 − 139): two boards via `chain`.
+   **Part 5 (3.87.18):** order (`'order'`): all numbers on the board; the first
+   place that differs among the numbers left gets the red frame, the pupil taps
+   the smallest (or biggest), it gets a green rank and goes quiet; last, the
+   round's own choices. Number → words (`'toWords'`): one word group at a time
+   (juta / ribu / ratus / puluh+sa), slips as tiles (digits read the other way,
+   a place too high; seratus, sepuluh, seribu). Words → number (`'fromWords'`,
+   incl. D6 juta pad): like compose, each word group's digits tapped into
+   place, a place not said gets 0. Expanded (`'expanded'`): the value of each
+   digit, then the round's choices. Still text-only in Gudang (49 generators):
+   estimate/check,
    operation choice, clues, rule picks, facts (1 × 2, 6 + 7), × ÷ by 10/100,
    remainders, two-digit ×, × first / brackets, D6 juta and primes.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5

@@ -64,6 +64,10 @@
 /* The button that opens it. */
 .btn.hint.wk-offer{background:var(--gold,#ffc94a);animation:wkGlow 1.6s ease-in-out infinite}
 /* Place-value board (round, compare, place name, digit value): the pupil taps a digit. */
+/* Order: a number already placed goes quiet and shows its rank; a word group is lit. */
+.wk-pvrow.wk-rowdone .wk-c{opacity:.4}
+.wk-op.wk-rank{display:grid;place-items:center;width:28px;height:28px;margin:auto;border-radius:50%;background:var(--leaf,#4f9a4a);color:#fff;font:900 15px/1 var(--f-display,system-ui)}
+.wk-c.wk-grp{background:#ffe9a6;box-shadow:0 0 0 3px var(--gold,#ffc94a)}
 /* Number pattern trail (pola): boxes with a hop mark between them. */
 .wk-seq{padding:10px 6px}
 .wk-trail{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 2px}

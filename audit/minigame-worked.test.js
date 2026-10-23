@@ -104,3 +104,23 @@ test('patterns, compose and the missing part: steps end at the answer', () => {
   assert.equal(W.buildChain({ a: 320, b: 219, d: 129, ops: ['add', 'add'] }).answer, 668);
   assert.equal(W.buildChain({ a: 439, b: 96, d: 139, ops: ['sub', 'sub'] }).answer, 204);
 });
+
+test('order, words and expanded: per step, then the round\'s own choices', () => {
+  const fin = { choices: ['4360, 5360, 5362, 5460', '5460, 5362, 5360, 4360'], right: '4360, 5360, 5362, 5460' };
+  const o = W.buildPV({ t: 'order', list: [5360, 5362, 5460, 4360] }, { final: fin });
+  assert.deepEqual(o.steps.filter(s => s.kind === 'tap').map(s => [s.row, s.pre.diff]), [[3, 3], [0, 2], [1, 2]], 'smallest each time, at the first place that differs');
+  assert.deepEqual([o.steps.at(-1).right, o.finalLabel], [fin.right, fin.right]);
+  assert.equal(W.buildPV({ t: 'order', list: [1, 1, 2] }), null, 'equal numbers');
+  const w = W.buildPV({ t: 'toWords', n: 51013 });
+  assert.deepEqual(w.steps.map(s => s.right), ['lima puluh satu ribu', 'tiga belas']);
+  for (let n = 1; n < 100000; n += 37) {
+    const p = W.buildPV({ t: 'toWords', n });
+    for (const s of p.steps) { assert.ok(s.choices.includes(s.right), n); assert.equal(new Set(s.choices).size, s.choices.length, n); assert.ok(!s.choices.some(c => /^satu (ratus|puluh|ribu)/.test(c)), n + ' ' + s.choices); }   // seratus, sepuluh, seribu
+    assert.equal(p.steps.map(s => s.right).join(' '), p.done.match(/“(.*)”/)[1], n);
+  }
+  const f = W.buildPV({ t: 'fromWords', n: 3801 });
+  assert.deepEqual(f.steps.map(s => s.kind), ['tap', 'tap', 'show', 'tap']);
+  assert.match(f.steps[0].say, /^“tiga ribu”/);
+  const e = W.buildPV({ t: 'expanded', n: 969 });
+  assert.deepEqual(e.steps.map(s => s.right), ['900', '60', '9']);
+});
