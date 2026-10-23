@@ -137,6 +137,6 @@ test('free sign-up after the guest demo opens registration, not the demo again',
   await h.entry.registerFree();
   assert.ok(h.calls.some(call => Array.isArray(call) && call[0] === 'screen' && call[1] === 'login'));
   assert.ok(!h.calls.includes('demo'));
-  assert.equal(h.elements.get('paEntryAuthTitle')?.textContent, 'Daftar akaun percuma');
+  assert.equal(h.elements.get('paEntryAuthTitle')?.textContent, 'Daftar Akses Mesra');
   assert.equal(JSON.parse(h.storage.get(KEY)).kind, 'login');
 });
