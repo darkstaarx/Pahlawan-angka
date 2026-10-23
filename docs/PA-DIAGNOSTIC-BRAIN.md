@@ -573,6 +573,14 @@ digit, then the round's choices.
    D3 44%, D4 85%, D5 83%, D6 26%; left: the build rounds (draw tally /
    pictograph / bars, sort cards), D1 classify, D6 chance (kebolehjadian).
    DEV sheet: 17 buttons. Test API `__posGen.planFor/showNormal/current`.
+   **Bengkel Ajaib (3.87.32).** `buildList` again, with the tool (ruler, scale,
+   cylinder) left in view: unit lines for every measure (split `230 cm = 2 m
+   30 cm`, join `2 kg 300 g = 2300 g`, decimals `1.25 ℓ = 1250 mL`, ¼ ½ ¾),
+   + − × ÷ with units, D6 relations (how many times, then × that). Compare
+   rounds (`cmpPick`) build their lines from `q.cmp` (change the big unit, then
+   compare). A build round's plan ends at `q.target`; read / pad rounds at
+   every field (m and cm). Plans cover D1 67%, D2 40%, D3–D5 100%, D6 94%;
+   left: plain tool tasks (measure 7 cm) and estimates. DEV sheet: 13 buttons.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
