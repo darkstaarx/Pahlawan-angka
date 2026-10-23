@@ -154,5 +154,28 @@ test('decimals: persepuluh / perseratus columns, the 0 before the point is writt
   assert.match(W.boardHTML(a), /wk-pt/);
   const c = W.buildChain({ a: 125, b: 250, d: 75, ops: ['add', 'add'] }, { dp: 2 });
   assert.deepEqual([c.answer, c.notes[0]], [450, 'Langkah pertama siap: <b>3.75</b>. Sekarang 3.75 + 0.75.']);
-  assert.equal(W.build('mul', 12, 3, { dp: 1 }), null, 'decimal × is not a written board yet');
+  // × and ÷ by one digit keep the point in its column.
+  assert.deepEqual([W.build('mul', 2382, 8, { dp: 3 }).done, W.build('div', 84, 7, { dp: 2 }).done], ['2.382 × 8 = 19.056.', '0.84 ÷ 7 = 0.12.']);
+  assert.equal(W.build('div', 85, 7, { dp: 2 }), null, 'a remainder: not a decimal board');
+  assert.equal(W.build('mul', 12, 13, { dp: 1 }), null, 'two-digit ×: not yet');
+});
+
+test('Lombong boards: decimals compare by place, fraction → decimal, hundred grid, percent of a number', () => {
+  const c = W.buildPV({ t: 'compare', a: 3, b: 30, ask: 'symbol', dp: 2 });
+  assert.equal(c.answer, '<');
+  assert.ok(!c.steps.some(s => /banyak digit/.test(s.say)), '0.03 vs 0.30: never "more digits is bigger"');
+  assert.match(c.steps.find(s => s.kind === 'tap').say, /Tempat persepuluh tidak sama: 0 dan 3/);
+  const f = W.buildPV({ t: 'decFrac', n: 7, dp: 2 });
+  assert.deepEqual([f.answer, f.steps.map(s => s.kind)], [7, ['tap', 'show', 'show']], '7/100: 7 at perseratus, 0 at persepuluh and sa');
+  const g = W.buildPV({ t: 'grid', n: 37, pct: true });
+  assert.deepEqual([g.answer, g.steps.map(s => s.right)], [37, ['3', '7', '37%']]);
+  assert.equal(W.buildPV({ t: 'grid', n: 37, pct: true, unshaded: true }).answer, 63);
+  const p = W.buildPV({ t: 'pctOf', p: 75, Q: 400 });
+  assert.deepEqual([p.answer, p.steps.map(s => s.right)], [300, ['40', '20', '300']]);
+  assert.equal(W.buildPV({ t: 'pctOf', p: 125, Q: 80 }).answer, 100, 'more than 100%');
+  assert.equal(W.buildPV({ t: 'fracToPct', a: 3, b: 4 }).answer, 75);
+  assert.equal(W.buildPV({ t: 'pctToFrac', p: 60 }).answer, '3/5');
+  assert.equal(W.buildPV({ t: 'decShift', n: 6, p: 100 }).steps[1].right, '0.06');
+  const r = W.buildPV({ t: 'round', n: 49357, place: 0, dp: 4 });
+  assert.deepEqual([r.answer, r.steps[2].right], [49360, '4.936']);
 });

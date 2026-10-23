@@ -80,6 +80,11 @@
 .wk-hop.wk-hopl{min-width:30px;padding:2px 5px;border-radius:999px;background:var(--leaf,#4f9a4a);color:#fff;font-size:13px;text-align:center}
 /* Decimals: the point after the sa column. */
 .wk-c.wk-pt::after{content:'.';position:absolute;right:-5px;bottom:0;font:900 26px/1 var(--f-display,system-ui);color:var(--ink,#4a2a16)}
+/* A hundred grid (Lombong): 10 × 10, the shaded squares from the round. */
+.wk-gridb{padding:10px}
+.wk-hg{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:min(64vw,230px)}
+.wk-g{aspect-ratio:1;border-radius:2px;background:#fff;border:1px solid var(--ink-soft,#8a6142)}
+.wk-g.on{background:var(--berry,#d2536b)}
 /* Compose: an empty row the pupil fills place by place. */
 .wk-pv .wk-c.wk-empty{background:#fff9;border:2px dashed var(--ink-soft,#8a6142)}
 /* Compare: the places that match go quiet; the first place that differs gets a red frame. */
