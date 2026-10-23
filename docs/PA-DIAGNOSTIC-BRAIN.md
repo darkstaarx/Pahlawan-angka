@@ -595,6 +595,18 @@ digit, then the round's choices.
    (+ 12 after 1 p.m., 00 at midnight) and time zones / flights. The clock stays
    in view. Plans cover D1 44% (calendar left), D2 100%, D3 94%, D4 96%, D5 86%,
    D6 100%. DEV sheet: 8 buttons. Test API `__menaraGen`.
+   **Tapak Bina (3.87.35).** Generators carry `wk` (`buildList`): perimeter (one
+   length + one width, then double; a missing side by − then ÷ 2; L shapes by
+   the hidden side, then (bottom + left) × 2), area (× , ÷ for a missing side,
+   L shapes as big − missing), faces / vertices / edges of prisms and pyramids
+   counted from the base, distance on a grid and with a scale, D6 polygon
+   perimeter and side, interior angles (sum, one angle, difference),
+   radius ↔ diameter; compare picks (bigger area, bigger perimeter) end on A or
+   B. The figure stays in view, the keypad is hidden. Plans cover D1 0%, D2 8%,
+   D3 8%, D4 38%, D5 52%, D6 42%; left: the touch tasks (pick a shape, grid
+   points and rectangles, patterns, symmetry lines, protractor, compass),
+   which have no sums to walk. No DEV sheet on this page: DEV test API
+   `__tapakGen.tryWorked(grade, archetype)`.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
