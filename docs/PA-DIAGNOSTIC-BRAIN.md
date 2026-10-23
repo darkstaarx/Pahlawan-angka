@@ -607,6 +607,11 @@ digit, then the round's choices.
    points and rectangles, patterns, symmetry lines, protractor, compass),
    which have no sums to walk. No DEV sheet on this page: DEV test API
    `__tapakGen.tryWorked(grade, archetype)`.
+   **Wira's bubble (3.87.36).** `js/minigame-wsay-v1.js` (all 9 mini games): Wira's
+   speech bubble sits right of his face, up to the scene edge, and steps its
+   text down (12 → 11 → 10 px) until it clears the pet's head; hidden during
+   "Jom tengok cara" (the steps speak in the panel). Owner: the bubble covered
+   Wira's or the pet's face.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

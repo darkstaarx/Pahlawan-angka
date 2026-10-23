@@ -11,7 +11,7 @@ const APP_SHELL=[
   './questions/d5/scenes-v1.js','./questions/d5/completion-v1.js','./questions/d4/completion-data-money-v1.js','./questions/d4/completion-measures-v1.js','./questions/d4/completion-v1.js','./js/entry-flow-v1.js','./css/entry-flow-v1.css',
   './js/demo-funnel-v1.js','./js/demo-wrapup-v1.js','./css/demo-wrapup-v1.css',
   './kedai-kek.html',
-  './js/minigame-dev-gate.js','./js/minigame-panel-fit-v1.js','./js/minigame-worked-v1.js','./css/minigame-worked-v1.css',
+  './js/minigame-dev-gate.js','./js/minigame-panel-fit-v1.js','./js/minigame-wsay-v1.js','./js/minigame-worked-v1.js','./css/minigame-worked-v1.css',
   './js/kedai-kek-router.js',
   './bengkel-ajaib.html',
   './js/bengkel-ajaib-router.js',

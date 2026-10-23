@@ -655,6 +655,24 @@ test('small phones: in every mini game the Tanya Wira / Semak row stays on scree
   }
 });
 
+test('Wira\'s speech bubble sits beside Wira, clear of his face and the pet\'s head, even with a long hint on a small phone', async () => {
+  const games = ['gudang-harta', 'kedai-kek', 'bengkel-ajaib', 'dapur-ramuan', 'pos-peninjau', 'lombong-permata', 'tapak-bina', 'menara-jam', 'gerai-wirayung'];
+  for (const [width, height] of [[390, 844], [360, 640]]) for (const game of games) {
+    const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width, height } });
+    await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+    const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+    await page.goto(`${base}/${game}.html`); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(1500);
+    await page.evaluate(() => { document.getElementById('wsayTxt').textContent = 'Buat kiraan satu langkah demi satu langkah, kemudian semak semula jawapan kamu dengan teliti sebelum tekan Semak.'; document.getElementById('wsay').className = 'wsay'; });
+    await page.waitForTimeout(600);
+    const m = await page.evaluate(() => { const r = s => document.querySelector(s)?.getBoundingClientRect(), s = r('#wsay'), w = r('.scene .wira'), p = r('#visitor,#pet');
+      return { left: s.left, bottom: s.bottom, right: s.right, face: w.left + w.width * .7, head: p ? p.top + p.height * .12 : Infinity, petLeft: p ? p.left : Infinity }; });
+    const at = `${game} ${width}x${height}: ${JSON.stringify(m)}`;
+    assert.ok(m.left >= m.face, 'clear of Wira\'s face: ' + at);
+    assert.ok(m.bottom <= m.head + 1 || m.right <= m.petLeft, 'clear of the pet\'s head: ' + at);
+    assert.deepEqual(errors, [], game); await context.close();
+  }
+});
+
 test('question first in every mini game: bigger panel, waist-up Wira with his head in view', async () => {
   const games = ['gudang-harta', 'kedai-kek', 'bengkel-ajaib', 'dapur-ramuan', 'pos-peninjau', 'lombong-permata', 'tapak-bina', 'menara-jam', 'gerai-wirayung'];
   for (const [width, height] of [[390, 844], [360, 640]]) for (const game of games) {
