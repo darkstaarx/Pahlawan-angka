@@ -505,7 +505,7 @@ digit, then the round's choices.
    biggest of four (`extreme`). Left in Lombong: shading and number-line
    rounds (they are their own widgets), D6 × ÷ decimals by decimals,
    percent change, BODMAS with fractions.
-   **DEV shortcut (3.87.22):** the mini game DEV sheet (Gudang, Lombong) has
+   **DEV shortcut (3.87.22, PR #96 merged):** the mini game DEV sheet (Gudang, Lombong) has
    "Cuba Jom tengok cara": one button per worked-example kind; it finds a
    round of that kind (`forcedQ`) and offers "Jom tengok cara" at once.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
