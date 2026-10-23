@@ -61,6 +61,9 @@
 .rack .col.wk-colon{box-shadow:0 0 0 3px var(--gold,#ffc94a);border-radius:12px;animation:wkTapMe 1.4s ease-in-out infinite}
 .rack .col.wk-coldone{opacity:.8}
 #widget>.wk-say{margin-bottom:8px}
+/* Gerai Wirayung: while Wira works the sum, the counter and the purse wait. */
+#stationCount.wk-walk .mat,#stationCount.wk-walk .mat-total,#stationCount.wk-walk .purse,#stationCount.wk-walk .signrow{display:none!important}
+#stationCount #wkPanel{margin:8px 0}
 /* The button that opens it. */
 .btn.hint.wk-offer{background:var(--gold,#ffc94a);animation:wkGlow 1.6s ease-in-out infinite}
 /* Place-value board (round, compare, place name, digit value): the pupil taps a digit. */

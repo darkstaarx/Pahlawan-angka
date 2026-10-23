@@ -342,6 +342,34 @@ test('Lombong Permata: Jom tengok cara walks lazim, hundred-grid and compare rou
   }
 });
 
+test('Gerai Wirayung: every DEV "Cuba Jom tengok cara" kind walks the money board, then the pupil lays the amount', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/gerai-wirayung.html#d3`); await page.waitForFunction(() => window.__geraiWk && window.PAWorked); await page.waitForTimeout(800);
+  await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
+  assert.equal(n, 9);
+  for (let i = 0; i < n; i++) {
+    if (i) await page.click('#devBtn');
+    const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);
+    await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let s = 0; s < 40; s++) {
+      if (!await page.evaluate(() => !!document.getElementById('wkPanel'))) break;
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('#wkPanel .wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(950);
+    }
+    await page.waitForTimeout(1500);
+    const tg = await page.evaluate(() => window.__geraiWk.target());
+    assert.match(await page.evaluate(() => document.getElementById('countHint').textContent), /^Jawapan Wira: /, label);
+    await page.evaluate(() => window.__geraiWk.lay()); await page.waitForTimeout(600);
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label + ' ' + tg);
+    await page.waitForTimeout(2700);
+  }
+  assert.deepEqual(errors, []); await context.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');

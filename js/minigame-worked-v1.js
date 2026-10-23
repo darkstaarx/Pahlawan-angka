@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.7.0';
+  const VERSION='1.8.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -21,10 +21,13 @@
   const DECP=['persepuluh','perseratus','perseribu'],DECH=['1/10','1/100','1/1000'];
   const names=dp=>[...Array(12).keys()].map(i=>i<dp?DECP[dp-1-i]:PLACE[i-dp]);
   const fmtDp=dp=>x=>dp?(x/10**dp).toFixed(dp):nf(x);
+  // Money in sen: RM12.50 (Gerai Wirayung); under RM1 as sen.
+  const rm=v=>v<100?`${v} sen`:`RM${(v/100).toFixed(2)}`;
+  const MNAMES=['1 sen','10 sen','RM1','RM10','RM100','RM1000'];   // money columns, low to high
   const digits=n=>String(Math.abs(Math.trunc(n))).split('').map(Number).reverse();
   const num=s=>Number(String(s).replace(/[\s, ]/g,''));
   // Thousands grouped with a no-break space from 10 000, as the games print them.
-  const nf=n=>Math.abs(n)>=10000?String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0'):String(n);
+  const nf=n=>Math.abs(n)>=10000?String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0'):String(n),nf_=nf;
   // Three different tiles: the right one first in the list given, shuffled by the caller's order rule.
   function tiles(right,wrongs){
     const out=[right];
@@ -48,7 +51,7 @@
      `after` says what the board shows once the step is done. */
   function build(op,a,b,opt={}){
     if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<0)return null;
-    let plan=null;const dp=opt.dp||0,N=dp?names(dp):PLACE;
+    let plan=null;const dp=opt.money?2:(opt.dp||0),N=opt.money?MNAMES:dp?names(dp):PLACE;
     if(op==='add')plan=add(a,b,N,dp);
     else if(op==='sub'&&a>=b)plan=sub(a,b,N,dp);
     // Decimals: × a whole number of one digit, ÷ one digit (the point stays in its column).
@@ -69,7 +72,7 @@
       // 0.45 + 0.3: the places up to sa that no sum reached are written as 0 (the 0 before the point too).
       const written=new Set(plan.steps.filter(s=>s.after&&s.after.write).map(s=>s.after.write.col));
       for(let c=0;c<=dp;c++)if(!written.has(c)&&c>=Math.max(...written,-1))plan.steps.push({kind:'show',col:c,say:c===dp?'Tiada nombor bulat: tulis 0 sebelum titik.':`Tempat ${N[c]}: 0.`,after:{write:{col:c,digit:0},note:'Tulis 0.'}});
-      const f=fmtDp(dp),fb=op==='mul'||op==='div'?nf:f;plan.dp=dp;plan.cols=Math.max(plan.cols,dp+1);plan.done=`${f(a)} ${SIGN[op]} ${fb(b)} = ${f(plan.answer)}.`;
+      const f=opt.money?rm:fmtDp(dp),fb=op==='mul'||op==='div'?nf:f;plan.dp=dp;plan.money=!!opt.money;plan.cols=Math.max(plan.cols,dp+1);plan.done=`${f(a)} ${SIGN[op]} ${fb(b)} = ${f(plan.answer)}.`;
     }
     return plan;
   }
@@ -320,13 +323,14 @@
     if(t==='pctOf'){
       // 15% of 200: 10% first (÷ 10), 5% is half of 10%, then put them together.
       const{p,Q}=spec;if(!(p>0&&p<=300&&p%5===0&&Q%10===0&&(p%10===0||(Q/10)%2===0)))return null;const ten=Q/10,k=Math.floor(p/10),half=p%10?ten/2:0,v=p*Q/100;
+      const nf=spec.money?rm:nf_;   // money rounds read RM / sen
       // A story that asks for the rest ("BUKAN merah"): (100 − p)% straight away.
       const lead=spec.rest?`Bukan ${spec.rest}% = ${100-spec.rest}%. `:'';
-      const items=[`100% = ${nf(Q)}`,null],steps=[pick(`${lead}10% daripada ${nf(Q)} = ${nf(Q)} ÷ 10 = ?`,ten,[Q,ten*10,ten+10],{fill:{i:1,v:`10% = ${nf(ten)}`}})];
-      if(half){items.push(null);steps.push(pick(`5% ialah separuh daripada 10%: ${nf(ten)} ÷ 2 = ?`,half,[ten,ten*2,half+1],{fill:{i:2,v:`5% = ${nf(half)}`}}))}
+      const items=[`100% = ${nf(Q)}`,null],steps=[pick(`${lead}10% daripada ${nf(Q)} = ${nf(Q)} ÷ 10 = ?`,nf(ten),[Q,ten*10,ten+10].map(nf),{fill:{i:1,v:`10% = ${nf(ten)}`}})];
+      if(half){items.push(null);steps.push(pick(`5% ialah separuh daripada 10%: ${nf(ten)} ÷ 2 = ?`,nf(half),[ten,ten*2,half+1].map(nf),{fill:{i:2,v:`5% = ${nf(half)}`}}))}
       if(!k){const st=steps[steps.length-1];st.after.fill={i:2,v:`5% = ${nf(half)}`};return{op:'seq',rows:[],items,steps,done:`5% daripada ${nf(Q)} = ${nf(v)}.`,answer:v}}
       items.push(null);const last=items.length-1;
-      steps.push(pick(half?(k?`${p}% = ${k} × 10% + 5% = ${k} × ${nf(ten)} + ${nf(half)} = ?`:`${p}% = 5% = ?`):`${p}% = ${k} × 10% = ${k} × ${nf(ten)} = ?`,v,[v+ten,v-half||v+1,k*ten*10].filter(x=>x>0),{fill:{i:last,v:`${p}% = ${nf(v)}`}}));
+      steps.push(pick(half?(k?`${p}% = ${k} × 10% + 5% = ${k} × ${nf(ten)} + ${nf(half)} = ?`:`${p}% = 5% = ?`):`${p}% = ${k} × 10% = ${k} × ${nf(ten)} = ?`,nf(v),[v+ten,v-half||v+1,k*ten*10].filter(x=>x>0).map(nf),{fill:{i:last,v:`${p}% = ${nf(v)}`}}));
       return{op:'seq',rows:[],items,steps,done:`${p}% daripada ${nf(Q)} = ${nf(v)}.`,answer:v};
     }
     if(t==='fracToPct'){
@@ -489,7 +493,7 @@
   function boardHTML(plan,opt={}){
     const n=plan.cols,[a,b]=plan.rows,A=digits(a),B=digits(b),cell=(cls,txt,col,extra='')=>`<span class="wk-c ${cls}" data-col="${col}"${extra}>${txt}</span>`;
     const cols=[...Array(n).keys()].reverse();
-    const dp=plan.dp||0,H=i=>i<dp?DECH[dp-1-i]:PLACE[i-dp];
+    const dp=plan.dp||0,H=i=>plan.money?MNAMES[i]:i<dp?DECH[dp-1-i]:PLACE[i-dp];
     const head=cols.map(i=>cell('wk-h',H(i)==='puluh ribu'?'p.ribu':H(i)==='ratus ribu'?'r.ribu':H(i),i)).join('');
     if(plan.op==='grid'){
       let g='';for(let i=0;i<100;i++)g+=`<i class="wk-g${i<plan.n?' on':''}" data-r="${Math.floor(i/10)}" data-g="${i}"></i>`;
@@ -515,10 +519,10 @@
         <div class="wk-rem" aria-live="polite"></div></div>`;
     }
     const pt=i=>dp&&i===dp?' wk-pt':'';   // the decimal point sits after the sa column
-    const row=(D,sign)=>`<div class="wk-row"><span class="wk-op">${sign||''}</span>${cols.map(i=>cell('wk-d'+pt(i),D[i]===undefined?(dp&&i<=dp?0:''):D[i],i)).join('')}</div>`;
+    const row=(D,sign,pad=true)=>`<div class="wk-row"><span class="wk-op">${sign||''}</span>${cols.map(i=>cell('wk-d'+(pad?pt(i):''),D[i]===undefined?(pad&&dp&&i<=dp?0:''):D[i],i)).join('')}</div>`;
     const sign=opt.hideSign?'<i class="wk-sign">?</i>':SIGN[plan.op];
-    const second=plan.op==='mul'?row([b],sign):row(B,sign);
-    return `<div class="wk-board" style="--n:${n}"><div class="wk-row wk-head"><span class="wk-op"></span>${head}</div>
+    const second=plan.op==='mul'?row([b],sign,false):row(B,sign);   // the multiplier is a whole number: no point, no zeros
+    return `<div class="wk-board${plan.money?' wk-money':''}" style="--n:${n}"><div class="wk-row wk-head"><span class="wk-op"></span>${head}</div>
       <div class="wk-row wk-carry"><span class="wk-op"></span>${cols.map(i=>cell('wk-k','',i)).join('')}</div>
       ${row(A)}${second}<div class="wk-line"></div>
       <div class="wk-row wk-ans"><span class="wk-op">=</span>${cols.map(i=>cell('wk-a'+pt(i),'',i)).join('')}</div></div>`;

@@ -179,3 +179,16 @@ test('Lombong boards: decimals compare by place, fraction → decimal, hundred g
   const r = W.buildPV({ t: 'round', n: 49357, place: 0, dp: 4 });
   assert.deepEqual([r.answer, r.steps[2].right], [49360, '4.936']);
 });
+
+test('money boards (Gerai Wirayung): RM / 10 sen / 1 sen columns, RM text, whole-number multiplier', () => {
+  const b = W.build('sub', 1000, 660, { money: true });
+  assert.equal(b.done, 'RM10.00 − RM6.60 = RM3.40.');
+  assert.match(b.steps[1].say, /^Tempat 10 sen: 0 kurang daripada 6\. Pinjam 1 dari tempat RM10/);
+  assert.match(W.boardHTML(b), />10 sen</);
+  const m = W.build('mul', 100, 4, { money: true });
+  assert.equal(m.done, 'RM1.00 × 4 = RM4.00.');
+  assert.doesNotMatch(W.boardHTML(m).replace(/\s+/g, ' '), /×<\/span>[^]*?>0<\/span>[^]*?>4</, 'the multiplier is 4, not 0.04');
+  assert.equal(W.build('div', 900, 3, { money: true }).done, 'RM9.00 ÷ 3 = RM3.00.');
+  const p = W.buildPV({ t: 'pctOf', p: 20, Q: 450, money: true });
+  assert.deepEqual([p.answer, p.steps.map(s => s.right)], [90, ['45 sen', '90 sen']]);
+});
