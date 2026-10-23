@@ -505,6 +505,8 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <small>Simulasi router Kemahiran Fokus</small>
     <div class="devrow sims" id="sims"></div>
     <p class="simout" id="simOut"></p><button type="button" class="btn go" id="simGo" hidden>Buka gudang ikut pelan →</button>
+    <small>Cuba “Jom tengok cara” (terus ke soalan yang ada langkah)</small>
+    <div class="devrow sims" id="wkTry"></div>
   </div></div>
 </main>
 
@@ -1284,7 +1286,9 @@ function fadeFor(k,gens,floor,cap){
  const n=fadeTurn[k]=(fadeTurn[k]||0)+1,lv=fadeLevel[k]||0,abs=!!focusTarget.check||lv===2||(n-1)%3>=2-lv;
  return {ti:abs?ft.A:ft.P,abs};
 }
-function makeQ(){const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind of question with new numbers
+/* DEV: a round picked by the 'Cuba Jom tengok cara' buttons is served next. */
+let forcedQ=null;
+function makeQ(){if(forcedQ){const x=forcedQ;forcedQ=null;return x}const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind of question with new numbers
  const k=rep?rep.mode:cfg.modes[served%cfg.modes.length],tg=rep?(rep.target?targetFor(cfg.grade,k):null):isTargetMode(focusTarget,k)&&!normalTurn(served)?targetFor(cfg.grade,k):null,key=tg?'target:'+k:k,gens=tg||GEN[cfg.grade][k],[floor,cap]=tg?[0,gens.length-1]:focusLimits.get(k)||[0,gens.length-1];
  // A target ladder starts at its concrete/pictorial step (CPA); a re-check starts at the abstract step.
  // A re-check skips the scaffold: sifir/regroup start at the abstract step, a bar model or a long wording at the story alone.
@@ -1326,6 +1330,44 @@ function hintTwo(){const K=q.kind;
  $('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Dua clue digunakan';if(hint2>=2)$('hint').disabled=true;reportProgress('hint');sfx(620,.1);offerWorked()};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;const pk=q.kind==='pad'||(q.rack&&(q.rack.mode==='add'||q.rack.mode==='sub'));if(pk&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(pk&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(q.kind==='pad'&&e.key==='Tab'){key('⇥');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
+/* DEV: jump straight to a round of one worked-example kind and offer "Jom tengok cara" at once. */
+const WK_TRY=[
+ ['Tambah lazim','d3-tambah',(c,wp)=>!!wp?.plan&&wp.plan.op==='add'&&!c.wk&&c.kind==='pad'],
+ ['Tolak lazim','d3-tolak',(c,wp)=>!!wp?.plan&&wp.plan.op==='sub'&&!c.wk&&c.kind==='pad'],
+ ['Darab lazim','d4-darab',(c,wp)=>!!wp?.plan&&wp.plan.op==='mul'&&!c.wk],
+ ['Bahagi lazim','d4-bahagi',(c,wp)=>!!wp?.plan&&wp.plan.op==='div'&&!c.wk],
+ ['Bahagi baki','d2-bahagi',(c,wp)=>!!c.form&&c.form.fields.length===2],
+ ['Rak bina','d3-bina',c=>c.kind==='build'&&c.rack.mode==='build'],
+ ['Rak tambah/tolak','d3-tambah',c=>c.kind==='build'&&c.rack.mode!=='build'],
+ ['Dua langkah (cerita)','d3-tolak',c=>c.wk?.t==='chain'&&!c.card],
+ ['Tiga nombor','d2-tambah',c=>c.wk?.t==='chain'&&!!c.card],
+ ['Bundar','d3-banding',c=>c.wk?.t==='round'],
+ ['Banding simbol','d4-banding',c=>c.wk?.t==='compare'&&c.wk.ask==='symbol'&&c.wk.a!==c.wk.b],
+ ['Banding besar/kecil','d2-banding',c=>c.wk?.t==='compare'&&c.wk.ask!=='symbol'],
+ ['Susun nombor','d3-banding',c=>c.wk?.t==='order'],
+ ['Nama tempat','d4-bina',c=>c.wk?.t==='placeName'],
+ ['Nilai digit','d4-bina',c=>c.wk?.t==='digitValue'],
+ ['Gubah','d4-bina',c=>c.wk?.t==='compose'],
+ ['Bahagian hilang','d3-bina',c=>c.wk?.t==='missingPart'],
+ ['Nombor → perkataan','d2-bina',c=>c.wk?.t==='toWords'],
+ ['Perkataan → nombor','d3-bina',c=>c.wk?.t==='fromWords'],
+ ['Cerakin','d2-bina',c=>c.wk?.t==='expanded'],
+ ['Pola','d2-pola',c=>c.wk?.t==='seq'],
+ ['Buat 10','d1-tambah',c=>c.wk?.t==='make10'],
+ ['Kira naik','d1-tolak',c=>c.wk?.t==='countUp'],
+ ['Sifir (lompat)','d2-darab',c=>c.wk?.t==='skip'],
+ ['× ÷ 10/100','d3-darab',c=>c.wk?.t==='pow10'],
+ ['Darab 2 digit','d5-darab',c=>c.wk?.t==='long']];
+function drawWkTry(){const box=$('wkTry');if(!box)return;box.innerHTML=WK_TRY.map((k,i)=>'<button type="button" data-i="'+i+'">'+k[0]+'</button>').join('');
+ box.querySelectorAll('button').forEach(b=>b.onclick=()=>tryWorked(WK_TRY[+b.dataset.i]))}
+function tryWorked([label,hash,test]){
+ try{history.replaceState(null,'','#'+hash)}catch(e){}cfg=parseHash(hash);resetAll();
+ let found=null;
+ for(let i=0;i<3000&&!found;i++){const k=cfg.modes[i%cfg.modes.length],n=GEN[cfg.grade][k].length;served=i%cfg.modes.length;tier[k]=Math.floor(i/cfg.modes.length)%n;clean[k]=0;
+  const c=makeQ(),keep=q;q=c;let ok=false;try{const wp=workedPlan();ok=(!!wp||(c.kind==='build'&&c.rack&&c.rack.mode==='build'))&&test(c,wp)}catch(_){}q=keep;if(ok)found=c}
+ $('dev').hidden=true;$('complete').hidden=true;served=0;
+ if(!found){msg('DEV: tiada soalan "'+label+'" dijumpai.','bad',3000);return}
+ forcedQ=found;startRound();misses=3;offerWorked();setTimeout(()=>msg('DEV · '+label+': tekan “Jom tengok cara”.','',3500),800)}
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
 
 /* ---------- DEV: tukar Darjah (sementara) ---------- */
@@ -1349,7 +1391,7 @@ function runSim(key){const s=SIMS[key],Rt=window.PAGudangHarta;if(!Rt){$('simOut
  const plan=Rt.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
  if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod gudang yang sesuai.';$('simGo').hidden=true;return}
  $('simOut').innerHTML='<b>'+s.skill+'</b> → '+plan.start.map(m=>MODE_LABEL[m.mode].toLowerCase()+' (T'+(m.start+1)+')').join(', ')+' · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
-$('devBtn').onclick=()=>{if(!devEnabled)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+$('devBtn').onclick=()=>{if(!devEnabled)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();drawWkTry();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
 $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
