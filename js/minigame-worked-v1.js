@@ -13,9 +13,14 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.5.0';
-  const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'];
+  const VERSION='1.6.0';
+  const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
+  /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
+     columns below sa are persepuluh, perseratus, perseribu, and the board shows the point. */
+  const DECP=['persepuluh','perseratus','perseribu'],DECH=['1/10','1/100','1/1000'];
+  const names=dp=>[...Array(12).keys()].map(i=>i<dp?DECP[dp-1-i]:PLACE[i-dp]);
+  const fmtDp=dp=>x=>dp?(x/10**dp).toFixed(dp):nf(x);
   const digits=n=>String(Math.abs(Math.trunc(n))).split('').map(Number).reverse();
   const num=s=>Number(String(s).replace(/[\s, ]/g,''));
   // Thousands grouped with a no-break space from 10 000, as the games print them.
@@ -43,9 +48,10 @@
      `after` says what the board shows once the step is done. */
   function build(op,a,b,opt={}){
     if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<0)return null;
-    let plan=null;
-    if(op==='add')plan=add(a,b);
-    else if(op==='sub'&&a>=b)plan=sub(a,b);
+    let plan=null;const dp=opt.dp||0,N=dp?names(dp):PLACE;
+    if(op==='add')plan=add(a,b,N,dp);
+    else if(op==='sub'&&a>=b)plan=sub(a,b,N,dp);
+    else if(dp)return null;
     else if(op==='mul'&&b>=1&&b<=9&&a>=10)plan=mul(a,b);
     else if(op==='mul'&&a>=1&&a<=9&&b>=10)plan=mul(b,a);
     else if(op==='div'&&b>=2&&b<=12&&a>=b)plan=div(a,b);
@@ -56,10 +62,18 @@
       plan.steps.unshift({kind:'pick',col:-1,say:'Ayat matematik mana yang sepadan dengan cerita?',right,choices:[wrong[0],right,wrong[1]],sentence:true,
         after:{sign:SIGN[op],note:`Betul: ${right}. Sekarang kira ikut tempat, mula dari sa.`}});
     }
+    if(plan&&dp){
+      // 0.45 + 0.3: the places up to sa that no sum reached are written as 0 (the 0 before the point too).
+      const written=new Set(plan.steps.filter(s=>s.after&&s.after.write).map(s=>s.after.write.col));
+      for(let c=0;c<=dp;c++)if(!written.has(c)&&c>=Math.max(...written,-1))plan.steps.push({kind:'show',col:c,say:c===dp?'Tiada nombor bulat: tulis 0 sebelum titik.':`Tempat ${N[c]}: 0.`,after:{write:{col:c,digit:0},note:'Tulis 0.'}});
+      const f=fmtDp(dp);plan.dp=dp;plan.cols=Math.max(plan.cols,dp+1);plan.done=`${f(a)} ${SIGN[op]} ${f(b)} = ${f(plan.answer)}.`;
+    }
     return plan;
   }
-  function add(a,b){
-    const A=digits(a),B=digits(b),n=Math.max(A.length,B.length),steps=[];let c=0;
+  // With decimals every column up to sa holds a real digit (0.05 has a 0 in persepuluh and in sa).
+  const padTo=(D,n)=>{const out=[...D];while(out.length<n)out.push(0);return out};
+  function add(a,b,PLACE=PLACE_,dp=0){
+    const A=dp?padTo(digits(a),dp+1):digits(a),B=dp?padTo(digits(b),dp+1):digits(b),n=Math.max(A.length,B.length),steps=[];let c=0;
     for(let i=0;i<n;i++){
       const x=A[i]||0,y=B[i]||0,s=x+y+c,one=A[i]===undefined||B[i]===undefined,ask=one?`${A[i]===undefined?y:x} + 1 = ?`:`${x} + ${y}${c?' + 1':''} = ?`;
       // Only one number has a digit here and nothing is carried: it just comes down.
@@ -71,8 +85,8 @@
     if(c)steps.push({kind:'show',col:n,say:`Tempat ${PLACE[n]}: 1 yang dikumpul semula turun.`,after:{write:{col:n,digit:1},note:'Tulis 1.'}});
     return{op:'add',rows:[a,b],answer:a+b,cols:Math.max(n+(c?1:0),digits(a+b).length),steps};
   }
-  function sub(a,b){
-    const A=digits(a),B=digits(b),top=[...A],n=A.length,steps=[];
+  function sub(a,b,PLACE=PLACE_,dp=0){
+    const A=dp?padTo(digits(a),dp+1):digits(a),B=dp?padTo(digits(b),dp+1):digits(b),top=[...A],n=A.length,steps=[];
     for(let i=0;i<n;i++){
       const y=B[i]||0;
       if(top[i]<y){
@@ -84,9 +98,9 @@
         top[j]-=1;for(let k=j-1;k>i;k--)top[k]=9;top[i]+=10;
       }
       const d=top[i]-y,ask=`${top[i]} − ${y} = ?`;
-      if(B[i]===undefined){const lead=i===n-1&&d===0&&n>1;steps.push({kind:'show',col:i,say:lead?`Tempat ${PLACE[i]}: tinggal 0. 0 di depan tidak ditulis.`:`Tempat ${PLACE[i]}: tiada nombor untuk ditolak. ${d} turun.`,after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1},note:d===0&&i===n-1&&n>1?'0 di depan tidak ditulis.':`Tulis ${d}.`}});continue}
+      if(B[i]===undefined){const lead=i===n-1&&d===0&&n>1&&i>dp;steps.push({kind:'show',col:i,say:lead?`Tempat ${PLACE[i]}: tinggal 0. 0 di depan tidak ditulis.`:`Tempat ${PLACE[i]}: tiada nombor untuk ditolak. ${d} turun.`,after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1&&i>dp},note:d===0&&i===n-1&&n>1&&i>dp?'0 di depan tidak ditulis.':`Tulis ${d}.`}});continue}
       steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:d,choices:tiles(d,[Math.abs((A[i])-y),d+1,top[i]+y]),
-        after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1},note:`Tulis ${d}.`}});
+        after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1&&i>dp},note:`Tulis ${d}.`}});
     }
     return{op:'sub',rows:[a,b],answer:a-b,cols:n,steps};
   }
@@ -117,18 +131,18 @@
 
   /* Two steps, left to right (a op1 b op2 d): two boards, one after the other.
      A story first asks for the whole number sentence. */
-  function buildChain(spec,opt={}){
+  function buildChain(spec,opt={}){const dp=opt.dp||0,f=fmtDp(dp);
     if(!spec||!Array.isArray(spec.ops)||spec.ops.length!==2)return null;
     const{a,b,d}=spec,[o1,o2]=spec.ops,mid=o1==='add'?a+b:o1==='sub'?a-b:NaN;
     if(!Number.isInteger(mid)||mid<0)return null;
-    const p1=build(o1,a,b),p2=build(o2,mid,d);if(!p1||!p2)return null;
+    const p1=build(o1,a,b,{dp}),p2=build(o2,mid,d,{dp});if(!p1||!p2)return null;
     if(opt.story){
       const S=(x,y)=>`${nf(a)} ${SIGN[x]} ${nf(b)} ${SIGN[y]} ${nf(d)}`,flip={add:'sub',sub:'add'};
       const right=S(o1,o2);
       p1.steps.unshift({kind:'pick',col:-1,say:'Ayat matematik mana yang sepadan dengan cerita?',right,choices:order(right,[S(flip[o1],flip[o2]),S(o1,o1)]),sentence:true,
         after:{sign:SIGN[o1],note:`Betul: ${right}. Kira dari kiri: langkah pertama ${nf(a)} ${SIGN[o1]} ${nf(b)}.`}});
     }
-    return{chain:[p1,p2],mid,answer:p2.answer,notes:[`Langkah pertama siap: <b>${nf(mid)}</b>. Sekarang ${nf(mid)} ${SIGN[o2]} ${nf(d)}.`]};
+    return{chain:[p1,p2],mid,answer:p2.answer,notes:[`Langkah pertama siap: <b>${f(mid)}</b>. Sekarang ${f(mid)} ${SIGN[o2]} ${f(d)}.`]};
   }
   /* 567 × 37: 567 × 7, then 567 × 3 with a 0 at the end (× 30), then add the two. */
   function buildLong(spec){
@@ -382,7 +396,8 @@
   function boardHTML(plan,opt={}){
     const n=plan.cols,[a,b]=plan.rows,A=digits(a),B=digits(b),cell=(cls,txt,col,extra='')=>`<span class="wk-c ${cls}" data-col="${col}"${extra}>${txt}</span>`;
     const cols=[...Array(n).keys()].reverse();
-    const head=cols.map(i=>cell('wk-h',PLACE[i]==='puluh ribu'?'p.ribu':PLACE[i]==='ratus ribu'?'r.ribu':PLACE[i],i)).join('');
+    const dp=plan.dp||0,H=i=>i<dp?DECH[dp-1-i]:PLACE[i-dp];
+    const head=cols.map(i=>cell('wk-h',H(i)==='puluh ribu'?'p.ribu':H(i)==='ratus ribu'?'r.ribu':H(i),i)).join('');
     if(plan.op==='seq'){
       return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?`<i class="wk-hop" data-h="${i}" aria-hidden="true">${plan.hops?'':'›'}</i>`:''}<span class="wk-c wk-box${v===null?' wk-q':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
     }
@@ -401,13 +416,14 @@
         <div class="wk-row wk-top wk-bracket"><span class="wk-op wk-dv">${b}</span>${D.map((d,k)=>cell('wk-d',d,D.length-1-k)).join('')}</div>
         <div class="wk-rem" aria-live="polite"></div></div>`;
     }
-    const row=(D,sign)=>`<div class="wk-row"><span class="wk-op">${sign||''}</span>${cols.map(i=>cell('wk-d',D[i]===undefined?'':D[i],i)).join('')}</div>`;
+    const pt=i=>dp&&i===dp?' wk-pt':'';   // the decimal point sits after the sa column
+    const row=(D,sign)=>`<div class="wk-row"><span class="wk-op">${sign||''}</span>${cols.map(i=>cell('wk-d'+pt(i),D[i]===undefined?(dp&&i<=dp?0:''):D[i],i)).join('')}</div>`;
     const sign=opt.hideSign?'<i class="wk-sign">?</i>':SIGN[plan.op];
     const second=plan.op==='mul'?row([b],sign):row(B,sign);
     return `<div class="wk-board" style="--n:${n}"><div class="wk-row wk-head"><span class="wk-op"></span>${head}</div>
       <div class="wk-row wk-carry"><span class="wk-op"></span>${cols.map(i=>cell('wk-k','',i)).join('')}</div>
       ${row(A)}${second}<div class="wk-line"></div>
-      <div class="wk-row wk-ans"><span class="wk-op">=</span>${cols.map(i=>cell('wk-a','',i)).join('')}</div></div>`;
+      <div class="wk-row wk-ans"><span class="wk-op">=</span>${cols.map(i=>cell('wk-a'+pt(i),'',i)).join('')}</div></div>`;
   }
   /* Run the walkthrough. el = {board, tiles, say, next}; onDone(plan) after the last step. */
   function run(plan,el,onDone,opt={}){
