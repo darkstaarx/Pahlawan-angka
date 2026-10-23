@@ -21,3 +21,6 @@
     box-shadow:0 24px 70px #0008;
   }
 }
+
+/* No grey/blue box on tap in Android Chrome; buttons have their own :active press. */
+html{-webkit-tap-highlight-color:transparent}
