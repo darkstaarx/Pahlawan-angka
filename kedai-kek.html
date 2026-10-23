@@ -359,6 +359,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.9.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .pa-game .scene{--waist:60px;--belt:.62;--aspect:1.09}
 .pa-game .scene .stand{left:calc(var(--ww) * .93)}.pa-game .scene .counter{width:66%}.pa-game .scene .shelf{left:54%;right:4%}
@@ -411,10 +412,13 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <small>Simulasi router Kemahiran Fokus</small>
     <div class="devrow sims" id="sims"></div>
     <p class="simout" id="simOut"></p><button type="button" class="btn go" id="simGo" hidden>Buka kedai ikut pelan →</button>
+    <small>Cuba “Jom tengok cara” (terus ke soalan yang ada langkah)</small>
+    <div class="devrow sims" id="wkTry"></div>
   </div></div>
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-worked-v1.js?v=1.9.0"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/kedai-kek-router.js"></script>
 <script>
@@ -453,20 +457,20 @@ const GEN={
 /* ======================= DARJAH 1: ½ dan ¼ ======================= */
 1:{
  potong:[
-  {arch:'shade_symbol',f:C=>{const[n,d]=pick(D1F);return{kind:'shade',vis:[{t:'round',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d),
+  {arch:'shade_symbol',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d),
    q:'Letak krim pada '+fs(n,d)+' kek '+C.fl.n+' ini.',s:'Penyebut '+d+': kek dipotong kepada '+d+' bahagian sama besar. Pengangka '+n+': bilangan bahagian yang diberi krim.',a:'Letak krim pada '+n+' daripada '+d+' bahagian.'}}},
-  {arch:'shade_words',f:C=>{const[n,d]=pick(D1F),w=pick(NAMES[n+'/'+d]);return{kind:'shade',vis:[{t:'round',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d)+' · '+w,
+  {arch:'shade_words',f:C=>{const[n,d]=pick(D1F),w=pick(NAMES[n+'/'+d]);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d)+' · '+w,
    q:'Letak krim pada '+w+' kek ini.',s:w==='suku'?'Suku sama dengan satu perempat: 1 daripada 4 bahagian.':/separuh|setengah|perdua/.test(w)?'Separuh: 1 daripada 2 bahagian sama besar.':'Perempat: kek dibahagi kepada 4 bahagian sama besar.',a:w+' = '+fs(n,d)+'.'}}},
-  {arch:'equal_share_shade',f:C=>{const d=pick([2,4]);return{kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:4},need:{n:d,k:1},ansTxt:fs(1,d),
+  {arch:'equal_share_shade',f:C=>{const d=pick([2,4]);return{wk:{t:'read',d,sh:1,label:'untuk seorang'},kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:4},need:{n:d,k:1},ansTxt:fs(1,d),
    q:'Kek ini dikongsi sama rata oleh '+d+' kawan. Potong kek, kemudian letak krim pada bahagian seorang.',s:d+' kawan: potong kepada '+d+' bahagian sama besar. Seorang dapat 1 bahagian.',a:'Bahagian seorang = '+fs(1,d)+'.'}}},
-  {arch:'shade_parts',f:C=>{const[n,d]=pick(D1F);return{kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:4},need:{n:d,k:n},ansTxt:fs(n,d),
+  {arch:'shade_parts',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:4},need:{n:d,k:n},ansTxt:fs(n,d),
    q:C.who+' mahu '+fs(n,d)+' kek. Potong kek sama besar, kemudian letak krim.',s:'Penyebut ialah bilangan potongan sama besar. Pengangka ialah bilangan bahagian berkrim.',a:'Potong '+d+', letak krim pada '+n+'.'}}}],
  nama:[
-  {arch:'model_symbol',f:C=>{const[n,d]=pick(D1F);return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(n,d)),
+  {arch:'model_symbol',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(n,d)),
    q:'Apakah pecahan bahagian kek yang berkrim?',s:'Kira semua bahagian (penyebut), kemudian kira bahagian berkrim (pengangka).',a:n+' daripada '+d+' bahagian = '+fs(n,d)+'.'}}},
-  {arch:'model_name',f:C=>{const[n,d]=pick(D1F);return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(['satu perdua','satu perempat','dua perempat','tiga perempat']),nm(n,d)),
+  {arch:'model_name',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(['satu perdua','satu perempat','dua perempat','tiga perempat']),nm(n,d)),
    q:'Apakah nama pecahan bahagian yang berkrim?',s:'Perdua: 2 bahagian sama besar. Perempat: 4 bahagian sama besar.',a:n+' daripada '+d+' = '+nm(n,d)+'.'}}},
-  {arch:'unmarked_symbol',f:C=>{const[n,d]=pick(D1F),u=d-n;return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(u,d)),
+  {arch:'unmarked_symbol',f:C=>{const[n,d]=pick(D1F),u=d-n;return{wk:{t:'read',d,sh:n,want:'un',label:'tanpa krim'},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(u,d)),
    q:'Apakah pecahan bahagian kek TANPA krim?',s:'Kira bahagian yang tidak berkrim sahaja.',a:u+' daripada '+d+' tanpa krim = '+fs(u,d)+'.'}}},
   {arch:'half_everyday_name',f:C=>{const half=Math.random()<.5,[n,d]=half?[1,2]:[1,4];
    if(Math.random()<.5){const c=half?pick(['setengah','separuh']):'suku';return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(half?[c,'suku','tiga perempat']:[c,'separuh','dua perempat'],c),
@@ -474,155 +478,155 @@ const GEN={
    const bad=half?'suku':'separuh';return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(half?['setengah','separuh',bad]:['suku','satu perempat',bad],bad),
     q:'Yang manakah BUKAN nama bagi bahagian berkrim?',s:'Kira bahagian kek dulu: 2 bahagian atau 4 bahagian?',a:'Bahagian berkrim ialah '+nm(n,d)+'. '+up(bad)+' bukan namanya.'}}}],
  cerita:[
-  {arch:'half_remaining_story',f:C=>{const d=pick([2,4]),k=d===2?1:R(1,3);return{kind:'pick',vis:[{t:'round',n:d,eat:range(k),fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(d-k,d)),
+  {arch:'half_remaining_story',f:C=>{const d=pick([2,4]),k=d===2?1:R(1,3);return{wk:{t:'read',d,eat:k,want:'left',label:'yang tinggal'},kind:'pick',vis:[{t:'round',n:d,eat:range(k),fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(d-k,d)),
    q:'Kek dipotong '+d+' sama besar. '+C.who+' makan '+k+' bahagian. Apakah pecahan kek yang tinggal?',s:'Kira bahagian yang masih ada di atas pinggan.',a:d+' − '+k+' = '+(d-k)+' bahagian tinggal = '+fs(d-k,d)+'.'}}},
-  {arch:'take_one_action',f:C=>{const k=R(1,3);return{kind:'pick',vis:[{t:'round',n:4,eat:range(k),fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(k,4)),
+  {arch:'take_one_action',f:C=>{const k=R(1,3);return{wk:{t:'read',d:4,eat:k,want:'eat',label:'yang kosong (diambil)'},kind:'pick',vis:[{t:'round',n:4,eat:range(k),fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(k,4)),
    q:C.who+' ambil '+k+' bahagian kek untuk dibawa pulang. Apakah pecahan kek yang diambil?',s:'Kira bahagian yang kosong di pinggan. Kek asal ada 4 bahagian.',a:k+' daripada 4 = '+fs(k,4)+'.'}}},
-  {arch:'two_people_eat',f:C=>{const[a,b]=pick([[1,1],[1,2],[2,1]]),o=C.others[0];return{kind:'pick',vis:[{t:'round',n:4,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(4-a-b,4)),
+  {arch:'two_people_eat',f:C=>{const[a,b]=pick([[1,1],[1,2],[2,1]]),o=C.others[0];return{wk:{t:'parts',d:4,terms:[a,b],left:1},kind:'pick',vis:[{t:'round',n:4,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(4-a-b,4)),
    q:'Kek dipotong 4 sama besar. '+C.who+' makan '+a+' bahagian dan '+o+' makan '+b+' bahagian. Apakah pecahan kek yang tinggal?',s:'Jumlahkan bahagian yang dimakan, kemudian tolak daripada 4.',a:'4 − '+a+' − '+b+' = '+(4-a-b)+' bahagian = '+fs(4-a-b,4)+'.'}}},
-  {arch:'two_people_receive',f:C=>{const[a,b]=pick([[1,1],[1,2],[2,1]]),o=C.others[0];return{kind:'pick',vis:[{t:'round',n:4,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(a+b,4)),
+  {arch:'two_people_receive',f:C=>{const[a,b]=pick([[1,1],[1,2],[2,1]]),o=C.others[0];return{wk:{t:'parts',d:4,terms:[a,b]},kind:'pick',vis:[{t:'round',n:4,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(a+b,4)),
    q:C.who+' dapat '+a+' bahagian dan '+o+' dapat '+b+' bahagian kek. Apakah pecahan yang mereka terima semuanya?',s:'Kek dipotong 4 sama besar. Tambah bahagian kedua-dua kawan.',a:a+' + '+b+' = '+(a+b)+' bahagian = '+fs(a+b,4)+'.'}}}]},
 
 /* ======================= DARJAH 2: penyebut hingga 10, persepuluh ======================= */
 2:{
  potong:[
-  {arch:'bar_model',f:C=>{const[n,d]=prop(3,10);return{kind:'shade',vis:[{t:'bar',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d),
+  {arch:'bar_model',f:C=>{const[n,d]=prop(3,10);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'bar',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d),
    q:'Letak krim pada '+fs(n,d)+' kek lapis ini.',s:'Kek lapis sudah dipotong '+d+' sama besar. Letak krim pada '+n+' bahagian.',a:'Letak krim pada '+n+' daripada '+d+' bahagian.'}}},
-  {arch:'verbal_part',f:C=>{const[n,d]=prop(3,10);return{kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:10},need:{n:d,k:n},ansTxt:fs(n,d),
+  {arch:'verbal_part',f:C=>{const[n,d]=prop(3,10);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:10},need:{n:d,k:n},ansTxt:fs(n,d),
    q:C.who+' mahu '+fs(n,d)+' kek. Potong kek sama besar, kemudian letak krim.',s:'Penyebut '+d+': potong '+d+' bahagian sama besar.',a:'Potong '+d+', letak krim pada '+n+'.'}}},
-  {arch:'verbal_part',f:C=>{const[n,d]=prop(3,10);return{kind:'pad',card:d+' bahagian sama besar<br>'+n+' bahagian berkrim',form:FR(n,d),
+  {arch:'verbal_part',f:C=>{const[n,d]=prop(3,10);return{wk:{t:'read',d,sh:n},kind:'pad',card:d+' bahagian sama besar<br>'+n+' bahagian berkrim',form:FR(n,d),
    q:'Apakah pecahan bahagian kek yang berkrim?',s:'Penyebut = semua bahagian. Pengangka = bahagian berkrim.',a:n+' daripada '+d+' = '+fs(n,d)+'.'}}},
-  {arch:'missing_part',f:C=>{const d=R(4,10),n=R(1,d-2);return{kind:'pad',vis:[{t:'round',n:d,sh:n,fl:C.fl}],form:FR(n+1,d),
+  {arch:'missing_part',f:C=>{const d=R(4,10),n=R(1,d-2);return{wk:{t:'read',d,sh:n+1,label:'berkrim sekarang'},kind:'pad',vis:[{t:'round',n:d,sh:n,fl:C.fl}],form:FR(n+1,d),
    q:'Jika satu lagi bahagian diberi krim, apakah pecahan baharu?',s:'Penyebut tidak berubah. Tambah 1 pada pengangka.',a:fs(n,d)+' + 1 bahagian = '+fs(n+1,d)+'.'}}}],
  banding:[
-  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);return{kind:'pick',vis:[{t:'round',n:d,sh:a,fl:C.fl,lab:'KEK A'},{t:'round',n:d,sh:b,fl:C.fl2,lab:'KEK B'}],
+  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);return{wk:{t:'cmp',a,b,d,names:['Kek A','Kek B']},kind:'pick',vis:[{t:'round',n:d,sh:a,fl:C.fl,lab:'KEK A'},{t:'round',n:d,sh:b,fl:C.fl2,lab:'KEK B'}],
    opts:[{id:'A',label:'Kek A'},{id:'B',label:'Kek B'}],correct:a>b?'A':'B',ansTxt:a>b?'Kek A':'Kek B',
    q:'Kek manakah lebih banyak krim?',s:'Kedua-dua kek dipotong sama banyak. Banding bilangan bahagian berkrim.',a:'A = '+fs(a,d)+', B = '+fs(b,d)+'.'}}},
-  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);const big=Math.random()<.5,c=big?Math.max(a,b):Math.min(a,b);return{kind:'pick',...opts([fs(a,d),fs(b,d)],fs(c,d)),
+  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);const big=Math.random()<.5,c=big?Math.max(a,b):Math.min(a,b);return{wk:{t:'cmp',a,b,d,big},kind:'pick',...opts([fs(a,d),fs(b,d)],fs(c,d)),
    q:'Antara '+fs(a,d)+' dengan '+fs(b,d)+', yang manakah lebih '+(big?'besar':'kecil')+'?',s:'Penyebut sama, jadi banding pengangka.',a:(big?'Pengangka lebih besar':'Pengangka lebih kecil')+': '+fs(c,d)+'.'}}},
-  {arch:'object_set',f:C=>{const d=R(3,10),n=R(1,d-1);return{kind:'pad',vis:[{t:'set',n:d,k:n}],form:FR(n,d),
+  {arch:'object_set',f:C=>{const d=R(3,10),n=R(1,d-1);return{wk:{t:'read',d,sh:n,label:'strawberi'},kind:'pad',vis:[{t:'set',n:d,k:n}],form:FR(n,d),
    q:'Apakah pecahan buah strawberi di atas dulang?',s:'Penyebut = semua buah. Pengangka = buah strawberi.',a:n+' strawberi daripada '+d+' buah = '+fs(n,d)+'.'}}},
   {arch:'compare_model',f:C=>{const d=R(4,10);const s=new Set();while(s.size<3)s.add(R(1,d-1));const L=[...s],asc=[...L].sort((x,y)=>x-y),T=asc.map(x=>fs(x,d)).join(', ');
-   const w1=[...L].sort((x,y)=>y-x).map(x=>fs(x,d)).join(', '),w2=[asc[1],asc[0],asc[2]].map(x=>fs(x,d)).join(', ');return{kind:'pick',...opts([T,w1,w2],T),
+   const w1=[...L].sort((x,y)=>y-x).map(x=>fs(x,d)).join(', '),w2=[asc[1],asc[0],asc[2]].map(x=>fs(x,d)).join(', ');return{wk:{t:'order',L,d},kind:'pick',...opts([T,w1,w2],T),
    q:'Susun '+L.map(x=>fs(x,d)).join(', ')+' secara menaik (kecil ke besar).',s:'Penyebut sama. Susun ikut pengangka dari kecil ke besar.',a:'Menaik: '+T+'.'}}}],
  persepuluh:[
-  {arch:'coloured_card',f:C=>{const n=R(1,9);return{kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:DEC(n/10),
+  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:DEC(n/10),
    q:'Kek lapis dipotong 10 sama besar. Tulis bahagian berkrim dalam perpuluhan.',s:'1 daripada 10 bahagian = 0.1.',a:n+' persepuluh = 0.'+n+'.'}}},
-  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:FR(n,10),
+  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'read',d:10,sh:n,label:'berisi jus'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:FR(n,10),
    q:'Jus oren memenuhi '+n+' daripada 10 bahagian botol. Apakah pecahan botol yang berisi jus?',s:'Botol ada 10 bahagian sama besar. Kira bahagian berisi jus.',a:n+' daripada 10 = '+fs(n,10)+'.'}}},
-  {arch:'decimal_to_fraction',f:C=>{const n=R(1,9);return{kind:'pad',card:'0.'+n+' = [□/10]',form:FR(n,10),
+  {arch:'decimal_to_fraction',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'dec',out:'frac'},kind:'pad',card:'0.'+n+' = [□/10]',form:FR(n,10),
    q:'Tukar 0.'+n+' kepada pecahan persepuluh.',s:'Digit selepas titik perpuluhan ialah bilangan persepuluh.',a:'0.'+n+' = '+fs(n,10)+'.'}}},
-  {arch:'remaining_part',f:C=>{const n=R(1,9),dec=Math.random()<.5;return{kind:'pad',vis:[{t:'bar',n:10,eat:range(n),fl:C.fl}],form:dec?DEC((10-n)/10):FR(10-n,10),
+  {arch:'remaining_part',f:C=>{const n=R(1,9),dec=Math.random()<.5;return{wk:{t:'tenth',n,from:'rest',out:dec?'dec':'frac'},kind:'pad',vis:[{t:'bar',n:10,eat:range(n),fl:C.fl}],form:dec?DEC((10-n)/10):FR(10-n,10),
    q:C.who+' makan '+(dec?'0.'+n:fs(n,10))+' kek lapis. Apakah '+(dec?'perpuluhan':'pecahan')+' kek yang tinggal?',s:'Satu kek penuh = 10 persepuluh. Tolak bahagian yang dimakan.',a:'10 − '+n+' = '+(10-n)+' persepuluh = '+(dec?'0.'+(10-n):fs(10-n,10))+'.'}}},
-  {arch:'mixed_compare',f:C=>{let a,b;do{a=R(1,9);b=R(1,9)}while(a===b);const c=a>b?fs(a,10):'0.'+b;return{kind:'pick',...opts([fs(a,10),'0.'+b],c),
+  {arch:'mixed_compare',f:C=>{let a,b;do{a=R(1,9);b=R(1,9)}while(a===b);const c=a>b?fs(a,10):'0.'+b;return{wk:{t:'tenthCmp',a,b},kind:'pick',...opts([fs(a,10),'0.'+b],c),
    q:'Yang manakah lebih besar: '+fs(a,10)+' atau 0.'+b+'?',s:'Tukar kedua-duanya kepada persepuluh, kemudian banding.',a:fs(a,10)+' = 0.'+a+'. Banding 0.'+a+' dengan 0.'+b+'.'}}}]},
 
 /* ======================= DARJAH 3: setara, permudah, bercampur, tambah tolak ======================= */
 3:{
  setara:[
   {arch:'equivalent_fraction_area',f:C=>{const[n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5]]),k=pick([2,3,4,5].filter(k=>d*k<=10));const c=fs(n*k,d*k);
-   const bad=[d*k<10?fs(n*k,d*k+1):fs(n*k,d*k-1),fs(n+1,d+1),fs(n,d*k),fs(n*k+1,d*k)].filter(x=>x!==c);return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts([c,...shuffle(bad).slice(0,2)],c),
+   const bad=[d*k<10?fs(n*k,d*k+1):fs(n*k,d*k-1),fs(n+1,d+1),fs(n,d*k),fs(n*k+1,d*k)].filter(x=>x!==c);return{wk:{t:'equiv',n,d,k},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts([c,...shuffle(bad).slice(0,2)],c),
    q:'Rajah menunjukkan '+fs(n,d)+' kek berkrim. Pecahan manakah sama nilai dengannya?',s:'Darab pengangka dan penyebut dengan nombor yang sama.',a:fs(n,d)+' = '+fs(n+' × '+k,d+' × '+k).replace(/\[([^\]]*)\]/,'('+n+' × '+k+')/('+d+' × '+k+')')+' = '+c+'.'}}},
-  {arch:'equivalent_fraction_area',f:C=>{const[n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5]]),k=pick([2,3,4,5].filter(k=>d*k<=10));return{kind:'shade',vis:[{t:'round',n:d,sh:n,fl:C.fl,lab:'KEK A'},{t:'round',n:d*k,fl:C.fl2,lab:'KEK B',live:1}],need:{k:n*k},ansTxt:fs(n,d)+' = '+fs(n*k,d*k),
+  {arch:'equivalent_fraction_area',f:C=>{const[n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5]]),k=pick([2,3,4,5].filter(k=>d*k<=10));return{wk:{t:'equiv',n,d,k,ask:'shade'},kind:'shade',vis:[{t:'round',n:d,sh:n,fl:C.fl,lab:'KEK A'},{t:'round',n:d*k,fl:C.fl2,lab:'KEK B',live:1}],need:{k:n*k},ansTxt:fs(n,d)+' = '+fs(n*k,d*k),
    q:'Kek A ada '+fs(n,d)+' berkrim. Letak krim pada kek B supaya sama banyak.',s:'Setiap bahagian kek A sama dengan '+k+' bahagian kek B.',a:n+' × '+k+' = '+n*k+' bahagian.'}}},
   {arch:'equivalent_fraction_missing_number',f:C=>{const[n,d]=propS(2,5),k=pick([2,3,4,5].filter(k=>d*k<=10)),top=Math.random()<.6;
-   return{kind:'pad',card:top?fs(n,d)+' = [□/'+d*k+']':fs(n,d)+' = ['+n*k+'/□]',form:INT(top?n*k:d*k),
+   return{wk:{t:'equiv',n,d,k,ask:top?'n':'d'},kind:'pad',card:top?fs(n,d)+' = [□/'+d*k+']':fs(n,d)+' = ['+n*k+'/□]',form:INT(top?n*k:d*k),
    q:'Apakah nombor dalam kotak?',s:top?'Penyebut '+d+' didarab dengan '+k+'. Buat yang sama pada pengangka.':'Pengangka '+n+' didarab dengan '+k+'. Buat yang sama pada penyebut.',a:(top?n+' × '+k+' = '+n*k:d+' × '+k+' = '+d*k)+'.'}}},
-  {arch:'equivalent_fraction_symbolic',f:C=>{const[n,d]=propS(2,5),k=pick([2,3,4,5].filter(k=>d*k<=10)),c=fs(n*k,d*k);return{kind:'pick',...opts([c,...near(n*k,d*k,3,10)],c),
+  {arch:'equivalent_fraction_symbolic',f:C=>{const[n,d]=propS(2,5),k=pick([2,3,4,5].filter(k=>d*k<=10)),c=fs(n*k,d*k);return{wk:{t:'equiv',n,d,k},kind:'pick',...opts([c,...near(n*k,d*k,3,10)],c),
    q:'Pecahan manakah setara dengan '+fs(n,d)+'?',s:'Pecahan setara: darab atau bahagi pengangka dan penyebut dengan nombor yang sama.',a:'Darab dengan '+k+': '+fs(n,d)+' = '+c+'.'}}}],
  permudah:[
-  {arch:'simplify_fraction_from_area',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10));return{kind:'pad',vis:[{t:'round',n:q*k,sh:p*k,fl:C.fl}],form:MX(p,q),
+  {arch:'simplify_fraction_from_area',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10));return{wk:{t:'simp',N:p*k,D:q*k},kind:'pad',vis:[{t:'round',n:q*k,sh:p*k,fl:C.fl}],form:MX(p,q),
    q:'Bahagian berkrim ialah '+fs(p*k,q*k)+'. Apakah bentuk termudahnya?',s:'Cari nombor yang boleh membahagi pengangka dan penyebut.',a:fs(p*k,q*k)+' ÷ '+k+' = '+fs(p,q)+'.'}}},
   {arch:'identify_common_factor_for_simplification',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10)),N=p*k,D=q*k;const L=[k];[2,3,4,5,N,D,1].forEach(x=>{if(x!==k&&!L.includes(x)&&x>1)L.push(x)});
-   return{kind:'pick',...opts([k,...shuffle(L.slice(1)).slice(0,2)],k),
+   return{wk:{t:'simp',N,D,ask:'gcf'},kind:'pick',...opts([k,...shuffle(L.slice(1)).slice(0,2)],k),
    q:'Untuk memudahkan '+fs(N,D)+' terus kepada bentuk termudah, bahagi pengangka dan penyebut dengan nombor apa?',s:'Cari faktor sepunya TERBESAR bagi '+N+' dan '+D+'.',a:'Faktor sepunya terbesar ialah '+k+'.'}}},
-  {arch:'simplify_fraction_direct',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10));return{kind:'pad',card:'Permudahkan '+fs(p*k,q*k),form:MX(p,q),
+  {arch:'simplify_fraction_direct',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10));return{wk:{t:'simp',N:p*k,D:q*k},kind:'pad',card:'Permudahkan '+fs(p*k,q*k),form:MX(p,q),
    q:'Tulis '+fs(p*k,q*k)+' dalam bentuk termudah.',s:'Bahagi pengangka dan penyebut dengan faktor sepunya terbesar.',a:fs(p*k,q*k)+' ÷ '+k+' = '+fs(p,q)+'.'}}}],
  bercampur:[
-  {arch:'identify_mixed_number_from_picture',f:C=>{const w=R(1,3),d=R(2,10),n=R(1,d-1);return{kind:'pad',vis:[{t:'bars',w,n,d,fl:C.fl}],form:MX(w*d+n,d,{simp:false}),ansTxt:ms(w,n,d),
+  {arch:'identify_mixed_number_from_picture',f:C=>{const w=R(1,3),d=R(2,10),n=R(1,d-1);return{wk:{t:'readMixed',w,n,d},kind:'pad',vis:[{t:'bars',w,n,d,fl:C.fl}],form:MX(w*d+n,d,{simp:false}),ansTxt:ms(w,n,d),
    q:'Rajah menunjukkan kek lapis berkrim. Tulis sebagai nombor bercampur.',s:'Kek penuh = nombor bulat. Kek separa = pecahan.',a:w+' kek penuh dan '+fs(n,d)+' = '+ms(w,n,d)+'.'}}},
-  {arch:'convert_improper_to_mixed',f:C=>{let N,d;do{d=R(2,8);N=R(d+1,3*d-1)}while(gcd(N,d)>1);return{kind:'pad',vis:[{t:'bars',w:Math.floor(N/d),n:N%d,d,fl:C.fl,cnt:1}],form:MX(N,d),
+  {arch:'convert_improper_to_mixed',f:C=>{let N,d;do{d=R(2,8);N=R(d+1,3*d-1)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',vis:[{t:'bars',w:Math.floor(N/d),n:N%d,d,fl:C.fl,cnt:1}],form:MX(N,d),
    q:'Ada '+fs(N,d)+' kek lapis. Tukar kepada nombor bercampur.',s:'Setiap '+d+' bahagian = 1 kek penuh.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
-  {arch:'convert_improper_to_mixed',f:C=>{let N,d;do{d=R(2,10);N=R(d+1,4*d)}while(gcd(N,d)>1);return{kind:'pad',card:fs(N,d)+' = ?',form:MX(N,d),
+  {arch:'convert_improper_to_mixed',f:C=>{let N,d;do{d=R(2,10);N=R(d+1,4*d)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',card:fs(N,d)+' = ?',form:MX(N,d),
    q:'Tukar '+fs(N,d)+' kepada nombor bercampur.',s:'Bahagi pengangka dengan penyebut. Hasil = nombor bulat, baki = pengangka baharu.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
-  {arch:'convert_mixed_to_improper',f:C=>{let w,n,d;do{d=R(2,10);n=R(1,d-1);w=R(1,4)}while(gcd(n,d)>1);const N=w*d+n;return{kind:'pad',card:ms(w,n,d)+' = ?',form:IMP(N,d),
+  {arch:'convert_mixed_to_improper',f:C=>{let w,n,d;do{d=R(2,10);n=R(1,d-1);w=R(1,4)}while(gcd(n,d)>1);const N=w*d+n;return{wk:{t:'toImp',w,n,d},kind:'pad',card:ms(w,n,d)+' = ?',form:IMP(N,d),
    q:'Tukar '+ms(w,n,d)+' kepada pecahan tak wajar.',s:'Darab nombor bulat dengan penyebut, kemudian tambah pengangka.',a:w+' × '+d+' + '+n+' = '+N+'. Jadi '+ms(w,n,d)+' = '+fs(N,d)+'.'}}}],
  tambah:[
-  {arch:'add_proper_fractions',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-2);b=R(1,d-1-a)}while(b<1);return{kind:'pad',vis:[{t:'round',n:d,sh:a,sh2:b,fl:C.fl}],form:MX(a+b,d),
+  {arch:'add_proper_fractions',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-2);b=R(1,d-1-a)}while(b<1);return{wk:{t:'add',terms:[[a,d],[b,d]],ops:['+']},kind:'pad',vis:[{t:'round',n:d,sh:a,sh2:b,fl:C.fl}],form:MX(a+b,d),
    q:'Krim strawberi '+fs(a,d)+' dan krim coklat '+fs(b,d)+'. Berapakah pecahan kek yang berkrim?',s:'Penyebut sama: tambah pengangka sahaja.',a:fs(a,d)+' + '+fs(b,d)+' = '+fv(a+b,d)+'.'}}},
-  {arch:'add_proper_fractions',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m+b>=d2);const S=a*m+b;return{kind:'pad',card:fs(a,d1)+' + '+fs(b,d2)+' = ?',form:MX(S,d2),
+  {arch:'add_proper_fractions',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m+b>=d2);const S=a*m+b;return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:['+']},kind:'pad',card:fs(a,d1)+' + '+fs(b,d2)+' = ?',form:MX(S,d2),
    q:'Kira '+fs(a,d1)+' + '+fs(b,d2)+'. Beri jawapan dalam bentuk termudah.',s:'Samakan penyebut dulu: tukar '+fs(a,d1)+' kepada pecahan berpenyebut '+d2+'.',a:fs(a,d1)+' + '+fs(b,d2)+' = '+fs(a*m,d2)+' + '+fs(b,d2)+' = '+fv(S,d2)+'.'}}},
   {arch:'subtract_proper_fractions',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(Math.random()<.4?[[5,5],[7,7],[8,8],[9,9],[10,10],[6,6]]:REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m-b<=0);const S=a*m-b;
-   return{kind:'pad',card:fs(a,d1)+' − '+fs(b,d2)+' = ?',form:MX(S,d2),
+   return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:['−']},kind:'pad',card:fs(a,d1)+' − '+fs(b,d2)+' = ?',form:MX(S,d2),
    q:'Kira '+fs(a,d1)+' − '+fs(b,d2)+'. Beri jawapan dalam bentuk termudah.',s:d1===d2?'Penyebut sama: tolak pengangka sahaja.':'Samakan penyebut dulu, kemudian tolak pengangka.',a:(d1===d2?'':fs(a,d1)+' − '+fs(b,d2)+' = ')+fs(a*m,d2)+' − '+fs(b,d2)+' = '+fv(S,d2)+'.'}}},
   {arch:'fraction_operation_context',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m+b>=d2||a*m-b<=0);const add=Math.random()<.5,S=add?a*m+b:a*m-b;
-   return{kind:'pad',form:MX(S,d2,{unit:'kg'}),
+   return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:[add?'+':'−']},kind:'pad',form:MX(S,d2,{unit:'kg'}),
    q:add?'Wira guna '+fs(a,d1)+' kg tepung untuk kek dan '+fs(b,d2)+' kg untuk biskut. Berapa kg tepung digunakan semuanya?':'Ada '+fs(a,d1)+' kg gula. Wira guna '+fs(b,d2)+' kg untuk kek. Berapa kg gula yang tinggal?',
    s:(add?'Tambah':'Tolak')+'. Samakan penyebut dulu.',a:fs(a*m,d2)+(add?' + ':' − ')+fs(b,d2)+' = '+fv(S,d2)+' kg.'}}}]},
 
 /* ======================= DARJAH 4: tak wajar, tambah tiga, operasi bergabung, kuantiti ======================= */
 4:{
  bercampur:[
-  {arch:'improper_to_mixed',f:C=>{let N,d;do{d=R(2,8);N=R(d+1,3*d-1)}while(gcd(N,d)>1);return{kind:'pad',vis:[{t:'bars',w:Math.floor(N/d),n:N%d,d,fl:C.fl,cnt:1}],form:MX(N,d),
+  {arch:'improper_to_mixed',f:C=>{let N,d;do{d=R(2,8);N=R(d+1,3*d-1)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',vis:[{t:'bars',w:Math.floor(N/d),n:N%d,d,fl:C.fl,cnt:1}],form:MX(N,d),
    q:'Ada '+fs(N,d)+' kek lapis. Tukar kepada nombor bercampur.',s:'Setiap '+d+' bahagian = 1 kek penuh.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
-  {arch:'improper_to_mixed',f:C=>{let N,d;do{d=R(2,10);N=R(d+1,5*d)}while(gcd(N,d)>1);return{kind:'pad',card:fs(N,d)+' = ?',form:MX(N,d),
+  {arch:'improper_to_mixed',f:C=>{let N,d;do{d=R(2,10);N=R(d+1,5*d)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',card:fs(N,d)+' = ?',form:MX(N,d),
    q:'Tukar '+fs(N,d)+' kepada nombor bercampur.',s:'Bahagi pengangka dengan penyebut.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
-  {arch:'mixed_to_improper',f:C=>{let w,n,d;do{d=R(2,10);n=R(1,d-1);w=R(1,5)}while(gcd(n,d)>1);const N=w*d+n;return{kind:'pad',card:ms(w,n,d)+' = ?',form:IMP(N,d),
+  {arch:'mixed_to_improper',f:C=>{let w,n,d;do{d=R(2,10);n=R(1,d-1);w=R(1,5)}while(gcd(n,d)>1);const N=w*d+n;return{wk:{t:'toImp',w,n,d},kind:'pad',card:ms(w,n,d)+' = ?',form:IMP(N,d),
    q:'Tukar '+ms(w,n,d)+' kepada pecahan tak wajar.',s:'Darab nombor bulat dengan penyebut, kemudian tambah pengangka.',a:w+' × '+d+' + '+n+' = '+N+'. Jadi '+ms(w,n,d)+' = '+fs(N,d)+'.'}}}],
  tambah:[
   {arch:'fraction_subtract',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(Math.random()<.5?[[6,6],[8,8],[9,9],[10,10]]:REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m-b<=0);const S=a*m-b;
-   return{kind:'pad',card:fs(a,d1)+' − '+fs(b,d2)+' = ?',form:MX(S,d2),q:'Kira '+fs(a,d1)+' − '+fs(b,d2)+'. Beri jawapan dalam bentuk termudah.',s:'Samakan penyebut, tolak pengangka, kemudian permudahkan.',a:fs(a*m,d2)+' − '+fs(b,d2)+' = '+fv(S,d2)+'.'}}},
-  {arch:'fraction_add_three',f:C=>{const d=R(4,10),a=R(1,d-1),b=R(1,d-1),c=R(1,d-1),S=a+b+c;return{kind:'pad',card:fs(a,d)+' + '+fs(b,d)+' + '+fs(c,d)+' = ?',form:MX(S,d),
+   return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:['−']},kind:'pad',card:fs(a,d1)+' − '+fs(b,d2)+' = ?',form:MX(S,d2),q:'Kira '+fs(a,d1)+' − '+fs(b,d2)+'. Beri jawapan dalam bentuk termudah.',s:'Samakan penyebut, tolak pengangka, kemudian permudahkan.',a:fs(a*m,d2)+' − '+fs(b,d2)+' = '+fv(S,d2)+'.'}}},
+  {arch:'fraction_add_three',f:C=>{const d=R(4,10),a=R(1,d-1),b=R(1,d-1),c=R(1,d-1),S=a+b+c;return{wk:{t:'add',terms:[[a,d],[b,d],[c,d]],ops:['+','+']},kind:'pad',card:fs(a,d)+' + '+fs(b,d)+' + '+fs(c,d)+' = ?',form:MX(S,d),
    q:'Kira jumlahnya. Beri jawapan dalam nombor bercampur atau bentuk termudah.',s:'Penyebut sama: tambah ketiga-tiga pengangka. Jika lebih daripada penyebut, tukar kepada nombor bercampur.',a:'Jumlah '+fv(S,d)+'.'}}},
-  {arch:'fraction_add_three',f:C=>{let d1,d2,m,a,b,c;[d1,d2]=pick(REL);m=d2/d1;do{a=R(1,d1-1);b=R(1,d2-1);c=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||gcd(c,d2)>1);const S=a*m+b+c;return{kind:'pad',card:fs(a,d1)+' + '+fs(b,d2)+' + '+fs(c,d2)+' = ?',form:MX(S,d2),
+  {arch:'fraction_add_three',f:C=>{let d1,d2,m,a,b,c;[d1,d2]=pick(REL);m=d2/d1;do{a=R(1,d1-1);b=R(1,d2-1);c=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||gcd(c,d2)>1);const S=a*m+b+c;return{wk:{t:'add',terms:[[a,d1],[b,d2],[c,d2]],ops:['+','+']},kind:'pad',card:fs(a,d1)+' + '+fs(b,d2)+' + '+fs(c,d2)+' = ?',form:MX(S,d2),
    q:'Kira jumlahnya dalam bentuk termudah.',s:'Tukar '+fs(a,d1)+' kepada pecahan berpenyebut '+d2+' dulu.',a:fs(a*m,d2)+' + '+fs(b,d2)+' + '+fs(c,d2)+' = '+fv(S,d2)+'.'}}},
-  {arch:'fraction_combined',f:C=>{let d,a,b,c;do{d=R(4,10);a=R(1,d-1);b=R(1,d-1);c=R(1,d-1)}while(a+b-c<=0);const S=a+b-c;return{kind:'pad',card:fs(a,d)+' + '+fs(b,d)+' − '+fs(c,d)+' = ?',form:MX(S,d),
+  {arch:'fraction_combined',f:C=>{let d,a,b,c;do{d=R(4,10);a=R(1,d-1);b=R(1,d-1);c=R(1,d-1)}while(a+b-c<=0);const S=a+b-c;return{wk:{t:'add',terms:[[a,d],[b,d],[c,d]],ops:['+','−']},kind:'pad',card:fs(a,d)+' + '+fs(b,d)+' − '+fs(c,d)+' = ?',form:MX(S,d),
    q:'Kira dari kiri ke kanan. Beri jawapan dalam bentuk termudah.',s:'Tambah dulu, kemudian tolak. Penyebut kekal '+d+'.',a:fs(a,d)+' + '+fs(b,d)+' − '+fs(c,d)+' = '+fv(S,d)+'.'}}}],
  kuantiti:[
-  {arch:'fraction_quantity',f:C=>{const d=R(2,6),g=R(2,6),n=R(1,d-1),N=d*g;return{kind:'tray',vis:[{t:'tray',d,g,live:1}],need:{k:n},ansTxt:n*g+' biji',
+  {arch:'fraction_quantity',f:C=>{const d=R(2,6),g=R(2,6),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N},kind:'tray',vis:[{t:'tray',d,g,live:1}],need:{k:n},ansTxt:n*g+' biji',
    q:'Ambil '+fs(n,d)+' daripada '+N+' biji tart untuk '+C.who+'.',s:'Bahagi '+N+' biji kepada '+d+' pinggan sama banyak. Ambil '+n+' pinggan.',a:N+' ÷ '+d+' × '+n+' = '+n*g+' biji.'}}},
-  {arch:'fraction_quantity',f:C=>{const d=R(2,6),g=R(2,6),n=R(1,d-1),N=d*g;return{kind:'pad',vis:[{t:'tray',d,g}],form:INT(n*g,'biji'),
+  {arch:'fraction_quantity',f:C=>{const d=R(2,6),g=R(2,6),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N},kind:'pad',vis:[{t:'tray',d,g}],form:INT(n*g,'biji'),
    q:fs(n,d)+' daripada '+N+' biji kek cawan ialah berapa biji?',s:'Cari '+fs(1,d)+' dulu: '+N+' ÷ '+d+'. Kemudian darab '+n+'.',a:N+' ÷ '+d+' = '+g+'; '+g+' × '+n+' = '+n*g+'.'}}},
-  {arch:'fraction_quantity',f:C=>{const d=R(3,10),g=R(3,12),n=R(1,d-1),N=d*g;return{kind:'pad',card:fs(n,d)+' daripada '+N,form:INT(n*g),
+  {arch:'fraction_quantity',f:C=>{const d=R(3,10),g=R(3,12),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N},kind:'pad',card:fs(n,d)+' daripada '+N,form:INT(n*g),
    q:'Berapakah '+fs(n,d)+' daripada '+N+'?',s:'Bahagi dengan penyebut, kemudian darab dengan pengangka.',a:N+' ÷ '+d+' = '+g+'; '+g+' × '+n+' = '+n*g+'.'}}},
-  {arch:'fraction_quantity',f:C=>{const d=R(3,10),g=R(3,10),n=R(1,d-1),N=d*g;return{kind:'pad',form:INT(N-n*g,'biji'),
+  {arch:'fraction_quantity',f:C=>{const d=R(3,10),g=R(3,10),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N,rest:1},kind:'pad',form:INT(N-n*g,'biji'),
    q:'Kedai Wira buat '+N+' biji kek cawan. '+fs(n,d)+' daripadanya dijual pagi tadi. Berapa biji belum dijual?',s:'Cari bilangan yang dijual dulu, kemudian tolak daripada '+N+'.',a:N+' ÷ '+d+' × '+n+' = '+n*g+' dijual; '+N+' − '+n*g+' = '+(N-n*g)+' biji.'}}}]},
 
 /* ======================= DARJAH 5: darab pecahan ======================= */
 5:{
  darab:[
-  {arch:'depth_visual_model',f:C=>{const[n,d]=propS(2,6),k=R(2,4);return{kind:'pad',vis:Array.from({length:k},()=>({t:'bar',n:d,sh:n,fl:C.fl})),stackVis:1,form:MX(n*k,d),
+  {arch:'depth_visual_model',f:C=>{const[n,d]=propS(2,6),k=R(2,4);return{wk:{t:'mulW',n,d,k},kind:'pad',vis:Array.from({length:k},()=>({t:'bar',n:d,sh:n,fl:C.fl})),stackVis:1,form:MX(n*k,d),
    q:'Setiap kek '+fs(n,d)+' berkrim. Berapakah '+fs(n,d)+' × '+k+'?',s:'Kira semua bahagian berkrim, kemudian tulis dengan penyebut '+d+'.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+'.'}}},
-  {arch:'depth_proper_x_whole',f:C=>{const[n,d]=propS(2,10),k=pick([d,2*d,R(2,12)]);return{kind:'pad',card:fs(n,d)+' × '+k+' = ?',form:MX(n*k,d),
+  {arch:'depth_proper_x_whole',f:C=>{const[n,d]=propS(2,10),k=pick([d,2*d,R(2,12)]);return{wk:{t:'mulW',n,d,k},kind:'pad',card:fs(n,d)+' × '+k+' = ?',form:MX(n*k,d),
    q:'Kira '+fs(n,d)+' × '+k+'. Beri jawapan dalam bentuk termudah.',s:'Darab pengangka dengan '+k+'. Penyebut kekal.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+'.'}}},
-  {arch:'depth_mixed_x_whole',f:C=>{let w,n,d;do{d=R(2,8);n=R(1,d-1);w=R(1,3)}while(gcd(n,d)>1);const k=R(2,5),N=(w*d+n)*k;return{kind:'pad',card:ms(w,n,d)+' × '+k+' = ?',form:MX(N,d),
+  {arch:'depth_mixed_x_whole',f:C=>{let w,n,d;do{d=R(2,8);n=R(1,d-1);w=R(1,3)}while(gcd(n,d)>1);const k=R(2,5),N=(w*d+n)*k;return{wk:{t:'mulW',n,d,k,w},kind:'pad',card:ms(w,n,d)+' × '+k+' = ?',form:MX(N,d),
    q:'Kira '+ms(w,n,d)+' × '+k+'.',s:'Tukar '+ms(w,n,d)+' kepada pecahan tak wajar dulu.',a:ms(w,n,d)+' = '+fs(w*d+n,d)+'; '+fs(w*d+n,d)+' × '+k+' = '+fv(N,d)+'.'}}},
-  {arch:'depth_proper_x_whole',f:C=>{const d=pick([2,3,4,5,8]),n=R(1,d-1),k=R(2,8);return{kind:'pad',form:MX(n*k,d,{unit:'cawan'}),
+  {arch:'depth_proper_x_whole',f:C=>{const d=pick([2,3,4,5,8]),n=R(1,d-1),k=R(2,8);return{wk:{t:'mulW',n,d,k},kind:'pad',form:MX(n*k,d,{unit:'cawan'}),
    q:'Satu resipi kek perlukan '+fs(n,d)+' cawan susu. Wira buat '+k+' biji kek. Berapa cawan susu diperlukan?',s:'Darab: '+fs(n,d)+' × '+k+'.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+' cawan.'}}}],
  darabf:[
-  {arch:'depth_proper_x_proper',f:C=>{const c=R(2,5),b=R(1,c-1),d=R(2,4),n=R(1,d-1);return{kind:'pad',vis:[{t:'grid',c,b,d,n,fl:C.fl}],form:MX(n*b,d*c),
+  {arch:'depth_proper_x_proper',f:C=>{const c=R(2,5),b=R(1,c-1),d=R(2,4),n=R(1,d-1);return{wk:{t:'mulF',n,d,c:b,e:c},kind:'pad',vis:[{t:'grid',c,b,d,n,fl:C.fl}],form:MX(n*b,d*c),
    q:fs(b,c)+' kek berkrim. Ceri ditabur pada '+fs(n,d)+' daripadanya. Berapakah '+fs(n,d)+' × '+fs(b,c)+'?',s:'Kira petak bertabur ceri. Penyebut = semua petak dalam kek.',a:fs(n,d)+' × '+fs(b,c)+' = '+fv(n*b,d*c)+'.'}}},
-  {arch:'depth_proper_x_proper',f:C=>{const[a,b]=propS(2,10),[c,d]=propS(2,10);return{kind:'pad',card:fs(a,b)+' × '+fs(c,d)+' = ?',form:MX(a*c,b*d),
+  {arch:'depth_proper_x_proper',f:C=>{const[a,b]=propS(2,10),[c,d]=propS(2,10);return{wk:{t:'mulF',n:a,d:b,c,e:d},kind:'pad',card:fs(a,b)+' × '+fs(c,d)+' = ?',form:MX(a*c,b*d),
    q:'Kira '+fs(a,b)+' × '+fs(c,d)+'. Beri jawapan dalam bentuk termudah.',s:'Darab pengangka dengan pengangka, penyebut dengan penyebut.',a:fs(a+' × '+c,b+' × '+d).replace(/\[[^\]]*\]/,'('+a+' × '+c+')/('+b+' × '+d+')')+' = '+fv(a*c,b*d)+'.'}}},
-  {arch:'depth_mixed_x_proper',f:C=>{let w,n,d;do{d=R(2,8);n=R(1,d-1);w=R(1,3)}while(gcd(n,d)>1);const[c,e]=propS(2,10),N=(w*d+n)*c,D=d*e;return{kind:'pad',card:ms(w,n,d)+' × '+fs(c,e)+' = ?',form:MX(N,D),
+  {arch:'depth_mixed_x_proper',f:C=>{let w,n,d;do{d=R(2,8);n=R(1,d-1);w=R(1,3)}while(gcd(n,d)>1);const[c,e]=propS(2,10),N=(w*d+n)*c,D=d*e;return{wk:{t:'mulF',n,d,w,c,e},kind:'pad',card:ms(w,n,d)+' × '+fs(c,e)+' = ?',form:MX(N,D),
    q:'Kira '+ms(w,n,d)+' × '+fs(c,e)+'.',s:'Tukar nombor bercampur kepada pecahan tak wajar dulu.',a:fs(w*d+n,d)+' × '+fs(c,e)+' = '+fv(N,D)+'.'}}},
-  {arch:'depth_proper_x_proper',f:C=>{const[a,b]=pick([[1,2],[1,3],[2,3],[1,4],[3,4]]),[c,d]=pick([[1,2],[3,4],[2,5],[3,5],[4,5],[1,4]]);return{kind:'pad',form:MX(a*c,b*d,{unit:'kg'}),
+  {arch:'depth_proper_x_proper',f:C=>{const[a,b]=pick([[1,2],[1,3],[2,3],[1,4],[3,4]]),[c,d]=pick([[1,2],[3,4],[2,5],[3,5],[4,5],[1,4]]);return{wk:{t:'mulF',n:a,d:b,c,e:d},kind:'pad',form:MX(a*c,b*d,{unit:'kg'}),
    q:'Wira ada '+fs(c,d)+' kg tepung. '+fs(a,b)+' daripadanya digunakan untuk tart. Berapa kg tepung digunakan?',s:'"daripada" bermaksud darab: '+fs(a,b)+' × '+fs(c,d)+'.',a:fs(a,b)+' × '+fs(c,d)+' = '+fv(a*c,b*d)+' kg.'}}}]},
 
 /* ======================= DARJAH 6: bahagi, operasi bergabung, masalah ======================= */
 6:{
  bahagi:[
-  {arch:'y6v2_2_1_1_whole_div_fraction',f:C=>{const W=R(2,4),d=R(2,5);return{kind:'pad',vis:Array.from({length:W},()=>({t:'round',n:d,fl:C.fl})),form:{...INT(W*d,'keping'),pre:W+' ÷ '+fs(1,d)+' ='},
+  {arch:'y6v2_2_1_1_whole_div_fraction',f:C=>{const W=R(2,4),d=R(2,5);return{wk:{t:'div',W,c:1,e:d},kind:'pad',vis:Array.from({length:W},()=>({t:'round',n:d,fl:C.fl})),form:{...INT(W*d,'keping'),pre:W+' ÷ '+fs(1,d)+' ='},
    q:'Wira ada '+W+' biji kek. Setiap kek dipotong '+d+' keping sama besar. Berapa keping kek semuanya?',sub:'Setiap keping = '+fs(1,d)+' kek.',s:'Kira keping dalam satu kek dulu, kemudian kira untuk '+W+' kek.',a:W+' ÷ '+fs(1,d)+' = '+W+' × '+d+' = '+W*d+' keping.'}}},
-  {arch:'y6v2_2_1_1_whole_div_fraction',f:C=>{const[n,d]=propS(2,8),W=R(2,9);return{kind:'pad',card:W+' ÷ '+fs(n,d)+' = ?',form:MX(W*d,n),
+  {arch:'y6v2_2_1_1_whole_div_fraction',f:C=>{const[n,d]=propS(2,8),W=R(2,9);return{wk:{t:'div',W,c:n,e:d},kind:'pad',card:W+' ÷ '+fs(n,d)+' = ?',form:MX(W*d,n),
    q:'Kira '+W+' ÷ '+fs(n,d)+'.',s:'Bahagi dengan pecahan = darab dengan salingannya, '+fs(d,n)+'.',a:W+' ÷ '+fs(n,d)+' = '+W+' × '+fs(d,n)+' = '+fv(W*d,n)+'.'}}},
-  {arch:'y6v2_2_1_1_fraction_div_whole',f:C=>{const[n,d]=propS(2,10),W=R(2,6);return{kind:'pad',card:fs(n,d)+' ÷ '+W+' = ?',form:MX(n,d*W),
+  {arch:'y6v2_2_1_1_fraction_div_whole',f:C=>{const[n,d]=propS(2,10),W=R(2,6);return{wk:{t:'div',n,d,k:W},kind:'pad',card:fs(n,d)+' ÷ '+W+' = ?',form:MX(n,d*W),
    q:'Kira '+fs(n,d)+' ÷ '+W+'.',s:'Bahagi dengan '+W+' sama dengan darab '+fs(1,W)+'.',a:fs(n,d)+' × '+fs(1,W)+' = '+fv(n,d*W)+'.'}}},
-  {arch:'y6v2_2_1_1_fraction_div_fraction',f:C=>{/* jawapan nombor bulat (2 atau 3) supaya santai */let c,d,Q;do{[c,d]=propS(3,10);Q=pick([2,3])}while(c*Q>=d);const g=gcd(c*Q,d),a=c*Q/g,b=d/g;return{kind:'pad',card:fs(a,b)+' ÷ '+fs(c,d)+' = ?',form:MX(a*d,b*c),
+  {arch:'y6v2_2_1_1_fraction_div_fraction',f:C=>{/* jawapan nombor bulat (2 atau 3) supaya santai */let c,d,Q;do{[c,d]=propS(3,10);Q=pick([2,3])}while(c*Q>=d);const g=gcd(c*Q,d),a=c*Q/g,b=d/g;return{wk:{t:'div',n:a,d:b,c,e:d},kind:'pad',card:fs(a,b)+' ÷ '+fs(c,d)+' = ?',form:MX(a*d,b*c),
    q:'Kira '+fs(a,b)+' ÷ '+fs(c,d)+'.',s:'Tukar ÷ kepada × dan terbalikkan pecahan kedua.',a:fs(a,b)+' × '+fs(d,c)+' = '+fv(a*d,b*c)+'.'}}},
-  {arch:'y6v2_2_1_1_mixed_div_fraction',f:C=>{/* nombor bercampur ÷ pecahan = nombor bulat */let c,e,Q;do{[c,e]=propS(2,8);Q=pick([2,3,4])}while(c*Q<=e||(c*Q)%e===0);const g0=gcd(c*Q,e),T=c*Q/g0,d=e/g0,w=Math.floor(T/d),n=T%d,N=(w*d+n)*e,D=d*c;return{kind:'pad',card:ms(w,n,d)+' ÷ '+fs(c,e)+' = ?',form:MX(N,D),
+  {arch:'y6v2_2_1_1_mixed_div_fraction',f:C=>{/* nombor bercampur ÷ pecahan = nombor bulat */let c,e,Q;do{[c,e]=propS(2,8);Q=pick([2,3,4])}while(c*Q<=e||(c*Q)%e===0);const g0=gcd(c*Q,e),T=c*Q/g0,d=e/g0,w=Math.floor(T/d),n=T%d,N=(w*d+n)*e,D=d*c;return{wk:{t:'div',w,n,d,c,e},kind:'pad',card:ms(w,n,d)+' ÷ '+fs(c,e)+' = ?',form:MX(N,D),
    q:'Kira '+ms(w,n,d)+' ÷ '+fs(c,e)+'.',s:'Tukar kepada pecahan tak wajar, kemudian darab dengan salingan.',a:fs(w*d+n,d)+' × '+fs(e,c)+' = '+fv(N,D)+'.'}}},
-  {arch:'y6v2_2_1_1_sharing_story',f:C=>{const[n,d]=pick([[1,2],[1,4],[3,4],[1,3],[2,3],[2,5]]),k=R(2,8),W=n*k/d;if(!Number.isInteger(W))return null;return{kind:'pad',form:INT(k,'botol'),
+  {arch:'y6v2_2_1_1_sharing_story',f:C=>{const[n,d]=pick([[1,2],[1,4],[3,4],[1,3],[2,3],[2,5]]),k=R(2,8),W=n*k/d;if(!Number.isInteger(W))return null;return{wk:{t:'div',W,c:n,e:d},kind:'pad',form:INT(k,'botol'),
    q:'Wira ada '+W+' ℓ jus oren. Setiap botol memuatkan '+fs(n,d)+' ℓ. Berapa botol penuh boleh diisi?',s:'Bahagi: '+W+' ÷ '+fs(n,d)+'.',a:W+' ÷ '+fs(n,d)+' = '+W+' × '+fs(d,n)+' = '+k+' botol.'}}}],
  gabung:[
   {arch:'y6v2_2_4_1_simple',f:C=>{const[n,d]=propS(2,5),b=d*R(2,6),a=R(2,30);return{kind:'pad',card:a+' + '+fs(n,d)+' × '+b+' = ?',form:INT(a+n*b/d),
@@ -634,7 +638,7 @@ const GEN={
   {arch:'y6v2_2_4_1_unknown',f:C=>{const[n,d]=propS(2,5),b=d*R(1,5),x=R(2,20),T=x+n*b/d;return{kind:'pad',card:'□ + '+fs(n,d)+' × '+b+' = '+T,form:INT(x),
    q:'Apakah nilai □?',s:'Kira '+fs(n,d)+' × '+b+' dulu, kemudian fikir: berapa tambah hasil itu menjadi '+T+'?',a:fs(n,d)+' × '+b+' = '+n*b/d+'; '+T+' − '+n*b/d+' = '+x+'.'}}}],
  masalah:[
-  {arch:'y6v2_2_5_1_recipe',f:C=>{const[n,d]=pick([[1,2],[3,4],[2,3],[1,4],[2,5],[3,5]]),k=R(2,8);return{kind:'pad',form:MX(n*k,d,{unit:'ℓ'}),
+  {arch:'y6v2_2_5_1_recipe',f:C=>{const[n,d]=pick([[1,2],[3,4],[2,3],[1,4],[2,5],[3,5]]),k=R(2,8);return{wk:{t:'mulW',n,d,k},kind:'pad',form:MX(n*k,d,{unit:'ℓ'}),
    q:'Satu resipi kek perlukan '+fs(n,d)+' ℓ susu. Wira buat '+k+' resipi untuk kenduri. Berapa liter susu diperlukan?',s:'Darab '+fs(n,d)+' dengan '+k+'.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+' ℓ.'}}},
   {arch:'y6v2_2_5_1_mixed_context',f:C=>{const d=pick([2,4,5]),n=R(1,d-1),A=d*R(2,6),add=R(1,4)+.5,v=A-A*n/d+add;return{kind:'pad',form:DEC(v,'ℓ'),
    q:'Tangki susu ada '+A+' ℓ. '+fs(n,d)+' daripadanya digunakan, kemudian Wira tambah '+dn(add)+' ℓ. Berapa liter susu sekarang?',s:'Cari '+fs(n,d)+' daripada '+A+' dulu.',a:fs(n,d)+' × '+A+' = '+A*n/d+'; '+A+' − '+A*n/d+' + '+dn(add)+' = '+dn(v)+' ℓ.'}}},
@@ -659,6 +663,7 @@ const FLS=[{n:'coklat',c:'#9a5634',k:'#5e2f17'},{n:'pandan',c:'#8fd16a',k:'#4f8f
 const PINK='#ff8fb1',PINK_K='#d24f7c',CHOC='#7a4426';
 /* [3/4] → pecahan bertindan; [1 2/3] → nombor bercampur */
 const T=s=>String(s==null?'':s).replace(/\[([\d?□]+) ([\d?□]+)\/([\d?□]+)\]|\[([\d?□]+)\/([\d?□]+)\]/g,(m,w,n,d,n2,d2)=>(w?'<span class="mxw">'+w+'</span>':'')+'<span class="fr"><i>'+(w?n:n2)+'</i><i>'+(w?d:d2)+'</i></span>');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MODE_LABEL={potong:'POTONG',nama:'NAMA',cerita:'CERITA',banding:'BANDING',persepuluh:'PERSEPULUH',setara:'SETARA',permudah:'PERMUDAH',bercampur:'BERCAMPUR',tambah:'TAMBAH & TOLAK',kuantiti:'KUANTITI',darab:'DARAB',darabf:'DARAB PECAHAN',bahagi:'BAHAGI',gabung:'BERGABUNG',masalah:'MASALAH'};
 const GRADES={1:{title:'Satu perdua & satu perempat'},2:{title:'Pecahan hingga persepuluh'},3:{title:'Setara, permudah, nombor bercampur'},4:{title:'Tak wajar, tambah tiga, kuantiti'},5:{title:'Darab pecahan'},6:{title:'Bahagi & operasi bergabung'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
@@ -804,10 +809,44 @@ function check(){
   const sl=$('slot'+((served-1)%SET));if(sl){sl.classList.add('on','pop')}$('stand').classList.add('done');
   $('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Seterusnya →';
   setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
- paAttempt(false),misses++;
+ paAttempt(false),misses++;offerWorked();
  if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',3800);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
+/* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in lombong-permata.html ----------
+   After 3 wrong tries (2 with both hints; fewer for a 2- or 3-choice pick) the hint button
+   offers a worked example: Wira walks the fraction step by step on a board, and the pupil
+   picks each small step. The round ends without stars; the next one is the same kind. */
+let workedOffer=false,repeatNext=null;
+function workedNeed(){const n=q.kind==='pick'&&q.wk?q.opts.length:0;return n&&n<=2?1:n===3?2:3}
+function offerWorked(){if(workedOffer||solved||!workedPlan()||!(misses>=workedNeed()||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
+/* The worked plan for this round, or null: it must end at the round's own answer. */
+function workedPlan(){const P=window.PAWorked;if(!P||!q.wk)return null;
+ const lab=q.kind==='pick'?q.opts.find(o=>o.id===q.correct).label:null;
+ const plan=P.buildFrac(q.wk,{final:lab!==null?{choices:q.opts.map(o=>o.label),right:lab}:null});if(!plan)return null;
+ if(lab!==null)return plan.finalLabel===lab?plan:null;
+ const v=plan.value,f=q.form;if(!v)return null;
+ if(q.kind==='shade'||q.kind==='tray')return plan;
+ if(!f)return null;
+ const[N,D]=f.type==='frac'?[f.n,f.d]:f.type==='int'||f.type==='dec'?[Math.round(f.v*1000),1000]:[f.N,f.D];
+ if(f.type==='frac'&&!(v.N===f.n&&v.D===f.d))return null;
+ return v.N*D===N*v.D?plan:null}
+const KK_HTML=t=>T(esc(t));
+function startWorked(){
+ const P=window.PAWorked,plan=workedPlan();if(!plan)return;
+ q.worked=true;workedOffer=false;hints++;hideMsg();$('bubble').classList.add('hide');
+ const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
+ const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
+ msg('Jom kira sama-sama, satu langkah demi satu.');
+ box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
+ P.run(plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{html:KK_HTML,onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}})}
+function finishWorked(){
+ if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);report(0);
+ repeatNext={mode:q.mode,ti:q.tierIx};
+ hideMsg();$('game').classList.remove('wk-on');pet('happy');$('say').textContent='Sekarang kamu cuba yang serupa!';$('bubble').classList.remove('hide');
+ const s=$('stamp');s.className='stamp ok';s.innerHTML='SIAP!<small>Cara Wira · '+T(esc(ansText()))+'</small>';void s.offsetWidth;s.classList.add('show');
+ renderTrack(true);const sl=$('slot'+((served-1)%SET));if(sl)sl.classList.add('on');$('stand').classList.add('done');
+ $('hint').textContent='Tanya Wira';$('check').disabled=false;$('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Cuba soalan serupa →'}
 function adapt(st){const k=q.mode,up=q.nTiers-1;
  if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Pesanan seterusnya lebih mencabar.','',2600),2000)}}
  else{clean[k]=0;if(hints+misses>=2&&tier[k]>0){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
@@ -816,8 +855,11 @@ function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get
  window.parent.postMessage({type:'PA_KEDAI_KEK_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,served,tier:q.tierIx+1,prompt:q.q,stars:st,misses,hints,at:Date.now()},location.origin)}catch(e){}}
 
 /* ---------- aliran ---------- */
-function makeQ(){const k=cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
- const ti=Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];
+/* DEV: a round picked by the 'Cuba Jom tengok cara' buttons is served next. */
+let forcedQ=null;
+function makeQ(){if(forcedQ){const x=forcedQ;forcedQ=null;return x}const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind with new numbers
+ const k=rep?rep.mode:cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
+ const ti=rep?Math.min(rep.ti,gens.length-1):Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];
  const fl=flOrder[served%SET],C={who:p.who,fl,fl2:FLS[(FLS.indexOf(fl)+2)%FLS.length],others:shuffle(pets.filter(x=>x.id!==p.id).map(x=>x.who))},e=gens[ti];
  return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,fl,...e.f(C),arch:e.arch}}
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
@@ -830,9 +872,10 @@ function startRound(){if(served%SET===0){flOrder=shuffle(FLS);drawShelf(0)}
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
  $('question').innerHTML=T(q.q);$('subtitle').innerHTML=T(q.sub||(served<2?(q.kind==='pad'&&q.form&&(q.form.type==='int'||q.form.type==='dec')?'Tekan nombor untuk isi jawapan.':SUB[q.kind]):''));
  $('wiraImg').src=A+'wira-baker-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';$('stand').className='stand';$('stand').innerHTML=cakeIcon(q.fl);
- $('check').textContent='Semak';$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('bubble').classList.add('hide');
+ $('check').textContent='Semak';$('check').disabled=false;$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('hint').classList.remove('wk-offer');workedOffer=false;$('game').classList.remove('wk-on');$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
- setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira, saya nak kek '+q.fl.n+'! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ setTimeout(()=>{$('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
+ $('say').textContent='Wira, saya nak kek '+q.fl.n+'! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildPanel()}
 let busyT;function busy(){const w=$('wira');w.classList.remove('cheer');clearTimeout(busyT)}
 function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';const cols=['#ff8fb1','#ffd23f','#9fe0c9','#c3a3ec','#fff'];
@@ -853,7 +896,7 @@ function hintTwo(){const K=q.kind;
  if(K==='shade')return q.cut?'Tekan + Potong sehingga bilangan bahagian sama dengan penyebut. Kemudian sentuh kepingan untuk letak krim.':'Sentuh kepingan satu per satu untuk letak krim. Kira sambil sentuh.';
  if(K==='tray')return 'Setiap pinggan ialah satu bahagian sama banyak. Ambil pinggan mengikut pengangka.';
  const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
-$('hint').onclick=()=>{if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';$('hint').disabled=hints>=2;sfx(620,.1)};
+$('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';$('hint').disabled=hints>=2;sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if(q.kind==='pad'&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(q.kind==='pad'&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(q.kind==='pad'&&e.key==='Tab'){key('⇥');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
@@ -879,12 +922,40 @@ function runSim(key){const s=SIMS[key],Rt=window.PAKedaiKek;if(!Rt){$('simOut').
  const plan=Rt.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
  if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod kedai kek yang sesuai.';$('simGo').hidden=true;return}
  $('simOut').innerHTML='<b>'+s.skill+'</b> → '+plan.start.map(m=>MODE_LABEL[m.mode].toLowerCase()+' (T'+(m.start+1)+')').join(', ')+' · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
-$('devBtn').onclick=()=>{if(!devToolsEnabled)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+/* DEV: jump straight to a round of one worked-example kind and offer "Jom tengok cara" at once. */
+const WK_TRY=[
+ ['Baca model','d1-nama',c=>c.wk?.t==='read'&&c.kind==='pick'],
+ ['Letak krim','d1-potong',c=>c.wk?.t==='read'&&c.kind==='shade'],
+ ['Cerita kek','d1-cerita',c=>c.wk?.t==='parts'],
+ ['Banding','d2-banding',c=>c.wk?.t==='cmp'],
+ ['Susun menaik','d2-banding',c=>c.wk?.t==='order'],
+ ['Persepuluh','d2-persepuluh',c=>c.wk?.t==='tenth'],
+ ['Pecahan setara','d3-setara',c=>c.wk?.t==='equiv'],
+ ['Permudah','d3-permudah',c=>c.wk?.t==='simp'],
+ ['Tak wajar → bercampur','d3-bercampur',c=>c.wk?.t==='toMixed'],
+ ['Bercampur → tak wajar','d3-bercampur',c=>c.wk?.t==='toImp'],
+ ['Tambah / tolak','d3-tambah',c=>c.wk?.t==='add'],
+ ['Tambah tiga','d4-tambah',c=>c.wk?.t==='add'&&c.wk.terms.length===3],
+ ['Pecahan kuantiti','d4-kuantiti',c=>c.wk?.t==='qty'],
+ ['Darab nombor bulat','d5-darab',c=>c.wk?.t==='mulW'],
+ ['Darab pecahan','d5-darabf',c=>c.wk?.t==='mulF'],
+ ['Bahagi pecahan','d6-bahagi',c=>c.wk?.t==='div']];
+function drawWkTry(){const box=$('wkTry');if(!box)return;box.innerHTML=WK_TRY.map((k,i)=>'<button type="button" data-i="'+i+'">'+k[0]+'</button>').join('');
+ box.querySelectorAll('button').forEach(b=>b.onclick=()=>tryWorked(WK_TRY[+b.dataset.i]))}
+function tryWorked([label,hash,test]){
+ try{history.replaceState(null,'','#'+hash)}catch(e){}cfg=parseHash(hash);resetAll();flOrder=shuffle(FLS);
+ let found=null;
+ for(let i=0;i<3000&&!found;i++){const k=cfg.modes[i%cfg.modes.length],n=GEN[cfg.grade][k].length;served=i%cfg.modes.length;tier[k]=Math.floor(i/cfg.modes.length)%n;clean[k]=0;
+  const c=makeQ(),keep=q;q=c;let ok=false;try{ok=!!workedPlan()&&test(c)}catch(_){}q=keep;if(ok)found=c}
+ $('dev').hidden=true;$('complete').hidden=true;served=0;
+ if(!found){msg('DEV: tiada soalan "'+label+'" dijumpai.','bad',3000);return}
+ forcedQ=found;startRound();misses=3;offerWorked();setTimeout(()=>msg('DEV · '+label+': tekan “Jom tengok cara”.','',3500),800)}
+$('devBtn').onclick=()=>{if(!devToolsEnabled)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();drawWkTry();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
 $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__kekDebug=()=>q&&{kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,cut:q.cut,correct:q.correct,live:q.vis&&q.vis.findIndex(m=>m.live),cutN,shaded:shadeSet.size}; // ujian sahaja
-window.__kekGen={GEN,FLS,hideStep,hintTwo:()=>hintTwo(),evalPad:()=>evalPad(),setInp:o=>{inp={...o}}}; // ujian sahaja
+window.__kekGen={GEN,FLS,hideStep,current:()=>q,planFor:x=>{const keep=q;q=x;try{return workedPlan()}finally{q=keep}},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},hintTwo:()=>hintTwo(),evalPad:()=>evalPad(),setInp:o=>{inp={...o}}}; // ujian sahaja
 resetAll();startRound();
 })();
 </script>

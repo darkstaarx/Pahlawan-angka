@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.8.0';
+  const VERSION='1.9.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -490,7 +490,189 @@
 
   /* ---------- renderer ---------- */
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  /* Fractions (Kedai Kek). Text uses the game's notation, [3/4] a fraction and [1 2/3] a mixed
+     number; the page draws it with opt.html. The board is a working line, one row at a time:
+     each row holds fractions whose numbers are slots the steps fill in. Every plan ends at
+     plan.value {N,D} (the exact fraction, D = 1 for a whole number) or at a pick's own label. */
+  const gcdF=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a||1};
+  const FS=(n,d)=>`[${n}/${d}]`,MS=(w,n,d)=>`[${w} ${n}/${d}]`;
+  const factors=n=>[...Array(n).keys()].map(i=>i+1).filter(i=>n%i===0);
+  function buildFrac(spec,opt={}){
+    if(!spec||!spec.t)return null;
+    const fin=opt.final&&Array.isArray(opt.final.choices)&&opt.final.choices.includes(opt.final.right)?opt.final:null;
+    const rows=[],steps=[];let sid=0;
+    const S=v=>({id:'f'+(sid++),v});                                  // a slot: empty until a step writes v
+    const row=(items,hide=true)=>{rows.push({items,hide});return rows.length-1};
+    const ok=x=>x!==undefined&&x!==null&&x!==''&&!(typeof x==='number'&&(!Number.isFinite(x)||x<=0||!Number.isInteger(x)));
+    const P=(say,right,wrongs,after={},pre)=>({kind:'pick',col:-1,say,right:String(right),choices:order(String(right),wrongs.filter(ok).map(String).filter(x=>x!==String(right))),after:{note:'',...after},...(pre?{pre}:{})});
+    const G=(say,after={},pre)=>({kind:'show',col:-1,say,after:{note:'',...after},...(pre?{pre}:{})});
+    const set=(...slots)=>Object.fromEntries(slots.map(s=>[s.id,s.v]));
+    const FIN=say=>fin?{kind:'pick',col:-1,say,right:String(fin.right),choices:order(String(fin.right),fin.choices.map(String).filter(x=>x!==String(fin.right)),4),after:{note:''}}:null;
+    const gcfWrongs=(g,a,b)=>[...factors(g).filter(x=>x>1&&x<g).reverse(),g+1,g*2,a,b];
+    // From N/D (on the board) to the simplest form: a whole number, a mixed number or a fraction.
+    const tail=(N,D,mixed=true)=>{
+      const g=gcdF(N,D);
+      if(N%D===0){const w=N/D,s=S(w),r=row([{t:'='},{v:s}]);
+        steps.push(P(`${FS(N,D)}: ${N} ÷ ${D} = ?`,w,[w+1,w-1,N-D],{showRow:r,set:set(s),note:`Jawapan nombor bulat: ${w}.`}));return{N:w,D:1,text:String(w)}}
+      if(N>D&&mixed){const w=Math.floor(N/D),rm=N%D,k=gcdF(rm,D),sw=S(w),sn=S(rm),r=row([{t:'='},{mx:[sw,sn,D]}]);
+        steps.push(P(`${FS(N,D)} lebih daripada 1. ${N} ÷ ${D} = ? (berapa kali ${D} muat dalam ${N}?)`,w,[w+1,w-1,rm],{showRow:r,set:set(sw),note:`${w} kek penuh.`}));
+        steps.push(P(`Baki: ${N} − ${w*D} = ?`,rm,[rm+1,rm-1,D-rm],{set:set(sn),note:`Baki ${rm} jadi pengangka. Penyebut kekal ${D}.`}));
+        if(k===1)return{N,D,text:MS(w,rm,D)};
+        const n2=S(rm/k),d2=S(D/k),r2=row([{t:'='},{mx:[w,n2,d2]}]);
+        steps.push(P(`Permudahkan ${FS(rm,D)}: nombor terbesar yang boleh bahagi ${rm} dan ${D}?`,k,gcfWrongs(k,rm,D),{showRow:r2,note:`Bahagi atas dan bawah dengan ${k}.`}));
+        steps.push(P(`${rm} ÷ ${k} = ?`,rm/k,[rm/k+1,rm-k,rm],{set:set(n2)}));
+        steps.push(P(`${D} ÷ ${k} = ?`,D/k,[D/k+1,D-k,D],{set:set(d2),note:`${MS(w,rm,D)} = ${MS(w,rm/k,D/k)}.`}));
+        return{N,D,text:MS(w,rm/k,D/k)}}
+      if(g>1){const n2=S(N/g),d2=S(D/g),r=row([{t:'='},{fr:[n2,d2]}]);
+        steps.push(P(`Bentuk termudah: nombor terbesar yang boleh bahagi ${N} dan ${D}?`,g,gcfWrongs(g,N,D),{showRow:r,note:`Bahagi atas dan bawah dengan ${g}.`}));
+        steps.push(P(`${N} ÷ ${g} = ?`,N/g,[N/g+1,N-g,N],{set:set(n2)}));
+        steps.push(P(`${D} ÷ ${g} = ?`,D/g,[D/g+1,D-g,D],{set:set(d2),note:`${FS(N,D)} = ${FS(N/g,D/g)}.`}));
+        return{N,D,text:FS(N/g,D/g)}}
+      return{N,D,text:FS(N,D)}};
+    const T=spec.t,I=Number.isInteger;let out=null;
+    if(T==='read'){
+      // Count all the equal parts (penyebut), then the parts asked about (pengangka).
+      const{d,sh=0,eat=0,want='sh',label='berkrim'}=spec,n=want==='sh'?sh:want==='un'?d-sh-eat:want==='eat'?eat:d-eat;
+      if(!I(d)||d<2||d>12||!I(n)||n<1||n>d)return null;
+      row([{model:{n:d,sh,eat}}],false);const sn=S(n),sd=S(d),r=row([{fr:[sn,sd]}]);
+      steps.push(P('Kira semua bahagian sama besar.',d,[d+1,d-1,n],{showRow:r,set:set(sd),note:`${d} bahagian semuanya: penyebut ${d}.`},{glow:'all'}));
+      steps.push(P(`Kira bahagian ${label}.`,n,[n+1,n-1,d-n],{set:set(sn),note:`${n} daripada ${d} = ${FS(n,d)}.`},{glow:want}));
+      out={N:n,D:d,text:FS(n,d),exact:true}}
+    else if(T==='parts'){
+      // A story: d equal parts; friends eat or get some. Add them; what is left is d − that.
+      const{d,terms,left}=spec;if(!I(d)||!Array.isArray(terms)||terms.length<2)return null;
+      const sum=terms.reduce((a,b)=>a+b,0),n=left?d-sum:sum;if(n<1||n>d)return null;
+      const sn=S(n),sd=S(d),r=row([{fr:[sn,sd]}],false);
+      steps.push(P(`Kek dipotong ${d} sama besar. Penyebut = ?`,d,[d+1,sum,d-1],{set:set(sd),note:`Penyebut ${d}.`}));
+      steps.push(P(`${left?'Dimakan':'Diterima'}: ${terms.join(' + ')} = ?`,sum,[sum+1,sum-1,d],left?{note:`${sum} bahagian dimakan.`}:{set:set(sn),note:`${sum} daripada ${d} = ${FS(sum,d)}.`}));
+      if(left)steps.push(P(`Tinggal: ${d} − ${sum} = ?`,n,[n+1,n-1,sum],{set:set(sn),note:`${n} daripada ${d} = ${FS(n,d)}.`}));
+      out={N:n,D:d,text:FS(n,d),exact:true};void r}
+    else if(T==='equiv'){
+      // n/d = ?/(d×k): find ×k from the known side, then do the same to the other side.
+      const{n,d,k,ask='both'}=spec;if(![n,d,k].every(I)||k<2)return null;
+      const sk=S('× '+k),sn=S(n*k),sd=S(d*k),N=ask==='d'?n*k:sn,D=ask==='n'||ask==='shade'?d*k:sd;
+      row([{fr:[n,d]},{t:'='},{fr:[N,D]}],false);const rt=row([{tag:sk}]);
+      if(ask==='shade'){
+        steps.push(P(`Kek B ada ${d*k} bahagian, kek A ada ${d}. ${d*k} ÷ ${d} = ?`,k,[k+1,k-1,d*k-d],{showRow:rt,set:set(sk),note:`1 bahagian kek A = ${k} bahagian kek B.`}));
+        steps.push(P(`Krim kek B: ${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn),note:`Letak krim pada ${n*k} bahagian kek B.`}))}
+      else if(ask==='n'){
+        steps.push(P(`Penyebut ${d} jadi ${d*k}. ${d} × ? = ${d*k}`,k,[k+1,k-1,d*k-d],{showRow:rt,set:set(sk),note:`Darab dengan ${k}.`}));
+        steps.push(P(`Buat sama pada pengangka: ${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}))}
+      else if(ask==='d'){
+        steps.push(P(`Pengangka ${n} jadi ${n*k}. ${n} × ? = ${n*k}`,k,[k+1,k-1,n*k-n],{showRow:rt,set:set(sk),note:`Darab dengan ${k}.`}));
+        steps.push(P(`Buat sama pada penyebut: ${d} × ${k} = ?`,d*k,[d+k,d*k+1,d],{set:set(sd),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}))}
+      else{
+        steps.push(G(`Pecahan setara: darab atas dan bawah dengan nombor yang sama. Cuba × ${k}.`,{showRow:rt,set:set(sk)}));
+        steps.push(P(`${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn)}));
+        steps.push(P(`${d} × ${k} = ?`,d*k,[d+k,d*k+1,d],{set:set(sd),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}))}
+      out=ask==='n'?{N:n*k,D:1,text:String(n*k)}:ask==='d'?{N:d*k,D:1,text:String(d*k)}:{N:n*k,D:d*k,text:FS(n*k,d*k),exact:true}}
+    else if(T==='simp'){
+      const{N,D}=spec;if(!I(N)||!I(D)||gcdF(N,D)<2)return null;
+      row([{fr:[N,D]}],false);
+      if(spec.ask==='gcf'){const g=gcdF(N,D);steps.push(G(`Faktor ${N}: ${factors(N).join(', ')}. Faktor ${D}: ${factors(D).join(', ')}.`,{note:`Sama dalam kedua-dua senarai: ${factors(g).filter(x=>D%x===0).join(', ')}.`}));out={N:g,D:1,text:String(g)}}
+      else out=tail(N,D,false)}
+    else if(T==='toMixed'){const{N,D}=spec;if(!I(N)||!I(D)||N<=D)return null;row([{fr:[N,D]}],false);out=tail(N,D)}
+    else if(T==='readMixed'){
+      const{w,n,d}=spec;if(![w,n,d].every(I)||n<1||n>=d)return null;
+      for(let i=0;i<w;i++)row([{model:{n:d,sh:d}}],false);row([{model:{n:d,sh:n}}],false);
+      const sw=S(w),sn=S(n),r=row([{mx:[sw,sn,d]}]);
+      steps.push(P('Berapa kek lapis penuh berkrim?',w,[w+1,w-1,w+2],{showRow:r,set:set(sw),note:`${w} kek penuh: nombor bulat ${w}.`}));
+      steps.push(P(`Kek terakhir: berapa bahagian berkrim daripada ${d}?`,n,[n+1,n-1,d-n],{set:set(sn),note:`${w} dan ${FS(n,d)} = ${MS(w,n,d)}.`}));
+      out={N:w*d+n,D:d,text:MS(w,n,d)}}
+    else if(T==='toImp'){
+      const{w,n,d}=spec;if(![w,n,d].every(I))return null;const N=w*d+n,sn=S(N);
+      row([{mx:[w,n,d]},{t:'='},{fr:[sn,d]}],false);
+      steps.push(P(`${w} kek penuh = berapa bahagian? ${w} × ${d} = ?`,w*d,[w+d,N,w*d-1],{note:`${w} kek penuh = ${w*d} bahagian.`}));
+      steps.push(P(`Tambah pengangka: ${w*d} + ${n} = ?`,N,[N+1,w*d,N-1],{set:set(sn),note:`${MS(w,n,d)} = ${FS(N,d)}. Penyebut kekal ${d}.`}));
+      out={N,D:d,text:FS(N,d),exact:true}}
+    else if(T==='add'){
+      // a/d1 ± b/d2 (± c/d3): make the denominators the same, add or take the numerators, simplify.
+      const{terms,ops}=spec;if(!Array.isArray(terms)||terms.length<2||!Array.isArray(ops)||ops.length!==terms.length-1)return null;
+      const D=Math.max(...terms.map(t=>t[1]));if(terms.some(([a,d])=>!I(a)||!I(d)||D%d))return null;
+      const line=[];terms.forEach(([a,d],i)=>{if(i)line.push({t:ops[i-1]});line.push({fr:[a,d]})});row(line,false);
+      const conv=terms.map(([a,d])=>d===D?a:null);
+      if(terms.some(([,d])=>d!==D)){
+        const slots=terms.map(([a,d])=>d===D?null:S(a*D/d)),l2=[];terms.forEach(([a,d],i)=>{if(i)l2.push({t:ops[i-1]});l2.push({fr:[slots[i]||a,D]})});const r=row([{t:'='},...l2]);
+        terms.forEach(([a,d],i)=>{if(d===D)return;const m=D/d;
+          steps.push(P(`Samakan penyebut kepada ${D}: ${d} × ? = ${D}`,m,[m+1,m-1,D-d],{showRow:r,note:`Darab atas dan bawah dengan ${m}.`}));
+          steps.push(P(`${a} × ${m} = ?`,a*m,[a+m,a*m+1,a],{set:set(slots[i]),note:`${FS(a,d)} = ${FS(a*m,D)}.`}));conv[i]=a*m})}
+      let S0=conv[0];ops.forEach((o,i)=>{S0=o==='+'?S0+conv[i+1]:S0-conv[i+1]});if(S0<1)return null;
+      const expr=conv.map((x,i)=>(i?ops[i-1]+' ':'')+x).join(' '),loose=conv.reduce((a,b)=>a+b,0),ss=S(S0),r=row([{t:'='},{fr:[ss,D]}]);
+      steps.push(P(`Penyebut sama (${D}). Pengangka: ${expr} = ?`,S0,[S0+1,S0-1,loose,S0+D],{showRow:r,set:set(ss),note:`Penyebut kekal ${D}: ${FS(S0,D)}.`}));
+      out=tail(S0,D)}
+    else if(T==='cmp'){
+      const{a,b,d,big=true,names}=spec;if(![a,b,d].every(I)||a===b)return null;const want=big?Math.max(a,b):Math.min(a,b),sy=S(a>b?'>':'<');
+      row([{fr:[a,d]},{v:sy},{fr:[b,d]}],false);
+      steps.push(P(`${names?`${names[0]} = ${FS(a,d)}, ${names[1]} = ${FS(b,d)}. `:''}Penyebut sama (${d}). Banding pengangka: ${a} dan ${b}. Yang lebih ${big?'besar':'kecil'}?`,want,[want===a?b:a],{set:set(sy),note:`${FS(a,d)} ${a>b?'>':'<'} ${FS(b,d)}.`}));
+      out={N:want,D:d,text:FS(want,d),exact:true}}
+    else if(T==='order'){
+      const{L,d}=spec;if(!Array.isArray(L)||L.length<3||!I(d))return null;const asc=[...L].sort((x,y)=>x-y),sl=asc.map(x=>S(x));
+      row(L.map(x=>({fr:[x,d]})),false);const r=row(sl.map(s=>({fr:[s,d]})));
+      asc.forEach((x,i)=>{const rest=asc.slice(i+1);if(!rest.length)return;
+        steps.push(P(i?'Antara yang tinggal, pengangka paling kecil?':`Penyebut sama (${d}). Pengangka paling kecil?`,x,rest,{...(i?{}:{showRow:r}),set:i===asc.length-2?set(sl[i],sl[i+1]):set(sl[i])}))});
+      out={text:asc.map(x=>FS(x,d)).join(', ')}}
+    else if(T==='tenthCmp'){
+      const{a,b}=spec;if(!I(a)||!I(b)||a===b)return null;const sv=S('0.'+a);
+      row([{fr:[a,10]},{t:'='},{v:sv}],false);
+      steps.push(P(`Tukar ${FS(a,10)} kepada perpuluhan.`,'0.'+a,['0.0'+a,a+'.0','0.'+(a>1?a-1:a+1)],{set:set(sv),note:`${FS(a,10)} = 0.${a}.`}));
+      steps.push(P(`Banding 0.${a} dan 0.${b}. Yang lebih besar?`,'0.'+Math.max(a,b),['0.'+Math.min(a,b)],{note:'Banding digit persepuluh.'}));
+      out={text:a>b?FS(a,10):'0.'+b}}
+    else if(T==='tenth'){
+      // n out of 10 parts: n persepuluh = 0.n = n/10; or the part left out of 10.
+      const{n,from='model',out:o='dec'}=spec;if(!I(n)||n<1||n>9)return null;const v=from==='rest'?10-n:n,sv=S(o==='dec'?'0.'+v:v);
+      if(from==='model'){row([{model:{n:10,sh:n}}],false);steps.push(P('Kira bahagian berkrim daripada 10.',n,[n+1,n-1,10-n],{note:`${n} persepuluh.`},{glow:'sh'}))}
+      if(from==='rest'){row([{model:{n:10,eat:n}}],false);steps.push(P(`Satu kek = 10 persepuluh. Dimakan ${n}. 10 − ${n} = ?`,v,[v+1,v-1,n],{note:`${v} persepuluh tinggal.`},{glow:'left'}))}
+      const r=row(o==='dec'?[{v:sv}]:[{fr:[sv,10]}],from==='dec');
+      if(from==='dec'){row([{t:`0.${n}`}],false);steps.push(P(`0.${n}: digit selepas titik = ?`,n,[n+1,n-1,10-n],{set:set(sv),note:`0.${n} = ${n} persepuluh = ${FS(n,10)}.`}))}
+      else steps.push(o==='dec'?P(`${v} persepuluh dalam perpuluhan = ?`,'0.'+v,['0.0'+v,v+'.0','0.'+(10-v)],{showRow:r,set:set(sv),note:`${v} persepuluh = 0.${v}.`}):G(`${v} daripada 10 = ${FS(v,10)}.`,{showRow:r,set:set(sv)}));
+      out={N:v,D:10,text:o==='dec'?'0.'+v:FS(v,10),exact:o!=='dec'}}
+    else if(T==='qty'){
+      // n/d of N: find 1/d first (N ÷ d), then n of them; "belum dijual" takes that from N.
+      const{n,d,N,rest}=spec;if(![n,d,N].every(I)||N%d)return null;const g=N/d,sg=S(g),sp=S(n*g);
+      row([{fr:[n,d]},{t:'daripada'},{v:N}],false);const r1=row([{fr:[1,d]},{t:'='},{v:sg}]),r2=row([{fr:[n,d]},{t:'='},{v:sp}]);
+      steps.push(P(`Cari ${FS(1,d)} dulu: ${N} ÷ ${d} = ?`,g,[g+1,N-d,g-1],{showRow:r1,set:set(sg),note:`${FS(1,d)} daripada ${N} = ${g}.`}));
+      steps.push(P(`${FS(n,d)}: ${g} × ${n} = ?`,n*g,[n*g+g,n+g,g],{showRow:r2,set:set(sp),note:`${FS(n,d)} daripada ${N} = ${n*g}.`}));
+      if(rest){const left=N-n*g,sl=S(left),r3=row([{t:`${N} −`},{v:n*g},{t:'='},{v:sl}]);
+        steps.push(P(`Belum dijual: ${N} − ${n*g} = ?`,left,[left+1,left-1,n*g],{showRow:r3,set:set(sl),note:`${left} belum dijual.`}));out={N:left,D:1,text:String(left)}}
+      else out={N:n*g,D:1,text:String(n*g)}}
+    else if(T==='mulW'||T==='mulF'){
+      // n/d × k: the numerator times k, the denominator stays. a/b × c/d: top × top, bottom × bottom.
+      let{n,d,w=0}=spec;if(!I(n)||!I(d))return null;
+      const k=spec.k,c=spec.c,e=spec.e,line=[w?{mx:[w,n,d]}:{fr:[n,d]},{t:'×'},T==='mulW'?{v:k}:{fr:[c,e]}];row(line,false);
+      if(w){const A=w*d+n,sa=S(A),r=row([{t:'='},{fr:[sa,d]},{t:'×'},T==='mulW'?{v:k}:{fr:[c,e]}]);
+        steps.push(P(`Tukar dulu: ${w} × ${d} + ${n} = ?`,A,[A+1,w*d,w+d+n],{showRow:r,set:set(sa),note:`${MS(w,n,d)} = ${FS(A,d)}.`}));n=A}
+      if(T==='mulW'){if(!I(k)||k<2)return null;const P0=n*k,sp=S(P0),r=row([{t:'='},{fr:[sp,d]}]);
+        steps.push(P(`Darab pengangka: ${n} × ${k} = ?`,P0,[n+k,P0+n,P0-1],{showRow:r,set:set(sp),note:`Penyebut kekal ${d}.`}));out=tail(P0,d)}
+      else{if(!I(c)||!I(e))return null;const tn=n*c,td=d*e,s1=S(tn),s2=S(td),r=row([{t:'='},{fr:[s1,s2]}]);
+        steps.push(P(`Atas × atas: ${n} × ${c} = ?`,tn,[n+c,tn+1,tn-1],{showRow:r,set:set(s1)}));
+        steps.push(P(`Bawah × bawah: ${d} × ${e} = ?`,td,[d+e,td+1,td-1],{set:set(s2),note:`${FS(tn,td)}.`}));out=tail(tn,td)}}
+    else if(T==='div'){
+      // ÷ a fraction = × its reciprocal (salingan); a whole number k is k/1, so ÷ k = × 1/k.
+      let{n,d,w=0,W,c,e,k}=spec;if(W!==undefined){n=W;d=1}
+      if(!I(n)||!I(d))return null;const byWhole=I(k);if(byWhole){c=k;e=1}if(!I(c)||!I(e)||c<1)return null;
+      const L=W!==undefined?{v:W}:w?{mx:[w,n,d]}:{fr:[n,d]},R=byWhole?{v:k}:{fr:[c,e]};row([L,{t:'÷'},R],false);
+      if(w){const A=w*d+n,sa=S(A),r=row([{t:'='},{fr:[sa,d]},{t:'÷'},R]);
+        steps.push(P(`Tukar dulu: ${w} × ${d} + ${n} = ?`,A,[A+1,w*d,w+d+n],{showRow:r,set:set(sa),note:`${MS(w,n,d)} = ${FS(A,d)}.`}));n=A}
+      const inv=FS(e,c),sr=S(byWhole?1:e),sd=S(c),Lr=W!==undefined?{v:W}:{fr:[n,d]},r=row([{t:'='},Lr,{t:'×'},{fr:[sr,sd]}]);
+      steps.push(P(byWhole?`Bahagi dengan ${k} = darab dengan ${FS(1,k)}. Salingan ${k} = ?`:`Bahagi dengan pecahan = darab dengan salingannya. Salingan ${FS(c,e)} = ?`,inv,[FS(c,e),byWhole?String(k):FS(e,c+1),FS(c,e+1)],{showRow:r,set:set(sr,sd),note:`÷ jadi ×, ${byWhole?k:FS(c,e)} jadi ${inv}.`}));
+      const tn=n*e,td=d*c,s1=S(tn),s2=d===1?td:S(td),r2=row([{t:'='},{fr:[s1,s2]}]);
+      steps.push(P(d===1?`${n} × ${e} = ?`:`Atas × atas: ${n} × ${e} = ?`,tn,[n+e,tn+1,tn-1],{showRow:r2,set:set(s1),...(d===1?{note:`${FS(tn,td)}.`}:{})}));
+      if(d!==1)steps.push(P(`Bawah × bawah: ${d} × ${c} = ?`,td,[d+c,td+1,td-1],{set:set(s2),note:`${FS(tn,td)}.`}));
+      out=td===1?{N:tn,D:1,text:String(tn)}:tail(tn,td)}
+    if(!out||!steps.length)return null;
+    const f=FIN(spec.ask==='gcf'?'Jadi faktor sepunya terbesar?':'Jadi jawapannya?');if(f)steps.push(f);
+    return{op:'frac',rows,steps,value:out.N!==undefined?{N:out.N,D:out.D,exact:!!out.exact}:null,answerText:out.text,finalLabel:fin?String(fin.right):undefined,
+      done:fin?`Jawapannya ${fin.right}.`:`Jawapannya ${out.text}.`};
+  }
   function boardHTML(plan,opt={}){
+    if(plan.op==='frac'){
+      const cell=x=>x&&typeof x==='object'&&'id' in x?`<span class="wk-c wk-fs wk-empty" data-s="${x.id}"></span>`:`<span class="wk-c wk-fs">${esc(x)}</span>`;
+      const model=m=>`<span class="wk-model" style="--p:${m.n}">${[...Array(m.n).keys()].map(i=>{const k=i<(m.eat||0)?'eat':i<(m.eat||0)+(m.sh||0)?'sh':'un';return`<i data-k="${k}" class="${k==='sh'?'on':k==='eat'?'eat':''}"></i>`}).join('')}</span>`;
+      const item=it=>it.fr?`<span class="wk-fr">${cell(it.fr[0])}<i></i>${cell(it.fr[1])}</span>`
+        :it.mx?`<span class="wk-mx">${cell(it.mx[0])}<span class="wk-fr">${cell(it.mx[1])}<i></i>${cell(it.mx[2])}</span></span>`
+        :it.model?model(it.model):it.tag?`<span class="wk-tag">${cell(it.tag)}</span>`:it.v!==undefined?cell(it.v):`<span class="wk-ft">${esc(it.t)}</span>`;
+      return `<div class="wk-board wk-frac">${plan.rows.map((r,i)=>`<div class="wk-frow${r.hide?' wk-hide':''}" data-r="${i}">${r.items.map(item).join('')}</div>`).join('')}</div>`;
+    }
     const n=plan.cols,[a,b]=plan.rows,A=digits(a),B=digits(b),cell=(cls,txt,col,extra='')=>`<span class="wk-c ${cls}" data-col="${col}"${extra}>${txt}</span>`;
     const cols=[...Array(n).keys()].reverse();
     const dp=plan.dp||0,H=i=>plan.money?MNAMES[i]:i<dp?DECH[dp-1-i]:PLACE[i-dp];
@@ -530,6 +712,8 @@
   /* Run the walkthrough. el = {board, tiles, say, next}; onDone(plan) after the last step. */
   function run(plan,el,onDone,opt={}){
     const q=s=>el.board.querySelector(s);let k=0,busy=false;
+    // opt.html draws the page's own notation (Kedai Kek: [3/4] as a stacked fraction); else plain text.
+    const H=t=>opt.html?opt.html(String(t)):esc(t),say=t=>{if(opt.html)el.say.innerHTML='<span>'+H(t)+'</span>';else el.say.textContent=t};
     const story=plan.steps[0]?.sentence===true;
     el.board.innerHTML=boardHTML(plan,{hideSign:story,hideHead:plan.hideHead});
     // A story asks for the number sentence first, with no board in the way; the board comes in after.
@@ -552,16 +736,19 @@
       if(a.sym){const g=q('.wk-sym');if(g){g.textContent=a.sym;g.classList.add('wk-pop')}}
       if(a.done){const r=q(`.wk-pvrow[data-row="${a.done.row}"]`);if(r){r.classList.add('wk-rowdone');const b=r.querySelector('.wk-op');if(b){b.textContent=a.done.rank;b.classList.add('wk-rank','wk-pop')}}}
       if(a.hop){const h=q(`.wk-hop[data-h="${a.hop.i}"]`);if(h){h.textContent=a.hop.label;h.classList.add('wk-hopl','wk-pop')}}
+      if(a.set)for(const[id,v]of Object.entries(a.set)){const c=q(`[data-s="${id}"]`);if(c){c.textContent=v;c.classList.remove('wk-empty');c.classList.add('wk-drop')}}
+      if(a.showRow!==undefined){const r=q(`.wk-frow[data-r="${a.showRow}"]`);if(r){r.classList.remove('wk-hide');r.classList.add('wk-pop')}}
       if(a.fill&&a.fill.i!==undefined){const c=q(`.wk-box[data-i="${a.fill.i}"]`);if(c){c.textContent=nf(a.fill.v);c.classList.remove('wk-q');c.classList.add('wk-drop')}}
       else if(a.fill){const c=q(`.wk-pvrow[data-row="${a.fill.row}"] [data-col="${a.fill.col}"]`);if(c){c.textContent=a.fill.digit;c.classList.remove('wk-empty');c.classList.add('wk-drop')}}
     };
     const tapCells=on=>el.board.querySelectorAll('.wk-tap').forEach(c=>{c.classList.toggle('wk-can',on&&(c.textContent!==''||c.classList.contains('wk-empty')));c.onclick=on?()=>tap(c):null});
     const show=()=>{
       busy=false;
-      if(k>=plan.steps.length){focus(-1);tapCells(false);el.say.innerHTML=plan.done?`<b>Siap!</b> ${esc(plan.done)}`:`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
-      const s=plan.steps[k];focus(s.kind==='tap'?-1:s.col);el.say.textContent=s.say;opt.onShow&&opt.onShow(k,plan.steps.length);
+      if(k>=plan.steps.length){focus(-1);tapCells(false);el.say.innerHTML=plan.done?(opt.html?`<span><b>Siap!</b> ${H(plan.done)}</span>`:`<b>Siap!</b> ${H(plan.done)}`):`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
+      const s=plan.steps[k];focus(s.kind==='tap'?-1:s.col);say(s.say);opt.onShow&&opt.onShow(k,plan.steps.length);
       if(s.pre&&s.pre.pair){el.board.querySelectorAll('.wk-box').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('wk-pair',s.pre.pair.includes(i));c.classList.toggle('wk-target',i===s.pre.hop)})}
       el.board.querySelectorAll('.wk-diff,.wk-grp').forEach(c=>c.classList.remove('wk-diff','wk-grp'));
+      el.board.querySelectorAll('.wk-model i').forEach(c=>{const g=s.pre&&s.pre.glow,k=c.dataset.k;c.classList.toggle('wk-glow',!!g&&(g==='all'||g===k||(g==='left'&&k!=='eat')))});
       if(s.pre&&s.pre.group)s.pre.group.forEach(col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`).forEach(c=>c.classList.add('wk-grp')));
       if(s.pre&&s.pre.diffRows){s.pre.diffRows.forEach(r=>{const c=q(`.wk-pvrow[data-row="${r}"] [data-col="${s.pre.diff}"]`);if(c)c.classList.add('wk-diff')})}
       else if(s.pre){const cells=col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`);
@@ -577,7 +764,7 @@
       const T=s.sentence&&el.inline?el.inline:el.tiles;if(T!==el.tiles)el.tiles.innerHTML='';if(el.inline&&T!==el.inline)el.inline.innerHTML='';
       T.classList.toggle('wk-one',!!s.sentence||s.kind!=='pick');T.classList.toggle('wk-two',s.kind==='pick'&&s.choices.length===2&&!s.sentence);
       T.classList.toggle('wk-wide',s.kind==='pick'&&s.choices.some(v=>String(v).length>6));
-      if(s.kind==='pick')T.innerHTML=s.choices.map(v=>`<button type="button" class="tl wk-t${s.sentence?' wk-s':''}" data-v="${esc(v)}">${esc(v)}</button>`).join('');
+      if(s.kind==='pick')T.innerHTML=s.choices.map(v=>`<button type="button" class="tl wk-t${s.sentence?' wk-s':''}" data-v="${esc(v)}">${H(v)}</button>`).join('');
       else T.innerHTML=`<button type="button" class="tl wk-t wk-go" data-v="go">${s.kind==='borrow'?'Pinjam 1':'Teruskan'}</button>`;
       T.querySelectorAll('.wk-t').forEach((btn,i)=>{btn.onclick=()=>pick(btn);btn.style.setProperty('--i',i);btn.classList.add('wk-enter')});
       try{T.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(_){}
@@ -590,7 +777,7 @@
         q(`.wk-pvrow[data-row="${s.row}"] [data-col="${s.col}"]`)?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
       }
       busy=true;tapCells(false);el.board.querySelector('.wk-board')?.classList.remove('wk-tapnow');el.board.querySelectorAll('.wk-hint').forEach(x=>x.classList.remove('wk-hint'));
-      apply(s.after);if(s.after?.note)el.say.textContent=s.after.note;opt.onStep&&opt.onStep(s);
+      apply(s.after);if(s.after?.note)say(s.after.note);opt.onStep&&opt.onStep(s);
       k++;setTimeout(show,opt.pace??900);
     };
     const pick=btn=>{
@@ -600,12 +787,12 @@
         [...btn.parentNode.querySelectorAll('.wk-t')].find(b=>b.dataset.v===String(s.right))?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
       }
       busy=true;btn.classList.add('wk-yes');btn.parentNode.querySelectorAll('.wk-t').forEach(b=>b.disabled=true);
-      apply(s.after);if(s.after?.note)el.say.textContent=s.after.note;opt.onStep&&opt.onStep(s);
+      apply(s.after);if(s.after?.note)say(s.after.note);opt.onStep&&opt.onStep(s);
       k++;setTimeout(show,opt.pace??900);
     };
     show();
     if(typeof window!=='undefined')window.__wkRight=()=>{const s=plan.steps[k];return s&&s.kind==='pick'?String(s.right):s&&s.kind==='tap'?`tap:${s.row}:${s.col}`:'go'};   // tests only
     return{get step(){return k},get misses(){return misses},plan};
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
 });

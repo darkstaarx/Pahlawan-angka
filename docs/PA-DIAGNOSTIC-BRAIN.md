@@ -520,6 +520,31 @@ digit, then the round's choices.
    reminder; the round ends without stars and the next is the same kind. DEV
    sheet: 9 "Cuba Jom tengok cara" buttons. A one-item bayar (read the tag)
    has no board.
+   **Small fixes (PRs #98–#100 merged):** #98 (3.87.24) Gerai Wirayung: the
+   hanging sign is gone, the basket is empty (its green liner repainted) and
+   sits on the counter. #99 (3.87.25) no Android tap-highlight box
+   (`-webkit-tap-highlight-color: transparent` in the app and every mini game).
+   #100 (3.87.28) front page: logo-only hero on the log-in background, Log masuk
+   (Wira blue) above Cuba Demo, compact plan cards that open on tap, squad art
+   with "Game yang faham anak anda"; the free plan is now **Akses Mesra**
+   everywhere it is shown; the landing frame asks for its height again (it
+   stayed at 1800px).
+   **Kedai Kek (3.87.29, this PR).** `PAWorked.buildFrac(spec,{final})` 1.9.0: a
+   fraction working line, row by row, the numbers are slots the steps fill. Kinds
+   (`q.wk.t`): `read` (a strip model: count all → penyebut, count the asked part →
+   pengangka; also tanpa krim / tinggal / diambil), `parts` (story: add, then
+   d − that), `equiv` (×k from the known side; `shade`: B parts ÷ A parts),
+   `simp` (biggest common factor, ÷ both; `gcf` lists the factors), `toMixed`,
+   `readMixed`, `toImp`, `add` (2–3 terms, same or related denominators, + / −),
+   `cmp`, `order`, `tenth`, `tenthCmp`, `qty` (÷ d then × n; `rest`), `mulW`,
+   `mulF`, `div` (× salingan). Every plan ends in the simplest form the round
+   asks for (whole / mixed / fraction). `run(...,{html})` lets a page draw its
+   own notation in the say line and tiles. Plans cover D1 92%, D2–D5 100%, D6 50%
+   of generators; left: D1 everyday names, D6 BODMAS (gabung), two D6 problems.
+   Offer after 3 misses (2 for a 3-choice pick, 1 for a 2-choice pick); the
+   board replaces the widget, the round ends without stars, the next is the same
+   kind. DEV sheet: 16 "Cuba Jom tengok cara" buttons. Test API
+   `__kekGen.planFor/showNormal/current`.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

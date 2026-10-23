@@ -371,6 +371,45 @@ test('Gerai Wirayung: every DEV "Cuba Jom tengok cara" kind walks the money boar
   assert.deepEqual(errors, []); await context.close();
 });
 
+test('Kedai Kek: every DEV "Cuba Jom tengok cara" kind walks the fraction board to the round\'s answer; the next round is the same kind', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/kedai-kek.html#d3`); await page.waitForFunction(() => window.__kekGen && window.PAWorked); await page.waitForTimeout(800);
+  await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
+  assert.equal(n, 16);
+  for (let i = 0; i < n; i++) {
+    if (i) await page.click('#devBtn');
+    const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);
+    await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    const kind = await page.evaluate(() => window.__kekGen.current().wk.t);
+    await page.evaluate(() => document.getElementById('hint').click());
+    let steps = 0;
+    for (let s = 0; s < 40; s++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      const clicked = await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); if (x) { x.click(); return true; } return false; });
+      if (clicked) steps++;
+      await page.waitForTimeout(950);
+    }
+    assert.ok(steps >= 1, label);
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label);
+    assert.equal(await page.evaluate(() => document.getElementById('check').textContent), 'Cuba soalan serupa →', label);
+    await page.evaluate(() => document.getElementById('check').click()); await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__kekGen.current().wk?.t), kind, label + ': same kind next');
+  }
+  // A real round: three wrong answers on a pad bring the offer, with no DEV help.
+  await page.evaluate(() => { history.replaceState(null, '', '#d3-bercampur'); dispatchEvent(new HashChangeEvent('hashchange')); }); await page.waitForTimeout(600);
+  for (let t = 0; t < 40 && !(await page.evaluate(() => window.__kekGen.current().kind === 'pad' && !!window.__kekGen.planFor(window.__kekGen.current()))); t++) { await page.evaluate(() => window.__kekGen.showNormal(0, 1)); await page.waitForTimeout(100); }
+  for (let m = 0; m < 3; m++) {
+    assert.notEqual(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', 'not after ' + m);
+    await page.evaluate(() => { const f = window.__kekGen.current().form; window.__kekGen.setInp(f.type === 'int' || f.type === 'dec' ? { v: '999' } : { n: '99', d: '100' }); document.getElementById('check').click(); });
+    await page.waitForTimeout(300);
+  }
+  assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara');
+  assert.deepEqual(errors, []); await context.close();
+});
+
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {
   for (const zero of [false, true]) {
     const g = await gudang({ kind: 'regroup', op: 'sub', zero }, 'd3-tolak');

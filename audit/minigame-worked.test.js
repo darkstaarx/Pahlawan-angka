@@ -192,3 +192,40 @@ test('money boards (Gerai Wirayung): RM / 10 sen / 1 sen columns, RM text, whole
   const p = W.buildPV({ t: 'pctOf', p: 20, Q: 450, money: true });
   assert.deepEqual([p.answer, p.steps.map(s => s.right)], [90, ['45 sen', '90 sen']]);
 });
+
+test('fraction boards (Kedai Kek): every step offers the right tile and the plan ends at the real answer', () => {
+  const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1)), g = (a, b) => { while (b) [a, b] = [b, a % b]; return a; };
+  const simp = (N, D) => { const k = g(N, D); N /= k; D /= k; const w = Math.floor(N / D), r = N % D; return r ? (w ? `[${w} ${r}/${D}]` : `[${r}/${D}]`) : String(w); };
+  const check = (spec, want) => {
+    const plan = W.buildFrac(spec); assert.ok(plan, JSON.stringify(spec));
+    for (const s of plan.steps) if (s.kind === 'pick') { assert.ok(s.choices.includes(s.right), s.say); assert.ok(s.choices.length >= 2, s.say); assert.equal(new Set(s.choices).size, s.choices.length, s.say); }
+    if (want !== undefined) assert.equal(plan.answerText, want, JSON.stringify(spec));
+    // Every slot on the board is filled by some step.
+    const slots = new Set(plan.rows.flatMap(r => r.items.flatMap(it => [it.fr, it.mx, [it.v], [it.tag]].flat().filter(x => x && typeof x === 'object' && 'id' in x).map(x => x.id))));
+    for (const s of plan.steps) for (const id of Object.keys(s.after?.set || {})) slots.delete(id);
+    assert.equal(slots.size, 0, 'unfilled slot ' + JSON.stringify(spec));
+    return plan;
+  };
+  for (let i = 0; i < 300; i++) {
+    const d = R(2, 10), sh = R(1, d - 1);
+    check({ t: 'read', d, sh }, `[${sh}/${d}]`);
+    check({ t: 'read', d, sh, want: 'un', label: 'tanpa krim' }, `[${d - sh}/${d}]`);
+    { let N, D; do { D = R(2, 10); N = R(D + 1, 5 * D); } while (g(N, D) > 1); check({ t: 'toMixed', N, D }, simp(N, D)); }
+    { const p = R(1, 4), q = R(p + 1, 5), k = R(2, 5); if (g(p, q) === 1) check({ t: 'simp', N: p * k, D: q * k }, simp(p, q)); }
+    { const D = R(4, 10), a = R(1, D - 1), b = R(1, D - 1), c = R(1, D - 1); check({ t: 'add', terms: [[a, D], [b, D], [c, D]], ops: ['+', '+'] }, simp(a + b + c, D)); }
+    { const [d1, d2] = [[2, 4], [2, 6], [3, 9], [5, 10]][R(0, 3)], m = d2 / d1, a = R(1, d1 - 1), b = R(1, d2 - 1); if (a * m - b > 0) check({ t: 'add', terms: [[a, d1], [b, d2]], ops: ['−'] }, simp(a * m - b, d2)); }
+    { const w = R(1, 5), n = R(1, d - 1); check({ t: 'toImp', w, n, d }, `[${w * d + n}/${d}]`); }
+    { const n = R(1, d - 1), k = R(2, 12), w = R(0, 3); check({ t: 'mulW', n, d, k, w }, simp((w * d + n) * k, d)); }
+    { const b = R(2, 10), a = R(1, b - 1), e = R(2, 10), c = R(1, e - 1); check({ t: 'mulF', n: a, d: b, c, e }, simp(a * c, b * e)); }
+    { const n = R(1, d - 1), q = R(2, 6); check({ t: 'qty', n, d, N: d * q }, String(n * q)); check({ t: 'qty', n, d, N: d * q, rest: 1 }, String(d * q - n * q)); }
+    { const x = R(1, 9); check({ t: 'tenth', n: x }, '0.' + x); check({ t: 'tenth', n: x, from: 'dec', out: 'frac' }, `[${x}/10]`); check({ t: 'tenth', n: x, from: 'rest' }, '0.' + (10 - x)); }
+    { const W0 = R(2, 9), n = R(1, 7), dd = R(n + 1, 8); check({ t: 'div', W: W0, c: n, e: dd }, simp(W0 * dd, n)); }
+    { const b = R(2, 9), a = R(1, b - 1), e = R(3, 10), c = R(1, e - 1); check({ t: 'div', n: a, d: b, c, e }, simp(a * e, b * c)); }
+    { const n = R(1, 9), dd = R(n + 1, 10), k = R(2, 6); check({ t: 'div', n, d: dd, k }, simp(n, dd * k)); }
+  }
+  // A pick round ends at its own label.
+  const plan = check({ t: 'equiv', n: 1, d: 2, k: 3 }); assert.equal(plan.answerText, '[3/6]');
+  const pick = W.buildFrac({ t: 'cmp', a: 3, b: 5, d: 7, names: ['Kek A', 'Kek B'] }, { final: { choices: ['Kek A', 'Kek B'], right: 'Kek B' } });
+  assert.equal(pick.finalLabel, 'Kek B'); assert.equal(pick.steps.at(-1).right, 'Kek B');
+  assert.equal(W.buildFrac({ t: 'read', d: 1, sh: 1 }), null); assert.equal(W.buildFrac({ t: 'nope' }), null);
+});
