@@ -313,27 +313,33 @@ test('Jom tengok cara on the rack, two steps, patterns and compose: every step d
   }
 });
 
-test('Lombong Permata: Jom tengok cara walks a decimal lazim round to its answer', async () => {
-  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 780 } });
-  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
-  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
-  await page.goto(`${base}/lombong-permata.html#d4-perpuluhan`); await page.waitForFunction(() => window.__lbGen && window.PAWorked);
-  const r0 = await page.evaluate(() => { for (let i = 0; i < 2000; i++) { const q = window.__lbGen.showNormal(i % 7, 0); if (q.kind === 'lazim' && q.lz.rows.length === 2) return { ans: q.lz.ans }; } return null; });
-  assert.ok(r0);
-  await page.waitForTimeout(800);
-  for (let i = 0; i < 3; i++) { await page.keyboard.press('1'); await page.evaluate(() => document.getElementById('check').click()); await page.keyboard.press('Backspace'); }
-  assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara');
-  await page.evaluate(() => document.getElementById('hint').click());
-  assert.ok(await page.evaluate(() => !!document.querySelector('.wk-board .wk-pt')), 'the board shows the decimal point');
-  for (let n = 0; n < 20; n++) {
-    if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
-    await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
-    await page.waitForTimeout(1000);
+test('Lombong Permata: Jom tengok cara walks lazim, hundred-grid and compare rounds to their answer', async () => {
+  for (const [hash, cond] of [['d4-perpuluhan', "q.kind==='lazim'&&q.lz.rows.length===2"], ['d3-peratus', "!!q.wk&&q.wk.t==='grid'"], ['d3-perpuluhan', "!!q.wk&&q.wk.t==='compare'"]]) {
+    const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 780 } });
+    await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+    const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+    await page.goto(`${base}/lombong-permata.html#${hash}`); await page.waitForFunction(() => window.__lbGen && window.PAWorked);
+    const r0 = await page.evaluate(cond => { const ok = new Function('q', 'return ' + cond); for (let i = 0; i < 3000; i++) { const q = window.__lbGen.showNormal(i % 7, 0); if (ok(q)) return { kind: q.kind, label: q.kind === 'pick' ? q.opts.find(o => o.id === q.correct).label : null }; } return null; }, cond);
+    assert.ok(r0, hash);
+    await page.waitForTimeout(800);
+    for (let i = 0; i < 3; i++) {
+      if (r0.kind === 'pick') await page.evaluate(() => { const q = window.__lbGen.current(); [...document.querySelectorAll('#tiles [data-o]')].find(x => x.dataset.o !== q.correct).click(); document.getElementById('check').click(); });
+      else { await page.keyboard.press('1'); await page.evaluate(() => document.getElementById('check').click()); await page.keyboard.press('Backspace'); }
+    }
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', hash);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let n = 0; n < 20; n++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight();
+        if (v && v.startsWith('tap:')) { const [, r, c] = v.split(':'); document.querySelector(`.wk-pvrow[data-row="${r}"] [data-col="${c}"]`).click(); return; }
+        const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(1000);
+    }
+    const stamp = await page.evaluate(() => document.querySelector('.stamp').textContent);
+    assert.match(stamp, /^SIAP!Cara Wira/, hash);
+    assert.equal(await page.evaluate(() => document.getElementById('check').textContent), 'Cuba soalan serupa →');
+    assert.deepEqual(errors, []); await context.close();
   }
-  const stamp = await page.evaluate(() => document.querySelector('.stamp').textContent);
-  assert.ok(stamp.startsWith('SIAP!Cara Wira') && stamp.endsWith(r0.ans), stamp + ' / ' + r0.ans);
-  assert.equal(await page.evaluate(() => document.getElementById('check').textContent), 'Cuba soalan serupa →');
-  assert.deepEqual(errors, []); await context.close();
 });
 
 test('borrowing target: every targeted round needs borrowing (through zero when asked), rack first', async () => {

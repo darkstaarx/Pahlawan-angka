@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.6.0';
+  const VERSION='1.7.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -51,6 +51,9 @@
     let plan=null;const dp=opt.dp||0,N=dp?names(dp):PLACE;
     if(op==='add')plan=add(a,b,N,dp);
     else if(op==='sub'&&a>=b)plan=sub(a,b,N,dp);
+    // Decimals: × a whole number of one digit, ÷ one digit (the point stays in its column).
+    else if(dp&&op==='mul'&&b>=1&&b<=9&&a>=1)plan=mul(a,b,N,dp);
+    else if(dp&&op==='div'&&b>=2&&b<=9&&a>=b&&a%b===0)plan=div(a,b,dp);
     else if(dp)return null;
     else if(op==='mul'&&b>=1&&b<=9&&a>=10)plan=mul(a,b);
     else if(op==='mul'&&a>=1&&a<=9&&b>=10)plan=mul(b,a);
@@ -66,7 +69,7 @@
       // 0.45 + 0.3: the places up to sa that no sum reached are written as 0 (the 0 before the point too).
       const written=new Set(plan.steps.filter(s=>s.after&&s.after.write).map(s=>s.after.write.col));
       for(let c=0;c<=dp;c++)if(!written.has(c)&&c>=Math.max(...written,-1))plan.steps.push({kind:'show',col:c,say:c===dp?'Tiada nombor bulat: tulis 0 sebelum titik.':`Tempat ${N[c]}: 0.`,after:{write:{col:c,digit:0},note:'Tulis 0.'}});
-      const f=fmtDp(dp);plan.dp=dp;plan.cols=Math.max(plan.cols,dp+1);plan.done=`${f(a)} ${SIGN[op]} ${f(b)} = ${f(plan.answer)}.`;
+      const f=fmtDp(dp),fb=op==='mul'||op==='div'?nf:f;plan.dp=dp;plan.cols=Math.max(plan.cols,dp+1);plan.done=`${f(a)} ${SIGN[op]} ${fb(b)} = ${f(plan.answer)}.`;
     }
     return plan;
   }
@@ -104,8 +107,8 @@
     }
     return{op:'sub',rows:[a,b],answer:a-b,cols:n,steps};
   }
-  function mul(a,b){
-    const A=digits(a),n=A.length,steps=[];let c=0;
+  function mul(a,b,PLACE=PLACE_,dp=0){
+    const A=dp?padTo(digits(a),dp+1):digits(a),n=A.length,steps=[];let c=0;
     for(let i=0;i<n;i++){
       const p=A[i]*b+c,ask=`${A[i]} × ${b}${c?' + '+c:''} = ?`;
       steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:p,choices:tiles(p,[c?A[i]*b:p+b,p-b,A[i]+b+c]),
@@ -113,14 +116,15 @@
       c=Math.floor(p/10);
     }
     if(c)steps.push({kind:'show',col:n,say:`Tempat ${PLACE[n]}: ${c} yang dibawa turun.`,after:{write:{col:n,digit:c,multi:true},note:`Tulis ${c}.`}});
-    return{op:'mul',rows:[a,b],answer:a*b,cols:digits(a*b).length,steps};
+    return{op:'mul',rows:[a,b],answer:a*b,cols:Math.max(digits(a*b).length,dp?dp+1:0),steps};
   }
-  function div(a,b){
+  function div(a,b,dp=0){
     // Short division (bahagi bentuk lazim): left to right, the remainder joins the next digit.
-    const D=digits(a).reverse(),steps=[];let r=0,started=false;const qd=[];
+    // With decimals the 0 at sa (and after it) is written: 0.84 ÷ 7 = 0.12.
+    const D=(dp?padTo(digits(a),dp+1):digits(a)).reverse(),steps=[];let r=0,started=false;const qd=[];
     D.forEach((d,k)=>{
       const cur=r*10+d,q=Math.floor(cur/b),col=D.length-1-k;
-      if(!started&&q===0&&k<D.length-1){r=cur;steps.push({kind:'show',col,say:`${cur} kurang daripada ${b}. Gabung dengan digit seterusnya.`,after:{write:{col,digit:null},note:'Tiada di sini.'}});return}
+      if(!started&&q===0&&k<D.length-1){r=cur;const z=dp&&col<=dp;steps.push({kind:'show',col,say:`${cur} kurang daripada ${b}. ${z?'Tulis 0, kemudian g':'G'}abung dengan digit seterusnya.`,after:{write:{col,digit:z?0:null},note:z?'Tulis 0.':'Tiada di sini.'}});return}
       started=true;qd.push(q);const nr=cur-q*b;
       steps.push({kind:'pick',col,ask:`${cur} ÷ ${b} = ?`,say:`${cur} ÷ ${b} = ? (berapa kumpulan ${b}?)`,right:q,choices:tiles(q,[q+1,q-1,cur%10]),
         after:{write:{col,digit:q},rem:nr,note:nr?`${q} × ${b} = ${q*b}. Baki ${nr}${k<D.length-1?' dibawa ke digit seterusnya':''}.`:`${q} × ${b} = ${q*b}. Tiada baki.`}});
@@ -137,10 +141,10 @@
     if(!Number.isInteger(mid)||mid<0)return null;
     const p1=build(o1,a,b,{dp}),p2=build(o2,mid,d,{dp});if(!p1||!p2)return null;
     if(opt.story){
-      const S=(x,y)=>`${nf(a)} ${SIGN[x]} ${nf(b)} ${SIGN[y]} ${nf(d)}`,flip={add:'sub',sub:'add'};
+      const S=(x,y)=>`${f(a)} ${SIGN[x]} ${f(b)} ${SIGN[y]} ${f(d)}`,flip={add:'sub',sub:'add'};
       const right=S(o1,o2);
       p1.steps.unshift({kind:'pick',col:-1,say:'Ayat matematik mana yang sepadan dengan cerita?',right,choices:order(right,[S(flip[o1],flip[o2]),S(o1,o1)]),sentence:true,
-        after:{sign:SIGN[o1],note:`Betul: ${right}. Kira dari kiri: langkah pertama ${nf(a)} ${SIGN[o1]} ${nf(b)}.`}});
+        after:{sign:SIGN[o1],note:`Betul: ${right}. Kira dari kiri: langkah pertama ${f(a)} ${SIGN[o1]} ${f(b)}.`}});
     }
     return{chain:[p1,p2],mid,answer:p2.answer,notes:[`Langkah pertama siap: <b>${f(mid)}</b>. Sekarang ${f(mid)} ${SIGN[o2]} ${f(d)}.`]};
   }
@@ -274,24 +278,112 @@
   }
   const expandStr=n=>digits(n).map((d,i)=>d*PV[i]).reverse().filter(x=>x).map(nf).join(' + ');
   function buildPV(spec,opt={}){
+    const plan=buildPV0(spec,opt);
+    if(plan&&spec&&spec.dp&&plan.op==='pv'&&!plan.dp){plan.dp=spec.dp;plan.cols=Math.max(plan.cols,spec.dp+1)}
+    return plan;
+  }
+  /* Decimal and percent boards (Lombong Permata). Returns undefined for any other spec. */
+  function buildDec(spec,opt={}){
+    const t=spec.t,fin=opt.final&&Array.isArray(opt.final.choices)&&opt.final.choices.includes(opt.final.right)?opt.final:null;
+    const pick=(say,right,wrongs,after={})=>({kind:'pick',col:-1,say,right:String(right),choices:order(String(right),wrongs.map(String).filter(x=>x!==String(right))),after:{note:'',...after}});
+    if(t==='decFrac'){
+      // 45/100 → 0.45: the last digit of 45 goes to perseratus, the one before to persepuluh, 0 at sa.
+      const{n,dp}=spec;if(!Number.isInteger(n)||n<1||!(dp>=1&&dp<=3)||n>=10**dp)return null;
+      const N=names(dp),D=padTo(digits(n),dp+1),steps=[];
+      for(let c=0;c<=dp;c++){const d=D[c];
+        if(c===0)steps.push({kind:'tap',row:0,col:0,blank:true,say:`${n}/${10**dp}: ${n} ${N[0]}. Digit akhir ${d} di tempat ${N[0]}. Tekan tempat itu.`,after:{fill:{row:0,col:0,digit:d},note:`Tulis ${d}.`}});
+        else if(c===dp)steps.push({kind:'show',col:dp,say:'Tiada nombor bulat: tulis 0 sebelum titik.',after:{fill:{row:0,col:dp,digit:0},note:'Tulis 0.'}});
+        else if(d)steps.push({kind:'tap',row:0,col:c,blank:true,say:`Digit ${d} di tempat ${N[c]}. Tekan tempat itu.`,after:{fill:{row:0,col:c,digit:d},note:`Tulis ${d}.`}});
+        else steps.push({kind:'show',col:c,say:`Tempat ${N[c]}: 0.`,after:{fill:{row:0,col:c,digit:0},note:'Tulis 0.'}});
+      }
+      return{op:'pv',dp,rows:[n],blank:[0],cols:dp+1,steps,done:`${n}/${10**dp} = ${(n/10**dp).toFixed(dp)}.`,answer:n};
+    }
+    if(t==='decShift'){
+      // 6 ÷ 100: 100 has 2 zeros, the point moves 2 places to the left.
+      const{n,p}=spec,z=[10,100,1000].indexOf(p)+1;if(!z||!Number.isInteger(n)||n<1)return null;
+      const v=n/p,vs=String(+v.toFixed(z));
+      return{op:'pv',dp:z,rows:[n*p],answerRow:'=',cols:Math.max(digits(n*p).length,z+1),steps:[
+        pick(`${spec.pct?`${n}% = ${n} ÷ 100. `:''}÷ ${nf(p)}: ${nf(p)} ada berapa sifar?`,z,[1,2,3],{note:`${nf(p)} ada ${z} sifar: titik bergerak ${z} tempat ke kiri.`}),
+        pick(`${nf(n)} ÷ ${nf(p)} = ?`,vs,[String(+(v*10).toFixed(z)),String(+(v/10).toFixed(z+1))],{answer:n,note:`Setiap digit beralih ${z} tempat ke kanan.`})],
+        done:`${nf(n)} ÷ ${nf(p)} = ${vs}.`,answer:n};
+    }
+    if(t==='grid'){
+      // A hundred grid: a full row is 0.1 (10%), one square is 0.01 (1%).
+      const{n,pct}=spec;if(!Number.isInteger(n)||n<1||n>99)return null;const r=Math.floor(n/10),c=n%10,one=spec.dp===1;
+      const val=pct?`${n}%`:one?(n/100).toFixed(1):(n/100).toFixed(2);
+      const steps=[pick('Berapa baris penuh berlorek?',r,[r+1,r-1,c].filter(x=>x>=0),{note:`${r} baris = ${pct?r*10+'%':(r/10).toFixed(1)}.`})];
+      if(!one)steps.push(pick('Berapa petak lagi di baris yang belum penuh?',c,[c+1,Math.max(0,c-1),r].filter(x=>x>=0),{note:`${c} petak = ${pct?c+'%':(c/100).toFixed(2)}.`}));
+      steps.push(pick(pct?'Jadi berapa peratus berlorek?':'Jadi nombor perpuluhannya?',val,pct?[`${r+c}%`,`${c*10+r}%`]:one?[`${r}.0`,(r/100).toFixed(2)]:[(c/10+r/100).toFixed(2),`${r}.${c}`]));   // the digits swapped, or the point in the wrong place
+      if(spec.unshaded){steps.push(pick(`Belum berlorek: 100% − ${n}% = ?`,`${100-n}%`,[`${n}%`,`${90-n}%`,`${110-n}%`].filter(x=>!/^-/.test(x))))}
+      return{op:'grid',rows:[],n,steps,done:spec.unshaded?`100% − ${n}% = ${100-n}%.`:`${n} petak daripada 100 = ${val}.`,answer:spec.unshaded?100-n:pct?n:+val};
+    }
+    if(t==='pctOf'){
+      // 15% of 200: 10% first (÷ 10), 5% is half of 10%, then put them together.
+      const{p,Q}=spec;if(!(p>0&&p<=300&&p%5===0&&Q%10===0&&(p%10===0||(Q/10)%2===0)))return null;const ten=Q/10,k=Math.floor(p/10),half=p%10?ten/2:0,v=p*Q/100;
+      // A story that asks for the rest ("BUKAN merah"): (100 − p)% straight away.
+      const lead=spec.rest?`Bukan ${spec.rest}% = ${100-spec.rest}%. `:'';
+      const items=[`100% = ${nf(Q)}`,null],steps=[pick(`${lead}10% daripada ${nf(Q)} = ${nf(Q)} ÷ 10 = ?`,ten,[Q,ten*10,ten+10],{fill:{i:1,v:`10% = ${nf(ten)}`}})];
+      if(half){items.push(null);steps.push(pick(`5% ialah separuh daripada 10%: ${nf(ten)} ÷ 2 = ?`,half,[ten,ten*2,half+1],{fill:{i:2,v:`5% = ${nf(half)}`}}))}
+      if(!k){const st=steps[steps.length-1];st.after.fill={i:2,v:`5% = ${nf(half)}`};return{op:'seq',rows:[],items,steps,done:`5% daripada ${nf(Q)} = ${nf(v)}.`,answer:v}}
+      items.push(null);const last=items.length-1;
+      steps.push(pick(half?(k?`${p}% = ${k} × 10% + 5% = ${k} × ${nf(ten)} + ${nf(half)} = ?`:`${p}% = 5% = ?`):`${p}% = ${k} × 10% = ${k} × ${nf(ten)} = ?`,v,[v+ten,v-half||v+1,k*ten*10].filter(x=>x>0),{fill:{i:last,v:`${p}% = ${nf(v)}`}}));
+      return{op:'seq',rows:[],items,steps,done:`${p}% daripada ${nf(Q)} = ${nf(v)}.`,answer:v};
+    }
+    if(t==='fracToPct'){
+      const{a,b}=spec,k=100/b;if(!Number.isInteger(k)||a<1||a>=b)return null;const p=a*k;
+      return{op:'seq',rows:[],items:[`${a}/${b}`,null,null],hops:['',''],steps:[
+        pick(`Jadikan penyebut 100: ${b} × ? = 100`,k,[k+1,k*10,100-b].filter(x=>x>0),{hop:{i:1,label:`× ${k}`}}),
+        pick(`Pengangka juga: ${a} × ${k} = ?`,p,[a+k,p+k,a*10].filter(x=>x>0),{fill:{i:1,v:`${p}/100`}}),
+        pick(`${p}/100 = ?`,`${p}%`,[`${a}%`,`${b}%`,`${p/10}%`].filter(x=>x!==`${p}%`),{fill:{i:2,v:`${p}%`}})],done:`${a}/${b} = ${p}/100 = ${p}%.`,answer:p};
+    }
+    if(t==='pctToFrac'){
+      const{p}=spec;if(!(p>0&&p<100))return null;const gcd=(x,y)=>y?gcd(y,x%y):x,g=gcd(p,100),A=p/g,B=100/g,lab=`${A}/${B}`;
+      return{op:'seq',rows:[],items:[`${p}%`,`${p}/100`,null],hops:['',''],steps:[
+        pick(`Nombor terbesar yang boleh membahagi ${p} dan 100?`,g,[2,5,10,g*2].filter(x=>x!==g&&p%x===0&&100%x===0).concat([g===1?2:1]),{hop:{i:2,label:`÷ ${g}`}}),
+        pick(`${p} ÷ ${g} / 100 ÷ ${g} = ?`,lab,[`${p}/100`,`${B}/${A}`,`${A}/${B*2}`].filter(x=>x!==lab),{fill:{i:2,v:lab}})],done:`${p}% = ${p}/100 = ${lab}.`,answer:lab,finalLabel:lab};
+    }
+    if(t==='outOf100'){
+      const{n}=spec;if(!(n>0&&n<100))return null;
+      return{op:'seq',rows:[],items:[`${n} daripada 100`,null],steps:[pick('Peratus bermaksud “daripada 100”. Jadi?',`${n}%`,[`${100-n}%`,`${n/10}%`,`${n*10}%`],{fill:{i:1,v:`${n}%`}})],done:`${n} daripada 100 = ${n}%.`,answer:n};
+    }
+    if(t==='extreme'){
+      // The biggest (or smallest) of four: compare from the first place that differs, then the round's own choices.
+      const plan=buildPV0({t:'order',list:spec.list,desc:!spec.small,dp:spec.dp},{});if(!plan)return null;
+      const first=plan.steps[0];first.say=first.say.replace('Cari nombor paling','Cari yang paling');
+      plan.steps=[first,...(fin?[{kind:'pick',col:-1,say:`Jadi yang paling ${spec.small?'sedikit':'banyak'}?`,right:fin.right,choices:fin.choices.slice(0,4),after:{note:''}}]:[])];
+      plan.dp=spec.dp;plan.cols=Math.max(plan.cols,spec.dp+1);plan.done=`Yang paling ${spec.small?'sedikit':'banyak'}: ${fmtDp(spec.dp)(spec.small?Math.min(...spec.list):Math.max(...spec.list))}.`;
+      plan.answer=fin?fin.right:null;plan.finalLabel=fin?fin.right:undefined;return plan;
+    }
+    return undefined;
+  }
+  function buildPV0(spec,opt={}){
     if(!spec||typeof spec!=='object')return null;
+    // Decimals (spec.dp): the numbers come scaled; the places below sa have their own names.
+    const dp=spec.dp||0,PL=dp?names(dp):PLACE,F=dp?(x=>String(+(x/10**dp).toFixed(dp))):nf;   // 0.6, not 0.60, in the text
+    const dec=buildDec(spec,opt);if(dec!==undefined)return dec;   // eslint-disable-line no-use-before-define
     const t=spec.t;
     if(t==='round'){
       const n=spec.n,p=spec.place,P=PV[p+1];if(!Number.isInteger(n)||!(p>=0)||!P||n<=0)return null;
-      const lo=Math.floor(n/P)*P,hi=lo+P,d=digits(n)[p]||0,up=d>=5,r=up?hi:lo,cols=Math.max(digits(n).length,digits(r).length);
+      const lo=Math.floor(n/P)*P,hi=lo+P,d=digits(n)[p]||0,up=d>=5,r=up?hi:lo,cols=Math.max(digits(n).length,digits(r).length,dp+1);
+      if(dp){const t=Math.max(0,dp-p-1),Ft=x=>(x/10**dp).toFixed(t),to=t?`${t} tempat perpuluhan`:'nombor bulat';
+        return{op:'pv',dp,rows:[n],answerRow:'≈',cols,steps:[
+          {kind:'tap',row:0,col:p,say:`Bundar kepada ${to}. Tekan digit selepas tempat itu.`,after:{mark:{row:0,col:p},note:`Digit itu ialah ${d}.`}},
+          {kind:'pick',col:-1,say:`Digit ${d}: 5 atau lebih?`,right:up?'Ya, 5 atau lebih':'Tidak, kurang 5',choices:['Ya, 5 atau lebih','Tidak, kurang 5'],after:{note:up?`Bundar naik: tempat ${PL[p+1]} tambah 1.`:`Tempat ${PL[p+1]} kekal.`}},
+          {kind:'pick',col:-1,say:`Jadi ${F(n)} ≈ ?`,right:Ft(r),choices:order(Ft(r),[Ft(up?lo:hi),(n/10**dp).toFixed(Math.min(dp,t+1))]),after:{answer:r,answerFrom:p+1,note:'Digit selepas tempat itu dibuang.'}}],
+          done:`${F(n)} ≈ ${Ft(r)}.`,answer:r}}
       const steps=[
-        {kind:'tap',row:0,col:p,say:`Bundar kepada ${PLACE[p+1]} terdekat. Tekan digit di tempat ${PLACE[p]}.`,after:{mark:{row:0,col:p},note:`Digit di tempat ${PLACE[p]} ialah ${d}.`}},
+        {kind:'tap',row:0,col:p,say:`Bundar kepada ${PL[p+1]} terdekat. Tekan digit di tempat ${PL[p]}.`,after:{mark:{row:0,col:p},note:`Digit di tempat ${PL[p]} ialah ${d}.`}},
         {kind:'pick',col:-1,say:`Digit ${d}: 5 atau lebih?`,right:up?'Ya, 5 atau lebih':'Tidak, kurang 5',choices:['Ya, 5 atau lebih','Tidak, kurang 5'],
-          after:{note:up?`${d} ialah 5 atau lebih: bundar naik. Tempat ${PLACE[p+1]} tambah 1.`:`${d} kurang daripada 5: tempat ${PLACE[p+1]} kekal.`}},
-        {kind:'pick',col:-1,say:`Jadi ${nf(n)} ≈ ?`,right:nf(r),choices:order(nf(r),[nf(up?lo:hi),nf(Math.round(n/PV[p])*PV[p])]),
-          after:{answer:r,note:`Digit selepas tempat ${PLACE[p+1]} jadi 0.`}}];
-      return{op:'pv',rows:[n],answerRow:'≈',cols,steps,done:`${nf(n)} ≈ ${nf(r)}.`,answer:r};
+          after:{note:up?`${d} ialah 5 atau lebih: bundar naik. Tempat ${PL[p+1]} tambah 1.`:`${d} kurang daripada 5: tempat ${PL[p+1]} kekal.`}},
+        {kind:'pick',col:-1,say:`Jadi ${F(n)} ≈ ?`,right:F(r),choices:order(F(r),[F(up?lo:hi),F(Math.round(n/PV[p])*PV[p])]),
+          after:{answer:r,note:`Digit selepas tempat ${PL[p+1]} jadi 0.`}}];
+      return{op:'pv',rows:[n],answerRow:'≈',cols,steps,done:`${F(n)} ≈ ${F(r)}.`,answer:r};
     }
     if(t==='compare'){
       const a=spec.a,b=spec.b;if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<0)return null;
-      const A=digits(a),B=digits(b),cols=Math.max(A.length,B.length),steps=[];
+      const cols=Math.max(digits(a).length,digits(b).length,dp?dp+1:0),A=dp?padTo(digits(a),cols):digits(a),B=dp?padTo(digits(b),cols):digits(b),steps=[];   // decimals: compare place by place, never by digit count
       let j=cols-1;while(j>=0&&(A[j]||0)===(B[j]||0))j--;
-      const same=[];for(let i=cols-1;i>j;i--)same.push(PLACE[i]);
+      const same=[];for(let i=cols-1;i>j;i--)same.push(PL[i]);
       if(A.length!==B.length){
         const big=A.length>B.length?0:1;
         steps.push({kind:'tap',row:big,col:cols-1,say:'Nombor mana ada lebih banyak digit? Tekan digit pertamanya.',after:{mark:{row:big,col:cols-1},note:'Lebih banyak digit = lebih besar.'}});
@@ -302,16 +394,16 @@
         if(same.length)steps.push({kind:'show',col:-1,pre:{same:sameCols},say:`Banding dari kiri. Tempat ${same.join(', ')}: digit sama.`,after:{note:'Lihat tempat seterusnya.'}});
         const big=(A[j]||0)>(B[j]||0)?0:1,hi=Math.max(A[j]||0,B[j]||0),lo=Math.min(A[j]||0,B[j]||0);
         // The first place that differs gets a red frame: "here they are not the same".
-        steps.push({kind:'tap',row:big,col:j,pre:{diff:j},say:`Tempat ${PLACE[j]} tidak sama: ${A[j]||0} dan ${B[j]||0}. Mana lebih besar? Tekan digit itu.`,after:{mark:{row:big,col:j},note:`${hi} lebih besar daripada ${lo}.`}});
+        steps.push({kind:'tap',row:big,col:j,pre:{diff:j},say:`Tempat ${PL[j]} tidak sama: ${A[j]||0} dan ${B[j]||0}. Mana lebih besar? Tekan digit itu.`,after:{mark:{row:big,col:j},note:`${hi} lebih besar daripada ${lo}.`}});
       }
       const bigN=Math.max(a,b),smallN=Math.min(a,b);
       if(spec.ask==='symbol'){const sym=a>b?'>':a<b?'<':'=';
-        steps.push({kind:'pick',col:-1,say:`${nf(a)} ___ ${nf(b)}`,right:sym,choices:['<','>','='],after:{sym,note:'Mulut buaya terbuka ke arah nombor yang lebih besar.'}});
-        return{op:'pv',rows:[a,b],labels:['',''],cols,steps,done:`${nf(a)} ${sym} ${nf(b)}.`,answer:sym};
+        steps.push({kind:'pick',col:-1,say:`${F(a)} ___ ${F(b)}`,right:sym,choices:['<','>','='],after:{sym,note:'Mulut buaya terbuka ke arah nombor yang lebih besar.'}});
+        return{op:'pv',rows:[a,b],labels:['',''],cols,steps,done:`${F(a)} ${sym} ${F(b)}.`,answer:sym};
       }
       const want=spec.ask==='small'?smallN:bigN;
-      steps.push({kind:'pick',col:-1,say:`Jadi yang lebih ${spec.ask==='small'?'kecil':'besar'}?`,right:nf(want),choices:order(nf(want),[nf(want===a?b:a)],2),after:{note:''}});
-      return{op:'pv',rows:[a,b],labels:['',''],cols,steps,done:`${nf(want)} lebih ${spec.ask==='small'?'kecil':'besar'}.`,answer:want};
+      steps.push({kind:'pick',col:-1,say:`Jadi yang lebih ${spec.ask==='small'?'kecil':'besar'}?`,right:F(want),choices:order(F(want),[F(want===a?b:a)],2),after:{note:''}});
+      return{op:'pv',rows:[a,b],labels:['',''],cols,steps,done:`${F(want)} lebih ${spec.ask==='small'?'kecil':'besar'}.`,answer:want};
     }
     if(t==='compose'){
       // 600 + 70 + 2: each part goes to its place on an empty row; a place with no part gets 0.
@@ -319,25 +411,25 @@
       const steps=[];
       for(let i=D.length-1;i>=0;i--){
         const d=D[i];
-        if(d)steps.push({kind:'tap',row:0,col:i,blank:true,say:`${nf(d*PV[i])}: digit ${d} di tempat ${PLACE[i]}. Tekan tempat ${PLACE[i]}.`,after:{fill:{row:0,col:i,digit:d},note:`Tulis ${d} di tempat ${PLACE[i]}.`}});
-        else steps.push({kind:'show',col:i,say:`Tiada bahagian untuk tempat ${PLACE[i]}. Tulis 0.`,after:{fill:{row:0,col:i,digit:0},note:'Tempat kosong ditulis 0.'}});
+        if(d)steps.push({kind:'tap',row:0,col:i,blank:true,say:`${F(d*PV[i])}: digit ${d} di tempat ${PL[i]}. Tekan tempat ${PL[i]}.`,after:{fill:{row:0,col:i,digit:d},note:`Tulis ${d} di tempat ${PL[i]}.`}});
+        else steps.push({kind:'show',col:i,say:`Tiada bahagian untuk tempat ${PL[i]}. Tulis 0.`,after:{fill:{row:0,col:i,digit:0},note:'Tempat kosong ditulis 0.'}});
       }
-      return{op:'pv',rows:[n],blank:[0],cols:D.length,steps,done:`${expandStr(n)} = ${nf(n)}.`,answer:n};
+      return{op:'pv',rows:[n],blank:[0],cols:D.length,steps,done:`${expandStr(n)} = ${F(n)}.`,answer:n};
     }
     // The round's own last choice (a pick round): {choices, right}.
     const fin=opt.final&&Array.isArray(opt.final.choices)&&opt.final.choices.includes(opt.final.right)?opt.final:null;
     const finalStep=say=>fin?[{kind:'pick',col:-1,say,right:fin.right,choices:fin.choices.length>4?fin.choices.slice(0,4):fin.choices,after:{note:''}}]:[];
     if(t==='order'){
       const L=spec.list;if(!Array.isArray(L)||L.length<2||L.some(x=>!Number.isInteger(x)||x<0)||new Set(L).size!==L.length)return null;
-      const cols=Math.max(...L.map(x=>digits(x).length)),R=L.map((_,i)=>i),steps=[],small=!spec.desc;let rank=1;
+      const cols=Math.max(...L.map(x=>digits(x).length),dp?dp+1:0),R=L.map((_,i)=>i),steps=[],small=!spec.desc;let rank=1;
       while(R.length>1){
         const D=R.map(r=>digits(L[r]));let j=cols-1;while(j>0&&D.every(d=>(d[j]||0)===(D[0][j]||0)))j--;
         const pickRow=R.reduce((a,b)=>small?(L[b]<L[a]?b:a):(L[b]>L[a]?b:a));
-        steps.push({kind:'tap',row:pickRow,col:j,anyCol:true,pre:{diff:j,diffRows:[...R]},say:`Cari nombor paling ${small?'kecil':'besar'}. Banding tempat ${PLACE[j]}, kemudian tekan nombor itu.`,
-          after:{done:{row:pickRow,rank},note:`${nf(L[pickRow])} ialah ${rank===1?'pertama':'ke-'+rank}.`}});
+        steps.push({kind:'tap',row:pickRow,col:j,anyCol:true,pre:{diff:j,diffRows:[...R]},say:`Cari nombor paling ${small?'kecil':'besar'}. Banding tempat ${PL[j]}, kemudian tekan nombor itu.`,
+          after:{done:{row:pickRow,rank},note:`${F(L[pickRow])} ialah ${rank===1?'pertama':'ke-'+rank}.`}});
         R.splice(R.indexOf(pickRow),1);rank++;
       }
-      steps.push({kind:'show',col:-1,say:`Tinggal ${nf(L[R[0]])}: ia ${'ke-'+rank}.`,after:{done:{row:R[0],rank},note:'Semua sudah tersusun.'}});
+      steps.push({kind:'show',col:-1,say:`Tinggal ${F(L[R[0]])}: ia ${'ke-'+rank}.`,after:{done:{row:R[0],rank},note:'Semua sudah tersusun.'}});
       steps.push(...finalStep(`Jadi susunan ${small?'menaik':'menurun'} ialah?`));
       return{op:'pv',rows:L,cols,steps,done:`${small?'Menaik':'Menurun'}: ${[...L].sort((a,b)=>small?a-b:b-a).map(nf).join(', ')}.`,answer:fin?fin.right:null,finalLabel:fin?fin.right:undefined};
     }
@@ -348,45 +440,46 @@
         steps.push({kind:'pick',col:-1,pre:{group:c.cols},say:`${c.cols.length>1?'Digit ':'Digit '}${c.cols.slice().reverse().map(i=>digits(n)[i]).join('')} di sini dibaca?`,right:c.w,choices:order(c.w,chunkWrongs(c)),after:{note:`Setakat ini: ${said.join(' ')}.`}});
       }
       steps.push(...finalStep('Jadi perkataan yang betul ialah?'));
-      return{op:'pv',rows:[n],cols:digits(n).length,steps,done:`${nf(n)} dibaca “${words(n)}”.`,answer:fin?fin.right:words(n),finalLabel:fin?fin.right:undefined};
+      return{op:'pv',rows:[n],cols:digits(n).length,steps,done:`${F(n)} dibaca “${words(n)}”.`,answer:fin?fin.right:words(n),finalLabel:fin?fin.right:undefined};
     }
     if(t==='fromWords'){
       const n=spec.n,D=digits(n);if(!Number.isInteger(n)||n<10)return null;
       const C=chunks(n),word=i=>(C.find(c=>c.cols.includes(i))||{}).w,steps=[];
       for(let i=D.length-1;i>=0;i--){
-        if(D[i])steps.push({kind:'tap',row:0,col:i,blank:true,say:`“${word(i)}”: digit ${D[i]} di tempat ${PLACE[i]}. Tekan tempat itu.`,after:{fill:{row:0,col:i,digit:D[i]},note:`Tulis ${D[i]}.`}});
-        else steps.push({kind:'show',col:i,say:`Tempat ${PLACE[i]} tidak disebut. Tulis 0.`,after:{fill:{row:0,col:i,digit:0},note:'Tempat yang tiada disebut ialah 0.'}});
+        if(D[i])steps.push({kind:'tap',row:0,col:i,blank:true,say:`“${word(i)}”: digit ${D[i]} di tempat ${PL[i]}. Tekan tempat itu.`,after:{fill:{row:0,col:i,digit:D[i]},note:`Tulis ${D[i]}.`}});
+        else steps.push({kind:'show',col:i,say:`Tempat ${PL[i]} tidak disebut. Tulis 0.`,after:{fill:{row:0,col:i,digit:0},note:'Tempat yang tiada disebut ialah 0.'}});
       }
       steps.push(...finalStep('Jadi angka yang betul ialah?'));
-      return{op:'pv',rows:[n],blank:[0],cols:D.length,steps,done:`“${words(n)}” = ${nf(n)}.`,answer:n,finalLabel:fin?fin.right:undefined};
+      return{op:'pv',rows:[n],blank:[0],cols:D.length,steps,done:`“${words(n)}” = ${F(n)}.`,answer:n,finalLabel:fin?fin.right:undefined};
     }
     if(t==='expanded'){
       const n=spec.n,D=digits(n);if(!Number.isInteger(n)||n<10)return null;
       const steps=[];
       for(let i=D.length-1;i>=0;i--){if(!D[i])continue;const v=D[i]*PV[i];
-        steps.push({kind:'pick',col:i,say:`Digit ${D[i]} di tempat ${PLACE[i]}: nilainya?`,right:nf(v),choices:order(nf(v),[nf(D[i]),nf(v*10)].filter(x=>x!==nf(v))),after:{mark:{row:0,col:i},note:`${D[i]} × ${nf(PV[i])} = ${nf(v)}.`}})}
+        steps.push({kind:'pick',col:i,say:`Digit ${D[i]} di tempat ${PL[i]}: nilainya?`,right:F(v),choices:order(F(v),[F(D[i]),F(v*10)].filter(x=>x!==F(v))),after:{mark:{row:0,col:i},note:`${D[i]} × ${F(PV[i])} = ${F(v)}.`}})}
       steps.push(...finalStep('Jadi cerakinan yang betul ialah?'));
-      return{op:'pv',rows:[n],cols:D.length,steps,done:`${nf(n)} = ${expandStr(n)}.`,answer:fin?fin.right:expandStr(n),finalLabel:fin?fin.right:undefined};
+      return{op:'pv',rows:[n],cols:D.length,steps,done:`${F(n)} = ${expandStr(n)}.`,answer:fin?fin.right:expandStr(n),finalLabel:fin?fin.right:undefined};
     }
     if(t==='missingPart'){
       // 9041 = 9000 + ___ + 1: the places already written go grey; the pupil finds the one left.
       const n=spec.n,i=spec.i,D=digits(n);if(!Number.isInteger(n)||!(i>=0&&i<D.length)||!D[i])return null;
       const known=D.map((d,j)=>d&&j!==i?j:-1).filter(j=>j>=0),v=D[i]*PV[i];
       const steps=[
-        {kind:'tap',row:0,col:i,pre:{same:known},say:`Tempat yang sudah ada dalam ayat jadi kelabu. Digit mana belum ada? Tekan digit itu.`,after:{mark:{row:0,col:i},reveal:true,note:`Digit ${D[i]} di tempat ${PLACE[i]}.`}},
-        {kind:'pick',col:i,say:`Nilai = ${D[i]} × ${nf(PV[i])} = ?`,right:nf(v),choices:order(nf(v),[nf(D[i]),nf(v*10),nf(v/10)].filter(x=>x!==nf(v)&&!/\./.test(x))),after:{note:`Bahagian yang hilang ialah ${nf(v)}.`}}];
-      return{op:'pv',rows:[n],cols:D.length,hideHead:true,steps,done:`${nf(n)} = ${expandStr(n)}.`,answer:v};
+        {kind:'tap',row:0,col:i,pre:{same:known},say:`Tempat yang sudah ada dalam ayat jadi kelabu. Digit mana belum ada? Tekan digit itu.`,after:{mark:{row:0,col:i},reveal:true,note:`Digit ${D[i]} di tempat ${PL[i]}.`}},
+        {kind:'pick',col:i,say:`Nilai = ${D[i]} × ${F(PV[i])} = ?`,right:F(v),choices:order(F(v),[F(D[i]),F(v*10),F(v/10)].filter(x=>x!==F(v)&&!/\./.test(x))),after:{note:`Bahagian yang hilang ialah ${F(v)}.`}}];
+      return{op:'pv',rows:[n],cols:D.length,hideHead:true,steps,done:`${F(n)} = ${expandStr(n)}.`,answer:v};
     }
     if(t==='placeName'||t==='digitValue'){
       const n=spec.n,i=spec.i,D=digits(n);if(!Number.isInteger(n)||!(i>=0&&i<D.length))return null;
-      const d=D[i],names=PLACE.slice(0,Math.max(D.length,3)).map((x,j)=>[x,Math.abs(j-i)]).filter(x=>x[1]).sort((x,y)=>x[1]-y[1]).map(x=>x[0]);   // the places next to it first
+      const d=D[i],names=PL.slice(0,Math.max(D.length,3)).map((x,j)=>[x,Math.abs(j-i)]).filter(x=>x[1]).sort((x,y)=>x[1]-y[1]).map(x=>x[0]);   // the places next to it first
       const steps=[
         {kind:'tap',row:0,col:i,say:`Tekan digit ${d} pada papan.`,after:{mark:{row:0,col:i},note:'Sekarang kira tempat dari kanan: sa, puluh, ratus…'}},
-        {kind:'pick',col:i,say:`Digit ${d} di tempat apa?`,right:PLACE[i],choices:order(PLACE[i],names),after:{reveal:true,note:`Digit ${d} di tempat ${PLACE[i]}.`}}];
-      if(t==='placeName')return{op:'pv',rows:[n],cols:D.length,hideHead:true,steps,done:`Digit ${d} di tempat ${PLACE[i]}.`,answer:PLACE[i]};
+        {kind:'pick',col:i,say:`Digit ${d} di tempat apa?`,right:PL[i],choices:order(PL[i],names),after:{reveal:true,note:`Digit ${d} di tempat ${PL[i]}.`}}];
+      if(t==='placeName')return{op:'pv',rows:[n],cols:D.length,hideHead:true,steps,done:`Digit ${d} di tempat ${PL[i]}.`,answer:PL[i]};
       const v=d*PV[i];
-      steps.push({kind:'pick',col:i,say:`Nilai = ${d} × ${nf(PV[i])} = ?`,right:nf(v),choices:order(nf(v),[nf(d),nf(v*10),nf(v/10)].filter(x=>x!==nf(v)&&!/\./.test(x))),after:{note:`Nilai digit ${d} ialah ${nf(v)}.`}});
-      return{op:'pv',rows:[n],cols:D.length,hideHead:true,steps,done:`${d} × ${nf(PV[i])} = ${nf(v)}.`,answer:v};
+      steps.push({kind:'pick',col:i,say:`Nilai = ${d} × ${F(PV[i])} = ?`,right:F(v),choices:order(F(v),[F(d),F(v*10),F(v/10)].filter(x=>x!==F(v)&&!/\./.test(x))),after:{note:`Nilai digit ${d} ialah ${F(v)}.`}});
+      if(fin){const last=steps[steps.length-1];last.right=fin.right;last.choices=fin.choices.slice(0,4)}
+      return{op:'pv',rows:[n],cols:D.length,hideHead:true,steps,finalLabel:fin?fin.right:undefined,done:`${d} × ${F(PV[i])} = ${F(v)}.`,answer:v};
     }
     return null;
   }
@@ -398,22 +491,27 @@
     const cols=[...Array(n).keys()].reverse();
     const dp=plan.dp||0,H=i=>i<dp?DECH[dp-1-i]:PLACE[i-dp];
     const head=cols.map(i=>cell('wk-h',H(i)==='puluh ribu'?'p.ribu':H(i)==='ratus ribu'?'r.ribu':H(i),i)).join('');
+    if(plan.op==='grid'){
+      let g='';for(let i=0;i<100;i++)g+=`<i class="wk-g${i<plan.n?' on':''}" data-r="${Math.floor(i/10)}" data-g="${i}"></i>`;
+      return `<div class="wk-board wk-gridb"><div class="wk-hg">${g}</div></div>`;
+    }
     if(plan.op==='seq'){
       return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?`<i class="wk-hop" data-h="${i}" aria-hidden="true">${plan.hops?'':'›'}</i>`:''}<span class="wk-c wk-box${v===null?' wk-q':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
     }
     if(plan.op==='pv'){
-      const head2=cols.map(i=>cell('wk-h'+(opt.hideHead?' wk-hide':''),opt.hideHead?'?':(PLACE[i]==='puluh ribu'?'p.ribu':PLACE[i]==='ratus ribu'?'r.ribu':PLACE[i]==='juta'?'juta':PLACE[i]),i,` data-name="${esc(PLACE[i])}"`)).join('');
-      const rowPV=(v,r)=>{const D=digits(v),blank=(plan.blank||[]).includes(r);return`<div class="wk-row wk-pvrow${blank?' wk-blank':''}" data-row="${r}"><span class="wk-op"></span>${cols.map(i=>cell('wk-d wk-tap'+(blank?' wk-empty':''),blank||D[i]===undefined?'':D[i],i,` data-row="${r}"`)).join('')}</div>`};
+      const pdp=plan.dp||0,NM=pdp?names(pdp):PLACE,HD=i=>i<pdp?DECH[pdp-1-i]:NM[i],ptc=i=>pdp&&i===pdp?' wk-pt':'';
+      const head2=cols.map(i=>cell('wk-h'+(opt.hideHead?' wk-hide':''),opt.hideHead?'?':(HD(i)==='puluh ribu'?'p.ribu':HD(i)==='ratus ribu'?'r.ribu':HD(i)),i,` data-name="${esc(HD(i))}"`)).join('');
+      const rowPV=(v,r)=>{const D=pdp?padTo(digits(v),pdp+1):digits(v),blank=(plan.blank||[]).includes(r);return`<div class="wk-row wk-pvrow${blank?' wk-blank':''}" data-row="${r}"><span class="wk-op"></span>${cols.map(i=>cell('wk-d wk-tap'+ptc(i)+(blank?' wk-empty':''),blank||D[i]===undefined?'':D[i],i,` data-row="${r}"`)).join('')}</div>`};
       const sym=plan.rows.length===2&&plan.steps.some(s=>s.after&&s.after.sym)?'<div class="wk-sym" aria-live="polite"></div>':'';
       return `<div class="wk-board wk-pv" style="--n:${n}"><div class="wk-row wk-head"><span class="wk-op"></span>${head2}</div>
         ${plan.rows.length>2?plan.rows.map((v,r)=>rowPV(v,r)).join(''):rowPV(plan.rows[0],0)+sym+(plan.rows[1]!==undefined?rowPV(plan.rows[1],1):'')}
-        ${plan.answerRow?`<div class="wk-line"></div><div class="wk-row wk-ans"><span class="wk-op">${esc(plan.answerRow)}</span>${cols.map(i=>cell('wk-a','',i)).join('')}</div>`:''}</div>`;
+        ${plan.answerRow?`<div class="wk-line"></div><div class="wk-row wk-ans"><span class="wk-op">${esc(plan.answerRow)}</span>${cols.map(i=>cell('wk-a'+ptc(i),'',i)).join('')}</div>`:''}</div>`;
     }
     if(plan.op==='div'){
-      const D=digits(a).reverse();
+      const dpv=plan.dp||0,D=(dpv?padTo(digits(a),dpv+1):digits(a)).reverse(),pc=c=>dpv&&c===dpv?' wk-pt':'';
       return `<div class="wk-board wk-div" style="--n:${D.length}"><div class="wk-row wk-head"><span class="wk-op"></span>${D.map((_,k)=>cell('wk-h','',D.length-1-k)).join('')}</div>
-        <div class="wk-row wk-ans"><span class="wk-op"></span>${D.map((_,k)=>cell('wk-a','',D.length-1-k)).join('')}</div>
-        <div class="wk-row wk-top wk-bracket"><span class="wk-op wk-dv">${b}</span>${D.map((d,k)=>cell('wk-d',d,D.length-1-k)).join('')}</div>
+        <div class="wk-row wk-ans"><span class="wk-op"></span>${D.map((_,k)=>cell('wk-a'+pc(D.length-1-k),'',D.length-1-k)).join('')}</div>
+        <div class="wk-row wk-top wk-bracket"><span class="wk-op wk-dv">${b}</span>${D.map((d,k)=>cell('wk-d'+pc(D.length-1-k),d,D.length-1-k)).join('')}</div>
         <div class="wk-rem" aria-live="polite"></div></div>`;
     }
     const pt=i=>dp&&i===dp?' wk-pt':'';   // the decimal point sits after the sa column
@@ -446,7 +544,7 @@
       if(a.rem!==undefined){const r=q('.wk-rem');if(r)r.textContent=a.rem?`baki ${a.rem}`:''}
       if(a.mark){const c=q(`.wk-pvrow[data-row="${a.mark.row}"] [data-col="${a.mark.col}"]`);if(c)c.classList.add('wk-mark','wk-pop')}
       if(a.reveal)el.board.querySelectorAll('.wk-head .wk-hide').forEach(c=>{c.textContent=c.dataset.name==='puluh ribu'?'p.ribu':c.dataset.name==='ratus ribu'?'r.ribu':c.dataset.name;c.classList.remove('wk-hide');c.classList.add('wk-pop')});
-      if(a.answer!==undefined){const D=digits(a.answer);el.board.querySelectorAll('.wk-ans .wk-a').forEach(c=>{const v=D[Number(c.dataset.col)];if(v!==undefined){c.textContent=v;c.classList.add('wk-drop')}})}
+      if(a.answer!==undefined){const D=padTo(digits(a.answer),(plan.dp||0)+1);el.board.querySelectorAll('.wk-ans .wk-a').forEach(c=>{const col=Number(c.dataset.col),v=D[col];if(v!==undefined&&!(a.answerFrom>col)){c.textContent=v;c.classList.add('wk-drop')}})}
       if(a.sym){const g=q('.wk-sym');if(g){g.textContent=a.sym;g.classList.add('wk-pop')}}
       if(a.done){const r=q(`.wk-pvrow[data-row="${a.done.row}"]`);if(r){r.classList.add('wk-rowdone');const b=r.querySelector('.wk-op');if(b){b.textContent=a.done.rank;b.classList.add('wk-rank','wk-pop')}}}
       if(a.hop){const h=q(`.wk-hop[data-h="${a.hop.i}"]`);if(h){h.textContent=a.hop.label;h.classList.add('wk-hopl','wk-pop')}}

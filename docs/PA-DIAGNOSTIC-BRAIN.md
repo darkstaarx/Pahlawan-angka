@@ -493,6 +493,18 @@ digit, then the round's choices.
    lazim add/sub (2 rows, and 3 rows as a chain) is covered: about 7% of
    Lombong rounds. Lombong has ~70 generators (decimal pads, percent, grids,
    number lines, compare); the next ones need their own boards.
+   **Lombong part 2 (3.87.21, PR #95 merged):** 46% of sampled Lombong rounds (most of D2–D5)
+   have a plan. `PAWorked` 1.7.0: decimal × and ÷ by one digit (the 0 at sa
+   is written); the place-value board takes `dp` (compare place by place,
+   never by digit count; round to n places; place name / digit value);
+   `buildDec` boards: fraction → decimal (`decFrac`), the point moves for
+   ÷ 10/100/1000 and p% → decimal (`decShift`), hundred grid (`grid`: full
+   rows, then squares; also the unshaded %), p% of Q via 10% and 5%
+   (`pctOf`, also > 100% and "BUKAN" stories), fraction → % (`fracToPct`),
+   % → simplest fraction (`pctToFrac`), n daripada 100, the smallest /
+   biggest of four (`extreme`). Left in Lombong: shading and number-line
+   rounds (they are their own widgets), D6 × ÷ decimals by decimals,
+   percent change, BODMAS with fractions.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
