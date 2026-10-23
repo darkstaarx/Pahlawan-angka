@@ -451,7 +451,8 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    #90 (3.87.16) D1 "X menulis 100 sebagai …": n − 10 equalled the wrong
    spelling, so one choice became "Tidak pasti"; now n − 20. This was the rare
    failure of the "Darjah 1–2: every choice is real" test.
-   **"Jom tengok cara" part 4 (3.87.17):** number patterns
+   **"Jom tengok cara" part 4 (3.87.17, PR #91 merged; the Gudang card label
+   "GULUNG ARAHAN" is now "KIRA", owner: plain school words):** number patterns
    (`PAWorked.buildSeq`, `q.wk.t='seq'|'apply'`): a trail of boxes; a known
    pair lights up → bertambah/berkurang → beza → hop from the neighbour into
    the "?" (the first box goes back from the next). Compose (`'compose'`): the

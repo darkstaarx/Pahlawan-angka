@@ -1121,7 +1121,7 @@ $('widget').addEventListener('click',e=>{const fb=e.target.closest('[data-f^="a"
 function busyMerge(){const r=$('rack');if(r){r.classList.remove('merge');void r.offsetWidth;r.classList.add('merge')}}
 function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className='tiles';box.classList.toggle('padk',K==='pad');
  let h='';if(q.story){const i=q.mark?q.story.lastIndexOf(q.mark):-1;h+='<div class="story">'+(i>=0?esc(q.story.slice(0,i))+'<mark>'+esc(q.mark)+'</mark>':esc(q.story))+'</div>'}
- if(q.card)h+='<div class="qcard'+(q.vis?' lt':'')+'"><small>'+(K==='pick'?'PILIH':'GULUNG ARAHAN')+'</small><b>'+q.card+'</b></div>';
+ if(q.card)h+='<div class="qcard'+(q.vis?' lt':'')+'"><small>'+(K==='pick'?'PILIH':'KIRA')+'</small><b>'+q.card+'</b></div>';
  h+=visHTML(q.vis);
  if(K==='build')h+=(q.rack.mode==='build'?'<div class="rdout">NILAI HARTA <b id="rv">0</b></div>':'')+'<div class="rack n'+q.rack.cols+'" id="rack" style="--n:'+q.rack.cols+'"></div>'+(q.rack.mode!=='build'?'<div class="rguide" id="rguide"></div>':'');
  if(K==='pad')h+='<div class="ansrow" id="ansrow">'+q.form.fields.map((f,i)=>(f.pre?'<span class="lbl">'+f.pre+'</span>':'')+'<button type="button" class="fld'+(q.form.fields.length>1?' two':'')+'" id="F'+i+'" data-f="'+i+'" aria-label="Jawapan '+(i+1)+'"><b></b></button>'+(f.post?'<span class="lbl">'+f.post+'</span>':'')).join('')+'</div>';
