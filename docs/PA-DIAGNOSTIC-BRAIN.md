@@ -588,6 +588,13 @@ digit, then the round's choices.
    cauldron (`mix` fix) ends at `need.v`. Plans cover D4 91%, D5 100%, D6 87%;
    left: "make it bigger" mixes (no single answer) and the true/false claims.
    DEV sheet: 14 buttons.
+   **Menara Jam (3.87.34).** Lines are built on the page from the round (`wkSpec()`,
+   no generator tags): read the clock (hour hand, minute hand ÷ 5), end / start
+   time (hours first, then minutes), elapsed time (to the next whole hour, then
+   on), unit changes (× or ÷ by 60, 24, 7, 12, 10, 100), time operations, 24-hour
+   (+ 12 after 1 p.m., 00 at midnight) and time zones / flights. The clock stays
+   in view. Plans cover D1 44% (calendar left), D2 100%, D3 94%, D4 96%, D5 86%,
+   D6 100%. DEV sheet: 8 buttons. Test API `__menaraGen`.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

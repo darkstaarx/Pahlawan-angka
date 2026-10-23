@@ -419,6 +419,10 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </style>
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.10.0">
+<style>/* "Jom tengok cara" tiles: this page has no .tl buttons of its own. */
+.wk-wrap .tiles.wk .tl{border:3px solid #4a2a16;border-radius:14px;background:#fff8e6;color:#4a2a16;font:900 22px/1.1 var(--f-display,system-ui);box-shadow:0 3px 0 #4a2a16;padding:8px 6px;cursor:pointer}
+.wk-wrap .tiles.wk .tl:disabled{opacity:.45}.wk-wrap .tiles.wk .tl.wk-yes{background:#eaffde;border-color:#2f6a2e}</style>
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .pa-game .scene{--belt:.6;--waist:18px}.pa-game .scene .bubble{left:auto;right:8px}</style>
 
@@ -469,10 +473,13 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <small>Simulasi router Kemahiran Fokus</small>
     <div class="devrow sims"><button type="button" data-sim="d6-zon">D6 lemah zon masa</button><button type="button" data-sim="d4-24jam">D4 lemah sistem 24 jam</button><button type="button" data-sim="d5-lompat">D5 lemah tahun lompat</button><button type="button" data-sim="d3-tempoh">D3 lemah tempoh</button></div>
     <p class="simout" id="simOut"></p><button type="button" class="btn go" id="simGo" hidden>Buka menara ikut pelan →</button>
+    <small>Cuba “Jom tengok cara” (terus ke soalan yang ada langkah)</small>
+    <div class="devrow sims" id="wkTry"></div>
   </div></div>
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-worked-v1.js?v=1.10.0"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/menara-jam-router.js"></script>
 <script src="js/engine/focus-time-diagnostic-v1.js"></script>
@@ -577,8 +584,8 @@ const GEN={
   const v=pick([['Kek siap dibakar ',' Kek dibakar selama ',' Pukul berapa kek mula dibakar?'],['Perlawanan tamat ',' Perlawanan itu berlangsung ',' Pukul berapa perlawanan bermula?']]);
   return{parts:withDistract([v[0],chip(f12(e)),'.'+v[1],chip(fDur(d)),'.'],t),ask:v[2],widget:'analog',start:e,target:s,s,d,e,ansText:f12(s),kssrSP:t.sp}},
  tempoh(t){if(t.calendar){const dates=pick([[2024,2,26,2024,3,3],[2023,12,27,2024,1,4],[2024,12,28,2025,1,5]]),s=new Date(Date.UTC(dates[0],dates[1]-1,dates[2])),e=new Date(Date.UTC(dates[3],dates[4]-1,dates[5])),days=(e-s)/86400000;const months=['','Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'],label=d=>d[2]+' '+months[d[1]]+' '+d[0];return{parts:['Tempoh dari ',chip(label(dates.slice(0,3))),' hingga ',chip(label(dates.slice(3,6))),' ialah berapa hari?'],ask:'',widget:'nombor',target:days,unitLbl:'hari',ansText:days+' hari',noTime:true,kssrSP:t.sp,archetypeId:'calendar_duration'}}
-  if(t.timetable){const s=step5(8*60,9*60+30),d=step5(45,120),e=s+d;return{parts:['Jadual tren KL → Ipoh: bertolak ',chip(f12(s)+' pagi'),' dan tiba ',chip(f12(e)+' pagi'),'. Berapa lama perjalanan?'],ask:'',widget:'durasi',start:s,target:d,s,e,ansText:fDur(d),kssrSP:t.sp,archetypeId:'timetable_read'}}
-  if(t.dayHour){const days=rnd(1,4),hours=rnd(1,23),target=days*24+hours;return{parts:['Tempoh perjalanan ialah ',chip(days+' hari '+hours+' jam'),'. Berapa jam semuanya?'],ask:'',widget:'nombor',target,unitLbl:'jam',ansText:target+' jam',noTime:true,kssrSP:t.sp,archetypeId:'time_duration_days_hours'}}
+  if(t.timetable){const s=step5(8*60,9*60+30),d=step5(45,120),e=s+d;return{parts:['Jadual tren KL → Ipoh: bertolak ',chip(f12(s)+' pagi'),' dan tiba ',chip(f12(e)+' pagi'),'. Berapa lama perjalanan?'],ask:'',widget:'durasi',start:s,target:d,s,e,tf:'12',ansText:fDur(d),kssrSP:t.sp,archetypeId:'timetable_read'}}
+  if(t.dayHour){const days=rnd(1,4),hours=rnd(1,23),target=days*24+hours;return{dh:[days,hours],parts:['Tempoh perjalanan ialah ',chip(days+' hari '+hours+' jam'),'. Berapa jam semuanya?'],ask:'',widget:'nombor',target,unitLbl:'jam',ansText:target+' jam',noTime:true,kssrSP:t.sp,archetypeId:'time_duration_days_hours'}}
   let s,d;
   if(t.night){s=step5(20*60,23*60+30);d=step5(t.span[0],t.span[1])}
   else if(t.d24){s=pick([am(),step5(9*60,12*60)]);d=step5(t.span[0],t.span[1])}
@@ -587,7 +594,7 @@ const GEN={
   const e=s+d,fmt=t.night?fWords:t.d24?f24:f12;
   const v=pick([['Wayang bermula ',' dan tamat ',' Berapa lama wayang itu?'],['Pasar malam dibuka ',' dan ditutup ',' Berapa lama pasar dibuka?'],['Wira mula tidur ',' dan bangun ',' Berapa lama Wira tidur?']]);
   const vv=t.night?pick([['Wira mula tidur ',' dan bangun ',' Berapa lama Wira tidur?'],['Pesta tanglung bermula ',' dan tamat ',' Berapa lama pesta itu?']]):v;
-  return{parts:withDistract([vv[0],chip(fmt(s)),vv[1],chip(fmt(e)),'.'],t),ask:vv[2],widget:'durasi',start:s,target:d,s,e,ansText:fDur(d),kssrSP:t.sp}},
+  return{parts:withDistract([vv[0],chip(fmt(s)),vv[1],chip(fmt(e)),'.'],t),ask:vv[2],widget:'durasi',start:s,target:d,s,e,tf:t.night?'w':t.d24?'24':'12',ansText:fDur(d),kssrSP:t.sp}},
  unit(t){let parts,target,widget='nombor',unitLbl,ansText;
   if(t.u==='fact_jm'){parts=[chip('1 jam'),' = ? minit'];target=60;unitLbl='minit';ansText='60 minit';return{parts:['Lengkapkan: ',...parts],ask:'',widget,target,unitLbl,u:t.u,ansText,noTime:true}}
   if(t.u==='fact_hj'){parts=[chip('1 hari'),' = ? jam'];target=24;unitLbl='jam';ansText='24 jam';return{parts:['Lengkapkan: ',...parts],ask:'',widget,target,unitLbl,u:t.u,ansText,noTime:true}}
@@ -785,11 +792,84 @@ function wrongMsg(){const w=q.widget,c=current();
  if(w==='durasi')return 'Tempoh kamu '+fDur(c)+'. '+(q.noTime?'Ingat: 60 minit = 1 jam.':(c<q.target?'Lengkok belum sampai tanda ●.':'Lengkok sudah melepasi tanda ●.'));
  return 'Jawapan kamu '+c+' '+q.unitLbl+'. Cuba kira semula.'}
 
+/* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in kedai-kek.html ----------
+   After 3 wrong tries (2 with both hints) the hint button offers a worked example: the clock
+   stays, and the pupil picks each small step (hours first, then minutes; one unit first, then
+   × or ÷) on a work card. The round ends without stars; the next one is the same kind. */
+const WL=(say,right,wrongs,line,o={})=>({say,right,wrongs,line,...o});
+const fx=(op,a,b)=>({fact:{op,a,b}});
+const mulW=(a,b,lab)=>WL(a+' × '+b+' = ?',a*b,[a*b+a,a+b,a*b+b],(lab?lab+' = ':'')+(a*b),fx('mul',a,b));
+const divW=(a,b,lab)=>WL(a+' ÷ '+b+' = ?',a/b,[a/b+1,a/b>1?a/b-1:a/b+2,a-b],(lab?lab+' = ':'')+(a/b),fx('div',a,b));
+const addW=(xs,lab)=>{const t=xs.reduce((a,b)=>a+b,0);return WL(xs.join(' + ')+' = ?',t,[t+1,t-1,t+10],(lab?lab+' = ':'')+t,xs.length===2?fx('add',xs[0],xs[1]):{})};
+const subW=(a,b,lab)=>WL(a+' − '+b+' = ?',a-b,[a-b+1,a-b-1,a+b],(lab?lab+' = ':'')+(a-b),fx('sub',a,b));
+const tw=(fm,t)=>fm==='24'?f24(t):fm==='w'?fWords(t):f12(t);
+function wkSpec(){const Q=q,M=Q.mode;
+ if(M==='baca'){const t=Q.target,h=h12(t),m=mod(t,60);
+  return{lines:[WL('Jarum pendek (jam) menunjuk ke angka berapa?',h,[h%12+1,h>1?h-1:12],'Jarum pendek: '+h),
+   WL(m?'Jarum panjang: '+m+' minit. Setiap angka = 5 minit. '+m+' ÷ 5 = ?':'Tepat pukul '+h+': jarum panjang menunjuk ke angka?',m?m/5:12,m?[m/5+1,m/5>1?m/5-1:m/5+2,m]:[6,3],'Jarum panjang: '+(m?m/5:12),m?fx('div',m,5):{}),
+   WL('Jadi pukul berapa?',f12(t),[f12(t+60),f12(mod(t,720)+(m?5:30))].filter(x=>x!==f12(t)),'Pukul '+f12(t))],value:t}}
+ if(M==='tamat'||M==='mula'){const fm=Q.widget==='digital'?'24':'12',d=Q.d,H=Math.floor(d/60),m=d%60,from=M==='tamat'?Q.s:Q.e,dir=M==='tamat'?1:-1,mid=from+dir*H*60,L=[];
+  if(H)L.push(WL((M==='tamat'?'Tambah ':'Kira ke belakang ')+H+' jam dulu: pukul?',tw(fm,mid),[tw(fm,mid+dir*60),tw(fm,from+dir*m)].filter(x=>x!==tw(fm,mid)),tw(fm,from)+(M==='tamat'?' + ':' − ')+H+' jam = '+tw(fm,mid)));
+  if(m)L.push(WL((M==='tamat'?'Tambah ':'Undur ')+m+' minit'+(H?' lagi':'')+': pukul?',tw(fm,Q.target),[tw(fm,Q.target+dir*60),tw(fm,mid-dir*m)].filter(x=>x!==tw(fm,Q.target)),tw(fm,mid)+(M==='tamat'?' + ':' − ')+m+' minit = '+tw(fm,Q.target)));
+  return L.length?{lines:L,value:Q.target}:null}
+ if(M==='tempoh'){
+  if(Q.dh){const[a,b]=Q.dh;return{lines:[mulW(a,24,a+' hari (jam)'),addW([a*24,b],'Jumlah (jam)')],value:Q.target}}
+  if(Q.s==null||Q.e==null)return null;const fm=Q.tf||'12',s0=Q.s,e=Q.e,r=Math.ceil((s0+1)/60)*60;
+  if(e<=r)return{lines:[subW(mod(e,60)||60,mod(s0,60),'Tempoh (minit)')],value:Q.target};
+  const a=r-s0,b=e-r;return{lines:[WL('Dari '+tw(fm,s0)+' ke '+tw(fm,r)+': berapa minit?',a,[a+5,60-a||5,a+60].filter(x=>x!==a),tw(fm,s0)+' → '+tw(fm,r)+' = '+a+' minit'),
+   WL('Dari '+tw(fm,r)+' ke '+tw(fm,e)+': berapa lama?',fDur(b),[fDur(b+60),fDur(Math.max(5,b-60)),fDur(b+5)].filter(x=>x!==fDur(b)),tw(fm,r)+' → '+tw(fm,e)+' = '+fDur(b)),
+   WL('Jumlah: '+a+' minit + '+fDur(b)+' = ?',fDur(Q.target),[fDur(Q.target+60),fDur(Q.target+5),fDur(Math.max(5,Q.target-60))].filter(x=>x!==fDur(Q.target)),'Tempoh = '+fDur(Q.target))],value:Q.target}}
+ if(M==='unit'){const c=(Q.parts.find(x=>typeof x==='object')||{}).c||'',u=Q.u,t=Q.target;if(!c||String(u).startsWith('fact'))return null;
+  const MUL={jm:60,hj:24,mh:7,ym:12,ms:60,ty:10,cd:10,cy:100,mc:10,frac_ty:10,dec_ty:10,frac_cd:10,dec_cd:10,frac_cy:100,dec_cy:100,frac_jm:60,dec_jm:60,frac_hj:24,dec_hj:24,frac_ym:12,dec_ym:12},DIV={jh:24,hm:7,sm:60,my:12,yt:10,dc:10,yc:100};
+  const unit=c.split(' ').pop(),num=c.slice(0,c.length-unit.length).trim();
+  if(MUL[u]){const f=MUL[u];return{lines:[WL('1 '+unit+' = '+f+' '+Q.unitLbl+'. '+num+' × '+f+' = ?',t,[t+f,Math.abs(t-f)||f*2,t*10],c+' = '+t+' '+Q.unitLbl,Number.isInteger(t/f)?fx('mul',t/f,f):{})],value:t}}
+  if(DIV[u]){const f=DIV[u];return{lines:[{...divW(t*f,f),say:f+' '+unit+' = 1 '+Q.unitLbl+'. '+t*f+' ÷ '+f+' = ?',line:c+' = '+t+' '+Q.unitLbl}],value:t}}
+  if(u==='jm2'){const[h,,m]=c.split(' ').map(Number);return{lines:[mulW(h,60,h+' jam (minit)'),addW([h*60,m],'Jumlah (minit)')],value:t}}
+  if(u==='mj'){const H=Math.floor(t/60),r=t%60;return{lines:[WL('60 minit = 1 jam. '+t+' minit ada berapa jam penuh?',H,[H+1,H>1?H-1:H+2],t+' minit = '+H+' jam …'),subW(t,H*60,'Baki minit')],value:t}}
+  return null}
+ if(M==='operasi'){const c=(Q.parts.find(x=>typeof x==='object')||{}).c||'',ns=(c.match(/\d+/g)||[]).map(Number),A=Q.archetypeId||'';
+  if(/combined/.test(A)&&ns.length===3){const[a,b,k]=ns,sub=c.includes('−');return{lines:[mulW(a,60,a+' jam (minit)'),addW([a*60,b],a+' jam '+b+' minit'),mulW(k,60,k+' jam (minit)'),sub?subW(a*60+b,k*60,'Jawapan (minit)'):addW([a*60+b,k*60],'Jawapan (minit)')],value:Q.target}}
+  const P={hari:24,minggu:7,tahun:12,dekad:10,abad:10};const w=c.split(' ');
+  if(ns.length===2&&w.length>=5&&!/[,½¼¾]/.test(c)&&w[1]!==w[w.length-1]){const big=w[1],f=big==='abad'&&w[w.length-1]==='tahun'?100:P[big];if(!f)return null;const[x,y]=ns,sub=c.includes('−');
+   return{lines:[mulW(x,f,x+' '+big+' ('+w[w.length-1]+')'),sub?subW(x*f,y,'Jawapan'):addW([x*f,y],'Jawapan')],value:Q.target}}
+  if(/[,½¼¾]/.test(c))return null;
+  if(ns.length>=2){const op=/_add$/.test(A)?'add':/_subtract$/.test(A)?'sub':/_multiply$/.test(A)?'mul':/_divide$/.test(A)?'div':null;if(!op)return null;
+   const L=op==='add'?addW(ns,'Jawapan'):op==='sub'?subW(ns[0],ns[1],'Jawapan'):op==='mul'?mulW(ns[0],ns[1],'Jawapan'):divW(ns[0],ns[1],'Jawapan');return{lines:[L],value:Q.target}}
+  return null}
+ if(M==='24jam'){const t=Q.target,h=Math.floor(t/60),hh=h12(t);
+  const L=h===0?WL('Tengah malam: jam 12 jadi?','00',['12','24'],'Tengah malam = 00'):h>=13?WL('Selepas 1 tengah hari, tambah 12. '+hh+' + 12 = ?',h,[hh,h+1,h-1],hh+' + 12 = '+h,fx('add',hh,12)):WL('Pagi atau 12 tengah hari: jam kekal. Jam?',pad(h),[pad(h+12),pad(h+1)].filter(x=>x!==pad(h)),'Jam = '+pad(h));
+  return{lines:[L,WL('Jadi dalam sistem 24 jam?',f24(t),[f24(t+720),f24(t+60)].filter(x=>x!==f24(t)),'= '+f24(t))],value:t}}
+ if(M==='zon'&&Q.z){const z=Q.z,k=Math.abs(z.d);
+  if(Q.fl){const a=mod(Q.s+Q.fl,1440);return{lines:[WL(f24(Q.s)+' + '+Q.fl/60+' jam = ?',f24(a),[f24(a+60),f24(a-60)],'Mendarat (waktu KL) = '+f24(a)),WL(z.c+' di belakang '+k+' jam: '+f24(a)+' − '+k+' jam = ?',f24(Q.target),[f24(Q.target+k*120),f24(Q.target+60)].filter(x=>x!==f24(Q.target)),'Waktu '+z.c+' = '+f24(Q.target))],value:Q.target}}
+  return{lines:[WL((z.d>0?'Mendahului: tambah ':'Di belakang: tolak ')+k+' jam. '+f24(Q.s)+(z.d>0?' + ':' − ')+k+' jam = ?',f24(Q.target),[f24(mod(Q.s-z.d*60,1440)),f24(Q.target+60)].filter(x=>x!==f24(Q.target)),'Waktu '+z.c+' = '+f24(Q.target))],value:Q.target}}
+ return null}
+let workedOffer=false,repeatNext=null;
+function offerWorked(){if(workedOffer||solved||!workedPlan()||!(misses>=3||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=el('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
+function workedPlan(){const P=window.PAWorked,spec=P&&wkSpec();if(!spec||spec.lines.some(x=>!x))return null;const plan=P.buildList(spec);return plan&&plan.value===q.target?plan:null}
+function startWorked(){
+ const P=window.PAWorked,plan=workedPlan();if(!plan)return;
+ q.worked=true;workedOffer=false;hints++;hideMsg();el('bubble').classList.add('hide');
+ const h=el('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';el('check').disabled=true;el('check').textContent='Ikut langkah Wira';
+ const box=el('widget'),tl=el('tiles');el('controls').hidden=true;el('game').classList.add('wk-on');
+ msg('Jom kira masa sama-sama, satu langkah demi satu.');
+ box.querySelectorAll('button').forEach(b=>b.disabled=true);
+ box.insertAdjacentHTML('beforeend','<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div><div class="tiles wk" id="wkTiles"></div></div>');
+ P.run(plan,{board:el('wkBoard'),tiles:el('wkTiles'),inline:el('wkInline'),say:el('wkSay')},finishWorked,{onFact:f=>P.reportFact('menara-jam',f,paRound),onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}})}
+function finishWorked(){
+ if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);
+ repeatNext={mode:q.mode,ti:q.tierIx};
+ hideMsg();el('game').classList.remove('wk-on');pet('happy');say('Sekarang kamu cuba yang serupa!');
+ const s=el('stamp');s.className='stamp ok';s.innerHTML='SIAP!<small>Cara Wira · '+q.ansText+'</small>';void s.offsetWidth;s.classList.add('show');
+ renderTrack(true);el('hint').textContent='Tanya Wira';el('check').disabled=false;el('check').textContent=served%SET===0?'Tamat syif ✦':'Cuba soalan serupa →'}
 /* ---------- aliran ---------- */
+/* DEV: a round picked by the 'Cuba Jom tengok cara' buttons is served next. */
+let forcedQ=null;
 function choosePet(){const p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];return p}
 function makeQ(){
  let k,ti,tiers,generated,spec=null;
- if(focusDiagnosticMode&&served<focusContrastPlan.length){spec=focusContrastPlan[served];k=spec.mode;tiers=[spec.tier];ti=0}
+ if(forcedQ){const x=forcedQ;forcedQ=null;return x}const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind with new numbers
+ if(rep){k=rep.mode;tiers=GRADES[cfg.grade][k];ti=Math.min(rep.ti,tiers.length-1)}
+ else if(focusDiagnosticMode&&served<focusContrastPlan.length){spec=focusContrastPlan[served];k=spec.mode;tiers=[spec.tier];ti=0}
  else{k=cfg.modes[served%cfg.modes.length];tiers=GRADES[cfg.grade][k];if(tier[k]==null){tier[k]=0;clean[k]=0}ti=Math.min(tier[k],tiers.length-1)}
  const p=choosePet();generated=GEN[k](tiers[ti]);
  const result={mode:k,tierIx:ti,nTiers:tiers.length,pet:p.id,who:p.who,...generated};
@@ -812,11 +892,12 @@ function startRound(){q=makeQ();solved=false;misses=0;paLast=Date.now();paRound+
  el('devBtn').textContent='D'+cfg.grade+' ▾';el('mode').textContent=(cfg.grade===1&&q.mode==='kalendar'?'HARI & BULAN':MODE_LABEL[q.mode])+' · T'+(q.tierIx+1);el('tint').style.background=['transparent','#fff3d000','#ffcf9a55','#f39a7a77','#6a7ad055'][served%SET];
  el('question').textContent=plain(q.parts)+(q.ask&&!q.noTime?' '+q.ask:'');el('subtitle').textContent=served<2?SUB[q.widget](q):'';
  el('wiraImg').src=A+'wira-konduktor-idle.webp';el('wira').classList.remove('cheer');el('stamp').className='stamp';el('stamp').innerHTML='';
- el('check').textContent='Semak';el('check').disabled=false;el('hint').disabled=false;el('hint').textContent='Tanya Wira';el('bubble').classList.add('hide');
+ el('check').textContent='Semak';el('check').disabled=false;el('hint').disabled=false;el('hint').textContent='Tanya Wira';el('hint').classList.remove('wk-offer');workedOffer=false;el('game').classList.remove('wk-on');el('bubble').classList.add('hide');
  el('dest').textContent=pick(DEST);const bs=el('bstat');bs.textContent='TIBA';bs.className='bstat';
  const v=el('visitor');v.className='customer away';pet('idle');el('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer arrive';sfx(330,.3,'triangle')}));
  setTimeout(()=>{if(!solved)el('bstat').textContent='MENUNGGU'},1300);
- setTimeout(()=>{el('who').textContent=q.who;say(pick(['Ketua Stesen, tolong aku!','Wira, boleh bantu aku?','Aku tak nak terlepas kereta api!']));el('bubble').classList.remove('hide');sfx(520,.08)},700);
+ setTimeout(()=>{el('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
+ say(pick(['Ketua Stesen, tolong aku!','Wira, boleh bantu aku?','Aku tak nak terlepas kereta api!']));el('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildWidget()}
 /* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
 function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
@@ -824,7 +905,7 @@ function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.
 function check(){
  if(solved){if(focusDiagnosticMode&&served===focusContrastPlan.length)towerDone();else if(served%SET===0)towerDone();else startRound();sfx(820,.12);return}
  if(current()===null){msg('Masukkan jawapan dulu.','',2000);return}
- if(!isRight()){paAttempt(false),misses++;say(pick(['Belum tepat lagi…','Hmm, cuba semak semula.']));msg(wrongMsg(),'bad',3600);pet('sad');const bs=el('bstat');bs.textContent='TERTUNDA';bs.className='bstat late';setTimeout(()=>{if(!solved){bs.textContent='MENUNGGU';bs.className='bstat'}},1400);const v=el('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(245,.17);return}
+ if(!isRight()){paAttempt(false),misses++;offerWorked();say(pick(['Belum tepat lagi…','Hmm, cuba semak semula.']));msg(wrongMsg(),'bad',3600);pet('sad');const bs=el('bstat');bs.textContent='TERTUNDA';bs.className='bstat late';setTimeout(()=>{if(!solved){bs.textContent='MENUNGGU';bs.className='bstat'}},1400);const v=el('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(245,.17);return}
  solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);
  if(!focusDiagnosticMode&&focusNonce&&window.parent!==window){const archetypeId=q.archetypeId||focusArchetypes[q.mode]||'time_practice';window.parent.postMessage({type:'PA_TREN_JAM_ROUND',version:1,nonce:focusNonce,grade:cfg.grade,skillId:focusOriginSkill,mode:q.mode,archetypeId,kssr:q.kssr||null,questionKey:focusNonce+':'+served+':'+q.mode,misses,hints,at:Date.now()},location.origin)}
  if(focusDiagnosticMode&&q.focusDiagnosticV1){
@@ -855,7 +936,7 @@ function towerDone(){const got=setLog.reduce((a,l)=>a+l.st,0);
  el('complete').hidden=false;el('again').focus()}
 el('again').onclick=()=>{const extra=focusDiagnosticMode&&served===SET;el('complete').hidden=true;if(!extra){towers++;setLog=[]}startRound()};
 el('check').onclick=check;
-el('hint').onclick=()=>{if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?HELP[q.mode].s(q):HELP2[q.mode](q),'',6500);el('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';el('hint').disabled=hints>=2;sfx(610,.12)};
+el('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?HELP[q.mode].s(q):HELP2[q.mode](q),'',6500);el('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';el('hint').disabled=hints>=2;sfx(610,.12)};
 el('sound').onclick=()=>{soundOn=!soundOn;el('sound').textContent=soundOn?'🔊':'🔈';el('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(810,.1)};
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];towers=1}
 
@@ -877,10 +958,31 @@ function runSim(key){const s=SIMS[key],R=window.PAMenaraJam;if(!R){el('simOut').
  const plan=R.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
  if(!plan){el('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod menara yang sesuai. Kekal battle biasa.';el('simGo').hidden=true;return}
  el('simOut').innerHTML='<b>'+s.skill+'</b> → mod lemah: <b>'+plan.modes.join(', ')+'</b> · #'+plan.hash;el('simGo').hidden=false;el('simGo').onclick=()=>applyDev('#'+plan.hash)}
-el('devBtn').onclick=()=>{devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();el('simOut').textContent='Pilih satu senario.';el('simGo').hidden=true;el('dev').hidden=false};
+/* DEV: jump straight to a round of one worked-example kind and offer "Jom tengok cara" at once. */
+const WK_TRY=[
+ ['Baca jam','d2-baca',c=>c.mode==='baca'],
+ ['Waktu tamat','d3-tamat',c=>c.mode==='tamat'&&c.d>=60],
+ ['Waktu mula','d3-mula',c=>c.mode==='mula'],
+ ['Tempoh','d3-tempoh',c=>c.mode==='tempoh'&&c.s!=null&&c.e>Math.ceil((c.s+1)/60)*60],
+ ['Tukar unit','d3-unit',c=>c.mode==='unit'],
+ ['Operasi masa','d4-operasi',c=>c.mode==='operasi'],
+ ['Sistem 24 jam','d4-24jam',c=>c.mode==='24jam'],
+ ['Zon waktu','d6-zon',c=>c.mode==='zon']];
+function drawWkTry(){const box=el('wkTry');if(!box)return;box.innerHTML=WK_TRY.map((k,i)=>'<button type="button" data-i="'+i+'">'+k[0]+'</button>').join('');
+ box.querySelectorAll('button').forEach(b=>b.onclick=()=>tryWorked(WK_TRY[+b.dataset.i]))}
+function tryWorked([label,hash,test]){
+ try{history.replaceState(null,'','#'+hash)}catch(e){}cfg=parseHash(hash);resetAll();
+ let found=null;
+ for(let i=0;i<3000&&!found;i++){const k=cfg.modes[i%cfg.modes.length],n=GRADES[cfg.grade][k].length;served=i%cfg.modes.length;tier[k]=Math.floor(i/cfg.modes.length)%n;clean[k]=0;
+  const c=makeQ(),keep=q;q=c;let ok=false;try{ok=!!workedPlan()&&test(c)}catch(_){}q=keep;if(ok)found=c}
+ el('dev').hidden=true;el('complete').hidden=true;served=0;
+ if(!found){msg('DEV: tiada soalan "'+label+'" dijumpai.','bad',3000);return}
+ forcedQ=found;startRound();misses=3;offerWorked();setTimeout(()=>msg('DEV · '+label+': tekan “Jom tengok cara”.','',3500),800)}
+el('devBtn').onclick=()=>{devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();drawWkTry();el('simOut').textContent='Pilih satu senario.';el('simGo').hidden=true;el('dev').hidden=false};
 el('devClose').onclick=()=>{el('dev').hidden=true};el('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
+window.__menaraGen={GRADES,current:()=>q,planFor:x=>{const keep=q;q=x;try{return workedPlan()}finally{q=keep}},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},make:()=>makeQ(),forTier:(m,ti)=>{const t=GRADES[cfg.grade][m][ti];const g=GEN[m](t);return g&&{mode:m,tierIx:ti,...g}}}; // ujian sahaja
 window.__menaraDebug=()=>q&&{target:q.target,widget:q.widget,mode:q.mode,tier:q.tierIx,start:q.start,s:q.s,hour,minute}; // ujian sahaja
 resetAll();startRound();
 })();
