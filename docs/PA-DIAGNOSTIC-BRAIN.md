@@ -482,7 +482,9 @@ digit, then the round's choices.
    statements / between / clues / more-less, estimate / check, choose the
    operation, D6 juta fractions/decimals and primes.
    **Other mini games (owner, 2026-10-23: "mini game lain dulu").** Lombong
-   Permata first (3.87.20): the same plumbing as Gudang (offer after 3 misses,
+   Permata first (3.87.20, PR #94 merged). **Owner: breadth first** — in each
+   game cover the most common kinds to about half, then move to the next game,
+   so all nine have real steps sooner; rare kinds later. the same plumbing as Gudang (offer after 3 misses,
    `workedPlan()`, `finishWorked`, repeat the kind; `__lbGen.planFor` for
    tests), and `PAWorked.build(op,a,b,{dp})` for decimals: numbers come scaled
    to whole numbers, columns below sa are persepuluh / perseratus / perseribu
