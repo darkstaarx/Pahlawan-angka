@@ -468,10 +468,19 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    a place too high; seratus, sepuluh, seribu). Words → number (`'fromWords'`,
    incl. D6 juta pad): like compose, each word group's digits tapped into
    place, a place not said gets 0. Expanded (`'expanded'`): the value of each
-   digit, then the round's choices. Still text-only in Gudang (49 generators):
-   estimate/check,
-   operation choice, clues, rule picks, facts (1 × 2, 6 + 7), × ÷ by 10/100,
-   remainders, two-digit ×, × first / brackets, D6 juta and primes.
+digit, then the round's choices.
+   **Part 6 (3.87.19):** facts as hops on the trail (`PAWorked.buildHops`):
+   8 + 4 buat 10 dulu; 17 − ___ = 9 count up through 10; k × t skip counting
+   (from 5 × t when k > 5; 1 × t one step); groups; ÷ in a story counts the
+   hops; take away again and again hops back; count coins "1 uncang = 10".
+   × ÷ by 10/100/1000 (`buildPow10`). A division with a remainder field uses
+   the written board (both fields). Two-digit × (`buildLong`, 567 × 37):
+   567 × 7, 567 × 3 with a 0 at the end, then add; `runChain` takes N boards.
+   `workedPlan()` in gudang-harta.html picks the plan (tests: `__gudangGen.planFor`).
+   Coverage: 76% of sampled Gudang rounds have a worked plan. Still text-only
+   (~40 generators): two-digit ÷, × first / brackets, rule picks, compare
+   statements / between / clues / more-less, estimate / check, choose the
+   operation, D6 juta fractions/decimals and primes.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

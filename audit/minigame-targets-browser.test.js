@@ -282,9 +282,9 @@ test('Jom tengok cara on the place-value board: a 2-choice round is offered afte
 });
 
 test('Jom tengok cara on the rack, two steps, patterns and compose: every step done, ends at the answer', async () => {
-  for (const [hash, cond] of [['d3-bina', "q.kind==='build'&&q.rack.mode==='build'"], ['d3-tambah', "q.kind==='build'&&q.rack.mode==='add'"], ['d3-tolak', "!!q.wk&&q.wk.t==='chain'&&!q.card"], ['d2-pola', "!!q.wk&&q.wk.t==='seq'"], ['d4-bina', "!!q.wk&&q.wk.t==='compose'"], ['d3-banding', "!!q.wk&&q.wk.t==='order'"], ['d3-bina', "!!q.wk&&q.wk.t==='fromWords'"]]) {
+  for (const [hash, cond] of [['d3-bina', "q.kind==='build'&&q.rack.mode==='build'"], ['d3-tambah', "q.kind==='build'&&q.rack.mode==='add'"], ['d3-tolak', "!!q.wk&&q.wk.t==='chain'&&!q.card"], ['d2-pola', "!!q.wk&&q.wk.t==='seq'"], ['d4-bina', "!!q.wk&&q.wk.t==='compose'"], ['d3-banding', "!!q.wk&&q.wk.t==='order'"], ['d3-bina', "!!q.wk&&q.wk.t==='fromWords'"], ['d1-tambah', "!!q.wk&&q.wk.t==='make10'"], ['d5-darab', "!!q.wk&&q.wk.t==='long'&&!!q.card"], ['d2-bahagi', "!!q.form&&q.form.fields.length===2"]]) {
     const g = await gudang(null, hash, { width: 390, height: 780 });
-    const r0 = await g.page.evaluate(cond => { const ok = new Function('q', 'return ' + cond); for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (ok(q)) return { kind: q.kind, mode: q.rack && q.rack.mode, v: q.form ? q.form.fields[0].v : q.need ? q.need.v : q.opts.find(o => o.id === q.correct).label.replace(/\D/g, '') }; } return null; }, cond);
+    const r0 = await g.page.evaluate(cond => { const ok = new Function('q', 'return ' + cond); for (let i = 0; i < 3000; i++) { const q = window.__gudangGen.showNormal(i % 7, 0); if (ok(q)) return { kind: q.kind, mode: q.rack && q.rack.mode, v: q.form ? q.form.fields.map(f => f.v).join('') : q.need ? q.need.v : q.opts.find(o => o.id === q.correct).label.replace(/\D/g, '') }; } return null; }, cond);
     assert.ok(r0, hash);
     await g.page.waitForTimeout(800);
     for (let i = 0; i < 3; i++) {
