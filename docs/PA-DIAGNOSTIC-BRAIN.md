@@ -481,6 +481,16 @@ digit, then the round's choices.
    (~40 generators): two-digit ÷, × first / brackets, rule picks, compare
    statements / between / clues / more-less, estimate / check, choose the
    operation, D6 juta fractions/decimals and primes.
+   **Other mini games (owner, 2026-10-23: "mini game lain dulu").** Lombong
+   Permata first (3.87.20): the same plumbing as Gudang (offer after 3 misses,
+   `workedPlan()`, `finishWorked`, repeat the kind; `__lbGen.planFor` for
+   tests), and `PAWorked.build(op,a,b,{dp})` for decimals: numbers come scaled
+   to whole numbers, columns below sa are persepuluh / perseratus / perseribu
+   (head 1/10, 1/100, 1/1000), every column up to sa holds a real digit, the
+   point is drawn after sa, and the 0 before the point is written. Decimal
+   lazim add/sub (2 rows, and 3 rows as a chain) is covered: about 7% of
+   Lombong rounds. Lombong has ~70 generators (decimal pads, percent, grids,
+   number lines, compare); the next ones need their own boards.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

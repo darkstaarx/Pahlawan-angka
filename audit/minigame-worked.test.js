@@ -142,3 +142,17 @@ test('facts as hops, × ÷ by 10/100/1000, two-digit multiplication', () => {
   assert.equal(W.buildLong({ a: 846, b: 20 }), null, 'a 0 in the units: no third board');
   for (let a = 3; a <= 9; a++) for (let b = 11 - a; b <= 9; b++) { const p = W.buildHops({ t: 'make10', a, b }); for (const s of p.steps) { assert.ok(s.choices.includes(s.right)); assert.equal(new Set(s.choices).size, s.choices.length, `${a}+${b}`); } }
 });
+
+test('decimals: persepuluh / perseratus columns, the 0 before the point is written', () => {
+  const a = W.build('add', 45, 30, { dp: 2 });
+  assert.deepEqual([a.done, a.steps.map(s => s.say)], ['0.45 + 0.30 = 0.75.', ['Tempat perseratus: 5 + 0 = ?', 'Tempat persepuluh: 4 + 3 = ?', 'Tempat sa: 0 + 0 = ?']]);
+  const s = W.build('sub', 8986, 8907, { dp: 3 });
+  assert.equal(s.answer, 79);
+  assert.equal(s.steps.filter(x => x.after && x.after.write && x.after.write.lead).length, 0, 'no leading zero is dropped at or below sa');
+  assert.match(s.steps[0].say, /Pinjam 1 dari tempat perseratus/);
+  assert.match(W.boardHTML(a), /1\/10<\/span>/);
+  assert.match(W.boardHTML(a), /wk-pt/);
+  const c = W.buildChain({ a: 125, b: 250, d: 75, ops: ['add', 'add'] }, { dp: 2 });
+  assert.deepEqual([c.answer, c.notes[0]], [450, 'Langkah pertama siap: <b>3.75</b>. Sekarang 3.75 + 0.75.']);
+  assert.equal(W.build('mul', 12, 3, { dp: 1 }), null, 'decimal × is not a written board yet');
+});

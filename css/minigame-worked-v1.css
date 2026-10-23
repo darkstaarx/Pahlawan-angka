@@ -78,6 +78,8 @@
 .wk-step{display:inline-flex;align-items:center;gap:2px}
 .wk-hop{font:900 15px/1 var(--f-display,system-ui);color:var(--ink-soft,#8a6142);font-style:normal}
 .wk-hop.wk-hopl{min-width:30px;padding:2px 5px;border-radius:999px;background:var(--leaf,#4f9a4a);color:#fff;font-size:13px;text-align:center}
+/* Decimals: the point after the sa column. */
+.wk-c.wk-pt::after{content:'.';position:absolute;right:-5px;bottom:0;font:900 26px/1 var(--f-display,system-ui);color:var(--ink,#4a2a16)}
 /* Compose: an empty row the pupil fills place by place. */
 .wk-pv .wk-c.wk-empty{background:#fff9;border:2px dashed var(--ink-soft,#8a6142)}
 /* Compare: the places that match go quiet; the first place that differs gets a red frame. */

@@ -340,6 +340,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 @media (max-height:640px){.tiles.kp{gap:4px}.tiles.kp .tl{min-height:30px;font-size:15px}.qcard{padding:5px 10px 6px}.qcard b{font-size:18px}.banner>div>b{font-size:13px}.lz .dg{font-size:20px}.lz .abox{min-height:30px}.lz .cbox{height:18px}}
 </style>
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.6.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
@@ -396,6 +397,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.6.0"></script>
 <script src="js/lombong-permata-router.js"></script>
 <script>
 (()=>{
@@ -634,7 +636,7 @@ function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className=
   tl.innerHTML=['1','2','3','4','5','⌫','6','7','8','9','0',dec?'.':multi?'⇥':''].map(k=>k?'<button type="button" class="tl'+(k==='⌫'?' del':'')+'" data-k="'+k+'" aria-label="'+(k==='⌫'?'Padam':k==='⇥'?'Kotak seterusnya':k==='.'?'Titik perpuluhan':k)+'">'+k+'</button>':'<span></span>').join('');
   tl.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>key(b.dataset.k));
   box.querySelectorAll('.fld').forEach(b=>b.onclick=()=>{if(solved)return;fk=+b.dataset.f;renderFields()});renderFields()}}
-function key(k){if(q.kind==='lazim')return lzKey(k);if(solved||q.kind!=='pad')return;const F=q.form.fields;if(k==='⇥'){fk=(fk+1)%F.length;renderFields();return}
+function key(k){if(q.worked)return;if(q.kind==='lazim')return lzKey(k);if(solved||q.kind!=='pad')return;const F=q.form.fields;if(k==='⇥'){fk=(fk+1)%F.length;renderFields();return}
  let s=inp[fk]||'';if(k==='⌫')s=s.slice(0,-1);else if(k==='.'){if(!F[fk].dec)return;if(!s.includes('.'))s=(s||'0')+'.'}else if(s.replace('.','').length<8)s=s==='0'?k:s+k;
  inp[fk]=s;$('ansrow').querySelectorAll('.fld').forEach(x=>x.classList.remove('bad'));hideMsg();renderFields();sfx(440,.03)}
 function renderFields(){if(q.kind!=='pad')return;q.form.fields.forEach((f,i)=>{const b=$('F'+i);if(!b)return;b.querySelector('b').textContent=nf(inp[i]||'');b.classList.toggle('on',i===fk&&!solved)})}
@@ -668,10 +670,44 @@ function check(){
   const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=GEM(GCOL[(served-1)%SET]);sl.classList.add('on','pop')}
   $('check').textContent=served%SET===0?'Lihat troli permata ✦':'Seterusnya →';
   setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
- paAttempt(false),misses++;
+ paAttempt(false),misses++;offerWorked();
  if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',4200);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
+/* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in gudang-harta.html ----------
+   After 3 wrong tries (2 with both hints) the hint button offers a worked example: Wira walks
+   the written method with decimals, and the pupil taps each step. The round ends without stars
+   and the next one is the same kind with new numbers. */
+let workedOffer=false,repeatNext=null;
+function offerWorked(){if(workedOffer||solved||!(misses>=3||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
+const dpOf=t=>(String(t).split('.')[1]||'').length,scaled=(t,dp)=>Math.round(parseFloat(t)*10**dp);
+/* The worked plan for this round, or null: it must end at the round's own answer. */
+function workedPlan(){const P=window.PAWorked;if(!P)return null;
+ if(q.kind==='lazim'){const L=q.lz,dp=Math.max(dpOf(L.ans),...L.rows.map(dpOf)),R=L.rows.map(r=>scaled(r,dp)),want=scaled(L.ans,dp),op=L.op==='+'?'add':'sub';
+  if(R.length===2){const plan=P.build(op,R[0],R[1],{dp});return plan&&plan.answer===want?{plan}:null}
+  if(R.length===3&&op==='add'){const chain=P.buildChain({a:R[0],b:R[1],d:R[2],ops:['add','add']},{dp});return chain&&chain.answer===want?{chain}:null}
+  return null}
+ return null}
+function startWorked(){
+ const P=window.PAWorked,wp=workedPlan();
+ q.worked=true;workedOffer=false;hints++;hideMsg();
+ const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
+ const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
+ $('wsayTxt').textContent='Jom kira sama-sama, satu langkah demi satu.';$('wsay').classList.remove('hide');
+ if(wp){box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
+  (wp.chain?P.runChain:P.run)(wp.chain||wp.plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});return}
+ // No steps for this kind yet: the worked line, then the right answer.
+ box.innerHTML='<div class="wk-wrap"><div class="wk-say">'+esc(q.a||q.s||'')+'</div><div class="wk-say"><b>Jawapan: '+esc(ansText())+'</b></div></div>';
+ tl.innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';tl.querySelector('button').onclick=finishWorked;
+}
+function finishWorked(){
+ if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);report(0);
+ repeatNext={mode:q.mode,ti:q.tierIx};
+ $('wsay').classList.add('hide');$('game').classList.remove('wk-on');pet('happy');$('say').textContent='Sekarang kamu cuba yang serupa!';$('bubble').classList.remove('hide');
+ const s=$('stamp');s.className='stamp ok';s.innerHTML='SIAP!<small>Cara Wira · '+esc(ansText())+'</small>';void s.offsetWidth;s.classList.add('show');
+ const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=GEM(GCOL[(served-1)%SET]);sl.classList.add('on')}
+ renderTrack(true);$('hint').textContent='Tanya Wira';$('check').disabled=false;$('check').textContent=served%SET===0?'Lihat troli permata ✦':'Cuba soalan serupa →';
+}
 function adapt(st){const k=q.mode,up=q.nTiers-1;
  if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Lapisan lombong seterusnya lebih dalam.','',2600),2000)}}
  else{clean[k]=0;if(hints+misses>=2&&tier[k]>0){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
@@ -679,8 +715,9 @@ function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get
  window.parent.postMessage({type:'PA_LOMBONG_PERMATA_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,index:served,tier:q.tierIx+1,prompt:q.q,stars:st,misses,hints,at:Date.now()},location.origin)}catch(e){}}
 
 /* ---------- aliran ---------- */
-function makeQ(){const k=cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
- const ti=Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
+function makeQ(){const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind of question with new numbers
+ const k=rep?rep.mode:cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
+ const ti=rep?Math.min(rep.ti,gens.length-1):Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
  return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch}}
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  $('stageN').textContent='PERMATA '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Hari '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
@@ -690,9 +727,10 @@ function startRound(){if(served%SET===0)$('cart').innerHTML=range(SET).map(i=>'<
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<2?SUB[q.kind]||'':'');
  $('wiraImg').src=A+'wira-pelombong-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
- $('check').textContent='Semak';$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('bubble').classList.add('hide');
+ $('check').textContent='Semak';$('check').disabled=false;$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('hint').classList.remove('wk-offer');workedOffer=false;$('game').classList.remove('wk-on');$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
- setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ setTimeout(()=>{$('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
+ $('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildPanel()}
 function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';
  for(let i=0;i<26;i++){const e=document.createElement('i'),a=Math.random()*Math.PI*2,d=70+Math.random()*120;e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d-30+'px');e.style.background=GCOL[i%5];e.style.animationDelay=(Math.random()*.15)+'s';b.appendChild(e)}}
@@ -710,7 +748,7 @@ function hideStep(a){a=String(a||'').trim().replace(/\.$/,'');if(!a)return '';
  return [...ss,keep.join('=').trimEnd()+' = '+MASK(eq[eq.length-1].trim())].join(' ')}
 function hintTwo(){if(q.hint2)return q.hint2;if(q.kind==='lazim')return q.lz.op==='+'?'Mula dari lajur paling kanan: '+q.lz.rows.map(r=>r.slice(-1)).join(' + ')+' = ?. Jika 10 atau lebih, kumpul semula 1 ke lajur kiri.':'Mula dari lajur paling kanan: '+q.lz.rows[0].slice(-1)+' − '+q.lz.rows[1].slice(-1)+'. Jika tidak cukup, pecahkan 1 dari lajur kiri.';
  const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
-$('hint').onclick=()=>{if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Klu habis';if(hint2>=2)$('hint').disabled=true;sfx(620,.1)};
+$('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Klu habis';if(hint2>=2)$('hint').disabled=true;sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;const pk=q.kind==='pad'||q.kind==='lazim';if(pk&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(pk&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
@@ -739,7 +777,7 @@ $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>apply
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__lbDebug=()=>q&&{kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,lz:q.lz,correct:q.correct,items:q.items,shade:shade.size,tick}; // ujian sahaja
-window.__lbGen={GEN}; // ujian sahaja
+window.__lbGen={GEN,current:()=>q,planFor:x=>{const keep=q;q=x;try{return workedPlan()}finally{q=keep}},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q}}; // ujian sahaja
 function focusLaunchAllowed(){try{const p=new URLSearchParams(location.search),skill=p.get('skill'),host=window.parent,sk=window.PALombongPermata?.SKILL?.[skill];/* The app's db is a top-level let (not window.db), so ask the bridge whether this frame is the active Focus launch. */return host!==window&&p.get('pa_focus_live')==='1'&&!!p.get('pa_nonce')&&!!sk&&Number(sk[0])===cfg.grade&&host.PAFocusMiniGamesLive?.isActiveFrame?.(window,p.get('pa_nonce'),skill,'lombong-permata')===true}catch(_){return false}}
 if(!DEV_ENABLED&&!focusLaunchAllowed()){document.body.innerHTML='<main style="min-height:100dvh;display:grid;place-items:center;padding:24px;background:#10263e;color:#fff6e0;font:700 16px system-ui;text-align:center"><section><h1>Lombong Permata Wira</h1><p>Buka latihan ini melalui Kemahiran Fokus untuk profil murid.</p></section></main>';return}
 resetAll();startRound();
