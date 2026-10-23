@@ -411,6 +411,9 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.10.0">
+<style>/* "Jom tengok cara": the row Wira is reading lights up on the chart. */
+.panel [data-r].wk-hl{outline:3px solid var(--gold,#ffc94a);outline-offset:2px;border-radius:6px;background:#fff4c2}.chart .col.wk-hl .bar{filter:brightness(1.15);box-shadow:0 0 0 3px var(--gold,#ffc94a)}</style>
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .pa-game .scene{--waist:30px;--belt:.58}</style>
 
@@ -460,10 +463,13 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
     <small>Simulasi router Kemahiran Fokus</small>
     <div class="devrow sims" id="sims"></div>
     <p class="simout" id="simOut"></p><button type="button" class="btn go" id="simGo" hidden>Buka pos ikut pelan →</button>
+    <small>Cuba “Jom tengok cara” (terus ke soalan yang ada langkah)</small>
+    <div class="devrow sims" id="wkTry"></div>
   </div></div>
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-worked-v1.js?v=1.10.0"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/pos-peninjau-router.js"></script>
 <script>
@@ -500,9 +506,23 @@ const SCALE=['mustahil','kecil kemungkinan','sama kemungkinan','besar kemungkina
 const SC=i=>({scale:1,opts:SCALE.map((l,j)=>({id:'s'+j,label:l})),correct:'s'+i,ansTxt:SCALE[i]});
 const NAMES=['Aina','Bala','Chong','Dina','Ezra','Farid','Mei Ling','Siva'];
 
+/* "Jom tengok cara" lines (PAWorked.buildList): read the chart row by row, then work it out. */
+const WL=(say,right,wrongs,line,o={})=>({say,right,wrongs,line,...o});
+const fx=(op,a,b)=>({fact:{op,a,b}});
+const rdT=(n,v,j)=>WL('Kira gundalan '+n+'. (||||/ = 5)',v,[v+1,v-1,v+5],n+' = '+v,{hl:[j]});
+function tallyL(n,v,j){const g=Math.floor(v/5),r=v%5;if(g<1)return[WL('Kira gundalan '+n+' satu-satu.',v,[v+1,v-1,v+2],n+' = '+v,{hl:[j]})];
+ return[WL('Kira ikatan ||||/ dalam baris '+n+'.',g,[g+1,g>1?g-1:g+2,v],n+': '+g+' ikat',{hl:[j]}),WL('Satu ikat = 5. '+g+' × 5 = ?',g*5,[g*5+5,g+5,g*5-1],g+' × 5 = '+g*5,fx('mul',g,5)),
+  ...(r?[WL('Tambah '+r+' gundalan yang tinggal: '+g*5+' + '+r+' = ?',v,[v+1,v-1,g*5],n+' = '+v,fx('add',g*5,r))]:[])]}
+const rdB=(n,v,j,st)=>WL('Ikut hujung palang '+n+' ke paksi nombor. Nilainya?',v,[v+st,v-st,v+2*st],n+' = '+nf(v),{hl:[j]});
+const rdP=(n,c,j,k)=>k===1?WL('Kira gambar dalam baris '+n+'.',c,[c+1,c-1,c+2],n+' = '+c,{hl:[j]}):WL('Kira ★ dalam baris '+n+'.',c,[c+1,c-1,c*k],n+': '+c+' ★',{hl:[j]});
+function pictL(n,c,j,k){return k===1?[rdP(n,c,j,1)]:[rdP(n,c,j,k),WL('Satu ★ = '+k+'. '+c+' × '+k+' = ?',c*k,[c+k,c*k+k,c*k-k],n+' = '+c+' × '+k+' = '+nf(c*k),fx('mul',c,k))]}
+const addL=(xs,lab='Jumlah')=>{const t=sum(xs);return WL(xs.map(nf).join(' + ')+' = ?',t,[t+1,t-1,t+10],lab+' = '+nf(t),xs.length===2?fx('add',xs[0],xs[1]):{})};
+const subL=(a,b,lab='Beza')=>WL(nf(a)+' − '+nf(b)+' = ?',a-b,[a-b+1,a-b-1,a+b],lab+' = '+nf(a)+' − '+nf(b)+' = '+nf(a-b),fx('sub',a,b));
+const mulL=(a,b,lab)=>WL(nf(a)+' × '+nf(b)+' = ?',a*b,[a*b+a,a+b,a*b-b],(lab?lab+' = ':'')+nf(a)+' × '+nf(b)+' = '+nf(a*b),fx('mul',a,b));
+const divL=(a,b,lab)=>WL(nf(a)+' ÷ '+nf(b)+' = ?',a/b,[a/b+1,a/b-1,a-b],(lab?lab+' = ':'')+nf(a)+' ÷ '+nf(b)+' = '+nf(a/b),fx('div',a,b));
 const Fx={
  /* ---------- gundalan ---------- */
- readTally:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),i=R(0,2);return{kind:'pad',vis:{t:'tally',rows:c.map((x,j)=>[x[0],x[1],v[j]])},form:NUM(v[i]),
+ readTally:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),i=R(0,2);return{wk:{lines:tallyL(c[i][0],v[i],i),value:v[i]},kind:'pad',vis:{t:'tally',rows:c.map((x,j)=>[x[0],x[1],v[j]])},form:NUM(v[i]),
   q:'Berapakah bilangan '+c[i][0]+'?',s:'Satu ikat gundalan ||||/ = 5. Kira ikatan dahulu, kemudian gundalan yang tinggal.',a:v[i]>=5?tallyTxt(v[i])+(v[i]%5)+' = '+v[i]:'Kira satu-satu gundalan '+c[i][0]+'.'}}}),
  tallyBuild:(arch,set,k,lo,hi)=>({arch,f:C=>{const c=cats(set,k),v=vals(k,lo,hi),items=shuffle(c.flatMap((x,j)=>range(v[j]).map(()=>x[1])));return{kind:'tally',vis:{t:'raw',items},build:{rows:c},need:v,
   q:'Asingkan dan kira data '+(set==='guli'?'guli':set==='kuih'?'jualan kuih':'buah')+' ini. Buat gundalan bagi setiap jenis.',sub:'Ketik item untuk tanda ✓. Tekan + untuk tambah gundalan.',s:'Kira satu jenis pada satu masa. Tanda ✓ setiap item yang sudah dikira supaya tidak terkira dua kali.',a:'',hint2:'Mula dengan '+c[0][0]+': ketik setiap '+c[0][0].toLowerCase()+' sambil tekan + sekali untuk setiap satu.'}}}),
@@ -512,11 +532,11 @@ const Fx={
   return{kind:'pick',...opts(V[2],V[1]),q:'Data “'+V[0]+'” boleh dikelaskan berdasarkan…',s:'Lihat apakah persamaan semua item dalam data itu.',a:''}}}),
  reasonCollect:(arch)=>({arch,f:C=>{const V=pick([['buah kegemaran kelas','pilihan buah setiap murid',['tinggi setiap murid','warna kasut murid']],['sukan kegemaran murid','sukan pilihan setiap murid',['berat beg murid','nama ibu bapa murid']],['warna kegemaran kelas','warna pilihan setiap murid',['bilangan adik-beradik','umur guru']],['kuih paling laris di kantin','bilangan setiap kuih yang dijual',['harga buku','bilangan meja kantin']]]);
   return{kind:'pick',...opts(V[2],V[1]),q:'Untuk mengetahui '+V[0]+', data paling sesuai dikumpul ialah…',s:'Data mesti menjawab soalan yang ditanya.',a:''}}}),
- tallyCompare:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2),big=v[i]>v[j]?i:j;return{kind:'pick',vis:{t:'tally',rows:c.map((x,k)=>[x[0],x[1],v[k]])},opts:[{id:'a',label:c[i][0]},{id:'b',label:c[j][0]}],correct:big===i?'a':'b',ansTxt:c[big][0],
+ tallyCompare:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2),big=v[i]>v[j]?i:j;return{wk:{lines:[rdT(c[i][0],v[i],i),rdT(c[j][0],v[j],j)],finSay:'Jadi yang manakah lebih banyak?'},kind:'pick',vis:{t:'tally',rows:c.map((x,k)=>[x[0],x[1],v[k]])},opts:[{id:'a',label:c[i][0]},{id:'b',label:c[j][0]}],correct:big===i?'a':'b',ansTxt:c[big][0],
   q:'Yang manakah lebih banyak: '+c[i][0]+' atau '+c[j][0]+'?',s:'Kira gundalan kedua-dua baris, kemudian banding.',a:c[i][0]+' = '+v[i]+', '+c[j][0]+' = '+v[j]+'.'}}}),
- tallyTotal:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2);return{kind:'pad',vis:{t:'tally',rows:c.map((x,k)=>[x[0],x[1],v[k]])},form:NUM(v[i]+v[j]),
+ tallyTotal:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2);return{wk:{lines:[rdT(c[i][0],v[i],i),rdT(c[j][0],v[j],j),addL([v[i],v[j]])],value:v[i]+v[j]},kind:'pad',vis:{t:'tally',rows:c.map((x,k)=>[x[0],x[1],v[k]])},form:NUM(v[i]+v[j]),
   q:'Berapakah jumlah '+c[i][0]+' dan '+c[j][0]+'?',s:'Kira gundalan setiap baris, kemudian tambah.',a:v[i]+' + '+v[j]+' = '+(v[i]+v[j])}}}),
- tallyDiff:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2),b=Math.max(v[i],v[j]),s=Math.min(v[i],v[j]);return{kind:'pad',vis:{t:'tally',rows:c.map((x,k)=>[x[0],x[1],v[k]])},form:NUM(b-s),
+ tallyDiff:(arch,set,lo,hi)=>({arch,f:C=>{const c=cats(set,3),v=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2),b=Math.max(v[i],v[j]),s=Math.min(v[i],v[j]);return{wk:{lines:[rdT(c[i][0],v[i],i),rdT(c[j][0],v[j],j),subL(b,s)],value:b-s},kind:'pad',vis:{t:'tally',rows:c.map((x,k)=>[x[0],x[1],v[k]])},form:NUM(b-s),
   q:'Berapakah beza bilangan '+c[i][0]+' dan '+c[j][0]+'?',s:'Beza = nombor besar tolak nombor kecil.',a:b+' − '+s+' = '+(b-s)}}}),
  tallyPick:(arch)=>({arch,f:C=>{const c=cats('guli',3),v=vals(3,3,9),i=R(0,2),items=shuffle(c.flatMap((x,j)=>range(v[j]).map(()=>x[1])));const o=opts([v[i]-1,v[i]+1,v[i]+2,v[i]-2].filter(x=>x>0).map(n=>'T:'+n),'T:'+v[i]);
   return{kind:'pick',vis:{t:'raw',items},...o,ansTxt:v[i]+' gundalan',q:'Tanda gundal manakah betul untuk guli '+c[i][0]+'?',sub:'Ketik guli untuk tanda ✓ semasa mengira.',s:'Kira guli '+c[i][0].toLowerCase()+' sahaja. Ingat ||||/ = 5.',a:''}}}),
@@ -525,82 +545,82 @@ const Fx={
   return{kind:'pick',vis:{t:'raw',items},...opts(bad,good),q:'Susun data dalam jadual dahulu. Pernyataan manakah betul?',sub:'Ketik guli untuk tanda ✓ semasa mengira.',s:'Kira setiap warna dahulu, kemudian semak setiap pernyataan.',a:'Jumlah = '+v.join(' + ')+' = '+sum(v)}}}),
 
  /* ---------- piktograf ---------- */
- pictRead:(arch,set,key,lo,hi)=>({arch,f:C=>{const c=cats(set,4),n=vals(4,lo,hi),k=pick([].concat(key)),i=R(0,3),sym=k===1?null:'★';return{kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym},form:NUM(n[i]*k),
+ pictRead:(arch,set,key,lo,hi)=>({arch,f:C=>{const c=cats(set,4),n=vals(4,lo,hi),k=pick([].concat(key)),i=R(0,3),sym=k===1?null:'★';return{wk:{lines:pictL(c[i][0],n[i],i,k),value:n[i]*k},kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym},form:NUM(n[i]*k),
   q:'Berapakah bilangan '+c[i][0]+'?',s:k===1?'Satu gambar = 1. Kira gambar dalam baris '+c[i][0]+'.':'Satu ★ mewakili '+k+'. Darab bilangan ★ dengan '+k+'.',a:k===1?'Kira gambar '+c[i][0]+'.':n[i]+' × '+k+' = '+n[i]*k}}}),
- pictMost:(arch,set,lo,hi,least)=>({arch,f:C=>{const c=cats(set,3),n=vals(3,lo,hi),w=least?argmin(n):argmax(n);return{kind:'pick',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:1},opts:c.map((x,j)=>({id:'o'+j,label:x[0]})),correct:'o'+w,ansTxt:c[w][0],
+ pictMost:(arch,set,lo,hi,least)=>({arch,f:C=>{const c=cats(set,3),n=vals(3,lo,hi),w=least?argmin(n):argmax(n);return{wk:{lines:c.map((x,j)=>rdP(x[0],n[j],j,1)),finSay:'Jadi yang manakah paling '+(least?'sedikit':'banyak')+'?'},kind:'pick',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:1},opts:c.map((x,j)=>({id:'o'+j,label:x[0]})),correct:'o'+w,ansTxt:c[w][0],
   q:'Yang manakah paling '+(least?'sedikit':'banyak')+'?',s:'Baris paling '+(least?'pendek':'panjang')+' menunjukkan bilangan paling '+(least?'sedikit':'banyak')+'.',a:''}}}),
- pictDiff:(arch,set,key,lo,hi,hiLo)=>({arch,f:C=>{const c=cats(set,4),n=vals(4,lo,hi),k=pick([].concat(key));let i,j;if(hiLo){i=argmax(n);j=argmin(n)}else[i,j]=shuffle([0,1,2,3]).slice(0,2);if(n[i]<n[j])[i,j]=[j,i];return{kind:'pad',vis:{t:'pict',rows:c.map((x,m)=>[x[0],x[1],n[m]]),key:k,sym:k===1?null:'★'},form:NUM((n[i]-n[j])*k),
+ pictDiff:(arch,set,key,lo,hi,hiLo)=>({arch,f:C=>{const c=cats(set,4),n=vals(4,lo,hi),k=pick([].concat(key));let i,j;if(hiLo){i=argmax(n);j=argmin(n)}else[i,j]=shuffle([0,1,2,3]).slice(0,2);if(n[i]<n[j])[i,j]=[j,i];return{wk:{lines:k===1?[rdP(c[i][0],n[i],i,1),rdP(c[j][0],n[j],j,1),subL(n[i],n[j])]:[rdP(c[i][0],n[i],i,k),rdP(c[j][0],n[j],j,k),subL(n[i],n[j],'Beza ★'),mulL(n[i]-n[j],k,'Beza')],value:(n[i]-n[j])*k},kind:'pad',vis:{t:'pict',rows:c.map((x,m)=>[x[0],x[1],n[m]]),key:k,sym:k===1?null:'★'},form:NUM((n[i]-n[j])*k),
   q:hiLo?'Berapakah beza bilangan tertinggi dengan terendah?':'Berapa lebih '+c[i][0]+' berbanding '+c[j][0]+'?',s:k===1?'Kira kedua-dua baris, kemudian tolak.':'Cari bilangan sebenar setiap baris (× '+k+'), kemudian tolak.',a:k===1?n[i]+' − '+n[j]+' = '+(n[i]-n[j]):n[i]*k+' − '+n[j]*k+' = '+(n[i]-n[j])*k}}}),
- pictTotal:(arch,set,key,lo,hi)=>({arch,f:C=>{const c=cats(set,4),n=vals(4,lo,hi),k=pick([].concat(key));return{kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym:k===1?null:'★'},form:NUM(sum(n)*k),
+ pictTotal:(arch,set,key,lo,hi)=>({arch,f:C=>{const c=cats(set,4),n=vals(4,lo,hi),k=pick([].concat(key));return{wk:{lines:[...c.map((x,j)=>rdP(x[0],n[j],j,k)),addL(n,k===1?'Jumlah':'Jumlah ★'),...(k===1?[]:[mulL(sum(n),k,'Jumlah')])],value:sum(n)*k},kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym:k===1?null:'★'},form:NUM(sum(n)*k),
   q:'Berapakah jumlah semua item?',s:k===1?'Kira gambar setiap baris, kemudian tambah semuanya.':'Kira semua ★ dahulu, kemudian darab dengan '+k+'.',a:k===1?n.join(' + ')+' = '+sum(n):n.join(' + ')+' = '+sum(n)+' ★; '+sum(n)+' × '+k+' = '+nf(sum(n)*k)}}}),
  pictBuild:(arch,set,key,lo,hi)=>({arch,f:C=>{const c=cats(set,3),n=vals(3,lo,hi),k=pick([].concat(key));return{kind:'pict',card:c.map((x,j)=>x[0]+' '+n[j]*k).join(' · '),build:{rows:c,key:k,sym:k===1?null:'★'},need:n,
   q:k===1?'Lukis piktograf bagi data ini. Satu gambar mewakili 1.':'Lukis piktograf bagi data ini. ★ mewakili '+k+'.',sub:'Tekan + atau − untuk setiap baris.',s:k===1?'Satu gambar untuk setiap satu item.':'Bilangan ★ = bilangan sebenar ÷ '+k+'.',a:'',hint2:k===1?'Baris '+c[0][0]+' perlukan gambar sebanyak '+c[0][0]+' dalam jadual.':c[0][0]+': '+n[0]*k+' ÷ '+k+' = ? ★'}}}),
- pictKey:(arch,keys=[2,5,10])=>({arch,f:C=>{const c=cats('alat',3),k=pick(keys),n=R(2,6),i=R(0,2);return{kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],j===i?n:R(1,6)]),key:'?',sym:'★'},form:NUM(k),
+ pictKey:(arch,keys=[2,5,10])=>({arch,f:C=>{const c=cats('alat',3),k=pick(keys),n=R(2,6),i=R(0,2);return{wk:{lines:[WL('Baris '+c[i][0]+': '+n+' ★ untuk '+n*k+'. '+n*k+' ÷ '+n+' = ?',k,[k+1,k*2,n],'★ = '+n*k+' ÷ '+n+' = '+k,{hl:[i],...fx('div',n*k,n)})],value:k},kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],j===i?n:R(1,6)]),key:'?',sym:'★'},form:NUM(k),
   q:'Ada '+n*k+' '+c[i][0].toLowerCase()+'. Petunjuk piktograf hilang. Satu ★ mewakili berapa?',s:'Bilangan sebenar ÷ bilangan ★ dalam baris itu.',a:n*k+' ÷ '+n+' = '+k}}}),
- pictClaim:(arch,keys=[2,5,10])=>({arch,f:C=>{const c=cats('alat',4),k=pick(keys),n=vals(4,1,6),i=R(0,3),truth=Math.random()<.4;const said=truth?n[i]*k:n[i];return{kind:'pick',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym:'★'},...YN(truth),
+ pictClaim:(arch,keys=[2,5,10])=>({arch,f:C=>{const c=cats('alat',4),k=pick(keys),n=vals(4,1,6),i=R(0,3),truth=Math.random()<.4;const said=truth?n[i]*k:n[i];return{wk:{lines:pictL(c[i][0],n[i],i,k),finSay:'Jadi kata-kata itu betul atau salah?'},kind:'pick',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym:'★'},...YN(truth),
   q:C.who+' berkata bilangan '+c[i][0]+' ialah '+said+'. Penilaian?',s:'Ingat petunjuk: satu ★ bukan 1, tetapi '+k+'.',a:n[i]+' × '+k+' = '+n[i]*k}}}),
 
  /* ---------- carta palang ---------- */
- barRead:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),i=R(0,k-1);return{kind:'pad',vis:{t:'bar',rows:c.map((x,j)=>[x[0],v[j]]),step,top:top(v,step)},form:NUM(v[i]),
+ barRead:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),i=R(0,k-1);return{wk:{lines:[rdB(c[i][0],v[i],i,step)],value:v[i]},kind:'pad',vis:{t:'bar',rows:c.map((x,j)=>[x[0],v[j]]),step,top:top(v,step)},form:NUM(v[i]),
   q:'Berapakah nilai bagi '+c[i][0]+'?',s:'Ikut hujung palang '+c[i][0]+' secara mendatar ke paksi nombor.',a:''}}}),
- barCompare:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),least=Math.random()<.4,w=least?argmin(v):argmax(v);return{kind:'pick',vis:{t:'bar',rows:c.map((x,j)=>[x[0],v[j]]),step,top:top(v,step)},opts:c.map((x,j)=>({id:'o'+j,label:x[0]})),correct:'o'+w,ansTxt:c[w][0],
+ barCompare:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),least=Math.random()<.4,w=least?argmin(v):argmax(v);return{wk:{lines:c.map((x,j)=>rdB(x[0],v[j],j,step)),finSay:'Jadi yang manakah paling '+(least?'sedikit':'banyak')+'?'},kind:'pick',vis:{t:'bar',rows:c.map((x,j)=>[x[0],v[j]]),step,top:top(v,step)},opts:c.map((x,j)=>({id:'o'+j,label:x[0]})),correct:'o'+w,ansTxt:c[w][0],
   q:'Yang manakah paling '+(least?'sedikit':'banyak')+'?',s:'Palang paling '+(least?'rendah':'tinggi')+' bermaksud paling '+(least?'sedikit':'banyak')+'.',a:''}}}),
  barBuild:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step);return{kind:'bars',card:c.map((x,j)=>x[0]+' '+v[j]).join(' · '),build:{rows:c.map(x=>x[0]),step,top:top(v,step)},need:v,
   q:'Lukis carta palang bagi data ini.'+(step>1?' Skala: setiap garis = '+step+'.':''),sub:'Ketik petak untuk tinggikan palang.',s:'Tinggi palang mesti sama dengan nilai dalam jadual.'+(step>1?' Setiap petak = '+step+'.':''),a:'',hint2:step>1?c[0][0]+' = '+v[0]+'; '+v[0]+' ÷ '+step+' = ? petak.':'Palang '+c[0][0]+' mesti sampai ke garis '+v[0]+'.'}}}),
  barTwo:(arch,set,k,step,lo,hi,op)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step);let i,j;if(op==='hl'){i=argmax(v);j=argmin(v)}else{[i,j]=shuffle(range(k)).slice(0,2);if(v[i]<v[j])[i,j]=[j,i]}
   const vis={t:'bar',rows:c.map((x,m)=>[x[0],v[m]]),step,top:top(v,step)};
-  if(op==='sum')return{kind:'pad',vis,form:NUM(v[i]+v[j]),q:'Berapakah jumlah '+c[i][0]+' dan '+c[j][0]+'?',s:'Baca nilai kedua-dua palang, kemudian tambah.',a:v[i]+' + '+v[j]+' = '+(v[i]+v[j])};
-  if(op==='all')return{kind:'pad',vis,form:NUM(sum(v)),q:'Berapakah jumlah semua data?',s:'Baca nilai setiap palang, kemudian tambah semuanya.',a:v.join(' + ')+' = '+sum(v)};
-  if(op==='cmp')return{kind:'pick',vis,opts:[{id:'a',label:c[i][0]},{id:'b',label:c[j][0]}].sort(()=>Math.random()-.5),correct:'a',ansTxt:c[i][0],q:'Yang manakah lebih banyak: '+c[j][0]+' atau '+c[i][0]+'?',s:'Banding tinggi kedua-dua palang.',a:''};
-  return{kind:'pad',vis,form:NUM(v[i]-v[j]),q:op==='hl'?'Cari nilai paling banyak dan paling sedikit. Berapakah beza kedua-duanya?':'Berapakah beza '+c[i][0]+' dan '+c[j][0]+'?',s:op==='hl'?'Cari palang paling tinggi dan paling rendah, kemudian tolak.':'Baca kedua-dua nilai, kemudian tolak yang kecil daripada yang besar.',a:v[i]+' − '+v[j]+' = '+(v[i]-v[j])}}}),
+  if(op==='sum')return{wk:{lines:[rdB(c[i][0],v[i],i,step),rdB(c[j][0],v[j],j,step),addL([v[i],v[j]])],value:v[i]+v[j]},kind:'pad',vis,form:NUM(v[i]+v[j]),q:'Berapakah jumlah '+c[i][0]+' dan '+c[j][0]+'?',s:'Baca nilai kedua-dua palang, kemudian tambah.',a:v[i]+' + '+v[j]+' = '+(v[i]+v[j])};
+  if(op==='all')return{wk:{lines:[...c.map((x,m)=>rdB(x[0],v[m],m,step)),addL(v)],value:sum(v)},kind:'pad',vis,form:NUM(sum(v)),q:'Berapakah jumlah semua data?',s:'Baca nilai setiap palang, kemudian tambah semuanya.',a:v.join(' + ')+' = '+sum(v)};
+  if(op==='cmp')return{wk:{lines:[rdB(c[j][0],v[j],j,step),rdB(c[i][0],v[i],i,step)],finSay:'Jadi yang manakah lebih banyak?'},kind:'pick',vis,opts:[{id:'a',label:c[i][0]},{id:'b',label:c[j][0]}].sort(()=>Math.random()-.5),correct:'a',ansTxt:c[i][0],q:'Yang manakah lebih banyak: '+c[j][0]+' atau '+c[i][0]+'?',s:'Banding tinggi kedua-dua palang.',a:''};
+  return{wk:{lines:[rdB(c[i][0],v[i],i,step),rdB(c[j][0],v[j],j,step),subL(v[i],v[j])],value:v[i]-v[j]},kind:'pad',vis,form:NUM(v[i]-v[j]),q:op==='hl'?'Cari nilai paling banyak dan paling sedikit. Berapakah beza kedua-duanya?':'Berapakah beza '+c[i][0]+' dan '+c[j][0]+'?',s:op==='hl'?'Cari palang paling tinggi dan paling rendah, kemudian tolak.':'Baca kedua-dua nilai, kemudian tolak yang kecil daripada yang besar.',a:v[i]+' − '+v[j]+' = '+(v[i]-v[j])}}}),
 
  /* ---------- soalan berlangkah ikut aras darjah (gaya UASA) ---------- */
- pictMore:(arch,lo,hi)=>({arch,f:C=>{const c=cats('buah',3),n=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2).sort((x,y)=>n[y]-n[x]);return{kind:'pad',vis:{t:'pict',rows:c.map((x,k)=>[x[0],x[1],n[k]]),key:1},form:NUM(n[i]-n[j]),
+ pictMore:(arch,lo,hi)=>({arch,f:C=>{const c=cats('buah',3),n=vals(3,lo,hi),[i,j]=shuffle([0,1,2]).slice(0,2).sort((x,y)=>n[y]-n[x]);return{wk:{lines:[rdP(c[i][0],n[i],i,1),rdP(c[j][0],n[j],j,1),subL(n[i],n[j],'Perlu tambah')],value:n[i]-n[j]},kind:'pad',vis:{t:'pict',rows:c.map((x,k)=>[x[0],x[1],n[k]]),key:1},form:NUM(n[i]-n[j]),
   q:'Berapa lagi '+c[j][0]+' diperlukan supaya sama banyak dengan '+c[i][0]+'?',s:'Cari beza antara dua baris itu.',a:n[i]+' − '+n[j]+' = '+(n[i]-n[j])}}}),
- barMore:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),[i,j]=shuffle(range(k)).slice(0,2).sort((x,y)=>v[y]-v[x]);return{kind:'pad',vis:{t:'bar',rows:c.map((x,m)=>[x[0],v[m]]),step,top:top(v,step)},form:NUM(v[i]-v[j]),
+ barMore:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),[i,j]=shuffle(range(k)).slice(0,2).sort((x,y)=>v[y]-v[x]);return{wk:{lines:[rdB(c[i][0],v[i],i,step),rdB(c[j][0],v[j],j,step),subL(v[i],v[j],'Perlu tambah')],value:v[i]-v[j]},kind:'pad',vis:{t:'bar',rows:c.map((x,m)=>[x[0],v[m]]),step,top:top(v,step)},form:NUM(v[i]-v[j]),
   q:'Carta menunjukkan '+(set==='hari'?'buku dibaca setiap hari':set==='kuih'?'jualan kuih':'buah dipetik')+'. Berapa lagi '+c[j][0]+' perlu ditambah supaya sama dengan '+c[i][0]+'?',s:'Baca kedua-dua nilai, kemudian cari bezanya.',a:nf(v[i])+' − '+nf(v[j])+' = '+nf(v[i]-v[j])}}}),
- barTarget:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),T=Math.ceil((sum(v)+step*R(1,6))/step/5)*step*5,need=T-sum(v);if(need<=0)return null;return{kind:'pad',vis:{t:'bar',rows:c.map((x,m)=>[x[0],v[m]]),step,top:top(v,step)},form:NUM(need),
+ barTarget:(arch,set,k,step,lo,hi)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),T=Math.ceil((sum(v)+step*R(1,6))/step/5)*step*5,need=T-sum(v);if(need<=0)return null;return{wk:{lines:[...c.map((x,m)=>rdB(x[0],v[m],m,step)),addL(v,'Jumlah jualan'),subL(T,sum(v),'Perlu lagi')],value:need},kind:'pad',vis:{t:'bar',rows:c.map((x,m)=>[x[0],v[m]]),step,top:top(v,step)},form:NUM(need),
   q:'Sasaran jualan minggu ini ialah '+nf(T)+'. Carta menunjukkan jualan setakat ini. Berapa lagi perlu dijual untuk capai sasaran?',s:'Langkah 1: tambah semua nilai. Langkah 2: tolak daripada sasaran.',a:'Jumlah = '+v.map(nf).join(' + ')+' = '+nf(sum(v))+'; '+nf(T)+' − '+nf(sum(v))+' = '+nf(need)}}}),
- barMoney:(arch,set,k,step,lo,hi,two)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),p=pick([2,3,5]),[i,j]=shuffle(range(k)).slice(0,2),amt=two?(v[i]+v[j])*p:v[i]*p;return{kind:'pad',vis:{t:'bar',rows:c.map((x,m)=>[x[0],v[m]]),step,top:top(v,step)},form:NUM(amt,{pre:'RM'}),
+ barMoney:(arch,set,k,step,lo,hi,two)=>({arch,f:C=>{const c=catsOrd(set,k),v=vals(k,lo,hi,step),p=pick([2,3,5]),[i,j]=shuffle(range(k)).slice(0,2),amt=two?(v[i]+v[j])*p:v[i]*p;return{wk:{lines:two?[rdB(c[i][0],v[i],i,step),rdB(c[j][0],v[j],j,step),addL([v[i],v[j]],'Biji'),mulL(v[i]+v[j],p,'RM')]:[rdB(c[i][0],v[i],i,step),mulL(v[i],p,'RM')],value:amt},kind:'pad',vis:{t:'bar',rows:c.map((x,m)=>[x[0],v[m]]),step,top:top(v,step)},form:NUM(amt,{pre:'RM'}),
   q:'Carta menunjukkan jualan kuih (biji). Setiap biji berharga RM'+p+'. Berapakah jumlah wang jualan '+(two?c[i][0]+' dan '+c[j][0]:c[i][0])+'?',s:two?'Tambah bilangan dua kuih dahulu, kemudian darab dengan harga.':'Baca bilangan kuih, kemudian darab dengan harga.',a:two?nf(v[i])+' + '+nf(v[j])+' = '+nf(v[i]+v[j])+'; '+nf(v[i]+v[j])+' × '+p+' = '+nf(amt):nf(v[i])+' × '+p+' = '+nf(amt)}}}),
- pictMoney:(arch,keys)=>({arch,f:C=>{const c=cats('alat',4),k=pick(keys),n=vals(4,2,6),i=R(0,3),p=pick([2,3,5]);return{kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym:'★'},form:NUM(n[i]*k*p,{pre:'RM'}),
+ pictMoney:(arch,keys)=>({arch,f:C=>{const c=cats('alat',4),k=pick(keys),n=vals(4,2,6),i=R(0,3),p=pick([2,3,5]);return{wk:{lines:[...pictL(c[i][0],n[i],i,k),mulL(n[i]*k,p,'RM')],value:n[i]*k*p},kind:'pad',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:k,sym:'★'},form:NUM(n[i]*k*p,{pre:'RM'}),
   q:'Piktograf menunjukkan jualan alat tulis. Setiap '+c[i][0].toLowerCase()+' RM'+p+'. Berapakah wang jualan '+c[i][0].toLowerCase()+'?',s:'Langkah 1: cari bilangan sebenar (★ × '+k+'). Langkah 2: darab dengan harga.',a:n[i]+' × '+k+' = '+n[i]*k+'; '+n[i]*k+' × '+p+' = '+nf(n[i]*k*p)}}}),
- meanBar:(arch)=>({arch,f:C=>{const k=5,m=R(4,9)*10;let d=range(k).map(()=>m+R(-3,3)*10);d[k-1]=m*k-sum(d.slice(0,k-1));if(d.some(x=>x<10||x>150||x%10))return null;const c=catsOrd('hari',k);return{kind:'pad',vis:{t:'bar',rows:c.map((x,j)=>[x[0],d[j]]),step:20,top:Math.ceil(Math.max(...d)/20)*20},form:NUM(m),
+ meanBar:(arch)=>({arch,f:C=>{const k=5,m=R(4,9)*10;let d=range(k).map(()=>m+R(-3,3)*10);d[k-1]=m*k-sum(d.slice(0,k-1));if(d.some(x=>x<10||x>150||x%10))return null;const c=catsOrd('hari',k);return{wk:{lines:[...c.map((x,j)=>rdB(x[0],d[j],j,20)),addL(d),divL(sum(d),5,'Min')],value:m},kind:'pad',vis:{t:'bar',rows:c.map((x,j)=>[x[0],d[j]]),step:20,top:Math.ceil(Math.max(...d)/20)*20},form:NUM(m),
   q:'Carta menunjukkan bilangan pengunjung perpustakaan dalam 5 hari. Berapakah min bilangan pengunjung sehari?',s:'Min = jumlah semua nilai ÷ bilangan hari.',a:d.join(' + ')+' = '+sum(d)+'; '+sum(d)+' ÷ 5 = '+m}}}),
  meanDec:(arch)=>({arch,f:C=>{const m=R(15,45),d=[m+R(-6,6),m+R(-6,6),m+R(-6,6)];d.push(4*m-sum(d));if(d.some(x=>x<5))return null;const f=x=>(x/10).toFixed(1);return{kind:'pad',card:'Jisim 4 beg: '+d.map(x=>f(x)+' kg').join(', '),form:NUM(m/10,{dec:1,post:'kg'}),
   q:'Jisim empat beg sekolah ialah '+d.map(x=>f(x)+' kg').join(', ')+'. Hitung min jisim sebuah beg.',s:'Tambah semua jisim, kemudian bahagi dengan 4.',a:d.map(f).join(' + ')+' = '+f(sum(d))+'; '+f(sum(d))+' ÷ 4 = '+f(m)}}}),
- meanNew:(arch)=>({arch,f:C=>{const n=4,m=R(60,85),nm=m+R(-4,4);const x=nm*(n+1)-m*n;if(x<40||x>100||nm===m)return null;return{kind:'pad',card:'Min '+n+' murid = '+m+' · murid baharu = '+x,form:NUM(nm),
+ meanNew:(arch)=>({arch,f:C=>{const n=4,m=R(60,85),nm=m+R(-4,4);const x=nm*(n+1)-m*n;if(x<40||x>100||nm===m)return null;return{wk:{lines:[mulL(m,n,'Jumlah lama'),addL([m*n,x],'Jumlah baharu'),divL(m*n+x,n+1,'Min baharu')],value:nm},kind:'pad',card:'Min '+n+' murid = '+m+' · murid baharu = '+x,form:NUM(nm),
   q:'Min markah '+n+' orang murid ialah '+m+'. Seorang murid baharu mendapat '+x+' markah. Apakah min markah baharu bagi '+(n+1)+' orang murid?',s:'Jumlah lama = min × bilangan murid. Tambah markah baharu, kemudian bahagi dengan '+(n+1)+'.',a:m+' × '+n+' = '+m*n+'; '+m*n+' + '+x+' = '+(m*n+x)+'; '+(m*n+x)+' ÷ '+(n+1)+' = '+nm}}}),
- meanTarget:(arch)=>({arch,f:C=>{const m=R(70,85),t=m+R(1,3),x=5*t-4*m;if(x>100)return null;return{kind:'pad',card:'Min 4 ujian = '+m+' · sasaran min 5 ujian = '+t,form:NUM(x,{post:'markah'}),
+ meanTarget:(arch)=>({arch,f:C=>{const m=R(70,85),t=m+R(1,3),x=5*t-4*m;if(x>100)return null;return{wk:{lines:[mulL(t,5,'Perlu jumlah'),mulL(m,4,'Ada'),subL(5*t,4*m,'Ujian kelima')],value:x},kind:'pad',card:'Min 4 ujian = '+m+' · sasaran min 5 ujian = '+t,form:NUM(x,{post:'markah'}),
   q:C.who+' mendapat min '+m+' markah bagi 4 ujian. Berapakah markah ujian kelima supaya min 5 ujian menjadi '+t+'?',s:'Jumlah diperlukan = '+t+' × 5. Tolak jumlah 4 ujian.',a:t+' × 5 = '+5*t+'; '+m+' × 4 = '+4*m+'; '+5*t+' − '+4*m+' = '+x}}}),
- modeBar:(arch)=>({arch,f:C=>{const S=[1,2,3,4,5],f=shuffle([R(6,9),R(1,5),R(1,5),R(1,5),R(0,4)]);const mx=Math.max(...f);if(f.filter(x=>x===mx).length>1)return null;const mi=S[f.indexOf(mx)];return{kind:'pad',vis:{t:'table',h:['Adik-beradik','1','2','3','4','5'],rows:[['Murid',...f]]},form:NUM(mi,{post:'orang'}),
+ modeBar:(arch)=>({arch,f:C=>{const S=[1,2,3,4,5],f=shuffle([R(6,9),R(1,5),R(1,5),R(1,5),R(0,4)]);const mx=Math.max(...f);if(f.filter(x=>x===mx).length>1)return null;const mi=S[f.indexOf(mx)];return{wk:{lines:[WL('Baris murid: nombor paling besar?',mx,[...f.filter(x=>x!==mx).slice(0,2)],'Paling ramai murid = '+mx,{hl:[f.indexOf(mx)+1]}),WL('Bilangan adik-beradik di lajur itu?',mi,[mx,mi===5?4:mi+1,mi===1?2:mi-1],'Mod = '+mi+' orang')],value:mi},kind:'pad',vis:{t:'table',h:['Adik-beradik','1','2','3','4','5'],rows:[['Murid',...f]]},form:NUM(mi,{post:'orang'}),
   q:'Jadual menunjukkan bilangan adik-beradik murid Kelas 5 Bestari. Apakah mod bilangan adik-beradik?',s:'Mod ialah nilai yang paling kerap, iaitu bilangan adik-beradik dengan bilangan murid paling ramai. Bukan bilangan murid itu sendiri.',a:''}}}),
  piePctMore:(arch)=>({arch,f:C=>{const P=pick([[40,30,20,10],[45,30,15,10],[50,25,15,10],[35,30,25,10]]),L=shuffle(SETS.sukan).slice(0,4).map(x=>x[0]),p=shuffle(P),T=pick([200,300,400,500,800]),[i,j]=shuffle([0,1,2,3]).slice(0,2).sort((x,y)=>p[y]-p[x]);if(p[i]===p[j])return null;const d=(p[i]-p[j])*T/100;
-  return{kind:'pad',vis:{t:'pie',sec:L.map((n,k)=>[n,p[k],n+' '+p[k]+'%'])},form:NUM(d,{post:'murid'}),q:'Carta pai menunjukkan sukan pilihan '+T+' murid. Berapa murid lebih memilih '+L[i]+' berbanding '+L[j]+'?',s:'Cari beza peratus dahulu, kemudian cari peratus itu daripada '+T+'.',a:p[i]+'% − '+p[j]+'% = '+(p[i]-p[j])+'%; '+(p[i]-p[j])+'/100 × '+T+' = '+d}}}),
+  return{wk:{lines:[WL(L[i]+' = ?%',p[i],[p[j],p[i]+5,p[i]-5],L[i]+' = '+p[i]+'%',{hl:[i]}),WL(L[j]+' = ?%',p[j],[p[i],p[j]+5,p[j]-5],L[j]+' = '+p[j]+'%',{hl:[j]}),subL(p[i],p[j],'Beza %'),divL(T,100,'1%'),mulL(T/100,p[i]-p[j],'Murid')],value:d},kind:'pad',vis:{t:'pie',sec:L.map((n,k)=>[n,p[k],n+' '+p[k]+'%'])},form:NUM(d,{post:'murid'}),q:'Carta pai menunjukkan sukan pilihan '+T+' murid. Berapa murid lebih memilih '+L[i]+' berbanding '+L[j]+'?',s:'Cari beza peratus dahulu, kemudian cari peratus itu daripada '+T+'.',a:p[i]+'% − '+p[j]+'% = '+(p[i]-p[j])+'%; '+(p[i]-p[j])+'/100 × '+T+' = '+d}}}),
  /* ---------- D1 masalah ---------- */
- pictSum:(arch)=>({arch,f:C=>{const c=cats('buah',3),n=vals(3,1,7),[i,j]=shuffle([0,1,2]).slice(0,2);return{kind:'pad',vis:{t:'pict',rows:c.map((x,k)=>[x[0],x[1],n[k]]),key:1},form:NUM(n[i]+n[j]),
+ pictSum:(arch)=>({arch,f:C=>{const c=cats('buah',3),n=vals(3,1,7),[i,j]=shuffle([0,1,2]).slice(0,2);return{wk:{lines:[rdP(c[i][0],n[i],i,1),rdP(c[j][0],n[j],j,1),addL([n[i],n[j]])],value:n[i]+n[j]},kind:'pad',vis:{t:'pict',rows:c.map((x,k)=>[x[0],x[1],n[k]]),key:1},form:NUM(n[i]+n[j]),
   q:'Berapakah jumlah '+c[i][0]+' dan '+c[j][0]+'?',s:'Kira gambar kedua-dua baris, kemudian tambah.',a:n[i]+' + '+n[j]+' = '+(n[i]+n[j])}}}),
- oneQ:(arch)=>({arch,f:C=>{const c=cats('buah',3),n=vals(3,2,7),least=Math.random()<.4,w=least?argmin(n):argmax(n);return{kind:'pick',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:1},opts:c.map((x,j)=>({id:'o'+j,label:x[0]})),correct:'o'+w,ansTxt:c[w][0],
+ oneQ:(arch)=>({arch,f:C=>{const c=cats('buah',3),n=vals(3,2,7),least=Math.random()<.4,w=least?argmin(n):argmax(n);return{wk:{lines:c.map((x,j)=>rdP(x[0],n[j],j,1)),finSay:'Jadi buah manakah paling '+(least?'kurang':'banyak')+'?'},kind:'pick',vis:{t:'pict',rows:c.map((x,j)=>[x[0],x[1],n[j]]),key:1},opts:c.map((x,j)=>({id:'o'+j,label:x[0]})),correct:'o'+w,ansTxt:c[w][0],
   q:'Buah manakah paling '+(least?'kurang':'banyak')+' dipilih murid?',s:'Banding panjang setiap baris gambar.',a:''}}}),
- missing:(arch)=>({arch,f:C=>{const a=R(2,7),b=R(1,6),P=pick([['karipap','pau'],['epal','oren'],['bola','badminton']]);return{kind:'pad',form:NUM(b),card:P[0]+' + '+P[1]+' = '+(a+b)+' murid',
+ missing:(arch)=>({arch,f:C=>{const a=R(2,7),b=R(1,6),P=pick([['karipap','pau'],['epal','oren'],['bola','badminton']]);return{wk:{lines:[subL(a+b,a,P[1])],value:b},kind:'pad',form:NUM(b),card:P[0]+' + '+P[1]+' = '+(a+b)+' murid',
   q:'Jumlah murid memilih '+P[0]+' dan '+P[1]+' ialah '+(a+b)+'. '+a+' memilih '+P[0]+'. Berapa memilih '+P[1]+'?',s:'Jumlah tolak bahagian yang diketahui.',a:(a+b)+' − '+a+' = '+b}}}),
- reasonData:(arch)=>({arch,f:C=>{const c=cats('kuih',2),a=R(4,8),b=R(1,a-1),truth=Math.random()<.4;return{kind:'pick',vis:{t:'pict',rows:[[c[0][0],c[0][1],a],[c[1][0],c[1][1],b]],key:1},...YN(truth),
+ reasonData:(arch)=>({arch,f:C=>{const c=cats('kuih',2),a=R(4,8),b=R(1,a-1),truth=Math.random()<.4;return{wk:{lines:[rdP(c[0][0],a,0,1),rdP(c[1][0],b,1,1)],finSay:'Jadi betulkah kata-kata itu?'},kind:'pick',vis:{t:'pict',rows:[[c[0][0],c[0][1],a],[c[1][0],c[1][1],b]],key:1},...YN(truth),
   q:C.who+' kata '+(truth?c[0][0]:c[1][0])+' lebih banyak. Betulkah?',s:'Kira gambar dalam kedua-dua baris dan banding.',a:c[0][0]+' = '+a+', '+c[1][0]+' = '+b+'.'}}}),
 
  /* ---------- D3 carta pai ---------- */
  pieLargest:(arch)=>({arch,f:C=>{const v=shuffle([6,4,3,2,1].slice(0,4)),L=['A','B','C','D'],w=argmax(v);return{kind:'pick',vis:{t:'pie',sec:L.map((n,i)=>[n,v[i],n])},opts:L.map(n=>({id:n,label:n})),correct:L[w],ansTxt:L[w],
   q:'Kategori manakah mempunyai bahagian paling besar?',s:'Sektor paling luas mewakili bilangan paling banyak.',a:''}}}),
- pieCount:(arch)=>({arch,f:C=>{const v=vals(4,1,9),L=['A','B','C','D'],[i,j]=shuffle([0,1,2,3]).slice(0,2),b=Math.max(v[i],v[j]),s=Math.min(v[i],v[j]);return{kind:'pad',vis:{t:'pie',sec:L.map((n,k)=>[n,v[k],n+' ('+v[k]+')'])},form:NUM(b-s),
+ pieCount:(arch)=>({arch,f:C=>{const v=vals(4,1,9),L=['A','B','C','D'],[i,j]=shuffle([0,1,2,3]).slice(0,2),b=Math.max(v[i],v[j]),s=Math.min(v[i],v[j]);return{wk:{lines:[WL(L[i]+': nombor dalam kurungan?',v[i],[v[i]+1,v[i]-1,v[j]],L[i]+' = '+v[i],{hl:[i]}),WL(L[j]+': nombor dalam kurungan?',v[j],[v[j]+1,v[j]-1,v[i]],L[j]+' = '+v[j],{hl:[j]}),subL(b,s)],value:b-s},kind:'pad',vis:{t:'pie',sec:L.map((n,k)=>[n,v[k],n+' ('+v[k]+')'])},form:NUM(b-s),
   q:'Berapakah beza bilangan antara kategori '+L[i]+' dan '+L[j]+'?',s:'Baca nombor dalam kurungan, kemudian tolak.',a:b+' − '+s+' = '+(b-s)}}}),
  pieFrac:(arch)=>({arch,f:C=>{const tot=pick([8,12,16,20,24,40]),F=pick([['separuh',2],['suku',4]]),w=tot/F[1],rest=tot-w,o=R(1,rest-1),L=shuffle(['Bola','Renang','Larian']);
-  const sec=[[L[0],w,L[0]],[L[1],o,L[1]],[L[2],rest-o,L[2]]];return{kind:'pad',vis:{t:'pie',sec,mark:0},form:NUM(w,{post:'murid'}),
+  const sec=[[L[0],w,L[0]],[L[1],o,L[1]],[L[2],rest-o,L[2]]];return{wk:{lines:[WL(F[0]+' bermaksud bahagi berapa?',F[1],[F[1]===2?4:2,F[1]+1],F[0]+' = ÷ '+F[1]),divL(tot,F[1],L[0])],value:w},kind:'pad',vis:{t:'pie',sec,mark:0},form:NUM(w,{post:'murid'}),
   q:tot+' murid memilih sukan. '+L[0]+' ialah '+F[0]+' daripada carta pai. Berapa murid memilih '+L[0]+'?',s:F[0]==='separuh'?'Separuh bermaksud bahagi 2.':'Suku bermaksud bahagi 4.',a:tot+' ÷ '+F[1]+' = '+w}}}),
  barToPie:(arch)=>({arch,f:C=>{const F=pick([[1,2],[1,4],[3,4]]),tot=pick([4,8]),a=tot*F[0]/F[1],b=R(1,tot-a-1),c=tot-a-b;if(c<1||a<1)return null;const lab=F[0]+'/'+F[1];
-  return{kind:'pick',vis:{t:'bar',rows:[['A',a],['B',b],['C',c]],step:1,top:top([a,b,c],1)},...opts(['1/2','1/4','3/4','1/3','1/8'],lab),
+  return{wk:{lines:[rdB('A',a,0,1),rdB('B',b,1,1),rdB('C',c,2,1),addL([a,b,c]),WL('A daripada jumlah = ?',a+'/'+tot,[tot+'/'+a,'1/'+tot,b+'/'+tot],'A = '+a+'/'+tot)],finSay:'Jadi bahagian A dalam carta pai?'},kind:'pick',vis:{t:'bar',rows:[['A',a],['B',b],['C',c]],step:1,top:top([a,b,c],1)},...opts(['1/2','1/4','3/4','1/3','1/8'],lab),
   q:'Jika data ini dilukis sebagai carta pai, berapakah bahagian bagi A?',s:'Cari jumlah semua dahulu. Bahagian A = A ÷ jumlah.',a:'Jumlah = '+a+' + '+b+' + '+c+' = '+tot+'; A = '+a+' daripada '+tot+'.'}}}),
  pictToBar:(arch)=>({arch,f:C=>{const n=vals(3,1,6),L=['A','B','C'];return{kind:'bars',vis:{t:'pict',rows:L.map((x,j)=>[x,'gB',n[j]]),key:1,mini:1},build:{rows:L,step:1,top:6},need:n,
   q:'Piktograf ini menunjukkan data. Lukis carta palang yang sama.',sub:'Ketik petak untuk tinggikan palang.',s:'Satu gambar = 1 petak palang.',a:'',hint2:'Kira gambar A, kemudian ketik petak pada garis nombor yang sama.'}}}),
- pictBarHigh:(arch)=>({arch,f:C=>{const n=vals(3,1,6),L=['A','B','C'],w=argmax(n);return{kind:'pick',vis:{t:'pict',rows:L.map((x,j)=>[x,'gG',n[j]]),key:1},opts:L.map(x=>({id:x,label:'Palang '+x})),correct:L[w],ansTxt:'Palang '+L[w],
+ pictBarHigh:(arch)=>({arch,f:C=>{const n=vals(3,1,6),L=['A','B','C'],w=argmax(n);return{wk:{lines:L.map((x,j)=>rdP(x,n[j],j,1)),finSay:'Jadi palang manakah paling tinggi?'},kind:'pick',vis:{t:'pict',rows:L.map((x,j)=>[x,'gG',n[j]]),key:1},opts:L.map(x=>({id:x,label:'Palang '+x})),correct:L[w],ansTxt:'Palang '+L[w],
   q:'Jika piktograf ini dilukis sebagai carta palang, palang manakah paling tinggi?',s:'Baris gambar paling panjang menjadi palang paling tinggi.',a:''}}}),
  compareReps:(arch)=>({arch,f:C=>{const good='Bilangan setiap kategori kekal sama';return{kind:'pick',vis:{t:'pict',rows:[['A','gR',3],['B','gR',1],['C','gR',4]],key:1,mini:1},card:'Carta palang: A 3 · B 1 · C 4',...opts(['Carta palang menukar bilangan','Kategori C menjadi paling sedikit','Jumlah data bertambah'],good),
   q:'Piktograf dan carta palang mewakili data yang sama. Pernyataan manakah mesti benar?',s:'Bentuk carta berubah, tetapi datanya tidak berubah.',a:''}}}),
@@ -608,23 +628,23 @@ const Fx={
  /* ---------- D5 statistik ---------- */
  mode:(arch)=>({arch,f:C=>{const m=R(3,12),d=shuffle([m,m,m,...vals(3,2,20).filter(x=>x!==m).slice(0,2),R(1,20)].filter((x,i,a)=>x!==m||i<3));const cnt=x=>d.filter(y=>y===x).length;if(d.some(x=>x!==m&&cnt(x)>=cnt(m)))return null;
   return{kind:'pad',vis:{t:'cards',vals:d,sort:1},form:NUM(m),q:'Apakah mod bagi data ini?',s:'Mod = nilai yang paling kerap muncul.',a:''}}}),
- range5:(arch)=>({arch,f:C=>{const d=vals(R(6,8),15,150);return{kind:'pad',vis:{t:'cards',vals:d,sort:1},form:NUM(Math.max(...d)-Math.min(...d)),q:'Apakah julat data ini?',s:'Julat = nilai terbesar − nilai terkecil.',a:Math.max(...d)+' − '+Math.min(...d)+' = '+(Math.max(...d)-Math.min(...d))}}}),
- median:(arch,even)=>({arch,f:C=>{const n=even?6:pick([7,9]),d=vals(n,10,99,even?2:1),s=[...d].sort((a,b)=>a-b),m=even?(s[n/2-1]+s[n/2])/2:s[(n-1)/2];return{kind:'pad',vis:{t:'cards',vals:d,sort:1},form:NUM(m),
+ range5:(arch)=>({arch,f:C=>{const d=vals(R(6,8),15,150);return{wk:{lines:[WL('Nilai paling besar?',Math.max(...d),[...d.filter(x=>x!==Math.max(...d)).slice(0,2)],'Terbesar = '+Math.max(...d)),WL('Nilai paling kecil?',Math.min(...d),[...d.filter(x=>x!==Math.min(...d)).slice(0,2)],'Terkecil = '+Math.min(...d)),subL(Math.max(...d),Math.min(...d),'Julat')],value:Math.max(...d)-Math.min(...d)},kind:'pad',vis:{t:'cards',vals:d,sort:1},form:NUM(Math.max(...d)-Math.min(...d)),q:'Apakah julat data ini?',s:'Julat = nilai terbesar − nilai terkecil.',a:Math.max(...d)+' − '+Math.min(...d)+' = '+(Math.max(...d)-Math.min(...d))}}}),
+ median:(arch,even)=>({arch,f:C=>{const n=even?6:pick([7,9]),d=vals(n,10,99,even?2:1),s=[...d].sort((a,b)=>a-b),m=even?(s[n/2-1]+s[n/2])/2:s[(n-1)/2];return{wk:{lines:even?[WL('Susun: '+s.join(', ')+'. Dua nilai di tengah: yang pertama?',s[n/2-1],[s[n/2],s[n/2-2]],'Tengah: '+s[n/2-1]+' dan '+s[n/2]),addL([s[n/2-1],s[n/2]],'Jumlah dua nilai'),divL(s[n/2-1]+s[n/2],2,'Median')]:[WL('Ada '+n+' nilai. Nilai ke-berapa di tengah?',(n+1)/2,[(n-1)/2,(n+3)/2],'Tengah = nilai ke-'+(n+1)/2),WL('Susun: '+s.join(', ')+'. Nilai ke-'+(n+1)/2+' = ?',m,[s[(n-3)/2],s[(n+1)/2]],'Median = '+m)],value:m},kind:'pad',vis:{t:'cards',vals:d,sort:1},form:NUM(m),
   q:'Apakah median data ini?',sub:'Ketik kad untuk susun data dari kecil ke besar.',s:even?'Susun data. Ada dua nilai di tengah: cari purata kedua-duanya.':'Susun data dari kecil ke besar. Median = nilai di tengah.',a:even?'('+s[n/2-1]+' + '+s[n/2]+') ÷ 2 = '+m:'',hint2:even?undefined:'Ada '+n+' nilai. Selepas disusun, nilai ke-'+(n+1)/2+' ialah median.'}}}),
- mean:(arch)=>({arch,f:C=>{const k=4,m=R(5,20);let d=range(k).map(()=>m+R(-4,4));d[k-1]=m*k-sum(d.slice(0,k-1));if(d.some(x=>x<1))return null;const c=catsOrd('hari',k);return{kind:'pad',vis:{t:'table',h:c.map(x=>x[0]),rows:[d]},form:NUM(m),
+ mean:(arch)=>({arch,f:C=>{const k=4,m=R(5,20);let d=range(k).map(()=>m+R(-4,4));d[k-1]=m*k-sum(d.slice(0,k-1));if(d.some(x=>x<1))return null;const c=catsOrd('hari',k);return{wk:{lines:[addL(d),divL(sum(d),k,'Min')],value:m},kind:'pad',vis:{t:'table',h:c.map(x=>x[0]),rows:[d]},form:NUM(m),
   q:'Jadual menunjukkan buku dibaca Kumpulan '+C.who.split(' ')[0]+'. Apakah min (purata) bilangan buku?',s:'Min = jumlah semua nilai ÷ bilangan nilai.',a:d.join(' + ')+' = '+sum(d)+'; '+sum(d)+' ÷ '+k+' = '+m}}}),
- missingMean:(arch)=>({arch,f:C=>{const m=R(15,40),d=[m+R(-6,6),m+R(-6,6),m+R(-6,6)],x=4*m-sum(d);if(x<1)return null;return{kind:'pad',card:'Min 4 nombor = '+m+' · '+d.join(', ')+', ?',form:NUM(x),
+ missingMean:(arch)=>({arch,f:C=>{const m=R(15,40),d=[m+R(-6,6),m+R(-6,6),m+R(-6,6)],x=4*m-sum(d);if(x<1)return null;return{wk:{lines:[mulL(m,4,'Jumlah 4 nombor'),addL(d,'Tiga nombor'),subL(4*m,sum(d),'Nombor keempat')],value:x},kind:'pad',card:'Min 4 nombor = '+m+' · '+d.join(', ')+', ?',form:NUM(x),
   q:'Min empat nombor ialah '+m+'. Tiga nombor ialah '+d.join(', ')+'. Apakah nombor keempat?',s:'Jumlah keempat-empat nombor = min × 4. Tolak tiga nombor yang diketahui.',a:m+' × 4 = '+4*m+'; '+4*m+' − '+sum(d)+' = '+x}}}),
- rangeChange:(arch)=>({arch,f:C=>{const st=R(3,8),a=R(4,15),d=range(4).map(i=>a+i*st),nw=d[3]+R(2,10);return{kind:'pad',card:'Data: '+d.join(', ')+' · tambah '+nw,form:NUM(nw-d[0]),
+ rangeChange:(arch)=>({arch,f:C=>{const st=R(3,8),a=R(4,15),d=range(4).map(i=>a+i*st),nw=d[3]+R(2,10);return{wk:{lines:[WL('Selepas tambah '+nw+', nilai terbesar = ?',nw,[d[3],d[0]],'Terbesar = '+nw),subL(nw,d[0],'Julat baharu')],value:nw-d[0]},kind:'pad',card:'Data: '+d.join(', ')+' · tambah '+nw,form:NUM(nw-d[0]),
   q:'Julat data '+d.join(', ')+' ialah '+(d[3]-d[0])+'. Jika '+nw+' ditambah, apakah julat baharu?',s:'Nilai terbesar sudah berubah. Julat = terbesar baharu − terkecil.',a:nw+' − '+d[0]+' = '+(nw-d[0])}}}),
  statClaim:(arch)=>({arch,f:C=>{const s=[R(3,6)],m=R(8,12);let d=[m-R(3,5),m-R(1,2),m,m+R(1,2)];d.push(5*m-sum(d));if(d[4]<=d[3])return null;const mean=m,med=d[2],rg=d[4]-d[0],claim=pick(['min','median','julat']),val={min:mean,median:med,julat:rg}[claim],truth=Math.random()<.5,said=truth?val:val+pick([1,2,-1]);
   return{kind:'pick',vis:{t:'cards',vals:d},...YN(truth),q:C.who+' kata '+claim+' data ini ialah '+said+'. Penilaian?',s:claim==='min'?'Min = jumlah ÷ bilangan nilai.':claim==='median'?'Median = nilai tengah selepas disusun.':'Julat = terbesar − terkecil.',a:claim==='min'?sum(d)+' ÷ 5 = '+mean:claim==='julat'?d[4]+' − '+d[0]+' = '+rg:'Nilai ke-3 selepas disusun.'}}}),
  /* ---------- D5 carta pai peratus ---------- */
  piePct:(arch,op)=>({arch,f:C=>{const P=pick([[40,30,20,10],[45,30,15,10],[50,25,15,10],[35,30,25,10],[40,35,15,10]]),L=shuffle(SETS.sukan).slice(0,4).map(x=>x[0]),p=shuffle(P);const vis={t:'pie',sec:L.map((n,i)=>[n,p[i],n+' '+p[i]+'%'])};
-  if(op==='read'){const w=argmax(p);return{kind:'pick',vis,opts:L.map((n,i)=>({id:'o'+i,label:n})),correct:'o'+w,ansTxt:L[w],q:'Aktiviti manakah dipilih paling ramai?',s:'Peratus paling besar = paling ramai.',a:''}}
-  if(op==='cmp'){const[i,j]=shuffle([0,1,2,3]).slice(0,2),b=Math.max(p[i],p[j]),s=Math.min(p[i],p[j]);return{kind:'pad',vis,form:NUM(b-s,{post:'%'}),q:'Berapa peratus beza '+L[i]+' dengan '+L[j]+'?',s:'Tolak peratus kecil daripada peratus besar.',a:b+' − '+s+' = '+(b-s)}}
-  if(op==='qty'){const T=pick([120,200,300,400,600,800]),i=R(0,3),ans=T*p[i]/100;if(ans%1)return null;return{kind:'pad',vis,form:NUM(ans,{post:'murid'}),q:'Carta mewakili '+T+' murid. Berapa murid memilih '+L[i]+'?',s:p[i]+'% daripada '+T+' = '+p[i]+'/100 × '+T+'.',a:p[i]+'/100 × '+T+' = '+ans}}
-  const o=[0,1,2,3].sort((a,b)=>p[b]-p[a]),A=o[0],B=o[1],Cc=o[2],tr=p[B]+p[Cc]>p[A];return{kind:'pick',vis,opts:[{id:'Y',label:'Betul'},{id:'N',label:'Salah'}],correct:tr?'Y':'N',ansTxt:tr?'Betul':'Salah',
+  if(op==='read'){const w=argmax(p);return{wk:{lines:L.map((n,j)=>WL(n+' = ?%',p[j],[p[(j+1)%4],p[j]+5],n+' = '+p[j]+'%',{hl:[j]})),finSay:'Jadi aktiviti manakah paling ramai?'},kind:'pick',vis,opts:L.map((n,i)=>({id:'o'+i,label:n})),correct:'o'+w,ansTxt:L[w],q:'Aktiviti manakah dipilih paling ramai?',s:'Peratus paling besar = paling ramai.',a:''}}
+  if(op==='cmp'){const[i,j]=shuffle([0,1,2,3]).slice(0,2),b=Math.max(p[i],p[j]),s=Math.min(p[i],p[j]);return{wk:{lines:[WL(L[i]+' = ?%',p[i],[p[j],p[i]+5],L[i]+' = '+p[i]+'%',{hl:[i]}),WL(L[j]+' = ?%',p[j],[p[i],p[j]+5],L[j]+' = '+p[j]+'%',{hl:[j]}),subL(b,s,'Beza %')],value:b-s},kind:'pad',vis,form:NUM(b-s,{post:'%'}),q:'Berapa peratus beza '+L[i]+' dengan '+L[j]+'?',s:'Tolak peratus kecil daripada peratus besar.',a:b+' − '+s+' = '+(b-s)}}
+  if(op==='qty'){const T=pick([120,200,300,400,600,800]),i=R(0,3),ans=T*p[i]/100;if(ans%1)return null;return{wk:{lines:[WL(L[i]+' = ?%',p[i],[p[(i+1)%4],p[i]+5],L[i]+' = '+p[i]+'%',{hl:[i]}),divL(T,100,'1%'),mulL(T/100,p[i],L[i])],value:ans},kind:'pad',vis,form:NUM(ans,{post:'murid'}),q:'Carta mewakili '+T+' murid. Berapa murid memilih '+L[i]+'?',s:p[i]+'% daripada '+T+' = '+p[i]+'/100 × '+T+'.',a:p[i]+'/100 × '+T+' = '+ans}}
+  const o=[0,1,2,3].sort((a,b)=>p[b]-p[a]),A=o[0],B=o[1],Cc=o[2],tr=p[B]+p[Cc]>p[A];return{wk:{lines:[WL(L[B]+' = ?%',p[B],[p[A],p[B]+5],L[B]+' = '+p[B]+'%',{hl:[B]}),WL(L[Cc]+' = ?%',p[Cc],[p[A],p[Cc]+5],L[Cc]+' = '+p[Cc]+'%',{hl:[Cc]}),addL([p[B],p[Cc]],'Bersama (%)'),WL(L[A]+' = ?%',p[A],[p[B],p[A]+5],L[A]+' = '+p[A]+'%',{hl:[A]})],finSay:'Jadi betulkah kata-kata itu?'},kind:'pick',vis,opts:[{id:'Y',label:'Betul'},{id:'N',label:'Salah'}],correct:tr?'Y':'N',ansTxt:tr?'Betul':'Salah',
    q:C.who+' kata '+L[B]+' dan '+L[Cc]+' bersama-sama lebih besar daripada '+L[A]+'. Penilaian?',s:'Tambah dua peratus itu, kemudian banding.',a:p[B]+' + '+p[Cc]+' = '+(p[B]+p[Cc])+'%'}}}),
 
 };
@@ -642,6 +662,7 @@ const FR={180:'separuh (½)',90:'suku (¼)',45:'satu perlapan (⅛)',270:'tiga s
 function pie6(o){for(;;){const A=pick(ANG),X=o&&o.money?CTX6[2]:o&&o.noMoney?pick([CTX6[0],CTX6[1],CTX6[3]]):pick(CTX6),names=shuffle(X.cats).slice(0,A.length),N=pick(X.N),v=A.map(a=>a*N/360);if(v.every(x=>x%1===0))return{A,X,names,N,v}}}
 const pieV=(P,ang=true)=>({t:'pie',sec:P.names.map((n,i)=>[n,P.A[i],n+(ang?' '+P.A[i]+'°':''),ang?P.A[i]+'°':''])});
 const qtyT=P=>({t:'table',h:P.names,rows:[P.v.map(x=>P.X.unit==='RM'?'RM'+nf(x):nf(x))]});
+const K8=a=>WL('Sektor '+a[0]+' = '+a[1]+'°. Berapa kali '+a[1]+'° muat dalam 360°?',360/a[1],[2,4,8].filter(x=>x!==360/a[1]),a[1]+'° = 1/'+360/a[1]+' bulatan',{hl:[a[2]],...fx('div',360,a[1])});
 const D6={
  /* ---- 8.1.1 carta pai ---- */
  label:{arch:'y6v2_8_1_1_complete_label',f:C=>{const P=pie6();if(new Set(P.A).size<2)return null;const ok=P.A.map(a=>P.names.filter((n,j)=>P.v[j]===a*P.N/360));
@@ -649,20 +670,20 @@ const D6={
    s:'Bandingkan setiap kuantiti dengan jumlah. Separuh = 180°, suku = 90°, satu perlapan = 45°.',a:'',hint2:'Kategori manakah ialah separuh atau suku daripada '+fq(P.X,P.N)+'? '+fq(P.X,P.N)+' ÷ 2 = ?, '+fq(P.X,P.N)+' ÷ 4 = ?'}}},
  build:{arch:'y6v2_8_1_1_reverse_sector',f:C=>{const P=pie6();return{kind:'piebuild',rows:P.names,vals:P.v.map(x=>P.X.unit==='RM'?'RM'+nf(x):nf(x)),need:P.A,q:'Data '+P.X.what+' (jumlah '+fq(P.X,P.N)+'). Lengkapkan carta pai dengan memilih sudut setiap sektor.',sub:'Ketik butang sudut untuk tukar 45° → 90° → 180°.',
    s:'Sudut = kuantiti ÷ jumlah × 360°. Jumlah semua sudut mesti 360°.',a:'',hint2:P.names[0]+': '+fq(P.X,P.v[0])+' ÷ '+fq(P.X,P.N)+' = ? daripada bulatan. Separuh = 180°, suku = 90°, ⅛ = 45°.'}}},
- readQty:{arch:'y6v2_8_1_1_read_quantity',f:C=>{const P=pie6(),i=R(0,P.A.length-1),a=P.A[i];return{kind:'pad',vis:pieV(P),form:QF(P.X,P.v[i]),
+ readQty:{arch:'y6v2_8_1_1_read_quantity',f:C=>{const P=pie6(),i=R(0,P.A.length-1),a=P.A[i];return{wk:{lines:[K8([P.names[i],a,i]),divL(P.N,360/a,P.names[i])],value:P.v[i]},kind:'pad',vis:pieV(P),form:QF(P.X,P.v[i]),
   q:'Carta pai menunjukkan '+P.X.what+'. Jumlahnya '+fq(P.X,P.N)+'. Berapakah '+(P.X.unit==='RM'?'wang untuk ':'bilangan ')+P.names[i]+'?',s:a+'° ialah '+FR[a]+' daripada 360°. Cari pecahan itu daripada jumlah.',a:nf(P.N)+' ÷ '+360/a+' = '+nf(P.v[i])}}},
- inferTotal:{arch:'y6v2_8_1_1_infer_total',f:C=>{const P=pie6(),i=R(0,P.A.length-1),a=P.A[i];return{kind:'pad',vis:pieV(P),form:QF(P.X,P.N),
+ inferTotal:{arch:'y6v2_8_1_1_infer_total',f:C=>{const P=pie6(),i=R(0,P.A.length-1),a=P.A[i];return{wk:{lines:[K8([P.names[i],a,i]),mulL(P.v[i],360/a,'Jumlah')],value:P.N},kind:'pad',vis:pieV(P),form:QF(P.X,P.N),
   q:'Sektor '+P.names[i]+' ('+a+'°) mewakili '+fq(P.X,P.v[i])+'. Berapakah jumlah '+P.X.what+'?',s:a+'° ialah '+FR[a]+' bulatan. Jadi jumlah = '+(360/a)+' kali ganda.',a:nf(P.v[i])+' × '+360/a+' = '+nf(P.N)}}},
- reverse:{arch:'y6v2_8_1_1_reverse_sector',f:C=>{const P=pie6({noMoney:1}),i=R(0,P.A.length-1);return{kind:'pad',vis:qtyT(P),form:NUM(P.A[i],{post:'°'}),
+ reverse:{arch:'y6v2_8_1_1_reverse_sector',f:C=>{const P=pie6({noMoney:1}),i=R(0,P.A.length-1);return{wk:{lines:[addL(P.v,'Jumlah'),WL(P.names[i]+' = '+P.v[i]+' daripada '+P.N+'. '+P.N+' ÷ '+P.v[i]+' = ?',P.N/P.v[i],[2,4,8].filter(x=>x!==P.N/P.v[i]),P.names[i]+' = 1/'+P.N/P.v[i]+' daripada jumlah',{hl:[i],...fx('div',P.N,P.v[i])}),divL(360,P.N/P.v[i],'Sudut')],value:P.A[i]},kind:'pad',vis:qtyT(P),form:NUM(P.A[i],{post:'°'}),
   q:'Data ini akan dilukis sebagai carta pai. Berapakah sudut sektor '+P.names[i]+'?',s:'Cari jumlah semua dahulu. Kemudian sudut = kuantiti ÷ jumlah × 360°.',a:'Jumlah = '+P.v.join(' + ')+' = '+P.N+'; '+P.v[i]+'/'+P.N+' × 360° = '+P.A[i]}}},
  compare:{arch:'y6v2_8_1_1_compare',f:C=>{const P=pie6({noMoney:1}),k=R(0,P.A.length-1),idx=range(P.A.length).filter(j=>j!==k),pr=shuffle(idx).slice(0,2).sort((x,y)=>P.v[y]-P.v[x]);const[i,j]=pr;if(P.v[i]===P.v[j])return null;
-  return{kind:'pad',vis:pieV(P),form:QF(P.X,P.v[i]-P.v[j]),q:'Sektor '+P.names[k]+' mewakili '+fq(P.X,P.v[k])+'. Berapa '+(P.X.unit==='murid'?'murid':''+P.X.unit)+' lebih '+P.names[i]+' berbanding '+P.names[j]+'?',
+  return{wk:{lines:[K8([P.names[k],P.A[k],k]),mulL(P.v[k],360/P.A[k],'Jumlah'),divL(P.N,360/P.A[i],P.names[i]),divL(P.N,360/P.A[j],P.names[j]),subL(P.v[i],P.v[j])],value:P.v[i]-P.v[j]},kind:'pad',vis:pieV(P),form:QF(P.X,P.v[i]-P.v[j]),q:'Sektor '+P.names[k]+' mewakili '+fq(P.X,P.v[k])+'. Berapa '+(P.X.unit==='murid'?'murid':''+P.X.unit)+' lebih '+P.names[i]+' berbanding '+P.names[j]+'?',
    s:'Langkah 1: cari jumlah daripada sektor '+P.names[k]+'. Langkah 2: cari kuantiti dua sektor. Langkah 3: tolak.',a:'Jumlah = '+P.v[k]+' × '+360/P.A[k]+' = '+P.N+'; '+P.names[i]+' = '+P.v[i]+', '+P.names[j]+' = '+P.v[j]+'; '+P.v[i]+' − '+P.v[j]+' = '+(P.v[i]-P.v[j])}}},
- missing:{arch:'y6v2_8_1_1_missing_angle',f:C=>{const P=pie6(),i=R(0,P.A.length-1),kn=P.A.filter((_,j)=>j!==i);return{kind:'pad',form:NUM(P.A[i],{post:'°'}),card:'Sektor diketahui: '+kn.map(x=>x+'°').join(', '),
+ missing:{arch:'y6v2_8_1_1_missing_angle',f:C=>{const P=pie6(),i=R(0,P.A.length-1),kn=P.A.filter((_,j)=>j!==i);return{wk:{lines:[addL(kn,'Sektor diketahui'),subL(360,sum(kn),'Sudut tinggal')],value:P.A[i]},kind:'pad',form:NUM(P.A[i],{post:'°'}),card:'Sektor diketahui: '+kn.map(x=>x+'°').join(', '),
   q:'Sebuah carta pai mempunyai '+P.A.length+' sektor. Sudut '+kn.length+' sektor ialah '+kn.map(x=>x+'°').join(', ')+'. Berapakah sudut sektor yang tinggal?',s:'Jumlah semua sudut dalam bulatan = 360°.',a:'360 − '+kn.join(' − ')+' = '+P.A[i]}}},
  validate:{arch:'y6v2_8_1_1_validate_chart',f:C=>{const P=pie6({noMoney:1});const ix=range(P.A.length).filter(j=>P.A[j]<180),i=pick(ix);if(i==null)return null;const W=[...P.A];W[i]=W[i]===45?90:45;const s=sum(W);
   const good='Salah, jumlah sudut ialah '+s+'°, bukan 360°',bad=['Betul, setiap kategori ada sektor','Salah, sektor '+P.names[argmax(P.A)]+' terlalu besar','Betul, sektor paling besar ialah '+P.names[argmax(P.A)]];
-  return{kind:'pick',vis:{t:'pie',sec:P.names.map((n,j)=>[n,W[j],n+' '+W[j]+'°',W[j]+'°'])},card:'Data: '+P.names.map((n,j)=>n+' '+P.v[j]).join(' · '),...opts(bad,good),q:C.who+' melukis carta pai ini. Adakah carta pai itu betul?',s:'Tambah semua sudut. Carta pai yang lengkap mesti berjumlah 360°.',a:W.join(' + ')+' = '+s}}},
+  return{wk:{lines:[addL(W,'Jumlah sudut')],finSay:'Jadi adakah carta pai itu betul?'},kind:'pick',vis:{t:'pie',sec:P.names.map((n,j)=>[n,W[j],n+' '+W[j]+'°',W[j]+'°'])},card:'Data: '+P.names.map((n,j)=>n+' '+P.v[j]).join(' · '),...opts(bad,good),q:C.who+' melukis carta pai ini. Adakah carta pai itu betul?',s:'Tambah semua sudut. Carta pai yang lengkap mesti berjumlah 360°.',a:W.join(' + ')+' = '+s}}},
  /* ---- 8.2.1 & 8.2.2 kebolehjadian ---- */
  daily:{arch:'y6v2_8_2_1_certain',f:C=>{const E=pick([['Matahari terbit di sebelah timur esok pagi.',4],['Seekor kucing bertelur.',0],['Hari Isnin datang selepas hari Ahad.',4],['Hujan turun di padang pasir yang sangat kering hari ini.',1],['Langit gelap dan mendung tebal. Hujan akan turun sebentar lagi.',3],['Syiling dilambung dan mendarat dengan kepala di atas.',2],['Seorang murid Tahun 6 berumur 50 tahun.',0],['Dadu dilambung dan mendapat nombor kurang daripada 7.',4],['Dadu dilambung dan mendapat nombor 6.',1],['Dadu dilambung dan mendapat nombor 2, 3, 4, 5 atau 6.',3],['Dadu dilambung dan mendapat nombor genap.',2],['Dadu dilambung dan mendapat nombor 9.',0],['Ais diletak di bawah matahari terik dan cair.',4]]);
   return{kind:'pick',...SC(E[1]),card:E[0],q:'Nyatakan kebolehjadian peristiwa ini.',s:'Tanya diri: Bolehkah ia berlaku? Selalu berlaku? Separuh peluang?',a:''}}},
@@ -789,7 +810,7 @@ function tallySVG(n){let h='';const grp=Math.floor(n/5),rem=n%5;
  if(rem)h+='<svg class="tg" viewBox="0 0 '+(rem*5+3)+' 20" style="width:'+(rem*5+3)/24*1.5+'em"><path d="'+range(rem).map(i=>'M'+(4+i*5)+' 2v16').join('')+'" stroke="#3b2c52" stroke-width="2.2" stroke-linecap="round"/></svg>';
  return h||'<span class="tz">—</span>'}
 const ico=k=>ICO[k]||ICO.dot;
-function pictRow(name,icon,n,key,sym){const s=sym?ICO.star:ico(icon);return '<div class="prow"><span class="pl">'+name+'</span><span class="ps">'+(n?s.repeat(n):'')+'</span></div>'}
+function pictRow(name,icon,n,key,sym,j){const s=sym?ICO.star:ico(icon);return '<div class="prow" data-r="'+j+'"><span class="pl">'+name+'</span><span class="ps">'+(n?s.repeat(n):'')+'</span></div>'}
 function pieSVG(sec,mark){const T=sum(sec.map(s=>s[1]));let a0=-Math.PI/2,h='';const r=46,c=50;
  sec.forEach((s,i)=>{const a1=a0+s[1]/T*Math.PI*2,lg=a1-a0>Math.PI?1:0,x0=c+r*Math.cos(a0),y0=c+r*Math.sin(a0),x1=c+r*Math.cos(a1),y1=c+r*Math.sin(a1),m=(a0+a1)/2;
   h+=sec.length===1?'<circle cx="50" cy="50" r="46" fill="'+PIE[i]+'"/>':'<path d="M50 50L'+x0.toFixed(2)+' '+y0.toFixed(2)+'A46 46 0 '+lg+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2)+'z" fill="'+PIE[i%5]+'" stroke="#3b2c52" stroke-width="1.5"'+(mark===i?' class="mk"':'')+'/>';
@@ -806,18 +827,18 @@ function bagSVG(m){const L=[];Object.entries(m).forEach(([k,n])=>{for(let i=0;i<
  shuffle(L).forEach((k,i)=>{const x=8+(i%cols)*s+s/2,y=16+Math.floor(i/cols)*s+s/2,c=GCOL[k];h+='<circle cx="'+x+'" cy="'+y+'" r="'+(s/2-1)+'" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="1.2"/>'});
  return h+'</svg>'}
 function chartHTML(rows,step,top,build){const N=top/step;let y='';for(let i=0;i<=N;i++)y+='<i style="bottom:'+(i/N*100)+'%">'+i*step+'</i>';
- const cols=rows.map((r,j)=>build?'<div class="col" data-c="'+j+'">'+range(N).map(i=>'<button type="button" class="cell" data-c="'+j+'" data-i="'+i+'" aria-label="'+r+' sampai '+(i+1)*step+'"></button>').join('')+'</div>':'<div class="col"><span class="bar" style="height:'+(r[1]/top*100)+'%;background:'+BARC[j%5]+'"></span></div>').join('');
- return '<div class="chart" style="--n:'+N+';--k:'+rows.length+'"><div class="yax">'+y+'</div><div class="plot">'+cols+'</div><div></div><div class="xl">'+rows.map(r=>'<span>'+(build?r:r[0])+'</span>').join('')+'</div></div>'}
+ const cols=rows.map((r,j)=>build?'<div class="col" data-c="'+j+'">'+range(N).map(i=>'<button type="button" class="cell" data-c="'+j+'" data-i="'+i+'" aria-label="'+r+' sampai '+(i+1)*step+'"></button>').join('')+'</div>':'<div class="col" data-r="'+j+'"><span class="bar" style="height:'+(r[1]/top*100)+'%;background:'+BARC[j%5]+'"></span></div>').join('');
+ return '<div class="chart" style="--n:'+N+';--k:'+rows.length+'"><div class="yax">'+y+'</div><div class="plot">'+cols+'</div><div></div><div class="xl">'+rows.map((r,j)=>'<span data-r="'+j+'">'+(build?r:r[0])+'</span>').join('')+'</div></div>'}
 function visHTML(v){if(!v)return '';
  if(v.t==='raw')return '<div class="raw'+(v.items.length>15?' many':'')+'" id="raw">'+v.items.map((k,i)=>'<button type="button" class="it" data-r="'+i+'" aria-label="item '+(i+1)+'">'+ico(k)+'</button>').join('')+'</div>';
- if(v.t==='tally')return '<table class="ttab"><tr><th>Item</th><th>Gundalan</th></tr>'+v.rows.map(r=>'<tr><td><span class="ti">'+ico(r[1])+'</span>'+r[0]+'</td><td class="tm">'+tallySVG(r[2])+'</td></tr>').join('')+'</table>';
- if(v.t==='pict')return '<div class="pict'+(v.mini?' mini':'')+'">'+v.rows.map(r=>pictRow(r[0],r[1],r[2],v.key,v.sym)).join('')+'<div class="pkey">'+(v.sym?ICO.star+' = '+v.key:'1 gambar = 1')+'</div></div>';
+ if(v.t==='tally')return '<table class="ttab"><tr><th>Item</th><th>Gundalan</th></tr>'+v.rows.map((r,j)=>'<tr data-r="'+j+'"><td><span class="ti">'+ico(r[1])+'</span>'+r[0]+'</td><td class="tm">'+tallySVG(r[2])+'</td></tr>').join('')+'</table>';
+ if(v.t==='pict')return '<div class="pict'+(v.mini?' mini':'')+'">'+v.rows.map((r,j)=>pictRow(r[0],r[1],r[2],v.key,v.sym,j)).join('')+'<div class="pkey">'+(v.sym?ICO.star+' = '+v.key:'1 gambar = 1')+'</div></div>';
  if(v.t==='bar')return chartHTML(v.rows,v.step,v.top,false);
- if(v.t==='pie')return '<div class="piew">'+pieSVG(v.sec,v.mark)+'<div class="leg">'+v.sec.map((s,i)=>'<span><i style="background:'+PIE[i%5]+'"></i>'+s[2]+'</span>').join('')+'</div></div>';
+ if(v.t==='pie')return '<div class="piew">'+pieSVG(v.sec,v.mark)+'<div class="leg">'+v.sec.map((s,i)=>'<span data-r="'+i+'"><i style="background:'+PIE[i%5]+'"></i>'+s[2]+'</span>').join('')+'</div></div>';
  if(v.t==='cards')return '<div class="cards"><div class="crow" id="crow">'+v.vals.map((x,i)=>'<button type="button" class="cd" data-cd="'+i+'"'+(v.sort?'':' disabled')+'>'+x+'</button>').join('')+'</div>'+(v.sort?'<div class="srow" id="srow"></div>':'')+'</div>';
  if(v.t==='bag')return '<div class="bags">'+v.bags.map(b=>'<div class="bag">'+(b.n?'<b>'+b.n+'</b>':'')+bagSVG(b.m)+'<small>'+Object.entries(b.m).map(([k,n])=>k+' '+n).join(' · ')+'</small></div>').join('')+'</div>';
  if(v.t==='spin')return '<div class="piew">'+spinSVG(v.segs)+'<div class="leg">'+[...new Set(v.segs)].map(c=>'<span><i style="background:'+({Merah:'#ff5a6e',Biru:'#4f8dff',Kuning:'#ffd23f',Hijau:'#48c06a'})[c]+'"></i>'+c+' ('+v.segs.filter(x=>x===c).length+'/'+v.segs.length+')</span>').join('')+'</div></div>';
- if(v.t==='table')return '<table class="ktab"><tr>'+v.h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+v.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</table>';
+ if(v.t==='table')return '<table class="ktab"><tr>'+v.h.map(x=>'<th>'+x+'</th>').join('')+'</tr>'+v.rows.map(r=>'<tr>'+r.map((c,j)=>'<td data-r="'+j+'">'+c+'</td>').join('')+'</tr>').join('')+'</table>';
  return ''}
 
 /* ---------- pembina interaktif ---------- */
@@ -898,10 +919,40 @@ function check(){
   const sl=$('slot'+((served-1)%SET));if(sl){sl.classList.add('on','pop');sl.style.setProperty('--pc',PAPER[(served-1)%SET])}
   $('check').textContent=served%SET===0?'Lihat papan misi ✦':'Seterusnya →';
   setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
- paAttempt(false),misses++;
+ paAttempt(false),misses++;offerWorked();
  if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',4200);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
+/* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in kedai-kek.html ----------
+   After 3 wrong tries (2 with both hints; fewer for a 2- or 3-choice pick) the hint button
+   offers a worked example: the chart stays, Wira lights the row to read, and the pupil picks
+   each small step on the work card. The round ends without stars; the next is the same kind. */
+let workedOffer=false,repeatNext=null;
+function workedNeed(){const n=q.kind==='pick'&&q.wk?q.opts.length:0;return n&&n<=2?1:n===3?2:3}
+function offerWorked(){if(workedOffer||solved||!workedPlan()||!(misses>=workedNeed()||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
+/* The worked plan for this round, or null: it must end at the round's own answer. */
+function workedPlan(){const P=window.PAWorked;if(!P||!q.wk)return null;
+ const lab=q.kind==='pick'?q.opts.find(o=>o.id===q.correct).label:null;
+ const plan=P.buildList(q.wk,{final:lab!==null?{choices:q.opts.map(o=>o.label),right:lab}:null});if(!plan)return null;
+ if(lab!==null)return plan.finalLabel===lab?plan:null;
+ return q.kind==='pad'&&q.form.fields.length===1&&Math.abs(Number(plan.value)-q.form.fields[0].v)<1e-9?plan:null}
+function lightRows(rows){$('widget').querySelectorAll('[data-r].wk-hl').forEach(x=>x.classList.remove('wk-hl'));(rows||[]).forEach(r=>$('widget').querySelectorAll('[data-r="'+r+'"]').forEach(x=>x.classList.add('wk-hl')))}
+function startWorked(){
+ const P=window.PAWorked,plan=workedPlan();if(!plan)return;
+ q.worked=true;workedOffer=false;hints++;hideMsg();$('bubble').classList.add('hide');
+ const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
+ const box=$('widget'),tl=$('tiles');tl.className='tiles wk';$('game').classList.add('wk-on');
+ msg('Jom baca data sama-sama, satu langkah demi satu.');
+ box.innerHTML=(q.card?'<div class="qcard lt"><small>DATA</small><b>'+esc(q.card)+'</b></div>':'')+visHTML(q.vis)+'<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
+ box.querySelectorAll('button').forEach(b=>b.disabled=true);
+ P.run(plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onFact:f=>P.reportFact('pos-peninjau',f,paRound),onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n;lightRows(plan.steps[i]&&plan.steps[i].hl)}})}
+function finishWorked(){
+ if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);report(0);lightRows(null);
+ repeatNext={mode:q.mode,ti:q.tierIx};
+ hideMsg();$('game').classList.remove('wk-on');pet('happy');$('say').textContent='Sekarang kamu cuba yang serupa!';$('bubble').classList.remove('hide');
+ const s=$('stamp');s.className='stamp ok';s.innerHTML='SIAP!<small>Cara Wira · '+esc(ansText())+'</small>';void s.offsetWidth;s.classList.add('show');
+ renderTrack(true);const sl=$('slot'+((served-1)%SET));if(sl){sl.classList.add('on');sl.style.setProperty('--pc',PAPER[(served-1)%SET])}
+ $('hint').textContent='Tanya Wira';$('check').disabled=false;$('check').textContent=served%SET===0?'Lihat papan misi ✦':'Cuba soalan serupa →'}
 function adapt(st){const k=q.mode,up=q.nTiers-1;
  if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Misi seterusnya lebih mencabar.','',2600),2000)}}
  else{clean[k]=0;if(hints+misses>=2&&tier[k]>0){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
@@ -909,8 +960,11 @@ function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get
  window.parent.postMessage({type:'PA_POS_PENINJAU_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,index:served,tier:q.tierIx+1,prompt:q.q,stars:st,misses,hints,at:Date.now()},location.origin)}catch(e){}}
 
 /* ---------- aliran ---------- */
-function makeQ(){const k=cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
- const ti=Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
+/* DEV: a round picked by the 'Cuba Jom tengok cara' buttons is served next. */
+let forcedQ=null;
+function makeQ(){if(forcedQ){const x=forcedQ;forcedQ=null;return x}const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind with new numbers
+ const k=rep?rep.mode:cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
+ const ti=rep?Math.min(rep.ti,gens.length-1):Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];const C={who:p.who},e=gens[ti];
  return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,kind:'pad',...e.f(C),arch:e.arch}}
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  $('stageN').textContent='MISI '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Hari '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
@@ -920,9 +974,10 @@ function startRound(){if(served%SET===0)$('board').innerHTML=range(SET).map(i=>'
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
  $('question').textContent=q.q;$('subtitle').textContent=q.sub||(served<2?SUB[q.kind]||'':'');
  $('wiraImg').src=A+'wira-peninjau-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';
- $('check').textContent='Semak';$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('bubble').classList.add('hide');
+ $('check').textContent='Semak';$('check').disabled=false;$('hint').textContent='Tanya Wira';$('hint').disabled=false;$('hint').classList.remove('wk-offer');workedOffer=false;$('game').classList.remove('wk-on');$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
- setTimeout(()=>{$('who').textContent=q.who;$('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ setTimeout(()=>{$('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
+ $('say').textContent='Wira! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildPanel()}
 function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';const cols=['#4f8dff','#ff8a5c','#48c06a','#ffd23f','#b79be0'];
  for(let i=0;i<26;i++){const e=document.createElement('i'),a=Math.random()*Math.PI*2,d=70+Math.random()*120;e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d-30+'px');e.style.background=cols[i%cols.length];e.style.animationDelay=(Math.random()*.15)+'s';b.appendChild(e)}}
@@ -939,7 +994,7 @@ function hideStep(a){a=String(a||'').trim().replace(/\.$/,'');if(!a)return '';
  const keep=eq.slice(0,-1);if(keep.length>1&&!/[+−×÷]/.test(keep[keep.length-1]))keep.pop();
  return [...ss,keep.join('=').trimEnd()+' = '+MASK(eq[eq.length-1].trim())].join(' ')+'.'}
 function hintTwo(){if(q.hint2)return q.hint2;const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
-$('hint').onclick=()=>{if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Klu habis';if(hint2>=2)$('hint').disabled=true;sfx(620,.1)};
+$('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hint2>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hint2===1?'Lagi bantuan':'Klu habis';if(hint2>=2)$('hint').disabled=true;sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
 document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if(q.kind==='pad'&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(q.kind==='pad'&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
@@ -963,12 +1018,41 @@ function runSim(k){const s=SIMS[k],Rt=window.PAPosPeninjau;if(!Rt){$('simOut').t
  const plan=Rt.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
  if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod yang sesuai.';$('simGo').hidden=true;return}
  $('simOut').innerHTML='<b>'+s.skill+'</b> → '+plan.start.map(m=>MODE_LABEL[m.mode].toLowerCase()+' (T'+(m.start+1)+')').join(', ')+' · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
-$('devBtn').onclick=()=>{if(!DEV_ENABLED)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+/* DEV: jump straight to a round of one worked-example kind and offer "Jom tengok cara" at once. */
+const WK_TRY=[
+ ['Baca gundalan','d1-gundal',c=>c.arch==='y1v2_8_1_1_count_tally'&&c.kind==='pad'&&!/jumlah/i.test(c.q)],
+ ['Jumlah gundalan','d2-gundal',c=>c.arch==='progress_data_total'],
+ ['Banding gundalan','d2-gundal',c=>c.kind==='pick'&&c.vis?.t==='tally'],
+ ['Baca piktograf','d1-piktograf',c=>c.arch==='y1v2_8_2_1_read_one'&&c.kind==='pad'],
+ ['Piktograf ★','d4-piktograf',c=>c.arch==='pictograph_read'],
+ ['Petunjuk ★','d4-piktograf',c=>c.arch==='pictograph_key'],
+ ['Baca carta palang','d2-carta',c=>c.arch==='integrity_bar_read'],
+ ['Beza palang','d2-masalah',c=>c.arch==='integrity_data_difference'],
+ ['Sasaran jualan','d3-carta',c=>c.q.startsWith('Sasaran')],
+ ['Wang jualan','d4-carta',c=>c.form?.fields[0]?.pre==='RM'],
+ ['Min','d5-purata',c=>c.arch==='y5_mean'&&c.kind==='pad'],
+ ['Median','d5-purata',c=>c.arch==='y5_median'],
+ ['Julat','d5-purata',c=>c.arch==='y5_range'],
+ ['Mod (jadual)','d5-purata',c=>c.arch==='y5_mode'&&c.vis?.t==='table'],
+ ['Peratus carta pai','d5-pai',c=>c.arch==='y5_pie_quantity'],
+ ['Carta pai (sudut)','d6-pai',c=>c.arch==='y6v2_8_1_1_read_quantity'],
+ ['Sudut sektor','d6-pai',c=>c.arch==='y6v2_8_1_1_reverse_sector'&&c.kind==='pad']];
+function drawWkTry(){const box=$('wkTry');if(!box)return;box.innerHTML=WK_TRY.map((k,i)=>'<button type="button" data-i="'+i+'">'+k[0]+'</button>').join('');
+ box.querySelectorAll('button').forEach(b=>b.onclick=()=>tryWorked(WK_TRY[+b.dataset.i]))}
+function tryWorked([label,hash,test]){
+ try{history.replaceState(null,'','#'+hash)}catch(e){}cfg=parseHash(hash);resetAll();
+ let found=null;
+ for(let i=0;i<3000&&!found;i++){const k=cfg.modes[i%cfg.modes.length],n=GEN[cfg.grade][k].length;served=i%cfg.modes.length;tier[k]=Math.floor(i/cfg.modes.length)%n;clean[k]=0;
+  const c=makeQ(),keep=q;q=c;let ok=false;try{ok=!!workedPlan()&&test(c)}catch(_){}q=keep;if(ok)found=c}
+ $('dev').hidden=true;$('complete').hidden=true;served=0;
+ if(!found){msg('DEV: tiada soalan "'+label+'" dijumpai.','bad',3000);return}
+ forcedQ=found;startRound();misses=3;offerWorked();setTimeout(()=>msg('DEV · '+label+': tekan “Jom tengok cara”.','',3500),800)}
+$('devBtn').onclick=()=>{if(!DEV_ENABLED)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();drawWkTry();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
 $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>applyDev();
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__posDebug=()=>q&&{ok:q.ok,names:q.names,pieA:q.pie&&q.pie.A,kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,build:q.build,correct:q.correct,items:q.items,cnt,seq}; // ujian sahaja
-window.__posGen={GEN}; // ujian sahaja
+window.__posGen={GEN,current:()=>q,planFor:x=>{const keep=q;q=x;try{return workedPlan()}finally{q=keep}},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},setInp:a=>{inp=a}}; // ujian sahaja
 function focusLaunchAllowed(){try{const p=new URLSearchParams(location.search),skill=p.get('skill'),host=window.parent,sk=window.PAPosPeninjau?.SKILL?.[skill];/* The app's db is a top-level let (not window.db), so ask the bridge whether this frame is the active Focus launch. */return host!==window&&p.get('pa_focus_live')==='1'&&!!p.get('pa_nonce')&&!!sk&&Number(sk[0])===cfg.grade&&host.PAFocusMiniGamesLive?.isActiveFrame?.(window,p.get('pa_nonce'),skill,'pos-peninjau')===true}catch(_){return false}}
 if(!DEV_ENABLED&&!focusLaunchAllowed()){document.body.innerHTML='<main style="min-height:100dvh;display:grid;place-items:center;padding:24px;background:#29243f;color:#fff6e0;font:700 16px system-ui;text-align:center"><section><h1>Pos Peninjau</h1><p>Buka latihan ini melalui Kemahiran Fokus untuk profil murid.</p></section></main>';return}
 resetAll();startRound();

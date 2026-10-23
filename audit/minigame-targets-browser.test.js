@@ -412,6 +412,35 @@ test('Kedai Kek: every DEV "Cuba Jom tengok cara" kind walks the fraction board 
   assert.deepEqual(errors, []); await context.close();
 });
 
+test('Pos Peninjau: every DEV "Cuba Jom tengok cara" kind reads the chart (the row lights) and works it out to the round\'s answer', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/pos-peninjau.html#d3`); await page.waitForFunction(() => window.__posGen && window.PAWorked); await page.waitForTimeout(800);
+  await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
+  assert.equal(n, 17);
+  let lit = 0;
+  for (let i = 0; i < n; i++) {
+    if (i) await page.click('#devBtn');
+    const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);
+    await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    const arch = await page.evaluate(() => window.__posGen.current().arch);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let s = 0; s < 40; s++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      lit += await page.evaluate(() => document.querySelectorAll('#widget [data-r].wk-hl').length > 0 ? 1 : 0);
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(950);
+    }
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label);
+    await page.evaluate(() => document.getElementById('check').click()); await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__posGen.current().arch), arch, label + ': same kind next');
+  }
+  assert.ok(lit >= 10, 'reading steps light the row on the chart: ' + lit);
+  assert.deepEqual(errors, []); await context.close();
+});
+
 test('guided facts: a wrong pick on a sifir step of "Jom tengok cara" reaches the brain as a guided fact try', async () => {
   const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
   await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));

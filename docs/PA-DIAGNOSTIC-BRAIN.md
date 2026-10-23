@@ -559,6 +559,20 @@ digit, then the round's choices.
    "Jom tengok cara" (Gudang, Lombong, Wirayung, Kedai Kek) sends its first pick
    to the brain (see §4.2 "Guided facts"): two guided misses in one sifir = not
    mastered, the Fokus card then opens sifir practice.
+   **Pos Peninjau (3.87.31).** `PAWorked.buildList(spec,{final})` 1.10.0: a work
+   card for data rounds. `q.wk.lines` = read the chart row by row (`hl` lights
+   the row: tally `tr`, pictograph `.prow`, bar `.col` and its label, pie
+   legend, table cell all carry `data-r`), then work it out (+, −, ×, ÷ lines
+   tagged as guided facts). Tagged: tally read / total / difference / compare,
+   pictograph read (★ keys), most, difference, total, key, claim, money; bar
+   read, compare, sum / all / difference / high−low, more, target, money; mean
+   (table, bar, new member, target), missing mean, median (odd, even), range,
+   range change, mode from a table; pie % read / compare / quantity / claim /
+   more; D3 pie counts and fractions; D6 pie in degrees (read quantity, total,
+   sector angle, compare, missing angle, check 360°). Plans cover D1 69%, D2 88%,
+   D3 44%, D4 85%, D5 83%, D6 26%; left: the build rounds (draw tally /
+   pictograph / bars, sort cards), D1 classify, D6 chance (kebolehjadian).
+   DEV sheet: 17 buttons. Test API `__posGen.planFor/showNormal/current`.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
