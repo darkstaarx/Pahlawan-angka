@@ -365,7 +365,7 @@ self.PA_ASSET_MANIFEST=Object.freeze({
   "./assets/minigames/dapur-ramuan/wira-idle.webp": "d31e946679c7a6a43eb0eede681468b7766651b8dbf944c8b03da13372f2edf8",
   "./assets/minigames/dapur-ramuan/wira-thumb.webp": "85846567f6c174ba7ad3e6fbbcc01c73ed793d763a3231ccbbd113500b2c236f",
   "./assets/minigames/dapur-ramuan/wira-victory.webp": "4d91cb07a06ac9c4ad10a4227f6516a9609fb87803712f5a3ff8372020c87140",
-  "./assets/minigames/gerai-wirayung/premium/item-bakul-back.webp": "efc81d5d3ab6be9194738a2794b3c2092712a3bbd23f413ed7ba092c2e32000a",
+  "./assets/minigames/gerai-wirayung/premium/item-bakul-back.webp": "1d3a29208f1976556487f3a428f752ff63dba2156a53aaed3cc41b5a38a3e0d3",
   "./assets/minigames/gerai-wirayung/premium/item-bakul-front.webp": "9797db77f2e0f758b0a881c15b79a866b54ab65dc7c8ec82f095df8ca105fa0d",
   "./assets/minigames/gerai-wirayung/premium/item-bakul.webp": "208671b9a65894b3df567ac95085700513e8ff41d089fa79de3c61dae7201722",
   "./assets/minigames/gerai-wirayung/premium/item-bandung.webp": "41ff3395ad922170b1a6a0da002f4cb74d7652f67ad490b9a82cfcaa501466aa",
