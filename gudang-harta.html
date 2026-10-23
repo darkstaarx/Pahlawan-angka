@@ -457,7 +457,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.4.0"></head><body>
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.5.0"></head><body>
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -512,7 +512,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
 <script src="js/engine/reading-pairs-v1.js?v=1.0.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.4.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.5.0"></script>
 <script>
 (()=>{
 'use strict';
@@ -620,14 +620,14 @@ const Fx={
   s:'Ada dua langkah. Tulis ayat matematik dulu.',a:order==='sa'?nf(a)+' − '+nf(b)+' + '+nf(d)+' = '+nf(v)+'.':nf(a)+' + '+nf(b)+' − '+nf(d)+' = '+nf(v)+'.'}}}),
  chooseOp:(arch,young)=>({arch,f:C=>{/* Tahun 1: tambah dan tolak sahaja */const T=pick([['@ ada 48 syiling dan beri 15 kepada kawan. Operasi untuk mencari baki?','Tolak'],['Wira ada 26 anak panah dan beli 14 lagi. Operasi untuk mencari jumlahnya?','Tambah'],['Ada 5 peti, setiap peti 8 permata. Operasi untuk mencari jumlah permata?','Darab'],['40 syiling dikongsi sama rata oleh 4 pet. Operasi untuk mencari bahagian setiap pet?','Bahagi']].slice(0,young?2:4));
   return{kind:'pick',...opts(young?['Tambah','Tolak']:['Tambah','Tolak','Darab','Bahagi'],T[1],young?2:4),q:story(C,T[0]),s:'Cari kata kunci: jumlah/lagi (tambah), baki/beri (tolak), setiap (darab), kongsi sama rata (bahagi).',a:'Operasi: '+T[1].toLowerCase()+'.'}}}),
- mulArray:(arch)=>({arch,f:C=>{const r=R(2,6),c=pick([2,3,4,5,10]);return{kind:'pad',vis:{t:'array',r,c},form:NUM(r*c),q:'Ada '+r+' uncang, setiap uncang '+c+' syiling. Berapakah jumlah syiling?',s:'Kira dengan langkau '+c+': '+c+', '+2*c+', …',a:r+' × '+c+' = '+r*c+'.'}}}),
- mulFact:(arch,tables)=>({arch,f:C=>{const t=pick(tables),k=R(1,10);return{kind:'pad',card:k+' × '+t+' = ?',form:NUM(k*t),q:'Kira hasil darab.',s:'Ingat sifir '+t+'. Kira langkau '+t+' sebanyak '+k+' kali.',a:k+' × '+t+' = '+k*t+'.'}}}),
+ mulArray:(arch)=>({arch,f:C=>{const r=R(2,6),c=pick([2,3,4,5,10]);return{kind:'pad',wk:{t:'skip',step:c,count:r},vis:{t:'array',r,c},form:NUM(r*c),q:'Ada '+r+' uncang, setiap uncang '+c+' syiling. Berapakah jumlah syiling?',s:'Kira dengan langkau '+c+': '+c+', '+2*c+', …',a:r+' × '+c+' = '+r*c+'.'}}}),
+ mulFact:(arch,tables)=>({arch,f:C=>{const t=pick(tables),k=R(1,10);return{kind:'pad',wk:{t:'skip',step:t,count:k},card:k+' × '+t+' = ?',form:NUM(k*t),q:'Kira hasil darab.',s:'Ingat sifir '+t+'. Kira langkau '+t+' sebanyak '+k+' kali.',a:k+' × '+t+' = '+k*t+'.'}}}),
  mulMissing:(arch,tables)=>({arch,f:C=>{const t=pick(tables),k=R(2,10);return{kind:'pad',card:t+' × ___ = '+k*t,form:NUM(k),q:'Apakah nombor yang hilang?',s:'Bahagi untuk cari faktor hilang: '+k*t+' ÷ '+t+'.',a:k*t+' ÷ '+t+' = '+k+'.'}}}),
- mulStory:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',form:NUM(n*k),q:pick(['Ada '+k+' peti. Setiap peti mengandungi '+nf(n)+' syiling. Berapakah jumlah syiling?','Wira buat '+k+' set anak panah, setiap set '+nf(n)+' batang. Berapakah jumlah anak panah?']),s:'“Setiap” bermaksud darab.',a:k+' × '+nf(n)+' = '+nf(n*k)+'.'}}}),
- mulCalc:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',card:nf(n)+' × '+k+' = ?',form:NUM(n*k),q:'Kira hasil darab.',s:'Darab setiap digit '+nf(n)+' dengan '+k+', mula dari tempat sa. Kumpul semula jika perlu.',a:nf(n)+' × '+k+' = '+nf(n*k)+'.'}}}),
+ mulStory:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',wk:k>=10?{t:'long',a:n,b:k}:n<10?{t:'skip',step:n,count:k}:undefined,form:NUM(n*k),q:pick(['Ada '+k+' peti. Setiap peti mengandungi '+nf(n)+' syiling. Berapakah jumlah syiling?','Wira buat '+k+' set anak panah, setiap set '+nf(n)+' batang. Berapakah jumlah anak panah?']),s:'“Setiap” bermaksud darab.',a:k+' × '+nf(n)+' = '+nf(n*k)+'.'}}}),
+ mulCalc:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',wk:k>=11?{t:'long',a:n,b:k}:undefined,card:nf(n)+' × '+k+' = ?',form:NUM(n*k),q:'Kira hasil darab.',s:'Darab setiap digit '+nf(n)+' dengan '+k+', mula dari tempat sa. Kumpul semula jika perlu.',a:nf(n)+' × '+k+' = '+nf(n*k)+'.'}}}),
  mulMiss:(arch,lo,hi,mlo,mhi)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi);return{kind:'pad',card:'___ × '+k+' = '+nf(n*k),form:NUM(n),q:'Apakah nombor yang hilang?',s:'Darab dan bahagi ialah operasi songsang.',a:nf(n*k)+' ÷ '+k+' = '+nf(n)+'.'}}}),
- pow10:(arch,lo,hi,div,max=99999)=>({arch,f:C=>{const p=pick([10,100,1000]);let n=R(lo,hi);if(div){const v=n*p;if(v>=10000)return null;return{kind:'pad',card:nf(v)+' ÷ '+nf(p)+' = ?',form:NUM(n),q:'Kira.',s:'Bahagi '+nf(p)+': buang '+(String(p).length-1)+' sifar di hujung.',a:nf(v)+' ÷ '+nf(p)+' = '+nf(n)+'.'}}
-  if(n*p>max)return null;return{kind:'pad',card:nf(n)+' × '+nf(p)+' = ?',form:NUM(n*p),q:'Kira.',s:'Darab '+nf(p)+': tambah '+(String(p).length-1)+' sifar di hujung.',a:nf(n)+' × '+nf(p)+' = '+nf(n*p)+'.'}}}),
+ pow10:(arch,lo,hi,div,max=99999)=>({arch,f:C=>{const p=pick([10,100,1000]);let n=R(lo,hi);if(div){const v=n*p;if(v>=10000)return null;return{kind:'pad',wk:{t:'pow10',n,p,div:true},card:nf(v)+' ÷ '+nf(p)+' = ?',form:NUM(n),q:'Kira.',s:'Bahagi '+nf(p)+': buang '+(String(p).length-1)+' sifar di hujung.',a:nf(v)+' ÷ '+nf(p)+' = '+nf(n)+'.'}}
+  if(n*p>max)return null;return{kind:'pad',wk:{t:'pow10',n,p},card:nf(n)+' × '+nf(p)+' = ?',form:NUM(n*p),q:'Kira.',s:'Darab '+nf(p)+': tambah '+(String(p).length-1)+' sifar di hujung.',a:nf(n)+' × '+nf(p)+' = '+nf(n*p)+'.'}}}),
  mulEst:(arch,lo,hi,mlo,mhi,P)=>({arch,f:C=>{const n=R(lo,hi),k=R(mlo,mhi),rn=Math.round(n/P)*P,rk=k>=10?Math.round(k/10)*10:k,e=rn*rk;return{kind:'pick',...opts([e*10,Math.round(e/10),e+rn].map(nf),nf(e)),
   q:'Anggaran munasabah bagi '+nf(n)+' × '+k+'?',s:'Bundarkan '+nf(n)+' kepada '+PLACE[String(P).length-1]+' terdekat'+(k>=10?' dan '+k+' kepada puluh terdekat':'')+', kemudian darab.',a:nf(rn)+' × '+rk+' = '+nf(e)+'.'}}}),
  divShare:(arch)=>({arch,f:C=>{const k=pick([2,3,4,5]),q=R(2,6),n=k*q;return{kind:'pad',vis:{t:'share',n,k},form:NUM(q),q:n+' syiling dikongsi sama rata oleh '+k+' pet. Berapa syiling setiap pet dapat?',s:'Tekan “Agih” untuk beri satu syiling kepada setiap pet sehingga habis.',a:n+' ÷ '+k+' = '+q+'.'}}}),
@@ -636,7 +636,7 @@ const Fx={
  divFact:(arch,tables)=>({arch,f:C=>{const t=pick(tables),k=R(1,10);return{kind:'pad',card:k*t+' ÷ '+t+' = ?',form:NUM(k),q:'Kira hasil bahagi.',s:'Fikir sifir '+t+': berapa × '+t+' = '+k*t+'?',a:k*t+' ÷ '+t+' = '+k+'.'}}}),
  divMissing:(arch,lo,hi,dlo,dhi)=>({arch,f:C=>{const d=R(dlo,dhi),q=R(lo,hi);return{kind:'pad',card:nf(d*q)+' ÷ ___ = '+nf(q),form:NUM(d),q:'Apakah nombor yang hilang?',s:'Pembahagi = '+nf(d*q)+' ÷ '+nf(q)+'.',a:nf(d*q)+' ÷ '+nf(q)+' = '+d+'.'}}}),
  divCalc:(arch,lo,hi,dlo,dhi)=>({arch,f:C=>{const d=R(dlo,dhi),q=R(lo,hi);return{kind:'pad',card:nf(d*q)+' ÷ '+d+' = ?',form:NUM(q),q:'Kira hasil bahagi.',s:'Bahagi dari tempat paling kiri. Turunkan digit seterusnya selepas setiap langkah.',a:nf(d*q)+' ÷ '+d+' = '+nf(q)+'.'}}}),
- divStory:(arch,lo,hi,dlo,dhi)=>({arch,f:C=>{const d=R(dlo,dhi),q=R(lo,hi);return{kind:'pad',form:NUM(q),q:pick([nf(d*q)+' syiling emas dibahagi sama rata kepada '+d+' pahlawan. Berapa syiling setiap pahlawan dapat?',nf(d*q)+' anak panah disusun sama banyak dalam '+d+' tabung. Berapa batang setiap tabung?']),s:'“Sama rata” bermaksud bahagi.',a:nf(d*q)+' ÷ '+d+' = '+nf(q)+'.'}}}),
+ divStory:(arch,lo,hi,dlo,dhi)=>({arch,f:C=>{const d=R(dlo,dhi),q=R(lo,hi);return{kind:'pad',wk:q<=10&&d<=12?{t:'skip',step:d,count:q,ask:'count'}:undefined,form:NUM(q),q:pick([nf(d*q)+' syiling emas dibahagi sama rata kepada '+d+' pahlawan. Berapa syiling setiap pahlawan dapat?',nf(d*q)+' anak panah disusun sama banyak dalam '+d+' tabung. Berapa batang setiap tabung?']),s:'“Sama rata” bermaksud bahagi.',a:nf(d*q)+' ÷ '+d+' = '+nf(q)+'.'}}}),
  divInverse:(arch,lo,hi)=>({arch,f:C=>{const k=R(2,9),n=R(lo,hi);if(n*k>10000)return null;/* KSSR T3: hasil dalam 10 000 */return{kind:'pad',card:'□ × '+k+' = '+nf(n*k),form:NUM(n),q:'Apakah nombor dalam kotak?',s:'Darab dan bahagi saling songsang: □ = '+nf(n*k)+' ÷ '+k+'.',a:nf(n*k)+' ÷ '+k+' = '+nf(n)+'.'}}}),
  ops:(arch,v,big)=>({arch,f:C=>{const L=big?[1000,9999]:[10,99];
   if(v==='mulfirst'){const a=R(...L),b=R(big?100:2,big?999:30),k=R(2,9);return{kind:'pad',card:nf(a)+' + '+nf(b)+' × '+k+' = ?',form:NUM(a+b*k),q:'Kira. Darab dahulu, kemudian tambah.',s:'Tertib: × dan ÷ dahulu, kemudian + dan −.',a:nf(b)+' × '+k+' = '+nf(b*k)+'; '+nf(a)+' + '+nf(b*k)+' = '+nf(a+b*k)+'.'}}
@@ -688,7 +688,7 @@ const GEN={
 /* ===== DARJAH 1: hingga 100 ===== */
 1:{
  bina:[
-  {arch:'y1v2_1_2_1_count_objects',f:C=>{const n=R(11,20);if(n%10===0)return null;return{kind:'pad',vis:{t:'coins',n},form:NUM(n),q:'Berapakah bilangan syiling?',s:'Setiap uncang ada 10 syiling. Kira uncang dulu: 10, kemudian syiling.',a:'1 uncang = 10; tambah '+n%10+' = '+n+'.'}}},
+  {arch:'y1v2_1_2_1_count_objects',f:C=>{const n=R(11,20);if(n%10===0)return null;return{kind:'pad',wk:{t:'tenAnd',n},vis:{t:'coins',n},form:NUM(n),q:'Berapakah bilangan syiling?',s:'Setiap uncang ada 10 syiling. Kira uncang dulu: 10, kemudian syiling.',a:'1 uncang = 10; tambah '+n%10+' = '+n+'.'}}},
   {...Fx.build(2,'y1v2_1_2_2_match_value')},
   {...Fx.placeName(2,'y1v2_1_6_1_place_name')},
   {...Fx.digitValue(2,'y1v2_1_6_1_digit_value')},
@@ -709,17 +709,17 @@ const GEN={
   {...Fx.seq(2,'y1v2_1_9_2_missing_end','next',[2,5,10])}],/* Tahun 1: langkah 1, 2, 5, 10 sahaja; langkah 4 hanya untuk Segel Emas */
  tambah:[
   {arch:'y1v2_1_4_1_make_number',f:C=>{const a=R(1,9),b=R(1,10-a);return{kind:'pad',vis:{t:'groups',a,b,join:1},form:NUM(a+b),q:a+' dan '+b+' membentuk nombor apa?',s:'Kira semua syiling dalam kedua-dua peti.',a:a+' + '+b+' = '+(a+b)+'.'}}},
-  {arch:'y1v2_2_2_1_fact_direct',f:C=>{const a=R(3,9),b=R(11-a,9);return{kind:'pad',card:a+' + '+b+' = ?',form:NUM(a+b),q:'Kira hasil tambah.',s:'Buat 10 dulu: '+a+' + '+(10-a)+' = 10, kemudian tambah bakinya.',a:a+' + '+(10-a)+' + '+(b-10+a)+' = '+(a+b)+'.'}}},
+  {arch:'y1v2_2_2_1_fact_direct',f:C=>{const a=R(3,9),b=R(11-a,9);return{kind:'pad',wk:{t:'make10',a,b},card:a+' + '+b+' = ?',form:NUM(a+b),q:'Kira hasil tambah.',s:'Buat 10 dulu: '+a+' + '+(10-a)+' = 10, kemudian tambah bakinya.',a:a+' + '+(10-a)+' + '+(b-10+a)+' = '+(a+b)+'.'}}},
   {arch:'y1v2_2_2_1_fact_missing',f:C=>{const a=R(3,9),b=R(10-a,9);return{kind:'pad',card:a+' + ___ = '+(a+b),form:NUM(b),q:'Apakah nombor yang hilang?',s:'Bilang naik dari '+a+' hingga '+(a+b)+'.',a:(a+b)+' − '+a+' = '+b+'.'}}},
   {...Fx.addExch(2,'y1v2_2_2_2_add_two')},
   {arch:'y1v2_2_2_2_add_two',f:C=>{let a,b;do{a=R(11,69);b=R(5,29)}while(a+b>99);return{kind:'pad',card:a+' + '+b+' = ?',form:NUM(a+b),q:'Kira hasil tambah.',s:'Tambah sa dengan sa, puluh dengan puluh. Kumpul semula jika 10 atau lebih.',a:a+' + '+b+' = '+(a+b)+'.'}}},
   {arch:'y1v2_2_1_3_write_add',f:C=>{const a=R(20,75),b=R(5,99-a);return{kind:'pick',...opts([a+' − '+b+' = '+(a-b),a+' + '+b+' = '+(a+b+1),b+' + '+b+' = '+(2*b)],a+' + '+b+' = '+(a+b)),q:story(C,'@ ada '+a+' syiling. Wira beri '+b+' syiling lagi. Ayat matematik yang betul?'),s:'“Beri lagi” menambah bilangan. Pastikan jumlah tidak melebihi 100.',a:'Ayat: '+a+' + '+b+' = ?'}}}],
  tolak:[
   {arch:'y1v2_2_3_1_fact_direct',f:C=>{const a=R(11,18),b=R(a-9,9);return{kind:'pad',card:a+' − '+b+' = ?',form:NUM(a-b),q:'Kira hasil tolak.',s:'Tolak hingga 10 dulu: '+a+' − '+(a-10)+' = 10.',a:a+' − '+b+' = '+(a-b)+'.'}}},
-  {arch:'y1v2_2_3_1_fact_missing',f:C=>{const answer=R(1,9),total=R(answer+1,20);return{kind:'pad',card:total+' − ___ = '+(total-answer),form:NUM(answer),q:'Apakah nombor yang hilang?',s:'Fikir: nombor yang ditolak bersama baki akan membentuk jumlah asal.',a:total+' − '+answer+' = '+(total-answer)+'.'}}},
+  {arch:'y1v2_2_3_1_fact_missing',f:C=>{const answer=R(1,9),total=R(answer+1,20);return{kind:'pad',wk:{t:'countUp',from:total-answer,to:total},card:total+' − ___ = '+(total-answer),form:NUM(answer),q:'Apakah nombor yang hilang?',s:'Fikir: nombor yang ditolak bersama baki akan membentuk jumlah asal.',a:total+' − '+answer+' = '+(total-answer)+'.'}}},
   {arch:'y1v2_2_3_1_sub_story',f:C=>{const a=R(11,20),b=R(1,a-1);return{kind:'pad',form:NUM(a-b),q:story(C,'@ ada '+a+' syiling. '+b+' syiling diberi kepada peti lain. Berapa yang tinggal?'),s:'Asingkan syiling yang diberi; kira baki daripada jumlah asal.',a:a+' − '+b+' = '+(a-b)+'.'}}},
   {arch:'y1v2_2_3_2_sub_two',f:C=>{let a,b;do{a=R(30,99);b=R(11,a-10)}while(a%10>=b%10);return{kind:'pad',card:a+' − '+b+' = ?',form:NUM(a-b),q:'Kira hasil tolak.',s:'Tolak sa dengan sa. Jika tidak cukup, pecahkan 1 puluh.',a:a+' − '+b+' = '+(a-b)+'.'}}},
-  {arch:'y1v2_2_6_2_remaining',f:C=>{const s=pick([2,5,10]),a=s*R(4,10),k=R(2,3);return{kind:'pad',form:NUM(a-s*k),q:'Ada '+a+' syiling. Wira ambil '+s+', kemudian '+s+' lagi'+(k===3?', dan '+s+' lagi':'')+'. Berapa syiling yang tinggal?',s:'Tolak '+s+' sebanyak '+k+' kali.',a:a+' − '+range(k).map(()=>s).join(' − ')+' = '+(a-s*k)+'.'}}},
+  {arch:'y1v2_2_6_2_remaining',f:C=>{const s=pick([2,5,10]),a=s*R(4,10),k=R(2,3);return{kind:'pad',wk:{t:'back',start:a,step:s,count:k},form:NUM(a-s*k),q:'Ada '+a+' syiling. Wira ambil '+s+', kemudian '+s+' lagi'+(k===3?', dan '+s+' lagi':'')+'. Berapa syiling yang tinggal?',s:'Tolak '+s+' sebanyak '+k+' kali.',a:a+' − '+range(k).map(()=>s).join(' − ')+' = '+(a-s*k)+'.'}}},
   {arch:'y1v2_2_4_2_sub_story',f:C=>{const a=R(20,99),b=R(3,a-5);return{kind:'pad',form:NUM(a-b),q:story(C,'@ ada '+a+' anak panah. '+b+' patah semasa latihan. Berapa yang tinggal?'),s:'Yang patah dikeluarkan daripada jumlah asal.',a:a+' − '+b+' = '+(a-b)+'.'}}},
   {...Fx.chooseOp('y1v2_2_4_2_choose_operation',true)}]},
 
@@ -1190,21 +1190,31 @@ let workedOffer=false,repeatNext=null;
 /* A place-value pick with 2 choices is offered after 1 miss (the next try is a coin toss), with 3 after 2. */
 function workedNeed(){const n=q.kind==='pick'&&q.wk?q.opts.length:0;return n&&n<=2?1:n===3?2:3}
 function offerWorked(){if(workedOffer||solved||!(misses>=workedNeed()||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
-function startWorked(){
+/* The worked plan for this round, or null: a board the pupil walks, ending at the round's own answer. */
+function workedPlan(){
  // Only when the written method ends at this round's answer (not a two-step sum, not a remainder field).
  // Place-value rounds (round, compare, place name, digit value) bring their own board spec (q.wk).
  // Two-step rounds run two boards; the rack's add/sub rounds use the written board (the rack already lays them out that way).
- const P=window.PAWorked,rackOp=q.kind==='build'&&(q.rack.mode==='add'||q.rack.mode==='sub'),want=q.kind==='pad'?q.form.fields[0].v:q.need?.v,
-  chain=P&&q.wk?.t==='chain'&&P.buildChain?.(q.wk,{story:!q.card}),pv=!chain&&P&&q.wk&&((q.wk.t==='seq'||q.wk.t==='apply')?P.buildSeq?.(q.wk):P.buildPV?.(q.wk,{final:q.kind==='pick'?{choices:q.opts.map(o=>o.label),right:ansText()}:null})),
-  par=!pv&&!chain&&P&&(rackOp||q.kind==='pad'&&q.form?.fields?.length===1)&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card&&!rackOp}),
-  plan=pv&&(pv.finalLabel!==undefined?pv.finalLabel===ansText():String(pv.answer)===String(pvAnswer()))?pv:built&&built.answer===want&&!built.rem?built:null;
+ const P=window.PAWorked;if(!P)return null;const rackOp=q.kind==='build'&&(q.rack.mode==='add'||q.rack.mode==='sub'),want=q.kind==='pad'?q.form.fields[0].v:q.need?.v,
+  W=q.wk,HOPS=['make10','countUp','skip','back','tenAnd'],
+  chain=P&&W&&(W.t==='chain'?P.buildChain?.(W,{story:!q.card}):W.t==='long'?P.buildLong?.(W):null),
+  pv=!chain&&P&&W&&W.t!=='chain'&&W.t!=='long'&&((W.t==='seq'||W.t==='apply')?P.buildSeq?.(W):HOPS.includes(W.t)?P.buildHops?.(W):W.t==='pow10'?P.buildPow10?.(W):P.buildPV?.(W,{final:q.kind==='pick'?{choices:q.opts.map(o=>o.label),right:ansText()}:null})),
+  // A division with a remainder field ("baki") ends at both fields.
+  qr=q.kind==='pad'&&q.form?.fields?.length===2&&q.form.fields[1].pre==='baki',
+  par=!pv&&!chain&&P&&(rackOp||q.kind==='pad'&&(q.form?.fields?.length===1||qr))&&P.parse(q),built=par&&P.build(par.op,par.a,par.b,{story:!q.card&&!rackOp}),
+  plan=pv&&(pv.finalLabel!==undefined?pv.finalLabel===ansText():String(pv.answer)===String(pvAnswer()))?pv:built&&built.answer===want&&(qr?built.rem===q.form.fields[1].v:!built.rem)?built:null;
+ if(chain&&chain.answer===want)return{chain};
+ return plan?{plan}:null;
+}
+function startWorked(){
+ const P=window.PAWorked,wp=q.kind==='build'&&q.rack.mode==='build'?null:workedPlan(),chain=wp?.chain,plan=wp?.plan;
  q.worked=true;workedOffer=false;hints++;reportProgress('worked');hideMsg();
  const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
  const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
  $('wsayTxt').textContent='Jom kira sama-sama, satu langkah demi satu.';$('wsay').classList.remove('hide');
  if(q.kind==='build'&&q.rack.mode==='build')return startRackWorked();
- if(chain&&chain.answer===want||plan){box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
-  (chain&&chain.answer===want?P.runChain:P.run)(chain&&chain.answer===want?chain:plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});return}
+ if(chain||plan){box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
+  (chain?P.runChain:P.run)(chain||plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});return}
  // No written method for this kind yet: the worked line, then the right answer.
  box.innerHTML='<div class="wk-wrap"><div class="wk-say">'+esc(q.a||q.s||'')+'</div><div class="wk-say"><b>Jawapan: '+esc(ansText())+'</b></div></div>';
  tl.innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';tl.querySelector('button').onclick=finishWorked;
@@ -1344,7 +1354,7 @@ $('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>apply
 document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
 window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
 window.__gudangDebug=()=>q&&{phase:rPhase,taken,addIn,kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,rack:q.rack,correct:q.correct,cur:rack,vis:q.vis&&q.vis.t}; // ujian sahaja
-window.__gudangGen={GEN,hideStep,hintTwo:()=>hintTwo(),focusTarget,fadeLevel,current:()=>q,show:(t,n=0)=>{tier['target:'+cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},targets:()=>targetFor(cfg.grade),sample:n=>{const keep=served,out=[];for(let i=0;i<n;i++){served=i;out.push(makeQ())}served=keep;return out}}; // ujian sahaja
+window.__gudangGen={planFor:x=>{const keep=q;q=x;try{return workedPlan()}finally{q=keep}},GEN,hideStep,hintTwo:()=>hintTwo(),focusTarget,fadeLevel,current:()=>q,show:(t,n=0)=>{tier['target:'+cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},targets:()=>targetFor(cfg.grade),sample:n=>{const keep=served,out=[];for(let i=0;i<n;i++){served=i;out.push(makeQ())}served=keep;return out}}; // ujian sahaja
 resetAll();startRound();
 })();
 </script>

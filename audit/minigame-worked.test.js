@@ -124,3 +124,21 @@ test('order, words and expanded: per step, then the round\'s own choices', () =>
   const e = W.buildPV({ t: 'expanded', n: 969 });
   assert.deepEqual(e.steps.map(s => s.right), ['900', '60', '9']);
 });
+
+test('facts as hops, × ÷ by 10/100/1000, two-digit multiplication', () => {
+  const m = W.buildHops({ t: 'make10', a: 5, b: 7 });
+  assert.deepEqual([m.answer, m.steps.map(s => s.right)], [12, ['5', '2', '12']]);
+  assert.deepEqual(W.buildHops({ t: 'countUp', from: 9, to: 14 }).steps.map(s => s.right), ['1', '4', '5']);
+  assert.equal(W.buildHops({ t: 'countUp', from: 3, to: 8 }).answer, 5);
+  const k = W.buildHops({ t: 'skip', step: 5, count: 7 });
+  assert.deepEqual([k.answer, k.steps.map(s => s.right)], [35, ['25', '30', '35']], 'from 5 × 5, then hops of 5');
+  assert.deepEqual(W.buildHops({ t: 'skip', step: 3, count: 4, ask: 'count' }).steps.map(s => s.right), ['6', '9', '12', '4'], 'division counts the hops');
+  assert.equal(W.buildHops({ t: 'skip', step: 7, count: 1 }).answer, 7);
+  assert.deepEqual(W.buildHops({ t: 'back', start: 40, step: 5, count: 3 }).steps.map(s => s.right), ['35', '30', '25']);
+  assert.equal(W.buildHops({ t: 'tenAnd', n: 16 }).answer, 16);
+  assert.deepEqual([W.buildPow10({ n: 19, p: 100 }).answer, W.buildPow10({ n: 42, p: 100, div: true }).answer], [1900, 42]);
+  const L = W.buildLong({ a: 846, b: 27 });
+  assert.deepEqual([L.answer, L.chain.map(p => p.rows)], [22842, [[846, 7], [846, 2], [5922, 16920]]]);
+  assert.equal(W.buildLong({ a: 846, b: 20 }), null, 'a 0 in the units: no third board');
+  for (let a = 3; a <= 9; a++) for (let b = 11 - a; b <= 9; b++) { const p = W.buildHops({ t: 'make10', a, b }); for (const s of p.steps) { assert.ok(s.choices.includes(s.right)); assert.equal(new Set(s.choices).size, s.choices.length, `${a}+${b}`); } }
+});

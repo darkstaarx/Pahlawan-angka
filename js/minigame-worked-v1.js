@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.4.0';
+  const VERSION='1.5.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'];
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   const digits=n=>String(Math.abs(Math.trunc(n))).split('').map(Number).reverse();
@@ -128,17 +128,27 @@
       p1.steps.unshift({kind:'pick',col:-1,say:'Ayat matematik mana yang sepadan dengan cerita?',right,choices:order(right,[S(flip[o1],flip[o2]),S(o1,o1)]),sentence:true,
         after:{sign:SIGN[o1],note:`Betul: ${right}. Kira dari kiri: langkah pertama ${nf(a)} ${SIGN[o1]} ${nf(b)}.`}});
     }
-    return{chain:[p1,p2],mid,answer:p2.answer};
+    return{chain:[p1,p2],mid,answer:p2.answer,notes:[`Langkah pertama siap: <b>${nf(mid)}</b>. Sekarang ${nf(mid)} ${SIGN[o2]} ${nf(d)}.`]};
+  }
+  /* 567 × 37: 567 × 7, then 567 × 3 with a 0 at the end (× 30), then add the two. */
+  function buildLong(spec){
+    const{a,b}=spec||{};if(!Number.isInteger(a)||!Number.isInteger(b)||a<10||b<11||b>99)return null;
+    const u=b%10,t=Math.floor(b/10);if(!u)return null;
+    const p1=build('mul',a,u),p2=build('mul',a,t),A=a*u,B=a*t*10,p3=build('add',A,B);if(!p1||!p2||!p3)return null;
+    return{chain:[p1,p2,p3],answer:a*b,notes:[
+      `${nf(a)} × ${u} = <b>${nf(A)}</b>. Sekarang ${nf(a)} × ${t} (untuk ${t*10}).`,
+      `${nf(a)} × ${t} = ${nf(a*t)}. Tambah 0 di hujung: ${nf(a)} × ${t*10} = <b>${nf(B)}</b>. Sekarang tambah.`]};
   }
   /* Run the two boards: the first, a short pause with its result, then the second. */
   function runChain(c,el,onDone,opt={}){
-    const total=c.chain[0].steps.length+c.chain[1].steps.length;
-    run(c.chain[0],el,()=>{
+    const total=c.chain.reduce((n,p)=>n+p.steps.length,0);
+    const go=(k,off)=>run(c.chain[k],el,k===c.chain.length-1?onDone:()=>{
       setTimeout(()=>{
-        el.say.innerHTML=`<span>Langkah pertama siap: <b>${esc(nf(c.mid))}</b>. Sekarang ${esc(nf(c.mid))} ${SIGN[c.chain[1].op]} ${esc(nf(c.chain[1].rows[1]))}.</span>`;
-        setTimeout(()=>run(c.chain[1],el,onDone,{...opt,onShow:(i)=>opt.onShow&&opt.onShow(c.chain[0].steps.length+i,total)}),opt.pause??1600);
+        el.say.innerHTML=`<span>${c.notes[k]}</span>`;   // notes are built from numbers only
+        setTimeout(()=>go(k+1,off+c.chain[k].steps.length),opt.pause??1600);
       },opt.pace??900);
-    },{...opt,onShow:(i)=>opt.onShow&&opt.onShow(i,total)});
+    },{...opt,onShow:(i)=>opt.onShow&&opt.onShow(off+i,total)});
+    go(0,0);
   }
 
   /* Number patterns (pola): a trail of boxes. {t:'seq', list, k} asks for list[k]: two
@@ -164,6 +174,51 @@
       {kind:'pick',col:-1,say:`Berapa bezanya? ${nf(big)} − ${nf(small)} = ?`,right:nf(gap),choices:order(nf(gap),[nf(gap*10),nf(gap+1),nf(Math.max(1,gap-1))]),after:{note:`Peraturan: ${up?'tambah':'tolak'} ${nf(gap)}.`}},
       {kind:'pick',col:-1,pre:{pair:back?[1]:[k-1],hop:k},say:back?`Nombor pertama: undur dari ${nf(from)}. ${ask}`:`Dari ${nf(from)}: ${ask}`,right:nf(v),choices:order(nf(v),[nf(back?from+st:from-st),nf(v+st),nf(v+(up?1:-1))].filter(x=>!/^-/.test(x))),after:{fill:{i:k,v},note:`Nombor yang hilang ialah ${nf(v)}.`}}];
     return{op:'seq',rows:[],items:L.map((x,i)=>i===k?null:x),steps,done:`Pola ${up?'tambah':'tolak'} ${nf(gap)}: nombor yang hilang ialah ${nf(v)}.`,answer:v};
+  }
+
+  /* Facts as hops on a trail (the seq board with a label on each hop):
+       {t:'make10',a,b}        8 + 4: 8 + 2 = 10, 4 = 2 + 2, 10 + 2 = 12
+       {t:'countUp',from,to}   17 − ___ = 9: count up 9 → 10 → 17
+       {t:'skip',step,count,ask}  4, 8, 12 … (from 5 × step when count > 5); ask 'end' (×) or 'count' (÷)
+       {t:'back',start,step,count}  take away step, count times
+       {t:'tenAnd',n}           1 uncang = 10, then the loose coins */
+  function buildHops(spec){
+    if(!spec)return null;const T=spec.t,P=(v,say,right,choices,i,hop)=>({kind:'pick',col:-1,say,right:String(right),choices:order(String(right),choices.map(String).filter(x=>x!==String(right)&&!/^-/.test(x))),after:{fill:i===undefined?undefined:{i,v},hop,note:''}});
+    if(T==='make10'){const{a,b}=spec,x=10-a,r=b-x;if(!(a>0&&a<10&&b>0&&b<10&&r>0))return null;
+      return{op:'seq',rows:[],items:[a,null,null],hops:['',''],steps:[
+        P(10,`Buat 10 dulu: ${a} + ? = 10`,x,[x+1,x-1,b],1,{i:1,label:`+${x}`}),
+        P(null,`${b} = ${x} + ?`,r,[r+1,b,x],undefined,{i:2,label:`+${r}`}),
+        P(a+b,`10 + ${r} = ?`,10+r,[10+r+1,a+b-10,10+r-1],2)],done:`${a} + ${b} = ${a+b}.`,answer:a+b}}
+    if(T==='countUp'){const{from,to}=spec,ans=to-from;if(!(from>=0&&ans>0))return null;
+      if(from<10&&to>10)return{op:'seq',rows:[],items:[from,10,to],hops:['',''],steps:[
+        P(null,`Kira naik dari ${from}: ${from} + ? = 10`,10-from,[11-from,9-from,to-10],undefined,{i:1,label:`+${10-from}`}),
+        P(null,`10 + ? = ${to}`,to-10,[to-9,to-11,10-from],undefined,{i:2,label:`+${to-10}`}),
+        P(null,`Jadi ${10-from} + ${to-10} = ?`,ans,[ans+1,ans-1,to],undefined)],done:`${to} − ${ans} = ${from}.`,answer:ans};
+      return{op:'seq',rows:[],items:[from,to],hops:[''],steps:[P(null,`Kira naik dari ${from}: ${from} + ? = ${to}`,ans,[ans+1,ans-1,to],undefined,{i:1,label:`+${ans}`})],done:`${to} − ${ans} = ${from}.`,answer:ans}}
+    if(T==='skip'&&spec.count===1&&spec.ask!=='count'){const d=spec.step;if(!(d>=1&&d<=12))return null;
+      return{op:'seq',rows:[],items:[null],steps:[P(d,`1 × ${d}: satu kumpulan ${d}. Berapa semuanya?`,d,[d+1,1,d*10],0)],done:`1 × ${d} = ${d}.`,answer:d}}
+    if(T==='skip'){const{step:d,count:k}=spec;if(!(d>=1&&d<=12&&k>=2&&k<=12))return null;
+      const s0=k>5?5:1,items=[];for(let i=s0;i<=k;i++)items.push(i*d);const steps=[];
+      if(s0===5)steps.push(P(5*d,`Mula dengan yang mudah: 5 × ${d} = ?`,5*d,[5*d+d,5+d,5*d-d],0));
+      for(let i=s0+1;i<=k;i++)steps.push(P(i*d,`${nf((i-1)*d)} + ${d} = ?`,i*d,[i*d+1,(i-1)*d+d+d,i*d-1],i-s0,{i:i-s0,label:`+${d}`}));
+      const it=items.map((v,i)=>i===0&&s0===1?v:null),cnt=spec.ask==='count';
+      if(cnt)steps.push(P(null,`Berapa kali ${d} sampai ${nf(k*d)}?`,k,[k+1,k-1,d],undefined));
+      return{op:'seq',rows:[],items:it,hops:items.slice(1).map(()=>''),steps,done:cnt?`${nf(k*d)} ÷ ${d} = ${k}.`:`${k} × ${d} = ${nf(k*d)}.`,answer:cnt?k:k*d}}
+    if(T==='back'){const{start:a,step:d,count:k}=spec;if(!(a-d*k>=0&&k>=1&&k<=5))return null;
+      const items=[a];for(let i=1;i<=k;i++)items.push(a-i*d);
+      return{op:'seq',rows:[],items:items.map((v,i)=>i?null:v),hops:items.slice(1).map(()=>''),steps:items.slice(1).map((v,i)=>P(v,`${nf(items[i])} − ${d} = ?`,v,[v+1,v-1,items[i]+d],i+1,{i:i+1,label:`−${d}`})),done:`${a} − ${d} × ${k} = ${a-d*k}.`,answer:a-d*k}}
+    if(T==='tenAnd'){const n=spec.n;if(!(n>10&&n<20))return null;
+      return{op:'seq',rows:[],items:[null,null],hops:[''],steps:[P(10,'Satu uncang penuh ada berapa syiling?',10,[5,9,n],0),P(n,`10 + ${n-10} syiling lagi = ?`,n,[n+1,n-1,10],1,{i:1,label:`+${n-10}`})],done:`10 + ${n-10} = ${n}.`,answer:n}}
+    return null;
+  }
+  /* × or ÷ by 10, 100, 1000: the digits move left (or right) by as many places as there are zeros. */
+  function buildPow10(spec){
+    const{n,p,div}=spec||{};const z=[10,100,1000].indexOf(p)+1;if(!z||!Number.isInteger(n)||n<1)return null;
+    const v=div?n:n*p,top=div?n*p:n,Z=k=>`${div?'Buang':'Tambah'} ${k} sifar`;
+    return{op:'pv',rows:[top],answerRow:'=',cols:digits(n*p).length,steps:[
+      {kind:'pick',col:-1,say:`${div?'÷':'×'} ${nf(p)}: ${nf(p)} ada berapa sifar?`,right:String(z),choices:order(String(z),['1','2','3'].filter(x=>x!==String(z))),after:{note:`${nf(p)} ada ${z} sifar.`}},
+      {kind:'pick',col:-1,say:`${Z(z)} ${div?'dari hujung':'di hujung'}: ${nf(top)} ${div?'÷':'×'} ${nf(p)} = ?`,right:nf(v),choices:order(nf(v),[nf(div?v*10:v/10),nf(div?Math.max(1,Math.round(v/10)):v*10)].filter(x=>!/\./.test(x))),after:{answer:v,note:`Setiap digit beralih ${z} tempat ke ${div?'kanan':'kiri'}.`}}],
+      done:`${nf(top)} ${div?'÷':'×'} ${nf(p)} = ${nf(v)}.`,answer:v};
   }
 
   /* ---------- place value (papan nilai tempat) ----------
@@ -329,7 +384,7 @@
     const cols=[...Array(n).keys()].reverse();
     const head=cols.map(i=>cell('wk-h',PLACE[i]==='puluh ribu'?'p.ribu':PLACE[i]==='ratus ribu'?'r.ribu':PLACE[i],i)).join('');
     if(plan.op==='seq'){
-      return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?'<i class="wk-hop" aria-hidden="true">›</i>':''}<span class="wk-c wk-box${v===null?' wk-q':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
+      return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?`<i class="wk-hop" data-h="${i}" aria-hidden="true">${plan.hops?'':'›'}</i>`:''}<span class="wk-c wk-box${v===null?' wk-q':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
     }
     if(plan.op==='pv'){
       const head2=cols.map(i=>cell('wk-h'+(opt.hideHead?' wk-hide':''),opt.hideHead?'?':(PLACE[i]==='puluh ribu'?'p.ribu':PLACE[i]==='ratus ribu'?'r.ribu':PLACE[i]==='juta'?'juta':PLACE[i]),i,` data-name="${esc(PLACE[i])}"`)).join('');
@@ -378,6 +433,7 @@
       if(a.answer!==undefined){const D=digits(a.answer);el.board.querySelectorAll('.wk-ans .wk-a').forEach(c=>{const v=D[Number(c.dataset.col)];if(v!==undefined){c.textContent=v;c.classList.add('wk-drop')}})}
       if(a.sym){const g=q('.wk-sym');if(g){g.textContent=a.sym;g.classList.add('wk-pop')}}
       if(a.done){const r=q(`.wk-pvrow[data-row="${a.done.row}"]`);if(r){r.classList.add('wk-rowdone');const b=r.querySelector('.wk-op');if(b){b.textContent=a.done.rank;b.classList.add('wk-rank','wk-pop')}}}
+      if(a.hop){const h=q(`.wk-hop[data-h="${a.hop.i}"]`);if(h){h.textContent=a.hop.label;h.classList.add('wk-hopl','wk-pop')}}
       if(a.fill&&a.fill.i!==undefined){const c=q(`.wk-box[data-i="${a.fill.i}"]`);if(c){c.textContent=nf(a.fill.v);c.classList.remove('wk-q');c.classList.add('wk-drop')}}
       else if(a.fill){const c=q(`.wk-pvrow[data-row="${a.fill.row}"] [data-col="${a.fill.col}"]`);if(c){c.textContent=a.fill.digit;c.classList.remove('wk-empty');c.classList.add('wk-drop')}}
     };
@@ -433,5 +489,5 @@
     if(typeof window!=='undefined')window.__wkRight=()=>{const s=plan.steps[k];return s&&s.kind==='pick'?String(s.right):s&&s.kind==='tap'?`tap:${s.row}:${s.col}`:'go'};   // tests only
     return{get step(){return k},get misses(){return misses},plan};
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildSeq,buildChain,runChain,boardHTML,run,_digits:digits,_nf:nf});
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
 });
