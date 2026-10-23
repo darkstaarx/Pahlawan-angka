@@ -493,7 +493,7 @@ digit, then the round's choices.
    lazim add/sub (2 rows, and 3 rows as a chain) is covered: about 7% of
    Lombong rounds. Lombong has ~70 generators (decimal pads, percent, grids,
    number lines, compare); the next ones need their own boards.
-   **Lombong part 2 (3.87.21):** 46% of sampled Lombong rounds (most of D2–D5)
+   **Lombong part 2 (3.87.21, PR #95 merged):** 46% of sampled Lombong rounds (most of D2–D5)
    have a plan. `PAWorked` 1.7.0: decimal × and ÷ by one digit (the 0 at sa
    is written); the place-value board takes `dp` (compare place by place,
    never by digit count; round to n places; place name / digit value);
