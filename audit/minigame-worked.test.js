@@ -85,3 +85,22 @@ test('two steps: two boards left to right; a story asks for the whole sentence f
   assert.equal(W.buildChain({ a: 900, b: 50, d: 70, ops: ['add', 'sub'] }).answer, 880);
   assert.equal(W.buildChain({ a: 10, b: 50, d: 1, ops: ['sub', 'add'] }), null, 'a negative first step');
 });
+
+test('patterns, compose and the missing part: steps end at the answer', () => {
+  const s = W.buildSeq({ t: 'seq', list: [254, 255, 256, 257, 258], k: 2 });
+  assert.deepEqual([s.answer, s.items[2], s.steps.map(x => x.right)], [256, null, ['Bertambah', '1', '256']]);
+  assert.deepEqual(s.steps[0].pre.pair, [3, 4], 'a known pair next to the gap');
+  const back = W.buildSeq({ t: 'seq', list: [50, 45, 40, 35, 30], k: 0 });
+  assert.deepEqual([back.answer, back.steps[2].right], [50, '50'], 'the first box: go back from the next one');
+  assert.equal(W.buildSeq({ t: 'seq', list: [1, 2, 4], k: 2 }), null, 'not a constant step');
+  const a = W.buildSeq({ t: 'apply', s0: 140, st: -10, n: 3 });
+  assert.deepEqual([a.answer, a.steps.map(x => x.right)], [110, ['130', '120', '110']]);
+  const c = W.buildPV({ t: 'compose', n: 54030 });
+  assert.deepEqual(c.steps.map(x => x.kind), ['tap', 'tap', 'show', 'tap', 'show']);
+  assert.equal(c.answer, 54030);
+  const m = W.buildPV({ t: 'missingPart', n: 1138, i: 2 });
+  assert.deepEqual([m.answer, [...m.steps[0].pre.same].sort(), m.steps[1].right], [100, [0, 1, 3], '100']);
+  // Three numbers: two boards.
+  assert.equal(W.buildChain({ a: 320, b: 219, d: 129, ops: ['add', 'add'] }).answer, 668);
+  assert.equal(W.buildChain({ a: 439, b: 96, d: 139, ops: ['sub', 'sub'] }).answer, 204);
+});

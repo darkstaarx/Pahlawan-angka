@@ -451,6 +451,18 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    #90 (3.87.16) D1 "X menulis 100 sebagai …": n − 10 equalled the wrong
    spelling, so one choice became "Tidak pasti"; now n − 20. This was the rare
    failure of the "Darjah 1–2: every choice is real" test.
+   **"Jom tengok cara" part 4 (3.87.17, PR #91 merged; the Gudang card label
+   "GULUNG ARAHAN" is now "KIRA", owner: plain school words):** number patterns
+   (`PAWorked.buildSeq`, `q.wk.t='seq'|'apply'`): a trail of boxes; a known
+   pair lights up → bertambah/berkurang → beza → hop from the neighbour into
+   the "?" (the first box goes back from the next). Compose (`'compose'`): the
+   pupil taps each part's place on an empty row; a place with no part gets 0.
+   Missing part (`'missingPart'`, incl. D1 "34 = ___ + 4"): the written places
+   go grey, tap the digit left, pick its value. Three numbers (126 + 183 +
+   233, 439 − 96 − 139): two boards via `chain`. Still text-only in Gudang
+   (62 generators): order, words ↔ number, expanded (pick), estimate/check,
+   operation choice, clues, rule picks, facts (1 × 2, 6 + 7), × ÷ by 10/100,
+   remainders, two-digit ×, × first / brackets, D6 juta and primes.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before
