@@ -469,7 +469,7 @@ Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first 
    incl. D6 juta pad): like compose, each word group's digits tapped into
    place, a place not said gets 0. Expanded (`'expanded'`): the value of each
 digit, then the round's choices.
-   **Part 6 (3.87.19):** facts as hops on the trail (`PAWorked.buildHops`):
+   **Part 6 (3.87.19, PR #93 merged):** facts as hops on the trail (`PAWorked.buildHops`):
    8 + 4 buat 10 dulu; 17 − ___ = 9 count up through 10; k × t skip counting
    (from 5 × t when k > 5; 1 × t one step); groups; ÷ in a story counts the
    hops; take away again and again hops back; count coins "1 uncang = 10".
