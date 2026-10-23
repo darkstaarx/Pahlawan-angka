@@ -229,3 +229,19 @@ test('fraction boards (Kedai Kek): every step offers the right tile and the plan
   assert.equal(pick.finalLabel, 'Kek B'); assert.equal(pick.steps.at(-1).right, 'Kek B');
   assert.equal(W.buildFrac({ t: 'read', d: 1, sh: 1 }), null); assert.equal(W.buildFrac({ t: 'nope' }), null);
 });
+
+test('fact steps (guided sifir / basic facts): the right tile is exactly a op b, and carried columns are not facts', () => {
+  const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const F = { add: (a, b) => a + b, sub: (a, b) => a - b, mul: (a, b) => a * b, div: (a, b) => a / b };
+  const plans = [];
+  for (let i = 0; i < 200; i++) {
+    plans.push(W.build('add', R(10, 9999), R(10, 9999)), W.build('sub', R(5000, 9999), R(10, 4999)), W.build('mul', R(10, 999), R(2, 9)), W.build('div', R(2, 9) * R(10, 999), R(2, 9)));
+    const d = R(2, 10), REL = [[2, 4], [3, 9], [5, 10]][R(0, 2)];
+    plans.push(W.buildFrac({ t: 'add', terms: [[1, REL[0]], [1, REL[1]]], ops: ['+'] }), W.buildFrac({ t: 'equiv', n: 1, d, k: R(2, 5), ask: 'n' }), W.buildFrac({ t: 'qty', n: 1, d, N: d * R(2, 9) }), W.buildFrac({ t: 'simp', N: 2 * d, D: 2 * (d + 1) }));
+  }
+  let n = 0;
+  for (const p of plans.filter(Boolean)) for (const s of p.steps) if (s.fact) { n++; assert.equal(String(F[s.fact.op](s.fact.a, s.fact.b)), String(s.right), s.say); }
+  assert.ok(n > 500, String(n));
+  // 47 × 3: 7 × 3 = 21 is a fact; 4 × 3 + 2 (a carried 2) is not.
+  assert.deepEqual(W.build('mul', 47, 3).steps.filter(s => s.fact).map(s => `${s.fact.a}×${s.fact.b}`), ['7×3']);
+});

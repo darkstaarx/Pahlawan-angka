@@ -18,6 +18,8 @@ function cleanFacets(fx){
  if(['lazim','word','symbolic','visual'].includes(fx.format))out.format=fx.format;
  // Language load (lens 4.8): 1 short wording … 3 long wording, set by the page that wrote both.
  if([1,2,3].includes(fx.reading))out.reading=fx.reading;
+ // A fact the child picked while Wira guided them ("Jom tengok cara" step).
+ if(fx.guided===true)out.guided=true;
  return out;
 }
 function fromChildFrame(src){if(!src)return false;for(const f of document.querySelectorAll('iframe')){try{if(f.contentWindow===src)return true}catch(_){}}return false}

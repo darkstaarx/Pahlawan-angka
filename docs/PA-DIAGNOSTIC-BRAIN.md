@@ -139,6 +139,16 @@ Thresholds are **starting values**; calibrate with real data (§7).
 - **Parent:** "Sifir 7: betul 9/10 tapi purata 6 saat — anak masih mengira, belum ingat."
 - **Action:** retrieval mini game limited to the weak facts, mixed with 30%
   known facts; spaced (§4.7).
+- **Guided facts (owner, 2026-10-23):** "lepas dia 3x salah, kita guide pun dia
+  salah, itu maknanya dia memang lemah situ." Each step of "Jom tengok cara" that
+  is one basic fact (a column with no carried digit, `d × ? = D`, `N ÷ g`, `a × m`,
+  a 2-term numerator sum, …; never × 1 / ÷ 1) reports its **first pick** as its own
+  item with `facets {op, operands, guided:true}` (`PAWorked.reportFact`); the brain
+  stores it with `g:1`. Rule: **2 guided misses in one table** (explain-away as
+  above) mark it "belum dikuasai — salah juga semasa Wira bimbing langkah demi
+  langkah", even before 8 tries, unless the child's own answers in that table are
+  ≥80%. Same for add20 / sub20 ("belum kukuh"). Guided records feed only 4.2
+  (sifir and basic facts); every other lens, rapid guessing included, ignores them.
 
 ### 4.3 Systematic error patterns ("bugs")
 - **Research:** Brown & Burton / VanLehn (Repair Theory): children's errors
@@ -545,6 +555,10 @@ digit, then the round's choices.
    board replaces the widget, the round ends without stars, the next is the same
    kind. DEV sheet: 16 "Cuba Jom tengok cara" buttons. Test API
    `__kekGen.planFor/showNormal/current`.
+   **Guided facts (3.87.30, next PR after #101).** A fact step in any game's
+   "Jom tengok cara" (Gudang, Lombong, Wirayung, Kedai Kek) sends its first pick
+   to the brain (see §4.2 "Guided facts"): two guided misses in one sifir = not
+   mastered, the Fokus card then opens sifir practice.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

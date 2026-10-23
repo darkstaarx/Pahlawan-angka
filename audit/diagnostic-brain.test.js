@@ -177,3 +177,36 @@ test('retention: mastered before, slipping in the last 3 days', () => {
   assert.equal(f.evidence.slips[0].old, '8/8');
   assert.match(f.action, /berjadual/);
 });
+
+test('guided facts ("Jom tengok cara"): two misses in one table while guided = not mastered, one is not enough', () => {
+  // The record: a fact the child picked on Wira's board after 3 misses.
+  let log = B.applyResponse([], { q: { token: 'mg-k:1:f1', prompt: '3 × 4', skill: 'D3.FRAC', facets: { op: 'mul', operands: [3, 4], guided: true } }, ok: false, sec: 4, mode: 'minigame-first-attempt', value: '15', at: NOW });
+  assert.equal(log[0].g, 1); assert.deepEqual(log[0].tb, [3, 4]);
+  const other = many(8, () => rec({ s: 'D3.ADD', o: 'add', tb: undefined, k: 1, sec: 4 }));
+  const g = (a, b, k) => rec({ s: 'D3.FRAC', tb: [a, b].filter(x => x >= 2), a: [a, b], k, sec: 4, g: 1 });
+  // One guided slip: no finding.
+  let r = B.analyze([...other, g(4, 3, 0), g(2, 5, 1)], { now: NOW });
+  assert.ok(!r.findings.some(f => f.id === 'fact_fluency'), JSON.stringify(r.findings));
+  // Two guided misses in sifir 4 (4 × 3, 4 × 6): sifir 4, even with only a few tries.
+  r = B.analyze([...other, g(4, 3, 0), g(4, 6, 0), g(2, 5, 1)], { now: NOW, name: 'Faris' });
+  const f = r.findings.find(x => x.id === 'fact_fluency');
+  assert.ok(f, JSON.stringify(r.findings));
+  assert.deepEqual(f.target.tables, [4]);
+  assert.match(f.text, /sifir 4 belum dikuasai — salah juga semasa Wira bimbing/i);
+  // A table the child knows well on their own is not marked weak by two guided slips.
+  r = B.analyze([...other, ...many(10, () => rec({ tb: [4], k: 1, sec: 2 })), g(4, 3, 0), g(4, 6, 0)], { now: NOW });
+  assert.ok(!r.findings.some(x => x.id === 'fact_fluency' && /sifir 4 belum/.test(x.text)), JSON.stringify(r.findings));
+});
+
+test('guided facts stay out of the other lenses (rapid guessing, symbolic vs word)', () => {
+  const guided = many(12, i => rec({ s: 'D3.FRAC', tb: [7], k: i % 2, sec: 0.3, g: 1 }));
+  const r = B.analyze([...guided, ...many(4, () => rec({ s: 'D3.ADD', o: 'add', tb: undefined, k: 1, sec: 4 }))], { now: NOW });
+  assert.ok(!r.findings.some(f => f.id === 'rapid_guess'), JSON.stringify(r.findings.map(f => f.id)));
+});
+
+test('basic facts: two guided misses in tambah asas mark it, even before 8 tries', () => {
+  const g = (a, b, k) => rec({ s: 'D1.ADD', o: 'add', tb: undefined, fx: 'add20', fk: `${a}+${b}`, k, sec: 4, g: 1 });
+  const r = B.analyze([...many(5, () => rec({ s: 'D1.SUB', o: 'sub', tb: undefined, k: 1, sec: 4 })), g(7, 5, 0), g(8, 6, 0)], { now: NOW });
+  const f = r.findings.find(x => x.id === 'basic_facts');
+  assert.ok(f, JSON.stringify(r.findings)); assert.match(f.text, /tambah asas hingga 20 belum kukuh — salah juga semasa Wira bimbing/i);
+});

@@ -363,7 +363,7 @@ main.pa-game .scene{--waist:90px;--belt:.55;--aspect:1.5;--ww:clamp(100px,58cqh,
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.1.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.9.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.9.1"></script>
 <script>/* Gerai Wirayung — router Kemahiran Fokus → mini-game wang.
    Membaca encounter learnerReviewV1 yang SAMA digunakan oleh focusPracticeSummary()
    dan memutuskan sama ada skill wang yang lemah sesuai dilatih di gerai.
@@ -966,7 +966,7 @@ function startWorked(){
  $('receipt').after(box);
  if(!wp){$('wkSay').innerHTML=esc(val(M().answer,m));$('wkTiles').innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';$('wkTiles').querySelector('button').onclick=wkDone;return}
  (wp.chain?W.runChain:W.run)(wp.chain||wp.plan,{board:$('wkBoard'),tiles:$('wkTiles'),inline:$('wkInline'),say:$('wkSay')},wkDone,
-  {onStep:()=>tone(700,.06),onMiss:()=>sfx.bad(),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});
+  {onFact:f=>W.reportFact('gerai-wirayung',f,paRound),onStep:()=>tone(700,.06),onMiss:()=>sfx.bad(),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});
 }
 /* After the board: the pupil lays the amount on the counter (SERAH), as in every round. */
 function wkDone(){const tg=target();

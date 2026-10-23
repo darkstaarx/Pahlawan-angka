@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.9.0';
+  const VERSION='1.9.1';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -84,7 +84,7 @@
       const x=A[i]||0,y=B[i]||0,s=x+y+c,one=A[i]===undefined||B[i]===undefined,ask=one?`${A[i]===undefined?y:x} + 1 = ?`:`${x} + ${y}${c?' + 1':''} = ?`;
       // Only one number has a digit here and nothing is carried: it just comes down.
       if((A[i]===undefined||B[i]===undefined)&&!c){steps.push({kind:'show',col:i,say:`Tempat ${PLACE[i]}: hanya ada ${s}. ${s} turun.`,after:{write:{col:i,digit:s},note:`Tulis ${s}.`}});continue}
-      steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:s,choices:tiles(s,[c?x+y:s+1,s%10===s?s-1:s%10,Math.abs(x-y)]),
+      steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:s,choices:tiles(s,[c?x+y:s+1,s%10===s?s-1:s%10,Math.abs(x-y)]),...(c||one?{}:{fact:{op:'add',a:x,b:y}}),
         after:{write:{col:i,digit:s%10},carry:s>=10?{col:i+1}:null,note:s>=10?`Tulis ${s%10}, kumpul semula 1 ke tempat ${PLACE[i+1]}.`:`Tulis ${s}.`}});
       c=s>=10?1:0;
     }
@@ -105,7 +105,7 @@
       }
       const d=top[i]-y,ask=`${top[i]} − ${y} = ?`;
       if(B[i]===undefined){const lead=i===n-1&&d===0&&n>1&&i>dp;steps.push({kind:'show',col:i,say:lead?`Tempat ${PLACE[i]}: tinggal 0. 0 di depan tidak ditulis.`:`Tempat ${PLACE[i]}: tiada nombor untuk ditolak. ${d} turun.`,after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1&&i>dp},note:d===0&&i===n-1&&n>1&&i>dp?'0 di depan tidak ditulis.':`Tulis ${d}.`}});continue}
-      steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:d,choices:tiles(d,[Math.abs((A[i])-y),d+1,top[i]+y]),
+      steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:d,choices:tiles(d,[Math.abs((A[i])-y),d+1,top[i]+y]),fact:{op:'sub',a:top[i],b:y},
         after:{write:{col:i,digit:d,lead:i===n-1&&d===0&&n>1&&i>dp},note:`Tulis ${d}.`}});
     }
     return{op:'sub',rows:[a,b],answer:a-b,cols:n,steps};
@@ -114,7 +114,7 @@
     const A=dp?padTo(digits(a),dp+1):digits(a),n=A.length,steps=[];let c=0;
     for(let i=0;i<n;i++){
       const p=A[i]*b+c,ask=`${A[i]} × ${b}${c?' + '+c:''} = ?`;
-      steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:p,choices:tiles(p,[c?A[i]*b:p+b,p-b,A[i]+b+c]),
+      steps.push({kind:'pick',col:i,ask,say:`Tempat ${PLACE[i]}: ${ask}`,right:p,choices:tiles(p,[c?A[i]*b:p+b,p-b,A[i]+b+c]),...(c?{}:{fact:{op:'mul',a:A[i],b}}),
         after:{write:{col:i,digit:p%10},carry:p>=10?{col:i+1,digit:Math.floor(p/10)}:null,note:p>=10?`Tulis ${p%10}, bawa ${Math.floor(p/10)} ke tempat ${PLACE[i+1]}.`:`Tulis ${p}.`}});
       c=Math.floor(p/10);
     }
@@ -129,7 +129,7 @@
       const cur=r*10+d,q=Math.floor(cur/b),col=D.length-1-k;
       if(!started&&q===0&&k<D.length-1){r=cur;const z=dp&&col<=dp;steps.push({kind:'show',col,say:`${cur} kurang daripada ${b}. ${z?'Tulis 0, kemudian g':'G'}abung dengan digit seterusnya.`,after:{write:{col,digit:z?0:null},note:z?'Tulis 0.':'Tiada di sini.'}});return}
       started=true;qd.push(q);const nr=cur-q*b;
-      steps.push({kind:'pick',col,ask:`${cur} ÷ ${b} = ?`,say:`${cur} ÷ ${b} = ? (berapa kumpulan ${b}?)`,right:q,choices:tiles(q,[q+1,q-1,cur%10]),
+      steps.push({kind:'pick',col,ask:`${cur} ÷ ${b} = ?`,say:`${cur} ÷ ${b} = ? (berapa kumpulan ${b}?)`,right:q,choices:tiles(q,[q+1,q-1,cur%10]),...(cur%b===0?{fact:{op:'div',a:cur,b}}:{}),
         after:{write:{col,digit:q},rem:nr,note:nr?`${q} × ${b} = ${q*b}. Baki ${nr}${k<D.length-1?' dibawa ke digit seterusnya':''}.`:`${q} × ${b} = ${q*b}. Tiada baki.`}});
       r=nr;
     });
@@ -506,6 +506,8 @@
     const ok=x=>x!==undefined&&x!==null&&x!==''&&!(typeof x==='number'&&(!Number.isFinite(x)||x<=0||!Number.isInteger(x)));
     const P=(say,right,wrongs,after={},pre)=>({kind:'pick',col:-1,say,right:String(right),choices:order(String(right),wrongs.filter(ok).map(String).filter(x=>x!==String(right))),after:{note:'',...after},...(pre?{pre}:{})});
     const G=(say,after={},pre)=>({kind:'show',col:-1,say,after:{note:'',...after},...(pre?{pre}:{})});
+    // A step that is one basic fact (sifir, tambah/tolak asas): the page reports the first pick as a fact try.
+    const X=(step,op,a,b)=>({...step,fact:{op,a,b}});
     const set=(...slots)=>Object.fromEntries(slots.map(s=>[s.id,s.v]));
     const FIN=say=>fin?{kind:'pick',col:-1,say,right:String(fin.right),choices:order(String(fin.right),fin.choices.map(String).filter(x=>x!==String(fin.right)),4),after:{note:''}}:null;
     const gcfWrongs=(g,a,b)=>[...factors(g).filter(x=>x>1&&x<g).reverse(),g+1,g*2,a,b];
@@ -513,20 +515,20 @@
     const tail=(N,D,mixed=true)=>{
       const g=gcdF(N,D);
       if(N%D===0){const w=N/D,s=S(w),r=row([{t:'='},{v:s}]);
-        steps.push(P(`${FS(N,D)}: ${N} ÷ ${D} = ?`,w,[w+1,w-1,N-D],{showRow:r,set:set(s),note:`Jawapan nombor bulat: ${w}.`}));return{N:w,D:1,text:String(w)}}
+        steps.push(X(P(`${FS(N,D)}: ${N} ÷ ${D} = ?`,w,[w+1,w-1,N-D],{showRow:r,set:set(s),note:`Jawapan nombor bulat: ${w}.`}),'div',N,D));return{N:w,D:1,text:String(w)}}
       if(N>D&&mixed){const w=Math.floor(N/D),rm=N%D,k=gcdF(rm,D),sw=S(w),sn=S(rm),r=row([{t:'='},{mx:[sw,sn,D]}]);
         steps.push(P(`${FS(N,D)} lebih daripada 1. ${N} ÷ ${D} = ? (berapa kali ${D} muat dalam ${N}?)`,w,[w+1,w-1,rm],{showRow:r,set:set(sw),note:`${w} kek penuh.`}));
         steps.push(P(`Baki: ${N} − ${w*D} = ?`,rm,[rm+1,rm-1,D-rm],{set:set(sn),note:`Baki ${rm} jadi pengangka. Penyebut kekal ${D}.`}));
         if(k===1)return{N,D,text:MS(w,rm,D)};
         const n2=S(rm/k),d2=S(D/k),r2=row([{t:'='},{mx:[w,n2,d2]}]);
         steps.push(P(`Permudahkan ${FS(rm,D)}: nombor terbesar yang boleh bahagi ${rm} dan ${D}?`,k,gcfWrongs(k,rm,D),{showRow:r2,note:`Bahagi atas dan bawah dengan ${k}.`}));
-        steps.push(P(`${rm} ÷ ${k} = ?`,rm/k,[rm/k+1,rm-k,rm],{set:set(n2)}));
-        steps.push(P(`${D} ÷ ${k} = ?`,D/k,[D/k+1,D-k,D],{set:set(d2),note:`${MS(w,rm,D)} = ${MS(w,rm/k,D/k)}.`}));
+        steps.push(X(P(`${rm} ÷ ${k} = ?`,rm/k,[rm/k+1,rm-k,rm],{set:set(n2)}),'div',rm,k));
+        steps.push(X(P(`${D} ÷ ${k} = ?`,D/k,[D/k+1,D-k,D],{set:set(d2),note:`${MS(w,rm,D)} = ${MS(w,rm/k,D/k)}.`}),'div',D,k));
         return{N,D,text:MS(w,rm/k,D/k)}}
       if(g>1){const n2=S(N/g),d2=S(D/g),r=row([{t:'='},{fr:[n2,d2]}]);
         steps.push(P(`Bentuk termudah: nombor terbesar yang boleh bahagi ${N} dan ${D}?`,g,gcfWrongs(g,N,D),{showRow:r,note:`Bahagi atas dan bawah dengan ${g}.`}));
-        steps.push(P(`${N} ÷ ${g} = ?`,N/g,[N/g+1,N-g,N],{set:set(n2)}));
-        steps.push(P(`${D} ÷ ${g} = ?`,D/g,[D/g+1,D-g,D],{set:set(d2),note:`${FS(N,D)} = ${FS(N/g,D/g)}.`}));
+        steps.push(X(P(`${N} ÷ ${g} = ?`,N/g,[N/g+1,N-g,N],{set:set(n2)}),'div',N,g));
+        steps.push(X(P(`${D} ÷ ${g} = ?`,D/g,[D/g+1,D-g,D],{set:set(d2),note:`${FS(N,D)} = ${FS(N/g,D/g)}.`}),'div',D,g));
         return{N,D,text:FS(N/g,D/g)}}
       return{N,D,text:FS(N,D)}};
     const T=spec.t,I=Number.isInteger;let out=null;
@@ -553,18 +555,18 @@
       const sk=S('× '+k),sn=S(n*k),sd=S(d*k),N=ask==='d'?n*k:sn,D=ask==='n'||ask==='shade'?d*k:sd;
       row([{fr:[n,d]},{t:'='},{fr:[N,D]}],false);const rt=row([{tag:sk}]);
       if(ask==='shade'){
-        steps.push(P(`Kek B ada ${d*k} bahagian, kek A ada ${d}. ${d*k} ÷ ${d} = ?`,k,[k+1,k-1,d*k-d],{showRow:rt,set:set(sk),note:`1 bahagian kek A = ${k} bahagian kek B.`}));
-        steps.push(P(`Krim kek B: ${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn),note:`Letak krim pada ${n*k} bahagian kek B.`}))}
+        steps.push(X(P(`Kek B ada ${d*k} bahagian, kek A ada ${d}. ${d*k} ÷ ${d} = ?`,k,[k+1,k-1,d*k-d],{showRow:rt,set:set(sk),note:`1 bahagian kek A = ${k} bahagian kek B.`}),'div',d*k,d));
+        steps.push(X(P(`Krim kek B: ${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn),note:`Letak krim pada ${n*k} bahagian kek B.`}),'mul',n,k))}
       else if(ask==='n'){
-        steps.push(P(`Penyebut ${d} jadi ${d*k}. ${d} × ? = ${d*k}`,k,[k+1,k-1,d*k-d],{showRow:rt,set:set(sk),note:`Darab dengan ${k}.`}));
-        steps.push(P(`Buat sama pada pengangka: ${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}))}
+        steps.push(X(P(`Penyebut ${d} jadi ${d*k}. ${d} × ? = ${d*k}`,k,[k+1,k-1,d*k-d],{showRow:rt,set:set(sk),note:`Darab dengan ${k}.`}),'div',d*k,d));
+        steps.push(X(P(`Buat sama pada pengangka: ${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}),'mul',n,k))}
       else if(ask==='d'){
-        steps.push(P(`Pengangka ${n} jadi ${n*k}. ${n} × ? = ${n*k}`,k,[k+1,k-1,n*k-n],{showRow:rt,set:set(sk),note:`Darab dengan ${k}.`}));
-        steps.push(P(`Buat sama pada penyebut: ${d} × ${k} = ?`,d*k,[d+k,d*k+1,d],{set:set(sd),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}))}
+        steps.push(X(P(`Pengangka ${n} jadi ${n*k}. ${n} × ? = ${n*k}`,k,[k+1,k-1,n*k-n],{showRow:rt,set:set(sk),note:`Darab dengan ${k}.`}),'div',n*k,n));
+        steps.push(X(P(`Buat sama pada penyebut: ${d} × ${k} = ?`,d*k,[d+k,d*k+1,d],{set:set(sd),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}),'mul',d,k))}
       else{
         steps.push(G(`Pecahan setara: darab atas dan bawah dengan nombor yang sama. Cuba × ${k}.`,{showRow:rt,set:set(sk)}));
-        steps.push(P(`${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn)}));
-        steps.push(P(`${d} × ${k} = ?`,d*k,[d+k,d*k+1,d],{set:set(sd),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}))}
+        steps.push(X(P(`${n} × ${k} = ?`,n*k,[n+k,n*k+1,n],{set:set(sn)}),'mul',n,k));
+        steps.push(X(P(`${d} × ${k} = ?`,d*k,[d+k,d*k+1,d],{set:set(sd),note:`${FS(n,d)} = ${FS(n*k,d*k)}.`}),'mul',d,k))}
       out=ask==='n'?{N:n*k,D:1,text:String(n*k)}:ask==='d'?{N:d*k,D:1,text:String(d*k)}:{N:n*k,D:d*k,text:FS(n*k,d*k),exact:true}}
     else if(T==='simp'){
       const{N,D}=spec;if(!I(N)||!I(D)||gcdF(N,D)<2)return null;
@@ -582,7 +584,7 @@
     else if(T==='toImp'){
       const{w,n,d}=spec;if(![w,n,d].every(I))return null;const N=w*d+n,sn=S(N);
       row([{mx:[w,n,d]},{t:'='},{fr:[sn,d]}],false);
-      steps.push(P(`${w} kek penuh = berapa bahagian? ${w} × ${d} = ?`,w*d,[w+d,N,w*d-1],{note:`${w} kek penuh = ${w*d} bahagian.`}));
+      steps.push(X(P(`${w} kek penuh = berapa bahagian? ${w} × ${d} = ?`,w*d,[w+d,N,w*d-1],{note:`${w} kek penuh = ${w*d} bahagian.`}),'mul',w,d));
       steps.push(P(`Tambah pengangka: ${w*d} + ${n} = ?`,N,[N+1,w*d,N-1],{set:set(sn),note:`${MS(w,n,d)} = ${FS(N,d)}. Penyebut kekal ${d}.`}));
       out={N,D:d,text:FS(N,d),exact:true}}
     else if(T==='add'){
@@ -594,11 +596,12 @@
       if(terms.some(([,d])=>d!==D)){
         const slots=terms.map(([a,d])=>d===D?null:S(a*D/d)),l2=[];terms.forEach(([a,d],i)=>{if(i)l2.push({t:ops[i-1]});l2.push({fr:[slots[i]||a,D]})});const r=row([{t:'='},...l2]);
         terms.forEach(([a,d],i)=>{if(d===D)return;const m=D/d;
-          steps.push(P(`Samakan penyebut kepada ${D}: ${d} × ? = ${D}`,m,[m+1,m-1,D-d],{showRow:r,note:`Darab atas dan bawah dengan ${m}.`}));
-          steps.push(P(`${a} × ${m} = ?`,a*m,[a+m,a*m+1,a],{set:set(slots[i]),note:`${FS(a,d)} = ${FS(a*m,D)}.`}));conv[i]=a*m})}
+          steps.push(X(P(`Samakan penyebut kepada ${D}: ${d} × ? = ${D}`,m,[m+1,m-1,D-d],{showRow:r,note:`Darab atas dan bawah dengan ${m}.`}),'div',D,d));
+          steps.push(X(P(`${a} × ${m} = ?`,a*m,[a+m,a*m+1,a],{set:set(slots[i]),note:`${FS(a,d)} = ${FS(a*m,D)}.`}),'mul',a,m));conv[i]=a*m})}
       let S0=conv[0];ops.forEach((o,i)=>{S0=o==='+'?S0+conv[i+1]:S0-conv[i+1]});if(S0<1)return null;
       const expr=conv.map((x,i)=>(i?ops[i-1]+' ':'')+x).join(' '),loose=conv.reduce((a,b)=>a+b,0),ss=S(S0),r=row([{t:'='},{fr:[ss,D]}]);
-      steps.push(P(`Penyebut sama (${D}). Pengangka: ${expr} = ?`,S0,[S0+1,S0-1,loose,S0+D],{showRow:r,set:set(ss),note:`Penyebut kekal ${D}: ${FS(S0,D)}.`}));
+      {const st=P(`Penyebut sama (${D}). Pengangka: ${expr} = ?`,S0,[S0+1,S0-1,loose,S0+D],{showRow:r,set:set(ss),note:`Penyebut kekal ${D}: ${FS(S0,D)}.`});
+        steps.push(conv.length===2?X(st,ops[0]==='+'?'add':'sub',conv[0],conv[1]):st)}
       out=tail(S0,D)}
     else if(T==='cmp'){
       const{a,b,d,big=true,names}=spec;if(![a,b,d].every(I)||a===b)return null;const want=big?Math.max(a,b):Math.min(a,b),sy=S(a>b?'>':'<');
@@ -630,8 +633,8 @@
       // n/d of N: find 1/d first (N ÷ d), then n of them; "belum dijual" takes that from N.
       const{n,d,N,rest}=spec;if(![n,d,N].every(I)||N%d)return null;const g=N/d,sg=S(g),sp=S(n*g);
       row([{fr:[n,d]},{t:'daripada'},{v:N}],false);const r1=row([{fr:[1,d]},{t:'='},{v:sg}]),r2=row([{fr:[n,d]},{t:'='},{v:sp}]);
-      steps.push(P(`Cari ${FS(1,d)} dulu: ${N} ÷ ${d} = ?`,g,[g+1,N-d,g-1],{showRow:r1,set:set(sg),note:`${FS(1,d)} daripada ${N} = ${g}.`}));
-      steps.push(P(`${FS(n,d)}: ${g} × ${n} = ?`,n*g,[n*g+g,n+g,g],{showRow:r2,set:set(sp),note:`${FS(n,d)} daripada ${N} = ${n*g}.`}));
+      steps.push(X(P(`Cari ${FS(1,d)} dulu: ${N} ÷ ${d} = ?`,g,[g+1,N-d,g-1],{showRow:r1,set:set(sg),note:`${FS(1,d)} daripada ${N} = ${g}.`}),'div',N,d));
+      steps.push(X(P(`${FS(n,d)}: ${g} × ${n} = ?`,n*g,[n*g+g,n+g,g],{showRow:r2,set:set(sp),note:`${FS(n,d)} daripada ${N} = ${n*g}.`}),'mul',g,n));
       if(rest){const left=N-n*g,sl=S(left),r3=row([{t:`${N} −`},{v:n*g},{t:'='},{v:sl}]);
         steps.push(P(`Belum dijual: ${N} − ${n*g} = ?`,left,[left+1,left-1,n*g],{showRow:r3,set:set(sl),note:`${left} belum dijual.`}));out={N:left,D:1,text:String(left)}}
       else out={N:n*g,D:1,text:String(n*g)}}
@@ -642,10 +645,10 @@
       if(w){const A=w*d+n,sa=S(A),r=row([{t:'='},{fr:[sa,d]},{t:'×'},T==='mulW'?{v:k}:{fr:[c,e]}]);
         steps.push(P(`Tukar dulu: ${w} × ${d} + ${n} = ?`,A,[A+1,w*d,w+d+n],{showRow:r,set:set(sa),note:`${MS(w,n,d)} = ${FS(A,d)}.`}));n=A}
       if(T==='mulW'){if(!I(k)||k<2)return null;const P0=n*k,sp=S(P0),r=row([{t:'='},{fr:[sp,d]}]);
-        steps.push(P(`Darab pengangka: ${n} × ${k} = ?`,P0,[n+k,P0+n,P0-1],{showRow:r,set:set(sp),note:`Penyebut kekal ${d}.`}));out=tail(P0,d)}
+        steps.push(X(P(`Darab pengangka: ${n} × ${k} = ?`,P0,[n+k,P0+n,P0-1],{showRow:r,set:set(sp),note:`Penyebut kekal ${d}.`}),'mul',n,k));out=tail(P0,d)}
       else{if(!I(c)||!I(e))return null;const tn=n*c,td=d*e,s1=S(tn),s2=S(td),r=row([{t:'='},{fr:[s1,s2]}]);
-        steps.push(P(`Atas × atas: ${n} × ${c} = ?`,tn,[n+c,tn+1,tn-1],{showRow:r,set:set(s1)}));
-        steps.push(P(`Bawah × bawah: ${d} × ${e} = ?`,td,[d+e,td+1,td-1],{set:set(s2),note:`${FS(tn,td)}.`}));out=tail(tn,td)}}
+        steps.push(X(P(`Atas × atas: ${n} × ${c} = ?`,tn,[n+c,tn+1,tn-1],{showRow:r,set:set(s1)}),'mul',n,c));
+        steps.push(X(P(`Bawah × bawah: ${d} × ${e} = ?`,td,[d+e,td+1,td-1],{set:set(s2),note:`${FS(tn,td)}.`}),'mul',d,e));out=tail(tn,td)}}
     else if(T==='div'){
       // ÷ a fraction = × its reciprocal (salingan); a whole number k is k/1, so ÷ k = × 1/k.
       let{n,d,w=0,W,c,e,k}=spec;if(W!==undefined){n=W;d=1}
@@ -656,8 +659,8 @@
       const inv=FS(e,c),sr=S(byWhole?1:e),sd=S(c),Lr=W!==undefined?{v:W}:{fr:[n,d]},r=row([{t:'='},Lr,{t:'×'},{fr:[sr,sd]}]);
       steps.push(P(byWhole?`Bahagi dengan ${k} = darab dengan ${FS(1,k)}. Salingan ${k} = ?`:`Bahagi dengan pecahan = darab dengan salingannya. Salingan ${FS(c,e)} = ?`,inv,[FS(c,e),byWhole?String(k):FS(e,c+1),FS(c,e+1)],{showRow:r,set:set(sr,sd),note:`÷ jadi ×, ${byWhole?k:FS(c,e)} jadi ${inv}.`}));
       const tn=n*e,td=d*c,s1=S(tn),s2=d===1?td:S(td),r2=row([{t:'='},{fr:[s1,s2]}]);
-      steps.push(P(d===1?`${n} × ${e} = ?`:`Atas × atas: ${n} × ${e} = ?`,tn,[n+e,tn+1,tn-1],{showRow:r2,set:set(s1),...(d===1?{note:`${FS(tn,td)}.`}:{})}));
-      if(d!==1)steps.push(P(`Bawah × bawah: ${d} × ${c} = ?`,td,[d+c,td+1,td-1],{set:set(s2),note:`${FS(tn,td)}.`}));
+      steps.push(X(P(d===1?`${n} × ${e} = ?`:`Atas × atas: ${n} × ${e} = ?`,tn,[n+e,tn+1,tn-1],{showRow:r2,set:set(s1),...(d===1?{note:`${FS(tn,td)}.`}:{})}),'mul',n,e));
+      if(d!==1)steps.push(X(P(`Bawah × bawah: ${d} × ${c} = ?`,td,[d+c,td+1,td-1],{set:set(s2),note:`${FS(tn,td)}.`}),'mul',d,c));
       out=td===1?{N:tn,D:1,text:String(tn)}:tail(tn,td)}
     if(!out||!steps.length)return null;
     const f=FIN(spec.ask==='gcf'?'Jadi faktor sepunya terbesar?':'Jadi jawapannya?');if(f)steps.push(f);
@@ -745,7 +748,7 @@
     const show=()=>{
       busy=false;
       if(k>=plan.steps.length){focus(-1);tapCells(false);el.say.innerHTML=plan.done?(opt.html?`<span><b>Siap!</b> ${H(plan.done)}</span>`:`<b>Siap!</b> ${H(plan.done)}`):`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
-      const s=plan.steps[k];focus(s.kind==='tap'?-1:s.col);say(s.say);opt.onShow&&opt.onShow(k,plan.steps.length);
+      const s=plan.steps[k];shownAt=Date.now();focus(s.kind==='tap'?-1:s.col);say(s.say);opt.onShow&&opt.onShow(k,plan.steps.length);
       if(s.pre&&s.pre.pair){el.board.querySelectorAll('.wk-box').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('wk-pair',s.pre.pair.includes(i));c.classList.toggle('wk-target',i===s.pre.hop)})}
       el.board.querySelectorAll('.wk-diff,.wk-grp').forEach(c=>c.classList.remove('wk-diff','wk-grp'));
       el.board.querySelectorAll('.wk-model i').forEach(c=>{const g=s.pre&&s.pre.glow,k=c.dataset.k;c.classList.toggle('wk-glow',!!g&&(g==='all'||g===k||(g==='left'&&k!=='eat')))});
@@ -769,7 +772,10 @@
       T.querySelectorAll('.wk-t').forEach((btn,i)=>{btn.onclick=()=>pick(btn);btn.style.setProperty('--i',i);btn.classList.add('wk-enter')});
       try{T.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(_){}
     };
-    let misses=0;
+    let misses=0,shownAt=0;const tried=new Set();
+    // A basic-fact step: its first pick is a fact try for the brain (lens 4.2, basic facts), even when guided.
+    const fact=(s,ok,v)=>{const f=s.fact;if(!f||tried.has(k)||(f.op==='mul'&&Math.min(f.a,f.b)<2)||(f.op==='div'&&f.b<2))return;   // × 1 and ÷ 1 say nothing about a table
+      tried.add(k);opt.onFact&&opt.onFact({...s.fact,ok,value:v,answer:s.right,ms:Date.now()-shownAt})};
     const tap=c=>{
       if(busy)return;const s=plan.steps[k];if(!s||s.kind!=='tap')return;
       if(Number(c.dataset.row)!==s.row||(!s.anyCol&&Number(c.dataset.col)!==s.col)){
@@ -782,6 +788,7 @@
     };
     const pick=btn=>{
       if(busy)return;const s=plan.steps[k];
+      if(s.kind==='pick')fact(s,String(btn.dataset.v)===String(s.right),btn.dataset.v);
       if(s.kind==='pick'&&String(btn.dataset.v)!==String(s.right)){
         misses++;btn.classList.remove('wk-no');void btn.offsetWidth;btn.classList.add('wk-no');btn.disabled=true;
         [...btn.parentNode.querySelectorAll('.wk-t')].find(b=>b.dataset.v===String(s.right))?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
@@ -794,5 +801,14 @@
     if(typeof window!=='undefined')window.__wkRight=()=>{const s=plan.steps[k];return s&&s.kind==='pick'?String(s.right):s&&s.kind==='tap'?`tap:${s.row}:${s.col}`:'go'};   // tests only
     return{get step(){return k},get misses(){return misses},plan};
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
+  /* A guided fact try → the parent app (js/minigame-telemetry-v1.js), as its own item with
+     facets {op, operands, guided}: lens 4.2 reads it as sifir / basic-fact evidence. */
+  let factN=0;
+  function reportFact(game,f,round){
+    try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window||!f||!SIGN[f.op])return;
+      window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game,skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:`${nonce}:${round}:f${++factN}`,
+        prompt:`${f.a} ${SIGN[f.op]} ${f.b}`,answer:String(f.answer),ok:!!f.ok,first:true,hints:0,ms:Math.max(0,f.ms|0),
+        facets:{op:f.op,operands:[f.a,f.b],guided:true},...(f.ok?{}:{value:String(f.value).slice(0,24)})},location.origin)}catch(_){}
+  }
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,reportFact,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
 });

@@ -83,7 +83,9 @@
     return{skill:q?.skill||given.skill||null,op,context,format,tables:tables&&tables.length?tables:null,
       operands:ops,words,factFamily,fact,regroup,answer,rep,reading,aloud:q?.readAloud===true,
       // 4.6: a page that knows its run may say so; otherwise applyResponse() reads it from the answers before.
-      interleaved:typeof given.interleaved==='boolean'?given.interleaved:null};
+      interleaved:typeof given.interleaved==='boolean'?given.interleaved:null,
+      // A basic fact the child picked while Wira guided them ("Jom tengok cara"): only the fact lenses read it.
+      guided:given.guided===true};
   }
 
   // ---------- recording ----------
@@ -97,7 +99,8 @@
     if(f.rep)r.rp=f.rep[0];   // c | p | a
     if(f.reading)r.rd=f.reading;
     if(f.aloud)r.ra=1;        // the child had the question read aloud before answering
-    if(f.interleaved!==null)r.il=f.interleaved?1:0;   // 0 same operation as the two answers before (blocked), 1 mixed
+    if(f.interleaved!==null)r.il=f.interleaved?1:0;
+    if(f.guided)r.g=1;   // 0 same operation as the two answers before (blocked), 1 mixed
     if(!ok&&value!==undefined&&value!==null&&value!==''){r.v=String(value).slice(0,24);if(f.answer)r.x=f.answer}
     return r;
   }
@@ -225,10 +228,12 @@
     const recs=(Array.isArray(log)?log:[]).filter(r=>r&&r.t&&now-r.t<=WINDOW_DAYS*864e5&&r.t<=now+6e4);
     const findings=[];
     if(recs.length<5)return{findings,strengths:[],total:recs.length,enough:false,name};
-    const scored=recs.filter(r=>!(r.k===0&&isRapid(r))); // rapid guesses are not ability evidence
+    const scoredAll=recs.filter(r=>!(r.k===0&&isRapid(r))); // rapid guesses are not ability evidence
+    // Guided fact tries (g) feed 4.2 sifir and basic facts only; every other lens reads the child's own answers.
+    const scored=scoredAll.filter(r=>!r.g);
 
     // 4.5 rapid guessing
-    const wrong=latest(recs,40).filter(r=>r.k===0),rapidWrong=wrong.filter(isRapid);
+    const wrong=latest(recs.filter(r=>!r.g),40).filter(r=>r.k===0),rapidWrong=wrong.filter(isRapid);
     if(rapidWrong.length>=5&&rapidWrong.length/wrong.length>=.4){
       findings.push({id:'rapid_guess',lens:'4.5',severity:3,confidence:rapidWrong.length>=10?'tinggi':'sederhana',
         text:`Banyak soalan dijawab terlalu cepat — ${rapidWrong.length} daripada ${wrong.length} jawapan salah diberi dalam beberapa saat sahaja. Kemungkinan ${name} meneka.`,
@@ -239,7 +244,7 @@
 
     // 4.2 fact fluency per table
     const byTable=new Map();
-    for(const r of scored)for(const t of(r.tb||[])){if(!byTable.has(t))byTable.set(t,[]);byTable.get(t).push(r)}
+    for(const r of scoredAll)for(const t of(r.tb||[])){if(!byTable.has(t))byTable.set(t,[]);byTable.get(t).push(r)}
     const weakT=[],slowT=[],fluentT=[];
     /* 4 × 7 belongs to sifir 4 and sifir 7. Explain away: confirm the weakest table first,
        then judge the others without the questions that share a confirmed weak table. */
@@ -253,6 +258,13 @@
       const cand=[...byTable.keys()].filter(t=>!weakSet.has(t)).map(t=>tStat(t,weakSet)).filter(x=>x&&x.acc<70&&wilsonHi(x.ok,x.n)<.8).sort((a,b)=>a.acc-b.acc);
       if(!cand.length)break;weakSet.add(cand[0].t);weakT.push(cand[0]);
     }
+    /* Guided (owner, 2026-10-23): after 3 misses Wira walks the method; a child who still picks the wrong
+       fact twice in one table, while being guided, has not mastered it, even before 8 tries. */
+    const guidedMiss=t=>(byTable.get(t)||[]).filter(r=>r.g&&r.k===0&&!(r.tb||[]).some(x=>x!==t&&weakSet.has(x)));
+    for(const t of [...byTable.keys()].filter(t=>!weakSet.has(t)).sort((a,b)=>guidedMiss(b).length-guidedMiss(a).length)){
+      const gm=guidedMiss(t);if(gm.length<2)continue;const x=tStat(t,weakSet);if(x&&x.acc>=80)continue;
+      const rs=latest(byTable.get(t),20),ok=rs.filter(independent);weakSet.add(t);weakT.push({t,acc:pct(ok.length,rs.length),n:rs.length,ok:ok.length,guided:gm.length});
+    }
     weakT.sort((a,b)=>a.t-b.t);
     for(const t of [...byTable.keys()].sort((a,b)=>a-b)){
       if(weakSet.has(t))continue;const x=tStat(t,weakSet);if(!x)continue;
@@ -261,7 +273,9 @@
     }
     if(weakT.length||slowT.length){
       const parts=[];
-      if(weakT.length)parts.push(`sifir ${joinBM(weakT.map(x=>x.t))} belum dikuasai (${weakT.map(x=>`${x.ok}/${x.n}`).join(', ')} betul)`);
+      const own=weakT.filter(x=>!x.guided),led=weakT.filter(x=>x.guided);
+      if(own.length)parts.push(`sifir ${joinBM(own.map(x=>x.t))} belum dikuasai (${own.map(x=>`${x.ok}/${x.n}`).join(', ')} betul)`);
+      if(led.length)parts.push(`sifir ${joinBM(led.map(x=>x.t))} belum dikuasai — salah juga semasa Wira bimbing langkah demi langkah`);
       if(slowT.length)parts.push(`sifir ${joinBM(slowT.map(x=>x.t))} betul tetapi lambat (purata ${Math.round(median(slowT.map(x=>x.med)))} saat) — anak masih mengira, belum ingat`);
       const lead=fluentT.length>=3?`Hebat dalam sifir ${joinBM(fluentT.slice(0,4))}; cuma `:'';
       const target=[...weakT,...slowT].map(x=>x.t);
@@ -269,7 +283,7 @@
         text:`${lead}${parts.join('; ')}.`.replace(/^./,c=>c.toUpperCase()),
         action:`Pahlawan Angka akan beri lebih banyak latihan sifir ${joinBM(target)} dalam mini game, bercampur dengan sifir yang sudah dikuasai.`,
         tip:`Uji sifir ${target[0]} secara lisan 2 minit sehari — dalam kereta atau sebelum tidur.`,
-        target:{tables:target},skills:skillsOf(scored.filter(r=>(r.tb||[]).some(t=>target.includes(t)))),evidence:{weak:weakT,slow:slowT,fluent:fluentT}});
+        target:{tables:target},skills:skillsOf(scoredAll.filter(r=>(r.tb||[]).some(t=>target.includes(t)))),evidence:{weak:weakT,slow:slowT,fluent:fluentT}});
     }else if(fluentT.length>=3){
       findings.push({id:'fact_strength',lens:'4.2',severity:0,confidence:'tinggi',strength:true,
         text:`Hebat dalam sifir ${joinBM(fluentT)} — tepat dan pantas.`,action:'',evidence:{fluent:fluentT}});
@@ -339,12 +353,13 @@
       const FAM={add20:'tambah asas hingga 20',sub20:'tolak asas hingga 20'};
       const parts=[],targets=[],hard=[];let weakAny=false;const fluent=[];
       for(const fam of Object.keys(FAM)){
-        const all=scored.filter(r=>r.fx===fam);if(all.length<8)continue;const rs=latest(all,20);
+        const all=scoredAll.filter(r=>r.fx===fam),gm=all.filter(r=>r.g&&r.k===0).length,rs=latest(all,20);
         const ok=rs.filter(independent),acc=pct(ok.length,rs.length),med=median(ok.map(r=>r.sec));
+        if(all.length<8){if(gm>=2){weakAny=true;targets.push(fam);parts.push(`${FAM[fam]} belum kukuh — salah juga semasa Wira bimbing langkah demi langkah`)}continue}
         const missed={};for(const r of rs.filter(r=>!independent(r)))missed[r.fk]=(missed[r.fk]||0)+1;
         const topRaw=Object.entries(missed).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([f])=>f);hard.push(...topRaw);
         const top=topRaw.map(f=>f.replace('-',' − ').replace('+',' + '));
-        if(acc<70){weakAny=true;targets.push(fam);parts.push(`${FAM[fam]} belum kukuh (${ok.length}/${rs.length} betul${top.length?`, paling kerap salah: ${top.join(', ')}`:''})`)}
+        if(acc<70||(gm>=2&&acc<80)){weakAny=true;targets.push(fam);parts.push(`${FAM[fam]} belum kukuh (${ok.length}/${rs.length} betul${top.length?`, paling kerap salah: ${top.join(', ')}`:''})`)}
         else if(acc>=80&&med>3){targets.push(fam);parts.push(`${FAM[fam]} betul tetapi lambat (purata ${Math.round(med)} saat) — anak masih mengira jari`)}
         else if(acc>=90&&med<=3)fluent.push(FAM[fam]);
       }
@@ -352,7 +367,7 @@
         text:`${parts.join('; ')}.`.replace(/^./,c=>c.toUpperCase()),
         action:`Pahlawan Angka akan beri latihan ingat pantas ${joinBM(targets.map(f=>FAM[f]))}, sedikit setiap hari.`,
         tip:'Main "cepat sebut" 2 minit: ibu bapa sebut soalan seperti 8 + 7, anak jawab tanpa jari.',
-        target:{factFamilies:targets,facts:hard},skills:skillsOf(scored.filter(r=>targets.includes(r.fx))),evidence:{parts}});
+        target:{factFamilies:targets,facts:hard},skills:skillsOf(scoredAll.filter(r=>targets.includes(r.fx))),evidence:{parts}});
       else if(fluent.length)findings.push({id:'basic_strength',lens:'4.2',severity:0,confidence:'tinggi',strength:true,
         text:`Hebat dalam ${joinBM(fluent)} — tepat dan pantas.`,action:'',evidence:{facts:fluent}});
     }

@@ -30,6 +30,8 @@ async function gudang(target, hash, viewport) {
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(`${base}/gudang-harta.html?${target ? 'focus_target=' + encodeURIComponent(JSON.stringify(target)) : ''}#${hash}`);
   await page.waitForFunction(() => window.__gudangGen);
+  // Measure with the real fonts: Google Fonts swap in late, and the fallback font is wider.
+  await page.evaluate(() => document.fonts.ready);
   return { page, errors, close: () => context.close() };
 }
 const digits = (n, c) => Array.from({ length: c }, (_, i) => Math.floor(n / 10 ** i) % 10);
@@ -407,6 +409,35 @@ test('Kedai Kek: every DEV "Cuba Jom tengok cara" kind walks the fraction board 
     await page.waitForTimeout(300);
   }
   assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara');
+  assert.deepEqual(errors, []); await context.close();
+});
+
+test('guided facts: a wrong pick on a sifir step of "Jom tengok cara" reaches the brain as a guided fact try', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/terma.html`);
+  await page.evaluate(() => { window.__calls = []; window.PATelemetry = { response: (...a) => window.__calls.push(a) }; });
+  await page.addScriptTag({ url: `${base}/js/minigame-telemetry-v1.js` });
+  await page.evaluate(() => { const f = document.createElement('iframe'); f.id = 'mg'; f.style.cssText = 'width:390px;height:780px'; f.src = 'kedai-kek.html?pa_nonce=t1#d3-tambah'; document.body.appendChild(f); });
+  const frame = await (await page.waitForSelector('#mg')).contentFrame();
+  await frame.waitForFunction(() => window.__kekGen && window.PAWorked); await frame.waitForTimeout(800);
+  await frame.click('#devBtn');
+  await frame.evaluate(() => [...document.querySelectorAll('#wkTry button')].find(b => b.textContent === 'Tambah / tolak').click()); await frame.waitForTimeout(900);
+  // Different denominators: the first step is "d × ? = D" (a sifir step); same: "a + b" (a basic fact).
+  for (let t = 0; t < 20 && !(await frame.evaluate(() => { const w = window.__kekGen.current().wk; return w.terms[0][1] !== w.terms[1][1]; })); t++) {
+    await frame.click('#devBtn'); await frame.evaluate(() => [...document.querySelectorAll('#wkTry button')].find(b => b.textContent === 'Tambah / tolak').click()); await frame.waitForTimeout(700);
+  }
+  await frame.evaluate(() => document.getElementById('hint').click()); await frame.waitForTimeout(400);
+  const wrong = await frame.evaluate(() => { const v = window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v !== v); x.click(); return x.dataset.v; });
+  await frame.waitForTimeout(300);
+  await frame.evaluate(() => { const v = window.__wkRight(); [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v).click(); });
+  await page.waitForTimeout(300);
+  const calls = await page.evaluate(() => window.__calls.map(([skill, ok, tag, sec, hint, q, mode, value]) => ({ ok, hint, mode, value, prompt: q.prompt, facets: q.facets })));
+  const g = calls.filter(c => c.facets && c.facets.guided);
+  assert.equal(g.length, 1, JSON.stringify(calls));
+  assert.equal(g[0].ok, false); assert.equal(g[0].mode, 'minigame-first-attempt'); assert.equal(g[0].value, wrong); assert.equal(g[0].hint, false);
+  assert.match(g[0].prompt, /^\d+ [+−×÷] \d+$/); assert.ok(['add', 'sub', 'mul', 'div'].includes(g[0].facets.op));
   assert.deepEqual(errors, []); await context.close();
 });
 
