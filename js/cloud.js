@@ -301,7 +301,21 @@
     const oldSave=window.save;window.save=function(){if(sess?.devBattlefield)return;oldSave();scheduleSave()};
     const oldStart=window.startNew;window.startNew=function(){oldStart();if(state.user)attachNewChild()};
     const oldScreen=window.screen;window.screen=function(id){oldScreen(id);if(ACTIVE_SCREENS.has(id))ensurePlaySession();else if(['login','parent','setup'].includes(id))endPlaySession(id==='parent'?'parent_lock':'user_exit');if(id==='parent')setTimeout(renderParentControls,0)};
-    if(window.PATelemetry?.response){const oldResponse=window.PATelemetry.response;window.PATelemetry.response=function(skillId,ok,tag,sec,usedHint,q,mode,value){if(sess?.devBattlefield)return;oldResponse(skillId,ok,tag,sec,usedHint,q,mode,value);if(sess?.demoMode||!state.user||!state.childId)return;state.client.from('learning_attempts').insert({client_event_id:crypto.randomUUID(),child_id:state.childId,question_id:String(q?.token||''),skill_id:String(skillId),grade:Number(db?.schoolGrade||1),is_correct:!!ok,used_hint:!!usedHint,response_ms:Math.round((Number(sec)||0)*1000),misconception_tag:ok?null:(tag||'generic'),battle_type:mode==='boss'?'boss':'practice'}).then(({error})=>{if(error)console.warn('Attempt sync failed',error)});};}
+    if(window.PATelemetry?.response){const oldResponse=window.PATelemetry.response;
+    /* Phase 5 (docs/PA-DIAGNOSTIC-BRAIN.md §8a): each row also carries the brain's own record
+       of this answer (PADiagnostic.cloudFacets: categories, operands, wrong number), so the
+       admin calibration page can rebuild the log and run the same analyze(). If the column is
+       missing (older database), the row is sent again without it. */
+    let facetsOk=true;
+    const sendAttempt=row=>state.client.from('learning_attempts').insert(row).then(({error})=>{
+      if(error&&row.facets&&/facets|42703|PGRST204/i.test(String(error.code||'')+' '+String(error.message||''))){facetsOk=false;const {facets:_drop,...plain}=row;return sendAttempt(plain)}
+      if(error)console.warn('Attempt sync failed',error)});
+    window.PATelemetry.response=function(skillId,ok,tag,sec,usedHint,q,mode,value){if(sess?.devBattlefield)return;
+      const before=Array.isArray(db?.diagLog)?db.diagLog[db.diagLog.length-1]:undefined;
+      oldResponse(skillId,ok,tag,sec,usedHint,q,mode,value);if(sess?.demoMode||!state.user||!state.childId)return;
+      const row={client_event_id:crypto.randomUUID(),child_id:state.childId,question_id:String(q?.token||''),skill_id:String(skillId),grade:Number(db?.schoolGrade||1),is_correct:!!ok,used_hint:!!usedHint,response_ms:Math.round((Number(sec)||0)*1000),misconception_tag:ok?null:(tag||'generic'),battle_type:mode==='boss'?'boss':'practice'};
+      if(facetsOk){try{const f=window.PADiagnostic?.cloudFacetsAfter?.(db?.diagLog,before,q);if(f)row.facets=f}catch(_){}}
+      sendAttempt(row);};}
   }
 
   async function init(){

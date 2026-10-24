@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pahlawan Angka · Kalibrasi Otak</title><meta name="theme-color" content="#102544"><meta name="robots" content="noindex,nofollow"><link rel="icon" href="icon.svg"><link rel="stylesheet" href="admin.css">
+<style>
+.cal-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 16px}
+.cal-controls label{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--muted)}
+.cal-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.cal-metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.cal-metric b{display:block;font-size:26px;color:var(--navy)}.cal-metric span{font-size:13px;color:var(--muted)}
+.cal-note{background:#fff8e6;border:1px solid #f0d9a0;border-radius:12px;padding:10px 14px;font-size:13px;color:#6b5420;margin-bottom:16px}
+.cal-table{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
+.cal-table th,.cal-table td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.cal-table th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.cal-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.cal-ev{font-size:12px;color:var(--muted)}.cal-ex{font-size:12px;color:var(--ink);opacity:.8;max-width:420px}
+.cal-tag{display:inline-block;background:#eef2f8;border-radius:8px;padding:1px 7px;margin:1px 3px 1px 0;font-size:12px}
+.cal-section{margin-bottom:22px}
+.cal-body{padding:0 clamp(18px,5vw,70px) 40px}.cal-body .table-wrap{overflow-x:auto}.cal-body .table-wrap::after{content:"Leret jadual ke kanan untuk lihat lajur lain →"}
+.cal-table{min-width:720px}.cal-ex{min-width:220px;max-width:320px}.cal-table td:first-child{white-space:nowrap}.cal-section h2{margin:0 0 8px;font-size:18px;color:var(--navy)}
+</style></head><body>
+<section id="loginView" class="auth-panel"><div class="brand"><img src="../assets/branding/pahlawan-angka-full-logo-v1.webp" alt="Pahlawan Angka"></div><div class="auth-card"><p class="kicker">RUANG PENTADBIR</p><h1>Kalibrasi otak diagnostik</h1><p class="muted">Lihat apa yang otak nampak pada data sebenar.</p><form id="loginForm"><label>E-mel<input id="email" type="email" autocomplete="email" required></label><label>Kata laluan<input id="password" type="password" autocomplete="current-password" required></label><button class="button primary" type="submit">Log masuk</button></form><button id="googleButton" class="button google" type="button">Teruskan dengan Google</button><p id="authMessage" class="message" role="alert"></p></div></section>
+<section id="appView" hidden><header class="topbar"><div class="top-brand"><img src="../assets/branding/pahlawan-angka-full-logo-v1.webp" alt="Pahlawan Angka"><span>Kalibrasi Otak</span></div><div class="top-actions"><button id="refreshButton" class="button ghost">↻ Segar semula</button><button id="logoutButton" class="button ghost">Log keluar</button></div></header>
+<main><div class="page-heading"><div><p class="kicker">FASA 5</p><h1>Dapatan otak pada data sebenar</h1><p id="generatedAt" class="muted">Memuatkan…</p></div><span id="appMessage" class="message" role="status"></span></div>
+<div class="cal-body"><div class="cal-controls"><label>Tempoh <select id="days"><option value="30">30 hari</option><option value="60">60 hari</option><option value="90" selected>90 hari</option></select></label><label><input id="mine" type="checkbox"> Termasuk anak akaun saya (ujian)</label><button id="csvButton" class="button secondary">Muat turun CSV</button></div>
+<div id="metrics" class="cal-metrics"></div>
+<p class="cal-note">Jawapan sebelum 24 Okt 2026 tiada data otak. Lensa yang perlukan jenis soalan (sifir, salah pinjam, soalan cerita, gambar, bacaan) hanya membaca jawapan baharu. Otak menilai 30 hari terkini setiap murid, sama seperti dalam app.</p>
+<section class="cal-section"><h2>Dapatan mengikut jenis</h2><div class="table-wrap"><table class="cal-table"><thead><tr><th>Dapatan</th><th>Lensa</th><th class="num">Murid</th><th class="num">% murid layak</th><th class="num">Yakin tinggi</th><th>Bukti (median)</th><th>Contoh ayat</th></tr></thead><tbody id="findingRows"></tbody></table></div></section>
+<section class="cal-section"><h2>Murid (kod tanpa nama)</h2><div class="table-wrap"><table class="cal-table"><thead><tr><th>Kod</th><th class="num">Darjah</th><th class="num">Jawapan</th><th class="num">30 hari</th><th class="num">Data otak</th><th>Dapatan</th></tr></thead><tbody id="childRows"></tbody></table></div></section></div>
+</main></section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.min.js"></script>
+<script src="../js/engine/diagnostic-brain-v1.js?v=1.10.0"></script>
+<script src="kalibrasi-core.js?v=1.0.0"></script>
+<script src="kalibrasi.js?v=1.0.0"></script>
+</body></html>
