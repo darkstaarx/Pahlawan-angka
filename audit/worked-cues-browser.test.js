@@ -116,3 +116,23 @@ test('Lombong Permata hundred grid: "Berapa baris penuh?" outlines the full rows
   assert.ok(st.pick, 'the choices pulse');
   assert.deepEqual(errors, []); await ctx.close();
 });
+
+test('Focus mode: the scene with Wira is hidden and only the answer place moves (Gerai Wirayung receipt)', async () => {
+  const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await ctx.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await ctx.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await open(page, 'gerai-wirayung', 'd5', 'Diskaun %');
+  await page.waitForTimeout(800);
+  const st = await page.evaluate(() => {
+    const scene = document.querySelector('.scene');
+    const moving = document.getAnimations().filter(a => a.playState === 'running' && a.effect && a.effect.getComputedTiming().iterations === Infinity)
+      .map(a => a.effect.target).filter(t => t && t.closest && t.closest('.panel,.actions,.tiles') && t.getClientRects().length);
+    const kinds = new Set(moving.map(t => t.classList.contains('wk-next') ? 'slot' : t.closest('.wk-pickhere') ? 'choices' : t.className));
+    const actions = document.querySelector('.actions').getBoundingClientRect(), panel = document.querySelector('.wk-walk,.panel:not([hidden])').getBoundingClientRect();
+    return { sceneShown: !!scene && scene.getClientRects().length > 0, kinds: [...kinds], overlap: panel.bottom > actions.top + 1 };
+  });
+  assert.equal(st.sceneShown, false, 'the scene with Wira is out of the way');
+  assert.ok(st.kinds.length <= 1 && st.kinds.every(k => k === 'slot' || k === 'choices'), 'one place moves: ' + st.kinds.join(' | '));
+  assert.equal(st.overlap, false, 'the panel stays above the buttons');
+  assert.deepEqual(errors, []); await ctx.close();
+});
