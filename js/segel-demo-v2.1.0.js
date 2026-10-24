@@ -1605,6 +1605,8 @@
       canvas.style.width=w+'px';canvas.style.height=renderH+'px';
       renderer.setSize(w,renderH,false);
       sizeFx(w,renderH);
+      // Ketebalan retakan bergantung pada saiz kubah di skrin: lukis semula.
+      seals.forEach(s=>{ if(s.crack&&s.crack.lines.length)s.crack.dirty=true });
       camera.aspect=w/renderH;
       setSpan(stageSpan(camera.aspect));
       const visH=Math.max(WORLD_W*span/camera.aspect, MIN_H);
@@ -1832,8 +1834,11 @@
     /* Retakan kubah: satu kanvas lutsinar per kubah, dipasang sebagai anak
        mesh kubah supaya ia ikut lantunan, nafas dan pudar kubah itu sendiri.
        Retakan bermula di sisi kiri (arah pedang Wira) dan berhenti sebelum
-       sampai ke muka pet, sama seperti tingkap uClear. */
-    const CRACK_PX=512;
+       sampai ke muka pet, sama seperti tingkap uClear.
+       Ketebalan garisan dikira dalam PIKSEL SKRIN, bukan piksel tekstur:
+       kubah kecil di telefon dan kubah besar di tablet/desktop sama-sama
+       dapat garisan halus yang tajam, dengan sedikit tambahan pada skrin besar. */
+    const CRACK_PX=768;
     seals.forEach(s=>{
       const c=document.createElement('canvas'); c.width=c.height=CRACK_PX;
       const tex=new THREE.CanvasTexture(c);
@@ -1871,14 +1876,21 @@
     function drawCracks(s,now){
       const cr=s.crack, g=cr.g, P=CRACK_PX, col=tierCss(s);
       g.clearRect(0,0,P,P); g.lineCap='round'; g.lineJoin='round';
+      // Tinggi kubah (seluruh satah tekstur) dalam piksel CSS, tanpa zoom kamera.
+      const visH=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z+.02);
+      const domePx=Math.max(60,s.front.scale.y*(fxCanvas.height/fxDpr)/visH);
+      const k2px=P/domePx;                                   // piksel tekstur per piksel skrin
+      const grow=Math.max(1,Math.min(1.6,domePx/260));       // skrin besar: sedikit lebih tebal
+      const W=px=>px*grow*k2px;
       let growing=false;
       for(const L of cr.lines){
         const k=Math.max(0,Math.min(1,(now-L.born)/140)); if(k<1)growing=true;
         const n=Math.max(2,Math.ceil(L.pts.length*k));
         const path=()=>{ g.beginPath(); for(let i=0;i<n;i++){ const [x,y]=L.pts[i]; i?g.lineTo(x*P,y*P):g.moveTo(x*P,y*P) } };
-        g.globalAlpha=1; g.strokeStyle='rgba(10,20,40,.4)'; g.lineWidth=13; path(); g.stroke();
-        g.globalAlpha=.9; g.strokeStyle=col; g.lineWidth=8; path(); g.stroke();
-        g.globalAlpha=1; g.strokeStyle='#ffffff'; g.lineWidth=3.4; path(); g.stroke();
+        // Bayang nipis untuk kontras atas latar cerah, cahaya warna tier, teras putih halus.
+        g.shadowBlur=0; g.globalAlpha=.22; g.strokeStyle='#0a1428'; g.lineWidth=W(3.2); path(); g.stroke();
+        g.globalAlpha=.55; g.strokeStyle=col; g.shadowColor=col; g.shadowBlur=W(5); g.lineWidth=W(2.6); path(); g.stroke();
+        g.shadowBlur=0; g.globalAlpha=1; g.strokeStyle='#ffffff'; g.lineWidth=W(1.1); path(); g.stroke();
       }
       cr.tex.needsUpdate=true; cr.dirty=growing;
     }
