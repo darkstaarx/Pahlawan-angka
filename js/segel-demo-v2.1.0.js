@@ -1077,7 +1077,7 @@
        ialah: pet sedih -> arena penuh -> Wira tiba. Langkau pun melalui
        pendedahan yang sama, maka babak ini tetap dimainkan.
 
-       HANYA kamera yang bergerak (zoom + anjakan). Jam animasi pet
+       HANYA bingkai kamera yang berubah (potongan zoom). Jam animasi pet
        (tAcc / petFrameT0 / petHold / petFps) tidak disentuh langsung, jadi
        kelajuan animasi sedih dalam kurungan kekal seperti asal. */
     const PET_INTRO_HOLD=1.1;           // saat kamera kekal dekat pada pet
@@ -1208,7 +1208,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,companionScale:COMPANION_SCALE,camY:0,rescued:false,lifecycle:0,
-             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,introPanX:0,introPanY:0,heroFade:1,running:true,active:0,
+             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
              companionFrames:petJoyE,companionHold:null,companionFps:2,companionFrameT0:0,
@@ -1418,15 +1418,11 @@
 
       S.shake=damp(S.shake,0,6,dt);
       const shakeX=(Math.random()-.5)*S.shake, shakeY=(Math.random()-.5)*S.shake;
+      camera.position.x=shakeX;
+      camera.position.y=S.camY+shakeY;
+      bg.position.x=-camera.position.x*.4;
+      bg.position.y=S.camY;
       petIntroCamera(dt);
-      camera.position.x=shakeX+S.introPanX;
-      camera.position.y=S.camY+shakeY+S.introPanY;
-      // Latar ikut 30% anjakan kamera: rasa jauh (paralaks) dan, kerana
-      // anjakan dihadkan oleh zoom, tepi latar tidak pernah terdedah.
-      bg.position.x=-shakeX*.4+S.introPanX*.3;
-      bg.position.y=S.camY+S.introPanY*.3;
-      groundOverlay.position.x=S.introPanX*.3;
-      groundOverlay.position.y=S.camY+S.introPanY*.3;
 
       /* Penerbangan syiling. Lengkung bezier yang sama dengan Unity: terbit,
          merebak, kemudian melengkung ke dada Wira dengan jeda berperingkat. */
@@ -1632,12 +1628,16 @@
     });
     let introShown=false;
     function endPetIntro(){
-      S.introT=-1; S.introPanX=0; S.introPanY=0; introShown=false;
-      if(camera.zoom!==1){camera.zoom=1;camera.updateProjectionMatrix()}
+      S.introT=-1; introShown=false;
+      if(camera.view&&camera.view.enabled){camera.clearViewOffset()}
       host.classList.remove('segel-pet-intro','segel-pet-intro-release');
     }
+    /* Zoom = potongan 2D daripada pandangan penuh (setViewOffset), BUKAN
+       kamera yang bergerak. Dengan itu pet, gembok dan latar kekal pada
+       hubungan yang sama seperti pandangan penuh: pet tidak "tergelincir"
+       atas peta semasa kamera tarik balik. */
     function petIntroCamera(dt){
-      if(S.introT<0){ if(camera.zoom!==1||introShown)endPetIntro(); return }
+      if(S.introT<0){ if(introShown||(camera.view&&camera.view.enabled))endPetIntro(); return }
       if(!introShown){ introShown=true; host.classList.add('segel-pet-intro') }
       S.introT+=dt;
       const t=S.introT;
@@ -1647,12 +1647,13 @@
       if(p>0)host.classList.add('segel-pet-intro-release');
       const push=Math.min(1,t/PET_INTRO_HOLD)*.06;       // tolakan perlahan ke depan
       const zoom=1+(PET_INTRO_ZOOM+push-1)*(1-pull);
-      camera.zoom=zoom; camera.updateProjectionMatrix();
-      // Anjakan dihadkan supaya pandangan yang dizum kekal di dalam bingkai asal.
-      const visH=2*Math.tan(camera.fov*Math.PI/360)*camera.position.z, visW=visH*camera.aspect;
-      const lim=1-1/zoom, cl=(v,m)=>Math.max(-m,Math.min(m,v));
-      S.introPanX=cl(SEAL_X,visW/2*lim)*(1-pull);
-      S.introPanY=cl(GROUND+.75-S.camY,visH/2*lim)*(1-pull);
+      // Kedudukan pet dalam pandangan penuh, sebagai pecahan bingkai render.
+      const dist=camera.position.z+.33;
+      const visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
+      const fx=SEAL_X/visW+.5, fy=.5-(GROUND+.75-S.camY)/visH;
+      const FH=1000, FW=FH*camera.aspect, w=FW/zoom, h=FH/zoom;
+      const ox=Math.max(0,Math.min(FW-w,fx*FW-w/2)), oy=Math.max(0,Math.min(FH-h,fy*FH-h/2));
+      camera.setViewOffset(FW,FH,ox,oy,w,h);
     }
     // Ketik pentas semasa syot dekat = terus ke tarikan balik (tidak potong mati).
     host.addEventListener('pointerdown',()=>{ if(S.introT>=0&&S.introT<PET_INTRO_HOLD)S.introT=PET_INTRO_HOLD });
@@ -1679,9 +1680,8 @@
         // dipanggil antara bingkai.
         const z=-.26, dist=camera.position.z-z;
         const visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
-        // Abaikan anjakan babak pembuka: bar mesti mendarat di kedudukan akhir.
-        const wx=SEAL_X-(camera.position.x-S.introPanX);
-        const wy=(GROUND+tier.visible*.98)-(camera.position.y-S.introPanY);
+        const wx=SEAL_X-camera.position.x;
+        const wy=(GROUND+tier.visible*.98)-camera.position.y;
         const yInRender=(.5-wy/visH)*stageRenderHeight;
         return {x:(wx/visW+.5)*100, y:yInRender/host.clientHeight*100};
       },
