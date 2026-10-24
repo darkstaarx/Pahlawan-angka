@@ -378,9 +378,10 @@ Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel
 
 **Status at a glance (2026-10-24).**
 - Merged into `main`: every PR up to #118 (3.87.46).
-- Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
-  connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
-  3.87.38–3.87.46 (#106–#118) are merged; the owner deploys (check the live version before assuming).
+- Netlify: 3.87.46 is live (2026-10-24 night, deploy 6adcba2f38a9bc2673abc65c, `main` at #118;
+  checked: the live `js/version.js` says 3.87.46). Deployed from this cloud session through the Netlify
+  connector from a clean `git archive` of `main` (needs the Netlify domains allowed in Admin settings →
+  Capabilities). The owner still decides when to deploy; check the live version before assuming.
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). D2.4.5 Bahagi wang and D2.4.6 Simpanan already go to
   Gerai Wirayung (`bahagi` / `simpanan` modes, `js/wirayung-live-bridge.js`); the old note
@@ -805,9 +806,8 @@ digit, then the round's choices.
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** Every PR up to #103 is merged into `main` (2026-10-24,
-version 3.87.36). Netlify was last confirmed at 3.87.12 (2026-10-22); the
-owner deploys after a real-device test.
+**Status on GitHub.** Older note; the current status is "Status at a glance" in §8a
+(every PR up to #118 merged, 3.87.46, also live on Netlify).
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
 record (before, the 40-character token cut the round number, so a session
 kept one answer). Mini game evidence before 3.87.2 is thin.
