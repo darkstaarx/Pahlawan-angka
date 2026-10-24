@@ -377,10 +377,10 @@ composition, lock policy.
 Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
 **Status at a glance (2026-10-24).**
-- Merged into `main`: every PR up to #111 (3.87.42).
+- Merged into `main`: every PR up to #113 (3.87.43).
 - Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
   connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
-  3.87.38–3.87.42 (#106–#111) are merged; the owner deploys (check the live version before assuming).
+  3.87.38–3.87.43 (#106–#113) are merged; the owner deploys (check the live version before assuming).
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
   D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
@@ -422,8 +422,8 @@ into the live Three.js stage.
   moves; hit-stop and slow motion freeze `fdt`, never `tAcc`, which drives pet
   frames); keep the aura farming frame and the eye cut-in; on-screen text says
   "Gembok". `reduceMotion` keeps the old behaviour (static cracks only).
-- Tunables (top of the hit-feel block): `HITSTOP` .11, zoom 1.16/1.26 (normal),
-  1.2/1.32 (finisher), glacier `S.slow` .6, pet intro `PET_INTRO_*`.
+- Tunables (top of the hit-feel block): `HITSTOP` .11, punch `S.camPunch`, glacier
+  `S.slow` .6, hop `S.hopDur` .34 / height .55, pet intro `PET_INTRO_*`.
 - How it was tested: guest Demo in headless Chromium (no GPU, so it runs slower
   than a phone): `PADemo.open(); PADemo.selectGrade(2); PADemo.start()`, then
   answer with `PASegelDemo.submitInteraction({tag:'correct'}, button, PASegelDemo.state().q)`
@@ -433,10 +433,15 @@ into the live Three.js stage.
   border (core ~7 px in the 1536 px art → crack core ×1.15, glow ×2.4), so cracks
   match the dome lines on every screen; aura farming is 1.6 s (`LIVE_FINISHER.chargeMs`
   and the `wiraChargeSheet` CSS animation must stay equal).
-- **Next:** owner tests on a real phone. Open question: the camera zoom during a
-  normal attack (lab had it too); owner may want it milder or off. Other likely
-  tweaks: glacier slow-motion speed. Not done: the old battle screen
-  (`#battleArena`) was not changed.
+- #113 (3.87.43, owner after a phone test: "tak sama macam lab"): normal attacks keep
+  the **full view** (no push-in zoom, only a small punch) and Wira **hops back** to his
+  place in an arc (`S.hopT`, prepare pose); the hit is applied **at sword contact**
+  (`strike()` calls `applyHit()` and stores it in `S.earlyHit`; `hitSeal()` returns
+  that result), so a dome breaks with no ~0.3 s delay; the finisher attack and
+  glacier have **no zoom** (the glacier keeps its full size); screen flashes fade
+  on real time, not slow motion. Camera zoom is now used only in the pet intro.
+- **Next:** owner tests on a real phone. Likely tweaks: glacier slow-motion speed,
+  hop height (`.55`). Not done: the old battle screen (`#battleArena`) was not changed.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #48, #69–#78, #80–#83 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
