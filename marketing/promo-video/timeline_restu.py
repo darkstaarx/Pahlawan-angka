@@ -78,7 +78,7 @@ def _game_sfx():
     for src, evs in (('RS', RS_SFX), ('GH', GH_SFX)):
         for c, name, vol in evs:
             t = ft(src, c)
-            if t is not None:
+            if t is not None and name in GS:
                 dur = {'StingerPA': 3.8, 'aura-charge': 1.3, 'glacier-thunder': 1.6}.get(name, 1.0)
                 out.append(('src', t, f'GS_{name}', 0.0, dur, min(1.0, vol * 1.25)))
     for c in (23.333, 23.7, 24.067, 24.433):    # titik PIN
