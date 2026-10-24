@@ -432,8 +432,7 @@
       S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
       S.heroFade=1;S.heroLock=reduceMotion?heroIdleE[0]:heroPrepareE;S.heroX=HERO_HOME;
       // Arena kembali dalam suasana jurus: latar gelap, bar sinematik, aura kekal.
-      if(!reduceMotion){ host.classList.add('segel-letterbox'); S.darkTo=1; S.dark=1; S.heroAura=1;
-        S.camFX=HERO_HOME+.3; S.camFY=GROUND+1.0; S.camZoom=S.camZoomTo=1.35; }
+      if(!reduceMotion){ host.classList.add('segel-letterbox'); S.darkTo=1; S.dark=1; S.heroAura=1; }
       return true;
       /* Legacy video implementation retained below for rollback reference. */
       const video=ensureFinisherVideo(), layer=finisherVideoLayer;
@@ -1225,7 +1224,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,companionScale:COMPANION_SCALE,camY:0,rescued:false,lifecycle:0,
-             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,freeze:0,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,dashFx:0,slow:1,dark:0,darkTo:0,heroAura:0,speedFx:0,heroFade:1,running:true,active:0,
+             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,freeze:0,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,dashFx:0,slow:1,dark:0,darkTo:0,heroAura:0,speedFx:0,hopT:-1,hopFrom:0,hopDur:.34,heroLift:0,earlyHit:null,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
              companionFrames:petJoyE,companionHold:null,companionFps:2,companionFrameT0:0,
@@ -1323,9 +1322,15 @@
 
       // S.heroX dan S.petY ialah kedudukan KAKI, bukan pusat satah.
       S.heroFeet=damp(S.heroFeet,S.heroX,15,fdt);
+      // Lompat balik selepas serangan (seperti lab): lengkung ke tempat asal.
+      if(S.hopT>=0){
+        S.hopT+=fdt; const k=Math.min(1,S.hopT/S.hopDur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+        S.heroFeet=S.hopFrom+(S.heroX-S.hopFrom)*e; S.heroLift=Math.sin(Math.PI*k)*.55;
+        if(k>=1){ S.hopT=-1; S.heroLift=0 }
+      }
       S.petFeet=damp(S.petFeet,S.petY,9,dt);
       hero.position.x=S.heroFeet+hero.userData.e.offX;
-      hero.position.y=GROUND+hero.userData.e.offY;
+      hero.position.y=GROUND+hero.userData.e.offY+S.heroLift;
       hero.material.opacity=S.heroFade;
       // The fade is authoritative. This prevents the hit-rebound path from
       // resurrecting the WebGL Wira underneath the DOM attack sheet.
@@ -1576,7 +1581,7 @@
       ghostFrame(dt);
       seals.forEach(s=>{ if(s.crack&&s.crack.dirty)drawCracks(s,now) });
       renderer.render(scene,camera);
-      fxFrame(fdt);
+      fxFrame(fdt,dt);
       chargeFxFrame(dt);
     }
 
@@ -1815,7 +1820,7 @@
     function finisherContactFx(s){
       if(!s)return;
       const vis=s.tier.visible, cx=SEAL_X-vis*.42, cy=GROUND+vis*.46;
-      S.freeze=.17; S.camPunch=.2; S.hitT=0; S.grey=1; S.heroAura=0; S.speedFx=0;
+      S.freeze=.17; S.camPunch=.08; S.hitT=0; S.grey=1; S.heroAura=0; S.speedFx=0;
       fxArc(cx+.05,cy,vis*.46,-.2); fxArc(cx+.05,cy-.05,vis*.44,Math.PI*.6);
       fxSparks(cx,cy,90,['#ffffff','#bfe9ff','#4cc9ff'],Math.PI,Math.PI*2);
       fxGlows(cx,cy,18,'rgba(150,225,255,.9)');
@@ -1836,7 +1841,7 @@
     /* Gembok Emas pecah: letupan emas, arena kembali terang, bar hilang. */
     function finalBreakFx(s){
       const vis=s.tier.visible, cx=SEAL_X, cy=GROUND+vis*.5, col=tierCss(s);
-      S.freeze=Math.max(S.freeze,.12); S.camPunch=.18; S.camZoomTo=1; S.darkTo=0; S.slow=1; S.heroAura=0;
+      S.freeze=Math.max(S.freeze,.12); S.camPunch=.08; S.camZoomTo=1; S.darkTo=0; S.slow=1; S.heroAura=0;
       host.classList.remove('segel-letterbox');
       if(reduceMotion){ clearCracks(s); return }
       fxFlash(.9,'#fff6d8');
@@ -1864,7 +1869,7 @@
     }
     function breakFx(s,next){
       const vis=s.tier.visible, cx=SEAL_X, cy=GROUND+vis*.5, col=tierCss(s);
-      S.freeze=Math.max(S.freeze,.15); S.camPunch=.15;
+      S.freeze=Math.max(S.freeze,.15); S.camPunch=.09;
       fxFlash(.38,col);
       fxRing(cx,cy,.2,vis*.95,.5,col); fxRing(cx,GROUND+.05,.2,vis*1.1,.6,col);
       fxSparks(cx,cy,70,['#ffffff',col,'#ffe9b0'],Math.PI/2,Math.PI*2);
@@ -1889,7 +1894,7 @@
     function contactFx(){
       const s=seals[Math.min(S.active,seals.length-1)], vis=s.tier.visible;
       const cx=SEAL_X-vis*.42, cy=GROUND+vis*.46;
-      S.freeze=HITSTOP; S.camPunch=.11; S.heroAura=0; S.speedFx=0;
+      S.freeze=HITSTOP; S.camPunch=.07; S.heroAura=0; S.speedFx=0;
       S.hitT=0; S.grey=1;            // kubah bereaksi TEPAT pada sentuhan pedang
       fxArc(cx+.05,cy,vis*.38,-.15);
       fxSparks(cx,cy,48,['#ffffff','#bfe9ff',tierCss(s)],Math.PI*.95,2.6);
@@ -1908,8 +1913,8 @@
       r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(.25,'rgba(150,225,255,.9)'); r.addColorStop(1,'rgba(150,225,255,0)');
       g.fillStyle=r; g.fillRect(0,0,64,64); return c;
     })();
-    function fxFrame(dt){
-      fxFlashA=Math.max(0,fxFlashA-dt*3.2);
+    function fxFrame(dt,rdt=dt){
+      fxFlashA=Math.max(0,fxFlashA-rdt*3.2);   // kilat ikut masa sebenar, bukan gerak perlahan
       S.speedFx=Math.max(0,S.speedFx-dt*1.2);
       if(!fxParts.length&&!fxArcs.length&&fxFlashA<=0&&S.heroAura<=.02&&S.speedFx<=.02){
         if(fxDirty){ fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height); fxDirty=false }
@@ -2180,16 +2185,17 @@
           // dalam gerak perlahan.
           if(reduceMotion){ sfx('hit'); clearNormalIceFx(); S.waveT=0; return }
           const finVis=tier.visible;
-          S.camFX=(HERO_HOME+SEAL_X)/2; S.camFY=GROUND+finVis*.5; S.camZoomTo=1.2;
+          // Tiada zoom semasa serangan penamat: petir ais kekal saiz penuh.
+          S.camZoomTo=1; S.camFX=SEAL_X-finVis*.45; S.camFY=GROUND+finVis*.48;
           fxCharge(HERO_HOME-.35,GROUND+.95,1.2,14);
           S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
           if(lifecycle!==S.lifecycle)return;
           sfx('swordSlash');
-          S.dashFx=1; S.speedFx=1; S.camZoomTo=1.32; S.camFX=SEAL_X-finVis*.45; S.camFY=GROUND+finVis*.48;
+          S.dashFx=1; S.speedFx=1;
           S.heroLock=heroSlashE; S.heroX=SLASH_X; await wait(140);
           if(lifecycle!==S.lifecycle)return;
           finisherContactFx(seals[S.active]);
-          S.slow=.6; S.camZoomTo=1.14; S.camFX=SEAL_X; S.camFY=GROUND+finVis*.55;
+          S.slow=.6;
           sfx('glacierThunder'); glacierThunderCount=1; clearNormalIceFx();
           finalImpactActive=true; finalImpactPending=true;
           finalImpactTarget={x:SEAL_X,y:GROUND,z:seals[S.active].front.position.z,height:tier.visible};
@@ -2210,14 +2216,15 @@
         }
         if(reduceMotion){ sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; addCracks(seals[Math.min(S.active,seals.length-1)],2); return }
         const strikeVis=stageTiers[Math.min(S.active,stageTiers.length-1)].visible;
-        // Bersedia: kamera menolak masuk ke arah aksi, tenaga berkumpul pada Wira.
-        S.camFX=(HERO_HOME+SEAL_X)/2; S.camFY=GROUND+strikeVis*.5; S.camZoomTo=1.16;
+        // Bersedia: tenaga berkumpul pada Wira. Kamera kekal pandangan penuh
+        // (pemilik: seperti lab); hanya "punch" kecil pada sentuhan.
+        S.camFX=SEAL_X-strikeVis*.45; S.camFY=GROUND+strikeVis*.48;
         fxCharge(HERO_HOME-.35,GROUND+.95,1.25,22); S.heroAura=.6;   // serap kuasa ringkas
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
         // Dash: bayang biru mengekori, kamera ikut ke arah kubah.
-        S.dashFx=1; S.speedFx=.55; S.camZoomTo=1.26; S.camFX=SEAL_X-strikeVis*.45; S.camFY=GROUND+strikeVis*.48;
+        S.dashFx=1; S.speedFx=.55;
         S.heroLock=heroSlashE;  S.heroX=SLASH_X; await wait(140);
         if(lifecycle!==S.lifecycle)return;
         sfx('hit');
@@ -2225,13 +2232,26 @@
         burst(5.5,0xbfe9ff);                    // serpihan ais, bukan warna tier
         S.waveT=0; S.shake=.32;
         contactFx();                            // hit-stop, tebasan, retak, punch
+        // Hentaman dikira TEPAT pada sentuhan: kubah pecah serta-merta jika
+        // ini hentaman terakhir tier (dulu ia menunggu strike() pulang, ~0.3s).
+        S.earlyHit=this.applyHit();
         await wait(210+HITSTOP*1000);
         if(lifecycle!==S.lifecycle)return;
         S.camZoomTo=1;
-        S.heroLock=null; S.heroX=HERO_HOME;
+        // Lompat balik ke tempat asal.
+        S.heroLock=heroPrepareE; S.hopFrom=S.heroFeet; S.heroX=HERO_HOME; S.hopDur=.34; S.hopT=0;
+        await wait(360);
+        if(lifecycle!==S.lifecycle)return;
+        S.heroLock=null;
       },
       // Satu jawapan betul = satu hentaman pada segel aktif.
+      // Serangan biasa sudah mengira hentaman pada sentuhan (earlyHit);
+      // jangan kira dua kali.
       hitSeal(){
+        if(S.earlyHit){ const o=S.earlyHit; S.earlyHit=null; return o }
+        return this.applyHit();
+      },
+      applyHit(){
         const s=seals[S.active]; if(!s)return {broken:false};
         s.damage=Math.min(1,s.damage+1/s.tier.hits);
         // Serangan biasa sudah melantunkan kubah TEPAT pada sentuhan pedang
@@ -2373,7 +2393,7 @@
         finalImpactPending=false; finalImpactActive=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME; endPetIntro();
-        S.freeze=0; S.camZoom=S.camZoomTo=1; S.camPunch=0; S.dashFx=0; clearHitFx();
+        S.freeze=0; S.camZoom=S.camZoomTo=1; S.camPunch=0; S.dashFx=0; S.hopT=-1; S.heroLift=0; S.earlyHit=null; clearHitFx();
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
         enMat.opacity=enHaloMat.opacity=0;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
