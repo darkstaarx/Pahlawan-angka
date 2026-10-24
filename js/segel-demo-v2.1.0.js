@@ -1071,6 +1071,20 @@
     const EN_TRAVEL=1.15;          // masa satu zarah dari atas ke sasarannya
     const EN_SPREAD=.30;           // serakan permulaan antara zarah
     const EN_SPAN=EN_TRAVEL+EN_SPREAD;
+    /* Babak pembuka (pet-intro): sebaik arena didedahkan, kamera bermula
+       dekat pada pet yang terkurung dalam gembok, kemudian tarik ke belakang.
+       Zarah Wira hanya mula berhimpun semasa tarikan itu, jadi susunannya
+       ialah: pet sedih -> arena penuh -> Wira tiba. Langkau pun melalui
+       pendedahan yang sama, maka babak ini tetap dimainkan.
+
+       HANYA kamera yang bergerak (zoom + anjakan). Jam animasi pet
+       (tAcc / petFrameT0 / petHold / petFps) tidak disentuh langsung, jadi
+       kelajuan animasi sedih dalam kurungan kekal seperti asal. */
+    const PET_INTRO_HOLD=1.1;           // saat kamera kekal dekat pada pet
+    const PET_INTRO_PULL=1.2;           // saat kamera tarik balik ke arena penuh
+    const PET_INTRO_PARTICLES_AT=1.35;  // zarah Wira mula bergerak di tengah tarikan
+    const PET_INTRO_ZOOM=1.9;
+    const PET_INTRO_END=PET_INTRO_HOLD+PET_INTRO_PULL;
     /* Had atas pentas kira-kira 2.65 unit; sasaran zarah berada antara -1.92
        dan +0.68. Jatuh 1.1–2.1 unit memastikan titik mula kekal dalam bingkai. */
     const EN_DROP=1.1, EN_DROP_VAR=1.0;
@@ -1194,7 +1208,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,companionScale:COMPANION_SCALE,camY:0,rescued:false,lifecycle:0,
-             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,heroFade:1,running:true,active:0,
+             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,introPanX:0,introPanY:0,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
              companionFrames:petJoyE,companionHold:null,companionFps:2,companionFrameT0:0,
@@ -1301,7 +1315,9 @@
          masuk selepas kebanyakan zarah sampai, jadi tiada detik dia dan
          zarahnya kelihatan bertindih dua kali. */
       if(S.enterT>=0){
-        S.enterT+=dt;
+        // Semasa kamera masih dekat pada pet, zarah menunggu di titik mula
+        // (legap 0), lalu mula bergerak bila kamera sudah tarik balik.
+        if(!(S.introT>=0&&S.introT<PET_INTRO_PARTICLES_AT))S.enterT+=dt;
         const cx=hero.position.x, cy=hero.position.y;
         let done=0;
         for(let i=0;i<EN;i++){
@@ -1401,10 +1417,16 @@
       if(S.active>=stageTiers.length){ shell.visible=false; floorGlow.visible=false }
 
       S.shake=damp(S.shake,0,6,dt);
-      camera.position.x=(Math.random()-.5)*S.shake;
-      camera.position.y=S.camY+(Math.random()-.5)*S.shake;
-      bg.position.x=-camera.position.x*.4;
-      bg.position.y=S.camY;
+      const shakeX=(Math.random()-.5)*S.shake, shakeY=(Math.random()-.5)*S.shake;
+      petIntroCamera(dt);
+      camera.position.x=shakeX+S.introPanX;
+      camera.position.y=S.camY+shakeY+S.introPanY;
+      // Latar ikut 30% anjakan kamera: rasa jauh (paralaks) dan, kerana
+      // anjakan dihadkan oleh zoom, tepi latar tidak pernah terdedah.
+      bg.position.x=-shakeX*.4+S.introPanX*.3;
+      bg.position.y=S.camY+S.introPanY*.3;
+      groundOverlay.position.x=S.introPanX*.3;
+      groundOverlay.position.y=S.camY+S.introPanY*.3;
 
       /* Penerbangan syiling. Lengkung bezier yang sama dengan Unity: terbit,
          merebak, kemudian melengkung ke dada Wira dengan jeda berperingkat. */
@@ -1588,6 +1610,52 @@
       fitBg();
     }
     fitShell();
+    /* Babak pembuka pet — bar sinematik + kamera. Gaya disuntik di sini supaya
+       perubahan ini tidak bergantung pada cache CSS lama. */
+    if(!document.getElementById('segelPetIntroStyle')){
+      const st=document.createElement('style');st.id='segelPetIntroStyle';
+      st.textContent=`
+        .segelIntroBar{position:absolute;left:0;right:0;height:11%;background:#000;z-index:7;pointer-events:none;
+          transform:scaleY(0);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+        .segelIntroBar.top{top:0;transform-origin:top}
+        .segelIntroBar.bottom{bottom:0;transform-origin:bottom}
+        .segel-pet-intro .segelIntroBar{transform:scaleY(1)}
+        .segel-pet-intro.segel-pet-intro-release .segelIntroBar{transform:scaleY(0);transition-duration:.9s}
+        .segelStage .segelTop{transition:opacity .35s}
+        .segel-pet-intro .segelTop,.segel-pet-intro .segelTag{opacity:0!important;pointer-events:none}
+        @media (prefers-reduced-motion: reduce){.segelIntroBar{transition:none}}`;
+      document.head.appendChild(st);
+    }
+    const introBars=['top','bottom'].map(side=>{
+      const bar=document.createElement('div');bar.className='segelIntroBar '+side;
+      bar.setAttribute('aria-hidden','true');host.appendChild(bar);return bar;
+    });
+    let introShown=false;
+    function endPetIntro(){
+      S.introT=-1; S.introPanX=0; S.introPanY=0; introShown=false;
+      if(camera.zoom!==1){camera.zoom=1;camera.updateProjectionMatrix()}
+      host.classList.remove('segel-pet-intro','segel-pet-intro-release');
+    }
+    function petIntroCamera(dt){
+      if(S.introT<0){ if(camera.zoom!==1||introShown)endPetIntro(); return }
+      if(!introShown){ introShown=true; host.classList.add('segel-pet-intro') }
+      S.introT+=dt;
+      const t=S.introT;
+      if(t>=PET_INTRO_END){ endPetIntro(); try{placeSealBar()}catch(_){} return }
+      const p=t<=PET_INTRO_HOLD?0:Math.min(1,(t-PET_INTRO_HOLD)/PET_INTRO_PULL);
+      const pull=p*p*p*(p*(p*6-15)+10);                 // smootherstep
+      if(p>0)host.classList.add('segel-pet-intro-release');
+      const push=Math.min(1,t/PET_INTRO_HOLD)*.06;       // tolakan perlahan ke depan
+      const zoom=1+(PET_INTRO_ZOOM+push-1)*(1-pull);
+      camera.zoom=zoom; camera.updateProjectionMatrix();
+      // Anjakan dihadkan supaya pandangan yang dizum kekal di dalam bingkai asal.
+      const visH=2*Math.tan(camera.fov*Math.PI/360)*camera.position.z, visW=visH*camera.aspect;
+      const lim=1-1/zoom, cl=(v,m)=>Math.max(-m,Math.min(m,v));
+      S.introPanX=cl(SEAL_X,visW/2*lim)*(1-pull);
+      S.introPanY=cl(GROUND+.75-S.camY,visH/2*lim)*(1-pull);
+    }
+    // Ketik pentas semasa syot dekat = terus ke tarikan balik (tidak potong mati).
+    host.addEventListener('pointerdown',()=>{ if(S.introT>=0&&S.introT<PET_INTRO_HOLD)S.introT=PET_INTRO_HOLD });
     const ro=new ResizeObserver(resize); ro.observe(host);
     resize(); raf=requestAnimationFrame(frame);
 
@@ -1611,8 +1679,9 @@
         // dipanggil antara bingkai.
         const z=-.26, dist=camera.position.z-z;
         const visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
-        const wx=SEAL_X-camera.position.x;
-        const wy=(GROUND+tier.visible*.98)-camera.position.y;
+        // Abaikan anjakan babak pembuka: bar mesti mendarat di kedudukan akhir.
+        const wx=SEAL_X-(camera.position.x-S.introPanX);
+        const wy=(GROUND+tier.visible*.98)-(camera.position.y-S.introPanY);
         const yInRender=(.5-wy/visH)*stageRenderHeight;
         return {x:(wx/visW+.5)*100, y:yInRender/host.clientHeight*100};
       },
@@ -1623,6 +1692,7 @@
         return Boolean(s && S.active===stageTiers.length-1 && s.damage+1/tier.hits>=.999);
       },
       async strike(){
+        if(S.introT>=0)endPetIntro();  // jawapan awal: terus ke pandangan arena
         const lifecycle=S.lifecycle;
         const tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
         const finalHit=S.active===stageTiers.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
@@ -1787,6 +1857,7 @@
             return;
           }
           S.enterT=0; S.heroFade=0;
+          S.introT=0;   // babak pembuka pet dahulu; zarah menunggu (lihat frame())
           enPoints.visible=enHalo.visible=true;
           enMat.opacity=enHaloMat.opacity=0;
           sfx('auraCharge');
@@ -1794,7 +1865,7 @@
           restoreHeroAfterEntranceFailure();
         }
       },
-      wrong(){ S.shake=.14 },
+      wrong(){ if(S.introT>=0)endPetIntro(); S.shake=.14 },
       reset(questionTarget=null){
         const hits=questionTarget==null?TIERS.map(tier=>tier.hits):demoSealHits(questionTarget);
         stageTiers.forEach((tier,i)=>{tier.hits=hits[i]});
@@ -1802,7 +1873,7 @@
         host.classList.remove('finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end');
         finalImpactPending=false; finalImpactActive=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
-        S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME;
+        S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME; endPetIntro();
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
         enMat.opacity=enHaloMat.opacity=0;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
@@ -1826,7 +1897,7 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
+      cancel(){ ++S.lifecycle; endPetIntro(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
       setCompanion(config){ return setPetVisual(config); },
       setRescuePet(config){ return setRescuePetVisual(config); },
       setPet(config){ return Promise.all([setPetVisual(config),setRescuePetVisual(config)]); },
