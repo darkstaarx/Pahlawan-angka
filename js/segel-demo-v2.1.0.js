@@ -2867,7 +2867,7 @@
     const count=entryMode?.guestDemo
       ? `Soalan ${run.asked+1} / ${run.questionTarget}`
       : `Soalan ${run.asked+1}`;
-    $('segelCount').textContent=count;
+    /* Owner (2026-10-24): one question number only, in the question panel. The pill by Wira is gone. */
     $('segelQLabel').textContent=count;
     /* .question ialah grid (game.css) supaya kandungannya terpusat menegak.
        Grid membloksifikasi SETIAP anak, jadi menyuap prompt terus ke situ
