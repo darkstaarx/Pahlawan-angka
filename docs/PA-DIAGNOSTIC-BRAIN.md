@@ -377,13 +377,20 @@ composition, lock policy.
 Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
 **Status at a glance (2026-10-24).**
-- Merged into `main`: every PR up to #117 (3.87.45).
+- Merged into `main`: every PR up to #118 (3.87.46).
 - Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
   connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
-  3.87.38–3.87.45 (#106–#117) are merged; the owner deploys (check the live version before assuming).
+  3.87.38–3.87.46 (#106–#118) are merged; the owner deploys (check the live version before assuming).
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
-  "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
-  D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
+  "Jom tengok cara" (#84–#103). D2.4.5 Bahagi wang and D2.4.6 Simpanan already go to
+  Gerai Wirayung (`bahagi` / `simpanan` modes, `js/wirayung-live-bridge.js`); the old note
+  that they went to battle was wrong. #118 (3.87.46) fixed them: Simpanan shelf prices
+  showed "RMNaN" (only the bought item had a price), its receipt said "Wang dibelanjakan ?"
+  although the story gives it, and it now alternates with a **sasaran** kind ("Aina mahu
+  beli X berharga RMa. Dia sudah simpan RMb. Berapa lagi perlu disimpan?", as in the
+  D2.4.6 bank) with its own "Jom tengok cara" (a − b) and DEV button; Bahagi wang share
+  slots read "Kawan 1" (was "Pet 1"). Open idea: money boards for whole-ringgit sums
+  still start with two "0 − 0" sen steps (engine-wide, `PAWorked.build`).
 - Phase 5: brain facets now go to the cloud and admin/kalibrasi.html shows the
   findings (3.87.37, see "Phase 5: what already exists" under item 2 below).
 - Known small issues: on a 360×600 screen Wira's bubble still covers the pet's
