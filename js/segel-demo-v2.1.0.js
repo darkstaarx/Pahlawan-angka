@@ -1208,7 +1208,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,companionScale:COMPANION_SCALE,camY:0,rescued:false,lifecycle:0,
-             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,heroFade:1,running:true,active:0,
+             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,freeze:0,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,dashFx:0,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
              companionFrames:petJoyE,companionHold:null,companionFps:2,companionFrameT0:0,
@@ -1283,6 +1283,9 @@
       raf=requestAnimationFrame(frame);
       if(!S.running)return;
       const dt=Math.min((now-last)/1000,.05); last=now; tAcc+=dt;
+      // Hit-stop: fdt beku seketika untuk Wira, lantunan kubah dan zarah.
+      // tAcc tetap berjalan, jadi animasi pet tidak pernah terhenti.
+      const fdt=S.freeze>0?0:dt; if(S.freeze>0)S.freeze-=dt;
 
       // Each pose sequence samples its own elapsed time (tAcc minus the moment
       // it was assigned), not the stage's raw clock — otherwise a switch like
@@ -1302,7 +1305,7 @@
       }
 
       // S.heroX dan S.petY ialah kedudukan KAKI, bukan pusat satah.
-      S.heroFeet=damp(S.heroFeet,S.heroX,15,dt);
+      S.heroFeet=damp(S.heroFeet,S.heroX,15,fdt);
       S.petFeet=damp(S.petFeet,S.petY,9,dt);
       hero.position.x=S.heroFeet+hero.userData.e.offX;
       hero.position.y=GROUND+hero.userData.e.offY;
@@ -1368,7 +1371,7 @@
          cukup untuk mata tahu ia melantun, bukan sekadar berkelip. */
       let recoil=0;
       if(S.hitT>=0){
-        S.hitT+=dt;
+        S.hitT+=fdt;
         const k=S.hitT/HIT_REBOUND;
         if(k>=1)S.hitT=-1;
         else recoil=Math.sin(k*Math.PI*2.2)*Math.exp(-k*4.2);
@@ -1390,7 +1393,8 @@
           m.scale.set(s.base.w*grow, s.base.h*grow, 1);
           u.uOpacity.value=k<.22 ? 1 : 1-((k-.22)/.78);
           u.uGrey.value=1;
-          if(k>=1){ s.breakT=-1; m.visible=false }
+          if(s.crack)s.crack.mesh.material.opacity=u.uOpacity.value;
+          if(k>=1){ s.breakT=-1; m.visible=false; clearCracks(s) }
           return;
         }
         const on=(i===S.active);
@@ -1422,7 +1426,7 @@
       camera.position.y=S.camY+shakeY;
       bg.position.x=-camera.position.x*.4;
       bg.position.y=S.camY;
-      petIntroCamera(dt);
+      cameraFrame(dt);
 
       /* Penerbangan syiling. Lengkung bezier yang sama dengan Unity: terbit,
          merebak, kemudian melengkung ke dada Wira dengan jeda berperingkat. */
@@ -1536,12 +1540,15 @@
 
       for(let i=0;i<PN;i++){
         if(pLife[i]<=0){ pPos[i*3+1]=999; continue }
-        pLife[i]-=dt; pVel[i*3+1]-=9.5*dt;
-        pPos[i*3]+=pVel[i*3]*dt; pPos[i*3+1]+=pVel[i*3+1]*dt; pPos[i*3+2]+=pVel[i*3+2]*dt;
+        pLife[i]-=fdt; pVel[i*3+1]-=9.5*fdt;
+        pPos[i*3]+=pVel[i*3]*fdt; pPos[i*3+1]+=pVel[i*3+1]*fdt; pPos[i*3+2]+=pVel[i*3+2]*fdt;
       }
       pGeo.attributes.position.needsUpdate=true;
 
+      ghostFrame(dt);
+      seals.forEach(s=>{ if(s.crack&&s.crack.dirty)drawCracks(s,now) });
       renderer.render(scene,camera);
+      fxFrame(fdt);
     }
 
     /* Panel soalan berubah tinggi ikut panjang soalan, jadi nisbah pentas tidak
@@ -1597,6 +1604,7 @@
       canvas.style.inset='0 auto auto 0';
       canvas.style.width=w+'px';canvas.style.height=renderH+'px';
       renderer.setSize(w,renderH,false);
+      sizeFx(w,renderH);
       camera.aspect=w/renderH;
       setSpan(stageSpan(camera.aspect));
       const visH=Math.max(WORLD_W*span/camera.aspect, MIN_H);
@@ -1657,6 +1665,229 @@
     }
     // Ketik pentas semasa syot dekat = terus ke tarikan balik (tidak potong mati).
     host.addEventListener('pointerdown',()=>{ if(S.introT>=0&&S.introT<PET_INTRO_HOLD)S.introT=PET_INTRO_HOLD });
+
+    /* ===== RASA HENTAMAN =====
+       Untuk serangan biasa sahaja (jurus penamat ada babaknya sendiri):
+       kamera menolak masuk dan "punch" pada sentuhan, hit-stop pendek,
+       bayang dash, lengkung tebasan + percikan pada kanvas 2D di atas WebGL,
+       dan retakan pada kubah yang bertambah setiap hentaman.
+       Hit-stop membekukan Wira, lantunan kubah dan zarah sahaja. Jam animasi
+       pet (tAcc) tidak dibekukan, jadi animasi sedih pet kekal pada kelajuannya. */
+    const HITSTOP=.085;
+    if(!document.getElementById('segelHitFxStyle')){
+      const st=document.createElement('style');st.id='segelHitFxStyle';
+      // Bar gembok diunjur tanpa zoom kamera; sorok sekejap semasa zoom supaya
+      // ia tidak terapung di tempat salah, kemudian muncul semula dengan nilai baharu.
+      st.textContent='.segel-cam-zoom .segelTag{opacity:0!important}';
+      document.head.appendChild(st);
+    }
+
+    // Kamera: zoom = potongan 2D pandangan penuh (sama seperti babak pembuka).
+    function viewZoom(zoom,wx,wy){
+      const dist=camera.position.z+.33;
+      const visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
+      const fx=wx/visW+.5, fy=.5-(wy-S.camY)/visH;
+      const FH=1000, FW=FH*camera.aspect, w=FW/zoom, h=FH/zoom;
+      const ox=Math.max(0,Math.min(FW-w,fx*FW-w/2)), oy=Math.max(0,Math.min(FH-h,fy*FH-h/2));
+      camera.setViewOffset(FW,FH,ox,oy,w,h);
+    }
+    function cameraFrame(dt){
+      if(S.introT>=0||introShown){ petIntroCamera(dt); return }
+      S.camZoom+=(S.camZoomTo-S.camZoom)*(1-Math.exp(-8*dt));
+      S.camPunch*=Math.exp(-10*dt);
+      const z=S.camZoom+S.camPunch;
+      host.classList.toggle('segel-cam-zoom',z>1.004);
+      if(z<=1.0005){ if(camera.view&&camera.view.enabled)camera.clearViewOffset(); return }
+      viewZoom(z,S.camFX,S.camFY);
+    }
+
+    // Bayang dash: empat salinan Wira berwarna biru yang mengekori kedudukannya.
+    const ghosts=[0,1,2,3].map(()=>{
+      const m=new THREE.Mesh(hero.geometry,new THREE.MeshBasicMaterial({map:hero.material.map,transparent:true,
+        depthWrite:false,blending:THREE.AdditiveBlending,color:0x6fd6ff,opacity:0}));
+      m.renderOrder=3.8; m.visible=false; scene.add(m); return m;
+    });
+    const ghostHist=[];
+    function ghostFrame(dt){
+      if(S.dashFx>.02&&hero.visible){
+        ghostHist.push({x:hero.position.x,y:hero.position.y,sx:hero.scale.x,sy:hero.scale.y,map:hero.material.map});
+        if(ghostHist.length>12)ghostHist.shift();
+      }else ghostHist.length=0;
+      ghosts.forEach((g,i)=>{
+        const h=ghostHist[ghostHist.length-1-(i+1)*2];
+        if(!h){ g.visible=false; return }
+        g.visible=true; g.material.map=h.map;
+        g.position.set(h.x,h.y,-.005); g.scale.set(h.sx,h.sy,1);
+        g.material.opacity=.5*(1-i/4)*S.dashFx;
+      });
+      S.dashFx=Math.max(0,S.dashFx-dt*2.6);
+    }
+
+    // Kanvas kesan 2D, betul-betul di atas kanvas WebGL dan di bawah HUD.
+    const fxCanvas=document.createElement('canvas');
+    fxCanvas.className='segelFxLayer'; fxCanvas.setAttribute('aria-hidden','true');
+    fxCanvas.style.cssText='position:absolute;left:0;top:0;pointer-events:none';
+    canvas.after(fxCanvas);
+    const fx2=fxCanvas.getContext('2d');
+    let fxDpr=1, fxDirty=false, fxParts=[], fxArcs=[];
+    function sizeFx(w,h){
+      fxDpr=Math.min(window.devicePixelRatio||1,2);
+      fxCanvas.width=Math.round(w*fxDpr); fxCanvas.height=Math.round(h*fxDpr);
+      fxCanvas.style.width=w+'px'; fxCanvas.style.height=h+'px';
+    }
+    // Dunia -> piksel kanvas, termasuk potongan zoom kamera.
+    function proj(x,y,z=0){
+      const dist=camera.position.z-z, visH=2*Math.tan(camera.fov*Math.PI/360)*dist, visW=visH*camera.aspect;
+      let a=(x-camera.position.x)/visW+.5, b=.5-(y-camera.position.y)/visH, zoom=1;
+      const v=camera.view;
+      if(v&&v.enabled){ a=(a*v.fullWidth-v.offsetX)/v.width; b=(b*v.fullHeight-v.offsetY)/v.height; zoom=v.fullHeight/v.height }
+      const cw=fxCanvas.width/fxDpr, ch=fxCanvas.height/fxDpr;
+      return {x:a*cw, y:b*ch, ppu:ch/visH*zoom};
+    }
+    const tierCss=s=>'#'+new THREE.Color(s.tier.color).getHexString();
+    function fxSparks(x,y,n,colors,dir,spread){
+      for(let i=0;i<n;i++){const a=dir+(Math.random()-.5)*spread, v=3+Math.random()*7;
+        fxParts.push({t:'s',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.22+Math.random()*.3,age:0,c:colors[i%colors.length],w:1.6+Math.random()*1.8,g:-7,drag:3.2})}
+    }
+    function fxGlows(x,y,n,color){
+      for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2, v=.6+Math.random()*2;
+        fxParts.push({t:'g',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.35+Math.random()*.4,age:0,c:color,r:.08+Math.random()*.1,g:.6,drag:2})}
+    }
+    function fxSymbols(x,y){
+      ['+','−','×','÷'].forEach(ch=>{const a=Math.PI*(.55+Math.random()*.4), v=3+Math.random()*2.5;
+        fxParts.push({t:'m',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.7+Math.random()*.3,age:0,ch,rot:(Math.random()-.5),vr:(Math.random()-.5)*9,g:-11,drag:1})});
+    }
+    function fxCharge(x,y){
+      for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2, r=.8+Math.random()*.6, life=.22+Math.random()*.12;
+        const sx=x+Math.cos(a)*r, sy=y+Math.sin(a)*r;
+        fxParts.push({t:'g',x:sx,y:sy,vx:(x-sx)/life,vy:(y-sy)/life,life,age:0,c:'rgba(130,220,255,.95)',r:.07+Math.random()*.06,g:0,drag:0})}
+    }
+    function fxArc(x,y,r,rot){ fxArcs.push({x,y,r,rot,age:0,dur:.3}) }
+    function clearHitFx(){
+      fxParts=[]; fxArcs=[]; ghostHist.length=0; ghosts.forEach(g=>{g.visible=false});
+      host.classList.remove('segel-cam-zoom'); seals.forEach(clearCracks);
+    }
+    function contactFx(){
+      const s=seals[Math.min(S.active,seals.length-1)], vis=s.tier.visible;
+      const cx=SEAL_X-vis*.42, cy=GROUND+vis*.46;
+      S.freeze=HITSTOP; S.camPunch=.06;
+      S.hitT=0; S.grey=1;            // kubah bereaksi TEPAT pada sentuhan pedang
+      fxArc(cx+.05,cy,vis*.36,-.15);
+      fxSparks(cx,cy,30,['#ffffff','#bfe9ff',tierCss(s)],Math.PI*.95,2.4);
+      fxGlows(cx,cy,8,'rgba(150,225,255,.9)');
+      fxSymbols(cx,cy+.15);
+      addCracks(s,s.damage>.3?3:2);
+    }
+    const glowDot=(function(){
+      const c=document.createElement('canvas'); c.width=c.height=64; const g=c.getContext('2d');
+      const r=g.createRadialGradient(32,32,0,32,32,32);
+      r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(.25,'rgba(150,225,255,.9)'); r.addColorStop(1,'rgba(150,225,255,0)');
+      g.fillStyle=r; g.fillRect(0,0,64,64); return c;
+    })();
+    function fxFrame(dt){
+      if(!fxParts.length&&!fxArcs.length){
+        if(fxDirty){ fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height); fxDirty=false }
+        return;
+      }
+      fxDirty=true;
+      fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+      fx2.setTransform(fxDpr,0,0,fxDpr,0,0);
+      // Lengkung tebasan: bulan sabit yang tirus, menyapu kemudian pudar.
+      for(let i=fxArcs.length-1;i>=0;i--){
+        const A=fxArcs[i]; A.age+=dt; const p=Math.min(1,A.age/A.dur);
+        if(p>=1){ fxArcs.splice(i,1); continue }
+        const sweep=1-Math.pow(1-Math.min(1,p*1.7),3), fade=1-Math.max(0,(p-.35)/.65);
+        const c=proj(A.x,A.y), r=A.r*c.ppu, th=r*.2, s0=-2.3, e0=s0+(3.2)*sweep;
+        fx2.save(); fx2.translate(c.x,c.y); fx2.rotate(A.rot); fx2.globalCompositeOperation='lighter';
+        [[1.18,.22],[1.06,.5],[1,1]].forEach(([m,al])=>{
+          fx2.globalAlpha=fade*al; fx2.beginPath(); fx2.arc(0,0,r*m,s0,e0); fx2.arc(th*.9,0,r*m-th*m*.9,e0,s0,true); fx2.closePath();
+          const lg=fx2.createLinearGradient(Math.cos(s0)*r,Math.sin(s0)*r,Math.cos(e0)*r,Math.sin(e0)*r);
+          lg.addColorStop(0,'rgba(76,201,255,0)'); lg.addColorStop(.7,'rgba(76,201,255,.9)'); lg.addColorStop(1,m===1?'#ffffff':'rgba(76,201,255,1)');
+          fx2.fillStyle=lg; fx2.fill();
+        });
+        fx2.restore();
+      }
+      for(let i=fxParts.length-1;i>=0;i--){
+        const P=fxParts[i]; P.age+=dt; if(P.age>=P.life){ fxParts.splice(i,1); continue }
+        const dr=Math.exp(-P.drag*dt); P.vx*=dr; P.vy=P.vy*dr+P.g*dt; P.x+=P.vx*dt; P.y+=P.vy*dt; if(P.vr)P.rot+=P.vr*dt;
+        const k=1-P.age/P.life, c=proj(P.x,P.y);
+        if(P.t==='s'){
+          const t=proj(P.x-P.vx*.04,P.y-P.vy*.04);
+          fx2.globalCompositeOperation='lighter'; fx2.globalAlpha=k; fx2.strokeStyle=P.c; fx2.lineWidth=P.w; fx2.lineCap='round';
+          fx2.beginPath(); fx2.moveTo(c.x,c.y); fx2.lineTo(t.x,t.y); fx2.stroke();
+        }else if(P.t==='g'){
+          const r=P.r*c.ppu*(.5+k*.5); fx2.globalCompositeOperation='lighter'; fx2.globalAlpha=Math.min(1,k*1.4);
+          fx2.drawImage(glowDot,c.x-r,c.y-r,r*2,r*2);
+        }else{
+          const size=Math.max(18,.3*c.ppu);
+          fx2.globalCompositeOperation='source-over'; fx2.globalAlpha=Math.min(1,k*1.6);
+          fx2.save(); fx2.translate(c.x,c.y); fx2.rotate(P.rot); fx2.font=`900 ${size|0}px system-ui,sans-serif`;
+          fx2.textAlign='center'; fx2.textBaseline='middle'; fx2.lineWidth=size*.22; fx2.lineJoin='round';
+          fx2.strokeStyle='#0d4ea8'; fx2.strokeText(P.ch,0,0); fx2.fillStyle='#ffffff'; fx2.fillText(P.ch,0,0); fx2.restore();
+        }
+      }
+      fx2.globalAlpha=1; fx2.globalCompositeOperation='source-over';
+    }
+
+    /* Retakan kubah: satu kanvas lutsinar per kubah, dipasang sebagai anak
+       mesh kubah supaya ia ikut lantunan, nafas dan pudar kubah itu sendiri.
+       Retakan bermula di sisi kiri (arah pedang Wira) dan berhenti sebelum
+       sampai ke muka pet, sama seperti tingkap uClear. */
+    const CRACK_PX=512;
+    seals.forEach(s=>{
+      const c=document.createElement('canvas'); c.width=c.height=CRACK_PX;
+      const tex=new THREE.CanvasTexture(c);
+      if('colorSpace' in tex)tex.colorSpace=THREE.SRGBColorSpace;
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
+        new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));
+      m.position.z=.002; m.renderOrder=3.5; s.front.add(m);
+      s.crack={mesh:m,g:c.getContext('2d'),tex,lines:[],dirty:false};
+    });
+    function addCracks(s,n){
+      const cr=s&&s.crack; if(!cr)return;
+      const face=s.front.material.uniforms.uClear.value, fu=face.x, fv=1-face.y, fr=.21;
+      const blocked=(x,y)=>Math.hypot(x-fu,y-fv)<fr||Math.hypot((x-.5)/.44,(y-.8)/.7)>1;
+      const now=performance.now();
+      for(let k=0;k<n;k++){
+        const a=.35+Math.random()*1.0;             // sisi kiri kubah
+        let x=.5-.42*Math.cos(a), y=.8-.66*Math.sin(a);
+        let ang=Math.atan2(.48-y,.5-x)+(Math.random()-.5)*.9;
+        const pts=[[x,y]], segs=6+((Math.random()*4)|0);
+        for(let j=0;j<segs;j++){
+          ang+=(Math.random()-.5)*.8; const l=.04+Math.random()*.05;
+          const nx=x+Math.cos(ang)*l, ny=y+Math.sin(ang)*l;
+          if(blocked(nx,ny))break;
+          x=nx; y=ny; pts.push([x,y]);
+          if(Math.random()<.28&&pts.length>2){
+            const b=[[x,y]]; let bx=x, by=y, ba=ang+(Math.random()<.5?-1:1)*(.7+Math.random()*.5);
+            for(let q=0;q<3;q++){ const ex=bx+Math.cos(ba)*.035, ey=by+Math.sin(ba)*.035; if(blocked(ex,ey))break; bx=ex; by=ey; b.push([bx,by]) }
+            if(b.length>1)cr.lines.push({pts:b,born:now+60});
+          }
+        }
+        if(pts.length>1)cr.lines.push({pts,born:now});
+      }
+      cr.dirty=true;
+    }
+    function drawCracks(s,now){
+      const cr=s.crack, g=cr.g, P=CRACK_PX, col=tierCss(s);
+      g.clearRect(0,0,P,P); g.lineCap='round'; g.lineJoin='round';
+      let growing=false;
+      for(const L of cr.lines){
+        const k=Math.max(0,Math.min(1,(now-L.born)/140)); if(k<1)growing=true;
+        const n=Math.max(2,Math.ceil(L.pts.length*k));
+        const path=()=>{ g.beginPath(); for(let i=0;i<n;i++){ const [x,y]=L.pts[i]; i?g.lineTo(x*P,y*P):g.moveTo(x*P,y*P) } };
+        g.globalAlpha=1; g.strokeStyle='rgba(10,20,40,.4)'; g.lineWidth=13; path(); g.stroke();
+        g.globalAlpha=.9; g.strokeStyle=col; g.lineWidth=8; path(); g.stroke();
+        g.globalAlpha=1; g.strokeStyle='#ffffff'; g.lineWidth=3.4; path(); g.stroke();
+      }
+      cr.tex.needsUpdate=true; cr.dirty=growing;
+    }
+    function clearCracks(s){
+      const cr=s&&s.crack; if(!cr)return;
+      cr.lines=[]; cr.g.clearRect(0,0,CRACK_PX,CRACK_PX); cr.tex.needsUpdate=true; cr.dirty=false;
+      cr.mesh.material.opacity=1;
+    }
+
     const ro=new ResizeObserver(resize); ro.observe(host);
     resize(); raf=requestAnimationFrame(frame);
 
@@ -1723,26 +1954,37 @@
           if(lifecycle!==S.lifecycle)return;
           return;
         }
-        if(reduceMotion){ sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; return }
+        if(reduceMotion){ sfx('hit'); clearNormalIceFx(); burst(3,0xbfe9ff); S.waveT=0; addCracks(seals[Math.min(S.active,seals.length-1)],2); return }
+        const strikeVis=stageTiers[Math.min(S.active,stageTiers.length-1)].visible;
+        // Bersedia: kamera menolak masuk ke arah aksi, tenaga berkumpul pada Wira.
+        S.camFX=(HERO_HOME+SEAL_X)/2; S.camFY=GROUND+strikeVis*.5; S.camZoomTo=1.07;
+        fxCharge(HERO_HOME-.35,GROUND+.95);
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
+        // Dash: bayang biru mengekori, kamera ikut ke arah kubah.
+        S.dashFx=1; S.camZoomTo=1.1; S.camFX=SEAL_X-strikeVis*.35;
         S.heroLock=heroSlashE;  S.heroX=SLASH_X; await wait(140);
         if(lifecycle!==S.lifecycle)return;
         sfx('hit');
         clearNormalIceFx();
         burst(5.5,0xbfe9ff);                    // serpihan ais, bukan warna tier
         S.waveT=0; S.shake=.32;
-        await wait(210);
+        contactFx();                            // hit-stop, tebasan, retak, punch
+        await wait(210+HITSTOP*1000);
         if(lifecycle!==S.lifecycle)return;
+        S.camZoomTo=1;
         S.heroLock=null; S.heroX=HERO_HOME;
       },
       // Satu jawapan betul = satu hentaman pada segel aktif.
       hitSeal(){
         const s=seals[S.active]; if(!s)return {broken:false};
         s.damage=Math.min(1,s.damage+1/s.tier.hits);
-        S.grey=1;                      // kilas kelabu pada detik hentaman
-        if(!reduceMotion)S.hitT=0;     // kubah melantun
+        // Serangan biasa sudah melantunkan kubah TEPAT pada sentuhan pedang
+        // (contactFx). Jangan mulakan semula, nanti kubah berkelip dua kali.
+        const fromContact=S.hitT>=0;
+        if(!fromContact)S.grey=1;      // kilas kelabu pada detik hentaman
+        if(!reduceMotion&&!fromContact)S.hitT=0;     // kubah melantun
         if(s.damage>=.999){
           s.broken=true; s.breakT=0;
           if(!reduceMotion)shatter(s);
@@ -1874,6 +2116,7 @@
         finalImpactPending=false; finalImpactActive=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME; endPetIntro();
+        S.freeze=0; S.camZoom=S.camZoomTo=1; S.camPunch=0; S.dashFx=0; clearHitFx();
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
         enMat.opacity=enHaloMat.opacity=0;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
