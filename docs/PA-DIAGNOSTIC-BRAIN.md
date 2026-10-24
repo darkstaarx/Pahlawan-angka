@@ -377,10 +377,10 @@ composition, lock policy.
 Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
 **Status at a glance (2026-10-24).**
-- Merged into `main`: every PR up to #109 (3.87.41).
+- Merged into `main`: every PR up to #111 (3.87.42).
 - Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
   connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
-  3.87.38–3.87.41 (#106–#109) are merged but **not deployed yet**; the owner deploys.
+  3.87.38–3.87.42 (#106–#111) are merged; the owner deploys (check the live version before assuming).
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
   D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
@@ -429,9 +429,13 @@ into the live Three.js stage.
   answer with `PASegelDemo.submitInteraction({tag:'correct'}, button, PASegelDemo.state().q)`
   (14 correct answers reach the finisher; `tag:'wrong'` for a wrong answer).
   `node --test audit/segel-hero-visibility.test.js audit/segel-result-lifecycle.test.js` → 11/11.
-- **Next:** owner tests on a real phone. Likely tweaks: aura farming length (1 s now;
-  owner may want ~1.4 s, then also stretch the `wiraChargeSheet` CSS animation),
-  glacier slow-motion speed, zoom strength. Not done: the old battle screen
+- #111 (3.87.42, owner after a phone test): crack width is based on the dome's own
+  border (core ~7 px in the 1536 px art → crack core ×1.15, glow ×2.4), so cracks
+  match the dome lines on every screen; aura farming is 1.6 s (`LIVE_FINISHER.chargeMs`
+  and the `wiraChargeSheet` CSS animation must stay equal).
+- **Next:** owner tests on a real phone. Open question: the camera zoom during a
+  normal attack (lab had it too); owner may want it milder or off. Other likely
+  tweaks: glacier slow-motion speed. Not done: the old battle screen
   (`#battleArena`) was not changed.
 
 **Start here (next agent).**
