@@ -15,7 +15,10 @@
     const roomH=(panel.clientHeight-padH)*ROOM;
     if(h<=0||roomH<=0)return;
     // Height decides the zoom; then step back while anything overflows sideways.
-    const wide=()=>panel.scrollWidth>panel.clientWidth+1||kids.some(el=>el.scrollWidth>el.clientWidth+1);
+    // Also step back when the panel runs under the action bar (a panel that grows with its content).
+    const bar=panel.closest(':is(.pa-game,.game)')?.querySelector('.actions');
+    const low=()=>{if(!bar||!bar.getClientRects().length||panel.contains(bar))return false;const b=bar.getBoundingClientRect(),p=panel.getBoundingClientRect();return p.bottom>b.top+1&&p.top<b.top};
+    const wide=()=>panel.scrollWidth>panel.clientWidth+1||kids.some(el=>el.scrollWidth>el.clientWidth+1)||low();
     let z=Math.floor(Math.max(1,Math.min(MAX,roomH/h))*100)/100;
     panel.style.setProperty('--qz',String(z));
     while(z>1&&wide()){z=Math.max(1,Math.round((z-.05)*100)/100);panel.style.setProperty('--qz',String(z))}

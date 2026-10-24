@@ -714,6 +714,17 @@ digit, then the round's choices.
      behind a pulsing "?" ghost line.
    - All cues go as soon as the step is answered. Reduced motion keeps them still.
    - `window.__wkStep()` is for tests only. Tests: `audit/worked-cues-browser.test.js`.
+   - **Calm and focus (3.87.48, owner on a phone: "1 page tapi semua scream for attention"; "zoom tunjuk
+     cara full screen, tak perlu ada page wira").** `PAWorked` 1.13.0:
+     - Only ONE thing moves: the answer place (`.wk-next`), or the choices when the board has no slot
+       (`.wk-pickhere`). Wira's "?" is a still berry pill. Numbers to look at are still and soft
+       (gold tint, underline), never pulsing. The trail's target box no longer pulses.
+     - A number glows once, nearest first: the board, then the page's own card or table. Inside a grid or
+       flex cell the whole cell is marked (a split span broke "100% = RM6.60" into two lines).
+     - While Wira shows the way, the scene with Wira is hidden (`.wk-on`, `.wk-walk`) so the steps get the
+       screen. `minigame-panel-fit-v1.js` 1.2.0 stops zooming when the panel would run under the buttons.
+     - Choices of 5–6 characters ("RM4.00", "40 sen") use a smaller font (`.wk-mid`).
+     - Test: "Focus mode" in `audit/worked-cues-browser.test.js`.
    - Known, older and DEV only: some "Cuba Jom tengok cara" buttons throw in `makeQ` when the kind
      is not in the current grade (Menara Jam, Pos, Kedai Kek).
    **Wira's bubble (3.87.36).** `js/minigame-wsay-v1.js` (all 9 mini games): Wira's

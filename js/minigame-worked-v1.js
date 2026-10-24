@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.12.0';
+  const VERSION='1.13.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -706,7 +706,7 @@
       return `<div class="wk-board wk-gridb"><div class="wk-hg">${g}</div></div>`;
     }
     if(plan.op==='seq'){
-      return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?`<i class="wk-hop" data-h="${i}" aria-hidden="true">${plan.hops?'':'›'}</i>`:''}<span class="wk-c wk-box${v===null?' wk-q':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
+      return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?`<i class="wk-hop" data-h="${i}" aria-hidden="true">${plan.hops?'':'›'}</i>`:''}<span class="wk-c wk-box${v===null?' wk-q':''}${v!==null&&String(nf(v)).length>7?' wk-long':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
     }
     if(plan.op==='pv'){
       const pdp=plan.dp||0,NM=pdp?names(pdp):PLACE,HD=i=>i<pdp?DECH[pdp-1-i]:NM[i],ptc=i=>pdp&&i===pdp?' wk-pt':'';
@@ -780,15 +780,20 @@
       const [i,d]=v.split('.'),body=i.replace(/\B(?=(\d{3})+(?!\d))/g,'§').replace(/§/g,'[\\s\\u00a0,]?')+(d?'\\.'+d:'');
       return new RegExp('(?<![\\d.,:])'+body+'(?![\\d]|[.,:]\\d|[\\s\\u00a0]\\d{3}(?!\\d))')};
     const lookNum=(t,used)=>{const re=numPat(t);if(!re)return false;const want=String(t).replace(/[\s\u00a0,]/g,'');
-      // a page element whose whole text is the number (a table cell, a tag)
-      for(const e of lookRoot.querySelectorAll('*')){if(e.children.length||used.has(e)||skip(e))continue;const tx=e.textContent.replace(/[\s\u00a0,]/g,'');if(tx===want){used.add(e);e.classList.add(e.matches('.wk-c,.wk-box')?'wk-src':'wk-look');return true}}
-      // the number inside a line of text
-      const w=document.createTreeWalker(lookRoot,NodeFilter.SHOW_TEXT);while(w.nextNode()){const n=w.currentNode;if(used.has(n.parentElement)||skip(n))continue;const m=re.exec(n.nodeValue);if(!m)continue;
-        const r=n.splitText(m.index);r.splitText(m[0].length);const sp=document.createElement('span');sp.className='wk-lookt';sp.textContent=r.nodeValue;r.parentNode.replaceChild(sp,r);used.add(sp);return true}
+      // Nearest first (owner, 2026-10-24: one page must not shout everywhere): the board, then the page's own card or table.
+      for(const root of [el.board,lookRoot]){
+        // an element whose whole text is the number (a cell, a tag, a table cell)
+        for(const e of root.querySelectorAll('*')){if(e.children.length||used.has(e)||skip(e))continue;const tx=e.textContent.replace(/[\s\u00a0,]/g,'');if(tx===want){used.add(e);e.classList.add(e.matches('.wk-c,.wk-box')?'wk-src':'wk-look');return true}}
+        // the number inside a line of text
+        const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);while(w.nextNode()){const n=w.currentNode;if(used.has(n.parentElement)||skip(n))continue;const m=re.exec(n.nodeValue);if(!m)continue;
+          // inside a grid or flex cell a new span would become its own item and break the line: mark the whole cell
+          const pe=n.parentElement,pd=getComputedStyle(pe).display;if(/grid|flex/.test(pd)){used.add(pe);pe.classList.add(pe.matches('.wk-c,.wk-box')?'wk-src':'wk-look');return true}
+          const r=n.splitText(m.index);r.splitText(m[0].length);const sp=document.createElement('span');sp.className='wk-lookt';sp.textContent=r.nodeValue;r.parentNode.replaceChild(sp,r);used.add(sp);return true}
+      }
       return false};
     // The numbers Wira's line names (not inside a [fraction], not after "="): the first, and any with two or more digits.
     const sayNums=t=>{const x=String(t||'').replace(/\[[^\]]*\]/g,' ').replace(/=\s*\?[\s\S]*$/,''),out=[];const re=/\d{1,2}:\d{2}|\d{1,3}(?:[ \u00a0]\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g;let m;
-      while((m=re.exec(x))){const v=m[0].replace(/[\s\u00a0]/g,'');if(!out.length||v.replace(/\D/g,'').length>=2)out.push(v)}return out.slice(0,3)};
+      while((m=re.exec(x))){const v=m[0].replace(/[\s\u00a0]/g,'');if((!out.length||v.replace(/\D/g,'').length>=2)&&!out.includes(v))out.push(v)}return out.slice(0,3)};
     const markQ=node=>{const w=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),list=[];while(w.nextNode())if(w.currentNode.nodeValue.includes('?'))list.push(w.currentNode);
       // Only a "?" that stands for a number (after =, an operation sign or a space, not the end of a word) becomes the pulsing blank.
       for(const t of list){const v=t.nodeValue,f=document.createDocumentFragment();let last=0;
@@ -855,7 +860,7 @@
       // The story's sentence choices sit right under Wira's question (el.inline) when the page gives a place for them.
       const T=s.sentence&&el.inline?el.inline:el.tiles;if(T!==el.tiles)el.tiles.innerHTML='';if(el.inline&&T!==el.inline)el.inline.innerHTML='';
       T.classList.toggle('wk-one',!!s.sentence||s.kind!=='pick');T.classList.toggle('wk-two',s.kind==='pick'&&s.choices.length===2&&!s.sentence);
-      T.classList.toggle('wk-wide',s.kind==='pick'&&s.choices.some(v=>String(v).length>6));
+      T.classList.toggle('wk-wide',s.kind==='pick'&&s.choices.some(v=>String(v).length>6));T.classList.toggle('wk-mid',s.kind==='pick'&&!s.choices.some(v=>String(v).length>6)&&s.choices.some(v=>String(v).length>4));
       if(s.kind==='pick')T.innerHTML=s.choices.map(v=>`<button type="button" class="tl wk-t${s.sentence?' wk-s':''}" data-v="${esc(v)}">${H(v)}</button>`).join('');
       else T.innerHTML=`<button type="button" class="tl wk-t wk-go" data-v="go">${s.kind==='borrow'?'Pinjam 1':'Teruskan'}</button>`;
       T.querySelectorAll('.wk-t').forEach((btn,i)=>{btn.onclick=()=>pick(btn);btn.style.setProperty('--i',i);btn.classList.add('wk-enter')});
