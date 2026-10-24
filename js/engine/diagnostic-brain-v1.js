@@ -16,7 +16,7 @@
   if(root)root.PADiagnostic=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.3.0';
+  const VERSION='1.4.0';
   const LOG_MAX=500, WINDOW_DAYS=30, RUN_GAP=15*6e4;
   const OP_WORD={add:'tambah',sub:'tolak',mul:'darab',div:'bahagi'};
   const CTX_WORD={money:'wang',time:'masa',measure:'ukuran',fraction:'pecahan',decimal:'perpuluhan',plain:'nombor'};
@@ -103,6 +103,57 @@
     if(f.guided)r.g=1;   // 0 same operation as the two answers before (blocked), 1 mixed
     if(!ok&&value!==undefined&&value!==null&&value!==''){r.v=String(value).slice(0,24);if(f.answer)r.x=f.answer}
     return r;
+  }
+  /* Phase 5 cloud copy of one diagLog record (docs/PA-DIAGNOSTIC-BRAIN.md §8a "Phase 5").
+     Same short keys as diagLog, so an admin page can rebuild a child's log and run the
+     same analyze(). Whitelist only: brain categories and numbers, never question text.
+     Owner (2026-10-24): keep the wrong answer, numbers only (RM / sen allowed for money). */
+  const CLOUD_KEYS=['o','c','f','w','fx','fk','rg','rp','rd','ra','il','g','r'];
+  const NUMLIKE=/^(RM ?)?[-+]?[\d.,:\/ %]{1,20}( ?sen)?$/i;
+  function cloudFacets(entry,opts={}){
+    if(!entry||typeof entry!=='object')return null;
+    const out={v:1};
+    for(const k of CLOUD_KEYS){const x=entry[k];
+      if(typeof x==='number'&&Number.isFinite(x))out[k]=x;
+      else if(typeof x==='string'&&x)out[k]=x.slice(0,24);}
+    for(const k of ['a','tb']){const x=entry[k];
+      if(Array.isArray(x)){const ns=x.filter(n=>typeof n==='number'&&Number.isFinite(n)).slice(0,6);if(ns.length)out[k]=ns}}
+    const val=entry.v==null?'':String(entry.v).trim(),ans=entry.x==null?'':String(entry.x).trim();
+    if(val&&NUMLIKE.test(val))out.wv=val.slice(0,24);   // wrong value ("v" in diagLog)
+    if(ans&&NUMLIKE.test(ans))out.x=ans.slice(0,24);
+    if(opts.retry)out.rt=1;                              // a later try of a record already sent
+    if(opts.arch)out.ar=String(opts.arch).slice(0,64);
+    return out;
+  }
+  /* After record() ran: the cloud facets of the answer just logged. A new last record means
+     a first try; otherwise the same token near the end is a later try (rt). */
+  function cloudFacetsAfter(log,lastBefore,q){
+    if(!Array.isArray(log)||!log.length)return null;
+    const last=log[log.length-1],arch=q?.archetypeId;
+    if(last!==lastBefore)return cloudFacets(last,{arch});
+    const id=q?.token?String(q.token).slice(0,40):null;if(!id)return null;
+    for(let i=log.length-1;i>=Math.max(0,log.length-6);i--)if(log[i]?.id===id)return cloudFacets(log[i],{arch,retry:true});
+    return null;
+  }
+  /* Rebuild a diagLog from cloud rows (oldest first): {occurred_at|t, question_id, skill_id,
+     is_correct, used_hint, response_ms, facets}. Retry rows set r on their first record. */
+  function fromCloudRows(rows){
+    const log=[],byId=new Map();
+    const list=(Array.isArray(rows)?rows:[]).map(x=>({...x,_t:typeof x.t==='number'?x.t:Date.parse(x.occurred_at)})).filter(x=>Number.isFinite(x._t)).sort((a,b)=>a._t-b._t);
+    for(const row of list){
+      const f=row.facets&&typeof row.facets==='object'?row.facets:{};
+      const id=row.question_id?String(row.question_id).slice(0,40):null;
+      if(f.rt){const first=id&&byId.get(id);if(first){first.r=row.is_correct?1:0;if(row.used_hint)first.h=1}continue}
+      const r={t:row._t,s:row.skill_id||null,k:row.is_correct?1:0,sec:Math.round((Number(row.response_ms)||0)/100)/10};
+      for(const k of CLOUD_KEYS)if(f[k]!==undefined&&k!=='r')r[k]=f[k];
+      if(f.r!==undefined)r.r=f.r;
+      if(Array.isArray(f.a))r.a=f.a;if(Array.isArray(f.tb))r.tb=f.tb;
+      if(row.used_hint)r.h=1;
+      if(f.wv!==undefined)r.v=f.wv;if(f.x!==undefined)r.x=f.x;
+      if(id){r.id=id;byId.set(id,r)}
+      log.push(r);
+    }
+    return log;
   }
   function pushRecord(log,entry,token){
     const list=Array.isArray(log)?log:[];
@@ -546,5 +597,5 @@
   }
   function current(){const d=liveDb();return analyze(d?.diagLog,{name:d?.name})}
 
-  return{VERSION,facets,applyResponse,analyze,detectBug,cardMarkup,record,current,_floor:floor};
+  return{VERSION,facets,applyResponse,analyze,detectBug,cardMarkup,record,current,cloudFacets,cloudFacetsAfter,fromCloudRows,_floor:floor};
 });

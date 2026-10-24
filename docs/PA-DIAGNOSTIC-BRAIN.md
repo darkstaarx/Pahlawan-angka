@@ -383,8 +383,8 @@ Last updated: 2026-10-24 (PR #103 merged: "Jom tengok cara" is in all nine mini 
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
   D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
-- Next: phase 5 (see "Phase 5: what already exists" under item 2 below). It
-  needs owner decisions before code.
+- Phase 5: brain facets now go to the cloud and admin/kalibrasi.html shows the
+  findings (3.87.37, see "Phase 5: what already exists" under item 2 below).
 - Known small issues: on a 360×600 screen Wira's bubble still covers the pet's
   head in 8 of 9 mini games and drops to 10 px; a Gerai Wirayung hint reads
   "Pecahkan 50 sen: RM0 dan 50 sen." (the RM0 part).
@@ -654,7 +654,42 @@ digit, then the round's choices.
         answers to calibrate thresholds, or whether a new consent version is
         needed.
    - So phase 5 is: add the brain fields to the answer log (or apply the
-     adaptive tables), then a threshold dashboard. Lens 4.1 `rep` is still sent
+     adaptive tables), then a threshold dashboard.
+   - **Built (3.87.37, PR "Phase 5: brain facets in the cloud + Kalibrasi Otak").**
+     Owner decisions (2026-10-24):
+     - one `facets` jsonb column on `learning_attempts`, not the adaptive tables;
+     - keep the wrong answer, numbers only (RM and sen allowed);
+     - the current Privacy Notice is enough, so no new consent version;
+     - an admin page in the app.
+
+     What was built:
+     - `PADiagnostic.cloudFacets()` copies one diagLog record into the cloud. It
+       keeps only whitelisted short keys, so there is never any question text.
+     - `cloudFacetsAfter()` picks the record that was just written. A retry row
+       gets `rt`.
+     - `fromCloudRows()` rebuilds the log. For all 7 dummy children,
+       `analyze()` on the rebuilt log gives the same findings and evidence as the
+       original.
+     - `js/cloud.js` sends `facets` with each attempt. If the column is missing,
+       it sends the row again without `facets`.
+     - Migration `supabase/migrations/20261024_learning_attempts_facets.sql` (already
+       applied to the live project on 2026-10-24) adds:
+       - the `facets` column, which must be an object of 2 kB or less;
+       - `admin_calibration_rows(p_days)`. It is admin only and returns each
+         child as a hash (no names), plus a `mine` flag for the admin's own test
+         children.
+     - `admin/kalibrasi.html` (+ `kalibrasi-core.js`, `kalibrasi.js`; same log in
+       as `admin/`):
+       - rebuilds each child's log and runs the same `analyze()`;
+       - shows children per finding, % of eligible children, high confidence,
+         median evidence and an example sentence;
+       - has a per-child list and a CSV download.
+     - Tests: `audit/cloud-facets.test.js`.
+
+     Next for phase 5:
+     - wait until there is real data (the old rows have no facets);
+     - then tune each threshold in `analyze()` against this page;
+     - later: `rep` from the other 8 mini games, so lens 4.1 sees them. Lens 4.1 `rep` is still sent
      by Gudang Harta only. No mini game has a speaker yet.
    Note on 4.6 as built: the sketch said "per skill", but the evidence is
    pooled across operations (a child chooses among operations, not within
