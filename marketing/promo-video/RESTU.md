@@ -1,6 +1,14 @@
-# Promo #9 — "Bukan Teka" (53 s, 9:16)
+# Promo #9 — "Bukan Teka" (66.6 s, 9:16)
 
-Mesej: **animasi cantik, ciri power.**
+Mesej: **animasi cantik, ciri power.** Penutup: **"App yang betul-betul mengajar. Bukan main semata."**
+
+**Versi 2 (maklum balas pemilik):** bahagian "tunjuk cara" terlalu laju, sedangkan inilah kelebihan utama app.
+
+- Kini ia menggunakan soalan paling mudah, cerita tolak Tahun 1 *"Kumbis ada 40 anak panah. 3 patah semasa latihan. Berapa yang tinggal?"* (40 − 3 = 37).
+- Soalan itu dirakam dengan rentak 3.6 s setiap langkah dan dimainkan pada **kelajuan sebenar (1×)**, kira-kira 25 s.
+- Setiap langkah diberi label **LANGKAH 1/4 … 4/4**, dan arahan Wira diangkat besar terus dari skrin app.
+- "0 jadi 10" diperlahankan 0.5×.
+- Selepas SIAP, "Cuba soalan serupa →" menunjukkan anak cuba sendiri.
 
 - Pahlawan Angka perasan bila anak teka-teka. Wira jatuh ke **Portal Restu**, dan mak ayah nampak setiap tekaan.
 - Ia bukan sekadar menghalang teka. **9 mini-game** dan **"Jom tengok cara"** bantu anak faham cara selesaikan soalan dengan betul.
@@ -21,7 +29,7 @@ Mesej: **animasi cantik, ciri power.**
 | **SEMAKAN** untuk ibu bapa: 3 soalan yang dijawab terlalu cepat, dengan jawapan anak, jawapan betul dan masa (⚡ 0.5 s), serta nasihat Cikgu | `rapid-lock-v1.js` | 0:22.8–0:28.5 |
 | Teruskan main (portal kekal aktif) atau "Biar teroka hari ini" (tidak disyorkan) | `rapid-lock-v1.js` | 0:25.5 "Lepas tu, teruskan main." |
 | 9 mini-game Kemahiran Fokus | `dev-minigame-launcher-v1.js` | 0:30 grid hidup |
-| **Jom tengok cara**: selepas 3 cubaan salah, Wira tunjuk kaedah bertulis langkah demi langkah | `js/minigame-worked-v1.js` (Gudang Harta) | 0:34–0:44.6 |
+| **Jom tengok cara**: selepas 3 cubaan salah, Wira tunjuk kaedah bertulis langkah demi langkah | `js/minigame-worked-v1.js` (Gudang Harta) | 0:33–0:58.2 (1×) |
 
 **Definisi tekaan laju (dari kod):**
 
@@ -50,7 +58,7 @@ Semua rakaman ialah app sebenar, dirakam bingkai demi bingkai pada 1080×2236 de
 - Video memaparkan nota *"Portal Restu aktif dalam akaun keluarga, bukan Demo."*
 - PIN ialah PIN ujian rakaman. Digit tidak pernah dipaparkan.
 - Sinematik jatuh menggunakan `jatuh.mp4` HD, iaitu klip yang sama dengan `assets/cinematics/portal-restu-jatuh-v1.mp4`. Pelayar rakaman tidak memainkan H.264, jadi klip itu disisipkan semasa suntingan.
-- Mini-game diambil daripada rakaman Gudang Harta `#d2-tolak` (lihat `KELAS.md`), iaitu Family Plus. Nota *"Mini-game Kemahiran Fokus dalam pakej Family Plus."* dipaparkan.
+- Mini-game: Gudang Harta `#d1-tolak` (`capture_gudang.js … d1-tolak y1v2_2_4_2_sub_story 5 3.6`), iaitu Family Plus. Nota *"Mini-game Kemahiran Fokus dalam pakej Family Plus."* dipaparkan.
 
 ## Storyboard
 
@@ -63,10 +71,17 @@ Semua rakaman ialah app sebenar, dirakam bingkai demi bingkai pada 1080×2236 de
 | 0:16–0:19.1 | **Wira jatuh ke Portal Restu** (skrin penuh, drop) | Wira jatuh ke **Portal Restu!** |
 | 0:19.1–0:22.8 | Skrin Portal Restu: Cikgu "3 jawapan dipilih terlalu cepat", kemudian PIN ●●●● | Panggil **mak ayah.** · *Portal Restu aktif dalam akaun keluarga, bukan Demo.* |
 | 0:22.8–0:28.5 | **SEMAKAN**: 3 soalan dinaikkan (Anak: 3/8 · Betul: 2/8 · ⚡0.5 s…), kemudian nasihat Cikgu → Teruskan main | Mak ayah nampak **setiap tekaan.** → Lepas tu, **teruskan main.** |
-| 0:28.5–0:34.2 | Grid 9 mini-game hidup | Bukan sekadar halang **teka…** → …bantu anak **betul-betul faham.** · 9 MINI-GAME KEMAHIRAN FOKUS\* |
-| 0:34.2–0:44.6 | Gudang Harta: salah ke-3 → **Jom tengok cara** → pinjam 1, 17 − 8 = 9… → **SIAP!** | Salah **3** kali? → Wira tunjuk cara, **langkah demi langkah.** |
-| 0:44.6–0:49.1 | **JURUS PENAMAT!** (skrin penuh) → AURORA BEBAS! → BERJAYA! | Faham dulu… **baru menang!** |
-| 0:49.1–0:53 | Kad akhir | **Bukan teka. Betul-betul faham.** · Cuba Demo Sekarang |
+| 0:28.5–0:33 | Grid 9 mini-game hidup | Bukan sekadar halang **teka…** → …Wira ajar **sampai faham.** · 9 MINI-GAME KEMAHIRAN FOKUS\* |
+| 0:33–0:37.6 | Gudang Harta: taip 47, 57, 67 → Semak (pil Cuba 1 ✗ 2 ✗ 3 ✗) | Salah **3** kali? **Tak apa.** |
+| 0:37.6–0:39 | Butang **Jom tengok cara** diketuk | Wira terus **tunjuk cara.** |
+| 0:39–0:43.2 | Cerita diangkat besar; pilih **40 − 3** daripada 40 + 3 / 40 − 3 / 3 − 40 | LANGKAH 1/4 · Baca cerita, pilih **ayat.** |
+| 0:43.2–0:47.5 | "Tempat sa: 0 kurang daripada 3. Pinjam 1 dari tempat puluh." → Pinjam 1 → **"0 jadi 10."** (0.5×) | LANGKAH 2/4 · Tak cukup? **Pinjam 1.** |
+| 0:47.5–0:51.2 | "Tempat sa: 10 − 3 = ?" → 7 → "Tulis 7." | LANGKAH 3/4 · Tempat sa: **10 − 3 = 7** |
+| 0:51.2–0:54.7 | "Tempat puluh: tiada nombor untuk ditolak. 3 turun." → Teruskan → "Tulis 3." | LANGKAH 4/4 · Tempat puluh: **3 turun.** |
+| 0:54.7–0:57 | **SIAP! Cara Wira · 37** | 40 − 3 = **37.** · Faham cara, bukan **hafal jawapan.** |
+| 0:57–0:58.2 | Cuba soalan serupa → soalan baharu | Lepas faham, **anak cuba sendiri.** |
+| 0:58.2–0:62.7 | **JURUS PENAMAT!** (skrin penuh) → AURORA BEBAS! → BERJAYA! | Faham dulu… **baru menang!** |
+| 0:62.7–1:06.6 | Kad akhir | App yang **betul-betul mengajar.** · Bukan main semata. Cuba demo, tengok sendiri. |
 
 ## Render
 
