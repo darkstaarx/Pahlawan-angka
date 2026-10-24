@@ -374,12 +374,13 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-24 (PR #103 merged: "Jom tengok cara" is in all nine mini games; phase 5 audit below). Read this section first if you are picking up the work.
+Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
 **Status at a glance (2026-10-24).**
-- Merged into `main`: every PR up to #105 (3.87.37).
+- Merged into `main`: every PR up to #109 (3.87.41).
 - Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
   connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
+  3.87.38–3.87.41 (#106–#109) are merged but **not deployed yet**; the owner deploys.
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
   D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
@@ -388,6 +389,50 @@ Last updated: 2026-10-24 (PR #103 merged: "Jom tengok cara" is in all nine mini 
 - Known small issues: on a 360×600 screen Wira's bubble still covers the pet's
   head in 8 of 9 mini games and drops to 10 px; a Gerai Wirayung hint reads
   "Pecahkan 50 sen: RM0 dan 50 sen." (the RM0 part).
+
+**Segel stage polish (PRs #107–#109, 3.87.39–3.87.41, all in `js/segel-demo-v2.1.0.js`).**
+Goal (owner, 2026-10-24): make the Gembok/pet rescue stage feel like an anime battle
+(reference: a Threads clip), tuned first in a throwaway canvas prototype, then moved
+into the live Three.js stage.
+- #107 pet intro: when the arena is revealed (normal or after "Langkau"), the camera
+  starts close on the trapped pet with black cinema bars, holds ~1.1 s, pulls back;
+  Wira's blue particles start during the pull-back. Tap the stage to skip to the
+  pull-back. Zoom is a **2D crop** of the full view (`camera.setViewOffset`), not a
+  camera move, so the pet stays on the same spot of the map (owner caught the
+  parallax version making the pet slide sideways).
+- #108 hit feel: the dome now bounces and greys **at sword contact** (before, it
+  reacted ~210 ms late, when `hitSeal()` ran); 110 ms hit-stop; camera push-in and
+  punch; blue dash afterimages; a 2D effects canvas over WebGL (slash arc, sparks,
+  shock ring, + − × ÷ symbols, short flash, hit counter like "2/3"); cracks on the
+  dome that grow every hit (a canvas child of the dome mesh; line width is in
+  screen pixels so phones and tablets look the same; cracks stop before the pet's
+  face). Gangsa/Perak break: longer hit-stop, tier-colour flash, two shock rings,
+  then the next dome grows in.
+- #109 finisher (Gembok Emas): the original **aura farming frame** (Wira raises the
+  sword on black) is kept, with an absorb layer drawn on top (energy to the sword
+  tip, rings at the feet, rising sparks, sword glow that bursts white); the
+  **eye cut-in + JURUS PENAMAT** stays; then a dark arena with cinema bars, dash,
+  X-slash, 170 ms hit-stop, glacier in 0.6× slow motion (each thunder flashes and
+  cracks the dome), gold burst, then the existing Aurora-bebas / coins / BERJAYA flow.
+  `placeFinalImpact()` now follows the camera crop. Normal attacks got a stronger
+  absorb (more energy, short aura). Wrong answer: the dome sends out tier-colour
+  rings, Wira is pushed back ~0.4 s, text "Gembok menolak!" (no damage).
+  Fix: an answer given before Wira has formed (intro/particles) now shows Wira first.
+- **Owner rules:** the pet's sad animation speed must never change (only the camera
+  moves; hit-stop and slow motion freeze `fdt`, never `tAcc`, which drives pet
+  frames); keep the aura farming frame and the eye cut-in; on-screen text says
+  "Gembok". `reduceMotion` keeps the old behaviour (static cracks only).
+- Tunables (top of the hit-feel block): `HITSTOP` .11, zoom 1.16/1.26 (normal),
+  1.2/1.32 (finisher), glacier `S.slow` .6, pet intro `PET_INTRO_*`.
+- How it was tested: guest Demo in headless Chromium (no GPU, so it runs slower
+  than a phone): `PADemo.open(); PADemo.selectGrade(2); PADemo.start()`, then
+  answer with `PASegelDemo.submitInteraction({tag:'correct'}, button, PASegelDemo.state().q)`
+  (14 correct answers reach the finisher; `tag:'wrong'` for a wrong answer).
+  `node --test audit/segel-hero-visibility.test.js audit/segel-result-lifecycle.test.js` → 11/11.
+- **Next:** owner tests on a real phone. Likely tweaks: aura farming length (1 s now;
+  owner may want ~1.4 s, then also stretch the `wiraChargeSheet` CSS animation),
+  glacier slow-motion speed, zoom strength. Not done: the old battle screen
+  (`#battleArena`) was not changed.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #48, #69–#78, #80–#83 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
