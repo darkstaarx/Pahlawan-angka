@@ -729,6 +729,11 @@ digit, then the round's choices.
      no board, so "Jom tengok cara" shows the mode's `answer` text with a Faham card. `val()` called mode
      methods without their mode, `this.sum` threw, and the pupil was left with an empty panel (and, since
      3.87.48, no scene). `val(x,o,owner)` now calls with the mode. Test: "one item to pay".
+     Same PR, owner: "cerita hal baki tapi jom cara still tanya jumlah dlm card". The receipt now shows one
+     "?" per thing to find, and says which one Wira is finding: a one-item Baki shows Jumlah as the price
+     (no "?"); the "?" of the current part is outlined gold (`.now`), later ones fade (`.later`), and a part
+     found on the way (the total, the discount) is written into its "?" (`PAWorked.runChain` 1.14.0
+     `opt.onPlanDone(k, plan)`).
    - Known, older and DEV only: some "Cuba Jom tengok cara" buttons throw in `makeQ` when the kind
      is not in the current grade (Menara Jam, Pos, Kedai Kek).
    **Wira's bubble (3.87.36).** `js/minigame-wsay-v1.js` (all 9 mini games): Wira's

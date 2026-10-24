@@ -163,6 +163,9 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .receipt .sumline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;border-top:2px dashed #d9c39a;margin-top:3px;padding-top:3px;font-weight:900}
 .receipt .sum{border-top:2px dashed #d9c39a;margin-top:4px;padding-top:4px;font-weight:900}
 .receipt .q{display:inline-block;min-width:44px;text-align:center;background:#fbeacb;border-radius:6px;color:var(--berry)}
+.q.found,[data-mid].found{color:var(--ink);background:#fff1c2}
+#receipt .now{outline:3px solid #e0a92e;outline-offset:1px;background:#fff1c2;color:var(--berry);border-radius:6px}
+#receipt .later{opacity:.4}
 .receipt .paid{color:var(--leaf-dk)}
 .mat{margin-top:7px;min-height:52px;border-radius:12px;background:repeating-linear-gradient(45deg,#3f7d4a 0 6px,#45864f 6px 12px);border:3px solid #2a5a33;box-shadow:inset 0 3px 6px #0004;padding:8px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;position:relative}
 .mat-empty{position:absolute;inset:0;display:grid;place-items:center;color:#cfe8cf;font:800 12px/1.3 var(--f-body);text-align:center;padding:0 20px;pointer-events:none}
@@ -364,7 +367,7 @@ main.pa-game .scene{--waist:90px;--belt:.55;--aspect:1.5;--ww:clamp(100px,58cqh,
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.2.0"></script>
 <script src="js/minigame-wsay-v1.js?v=1.0.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.13.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.14.0"></script>
 <script>/* Gerai Wirayung — router Kemahiran Fokus → mini-game wang.
    Membaca encounter learnerReviewV1 yang SAMA digunakan oleh focusPracticeSummary()
    dan memutuskan sama ada skill wang yang lemah sesuai dilatih di gerai.
@@ -612,7 +615,7 @@ const MODES={
   sum:o=>o.items.reduce((a,id)=>a+P(id).price,0)*o.qty,
   target(o){return o.paid-this.sum(o)},
   ask:'Berapa baki aku?',title:o=>'Kira baki dari '+money(o.paid),text:'Dibayar tolak harga. Susun baki di kaunter.',goLbl:'Serah baki',
-  receipt(o){return rows(o)+sumline([['Jumlah','?'],['Dibayar',money(o.paid),'paid'],['Baki','?']])},
+  receipt(o){return rows(o)+sumline([['Jumlah',o.items.length===1&&!(o.qty>1)?money(this.sum(o)):'?0'],['Dibayar',money(o.paid),'paid'],['Baki','?']])},
   strategy(o){return (o.items.length>1||o.qty>1?'Cari jumlah dulu. ':'')+'Kemudian kira naik dari jumlah ke ringgit bulat, terus ke '+money(o.paid)+'.'},
   answer(o){const t=this.sum(o),up=Math.ceil(t/100)*100;return 'Jumlah '+money(t)+'. Kira naik: '+money(t)+' → '+money(up)+' ('+(up-t)+' sen), kemudian → '+money(o.paid)+'. Baki '+money(o.paid-t)+'.'},
   stamp:(o,v)=>'baki '+money(v),revenue(o){return this.sum(o)}},
@@ -662,7 +665,7 @@ const MODES={
   title:o=>o.paid?'Diskaun, kemudian baki':'Kira harga selepas diskaun',
   text:o=>o.paid?'Harga akhir dulu, kemudian tolak dari '+money(o.paid)+'.':'Tolak diskaun daripada harga asal. Susun wang di kaunter.',
   goLbl:o=>o.paid?'Serah baki':'Serah resit',
-  receipt(o){const it=o.items[0];return '<div class="items one"><div class="row"><span>'+ART[it]+name(it)+' · asal</span><span>'+money(P(it).price)+'</span></div><div class="row dsc"><span>Diskaun '+(o.cut?money(o.cut):o.pct+'%')+'</span><span>'+(o.cut?'−'+money(o.cut):'−?')+'</span></div></div>'
+  receipt(o){const it=o.items[0];return '<div class="items one"><div class="row"><span>'+ART[it]+name(it)+' · asal</span><span>'+money(P(it).price)+'</span></div><div class="row dsc"><span>Diskaun '+(o.cut?money(o.cut):o.pct+'%')+'</span><span>'+(o.cut?'−'+money(o.cut):'−<span data-mid="0">?</span>')+'</span></div></div>'
    +sumline(o.paid?[['Harga akhir','?'],['Dibayar',money(o.paid),'paid'],['Baki','?']]:[['Harga akhir','?']])},
   strategy(o){const pr=P(o.items[0]).price;if(o.cut)return 'Harga akhir = harga asal tolak potongan: '+money(pr)+' − '+money(o.cut)+'.';
    const ten=pr/10;const m10='10% daripada '+money(pr)+' = '+money(ten)+' (bahagi 10).';
@@ -700,7 +703,7 @@ const MODES={
 };
 const val=(x,o,owner)=>typeof x==='function'?x.call(owner,o):x   // owner: the mode, so its methods can use this.sum();
 function rows(o){return '<div class="items">'+o.items.map(id=>'<div class="row"><span>'+ART[id]+name(id)+'</span><span>'+money(P(id).price)+(o.qty>1?' × '+o.qty:'')+'</span></div>').join('')+'</div>'}
-function sumline(parts){return '<div class="sumline">'+parts.map(([k,v,c])=>'<span'+(c?' class="'+c+'"':'')+'>'+k+' '+(v==='?'?'<span class="q">?</span>':v)+'</span>').join('')+'</div>'}
+function sumline(parts){return '<div class="sumline">'+parts.map(([k,v,c])=>'<span'+(c?' class="'+c+'"':'')+'>'+k+' '+(v==='?'?'<span class="q">?</span>':/^\?\d$/.test(v)?'<span class="q" data-mid="'+v[1]+'">?</span>':v)+'</span>').join('')+'</div>'}
 
 function makeOrder(){
  if(liveFocus&&!liveFocus.complete&&liveFocus.contexts.length<2&&served>=CHECK_EVERY-2)return makeLiveFocusOrder();
@@ -976,6 +979,13 @@ function wkPlan(){const W=window.PAWorked;if(!W||!m)return null;const O={money:t
  if(plans.some(p=>!p)||plans[plans.length-1].answer!==ans)return null;
  return plans.length>1?{chain:{chain:plans,notes,answer:ans}}:{plan:plans[0]};
 }
+/* Owner (2026-10-25): the receipt must say which "?" Wira is finding now. The "?" of the current part
+   (the total, the discount, or the answer itself) is marked; the other "?" fade until their turn. */
+let wkParts=[];
+function wkNow(i){const R=$('receipt');if(!R)return;let k=0,n=0;for(;k<wkParts.length;k++){n+=wkParts[k];if(i<n)break}
+ const last=k>=wkParts.length-1,qs=[...R.querySelectorAll('.q,[data-mid]')];
+ const cur=qs.find(q=>q.dataset.mid===String(k)&&!q.classList.contains('found'))||(last?qs.filter(q=>q.dataset.mid===undefined&&!q.classList.contains('found')).pop():null);
+ qs.forEach(q=>{q.classList.toggle('now',q===cur);q.classList.toggle('later',q!==cur&&!q.classList.contains('found'))})}
 function startWorked(){
  const W=window.PAWorked,wp=wkPlan(),h=$('hint');workedOffer=false;hints++;m.worked=true;
  h.classList.remove('wk-offer');h.disabled=true;$('go').disabled=true;
@@ -985,12 +995,15 @@ function startWorked(){
  box.innerHTML='<div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div><div class="tiles wk" id="wkTiles"></div>';
  $('receipt').after(box);
  if(!wp){$('wkSay').innerHTML=esc(val(M().answer,m,M()));$('wkTiles').innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';$('wkTiles').querySelector('button').onclick=wkDone;return}
+ wkParts=wp.chain?wp.chain.chain.map(p=>p.steps.length):[wp.plan.steps.length];
  (wp.chain?W.runChain:W.run)(wp.chain||wp.plan,{board:$('wkBoard'),tiles:$('wkTiles'),inline:$('wkInline'),say:$('wkSay')},wkDone,
-  {onFact:f=>W.reportFact('gerai-wirayung',f,paRound),onStep:()=>tone(700,.06),onMiss:()=>sfx.bad(),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});
+  {onFact:f=>W.reportFact('gerai-wirayung',f,paRound),onStep:()=>tone(700,.06),onMiss:()=>sfx.bad(),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n;wkNow(i)},
+  // A number found on the way (the total before the change, the discount) replaces its "?" on the receipt.
+  onPlanDone:(k,p)=>{const c=$('receipt').querySelector('[data-mid="'+k+'"]');const v=m.mode==='diskaun'?m.disc:p&&p.answer;if(c&&Number.isFinite(v)){c.textContent=money(v);c.classList.remove('now','later');c.classList.add('found')}}});
 }
 /* After the board: the pupil lays the amount on the counter (SERAH), as in every round. */
 function wkDone(){const tg=target();
- setTimeout(()=>{$('wkPanel')?.remove();$('stationCount').classList.remove('wk-walk');
+ setTimeout(()=>{$('wkPanel')?.remove();$('stationCount').classList.remove('wk-walk');$('receipt').querySelectorAll('.now,.later').forEach(q=>q.classList.remove('now','later'));
   mat=[];if(m.mode==='bahagi')splitPiles=splitPiles.map(()=>[]);
   if(M().needSign&&M().needSign(m)){sign=m.kind;drawSign()}
   drawMat();$('go').disabled=false;$('hint').textContent='Tanya Wira';
