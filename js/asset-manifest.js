@@ -109,6 +109,8 @@ self.PA_ASSET_MANIFEST=Object.freeze({
   "./assets/enemies/time/frames/contact.webp": "5637b08709b35cb47da1557805031c2af607b06a3b2e28ca76574871e50aa8d5",
   "./assets/enemies/time/frames/follow-through.webp": "d65be3582fe9df1af948470c52e13fba09159f2eca531d72fd455e436321c171",
   "./assets/enemies/time/penguasa-jam-berdetik.webp": "3703c59c093032bc5346a67fd038ff2a2464dae9da4f2099d90aef8f98b65bc2",
+  "./assets/fonts/lilita-one-OFL.txt": "2db08f46f614cf63e96dc99390112b2a1d2c4171370443f510e2163fd4ad40eb",
+  "./assets/fonts/lilita-one-latin-400-normal.woff2": "d2575d4fa3632580aafcbcdf6978b3b57e144b90cf5bd9c2c98194f28b869704",
   "./assets/fx/bunga/bulatan-harmoni/fx-charge-arc-v1.webp": "92be9861dadf4bb7de3157ea74097abd32847d79b846839133b5e3e75ef8e8e8",
   "./assets/fx/bunga/bulatan-harmoni/fx-enemy-impact-v1.webp": "8e972d198ede3862b0b1d2c8e060f5922dbb93bde3fa0c1308abe6c40efe3392",
   "./assets/fx/bunga/finisher-thorn-bloom-v2.png": "0e5ccf3901009892ca1113abc0ffaf45c318283cea2204937571a28f199f2528",
