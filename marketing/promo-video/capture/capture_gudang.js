@@ -1,11 +1,11 @@
 // Rakam mini game Gudang Harta (cerita tolak, Tahun 4) bingkai demi bingkai pada 1080×2236:
 // 3 kali salah → "Jom tengok cara" → setiap langkah Cara Wira → SIAP! → Cuba soalan serupa.
-// node capture_gudang.js <outdir> [hash=d4-tolak] [arch] [seed=5]   (arch: hadkan kepada archetype tertentu, contoh separate)
+// node capture_gudang.js <outdir> [hash=d4-tolak] [arch] [seed=5] [pace=1.25]   (pace: saat antara langkah Wira)   (arch: hadkan kepada archetype tertentu, contoh separate)
 // Resipi ikut audit/minigame-targets-browser.test.js (main 3.87.8).
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const out = process.argv[2], HASH = process.argv[3] || 'd4-tolak', ARCH = process.argv[4] || '', SEED = parseInt(process.argv[5] || '5', 10);
+const out = process.argv[2], HASH = process.argv[3] || 'd4-tolak', ARCH = process.argv[4] || '', SEED = parseInt(process.argv[5] || '5', 10), PACE = parseFloat(process.argv[6] || '1.25');
 const SEED_JS = s => `(()=>{if(window!==window.top)return;let a=${s}>>>0;Math.random=function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};})();`;
 
 const FPS = 30, DT = 1000 / FPS, DPR = 1080 / 412;
@@ -75,7 +75,7 @@ const ev = (type, extra = {}) => { const e = { type, frame: log.frames, t: +(log
   await idle(0.6);
   await tap('#hint', 'jom-tengok-cara');
   ev('worked');
-  await idle(1.8);
+  await idle(Math.max(1.8, PACE));
   for (let n = 0; n < 24; n++) {
     const right = await p.evaluate(() => window.__wkRight && window.__wkRight());
     const open = await p.evaluate(() => document.querySelectorAll('.wk-t:not([disabled])').length);
@@ -87,10 +87,10 @@ const ev = (type, extra = {}) => { const e = { type, frame: log.frames, t: +(log
       for (const h of hs) if (await h.evaluate((b, v) => b.dataset.v === String(v), right)) return h;
       return null;
     });
-    await idle(1.25);
+    await idle(PACE);
   }
   ev('siap', await p.evaluate(() => ({ stamp: (document.querySelector('.stamp') || {}).textContent || '', check: document.getElementById('check').textContent })));
-  await idle(2.2);
+  await idle(Math.max(2.2, PACE));
   await tap('#check', 'cuba-soalan-serupa');
   await idle(2.6);
   ev('end');
