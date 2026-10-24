@@ -134,3 +134,18 @@
 .wk-list .wk-frow{justify-content:flex-start}
 .wk-list .wk-ft{font:800 clamp(15px,4.4vw,19px)/1.3 var(--f-body,system-ui);white-space:normal;text-align:left}
 .wk-list .wk-frow:last-child .wk-ft{color:var(--leaf-dk,#2f6a2e)}
+
+/* Where to look (owner, 2026-10-24): Wira's new line pops, its "?" pulses; the slot the answer goes into
+   pulses berry with a "?"; the numbers the step works on glow gold. */
+.wk-say.wk-saynew{animation:wkSay .65s cubic-bezier(.2,1.4,.4,1)}
+@keyframes wkSay{0%{transform:scale(.94);box-shadow:0 0 0 0 var(--gold,#ffc94a),0 3px 0 var(--ink,#4a2a16)}45%{transform:scale(1.05);box-shadow:0 0 0 6px var(--gold,#ffc94a),0 3px 0 var(--ink,#4a2a16)}100%{transform:none;box-shadow:0 3px 0 var(--ink,#4a2a16)}}
+.wk-say .wk-qm{display:inline-grid;place-items:center;min-width:1.3em;height:1.3em;margin:0 1px;border-radius:8px;background:var(--berry,#d2536b);color:#fff;font-weight:900;animation:wkQm 1s ease-in-out infinite}
+@keyframes wkQm{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.wk-c.wk-next,.wk-box.wk-next{position:relative;background:#fff0f3!important;border:2.5px solid var(--berry,#d2536b)!important;animation:wkNext 1s ease-in-out infinite;z-index:1}
+.wk-c.wk-next:empty::after,.wk-box.wk-next:empty::after{content:'?';font:900 .9em/1 var(--f-display,system-ui);color:var(--berry,#d2536b)}
+@keyframes wkNext{0%,100%{box-shadow:0 0 0 3px #d2536b55;transform:scale(1)}50%{box-shadow:0 0 0 8px #d2536b22;transform:scale(1.07)}}
+.wk-c.wk-src,.wk-box.wk-src{background:#ffe9a6!important;border-radius:10px;box-shadow:0 0 0 3px var(--gold-dk,#b9801c);animation:wkSrc 1.2s ease-in-out infinite}
+.wk-tag .wk-c.wk-src{padding:3px 10px}
+@keyframes wkSrc{0%,100%{box-shadow:0 0 0 3px var(--gold-dk,#b9801c)}50%{box-shadow:0 0 0 6px #ffc94aaa}}
+@media (prefers-reduced-motion:reduce){.wk-say.wk-saynew,.wk-say .wk-qm,.wk-c.wk-next,.wk-box.wk-next,.wk-c.wk-src,.wk-box.wk-src{animation:none}}
+.wk-frow.wk-ghost{justify-content:flex-start}.wk-list .wk-ghost .wk-c.wk-next{width:100%;height:calc(var(--cw) * .75)}.wk-frac:not(.wk-list) .wk-ghost .wk-c.wk-next{min-width:calc(var(--cw) * 1.4)}

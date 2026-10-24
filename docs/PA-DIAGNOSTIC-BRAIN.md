@@ -377,9 +377,9 @@ composition, lock policy.
 Last updated: 2026-10-24 (PR #103 merged: "Jom tengok cara" is in all nine mini games; phase 5 audit below). Read this section first if you are picking up the work.
 
 **Status at a glance (2026-10-24).**
-- Merged into `main`: every PR up to #103 (latest version 3.87.36). No open PRs.
-- Netlify: last confirmed live is 3.87.12 (2026-10-22). 3.87.13–3.87.36 are on
-  GitHub Pages only until the owner deploys.
+- Merged into `main`: every PR up to #105 (3.87.37).
+- Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
+  connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
   D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
@@ -620,6 +620,21 @@ digit, then the round's choices.
    points and rectangles, patterns, symmetry lines, protractor, compass),
    which have no sums to walk. No DEV sheet on this page: DEV test API
    `__tapakGen.tryWorked(grade, archetype)`.
+   **Where to look (3.87.38, owner 2026-10-24: "aku tak perasan pun 1 × 2 tu. Dan nak letak mana").**
+   `PAWorked.run` 1.11.0, all nine mini games:
+   - Each step, Wira's line pops and a "?" that stands for a number turns into a pulsing berry
+     blank. A sentence-end "?" stays plain, for example "Jadi jawapannya?".
+   - The slot the answer goes into pulses berry with a "?" (`.wk-next`).
+   - On boards without columns, the numbers of a fact step (a × b) glow gold (`.wk-src`), for example
+     "1" and "× 2". Column boards keep their lit column.
+   - A fraction row is shown early, empty, only when it holds the target slot and no visible number
+     gives the answer away.
+   - A work-card line (lists: Pos, Bengkel, Dapur, Menara) holds its answer, so it stays hidden
+     behind a pulsing "?" ghost line.
+   - All cues go as soon as the step is answered. Reduced motion keeps them still.
+   - `window.__wkStep()` is for tests only. Tests: `audit/worked-cues-browser.test.js`.
+   - Known, older and DEV only: some "Cuba Jom tengok cara" buttons throw in `makeQ` when the kind
+     is not in the current grade (Menara Jam, Pos, Kedai Kek).
    **Wira's bubble (3.87.36).** `js/minigame-wsay-v1.js` (all 9 mini games): Wira's
    speech bubble sits right of his face, up to the scene edge, and steps its
    text down (12 → 11 → 10 px) until it clears the pet's head; hidden during

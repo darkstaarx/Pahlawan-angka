@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.10.0';
+  const VERSION='1.11.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -765,11 +765,46 @@
       if(a.fill&&a.fill.i!==undefined){const c=q(`.wk-box[data-i="${a.fill.i}"]`);if(c){c.textContent=nf(a.fill.v);c.classList.remove('wk-q');c.classList.add('wk-drop')}}
       else if(a.fill){const c=q(`.wk-pvrow[data-row="${a.fill.row}"] [data-col="${a.fill.col}"]`);if(c){c.textContent=a.fill.digit;c.classList.remove('wk-empty');c.classList.add('wk-drop')}}
     };
+    /* Owner (2026-10-24): the pupil must see where to look. Each step: Wira's line pops and its "?" pulses,
+       the slot the answer goes into pulses (berry, with "?"), and the numbers the step works on glow (gold). */
+    const clearCue=()=>{el.board.querySelectorAll('.wk-ghost').forEach(g=>g.remove());el.board.querySelectorAll('.wk-next,.wk-src').forEach(c=>c.classList.remove('wk-next','wk-src'))};
+    const markQ=node=>{const w=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),list=[];while(w.nextNode())if(w.currentNode.nodeValue.includes('?'))list.push(w.currentNode);
+      // Only a "?" that stands for a number (after =, an operation sign or a space, not the end of a word) becomes the pulsing blank.
+      for(const t of list){const v=t.nodeValue,f=document.createDocumentFragment();let last=0;
+        for(let i=0;i<v.length;i++)if(v[i]==='?'&&(i===0||/[\s=×÷+−\-]/.test(v[i-1]))){if(i>last)f.appendChild(document.createTextNode(v.slice(last,i)));const q=document.createElement('span');q.className='wk-qm';q.textContent='?';f.appendChild(q);last=i+1}
+        if(last===0)continue;if(last<v.length)f.appendChild(document.createTextNode(v.slice(last)));t.parentNode.replaceChild(f,t)}};
+    const cue=s=>{
+      clearCue();
+      try{markQ(el.say)}catch(_){}
+      el.say.classList.remove('wk-saynew');void el.say.offsetWidth;el.say.classList.add('wk-saynew');
+      if(s.kind==='tap')return;
+      const A=s.after||{},tg=[];
+      if(A.set)for(const id of Object.keys(A.set)){const c=q(`[data-s="${id}"]`);if(c)tg.push(c)}
+      if(A.showRow!==undefined){const r=q(`.wk-frow[data-r="${A.showRow}"]`);
+        if(r&&r.classList.contains('wk-hide')){
+          // A work-card line (lists) holds its answer as text: keep it hidden, show a pulsing "?" line where it will appear.
+          // A fraction row is shown early, empty, only when the answer goes into one of its slots and no visible number gives it away.
+          const right=String(s.right??'').replace(/\s+/g,''),shown=[...r.querySelectorAll('.wk-c')].filter(c=>!c.classList.contains('wk-empty')).map(c=>c.textContent.replace(/\s+/g,''));
+          if(!plan.list&&tg.some(c=>r.contains(c))&&!(right&&shown.includes(right))){r.classList.remove('wk-hide');r.classList.add('wk-pop')}
+          else if(s.kind==='pick'){const g=document.createElement('div');g.className='wk-frow wk-ghost';g.innerHTML='<span class="wk-c wk-next"></span>';r.parentNode.insertBefore(g,r)}}}
+      if(A.write&&A.write.digit!==null&&A.write.digit!==undefined&&!A.write.lead){const c=q(`.wk-ans [data-col="${A.write.col}"]`);if(c)tg.push(c)}
+      if(A.fill&&A.fill.i!==undefined){const c=q(`.wk-box[data-i="${A.fill.i}"]`);if(c)tg.push(c)}
+      else if(A.fill){const c=q(`.wk-pvrow[data-row="${A.fill.row}"] [data-col="${A.fill.col}"]`);if(c)tg.push(c)}
+      tg.forEach(c=>c.classList.add('wk-next'));
+      // The numbers of a fact step (a × b): the first matching number on the board glows. Column boards
+      // already light their column, so only boards without columns (fractions, lists, trails) get this.
+      if(s.fact&&!(s.col>=0)){
+        const norm=t=>String(t).replace(/\s+/g,''),used=new Set(tg);
+        const cells=[...el.board.querySelectorAll('.wk-c,.wk-box')].filter(c=>c.textContent.trim()!==''&&!c.closest('.wk-hide'));
+        const find=alts=>{for(const a of alts){const c=cells.find(x=>!used.has(x)&&norm(x.textContent)===a);if(c){used.add(c);c.classList.add('wk-src');return}}};
+        const sym=SIGN[s.fact.op]||'';find([String(s.fact.a)]);find([sym+s.fact.b,String(s.fact.b)]);
+      }
+    };
     const tapCells=on=>el.board.querySelectorAll('.wk-tap').forEach(c=>{c.classList.toggle('wk-can',on&&(c.textContent!==''||c.classList.contains('wk-empty')));c.onclick=on?()=>tap(c):null});
     const show=()=>{
       busy=false;
-      if(k>=plan.steps.length){focus(-1);tapCells(false);el.say.innerHTML=plan.done?(opt.html?`<span><b>Siap!</b> ${H(plan.done)}</span>`:`<b>Siap!</b> ${H(plan.done)}`):`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
-      const s=plan.steps[k];shownAt=Date.now();focus(s.kind==='tap'?-1:s.col);say(s.say);opt.onShow&&opt.onShow(k,plan.steps.length);
+      if(k>=plan.steps.length){focus(-1);tapCells(false);clearCue();el.say.innerHTML=plan.done?(opt.html?`<span><b>Siap!</b> ${H(plan.done)}</span>`:`<b>Siap!</b> ${H(plan.done)}`):`<b>Siap!</b> ${esc(nf(plan.rows[0]))} ${SIGN[plan.op]} ${esc(nf(plan.rows[1]))} = ${esc(nf(plan.answer))}${plan.rem?` baki ${plan.rem}`:''}.`;el.tiles.innerHTML='';if(el.inline)el.inline.innerHTML='';onDone&&onDone(plan);return}
+      const s=plan.steps[k];shownAt=Date.now();focus(s.kind==='tap'?-1:s.col);say(s.say);cue(s);opt.onShow&&opt.onShow(k,plan.steps.length);
       if(s.pre&&s.pre.pair){el.board.querySelectorAll('.wk-box').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('wk-pair',s.pre.pair.includes(i));c.classList.toggle('wk-target',i===s.pre.hop)})}
       el.board.querySelectorAll('.wk-diff,.wk-grp').forEach(c=>c.classList.remove('wk-diff','wk-grp'));
       el.board.querySelectorAll('.wk-model i').forEach(c=>{const g=s.pre&&s.pre.glow,k=c.dataset.k;c.classList.toggle('wk-glow',!!g&&(g==='all'||g===k||(g==='left'&&k!=='eat')))});
@@ -804,7 +839,7 @@
         q(`.wk-pvrow[data-row="${s.row}"] [data-col="${s.col}"]`)?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
       }
       busy=true;tapCells(false);el.board.querySelector('.wk-board')?.classList.remove('wk-tapnow');el.board.querySelectorAll('.wk-hint').forEach(x=>x.classList.remove('wk-hint'));
-      apply(s.after);if(s.after?.note)say(s.after.note);opt.onStep&&opt.onStep(s);
+      clearCue();apply(s.after);if(s.after?.note)say(s.after.note);opt.onStep&&opt.onStep(s);
       k++;setTimeout(show,opt.pace??900);
     };
     const pick=btn=>{
@@ -815,10 +850,11 @@
         [...btn.parentNode.querySelectorAll('.wk-t')].find(b=>b.dataset.v===String(s.right))?.classList.add('wk-hint');opt.onMiss&&opt.onMiss(s);return;
       }
       busy=true;btn.classList.add('wk-yes');btn.parentNode.querySelectorAll('.wk-t').forEach(b=>b.disabled=true);
-      apply(s.after);if(s.after?.note)say(s.after.note);opt.onStep&&opt.onStep(s);
+      clearCue();apply(s.after);if(s.after?.note)say(s.after.note);opt.onStep&&opt.onStep(s);
       k++;setTimeout(show,opt.pace??900);
     };
     show();
+    if(typeof window!=='undefined')window.__wkStep=()=>plan.steps[k]||null;   // tests only
     if(typeof window!=='undefined')window.__wkRight=()=>{const s=plan.steps[k];return s&&s.kind==='pick'?String(s.right):s&&s.kind==='tap'?`tap:${s.row}:${s.col}`:'go'};   // tests only
     return{get step(){return k},get misses(){return misses},plan};
   }
