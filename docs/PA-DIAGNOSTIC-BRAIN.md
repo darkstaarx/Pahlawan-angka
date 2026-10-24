@@ -333,7 +333,7 @@ composition, lock policy.
 | 2 ✅ | Portal Restu (§5) | Lock only on rapid-wrong streak; PIN unlock shows the 3 items; parent can allow exploring for the day; never in demo |
 | 3 (worksheet ✅, rest: see §8a) | Actions: mini-game targeting by finding (weak tables, op=sub), worksheet composer (word problems, show-working box, mixed sets). Worksheet done: "Disyorkan" PDF takes ~60% items from `PATargets.worksheetItems` (FOKUS tag, Cara Kerja box for word/money/regroup, "Kenapa latihan ini" box, step-by-step skema from `PATargets.explain`); rest from the bank; falls back to mastery logic without findings | Mini game round composition reflects findings; worksheet PDF has the right mix |
 | 4 ✅ (4.1, 4.6, 4.7, light 4.8; thresholds not calibrated) | Lenses 4.1, 4.6, 4.7, 4.8 (need item variants: pictorial/abstract pairs, reading levels, mixed sets) | Each lens has tests + calibrated thresholds |
-| 5 | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
+| 5 (partly there, see §8a "Phase 5: what already exists") | Consented cloud telemetry (`adaptive_question_exposures`, `adaptive_interaction_events`) for calibration across devices | Only with guardian consent; dashboards for threshold tuning |
 
 ## 8. Where things live (current code)
 
@@ -374,7 +374,20 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-Last updated: 2026-10-21 (PR #82 merged, phase 4 done). Read this section first if you are picking up the work.
+Last updated: 2026-10-24 (PR #103 merged: "Jom tengok cara" is in all nine mini games; phase 5 audit below). Read this section first if you are picking up the work.
+
+**Status at a glance (2026-10-24).**
+- Merged into `main`: every PR up to #103 (latest version 3.87.36). No open PRs.
+- Netlify: last confirmed live is 3.87.12 (2026-10-22). 3.87.13–3.87.36 are on
+  GitHub Pages only until the owner deploys.
+- Mini games: all nine KSSR topic families have a mini game, and all nine have
+  "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
+  D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
+- Next: phase 5 (see "Phase 5: what already exists" under item 2 below). It
+  needs owner decisions before code.
+- Known small issues: on a 360×600 screen Wira's bubble still covers the pet's
+  head in 8 of 9 mini games and drops to 10 px; a Gerai Wirayung hint reads
+  "Pecahkan 50 sen: RM0 dan 50 sen." (the RM0 part).
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #48, #69–#78, #80–#83 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
@@ -618,6 +631,31 @@ digit, then the round's choices.
    any code. Smaller leftovers the owner may pick instead: other mini games
    send `rep` (4.1, only Gudang Harta today); more pictures in D4–D6; 4.8 for
    D3 and D6; a speaker in mini games.
+   **Phase 5: what already exists (checked 2026-10-24 on the live Supabase
+   project "Pahlawan Angka" and in `main`).**
+   - Cloud answer log is live. `js/cloud.js` wraps `PATelemetry.response` and
+     inserts one row per answer into `public.learning_attempts`: skill, grade,
+     correct, used hint, response ms, misconception tag, battle type. About
+     6,950 battle rows from 59 children since 2026-08-15. Mini game rounds go
+     through the same path (`js/minigame-telemetry-v1.js`), but only 20 rows so
+     far, because the newer mini games are not on Netlify yet.
+   - Guardian consent is live. A checkbox at log in accepts the Privacy Notice
+     and Beta Terms; `public.guardian_consents` (57 rows) stores the version
+     (`js/beta-trust-v3.29.0.js`).
+   - Not there yet:
+     1. The brain's data does not reach the cloud: facets (operation,
+        operands), the wrong value, representation (`rep`), wording length,
+        and the lens readings.
+     2. `supabase/schema/adaptive_learner_telemetry_v1.sql` is a local file
+        only ("LOCAL SOURCE ONLY"). `adaptive_question_exposures` and
+        `adaptive_interaction_events` do not exist in the live database.
+     3. There is no dashboard for tuning thresholds.
+     4. The owner should decide whether the current Privacy Notice covers using
+        answers to calibrate thresholds, or whether a new consent version is
+        needed.
+   - So phase 5 is: add the brain fields to the answer log (or apply the
+     adaptive tables), then a threshold dashboard. Lens 4.1 `rep` is still sent
+     by Gudang Harta only. No mini game has a speaker yet.
    Note on 4.6 as built: the sketch said "per skill", but the evidence is
    pooled across operations (a child chooses among operations, not within
    one skill), and blocked/mixed is read from the answers before, not from
@@ -636,9 +674,9 @@ digit, then the round's choices.
    `text` is one plain sentence with at most one score; extra numbers go in
    `evidence`, not on screen. Every new lens follows this.
 
-**Status on GitHub.** PRs #48, #55–#63, #65–#78 and #80–#83 are merged into `main`
-(2026-10-21) but NOT deployed to Netlify yet; the owner deploys after a
-real-device test.
+**Status on GitHub.** Every PR up to #103 is merged into `main` (2026-10-24,
+version 3.87.36). Netlify was last confirmed at 3.87.12 (2026-10-22); the
+owner deploys after a real-device test.
 PR #80 (3.87.2, merged): mini game fix, every round now gets its own brain
 record (before, the 40-character token cut the round number, so a session
 kept one answer). Mini game evidence before 3.87.2 is thin.
