@@ -136,3 +136,24 @@ test('Focus mode: the scene with Wira is hidden and only the answer place moves 
   assert.equal(st.overlap, false, 'the panel stays above the buttons');
   assert.deepEqual(errors, []); await ctx.close();
 });
+
+test('Gerai Wirayung: one item to pay ("Jumlah ?"), "Jom tengok cara" gives a Faham card, not a stuck screen', async () => {
+  const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  let found = false;
+  for (let t = 0; t < 15 && !found; t++) {
+    await page.goto(`${base}/gerai-wirayung.html#d2`); await page.waitForFunction(() => window.__geraiWk); await page.waitForTimeout(600);
+    const m = await page.evaluate(() => { const m = __geraiWk.current(); return { mode: m.mode, items: m.items, qty: m.qty }; });
+    if (m.mode !== 'bayar' || m.items.length !== 1 || m.qty > 1) continue;
+    found = true;
+    await page.evaluate(id => document.querySelector(`#stationShelf [data-id="${id}"]`).click(), m.items[0]);
+    await page.waitForTimeout(300); await page.click('#go'); await page.waitForTimeout(2200);
+    await page.evaluate(() => __geraiWk.start()); await page.waitForTimeout(400);
+    assert.match(await page.evaluate(() => document.getElementById('wkSay').textContent), /^Jumlah /);
+    await page.click('#wkTiles .wk-go'); await page.waitForTimeout(1800);
+    const st = await page.evaluate(() => ({ scene: getComputedStyle(document.querySelector('.scene')).display, purse: document.getElementById('purse').getClientRects().length > 0, go: document.getElementById('go').disabled }));
+    assert.deepEqual(st, { scene: 'block', purse: true, go: false }, 'back to the counter with the coins');
+  }
+  assert.ok(found, 'a one-item round came up');
+  assert.deepEqual(errors, []); await ctx.close();
+});

@@ -698,7 +698,7 @@ const MODES={
    return 'Jualan '+money(o.sales)+'. '+(o.kind==='untung'?money(o.sales)+' − '+money(o.cost)+' = untung ':money(o.cost)+' − '+money(o.sales)+' = rugi ')+money(Math.abs(o.sales-o.cost))+'.'},
   stamp:(o,v)=>o.reverse?'kos '+money(v):o.kind+' '+money(v),revenue(o){return o.sales}}
 };
-const val=(x,o)=>typeof x==='function'?x(o):x;
+const val=(x,o,owner)=>typeof x==='function'?x.call(owner,o):x   // owner: the mode, so its methods can use this.sum();
 function rows(o){return '<div class="items">'+o.items.map(id=>'<div class="row"><span>'+ART[id]+name(id)+'</span><span>'+money(P(id).price)+(o.qty>1?' × '+o.qty:'')+'</span></div>').join('')+'</div>'}
 function sumline(parts){return '<div class="sumline">'+parts.map(([k,v,c])=>'<span'+(c?' class="'+c+'"':'')+'>'+k+' '+(v==='?'?'<span class="q">?</span>':v)+'</span>').join('')+'</div>'}
 
@@ -762,7 +762,7 @@ function chips(){[1,2,3].forEach(i=>{$('c'+i).className=i<step?'done':i===step?'
 function banner(){const md=M();
  $('mode').textContent=MODE_LABEL[m.mode]+' · T'+(m.tierIx+1);
  if(step===1){$('bTitle').textContent=m.mode==='untung'?'Ambil stok untuk diborong':'Ambil pesanan';$('bText').textContent='Lihat pesanan, sentuh barang yang betul.';$('go').textContent='Siap ambil'}
- else if(step===2){$('bTitle').textContent=val(md.title,m);$('bText').textContent=val(md.text,m);$('go').textContent=val(md.goLbl,m)}}
+ else if(step===2){$('bTitle').textContent=val(md.title,m,md);$('bText').textContent=val(md.text,m,md);$('go').textContent=val(md.goLbl,m,md)}}
 
 /* ---------- builds ---------- */
 function drawShelf(){const sh=$('shelf');sh.innerHTML='';products.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='item'+(picked.includes(p.id)?' picked':'');b.dataset.id=p.id;b.setAttribute('aria-pressed',picked.includes(p.id));b.setAttribute('aria-label',p.name+' '+money(p.price));
@@ -850,7 +850,7 @@ function fly(src,done){const r=src.getBoundingClientRect(),t=$('basket').getBoun
 function go(){if(busy)return;const md=M();
  if(step===1){const ok=picked.length===m.items.length&&picked.every(id=>m.items.includes(id));
   if(!ok){paAttempt(false),misses++;sad();offerWorked();$('say').textContent=picked.length<m.items.length?'Eh, ada yang belum masuk beg…':'Hmm, itu bukan pesanan aku.';return}
-  step=2;chips();banner();$('say').textContent=val(md.ask,m);
+  step=2;chips();banner();$('say').textContent=val(md.ask,m,md);
   $('stationShelf').hidden=true;$('stationCount').hidden=false;drawReceipt();drawSign();drawPurse();drawMat();return}
  if(step===2){
   if(m.mode==='bahagi'){
@@ -984,7 +984,7 @@ function startWorked(){
  const box=document.createElement('div');box.id='wkPanel';box.className='wk-wrap';
  box.innerHTML='<div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div><div class="tiles wk" id="wkTiles"></div>';
  $('receipt').after(box);
- if(!wp){$('wkSay').innerHTML=esc(val(M().answer,m));$('wkTiles').innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';$('wkTiles').querySelector('button').onclick=wkDone;return}
+ if(!wp){$('wkSay').innerHTML=esc(val(M().answer,m,M()));$('wkTiles').innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';$('wkTiles').querySelector('button').onclick=wkDone;return}
  (wp.chain?W.runChain:W.run)(wp.chain||wp.plan,{board:$('wkBoard'),tiles:$('wkTiles'),inline:$('wkInline'),say:$('wkSay')},wkDone,
   {onFact:f=>W.reportFact('gerai-wirayung',f,paRound),onStep:()=>tone(700,.06),onMiss:()=>sfx.bad(),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}});
 }
@@ -1223,8 +1223,8 @@ $('clear').onclick=()=>{if(busy)return;if(m.mode==='bahagi')splitPiles[activeSpl
 document.querySelectorAll('#signRow button').forEach(b=>b.onclick=()=>{if(busy)return;sign=b.dataset.sign;sfx.pop();drawSign()});
 $('hint').onclick=()=>{if(workedOffer){startWorked();return}if(busy||hints>=2||m.worked)return;hints++;hint2++;
  if(step===1&&hints===1){wira('Cari '+m.items.map(name).join(' dan ')+' dalam pesanan.',4200);document.querySelectorAll('.item').forEach(b=>b.classList.toggle('glow',m.items.includes(b.dataset.id)));setTimeout(()=>document.querySelectorAll('.item').forEach(b=>b.classList.remove('glow')),2600)}
- else if(hints===1){wira(val(M().text,m),5200)}
- else{wira(val(M().strategy,m),6000)}
+ else if(hints===1){wira(val(M().text,m,M()),5200)}
+ else{wira(val(M().strategy,m,M()),6000)}
  $('hint').disabled=hints>=2;$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';tone(740,.1)};
 $('sound').onclick=()=>{audioOn=!audioOn;$('sound').textContent=audioOn?'🔊':'🔈';$('sound').setAttribute('aria-label',audioOn?'Matikan bunyi':'Hidupkan bunyi');sfx.pop()};
 $('again').onclick=()=>{$('overlay').hidden=true;log=[];startRound()};
