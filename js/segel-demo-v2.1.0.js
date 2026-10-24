@@ -327,9 +327,17 @@
       if(!finisherImpact||!finalImpactTarget)return;
       const target=finalImpactTarget;
       const viewH=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-target.z);
-      const pixels=stageRenderHeight/viewH;
-      const x=host.clientWidth/2+(target.x-camera.position.x)*pixels;
-      const ground=stageRenderHeight/2-(target.y-camera.position.y)*pixels;
+      const pixels0=stageRenderHeight/viewH;
+      let x=host.clientWidth/2+(target.x-camera.position.x)*pixels0;
+      let ground=stageRenderHeight/2-(target.y-camera.position.y)*pixels0;
+      let pixels=pixels0;
+      // Ikut potongan zoom kamera (setViewOffset) supaya petir kekal atas kubah.
+      const v=camera.view;
+      if(v&&v.enabled){
+        x=(x/host.clientWidth*v.fullWidth-v.offsetX)/v.width*host.clientWidth;
+        ground=(ground/stageRenderHeight*v.fullHeight-v.offsetY)/v.height*stageRenderHeight;
+        pixels*=v.fullHeight/v.height;
+      }
       glacierLayers.forEach((layer,index)=>{
         const side=Number(layer.dataset.glacierSide)||0;
         const height=target.height*1.22*pixels*(side===-1 ? .76*1.10 : side===1 ? .76*1.03 : 1);
@@ -390,18 +398,32 @@
       const cfg=applyLiveFinisherAssets();
       void host.offsetWidth;
 
-      // 1) Aura farming: planted focus, energy visibly accumulates before any hit.
-      S.heroFade=0;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;
-      host.classList.add('finisher-charge');
-      sfx('auraCharge');
-      if(typeof startChargeup==='function')startChargeup();
-      await wait(cfg.chargeMs);
-      if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      // 1) Serap kuasa DALAM arena (menggantikan skrin cas gelap): latar
+      //    dimalapkan, bar sinematik, kamera zoom pada Wira, tenaga berkumpul
+      //    dan aura naik. Cutscene mata + JURUS PENAMAT di bawah dikekalkan.
+      if(!reduceMotion){
+        S.heroFade=1;S.heroLock=heroPrepareE;S.heroX=HERO_HOME-.12;
+        host.classList.add('segel-letterbox');
+        S.darkTo=1; S.heroAura=1; S.camFX=HERO_HOME+.35; S.camFY=GROUND+1.0; S.camZoomTo=1.55;
+        sfx('auraCharge');
+        if(typeof startChargeup==='function')startChargeup();
+        for(let i=0;i<5;i++){ fxCharge(HERO_HOME-.12,GROUND+.95,1.6,18); await wait(170) }
+        S.speedFx=.7; await wait(120);
+        if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      }else{
+        S.heroFade=0;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;
+        host.classList.add('finisher-charge');
+        sfx('auraCharge');
+        if(typeof startChargeup==='function')startChargeup();
+        await wait(cfg.chargeMs);
+        if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
+      }
 
       // 2) Anime-style eye cut-in: the black charge screen collapses into
       // Wira's new icy-electric stare. No ordinary attack pose appears here.
       host.classList.remove('finisher-charge');host.classList.add('finisher-focus');
       if(typeof stopChargeup==='function')stopChargeup();
+      S.speedFx=0;
       sfx('finisherSwing');
       await wait(cfg.focusMs);
       if(lifecycle!==S.lifecycle){stopFinisherVideo();return false}
@@ -416,7 +438,7 @@
       finalImpactPending=false;
       hideGlaciers();
       S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
-      S.heroFade=1;S.heroLock=heroIdleE[0];S.heroX=HERO_HOME;
+      S.heroFade=1;S.heroLock=reduceMotion?heroIdleE[0]:heroPrepareE;S.heroX=HERO_HOME;
       return true;
       /* Legacy video implementation retained below for rollback reference. */
       const video=ensureFinisherVideo(), layer=finisherVideoLayer;
@@ -1208,7 +1230,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,companionScale:COMPANION_SCALE,camY:0,rescued:false,lifecycle:0,
-             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,freeze:0,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,dashFx:0,heroFade:1,running:true,active:0,
+             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,freeze:0,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,dashFx:0,slow:1,dark:0,darkTo:0,heroAura:0,speedFx:0,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
              companionFrames:petJoyE,companionHold:null,companionFps:2,companionFrameT0:0,
@@ -1285,7 +1307,7 @@
       const dt=Math.min((now-last)/1000,.05); last=now; tAcc+=dt;
       // Hit-stop: fdt beku seketika untuk Wira, lantunan kubah dan zarah.
       // tAcc tetap berjalan, jadi animasi pet tidak pernah terhenti.
-      const fdt=S.freeze>0?0:dt; if(S.freeze>0)S.freeze-=dt;
+      const fdt=S.freeze>0?0:dt*S.slow; if(S.freeze>0)S.freeze-=dt;
 
       // Each pose sequence samples its own elapsed time (tAcc minus the moment
       // it was assigned), not the stage's raw clock — otherwise a switch like
@@ -1503,7 +1525,7 @@
       });
 
       if(S.iceT>=0){
-        S.iceT+=dt;
+        S.iceT+=fdt;
         if(S.iceT>=GLACIER_END){
           S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
           hideGlaciers(); finalImpactActive=false;
@@ -1511,6 +1533,7 @@
           // Thunder follows the three impacts; no detached audio timers.
           while(glacierThunderCount<3&&S.iceT>=glacierThunderCount*.12){
             sfx('glacierThunder');glacierThunderCount++;
+            finisherThunderFx();
           }
           glacierLayers.forEach((layer,index)=>{
             const side=Number(layer.dataset.glacierSide)||0;
@@ -1690,7 +1713,9 @@
       const st=document.createElement('style');st.id='segelHitFxStyle';
       // Bar gembok diunjur tanpa zoom kamera; sorok sekejap semasa zoom supaya
       // ia tidak terapung di tempat salah, kemudian muncul semula dengan nilai baharu.
-      st.textContent='.segel-cam-zoom .segelTag{opacity:0!important}';
+      st.textContent='.segel-cam-zoom .segelTag{opacity:0!important}'+
+        '.segel-letterbox .segelIntroBar{transform:scaleY(1)}'+
+        '.segel-letterbox .segelTop,.segel-letterbox .segelTag{opacity:0!important;pointer-events:none}';
       document.head.appendChild(st);
     }
 
@@ -1704,6 +1729,11 @@
       camera.setViewOffset(FW,FH,ox,oy,w,h);
     }
     function cameraFrame(dt){
+      // Latar dimalapkan (jurus penamat) — watak kekal terang di depannya.
+      if(Math.abs(S.dark-S.darkTo)>.002||S.dark>0){
+        S.dark+=(S.darkTo-S.dark)*(1-Math.exp(-6*dt)); if(S.dark<.003&&S.darkTo===0)S.dark=0;
+        bg.material.color.setScalar(1-.62*S.dark); groundOverlay.material.color.setScalar(1-.62*S.dark);
+      }
       if(S.introT>=0||introShown){ petIntroCamera(dt); return }
       S.camZoom+=(S.camZoomTo-S.camZoom)*(1-Math.exp(-8*dt));
       S.camPunch*=Math.exp(-10*dt);
@@ -1769,19 +1799,70 @@
       ['+','−','×','÷'].forEach(ch=>{const a=Math.PI*(.55+Math.random()*.4), v=3+Math.random()*2.5;
         fxParts.push({t:'m',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.7+Math.random()*.3,age:0,ch,rot:(Math.random()-.5),vr:(Math.random()-.5)*9,g:-11,drag:1})});
     }
-    function fxCharge(x,y){
-      for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2, r=.8+Math.random()*.6, life=.22+Math.random()*.12;
+    function fxCharge(x,y,rad=1.1,n=12){
+      for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2, r=rad*(.7+Math.random()*.55), life=.22+Math.random()*.12;
         const sx=x+Math.cos(a)*r, sy=y+Math.sin(a)*r;
         fxParts.push({t:'g',x:sx,y:sy,vx:(x-sx)/life,vy:(y-sy)/life,life,age:0,c:'rgba(130,220,255,.95)',r:.07+Math.random()*.06,g:0,drag:0})}
     }
     function fxArc(x,y,r,rot){ fxArcs.push({x,y,r,rot,age:0,dur:.3}) }
     function fxRing(x,y,r0,r1,life,color){ fxParts.push({t:'r',x,y,r0,r1,life,age:0,c:color,vx:0,vy:0,g:0,drag:0}) }
-    function fxText(text,x,y,color){ fxParts.push({t:'x',x,y,text,c:color,life:1,age:0,vx:0,vy:.35,g:0,drag:0}) }
+    function fxText(text,x,y,color,scale=1){ fxParts.push({t:'x',x,y,text,c:color,scale,life:1,age:0,vx:0,vy:.35,g:0,drag:0}) }
     let fxFlashA=0, fxFlashC='#ffffff';
     function fxFlash(a,css){ if(a>=fxFlashA){fxFlashA=a;fxFlashC=css} }
     /* Gembok pecah (tier Gangsa/Perak): hit-stop lebih panjang, punch besar,
        kilat warna tier, gelang kejutan, percikan + simbol, kemudian tenaga
        berkumpul dan kubah tier seterusnya terbentuk. Tier Emas milik jurus penamat. */
+    /* Jurus penamat: tebasan X pada kubah Emas. */
+    function finisherContactFx(s){
+      if(!s)return;
+      const vis=s.tier.visible, cx=SEAL_X-vis*.42, cy=GROUND+vis*.46;
+      S.freeze=.17; S.camPunch=.2; S.hitT=0; S.grey=1; S.heroAura=0; S.speedFx=0;
+      fxArc(cx+.05,cy,vis*.46,-.2); fxArc(cx+.05,cy-.05,vis*.44,Math.PI*.6);
+      fxSparks(cx,cy,90,['#ffffff','#bfe9ff','#4cc9ff'],Math.PI,Math.PI*2);
+      fxGlows(cx,cy,18,'rgba(150,225,255,.9)');
+      fxRing(cx,cy,.1,vis*.65,.42,'rgba(190,240,255,1)');
+      fxSymbols(cx,cy+.1);
+      fxFlash(.65,"#ffffff");
+      addCracks(s,4); sfx('hit');
+    }
+    /* Setiap sambaran petir ais (gerak perlahan): kilat, gegar, kubah
+       melantun dan retak lagi. */
+    function finisherThunderFx(){
+      const s=seals[Math.min(S.active,seals.length-1)]; if(!s||reduceMotion)return;
+      const vis=s.tier.visible;
+      fxFlash(.5,'#e8fbff'); S.shake=Math.max(S.shake,.3); S.hitT=0;
+      fxRing(SEAL_X,GROUND+.05,.2,vis*1.2,.5,'rgba(160,230,255,1)');
+      addCracks(s,3);
+    }
+    /* Gembok Emas pecah: letupan emas, arena kembali terang, bar hilang. */
+    function finalBreakFx(s){
+      const vis=s.tier.visible, cx=SEAL_X, cy=GROUND+vis*.5, col=tierCss(s);
+      S.freeze=Math.max(S.freeze,.12); S.camPunch=.18; S.camZoomTo=1; S.darkTo=0; S.slow=1; S.heroAura=0;
+      host.classList.remove('segel-letterbox');
+      if(reduceMotion){ clearCracks(s); return }
+      fxFlash(.9,'#fff6d8');
+      fxRing(cx,cy,.2,vis*1.4,.6,col); fxRing(cx,GROUND+.05,.2,vis*1.8,.7,'#ffe9b0');
+      fxSparks(cx,cy,110,['#ffffff','#ffe08a',col],Math.PI/2,Math.PI*2);
+      fxGlows(cx,cy,30,'rgba(255,214,120,.9)');
+      fxSymbols(cx,cy); fxSymbols(cx,cy); fxSymbols(cx,cy);
+      clearCracks(s);
+    }
+    /* Jawapan salah: kubah memancar tenaga dan menolak Wira ke belakang.
+       Tiada damage, dan animasi pet tidak disentuh. */
+    function wrongFx(){
+      if(S.active>=seals.length)return;
+      const s=seals[S.active], vis=s.tier.visible, col=tierCss(s), cy=GROUND+vis*.45, lc=S.lifecycle;
+      S.hitT=0;
+      fxRing(SEAL_X,cy,.3,vis*1.3,.5,col);
+      fxRing(SEAL_X,GROUND+.05,.3,Math.abs(SEAL_X-HERO_HOME)+.6,.65,col);
+      fxSparks(SEAL_X-vis*.4,cy,22,[col,'#ffffff'],Math.PI,1.2);
+      fxFlash(.16,col);
+      if(S.heroLock==null){
+        S.heroX=HERO_HOME-.32;
+        setTimeout(()=>{ if(lc===S.lifecycle&&S.heroLock==null)S.heroX=HERO_HOME },420);
+      }
+      fxText('Gembok menolak!',HERO_HOME+.25,GROUND+2.25,'#ffd0d8',.62);
+    }
     function breakFx(s,next){
       const vis=s.tier.visible, cx=SEAL_X, cy=GROUND+vis*.5, col=tierCss(s);
       S.freeze=Math.max(S.freeze,.15); S.camPunch=.15;
@@ -1801,13 +1882,15 @@
       }
     }
     function clearHitFx(){
-      fxParts=[]; fxArcs=[]; fxFlashA=0; ghostHist.length=0; ghosts.forEach(g=>{g.visible=false});
+      fxParts=[]; fxArcs=[]; fxFlashA=0; ghostHist.length=0;
+      S.slow=1; S.dark=S.darkTo=0; S.heroAura=0; S.speedFx=0; host.classList.remove('segel-letterbox');
+      bg.material.color.setScalar(1); groundOverlay.material.color.setScalar(1); ghosts.forEach(g=>{g.visible=false});
       host.classList.remove('segel-cam-zoom'); seals.forEach(clearCracks);
     }
     function contactFx(){
       const s=seals[Math.min(S.active,seals.length-1)], vis=s.tier.visible;
       const cx=SEAL_X-vis*.42, cy=GROUND+vis*.46;
-      S.freeze=HITSTOP; S.camPunch=.11;
+      S.freeze=HITSTOP; S.camPunch=.11; S.heroAura=0; S.speedFx=0;
       S.hitT=0; S.grey=1;            // kubah bereaksi TEPAT pada sentuhan pedang
       fxArc(cx+.05,cy,vis*.38,-.15);
       fxSparks(cx,cy,48,['#ffffff','#bfe9ff',tierCss(s)],Math.PI*.95,2.6);
@@ -1828,13 +1911,36 @@
     })();
     function fxFrame(dt){
       fxFlashA=Math.max(0,fxFlashA-dt*3.2);
-      if(!fxParts.length&&!fxArcs.length&&fxFlashA<=0){
+      S.speedFx=Math.max(0,S.speedFx-dt*1.2);
+      if(!fxParts.length&&!fxArcs.length&&fxFlashA<=0&&S.heroAura<=.02&&S.speedFx<=.02){
         if(fxDirty){ fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height); fxDirty=false }
         return;
       }
       fxDirty=true;
       fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height);
       fx2.setTransform(fxDpr,0,0,fxDpr,0,0);
+      const cw=fxCanvas.width/fxDpr, ch=fxCanvas.height/fxDpr;
+      // Aura serap kuasa: gelang di kaki Wira, tiang cahaya, zarah naik.
+      if(S.heroAura>.02&&hero.visible){
+        const f=proj(S.heroFeet,GROUND+.05), t=performance.now();
+        fx2.save(); fx2.globalCompositeOperation='lighter'; fx2.strokeStyle='rgba(110,215,255,1)'; fx2.lineWidth=2.5;
+        for(let i=0;i<3;i++){ const r=(.55+i*.2+Math.sin(t*.008+i)*.04)*f.ppu;
+          fx2.globalAlpha=S.heroAura*(.55-i*.15); fx2.beginPath(); fx2.ellipse(f.x,f.y,r,r*.24,0,0,Math.PI*2); fx2.stroke() }
+        const top=f.y-2.3*f.ppu, lg=fx2.createLinearGradient(0,f.y,0,top);
+        lg.addColorStop(0,`rgba(90,200,255,${.4*S.heroAura})`); lg.addColorStop(1,'rgba(90,200,255,0)');
+        fx2.globalAlpha=1; fx2.fillStyle=lg; fx2.fillRect(f.x-.5*f.ppu,top,f.ppu,f.y-top);
+        fx2.restore();
+        if(Math.random()<.7*S.heroAura)fxParts.push({t:'g',x:S.heroFeet+(Math.random()-.5)*.9,y:GROUND+Math.random()*.3,vx:(Math.random()-.5)*.2,vy:2.4+Math.random()*1.6,life:.4+Math.random()*.4,age:0,c:'rgba(110,215,255,.9)',r:.05+Math.random()*.06,g:0,drag:.5});
+      }
+      // Garisan laju di tepi skrin.
+      if(S.speedFx>.02){
+        fx2.save(); fx2.translate(cw/2,ch/2); fx2.globalCompositeOperation='lighter'; fx2.strokeStyle='rgba(170,230,255,1)';
+        const R=Math.hypot(cw,ch)/2;
+        for(let i=0;i<40;i++){ const a=Math.random()*Math.PI*2, r0=R*(.45+Math.random()*.3);
+          fx2.globalAlpha=S.speedFx*(.15+Math.random()*.35); fx2.lineWidth=1+Math.random()*3;
+          fx2.beginPath(); fx2.moveTo(Math.cos(a)*r0,Math.sin(a)*r0); fx2.lineTo(Math.cos(a)*R*1.05,Math.sin(a)*R*1.05); fx2.stroke() }
+        fx2.restore();
+      }
       // Lengkung tebasan: bulan sabit yang tirus, menyapu kemudian pudar.
       for(let i=fxArcs.length-1;i>=0;i--){
         const A=fxArcs[i]; A.age+=dt; const p=Math.min(1,A.age/A.dur);
@@ -1864,7 +1970,7 @@
           fx2.beginPath(); fx2.arc(c.x,c.y,r,0,Math.PI*2); fx2.stroke();
         }else if(P.t==='x'){
           const q=P.age/P.life, pop=q<.14?2.1-1.1*(1+2.9*Math.pow(q/.14-1,3)+1.9*Math.pow(q/.14-1,2)):1;
-          const size=Math.max(22,.32*c.ppu)*pop;
+          const size=Math.max(22*P.scale,.32*c.ppu*P.scale)*pop;
           fx2.globalCompositeOperation='source-over'; fx2.globalAlpha=q>.7?1-(q-.7)/.3:1;
           fx2.font=`900 ${size|0}px system-ui,sans-serif`; fx2.textAlign='center'; fx2.textBaseline='middle'; fx2.lineJoin='round';
           fx2.lineWidth=size*.2; fx2.strokeStyle='#10183a'; fx2.strokeText(P.text,c.x,c.y); fx2.fillStyle=P.c; fx2.fillText(P.text,c.x,c.y);
@@ -1990,20 +2096,31 @@
         return Boolean(s && S.active===stageTiers.length-1 && s.damage+1/tier.hits>=.999);
       },
       async strike(){
-        if(S.introT>=0)endPetIntro();  // jawapan awal: terus ke pandangan arena
+        // Jawapan awal (babak pembuka / zarah Wira belum siap): terus ke arena
+        // dengan Wira penuh, supaya serangan tidak berlaku tanpa Wira kelihatan.
+        if(S.introT>=0)endPetIntro();
+        if(S.enterT>=0)restoreHeroAfterEntranceFailure();
         const lifecycle=S.lifecycle;
         const tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
         const finalHit=S.active===stageTiers.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
         if(finalHit){
           await playFinisherVideo(lifecycle);
           if(lifecycle!==S.lifecycle)return;
-          // After the aura and eye cutscene, use the same ordinary attack.
+          // Selepas cutscene: kembali ke arena yang masih gelap, Wira meluru
+          // dengan bayang, tebasan X, hit-stop panjang, kemudian petir ais
+          // dalam gerak perlahan.
           if(reduceMotion){ sfx('hit'); clearNormalIceFx(); S.waveT=0; return }
+          const finVis=tier.visible;
+          S.camFX=(HERO_HOME+SEAL_X)/2; S.camFY=GROUND+finVis*.5; S.camZoomTo=1.2;
+          fxCharge(HERO_HOME-.35,GROUND+.95,1.2,14);
           S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
           if(lifecycle!==S.lifecycle)return;
           sfx('swordSlash');
+          S.dashFx=1; S.speedFx=1; S.camZoomTo=1.32; S.camFX=SEAL_X-finVis*.45; S.camFY=GROUND+finVis*.48;
           S.heroLock=heroSlashE; S.heroX=SLASH_X; await wait(140);
           if(lifecycle!==S.lifecycle)return;
+          finisherContactFx(seals[S.active]);
+          S.slow=.6; S.camZoomTo=1.14; S.camFX=SEAL_X; S.camFY=GROUND+finVis*.55;
           sfx('glacierThunder'); glacierThunderCount=1; clearNormalIceFx();
           finalImpactActive=true; finalImpactPending=true;
           finalImpactTarget={x:SEAL_X,y:GROUND,z:seals[S.active].front.position.z,height:tier.visible};
@@ -2018,6 +2135,7 @@
           S.waveT=0; S.shake=.32;
           // Do not let respond() shatter the seal until the glacier finishes.
           while(finalImpactActive&&lifecycle===S.lifecycle)await wait(16);
+          S.slow=1;
           if(lifecycle!==S.lifecycle)return;
           return;
         }
@@ -2025,12 +2143,12 @@
         const strikeVis=stageTiers[Math.min(S.active,stageTiers.length-1)].visible;
         // Bersedia: kamera menolak masuk ke arah aksi, tenaga berkumpul pada Wira.
         S.camFX=(HERO_HOME+SEAL_X)/2; S.camFY=GROUND+strikeVis*.5; S.camZoomTo=1.16;
-        fxCharge(HERO_HOME-.35,GROUND+.95);
+        fxCharge(HERO_HOME-.35,GROUND+.95,1.25,22); S.heroAura=.6;   // serap kuasa ringkas
         S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
         if(lifecycle!==S.lifecycle)return;
         sfx('swordSlash');
         // Dash: bayang biru mengekori, kamera ikut ke arah kubah.
-        S.dashFx=1; S.camZoomTo=1.26; S.camFX=SEAL_X-strikeVis*.45; S.camFY=GROUND+strikeVis*.48;
+        S.dashFx=1; S.speedFx=.55; S.camZoomTo=1.26; S.camFX=SEAL_X-strikeVis*.45; S.camFY=GROUND+strikeVis*.48;
         S.heroLock=heroSlashE;  S.heroX=SLASH_X; await wait(140);
         if(lifecycle!==S.lifecycle)return;
         sfx('hit');
@@ -2063,6 +2181,7 @@
           S.active=Math.min(stageTiers.length,nextTier);
           fitShell();
           if(!reduceMotion&&nextTier<stageTiers.length)breakFx(s,seals[nextTier]);
+          else if(nextTier>=stageTiers.length)finalBreakFx(s);
           return {broken:true, tier:s.tier};
         }
         // Cincin kejutan kecil berwarna tier — inilah yang menjadikan hentaman
@@ -2176,7 +2295,7 @@
           restoreHeroAfterEntranceFailure();
         }
       },
-      wrong(){ if(S.introT>=0)endPetIntro(); S.shake=.14 },
+      wrong(){ if(S.introT>=0)endPetIntro(); if(S.enterT>=0)restoreHeroAfterEntranceFailure(); S.shake=.14; if(!reduceMotion)wrongFx() },
       reset(questionTarget=null){
         const hits=questionTarget==null?TIERS.map(tier=>tier.hits):demoSealHits(questionTarget);
         stageTiers.forEach((tier,i)=>{tier.hits=hits[i]});
@@ -2209,7 +2328,7 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; endPetIntro(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
+      cancel(){ ++S.lifecycle; endPetIntro(); clearHitFx(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
       setCompanion(config){ return setPetVisual(config); },
       setRescuePet(config){ return setRescuePetVisual(config); },
       setPet(config){ return Promise.all([setPetVisual(config),setRescuePetVisual(config)]); },
