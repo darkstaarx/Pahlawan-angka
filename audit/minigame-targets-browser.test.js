@@ -351,7 +351,7 @@ test('Gerai Wirayung: every DEV "Cuba Jom tengok cara" kind walks the money boar
   const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto(`${base}/gerai-wirayung.html#d3`); await page.waitForFunction(() => window.__geraiWk && window.PAWorked); await page.waitForTimeout(800);
   await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
-  assert.equal(n, 9);
+  assert.equal(n, 10);   // #118 added "Simpanan (sasaran)"
   for (let i = 0; i < n; i++) {
     if (i) await page.click('#devBtn');
     const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);

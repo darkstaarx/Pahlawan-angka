@@ -207,7 +207,7 @@ test('guest seal ratios complete exactly one cycle at the last correct answer',(
   const ratio=source.slice(source.indexOf('  function demoSealHits('),source.indexOf('  const SEAL_HITS='));
   const method=(start,end)=>source.slice(source.indexOf(start),source.indexOf(end,source.indexOf(start)));
   for(const target of [14,15,16,17,18,20]){
-    const c={reduceMotion:true,popSound(){},burst(){},fitShell(){},waveMat:{color:{setHex(){}}}};
+    const c={reduceMotion:true,popSound(){},burst(){},fitShell(){},finalBreakFx(){},waveMat:{color:{setHex(){}}}};
     vm.createContext(c);
     vm.runInContext(ratio+'; globalThis.hits=demoSealHits('+target+');',c);
     assert.equal(c.hits.reduce((a,b)=>a+b,0),target);
