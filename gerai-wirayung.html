@@ -535,6 +535,7 @@ const name=id=>P(id).name;
    examples. Keep the last 14 calculations (not just their story wording)
    across PWA restarts so RM6 / 3 cannot reappear several times in a row. */
 const DIVISION_RECENT_KEY='pa_wirayung_bahagi_recent_v2';
+let savingKind=Math.random()<.5?'belanja':'sasaran';   // simpanan: jenis seterusnya bergilir
 function divisionHistory(){
  try{const data=JSON.parse(localStorage.getItem(DIVISION_RECENT_KEY)||'[]');
   return Array.isArray(data)?data.filter(x=>x&&Number.isInteger(x.people)&&Number.isInteger(x.total)&&['kongsi','tukar'].includes(x.kind)).slice(-14):[];
@@ -616,18 +617,35 @@ const MODES={
   answer(o){const t=this.sum(o),up=Math.ceil(t/100)*100;return 'Jumlah '+money(t)+'. Kira naik: '+money(t)+' → '+money(up)+' ('+(up-t)+' sen), kemudian → '+money(o.paid)+'. Baki '+money(o.paid-t)+'.'},
   stamp:(o,v)=>'baki '+money(v),revenue(o){return this.sum(o)}},
  simpanan:{
+  /* Dua jenis, bergilir (sama seperti bank soalan D2.4.6):
+     belanja: wang diterima − wang dibelanjakan = wang disimpan;
+     sasaran: harga barang idaman − wang sudah disimpan = perlu disimpan lagi. */
   make(t){const items=chooseItems(1);let income,spent;
+   // Harga barang lain di rak juga perlu ada (dulu tertulis RMNaN).
+   products.forEach(p=>p.price=t.whole?rnd(1,9)*100:price10(100,900));
    if(t.whole){income=rnd(Math.ceil(t.incomeMin/100),Math.floor(t.incomeMax/100))*100;spent=rnd(Math.ceil(t.spendMin/100),Math.floor(Math.min(t.spendMax,income-100)/100))*100}
    else{income=price10(t.incomeMin,t.incomeMax);spent=price10(t.spendMin,Math.min(t.spendMax,income-10))}
+   const kind=savingKind=savingKind==='belanja'?'sasaran':'belanja';
+   if(kind==='sasaran'){const goal=income,have=income-spent;P(items[0]).price=goal;
+    return{items,qty:1,kind,have,say:'Aina mahu beli '+name(items[0])+' berharga '+money(goal)+'. Dia sudah simpan '+money(have)+'. Berapa lagi perlu disimpan?'}}
    P(items[0]).price=spent;
-   return{items,qty:1,paid:income,say:'Aina menerima '+money(income)+'. Dia berbelanja '+money(spent)+' untuk '+name(items[0])+'. Berapa wang yang dapat disimpan?'}},
+   return{items,qty:1,kind,paid:income,say:'Aina menerima '+money(income)+'. Dia berbelanja '+money(spent)+' untuk '+name(items[0])+'. Berapa wang yang dapat disimpan?'}},
   sum(o){return o.items.reduce((a,id)=>a+P(id).price,0)*o.qty},
-  target(o){return o.paid-this.sum(o)},
-  ask:'Berapa wang yang dapat disimpan?',title:o=>'Asingkan simpanan daripada '+money(o.paid),text:'Simpanan = wang diterima − wang dibelanjakan. Susun baki untuk disimpan.',goLbl:'Semak simpanan',
-  receipt(o){return rows(o)+sumline([['Wang diterima',money(o.paid),'paid'],['Wang dibelanjakan','?'],['Wang disimpan','?']])},
-  strategy(o){return 'Wang disimpan = wang diterima − wang dibelanjakan: '+money(o.paid)+' − '+money(this.sum(o))+'.'},
-  answer(o){return money(o.paid)+' − '+money(this.sum(o))+' = '+money(this.target(o))+' boleh disimpan.'},
-  stamp:(o,v)=>'simpanan '+money(v),revenue(){return 0}},
+  target(o){return o.kind==='sasaran'?this.sum(o)-o.have:o.paid-this.sum(o)},
+  ask:o=>o.kind==='sasaran'?'Berapa lagi perlu disimpan?':'Berapa wang yang dapat disimpan?',
+  title:o=>o.kind==='sasaran'?'Simpan untuk '+name(o.items[0]):'Asingkan simpanan daripada '+money(o.paid),
+  text:o=>o.kind==='sasaran'?'Perlu simpan lagi = harga barang − wang sudah disimpan. Susun jumlahnya.':'Simpanan = wang diterima − wang dibelanjakan. Susun baki untuk disimpan.',
+  goLbl:'Semak simpanan',
+  receipt(o){return rows(o)+(o.kind==='sasaran'
+    ?sumline([['Harga barang',money(this.sum(o))],['Sudah disimpan',money(o.have),'paid'],['Perlu disimpan lagi','?']])
+    :sumline([['Wang diterima',money(o.paid),'paid'],['Wang dibelanjakan',money(this.sum(o))],['Wang disimpan','?']]))},
+  strategy(o){return o.kind==='sasaran'
+    ?'Perlu simpan lagi = harga barang − wang sudah disimpan: '+money(this.sum(o))+' − '+money(o.have)+'.'
+    :'Wang disimpan = wang diterima − wang dibelanjakan: '+money(o.paid)+' − '+money(this.sum(o))+'.'},
+  answer(o){return o.kind==='sasaran'
+    ?money(this.sum(o))+' − '+money(o.have)+' = '+money(this.target(o))+' perlu disimpan lagi.'
+    :money(o.paid)+' − '+money(this.sum(o))+' = '+money(this.target(o))+' boleh disimpan.'},
+  stamp:(o,v)=>(o.kind==='sasaran'?'simpan lagi ':'simpanan ')+money(v),revenue(){return 0}},
  diskaun:{
   make(t){const items=chooseItems(1);let base,pct=0,cut=0;
    if(t.cut){base=rnd(2,8)*100;cut=pick(t.cut.filter(c=>c<base))}
@@ -759,8 +777,8 @@ function drawSharePiles(){
  for(let i=0;i<m.people;i++){
   const selected=i===activeSplit,amount=splitPiles[i].reduce((a,b)=>a+b,0),button=document.createElement('button');
   button.type='button';button.className='share-slot'+(selected?' selected':'');
-  button.setAttribute('aria-pressed',String(selected));button.setAttribute('aria-label',(m.kind==='kongsi'?'Pet ':'Sampul ')+(i+1)+' '+money(amount));
-  button.innerHTML='<span>'+(m.kind==='kongsi'?'Pet ':'Sampul ')+(i+1)+'</span><b>'+money(amount)+'</b><span class="smallcoins">'+splitPiles[i].slice(-5).map(v=>cash(denoms.find(d=>d.v===v))).join('')+'</span>';
+  button.setAttribute('aria-pressed',String(selected));button.setAttribute('aria-label',(m.kind==='kongsi'?'Kawan ':'Sampul ')+(i+1)+' '+money(amount));
+  button.innerHTML='<span>'+(m.kind==='kongsi'?'Kawan ':'Sampul ')+(i+1)+'</span><b>'+money(amount)+'</b><span class="smallcoins">'+splitPiles[i].slice(-5).map(v=>cash(denoms.find(d=>d.v===v))).join('')+'</span>';
   button.onclick=()=>{activeSplit=i;sfx.pick();drawMat()};tray.appendChild(button)
  }
  el.appendChild(tray);
@@ -797,7 +815,7 @@ function animateMoneyPlacement(source,value){
  function drawSign(){const need=!!(M().needSign&&M().needSign(m));$('signRow').hidden=!need;$('countHint').hidden=need;
  document.querySelectorAll('#signRow button').forEach(b=>{b.classList.toggle('on',b.dataset.sign===sign);b.setAttribute('aria-pressed',b.dataset.sign===sign)})}
 function drawReceipt(){$('receipt').innerHTML=M().receipt(m);
- $('countHint').textContent={bayar:'Kira sendiri, tiada kalkulator',baki:'Baki = dibayar − jumlah',bahagi:'Setiap bahagian mesti sama nilai',simpanan:'Simpanan = wang diterima − belanja',diskaun:'Akhir = asal − diskaun',untung:'Untung/rugi = beza jualan & kos'}[m.mode];document.querySelector('.mat-total>span').firstChild.textContent=m.mode==='bahagi'?'Jumlah diagih ':m.mode==='simpanan'?'Untuk disimpan ':'Atas kaunter '}
+ $('countHint').textContent={bayar:'Kira sendiri, tiada kalkulator',baki:'Baki = dibayar − jumlah',bahagi:'Setiap bahagian mesti sama nilai',simpanan:m.kind==='sasaran'?'Perlu simpan = harga − sudah disimpan':'Simpanan = wang diterima − belanja',diskaun:'Akhir = asal − diskaun',untung:'Untung/rugi = beza jualan & kos'}[m.mode];document.querySelector('.mat-total>span').firstChild.textContent=m.mode==='bahagi'?'Jumlah diagih ':m.mode==='simpanan'?'Untuk disimpan ':'Atas kaunter '}
 function drawOrder(){$('who').textContent=m.who;$('say').textContent=m.say;
  if(m.mode==='bahagi'){$('order').innerHTML=m.items.map(id=>'<span>'+ART[id]+'</span>').join('')+'<span class="coupon">'+money(m.total)+'</span>';return}
  let h=m.items.map(id=>'<span>'+ART[id]+(m.qty>1?'<b class="qtyb">×'+m.qty+'</b>':'')+'</span>').join('');
@@ -941,6 +959,7 @@ function wkPlan(){const W=window.PAWorked;if(!W||!m)return null;const O={money:t
  const add=(p,note)=>{if(!p)return false;if(plans.length)notes.push(note);plans.push(p);return true};
  const md=m.mode;let ans=target();
  if(md==='bayar'){const T=totalPlans();if(!T.p)return null;add(T.p)}
+ else if(md==='simpanan'&&m.kind==='sasaran'){if(!add(W.build('sub',pr[0],m.have,O)))return null}
  else if(md==='baki'||md==='simpanan'){const T=md==='simpanan'?{p:null,v:pr[0]}:totalPlans();if(T.p)add(T.p);
   if(!add(W.build('sub',m.paid,T.v,O),T.p?'Jumlah harga <b>'+RMf(T.v)+'</b>. Sekarang baki: '+RMf(m.paid)+' − '+RMf(T.v)+'.':''))return null}
  else if(md==='diskaun'){const base=pr[0];let fin;
@@ -979,7 +998,7 @@ function wkDone(){const tg=target();
   wira('Sekarang susun '+RMf(tg)+(m.mode==='bahagi'?' untuk setiap '+m.petWord:' di kaunter')+'.',0)},1300)}
 /* DEV: jump straight to the KIRA step of one kind and offer "Jom tengok cara" at once. */
 const WK_TRY=[['Bayar (2 barang)','d3-bayar',o=>o.mode==='bayar'&&o.items.length===2],['Bayar (× bilangan)','d4-bayar',o=>o.mode==='bayar'&&o.qty>1],
- ['Baki','d3-baki',o=>o.mode==='baki'],['Simpanan','d2-simpanan',o=>o.mode==='simpanan'],['Bahagi bil','d2-bahagi',o=>o.mode==='bahagi'],
+ ['Baki','d3-baki',o=>o.mode==='baki'],['Simpanan (belanja)','d2-simpanan',o=>o.mode==='simpanan'&&o.kind!=='sasaran'],['Simpanan (sasaran)','d2-simpanan',o=>o.mode==='simpanan'&&o.kind==='sasaran'],['Bahagi bil','d2-bahagi',o=>o.mode==='bahagi'],
  ['Diskaun %','d5-diskaun',o=>o.mode==='diskaun'&&o.pct>0],['Diskaun RM','d5-diskaun',o=>o.mode==='diskaun'&&o.cut>0],['Untung / rugi','d6-untung',o=>o.mode==='untung'&&!o.reverse],['Cari kos','d6-untung',o=>o.mode==='untung'&&o.reverse]];
 function drawWkTry(){const box=$('wkTry');if(!box)return;box.innerHTML=WK_TRY.map((k,i)=>'<button type="button" data-i="'+i+'">'+k[0]+'</button>').join('');box.querySelectorAll('button').forEach(b=>b.onclick=()=>tryWorked(WK_TRY[+b.dataset.i]))}
 function tryWorked([label,hash,test]){
