@@ -377,10 +377,10 @@ composition, lock policy.
 Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
 **Status at a glance (2026-10-24).**
-- Merged into `main`: every PR up to #113 (3.87.43).
+- Merged into `main`: every PR up to #115 (3.87.44).
 - Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
   connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
-  3.87.38–3.87.43 (#106–#113) are merged; the owner deploys (check the live version before assuming).
+  3.87.38–3.87.44 (#106–#115) are merged; the owner deploys (check the live version before assuming).
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
   D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
@@ -440,8 +440,18 @@ into the live Three.js stage.
   that result), so a dome breaks with no ~0.3 s delay; the finisher attack and
   glacier have **no zoom** (the glacier keeps its full size); screen flashes fade
   on real time, not slow motion. Camera zoom is now used only in the pet intro.
+- #115 (3.87.44, owner): the "1/2" hit counter above the dome is removed (the seal
+  bar shows it). **Wira's opening line:** when Wira finishes forming after the pet
+  close-up, a speech bubble greets the player by name and names the trapped pet
+  (`GREET_LINES` per pet id, 2–3 short lines each, `{n}` = `resultPlayerName()`,
+  "Pahlawan" if empty); it hides when the pupil answers. **Event banner**
+  (`.segelToast`: "… DITEMUI!", "… BEBAS!", "KUNCI … PECAH!"): Lilita One game font
+  (OFL, bundled in `assets/fonts/` so it works offline), gold fill, thick outline,
+  3D shadow, bounce-in; `toast()` shows it 1.5 s. Note: the banner still says
+  "KUNCI" while the file header asks for "gembok" in pupil-facing text (owner to decide).
 - **Next:** owner tests on a real phone. Likely tweaks: glacier slow-motion speed,
-  hop height (`.55`). Not done: the old battle screen (`#battleArena`) was not changed.
+  hop height (`.55`), greeting wording. Not done: the old battle screen
+  (`#battleArena`) was not changed.
 
 **Start here (next agent).**
 1. Merged into `main`: PRs #48, #69–#78, #80–#83 (#79 closed as a duplicate of #75). #69 Next item 3 + question-first mini
