@@ -289,7 +289,7 @@
       chargeAura:null,
       focus:'assets/fx/wira/final-v4/wira-eye-ice-electric-v1.webp',
       impact:'assets/fx/wira/final-v3/glacier-ice-math-swivel-v1.webp',
-      color:0xbfe9ff,chargeMs:1000,focusMs:980,impactMs:2400
+      color:0xbfe9ff,chargeMs:1600,focusMs:980,impactMs:2400
     };
     // Warm finisher images before the cut-in: the eye scene only lasts
     // ~1s, so an image fetched on demand can miss its window entirely.
@@ -1995,9 +1995,11 @@
        mesh kubah supaya ia ikut lantunan, nafas dan pudar kubah itu sendiri.
        Retakan bermula di sisi kiri (arah pedang Wira) dan berhenti sebelum
        sampai ke muka pet, sama seperti tingkap uClear.
-       Ketebalan garisan dikira dalam PIKSEL SKRIN, bukan piksel tekstur:
-       kubah kecil di telefon dan kubah besar di tablet/desktop sama-sama
-       dapat garisan halus yang tajam, dengan sedikit tambahan pada skrin besar. */
+       Ketebalan garisan berasaskan BORDER kubah itu sendiri (pemilik,
+       2026-10-24): teras border dalam lukisan 1536px ~6–8px, jadi teras
+       retakan = border x1.15 dan cahayanya ~2.4x border. Kerana ia diukur
+       dalam ruang tekstur, retakan sentiasa sepadan dengan garisan kubah
+       pada telefon, tablet dan desktop. */
     /* ===== SERAP KUASA atas frame aura farming =====
        Frame aura farming ialah DOM (.segelChargeHero) atas latar hitam, dan
        CSS menghitamkan semua kanvas pentas semasa itu. Jadi lapisan ini kanvas
@@ -2108,21 +2110,17 @@
     function drawCracks(s,now){
       const cr=s.crack, g=cr.g, P=CRACK_PX, col=tierCss(s);
       g.clearRect(0,0,P,P); g.lineCap='round'; g.lineJoin='round';
-      // Tinggi kubah (seluruh satah tekstur) dalam piksel CSS, tanpa zoom kamera.
-      const visH=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z+.02);
-      const domePx=Math.max(60,s.front.scale.y*(fxCanvas.height/fxDpr)/visH);
-      const k2px=P/domePx;                                   // piksel tekstur per piksel skrin
-      const grow=Math.max(1,Math.min(1.6,domePx/260));       // skrin besar: sedikit lebih tebal
-      const W=px=>px*grow*k2px;
+      const B=P*(7/1536);                                    // teras border kubah dalam piksel kanvas ini
+      const W=m=>m*B;
       let growing=false;
       for(const L of cr.lines){
         const k=Math.max(0,Math.min(1,(now-L.born)/140)); if(k<1)growing=true;
         const n=Math.max(2,Math.ceil(L.pts.length*k));
         const path=()=>{ g.beginPath(); for(let i=0;i<n;i++){ const [x,y]=L.pts[i]; i?g.lineTo(x*P,y*P):g.moveTo(x*P,y*P) } };
         // Bayang nipis untuk kontras atas latar cerah, cahaya warna tier, teras putih halus.
-        g.shadowBlur=0; g.globalAlpha=.22; g.strokeStyle='#0a1428'; g.lineWidth=W(3.2); path(); g.stroke();
-        g.globalAlpha=.55; g.strokeStyle=col; g.shadowColor=col; g.shadowBlur=W(5); g.lineWidth=W(2.6); path(); g.stroke();
-        g.shadowBlur=0; g.globalAlpha=1; g.strokeStyle='#ffffff'; g.lineWidth=W(1.1); path(); g.stroke();
+        g.shadowBlur=0; g.globalAlpha=.14; g.strokeStyle='#0a1428'; g.lineWidth=W(1.8); path(); g.stroke();
+        g.globalAlpha=.5; g.strokeStyle=col; g.shadowColor=col; g.shadowBlur=W(1.5); g.lineWidth=W(2.4); path(); g.stroke();
+        g.shadowBlur=0; g.globalAlpha=1; g.strokeStyle='#ffffff'; g.lineWidth=W(1.15); path(); g.stroke();
       }
       cr.tex.needsUpdate=true; cr.dirty=growing;
     }
