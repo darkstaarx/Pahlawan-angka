@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.11.0';
+  const VERSION='1.12.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -314,10 +314,10 @@
       // A hundred grid: a full row is 0.1 (10%), one square is 0.01 (1%).
       const{n,pct}=spec;if(!Number.isInteger(n)||n<1||n>99)return null;const r=Math.floor(n/10),c=n%10,one=spec.dp===1;
       const val=pct?`${n}%`:one?(n/100).toFixed(1):(n/100).toFixed(2);
-      const steps=[pick('Berapa baris penuh berlorek?',r,[r+1,r-1,c].filter(x=>x>=0),{note:`${r} baris = ${pct?r*10+'%':(r/10).toFixed(1)}.`})];
-      if(!one)steps.push(pick('Berapa petak lagi di baris yang belum penuh?',c,[c+1,Math.max(0,c-1),r].filter(x=>x>=0),{note:`${c} petak = ${pct?c+'%':(c/100).toFixed(2)}.`}));
+      const steps=[{...pick('Berapa baris penuh berlorek?',r,[r+1,r-1,c].filter(x=>x>=0),{note:`${r} baris = ${pct?r*10+'%':(r/10).toFixed(1)}.`}),look:'full'}];
+      if(!one)steps.push({look:'part',...pick('Berapa petak lagi di baris yang belum penuh?',c,[c+1,Math.max(0,c-1),r].filter(x=>x>=0),{note:`${c} petak = ${pct?c+'%':(c/100).toFixed(2)}.`})});
       steps.push(pick(pct?'Jadi berapa peratus berlorek?':'Jadi nombor perpuluhannya?',val,pct?[`${r+c}%`,`${c*10+r}%`]:one?[`${r}.0`,(r/100).toFixed(2)]:[(c/10+r/100).toFixed(2),`${r}.${c}`]));   // the digits swapped, or the point in the wrong place
-      if(spec.unshaded){steps.push(pick(`Belum berlorek: 100% − ${n}% = ?`,`${100-n}%`,[`${n}%`,`${90-n}%`,`${110-n}%`].filter(x=>!/^-/.test(x))))}
+      if(spec.unshaded){steps.push({look:'off',...pick(`Belum berlorek: 100% − ${n}% = ?`,`${100-n}%`,[`${n}%`,`${90-n}%`,`${110-n}%`].filter(x=>!/^-/.test(x)))})}
       return{op:'grid',rows:[],n,steps,done:spec.unshaded?`100% − ${n}% = ${100-n}%.`:`${n} petak daripada 100 = ${val}.`,answer:spec.unshaded?100-n:pct?n:+val};
     }
     if(t==='pctOf'){
@@ -767,7 +767,28 @@
     };
     /* Owner (2026-10-24): the pupil must see where to look. Each step: Wira's line pops and its "?" pulses,
        the slot the answer goes into pulses (berry, with "?"), and the numbers the step works on glow (gold). */
-    const clearCue=()=>{el.board.querySelectorAll('.wk-ghost').forEach(g=>g.remove());el.board.querySelectorAll('.wk-next,.wk-src').forEach(c=>c.classList.remove('wk-next','wk-src'))};
+    // The page's own question (data table, work card) sits beside Wira's panel, inside the same box.
+    const lookRoot=(()=>{let a=el.board;while(a&&a.contains&&!a.contains(el.say))a=a.parentElement;a=a||el.board;return a.classList.contains('wk-wrap')&&a.parentElement&&a.parentElement!==document.body?a.parentElement:a})();
+    const clearCue=()=>{el.board.querySelectorAll('.wk-ghost').forEach(g=>g.remove());el.board.querySelectorAll('.wk-next,.wk-src').forEach(c=>c.classList.remove('wk-next','wk-src'));
+      lookRoot.querySelectorAll('span.wk-lookt').forEach(x=>{const p=x.parentNode;p.replaceChild(document.createTextNode(x.textContent),x);p.normalize()});
+      lookRoot.querySelectorAll('.wk-look').forEach(x=>x.classList.remove('wk-look'));if(el.tiles)el.tiles.classList.remove('wk-pickhere')};
+    /* "Look here": a number the step works on glows where the pupil can see it: a board cell first, then a table
+       cell or card on the page, then the number inside a work line ("3 kg = 3 000 g"). Never Wira's line or the tiles. */
+    const skip=n=>{for(let x=n;x&&x!==lookRoot.parentNode;x=x.parentElement){if(x===el.say||x===el.tiles||x===el.inline||x.tagName==='BUTTON'||(x.classList&&(x.classList.contains('wk-ghost')||x.classList.contains('wk-hide')||x.classList.contains('wk-next'))))return true}
+      const e=n.nodeType===1?n:n.parentElement;return !e||!e.getClientRects().length};
+    const numPat=t=>{const v=String(t).replace(/[\s\u00a0,]/g,'');if(!/^\d+(\.\d+)?$|^\d{1,2}:\d{2}$/.test(v))return null;
+      const [i,d]=v.split('.'),body=i.replace(/\B(?=(\d{3})+(?!\d))/g,'§').replace(/§/g,'[\\s\\u00a0,]?')+(d?'\\.'+d:'');
+      return new RegExp('(?<![\\d.,:])'+body+'(?![\\d]|[.,:]\\d|[\\s\\u00a0]\\d{3}(?!\\d))')};
+    const lookNum=(t,used)=>{const re=numPat(t);if(!re)return false;const want=String(t).replace(/[\s\u00a0,]/g,'');
+      // a page element whose whole text is the number (a table cell, a tag)
+      for(const e of lookRoot.querySelectorAll('*')){if(e.children.length||used.has(e)||skip(e))continue;const tx=e.textContent.replace(/[\s\u00a0,]/g,'');if(tx===want){used.add(e);e.classList.add(e.matches('.wk-c,.wk-box')?'wk-src':'wk-look');return true}}
+      // the number inside a line of text
+      const w=document.createTreeWalker(lookRoot,NodeFilter.SHOW_TEXT);while(w.nextNode()){const n=w.currentNode;if(used.has(n.parentElement)||skip(n))continue;const m=re.exec(n.nodeValue);if(!m)continue;
+        const r=n.splitText(m.index);r.splitText(m[0].length);const sp=document.createElement('span');sp.className='wk-lookt';sp.textContent=r.nodeValue;r.parentNode.replaceChild(sp,r);used.add(sp);return true}
+      return false};
+    // The numbers Wira's line names (not inside a [fraction], not after "="): the first, and any with two or more digits.
+    const sayNums=t=>{const x=String(t||'').replace(/\[[^\]]*\]/g,' ').replace(/=\s*\?[\s\S]*$/,''),out=[];const re=/\d{1,2}:\d{2}|\d{1,3}(?:[ \u00a0]\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g;let m;
+      while((m=re.exec(x))){const v=m[0].replace(/[\s\u00a0]/g,'');if(!out.length||v.replace(/\D/g,'').length>=2)out.push(v)}return out.slice(0,3)};
     const markQ=node=>{const w=document.createTreeWalker(node,NodeFilter.SHOW_TEXT),list=[];while(w.nextNode())if(w.currentNode.nodeValue.includes('?'))list.push(w.currentNode);
       // Only a "?" that stands for a number (after =, an operation sign or a space, not the end of a word) becomes the pulsing blank.
       for(const t of list){const v=t.nodeValue,f=document.createDocumentFragment();let last=0;
@@ -795,10 +816,22 @@
       // already light their column, so only boards without columns (fractions, lists, trails) get this.
       if(s.fact&&!(s.col>=0)){
         const norm=t=>String(t).replace(/\s+/g,''),used=new Set(tg);
-        const cells=[...el.board.querySelectorAll('.wk-c,.wk-box')].filter(c=>c.textContent.trim()!==''&&!c.closest('.wk-hide'));
+        // a number just worked out (it dropped in) comes before the same number printed in the question
+        const cells=[...el.board.querySelectorAll('.wk-c,.wk-box')].filter(c=>c.textContent.trim()!==''&&!c.closest('.wk-hide')).sort((x,y)=>y.classList.contains('wk-drop')-x.classList.contains('wk-drop'));
         const find=alts=>{for(const a of alts){const c=cells.find(x=>!used.has(x)&&norm(x.textContent)===a);if(c){used.add(c);c.classList.add('wk-src');return}}};
         const sym=SIGN[s.fact.op]||'';find([String(s.fact.a)]);find([sym+s.fact.b,String(s.fact.b)]);
       }
+      if(!(s.col>=0)){
+        const used=new Set([...el.board.querySelectorAll('.wk-src,.wk-next')]);
+        const want=s.fact?[s.fact.a,s.fact.b]:sayNums(s.say);
+        const done=new Set([...el.board.querySelectorAll('.wk-src')].map(c=>c.textContent.replace(/[^\d.:]/g,'')));
+        for(const t of want){const v=String(t).replace(/[\s\u00a0,]/g,'');if(done.has(v)){done.delete(v);continue}try{lookNum(v,used)}catch(_){}}
+      }
+      // The hundred grid: the rows or squares the question asks about.
+      if(plan.op==='grid'&&s.look){const r=Math.floor(plan.n/10);el.board.querySelectorAll('.wk-g').forEach(g=>{const row=Number(g.dataset.r),on=g.classList.contains('on');
+        if((s.look==='full'&&on&&row<r)||(s.look==='part'&&on&&row===r)||(s.look==='off'&&!on))g.classList.add('wk-src')})}
+      // No slot on the board for this answer: the choices below pulse, so the pupil knows where to answer.
+      if(!el.board.querySelector('.wk-next')&&el.tiles)el.tiles.classList.add('wk-pickhere');
     };
     const tapCells=on=>el.board.querySelectorAll('.wk-tap').forEach(c=>{c.classList.toggle('wk-can',on&&(c.textContent!==''||c.classList.contains('wk-empty')));c.onclick=on?()=>tap(c):null});
     const show=()=>{

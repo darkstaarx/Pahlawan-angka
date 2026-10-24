@@ -80,3 +80,39 @@ test('Pos Peninjau work card: the answer line stays hidden behind a pulsing "?" 
   assert.ok(steps >= 1 && ghosts >= 1, `steps ${steps}, ghost lines ${ghosts}`);
   assert.deepEqual(errors, []); await ctx.close();
 });
+
+test('Dapur Ramuan: the numbers of "a ÷ b" glow in the data table, with no slot on the board the choices pulse, all go after the answer', async () => {
+  const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await ctx.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await ctx.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await open(page, 'dapur-ramuan', 'd6', 'Kadaran (darab)');
+  let found = false;
+  for (let i = 0; i < 6 && !found; i++) {
+    const s = await page.evaluate(() => window.__wkStep());
+    if (!s) break;
+    if (s.fact && s.fact.op === 'div') {
+      const look = await page.evaluate(() => [...document.querySelectorAll('.wk-look,.wk-lookt,.wk-src')].map(c => c.textContent.replace(/\s+/g, '')));
+      assert.ok(look.includes(String(s.fact.a)) && look.includes(String(s.fact.b)), `${s.say} → ${look}`);
+      assert.equal(await page.evaluate(() => !!document.querySelector('.wk-say .wk-qm')), true);
+      found = true;
+      await answer(page); await page.waitForTimeout(150);
+      assert.equal(await page.evaluate(() => document.querySelectorAll('.wk-look,.wk-lookt,.wk-pickhere').length), 0, 'cues go once answered');
+      break;
+    }
+    await answer(page); await page.waitForTimeout(1100);
+  }
+  assert.ok(found, 'a division step was shown');
+  assert.deepEqual(errors, []); await ctx.close();
+});
+
+test('Lombong Permata hundred grid: "Berapa baris penuh?" outlines the full rows and the choices pulse', async () => {
+  const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await ctx.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await ctx.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await open(page, 'lombong-permata', 'd5', 'Petak seratus');
+  const st = await page.evaluate(() => ({ s: window.__wkStep(), n: document.querySelectorAll('.wk-g.on').length, src: document.querySelectorAll('.wk-g.wk-src').length, pick: !!document.querySelector('.wk-pickhere') }));
+  assert.equal(st.s.look, 'full');
+  assert.equal(st.src, Math.floor(st.n / 10) * 10, 'every square of the full rows, nothing else');
+  assert.ok(st.pick, 'the choices pulse');
+  assert.deepEqual(errors, []); await ctx.close();
+});

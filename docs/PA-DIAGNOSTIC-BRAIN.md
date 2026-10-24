@@ -621,12 +621,18 @@ digit, then the round's choices.
    which have no sums to walk. No DEV sheet on this page: DEV test API
    `__tapakGen.tryWorked(grade, archetype)`.
    **Where to look (3.87.38, owner 2026-10-24: "aku tak perasan pun 1 × 2 tu. Dan nak letak mana").**
-   `PAWorked.run` 1.11.0, all nine mini games:
+   `PAWorked.run` 1.12.0, all nine mini games:
    - Each step, Wira's line pops and a "?" that stands for a number turns into a pulsing berry
      blank. A sentence-end "?" stays plain, for example "Jadi jawapannya?".
    - The slot the answer goes into pulses berry with a "?" (`.wk-next`).
    - On boards without columns, the numbers of a fact step (a × b) glow gold (`.wk-src`), for example
      "1" and "× 2". Column boards keep their lit column.
+   - 1.12.0: when the number is not a board cell, it glows where the pupil can see it: a cell in the
+     page's data table or work card (`.wk-look`), or the number inside a work line (`span.wk-lookt`, for
+     example "3 kg = **3 000** g"). Steps without a fact glow the numbers Wira names ("Lihat 447 dan 449").
+     The hundred grid outlines the full rows, the part row or the empty squares (`step.look`).
+   - When nothing on the board takes the answer, the choice buttons pulse (`.wk-pickhere`).
+   - A number that is shown nowhere (for example 6 × 100 when changing hours) stays in Wira's line only.
    - A fraction row is shown early, empty, only when it holds the target slot and no visible number
      gives the answer away.
    - A work-card line (lists: Pos, Bengkel, Dapur, Menara) holds its answer, so it stays hidden
