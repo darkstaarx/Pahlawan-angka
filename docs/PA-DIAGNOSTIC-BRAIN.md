@@ -377,10 +377,10 @@ composition, lock policy.
 Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
 **Status at a glance (2026-10-24).**
-- Merged into `main`: every PR up to #115 (3.87.44).
+- Merged into `main`: every PR up to #117 (3.87.45).
 - Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
   connector, after the owner allowed the Netlify domains in Admin settings → Capabilities.
-  3.87.38–3.87.44 (#106–#115) are merged; the owner deploys (check the live version before assuming).
+  3.87.38–3.87.45 (#106–#117) are merged; the owner deploys (check the live version before assuming).
 - Mini games: all nine KSSR topic families have a mini game, and all nine have
   "Jom tengok cara" (#84–#103). Two money skills have no mini game mode yet:
   D2.4.5 Bahagi wang and D2.4.6 Simpanan (Gerai Wirayung sends them to battle).
@@ -447,8 +447,12 @@ into the live Three.js stage.
   "Pahlawan" if empty); it hides when the pupil answers. **Event banner**
   (`.segelToast`: "… DITEMUI!", "… BEBAS!", "KUNCI … PECAH!"): Lilita One game font
   (OFL, bundled in `assets/fonts/` so it works offline), gold fill, thick outline,
-  3D shadow, bounce-in; `toast()` shows it 1.5 s. Note: the banner still says
-  "KUNCI" while the file header asks for "gembok" in pupil-facing text (owner to decide).
+  3D shadow, bounce-in; `toast()` shows it 1.5 s.
+- #117 (3.87.45, owner): the greeting uses the **main-menu dialogue box style**
+  (same look as `#wiraBubble` in `css/menu-v2-v1.0.0.css`: white, double border, no
+  tail, typewriter 90 ms per letter, then 2.4 s). A broken dome shows the tier name on
+  top and "PECAH!" below ("GANGSA / PECAH!", "PERAK / PECAH!", "EMAS / PECAH!"), same
+  gold style, in the demo and in production missions (`toast()` keeps line breaks).
 - **Next:** owner tests on a real phone. Likely tweaks: glacier slow-motion speed,
   hop height (`.55`), greeting wording. Not done: the old battle screen
   (`#battleArena`) was not changed.

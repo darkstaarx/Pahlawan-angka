@@ -1718,17 +1718,19 @@
       // Bar gembok diunjur tanpa zoom kamera; sorok sekejap semasa zoom supaya
       // ia tidak terapung di tempat salah, kemudian muncul semula dengan nilai baharu.
       st.textContent="@font-face{font-family:'PA Lilita';src:url('assets/fonts/lilita-one-latin-400-normal.woff2') format('woff2');font-display:swap}"+
-        /* Ayat pembuka Wira: belon putih dengan ekor ke arah Wira. */
-        ".segelWiraSay{position:absolute;left:0;top:0;z-index:14;max-width:min(56%,250px);padding:8px 13px;border-radius:14px;"+
-        "background:#fffdf5;color:#14254a;font:800 15px/1.25 system-ui,-apple-system,'Segoe UI',sans-serif;"+
-        "box-shadow:0 4px 0 #c99a2e,0 10px 22px rgba(0,0,0,.35);border:2px solid #f2c45a;pointer-events:none;"+
-        "transform:translateY(-100%) scale(.6);transform-origin:var(--tail,30px) 100%;opacity:0;transition:opacity .18s,transform .32s cubic-bezier(.2,1.6,.4,1)}"+
-        ".segelWiraSay::after{content:'';position:absolute;left:calc(var(--tail,30px) - 8px);bottom:-9px;border:8px solid transparent;border-bottom:0;border-top:10px solid #f2c45a}"+
-        ".segelWiraSay.show{opacity:1;transform:translateY(calc(-100% - 12px)) scale(1)}"+
-        /* Banner peristiwa (... DITEMUI!, ... BEBAS!, KUNCI ... PECAH!): fon permainan,
+        /* Ayat pembuka Wira: gaya sama dengan kotak dialog RPG di menu utama
+           (#wiraBubble dalam css/menu-v2-v1.0.0.css): putih, border dua garis,
+           tanpa ekor, teks muncul huruf demi huruf. */
+        ".segelWiraSay{position:absolute;left:0;top:0;z-index:14;width:fit-content;max-width:min(56%,250px);min-height:42px;box-sizing:border-box;"+
+        "padding:7px 11px;border:5px double #253047;border-radius:4px;background:#fff;color:#111827;"+
+        "font-family:inherit;font-size:13px;font-weight:750;line-height:1.35;text-align:left;white-space:normal;overflow-wrap:anywhere;"+
+        "display:flex;align-items:center;box-shadow:0 3px 0 #0b1729,0 5px 12px rgba(0,0,0,.2);pointer-events:none;"+
+        "opacity:0;transform:translateY(calc(-100% - 6px));transition:opacity .15s ease,transform .15s ease}"+
+        ".segelWiraSay.show{opacity:1;transform:translateY(calc(-100% - 9px))}"+
+        /* Banner peristiwa (... DITEMUI!, ... BEBAS!, GANGSA/PERAK/EMAS + PECAH!): fon permainan,
            isi emas, garis tebal, bayang 3D, masuk melantun dan sinar menyapu. */
         "#segelStage .segelToast{font-family:'PA Lilita',system-ui,sans-serif;font-weight:400;font-size:clamp(28px,8.5vw,46px);letter-spacing:.02em;"+
-        "line-height:1.05;text-align:center;white-space:nowrap;color:#fff4c2;z-index:15;"+
+        "line-height:.98;text-align:center;white-space:pre;color:#fff4c2;z-index:15;"+
         "background:linear-gradient(180deg,#fffbe6 0%,#ffe27a 48%,#ffb93b 52%,#ffd25e 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;"+
         "filter:drop-shadow(0 2px 0 #7a3b00) drop-shadow(0 -2px 0 #7a3b00) drop-shadow(2px 0 0 #7a3b00) drop-shadow(-2px 0 0 #7a3b00) drop-shadow(0 5px 0 #4a1f00) drop-shadow(0 8px 14px rgba(0,0,0,.55));"+
         "text-shadow:none;transform:translate(-50%,-50%) scale(.3) rotate(-8deg);transition:none}"+
@@ -2122,16 +2124,22 @@
       const w=sayEl.offsetWidth||160, hw=host.clientWidth;
       const left=Math.max(8,Math.min(hw-w-8,p.x-w*.28));
       sayEl.style.left=left+'px'; sayEl.style.top=Math.max(52,p.y)+'px';
-      sayEl.style.setProperty('--tail',Math.max(14,Math.min(w-18,p.x-left))+'px');
     }
     function wiraGreet(){
       if(run===null&&!entryMode)return;
       const pet=trappedPet(), lines=GREET_LINES[pet.id]||['{n}, jom selamatkan '+pet.name+'!'];
       const n=(typeof resultPlayerName==='function'?resultPlayerName():'')||'Pahlawan';
       const text=lines[(Math.random()*lines.length)|0].replace(/\{n\}/g,n);
-      sayEl.textContent=text; sayEl.classList.remove('show'); void sayEl.offsetWidth; sayEl.classList.add('show');
-      placeSay();
-      clearTimeout(sayTimer); sayTimer=setTimeout(()=>sayEl.classList.remove('show'),2600);
+      // Taip huruf demi huruf seperti dialog menu utama (90ms satu huruf),
+      // kemudian kekal 2.4s. Lebar kotak ditetapkan dahulu supaya ia tidak melompat.
+      clearTimeout(sayTimer);
+      sayEl.textContent=text; sayEl.style.width=''; sayEl.classList.add('show');
+      sayEl.style.width=Math.ceil(sayEl.getBoundingClientRect().width)+'px';
+      sayEl.textContent=''; placeSay();
+      let c=0;
+      const write=()=>{ c++; sayEl.textContent=text.slice(0,c);
+        sayTimer=c<text.length?setTimeout(write,90):setTimeout(()=>sayEl.classList.remove('show'),2400) };
+      write();
     }
     function hideSay(){ clearTimeout(sayTimer); sayEl.classList.remove('show') }
 
@@ -2994,7 +3002,7 @@
     if(correct){
       sfx('correct');activeRun.tally[activeRun.usedHint||retrying?'hint':'own']++;await stage.strike();
       if(!currentRun(activeRun))return;
-      const outcome=stage.hitSeal();await stage.waitFinalImpact?.();if(outcome.broken)toast('KUNCI '+outcome.tier.name+' PECAH!');
+      const outcome=stage.hitSeal();await stage.waitFinalImpact?.();if(outcome.broken)toast(outcome.tier.name+'\nPECAH!');
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
       paintSeal();
       if(reachedTarget)return celebrate(activeRun);
@@ -3049,7 +3057,7 @@
     if(correct){
       run.tally[run.usedHint?'hint':'own']++;await stage.strike();
       if(!productionCurrent(hostRun,q))return;
-      const outcome=stage.hitSeal();await stage.waitFinalImpact?.();$('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';paintSeal();
+      const outcome=stage.hitSeal();await stage.waitFinalImpact?.();if(outcome.broken)toast(outcome.tier.name+'\nPECAH!');$('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';paintSeal();
       if(stage.allBroken()){window.PAProductionJourney?.complete?.();if(!productionCurrent(hostRun,q))return;return celebrateProduction(hostRun,q);}
     }else{run.tally.miss++;stage.wrong();$('segelFeedback').textContent=`Belum tepat. ${q_hint(q)}`;}
     if(result?.intervention){window.PAProductionJourney?.pauseForLearning?.(result.intervention);return;}
