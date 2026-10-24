@@ -25,6 +25,9 @@ const ev = (type, extra = {}) => { const e = { type, frame: log.frames, t: +(log
   await ctx.route('**/*', r => r.request().url().startsWith('http://127.0.0.1:8765/') ? r.continue() : r.abort());
   await ctx.addInitScript({ content: SEED_JS(SEED) });
   await ctx.addInitScript({ path: path.join(__dirname, 'vtime-shim.js') });
+  // Laluan aset Portal Restu sebagai URL penuh. Dalam app, url() relatif di dalam pemboleh ubah CSS diselesaikan
+  // berbanding css/ dan memberi 404 (butang/bingkai kosong); PA_ASSET_BASE ialah sokongan rasmi modul itu.
+  await ctx.addInitScript(() => { window.PA_ASSET_BASE = location.origin + '/'; });
   const p = await ctx.newPage();
   p.on('pageerror', e => console.log('pageerror', e.message.slice(0, 200)));
   const cdp = await ctx.newCDPSession(p);
