@@ -1369,6 +1369,7 @@
           S.enterT=-1; S.heroFade=1;
           enPoints.visible=enHalo.visible=false; enGlow.visible=false;
           enMat.opacity=enHaloMat.opacity=0;
+          wiraGreet();   // Wira baru tiba: satu ayat pembuka kepada pemain
         }
       }
       heroShadow.position.x=S.heroFeet;
@@ -1583,6 +1584,7 @@
       renderer.render(scene,camera);
       fxFrame(fdt,dt);
       chargeFxFrame(dt);
+      placeSay();
     }
 
     /* Panel soalan berubah tinggi ikut panjang soalan, jadi nisbah pentas tidak
@@ -1715,7 +1717,27 @@
       const st=document.createElement('style');st.id='segelHitFxStyle';
       // Bar gembok diunjur tanpa zoom kamera; sorok sekejap semasa zoom supaya
       // ia tidak terapung di tempat salah, kemudian muncul semula dengan nilai baharu.
-      st.textContent='.segel-cam-zoom .segelTag{opacity:0!important}'+
+      st.textContent="@font-face{font-family:'PA Lilita';src:url('assets/fonts/lilita-one-latin-400-normal.woff2') format('woff2');font-display:swap}"+
+        /* Ayat pembuka Wira: belon putih dengan ekor ke arah Wira. */
+        ".segelWiraSay{position:absolute;left:0;top:0;z-index:14;max-width:min(56%,250px);padding:8px 13px;border-radius:14px;"+
+        "background:#fffdf5;color:#14254a;font:800 15px/1.25 system-ui,-apple-system,'Segoe UI',sans-serif;"+
+        "box-shadow:0 4px 0 #c99a2e,0 10px 22px rgba(0,0,0,.35);border:2px solid #f2c45a;pointer-events:none;"+
+        "transform:translateY(-100%) scale(.6);transform-origin:var(--tail,30px) 100%;opacity:0;transition:opacity .18s,transform .32s cubic-bezier(.2,1.6,.4,1)}"+
+        ".segelWiraSay::after{content:'';position:absolute;left:calc(var(--tail,30px) - 8px);bottom:-9px;border:8px solid transparent;border-bottom:0;border-top:10px solid #f2c45a}"+
+        ".segelWiraSay.show{opacity:1;transform:translateY(calc(-100% - 12px)) scale(1)}"+
+        /* Banner peristiwa (... DITEMUI!, ... BEBAS!, KUNCI ... PECAH!): fon permainan,
+           isi emas, garis tebal, bayang 3D, masuk melantun dan sinar menyapu. */
+        "#segelStage .segelToast{font-family:'PA Lilita',system-ui,sans-serif;font-weight:400;font-size:clamp(28px,8.5vw,46px);letter-spacing:.02em;"+
+        "line-height:1.05;text-align:center;white-space:nowrap;color:#fff4c2;z-index:15;"+
+        "background:linear-gradient(180deg,#fffbe6 0%,#ffe27a 48%,#ffb93b 52%,#ffd25e 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;"+
+        "filter:drop-shadow(0 2px 0 #7a3b00) drop-shadow(0 -2px 0 #7a3b00) drop-shadow(2px 0 0 #7a3b00) drop-shadow(-2px 0 0 #7a3b00) drop-shadow(0 5px 0 #4a1f00) drop-shadow(0 8px 14px rgba(0,0,0,.55));"+
+        "text-shadow:none;transform:translate(-50%,-50%) scale(.3) rotate(-8deg);transition:none}"+
+        "#segelStage .segelToast.show{animation:segelToastPop 1.5s cubic-bezier(.2,1.5,.35,1) both}"+
+        "@keyframes segelToastPop{0%{opacity:0;transform:translate(-50%,-50%) scale(2.2) rotate(-10deg)}"+
+        "14%{opacity:1;transform:translate(-50%,-50%) scale(.92) rotate(-3deg)}22%{transform:translate(-50%,-50%) scale(1.06) rotate(-4deg)}"+
+        "30%,82%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-4deg)}100%{opacity:0;transform:translate(-50%,-62%) scale(1.04) rotate(-4deg)}}"+
+        "@media (prefers-reduced-motion: reduce){#segelStage .segelToast.show{animation:none;opacity:1;transform:translate(-50%,-50%)}.segelWiraSay{transition:opacity .18s}}"+
+        '.segel-cam-zoom .segelTag{opacity:0!important}'+
         '.segel-letterbox .segelIntroBar{transform:scaleY(1)}'+
         '.segel-letterbox .segelTop,.segel-letterbox .segelTag{opacity:0!important;pointer-events:none}';
       document.head.appendChild(st);
@@ -1887,7 +1909,7 @@
     }
     function clearHitFx(){
       fxParts=[]; fxArcs=[]; fxFlashA=0; ghostHist.length=0;
-      S.slow=1; S.dark=S.darkTo=0; S.heroAura=0; S.speedFx=0; host.classList.remove('segel-letterbox'); chargeFxStop();
+      S.slow=1; S.dark=S.darkTo=0; S.heroAura=0; S.speedFx=0; host.classList.remove('segel-letterbox'); chargeFxStop(); hideSay();
       bg.material.color.setScalar(1); groundOverlay.material.color.setScalar(1); ghosts.forEach(g=>{g.visible=false});
       host.classList.remove('segel-cam-zoom'); seals.forEach(clearCracks);
     }
@@ -1902,9 +1924,6 @@
       fxRing(cx,cy,.1,vis*.42,.32,'rgba(190,240,255,1)');
       fxSymbols(cx,cy+.15);
       fxFlash(.22,'#ffffff');
-      // Kiraan hentaman di atas kubah, contoh 2/3.
-      const hits=s.tier.hits, n=Math.min(hits,Math.round(s.damage*hits)+1);
-      fxText(`${n}/${hits}`,SEAL_X,GROUND+vis*.9,tierCss(s));
       addCracks(s,s.damage>.3?3:2);
     }
     const glowDot=(function(){
@@ -2077,6 +2096,45 @@
       cg.globalAlpha=1; cg.globalCompositeOperation='source-over';
     }
 
+    /* ===== AYAT PEMBUKA WIRA =====
+       Sebaik Wira siap terbentuk (selepas syot dekat pet), dia menyapa pemain
+       dengan nama dan menyebut teman yang terkurung. Ayat pendek, ikut pet. */
+    const GREET_LINES={
+      aurora:['{n}, jom selamatkan Aurora!','Aurora terkurung! Jom bebaskan dia, {n}!','Sedia, {n}? Kita lepaskan Aurora!'],
+      ketupatKura:['Kukupat terperangkap! Jom tolong dia, {n}!','{n}, jom keluarkan Kukupat!'],
+      kumbangManggis:['{n}, jom selamatkan Kumbis!','Kumbis tak boleh terbang! Jom bebaskan dia, {n}!'],
+      harimauBunga:['Riya perlukan kita, {n}! Jom!','{n}, jom lepaskan Riya!'],
+      arnabKekLapis:['Jom lepaskan Bunnis, {n}!','{n}, Bunnis tunggu kita! Jom!'],
+      durianKerbau:['Keryan terkurung! Jom pecahkan gembok, {n}!','{n}, jom selamatkan Keryan!']
+    };
+    function trappedPet(){
+      const id=rescuePetConfig?.id||'aurora';
+      const name=window.PetCollection?.catalog?.[id]?.name||rescuePetConfig?.name||'Aurora';
+      return {id,name};
+    }
+    const sayEl=document.createElement('div');
+    sayEl.className='segelWiraSay'; sayEl.setAttribute('role','status'); sayEl.setAttribute('aria-live','polite');
+    host.appendChild(sayEl);
+    let sayTimer=0;
+    function placeSay(){
+      if(!sayEl.classList.contains('show'))return;
+      const p=proj(hero.position.x,hero.position.y+hero.scale.y*.42);
+      const w=sayEl.offsetWidth||160, hw=host.clientWidth;
+      const left=Math.max(8,Math.min(hw-w-8,p.x-w*.28));
+      sayEl.style.left=left+'px'; sayEl.style.top=Math.max(52,p.y)+'px';
+      sayEl.style.setProperty('--tail',Math.max(14,Math.min(w-18,p.x-left))+'px');
+    }
+    function wiraGreet(){
+      if(run===null&&!entryMode)return;
+      const pet=trappedPet(), lines=GREET_LINES[pet.id]||['{n}, jom selamatkan '+pet.name+'!'];
+      const n=(typeof resultPlayerName==='function'?resultPlayerName():'')||'Pahlawan';
+      const text=lines[(Math.random()*lines.length)|0].replace(/\{n\}/g,n);
+      sayEl.textContent=text; sayEl.classList.remove('show'); void sayEl.offsetWidth; sayEl.classList.add('show');
+      placeSay();
+      clearTimeout(sayTimer); sayTimer=setTimeout(()=>sayEl.classList.remove('show'),2600);
+    }
+    function hideSay(){ clearTimeout(sayTimer); sayEl.classList.remove('show') }
+
     const CRACK_PX=768;
     seals.forEach(s=>{
       const c=document.createElement('canvas'); c.width=c.height=CRACK_PX;
@@ -2174,6 +2232,7 @@
         // dengan Wira penuh, supaya serangan tidak berlaku tanpa Wira kelihatan.
         if(S.introT>=0)endPetIntro();
         if(S.enterT>=0)restoreHeroAfterEntranceFailure();
+        hideSay();
         const lifecycle=S.lifecycle;
         const tier=stageTiers[Math.min(S.active,stageTiers.length-1)];
         const finalHit=S.active===stageTiers.length-1&&seals[S.active]?.damage+1/tier.hits>=.999;
@@ -2384,7 +2443,7 @@
           restoreHeroAfterEntranceFailure();
         }
       },
-      wrong(){ if(S.introT>=0)endPetIntro(); if(S.enterT>=0)restoreHeroAfterEntranceFailure(); S.shake=.14; if(!reduceMotion)wrongFx() },
+      wrong(){ if(S.introT>=0)endPetIntro(); if(S.enterT>=0)restoreHeroAfterEntranceFailure(); hideSay(); S.shake=.14; if(!reduceMotion)wrongFx() },
       reset(questionTarget=null){
         const hits=questionTarget==null?TIERS.map(tier=>tier.hits):demoSealHits(questionTarget);
         stageTiers.forEach((tier,i)=>{tier.hits=hits[i]});
@@ -2892,8 +2951,9 @@
 
   function toast(text){
     const el=$('segelToast'); if(!el)return;
-    el.textContent=text; el.classList.add('show');
-    setTimeout(()=>el.classList.remove('show'),1100);
+    // Mulakan semula animasi masuk setiap kali (banner boleh muncul berturut).
+    el.textContent=text; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1500);
   }
 
   function unlockGuestRetryControls(except){
