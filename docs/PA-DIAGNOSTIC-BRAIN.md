@@ -559,6 +559,59 @@ digit, then the round's choices.
    "Jom tengok cara" (Gudang, Lombong, Wirayung, Kedai Kek) sends its first pick
    to the brain (see §4.2 "Guided facts"): two guided misses in one sifir = not
    mastered, the Fokus card then opens sifir practice.
+   **Pos Peninjau (3.87.31).** `PAWorked.buildList(spec,{final})` 1.10.0: a work
+   card for data rounds. `q.wk.lines` = read the chart row by row (`hl` lights
+   the row: tally `tr`, pictograph `.prow`, bar `.col` and its label, pie
+   legend, table cell all carry `data-r`), then work it out (+, −, ×, ÷ lines
+   tagged as guided facts). Tagged: tally read / total / difference / compare,
+   pictograph read (★ keys), most, difference, total, key, claim, money; bar
+   read, compare, sum / all / difference / high−low, more, target, money; mean
+   (table, bar, new member, target), missing mean, median (odd, even), range,
+   range change, mode from a table; pie % read / compare / quantity / claim /
+   more; D3 pie counts and fractions; D6 pie in degrees (read quantity, total,
+   sector angle, compare, missing angle, check 360°). Plans cover D1 69%, D2 88%,
+   D3 44%, D4 85%, D5 83%, D6 26%; left: the build rounds (draw tally /
+   pictograph / bars, sort cards), D1 classify, D6 chance (kebolehjadian).
+   DEV sheet: 17 buttons. Test API `__posGen.planFor/showNormal/current`.
+   **Bengkel Ajaib (3.87.32).** `buildList` again, with the tool (ruler, scale,
+   cylinder) left in view: unit lines for every measure (split `230 cm = 2 m
+   30 cm`, join `2 kg 300 g = 2300 g`, decimals `1.25 ℓ = 1250 mL`, ¼ ½ ¾),
+   + − × ÷ with units, D6 relations (how many times, then × that). Compare
+   rounds (`cmpPick`) build their lines from `q.cmp` (change the big unit, then
+   compare). A build round's plan ends at `q.target`; read / pad rounds at
+   every field (m and cm). Plans cover D1 67%, D2 40%, D3–D5 100%, D6 94%;
+   left: plain tool tasks (measure 7 cm) and estimates. DEV sheet: 13 buttons.
+   **Dapur Ramuan (3.87.33).** `buildList`: ratio lines (the multiplier, × it;
+   simplest form by the biggest common factor; units made the same first; a
+   share from the total via one part), rate lines (one unit first, then × or ÷),
+   compare (cross-multiply, or the price of one), map scale and costs. The
+   cauldron (`mix` fix) ends at `need.v`. Plans cover D4 91%, D5 100%, D6 87%;
+   left: "make it bigger" mixes (no single answer) and the true/false claims.
+   DEV sheet: 14 buttons.
+   **Menara Jam (3.87.34).** Lines are built on the page from the round (`wkSpec()`,
+   no generator tags): read the clock (hour hand, minute hand ÷ 5), end / start
+   time (hours first, then minutes), elapsed time (to the next whole hour, then
+   on), unit changes (× or ÷ by 60, 24, 7, 12, 10, 100), time operations, 24-hour
+   (+ 12 after 1 p.m., 00 at midnight) and time zones / flights. The clock stays
+   in view. Plans cover D1 44% (calendar left), D2 100%, D3 94%, D4 96%, D5 86%,
+   D6 100%. DEV sheet: 8 buttons. Test API `__menaraGen`.
+   **Tapak Bina (3.87.35).** Generators carry `wk` (`buildList`): perimeter (one
+   length + one width, then double; a missing side by − then ÷ 2; L shapes by
+   the hidden side, then (bottom + left) × 2), area (× , ÷ for a missing side,
+   L shapes as big − missing), faces / vertices / edges of prisms and pyramids
+   counted from the base, distance on a grid and with a scale, D6 polygon
+   perimeter and side, interior angles (sum, one angle, difference),
+   radius ↔ diameter; compare picks (bigger area, bigger perimeter) end on A or
+   B. The figure stays in view, the keypad is hidden. Plans cover D1 0%, D2 8%,
+   D3 8%, D4 38%, D5 52%, D6 42%; left: the touch tasks (pick a shape, grid
+   points and rectangles, patterns, symmetry lines, protractor, compass),
+   which have no sums to walk. No DEV sheet on this page: DEV test API
+   `__tapakGen.tryWorked(grade, archetype)`.
+   **Wira's bubble (3.87.36).** `js/minigame-wsay-v1.js` (all 9 mini games): Wira's
+   speech bubble sits right of his face, up to the scene edge, and steps its
+   text down (12 → 11 → 10 px) until it clears the pet's head; hidden during
+   "Jom tengok cara" (the steps speak in the panel). Owner: the bubble covered
+   Wira's or the pet's face.
 2. **Phase 4 is done with 4.7 (all eight lenses).** Next: phase 5
    (consented cloud telemetry for calibration, §7). It needs owner decisions
    first (guardian consent, privacy, which Supabase tables), so ask before

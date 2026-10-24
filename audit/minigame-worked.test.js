@@ -245,3 +245,19 @@ test('fact steps (guided sifir / basic facts): the right tile is exactly a op b,
   // 47 × 3: 7 × 3 = 21 is a fact; 4 × 3 + 2 (a carried 2) is not.
   assert.deepEqual(W.build('mul', 47, 3).steps.filter(s => s.fact).map(s => `${s.fact.a}×${s.fact.b}`), ['7×3']);
 });
+
+test('data boards (Pos Peninjau): read → work out, line by line; a pick ends at its own label', () => {
+  const plan = W.buildList({ lines: [
+    { say: 'Kira gundalan Pau.', right: 12, wrongs: [13, 11, 17], line: 'Pau = 12', hl: [1] },
+    { say: '12 + 7 = ?', right: 19, wrongs: [20, 18, 5], line: 'Jumlah = 19', fact: { op: 'add', a: 12, b: 7 } }], value: 19 });
+  assert.equal(plan.op, 'frac'); assert.ok(plan.list); assert.equal(plan.value, 19);
+  assert.equal(plan.rows.length, 2); assert.ok(plan.rows.every(r => r.hide));
+  assert.deepEqual(plan.steps.map(s => s.after.showRow), [0, 1]);
+  assert.deepEqual(plan.steps[0].hl, [1]); assert.equal(plan.steps[1].fact.op, 'add');
+  for (const s of plan.steps) { assert.ok(s.choices.includes(s.right)); assert.equal(new Set(s.choices).size, s.choices.length); }
+  const pick = W.buildList({ lines: [{ say: 'Kira A.', right: 3, wrongs: [4, 2], line: 'A = 3' }], finSay: 'Jadi?' }, { final: { choices: ['A', 'B'], right: 'B' } });
+  assert.equal(pick.finalLabel, 'B'); assert.equal(pick.steps.at(-1).say, 'Jadi?');
+  assert.equal(W.buildList({ lines: [{ say: 'x', right: 1, wrongs: [] }], value: 1 }), null, 'one tile is not a choice');
+  assert.equal(W.buildList({ lines: [{ say: 'x', right: 1, wrongs: [2] }] }), null, 'a pad round needs its value');
+  assert.equal(W.buildList({ lines: [] }), null);
+});

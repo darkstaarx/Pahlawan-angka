@@ -412,6 +412,146 @@ test('Kedai Kek: every DEV "Cuba Jom tengok cara" kind walks the fraction board 
   assert.deepEqual(errors, []); await context.close();
 });
 
+test('Pos Peninjau: every DEV "Cuba Jom tengok cara" kind reads the chart (the row lights) and works it out to the round\'s answer', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/pos-peninjau.html#d3`); await page.waitForFunction(() => window.__posGen && window.PAWorked); await page.waitForTimeout(800);
+  await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
+  assert.equal(n, 17);
+  let lit = 0;
+  for (let i = 0; i < n; i++) {
+    if (i) await page.click('#devBtn');
+    const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);
+    await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    const arch = await page.evaluate(() => window.__posGen.current().arch);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let s = 0; s < 40; s++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      lit += await page.evaluate(() => document.querySelectorAll('#widget [data-r].wk-hl').length > 0 ? 1 : 0);
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(950);
+    }
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label);
+    await page.evaluate(() => document.getElementById('check').click()); await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__posGen.current().arch), arch, label + ': same kind next');
+  }
+  assert.ok(lit >= 10, 'reading steps light the row on the chart: ' + lit);
+  assert.deepEqual(errors, []); await context.close();
+});
+
+test('Bengkel Ajaib: every DEV "Cuba Jom tengok cara" kind works the units out on the card, with the tool still in view', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/bengkel-ajaib.html#d3`); await page.waitForFunction(() => window.__bengkelGen && window.PAWorked); await page.waitForTimeout(800);
+  await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
+  assert.equal(n, 13);
+  for (let i = 0; i < n; i++) {
+    if (i) await page.click('#devBtn');
+    const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);
+    await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    const arch = await page.evaluate(() => window.__bengkelGen.current().arch);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let s = 0; s < 40; s++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(950);
+    }
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label);
+    await page.evaluate(() => document.getElementById('check').click()); await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__bengkelGen.current().arch), arch, label + ': same kind next');
+  }
+  assert.deepEqual(errors, []); await context.close();
+});
+
+test('Menara Jam: every DEV "Cuba Jom tengok cara" kind walks the time (hours, then minutes) with the clock in view', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/menara-jam.html#d3`); await page.waitForFunction(() => window.__menaraGen && window.PAWorked); await page.waitForTimeout(800);
+  await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
+  assert.equal(n, 8);
+  for (let i = 0; i < n; i++) {
+    if (i) await page.click('#devBtn');
+    const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);
+    await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    const arch = await page.evaluate(() => window.__menaraGen.current().mode);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let s = 0; s < 40; s++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(950);
+    }
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label);
+    await page.evaluate(() => document.getElementById('check').click()); await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__menaraGen.current().mode), arch, label + ': same kind next');
+  }
+  assert.deepEqual(errors, []); await context.close();
+});
+
+test('Tapak Bina: Jom tengok cara works perimeter, area, solids, angles and coordinates to the round\'s answer', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/tapak-bina.html#d4`); await page.waitForFunction(() => window.__tapakGen && window.PAWorked); await page.waitForTimeout(800);
+  // Every tagged archetype builds a plan that ends on the round's own answer.
+  const cover = await page.evaluate(() => { const T = window.__tapakGen, out = {};
+    for (const g of [1, 2, 3, 4, 5, 6]) for (const list of Object.values(T.GRADES[g].fams)) for (const a of list) {
+      let n = 0, tagged = 0; for (let i = 0; i < 60; i++) { const r = T.GEN[a](g); if (!r.wk) continue; tagged++; if (T.planFor({ fam: 'x', arch: a, tierIx: 0, pet: 'x', who: 'x', ...r })) n++; }
+      if (tagged) out[g + ':' + a] = n / tagged; }
+    return out; });
+  for (const [k, v] of Object.entries(cover)) assert.equal(v, 1, k);
+  assert.ok(Object.keys(cover).length >= 16, JSON.stringify(cover));
+  for (const [g, arch] of [[4, 'perimeter_rect'], [4, 'composite_perimeter'], [5, 'composite_area'], [5, 'compare_area'], [3, 'reason_vertices_edges'], [6, 'scaled_distance'], [6, 'polygon_angle']]) {
+    const label = g + ':' + arch;
+    assert.equal(await page.evaluate(([g, a]) => window.__tapakGen.tryWorked(g, a), [g, arch]), true, label);
+    await page.waitForTimeout(300);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let s = 0; s < 40; s++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(950);
+    }
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label);
+    const fig = await page.evaluate(() => { const f = document.querySelector('#widget .padfig, #widget .picks'); return !!f && f.getBoundingClientRect().height > 40; });
+    assert.ok(fig, label + ': the figure stays in view');
+    await page.evaluate(() => document.getElementById('check').click()); await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__tapakGen.current().arch), arch, label + ': same kind next');
+  }
+  assert.deepEqual(errors, []); await context.close();
+});
+
+test('Dapur Ramuan: every DEV "Cuba Jom tengok cara" kind walks the ratio or rate to the round\'s answer', async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
+  await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+  const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto(`${base}/dapur-ramuan.html#d5`); await page.waitForFunction(() => window.__dapurGen && window.PAWorked); await page.waitForTimeout(800);
+  await page.click('#devBtn'); const n = await page.evaluate(() => document.querySelectorAll('#wkTry button').length);
+  assert.equal(n, 14);
+  for (let i = 0; i < n; i++) {
+    if (i) await page.click('#devBtn');
+    const label = await page.evaluate(i => { const b = document.querySelectorAll('#wkTry button')[i]; b.click(); return b.textContent; }, i);
+    await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => document.getElementById('hint').textContent), 'Jom tengok cara', label);
+    const arch = await page.evaluate(() => window.__dapurGen.current().arch);
+    await page.evaluate(() => document.getElementById('hint').click());
+    for (let s = 0; s < 40; s++) {
+      if (await page.evaluate(() => !!document.querySelector('.stamp.show'))) break;
+      await page.evaluate(() => { const v = window.__wkRight && window.__wkRight(); const x = [...document.querySelectorAll('.wk-t:not([disabled])')].find(b => b.dataset.v === v); x && x.click(); });
+      await page.waitForTimeout(950);
+    }
+    assert.match(await page.evaluate(() => document.getElementById('stamp').textContent), /^SIAP!Cara Wira/, label);
+    await page.evaluate(() => document.getElementById('check').click()); await page.waitForTimeout(500);
+    assert.equal(await page.evaluate(() => window.__dapurGen.current().arch), arch, label + ': same kind next');
+  }
+  assert.deepEqual(errors, []); await context.close();
+});
+
 test('guided facts: a wrong pick on a sifir step of "Jom tengok cara" reaches the brain as a guided fact try', async () => {
   const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
   await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
@@ -512,6 +652,24 @@ test('small phones: in every mini game the Tanya Wira / Semak row stays on scree
     assert.equal(r.sideways, false, `${game} ${viewport.width}: sideways scroll`);
     assert.deepEqual(errors, [], game);
     await context.close();
+  }
+});
+
+test('Wira\'s speech bubble sits beside Wira, clear of his face and the pet\'s head, even with a long hint on a small phone', async () => {
+  const games = ['gudang-harta', 'kedai-kek', 'bengkel-ajaib', 'dapur-ramuan', 'pos-peninjau', 'lombong-permata', 'tapak-bina', 'menara-jam', 'gerai-wirayung'];
+  for (const [width, height] of [[390, 844], [360, 640]]) for (const game of games) {
+    const context = await browser.newContext({ serviceWorkers: 'block', viewport: { width, height } });
+    await context.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
+    const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
+    await page.goto(`${base}/${game}.html`); await page.evaluate(() => document.fonts.ready); await page.waitForTimeout(1500);
+    await page.evaluate(() => { document.getElementById('wsayTxt').textContent = 'Buat kiraan satu langkah demi satu langkah, kemudian semak semula jawapan kamu dengan teliti sebelum tekan Semak.'; document.getElementById('wsay').className = 'wsay'; });
+    await page.waitForTimeout(600);
+    const m = await page.evaluate(() => { const r = s => document.querySelector(s)?.getBoundingClientRect(), s = r('#wsay'), w = r('.scene .wira'), p = r('#visitor,#pet');
+      return { left: s.left, bottom: s.bottom, right: s.right, face: w.left + w.width * .7, head: p ? p.top + p.height * .12 : Infinity, petLeft: p ? p.left : Infinity }; });
+    const at = `${game} ${width}x${height}: ${JSON.stringify(m)}`;
+    assert.ok(m.left >= m.face, 'clear of Wira\'s face: ' + at);
+    assert.ok(m.bottom <= m.head + 1 || m.right <= m.petLeft, 'clear of the pet\'s head: ' + at);
+    assert.deepEqual(errors, [], game); await context.close();
   }
 });
 

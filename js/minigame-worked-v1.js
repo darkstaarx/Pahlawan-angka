@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.9.1';
+  const VERSION='1.10.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -667,6 +667,27 @@
     return{op:'frac',rows,steps,value:out.N!==undefined?{N:out.N,D:out.D,exact:!!out.exact}:null,answerText:out.text,finalLabel:fin?String(fin.right):undefined,
       done:fin?`Jawapannya ${fin.right}.`:`Jawapannya ${out.text}.`};
   }
+  /* Data (Pos Peninjau): read the chart, then work it out, one line at a time. spec.lines =
+     [{say, right, wrongs, line, hl?, fact?, show?}]: each step's line is written on the work card
+     after the pupil picks the right tile; hl (rows to light on the page's own chart) rides along.
+     spec.value is the round's number; a pick round ends at its own label (opt.final). */
+  function buildList(spec,opt={}){
+    if(!spec||!Array.isArray(spec.lines)||!spec.lines.length)return null;
+    const fin=opt.final&&Array.isArray(opt.final.choices)&&opt.final.choices.includes(opt.final.right)?opt.final:null;
+    const ok=x=>x!==undefined&&x!==null&&x!==''&&!(typeof x==='number'&&(!Number.isFinite(x)||x<0));
+    const rows=[],steps=[];
+    for(const L of spec.lines){
+      if(!L||!ok(L.right)||!L.say)return null;
+      const r=rows.push({items:[{t:L.line||''}],hide:true})-1,right=String(L.right);
+      const st=L.show?{kind:'show',col:-1,say:L.say,after:{showRow:r,note:L.note||''}}
+        :{kind:'pick',col:-1,say:L.say,right,choices:order(right,(L.wrongs||[]).filter(ok).map(String).filter(x=>x!==right)),after:{showRow:r,note:L.note||''}};
+      if(st.kind==='pick'&&st.choices.length<2)return null;
+      if(L.hl)st.hl=L.hl;if(L.fact)st.fact=L.fact;steps.push(st);
+    }
+    if(fin)steps.push({kind:'pick',col:-1,say:spec.finSay||'Jadi jawapannya?',right:String(fin.right),choices:order(String(fin.right),fin.choices.map(String).filter(x=>x!==String(fin.right)),4),after:{note:''}});
+    else if(spec.value===undefined)return null;
+    return{op:'frac',list:true,rows,steps,value:spec.value,finalLabel:fin?String(fin.right):undefined,answerText:spec.text,done:spec.done||(fin?`Jawapannya ${fin.right}.`:`Jawapannya ${spec.text??spec.value}.`)};
+  }
   function boardHTML(plan,opt={}){
     if(plan.op==='frac'){
       const cell=x=>x&&typeof x==='object'&&'id' in x?`<span class="wk-c wk-fs wk-empty" data-s="${x.id}"></span>`:`<span class="wk-c wk-fs">${esc(x)}</span>`;
@@ -674,7 +695,7 @@
       const item=it=>it.fr?`<span class="wk-fr">${cell(it.fr[0])}<i></i>${cell(it.fr[1])}</span>`
         :it.mx?`<span class="wk-mx">${cell(it.mx[0])}<span class="wk-fr">${cell(it.mx[1])}<i></i>${cell(it.mx[2])}</span></span>`
         :it.model?model(it.model):it.tag?`<span class="wk-tag">${cell(it.tag)}</span>`:it.v!==undefined?cell(it.v):`<span class="wk-ft">${esc(it.t)}</span>`;
-      return `<div class="wk-board wk-frac">${plan.rows.map((r,i)=>`<div class="wk-frow${r.hide?' wk-hide':''}" data-r="${i}">${r.items.map(item).join('')}</div>`).join('')}</div>`;
+      return `<div class="wk-board wk-frac${plan.list?' wk-list':''}">${plan.rows.map((r,i)=>`<div class="wk-frow${r.hide?' wk-hide':''}" data-r="${i}">${r.items.map(item).join('')}</div>`).join('')}</div>`;
     }
     const n=plan.cols,[a,b]=plan.rows,A=digits(a),B=digits(b),cell=(cls,txt,col,extra='')=>`<span class="wk-c ${cls}" data-col="${col}"${extra}>${txt}</span>`;
     const cols=[...Array(n).keys()].reverse();
@@ -810,5 +831,5 @@
         prompt:`${f.a} ${SIGN[f.op]} ${f.b}`,answer:String(f.answer),ok:!!f.ok,first:true,hints:0,ms:Math.max(0,f.ms|0),
         facets:{op:f.op,operands:[f.a,f.b],guided:true},...(f.ok?{}:{value:String(f.value).slice(0,24)})},location.origin)}catch(_){}
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,reportFact,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,buildList,reportFact,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
 });
