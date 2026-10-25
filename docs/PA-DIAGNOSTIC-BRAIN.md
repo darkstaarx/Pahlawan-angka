@@ -374,6 +374,18 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
+**Cikgu Restu entrance (3.87.58 draft, 2026-10-26).** Before the existing Restu fall clip,
+`PARapidLock` awaits the real Segel stage entrance: left-facing WebP teacher between Wira
+and the rescue pet, held face close-up, parallax pull-back, descent and palm-contact FX.
+Owner confirmed the existing three rapid wrong first-attempt trigger stays unchanged.
+Entry assets load lazily; cancellation/profile checks and bounded fallbacks always retain
+the guardian PIN/review flow. Production input resumes on the same retry question.
+`audit/cikgu-dimensi-entry-preview.html` now loads the real arena/entry/Restu flow locally
+(PIN 1234, no learner saves); the old pose-only preview is retained separately.
+Targeted regression: `audit/restu-cinematic.test.js`. This source update does not enable
+automatic Netlify publishing; a production release remains a separate owner decision.
+
+
 **Gembok player XP (3.87.57, 2026-10-25).** Real manual/adaptive/focus answers now grant
 12 player XP per resolved correct answer. A per-profile, per-run `gembok.xpAwards` ledger
 prevents repeat awards and recovers missing XP from saved eligible completions on load,

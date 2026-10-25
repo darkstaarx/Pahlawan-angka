@@ -66,6 +66,28 @@
   const setPin=pin=>{try{return typeof createPageLockParentPin==='function'&&createPageLockParentPin(pin)}catch(_){return false}};
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let el=null, warnEl=null, warnTimer=0, pending=null;
+  let flowId=0, phase='idle', stopPresentation=null, watchTimer=0, skipEntry=null;
+
+  function sameProfile(p){
+    return !!p&&p.profile===liveDb()&&p.session===liveSess()
+      &&(!p.childId||p.childId===root.PACloud?.state?.childId)
+      &&(!p.screen||p.screen===document.body.dataset?.screen);
+  }
+  function currentFlow(id){return id===flowId&&sameProfile(pending)}
+  function cancel(){
+    const previous=pending;
+    ++flowId;phase='idle';pending=null;skipEntry=null;
+    if(previous?.background)previous.background.inert=previous.wasInert;
+    clearTimeout(watchTimer);watchTimer=0;
+    const stop=stopPresentation;stopPresentation=null;stop?.();
+    root.PASegelHost?.cancelRestuEntry?.();
+    el?.classList.add('hidden');el?.classList.remove('pa-restu-entry');
+    document.body.classList.remove('pa-rapid-locked','pa-restu-cinematic');
+  }
+  function watchProfile(id){
+    clearTimeout(watchTimer);
+    watchTimer=setTimeout(()=>{if(id!==flowId)return;if(!sameProfile(pending)){cancel();return}watchProfile(id)},250);
+  }
 
   function engineFor(session){
     const key=session&&typeof session==='object'?session:root;
@@ -102,7 +124,8 @@
     el.style.setProperty('--pr-frame',`url("${art('frame')}")`);
     el.style.setProperty('--pr-gold',`url("${art('gold')}")`);el.style.setProperty('--pr-gold-down',`url("${art('goldDown')}")`);
     el.style.setProperty('--pr-navy',`url("${art('navy')}")`);el.style.setProperty('--pr-navy-down',`url("${art('navyDown')}")`);
-    el.innerHTML=`<div class="paRapidFall" data-step="fall" hidden><video class="paRapidVideo" playsinline preload="none" aria-hidden="true"></video></div>
+    el.innerHTML=`<button type="button" class="paRestuSkip" data-act="skip-entry">Langkau animasi</button>
+      <div class="paRapidFall" data-step="fall" hidden><video class="paRapidVideo" playsinline preload="none" aria-hidden="true"></video></div>
       <section class="paRapidStage">
       <div class="paRapidStep" data-step="child">
         <h2 id="paRapidTitle" class="paRapidSr">Portal Restu: panggil ibu bapa</h2>
@@ -142,6 +165,7 @@
     el.querySelector('[data-act="unlock"]').addEventListener('click',unlock);
     el.querySelector('[data-act="resume"]').addEventListener('click',()=>resume('armed'));
     el.querySelector('[data-act="explore"]').addEventListener('click',()=>resume('explore'));
+    el.querySelector('[data-act="skip-entry"]').addEventListener('click',()=>skipEntry?.());
     el.querySelectorAll('.paRapidPin').forEach(i=>{
       i.addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
       i.addEventListener('input',()=>{i.value=i.value.replace(/\D/g,'').slice(0,4);paintSlots(i);
@@ -153,8 +177,13 @@
 
   function setupMode(){return !getPin()}
   function lock(items,onDone){
+    if(pending)cancel();
     if(!el)build();
-    pending={items:items||[],onDone};
+    const id=++flowId;
+    pending={items:items||[],onDone,profile:liveDb(),session:liveSess(),childId:root.PACloud?.state?.childId||null,screen:document.body.dataset?.screen||null};
+    pending.background=document.querySelector?.('.app')||document.getElementById?.(pending.screen);
+    if(pending.background){pending.wasInert=!!pending.background.inert;pending.background.inert=true}
+    phase='teacher';
     const create=setupMode();
     el.querySelector('[data-pin-label]').textContent=create?'Ibu bapa: PIN belum ada. Cipta PIN 4 digit':'Ibu bapa: masukkan PIN Penjaga';
     el.querySelector('[data-pin2-label]').hidden=!create;el.querySelector('[data-slots="b"]').hidden=!create;
@@ -164,15 +193,42 @@
     el.querySelector('[data-step="child"]').hidden=true;el.querySelector('[data-step="review"]').hidden=true;
     warnEl?.classList.remove('show');
     el.classList.remove('hidden');document.body.classList.add('pa-rapid-locked');
-    playFall(()=>{el.querySelector('.paRapidStage').hidden=false;el.querySelector('[data-step="child"]').hidden=false;
-      setTimeout(()=>el.querySelector('#paRapidPin')?.focus(),150);});
+    el.tabIndex=-1;el.focus();
+    el.querySelector('.paRapidStage').hidden=true;
+    el.querySelector('[data-step="fall"]').hidden=true;
+    watchProfile(id);
+    playTeacher(id,()=>playFall(()=>{
+      if(!currentFlow(id))return;
+      phase='pin';el.querySelector('.paRapidStage').hidden=false;el.querySelector('[data-step="child"]').hidden=false;
+      setTimeout(()=>{if(currentFlow(id)&&phase==='pin')el.querySelector('#paRapidPin')?.focus()},150);
+    },id));
+  }
+  function playTeacher(id,next){
+    let done=false,guard=0;
+    const finish=()=>{
+      if(done)return;done=true;clearTimeout(guard);skipEntry=null;stopPresentation=null;
+      el.classList.remove('pa-restu-entry');document.body.classList.remove('pa-restu-cinematic');
+      root.PASegelHost?.cancelRestuEntry?.();
+      if(currentFlow(id)){root.PASegelHost?.pause?.();next()}
+    };
+    stopPresentation=()=>{done=true;clearTimeout(guard);skipEntry=null};
+    const reduce=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if(reduce||typeof root.PASegelHost?.playRestuEntry!=='function'){finish();return}
+    el.classList.add('pa-restu-entry');document.body.classList.add('pa-restu-cinematic');
+    skipEntry=finish;guard=setTimeout(finish,9000);
+    try{Promise.resolve(root.PASegelHost.playRestuEntry()).then(finish,finish)}catch(_){finish()}
   }
   /* Wira falls into the portal (3 s). Loaded only now, so players who never
      trigger the portal never download it. Sound follows the game mute. */
-  function playFall(next){
+  function playFall(next,id){
+    if(!currentFlow(id))return;
+    phase='video';
     const box=el.querySelector('[data-step="fall"]'),v=el.querySelector('.paRapidVideo');
     el.querySelector('.paRapidStage').hidden=true;
-    let done=false;const finish=()=>{if(done)return;done=true;clearTimeout(guard);v.pause();box.hidden=true;next()};
+    let done=false,guard=0;
+    const stop=()=>{done=true;clearTimeout(guard);v.onended=null;v.onerror=null;v.pause();box.hidden=true};
+    const finish=()=>{if(done)return;stop();stopPresentation=null;if(currentFlow(id))next()};
+    stopPresentation=stop;
     const reduce=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if(reduce||!art('fall')){finish();return}
     box.hidden=false;
@@ -180,10 +236,15 @@
     v.muted=muted;v.onended=finish;v.onerror=finish;
     if(v.getAttribute('src')!==art('fall'))v.src=art('fall');
     try{v.currentTime=0}catch(_){}
-    const guard=setTimeout(finish,6000);
-    const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;v.play().catch(finish)});
+    guard=setTimeout(finish,6000);
+    try{const p=v.play();if(p&&p.catch)p.catch(()=>{
+      if(done||!currentFlow(id))return;v.muted=true;
+      try{const retry=v.play();if(retry?.catch)retry.catch(finish)}catch(_){finish()}
+    })}catch(_){finish()}
   }
   function unlock(){
+    if(phase!=='pin'||!pending)return;
+    if(!sameProfile(pending)){cancel();return}
     const a=el.querySelector('#paRapidPin').value.trim(),b=el.querySelector('#paRapidPin2').value.trim(),err=el.querySelector('.paRapidError');
     if(!/^\d{4}$/.test(a)){err.textContent='Masukkan PIN 4 digit.';return;}
     if(setupMode()){
@@ -193,9 +254,12 @@
     const list=el.querySelector('.paRapidItems');
     list.innerHTML=(pending?.items||[]).map(x=>`<li><p>${esc(x.prompt||'Soalan')}</p><div><span class="no">Anak: <b>${esc(x.answer||'-')}</b></span>${x.correct?`<span class="ok">Betul: <b>${esc(x.correct)}</b></span>`:''}<span class="t">⚡ ${esc(x.sec)} s</span></div></li>`).join('');
     el.querySelector('[data-step="child"]').hidden=true;el.querySelector('[data-step="review"]').hidden=false;
+    phase='review';
     try{root.PAEffortGuard?.resetAfterParent?.()}catch(_){}
   }
   function resume(choice){
+    if(phase!=='review'||!pending)return;
+    if(!sameProfile(pending)){cancel();return}
     const d=liveDb();
     if(d&&!d.demoMode){
       if(choice==='explore')d.portalRestu={...(d.portalRestu||{}),offUntil:endOfDayMYT(Date.now()),offAt:Date.now()};
@@ -203,8 +267,9 @@
       if(log.length)log[log.length-1].choice=choice;
       try{typeof save==='function'&&save()}catch(_){}
     }
-    el.classList.add('hidden');document.body.classList.remove('pa-rapid-locked');
-    const done=pending?.onDone;pending=null;try{done?.(choice)}catch(_){}
+    const done=pending.onDone;
+    cancel();root.PASegelHost?.resumeAfterRestu?.();
+    try{done?.(choice)}catch(_){}
   }
 
   function logLock(items){
@@ -217,7 +282,7 @@
   function observe(skillId,ok,tag,sec,usedHint,q,mode,value){
     try{
       const d=liveDb(),s=liveSess();
-      if(!d||d.demoMode||s?.demoMode||s?.devBattlefield)return null;
+      if(!d||d.demoMode||s?.demoMode||s?.devBattlefield||pending)return null;
       if(d.restuLock?.active)return null;               // the older Restu lock already owns the screen
       let out=engineFor(s).observe({q,ok,sec,firstAttempt:/first-attempt/.test(String(mode||'')),value});
       if(out==='lock'&&portalOff(d))out='warn';          // parent allowed exploring today
@@ -228,5 +293,5 @@
   }
 
   function state(){const e=engineFor(liveSess()),d=liveDb();return{streak:e.streak,hasLocked:e.hasLocked,locks:e.locks,portalOff:portalOff(d),offUntil:Number(d?.portalRestu?.offUntil||0)}}
-  return{createEngine,floor,endOfDayMYT,portalOff,observe,lock,warn,state,WARN_AT,LOCK_AT,isLocked:()=>!!el&&!el.classList.contains('hidden')};
+  return{createEngine,floor,endOfDayMYT,portalOff,observe,lock,cancel,warn,state,WARN_AT,LOCK_AT,isLocked:()=>!!pending};
 });

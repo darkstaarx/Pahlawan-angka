@@ -856,6 +856,79 @@
     companion.visible=false;
     const COMPANION_SCALE=.58;
 
+    /* Cikgu Restu masuk sebagai lapisan pentas sebenar, bukan video/canvas
+       ganti. Asetnya sengaja tidak dimuat semasa boot: lock rapid hanya jarang
+       berlaku dan pentas biasa mesti kekal ringan. */
+    const RESTU_ASSETS={
+      anticipate:'assets/coach/cikgu-dimensi/full-body/entry-v1/anticipate-v1.webp',
+      fall:'assets/coach/cikgu-dimensi/full-body/entry-v1/fall-v1.webp',
+      preland:'assets/coach/cikgu-dimensi/full-body/entry-v1/preland-v1.webp',
+      land:'assets/coach/cikgu-dimensi/full-body/summon-land-clean-v2.webp',
+      fx:'assets/fx/cikgu-dimensi/summon-circle-v1.webp'
+    };
+    let restuLoaded=null, restuLoadPromise=null, restuToken=0, restuActive=null, restuPendingCancel=null, restuDisposed=false;
+    const restuMesh=actor({tex:null,w:1,h:1,offX:0,offY:0},.22);
+    restuMesh.visible=false;
+    restuMesh.material.opacity=1;
+    const restuFx=quad(null,1,1,.20,true);
+    restuFx.visible=false;
+    function restuEntry(tex,anchor,scale=1){
+      const w=2.12*scale, h=2.12*scale;
+      return {tex,w,h,offX:(anchor[0]-.5)*w,offY:h*(anchor[1]-.5)};
+    }
+    async function loadRestu(){
+      if(restuLoaded)return restuLoaded;
+      if(restuLoadPromise)return restuLoadPromise;
+      restuLoadPromise=Promise.all(Object.values(RESTU_ASSETS).map(load)).then(xs=>{
+        const [anticipate,fall,preland,land,fx]=xs;
+        if(!anticipate||!fall||!preland||!land||!fx)throw new Error('Aset masuk Cikgu Restu gagal dimuat');
+        if(restuDisposed){xs.forEach(t=>t?.dispose?.());throw new Error('Cikgu Restu pentas sudah dibuang')}
+        restuFx.material.map=fx;restuFx.material.needsUpdate=true;
+        restuLoaded={
+          anticipate:restuEntry(anticipate,[.52,.92],1.00),
+          fall:restuEntry(fall,[.50,.96],1.02),
+          preland:restuEntry(preland,[.60,.916],1.00),
+          land:restuEntry(land,[.55,.84],1.00),
+          fx
+        };
+        return restuLoaded;
+      }).catch(err=>{restuLoadPromise=null; throw err});
+      return restuLoadPromise;
+    }
+    function setRestuPose(e){
+      if(!e)return;
+      const firstMap=!restuMesh.material.map;
+      swap(restuMesh,e);
+      if(firstMap)restuMesh.material.needsUpdate=true;
+      // Source artwork faces right; Cikgu Restu must look toward Wira on left.
+      restuMesh.scale.x=-Math.abs(e.w);
+      restuMesh.scale.y=e.h;
+    }
+    function restoreRestuState(state,ownerToken=null){
+      if(!state)return;
+      if(ownerToken!=null&&restuActive&&restuActive.token!==ownerToken)return false;
+      restuActive=null; restuMesh.visible=false; restuFx.visible=false;
+      S.camZoom=state.camZoom; S.camZoomTo=state.camZoomTo; S.camPunch=state.camPunch;
+      S.camFX=state.camFX; S.camFY=state.camFY; S.camK=state.camK;
+      S.par=state.par; S.parTo=state.parTo; S.introT=state.introT;
+      S.running=state.running;
+      introShown=!!state.introShown;
+      host.classList.toggle('segel-cam-zoom',state.camZoom>1.004);
+      host.classList.toggle('segel-pet-intro',!!state.introShown);
+      if(camera.view&&camera.view.enabled)camera.clearViewOffset();
+      applyParallax(1,null);
+      return true;
+    }
+    function cancelRestuEntry(){
+      const active=restuActive;
+      if(active)active.result.cancelled=true;
+      ++restuToken;
+      if(active){ active.settle?.(); restoreRestuState(active.state,active.token); }
+      else { restuMesh.visible=false; restuFx.visible=false; }
+      restuPendingCancel?.(); restuPendingCancel=null;
+      return active?active.result:false;
+    }
+
     /* Bayang lembut. Bulatan hitam bertepi tajam nampak macam tampalan;
        kecerunan jejarian pada tekstur kecil sudah cukup dan murah. */
     const shadowTex=(function(){
@@ -1477,6 +1550,7 @@
       camera.position.y=S.camY+shakeY;
       bg.position.x=-camera.position.x*.4;
       bg.position.y=S.camY;
+      restuFrame(now);
       cameraFrame(dt);
 
       /* Penerbangan syiling. Lengkung bezier yang sama dengan Unity: terbit,
@@ -1809,6 +1883,74 @@
       host.classList.toggle('segel-cam-zoom',z>1.004);
       if(z<=1.0005){ if(camera.view&&camera.view.enabled)camera.clearViewOffset(); applyParallax(1,null); camWin=null; return }
       camWin=viewZoom(z,S.camFX,S.camFY); applyParallax(z,camWin);
+    }
+
+    function restuFrame(now){
+      const a=restuActive, data=restuLoaded;
+      if(!a||!data)return;
+      const p=Math.max(0,Math.min(1,(now-a.started)/a.duration));
+      let pose=data.anticipate, y=GROUND+2.3;
+      if(p<.18){
+        pose=data.anticipate;
+        y=GROUND+2.3;
+      }else if(p<.58){
+        pose=data.fall;
+        const k=(p-.18)/.40;
+        const e=k*k*(3-2*k);
+        y=(GROUND+2.3)+(GROUND+.30-(GROUND+2.3))*e;
+      }else if(p<.75){
+        pose=data.preland;
+        const k=(p-.58)/.17;
+        y=(GROUND+.30)+(GROUND-(GROUND+.30))*(k*k*(3-2*k));
+      }else{
+        pose=data.land;
+        y=GROUND;
+      }
+      setRestuPose(pose);
+      restuMesh.position.set(a.x+pose.offX,y+pose.offY,.24);
+      restuMesh.visible=true;
+      if(p>=.75&&p<.94){
+        const k=(p-.75)/.19;
+        const land=data.land;
+        restuFx.visible=true; restuFx.position.set(a.x+land.offX,GROUND+land.offY,.18);
+        // The summon FX uses the same 1254px canvas framing as land-v2.
+        restuFx.scale.set(-land.w,land.h,1);
+        restuFx.material.opacity=Math.sin(k*Math.PI)*.9;
+      }else restuFx.visible=false;
+      // Tahan wajah dahulu, kemudian undur sambil mengikut Cikgu turun.
+      const zoomK=Math.max(0,Math.min(1,(p-.13)/.49)), zoomEase=zoomK*zoomK*(3-2*zoomK);
+      const zoom=3.65-zoomEase*2.65;
+      S.camZoom=zoom; S.camZoomTo=zoom; S.camK=20; S.camFX=a.x; S.camFY=y+1.15;
+      S.par=p<.58?.72:.35; S.parTo=S.par;
+    }
+
+    async function playRestuEntry(){
+      cancelRestuEntry();
+      const token=++restuToken;
+      const state={camZoom:S.camZoom,camZoomTo:S.camZoomTo,camPunch:S.camPunch,camFX:S.camFX,camFY:S.camFY,
+        camK:S.camK,par:S.par,parTo:S.parTo,introT:S.introT,running:S.running,introShown};
+      const result={cancelled:false,failed:false};
+      let data;
+      let cancelPending;
+      const pendingCancel=new Promise(resolve=>{cancelPending=()=>{result.cancelled=true;resolve(null)};restuPendingCancel=cancelPending});
+      try{ data=await Promise.race([loadRestu(),wait(3500).then(()=>null),pendingCancel]); }
+      catch(_){ data=null }
+      if(restuPendingCancel===cancelPending)restuPendingCancel=null;
+      if(!data||token!==restuToken){ const wasCancelled=result.cancelled||token!==restuToken; result.cancelled=true; result.failed=!data&&!wasCancelled; return result }
+      const x=Math.max(HERO_HOME+.58,Math.min(SEAL_X-.58,(HERO_HOME+SEAL_X)/2));
+      S.introT=-1; introShown=false; host.classList.remove('segel-pet-intro','segel-pet-intro-release');
+      S.running=true; last=performance.now(); resize();
+      let settle;
+      const settled=new Promise(resolve=>{settle=resolve});
+      restuActive={token,started:performance.now(),duration:4200,x,state,result,settle};
+      // One timer owns completion, so a hidden or paused renderer cannot leave
+      // the parent lock waiting forever.
+      await Promise.race([settled,wait(4200)]);
+      if(token!==restuToken||!restuActive){ result.cancelled=true; return result }
+      restoreRestuState(state,token);
+      // The rapid-lock owner decides when the question surface may resume.
+      S.running=false;
+      return result;
     }
 
     // Bayang dash: empat salinan Wira berwarna biru yang mengekori kedudukannya.
@@ -2581,6 +2723,7 @@
       },
       wrong(){ if(S.introT>=0)endPetIntro(); if(S.enterT>=0)restoreHeroAfterEntranceFailure(); hideSay(); S.shake=.14; if(!reduceMotion)wrongFx() },
       reset(questionTarget=null){
+        cancelRestuEntry();
         const hits=questionTarget==null?TIERS.map(tier=>tier.hits):demoSealHits(questionTarget);
         stageTiers.forEach((tier,i)=>{tier.hits=hits[i]});
         ++S.lifecycle;stopFinisherVideo();S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
@@ -2612,7 +2755,9 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; endPetIntro(); clearHitFx(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
+      cancel(){ ++S.lifecycle; cancelRestuEntry(); endPetIntro(); clearHitFx(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
+      playRestuEntry,
+      cancelRestuEntry,
       setCompanion(config){ return setPetVisual(config); },
       setRescuePet(config){ return setRescuePetVisual(config); },
       setPet(config){ return Promise.all([setPetVisual(config),setRescuePetVisual(config)]); },
@@ -2625,7 +2770,7 @@
         await wait(900);
         return result;
       },
-      dispose(){ S.running=false; stopFinisherVideo(); finisherVideoLayer?.remove(); cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
+      dispose(){ ++S.lifecycle; restuDisposed=true; cancelRestuEntry(); S.running=false; stopFinisherVideo(); finisherVideoLayer?.remove(); cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
   }
 
@@ -2866,7 +3011,8 @@
   function productionCurrent(hostRun,q){
     return run&&run.production&&run.productionRun===hostRun&&run.q===q
       && window.PAProductionJourney?.isCurrent?.(hostRun)
-      && hostRun.session.generation===run.productionGeneration;
+      && hostRun.session.generation===run.productionGeneration
+      && window.PARapidLock?.isLocked?.()!==true;
   }
 
   /* Bar kesihatan, bukan ayat. Bilangan ketul = bilangan hentaman tier itu
@@ -3161,7 +3307,7 @@
   }
 
   async function respondProduction(option,button){
-    if(run.locked)return;
+    if(run.locked||window.PARapidLock?.isLocked?.()===true)return;
     const q=run.q,hostRun=run.productionRun;if(!q||!productionCurrent(hostRun,q))return;
     run.locked=true;
     const correct=option.tag==='correct'&&String(option.v)===String(q.answer);
@@ -3593,6 +3739,16 @@
       bindSpeaker();bindSound();bindHint();stage.resume();startProductionRun(productionRun);
     },
     resumeProduction:productionRun=>{if(!run||!run.production||run.productionRun!==productionRun||!window.PAProductionJourney?.isCurrent?.(productionRun))return;if(typeof screen==='function')screen('segelDemo');stage.resume();run.locked=false;run.retryOpen=false;drawQuestion();},
+    playRestuEntry:async()=>stage?.playRestuEntry?.()||{cancelled:true,failed:true},
+    cancelRestuEntry:()=>stage?.cancelRestuEntry?.(),
+    resumeAfterRestu:()=>{
+      stage?.resume?.();
+      if(!run?.production)return;
+      run.locked=false;
+      run.retryOpen=!!run.productionRun?.session?.retryState;
+      unlockGuestRetryControls();
+      setTypedRetryEnabled();
+    },
     pause:()=>stage&&stage.pause()
   };
 
@@ -3636,6 +3792,11 @@
     pause:()=>stage?.pause?.(),
     previewAuraFarming:()=>stage?.previewAuraFarming?.(),
     previewFinalBlow:()=>stage?.previewFinalBlow?.(),
+    previewRestu:async()=>{
+      if(!['localhost','127.0.0.1','[::1]'].includes(location.hostname))return;
+      await boot();await stage.setRescuePet?.(null);stage.reset();stage.resume();stage.enter();
+      return stage;
+    },
     clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
     submitInteraction:(choice,button,q)=>{
       if(!entryMode?.guestDemo||!run||run.q!==q||run.locked)return false;
