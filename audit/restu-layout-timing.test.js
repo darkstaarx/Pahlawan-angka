@@ -15,7 +15,7 @@ for(const [w,h] of [[320,568],[360,800],[390,844],[768,1024],[844,390],[1366,768
  test(`real render transforms preserve three separate groups at ${w}×${h}`,()=>{
   const s=fixture();size(s,w,h);
   s.sandbox.companion.visible=true;
-  for(const t of [1250,1380,1500,1800,2499]){
+  for(const t of [1250,1380,1500,1800,1999]){
    s.restoreLayout();s.frame(t);s.applyLayout();
    const hero=screenBounds(s,s.sandbox.hero,w),companion=screenBounds(s,s.sandbox.companion,w),teacher=screenBounds(s,s.mesh,w);
    const dome=screenBounds(s,s.sandbox.seals[0].front,w),pet=screenBounds(s,s.sandbox.pet,w);
@@ -51,9 +51,9 @@ test('Restu impact particles and trails share the teacher transform and scale af
   assert.equal(s.projectFx({...p,restuToken:-1}).x,a.x,'ordinary battle effects remain unchanged');
  }
 });
-test('completed landing holds exactly 1000ms and the entry promise resolves without another delay',async()=>{
+test('completed landing holds exactly 500ms and the entry promise resolves without another delay',async()=>{
  const s=fixture();s.getActive().state={...s.state,heroPose:s.sandbox.hero.userData.e};s.cancel();
- assert.equal(s.endAt-s.landAt,1000);assert.equal(s.afterLand,1000);
+ assert.equal(s.endAt-s.landAt,500);assert.equal(s.afterLand,500);
  let done=false;const playing=s.play().then(()=>{done=true});
  for(let i=0;i<8;i++)await Promise.resolve();
  assert.ok(s.getActive(),'real playRestuEntry started');
@@ -62,7 +62,7 @@ test('completed landing holds exactly 1000ms and the entry promise resolves with
  s.frame(s.endAt-1);assert.equal(done,false);
  s.timers.find(t=>t.ms===s.endAt).resolve();await playing;
  assert.equal(done,true);assert.equal(s.getActive(),null);assert.equal(s.state.running,false);
- assert.ok(!s.timers.some(t=>t.ms===3600||t.ms===4200),'no old tail delay');
+ assert.ok(!s.timers.some(t=>t.ms===2500||t.ms===3600||t.ms===4200),'no old tail delay');
 });
 test('layout runs after late frame effects, restores before updates/resize, and cleanup precedes video',()=>{
  assert.ok(source.indexOf('if(restuActive?.wide)restuApplyLayout(restuActive);')<source.indexOf('renderer.render(scene,camera);'));
@@ -94,7 +94,7 @@ function calibratedFixture(tier){
 for(const tier of ['gangsa','perak','emas'])test(`real WebP alpha geometry: ${tier}, 9 viewport shapes, surprise and mirrored landing`,()=>{
  for(const [w,h] of [[320,568],[360,800],[390,844],[768,1024],[844,390],[1366,768],[1920,1080],[390,240],[600,768]]){
   const s=calibratedFixture(tier);size(s,w,h);
-  for(const t of [1250,1500,2000,2499]){
+  for(const t of [1250,1500,1750,1999]){
    s.restoreLayout();s.frame(t);s.applyLayout();
    const hs=[s.sandbox.hero,s.sandbox.companion].map(m=>screenBounds(s,m,w)),teacher=screenBounds(s,s.mesh,w),ds=[s.sandbox.pet,s.sandbox.seals[0].front].map(m=>screenBounds(s,m,w));
    const g1=teacher.left-Math.max(...hs.map(b=>b.right)),g2=Math.min(...ds.map(b=>b.left))-teacher.right;

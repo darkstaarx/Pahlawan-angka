@@ -56,3 +56,26 @@ local browser control is disabled in Work settings. Astra reviewed the final hel
 and FX fix with no remaining material findings. GitHub update only; no Netlify deployment.
 
 Final verification: 95 targeted tests passed; JavaScript syntax and diff whitespace checks passed. Asset manifest remains current at 835 assets; this update changes no bitmap assets.
+
+## Faster cut, fixed background and Wira speech (2026-10-26, 3.87.60 draft)
+
+Supersedes the one-second tail above: full landing at 1500ms, hold 500ms, then existing
+video at 2000ms. Restu-only inverse-zoom and crop-center compensation keep texture landmarks
+fixed on screen for both arena image and ground overlay, independently at each layer's depth.
+Approved actor-camera motion and foreground effects remain. Normal battle parallax keeps its
+original response outside Restu; ending/cancelling restores the normal arena framing.
+
+On the wide reveal, Wira's existing dialogue element displays “Eh, Cikgu Dimensi!” in a
+spiky surprise burst, with the full sentence immediately visible. The optional reaction-art
+fallback still gets the bubble. It follows Wira's final render position and clears with its
+timer/classes/fixed width on entry completion/cancellation, before the video.
+
+`audit/restu-background-bubble.test.js` executes the real production functions to compare
+texture-landmark projections across six viewport shapes and all actual dive/impact camera
+beats, including shake. It also checks ordinary parallax, one-shot/replay/optional-art speech,
+mobile placement margins and completion cleanup. The actual entry promise test now asserts
+500ms after landing and a 2000ms deadline. Astra found no material issue. Browser visual
+inspection is still unavailable because local browser control is disabled in Work settings.
+GitHub only; no production deployment.
+
+Final verification for 3.87.60: 105 targeted tests passed; JavaScript syntax and diff checks passed.

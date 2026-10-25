@@ -287,7 +287,7 @@ test('real Restu stage preserves the close-up, left-facing dive and contact-gate
   stage.frame(1500);
   assert.equal(stage.mesh.material.map,stage.data.land.tex);
   assert.equal(stage.mesh.position.y,-1.92+stage.data.land.offY);
-  stage.frame(2500);
+  stage.frame(2000);
   assert.equal(stage.state.camZoom,1);
 });
 

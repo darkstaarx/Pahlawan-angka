@@ -907,9 +907,13 @@
       restuMesh.scale.y=e.h;
     }
     function applyRestuHeroReaction(a,data,zoom){
-      if(!data.surprised||a.heroSurprised)return;
+      if(a.heroSurprised)return;
       // Tunggu kamera kembali ke arena supaya reaksi Wira sempat dibaca.
-      if(zoom<=1.2){a.heroSurprised=true;S.heroLock=data.surprised;swap(hero,data.surprised)}
+      if(zoom<=1.2){
+        a.heroSurprised=true;
+        if(data.surprised){S.heroLock=data.surprised;swap(hero,data.surprised)}
+        showRestuSurprise();
+      }
     }
     function restoreRestuState(state,ownerToken=null){
       if(!state)return;
@@ -919,7 +923,7 @@
       restuActive=null; restuMesh.visible=false; restuFx.visible=false;
       if('heroLock' in state)S.heroLock=state.heroLock;
       if(state.heroPose)swap(hero,state.heroPose);
-      restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
+      hideSay(); restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
       S.camZoom=state.camZoom; S.camZoomTo=state.camZoomTo; S.camPunch=state.camPunch;
       S.camFX=state.camFX; S.camFY=state.camFY; S.camK=state.camK;
       S.par=state.par; S.parTo=state.parTo; S.introT=state.introT;
@@ -1836,6 +1840,11 @@
         "display:flex;align-items:center;box-shadow:0 3px 0 #0b1729,0 5px 12px rgba(0,0,0,.2);pointer-events:none;"+
         "opacity:0;transform:translateY(calc(-100% - 6px));transition:opacity .15s ease,transform .15s ease}"+
         ".segelWiraSay.show{opacity:1;transform:translateY(calc(-100% - 9px))}"+
+        ".segelWiraSay.restu-surprise{isolation:isolate;border:0;border-radius:0;padding:17px 20px;min-height:62px;max-width:min(64%,260px);"+
+        "background:#182944;font-family:'PA Lilita',system-ui,sans-serif;font-size:clamp(14px,3.4vw,18px);font-weight:400;line-height:1.1;"+
+        "text-align:center;justify-content:center;box-shadow:none;transition:none;"+
+        "clip-path:polygon(0 18%,10% 18%,6% 0,28% 10%,40% 0,53% 9%,71% 0,76% 12%,96% 5%,91% 27%,100% 37%,94% 54%,100% 77%,82% 77%,87% 98%,65% 88%,51% 100%,41% 86%,19% 100%,22% 80%,0 86%,6% 61%,0 49%,7% 34%)}"+
+        ".segelWiraSay.restu-surprise::before{content:'';position:absolute;inset:3px;z-index:-1;background:#fffbea;clip-path:inherit}"+
         /* Banner peristiwa (... DITEMUI!, ... BEBAS!, GANGSA/PERAK/EMAS + PECAH!): fon permainan,
            isi emas, garis tebal, bayang 3D, masuk melantun dan sinar menyapu. */
         "#segelStage .segelToast{font-family:'PA Lilita',system-ui,sans-serif;font-weight:400;font-size:clamp(28px,8.5vw,46px);letter-spacing:.02em;"+
@@ -1871,6 +1880,18 @@
     let camWin=null;
     function applyParallax(z,win){
       if(!bgBase)return;
+      if(restuActive){
+        // The camera crop belongs to the actors. Counter it on the two arena
+        // layers so their texture landmarks stay fixed while Cikgu dives.
+        const q=1/Math.max(1,z), cx=win?.cx??.5, cy=win?.cy??.5;
+        [bg,groundOverlay].forEach(layer=>{
+          const h=worldH(layer.position.z);
+          layer.scale.set(bgBase.x*q,bgBase.y*q,1);
+          layer.position.x=camera.position.x+(cx-.5)*h*camera.aspect;
+          layer.position.y=camera.position.y+(.5-cy)*h;
+        });
+        return;
+      }
       let q=1;
       if(S.par>.002&&win&&z>1.0005){
         q=Math.pow(z,-.42*S.par);
@@ -1881,7 +1902,10 @@
         q=Math.min(1,Math.max(q,need*1.01));
         bg.position.x=wx+(bg.position.x-wx)*q; bg.position.y=wy+(bg.position.y-wy)*q;
         groundOverlay.position.x=wx+(0-wx)*q; groundOverlay.position.y=wy+(S.camY-wy)*q;
-      }else{ groundOverlay.position.x=0; groundOverlay.position.y=S.camY }
+      }else{
+        bg.position.x=-camera.position.x*.4; bg.position.y=S.camY;
+        groundOverlay.position.x=0; groundOverlay.position.y=S.camY;
+      }
       bg.scale.set(bgBase.x*q,bgBase.y*q,1); groundOverlay.scale.set(bgBase.x*q,bgBase.y*q,1);
     }
     function cameraFrame(dt){
@@ -1908,11 +1932,11 @@
                   atas skrin dengan pecutan (bukan smoothstep perlahan).
          1.25     HENTAMAN: hit-stop pada pose preland, kilat, gegar, gelang
                   kejutan, percikan, simbol matematik, bulatan seru meletup.
-         1.5–2.5  pose mendarat 1 saat, kemudian terus ke video Restu. */
+         1.5–2.0  pose mendarat 0.5 saat, kemudian terus ke video Restu. */
     const RESTU_FACE=900, RESTU_DIVE=350, RESTU_HOLD=130, RESTU_SKY=3.7;
     const RESTU_T_HIT=RESTU_FACE+RESTU_DIVE;
     const RESTU_T_LAND=RESTU_T_HIT+RESTU_HOLD+120;
-    const RESTU_AFTER_LAND=1000;
+    const RESTU_AFTER_LAND=500;
     const RESTU_MS=RESTU_T_LAND+RESTU_AFTER_LAND;
     let restuName=null;
     function restuNamePlate(show){
@@ -2545,7 +2569,8 @@
       const p=proj(hero.position.x,hero.position.y+hero.scale.y*.42);
       const w=sayEl.offsetWidth||160, hw=host.clientWidth;
       const left=Math.max(8,Math.min(hw-w-8,p.x-w*.28));
-      sayEl.style.left=left+'px'; sayEl.style.top=Math.max(52,p.y)+'px';
+      const minTop=sayEl.classList.contains('restu-surprise')?(sayEl.offsetHeight||62)+12:52;
+      sayEl.style.left=left+'px'; sayEl.style.top=Math.max(minTop,p.y)+'px';
     }
     function wiraGreet(){
       if(run===null&&!entryMode)return;
@@ -2554,7 +2579,7 @@
       const text=lines[(Math.random()*lines.length)|0].replace(/\{n\}/g,n);
       // Taip huruf demi huruf seperti dialog menu utama (90ms satu huruf),
       // kemudian kekal 2.4s. Lebar kotak ditetapkan dahulu supaya ia tidak melompat.
-      clearTimeout(sayTimer);
+      hideSay();
       sayEl.textContent=text; sayEl.style.width=''; sayEl.classList.add('show');
       sayEl.style.width=Math.ceil(sayEl.getBoundingClientRect().width)+'px';
       sayEl.textContent=''; placeSay();
@@ -2563,7 +2588,18 @@
         sayTimer=c<text.length?setTimeout(write,90):setTimeout(()=>sayEl.classList.remove('show'),2400) };
       write();
     }
-    function hideSay(){ clearTimeout(sayTimer); sayEl.classList.remove('show') }
+    function showRestuSurprise(){
+      hideSay();
+      // Reveal the whole sentence immediately: the short reaction has no typewriter delay.
+      sayEl.textContent='Eh, Cikgu Dimensi!';
+      sayEl.classList.add('restu-surprise','show');
+      placeSay();
+    }
+    function hideSay(){
+      clearTimeout(sayTimer);
+      sayEl.classList.remove('show','restu-surprise');
+      sayEl.style.width='';
+    }
 
     const CRACK_PX=768;
     seals.forEach(s=>{

@@ -30,7 +30,7 @@ function makeReactionFixture() {
   const S = { heroLock: 'idle' };
   const hero = { userData: { e: 'idle' }, material: { map: 'idle' }, scale: { set() {} } };
   const sandbox = {
-    S, hero,
+    S, hero, showRestuSurprise() {},
     swap(mesh, entry) {
       mesh.userData.e = entry;
       mesh.material.map = entry.tex;
@@ -67,7 +67,7 @@ function restoreFixture() {
   const sandbox = {
     S, hero, restuActive: null, restuMesh: { visible: true }, restuFx: { visible: true },
     host: { classList: { remove() {}, toggle() {} } },
-    restuNamePlate() {}, restoreRestuLayout() {}, fxParts:[], introShown: false,
+    restuNamePlate() {}, hideSay() {}, restoreRestuLayout() {}, fxParts:[], introShown: false,
     camera: { view: null }, applyParallax() {}, swap(mesh, entry) { mesh.userData.e = entry; mesh.material.map = entry.tex; }
   };
   vm.runInNewContext(`${restore}\nthis.restoreRestuState=restoreRestuState;`, sandbox);
