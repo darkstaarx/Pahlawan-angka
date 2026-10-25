@@ -79,3 +79,13 @@ inspection is still unavailable because local browser control is disabled in Wor
 GitHub only; no production deployment.
 
 Final verification for 3.87.60: 105 targeted tests passed; JavaScript syntax and diff checks passed.
+
+## Timing correction (2026-10-26, 3.87.61 draft)
+
+The owner's “0.5s” means cut only 0.5s from the original tail, adding 0.5s back relative
+to the earlier 2500ms cut (fac379d). It did not mean hold the landing for only 500ms.
+Final deadline is 3000ms: full land at 1500ms, 1500ms hold, then the portal video. The
+camera retains its original 1000ms settle after full land and rests another 500ms.
+Background lock, Wira burst dialogue, pre-impact animation and responsive gaps remain.
+The entry-promise test explicitly checks 2500+500=3000ms, and background/layout suites
+cover the restored tail. This supersedes the incorrect 2000ms deadline in 3.87.60.

@@ -374,7 +374,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-**Cikgu Restu entrance (3.87.60 draft, 2026-10-26).** Before the existing Restu fall clip,
+**Cikgu Restu entrance (3.87.61 draft, 2026-10-26).** Before the existing Restu fall clip,
 `PARapidLock` awaits the real Segel stage entrance: left-facing WebP teacher between Wira
 and the rescue pet, held face close-up, parallax pull-back, descent and palm-contact FX.
 Owner confirmed the existing three rapid wrong first-attempt trigger stays unchanged.
@@ -383,7 +383,9 @@ the guardian PIN/review flow. Production input resumes on the same retry questio
 `audit/cikgu-dimensi-entry-preview.html` now loads the real arena/entry/Restu flow locally
 (PIN 1234, no learner saves); the old pose-only preview is retained separately.
 Owner-approved cinematic: 0.9s face hold, fast dive, impact at 1.25s, full landing at
-1.5s; hold exactly 0.5s then hand directly to the existing video at 2s (owner revision). The wide shot
+1.5s; hold 1.5s then hand directly to the existing video at 3s. Owner clarified:
+add 0.5s back relative to the approved 2.5s cut; the 0.5s total hold in 3.87.60 was
+a misinterpretation. Camera settles over the original 1s, then rests for 0.5s. The wide shot
 fits Wira + equipped companion / teacher / pet+dome into three separated groups using
 real alpha bounds, viewport FOV and impact zoom. Render-only transforms are restored
 before each tick, resize and cancellation. Teacher particles follow the same transform.

@@ -1932,11 +1932,13 @@
                   atas skrin dengan pecutan (bukan smoothstep perlahan).
          1.25     HENTAMAN: hit-stop pada pose preland, kilat, gegar, gelang
                   kejutan, percikan, simbol matematik, bulatan seru meletup.
-         1.5–2.0  pose mendarat 0.5 saat, kemudian terus ke video Restu. */
+         1.5–3.0  pose mendarat 1.5 saat, kemudian terus ke video Restu. */
     const RESTU_FACE=900, RESTU_DIVE=350, RESTU_HOLD=130, RESTU_SKY=3.7;
     const RESTU_T_HIT=RESTU_FACE+RESTU_DIVE;
     const RESTU_T_LAND=RESTU_T_HIT+RESTU_HOLD+120;
-    const RESTU_AFTER_LAND=500;
+    // Owner correction: add 0.5s back to the 2.5s version (not a 0.5s hold).
+    const RESTU_AFTER_LAND=1500;
+    const RESTU_CAMERA_SETTLE=1000;
     const RESTU_MS=RESTU_T_LAND+RESTU_AFTER_LAND;
     let restuName=null;
     function restuNamePlate(show){
@@ -2080,7 +2082,7 @@
       }else{
         /* 4. Mendarat dan tenang */
         pose=t<tLand?data.preland:data.land; y=GROUND;
-        const zk=ease3(clamp((t-tLand)/RESTU_AFTER_LAND));
+        const zk=ease3(clamp((t-tLand)/RESTU_CAMERA_SETTLE));
         zoom=1.14+(1-1.14)*zk; fy=GROUND+1.25;
         if(t>=tLand&&restuOnce(a,'land')){ S.shake=Math.max(S.shake,.12); if(!reduceMotion)fxGlows(x,GROUND+.2,8,'rgba(255,224,138,.9)') }
       }

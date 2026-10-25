@@ -15,7 +15,7 @@ for(const [w,h] of [[320,568],[360,800],[390,844],[768,1024],[844,390],[1366,768
  test(`real render transforms preserve three separate groups at ${w}×${h}`,()=>{
   const s=fixture();size(s,w,h);
   s.sandbox.companion.visible=true;
-  for(const t of [1250,1380,1500,1800,1999]){
+  for(const t of [1250,1380,1500,1800,2499,2999]){
    s.restoreLayout();s.frame(t);s.applyLayout();
    const hero=screenBounds(s,s.sandbox.hero,w),companion=screenBounds(s,s.sandbox.companion,w),teacher=screenBounds(s,s.mesh,w);
    const dome=screenBounds(s,s.sandbox.seals[0].front,w),pet=screenBounds(s,s.sandbox.pet,w);
@@ -51,9 +51,9 @@ test('Restu impact particles and trails share the teacher transform and scale af
   assert.equal(s.projectFx({...p,restuToken:-1}).x,a.x,'ordinary battle effects remain unchanged');
  }
 });
-test('completed landing holds exactly 500ms and the entry promise resolves without another delay',async()=>{
+test('completed landing holds 1500ms (0.5s longer than the approved 2.5s version) and the entry promise resolves without another delay',async()=>{
  const s=fixture();s.getActive().state={...s.state,heroPose:s.sandbox.hero.userData.e};s.cancel();
- assert.equal(s.endAt-s.landAt,500);assert.equal(s.afterLand,500);
+ assert.equal(s.endAt-s.landAt,1500);assert.equal(s.afterLand,1500);assert.equal(s.endAt,2500+500);
  let done=false;const playing=s.play().then(()=>{done=true});
  for(let i=0;i<8;i++)await Promise.resolve();
  assert.ok(s.getActive(),'real playRestuEntry started');
@@ -94,7 +94,7 @@ function calibratedFixture(tier){
 for(const tier of ['gangsa','perak','emas'])test(`real WebP alpha geometry: ${tier}, 9 viewport shapes, surprise and mirrored landing`,()=>{
  for(const [w,h] of [[320,568],[360,800],[390,844],[768,1024],[844,390],[1366,768],[1920,1080],[390,240],[600,768]]){
   const s=calibratedFixture(tier);size(s,w,h);
-  for(const t of [1250,1500,1750,1999]){
+  for(const t of [1250,1500,2000,2499,2999]){
    s.restoreLayout();s.frame(t);s.applyLayout();
    const hs=[s.sandbox.hero,s.sandbox.companion].map(m=>screenBounds(s,m,w)),teacher=screenBounds(s,s.mesh,w),ds=[s.sandbox.pet,s.sandbox.seals[0].front].map(m=>screenBounds(s,m,w));
    const g1=teacher.left-Math.max(...hs.map(b=>b.right)),g2=Math.min(...ds.map(b=>b.left))-teacher.right;
@@ -106,4 +106,10 @@ for(const tier of ['gangsa','perak','emas'])test(`real WebP alpha geometry: ${ti
 test('sampled WebP alpha evidence still matches the actual source assets',()=>{
  const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
  for(const [asset,record] of Object.entries(alpha))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'..',asset))).digest('hex'),record.sha256,asset);
+});
+
+test('camera keeps the original 1s settle and holds the wide shot for the restored 0.5s',()=>{
+ const s=fixture();s.frame(2000);assert.ok(s.state.camZoom>1);
+ s.frame(2500);assert.equal(s.state.camZoom,1);
+ s.frame(2999);assert.equal(s.state.camZoom,1);
 });

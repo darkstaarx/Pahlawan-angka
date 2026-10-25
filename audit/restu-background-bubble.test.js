@@ -13,7 +13,7 @@ for(const [w,h] of [[320,568],[390,844],[390,240],[768,1024],[1366,768],[1920,10
  const a=s.getActive(),layers=[s.sandbox.bg,s.sandbox.groundOverlay],points=[[.25,.3],[.5,.5],[.72,.8]];
  s.setActive(null);s.background(1,null);
  const baseline=layers.map(m=>points.map(([u,v])=>pixel(s,m,u,v)));s.setActive(a);
- for(const t of [0,450,899,900,1000,1070,1249,1250,1380,1500,1750,1999]){
+ for(const t of [0,450,899,900,1000,1070,1249,1250,1380,1500,2000,2499,2999]){
   s.frame(t);c.position.x=Math.sin(t)*.12;c.position.y=Math.cos(t)*.09;
   const zoom=s.state.camZoom+s.state.camPunch,win=s.viewZoom(zoom,s.state.camFX,s.state.camFY);s.background(zoom,win);
   layers.forEach((m,i)=>points.forEach(([u,v],j)=>{
@@ -51,6 +51,6 @@ test('real entry completion hides the surprise before handing control to the por
  const s=fixture();s.getActive().state={...s.state,heroPose:s.sandbox.hero.userData.e};s.cancel();
  const playing=s.play();for(let i=0;i<8;i++)await Promise.resolve();
  s.frame(1250);assert.equal(s.bubble.classList.contains('show'),true);
- s.timers.find(t=>t.ms===2000).resolve();await playing;
+ s.timers.find(t=>t.ms===3000).resolve();await playing;
  assert.equal(s.bubble.classList.contains('show'),false);assert.equal(s.bubble.classList.contains('restu-surprise'),false);assert.equal(s.bubble.style.width,'');
 });
