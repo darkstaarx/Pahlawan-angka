@@ -63,12 +63,12 @@
   function renderLink(code){
     const ref=safeRef(code),link=APP_URL+'?ref='+encodeURIComponent(ref);
     $('refLink').value=link;$('refCode').textContent=ref;
-    // Owner (2026-10-25): stronger hooks. Three ready posts; claims stay true to the product (no invented
+    // Owner (2026-10-25): hooks lead with PA's moat (it understands where the child is stuck and acts on it). Three ready posts; claims stay true to the product (no invented
     // testimonials, since the affiliate posts as themselves).
     const CAPTIONS=[
-      ['Game vs latihan','Anak boleh main game berjam-jam, tapi buat latihan Matematik 10 minit dah mengeluh? 😩\n\nPahlawan Angka tukar latihan Matematik jadi game. Setiap jawapan betul, Wira menyerang dan pecahkan gembok untuk selamatkan haiwan peliharaan. Ikut silibus KSSR Tahun 1 hingga 6.\n\nCuba demo percuma dulu, tak perlu bayar 👇\n'],
-      ['UASA','UASA makin dekat, tapi anak masih kira guna jari? 🤔\n\nPahlawan Angka latih sifir, tambah, tolak, pecahan, wang dan masa ikut KSSR Tahun 1 hingga 6, dalam bentuk game. Ibu bapa boleh nampak kemajuan anak.\n\nDemo percuma di sini 👇\n'],
-      ['Screen time','Screen time anak tak semestinya membazir. 📱➡️🧠\n\n15 minit sehari dengan Pahlawan Angka: anak rasa macam main game, tapi sebenarnya sedang latih Matematik ikut KSSR Tahun 1 hingga 6.\n\nCuba demo percuma 👇\n']
+      ['Bukan latihan biasa','Anak dah buat beratus soalan latihan, tapi markah Matematik masih sama? 🤔\n\nMasalahnya selalu bukan kurang latihan. Kita tak tahu di mana sebenarnya anak tersangkut.\n\nPahlawan Angka kesan sendiri corak kesilapan anak (contohnya sifir 7 masih lambat, salah bila tolak perlu pinjam, atau keliru bila soalan dalam bentuk ayat), kemudian terus fokuskan latihan pada bahagian itu, langkah demi langkah sampai faham.\n\nIkut KSSR Tahun 1 hingga 6. Cuba demo percuma 👇\n'],
+      ['Cikgu peribadi','Bukan sekadar game latihan Matematik. 🎯\n\nPahlawan Angka berfungsi macam cikgu tuisyen peribadi: ia perhati setiap jawapan anak, kesan apa yang dia belum faham, dan terus ubah latihan untuk bantu bahagian itu.\n\nIbu bapa pula nampak dengan jelas topik mana yang lemah dan kenapa, bukan sekadar "betul 72%".\n\nDemo percuma di sini 👇\n'],
+      ['UASA','UASA makin dekat. Anak lemah Matematik di bahagian mana sebenarnya? 🤔\nSifir? Tolak dengan pinjam? Wang? Soalan berayat?\n\nPahlawan Angka cari jawapannya sendiri daripada cara anak menjawab, kemudian fokuskan latihan ke situ, dalam bentuk game yang anak memang nak main.\n\nCuba demo percuma 👇\n']
     ];
     let pick=0;
     const tabs=$('capTabs');tabs.textContent='';
