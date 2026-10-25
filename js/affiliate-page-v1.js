@@ -63,11 +63,21 @@
   function renderLink(code){
     const ref=safeRef(code),link=APP_URL+'?ref='+encodeURIComponent(ref);
     $('refLink').value=link;$('refCode').textContent=ref;
-    const caption='Anak susah nak fokus belajar Matematik? Saya jumpa Pahlawan Angka: anak main sambil belajar, ikut KSSR Tahun 1 hingga 6. Ada demo percuma, cuba dulu:\n'+link;
-    $('caption').textContent=caption;
-    $('wa').href='https://wa.me/?text='+encodeURIComponent(caption);
+    // Owner (2026-10-25): stronger hooks. Three ready posts; claims stay true to the product (no invented
+    // testimonials, since the affiliate posts as themselves).
+    const CAPTIONS=[
+      ['Game vs latihan','Anak boleh main game berjam-jam, tapi buat latihan Matematik 10 minit dah mengeluh? 😩\n\nPahlawan Angka tukar latihan Matematik jadi game. Setiap jawapan betul, Wira menyerang dan pecahkan gembok untuk selamatkan haiwan peliharaan. Ikut silibus KSSR Tahun 1 hingga 6.\n\nCuba demo percuma dulu, tak perlu bayar 👇\n'],
+      ['UASA','UASA makin dekat, tapi anak masih kira guna jari? 🤔\n\nPahlawan Angka latih sifir, tambah, tolak, pecahan, wang dan masa ikut KSSR Tahun 1 hingga 6, dalam bentuk game. Ibu bapa boleh nampak kemajuan anak.\n\nDemo percuma di sini 👇\n'],
+      ['Screen time','Screen time anak tak semestinya membazir. 📱➡️🧠\n\n15 minit sehari dengan Pahlawan Angka: anak rasa macam main game, tapi sebenarnya sedang latih Matematik ikut KSSR Tahun 1 hingga 6.\n\nCuba demo percuma 👇\n']
+    ];
+    let pick=0;
+    const tabs=$('capTabs');tabs.textContent='';
+    const apply=i=>{pick=i;const caption=CAPTIONS[i][1]+link;$('caption').textContent=caption;$('wa').href='https://wa.me/?text='+encodeURIComponent(caption);
+      [...tabs.children].forEach((b,j)=>b.setAttribute('aria-selected',String(j===i)))};
+    CAPTIONS.forEach(([label],i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=label;b.onclick=()=>apply(i);tabs.appendChild(b)});
+    apply(0);
     $('tryApp').href='./';   // own purchases earn no commission, so the app opens without the ref
-    if(navigator.share){$('nativeShare').hidden=false;$('nativeShare').onclick=()=>navigator.share({title:'Pahlawan Angka',text:caption}).catch(()=>{})}
+    if(navigator.share){$('nativeShare').hidden=false;$('nativeShare').onclick=()=>navigator.share({title:'Pahlawan Angka',text:$('caption').textContent}).catch(()=>{})}
     show('vLink');
   }
   async function copy(text,okText){

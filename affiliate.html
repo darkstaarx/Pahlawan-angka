@@ -60,6 +60,7 @@ label.f input[readonly]{background:#f3f5fa;color:var(--muted)}
 .link .copy{width:auto;min-width:96px;padding:0 14px}
 .code{font-size:14px;color:var(--muted)}.code b{color:var(--ink);letter-spacing:.06em}
 .share{display:grid;gap:10px;margin-bottom:14px}
+.tabs.cap{grid-template-columns:repeat(3,1fr)}.tabs.cap button{font-size:13px;padding:8px 4px}
 .caption{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:12px;font-size:14px;line-height:1.5;white-space:pre-wrap;margin-bottom:8px}
 .next{margin-top:16px;padding-top:14px;border-top:2px solid var(--line)}
 .small{font-size:13px;color:var(--muted);line-height:1.45}
@@ -105,7 +106,7 @@ footer{max-width:520px;margin:0 auto;padding:0 16px 30px;text-align:center;font-
     <!-- 2. Details -->
     <form id="vDetails" hidden novalidate>
       <h2>Butiran anda</h2>
-      <p>Kami guna nombor telefon untuk hubungi anda tentang komisen. Butiran bank boleh diisi kemudian.</p>
+      <p>Kami guna e-mel dan nombor telefon ini untuk hubungi anda tentang komisen. Butiran bank hanya diminta bila anda ada jualan pertama.</p>
       <label class="f">Akaun<input type="email" id="acct" readonly tabindex="-1"></label>
       <label class="f">Nama penuh<input type="text" id="name" autocomplete="name" maxlength="120" required></label>
       <label class="f">Nombor telefon<input type="tel" id="phone" autocomplete="tel" inputmode="numeric" placeholder="0123456789" maxlength="14" required></label>
@@ -126,7 +127,8 @@ footer{max-width:520px;margin:0 auto;padding:0 16px 30px;text-align:center;font-
         <a class="btn green" id="wa" target="_blank" rel="noopener">Kongsi di WhatsApp</a>
         <button type="button" class="btn white" id="nativeShare" hidden>Kongsi ke aplikasi lain</button>
       </div>
-      <p class="small"><b>Ayat sedia guna</b> (boleh ubah):</p>
+      <p class="small"><b>Ayat sedia guna</b>, pilih satu (boleh ubah):</p>
+      <div class="tabs cap" role="tablist" id="capTabs"></div>
       <div class="caption" id="caption"></div>
       <button type="button" class="btn white" id="copyCaption">Salin ayat + pautan</button>
       <p class="msg" id="linkMsg" role="status"></p>
