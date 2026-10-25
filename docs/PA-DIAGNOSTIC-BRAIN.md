@@ -733,6 +733,12 @@ digit, then the round's choices.
      (`opt.lookHome`). When the last step is done (or the page removes its panel) the card closes and the
      finished walkthrough is back in the page. `opt.inline` keeps the old in-page layout.
      Test: "Focus card" in `audit/worked-cues-browser.test.js`.
+   - **Percent trail reads by itself (3.87.51, owner on the Gerai 50% card: "better tapi still mcm tak
+     betul").** `pctOf` boxes carry a name above (`plan.labels`: 100%, 10%, 5%, p%) and hold only the
+     amount, so the pupil knows what each "?" is; Wira's lines are shorter ("10% = RM5.80 ÷ 10 = ?");
+     a 10% question stops at the 10% box (no "1 × 10%" step). Wira's sentence and its "?" stay on one
+     line (the line is a grid; they are wrapped in one span). In the card, choices look like buttons in
+     every game. `PAWorked` 1.16.0.
    - **Gerai stuck screen (3.87.49, owner on a phone: "takle tekan apa apa").** A one-item Bayar round has
      no board, so "Jom tengok cara" shows the mode's `answer` text with a Faham card. `val()` called mode
      methods without their mode, `this.sum` threw, and the pupil was left with an empty panel (and, since

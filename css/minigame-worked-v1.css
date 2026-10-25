@@ -170,3 +170,9 @@ html.wk-card-on :is(.pa-game,.game) .panel{justify-content:flex-start!important;
 html.wk-card-on :is(.pa-game,.game) .panel>*{margin-top:0}
 /* Gerai: the receipt is the question; its tall market scene steps aside while the card is up. */
 html.wk-card-on .pa-game:has(#stationCount.wk-walk)>.scene{display:none}
+/* Trail boxes with a name above (100%, 10%, 50%): the box holds only the amount. */
+.wk-lbox{display:inline-grid;justify-items:center;gap:2px}
+.wk-lab{font:900 12px/1 var(--f-body,system-ui);color:var(--ink-soft,#8a6142);letter-spacing:.02em}
+/* In the card, the choices look like buttons in every game (Gerai's counter tiles were flat grey). */
+.wk-card .tiles .wk-t:not(.wk-go){background:#fff;color:var(--ink,#4a2a16);border:2.5px solid var(--ink,#4a2a16);border-radius:14px;box-shadow:0 4px 0 var(--ink,#4a2a16);font-weight:900}
+.wk-card .tiles .wk-t:not(.wk-go):active{transform:translateY(2px);box-shadow:0 2px 0 var(--ink,#4a2a16)}
