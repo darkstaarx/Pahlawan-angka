@@ -58,6 +58,14 @@ async function fetchWithTimeout(input: string, init: RequestInit) {
   }
 }
 
+/** The affiliate's own name for the greeting; the e-mail still goes out without it. */
+async function affiliateName(service: ReturnType<typeof createClient>, affiliateId: string) {
+  try {
+    const { data } = await service.from('affiliate_applications').select('display_name').eq('id', affiliateId).maybeSingle();
+    return typeof data?.display_name === 'string' ? data.display_name : null;
+  } catch { return null; }
+}
+
 function validRecipient(value: string) {
   return !/[\r\n]/.test(value) && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value);
 }
@@ -122,7 +130,7 @@ Deno.serve(async (req) => {
       }
       const rendered = item.kind === 'payment'
         ? paymentEmail({ plan: item.plan, amountCents: item.amount_cents, orderId: item.order_id, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.netlify.app/' })
-        : affiliateWelcomeEmail({ affiliateCode: item.affiliate_code, commissionSnapshot: item.commission_snapshot, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.netlify.app/' });
+        : affiliateWelcomeEmail({ affiliateCode: item.affiliate_code, commissionSnapshot: item.commission_snapshot, appUrl: Deno.env.get('APP_URL') ?? 'https://pahlawanangka.netlify.app/', name: await affiliateName(service, item.affiliate_id), email: recipient });
       let response: Response;
       const copy = item.kind === 'payment' ? { cc: ownerCopies('PAYMENT_EMAIL_CC'), bcc: ownerCopies('PAYMENT_EMAIL_BCC') } : {};
       try { response = await sendGmail(token, recipient, rendered.subject, rendered.text, rendered.html, copy); }

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rakan Affiliate · Pahlawan Angka</title>
+<meta name="description" content="Daftar percuma sebagai rakan affiliate Pahlawan Angka. Dapat pautan anda serta-merta dan komisen untuk setiap jualan yang disahkan.">
+<meta name="theme-color" content="#06164c">
+<link rel="icon" href="assets/branding/pahlawan-angka-full-logo-v1.webp">
+<style>
+/* Standalone affiliate sign-up (owner, 2026-10-25): a link from the front page; sign up and get the
+   referral link at once, without entering the app. Same Supabase project and session as the app. */
+:root{--ink:#06164c;--navy:#0a2a6a;--blue:#0067d9;--gold:#ffcb32;--gold-dk:#c98a12;--paper:#fffdf6;--line:#dae3f2;--muted:#5a6785;--green:#1d8a4f;--red:#c0392b}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fdfaf2;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+a{color:var(--blue)}
+button,input{font:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hero{position:relative;padding:18px 16px 26px;text-align:center;color:#fff;
+  background:linear-gradient(180deg,rgba(4,18,38,.55) 0%,rgba(7,26,49,.25) 40%,rgba(4,17,36,.85) 100%),url('assets/branding/login-chibi-math-world-v1.webp') center top/cover}
+.hero .logo{width:min(200px,52vw);height:auto;display:block;margin:0 auto 6px}
+.hero h1{margin:4px 0 8px;font-size:clamp(26px,7vw,40px);line-height:1.05;letter-spacing:-.5px;text-shadow:0 2px 0 #031033,0 6px 18px rgba(0,0,0,.45)}
+.hero p{margin:0 auto;max-width:440px;font-size:clamp(15px,4vw,18px);line-height:1.4;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.tag{display:inline-block;margin-bottom:8px;padding:5px 12px;border-radius:99px;background:var(--gold);color:var(--ink);font-weight:900;font-size:13px;letter-spacing:.06em}
+main{max-width:520px;margin:0 auto;padding:0 16px 40px}
+.rates{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:-14px 0 16px;position:relative}
+.rate{background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;box-shadow:0 3px 8px rgba(6,22,76,.08)}
+.rate.plus{border-color:#ffb300;background:linear-gradient(180deg,#fff9e6,#fff)}
+.rate small{display:block;color:var(--muted);font-weight:700;font-size:13px}
+.rate b{display:block;font-size:30px;line-height:1.1;margin:4px 0 2px}
+.rate span{font-size:13px;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;background:#eef4ff;border-radius:12px;padding:10px 8px;font-size:13px;font-weight:700;text-align:center;line-height:1.3}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:26px;height:26px;margin:0 auto 6px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:18px 16px;box-shadow:0 6px 18px rgba(6,22,76,.08)}
+.card h2{margin:0 0 6px;font-size:22px}
+.card p{margin:0 0 12px;color:var(--muted);line-height:1.45}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;border-radius:14px;border:2px solid transparent;font-weight:900;font-size:17px;cursor:pointer;text-decoration:none}
+.btn:disabled{opacity:.6;cursor:default}
+.btn.gold{background:linear-gradient(#ffe07a,#ffc23a);border-color:var(--gold-dk);color:var(--ink);box-shadow:0 4px 0 var(--gold-dk)}
+.btn.blue{background:linear-gradient(#2b74ec,#0a46c8);border-color:#05286f;color:#fff;box-shadow:0 4px 0 #05286f}
+.btn.white{background:#fff;border-color:var(--line);color:var(--ink);box-shadow:0 3px 0 var(--line)}
+.btn.green{background:#25d366;border-color:#128c3e;color:#06331a;box-shadow:0 4px 0 #128c3e}
+.btn:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.consent{display:flex;gap:10px;align-items:flex-start;margin:0 0 12px;font-size:14px;line-height:1.4;color:var(--ink)}
+.consent input{width:20px;height:20px;margin-top:1px;flex:none}
+.or{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--muted);font-size:13px;font-weight:700}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;background:#eef1f8;border-radius:12px;padding:4px}
+.tabs button{border:0;border-radius:9px;padding:9px;background:transparent;font-weight:800;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+label.f{display:grid;gap:5px;margin-bottom:10px;font-weight:800;font-size:14px}
+label.f input{min-height:48px;padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:#fff;font-size:16px;color:var(--ink)}
+label.f input[readonly]{background:#f3f5fa;color:var(--muted)}
+.msg{min-height:20px;margin:8px 0 0;font-size:14px;font-weight:700;line-height:1.4}
+.msg.err{color:var(--red)}.msg.ok{color:var(--green)}
+.link{display:grid;gap:8px;margin:6px 0 12px}
+.link .row{display:flex;gap:8px}
+.link input{flex:1;min-width:0;min-height:52px;padding:10px 12px;border:2px solid var(--gold-dk);border-radius:12px;background:#fffbea;font-weight:800;font-size:15px;color:var(--ink)}
+.link .copy{width:auto;min-width:96px;padding:0 14px}
+.code{font-size:14px;color:var(--muted)}.code b{color:var(--ink);letter-spacing:.06em}
+.share{display:grid;gap:10px;margin-bottom:14px}
+.tabs.cap{grid-template-columns:repeat(3,1fr)}.tabs.cap button{font-size:13px;padding:8px 4px}
+.caption{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:12px;font-size:14px;line-height:1.5;white-space:pre-wrap;margin-bottom:8px}
+.limited{margin:-6px 0 14px;padding:9px 12px;border-radius:12px;background:#fff4d6;border:1px solid #f0d58a;font-size:13px;line-height:1.45;color:#5c4513;text-align:center}
+.offer{margin-top:16px;padding:16px;border-radius:16px;background:#fff0bf;border:2px solid #efd78c}.offer small{display:block;font-size:11px;font-weight:900;letter-spacing:.08em;color:#7f6420;margin-bottom:6px}.offer h2{margin:0 0 8px;font-size:20px}.offer p{color:var(--ink)}.offer ol{margin:0 0 10px;padding-left:20px;line-height:1.6;font-size:14px}
+.next{margin-top:16px;padding-top:14px;border-top:2px solid var(--line)}
+.small{font-size:13px;color:var(--muted);line-height:1.45}
+.linkbtn{background:none;border:0;color:var(--blue);text-decoration:underline;cursor:pointer;padding:0;font-size:13px}
+.done{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;background:#e6f6ec;color:var(--green);font-weight:900;font-size:13px;margin-bottom:8px}
+footer{max-width:520px;margin:0 auto;padding:0 16px 30px;text-align:center;font-size:13px;color:var(--muted)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="hero">
+  <img class="logo" src="assets/landing-approved-v1/logo.webp" alt="Pahlawan Angka">
+  <span class="tag">PERCUMA · TIADA YURAN</span>
+  <h1>Jadi Rakan Affiliate</h1>
+  <p>Kongsi Pahlawan Angka dengan ibu bapa lain. Dapat komisen untuk setiap jualan yang disahkan.</p>
+</header>
+<main>
+  <section class="rates" aria-label="Komisen">
+    <div class="rate"><small>Akses Keluarga <span id="pPrice">RM19</span></small><b id="pComm">RM9</b><span>komisen setiap jualan</span></div>
+    <div class="rate plus"><small>Family Plus <span id="fPrice">RM29</span></small><b id="fComm">RM15</b><span>komisen setiap jualan</span></div>
+  </section>
+  <p class="limited">⏳ Kadar komisen ini dan hadiah naik taraf untuk affiliate ialah tawaran <b>tempoh terhad</b>.</p>
+  <ol class="steps"><li>Daftar dalam 1 minit</li><li>Dapat pautan anda serta-merta</li><li>Kongsi dan dapat komisen</li></ol>
+
+  <section class="card" id="card" aria-live="polite">
+    <p id="loading">Memuatkan…</p>
+
+    <!-- 1. Account -->
+    <div id="vAuth" hidden>
+      <h2>Daftar akaun</h2>
+      <p>Guna akaun yang sama untuk app Pahlawan Angka nanti.</p>
+      <label class="consent"><input type="checkbox" id="consent"> <span>Saya bersetuju dengan <a href="terma.html" target="_blank" rel="noopener">Terma</a> dan <a href="privasi.html" target="_blank" rel="noopener">Notis Privasi</a>.</span></label>
+      <button type="button" class="btn white" id="google"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg><span>Teruskan dengan Google</span></button>
+      <div class="or">atau e-mel</div>
+      <div class="tabs" role="tablist"><button type="button" role="tab" id="tReg" aria-selected="true">Daftar baharu</button><button type="button" role="tab" id="tLog" aria-selected="false">Sudah ada akaun</button></div>
+      <form id="fAuth" novalidate>
+        <label class="f">E-mel<input type="email" id="email" autocomplete="email" required></label>
+        <label class="f">Kata laluan<input type="password" id="password" autocomplete="new-password" minlength="8" required></label>
+        <button type="submit" class="btn blue" id="authBtn">Daftar</button>
+        <p class="msg" id="authMsg" role="alert"></p>
+      </form>
+    </div>
+
+    <!-- 2. Details -->
+    <form id="vDetails" hidden novalidate>
+      <h2>Butiran anda</h2>
+      <p>Kami guna e-mel dan nombor telefon ini untuk hubungi anda tentang komisen. Butiran bank hanya diminta bila anda ada jualan pertama.</p>
+      <label class="f">Akaun<input type="email" id="acct" readonly tabindex="-1"></label>
+      <label class="f">Nama penuh<input type="text" id="name" autocomplete="name" maxlength="120" required></label>
+      <label class="f">Nombor telefon<input type="tel" id="phone" autocomplete="tel" inputmode="numeric" placeholder="0123456789" maxlength="14" required></label>
+      <button type="submit" class="btn gold" id="joinBtn">Dapatkan pautan saya</button>
+      <p class="msg" id="joinMsg" role="alert"></p>
+      <p class="small">Bukan anda? <button type="button" class="linkbtn" data-logout>Log keluar</button></p>
+    </form>
+
+    <!-- 3. Link -->
+    <div id="vLink" hidden>
+      <span class="done">✓ Anda kini rakan affiliate</span>
+      <h2>Pautan anda</h2>
+      <div class="link">
+        <div class="row"><input type="text" id="refLink" readonly aria-label="Pautan rujukan anda"><button type="button" class="btn gold copy" id="copyLink">Salin</button></div>
+        <span class="code">Kod: <b id="refCode"></b></span>
+      </div>
+      <div class="share">
+        <a class="btn green" id="wa" target="_blank" rel="noopener">Kongsi di WhatsApp</a>
+        <button type="button" class="btn white" id="nativeShare" hidden>Kongsi ke aplikasi lain</button>
+      </div>
+      <a class="btn white" href="https://t.me/+BnCBaArZh301ODZl" target="_blank" rel="noopener" style="margin-bottom:14px">📣 Masuk Telegram Affiliate (bahan promosi)</a>
+      <p class="small"><b>Ayat sedia guna</b>, pilih satu (boleh ubah):</p>
+      <div class="tabs cap" role="tablist" id="capTabs"></div>
+      <div class="caption" id="caption"></div>
+      <button type="button" class="btn white" id="copyCaption">Salin ayat + pautan</button>
+      <p class="msg" id="linkMsg" role="status"></p>
+      <div class="offer">
+        <small>HADIAH KHAS AFFILIATE · TEMPOH TERHAD</small>
+        <h2>Bayar RM19, kami hadiahkan Family Plus 🎁</h2>
+        <p>Beli <b>Akses Keluarga RM19</b> dan kami naik taraf akaun anda ke <b>Family Plus (RM29)</b> tanpa bayaran tambahan: 9 mini game Kemahiran Fokus, sehingga 5 profil anak, laporan PDF dan worksheet tanpa had.</p>
+        <ol><li>Beli pakej RM19 dengan akaun yang sama.</li><li>E-mel <a href="mailto:pahlawanangka.app@gmail.com?subject=Tuntut%20naik%20taraf%20affiliate">pahlawanangka.app@gmail.com</a> dengan e-mel akaun dan rujukan pesanan, atau balas e-mel selamat datang kami.</li><li>Kami semak dan aktifkan naik taraf secara manual.</li></ol>
+        <p class="small">Pilihan sahaja. Link affiliate anda tetap aktif walaupun anda tidak membeli.</p>
+      </div>
+      <div class="next">
+        <h2>Cuba sendiri dulu</h2>
+        <p>Lebih senang promosi bila anda tahu rasanya. Cuba demo percuma dengan akaun yang sama.</p>
+        <a class="btn blue" id="tryApp" href="./">Cuba demo percuma</a>
+        <p class="small" style="margin-top:12px">Komisen dikira selepas bayaran pembeli disahkan. Pembelian sendiri tidak mendapat komisen. <button type="button" class="linkbtn" data-logout>Log keluar</button></p>
+      </div>
+    </div>
+
+    <!-- Other states -->
+    <div id="vNote" hidden><h2 id="noteTitle"></h2><p id="noteText"></p><p class="small"><button type="button" class="linkbtn" data-logout>Log keluar</button></p></div>
+  </section>
+</main>
+<footer><a href="./">Pahlawan Angka</a> · <a href="terma.html">Terma</a> · <a href="privasi.html">Privasi</a></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.min.js"></script>
+<script src="js/affiliate-page-v1.js?v=1.0.0"></script>
+</body>
+</html>

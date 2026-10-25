@@ -108,7 +108,7 @@
     ['Pakej', 'Harga jualan', 'Komisen anda'].forEach(label => { const cell = text('th', label); cell.scope = 'col'; headings.append(cell); }); head.append(headings); table.append(head);
     const body = document.createElement('tbody');
     ['premium', 'family_plus'].forEach(key => { const plan = PLANS[key]; const row = document.createElement('tr'); const name = text('th', plan.label); name.scope = 'row'; row.append(name, text('td', `RM${plan.price.toFixed(2)}`), text('td', `RM${plan.commission.toFixed(2)}`, 'pa-aff-rate-earned')); body.append(row); });
-    table.append(body); section.append(table, text('p', 'Daftar percuma · Tiada yuran pendahuluan', 'pa-aff-free-note'), text('p', 'Komisen dikira selepas bayaran pembeli disahkan. Pembelian sendiri tidak mendapat komisen. Bayaran komisen diurus secara manual.', 'pa-aff-note')); return section;
+    table.append(body); section.append(table, text('p', 'Daftar percuma · Tiada yuran pendahuluan', 'pa-aff-free-note'), text('p', 'Tempoh terhad: kadar komisen ini, dan hadiah naik taraf ke Family Plus untuk affiliate yang membeli Akses Keluarga RM19 (tuntut melalui e-mel pahlawanangka.app@gmail.com).', 'pa-aff-free-note'), text('p', 'Komisen dikira selepas bayaran pembeli disahkan. Pembelian sendiri tidak mendapat komisen. Bayaran komisen diurus secara manual.', 'pa-aff-note')); return section;
   }
   function affiliateForm(host) {
     host.textContent = ''; host.append(text('h3', 'Daftar Rakan Affiliate — percuma'), commissionTable());
