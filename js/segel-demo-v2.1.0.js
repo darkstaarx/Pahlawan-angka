@@ -864,7 +864,8 @@
       fall:'assets/coach/cikgu-dimensi/full-body/entry-v1/fall-v1.webp',
       preland:'assets/coach/cikgu-dimensi/full-body/entry-v1/preland-v1.webp',
       land:'assets/coach/cikgu-dimensi/full-body/summon-land-clean-v2.webp',
-      fx:'assets/fx/cikgu-dimensi/summon-circle-v1.webp'
+      fx:'assets/fx/cikgu-dimensi/summon-circle-v1.webp',
+      surprised:'assets/heroes/wira/frames/restu-surprised-v1.webp'
     };
     let restuLoaded=null, restuLoadPromise=null, restuToken=0, restuActive=null, restuPendingCancel=null, restuDisposed=false;
     const restuMesh=actor({tex:null,w:1,h:1,offX:0,offY:0},.22);
@@ -880,7 +881,7 @@
       if(restuLoaded)return restuLoaded;
       if(restuLoadPromise)return restuLoadPromise;
       restuLoadPromise=Promise.all(Object.values(RESTU_ASSETS).map(load)).then(xs=>{
-        const [anticipate,fall,preland,land,fx]=xs;
+        const [anticipate,fall,preland,land,fx,surprised]=xs;
         if(!anticipate||!fall||!preland||!land||!fx)throw new Error('Aset masuk Cikgu Restu gagal dimuat');
         if(restuDisposed){xs.forEach(t=>t?.dispose?.());throw new Error('Cikgu Restu pentas sudah dibuang')}
         restuFx.material.map=fx;restuFx.material.needsUpdate=true;
@@ -889,7 +890,8 @@
           fall:restuEntry(fall,[.50,.96],1.02),
           preland:restuEntry(preland,[.60,.916],1.00),
           land:restuEntry(land,[.55,.84],1.00),
-          fx
+          fx,
+          surprised:surprised?{...entry(surprised,heroCalibratedUpp(surprised,HERO_CHAR_H)),cleanMatte:false}:null
         };
         return restuLoaded;
       }).catch(err=>{restuLoadPromise=null; throw err});
@@ -904,10 +906,17 @@
       restuMesh.scale.x=-Math.abs(e.w);
       restuMesh.scale.y=e.h;
     }
+    function applyRestuHeroReaction(a,data,zoom){
+      if(!data.surprised||a.heroSurprised)return;
+      // Tunggu kamera kembali ke arena supaya reaksi Wira sempat dibaca.
+      if(zoom<=1.2){a.heroSurprised=true;S.heroLock=data.surprised;swap(hero,data.surprised)}
+    }
     function restoreRestuState(state,ownerToken=null){
       if(!state)return;
       if(ownerToken!=null&&restuActive&&restuActive.token!==ownerToken)return false;
       restuActive=null; restuMesh.visible=false; restuFx.visible=false;
+      if('heroLock' in state)S.heroLock=state.heroLock;
+      if(state.heroPose)swap(hero,state.heroPose);
       S.camZoom=state.camZoom; S.camZoomTo=state.camZoomTo; S.camPunch=state.camPunch;
       S.camFX=state.camFX; S.camFY=state.camFY; S.camK=state.camK;
       S.par=state.par; S.parTo=state.parTo; S.introT=state.introT;
@@ -1922,13 +1931,15 @@
       const zoom=3.65-zoomEase*2.65;
       S.camZoom=zoom; S.camZoomTo=zoom; S.camK=20; S.camFX=a.x; S.camFY=y+1.15;
       S.par=p<.58?.72:.35; S.parTo=S.par;
+      const fullTeacher=pose===data.preland||pose===data.land;
+      applyRestuHeroReaction(a,data,fullTeacher?zoom:Infinity);
     }
 
     async function playRestuEntry(){
       cancelRestuEntry();
       const token=++restuToken;
       const state={camZoom:S.camZoom,camZoomTo:S.camZoomTo,camPunch:S.camPunch,camFX:S.camFX,camFY:S.camFY,
-        camK:S.camK,par:S.par,parTo:S.parTo,introT:S.introT,running:S.running,introShown};
+        camK:S.camK,par:S.par,parTo:S.parTo,introT:S.introT,running:S.running,introShown,heroLock:S.heroLock,heroPose:hero.userData.e};
       const result={cancelled:false,failed:false};
       let data;
       let cancelPending;

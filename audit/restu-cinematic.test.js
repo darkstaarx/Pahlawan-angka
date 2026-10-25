@@ -169,9 +169,10 @@ function extractArrowMethod(sourceText, name) {
 
 function realRestuFrameFixture() {
   const stageSource = fs.readFileSync(require.resolve('../js/segel-demo-v2.1.0.js'), 'utf8');
+  const reaction = extractFunction(stageSource, 'applyRestuHeroReaction');
   const setPose = extractFunction(stageSource, 'setRestuPose');
   const frame = extractFunction(stageSource, 'restuFrame');
-  const code = `${setPose}\n${frame}\nthis.api={
+  const code = `${reaction}\n${setPose}\n${frame}\nthis.api={
     setData(data){restuLoaded=data}, setActive(active){restuActive=active},
     frame(now){restuFrame(now)}, mesh:restuMesh, fx:restuFx, state:S
   }`;
