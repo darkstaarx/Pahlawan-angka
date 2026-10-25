@@ -374,7 +374,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-**Cikgu Restu entrance (3.87.61 draft, 2026-10-26).** Before the existing Restu fall clip,
+**Cikgu Restu entrance (3.87.62 draft, 2026-10-26).** Before the existing Restu fall clip,
 `PARapidLock` awaits the real Segel stage entrance: left-facing WebP teacher between Wira
 and the rescue pet, held face close-up, parallax pull-back, descent and palm-contact FX.
 Owner confirmed the existing three rapid wrong first-attempt trigger stays unchanged.
@@ -392,7 +392,12 @@ before each tick, resize and cancellation. Teacher particles follow the same tra
 Responsive geometry tested at 9 viewport shapes with all 3 real WebP dome tiers.
 During Restu only, arena image and ground-overlay transforms counter the actor-camera
 crop zoom/center per layer depth; the background no longer expands during the dive.
-Foreground motion and actor framing remain. Wira instantly says “Eh, Cikgu Dimensi!”
+Owner then reported perceived zoom after impact: the independent foreground canvas
+was still scaling grass/motes with camera zoom^1.25 after WebGL rendered. That layer
+now uses fixed center/scale throughout the wide shot. Opening parallax and actor
+framing remain. Regression tests cover the canvas draw geometry as well as actual
+Three.js projection matrices; previous plane-only checks missed this layer.
+Wira instantly says “Eh, Cikgu Dimensi!”
 in a burst bubble on the wide reveal, including the optional-art fallback. Cleanup
 removes it before video or cancellation. Background landmarks and bubble lifecycle are
 covered by `audit/restu-background-bubble.test.js`.

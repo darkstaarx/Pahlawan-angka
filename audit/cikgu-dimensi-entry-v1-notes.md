@@ -89,3 +89,21 @@ camera retains its original 1000ms settle after full land and rests another 500m
 Background lock, Wira burst dialogue, pre-impact animation and responsive gaps remain.
 The entry-promise test explicitly checks 2500+500=3000ms, and background/layout suites
 cover the restored tail. This supersedes the incorrect 2000ms deadline in 3.87.60.
+
+## Post-impact foreground zoom fix (2026-10-26, 3.87.62 draft)
+
+The owner still saw zoom after impact. The arena planes were fixed, but the independent
+2D foreground pass (`drawParallaxFront`) still enlarged grass by zoom^1.25, panned it
+with the camera crop, and varied mote size throughout the landing hold. Earlier tests
+only observed the WebGL background planes. From contact until completion, foreground
+grass/motes now use a fixed center/scale; pre-contact and ordinary battle parallax stay
+intact. The 3000ms entry, speech and actor framing are preserved.
+
+A new regression captures the real foreground drawImage/gradient geometry at 1250..2999ms
+and requires identical framing and mote size, while confirming opening and ordinary
+parallax still respond. A second test uses the checked-in Three.js camera/mesh matrices
+to verify arena/ground-overlay landmark projections at real impact/settling beats.
+Astra found no material issue. Actual impact continuity still needs browser playback:
+local browser control remains disabled. GitHub only; no Netlify deployment.
+
+Verification: 108 targeted tests passed. Running the new foreground regression against the previous HEAD reproduces the bug at 1700ms while the background-plane tests still pass.

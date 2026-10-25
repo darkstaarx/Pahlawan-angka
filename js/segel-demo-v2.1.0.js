@@ -2325,7 +2325,11 @@
     }
     function drawParallaxFront(cw,ch,rdt){
       if(!fgLayer||Math.abs(fgW-cw)>2)buildFront(cw);
-      const z=S.camZoom+S.camPunch, win=camWin||{cx:.5,cy:.5}, a=S.par;
+      // The arena planes are screen-locked during Restu. Keep their foreground
+      // grass/motes at the same framing after contact too: this independent
+      // canvas used to keep zooming while the actor camera settled.
+      const hold=!!restuActive?.wide;
+      const z=hold?1:S.camZoom+S.camPunch, win=hold?{cx:.5,cy:.5}:(camWin||{cx:.5,cy:.5}), a=S.par;
       const zf=Math.pow(Math.max(1,z),1.25), fw=fgLayer.width*zf, fh=fgLayer.height*zf;
       const px=(win.cx-.5)*cw*z*1.45, py=(win.cy-.5)*ch*z*.3;
       fx2.save(); fx2.globalAlpha=a;

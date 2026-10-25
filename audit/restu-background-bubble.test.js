@@ -54,3 +54,46 @@ test('real entry completion hides the surprise before handing control to the por
  s.timers.find(t=>t.ms===3000).resolve();await playing;
  assert.equal(s.bubble.classList.contains('show'),false);assert.equal(s.bubble.classList.contains('restu-surprise'),false);assert.equal(s.bubble.style.width,'');
 });
+// The foreground canvas is rendered after WebGL. Its transforms need their own
+// regression; background-plane projection tests cannot observe this layer.
+test('foreground grass and mote sizes stay fixed after impact while the actor camera settles',()=>{
+ const vm=require('node:vm'),{extract}=require('./helpers/restu-stage-fixture.cjs');
+ const s=fixture(),ctx=s.sandbox,draws=[],glows=[];
+ ctx.fgLayer={width:1900,height:230};ctx.fgW=1000;ctx.fgMotes=[{x:.4,y:.5,d:1.2,s:3,ph:0,vy:0}];ctx.camWin=null;
+ ctx.fx2={save(){},restore(){},drawImage(...args){draws.push(args.slice(1))},createRadialGradient(...args){glows.push(args);return{addColorStop(){}}},fillRect(){}};
+ ctx.buildFront=()=>{throw Error('unexpected foreground rebuild')};
+ vm.runInNewContext(extract('drawParallaxFront')+';this.drawFront=drawParallaxFront',ctx);
+ let reference;
+ for(const t of [1250,1300,1380,1500,1700,2000,2499,2999]){
+  s.frame(t);ctx.camWin=s.viewZoom(s.state.camZoom+s.state.camPunch,s.state.camFX,s.state.camFY);
+  ctx.drawFront(1000,700,0);
+  const sample={grass:draws.at(-1),mote:glows.at(-1)};
+  if(!reference)reference=sample;else assert.deepEqual(sample,reference,`foreground visibly reframed at ${t}ms`);
+ }
+ // Preserve the approved opening parallax and the ordinary battle effect.
+ s.frame(450);ctx.camWin=s.viewZoom(s.state.camZoom,s.state.camFX,s.state.camFY);ctx.drawFront(1000,700,0);
+ assert.notDeepEqual(draws.at(-1),reference.grass,'opening parallax is still active');
+ s.setActive(null);s.state.camZoom=2;s.state.camPunch=0;ctx.drawFront(1000,700,0);const zoomed=draws.at(-1);
+ s.state.camZoom=1.1;ctx.drawFront(1000,700,0);assert.notDeepEqual(draws.at(-1),zoomed,'ordinary parallax still responds to zoom');
+});
+
+test('actual Three.js projection matrices keep arena landmarks fixed through impact and settling',async()=>{
+ const {pathToFileURL}=require('node:url'),path=require('node:path');
+ const THREE=await import(pathToFileURL(path.join(__dirname,'../js/vendor/three.module.min.js')).href);
+ for(const [width,height] of [[360,800],[390,240],[1366,768]]){
+  const s=fixture(),ctx=s.sandbox,c=new THREE.PerspectiveCamera(36,width/height,.1,100);c.position.z=10;ctx.camera=c;
+  ctx.bg=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial());ctx.bg.position.z=-8;
+  ctx.groundOverlay=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial());ctx.groundOverlay.position.z=-7.45;
+  const layers=[ctx.bg,ctx.groundOverlay],points=[[.25,.3],[.5,.5],[.72,.8]];
+  function actualProjection(m,u,v){c.updateMatrixWorld();m.updateMatrixWorld();return new THREE.Vector3(u-.5,v-.5,0).applyMatrix4(m.matrixWorld).project(c).toArray().slice(0,2)}
+  const a=s.getActive();s.setActive(null);s.background(1,null);
+  const baseline=layers.map(m=>points.map(([u,v])=>actualProjection(m,u,v)));s.setActive(a);
+  for(const t of [1250,1380,1500,1700,2200,2499,2999]){
+   s.frame(t);c.position.x=Math.sin(t)*.12;c.position.y=Math.cos(t)*.09;
+   const zoom=s.state.camZoom+s.state.camPunch,win=s.viewZoom(zoom,s.state.camFX,s.state.camFY);s.background(zoom,win);
+   layers.forEach((m,i)=>points.forEach(([u,v],j)=>{
+    const actual=actualProjection(m,u,v);actual.forEach((n,k)=>assert.ok(Math.abs(n-baseline[i][j][k])<1e-8,`${width}x${height}: matrix landmark changed at ${t}`));
+   }));
+  }
+ }
+});
