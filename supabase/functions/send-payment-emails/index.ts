@@ -14,13 +14,19 @@ function base64Url(bytes: Uint8Array) {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
+/** RFC 2047: a subject with non-ASCII (an emoji, an en dash) is sent base64-encoded so every client shows it. */
+function encodeHeader(value: string) {
+  if (/^[\x20-\x7e]*$/.test(value)) return value;
+  return `=?UTF-8?B?${btoa(String.fromCharCode(...new TextEncoder().encode(value)))}?=`;
+}
+
 function mimeMessage(to: string, subject: string, text: string, html: string, copy: { cc?: string[]; bcc?: string[] } = {}) {
   const boundary = `pa-${crypto.randomUUID()}`;
   const message = [
     `From: Pahlawan Angka <${SENDER}>`, `To: ${to}`,
     ...(copy.cc?.length ? [`Cc: ${copy.cc.join(', ')}`] : []),
     ...(copy.bcc?.length ? [`Bcc: ${copy.bcc.join(', ')}`] : []),
-    `Subject: ${subject}`, 'MIME-Version: 1.0',
+    `Subject: ${encodeHeader(subject)}`, 'MIME-Version: 1.0',
     `Content-Type: multipart/alternative; boundary="${boundary}"`, '',
     `--${boundary}`, 'Content-Type: text/plain; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', text, '',
     `--${boundary}`, 'Content-Type: text/html; charset=UTF-8', 'Content-Transfer-Encoding: 8bit', '', html, '',
