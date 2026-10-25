@@ -21,16 +21,62 @@ function ensureProgression(){
   db.totalCorrect=db.totalCorrect||0;
   db.totalQuestions=db.totalQuestions||0;
   if(localStorage.getItem('pa_dev_unlocked')==='1'&&(location.hostname==='localhost'||location.hostname==='127.0.0.1'||window.PACommercial?.canUseDev?.()===true))db.devMode=true;
+  const gembokXpDelta=reconcileGembokXp(db);
   const today=new Date().toISOString().slice(0,10);
   if(!db.daily || db.daily.date!==today)db.daily={date:today,correct:0,claimed:false};
   recalcLevel();
+  // Persist a one-time historical recovery so a cloud/profile reload cannot lose it.
+  if(gembokXpDelta>0&&typeof save==='function')save();
 }
 function xpForLevel(level){return 120+(level-1)*45}
+function gembokXpEligible(profile){
+  return !!profile&&!profile.demoMode&&!profile.guestDemo&&!profile.devMode&&!(typeof sess!=='undefined'&&sess&&(sess.demoMode||sess.devBankTest||sess.devBattlefield));
+}
+function gembokCorrectCount(value){
+  const n=Number(value);return Number.isFinite(n)&&n>0?Math.floor(n):0;
+}
+function recalcProfileLevel(profile){
+  if(!profile)return;
+  let lvl=1,remaining=Number(profile.xp)||0;
+  while(remaining>=xpForLevel(lvl)){remaining-=xpForLevel(lvl);lvl++}
+  profile.level=lvl;profile.levelXp=remaining;
+}
+function reconcileGembokXp(profile){
+  if(!gembokXpEligible(profile))return 0;
+  const g=profile.gembok=profile.gembok||{};
+  const completions=g.completions&&typeof g.completions==='object'?g.completions:{};
+  const awards=g.xpAwards&&typeof g.xpAwards==='object'?g.xpAwards:{};
+  g.completions=completions;g.xpAwards=awards;
+  let deltaXp=0;
+  Object.entries(completions).forEach(([runId,completion])=>{
+    if(!completion||!['manual','adaptive','focus'].includes(completion.route))return;
+    const correct=gembokCorrectCount(completion.correct);
+    if(!correct)return;
+    const entry=awards[runId]&&typeof awards[runId]==='object'?awards[runId]:{};
+    const awarded=gembokCorrectCount(entry.correct);
+    if(correct<=awarded)return;
+    const delta=correct-awarded;
+    profile.xp=(Number(profile.xp)||0)+delta*PROGRESSION.xpPerCorrect;
+    awards[runId]={correct,xp:correct*PROGRESSION.xpPerCorrect,at:entry.at||Date.now()};
+    deltaXp+=delta*PROGRESSION.xpPerCorrect;
+  });
+  if(deltaXp)recalcProfileLevel(profile);
+  return deltaXp;
+}
+function awardGembokXp(profile,run,correct){
+  if(!gembokXpEligible(profile)||!run?.gembok||run.demoMode||run.devMode||!['manual','adaptive','focus'].includes(run.route))return 0;
+  const g=profile.gembok=profile.gembok||{},awards=g.xpAwards=g.xpAwards&&typeof g.xpAwards==='object'?g.xpAwards:{};
+  const runId=String(run.id||'');if(!runId)return 0;
+  const target=gembokCorrectCount(correct),entry=awards[runId]&&typeof awards[runId]==='object'?awards[runId]:{},awarded=gembokCorrectCount(entry.correct);
+  if(target<=awarded)return 0;
+  const delta=(target-awarded)*PROGRESSION.xpPerCorrect;
+  profile.xp=(Number(profile.xp)||0)+delta;
+  awards[runId]={correct:target,xp:target*PROGRESSION.xpPerCorrect,at:entry.at||Date.now()};
+  recalcProfileLevel(profile);return delta;
+}
 function recalcLevel(){
   if(!db)return;
-  let lvl=1,remaining=db.xp||0;
-  while(remaining>=xpForLevel(lvl)){remaining-=xpForLevel(lvl);lvl++}
-  db.level=lvl;db.levelXp=remaining;
+  recalcProfileLevel(db);
 }
 function addXp(amount){db.xp=(db.xp||0)+amount;recalcLevel()}
 function addCoins(amount){db.coins=(db.coins||0)+amount}

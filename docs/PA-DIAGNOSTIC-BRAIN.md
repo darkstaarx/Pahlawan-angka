@@ -374,6 +374,14 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
+**Gembok player XP (3.87.57, 2026-10-25).** Real manual/adaptive/focus answers now grant
+12 player XP per resolved correct answer. A per-profile, per-run `gembok.xpAwards` ledger
+prevents repeat awards and recovers missing XP from saved eligible completions on load,
+persisting the correction once. Stale callbacks after profile switches are rejected. Coins,
+pet rewards, mastery rules and diagnostic thresholds are unchanged. Regression suite:
+`node --test audit/gembok-xp.test.js` (including serialized reload and live profile switching).
+
+
 Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
 **Affiliate page (3.87.56, owner 2026-10-25).** `affiliate.html` + `js/affiliate-page-v1.js`: sign up as an

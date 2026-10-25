@@ -20,10 +20,12 @@
 
   let active=null;
   const now=()=>performance.now();
+  const currentRun=run=>!!run&&active===run&&(run.profileDb===db||run.session===db)
+    &&(!run.childId||!window.PACloud?.state?.childId||run.childId===window.PACloud.state.childId);
   const realSave=()=>{
     if(typeof save!=='function')return;
     const profile=active?.profileDb;
-    if(!profile){ save(); return; }
+    if(!profile||!currentRun(active))return;
     const previous=swapDemoState(profile,active.session);
     try{save()}finally{swapDemoState(previous.db,previous.sess)}
   };
@@ -88,7 +90,8 @@
     if(!await window.PACommercial?.authorizeMission?.()||db!==profile)return;
     if(active)close(false);
     const id=`gembok-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-    active={id,gembok:true,route:focusSkill?'focus':(options.adaptive?'adaptive':'manual'),chapter,focusSkill,pool,profileDb:db,petConfig:activePetConfig(db),previousSession:sess,session:makeSession(options),
+    active={id,gembok:true,route:focusSkill?'focus':(options.adaptive?'adaptive':'manual'),chapter,focusSkill,pool,profileDb:db,childId:db.cloudChildId||window.PACloud?.state?.childId||null,petConfig:activePetConfig(db),previousSession:sess,session:makeSession(options),
+      resolvedTokens:Object.create(null),firstWrongTokens:Object.create(null),
       questionNumber:0,correct:0,completed:false,paused:false,startedAt:Date.now()};
     activateSession(active.session);
     window.PASegelHost.openProduction(active);
@@ -112,7 +115,7 @@
   }
 
   function nextQuestion(run){
-    if(!active||active!==run||run.completed||run.paused)return null;
+    if(!currentRun(run)||run.completed||run.paused)return null;
     const s=run.session,id=selectSkill(run),state=realScore(id);
     if(!id||!state)return null;
     return withSession(s,()=>{
@@ -146,7 +149,8 @@
   }
 
   function recordResolved(q,option,ok,seconds){
-    const run=active,s=realScore(q.skill),g=run.session,delta=META[q.skill].grade-coreGrade();
+    const run=active;if(run.resolvedTokens[q.token])return null;run.resolvedTokens[q.token]=true;
+    const s=realScore(q.skill),g=run.session,delta=META[q.skill].grade-coreGrade();
     recordIndependentAnswer(q,ok&&!g.hint&&!g.retryState);
     if(ok){
       s.correct++;
@@ -157,6 +161,7 @@
       s.stability=Math.min(100,s.stability+4*quality);
       if(delta>0&&!g.retryState&&!g.hint)s.probePass++;
       run.correct++;
+      awardGembokXp(run.profileDb,run,run.correct);
     }
     /* A retry wrong answer is intentionally not a second evidence event. */
     recordCoachResponse(q.skill,ok,option.tag,seconds,g.hint,q.token);
@@ -181,7 +186,9 @@
   }
 
   function firstWrong(q,option){
-    const run=active;if(!run||run.session.q!==q)return null;
+    const run=active;if(!currentRun(run)||run.completed||run.paused||run.session.q!==q||run.resolvedTokens[q.token])return null;
+    if(run.firstWrongTokens[q.token])return {hint:q.hint||'Baca semula maklumat penting dalam soalan.'};
+    run.firstWrongTokens[q.token]=true;
     const seconds=(now()-run.session.start)/1000;
     run.session.retryState={wrongTag:option.tag,wrongValue:option.v,firstSeconds:seconds};
     mutateFirstWrong(q,option,seconds);realSave();
@@ -189,14 +196,14 @@
   }
 
   function resolve(q,option,ok){
-    const run=active;if(!run||run.session.q!==q)return null;
+    const run=active;if(!currentRun(run)||run.completed||run.paused||run.session.q!==q||run.resolvedTokens[q.token])return null;
     const seconds=(now()-run.session.start)/1000;
     const intervention=recordResolved(q,option,ok,seconds);
     return {intervention,correct:ok};
   }
 
   function hint(){
-    const run=active,q=run?.session.q;if(!q)return null;
+    const run=active,q=run?.session.q;if(!currentRun(run)||run.completed||run.paused||!q||run.resolvedTokens[q.token])return null;
     const s=run.session;
     s.hintLevel++;window.PALearnerReview?.hintUsed?.(q,s.hintLevel);
     if(!s.hint){s.hint=true;realScore(q.skill).hints++;realSave();}
@@ -204,7 +211,7 @@
   }
 
   function complete(){
-    const run=active;if(!run||run.completed||run.paused)return;
+    const run=active;if(!currentRun(run)||run.completed||run.paused)return;
     /* The Segel host reaches this only after Gangsa 2 -> Perak 3 -> Emas 5.
        Retain that production boundary even if a caller invokes complete(). */
     if(run.correct<10)return;
@@ -216,8 +223,9 @@
       profileDb.gembok.completions[run.id]={route:run.route,coins,at:Date.now(),correct:run.correct,grade:profileDb.schoolGrade,
         firstAttemptQuestions:run.firstAttemptQuestions||0,independentCorrect:run.independentCorrect||0};
       profileDb.coins=(profileDb.coins||0)+coins;
-      realSave();
     }
+    reconcileGembokXp(profileDb);
+    realSave();
     /* Cosmetic only; PetCollection owns its own per-run idempotency record. */
     const petAward=window.PetCollection?.awardGembokCompletion?.(profileDb,run);
     run.petAward=petAward||null;
@@ -226,31 +234,31 @@
   }
 
   function pauseForLearning(intervention){
-    const run=active;if(!run||run.paused)return false;
+    const run=active;if(!currentRun(run)||run.paused)return false;
     run.paused=true;run.session.learningActive=true;
     activateSession(run.session);
     learningStart(run.session.q.skill,intervention,{gembok:true});
     return true;
   }
   function resumeFromLearning(){
-    const run=active;if(!run||run.completed)return;
+    const run=active;if(!currentRun(run)||run.completed)return;
     run.paused=false;run.session.learningActive=false;
     window.PASegelHost?.resumeProduction?.(run);
   }
   function restart(run){
-    if(!active||active!==run)return;
+    if(!currentRun(run))return;
     open({chapter:run.chapter,adaptive:run.route==='adaptive',focusSkill:run.route==='focus'?run.focusSkill:null,focusTarget:run.session.focusTarget});
   }
   function close(renderMenu=true){
     if(!active)return;
     const run=active;run.session.generation++;active=null;
-    swapDemoState(db,run.previousSession);
+    if(run.profileDb===db||run.session===db)swapDemoState(db,run.previousSession);
     window.PASegelHost?.pause?.();
     if(renderMenu&&typeof renderHub==='function')renderHub();
   }
 
   window.PAProductionRuntime={score:realScore,save:realSave,session:realSession};
-  window.PAProductionJourney={open,nextQuestion,firstWrong,resolve,hint,complete,pauseForLearning,resumeFromLearning,restart,close,isActive:()=>!!active,state:()=>active,isCurrent:run=>active===run&&!run.paused};
+  window.PAProductionJourney={open,nextQuestion,firstWrong,resolve,hint,complete,pauseForLearning,resumeFromLearning,restart,close,isActive:()=>!!active,state:()=>active,isCurrent:run=>currentRun(run)&&!run.paused};
   window.openGembok=open;
 })();
 
