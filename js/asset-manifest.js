@@ -299,6 +299,7 @@ self.PA_ASSET_MANIFEST=Object.freeze({
   "./assets/heroes/wira/frames/rescue-happy-v6/rescue-happy-19-v6.webp": "6c52961727d19e158574351fc9e74ed917d7f53625ebd66673d17e96cc009dc8",
   "./assets/heroes/wira/frames/rescue-prepare-v1.webp": "be4f6970ade27c32f7903c03f6714477051675b48e513e814f43bc5e18c85f23",
   "./assets/heroes/wira/frames/rescue-slash-v1.webp": "3a386e9cbb8a90695a42d5a1f53f57924936830f959ca81e5c3d5225f133f098",
+  "./assets/heroes/wira/frames/restu-surprised-v1.webp": "3f2af481cdf2cf03f39dac3777238b60a9fc83936e4e166aa7bc2686b5b03522",
   "./assets/heroes/wira/frames/victory-v1.webp": "51492ca37feb8038e1ff3bcb95c53346f05b8b55419b9c999aa5ef720a36a17a",
   "./assets/heroes/wira/idle.webp": "cc5fd2ce33117240fa9907068398015c890ed45a136ada03e902cc8f7f965e68",
   "./assets/icons/pa-180.png": "79288df8bad48bf09d9cbdd05a7825489bdf31cf7e1e9fe2a1636d4d927e8a1d",
