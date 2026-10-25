@@ -477,6 +477,13 @@ into the live Three.js stage.
     right of the screen, tumbling on x/y (double-sided); they vanish before reaching the camera.
   - `drawSkyBolts`: once a glacier sheet reaches its bolt frames (7+), a flickering jagged bolt (glow, core,
     two branches, redrawn every ~60 ms) joins the top of the stage to the bolt tip, with a sky flash.
+- 3.87.55 (owner on a phone: "tak sama … masa pecah final blow … kat mana pecah?"): in 3.87.54 the final
+  pieces flew towards the camera so fast that, with the dome near the right edge of the zoomed frame, they
+  left the screen in ~0.3 s and the break could not be seen. Now the final break reads like the other
+  breaks (glass pieces from the dome that spin and fall), with 18 pieces instead of 10, ~1.5–1.9 s life, a
+  small pull towards the camera (`vz` .35–1.25) and a lean towards the middle of the screen; during the
+  glacier the camera also moves its centre onto the dome. `host._shardInfo()` (tests only) lists live
+  pieces in screen space.
 - **Next:** owner tests on a real phone. Likely tweaks: glacier slow-motion speed,
   hop height (`.55`), greeting wording. Not done: the old battle screen
   (`#battleArena`) was not changed.
