@@ -117,23 +117,30 @@ test('Lombong Permata hundred grid: "Berapa baris penuh?" outlines the full rows
   assert.deepEqual(errors, []); await ctx.close();
 });
 
-test('Focus mode: the scene with Wira is hidden and only the answer place moves (Gerai Wirayung receipt)', async () => {
+test('Focus card: the walkthrough opens as one card over the game, only the answer place moves, and the card goes when it is done', async () => {
   const ctx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 390, height: 844 } });
   await ctx.addInitScript(() => localStorage.setItem('pa_dev_unlocked', '1'));
   const page = await ctx.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message));
-  await open(page, 'gerai-wirayung', 'd5', 'Diskaun %');
+  await open(page, 'dapur-ramuan', 'd6', 'Kadaran (bahagi)');
   await page.waitForTimeout(800);
   const st = await page.evaluate(() => {
-    const scene = document.querySelector('.scene');
+    const card = document.querySelector('.wk-modal .wk-card');
     const moving = document.getAnimations().filter(a => a.playState === 'running' && a.effect && a.effect.getComputedTiming().iterations === Infinity)
-      .map(a => a.effect.target).filter(t => t && t.closest && t.closest('.panel,.actions,.tiles') && t.getClientRects().length);
+      .map(a => a.effect.target).filter(t => t && t.getClientRects && t.getClientRects().length && card && card.contains(t));
     const kinds = new Set(moving.map(t => t.classList.contains('wk-next') ? 'slot' : t.closest('.wk-pickhere') ? 'choices' : t.className));
-    const actions = document.querySelector('.actions').getBoundingClientRect(), panel = document.querySelector('.wk-walk,.panel:not([hidden])').getBoundingClientRect();
-    return { sceneShown: !!scene && scene.getClientRects().length > 0, kinds: [...kinds], overlap: panel.bottom > actions.top + 1 };
+    const r = card && card.getBoundingClientRect(), table = [...document.querySelectorAll('.panel *')].find(e => !card.contains(e) && /kotak|dulang|resipi/i.test(e.textContent) && !e.children.length);
+    return { card: !!card, inCard: !!card && card.contains(document.getElementById('wkSay')) && !!card.querySelector('.wk-t'),
+      step: card && card.querySelector('.wk-mstep').textContent, kinds: [...kinds], dataAbove: !!table && table.getBoundingClientRect().bottom < r.top,
+      lit: document.querySelectorAll('.panel .wk-look,.panel .wk-lookt').length };
   });
-  assert.equal(st.sceneShown, false, 'the scene with Wira is out of the way');
+  assert.ok(st.card && st.inCard, 'Wira\'s line, the board and the choices are in one card');
+  assert.match(st.step, /^Langkah 1\/\d$/);
   assert.ok(st.kinds.length <= 1 && st.kinds.every(k => k === 'slot' || k === 'choices'), 'one place moves: ' + st.kinds.join(' | '));
-  assert.equal(st.overlap, false, 'the panel stays above the buttons');
+  assert.ok(st.dataAbove, 'the question table stays visible above the card');
+  assert.ok(st.lit >= 1, 'the numbers glow in the table behind the card');
+  for (let i = 0; i < 6 && await page.evaluate(() => !!document.querySelector('.wk-modal')); i++) { await answer(page).catch(() => {}); await page.waitForTimeout(1200); }
+  assert.equal(await page.evaluate(() => !!document.querySelector('.wk-modal')), false, 'the card goes when the walkthrough is done');
+  assert.ok(await page.evaluate(() => /Siap!/.test(document.getElementById('wkSay').textContent) && !!document.getElementById('wkSay').closest('.panel')), 'the finished walkthrough is back on the page');
   assert.deepEqual(errors, []); await ctx.close();
 });
 

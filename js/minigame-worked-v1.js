@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.14.0';
+  const VERSION='1.15.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -160,10 +160,35 @@
       `${nf(a)} × ${u} = <b>${nf(A)}</b>. Sekarang ${nf(a)} × ${t} (untuk ${t*10}).`,
       `${nf(a)} × ${t} = ${nf(a*t)}. Tambah 0 di hujung: ${nf(a)} × ${t*10} = <b>${nf(B)}</b>. Sekarang tambah.`]};
   }
+  /* Owner (2026-10-25): no sudden full screen to scan. The walkthrough opens as ONE card over the dimmed
+     game: step count, Wira's line, the board, the choices, read top to bottom. The page's own panel and
+     choice row are moved into the card and put back, finished, when the last step is done (or when the
+     page removes its panel). opt.inline keeps the old in-page layout. */
+  function withCard(el,opt,onDone,start){
+    if(opt.inline||typeof document==='undefined'||!el||!el.board||!el.say)return start(opt,onDone);
+    const wrap=el.say.closest('.wk-wrap')||el.board.parentElement;if(!wrap||!wrap.parentNode)return start(opt,onDone);
+    const host=wrap.closest('.pa-game,.game,main')||document.body;
+    const M=document.createElement('div');M.className='wk-modal';
+    M.innerHTML='<div class="wk-card" role="dialog" aria-modal="true" aria-label="Jom tengok cara"><div class="wk-mhead"><b>Jom tengok cara</b><span class="wk-mstep"></span></div></div>';
+    const card=M.firstChild,lab=card.querySelector('.wk-mstep'),marks=[];
+    const move=n=>{if(!n||!n.parentNode||card.contains(n))return;const ph=document.createComment('wk-card');n.parentNode.insertBefore(ph,n);marks.push([ph,n]);card.appendChild(n)};
+    host.appendChild(M);move(wrap);if(el.tiles&&!wrap.contains(el.tiles))move(el.tiles);
+    document.documentElement.classList.add('wk-card-on');
+    let closed=false;const mo=typeof MutationObserver==='function'?new MutationObserver(()=>{if(!card.contains(wrap))close()}):null;
+    const close=()=>{if(closed)return;closed=true;mo&&mo.disconnect();
+      for(const[ph,n]of marks.reverse()){if(ph.parentNode)ph.parentNode.replaceChild(n,ph);else n.remove()}
+      M.remove();document.documentElement.classList.remove('wk-card-on')};
+    mo&&mo.observe(card,{childList:true});
+    // The question's own data (a table, a work card) stays on the page behind the card; numbers can still glow there.
+    const o={...opt,lookHome:marks[0]&&marks[0][0].parentNode,onShow:(i,n)=>{lab.textContent='Langkah '+(i+1)+'/'+n;opt.onShow&&opt.onShow(i,n)}};
+    return start(o,p=>{close();onDone&&onDone(p)});
+  }
+  function run(plan,el,onDone,opt={}){return withCard(el,opt,onDone,(o,d)=>runCore(plan,el,d,o))}
   /* Run the two boards: the first, a short pause with its result, then the second. */
-  function runChain(c,el,onDone,opt={}){
+  function runChain(c,el,onDone,opt={}){return withCard(el,opt,onDone,(o,d)=>runChainCore(c,el,d,o))}
+  function runChainCore(c,el,onDone,opt={}){
     const total=c.chain.reduce((n,p)=>n+p.steps.length,0);
-    const go=(k,off)=>run(c.chain[k],el,k===c.chain.length-1?onDone:()=>{
+    const go=(k,off)=>runCore(c.chain[k],el,k===c.chain.length-1?onDone:()=>{
       setTimeout(()=>{
         try{opt.onPlanDone&&opt.onPlanDone(k,c.chain[k])}catch(_){}   // the page can write the found number where the pupil saw a "?"
         el.say.innerHTML=`<span>${c.notes[k]}</span>`;   // notes are built from numbers only
@@ -735,7 +760,7 @@
       <div class="wk-row wk-ans"><span class="wk-op">=</span>${cols.map(i=>cell('wk-a'+pt(i),'',i)).join('')}</div></div>`;
   }
   /* Run the walkthrough. el = {board, tiles, say, next}; onDone(plan) after the last step. */
-  function run(plan,el,onDone,opt={}){
+  function runCore(plan,el,onDone,opt={}){
     const q=s=>el.board.querySelector(s);let k=0,busy=false;
     // opt.html draws the page's own notation (Kedai Kek: [3/4] as a stacked fraction); else plain text.
     const H=t=>opt.html?opt.html(String(t)):esc(t),say=t=>{if(opt.html)el.say.innerHTML='<span>'+H(t)+'</span>';else el.say.textContent=t};
@@ -771,8 +796,9 @@
     // The page's own question (data table, work card) sits beside Wira's panel, inside the same box.
     const lookRoot=(()=>{let a=el.board;while(a&&a.contains&&!a.contains(el.say))a=a.parentElement;a=a||el.board;return a.classList.contains('wk-wrap')&&a.parentElement&&a.parentElement!==document.body?a.parentElement:a})();
     const clearCue=()=>{el.board.querySelectorAll('.wk-ghost').forEach(g=>g.remove());el.board.querySelectorAll('.wk-next,.wk-src').forEach(c=>c.classList.remove('wk-next','wk-src'));
-      lookRoot.querySelectorAll('span.wk-lookt').forEach(x=>{const p=x.parentNode;p.replaceChild(document.createTextNode(x.textContent),x);p.normalize()});
-      lookRoot.querySelectorAll('.wk-look').forEach(x=>x.classList.remove('wk-look'));if(el.tiles)el.tiles.classList.remove('wk-pickhere')};
+      for(const R of [lookRoot,opt.lookHome].filter(Boolean)){
+        R.querySelectorAll('span.wk-lookt').forEach(x=>{const p=x.parentNode;p.replaceChild(document.createTextNode(x.textContent),x);p.normalize()});
+        R.querySelectorAll('.wk-look').forEach(x=>x.classList.remove('wk-look'))}if(el.tiles)el.tiles.classList.remove('wk-pickhere')};
     /* "Look here": a number the step works on glows where the pupil can see it: a board cell first, then a table
        cell or card on the page, then the number inside a work line ("3 kg = 3 000 g"). Never Wira's line or the tiles. */
     const skip=n=>{for(let x=n;x&&x!==lookRoot.parentNode;x=x.parentElement){if(x===el.say||x===el.tiles||x===el.inline||x.tagName==='BUTTON'||(x.classList&&(x.classList.contains('wk-ghost')||x.classList.contains('wk-hide')||x.classList.contains('wk-next'))))return true}
@@ -782,7 +808,7 @@
       return new RegExp('(?<![\\d.,:])'+body+'(?![\\d]|[.,:]\\d|[\\s\\u00a0]\\d{3}(?!\\d))')};
     const lookNum=(t,used)=>{const re=numPat(t);if(!re)return false;const want=String(t).replace(/[\s\u00a0,]/g,'');
       // Nearest first (owner, 2026-10-24: one page must not shout everywhere): the board, then the page's own card or table.
-      for(const root of [el.board,lookRoot]){
+      for(const root of [el.board,lookRoot,opt.lookHome].filter(Boolean)){
         // an element whose whole text is the number (a cell, a tag, a table cell)
         for(const e of root.querySelectorAll('*')){if(e.children.length||used.has(e)||skip(e))continue;const tx=e.textContent.replace(/[\s\u00a0,]/g,'');if(tx===want){used.add(e);e.classList.add(e.matches('.wk-c,.wk-box')?'wk-src':'wk-look');return true}}
         // the number inside a line of text
