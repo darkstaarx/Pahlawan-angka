@@ -721,10 +721,18 @@ digit, then the round's choices.
        (gold tint, underline), never pulsing. The trail's target box no longer pulses.
      - A number glows once, nearest first: the board, then the page's own card or table. Inside a grid or
        flex cell the whole cell is marked (a split span broke "100% = RM6.60" into two lines).
-     - While Wira shows the way, the scene with Wira is hidden (`.wk-on`, `.wk-walk`) so the steps get the
-       screen. `minigame-panel-fit-v1.js` 1.2.0 stops zooming when the panel would run under the buttons.
+     - (Superseded by the card in 3.87.50.) While Wira showed the way, the scene with Wira was hidden. `minigame-panel-fit-v1.js` 1.2.0 stops zooming when the panel would run under the buttons.
      - Choices of 5–6 characters ("RM4.00", "40 sen") use a smaller font (`.wk-mid`).
      - Test: "Focus mode" in `audit/worked-cues-browser.test.js`.
+   - **One card (3.87.50, owner: "tak suka view yg tiba tiba screen penuh dan user kena scan apa patut tgk";
+     chose "Kad timbul").** `PAWorked.run`/`runChain` 1.15.0 (`withCard`): the page's walkthrough panel
+     (Wira's line, board) and its choice row move into ONE card at the bottom over the dimmed game, read top
+     to bottom: "Jom tengok cara · Langkah i/n", Wira's line, the board, the choices. The scene is no longer
+     hidden (3.87.48's full screen is gone), except Gerai, whose receipt is the question. With the card up,
+     each page's panel keeps its question data at the top, above the card, and the numbers still glow there
+     (`opt.lookHome`). When the last step is done (or the page removes its panel) the card closes and the
+     finished walkthrough is back in the page. `opt.inline` keeps the old in-page layout.
+     Test: "Focus card" in `audit/worked-cues-browser.test.js`.
    - **Gerai stuck screen (3.87.49, owner on a phone: "takle tekan apa apa").** A one-item Bayar round has
      no board, so "Jom tengok cara" shows the mode's `answer` text with a Faham card. `val()` called mode
      methods without their mode, `this.sum` threw, and the pupil was left with an empty panel (and, since
