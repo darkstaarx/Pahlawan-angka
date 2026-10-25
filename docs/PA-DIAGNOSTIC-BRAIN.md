@@ -460,6 +460,14 @@ into the live Three.js stage.
   tail, typewriter 90 ms per letter, then 2.4 s). A broken dome shows the tier name on
   top and "PECAH!" below ("GANGSA / PECAH!", "PERAK / PECAH!", "EMAS / PECAH!"), same
   gold style, in the demo and in production missions (`toast()` keeps line breaks).
+- 3.87.53 (owner: "artifact punya final scene lagi cantik … bila last hit patutnya dia ada zoom in mcm
+  entrance tu"): the **final strike zooms in again**, with **parallax**, like the Gembok Epik Lab artifact.
+  As Wira dashes, the camera crop eases (k 11) to `FIN_ZOOM` 1.42 between Wira and the dome; punch .14 at
+  contact; after `FIN_HOLD_MS` 260 it pulls back slowly (k `FIN_PULL_K` 2.4) so the glacier rises into the
+  full view. Parallax (`S.par`): the background and ground overlay grow less than the crop (`z^-0.42`,
+  never smaller than needed to cover the crop window), and a front layer on the 2D effects canvas (dark
+  grass silhouettes + light motes, `drawParallaxFront`) grows `z^1.25` and moves 1.45× the crop shift.
+  Normal attacks still keep the full view. `reduceMotion` skips it (returns before the zoom).
 - **Next:** owner tests on a real phone. Likely tweaks: glacier slow-motion speed,
   hop height (`.55`), greeting wording. Not done: the old battle screen
   (`#battleArena`) was not changed.
