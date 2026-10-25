@@ -374,7 +374,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-**Cikgu Restu entrance (3.87.58 draft, 2026-10-26).** Before the existing Restu fall clip,
+**Cikgu Restu entrance (3.87.59 draft, 2026-10-26).** Before the existing Restu fall clip,
 `PARapidLock` awaits the real Segel stage entrance: left-facing WebP teacher between Wira
 and the rescue pet, held face close-up, parallax pull-back, descent and palm-contact FX.
 Owner confirmed the existing three rapid wrong first-attempt trigger stays unchanged.
@@ -382,7 +382,14 @@ Entry assets load lazily; cancellation/profile checks and bounded fallbacks alwa
 the guardian PIN/review flow. Production input resumes on the same retry question.
 `audit/cikgu-dimensi-entry-preview.html` now loads the real arena/entry/Restu flow locally
 (PIN 1234, no learner saves); the old pose-only preview is retained separately.
-Targeted regression: `audit/restu-cinematic.test.js`. This source update does not enable
+Owner-approved cinematic: 0.9s face hold, fast dive, impact at 1.25s, full landing at
+1.5s; hold exactly 1s then hand directly to the existing video at 2.5s. The wide shot
+fits Wira + equipped companion / teacher / pet+dome into three separated groups using
+real alpha bounds, viewport FOV and impact zoom. Render-only transforms are restored
+before each tick, resize and cancellation. Teacher particles follow the same transform.
+Responsive geometry tested at 9 viewport shapes with all 3 real WebP dome tiers.
+Browser visual verification remains pending because local browser control is disabled.
+Targeted regressions: `audit/restu-cinematic.test.js`, `audit/restu-layout-timing.test.js`. This source update does not enable
 automatic Netlify publishing; a production release remains a separate owner decision.
 
 

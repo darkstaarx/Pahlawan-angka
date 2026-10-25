@@ -33,3 +33,26 @@ Source anchors are normalized in the preview. Common pixel scale compensates for
 The main HTML preview now uses the real Segel Three.js arena and the production Restu sequence. The pose-only draft remains at cikgu-dimensi-pose-preview-v1.html and the original animated WebP remains a pose study. The integrated scene holds a 3.65x face close-up, uses the arena parallax implementation while pulling back to full view before contact, mirrors teacher and FX left, and completes the landing before the existing Restu video. It retains the existing three rapid wrong-answer trigger, guardian PIN/review, and the current retry question. All new bitmap assets are WebP. The isolated preview has a local-only stage boot helper, synthetic demo state, test PIN1234 and no cloud/learner saves.
 
 Validation:73 targeted regressions passed; independent Astra review found no material issue within the reviewed scope. Actual WebGL rendering/browser focus could not be visually inspected because local browser control is disabled in Work settings. Frame math, FX contact gating, cancellation, fallbacks, reduced motion and production retry gates were exercised through the real functions in VM tests. No Netlify deployment was made for this scene.
+
+## Approved cinematic spacing and quick cut (2026-10-26, 3.87.59 draft)
+
+Preserves the owner's approved epic close-up/parallax/dive/impact. The full landing pose
+starts at 1500ms; the existing Portal Restu video follows at 2500ms with no additional tail.
+The wide shot computes three groups from actual visible alpha bounds, including the equipped
+companion with Wira and the rescue pet with its active dome. Viewport projection and camera
+punch determine a common scale only when needed, with a 5.5% viewport gap between groups.
+All temporary positions/scales are restored before each tick, resize, cancellation and video.
+Impact particles/trails/radii share Cikgu's render transform, and owned particles are cleared
+when the entry ends. The existing trigger, retry question, PIN and review stay unchanged.
+
+Evidence: `audit/restu-layout-timing.test.js` executes real production functions. It checks
+9 viewport shapes (320x568, 360x800, 390x844, 768x1024, 844x390, 1366x768, 1920x1080,
+390x240 and 600x768), surprise/landing states, Gangsa/Perak/Emas artwork, companion spacing,
+no clipped silhouettes, repeated frames, resize, cancel, FX alignment and the actual entry
+promise deadline. Native Canvas WebP measurements use the real `measureAt()` and are locked
+to source asset SHA-256 hashes in `fixtures/restu-alpha-metrics.json`. These are geometry
+checks, not browser screenshots. Actual browser/device visual verification remains pending:
+local browser control is disabled in Work settings. Astra reviewed the final helper lifecycle
+and FX fix with no remaining material findings. GitHub update only; no Netlify deployment.
+
+Final verification: 95 targeted tests passed; JavaScript syntax and diff whitespace checks passed. Asset manifest remains current at 835 assets; this update changes no bitmap assets.

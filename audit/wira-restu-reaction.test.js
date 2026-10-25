@@ -67,7 +67,7 @@ function restoreFixture() {
   const sandbox = {
     S, hero, restuActive: null, restuMesh: { visible: true }, restuFx: { visible: true },
     host: { classList: { remove() {}, toggle() {} } },
-    restuNamePlate() {}, introShown: false,
+    restuNamePlate() {}, restoreRestuLayout() {}, fxParts:[], introShown: false,
     camera: { view: null }, applyParallax() {}, swap(mesh, entry) { mesh.userData.e = entry; mesh.material.map = entry.tex; }
   };
   vm.runInNewContext(`${restore}\nthis.restoreRestuState=restoreRestuState;`, sandbox);

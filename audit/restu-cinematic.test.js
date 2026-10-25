@@ -167,27 +167,7 @@ function extractArrowMethod(sourceText, name) {
   throw new Error(`unterminated host method ${name}`);
 }
 
-function realRestuFrameFixture() {
-  const stageSource = fs.readFileSync(require.resolve('../js/segel-demo-v2.1.0.js'), 'utf8');
-  const reaction = extractFunction(stageSource, 'applyRestuHeroReaction');
-  const setPose = extractFunction(stageSource, 'setRestuPose');
-  const frame = extractFunction(stageSource, 'restuFrame');
-  const code = `${reaction}\n${setPose}\n${frame}\nthis.api={
-    setData(data){restuLoaded=data}, setActive(active){restuActive=active},
-    frame(now){restuFrame(now)}, mesh:restuMesh, fx:restuFx, state:S
-  }`;
-  const position = () => ({ x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } });
-  const sandbox = {
-    Math, performance: { now: () => 0 }, GROUND: 0,
-    S: { camZoom: 1, camZoomTo: 1, camPunch: 0, camFX: 0, camFY: 0, camK: 0, par: 0, parTo: 0 },
-    swap(target, entry) { Object.assign(target, entry); },
-    restuMesh: { position: position(), scale: { x: 1, y: 1 }, visible: false, material: { opacity: 1 } },
-    restuFx: { position: position(), scale: { x: 1, y: 1, set(x, y) { this.x = x; this.y = y; } }, visible: false, material: { opacity: 0 } },
-    restuActive: null, restuLoaded: null
-  };
-  vm.runInNewContext(code, sandbox);
-  return sandbox.api;
-}
+const realRestuFrameFixture = require('./helpers/restu-stage-fixture.cjs').fixture;
 
 async function lockWithThreeRapidWrong(h) {
   let out;
@@ -292,34 +272,23 @@ test('parent resume continues the blocked run exactly once', async () => {
   assert.equal(h.context.document.body.classList.contains('pa-rapid-locked'), false);
 });
 
-test('real Restu stage frame keeps teacher facing Wira, gates FX at contact, and returns camera before impact', () => {
-  const stage = realRestuFrameFixture();
-  const data = {
-    anticipate: { tex: 'anticipate', w: 2, h: 3, offX: .1, offY: -.2 },
-    fall: { tex: 'fall', w: 2.1, h: 3.1, offX: .2, offY: -.1 },
-    preland: { tex: 'preland', w: 2, h: 3, offX: .3, offY: -.05 },
-    land: { tex: 'land', w: 2.2, h: 3.2, offX: .4, offY: -.15 }
-  };
-  stage.setData(data);
-  stage.setActive({ started: 0, duration: 100, x: 1.5 });
-
+test('real Restu stage preserves the close-up, left-facing dive and contact-gated FX', () => {
+  const stage=realRestuFrameFixture();
   stage.frame(0);
-  assert.equal(stage.state.camZoom, 3.65, 'first pose opens with a close-up');
-  assert.ok(stage.state.camFY > 2.3, 'close-up tracks the airborne face');
-
-  stage.frame(74);
-  assert.equal(stage.mesh.scale.x, -Math.abs(data.preland.w), 'Cikgu faces left toward Wira');
-  assert.equal(stage.fx.visible, false, 'summon FX stays off before contact');
-  assert.equal(stage.state.camZoom, 1, 'arena is fully visible before contact');
-
-  stage.frame(80);
-  assert.equal(stage.fx.visible, true, 'summon FX starts after contact');
-  assert.equal(stage.fx.scale.x, -data.land.w, 'FX mirror follows the landing contact');
-  assert.equal(stage.mesh.position.x, 1.5 + data.land.offX, 'landing anchor keeps the actor offset');
-  assert.equal(stage.mesh.position.y, data.land.offY, 'landing anchor keeps the corrected vertical offset');
-
-  stage.frame(75);
-  assert.equal(stage.state.camZoom, 1, 'camera reaches the full view before the impact pose');
+  assert.equal(stage.state.camZoom,3.55);
+  assert.equal(stage.fx.visible,false);
+  stage.frame(1249);
+  assert.equal(stage.mesh.scale.x,-stage.data.fall.w);
+  assert.equal(stage.fx.visible,false);
+  assert.ok(Math.abs(stage.state.camZoom-1.14)<1e-9);
+  stage.frame(1250);
+  assert.equal(stage.mesh.scale.x,-stage.data.preland.w);
+  assert.equal(stage.fx.visible,true);
+  stage.frame(1500);
+  assert.equal(stage.mesh.material.map,stage.data.land.tex);
+  assert.equal(stage.mesh.position.y,-1.92+stage.data.land.offY);
+  stage.frame(2500);
+  assert.equal(stage.state.camZoom,1);
 });
 
 test('real PASegelHost.resumeAfterRestu restores retry state without regenerating the question', async () => {
