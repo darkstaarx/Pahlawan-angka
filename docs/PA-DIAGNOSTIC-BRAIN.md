@@ -374,7 +374,7 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
-**Cikgu Restu entrance (3.87.62 draft, 2026-10-26).** Before the existing Restu fall clip,
+**Cikgu Restu entrance (3.87.63 draft, 2026-10-26).** Before the existing Restu fall clip,
 `PARapidLock` awaits the real Segel stage entrance: left-facing WebP teacher between Wira
 and the rescue pet, held face close-up, parallax pull-back, descent and palm-contact FX.
 Owner confirmed the existing three rapid wrong first-attempt trigger stays unchanged.
@@ -401,6 +401,13 @@ Wira instantly says “Eh, Cikgu Dimensi!”
 in a burst bubble on the wide reveal, including the optional-art fallback. Cleanup
 removes it before video or cancellation. Background landmarks and bubble lifecycle are
 covered by `audit/restu-background-bubble.test.js`.
+Grounding correction: surprise-pose swaps adjust the canvas offset in the same tick.
+After the pull-back reaches the arena, each render cluster anchors to the original
+screen floor row using the actual camera crop and layer depth; particles share Cikgu's
+anchor. Prior hops/pet lifts finish when Restu successfully takes ownership and cannot
+replay after video/cancellation. Loading failures leave normal motion alone.
+`audit/restu-grounding.test.js` checks actual Three.js floor projections, real asset
+anchors, the first surprise frame, and the next normal tick after completion/cancel.
 Browser visual verification remains pending because local browser control is disabled.
 Targeted regressions: `audit/restu-cinematic.test.js`, `audit/restu-layout-timing.test.js`. This source update does not enable
 automatic Netlify publishing; a production release remains a separate owner decision.

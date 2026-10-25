@@ -107,3 +107,30 @@ Astra found no material issue. Actual impact continuity still needs browser play
 local browser control remains disabled. GitHub only; no Netlify deployment.
 
 Verification: 108 targeted tests passed. Running the new foreground regression against the previous HEAD reproduces the bug at 1700ms while the background-plane tests still pass.
+
+## Actor grounding (2026-10-26, 3.87.63 draft)
+
+The fixed arena exposed another mismatch: world GROUND still changed screen row as the
+actor-camera crop settled. Render clusters now invert that crop per mesh depth to retain
+the original floor row. Grounding starts once the pull-back reaches the arena (zoom <=1.2)
+and continues through impact/landing; teacher particles use the same corrected anchor.
+The initial close-up/dive, left-facing poses, spacing, fixed background/foreground, speech
+and 3000ms deadline remain. Render transforms still restore before updates, resize and cancel.
+
+A surprise texture swap also used the previous canvas position for one tick. The same-tick
+swap now applies the difference between old/new offsets to preserve Wira's feet; cleanup
+uses the same helper. Successful Restu entry finishes leftover hero hops and pet lifts,
+so transient motion cannot leak into the shot or replay after cleanup. Required-asset
+loading failure leaves the normal motion state untouched.
+
+Five new regressions execute actual entry/calibration/pose helpers with real WebP alpha
+metrics, and actual checked-in Three.js camera matrices: seven viewport shapes x three
+dome tiers x eleven reveal/landing beats, checking Wira, pet, companion, dome and both
+shadows. They also execute the first normal hop tick after completion/cancellation.
+Against the previous reaction/layout functions, the new tests reproduce the one-frame
+pose pop and screen-floor displacement. Astra's hop-replay finding was fixed by finishing
+transients rather than restoring stale jump state; final review found no material issue.
+Actual browser continuity still needs playback because local browser control is disabled.
+GitHub only; no Netlify deployment.
+
+Final verification: 113 targeted tests passed; JavaScript syntax and diff checks passed.

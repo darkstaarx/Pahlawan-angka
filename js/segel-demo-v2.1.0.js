@@ -906,12 +906,19 @@
       restuMesh.scale.x=-Math.abs(e.w);
       restuMesh.scale.y=e.h;
     }
+    function swapRestuHeroPose(e){
+      const old=hero.userData.e;
+      swap(hero,e);
+      // Position was computed earlier this frame using the previous canvas.
+      // Change the canvas offset in the same tick, preserving the feet.
+      if(old){hero.position.x+=e.offX-old.offX;hero.position.y+=e.offY-old.offY}
+    }
     function applyRestuHeroReaction(a,data,zoom){
       if(a.heroSurprised)return;
       // Tunggu kamera kembali ke arena supaya reaksi Wira sempat dibaca.
       if(zoom<=1.2){
         a.heroSurprised=true;
-        if(data.surprised){S.heroLock=data.surprised;swap(hero,data.surprised)}
+        if(data.surprised){S.heroLock=data.surprised;swapRestuHeroPose(data.surprised)}
         showRestuSurprise();
       }
     }
@@ -922,7 +929,7 @@
       if(restuActive)fxParts=fxParts.filter(p=>p.restuToken!==restuActive.token);
       restuActive=null; restuMesh.visible=false; restuFx.visible=false;
       if('heroLock' in state)S.heroLock=state.heroLock;
-      if(state.heroPose)swap(hero,state.heroPose);
+      if(state.heroPose)swapRestuHeroPose(state.heroPose);
       hideSay(); restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
       S.camZoom=state.camZoom; S.camZoomTo=state.camZoomTo; S.camPunch=state.camPunch;
       S.camFX=state.camFX; S.camFY=state.camFY; S.camK=state.camK;
@@ -1692,7 +1699,7 @@
 
       ghostFrame(dt);
       seals.forEach(s=>{ if(s.crack&&s.crack.dirty)drawCracks(s,now) });
-      if(restuActive?.wide)restuApplyLayout(restuActive);
+      if(restuActive?.grounded)restuApplyLayout(restuActive);
       renderer.render(scene,camera);
       fxFrame(fdt,dt);
       chargeFxFrame(dt);
@@ -1995,6 +2002,11 @@
       });
       if(restuActive)restuActive.layoutSnapshot=null;
     }
+    function restuFloorY(z){
+      const h=worldH(z), floor=.5-(GROUND-S.camY)/h, v=camera.view;
+      const source=v?.enabled?(v.offsetY+floor*v.height)/v.fullHeight:floor;
+      return camera.position.y+(.5-source)*h;
+    }
     function restuApplyLayout(a){
       restoreRestuLayout();
       const activeSeal=seals[Math.min(S.active,seals.length-1)];
@@ -2021,13 +2033,13 @@
       ['hero','teacher','dome'].forEach((key,i)=>{a.layoutWidths[key]=Math.max(a.layoutWidths[key],extents[i].width)});
       const layout=restuLayout({viewWidth,widths:a.layoutWidths});
       a.layoutSnapshot=[];
-      a.teacherTransform={center:extents[1].center,target:layout.teacher,scale:layout.scale};
+      a.teacherTransform={center:extents[1].center,target:layout.teacher,scale:layout.scale,ground:restuFloorY(.24)};
       clusters.forEach((meshes,i)=>{
         const center=extents[i].center, target=layout[['hero','teacher','dome'][i]];
         meshes.forEach(mesh=>{
           a.layoutSnapshot.push({mesh,p:mesh.position.clone(),s:mesh.scale.clone()});
           mesh.position.x=target+(mesh.position.x-center)*layout.scale;
-          mesh.position.y=GROUND+(mesh.position.y-GROUND)*layout.scale;
+          mesh.position.y=restuFloorY(mesh.position.z)+(mesh.position.y-GROUND)*layout.scale;
           mesh.scale.multiplyScalar(layout.scale);
         });
       });
@@ -2037,6 +2049,11 @@
       const a=restuActive, data=restuLoaded;
       if(!a||!data)return;
       const t=now-a.started, x=a.x, particleStart=fxParts.length;
+      // Restu owns the actors until video/PIN: an unfinished attack/rescue hop
+      // must not make either character leave the screen-locked arena floor.
+      S.hopT=-1;S.heroLift=0;S.petY=GROUND;S.petFeet=GROUND;
+      hero.position.y=GROUND+hero.userData.e.offY;
+      pet.position.y=GROUND+pet.userData.e.offY;
       const ease3=k=>1-Math.pow(1-k,3), clamp=k=>Math.max(0,Math.min(1,k));
       const tDive=RESTU_FACE, tHit=RESTU_T_HIT, tLand=RESTU_T_LAND;
       let pose, y, zoom, fy;
@@ -2097,6 +2114,7 @@
         restuFx.material.opacity=(k<.12?1:1-(k-.12)/.88)*(.85+.15*Math.sin(t*.02));
       }else restuFx.visible=false;
       a.wide=t>=tHit;
+      a.grounded=a.wide||zoom<=1.2;
       S.camZoom=zoom; S.camZoomTo=zoom; S.camK=40; S.camFX=t>=tHit?0:x; S.camFY=fy;
       S.par=t<tHit?.72:.35; S.parTo=S.par;
       const fullTeacher=pose===data.preland||pose===data.land;
@@ -2105,8 +2123,8 @@
     }
 
     function restuProjectFx(p,x=p.x,y=p.y){
-      const a=restuActive, tr=p.restuToken===a?.token&&a?.wide?a.teacherTransform:null;
-      const c=tr?proj(tr.target+(x-tr.center)*tr.scale,GROUND+(y-GROUND)*tr.scale,.24):proj(x,y);
+      const a=restuActive, tr=p.restuToken===a?.token&&a?.grounded?a.teacherTransform:null;
+      const c=tr?proj(tr.target+(x-tr.center)*tr.scale,tr.ground+(y-GROUND)*tr.scale,.24):proj(x,y);
       c.fxScale=tr?.scale||1;
       c.ppu*=c.fxScale;
       return c;
@@ -2126,6 +2144,7 @@
       if(restuPendingCancel===cancelPending)restuPendingCancel=null;
       if(!data||token!==restuToken){ const wasCancelled=result.cancelled||token!==restuToken; result.cancelled=true; result.failed=!data&&!wasCancelled; return result }
       const x=Math.max(HERO_HOME+.58,Math.min(SEAL_X-.58,(HERO_HOME+SEAL_X)/2));
+      S.hopT=-1;S.heroLift=0;S.petY=GROUND;S.petFeet=GROUND;
       S.introT=-1; introShown=false; host.classList.remove('segel-pet-intro','segel-pet-intro-release');
       S.running=true; last=performance.now(); resize();
       let settle;

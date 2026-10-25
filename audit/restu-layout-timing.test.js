@@ -45,7 +45,7 @@ test('Restu impact particles and trails share the teacher transform and scale af
   const a=s.getActive(),tr=a.teacherTransform,p={restuToken:a.token,x:a.x,y:-1.92};
   const projected=s.projectFx(p);
   assert.equal(projected.x,tr.target+(a.x-tr.center)*tr.scale);
-  assert.equal(projected.y,-1.92);assert.equal(projected.z,.24);assert.equal(projected.ppu,100*tr.scale);
+  assert.equal(projected.y,tr.ground);assert.equal(projected.z,.24);assert.equal(projected.ppu,100*tr.scale);
   const trail=s.projectFx(p,a.x+.2,-1.82);
   assert.ok(Math.abs(trail.x-projected.x-.2*tr.scale)<1e-9);
   assert.equal(s.projectFx({...p,restuToken:-1}).x,a.x,'ordinary battle effects remain unchanged');
@@ -65,7 +65,7 @@ test('completed landing holds 1500ms (0.5s longer than the approved 2.5s version
  assert.ok(!s.timers.some(t=>t.ms===2500||t.ms===3600||t.ms===4200),'no old tail delay');
 });
 test('layout runs after late frame effects, restores before updates/resize, and cleanup precedes video',()=>{
- assert.ok(source.indexOf('if(restuActive?.wide)restuApplyLayout(restuActive);')<source.indexOf('renderer.render(scene,camera);'));
+ assert.ok(source.indexOf('if(restuActive?.grounded)restuApplyLayout(restuActive);')<source.indexOf('renderer.render(scene,camera);'));
  assert.match(source,/raf=requestAnimationFrame\(frame\);\s+restoreRestuLayout\(\);\s+if\(!S.running\)return/);
  assert.match(source,/function resize\(\)\{\s+restoreRestuLayout\(\)/);
 });

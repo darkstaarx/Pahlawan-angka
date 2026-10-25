@@ -28,7 +28,7 @@ function makeReactionFixture() {
   const source = fs.readFileSync(sourcePath, 'utf8');
   const helper = extractFunction(source, 'applyRestuHeroReaction');
   const S = { heroLock: 'idle' };
-  const hero = { userData: { e: 'idle' }, material: { map: 'idle' }, scale: { set() {} } };
+  const hero = { userData: { e: {tex:'idle',offX:0,offY:.5} }, material: { map: 'idle' }, position:{x:0,y:.5}, scale: { set() {} } };
   const sandbox = {
     S, hero, showRestuSurprise() {},
     swap(mesh, entry) {
@@ -36,7 +36,7 @@ function makeReactionFixture() {
       mesh.material.map = entry.tex;
     }
   };
-  vm.runInNewContext(`${helper}\nthis.applyRestuHeroReaction=applyRestuHeroReaction;`, sandbox);
+  vm.runInNewContext(`${extractFunction(source,'swapRestuHeroPose')}\n${helper}\nthis.applyRestuHeroReaction=applyRestuHeroReaction;`, sandbox);
   return { apply: sandbox.applyRestuHeroReaction, S, hero };
 }
 
@@ -62,7 +62,7 @@ function makeLoadFixture() {
 function restoreFixture() {
   const source = fs.readFileSync(sourcePath, 'utf8');
   const restore = extractFunction(source, 'restoreRestuState');
-  const hero = { userData: { e: 'surprised' }, material: { map: 'surprised' } };
+  const hero = { userData: { e: {tex:'surprised',offX:0,offY:.4} }, position:{x:0,y:.4}, material: { map: 'surprised' } };
   const S = { heroLock: 'surprised', dark: 1, darkTo: 1, speedFx: 1, camZoom: 2, camZoomTo: 2, camPunch: 1, camFX: 1, camFY: 1, camK: 1, par: 1, parTo: 1, introT: 1, running: true };
   const sandbox = {
     S, hero, restuActive: null, restuMesh: { visible: true }, restuFx: { visible: true },
@@ -70,14 +70,14 @@ function restoreFixture() {
     restuNamePlate() {}, hideSay() {}, restoreRestuLayout() {}, fxParts:[], introShown: false,
     camera: { view: null }, applyParallax() {}, swap(mesh, entry) { mesh.userData.e = entry; mesh.material.map = entry.tex; }
   };
-  vm.runInNewContext(`${restore}\nthis.restoreRestuState=restoreRestuState;`, sandbox);
+  vm.runInNewContext(`${extractFunction(source,'swapRestuHeroPose')}\n${restore}\nthis.restoreRestuState=restoreRestuState;`, sandbox);
   return { restore: sandbox.restoreRestuState, sandbox, hero, S };
 }
 
 test('Wira keeps the normal hero pose during the early close-up', () => {
   const { apply, S, hero } = makeReactionFixture();
   const active = { heroSurprised: false };
-  apply(active, { surprised: { tex: 'surprised' } }, 1.21);
+  apply(active, { surprised: { tex: 'surprised',offX:0,offY:.4 } }, 1.21);
   assert.equal(active.heroSurprised, false);
   assert.equal(S.heroLock, 'idle');
   assert.equal(hero.material.map, 'idle');
@@ -86,12 +86,12 @@ test('Wira keeps the normal hero pose during the early close-up', () => {
 test('Wira swaps to the optional surprised full-body pose on the wide reveal', () => {
   const { apply, S, hero } = makeReactionFixture();
   const active = { heroSurprised: false };
-  const surprised = { tex: 'surprised' };
+  const surprised = { tex: 'surprised',offX:0,offY:.4 };
   apply(active, { surprised }, 1.2);
   assert.equal(active.heroSurprised, true);
   assert.equal(S.heroLock, surprised);
   assert.equal(hero.material.map, 'surprised', 'the wide shot renders the reaction immediately');
-  apply(active, { surprised: { tex: 'other' } }, 1.21);
+  apply(active, { surprised: { tex: 'other',offX:0,offY:.4 } }, 1.21);
   assert.equal(active.heroSurprised, true);
   assert.equal(S.heroLock, surprised, 'the surprise lock remains until Restu cleanup restores the saved state');
 });
@@ -108,7 +108,7 @@ test('missing optional surprised asset leaves Restu loading usable', async () =>
 
 test('Restu cleanup restores the saved Wira map and lock', () => {
   const { restore, sandbox, hero, S } = restoreFixture();
-  const oldPose = { tex: 'idle', w: 1, h: 1 };
+  const oldPose = { tex: 'idle', w: 1, h: 1,offX:0,offY:.5 };
   const oldState = { camZoom: 1, camZoomTo: 1, camPunch: 0, camFX: 0, camFY: 0, camK: 8, par: 0, parTo: 0, introT: -1, running: false, introShown: false, heroPose: oldPose, heroLock: 'slash' };
   restore(oldState);
   assert.equal(hero.material.map, 'idle');
@@ -121,7 +121,7 @@ test('Restu cleanup restores the saved Wira map and lock', () => {
 
 test('cancel cleanup cannot leak the temporary Wira surprised pose', () => {
   const { restore, hero, S } = restoreFixture();
-  const oldPose = { tex: 'idle', w: 1, h: 1 };
+  const oldPose = { tex: 'idle', w: 1, h: 1,offX:0,offY:.5 };
   restore({ camZoom: 1, camZoomTo: 1, camPunch: 0, camFX: 0, camFY: 0, camK: 8, par: 0, parTo: 0, introT: -1, running: false, introShown: false, heroPose: oldPose, heroLock: null });
   assert.equal(hero.material.map, 'idle');
   assert.equal(S.heroLock, null);

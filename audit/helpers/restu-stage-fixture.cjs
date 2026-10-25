@@ -21,7 +21,7 @@ function fixture(){
  const sayEl={textContent:'',style:{},offsetWidth:170,offsetHeight:62,classList:{add(...xs){xs.forEach(x=>classes.add(x))},remove(...xs){xs.forEach(x=>classes.delete(x))},contains:x=>classes.has(x)}};
  const bg=mesh(0,16,10,-8),groundOverlay=mesh(0,16,10,-7.45);
  const sandbox={Math,WeakMap,performance:{now:()=>0},GROUND:-1.92,HERO_HOME:-1.62,SEAL_X:1.52,
-  S:{active:0,heroLock:null,running:false,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,camK:8,par:0,parTo:0,introT:-1,camY:0,dark:0,darkTo:0,speedFx:0,shake:0},
+  S:{heroFeet:-1.62,heroX:-1.62,hopT:-1,hopFrom:-1.62,hopDur:.34,heroLift:0,petY:-1.92,petFeet:-1.92,active:0,heroLock:null,running:false,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,camK:8,par:0,parTo:0,introT:-1,camY:0,dark:0,darkTo:0,speedFx:0,shake:0},
   hero,pet,companion,heroShadow:mesh(-1.62,2,.1),petShadow:mesh(1.52,1.12,.1),
   restuMesh:teacher,restuFx:mesh(0,2.12,2.12,.18),seals:[{front:dome}],shell:mesh(1.52),floorGlow:mesh(1.52),backGlow:mesh(1.52),wave:mesh(1.52),flash:mesh(1.52),
   camera:{aspect:1,fov:36,position:vector(0,0,10),view:null,clearViewOffset(){this.view=null},setViewOffset(fullWidth,fullHeight,offsetX,offsetY,width,height){this.view={fullWidth,fullHeight,offsetX,offsetY,width,height,enabled:true}}},
@@ -34,8 +34,8 @@ function fixture(){
   proj(x,y,z=0){return{x,y,z,ppu:100}},
  };
  const constants=source.slice(source.indexOf('    const RESTU_FACE='),source.indexOf('    let restuName='));
- const names=['viewZoom','applyParallax','placeSay','hideSay','showRestuSurprise','setRestuPose','applyRestuHeroReaction','restuOnce','restuLayout','restuBounds','restoreRestuLayout','restuApplyLayout','restuFrame','restuProjectFx','restoreRestuState','cancelRestuEntry','playRestuEntry'];
- vm.runInNewContext(`${constants}\n${names.map(extract).join('\n')}\nthis.api={bubble:sayEl,placeSay,showSurprise:showRestuSurprise,hideSay,background:applyParallax,viewZoom,layout:restuLayout,bounds:restuBounds,restoreLayout:restoreRestuLayout,applyLayout:()=>restuApplyLayout(restuActive),projectFx:restuProjectFx,restore:restoreRestuState,cancel:cancelRestuEntry,play:playRestuEntry,afterLand:RESTU_AFTER_LAND,landAt:RESTU_T_LAND,endAt:RESTU_MS,frame:restuFrame,setData(d){restuLoaded=d},setActive(a){restuActive=a},getActive(){return restuActive}}`,sandbox);
+ const names=['viewZoom','applyParallax','placeSay','hideSay','showRestuSurprise','setRestuPose','swapRestuHeroPose','applyRestuHeroReaction','restuOnce','restuLayout','restuBounds','restoreRestuLayout','restuFloorY','restuApplyLayout','restuFrame','restuProjectFx','restoreRestuState','cancelRestuEntry','playRestuEntry'];
+ vm.runInNewContext(`${constants}\n${names.map(extract).join('\n')}\nthis.api={swapHero:swapRestuHeroPose,floorY:restuFloorY,bubble:sayEl,placeSay,showSurprise:showRestuSurprise,hideSay,background:applyParallax,viewZoom,layout:restuLayout,bounds:restuBounds,restoreLayout:restoreRestuLayout,applyLayout:()=>restuApplyLayout(restuActive),projectFx:restuProjectFx,restore:restoreRestuState,cancel:cancelRestuEntry,play:playRestuEntry,afterLand:RESTU_AFTER_LAND,landAt:RESTU_T_LAND,endAt:RESTU_MS,frame:restuFrame,setData(d){restuLoaded=d},setActive(a){restuActive=a},getActive(){return restuActive}}`,sandbox);
  const data=Object.fromEntries(['anticipate','fall','preland','land'].map((key,i)=>[key,{tex:{key,image:{metric:{cx:.08-i*.025,boxW:.84}}},w:2.12,h:2.12,offX:.1+i*.04,offY:1}]));
  sandbox.api.setData(data);sandbox.api.setActive({token:1,started:0,duration:sandbox.api.endAt,x:0,fired:{},result:{}});
  return {...sandbox.api,sandbox,data,timers,mesh:teacher,fx:sandbox.restuFx,state:sandbox.S};
