@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.15.0';
+  const VERSION='1.16.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -352,12 +352,14 @@
       const nf=spec.money?rm:nf_;   // money rounds read RM / sen
       // A story that asks for the rest ("BUKAN merah"): (100 − p)% straight away.
       const lead=spec.rest?`Bukan ${spec.rest}% = ${100-spec.rest}%. `:'';
-      const items=[`100% = ${nf(Q)}`,null],steps=[pick(`${lead}10% daripada ${nf(Q)} = ${nf(Q)} ÷ 10 = ?`,nf(ten),[Q,ten*10,ten+10].map(nf),{fill:{i:1,v:`10% = ${nf(ten)}`}})];
-      if(half){items.push(null);steps.push(pick(`5% ialah separuh daripada 10%: ${nf(ten)} ÷ 2 = ?`,nf(half),[ten,ten*2,half+1].map(nf),{fill:{i:2,v:`5% = ${nf(half)}`}}))}
-      if(!k){const st=steps[steps.length-1];st.after.fill={i:2,v:`5% = ${nf(half)}`};return{op:'seq',rows:[],items,steps,done:`5% daripada ${nf(Q)} = ${nf(v)}.`,answer:v}}
-      items.push(null);const last=items.length-1;
-      steps.push(pick(half?(k?`${p}% = ${k} × 10% + 5% = ${k} × ${nf(ten)} + ${nf(half)} = ?`:`${p}% = 5% = ?`):`${p}% = ${k} × 10% = ${k} × ${nf(ten)} = ?`,nf(v),[v+ten,v-half||v+1,k*ten*10].filter(x=>x>0).map(nf),{fill:{i:last,v:`${p}% = ${nf(v)}`}}));
-      return{op:'seq',rows:[],items,steps,done:`${p}% daripada ${nf(Q)} = ${nf(v)}.`,answer:v};
+      // Owner (2026-10-25): each box says what it holds (100%, 10%, 5%, p%) above it, so the trail reads without guessing.
+      const items=[nf(Q),null],labels=['100%','10%'],steps=[pick(`${lead}10% = ${nf(Q)} ÷ 10 = ?`,nf(ten),[Q,ten*10,ten+10].map(nf),{fill:{i:1,v:nf(ten)}})];
+      if(p===10)return{op:'seq',rows:[],items,labels,steps,done:`10% daripada ${nf(Q)} = ${nf(v)}.`,answer:v};   // the 10% box is the answer
+      if(half){items.push(null);labels.push('5%');steps.push(pick(`5% = separuh 10% = ${nf(ten)} ÷ 2 = ?`,nf(half),[ten,ten*2,half+1].map(nf),{fill:{i:2,v:nf(half)}}))}
+      if(!k){const st=steps[steps.length-1];st.after.fill={i:2,v:nf(half)};return{op:'seq',rows:[],items,labels,steps,done:`5% daripada ${nf(Q)} = ${nf(v)}.`,answer:v}}
+      items.push(null);labels.push(`${p}%`);const last=items.length-1;
+      steps.push(pick(half?`${p}% = ${k} × 10% + 5% = ${k} × ${nf(ten)} + ${nf(half)} = ?`:`${p}% = ${k} × 10% = ${k} × ${nf(ten)} = ?`,nf(v),[v+ten,v-half||v+1,k*ten*10].filter(x=>x>0).map(nf),{fill:{i:last,v:nf(v)}}));
+      return{op:'seq',rows:[],items,labels,steps,done:`${p}% daripada ${nf(Q)} = ${nf(v)}.`,answer:v};
     }
     if(t==='fracToPct'){
       const{a,b}=spec,k=100/b;if(!Number.isInteger(k)||a<1||a>=b)return null;const p=a*k;
@@ -732,7 +734,7 @@
       return `<div class="wk-board wk-gridb"><div class="wk-hg">${g}</div></div>`;
     }
     if(plan.op==='seq'){
-      return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?`<i class="wk-hop" data-h="${i}" aria-hidden="true">${plan.hops?'':'›'}</i>`:''}<span class="wk-c wk-box${v===null?' wk-q':''}${v!==null&&String(nf(v)).length>7?' wk-long':''}" data-i="${i}">${v===null?'?':nf(v)}</span></span>`).join('')}</div></div>`;
+      return `<div class="wk-board wk-seq"><div class="wk-trail">${plan.items.map((v,i)=>`<span class="wk-step">${i?`<i class="wk-hop" data-h="${i}" aria-hidden="true">${plan.hops?'':'›'}</i>`:''}${plan.labels?`<span class="wk-lbox"><small class="wk-lab">${esc(plan.labels[i]??'')}</small>`:''}<span class="wk-c wk-box${v===null?' wk-q':''}${v!==null&&String(nf(v)).length>7?' wk-long':''}" data-i="${i}">${v===null?'?':nf(v)}</span>${plan.labels?'</span>':''}</span>`).join('')}</div></div>`;
     }
     if(plan.op==='pv'){
       const pdp=plan.dp||0,NM=pdp?names(pdp):PLACE,HD=i=>i<pdp?DECH[pdp-1-i]:NM[i],ptc=i=>pdp&&i===pdp?' wk-pt':'';
@@ -801,7 +803,7 @@
         R.querySelectorAll('.wk-look').forEach(x=>x.classList.remove('wk-look'))}if(el.tiles)el.tiles.classList.remove('wk-pickhere')};
     /* "Look here": a number the step works on glows where the pupil can see it: a board cell first, then a table
        cell or card on the page, then the number inside a work line ("3 kg = 3 000 g"). Never Wira's line or the tiles. */
-    const skip=n=>{for(let x=n;x&&x!==lookRoot.parentNode;x=x.parentElement){if(x===el.say||x===el.tiles||x===el.inline||x.tagName==='BUTTON'||(x.classList&&(x.classList.contains('wk-ghost')||x.classList.contains('wk-hide')||x.classList.contains('wk-next'))))return true}
+    const skip=n=>{for(let x=n;x&&x!==lookRoot.parentNode;x=x.parentElement){if(x===el.say||x===el.tiles||x===el.inline||x.tagName==='BUTTON'||(x.classList&&(x.classList.contains('wk-ghost')||x.classList.contains('wk-lab')||x.classList.contains('wk-hide')||x.classList.contains('wk-next'))))return true}
       const e=n.nodeType===1?n:n.parentElement;return !e||!e.getClientRects().length};
     const numPat=t=>{const v=String(t).replace(/[\s\u00a0,]/g,'');if(!/^\d+(\.\d+)?$|^\d{1,2}:\d{2}$/.test(v))return null;
       const [i,d]=v.split('.'),body=i.replace(/\B(?=(\d{3})+(?!\d))/g,'§').replace(/§/g,'[\\s\\u00a0,]?')+(d?'\\.'+d:'');
@@ -828,7 +830,9 @@
         if(last===0)continue;if(last<v.length)f.appendChild(document.createTextNode(v.slice(last)));t.parentNode.replaceChild(f,t)}};
     const cue=s=>{
       clearCue();
-      try{markQ(el.say)}catch(_){}
+      try{markQ(el.say);
+        // Wira's line is a grid: keep the sentence and its "?" on one line by wrapping them in one span.
+        if(el.say.childNodes.length>1){const w=document.createElement('span');while(el.say.firstChild)w.appendChild(el.say.firstChild);el.say.appendChild(w)}}catch(_){}
       el.say.classList.remove('wk-saynew');void el.say.offsetWidth;el.say.classList.add('wk-saynew');
       if(s.kind==='tap')return;
       const A=s.after||{},tg=[];
