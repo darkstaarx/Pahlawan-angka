@@ -376,6 +376,17 @@ composition, lock policy.
 
 Last updated: 2026-10-24 (PRs #107–#109 merged: Segel stage polish, see "Segel stage polish" below). Read this section first if you are picking up the work.
 
+**Affiliate page (3.87.56, owner 2026-10-25).** `affiliate.html` + `js/affiliate-page-v1.js`: sign up as an
+affiliate without entering the app (Google or e-mail; consent to Terma/Privasi), give name and phone, and get
+the referral link at once (`https://pahlawanangka.netlify.app/?ref=CODE`) with Salin, WhatsApp, native share
+and a ready caption. Same Supabase project and default session as the app, so the account works in the app.
+It calls the existing `affiliate-application` edge function (approved at registration; welcome e-mail
+queued). The front page (`landing-approved-v1.html` 1.4.1) has "Jana komisen: jadi rakan affiliate"
+(`target=_top`, out of the app frame). The welcome e-mail (`_shared/affiliate-email.ts`) now links the
+affiliate page and adds "Cuba sendiri dulu" with a demo button; **it needs `send-payment-emails` redeployed**.
+If Google sign-in comes back to the home page instead of this page, add `…/affiliate.html` to Supabase Auth
+→ Redirect URLs. Test: `audit/affiliate-page-browser.test.js`.
+
 **Status at a glance (2026-10-24).**
 - Merged into `main`: every PR up to #118 (3.87.46).
 - Netlify: 3.87.37 is live (2026-10-24). It was deployed from this cloud session through the Netlify
