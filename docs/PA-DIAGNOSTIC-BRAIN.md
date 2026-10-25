@@ -468,6 +468,15 @@ into the live Three.js stage.
   never smaller than needed to cover the crop window), and a front layer on the 2D effects canvas (dark
   grass silhouettes + light motes, `drawParallaxFront`) grows `z^1.25` and moves 1.45× the crop shift.
   Normal attacks still keep the full view. `reduceMotion` skips it (returns before the zoom).
+- 3.87.54 (owner: the pieces should fly "macam 3D … ke kiri ke kanan" while still zoomed, and the
+  lightning should "turun daripada langit dan kena segel"):
+  - The camera stays close through the glacier (eases from 1.42 to `FIN_GLACIER_ZOOM` 1.24) and the seal
+    breaks while zoomed; `applyHit()` pulls back to the full view `FIN_BREAK_HOLD_MS` 750 after the break
+    (`finalBreakFx` no longer resets the zoom; its flash is softer, .55, so the pieces show).
+  - The last seal's 10 pieces fly in 3D (`shatter(s,true)`): towards the camera (`vz`), out to the left or
+    right of the screen, tumbling on x/y (double-sided); they vanish before reaching the camera.
+  - `drawSkyBolts`: once a glacier sheet reaches its bolt frames (7+), a flickering jagged bolt (glow, core,
+    two branches, redrawn every ~60 ms) joins the top of the stage to the bolt tip, with a sky flash.
 - **Next:** owner tests on a real phone. Likely tweaks: glacier slow-motion speed,
   hop height (`.55`), greeting wording. Not done: the old battle screen
   (`#battleArena`) was not changed.

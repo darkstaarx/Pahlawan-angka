@@ -956,9 +956,10 @@
       const g=new THREE.PlaneGeometry(1,1);
       const m=new THREE.Mesh(g, sealMaterial(null));
       m.renderOrder=4; m.visible=false; scene.add(m);
-      shards.push({mesh:m, vx:0, vy:0, spin:0, life:0});
+      m.material.side=THREE.DoubleSide;   // kepingan berpusing dalam 3D (gembok terakhir) mesti nampak kedua-dua muka
+      shards.push({mesh:m, vx:0, vy:0, vz:0, spin:0, rx:0, ry:0, life:0});
     }
-    function shatter(seal){
+    function shatter(seal,big=false){
       const e=seal.front, tex=e.material.uniforms.map.value;
       const pw=e.scale.x, ph=e.scale.y;
       const cx=e.position.x, cy=e.position.y;
@@ -985,6 +986,15 @@
         s.vx=Math.cos(out)*sp; s.vy=Math.sin(out)*sp+1.5;
         s.spin=(Math.random()-.5)*11;
         s.life=.85+Math.random()*.35;
+        s.vz=0; s.rx=0; s.ry=0; s.mesh.rotation.x=s.mesh.rotation.y=0;
+        if(big){
+          // Gembok terakhir (pemilik): kepingan terpelanting KE ARAH kamera dan ke kiri/kanan skrin, sambil
+          // berpusing dalam 3D. Kamera perspektif membesarkannya sendiri bila ia makin dekat.
+          const side=Math.cos(out)>=0?1:-1;
+          s.vx=side*(2.6+Math.random()*3.4)+Math.cos(out)*1.2; s.vy=Math.sin(out)*2.2+1.8+Math.random()*1.6;
+          s.vz=3.2+Math.random()*4.2; s.rx=(Math.random()-.5)*9; s.ry=(Math.random()-.5)*9;
+          s.life=1.15+Math.random()*.35;
+        }
       });
     }
 
@@ -1097,7 +1107,7 @@
        HANYA bingkai kamera yang berubah (potongan zoom). Jam animasi pet
        (tAcc / petFrameT0 / petHold / petFps) tidak disentuh langsung, jadi
        kelajuan animasi sedih dalam kurungan kekal seperti asal. */
-    const FIN_ZOOM=1.42, FIN_HOLD_MS=260, FIN_PULL_K=2.4;   // jurus penamat: zoom masuk, tahan pada sentuhan, tarik balik
+    const FIN_ZOOM=1.42, FIN_HOLD_MS=260, FIN_PULL_K=2.4, FIN_GLACIER_ZOOM=1.24, FIN_BREAK_HOLD_MS=750;   // jurus penamat: zoom masuk, tahan pada sentuhan, tarik balik
     const PET_INTRO_HOLD=1.1;           // saat kamera kekal dekat pada pet
     const PET_INTRO_PULL=1.2;           // saat kamera tarik balik ke arena penuh
     const PET_INTRO_PARTICLES_AT=1.35;  // zarah Wira mula bergerak di tengah tarikan
@@ -1523,6 +1533,8 @@
         s.mesh.position.x+=s.vx*dt;
         s.mesh.position.y+=s.vy*dt;
         s.mesh.rotation.z+=s.spin*dt;
+        if(s.vz){ s.mesh.position.z+=s.vz*dt; s.mesh.rotation.x+=s.rx*dt; s.mesh.rotation.y+=s.ry*dt;
+          if(s.mesh.position.z>camera.position.z-1.2)s.life=0 }   // jangan tembus kamera
         s.mesh.material.uniforms.uOpacity.value=Math.max(0,Math.min(1,s.life*1.6));
         if(s.life<=0)s.mesh.visible=false;
       });
@@ -1889,10 +1901,11 @@
     /* Gembok Emas pecah: letupan emas, arena kembali terang, bar hilang. */
     function finalBreakFx(s){
       const vis=s.tier.visible, cx=SEAL_X, cy=GROUND+vis*.5, col=tierCss(s);
-      S.freeze=Math.max(S.freeze,.12); S.camPunch=.08; S.camZoomTo=1; S.darkTo=0; S.slow=1; S.heroAura=0;
+      // Kamera kekal dekat semasa pecahan (applyHit menarik balik selepas FIN_BREAK_HOLD_MS).
+      S.freeze=Math.max(S.freeze,.12); S.camPunch=.12; S.darkTo=0; S.slow=1; S.heroAura=0;
       host.classList.remove('segel-letterbox');
-      if(reduceMotion){ clearCracks(s); return }
-      fxFlash(.9,'#fff6d8');
+      if(reduceMotion){ S.camZoomTo=1; clearCracks(s); return }
+      fxFlash(.55,'#fff6d8');   // lebih lembut supaya kepingan yang terpelanting nampak
       fxRing(cx,cy,.2,vis*1.4,.6,col); fxRing(cx,GROUND+.05,.2,vis*1.8,.7,'#ffe9b0');
       fxSparks(cx,cy,110,['#ffffff','#ffe08a',col],Math.PI/2,Math.PI*2);
       fxGlows(cx,cy,30,'rgba(255,214,120,.9)');
@@ -1991,10 +2004,50 @@
       }
       fx2.restore();
     }
+    /* Petir dari langit (pemilik, 2026-10-25): lembaran petir ais hanya setinggi kubah. Bila petirnya
+       naik (bingkai 7 ke atas), sambungkan dari atas skrin turun ke hujung petir itu, jadi ia nampak turun
+       dari langit dan menghentam gembok. Garis bergerigi dilukis semula setiap ~60 ms supaya berkelip. */
+    let boltSeed=0, boltPaths=[];
+    function boltPath(x0,y0,x1,y1,seg){
+      const pts=[[x0,y0]];
+      for(let i=1;i<seg;i++){const t=i/seg, sway=(Math.random()-.5)*Math.min(46,Math.abs(y1-y0)*.12)*(1-Math.abs(t-.5));
+        pts.push([x0+(x1-x0)*t+sway,y0+(y1-y0)*t])}
+      pts.push([x1,y1]);return pts;
+    }
+    function strokeBolt(pts,a){
+      for(const [w,al,c] of [[16,.18,'rgba(110,210,255,1)'],[6,.55,'rgba(150,230,255,1)'],[2.2,1,'#ffffff']]){
+        fx2.globalAlpha=a*al; fx2.strokeStyle=c; fx2.lineWidth=w; fx2.beginPath();
+        pts.forEach((p,i)=>i?fx2.lineTo(p[0],p[1]):fx2.moveTo(p[0],p[1])); fx2.stroke();
+      }
+    }
+    function drawSkyBolts(cw,ch){
+      const now=performance.now(), fresh=now-boltSeed>60;
+      if(fresh){boltSeed=now;boltPaths=[]}
+      fx2.save(); fx2.globalCompositeOperation='lighter'; fx2.lineCap='round'; fx2.lineJoin='round';
+      let lit=0;
+      glacierLayers.forEach((layer,i)=>{
+        const f=Number(layer.dataset.glacierFrame)||0;
+        if(layer.style.display==='none'||f<7||Number(layer.style.opacity||1)<.05)return;
+        const L=parseFloat(layer.style.left), T=parseFloat(layer.style.top), Wd=parseFloat(layer.style.width), Hd=parseFloat(layer.style.height);
+        if(!(Wd>0))return;
+        const x1=L+Wd*.52, y1=T+Hd*.05, x0=x1+(i-1)*cw*.06;
+        if(fresh||!boltPaths[i]){
+          const main=boltPath(x0,-12,x1,y1,12), br=[];
+          for(let k=0;k<2;k++){const j=2+((Math.random()*(main.length-5))|0), p=main[j];
+            br.push(boltPath(p[0],p[1],p[0]+(Math.random()<.5?-1:1)*(30+Math.random()*50),p[1]+40+Math.random()*60,5))}
+          boltPaths[i]={main,br};
+        }
+        const a=Math.min(1,Number(layer.style.opacity||1))*(f>=10?.7:1);
+        strokeBolt(boltPaths[i].main,a); boltPaths[i].br.forEach(b=>strokeBolt(b,a*.6)); lit++;
+      });
+      if(lit){ const g=fx2.createLinearGradient(0,0,0,ch*.35); g.addColorStop(0,'rgba(170,230,255,.35)'); g.addColorStop(1,'rgba(170,230,255,0)');
+        fx2.globalAlpha=Math.min(1,lit/2)*(.6+.4*Math.random()); fx2.fillStyle=g; fx2.fillRect(0,0,cw,ch*.35) }
+      fx2.restore();
+    }
     function fxFrame(dt,rdt=dt){
       fxFlashA=Math.max(0,fxFlashA-rdt*3.2);   // kilat ikut masa sebenar, bukan gerak perlahan
       S.speedFx=Math.max(0,S.speedFx-dt*1.2);
-      if(!fxParts.length&&!fxArcs.length&&fxFlashA<=0&&S.heroAura<=.02&&S.speedFx<=.02&&S.par<=.01){
+      if(!fxParts.length&&!fxArcs.length&&fxFlashA<=0&&S.heroAura<=.02&&S.speedFx<=.02&&S.par<=.01&&!finalImpactActive){
         if(fxDirty){ fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height); fxDirty=false }
         return;
       }
@@ -2002,6 +2055,7 @@
       fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height);
       fx2.setTransform(fxDpr,0,0,fxDpr,0,0);
       const cw=fxCanvas.width/fxDpr, ch=fxCanvas.height/fxDpr;
+      if(finalImpactActive)drawSkyBolts(cw,ch);
       if(S.par>.01)drawParallaxFront(cw,ch,rdt);
       // Aura serap kuasa: gelang di kaki Wira, tiang cahaya, zarah naik.
       if(S.heroAura>.02&&hero.visible){
@@ -2336,11 +2390,12 @@
           // The 11 authored glacier frames start exactly when the sword lands.
           iceHit(SEAL_X,GROUND+.78);
           S.waveT=0; S.shake=.32;
-          // Tahan dekat sekejap pada sentuhan, kemudian tarik balik bersama petir.
-          wait(FIN_HOLD_MS).then(()=>{ if(lifecycle===S.lifecycle){ S.camK=FIN_PULL_K; S.camZoomTo=1 } });
+          // Selepas sentuhan, kamera undur sedikit sahaja (petir dari langit masih nampak) dan kekal dekat
+          // sehingga gembok pecah; applyHit() menarik balik selepas pecahan.
+          wait(FIN_HOLD_MS).then(()=>{ if(lifecycle===S.lifecycle){ S.camK=FIN_PULL_K; S.camZoomTo=FIN_GLACIER_ZOOM } });
           // Do not let respond() shatter the seal until the glacier finishes.
           while(finalImpactActive&&lifecycle===S.lifecycle)await wait(16);
-          S.slow=1; S.camK=8; S.camZoomTo=1; S.parTo=0;
+          S.slow=1;
           if(lifecycle!==S.lifecycle)return;
           return;
         }
@@ -2391,9 +2446,12 @@
         if(!reduceMotion&&!fromContact)S.hitT=0;     // kubah melantun
         if(s.damage>=.999){
           s.broken=true; s.breakT=0;
-          if(!reduceMotion)shatter(s);
+          const lastSeal=S.active+1>=stageTiers.length;
+          if(!reduceMotion)shatter(s,lastSeal);
           popSound();
           burst(6.5,s.tier.color);
+          // Pecah semasa kamera masih dekat (pemilik), kemudian baru tarik balik ke pandangan penuh.
+          if(lastSeal&&S.camZoomTo>1.001){ const lc=S.lifecycle; wait(FIN_BREAK_HOLD_MS).then(()=>{ if(lc===S.lifecycle){ S.camK=FIN_PULL_K; S.camZoomTo=1; S.parTo=0 } }) }
           waveMat.color.setHex(s.tier.color); S.waveScale=1.35; S.waveT=0;
           S.flashT=0; S.shake=.46; S.hitT=-1;
           const nextTier=S.active+1;
