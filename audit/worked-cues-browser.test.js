@@ -156,10 +156,12 @@ test('Gerai Wirayung: one item to pay ("Jumlah ?"), "Jom tengok cara" gives a Fa
     await page.evaluate(id => document.querySelector(`#stationShelf [data-id="${id}"]`).click(), m.items[0]);
     await page.waitForTimeout(300); await page.click('#go'); await page.waitForTimeout(2200);
     await page.evaluate(() => __geraiWk.start()); await page.waitForTimeout(400);
-    assert.match(await page.evaluate(() => document.getElementById('wkSay').textContent), /^Jumlah /);
+    assert.match(await page.evaluate(() => document.getElementById('wkSay').textContent), /^(Jumlah|Satu barang)/);
+    assert.ok(await page.evaluate(() => !!document.querySelector('.wk-modal .wk-card #wkSay') && !!document.querySelector('.wk-modal .wk-card .wk-go')), 'the same card as every walkthrough');
     await page.click('#wkTiles .wk-go'); await page.waitForTimeout(1800);
     const st = await page.evaluate(() => ({ scene: getComputedStyle(document.querySelector('.scene')).display, purse: document.getElementById('purse').getClientRects().length > 0, go: document.getElementById('go').disabled }));
     assert.deepEqual(st, { scene: 'block', purse: true, go: false }, 'back to the counter with the coins');
+    assert.equal(await page.evaluate(() => !!document.querySelector('.wk-modal')), false, 'the card is gone');
   }
   assert.ok(found, 'a one-item round came up');
   assert.deepEqual(errors, []); await ctx.close();

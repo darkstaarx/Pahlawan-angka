@@ -739,6 +739,10 @@ digit, then the round's choices.
      a 10% question stops at the 10% box (no "1 × 10%" step). Wira's sentence and its "?" stay on one
      line (the line is a grid; they are wrapped in one span). In the card, choices look like buttons in
      every game. `PAWorked` 1.16.0.
+   - **Gerai one-item total in the card (3.87.52, owner: "Ini belum buat?").** A one-item Bayar has no
+     board, so it skipped the card. `PAWorked.card(el,opt)` 1.17.0 opens the same card for a page that fills
+     it itself: "Langkah 1/1", "Satu barang sahaja: jumlah = harganya, RM2.40.", Faham. The receipt's
+     "Jumlah ?" is outlined while the card is up and gets the amount on Faham.
    - **Gerai stuck screen (3.87.49, owner on a phone: "takle tekan apa apa").** A one-item Bayar round has
      no board, so "Jom tengok cara" shows the mode's `answer` text with a Faham card. `val()` called mode
      methods without their mode, `this.sum` threw, and the pupil was left with an empty panel (and, since

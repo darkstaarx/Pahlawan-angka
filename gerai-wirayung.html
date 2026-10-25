@@ -367,7 +367,7 @@ main.pa-game .scene{--waist:90px;--belt:.55;--aspect:1.5;--ww:clamp(100px,58cqh,
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.2.0"></script>
 <script src="js/minigame-wsay-v1.js?v=1.0.0"></script>
-<script src="js/minigame-worked-v1.js?v=1.16.0"></script>
+<script src="js/minigame-worked-v1.js?v=1.17.0"></script>
 <script>/* Gerai Wirayung — router Kemahiran Fokus → mini-game wang.
    Membaca encounter learnerReviewV1 yang SAMA digunakan oleh focusPracticeSummary()
    dan memutuskan sama ada skill wang yang lemah sesuai dilatih di gerai.
@@ -602,7 +602,7 @@ const MODES={
    if(pr.length===1)return 'Pecahkan '+money(pr[0])+': RM'+Math.floor(pr[0]/100)+' dan '+(pr[0]%100)+' sen.';
    return 'Tambah ringgit dulu: RM'+Math.floor(pr[0]/100)+' + RM'+Math.floor(pr[1]/100)+'. Kemudian sen: '+(pr[0]%100)+' + '+(pr[1]%100)+' sen.'},
   answer(o){const pr=o.items.map(id=>P(id).price),t=this.sum(o);
-   return (o.qty>1?money(pr[0])+' × '+o.qty+' = ':pr.length>1?pr.map(money).join(' + ')+' = ':'Jumlah ')+money(t)+'.'},
+   return (o.qty>1?money(pr[0])+' × '+o.qty+' = ':pr.length>1?pr.map(money).join(' + ')+' = ':'Satu barang sahaja: jumlah = harganya, ')+money(t)+'.'},
   stamp:(o,v)=>money(v),revenue(o){return this.sum(o)}},
  baki:{
   make(t){const items=chooseItems(t.n),qty=t.qty?rnd(t.qty[0],t.qty[1]):1;
@@ -994,7 +994,12 @@ function startWorked(){
  const box=document.createElement('div');box.id='wkPanel';box.className='wk-wrap';
  box.innerHTML='<div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div><div class="tiles wk" id="wkTiles"></div>';
  $('receipt').after(box);
- if(!wp){$('wkSay').innerHTML=esc(val(M().answer,m,M()));$('wkTiles').innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';$('wkTiles').querySelector('button').onclick=wkDone;return}
+ if(!wp){
+  // No board (one item, so the total is its price): the same card, Wira's line and Faham. The receipt's "?" is the one we find.
+  const C=W.card&&W.card({board:$('wkBoard'),say:$('wkSay'),tiles:$('wkTiles')},{step:'Langkah 1/1'});
+  h.textContent='Langkah 1/1';wkParts=[1];wkNow(0);
+  $('wkSay').innerHTML=esc(val(M().answer,m,M()));$('wkTiles').innerHTML='<button type="button" class="tl wk-t wk-go">Faham</button>';
+  $('wkTiles').querySelector('button').onclick=()=>{const q=[...$('receipt').querySelectorAll('.q')].pop();if(q){q.textContent=money(target());q.classList.remove('now','later');q.classList.add('found')}C&&C.close();wkDone()};return}
  wkParts=wp.chain?wp.chain.chain.map(p=>p.steps.length):[wp.plan.steps.length];
  (wp.chain?W.runChain:W.run)(wp.chain||wp.plan,{board:$('wkBoard'),tiles:$('wkTiles'),inline:$('wkInline'),say:$('wkSay')},wkDone,
   {onFact:f=>W.reportFact('gerai-wirayung',f,paRound),onStep:()=>tone(700,.06),onMiss:()=>sfx.bad(),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n;wkNow(i)},

@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.16.0';
+  const VERSION='1.17.0';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -164,9 +164,11 @@
      game: step count, Wira's line, the board, the choices, read top to bottom. The page's own panel and
      choice row are moved into the card and put back, finished, when the last step is done (or when the
      page removes its panel). opt.inline keeps the old in-page layout. */
-  function withCard(el,opt,onDone,start){
-    if(opt.inline||typeof document==='undefined'||!el||!el.board||!el.say)return start(opt,onDone);
-    const wrap=el.say.closest('.wk-wrap')||el.board.parentElement;if(!wrap||!wrap.parentNode)return start(opt,onDone);
+  /* openCard(el,opt): the card itself, for a page that fills it without a board (Gerai's one-item total).
+     Returns {opt, close} or null when the card cannot open. */
+  function openCard(el,opt={}){
+    if(opt.inline||typeof document==='undefined'||!el||!el.say)return null;
+    const wrap=el.say.closest('.wk-wrap')||(el.board&&el.board.parentElement);if(!wrap||!wrap.parentNode)return null;
     const host=wrap.closest('.pa-game,.game,main')||document.body;
     const M=document.createElement('div');M.className='wk-modal';
     M.innerHTML='<div class="wk-card" role="dialog" aria-modal="true" aria-label="Jom tengok cara"><div class="wk-mhead"><b>Jom tengok cara</b><span class="wk-mstep"></span></div></div>';
@@ -181,7 +183,13 @@
     mo&&mo.observe(card,{childList:true});
     // The question's own data (a table, a work card) stays on the page behind the card; numbers can still glow there.
     const o={...opt,lookHome:marks[0]&&marks[0][0].parentNode,onShow:(i,n)=>{lab.textContent='Langkah '+(i+1)+'/'+n;opt.onShow&&opt.onShow(i,n)}};
-    return start(o,p=>{close();onDone&&onDone(p)});
+    if(opt.step)lab.textContent=opt.step;
+    return{opt:o,close};
+  }
+  function withCard(el,opt,onDone,start){
+    if(!el||!el.board)return start(opt,onDone);
+    const C=openCard(el,opt);if(!C)return start(opt,onDone);
+    return start(C.opt,p=>{C.close();onDone&&onDone(p)});
   }
   function run(plan,el,onDone,opt={}){return withCard(el,opt,onDone,(o,d)=>runCore(plan,el,d,o))}
   /* Run the two boards: the first, a short pause with its result, then the second. */
@@ -936,5 +944,5 @@
         prompt:`${f.a} ${SIGN[f.op]} ${f.b}`,answer:String(f.answer),ok:!!f.ok,first:true,hints:0,ms:Math.max(0,f.ms|0),
         facets:{op:f.op,operands:[f.a,f.b],guided:true},...(f.ok?{}:{value:String(f.value).slice(0,24)})},location.origin)}catch(_){}
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,buildList,reportFact,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,_digits:digits,_nf:nf});
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,buildList,reportFact,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,card:openCard,_digits:digits,_nf:nf});
 });
