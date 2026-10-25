@@ -610,11 +610,12 @@
       new THREE.MeshBasicMaterial({map:groundTex,transparent:true,depthWrite:false}));
     groundOverlay.position.z=-7.45; scene.add(groundOverlay);
     const worldH = z => 2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-z);
+    let bgBase=null;   // saiz "cover" latar; paralaks jurus penamat mengecilkannya sedikit dari sini
     function fitBg(){
       const img=arenaTex&&arenaTex.image; if(!img)return;
       const a=img.width/img.height, vh=worldH(-8), vw=vh*camera.aspect;
       const h=Math.max(vh, vw/a); bg.scale.set(h*a,h,1);
-      groundOverlay.scale.set(h*a,h,1);
+      groundOverlay.scale.set(h*a,h,1); bgBase={x:h*a,y:h};
       bg.position.y=S.camY;
       groundOverlay.position.y=S.camY;
     }
@@ -1096,6 +1097,7 @@
        HANYA bingkai kamera yang berubah (potongan zoom). Jam animasi pet
        (tAcc / petFrameT0 / petHold / petFps) tidak disentuh langsung, jadi
        kelajuan animasi sedih dalam kurungan kekal seperti asal. */
+    const FIN_ZOOM=1.42, FIN_HOLD_MS=260, FIN_PULL_K=2.4;   // jurus penamat: zoom masuk, tahan pada sentuhan, tarik balik
     const PET_INTRO_HOLD=1.1;           // saat kamera kekal dekat pada pet
     const PET_INTRO_PULL=1.2;           // saat kamera tarik balik ke arena penuh
     const PET_INTRO_PARTICLES_AT=1.35;  // zarah Wira mula bergerak di tengah tarikan
@@ -1224,7 +1226,7 @@
     const absorbFlare=quad(flareTex,1.05,1.05,.37,true);
 
     const S={heroX:HERO_HOME,heroFeet:HERO_HOME,petY:GROUND,petFeet:GROUND,companionFeet:COMPANION_HOME,companionMirror:true,companionScale:COMPANION_SCALE,camY:0,rescued:false,lifecycle:0,
-             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,freeze:0,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,dashFx:0,slow:1,dark:0,darkTo:0,heroAura:0,speedFx:0,hopT:-1,hopFrom:0,hopDur:.34,heroLift:0,earlyHit:null,heroFade:1,running:true,active:0,
+             shake:0,waveT:-1,waveScale:1.35,hitT:-1,flashT:-1,flareT:-1,iceT:-1,enterT:-1,introT:-1,freeze:0,camZoom:1,camZoomTo:1,camPunch:0,camFX:0,camFY:0,camK:8,par:0,parTo:0,dashFx:0,slow:1,dark:0,darkTo:0,heroAura:0,speedFx:0,hopT:-1,hopFrom:0,hopDur:.34,heroLift:0,earlyHit:null,heroFade:1,running:true,active:0,
              heroFrames:heroIdleE,heroHold:HERO_IDLE_HOLD,heroFps:4,heroFrameT0:0,
              petFrames:petSadE,petHold:PET_IDLE_HOLD,petFps:4,petFrameT0:0,
              companionFrames:petJoyE,companionHold:null,companionFps:2,companionFrameT0:0,
@@ -1753,6 +1755,27 @@
       const FH=1000, FW=FH*camera.aspect, w=FW/zoom, h=FH/zoom;
       const ox=Math.max(0,Math.min(FW-w,fx*FW-w/2)), oy=Math.max(0,Math.min(FH-h,fy*FH-h/2));
       camera.setViewOffset(FW,FH,ox,oy,w,h);
+      return {cx:(ox+w/2)/FW, cy:(oy+h/2)/FH, hw:w/FW/2, hh:h/FH/2};
+    }
+    /* Paralaks jurus penamat (pemilik, 2026-10-25: "lab punya final scene lagi cantik"). Zoom ialah potongan
+       2D, jadi semua lapisan membesar sama. Untuk rasa kedalaman, latar (jauh) membesar KURANG daripada
+       potongan, dan lapisan rumput serta habuk di depan (kanvas 2D) membesar dan bergerak LEBIH. Latar
+       dikecilkan di sekitar tengah tingkap potongan, tidak kurang daripada yang perlu untuk menutup tingkap. */
+    let camWin=null;
+    function applyParallax(z,win){
+      if(!bgBase)return;
+      let q=1;
+      if(S.par>.002&&win&&z>1.0005){
+        q=Math.pow(z,-.42*S.par);
+        const vh8=worldH(-8), vw8=vh8*camera.aspect;
+        const wx=(win.cx-.5)*vw8+camera.position.x, wy=(.5-win.cy)*vh8+camera.position.y;
+        const L=bg.position.x-bgBase.x/2, R=bg.position.x+bgBase.x/2, B=bg.position.y-bgBase.y/2, T=bg.position.y+bgBase.y/2;
+        const need=Math.max(win.hw*vw8/Math.max(1e-3,wx-L), win.hw*vw8/Math.max(1e-3,R-wx), win.hh*vh8/Math.max(1e-3,wy-B), win.hh*vh8/Math.max(1e-3,T-wy));
+        q=Math.min(1,Math.max(q,need*1.01));
+        bg.position.x=wx+(bg.position.x-wx)*q; bg.position.y=wy+(bg.position.y-wy)*q;
+        groundOverlay.position.x=wx+(0-wx)*q; groundOverlay.position.y=wy+(S.camY-wy)*q;
+      }else{ groundOverlay.position.x=0; groundOverlay.position.y=S.camY }
+      bg.scale.set(bgBase.x*q,bgBase.y*q,1); groundOverlay.scale.set(bgBase.x*q,bgBase.y*q,1);
     }
     function cameraFrame(dt){
       // Latar dimalapkan (jurus penamat) — watak kekal terang di depannya.
@@ -1761,12 +1784,13 @@
         bg.material.color.setScalar(1-.62*S.dark); groundOverlay.material.color.setScalar(1-.62*S.dark);
       }
       if(S.introT>=0||introShown){ petIntroCamera(dt); return }
-      S.camZoom+=(S.camZoomTo-S.camZoom)*(1-Math.exp(-8*dt));
+      S.camZoom+=(S.camZoomTo-S.camZoom)*(1-Math.exp(-S.camK*dt));
       S.camPunch*=Math.exp(-10*dt);
+      S.par+=(S.parTo-S.par)*(1-Math.exp(-5*dt)); if(S.parTo===0&&S.par<.003)S.par=0;
       const z=S.camZoom+S.camPunch;
       host.classList.toggle('segel-cam-zoom',z>1.004);
-      if(z<=1.0005){ if(camera.view&&camera.view.enabled)camera.clearViewOffset(); return }
-      viewZoom(z,S.camFX,S.camFY);
+      if(z<=1.0005){ if(camera.view&&camera.view.enabled)camera.clearViewOffset(); applyParallax(1,null); camWin=null; return }
+      camWin=viewZoom(z,S.camFX,S.camFY); applyParallax(z,camWin);
     }
 
     // Bayang dash: empat salinan Wira berwarna biru yang mengekori kedudukannya.
@@ -1934,10 +1958,43 @@
       r.addColorStop(0,'rgba(255,255,255,1)'); r.addColorStop(.25,'rgba(150,225,255,.9)'); r.addColorStop(1,'rgba(150,225,255,0)');
       g.fillStyle=r; g.fillRect(0,0,64,64); return c;
     })();
+    /* Lapisan depan paralaks (sama seperti lab): rumput gelap di bawah dan habuk cahaya di depan kamera.
+       Ia membesar z^1.25 dan beralih 1.45 kali ganjakan potongan, jadi ia "lalu" lebih laju daripada pentas. */
+    let fgLayer=null, fgW=0, fgMotes=[];
+    function buildFront(cw){
+      const fw=Math.round(cw*1.9), fh=Math.round(Math.min(230,cw*.55));
+      fgLayer=document.createElement('canvas'); fgLayer.width=fw; fgLayer.height=fh; fgW=cw;
+      const g=fgLayer.getContext('2d');
+      const lg=g.createLinearGradient(0,fh*.35,0,fh); lg.addColorStop(0,'rgba(4,10,16,0)'); lg.addColorStop(1,'rgba(4,10,16,.85)');
+      g.fillStyle=lg; g.fillRect(0,0,fw,fh);
+      for(let i=0;i<fw/3.2;i++){
+        const x=Math.random()*fw, h=(.15+.55*Math.pow(Math.random(),1.6))*fh, lean=(Math.random()*2-1)*h*.45, w=3+Math.random()*6, v=(8+Math.random()*14)|0;
+        g.fillStyle=`rgb(${v*.5|0},${v+10},${v*.9|0})`;
+        g.beginPath(); g.moveTo(x-w,fh); g.quadraticCurveTo(x+lean*.3,fh-h*.6,x+lean,fh-h); g.quadraticCurveTo(x+lean*.3+w*.4,fh-h*.55,x+w,fh); g.fill();
+      }
+      fgMotes=Array.from({length:18},()=>({x:Math.random(),y:Math.random(),d:1.1+Math.random()*.6,s:2+Math.random()*4,ph:Math.random()*6.3,vy:.03+Math.random()*.05}));
+    }
+    function drawParallaxFront(cw,ch,rdt){
+      if(!fgLayer||Math.abs(fgW-cw)>2)buildFront(cw);
+      const z=S.camZoom+S.camPunch, win=camWin||{cx:.5,cy:.5}, a=S.par;
+      const zf=Math.pow(Math.max(1,z),1.25), fw=fgLayer.width*zf, fh=fgLayer.height*zf;
+      const px=(win.cx-.5)*cw*z*1.45, py=(win.cy-.5)*ch*z*.3;
+      fx2.save(); fx2.globalAlpha=a;
+      fx2.drawImage(fgLayer,cw/2-fw/2-px,ch-fh*.78-py,fw,fh);
+      fx2.globalCompositeOperation='lighter'; const t=performance.now()*.001;
+      for(const m of fgMotes){
+        m.y-=m.vy*rdt; if(m.y<-.05){m.y=1.05;m.x=Math.random()}
+        const x=((m.x*cw-px*m.d)%cw+cw)%cw, y=m.y*ch, r=m.s*(1+.6*(z-1))*m.d;
+        fx2.globalAlpha=a*(.45+.35*Math.sin(t*3+m.ph));
+        const gr=fx2.createRadialGradient(x,y,0,x,y,r*2); gr.addColorStop(0,'rgba(255,240,190,1)'); gr.addColorStop(1,'rgba(255,220,140,0)');
+        fx2.fillStyle=gr; fx2.fillRect(x-r*2,y-r*2,r*4,r*4);
+      }
+      fx2.restore();
+    }
     function fxFrame(dt,rdt=dt){
       fxFlashA=Math.max(0,fxFlashA-rdt*3.2);   // kilat ikut masa sebenar, bukan gerak perlahan
       S.speedFx=Math.max(0,S.speedFx-dt*1.2);
-      if(!fxParts.length&&!fxArcs.length&&fxFlashA<=0&&S.heroAura<=.02&&S.speedFx<=.02){
+      if(!fxParts.length&&!fxArcs.length&&fxFlashA<=0&&S.heroAura<=.02&&S.speedFx<=.02&&S.par<=.01){
         if(fxDirty){ fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height); fxDirty=false }
         return;
       }
@@ -1945,6 +2002,7 @@
       fx2.setTransform(1,0,0,1,0,0); fx2.clearRect(0,0,fxCanvas.width,fxCanvas.height);
       fx2.setTransform(fxDpr,0,0,fxDpr,0,0);
       const cw=fxCanvas.width/fxDpr, ch=fxCanvas.height/fxDpr;
+      if(S.par>.01)drawParallaxFront(cw,ch,rdt);
       // Aura serap kuasa: gelang di kaki Wira, tiang cahaya, zarah naik.
       if(S.heroAura>.02&&hero.visible){
         const f=proj(S.heroFeet,GROUND+.05), t=performance.now();
@@ -2252,8 +2310,10 @@
           // dalam gerak perlahan.
           if(reduceMotion){ sfx('hit'); clearNormalIceFx(); S.waveT=0; return }
           const finVis=tier.visible;
-          // Tiada zoom semasa serangan penamat: petir ais kekal saiz penuh.
-          S.camZoomTo=1; S.camFX=SEAL_X-finVis*.45; S.camFY=GROUND+finVis*.48;
+          // Pemilik (2026-10-25): sebaik Wira meluru, kamera terus zoom masuk ke arah kubah seperti babak
+          // pembuka, dengan paralaks (latar jauh perlahan, rumput depan laju). Pada petir ais kamera tarik
+          // balik perlahan, jadi petir naik dan pecahkan gembok dalam pandangan penuh.
+          S.camFX=SEAL_X-finVis*.55; S.camFY=GROUND+finVis*.5; S.camK=11; S.camZoomTo=FIN_ZOOM; S.parTo=1;
           fxCharge(HERO_HOME-.35,GROUND+.95,1.2,14);
           S.heroLock=heroPrepareE; S.heroX=HERO_HOME-.35; await wait(170);
           if(lifecycle!==S.lifecycle)return;
@@ -2262,6 +2322,7 @@
           S.heroLock=heroSlashE; S.heroX=SLASH_X; await wait(140);
           if(lifecycle!==S.lifecycle)return;
           finisherContactFx(seals[S.active]);
+          S.camPunch=.14;
           S.slow=.6;
           sfx('glacierThunder'); glacierThunderCount=1; clearNormalIceFx();
           finalImpactActive=true; finalImpactPending=true;
@@ -2275,9 +2336,11 @@
           // The 11 authored glacier frames start exactly when the sword lands.
           iceHit(SEAL_X,GROUND+.78);
           S.waveT=0; S.shake=.32;
+          // Tahan dekat sekejap pada sentuhan, kemudian tarik balik bersama petir.
+          wait(FIN_HOLD_MS).then(()=>{ if(lifecycle===S.lifecycle){ S.camK=FIN_PULL_K; S.camZoomTo=1 } });
           // Do not let respond() shatter the seal until the glacier finishes.
           while(finalImpactActive&&lifecycle===S.lifecycle)await wait(16);
-          S.slow=1;
+          S.slow=1; S.camK=8; S.camZoomTo=1; S.parTo=0;
           if(lifecycle!==S.lifecycle)return;
           return;
         }
@@ -2460,7 +2523,7 @@
         finalImpactPending=false; finalImpactActive=false;
         S.iceT=-1; iceBurst.visible=iceEnd.visible=false;
         S.enterT=-1; S.heroFade=1; S.heroFeet=HERO_HOME; endPetIntro();
-        S.freeze=0; S.camZoom=S.camZoomTo=1; S.camPunch=0; S.dashFx=0; S.hopT=-1; S.heroLift=0; S.earlyHit=null; clearHitFx();
+        S.freeze=0; S.camZoom=S.camZoomTo=1; S.camPunch=0; S.camK=8; S.par=S.parTo=0; S.dashFx=0; S.hopT=-1; S.heroLift=0; S.earlyHit=null; clearHitFx();
         enPoints.visible=enHalo.visible=false; enGlow.visible=false;
         enMat.opacity=enHaloMat.opacity=0;
         shards.forEach(s=>{ s.life=0; s.mesh.visible=false });
