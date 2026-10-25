@@ -55,7 +55,8 @@ export function affiliateWelcomeEmail(input: { affiliateCode: string; commission
     'Apa yang buat PA lain daripada app latihan biasa:',
     ...moat.map(([, t, d]) => `- ${t}: ${d}`), '',
     `Cuba demo percuma dahulu: ${url.href}${email ? ` (log masuk dengan ${email})` : ''}`, '',
-    'Bila ada jualan pertama, kami akan hubungi anda untuk butiran bank.',
+    `HADIAH KHAS (tempoh terhad): bayar Akses Keluarga ${rm(premiumPrice)}, kami naik taraf ke Family Plus (${rm(familyPrice)}) tanpa bayaran tambahan. Beli dengan akaun yang sama, kemudian balas email ini dengan email akaun dan rujukan pesanan. Kami aktifkan secara manual.`, '',
+    'Kadar komisen ini untuk tempoh terhad. Bila ada jualan pertama, kami akan hubungi anda untuk butiran bank.',
     'Ada soalan? Balas sahaja email ini.', '',
     'Jumpa dalam pengembaraan,', 'Pasukan Pahlawan Angka',
   ].join('\n');
@@ -90,7 +91,7 @@ ${btn(escapeHtml(affiliatePage), 'Buka halaman affiliate →', '#ffda58', '#1024
 <table width="100%" cellpadding="12" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;font-size:15px;line-height:1.6">
 <thead><tr bgcolor="#173451" style="background:#173451;color:#fff"><th scope="col" style="text-align:left;padding:12px">Pakej</th><th scope="col" style="text-align:left;padding:12px">Harga promo</th><th scope="col" style="text-align:left;padding:12px">Komisen</th></tr></thead>
 <tbody>${row('Akses Keluarga', premiumPrice, premium, '#ffffff')}${row('Family Plus', familyPrice, family, '#fff0bf')}</tbody></table>
-<p style="font-size:13px;line-height:1.8;color:#586674;margin:13px 0 0">Komisen dikira selepas bayaran pelanggan melalui link anda disahkan, dan dibayar secara manual selepas semakan. Pembelian sendiri tidak menerima komisen. Bila anda ada jualan pertama, kami akan hubungi anda untuk butiran bank.</p>
+<p style="font-size:13px;line-height:1.8;color:#586674;margin:13px 0 0">Komisen dikira selepas bayaran pelanggan melalui link anda disahkan, dan dibayar secara manual selepas semakan. Pembelian sendiri tidak menerima komisen. Kadar komisen ini untuk <strong>tempoh terhad</strong>. Bila anda ada jualan pertama, kami akan hubungi anda untuk butiran bank.</p>
 <h2 style="${h2}">Bahan promosi ada di Telegram 📣</h2>
 <p style="margin:0 0 18px">Masuk kumpulan Telegram untuk akses material promosi Pahlawan Angka. Gunakan bahan tersebut bersama <strong>link affiliate anda sendiri</strong> apabila berkongsi.</p>
 ${btn(tg, 'Masuk Telegram Affiliate →', '#ffda58', '#10243b')}
@@ -103,6 +104,18 @@ ${moat.map(([i, t, d]) => `<tr><td width="34" valign="top" style="padding:0 6px 
 <p style="margin:0 0 18px">Itulah cerita yang paling kuat untuk dikongsi. Cuba demo percuma dahulu dan rasai sendiri. Di laman utama, pilih <strong>“Cuba Demo”</strong>${email ? ` dan log masuk menggunakan <strong>${escapeHtml(email)}</strong>` : ''}.</p>
 ${btn(appUrl, 'Cuba Demo Percuma →', '#173451', '#ffffff')}
 <p style="font-size:13px;line-height:1.8;color:#586674;margin:13px 0 20px">Untuk melihat link dan rekod komisen: halaman affiliate di atas, atau dalam app <strong>Tetapan Ibu Bapa → Rakan Affiliate</strong>.</p>
+</td></tr>
+<tr><td style="padding:0 24px 24px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#fff0bf" style="background:#fff0bf;border:1px solid #efd78c"><tr><td style="padding:24px;font-size:15px;line-height:1.8">
+<p style="font-size:12px;font-weight:bold;letter-spacing:1px;color:#7f6420;margin:0 0 9px">JEMPUTAN KHAS UNTUK ${escapeHtml((name || codeRaw).toUpperCase())} · TEMPOH TERHAD</p>
+<h2 style="font-size:22px;line-height:1.4;margin:0 0 16px;color:#173451">Bayar ${rm(premiumPrice)}, kami hadiahkan Family Plus 🎁</h2>
+<p style="margin:0 0 16px">Kalau anda ingin mencuba PA dengan lebih menyeluruh, beli <strong>Akses Keluarga ${rm(premiumPrice)}</strong> dan kami akan naik taraf kepada <strong>Family Plus, pakej ${rm(familyPrice)}, tanpa bayaran tambahan</strong>.</p>
+<p style="margin:0 0 10px">Selain semua ciri Akses Keluarga, anda boleh mencuba:</p>
+<ul style="margin:0 0 20px;padding-left:20px"><li style="margin:0 0 7px"><strong>Kemahiran Fokus</strong> dengan 9 mini game</li><li style="margin:0 0 7px">Sehingga <strong>5 profil anak</strong></li><li style="margin:0 0 7px"><strong>Laporan PDF dan muat turun worksheet tanpa had</strong></li></ul>
+<p style="margin:0 0 8px;font-weight:bold;color:#173451">Cara tuntut hadiah:</p>
+<p style="margin:0 0 12px"><strong>1.</strong> Beli pakej ${rm(premiumPrice)} menggunakan akaun yang sama${email ? ` (${escapeHtml(email)})` : ''}.<br><strong>2.</strong> Selepas bayaran berjaya, <strong>balas email ini</strong> dengan email akaun dan rujukan pesanan atau bukti pembayaran.<br><strong>3.</strong> Kami semak dan <strong>aktifkan naik taraf secara manual</strong>.</p>
+<p style="font-size:13px;color:#586674;margin:0">Tawaran tempoh terhad. Pembelian ini pilihan sahaja. Link affiliate anda sudah aktif dan boleh digunakan walaupun anda belum membeli pakej.</p>
+</td></tr></table>
 </td></tr>
 <tr><td style="padding:0 24px 28px;font-size:16px;line-height:1.8">
 <p style="margin:0 0 16px">Ada soalan tentang produk, komisen atau cara berkongsi? Balas sahaja email ini. Kami sedia membantu.</p>

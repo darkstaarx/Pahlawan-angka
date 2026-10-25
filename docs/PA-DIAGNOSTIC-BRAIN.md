@@ -384,7 +384,11 @@ It calls the existing `affiliate-application` edge function (approved at registr
 queued). The front page (`landing-approved-v1.html` 1.4.1) has "Jana komisen: jadi rakan affiliate"
 (`target=_top`, out of the app frame). The welcome e-mail (`_shared/affiliate-email.ts`) now links the
 affiliate page and adds "Cuba sendiri dulu" with a demo button; **it needs `send-payment-emails` redeployed**.
-If Google sign-in comes back to the home page instead of this page, add `…/affiliate.html` to Supabase Auth
+Owner offer (2026-10-25, all affiliates, **limited time**): an affiliate who buys Akses Keluarga RM19 is
+upgraded to Family Plus by hand (claim by e-mail with account e-mail and order reference). Shown on the
+affiliate page, in the welcome e-mail (owner's style: dark header, Telegram group, "why PA, not a plain
+practice app", greeting by name) and as a note in the app's affiliate panel; the commission rates are also
+marked limited time. If Google sign-in comes back to the home page instead of this page, add `…/affiliate.html` to Supabase Auth
 → Redirect URLs. Test: `audit/affiliate-page-browser.test.js`.
 
 **Status at a glance (2026-10-24).**
