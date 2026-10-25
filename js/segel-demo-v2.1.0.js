@@ -950,7 +950,7 @@
        UV daripada tekstur kubah itu sendiri, jadi ia membawa garisan rune dan
        warna tier yang betul. Ia bermula tepat di tempat kepingan itu berada
        pada kubah, lalu terpelanting keluar, berpusing dan jatuh. */
-    const SHARDS=10;
+    const SHARDS=18, SHARDS_NORMAL=10;   // gembok terakhir guna semua 18 kepingan
     const shards=[];
     for(let i=0;i<SHARDS;i++){
       const g=new THREE.PlaneGeometry(1,1);
@@ -959,13 +959,16 @@
       m.material.side=THREE.DoubleSide;   // kepingan berpusing dalam 3D (gembok terakhir) mesti nampak kedua-dua muka
       shards.push({mesh:m, vx:0, vy:0, vz:0, spin:0, rx:0, ry:0, life:0});
     }
+    host._shardInfo=()=>shards.filter(s=>s.life>0&&s.mesh.visible).map(s=>{const v=s.mesh.position.clone().project(camera);return{x:+v.x.toFixed(2),y:+v.y.toFixed(2),z:+s.mesh.position.z.toFixed(2)}});   // ujian sahaja
     function shatter(seal,big=false){
       const e=seal.front, tex=e.material.uniforms.map.value;
       const pw=e.scale.x, ph=e.scale.y;
       const cx=e.position.x, cy=e.position.y;
+      const n=big?SHARDS:SHARDS_NORMAL;
       shards.forEach((s,i)=>{
+        if(i>=n){ s.life=0; s.mesh.visible=false; return }
         // Petak UV dalam separuh atas kubah, di mana kubahnya paling pekat.
-        const a=(i/SHARDS)*Math.PI*2+Math.random()*.4;
+        const a=(i/n)*Math.PI*2+Math.random()*.4;
         const rad=.16+Math.random()*.20;
         const u=.5+Math.cos(a)*rad, v=.52+Math.sin(a)*rad*.9;
         const su=.16+Math.random()*.07, sv=su;
@@ -990,10 +993,13 @@
         if(big){
           // Gembok terakhir (pemilik): kepingan terpelanting KE ARAH kamera dan ke kiri/kanan skrin, sambil
           // berpusing dalam 3D. Kamera perspektif membesarkannya sendiri bila ia makin dekat.
+          // Pemilik (2026-10-25, "kat mana pecah?"): sama seperti kaca pecah gembok lain — kepingan bermula di
+          // kubah, berpusing dan jatuh — cuma lebih banyak, lebih lama, dan datang sedikit ke arah kamera.
           const side=Math.cos(out)>=0?1:-1;
-          s.vx=side*(2.6+Math.random()*3.4)+Math.cos(out)*1.2; s.vy=Math.sin(out)*2.2+1.8+Math.random()*1.6;
-          s.vz=3.2+Math.random()*4.2; s.rx=(Math.random()-.5)*9; s.ry=(Math.random()-.5)*9;
-          s.life=1.15+Math.random()*.35;
+          // Kubah duduk di sebelah kanan pentas: condong sedikit ke tengah supaya kepingan kanan tidak terus keluar skrin.
+          s.vx=Math.cos(out)*sp*.85+side*.35-.7; s.vy=Math.sin(out)*sp+1.9;
+          s.vz=.35+Math.random()*.9; s.rx=(Math.random()-.5)*7; s.ry=(Math.random()-.5)*7;
+          s.life=1.45+Math.random()*.45;
         }
       });
     }
@@ -1534,7 +1540,7 @@
         s.mesh.position.y+=s.vy*dt;
         s.mesh.rotation.z+=s.spin*dt;
         if(s.vz){ s.mesh.position.z+=s.vz*dt; s.mesh.rotation.x+=s.rx*dt; s.mesh.rotation.y+=s.ry*dt;
-          if(s.mesh.position.z>camera.position.z-1.2)s.life=0 }   // jangan tembus kamera
+          if(s.mesh.position.z>camera.position.z-2)s.life=0 }   // jangan tembus kamera
         s.mesh.material.uniforms.uOpacity.value=Math.max(0,Math.min(1,s.life*1.6));
         if(s.life<=0)s.mesh.visible=false;
       });
@@ -2392,7 +2398,8 @@
           S.waveT=0; S.shake=.32;
           // Selepas sentuhan, kamera undur sedikit sahaja (petir dari langit masih nampak) dan kekal dekat
           // sehingga gembok pecah; applyHit() menarik balik selepas pecahan.
-          wait(FIN_HOLD_MS).then(()=>{ if(lifecycle===S.lifecycle){ S.camK=FIN_PULL_K; S.camZoomTo=FIN_GLACIER_ZOOM } });
+          // Kamera beralih ke tengah kubah, supaya pecahan berlaku di tengah skrin (bukan di tepi).
+          wait(FIN_HOLD_MS).then(()=>{ if(lifecycle===S.lifecycle){ S.camK=FIN_PULL_K; S.camZoomTo=FIN_GLACIER_ZOOM; S.camFX=SEAL_X; S.camFY=GROUND+finVis*.5 } });
           // Do not let respond() shatter the seal until the glacier finishes.
           while(finalImpactActive&&lifecycle===S.lifecycle)await wait(16);
           S.slow=1;
