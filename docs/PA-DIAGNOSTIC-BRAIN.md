@@ -374,6 +374,8 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
+**Restu stays in the battle stage (3.87.65, 2026-10-26).** Owner on phone: when Cikgu dives, the arena "resized" into a non-battle layout. Cause: `body.pa-restu-cinematic` turned `.segelStage` full-screen, so a phone went from the 40% battle strip to a tall portrait canvas (huge sky, tiny actors). `css/rapid-lock-v1.css` no longer resizes the stage; the question panel is only dimmed and inert during the cinematic, and the screen-level 7vh bars are gone (the stage has its own letterbox for the face shot). Checked at 390x844, 768x1024 and 1280x800. Known pre-existing failure on main: `audit/restu-cinematic.test.js` "missing, rejected, and hanging Cikgu hooks…" (fails before and after this change).
+
 **Cikgu Restu entrance (3.87.64 draft, 2026-10-26).** Before the existing Restu fall clip,
 `PARapidLock` awaits the real Segel stage entrance: left-facing WebP teacher between Wira
 and the rescue pet, held face close-up, parallax pull-back, descent and palm-contact FX.
