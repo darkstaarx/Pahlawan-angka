@@ -202,7 +202,7 @@ test('missing, rejected, and hanging Cikgu hooks all fall through to video and P
     ['missing', undefined],
     ['rejected', { playRestuEntry: () => Promise.reject(new Error('texture failed')) }],
     ['hanging', { playRestuEntry: () => new Promise(() => {}) }]
-  ]) t.test(name, async () => {
+  ]) await t.test(name, async () => {
     const h = harness({ host, withHost: !!host });
     assert.equal(await lockWithThreeRapidWrong(h), 'lock');
     h.flush();
