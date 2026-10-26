@@ -856,6 +856,102 @@
     companion.visible=false;
     const COMPANION_SCALE=.58;
 
+    /* Cikgu Restu masuk sebagai lapisan pentas sebenar, bukan video/canvas
+       ganti. Asetnya sengaja tidak dimuat semasa boot: lock rapid hanya jarang
+       berlaku dan pentas biasa mesti kekal ringan. */
+    const RESTU_ASSETS={
+      anticipate:'assets/coach/cikgu-dimensi/full-body/entry-v1/anticipate-v1.webp',
+      fall:'assets/coach/cikgu-dimensi/full-body/entry-v1/fall-v1.webp',
+      preland:'assets/coach/cikgu-dimensi/full-body/entry-v1/preland-v1.webp',
+      land:'assets/coach/cikgu-dimensi/full-body/summon-land-clean-v2.webp',
+      fx:'assets/fx/cikgu-dimensi/summon-circle-v1.webp',
+      surprised:'assets/heroes/wira/frames/restu-surprised-v1.webp'
+    };
+    let restuLoaded=null, restuLoadPromise=null, restuToken=0, restuActive=null, restuPendingCancel=null, restuDisposed=false;
+    const restuMesh=actor({tex:null,w:1,h:1,offX:0,offY:0},.22);
+    restuMesh.visible=false;
+    restuMesh.material.opacity=1;
+    const restuFx=quad(null,1,1,.20,true);
+    restuFx.visible=false;
+    function restuEntry(tex,anchor,scale=1){
+      const w=2.12*scale, h=2.12*scale;
+      return {tex,w,h,offX:(anchor[0]-.5)*w,offY:h*(anchor[1]-.5)};
+    }
+    async function loadRestu(){
+      if(restuLoaded)return restuLoaded;
+      if(restuLoadPromise)return restuLoadPromise;
+      restuLoadPromise=Promise.all(Object.values(RESTU_ASSETS).map(load)).then(xs=>{
+        const [anticipate,fall,preland,land,fx,surprised]=xs;
+        if(!anticipate||!fall||!preland||!land||!fx)throw new Error('Aset masuk Cikgu Restu gagal dimuat');
+        if(restuDisposed){xs.forEach(t=>t?.dispose?.());throw new Error('Cikgu Restu pentas sudah dibuang')}
+        restuFx.material.map=fx;restuFx.material.needsUpdate=true;
+        restuLoaded={
+          anticipate:restuEntry(anticipate,[.52,.92],1.00),
+          fall:restuEntry(fall,[.50,.96],1.02),
+          preland:restuEntry(preland,[.60,.916],1.00),
+          land:restuEntry(land,[.55,.84],1.00),
+          fx,
+          surprised:surprised?{...entry(surprised,heroCalibratedUpp(surprised,HERO_CHAR_H)),cleanMatte:false}:null
+        };
+        return restuLoaded;
+      }).catch(err=>{restuLoadPromise=null; throw err});
+      return restuLoadPromise;
+    }
+    function setRestuPose(e){
+      if(!e)return;
+      const firstMap=!restuMesh.material.map;
+      swap(restuMesh,e);
+      if(firstMap)restuMesh.material.needsUpdate=true;
+      // Source artwork faces right; Cikgu Restu must look toward Wira on left.
+      restuMesh.scale.x=-Math.abs(e.w);
+      restuMesh.scale.y=e.h;
+    }
+    function swapRestuHeroPose(e){
+      const old=hero.userData.e;
+      swap(hero,e);
+      // Position was computed earlier this frame using the previous canvas.
+      // Change the canvas offset in the same tick, preserving the feet.
+      if(old){hero.position.x+=e.offX-old.offX;hero.position.y+=e.offY-old.offY}
+    }
+    function applyRestuHeroReaction(a,data,zoom){
+      if(a.heroSurprised)return;
+      // Tunggu kamera kembali ke arena supaya reaksi Wira sempat dibaca.
+      if(zoom<=1.2){
+        a.heroSurprised=true;
+        if(data.surprised){S.heroLock=data.surprised;swapRestuHeroPose(data.surprised)}
+        showRestuSurprise();
+      }
+    }
+    function restoreRestuState(state,ownerToken=null){
+      if(!state)return;
+      if(ownerToken!=null&&restuActive&&restuActive.token!==ownerToken)return false;
+      restoreRestuLayout();
+      if(restuActive)fxParts=fxParts.filter(p=>p.restuToken!==restuActive.token);
+      restuActive=null; restuMesh.visible=false; restuFx.visible=false;
+      if('heroLock' in state)S.heroLock=state.heroLock;
+      if(state.heroPose)swapRestuHeroPose(state.heroPose);
+      hideSay(); restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
+      S.camZoom=state.camZoom; S.camZoomTo=state.camZoomTo; S.camPunch=state.camPunch;
+      S.camFX=state.camFX; S.camFY=state.camFY; S.camK=state.camK;
+      S.par=state.par; S.parTo=state.parTo; S.introT=state.introT;
+      S.running=state.running;
+      introShown=!!state.introShown;
+      host.classList.toggle('segel-cam-zoom',state.camZoom>1.004);
+      host.classList.toggle('segel-pet-intro',!!state.introShown);
+      if(camera.view&&camera.view.enabled)camera.clearViewOffset();
+      applyParallax(1,null);
+      return true;
+    }
+    function cancelRestuEntry(){
+      const active=restuActive;
+      if(active)active.result.cancelled=true;
+      ++restuToken;
+      if(active){ active.settle?.(); restoreRestuState(active.state,active.token); }
+      else { restuMesh.visible=false; restuFx.visible=false; }
+      restuPendingCancel?.(); restuPendingCancel=null;
+      return active?active.result:false;
+    }
+
     /* Bayang lembut. Bulatan hitam bertepi tajam nampak macam tampalan;
        kecerunan jejarian pada tekstur kecil sudah cukup dan murah. */
     const shadowTex=(function(){
@@ -1315,6 +1411,7 @@
 
     function frame(now){
       raf=requestAnimationFrame(frame);
+      restoreRestuLayout();
       if(!S.running)return;
       const dt=Math.min((now-last)/1000,.05); last=now; tAcc+=dt;
       // Hit-stop: fdt beku seketika untuk Wira, lantunan kubah dan zarah.
@@ -1477,6 +1574,7 @@
       camera.position.y=S.camY+shakeY;
       bg.position.x=-camera.position.x*.4;
       bg.position.y=S.camY;
+      restuFrame(now);
       cameraFrame(dt);
 
       /* Penerbangan syiling. Lengkung bezier yang sama dengan Unity: terbit,
@@ -1601,6 +1699,7 @@
 
       ghostFrame(dt);
       seals.forEach(s=>{ if(s.crack&&s.crack.dirty)drawCracks(s,now) });
+      if(restuActive?.grounded)restuApplyLayout(restuActive);
       renderer.render(scene,camera);
       fxFrame(fdt,dt);
       chargeFxFrame(dt);
@@ -1649,6 +1748,7 @@
       return Math.min(crop,host.clientHeight*.4);
     }
     function resize(){
+      restoreRestuLayout();
       const w=host.clientWidth, h=host.clientHeight;
       if(!w||!h)return;
       /* The layout gives the question panel more height by shortening its
@@ -1747,6 +1847,11 @@
         "display:flex;align-items:center;box-shadow:0 3px 0 #0b1729,0 5px 12px rgba(0,0,0,.2);pointer-events:none;"+
         "opacity:0;transform:translateY(calc(-100% - 6px));transition:opacity .15s ease,transform .15s ease}"+
         ".segelWiraSay.show{opacity:1;transform:translateY(calc(-100% - 9px))}"+
+        ".segelWiraSay.restu-surprise{isolation:isolate;border:0;border-radius:0;padding:17px 20px;min-height:62px;max-width:min(64%,260px);"+
+        "background:#182944;font-family:'PA Lilita',system-ui,sans-serif;font-size:clamp(14px,3.4vw,18px);font-weight:400;line-height:1.1;"+
+        "text-align:center;justify-content:center;box-shadow:none;transition:none;"+
+        "clip-path:polygon(0 18%,10% 18%,6% 0,28% 10%,40% 0,53% 9%,71% 0,76% 12%,96% 5%,91% 27%,100% 37%,94% 54%,100% 77%,82% 77%,87% 98%,65% 88%,51% 100%,41% 86%,19% 100%,22% 80%,0 86%,6% 61%,0 49%,7% 34%)}"+
+        ".segelWiraSay.restu-surprise::before{content:'';position:absolute;inset:3px;z-index:-1;background:#fffbea;clip-path:inherit}"+
         /* Banner peristiwa (... DITEMUI!, ... BEBAS!, GANGSA/PERAK/EMAS + PECAH!): fon permainan,
            isi emas, garis tebal, bayang 3D, masuk melantun dan sinar menyapu. */
         "#segelStage .segelToast{font-family:'PA Lilita',system-ui,sans-serif;font-weight:400;font-size:clamp(28px,8.5vw,46px);letter-spacing:.02em;"+
@@ -1782,6 +1887,18 @@
     let camWin=null;
     function applyParallax(z,win){
       if(!bgBase)return;
+      if(restuActive){
+        // The camera crop belongs to the actors. Counter it on the two arena
+        // layers so their texture landmarks stay fixed while Cikgu dives.
+        const q=1/Math.max(1,z), cx=win?.cx??.5, cy=win?.cy??.5;
+        [bg,groundOverlay].forEach(layer=>{
+          const h=worldH(layer.position.z);
+          layer.scale.set(bgBase.x*q,bgBase.y*q,1);
+          layer.position.x=camera.position.x+(cx-.5)*h*camera.aspect;
+          layer.position.y=camera.position.y+(.5-cy)*h;
+        });
+        return;
+      }
       let q=1;
       if(S.par>.002&&win&&z>1.0005){
         q=Math.pow(z,-.42*S.par);
@@ -1792,7 +1909,10 @@
         q=Math.min(1,Math.max(q,need*1.01));
         bg.position.x=wx+(bg.position.x-wx)*q; bg.position.y=wy+(bg.position.y-wy)*q;
         groundOverlay.position.x=wx+(0-wx)*q; groundOverlay.position.y=wy+(S.camY-wy)*q;
-      }else{ groundOverlay.position.x=0; groundOverlay.position.y=S.camY }
+      }else{
+        bg.position.x=-camera.position.x*.4; bg.position.y=S.camY;
+        groundOverlay.position.x=0; groundOverlay.position.y=S.camY;
+      }
       bg.scale.set(bgBase.x*q,bgBase.y*q,1); groundOverlay.scale.set(bgBase.x*q,bgBase.y*q,1);
     }
     function cameraFrame(dt){
@@ -1809,6 +1929,251 @@
       host.classList.toggle('segel-cam-zoom',z>1.004);
       if(z<=1.0005){ if(camera.view&&camera.view.enabled)camera.clearViewOffset(); applyParallax(1,null); camWin=null; return }
       camWin=viewZoom(z,S.camFX,S.camFY); applyParallax(z,camWin);
+    }
+
+    /* Masuk Cikgu Restu, gaya lab pertempuran (pemilik, 2026-10-26: "tak
+       cukup cinematic", "turun slow, tak epic"):
+         0–0.9s   wajah dekat: letterbox, latar gelap, garisan laju, tenaga
+                  berkumpul, papan nama CIKGU DIMENSI masuk menyapu.
+         0.9–1.25 junaman: kamera tarik keluar pantas, Cikgu menjunam dari
+                  atas skrin dengan pecutan (bukan smoothstep perlahan).
+         1.25     HENTAMAN: hit-stop pada pose preland, kilat, gegar, gelang
+                  kejutan, percikan, simbol matematik, bulatan seru meletup.
+         1.5–3.0  pose mendarat 1.5 saat, kemudian terus ke video Restu. */
+    const RESTU_FACE=900, RESTU_DIVE=350, RESTU_HOLD=130, RESTU_SKY=3.7;
+    const RESTU_T_HIT=RESTU_FACE+RESTU_DIVE;
+    const RESTU_T_LAND=RESTU_T_HIT+RESTU_HOLD+120;
+    // Owner correction: add 0.5s back to the 2.5s version (not a 0.5s hold).
+    const RESTU_AFTER_LAND=1500;
+    const RESTU_CAMERA_SETTLE=1000;
+    const RESTU_MS=RESTU_T_LAND+RESTU_AFTER_LAND;
+    let restuName=null;
+    function restuNamePlate(show){
+      if(show&&!restuName){
+        if(!document.getElementById('segelRestuStyle')){
+          const st=document.createElement('style');st.id='segelRestuStyle';
+          st.textContent=".segelRestuName{position:absolute;left:0;right:0;bottom:15%;z-index:16;pointer-events:none;display:flex;flex-direction:column;align-items:flex-start;padding-left:7%;"+
+            "transform:translateX(-110%) skewX(-12deg);opacity:0}"+
+            ".segelRestuName.show{animation:segelRestuName 1.05s cubic-bezier(.15,1.2,.3,1) both}"+
+            ".segelRestuName b{font-family:'PA Lilita',system-ui,sans-serif;font-weight:400;font-size:clamp(30px,9vw,58px);line-height:.95;letter-spacing:.02em;"+
+            "background:linear-gradient(180deg,#ffffff 0%,#bdf0ff 45%,#4cc9ff 55%,#9fe6ff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;"+
+            "filter:drop-shadow(0 2px 0 #0b2a66) drop-shadow(0 -2px 0 #0b2a66) drop-shadow(2px 0 0 #0b2a66) drop-shadow(-2px 0 0 #0b2a66) drop-shadow(0 5px 0 #061638) drop-shadow(0 8px 16px rgba(0,0,0,.6))}"+
+            ".segelRestuName i{font-style:normal;font-weight:800;font-size:clamp(11px,2.6vw,15px);letter-spacing:.28em;color:#ffe08a;margin:0 0 4px 4px;text-shadow:0 2px 0 #3b2200,0 0 10px rgba(255,200,80,.6)}"+
+            ".segelRestuName::after{content:'';display:block;height:3px;width:min(60vw,360px);margin-top:6px;background:linear-gradient(90deg,#ffe08a,#4cc9ff 60%,transparent)}"+
+            "@keyframes segelRestuName{0%{opacity:0;transform:translateX(-110%) skewX(-12deg)}22%{opacity:1;transform:translateX(4%) skewX(-12deg)}"+
+            "32%,78%{opacity:1;transform:translateX(0) skewX(-12deg)}100%{opacity:0;transform:translateX(18%) skewX(-12deg)}}"+
+            "@media (prefers-reduced-motion: reduce){.segelRestuName.show{animation:none;opacity:1;transform:none}}";
+          document.head.appendChild(st);
+        }
+        restuName=document.createElement('div');restuName.className='segelRestuName';
+        restuName.innerHTML='<i>PENJAGA DIMENSI</i><b>CIKGU DIMENSI</b>';
+        host.appendChild(restuName);
+        void restuName.offsetWidth; restuName.classList.add('show');
+      }else if(!show&&restuName){ restuName.remove(); restuName=null }
+    }
+    function restuOnce(a,key){ if(a.fired[key])return false; a.fired[key]=true; return true }
+    /* Layout sinematik dikira daripada lebar alfa sebenar, bukan kotak kanvas.
+       Ia sengaja pure supaya kontrak jarak boleh diuji tanpa WebGL atau DOM. */
+    function restuLayout(options){
+      const {viewWidth=6,widths={}}=options||{};
+      const hero=Math.max(0,widths.hero||0), teacher=Math.max(0,widths.teacher||0), dome=Math.max(0,widths.dome||0);
+      const margin=viewWidth*.045, gap=viewWidth*.055;
+      const scale=Math.min(1,(viewWidth-margin*2-gap*2)/Math.max(.001,hero+teacher+dome));
+      const total=(hero+teacher+dome)*scale+gap*2;
+      const left=-total/2;
+      const h=left+hero*scale/2, t=left+hero*scale+gap+teacher*scale/2;
+      const d=left+(hero+teacher)*scale+gap*2+dome*scale/2;
+      return {gap,scale,hero:h,teacher:t,dome:d,focus:0};
+    }
+    const restuAlphaCache=new WeakMap();
+    function restuBounds(mesh){
+      const img=(mesh.material.map||mesh.material.uniforms?.map?.value)?.image;
+      let m=img&&restuAlphaCache.get(img);
+      if(img&&!m){m=measureHiRes(img);restuAlphaCache.set(img,m)}
+      const cx=mesh.position.x+(m?.cx||0)*mesh.scale.x;
+      const half=Math.abs(mesh.scale.x)*(m?.boxW||1)/2;
+      return {left:cx-half,right:cx+half};
+    }
+    // Render-only transforms: restore before the next tick, resize or cancellation.
+    // Gameplay coordinates, anchors, and the retry state never move.
+    function restoreRestuLayout(){
+      restuActive?.layoutSnapshot?.forEach(({mesh,p,s})=>{
+        mesh.position.copy(p);mesh.scale.copy(s);
+      });
+      if(restuActive)restuActive.layoutSnapshot=null;
+    }
+    function restuFloorY(z){
+      const h=worldH(z), floor=.5-(GROUND-S.camY)/h, v=camera.view;
+      const source=v?.enabled?(v.offsetY+floor*v.height)/v.fullHeight:floor;
+      return camera.position.y+(.5-source)*h;
+    }
+    function restuApplyLayout(a){
+      restoreRestuLayout();
+      const activeSeal=seals[Math.min(S.active,seals.length-1)];
+      const heroCluster=[hero,heroShadow,companion];
+      const teacherCluster=[restuMesh,restuFx];
+      const domeCluster=[pet,petShadow,...seals.map(s=>s.front),shell,floorGlow,backGlow,wave,flash];
+      const clusters=[heroCluster,teacherCluster,domeCluster];
+      const extents=[
+        [hero,...(companion.visible?[companion]:[])],
+        [restuMesh],
+        [pet,...(activeSeal?.front.visible?[activeSeal.front]:[])]
+      ].map(ms=>{
+        const bs=ms.map(restuBounds);
+        const left=Math.min(...bs.map(b=>b.left)),right=Math.max(...bs.map(b=>b.right));
+        return {center:(left+right)/2,width:right-left};
+      });
+      // Closest sprite plane is conservative for the further-away pet/dome.
+      // Account for the real FOV, current crop zoom and impact camera punch.
+      const zoom=Math.max(1,S.camZoom+S.camPunch);
+      const viewWidth=2*Math.tan(camera.fov*Math.PI/360)*(camera.position.z-.24)*camera.aspect/zoom;
+      // Reserve the largest pose widths so the composition doesn't breathe at
+      // the preland->land swap. Companion animation remains part of Wira's group.
+      a.layoutWidths=a.layoutWidths||{hero:0,teacher:0,dome:0};
+      ['hero','teacher','dome'].forEach((key,i)=>{a.layoutWidths[key]=Math.max(a.layoutWidths[key],extents[i].width)});
+      const layout=restuLayout({viewWidth,widths:a.layoutWidths});
+      a.layoutSnapshot=[];
+      a.teacherTransform={center:extents[1].center,target:layout.teacher,scale:layout.scale,ground:restuFloorY(.24)};
+      clusters.forEach((meshes,i)=>{
+        const center=extents[i].center, target=layout[['hero','teacher','dome'][i]];
+        meshes.forEach(mesh=>{
+          a.layoutSnapshot.push({mesh,p:mesh.position.clone(),s:mesh.scale.clone()});
+          mesh.position.x=target+(mesh.position.x-center)*layout.scale;
+          mesh.position.y=restuFloorY(mesh.position.z)+(mesh.position.y-GROUND)*layout.scale;
+          mesh.scale.multiplyScalar(layout.scale);
+        });
+      });
+      a.layout=layout;
+    }
+    function restuFrame(now){
+      const a=restuActive, data=restuLoaded;
+      if(!a||!data)return;
+      const t=a.previewAt??(now-a.started), x=a.x, particleStart=fxParts.length;
+      // Restu owns the actors until video/PIN: an unfinished attack/rescue hop
+      // must not make either character leave the screen-locked arena floor.
+      S.hopT=-1;S.heroLift=0;S.petY=GROUND;S.petFeet=GROUND;
+      hero.position.y=GROUND+hero.userData.e.offY;
+      pet.position.y=GROUND+pet.userData.e.offY;
+      const ease3=k=>1-Math.pow(1-k,3), clamp=k=>Math.max(0,Math.min(1,k));
+      const tDive=RESTU_FACE, tHit=RESTU_T_HIT, tLand=RESTU_T_LAND;
+      let pose, y, zoom, fy;
+      if(t<tDive){
+        /* 1. Wajah dekat */
+        pose=data.anticipate; y=GROUND+2.3+Math.sin(t*.006)*.03;
+        zoom=3.55+clamp(t/tDive)*.4; fy=y+1.15;
+        if(restuOnce(a,'open')){
+          host.classList.add('segel-letterbox'); S.darkTo=.75; S.dark=.75;
+          fxFlash(.55,'#dff6ff'); restuNamePlate(true);
+        }
+        S.speedFx=Math.max(S.speedFx,.85);
+        if(!reduceMotion&&t-(a.lastCharge||-999)>110){ a.lastCharge=t; fxCharge(x+.05,y+1.05,.85,7) }
+      }else if(t<tHit){
+        /* 2. Junaman */
+        const k=clamp((t-tDive)/RESTU_DIVE);
+        pose=data.fall;
+        y=(GROUND+RESTU_SKY)+((GROUND+.25)-(GROUND+RESTU_SKY))*Math.pow(k,1.9);
+        const zk=ease3(clamp((t-tDive)/170));
+        zoom=3.95+(1.14-3.95)*zk; fy=GROUND+1.25+(y-GROUND)*.45; // kamera ikut Cikgu menjunam
+        if(restuOnce(a,'dive')){
+          host.classList.remove('segel-letterbox'); S.darkTo=.25; restuNamePlate(false);
+          fxFlash(.35,'#ffffff'); S.speedFx=1;
+        }
+        S.speedFx=Math.max(S.speedFx,.7);
+        if(!reduceMotion)for(let i=0;i<3;i++)fxParts.push({t:'s',x:x+(Math.random()-.5)*.7,y:y+1.5+Math.random()*1.1,vx:0,vy:9+Math.random()*6,
+          life:.16+Math.random()*.12,age:0,c:i%2?'#bdf0ff':'#4cc9ff',w:2+Math.random()*2.5,g:0,drag:2});
+      }else if(t<tHit+RESTU_HOLD){
+        /* 3. Hentaman + hit-stop */
+        pose=data.preland; y=GROUND; zoom=1.14; fy=GROUND+1.25;
+        if(restuOnce(a,'hit')){
+          S.darkTo=0; fxFlash(.85,'#ffffff'); S.shake=Math.max(S.shake,.6); S.camPunch=.16; S.speedFx=0;
+          if(!reduceMotion){
+            fxRing(x,GROUND+.1,.2,2.6,.55,'rgba(120,220,255,1)');
+            fxRing(x,GROUND+.1,.1,1.7,.42,'rgba(255,224,138,1)');
+            fxSparks(x,GROUND+.15,18,['#ffffff','#9fe6ff','#ffe08a'],Math.PI/2,2.4);
+            fxSparks(x,GROUND+.1,10,['#bdf0ff','#ffffff'],0,.5);
+            fxSparks(x,GROUND+.1,10,['#bdf0ff','#ffffff'],Math.PI,.5);
+            fxGlows(x,GROUND+.3,14,'rgba(130,220,255,.95)');
+            fxSymbols(x,GROUND+.6);
+          }
+        }
+      }else{
+        /* 4. Mendarat dan tenang */
+        pose=t<tLand?data.preland:data.land; y=GROUND;
+        const zk=ease3(clamp((t-tLand)/RESTU_CAMERA_SETTLE));
+        zoom=1.14+(1-1.14)*zk; fy=GROUND+1.25;
+        if(t>=tLand&&restuOnce(a,'land')){ S.shake=Math.max(S.shake,.12); if(!reduceMotion)fxGlows(x,GROUND+.2,8,'rgba(255,224,138,.9)') }
+      }
+      setRestuPose(pose);
+      restuMesh.position.set(x+pose.offX,y+pose.offY,.24);
+      restuMesh.visible=true;
+      /* Bulatan seru: letup besar semasa hentaman, kemudian berdenyut dan pudar. */
+      if(t>=tHit){
+        const k=clamp((t-tHit)/1500), land=data.land, pop=1+.35*Math.pow(1-clamp((t-tHit)/260),2);
+        restuFx.visible=k<1; restuFx.position.set(x+land.offX,GROUND+land.offY,.18);
+        restuFx.scale.set(-land.w*pop,land.h*pop,1);
+        restuFx.material.opacity=(k<.12?1:1-(k-.12)/.88)*(.85+.15*Math.sin(t*.02));
+      }else restuFx.visible=false;
+      a.wide=t>=tHit;
+      a.grounded=a.wide||zoom<=1.2;
+      S.camZoom=zoom; S.camZoomTo=zoom; S.camK=40; S.camFX=t>=tHit?0:x; S.camFY=fy;
+      S.par=t<tHit?.72:.35; S.parTo=S.par;
+      const fullTeacher=pose===data.preland||pose===data.land;
+      applyRestuHeroReaction(a,data,fullTeacher?zoom:Infinity);
+      for(let i=particleStart;i<fxParts.length;i++)fxParts[i].restuToken=a.token;
+    }
+
+    function restuProjectFx(p,x=p.x,y=p.y){
+      const a=restuActive, tr=p.restuToken===a?.token&&a?.grounded?a.teacherTransform:null;
+      const c=tr?proj(tr.target+(x-tr.center)*tr.scale,tr.ground+(y-GROUND)*tr.scale,.24):proj(x,y);
+      c.fxScale=tr?.scale||1;
+      c.ppu*=c.fxScale;
+      return c;
+    }
+
+    async function playRestuEntry(){
+      cancelRestuEntry();
+      const token=++restuToken;
+      const state={camZoom:S.camZoom,camZoomTo:S.camZoomTo,camPunch:S.camPunch,camFX:S.camFX,camFY:S.camFY,
+        camK:S.camK,par:S.par,parTo:S.parTo,introT:S.introT,running:S.running,introShown,heroLock:S.heroLock,heroPose:hero.userData.e};
+      const result={cancelled:false,failed:false};
+      let data;
+      let cancelPending;
+      const pendingCancel=new Promise(resolve=>{cancelPending=()=>{result.cancelled=true;resolve(null)};restuPendingCancel=cancelPending});
+      try{ data=await Promise.race([loadRestu(),wait(3500).then(()=>null),pendingCancel]); }
+      catch(_){ data=null }
+      if(restuPendingCancel===cancelPending)restuPendingCancel=null;
+      if(!data||token!==restuToken){ const wasCancelled=result.cancelled||token!==restuToken; result.cancelled=true; result.failed=!data&&!wasCancelled; return result }
+      const x=Math.max(HERO_HOME+.58,Math.min(SEAL_X-.58,(HERO_HOME+SEAL_X)/2));
+      S.hopT=-1;S.heroLift=0;S.petY=GROUND;S.petFeet=GROUND;
+      S.introT=-1; introShown=false; host.classList.remove('segel-pet-intro','segel-pet-intro-release');
+      S.running=true; last=performance.now(); resize();
+      let settle;
+      const settled=new Promise(resolve=>{settle=resolve});
+      restuActive={token,started:performance.now(),duration:RESTU_MS,x,state,result,settle,fired:{}};
+      // One timer owns completion, so a hidden or paused renderer cannot leave
+      // the parent lock waiting forever.
+      await Promise.race([settled,wait(RESTU_MS)]);
+      if(token!==restuToken||!restuActive){ result.cancelled=true; return result }
+      restoreRestuState(state,token);
+      // The rapid-lock owner decides when the question surface may resume.
+      S.running=false;
+      return result;
+    }
+
+    // Local visual audit only: hold an actual arena frame without creating
+    // learner attempts or changing the production cinematic/video deadline.
+    async function previewRestuFrame(ms=1800){
+      if(!['localhost','127.0.0.1','[::1]'].includes(location.hostname)||!location.pathname.startsWith('/audit/'))return false;
+      cancelRestuEntry();const token=++restuToken;
+      let data;try{data=await Promise.race([loadRestu(),wait(3500).then(()=>null)])}catch(_){return false}
+      if(!data||token!==restuToken)return false;
+      const state={camZoom:S.camZoom,camZoomTo:S.camZoomTo,camPunch:S.camPunch,camFX:S.camFX,camFY:S.camFY,
+        camK:S.camK,par:S.par,parTo:S.parTo,introT:S.introT,running:S.running,introShown,heroLock:S.heroLock,heroPose:hero.userData.e};
+      S.hopT=-1;S.heroLift=0;S.petY=GROUND;S.petFeet=GROUND;S.introT=-1;introShown=false;
+      host.classList.remove('segel-pet-intro','segel-pet-intro-release');
+      const x=Math.max(HERO_HOME+.58,Math.min(SEAL_X-.58,(HERO_HOME+SEAL_X)/2));
+      restuActive={token,started:performance.now(),previewAt:Math.max(0,Math.min(RESTU_MS-1,Number(ms)||1800)),x,state,result:{cancelled:false,failed:false},fired:{}};
+      S.running=true;last=performance.now();resize();return true;
     }
 
     // Bayang dash: empat salinan Wira berwarna biru yang mengekori kedudukannya.
@@ -1995,7 +2360,11 @@
     }
     function drawParallaxFront(cw,ch,rdt){
       if(!fgLayer||Math.abs(fgW-cw)>2)buildFront(cw);
-      const z=S.camZoom+S.camPunch, win=camWin||{cx:.5,cy:.5}, a=S.par;
+      // The arena planes are screen-locked during Restu. Keep their foreground
+      // grass/motes at the same framing after contact too: this independent
+      // canvas used to keep zooming while the actor camera settled.
+      const hold=!!restuActive?.wide;
+      const z=hold?1:S.camZoom+S.camPunch, win=hold?{cx:.5,cy:.5}:(camWin||{cx:.5,cy:.5}), a=S.par;
       const zf=Math.pow(Math.max(1,z),1.25), fw=fgLayer.width*zf, fh=fgLayer.height*zf;
       const px=(win.cx-.5)*cw*z*1.45, py=(win.cy-.5)*ch*z*.3;
       fx2.save(); fx2.globalAlpha=a;
@@ -2102,14 +2471,14 @@
       for(let i=fxParts.length-1;i>=0;i--){
         const P=fxParts[i]; P.age+=dt; if(P.age<0)continue; if(P.age>=P.life){ fxParts.splice(i,1); continue }
         const dr=Math.exp(-P.drag*dt); P.vx*=dr; P.vy=P.vy*dr+P.g*dt; P.x+=P.vx*dt; P.y+=P.vy*dt; if(P.vr)P.rot+=P.vr*dt;
-        const k=1-P.age/P.life, c=proj(P.x,P.y);
+        const k=1-P.age/P.life, c=restuProjectFx(P);
         if(P.t==='s'){
-          const t=proj(P.x-P.vx*.04,P.y-P.vy*.04);
-          fx2.globalCompositeOperation='lighter'; fx2.globalAlpha=k; fx2.strokeStyle=P.c; fx2.lineWidth=P.w; fx2.lineCap='round';
+          const t=restuProjectFx(P,P.x-P.vx*.04,P.y-P.vy*.04);
+          fx2.globalCompositeOperation='lighter'; fx2.globalAlpha=k; fx2.strokeStyle=P.c; fx2.lineWidth=P.w*c.fxScale; fx2.lineCap='round';
           fx2.beginPath(); fx2.moveTo(c.x,c.y); fx2.lineTo(t.x,t.y); fx2.stroke();
         }else if(P.t==='r'){
           const q=1-Math.pow(1-P.age/P.life,3), r=(P.r0+(P.r1-P.r0)*q)*c.ppu;
-          fx2.globalCompositeOperation='lighter'; fx2.globalAlpha=k; fx2.strokeStyle=P.c; fx2.lineWidth=Math.max(1.5,6*k);
+          fx2.globalCompositeOperation='lighter'; fx2.globalAlpha=k; fx2.strokeStyle=P.c; fx2.lineWidth=Math.max(1.5,6*k)*c.fxScale;
           fx2.beginPath(); fx2.arc(c.x,c.y,r,0,Math.PI*2); fx2.stroke();
         }else if(P.t==='x'){
           const q=P.age/P.life, pop=q<.14?2.1-1.1*(1+2.9*Math.pow(q/.14-1,3)+1.9*Math.pow(q/.14-1,2)):1;
@@ -2121,7 +2490,7 @@
           const r=P.r*c.ppu*(.5+k*.5); fx2.globalCompositeOperation='lighter'; fx2.globalAlpha=Math.min(1,k*1.4);
           fx2.drawImage(glowDot,c.x-r,c.y-r,r*2,r*2);
         }else{
-          const size=Math.max(18,.3*c.ppu);
+          const size=Math.max(18*c.fxScale,.3*c.ppu);
           fx2.globalCompositeOperation='source-over'; fx2.globalAlpha=Math.min(1,k*1.6);
           fx2.save(); fx2.translate(c.x,c.y); fx2.rotate(P.rot); fx2.font=`900 ${size|0}px system-ui,sans-serif`;
           fx2.textAlign='center'; fx2.textBaseline='middle'; fx2.lineWidth=size*.22; fx2.lineJoin='round';
@@ -2241,7 +2610,8 @@
       const p=proj(hero.position.x,hero.position.y+hero.scale.y*.42);
       const w=sayEl.offsetWidth||160, hw=host.clientWidth;
       const left=Math.max(8,Math.min(hw-w-8,p.x-w*.28));
-      sayEl.style.left=left+'px'; sayEl.style.top=Math.max(52,p.y)+'px';
+      const minTop=sayEl.classList.contains('restu-surprise')?(sayEl.offsetHeight||62)+12:52;
+      sayEl.style.left=left+'px'; sayEl.style.top=Math.max(minTop,p.y)+'px';
     }
     function wiraGreet(){
       if(run===null&&!entryMode)return;
@@ -2250,7 +2620,7 @@
       const text=lines[(Math.random()*lines.length)|0].replace(/\{n\}/g,n);
       // Taip huruf demi huruf seperti dialog menu utama (90ms satu huruf),
       // kemudian kekal 2.4s. Lebar kotak ditetapkan dahulu supaya ia tidak melompat.
-      clearTimeout(sayTimer);
+      hideSay();
       sayEl.textContent=text; sayEl.style.width=''; sayEl.classList.add('show');
       sayEl.style.width=Math.ceil(sayEl.getBoundingClientRect().width)+'px';
       sayEl.textContent=''; placeSay();
@@ -2259,7 +2629,18 @@
         sayTimer=c<text.length?setTimeout(write,90):setTimeout(()=>sayEl.classList.remove('show'),2400) };
       write();
     }
-    function hideSay(){ clearTimeout(sayTimer); sayEl.classList.remove('show') }
+    function showRestuSurprise(){
+      hideSay();
+      // Reveal the whole sentence immediately: the short reaction has no typewriter delay.
+      sayEl.textContent='Eh, Cikgu Dimensi!';
+      sayEl.classList.add('restu-surprise','show');
+      placeSay();
+    }
+    function hideSay(){
+      clearTimeout(sayTimer);
+      sayEl.classList.remove('show','restu-surprise');
+      sayEl.style.width='';
+    }
 
     const CRACK_PX=768;
     seals.forEach(s=>{
@@ -2581,6 +2962,7 @@
       },
       wrong(){ if(S.introT>=0)endPetIntro(); if(S.enterT>=0)restoreHeroAfterEntranceFailure(); hideSay(); S.shake=.14; if(!reduceMotion)wrongFx() },
       reset(questionTarget=null){
+        cancelRestuEntry();
         const hits=questionTarget==null?TIERS.map(tier=>tier.hits):demoSealHits(questionTarget);
         stageTiers.forEach((tier,i)=>{tier.hits=hits[i]});
         ++S.lifecycle;stopFinisherVideo();S.active=0; S.heroX=HERO_HOME; S.heroLock=null; S.grey=0; S.coinT=-1; S.rescued=false;
@@ -2612,7 +2994,10 @@
       },
       pause(){ S.running=false },
       resume(){ S.running=true; last=performance.now(); resize() },
-      cancel(){ ++S.lifecycle; endPetIntro(); clearHitFx(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
+      cancel(){ ++S.lifecycle; cancelRestuEntry(); endPetIntro(); clearHitFx(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
+      playRestuEntry,
+      cancelRestuEntry,
+      previewRestuFrame,
       setCompanion(config){ return setPetVisual(config); },
       setRescuePet(config){ return setRescuePetVisual(config); },
       setPet(config){ return Promise.all([setPetVisual(config),setRescuePetVisual(config)]); },
@@ -2625,7 +3010,7 @@
         await wait(900);
         return result;
       },
-      dispose(){ S.running=false; stopFinisherVideo(); finisherVideoLayer?.remove(); cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
+      dispose(){ ++S.lifecycle; restuDisposed=true; cancelRestuEntry(); S.running=false; stopFinisherVideo(); finisherVideoLayer?.remove(); cancelAnimationFrame(raf); ro.disconnect(); renderer.dispose() }
     };
   }
 
@@ -2866,7 +3251,8 @@
   function productionCurrent(hostRun,q){
     return run&&run.production&&run.productionRun===hostRun&&run.q===q
       && window.PAProductionJourney?.isCurrent?.(hostRun)
-      && hostRun.session.generation===run.productionGeneration;
+      && hostRun.session.generation===run.productionGeneration
+      && window.PARapidLock?.isLocked?.()!==true;
   }
 
   /* Bar kesihatan, bukan ayat. Bilangan ketul = bilangan hentaman tier itu
@@ -3161,7 +3547,7 @@
   }
 
   async function respondProduction(option,button){
-    if(run.locked)return;
+    if(run.locked||window.PARapidLock?.isLocked?.()===true)return;
     const q=run.q,hostRun=run.productionRun;if(!q||!productionCurrent(hostRun,q))return;
     run.locked=true;
     const correct=option.tag==='correct'&&String(option.v)===String(q.answer);
@@ -3593,6 +3979,16 @@
       bindSpeaker();bindSound();bindHint();stage.resume();startProductionRun(productionRun);
     },
     resumeProduction:productionRun=>{if(!run||!run.production||run.productionRun!==productionRun||!window.PAProductionJourney?.isCurrent?.(productionRun))return;if(typeof screen==='function')screen('segelDemo');stage.resume();run.locked=false;run.retryOpen=false;drawQuestion();},
+    playRestuEntry:async()=>stage?.playRestuEntry?.()||{cancelled:true,failed:true},
+    cancelRestuEntry:()=>stage?.cancelRestuEntry?.(),
+    resumeAfterRestu:()=>{
+      stage?.resume?.();
+      if(!run?.production)return;
+      run.locked=false;
+      run.retryOpen=!!run.productionRun?.session?.retryState;
+      unlockGuestRetryControls();
+      setTypedRetryEnabled();
+    },
     pause:()=>stage&&stage.pause()
   };
 
@@ -3636,6 +4032,11 @@
     pause:()=>stage?.pause?.(),
     previewAuraFarming:()=>stage?.previewAuraFarming?.(),
     previewFinalBlow:()=>stage?.previewFinalBlow?.(),
+    previewRestu:async()=>{
+      if(!['localhost','127.0.0.1','[::1]'].includes(location.hostname))return;
+      await boot();await stage.setRescuePet?.(null);stage.reset();stage.resume();stage.enter();
+      return stage;
+    },
     clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
     submitInteraction:(choice,button,q)=>{
       if(!entryMode?.guestDemo||!run||run.q!==q||run.locked)return false;

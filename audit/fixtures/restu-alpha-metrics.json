@@ -1,0 +1,236 @@
+{
+  "method": "Real measureAt() with native Canvas WebP decode; alpha thresholds 18/150; 96/512px sampling. Geometry evidence, not a browser screenshot.",
+  "assets": {
+    "assets/heroes/wira/frames/restu-surprised-v1.webp": {
+      "width": 1254,
+      "height": 1254,
+      "sha256": "3f2af481cdf2cf03f39dac3777238b60a9fc83936e4e166aa7bc2686b5b03522",
+      "metrics": {
+        "96": {
+          "foot": 0.041666666666666664,
+          "cx": 0.02604166666666663,
+          "ring": 0.9479166666666666,
+          "boxH": 0.84375,
+          "boxW": 0.8333333333333334
+        },
+        "512": {
+          "foot": 0.041015625,
+          "cx": 0.0322265625,
+          "ring": 0.953125,
+          "boxH": 0.841796875,
+          "boxW": 0.83203125
+        }
+      }
+    },
+    "assets/heroes/wira/frames/idle-loop-0-v1.webp": {
+      "width": 480,
+      "height": 480,
+      "sha256": "cc5fd2ce33117240fa9907068398015c890ed45a136ada03e902cc8f7f965e68",
+      "metrics": {
+        "96": {
+          "foot": 0.052083333333333336,
+          "cx": 0.00520833333333337,
+          "ring": 0.9375,
+          "boxH": 0.84375,
+          "boxW": 0.8541666666666666
+        },
+        "512": {
+          "foot": 0.048828125,
+          "cx": 0.01171875,
+          "ring": 0.947265625,
+          "boxH": 0.84765625,
+          "boxW": 0.849609375
+        }
+      }
+    },
+    "assets/pets/aurora/frames/joy-0-v1.webp": {
+      "width": 470,
+      "height": 400,
+      "sha256": "df969da2854a578a96328c348f5f3c63bf41ce07daaa48fbb1aa97f1baa8a9c0",
+      "metrics": {
+        "96": {
+          "foot": 0.08333333333333333,
+          "cx": -0.08333333333333331,
+          "ring": 0.8958333333333334,
+          "boxH": 0.9166666666666666,
+          "boxW": 0.6770833333333334
+        },
+        "512": {
+          "foot": 0.08203125,
+          "cx": -0.078125,
+          "ring": 0.90234375,
+          "boxH": 0.91796875,
+          "boxW": 0.677734375
+        }
+      }
+    },
+    "assets/pets/aurora/frames/sad-0-v1.webp": {
+      "width": 470,
+      "height": 400,
+      "sha256": "873529210753c25a51ab026468358d833d1ac22968400707e69c78c75064e791",
+      "metrics": {
+        "96": {
+          "foot": 0.07291666666666667,
+          "cx": -0.046875,
+          "ring": 0.90625,
+          "boxH": 0.8645833333333334,
+          "boxW": 0.7708333333333334
+        },
+        "512": {
+          "foot": 0.068359375,
+          "cx": -0.041015625,
+          "ring": 0.919921875,
+          "boxH": 0.865234375,
+          "boxW": 0.775390625
+        }
+      }
+    },
+    "assets/coach/cikgu-dimensi/full-body/entry-v1/anticipate-v1.webp": {
+      "width": 1254,
+      "height": 1254,
+      "sha256": "4dfbb6c7cd061c9baa03ce3302eef5048bb789d8e11228c4f0b1eebf4147e0d5",
+      "metrics": {
+        "96": {
+          "foot": 0.052083333333333336,
+          "cx": -0.005208333333333315,
+          "ring": 0.90625,
+          "boxH": 0.875,
+          "boxW": 0.8958333333333334
+        },
+        "512": {
+          "foot": 0.056640625,
+          "cx": 0.001953125,
+          "ring": 0.916015625,
+          "boxH": 0.865234375,
+          "boxW": 0.896484375
+        }
+      }
+    },
+    "assets/coach/cikgu-dimensi/full-body/entry-v1/fall-v1.webp": {
+      "width": 1254,
+      "height": 1254,
+      "sha256": "5da63ba4b2f39cdb43333133ba920ea5f9faccc109b21bd4455c7444c74c96ab",
+      "metrics": {
+        "96": {
+          "foot": 0.010416666666666666,
+          "cx": 0.01041666666666663,
+          "ring": 0.7291666666666666,
+          "boxH": 0.9791666666666666,
+          "boxW": 0.8854166666666666
+        },
+        "512": {
+          "foot": 0.009765625,
+          "cx": 0.0126953125,
+          "ring": 0.736328125,
+          "boxH": 0.978515625,
+          "boxW": 0.88671875
+        }
+      }
+    },
+    "assets/coach/cikgu-dimensi/full-body/entry-v1/preland-v1.webp": {
+      "width": 1254,
+      "height": 1254,
+      "sha256": "c0bc7894a1f3defd37af6cfc0b8ecc00e208223f37f27a6dadc189569a985a15",
+      "metrics": {
+        "96": {
+          "foot": 0.0625,
+          "cx": 0.00520833333333337,
+          "ring": 0.8229166666666666,
+          "boxH": 0.8645833333333334,
+          "boxW": 0.9375
+        },
+        "512": {
+          "foot": 0.0625,
+          "cx": 0.0107421875,
+          "ring": 0.84375,
+          "boxH": 0.86328125,
+          "boxW": 0.94140625
+        }
+      }
+    },
+    "assets/coach/cikgu-dimensi/full-body/summon-land-clean-v2.webp": {
+      "width": 1254,
+      "height": 1254,
+      "sha256": "b4b81a54e8af3c6865e8d1038da8540bdb296468a5221303fe1164e6f4067b30",
+      "metrics": {
+        "96": {
+          "foot": 0.13541666666666666,
+          "cx": 0.00520833333333337,
+          "ring": 0.7916666666666666,
+          "boxH": 0.7916666666666666,
+          "boxW": 0.9375
+        },
+        "512": {
+          "foot": 0.138671875,
+          "cx": 0.0087890625,
+          "ring": 0.818359375,
+          "boxH": 0.791015625,
+          "boxW": 0.9375
+        }
+      }
+    },
+    "assets/fx/segel/gangsa-v2.webp": {
+      "width": 1536,
+      "height": 1536,
+      "sha256": "b31ee4fd682d7d7ee1e8f32a3aeb7c5946e5b3741b3b34ce3dc1da8ad97cc491",
+      "metrics": {
+        "96": {
+          "foot": 0.13541666666666666,
+          "cx": -0.005208333333333315,
+          "ring": 0.84375,
+          "boxH": 0.78125,
+          "boxW": 0.8958333333333334
+        },
+        "512": {
+          "foot": 0.130859375,
+          "cx": -0.001953125,
+          "ring": 0.853515625,
+          "boxH": 0.7890625,
+          "boxW": 0.892578125
+        }
+      }
+    },
+    "assets/fx/segel/perak-v2.webp": {
+      "width": 1536,
+      "height": 1536,
+      "sha256": "2881fa3a8a4839e775ed3b0570ab517d924f114f628f231c07b69d38c40d5eb4",
+      "metrics": {
+        "96": {
+          "foot": 0.125,
+          "cx": -0.005208333333333315,
+          "ring": 0.8541666666666666,
+          "boxH": 0.78125,
+          "boxW": 0.875
+        },
+        "512": {
+          "foot": 0.126953125,
+          "cx": -0.0009765625,
+          "ring": 0.857421875,
+          "boxH": 0.787109375,
+          "boxW": 0.8828125
+        }
+      }
+    },
+    "assets/fx/segel/emas-v2.webp": {
+      "width": 1536,
+      "height": 1536,
+      "sha256": "ed9bd6df85276a625de11ee8ccb2998c156f76dc166c265afc8c3912f6e49245",
+      "metrics": {
+        "96": {
+          "foot": 0.125,
+          "cx": -0.005208333333333315,
+          "ring": 0.8541666666666666,
+          "boxH": 0.78125,
+          "boxW": 0.8958333333333334
+        },
+        "512": {
+          "foot": 0.126953125,
+          "cx": 0,
+          "ring": 0.857421875,
+          "boxH": 0.7890625,
+          "boxW": 0.888671875
+        }
+      }
+    }
+  }
+}

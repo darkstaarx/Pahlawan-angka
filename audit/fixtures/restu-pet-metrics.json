@@ -1,0 +1,2893 @@
+{
+  "method": "Production petConfig/sheetFrames/measureAt; native Canvas, alpha 18/150, 96/512px. All selected logical frames.",
+  "variants": [
+    {
+      "key": "aurora:base",
+      "id": "aurora",
+      "form": "base",
+      "config": {
+        "id": "aurora",
+        "name": "Aurora",
+        "sad": [
+          "assets/pets/aurora/frames/sad-0-v1.webp",
+          "assets/pets/aurora/frames/sad-1-v1.webp",
+          "assets/pets/aurora/frames/sad-2-v1.webp",
+          "assets/pets/aurora/frames/sad-3-v1.webp",
+          "assets/pets/aurora/frames/sad-4-v1.webp",
+          "assets/pets/aurora/frames/sad-5-v1.webp",
+          "assets/pets/aurora/frames/sad-6-v1.webp",
+          "assets/pets/aurora/frames/sad-7-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/aurora/standby-v2.webp"
+        ],
+        "idle": [
+          "assets/pets/aurora/standby-v2.webp"
+        ],
+        "sadSheet": null,
+        "evolutionTheme": null,
+        "companionScale": 0.58,
+        "idleSheet": null,
+        "happySheet": null
+      }
+    },
+    {
+      "key": "aurora:bara",
+      "id": "aurora",
+      "form": "bara",
+      "config": {
+        "id": "aurora",
+        "name": "Aurora",
+        "sad": [
+          "assets/pets/aurora/frames/sad-0-v1.webp",
+          "assets/pets/aurora/frames/sad-1-v1.webp",
+          "assets/pets/aurora/frames/sad-2-v1.webp",
+          "assets/pets/aurora/frames/sad-3-v1.webp",
+          "assets/pets/aurora/frames/sad-4-v1.webp",
+          "assets/pets/aurora/frames/sad-5-v1.webp",
+          "assets/pets/aurora/frames/sad-6-v1.webp",
+          "assets/pets/aurora/frames/sad-7-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/evolution/fire/aurora/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/evolution/fire/aurora/happy-v1.webp"
+        ],
+        "sadSheet": null,
+        "evolutionTheme": "fire",
+        "companionScale": 1,
+        "idleSheet": "assets/pets/evolution/fire/aurora/companion-idle-v1.webp",
+        "happySheet": "assets/pets/evolution/fire/aurora/happy-sprite-v1.webp"
+      }
+    },
+    {
+      "key": "ketupatKura:base",
+      "id": "ketupatKura",
+      "form": "base",
+      "config": {
+        "id": "ketupatKura",
+        "name": "Kukupat",
+        "sad": [
+          "assets/pets/collection/ketupat-kura/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/collection/ketupat-kura/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/collection/ketupat-kura/idle.webp"
+        ],
+        "sadSheet": "assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": null,
+        "companionScale": 0.58,
+        "idleSheet": "assets/pets/collection/ketupat-kura/companion-idle-v1.webp",
+        "happySheet": "assets/pets/collection/ketupat-kura/sprite-sheets/happy-v1.webp"
+      }
+    },
+    {
+      "key": "ketupatKura:bara",
+      "id": "ketupatKura",
+      "form": "bara",
+      "config": {
+        "id": "ketupatKura",
+        "name": "Kukupat",
+        "sad": [
+          "assets/pets/collection/ketupat-kura/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/evolution/fire/ketupatKura/happy-v2.webp"
+        ],
+        "idle": [
+          "assets/pets/evolution/fire/ketupatKura/happy-v2.webp"
+        ],
+        "sadSheet": "assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": "fire",
+        "companionScale": 1,
+        "idleSheet": "assets/pets/evolution/fire/ketupatKura/companion-idle-v2.webp",
+        "happySheet": "assets/pets/evolution/fire/ketupatKura/happy-sprite-v1.webp"
+      }
+    },
+    {
+      "key": "kumbangManggis:base",
+      "id": "kumbangManggis",
+      "form": "base",
+      "config": {
+        "id": "kumbangManggis",
+        "name": "Kumbis",
+        "sad": [
+          "assets/pets/collection/kumbang-manggis/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/collection/kumbang-manggis/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/collection/kumbang-manggis/idle.webp"
+        ],
+        "sadSheet": "assets/pets/collection/kumbang-manggis/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": null,
+        "companionScale": 0.58,
+        "idleSheet": "assets/pets/collection/kumbang-manggis/companion-idle-v1.webp",
+        "happySheet": "assets/pets/collection/kumbang-manggis/sprite-sheets/happy-v1.webp"
+      }
+    },
+    {
+      "key": "kumbangManggis:bara",
+      "id": "kumbangManggis",
+      "form": "bara",
+      "config": {
+        "id": "kumbangManggis",
+        "name": "Kumbis",
+        "sad": [
+          "assets/pets/collection/kumbang-manggis/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/evolution/fire/kumbangManggis/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/evolution/fire/kumbangManggis/happy-v1.webp"
+        ],
+        "sadSheet": "assets/pets/collection/kumbang-manggis/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": "fire",
+        "companionScale": 1,
+        "idleSheet": "assets/pets/evolution/fire/kumbangManggis/companion-idle-v1.webp",
+        "happySheet": "assets/pets/evolution/fire/kumbangManggis/happy-sprite-v1.webp"
+      }
+    },
+    {
+      "key": "harimauBunga:base",
+      "id": "harimauBunga",
+      "form": "base",
+      "config": {
+        "id": "harimauBunga",
+        "name": "Riya",
+        "sad": [
+          "assets/pets/collection/harimau-bunga/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/collection/harimau-bunga/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/collection/harimau-bunga/idle.webp"
+        ],
+        "sadSheet": "assets/pets/collection/harimau-bunga/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": null,
+        "companionScale": 0.58,
+        "idleSheet": "assets/pets/collection/harimau-bunga/companion-idle-v1.webp",
+        "happySheet": "assets/pets/collection/harimau-bunga/sprite-sheets/happy-v1.webp"
+      }
+    },
+    {
+      "key": "harimauBunga:bara",
+      "id": "harimauBunga",
+      "form": "bara",
+      "config": {
+        "id": "harimauBunga",
+        "name": "Riya",
+        "sad": [
+          "assets/pets/collection/harimau-bunga/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/evolution/fire/harimauBunga/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/evolution/fire/harimauBunga/happy-v1.webp"
+        ],
+        "sadSheet": "assets/pets/collection/harimau-bunga/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": "fire",
+        "companionScale": 1,
+        "idleSheet": "assets/pets/evolution/fire/harimauBunga/companion-idle-v1.webp",
+        "happySheet": "assets/pets/evolution/fire/harimauBunga/happy-sprite-v1.webp"
+      }
+    },
+    {
+      "key": "arnabKekLapis:base",
+      "id": "arnabKekLapis",
+      "form": "base",
+      "config": {
+        "id": "arnabKekLapis",
+        "name": "Bunnis",
+        "sad": [
+          "assets/pets/collection/arnab-kek-lapis/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/collection/arnab-kek-lapis/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/collection/arnab-kek-lapis/idle.webp"
+        ],
+        "sadSheet": "assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": null,
+        "companionScale": 0.58,
+        "idleSheet": "assets/pets/collection/arnab-kek-lapis/companion-idle-v2.webp",
+        "happySheet": "assets/pets/collection/arnab-kek-lapis/sprite-sheets/happy-v1.webp"
+      }
+    },
+    {
+      "key": "arnabKekLapis:bara",
+      "id": "arnabKekLapis",
+      "form": "bara",
+      "config": {
+        "id": "arnabKekLapis",
+        "name": "Bunnis",
+        "sad": [
+          "assets/pets/collection/arnab-kek-lapis/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/evolution/fire/arnabKekLapis/happy-v4.webp"
+        ],
+        "idle": [
+          "assets/pets/evolution/fire/arnabKekLapis/happy-v4.webp"
+        ],
+        "sadSheet": "assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": "fire",
+        "companionScale": 1,
+        "idleSheet": "assets/pets/evolution/fire/arnabKekLapis/companion-idle-v5.webp",
+        "happySheet": "assets/pets/evolution/fire/arnabKekLapis/happy-sprite-v1.webp"
+      }
+    },
+    {
+      "key": "durianKerbau:base",
+      "id": "durianKerbau",
+      "form": "base",
+      "config": {
+        "id": "durianKerbau",
+        "name": "Keryan",
+        "sad": [
+          "assets/pets/collection/durian-kerbau/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/collection/durian-kerbau/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/collection/durian-kerbau/idle.webp"
+        ],
+        "sadSheet": "assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": null,
+        "companionScale": 0.58,
+        "idleSheet": "assets/pets/collection/durian-kerbau/companion-idle-v1.webp",
+        "happySheet": "assets/pets/collection/durian-kerbau/sprite-sheets/happy-v1.webp"
+      }
+    },
+    {
+      "key": "durianKerbau:bara",
+      "id": "durianKerbau",
+      "form": "bara",
+      "config": {
+        "id": "durianKerbau",
+        "name": "Keryan",
+        "sad": [
+          "assets/pets/collection/durian-kerbau/sad-v1.webp"
+        ],
+        "happy": [
+          "assets/pets/evolution/fire/durianKerbau/happy-v1.webp"
+        ],
+        "idle": [
+          "assets/pets/evolution/fire/durianKerbau/happy-v1.webp"
+        ],
+        "sadSheet": "assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.webp",
+        "evolutionTheme": "fire",
+        "companionScale": 1,
+        "idleSheet": "assets/pets/evolution/fire/durianKerbau/companion-idle-v1.webp",
+        "happySheet": "assets/pets/evolution/fire/durianKerbau/happy-sprite-v1.webp"
+      }
+    }
+  ],
+  "assets": {
+    "assets/pets/aurora/frames/sad-0-v1.webp": {
+      "sha256": "873529210753c25a51ab026468358d833d1ac22968400707e69c78c75064e791",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.046875,
+            "ring": 0.90625,
+            "boxH": 0.8645833333333334,
+            "boxW": 0.7708333333333334
+          },
+          "m512": {
+            "foot": 0.068359375,
+            "cx": -0.041015625,
+            "ring": 0.919921875,
+            "boxH": 0.865234375,
+            "boxW": 0.775390625
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/sad-1-v1.webp": {
+      "sha256": "5c143446bf49d4ded5f5f0460f65573e4fb072a158fdc1b8fd7ce9eff34dab7d",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.06770833333333331,
+            "ring": 0.90625,
+            "boxH": 0.7916666666666666,
+            "boxW": 0.8333333333333334
+          },
+          "m512": {
+            "foot": 0.068359375,
+            "cx": -0.0625,
+            "ring": 0.91796875,
+            "boxH": 0.794921875,
+            "boxW": 0.837890625
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/sad-2-v1.webp": {
+      "sha256": "1f32e50e4288d02b016ef93f69db9a3bfa94438809aa5f5d3b48dfa3ddccc54b",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.08854166666666669,
+            "ring": 0.90625,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.8333333333333334
+          },
+          "m512": {
+            "foot": 0.068359375,
+            "cx": -0.0869140625,
+            "ring": 0.91796875,
+            "boxH": 0.771484375,
+            "boxW": 0.828125
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/sad-3-v1.webp": {
+      "sha256": "e60e70057c895509d9eb21235eb4e00f31bedee33be7eaabb95218f485d565ec",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.052083333333333315,
+            "ring": 0.90625,
+            "boxH": 0.875,
+            "boxW": 0.78125
+          },
+          "m512": {
+            "foot": 0.0703125,
+            "cx": -0.046875,
+            "ring": 0.91796875,
+            "boxH": 0.880859375,
+            "boxW": 0.775390625
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/sad-4-v1.webp": {
+      "sha256": "1019d6ee75bcf688019e3c25c17167473d584a5ccc87a2c104027313d6f71d5c",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.0625,
+            "cx": -0.026041666666666685,
+            "ring": 0.90625,
+            "boxH": 0.8645833333333334,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0.064453125,
+            "cx": -0.01953125,
+            "ring": 0.916015625,
+            "boxH": 0.865234375,
+            "boxW": 0.857421875
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/sad-5-v1.webp": {
+      "sha256": "23e39aacac71226dbe2e0b699d34044055ba5c6d2f52ab427f4b91fcab128e8f",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.03125,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8229166666666666,
+            "boxW": 0.8229166666666666
+          },
+          "m512": {
+            "foot": 0.068359375,
+            "cx": -0.029296875,
+            "ring": 0.919921875,
+            "boxH": 0.830078125,
+            "boxW": 0.818359375
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/sad-6-v1.webp": {
+      "sha256": "e80ae82257793de5a1f861263d2214e03ab8b9382ab03bf23345449dd0d30947",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.0625,
+            "cx": -0.036458333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8645833333333334,
+            "boxW": 0.7916666666666666
+          },
+          "m512": {
+            "foot": 0.06640625,
+            "cx": -0.03125,
+            "ring": 0.921875,
+            "boxH": 0.859375,
+            "boxW": 0.791015625
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/sad-7-v1.webp": {
+      "sha256": "2753f2b4b7a6d1e9f450514e00dc294d7deea9f87573eb330d363e9b56a9ab3e",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.0625,
+            "cx": -0.08333333333333331,
+            "ring": 0.90625,
+            "boxH": 0.7604166666666666,
+            "boxW": 0.8229166666666666
+          },
+          "m512": {
+            "foot": 0.06640625,
+            "cx": -0.08203125,
+            "ring": 0.919921875,
+            "boxH": 0.759765625,
+            "boxW": 0.826171875
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/standby-v2.webp": {
+      "sha256": "3435df784a355c605e5c126de0864d4e8ff40ba101335d121ed67a0442acd290",
+      "width": 900,
+      "height": 739,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 900,
+          "height": 739,
+          "m96": {
+            "foot": 0,
+            "cx": -0.005208333333333315,
+            "ring": 0.9375,
+            "boxH": 1,
+            "boxW": 1
+          },
+          "m512": {
+            "foot": 0,
+            "cx": -0.0009765625,
+            "ring": 0.947265625,
+            "boxH": 1,
+            "boxW": 1
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/aurora/happy-v1.webp": {
+      "sha256": "922e7843c52ea28556725feb1943ee92f883a423358438ebb59d82f413c7aa8d",
+      "width": 512,
+      "height": 512,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.90625,
+            "boxH": 0.7395833333333334,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.9140625,
+            "boxH": 0.734375,
+            "boxW": 0.90625
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/aurora/companion-idle-v1.webp": {
+      "sha256": "00793df60bc64495a725164cac0eac04380f9fe34485e15d534daf5c6e3c928f",
+      "width": 1024,
+      "height": 512,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.8020833333333334,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.931640625,
+            "boxH": 0.794921875,
+            "boxW": 0.90625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.8020833333333334,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.931640625,
+            "boxH": 0.798828125,
+            "boxW": 0.90625
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/aurora/happy-sprite-v1.webp": {
+      "sha256": "1cb03ddafa2282598ceb7395a8c4e55a679cb1e8cc70421f8f84f06324883386",
+      "width": 1024,
+      "height": 1024,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.90625,
+            "boxH": 0.75,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.9140625,
+            "boxH": 0.74609375,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.8229166666666666,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.833984375,
+            "boxH": 0.76953125,
+            "boxW": 0.876953125
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.8229166666666666,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.833984375,
+            "boxH": 0.76953125,
+            "boxW": 0.876953125
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.90625,
+            "boxH": 0.75,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.9140625,
+            "boxH": 0.74609375,
+            "boxW": 0.890625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/ketupat-kura/sad-v1.webp": {
+      "sha256": "a4129022078de1719605766b21ee4f7bffa013a1a355517d66f7b0a3f6085ef2",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": 0.00520833333333337,
+            "ring": 0.8854166666666666,
+            "boxH": 0.84375,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0.083984375,
+            "cx": 0.0078125,
+            "ring": 0.89453125,
+            "boxH": 0.83984375,
+            "boxW": 0.845703125
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/ketupat-kura/happy-v1.webp": {
+      "sha256": "9858bc80febdc17604052416cc0eac308336e191ddcaecfe715ee2a283ef010f",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": 0.00520833333333337,
+            "ring": 0.8854166666666666,
+            "boxH": 0.84375,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0.0859375,
+            "cx": 0.0078125,
+            "ring": 0.89453125,
+            "boxH": 0.837890625,
+            "boxW": 0.845703125
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/ketupat-kura/idle.webp": {
+      "sha256": "31cfa3a753a3080bf41ce61d7fd50396a80afacb19a46cd1859cb5ea0a9220cf",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": 0.00520833333333337,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9270833333333334,
+            "boxW": 0.9375
+          },
+          "m512": {
+            "foot": 0.0390625,
+            "cx": 0.0087890625,
+            "ring": 0.9375,
+            "boxH": 0.931640625,
+            "boxW": 0.94140625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/ketupat-kura/sprite-sheets/sad-v1.webp": {
+      "sha256": "72ea2ec58c3549be52d06d28fa3d101769e094aa80e79800e24c547f4643a15f",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.010416666666666666,
+            "cx": 0.00520833333333337,
+            "ring": 0.96875,
+            "boxH": 0.96875,
+            "boxW": 0.9791666666666666
+          },
+          "m512": {
+            "foot": 0.0078125,
+            "cx": 0.009765625,
+            "ring": 0.97265625,
+            "boxH": 0.96875,
+            "boxW": 0.978515625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.010416666666666666,
+            "cx": 0.03125,
+            "ring": 0.96875,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.90625
+          },
+          "m512": {
+            "foot": 0.0078125,
+            "cx": 0.0390625,
+            "ring": 0.978515625,
+            "boxH": 0.923828125,
+            "boxW": 0.904296875
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": 0.02604166666666663,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9270833333333334,
+            "boxW": 0.9375
+          },
+          "m512": {
+            "foot": 0.044921875,
+            "cx": 0.0283203125,
+            "ring": 0.935546875,
+            "boxH": 0.921875,
+            "boxW": 0.94140625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.03125,
+            "cx": -0.010416666666666685,
+            "ring": 0.9375,
+            "boxH": 0.9270833333333334,
+            "boxW": 0.9895833333333334
+          },
+          "m512": {
+            "foot": 0.02734375,
+            "cx": -0.0087890625,
+            "ring": 0.94140625,
+            "boxH": 0.927734375,
+            "boxW": 0.984375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/ketupat-kura/companion-idle-v1.webp": {
+      "sha256": "29b7e827e72dc185918d641926fc1099d3f1cec46348d3fbe2d8c6df1787c088",
+      "width": 1983,
+      "height": 793,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 991,
+          "height": 793,
+          "m96": {
+            "foot": 0.03125,
+            "cx": 0.03645833333333337,
+            "ring": 0.9375,
+            "boxH": 0.9270833333333334,
+            "boxW": 0.8125
+          },
+          "m512": {
+            "foot": 0.033203125,
+            "cx": 0.0400390625,
+            "ring": 0.947265625,
+            "boxH": 0.921875,
+            "boxW": 0.80859375
+          }
+        },
+        {
+          "width": 991,
+          "height": 793,
+          "m96": {
+            "foot": 0.03125,
+            "cx": -0.005208333333333315,
+            "ring": 0.9375,
+            "boxH": 0.9270833333333334,
+            "boxW": 0.8125
+          },
+          "m512": {
+            "foot": 0.033203125,
+            "cx": -0.0009765625,
+            "ring": 0.947265625,
+            "boxH": 0.921875,
+            "boxW": 0.80859375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/ketupat-kura/sprite-sheets/happy-v1.webp": {
+      "sha256": "3da75fad615181a270e3a17bbd4efba8bb8509a911d42632828370b0398da5f5",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0,
+            "cx": 0.015625,
+            "ring": 0.9479166666666666,
+            "boxH": 0.8125,
+            "boxW": 0.8125
+          },
+          "m512": {
+            "foot": 0,
+            "cx": 0.0205078125,
+            "ring": 0.953125,
+            "boxH": 0.814453125,
+            "boxW": 0.8046875
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.0625,
+            "cx": -0.052083333333333315,
+            "ring": 0.90625,
+            "boxH": 0.84375,
+            "boxW": 0.8854166666666666
+          },
+          "m512": {
+            "foot": 0.0625,
+            "cx": -0.046875,
+            "ring": 0.91796875,
+            "boxH": 0.849609375,
+            "boxW": 0.884765625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.09375,
+            "cx": 0.00520833333333337,
+            "ring": 0.8645833333333334,
+            "boxH": 0.90625,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.08984375,
+            "cx": 0.0078125,
+            "ring": 0.876953125,
+            "boxH": 0.91015625,
+            "boxW": 0.880859375
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.0625,
+            "cx": 0.00520833333333337,
+            "ring": 0.9166666666666666,
+            "boxH": 0.78125,
+            "boxW": 0.8125
+          },
+          "m512": {
+            "foot": 0.05859375,
+            "cx": 0.0107421875,
+            "ring": 0.921875,
+            "boxH": 0.783203125,
+            "boxW": 0.81640625
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/ketupatKura/happy-v2.webp": {
+      "sha256": "4d77b46b9791eec31d553db327202727c306cee6724e9ac768b71c54962b1293",
+      "width": 512,
+      "height": 512,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.935546875,
+            "boxH": 0.90625,
+            "boxW": 0.8671875
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/ketupatKura/companion-idle-v2.webp": {
+      "sha256": "345c2a56a98c5b0b25bfd8340d1eccc785b487e09c8b6e54849c0f3f3d10c032",
+      "width": 1024,
+      "height": 512,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.935546875,
+            "boxH": 0.90625,
+            "boxW": 0.8671875
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.935546875,
+            "boxH": 0.90625,
+            "boxW": 0.8671875
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/ketupatKura/happy-sprite-v1.webp": {
+      "sha256": "2533a6fe77983ed95402caf89099b0f48f44452aa02045e244aa04dffb232d60",
+      "width": 1024,
+      "height": 1024,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.92578125,
+            "boxH": 0.888671875,
+            "boxW": 0.84375
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.875,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.923828125,
+            "boxH": 0.876953125,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.875,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.923828125,
+            "boxH": 0.876953125,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.92578125,
+            "boxH": 0.888671875,
+            "boxW": 0.84375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/kumbang-manggis/sad-v1.webp": {
+      "sha256": "5e3ccba4d91e8cf42c4c0c942551ca5b9bed85250b572690e4fcc717abf1a48e",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.11458333333333333,
+            "cx": 0.00520833333333337,
+            "ring": 0.8333333333333334,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.111328125,
+            "cx": 0.009765625,
+            "ring": 0.83984375,
+            "boxH": 0.76953125,
+            "boxW": 0.865234375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/kumbang-manggis/happy-v1.webp": {
+      "sha256": "0783b76d03e8885d28e7b93a62c4cb6ed2ebfd4f02e3e561f899ccbdba2aad06",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.11458333333333333,
+            "cx": 0.00520833333333337,
+            "ring": 0.8229166666666666,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.111328125,
+            "cx": 0.009765625,
+            "ring": 0.837890625,
+            "boxH": 0.76953125,
+            "boxW": 0.865234375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/kumbang-manggis/idle.webp": {
+      "sha256": "28e551a89203a1cb23a7e60a13c197f4d59cb535b47dae14eaad568b4c19be26",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": 0.00520833333333337,
+            "ring": 0.8645833333333334,
+            "boxH": 0.8541666666666666,
+            "boxW": 0.9583333333333334
+          },
+          "m512": {
+            "foot": 0.068359375,
+            "cx": 0.0107421875,
+            "ring": 0.876953125,
+            "boxH": 0.85546875,
+            "boxW": 0.9609375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/kumbang-manggis/sprite-sheets/sad-v1.webp": {
+      "sha256": "3eead64fbe6421384725e4980183bf265b2c3b2223ce145ab6b5adab5f25af9b",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": 0.01041666666666663,
+            "ring": 0.90625,
+            "boxH": 0.8645833333333334,
+            "boxW": 0.96875
+          },
+          "m512": {
+            "foot": 0.037109375,
+            "cx": 0.0166015625,
+            "ring": 0.91015625,
+            "boxH": 0.865234375,
+            "boxW": 0.96484375
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.020833333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.7395833333333334,
+            "boxW": 0.96875
+          },
+          "m512": {
+            "foot": 0.041015625,
+            "cx": -0.0185546875,
+            "ring": 0.931640625,
+            "boxH": 0.7421875,
+            "boxW": 0.96484375
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": 0.046875,
+            "ring": 0.8645833333333334,
+            "boxH": 0.78125,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.080078125,
+            "cx": 0.05078125,
+            "ring": 0.876953125,
+            "boxH": 0.7890625,
+            "boxW": 0.896484375
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": -0.020833333333333315,
+            "ring": 0.8645833333333334,
+            "boxH": 0.8020833333333334,
+            "boxW": 0.96875
+          },
+          "m512": {
+            "foot": 0.080078125,
+            "cx": -0.015625,
+            "ring": 0.873046875,
+            "boxH": 0.806640625,
+            "boxW": 0.970703125
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/kumbang-manggis/companion-idle-v1.webp": {
+      "sha256": "a2d62ae4ef1d717e9c0dc9a528fd0ed6a31ed99c61c2467573d996df138e2582",
+      "width": 1774,
+      "height": 887,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 887,
+          "height": 887,
+          "m96": {
+            "foot": 0.0625,
+            "cx": 0.00520833333333337,
+            "ring": 0.8854166666666666,
+            "boxH": 0.8541666666666666,
+            "boxW": 0.9791666666666666
+          },
+          "m512": {
+            "foot": 0.056640625,
+            "cx": 0.005859375,
+            "ring": 0.89453125,
+            "boxH": 0.85546875,
+            "boxW": 0.982421875
+          }
+        },
+        {
+          "width": 887,
+          "height": 887,
+          "m96": {
+            "foot": 0.0625,
+            "cx": 0,
+            "ring": 0.8854166666666666,
+            "boxH": 0.8541666666666666,
+            "boxW": 0.9895833333333334
+          },
+          "m512": {
+            "foot": 0.056640625,
+            "cx": 0.005859375,
+            "ring": 0.89453125,
+            "boxH": 0.85546875,
+            "boxW": 0.982421875
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/kumbang-manggis/sprite-sheets/happy-v1.webp": {
+      "sha256": "1f649695b26603bd050e5a8c17de18997dd26349c7c37583bcae0aaccfbc1309",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.010416666666666666,
+            "cx": 0.00520833333333337,
+            "ring": 0.9270833333333334,
+            "boxH": 0.8020833333333334,
+            "boxW": 0.9375
+          },
+          "m512": {
+            "foot": 0.00390625,
+            "cx": 0.01171875,
+            "ring": 0.9296875,
+            "boxH": 0.80859375,
+            "boxW": 0.939453125
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.010416666666666685,
+            "ring": 0.84375,
+            "boxH": 0.875,
+            "boxW": 0.8854166666666666
+          },
+          "m512": {
+            "foot": 0.044921875,
+            "cx": -0.005859375,
+            "ring": 0.853515625,
+            "boxH": 0.87109375,
+            "boxW": 0.892578125
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.11458333333333333,
+            "cx": 0.015625,
+            "ring": 0.8229166666666666,
+            "boxH": 0.8229166666666666,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.115234375,
+            "cx": 0.0185546875,
+            "ring": 0.830078125,
+            "boxH": 0.82421875,
+            "boxW": 0.9140625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": -0.005208333333333315,
+            "ring": 0.84375,
+            "boxH": 0.8020833333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.087890625,
+            "cx": 0,
+            "ring": 0.853515625,
+            "boxH": 0.798828125,
+            "boxW": 0.880859375
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/kumbangManggis/happy-v1.webp": {
+      "sha256": "4297e0165a22854b24c1626e297467e36fa06982a2c91a8db94d0a1a9a014b23",
+      "width": 512,
+      "height": 512,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.8958333333333334,
+            "boxH": 0.8229166666666666,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.90234375,
+            "boxH": 0.814453125,
+            "boxW": 0.90625
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/kumbangManggis/companion-idle-v1.webp": {
+      "sha256": "b44725f02e5812ba8b9ec808fe419f0b23b11b2b9e8d123a9f7c3d80db5dcc6c",
+      "width": 1024,
+      "height": 512,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.8958333333333334,
+            "boxH": 0.8229166666666666,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.90234375,
+            "boxH": 0.814453125,
+            "boxW": 0.90625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.8958333333333334,
+            "boxH": 0.8229166666666666,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.90234375,
+            "boxH": 0.814453125,
+            "boxW": 0.90625
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/kumbangManggis/happy-sprite-v1.webp": {
+      "sha256": "fd30c77e0d5d5096aeec60f4032b6a31c0614bdf414c2fd882a04a2e15609525",
+      "width": 1024,
+      "height": 1024,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.8958333333333334,
+            "boxH": 0.8125,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.900390625,
+            "boxH": 0.814453125,
+            "boxW": 0.888671875
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.875,
+            "boxH": 0.8541666666666666,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.888671875,
+            "boxH": 0.849609375,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.875,
+            "boxH": 0.8541666666666666,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.888671875,
+            "boxH": 0.849609375,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.8958333333333334,
+            "boxH": 0.8125,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.900390625,
+            "boxH": 0.814453125,
+            "boxW": 0.888671875
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/harimau-bunga/sad-v1.webp": {
+      "sha256": "86749d9cb421d8716d6f82121261554865cd85f4793d12b0d4b50f19aea1208b",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.09375,
+            "cx": 0,
+            "ring": 0.8645833333333334,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.8854166666666666
+          },
+          "m512": {
+            "foot": 0.09765625,
+            "cx": 0.005859375,
+            "ring": 0.876953125,
+            "boxH": 0.771484375,
+            "boxW": 0.884765625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/harimau-bunga/happy-v1.webp": {
+      "sha256": "0c95d47714ce5b2253b567cff757085a00437ee321f1e3bad9c9f660741b7e30",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.10416666666666667,
+            "cx": 0,
+            "ring": 0.8645833333333334,
+            "boxH": 0.7604166666666666,
+            "boxW": 0.8854166666666666
+          },
+          "m512": {
+            "foot": 0.099609375,
+            "cx": 0.005859375,
+            "ring": 0.876953125,
+            "boxH": 0.76953125,
+            "boxW": 0.884765625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/harimau-bunga/idle.webp": {
+      "sha256": "c2a991c426ab08599d7358ef1b95034aec3e5796d9da6bf53defa0c9dcef99d1",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": 0.00520833333333337,
+            "ring": 0.90625,
+            "boxH": 0.8541666666666666,
+            "boxW": 0.9791666666666666
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": 0.005859375,
+            "ring": 0.919921875,
+            "boxH": 0.85546875,
+            "boxW": 0.982421875
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/harimau-bunga/sprite-sheets/sad-v1.webp": {
+      "sha256": "6845e1d726e2c08c48abb26e3a69d693fd23fb6ccabbe07c13e2e59e35c7f24d",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.010416666666666666,
+            "cx": -0.005208333333333315,
+            "ring": 0.96875,
+            "boxH": 0.71875,
+            "boxW": 0.9791666666666666
+          },
+          "m512": {
+            "foot": 0.005859375,
+            "cx": -0.001953125,
+            "ring": 0.9765625,
+            "boxH": 0.7265625,
+            "boxW": 0.978515625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.010416666666666666,
+            "cx": 0,
+            "ring": 0.96875,
+            "boxH": 0.6145833333333334,
+            "boxW": 0.96875
+          },
+          "m512": {
+            "foot": 0.01171875,
+            "cx": 0.0048828125,
+            "ring": 0.9765625,
+            "boxH": 0.6171875,
+            "boxW": 0.96484375
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.09375,
+            "cx": 0,
+            "ring": 0.875,
+            "boxH": 0.6979166666666666,
+            "boxW": 0.9479166666666666
+          },
+          "m512": {
+            "foot": 0.09765625,
+            "cx": 0.00390625,
+            "ring": 0.880859375,
+            "boxH": 0.69140625,
+            "boxW": 0.955078125
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": -0.005208333333333315,
+            "ring": 0.8645833333333334,
+            "boxH": 0.6979166666666666,
+            "boxW": 0.9791666666666666
+          },
+          "m512": {
+            "foot": 0.0859375,
+            "cx": -0.005859375,
+            "ring": 0.873046875,
+            "boxH": 0.69921875,
+            "boxW": 0.982421875
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/harimau-bunga/companion-idle-v1.webp": {
+      "sha256": "32ac21c1899b329fde9df5ec93ac08c86d6345bad910bca92e39f6d67f0d437e",
+      "width": 1774,
+      "height": 887,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 887,
+          "height": 887,
+          "m96": {
+            "foot": 0.0625,
+            "cx": 0.015625,
+            "ring": 0.90625,
+            "boxH": 0.7916666666666666,
+            "boxW": 0.9583333333333334
+          },
+          "m512": {
+            "foot": 0.0625,
+            "cx": 0.021484375,
+            "ring": 0.916015625,
+            "boxH": 0.7890625,
+            "boxW": 0.955078125
+          }
+        },
+        {
+          "width": 887,
+          "height": 887,
+          "m96": {
+            "foot": 0.0625,
+            "cx": -0.015625,
+            "ring": 0.90625,
+            "boxH": 0.7916666666666666,
+            "boxW": 0.9791666666666666
+          },
+          "m512": {
+            "foot": 0.0625,
+            "cx": -0.01171875,
+            "ring": 0.916015625,
+            "boxH": 0.791015625,
+            "boxW": 0.978515625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/harimau-bunga/sprite-sheets/happy-v1.webp": {
+      "sha256": "75909a01f9b344bb99ac30d8c0753e3b563d89a296d548a7d5ee9b5e48857743",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0,
+            "cx": 0.0625,
+            "ring": 0.9895833333333334,
+            "boxH": 0.8541666666666666,
+            "boxW": 0.8645833333333334
+          },
+          "m512": {
+            "foot": 0,
+            "cx": 0.0654296875,
+            "ring": 0.99609375,
+            "boxH": 0.857421875,
+            "boxW": 0.8671875
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0,
+            "cx": 0.02604166666666663,
+            "ring": 0.9895833333333334,
+            "boxH": 0.8333333333333334,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0,
+            "cx": -0.0107421875,
+            "ring": 0.994140625,
+            "boxH": 0.830078125,
+            "boxW": 0.98046875
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": 0.0625,
+            "ring": 0.8958333333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.8645833333333334
+          },
+          "m512": {
+            "foot": 0.08203125,
+            "cx": 0.0654296875,
+            "ring": 0.90625,
+            "boxH": 0.91796875,
+            "boxW": 0.8671875
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": -0.010416666666666685,
+            "ring": 0.8958333333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.9895833333333334
+          },
+          "m512": {
+            "foot": 0.080078125,
+            "cx": -0.005859375,
+            "ring": 0.90625,
+            "boxH": 0.919921875,
+            "boxW": 0.990234375
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/harimauBunga/happy-v1.webp": {
+      "sha256": "31fd75ace435455d08aac9e3703b7cd9da1069650908d661cab7ed2253138219",
+      "width": 512,
+      "height": 512,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.9296875,
+            "boxH": 0.775390625,
+            "boxW": 0.88671875
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/harimauBunga/companion-idle-v1.webp": {
+      "sha256": "c69748d043284335d98184df7ecd7738572443ef2e54b97d8da4ae83f77b53c4",
+      "width": 1024,
+      "height": 512,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.9296875,
+            "boxH": 0.775390625,
+            "boxW": 0.88671875
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.78125,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.9296875,
+            "boxH": 0.775390625,
+            "boxW": 0.90625
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/harimauBunga/happy-sprite-v1.webp": {
+      "sha256": "fc86127b2b2a2a3bec369761ce8002175d84684219bd8522634519e30908fba8",
+      "width": 1024,
+      "height": 1024,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.6979166666666666,
+            "boxW": 0.8125
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.927734375,
+            "boxH": 0.689453125,
+            "boxW": 0.81640625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.7083333333333334,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.92578125,
+            "boxH": 0.70703125,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.7083333333333334,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.92578125,
+            "boxH": 0.70703125,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.6979166666666666,
+            "boxW": 0.8125
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.927734375,
+            "boxH": 0.689453125,
+            "boxW": 0.81640625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/arnab-kek-lapis/sad-v1.webp": {
+      "sha256": "c4e0f5301d33171ab0ea7f4d776184089f5902dffce6f95ec8b13db38785cabd",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.125,
+            "cx": 0.02604166666666663,
+            "ring": 0.84375,
+            "boxH": 0.7291666666666666,
+            "boxW": 0.7916666666666666
+          },
+          "m512": {
+            "foot": 0.126953125,
+            "cx": 0.03125,
+            "ring": 0.8515625,
+            "boxH": 0.732421875,
+            "boxW": 0.783203125
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/arnab-kek-lapis/happy-v1.webp": {
+      "sha256": "0ef452e9a313494af61b8a4c2c8cd05bd9aecd75c42e5cc7f04debb688235f48",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.125,
+            "cx": 0.03125,
+            "ring": 0.84375,
+            "boxH": 0.7291666666666666,
+            "boxW": 0.78125
+          },
+          "m512": {
+            "foot": 0.12890625,
+            "cx": 0.0302734375,
+            "ring": 0.849609375,
+            "boxH": 0.728515625,
+            "boxW": 0.78125
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/arnab-kek-lapis/idle.webp": {
+      "sha256": "3d382fb04a2f0f535faeca063d8f445a615802cd311dfe7f0f314af87bf2eb59",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": 0.03125,
+            "ring": 0.8854166666666666,
+            "boxH": 0.8125,
+            "boxW": 0.8645833333333334
+          },
+          "m512": {
+            "foot": 0.087890625,
+            "cx": 0.033203125,
+            "ring": 0.888671875,
+            "boxH": 0.80859375,
+            "boxW": 0.869140625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/arnab-kek-lapis/sprite-sheets/sad-v1.webp": {
+      "sha256": "3df7df4d1a12eab524cde226feff517b171affdcb2de02ab5972df4876009cc9",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.010416666666666666,
+            "cx": 0.00520833333333337,
+            "ring": 0.96875,
+            "boxH": 0.8854166666666666,
+            "boxW": 0.9791666666666666
+          },
+          "m512": {
+            "foot": 0.0078125,
+            "cx": 0.0107421875,
+            "ring": 0.9765625,
+            "boxH": 0.884765625,
+            "boxW": 0.9765625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0,
+            "cx": -0.010416666666666685,
+            "ring": 0.96875,
+            "boxH": 0.8020833333333334,
+            "boxW": 0.9895833333333334
+          },
+          "m512": {
+            "foot": 0.00390625,
+            "cx": -0.0048828125,
+            "ring": 0.974609375,
+            "boxH": 0.79296875,
+            "boxW": 0.9921875
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.10416666666666667,
+            "cx": -0.010416666666666685,
+            "ring": 0.875,
+            "boxH": 0.7604166666666666,
+            "boxW": 0.8020833333333334
+          },
+          "m512": {
+            "foot": 0.099609375,
+            "cx": -0.0068359375,
+            "ring": 0.880859375,
+            "boxH": 0.76171875,
+            "boxW": 0.79296875
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.010416666666666685,
+            "ring": 0.8645833333333334,
+            "boxH": 0.84375,
+            "boxW": 0.96875
+          },
+          "m512": {
+            "foot": 0.0703125,
+            "cx": -0.0048828125,
+            "ring": 0.87109375,
+            "boxH": 0.84375,
+            "boxW": 0.9609375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/arnab-kek-lapis/companion-idle-v2.webp": {
+      "sha256": "8bd035300e8832328694839cd17ae7ac1d8c7ce446d9f85cfe18520764e6647f",
+      "width": 1024,
+      "height": 512,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.8125
+          },
+          "m512": {
+            "foot": 0.05078125,
+            "cx": 0,
+            "ring": 0.935546875,
+            "boxH": 0.8984375,
+            "boxW": 0.814453125
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.7916666666666666
+          },
+          "m512": {
+            "foot": 0.05078125,
+            "cx": -0.0009765625,
+            "ring": 0.935546875,
+            "boxH": 0.8984375,
+            "boxW": 0.796875
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/arnab-kek-lapis/sprite-sheets/happy-v1.webp": {
+      "sha256": "80d93cafff2595606602e6e6181cd07903a797ac62ece7aa1294e4af1391c6e0",
+      "width": 1312,
+      "height": 1200,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 656,
+          "height": 600,
+          "m96": {
+            "foot": 0,
+            "cx": -0.005208333333333315,
+            "ring": 0.96875,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.9583333333333334
+          },
+          "m512": {
+            "foot": 0.001953125,
+            "cx": -0.001953125,
+            "ring": 0.982421875,
+            "boxH": 0.763671875,
+            "boxW": 0.955078125
+          }
+        },
+        {
+          "width": 656,
+          "height": 600,
+          "m96": {
+            "foot": 0,
+            "cx": -0.010416666666666685,
+            "ring": 0.96875,
+            "boxH": 0.7708333333333334,
+            "boxW": 0.9895833333333334
+          },
+          "m512": {
+            "foot": 0.001953125,
+            "cx": -0.00390625,
+            "ring": 0.982421875,
+            "boxH": 0.767578125,
+            "boxW": 0.990234375
+          }
+        },
+        {
+          "width": 656,
+          "height": 600,
+          "m96": {
+            "foot": 0.10416666666666667,
+            "cx": -0.005208333333333315,
+            "ring": 0.875,
+            "boxH": 0.7604166666666666,
+            "boxW": 0.9583333333333334
+          },
+          "m512": {
+            "foot": 0.099609375,
+            "cx": -0.0048828125,
+            "ring": 0.88671875,
+            "boxH": 0.763671875,
+            "boxW": 0.9609375
+          }
+        },
+        {
+          "width": 656,
+          "height": 600,
+          "m96": {
+            "foot": 0.10416666666666667,
+            "cx": -0.010416666666666685,
+            "ring": 0.875,
+            "boxH": 0.75,
+            "boxW": 0.96875
+          },
+          "m512": {
+            "foot": 0.099609375,
+            "cx": -0.0078125,
+            "ring": 0.88671875,
+            "boxH": 0.759765625,
+            "boxW": 0.970703125
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/arnabKekLapis/happy-v4.webp": {
+      "sha256": "60e4236e52d0691a603e37f8dfc0e827f1e3aeccdd06229c2ee8eeafe5c6c618",
+      "width": 512,
+      "height": 512,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.9375
+          },
+          "m512": {
+            "foot": 0.044921875,
+            "cx": 0.00390625,
+            "ring": 0.931640625,
+            "boxH": 0.908203125,
+            "boxW": 0.935546875
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/arnabKekLapis/companion-idle-v5.webp": {
+      "sha256": "47b84ae0c8ce9ba0c7ae0c8f0d67a737988160e3bb3d5324a9a983d85004b662",
+      "width": 1024,
+      "height": 512,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.05078125,
+            "cx": 0,
+            "ring": 0.923828125,
+            "boxH": 0.8984375,
+            "boxW": 0.876953125
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.05078125,
+            "cx": 0,
+            "ring": 0.923828125,
+            "boxH": 0.8984375,
+            "boxW": 0.876953125
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/arnabKekLapis/happy-sprite-v1.webp": {
+      "sha256": "0efea774ef4a68e6ae8b0a84708e46c82c7d873f1bd5ae058b6d8b112e87bebe",
+      "width": 1024,
+      "height": 1024,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.015625,
+            "ring": 0.9166666666666666,
+            "boxH": 0.84375,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.923828125,
+            "boxH": 0.83984375,
+            "boxW": 0.884765625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8333333333333334,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.923828125,
+            "boxH": 0.828125,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.8333333333333334,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.923828125,
+            "boxH": 0.828125,
+            "boxW": 0.890625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.015625,
+            "ring": 0.9166666666666666,
+            "boxH": 0.84375,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.923828125,
+            "boxH": 0.83984375,
+            "boxW": 0.884765625
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/durian-kerbau/sad-v1.webp": {
+      "sha256": "3e6d281f37798413ccc9aa430d0ec9b1f6fab7657395eb15677cb0f3bdaee46d",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.005208333333333315,
+            "ring": 0.90625,
+            "boxH": 0.8645833333333334,
+            "boxW": 0.7708333333333334
+          },
+          "m512": {
+            "foot": 0.07421875,
+            "cx": 0,
+            "ring": 0.91015625,
+            "boxH": 0.86328125,
+            "boxW": 0.779296875
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/durian-kerbau/happy-v1.webp": {
+      "sha256": "b59bf11305b573d399b2326e3b696ac5a5d44d850da408439e6c0decf73f74fa",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.07291666666666667,
+            "cx": -0.005208333333333315,
+            "ring": 0.8958333333333334,
+            "boxH": 0.8645833333333334,
+            "boxW": 0.7708333333333334
+          },
+          "m512": {
+            "foot": 0.076171875,
+            "cx": -0.0009765625,
+            "ring": 0.91015625,
+            "boxH": 0.861328125,
+            "boxW": 0.77734375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/durian-kerbau/idle.webp": {
+      "sha256": "b095ebe78350afd3bec10b63b5079775f54ae5fa4f4d05c3a25728deeea3b7b5",
+      "width": 1254,
+      "height": 1254,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 1254,
+          "height": 1254,
+          "m96": {
+            "foot": 0.03125,
+            "cx": -0.005208333333333315,
+            "ring": 0.9479166666666666,
+            "boxH": 0.9583333333333334,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0.02734375,
+            "cx": -0.0009765625,
+            "ring": 0.955078125,
+            "boxH": 0.95703125,
+            "boxW": 0.86328125
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/durian-kerbau/sprite-sheets/sad-v1.webp": {
+      "sha256": "7aebcfc6b551e091e9cd7e17b7cae043cdba03c09305cde88fc14ce15ea8df67",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0,
+            "cx": 0.02604166666666663,
+            "ring": 0.9791666666666666,
+            "boxH": 0.96875,
+            "boxW": 0.9166666666666666
+          },
+          "m512": {
+            "foot": 0,
+            "cx": 0.0302734375,
+            "ring": 0.98828125,
+            "boxH": 0.97265625,
+            "boxW": 0.90625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0,
+            "cx": 0.015625,
+            "ring": 0.9895833333333334,
+            "boxH": 0.875,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0,
+            "cx": 0.0166015625,
+            "ring": 0.9921875,
+            "boxH": 0.873046875,
+            "boxW": 0.89453125
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.03125,
+            "cx": 0.03125,
+            "ring": 0.9375,
+            "boxH": 0.96875,
+            "boxW": 0.8645833333333334
+          },
+          "m512": {
+            "foot": 0.033203125,
+            "cx": 0.03515625,
+            "ring": 0.94921875,
+            "boxH": 0.966796875,
+            "boxW": 0.865234375
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.03125,
+            "cx": 0.01041666666666663,
+            "ring": 0.9375,
+            "boxH": 0.96875,
+            "boxW": 0.90625
+          },
+          "m512": {
+            "foot": 0.029296875,
+            "cx": 0.015625,
+            "ring": 0.939453125,
+            "boxH": 0.970703125,
+            "boxW": 0.912109375
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/durian-kerbau/companion-idle-v1.webp": {
+      "sha256": "119e437924af3b7b3154b7507b7864dba29443a521e27dfb65f9d7b2c6bdb67d",
+      "width": 1774,
+      "height": 887,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 887,
+          "height": 887,
+          "m96": {
+            "foot": 0.020833333333333332,
+            "cx": 0.015625,
+            "ring": 0.9583333333333334,
+            "boxH": 0.96875,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.0234375,
+            "cx": 0.021484375,
+            "ring": 0.9609375,
+            "boxH": 0.9609375,
+            "boxW": 0.900390625
+          }
+        },
+        {
+          "width": 887,
+          "height": 887,
+          "m96": {
+            "foot": 0.020833333333333332,
+            "cx": 0,
+            "ring": 0.9583333333333334,
+            "boxH": 0.9583333333333334,
+            "boxW": 0.90625
+          },
+          "m512": {
+            "foot": 0.021484375,
+            "cx": 0.005859375,
+            "ring": 0.962890625,
+            "boxH": 0.958984375,
+            "boxW": 0.904296875
+          }
+        }
+      ]
+    },
+    "assets/pets/collection/durian-kerbau/sprite-sheets/happy-v1.webp": {
+      "sha256": "8c241aecf4b3ebeec430673a82aed0a4e24996b7b55e478d73f5401d159324ad",
+      "width": 1254,
+      "height": 1254,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0,
+            "cx": 0.03645833333333337,
+            "ring": 0.9479166666666666,
+            "boxH": 0.9583333333333334,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0,
+            "cx": 0.037109375,
+            "ring": 0.95703125,
+            "boxH": 0.955078125,
+            "boxW": 0.853515625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.010416666666666666,
+            "cx": -0.041666666666666685,
+            "ring": 0.9166666666666666,
+            "boxH": 0.96875,
+            "boxW": 0.8854166666666666
+          },
+          "m512": {
+            "foot": 0.015625,
+            "cx": -0.037109375,
+            "ring": 0.931640625,
+            "boxH": 0.96875,
+            "boxW": 0.892578125
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": 0.04166666666666663,
+            "ring": 0.9375,
+            "boxH": 0.9583333333333334,
+            "boxW": 0.84375
+          },
+          "m512": {
+            "foot": 0.04296875,
+            "cx": 0.04296875,
+            "ring": 0.947265625,
+            "boxH": 0.95703125,
+            "boxW": 0.837890625
+          }
+        },
+        {
+          "width": 627,
+          "height": 627,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.015625,
+            "ring": 0.9375,
+            "boxH": 0.9375,
+            "boxW": 0.8541666666666666
+          },
+          "m512": {
+            "foot": 0.041015625,
+            "cx": -0.0087890625,
+            "ring": 0.9453125,
+            "boxH": 0.94140625,
+            "boxW": 0.859375
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/durianKerbau/happy-v1.webp": {
+      "sha256": "8176da57d33516b3e5df24f5928f99e8393da27c7dd9cdfdfb9f5fdca6ba759c",
+      "width": 512,
+      "height": 512,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.939453125,
+            "boxH": 0.90625,
+            "boxW": 0.89453125
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/durianKerbau/companion-idle-v1.webp": {
+      "sha256": "9ff3130c65779dbe1fb9647ba12dbec42a046c32bfaf030e54f13264aaba825e",
+      "width": 1024,
+      "height": 512,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.939453125,
+            "boxH": 0.90625,
+            "boxW": 0.89453125
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.041666666666666664,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.90625,
+            "boxW": 0.8958333333333334
+          },
+          "m512": {
+            "foot": 0.046875,
+            "cx": -0.0009765625,
+            "ring": 0.939453125,
+            "boxH": 0.904296875,
+            "boxW": 0.89453125
+          }
+        }
+      ]
+    },
+    "assets/pets/evolution/fire/durianKerbau/happy-sprite-v1.webp": {
+      "sha256": "2919ffd99a4962fd3da903f58169669bf3c180a6ea457bb7c150ada5e61c0a83",
+      "width": 1024,
+      "height": 1024,
+      "sheet": true,
+      "frames": [
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.931640625,
+            "boxH": 0.890625,
+            "boxW": 0.869140625
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.875,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.923828125,
+            "boxH": 0.876953125,
+            "boxW": 0.87109375
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9166666666666666,
+            "boxH": 0.875,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.0009765625,
+            "ring": 0.923828125,
+            "boxH": 0.876953125,
+            "boxW": 0.87109375
+          }
+        },
+        {
+          "width": 512,
+          "height": 512,
+          "m96": {
+            "foot": 0.052083333333333336,
+            "cx": -0.005208333333333315,
+            "ring": 0.9270833333333334,
+            "boxH": 0.8958333333333334,
+            "boxW": 0.875
+          },
+          "m512": {
+            "foot": 0.0546875,
+            "cx": -0.001953125,
+            "ring": 0.931640625,
+            "boxH": 0.890625,
+            "boxW": 0.869140625
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/joy-0-v1.webp": {
+      "sha256": "df969da2854a578a96328c348f5f3c63bf41ce07daaa48fbb1aa97f1baa8a9c0",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": -0.08333333333333331,
+            "ring": 0.8958333333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.6770833333333334
+          },
+          "m512": {
+            "foot": 0.08203125,
+            "cx": -0.078125,
+            "ring": 0.90234375,
+            "boxH": 0.91796875,
+            "boxW": 0.677734375
+          }
+        }
+      ]
+    },
+    "assets/pets/aurora/frames/joy-1-v1.webp": {
+      "sha256": "567c732c620b43f58310b918376933d2b535a1796903c75aa74fe425bec96c0d",
+      "width": 470,
+      "height": 400,
+      "sheet": false,
+      "frames": [
+        {
+          "width": 470,
+          "height": 400,
+          "m96": {
+            "foot": 0.08333333333333333,
+            "cx": -0.08333333333333331,
+            "ring": 0.8958333333333334,
+            "boxH": 0.9166666666666666,
+            "boxW": 0.6770833333333334
+          },
+          "m512": {
+            "foot": 0.08203125,
+            "cx": -0.080078125,
+            "ring": 0.90234375,
+            "boxH": 0.91796875,
+            "boxW": 0.677734375
+          }
+        }
+      ]
+    }
+  }
+}

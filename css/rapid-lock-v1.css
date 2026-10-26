@@ -21,6 +21,18 @@
 .paRapidLock{position:fixed;inset:0;z-index:2147483601;overflow-y:auto;font-family:Arial,Helvetica,sans-serif;
   background:radial-gradient(120% 70% at 50% 0%,rgba(30,58,100,.55),rgba(4,10,22,.92) 60%),rgba(4,10,22,.88);backdrop-filter:blur(3px)}
 .paRapidLock.hidden{display:none}
+.paRapidLock.pa-restu-entry{background:transparent;backdrop-filter:none;overflow:hidden;touch-action:none}
+body.pa-restu-cinematic #segelDemo>.segelStage{position:absolute;inset:0;flex:none;width:100%;height:100%;max-width:none;max-height:none;margin:0;border-radius:0;--segel-stage-bottom-crop:0px}
+body.pa-restu-cinematic #segelDemo>.segelPanel{visibility:hidden;pointer-events:none}
+body.pa-restu-cinematic .segelTop,body.pa-restu-cinematic .segelTag,body.pa-restu-cinematic .segelToast{visibility:hidden;pointer-events:none}
+.paRapidLock.pa-restu-entry::before,.paRapidLock.pa-restu-entry::after{content:"";position:absolute;left:0;right:0;height:7vh;background:#02060f;pointer-events:none;animation:paRestuBars .3s ease-out both}
+.paRapidLock.pa-restu-entry::before{top:0;transform-origin:top}
+.paRapidLock.pa-restu-entry::after{bottom:0;transform-origin:bottom}
+@keyframes paRestuBars{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.paRestuSkip{display:none;position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:3;border:1px solid #eac87588;border-radius:999px;padding:10px 16px;color:#fff5da;background:#0b192fdd;font:700 13px Arial,Helvetica,sans-serif;cursor:pointer}
+.pa-restu-entry .paRestuSkip{display:block}
+.paRestuSkip:focus-visible{outline:3px solid #ffd970;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.paRapidLock.pa-restu-entry::before,.paRapidLock.pa-restu-entry::after{animation:none}}
 .paRapidLock [hidden]{display:none!important}
 .paRapidStage{width:min(100%,390px);box-sizing:border-box;margin:0 auto;padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px))}
 .paRapidStep{display:grid;justify-items:center;gap:10px;animation:paRapidIn .45s cubic-bezier(.2,1.1,.3,1) both}
