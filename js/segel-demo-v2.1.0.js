@@ -3589,7 +3589,15 @@
        mendarat: dengung pudar, satu loceng lembut
      Semuanya hormat paMuted dan guna AudioContext audio.js. */
   const restuAudio=(function(){
-    let drone=null;
+    /* v2 (pemilik: "tak cukup epic"): gaya hentakan trailer.
+       - Semua lapisan melalui gema besar (ConvolverNode, impuls dijana sekali).
+       - BRAAAM: kluster saw rendah + penapis yang terbuka-tutup, dua kali —
+         bila wajah Cikgu muncul (sederhana) dan bila mendarat (penuh).
+       - Riser: hingar + nada menaik sepanjang syot wajah, dipotong tepat
+         pada junaman supaya terasa "lepas".
+       - Hentaman: BRAAAM penuh + dentum sub + finisher.wav + glacier-thunder.wav
+         + kord loceng, ekor gema ~2.5s sebelum video Restu. */
+    let drone=null, verb=null, verbCtx=null, riser=null;
     const vol=()=>(typeof PA_VOLUME_SCALE!=='undefined')?PA_VOLUME_SCALE:.8;
     function ctxOk(){
       if(typeof paMuted!=='undefined'&&paMuted)return null;
@@ -3598,7 +3606,21 @@
       if(ctx.state==='suspended')ctx.resume().catch(()=>{});
       return ctx;
     }
-    function bus(ctx,g){ const o=ctx.createGain(); o.gain.value=g*vol(); o.connect(ctx.destination); return o }
+    function reverb(ctx){
+      if(verb&&verbCtx===ctx)return verb;
+      const secs=2.6, len=Math.floor(ctx.sampleRate*secs), ir=ctx.createBuffer(2,len,ctx.sampleRate);
+      for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
+      const conv=ctx.createConvolver(); conv.buffer=ir;
+      const wet=ctx.createGain(); wet.gain.value=.55*vol();
+      conv.connect(wet).connect(ctx.destination);
+      verb=conv; verbCtx=ctx; return verb;
+    }
+    // Bas kering + hantaran gema.
+    function bus(ctx,g,send=.5){
+      const o=ctx.createGain(); o.gain.value=g*vol(); o.connect(ctx.destination);
+      if(send>0){const s=ctx.createGain(); s.gain.value=send; o.connect(s).connect(reverb(ctx))}
+      return o;
+    }
     function bell(ctx,out,freq,at,dur=1.4,peak=.22){
       [1,2.76,5.4].forEach((m,i)=>{
         const o=ctx.createOscillator(), g=ctx.createGain();
@@ -3614,81 +3636,124 @@
       for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
       const src=ctx.createBufferSource(); src.buffer=buf; return src;
     }
+    // Hentakan trailer: saw berlapis oktaf rendah, penapis terbuka pantas lalu tutup perlahan.
+    function braam(ctx,at,power=1,dur=2.2){
+      const out=bus(ctx,.4*power,.75), lp=ctx.createBiquadFilter(), g=ctx.createGain();
+      lp.type='lowpass'; lp.Q.value=4;
+      lp.frequency.setValueAtTime(140,at); lp.frequency.exponentialRampToValueAtTime(2600*power,at+.09);
+      lp.frequency.exponentialRampToValueAtTime(220,at+dur);
+      g.gain.setValueAtTime(.0001,at); g.gain.exponentialRampToValueAtTime(1,at+.03);
+      g.gain.setValueAtTime(1,at+.25); g.gain.exponentialRampToValueAtTime(.0001,at+dur);
+      lp.connect(g).connect(out);
+      [[41.2,-9],[41.2,9],[55,0],[82.4,-6],[82.4,6],[110,0],[164.8,3]].forEach(([f,det])=>{
+        const o=ctx.createOscillator(), og=ctx.createGain();
+        o.type='sawtooth'; o.frequency.setValueAtTime(f*1.04,at); o.frequency.exponentialRampToValueAtTime(f,at+.12); o.detune.value=det;
+        og.gain.value=.16; o.connect(og).connect(lp); o.start(at); o.stop(at+dur+.05);
+      });
+      setTimeout(()=>{try{out.disconnect()}catch(_){}},(dur+3)*1000);
+    }
+    function sub(ctx,at,from=120,peak=1){
+      const out=bus(ctx,.72,.2), o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.setValueAtTime(from,at); o.frequency.exponentialRampToValueAtTime(32,at+.7);
+      g.gain.setValueAtTime(.0001,at); g.gain.exponentialRampToValueAtTime(peak,at+.012); g.gain.exponentialRampToValueAtTime(.0001,at+1);
+      o.connect(g).connect(out); o.start(at); o.stop(at+1.05);
+      setTimeout(()=>{try{out.disconnect()}catch(_){}},1600);
+    }
     function musicDown(){
-      try{ if(typeof fadeBattleMusicVolume==='function')fadeBattleMusicVolume(0,380) }catch(_){}
+      try{ if(typeof fadeBattleMusicVolume==='function')fadeBattleMusicVolume(0,250) }catch(_){}
       try{ if(typeof fadeForestAmbience==='function')fadeForestAmbience(0) }catch(_){}
     }
-    function stopDrone(fade=.35){
-      const d=drone; drone=null; if(!d)return;
+    function stopNodes(d,fade){
+      if(!d)return;
       try{
         const t=d.ctx.currentTime;
-        d.out.gain.cancelScheduledValues(t); d.out.gain.setValueAtTime(d.out.gain.value,t);
-        d.out.gain.linearRampToValueAtTime(.0001,t+fade);
+        d.out.gain.cancelScheduledValues(t); d.out.gain.setValueAtTime(Math.max(.0001,d.out.gain.value),t);
+        d.out.gain.exponentialRampToValueAtTime(.0001,t+fade);
         d.nodes.forEach(n=>{try{n.stop(t+fade+.05)}catch(_){}});
-        setTimeout(()=>{try{d.out.disconnect()}catch(_){}},(fade+.3)*1000);
+        setTimeout(()=>{try{d.out.disconnect()}catch(_){}},(fade+.4)*1000);
       }catch(_){}
     }
+    function stopDrone(fade=.35){ const d=drone; drone=null; stopNodes(d,fade) }
+    function stopRiser(fade=.04){ const r=riser; riser=null; stopNodes(r,fade) }
     return {
       open(){
-        musicDown(); stopDrone(.05);
+        musicDown(); stopDrone(.05); stopRiser();
         const ctx=ctxOk(); if(!ctx)return;
         try{
-          const t=ctx.currentTime, out=bus(ctx,1);
-          out.gain.setValueAtTime(.0001,t); out.gain.exponentialRampToValueAtTime(.42*vol(),t+.35);
+          const t=ctx.currentTime;
+          // 1. BRAAAM sederhana + dentum, serentak dengan kilat wajah.
+          braam(ctx,t,.7,1.8); sub(ctx,t,90,.7);
+          // 2. Dengung dimensi di bawahnya.
+          const out=bus(ctx,1,.6);
+          out.gain.setValueAtTime(.0001,t); out.gain.exponentialRampToValueAtTime(.3*vol(),t+.5);
           const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=6;
-          lp.frequency.setValueAtTime(260,t); lp.frequency.exponentialRampToValueAtTime(2400,t+.9);
+          lp.frequency.setValueAtTime(300,t); lp.frequency.exponentialRampToValueAtTime(2200,t+.9);
           lp.connect(out);
           const nodes=[];
           [[110,-7],[110,7],[164.8,0],[220,4]].forEach(([f,det])=>{
             const o=ctx.createOscillator(), g=ctx.createGain();
-            o.type='sawtooth'; o.frequency.value=f; o.detune.value=det; g.gain.value=.13;
+            o.type='sawtooth'; o.frequency.value=f; o.detune.value=det; g.gain.value=.12;
             o.connect(g).connect(lp); o.start(t); nodes.push(o);
           });
           const lfo=ctx.createOscillator(), lg=ctx.createGain();
-          lfo.frequency.value=5.5; lg.gain.value=180; lfo.connect(lg).connect(lp.frequency); lfo.start(t); nodes.push(lfo);
+          lfo.frequency.value=5.5; lg.gain.value=160; lfo.connect(lg).connect(lp.frequency); lfo.start(t); nodes.push(lfo);
           drone={ctx,out,nodes};
-          const sparkle=bus(ctx,.9);
-          [880,1108.7,1318.5,1760].forEach((f,i)=>bell(ctx,sparkle,f,t+.08+i*.13,1.1,.16));
-          setTimeout(()=>{try{sparkle.disconnect()}catch(_){}},2600);
+          // 3. Riser: hingar + nada menaik sehingga junaman.
+          const rOut=bus(ctx,1,.5), n=noise(ctx,1.6), hp=ctx.createBiquadFilter(), ng=ctx.createGain();
+          rOut.gain.setValueAtTime(.0001,t); rOut.gain.exponentialRampToValueAtTime(.55*vol(),t+.85);
+          hp.type='bandpass'; hp.Q.value=2; hp.frequency.setValueAtTime(400,t); hp.frequency.exponentialRampToValueAtTime(6000,t+.9);
+          ng.gain.value=.7; n.connect(hp).connect(ng).connect(rOut); n.start(t);
+          const so=ctx.createOscillator(), sg=ctx.createGain();
+          so.type='sawtooth'; so.frequency.setValueAtTime(220,t); so.frequency.exponentialRampToValueAtTime(1320,t+.9);
+          sg.gain.value=.06; so.connect(sg).connect(rOut); so.start(t);
+          riser={ctx,out:rOut,nodes:[n,so]};
+          // 4. Loceng kristal menaik.
+          const sparkle=bus(ctx,.8,.8);
+          [880,1108.7,1318.5,1760].forEach((f,i)=>bell(ctx,sparkle,f,t+.1+i*.14,1.2,.14));
+          setTimeout(()=>{try{sparkle.disconnect()}catch(_){}},3500);
           sfx('auraCharge');
         }catch(_){}
       },
       dive(){
+        stopRiser(.03);
         const ctx=ctxOk(); if(!ctx)return;
         try{
-          const t=ctx.currentTime, out=bus(ctx,.55), n=noise(ctx,.6), bp=ctx.createBiquadFilter(), g=ctx.createGain();
-          bp.type='bandpass'; bp.Q.value=1.4;
-          bp.frequency.setValueAtTime(3200,t); bp.frequency.exponentialRampToValueAtTime(380,t+.45);
-          g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.9,t+.18); g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+          const t=ctx.currentTime, out=bus(ctx,.7,.4), n=noise(ctx,.6), bp=ctx.createBiquadFilter(), g=ctx.createGain();
+          bp.type='bandpass'; bp.Q.value=1.2;
+          bp.frequency.setValueAtTime(4200,t); bp.frequency.exponentialRampToValueAtTime(300,t+.42);
+          g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(1,t+.12); g.gain.exponentialRampToValueAtTime(.0001,t+.46);
           n.connect(bp).connect(g).connect(out); n.start(t); n.stop(t+.6);
-          setTimeout(()=>{try{out.disconnect()}catch(_){}},1200);
+          // Jeritan menjunam: nada turun pantas.
+          const o=ctx.createOscillator(), og=ctx.createGain();
+          o.type='triangle'; o.frequency.setValueAtTime(1600,t); o.frequency.exponentialRampToValueAtTime(180,t+.42);
+          og.gain.setValueAtTime(.0001,t); og.gain.exponentialRampToValueAtTime(.18,t+.05); og.gain.exponentialRampToValueAtTime(.0001,t+.44);
+          o.connect(og).connect(out); o.start(t); o.stop(t+.5);
+          sfx('swordSlash');
+          setTimeout(()=>{try{out.disconnect()}catch(_){}},2500);
         }catch(_){}
       },
       hit(){
-        stopDrone(.12);
-        sfx('glacierThunder');
+        stopDrone(.08); stopRiser();
+        sfx('finisher'); sfx('glacierThunder');
         const ctx=ctxOk(); if(!ctx)return;
         try{
-          const t=ctx.currentTime, out=bus(ctx,.8);
-          const o=ctx.createOscillator(), g=ctx.createGain();
-          o.type='sine'; o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(38,t+.5);
-          g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.95,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+.7);
-          o.connect(g).connect(out); o.start(t); o.stop(t+.75);
-          const n=noise(ctx,.35), lp=ctx.createBiquadFilter(), ng=ctx.createGain();
-          lp.type='lowpass'; lp.frequency.value=900;
-          ng.gain.setValueAtTime(.6,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.32);
-          n.connect(lp).connect(ng).connect(out); n.start(t); n.stop(t+.35);
-          [659.3,830.6,987.8,1318.5].forEach(f=>bell(ctx,out,f,t+.05,1.8,.12));
-          setTimeout(()=>{try{out.disconnect()}catch(_){}},2600);
+          const t=ctx.currentTime;
+          braam(ctx,t,1,2.6); sub(ctx,t,150,1);
+          const out=bus(ctx,.8,.7), n=noise(ctx,.5), lp=ctx.createBiquadFilter(), ng=ctx.createGain();
+          lp.type='lowpass'; lp.frequency.value=1200;
+          ng.gain.setValueAtTime(.8,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.45);
+          n.connect(lp).connect(ng).connect(out); n.start(t); n.stop(t+.5);
+          [659.3,830.6,987.8,1318.5,1975.5].forEach((f,i)=>bell(ctx,out,f,t+.04+i*.015,2.2,.11));
+          setTimeout(()=>{try{out.disconnect()}catch(_){}},4000);
         }catch(_){}
       },
       land(){
         const ctx=ctxOk(); if(!ctx)return;
-        try{ const out=bus(ctx,.7); bell(ctx,out,1318.5,ctx.currentTime,1.6,.1); setTimeout(()=>{try{out.disconnect()}catch(_){}},2000) }catch(_){}
+        try{ const out=bus(ctx,.7,.8); [1318.5,1760].forEach((f,i)=>bell(ctx,out,f,ctx.currentTime+i*.12,1.8,.09)); setTimeout(()=>{try{out.disconnect()}catch(_){}},3500) }catch(_){}
       },
-      stop(){ stopDrone(.25) },
+      stop(){ stopDrone(.25); stopRiser() },
       resumeMusic(){
-        stopDrone(.1);
+        stopDrone(.1); stopRiser();
         try{
           if(typeof paMuted!=='undefined'&&paMuted)return;
           const target=(typeof PA_BATTLE_MUSIC_VOLUME!=='undefined'?PA_BATTLE_MUSIC_VOLUME:.08)*vol();
