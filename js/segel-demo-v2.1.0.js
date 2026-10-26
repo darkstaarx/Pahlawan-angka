@@ -3677,41 +3677,49 @@
     function stopRiser(fade=.04){ const r=riser; riser=null; stopNodes(r,fade) }
     return {
       open(){
+        /* v3 (pemilik: "entrance tu mcm magical fairy sgt"): pembukaan kini
+           BERAT dan gelap — tiada loceng/aura. Magik + "bam" kekal pada
+           junaman dan hentaman. */
         musicDown(); stopDrone(.05); stopRiser();
         const ctx=ctxOk(); if(!ctx)return;
         try{
           const t=ctx.currentTime;
-          // 1. BRAAAM sederhana + dentum, serentak dengan kilat wajah.
-          braam(ctx,t,.7,1.8); sub(ctx,t,90,.7);
-          // 2. Dengung dimensi di bawahnya.
-          const out=bus(ctx,1,.6);
-          out.gain.setValueAtTime(.0001,t); out.gain.exponentialRampToValueAtTime(.3*vol(),t+.5);
-          const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=6;
-          lp.frequency.setValueAtTime(300,t); lp.frequency.exponentialRampToValueAtTime(2200,t+.9);
+          // 1. BRAAAM penuh + dentum sub dalam, serentak dengan wajah.
+          braam(ctx,t,1,2.4); sub(ctx,t,70,.9);
+          // 2. Dua pukulan gendang perang mengikut nadi syot wajah.
+          [.38,.66].forEach((d,i)=>{
+            const at=t+d, out=bus(ctx,.75,.45), o=ctx.createOscillator(), g=ctx.createGain();
+            o.type='sine'; o.frequency.setValueAtTime(105-i*8,at); o.frequency.exponentialRampToValueAtTime(42,at+.32);
+            g.gain.setValueAtTime(.0001,at); g.gain.exponentialRampToValueAtTime(.85,at+.008); g.gain.exponentialRampToValueAtTime(.0001,at+.45);
+            o.connect(g).connect(out); o.start(at); o.stop(at+.5);
+            const n=noise(ctx,.12), lp=ctx.createBiquadFilter(), ng=ctx.createGain();
+            lp.type='lowpass'; lp.frequency.value=700;
+            ng.gain.setValueAtTime(.45,at); ng.gain.exponentialRampToValueAtTime(.0001,at+.1);
+            n.connect(lp).connect(ng).connect(out); n.start(at); n.stop(at+.12);
+            setTimeout(()=>{try{out.disconnect()}catch(_){}},2500);
+          });
+          // 3. Dengung gelap satu oktaf lebih rendah, penapis tertutup.
+          const out=bus(ctx,1,.5);
+          out.gain.setValueAtTime(.0001,t); out.gain.exponentialRampToValueAtTime(.34*vol(),t+.4);
+          const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=3;
+          lp.frequency.setValueAtTime(180,t); lp.frequency.exponentialRampToValueAtTime(750,t+.9);
           lp.connect(out);
           const nodes=[];
-          [[110,-7],[110,7],[164.8,0],[220,4]].forEach(([f,det])=>{
+          [[55,-6],[55,6],[82.4,0],[110,-3]].forEach(([f,det])=>{
             const o=ctx.createOscillator(), g=ctx.createGain();
-            o.type='sawtooth'; o.frequency.value=f; o.detune.value=det; g.gain.value=.12;
+            o.type='sawtooth'; o.frequency.value=f; o.detune.value=det; g.gain.value=.15;
             o.connect(g).connect(lp); o.start(t); nodes.push(o);
           });
-          const lfo=ctx.createOscillator(), lg=ctx.createGain();
-          lfo.frequency.value=5.5; lg.gain.value=160; lfo.connect(lg).connect(lp.frequency); lfo.start(t); nodes.push(lfo);
           drone={ctx,out,nodes};
-          // 3. Riser: hingar + nada menaik sehingga junaman.
-          const rOut=bus(ctx,1,.5), n=noise(ctx,1.6), hp=ctx.createBiquadFilter(), ng=ctx.createGain();
-          rOut.gain.setValueAtTime(.0001,t); rOut.gain.exponentialRampToValueAtTime(.55*vol(),t+.85);
-          hp.type='bandpass'; hp.Q.value=2; hp.frequency.setValueAtTime(400,t); hp.frequency.exponentialRampToValueAtTime(6000,t+.9);
-          ng.gain.value=.7; n.connect(hp).connect(ng).connect(rOut); n.start(t);
+          // 4. Riser gelap: hingar laluan-rendah + nada rendah menaik sehingga junaman.
+          const rOut=bus(ctx,1,.5), n=noise(ctx,1.6), rl=ctx.createBiquadFilter(), ng=ctx.createGain();
+          rOut.gain.setValueAtTime(.0001,t); rOut.gain.exponentialRampToValueAtTime(.5*vol(),t+.88);
+          rl.type='lowpass'; rl.Q.value=5; rl.frequency.setValueAtTime(150,t); rl.frequency.exponentialRampToValueAtTime(1600,t+.9);
+          ng.gain.value=.8; n.connect(rl).connect(ng).connect(rOut); n.start(t);
           const so=ctx.createOscillator(), sg=ctx.createGain();
-          so.type='sawtooth'; so.frequency.setValueAtTime(220,t); so.frequency.exponentialRampToValueAtTime(1320,t+.9);
-          sg.gain.value=.06; so.connect(sg).connect(rOut); so.start(t);
+          so.type='sawtooth'; so.frequency.setValueAtTime(55,t); so.frequency.exponentialRampToValueAtTime(220,t+.9);
+          sg.gain.value=.12; so.connect(sg).connect(rOut); so.start(t);
           riser={ctx,out:rOut,nodes:[n,so]};
-          // 4. Loceng kristal menaik.
-          const sparkle=bus(ctx,.8,.8);
-          [880,1108.7,1318.5,1760].forEach((f,i)=>bell(ctx,sparkle,f,t+.1+i*.14,1.2,.14));
-          setTimeout(()=>{try{sparkle.disconnect()}catch(_){}},3500);
-          sfx('auraCharge');
         }catch(_){}
       },
       dive(){
