@@ -930,7 +930,7 @@
       restuActive=null; restuMesh.visible=false; restuFx.visible=false;
       if('heroLock' in state)S.heroLock=state.heroLock;
       if(state.heroPose)swapRestuHeroPose(state.heroPose);
-      hideSay(); restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
+      globalThis.PARestuAudio?.stop?.(); hideSay(); restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
       S.camZoom=state.camZoom; S.camZoomTo=state.camZoomTo; S.camPunch=state.camPunch;
       S.camFX=state.camFX; S.camFY=state.camFY; S.camK=state.camK;
       S.par=state.par; S.parTo=state.parTo; S.introT=state.introT;
@@ -2063,7 +2063,7 @@
         zoom=3.55+clamp(t/tDive)*.4; fy=y+1.15;
         if(restuOnce(a,'open')){
           host.classList.add('segel-letterbox'); S.darkTo=.75; S.dark=.75;
-          fxFlash(.55,'#dff6ff'); restuNamePlate(true);
+          fxFlash(.55,'#dff6ff'); restuNamePlate(true); globalThis.PARestuAudio?.open?.();
         }
         S.speedFx=Math.max(S.speedFx,.85);
         if(!reduceMotion&&t-(a.lastCharge||-999)>110){ a.lastCharge=t; fxCharge(x+.05,y+1.05,.85,7) }
@@ -2076,7 +2076,7 @@
         zoom=3.95+(1.14-3.95)*zk; fy=GROUND+1.25+(y-GROUND)*.45; // kamera ikut Cikgu menjunam
         if(restuOnce(a,'dive')){
           host.classList.remove('segel-letterbox'); S.darkTo=.25; restuNamePlate(false);
-          fxFlash(.35,'#ffffff'); S.speedFx=1;
+          fxFlash(.35,'#ffffff'); S.speedFx=1; globalThis.PARestuAudio?.dive?.();
         }
         S.speedFx=Math.max(S.speedFx,.7);
         if(!reduceMotion)for(let i=0;i<3;i++)fxParts.push({t:'s',x:x+(Math.random()-.5)*.7,y:y+1.5+Math.random()*1.1,vx:0,vy:9+Math.random()*6,
@@ -2085,7 +2085,7 @@
         /* 3. Hentaman + hit-stop */
         pose=data.preland; y=GROUND; zoom=1.14; fy=GROUND+1.25;
         if(restuOnce(a,'hit')){
-          S.darkTo=0; fxFlash(.85,'#ffffff'); S.shake=Math.max(S.shake,.6); S.camPunch=.16; S.speedFx=0;
+          S.darkTo=0; fxFlash(.85,'#ffffff'); S.shake=Math.max(S.shake,.6); S.camPunch=.16; S.speedFx=0; globalThis.PARestuAudio?.hit?.();
           if(!reduceMotion){
             fxRing(x,GROUND+.1,.2,2.6,.55,'rgba(120,220,255,1)');
             fxRing(x,GROUND+.1,.1,1.7,.42,'rgba(255,224,138,1)');
@@ -2101,7 +2101,7 @@
         pose=t<tLand?data.preland:data.land; y=GROUND;
         const zk=ease3(clamp((t-tLand)/RESTU_CAMERA_SETTLE));
         zoom=1.14+(1-1.14)*zk; fy=GROUND+1.25;
-        if(t>=tLand&&restuOnce(a,'land')){ S.shake=Math.max(S.shake,.12); if(!reduceMotion)fxGlows(x,GROUND+.2,8,'rgba(255,224,138,.9)') }
+        if(t>=tLand&&restuOnce(a,'land')){ S.shake=Math.max(S.shake,.12); globalThis.PARestuAudio?.land?.(); if(!reduceMotion)fxGlows(x,GROUND+.2,8,'rgba(255,224,138,.9)') }
       }
       setRestuPose(pose);
       restuMesh.position.set(x+pose.offX,y+pose.offY,.24);
@@ -3578,6 +3578,131 @@
     await wait(correct?420:1800);if(!productionCurrent(hostRun,q))return;run.retryOpen=false;run.locked=false;drawQuestion();
   }
 
+  /* ===== Bunyi masuk Cikgu Restu (pemilik, 2026-10-26: "dull bila music
+     background still continue... patutnya tukar mood sound") =====
+     Muzik battle dipudar ke senyap bila wajah Cikgu muncul dan KEKAL senyap
+     melalui video Restu + PIN; ia kembali hanya bila soalan disambung
+     (resumeAfterRestu). Semua bunyi disintesis (tiada fail baharu):
+       buka    : dengung dimensi (pad rendah + penapis menaik) + loceng kristal
+       junam   : desir angin menurun
+       hentam  : dentum sub + guruh glasier sedia ada + kord loceng terang
+       mendarat: dengung pudar, satu loceng lembut
+     Semuanya hormat paMuted dan guna AudioContext audio.js. */
+  const restuAudio=(function(){
+    let drone=null;
+    const vol=()=>(typeof PA_VOLUME_SCALE!=='undefined')?PA_VOLUME_SCALE:.8;
+    function ctxOk(){
+      if(typeof paMuted!=='undefined'&&paMuted)return null;
+      const ctx=(typeof ensureBattleAudio==='function')?ensureBattleAudio():null;
+      if(!ctx)return null;
+      if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+      return ctx;
+    }
+    function bus(ctx,g){ const o=ctx.createGain(); o.gain.value=g*vol(); o.connect(ctx.destination); return o }
+    function bell(ctx,out,freq,at,dur=1.4,peak=.22){
+      [1,2.76,5.4].forEach((m,i)=>{
+        const o=ctx.createOscillator(), g=ctx.createGain();
+        o.type='sine'; o.frequency.value=freq*m;
+        const pk=peak/(1+i*1.8);
+        g.gain.setValueAtTime(.0001,at); g.gain.exponentialRampToValueAtTime(pk,at+.012);
+        g.gain.exponentialRampToValueAtTime(.0001,at+dur/(1+i*.7));
+        o.connect(g).connect(out); o.start(at); o.stop(at+dur+.05);
+      });
+    }
+    function noise(ctx,secs){
+      const len=Math.floor(ctx.sampleRate*secs), buf=ctx.createBuffer(1,len,ctx.sampleRate), d=buf.getChannelData(0);
+      for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+      const src=ctx.createBufferSource(); src.buffer=buf; return src;
+    }
+    function musicDown(){
+      try{ if(typeof fadeBattleMusicVolume==='function')fadeBattleMusicVolume(0,380) }catch(_){}
+      try{ if(typeof fadeForestAmbience==='function')fadeForestAmbience(0) }catch(_){}
+    }
+    function stopDrone(fade=.35){
+      const d=drone; drone=null; if(!d)return;
+      try{
+        const t=d.ctx.currentTime;
+        d.out.gain.cancelScheduledValues(t); d.out.gain.setValueAtTime(d.out.gain.value,t);
+        d.out.gain.linearRampToValueAtTime(.0001,t+fade);
+        d.nodes.forEach(n=>{try{n.stop(t+fade+.05)}catch(_){}});
+        setTimeout(()=>{try{d.out.disconnect()}catch(_){}},(fade+.3)*1000);
+      }catch(_){}
+    }
+    return {
+      open(){
+        musicDown(); stopDrone(.05);
+        const ctx=ctxOk(); if(!ctx)return;
+        try{
+          const t=ctx.currentTime, out=bus(ctx,1);
+          out.gain.setValueAtTime(.0001,t); out.gain.exponentialRampToValueAtTime(.42*vol(),t+.35);
+          const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=6;
+          lp.frequency.setValueAtTime(260,t); lp.frequency.exponentialRampToValueAtTime(2400,t+.9);
+          lp.connect(out);
+          const nodes=[];
+          [[110,-7],[110,7],[164.8,0],[220,4]].forEach(([f,det])=>{
+            const o=ctx.createOscillator(), g=ctx.createGain();
+            o.type='sawtooth'; o.frequency.value=f; o.detune.value=det; g.gain.value=.13;
+            o.connect(g).connect(lp); o.start(t); nodes.push(o);
+          });
+          const lfo=ctx.createOscillator(), lg=ctx.createGain();
+          lfo.frequency.value=5.5; lg.gain.value=180; lfo.connect(lg).connect(lp.frequency); lfo.start(t); nodes.push(lfo);
+          drone={ctx,out,nodes};
+          const sparkle=bus(ctx,.9);
+          [880,1108.7,1318.5,1760].forEach((f,i)=>bell(ctx,sparkle,f,t+.08+i*.13,1.1,.16));
+          setTimeout(()=>{try{sparkle.disconnect()}catch(_){}},2600);
+          sfx('auraCharge');
+        }catch(_){}
+      },
+      dive(){
+        const ctx=ctxOk(); if(!ctx)return;
+        try{
+          const t=ctx.currentTime, out=bus(ctx,.55), n=noise(ctx,.6), bp=ctx.createBiquadFilter(), g=ctx.createGain();
+          bp.type='bandpass'; bp.Q.value=1.4;
+          bp.frequency.setValueAtTime(3200,t); bp.frequency.exponentialRampToValueAtTime(380,t+.45);
+          g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.9,t+.18); g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+          n.connect(bp).connect(g).connect(out); n.start(t); n.stop(t+.6);
+          setTimeout(()=>{try{out.disconnect()}catch(_){}},1200);
+        }catch(_){}
+      },
+      hit(){
+        stopDrone(.12);
+        sfx('glacierThunder');
+        const ctx=ctxOk(); if(!ctx)return;
+        try{
+          const t=ctx.currentTime, out=bus(ctx,.8);
+          const o=ctx.createOscillator(), g=ctx.createGain();
+          o.type='sine'; o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(38,t+.5);
+          g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.95,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+.7);
+          o.connect(g).connect(out); o.start(t); o.stop(t+.75);
+          const n=noise(ctx,.35), lp=ctx.createBiquadFilter(), ng=ctx.createGain();
+          lp.type='lowpass'; lp.frequency.value=900;
+          ng.gain.setValueAtTime(.6,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.32);
+          n.connect(lp).connect(ng).connect(out); n.start(t); n.stop(t+.35);
+          [659.3,830.6,987.8,1318.5].forEach(f=>bell(ctx,out,f,t+.05,1.8,.12));
+          setTimeout(()=>{try{out.disconnect()}catch(_){}},2600);
+        }catch(_){}
+      },
+      land(){
+        const ctx=ctxOk(); if(!ctx)return;
+        try{ const out=bus(ctx,.7); bell(ctx,out,1318.5,ctx.currentTime,1.6,.1); setTimeout(()=>{try{out.disconnect()}catch(_){}},2000) }catch(_){}
+      },
+      stop(){ stopDrone(.25) },
+      resumeMusic(){
+        stopDrone(.1);
+        try{
+          if(typeof paMuted!=='undefined'&&paMuted)return;
+          const target=(typeof PA_BATTLE_MUSIC_VOLUME!=='undefined'?PA_BATTLE_MUSIC_VOLUME:.08)*vol();
+          if(typeof ensureBattleMusic==='function'){
+            const m=ensureBattleMusic();
+            if(m&&(m.paused||m.ended)&&typeof playNextBattleMusic==='function'){ m.volume=0; playNextBattleMusic(); m.volume=0 }
+          }
+          if(typeof fadeBattleMusicVolume==='function')fadeBattleMusicVolume(target,900);
+        }catch(_){}
+      }
+    };
+  })();
+  globalThis.PARestuAudio=restuAudio;
+
   async function celebrateProduction(hostRun,q){
     if(!productionCurrent(hostRun,q))return;
     run.locked=true;$('segelTag').style.opacity='0';
@@ -3981,7 +4106,9 @@
     resumeProduction:productionRun=>{if(!run||!run.production||run.productionRun!==productionRun||!window.PAProductionJourney?.isCurrent?.(productionRun))return;if(typeof screen==='function')screen('segelDemo');stage.resume();run.locked=false;run.retryOpen=false;drawQuestion();},
     playRestuEntry:async()=>stage?.playRestuEntry?.()||{cancelled:true,failed:true},
     cancelRestuEntry:()=>stage?.cancelRestuEntry?.(),
+    restoreRestuMusic:()=>globalThis.PARestuAudio?.resumeMusic?.(),
     resumeAfterRestu:()=>{
+      globalThis.PARestuAudio?.resumeMusic?.();
       stage?.resume?.();
       if(!run?.production)return;
       run.locked=false;

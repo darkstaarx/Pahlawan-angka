@@ -83,6 +83,8 @@
     root.PASegelHost?.cancelRestuEntry?.();
     el?.classList.add('hidden');el?.classList.remove('pa-restu-entry');
     document.body.classList.remove('pa-rapid-locked','pa-restu-cinematic');
+    // Muzik battle senyap sepanjang Restu; pulihkan bila aliran tamat/dibatalkan.
+    if(previous)root.PASegelHost?.restoreRestuMusic?.();
   }
   function watchProfile(id){
     clearTimeout(watchTimer);
