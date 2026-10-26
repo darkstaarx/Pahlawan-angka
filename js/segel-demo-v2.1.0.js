@@ -930,7 +930,7 @@
       restuActive=null; restuMesh.visible=false; restuFx.visible=false;
       if('heroLock' in state)S.heroLock=state.heroLock;
       if(state.heroPose)swapRestuHeroPose(state.heroPose);
-      globalThis.PARestuAudio?.stop?.(); hideSay(); restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
+      globalThis.PARestuAudio?.stop?.(); if(typeof restuCssClear==='function')restuCssClear(); hideSay(); restuNamePlate(false); host.classList.remove('segel-letterbox'); S.dark=S.darkTo=0; S.speedFx=0;
       S.camZoom=state.camZoom; S.camZoomTo=state.camZoomTo; S.camPunch=state.camPunch;
       S.camFX=state.camFX; S.camFY=state.camFY; S.camK=state.camK;
       S.par=state.par; S.parTo=state.parTo; S.introT=state.introT;
@@ -1704,6 +1704,7 @@
       fxFrame(fdt,dt);
       chargeFxFrame(dt);
       placeSay();
+      if(restuActive||restuCssOn)restuCssFrame();
     }
 
     /* Panel soalan berubah tinggi ikut panjang soalan, jadi nisbah pentas tidak
@@ -1943,8 +1944,12 @@
     const RESTU_FACE=900, RESTU_DIVE=350, RESTU_HOLD=130, RESTU_SKY=3.7;
     const RESTU_T_HIT=RESTU_FACE+RESTU_DIVE;
     const RESTU_T_LAND=RESTU_T_HIT+RESTU_HOLD+120;
-    // Owner correction: add 0.5s back to the 2.5s version (not a 0.5s hold).
-    const RESTU_AFTER_LAND=1500;
+    /* Selepas mendarat (pemilik, 2026-10-26): zoom paralaks pantas ke muka
+       Wira semasa "Eh, Cikgu Dimensi!", kemudian skrin pudar gelap dan terus
+       ke video Restu (dimainkan 1.5x). Menggantikan tahanan lebar 1.5s. */
+    const RESTU_ZOOM_AT=250, RESTU_ZOOM_IN=300, RESTU_FADE_AT=820, RESTU_FADE=280;
+    const RESTU_AFTER_LAND=RESTU_FADE_AT+RESTU_FADE+30;
+    const RESTU_FACE_ZOOM=1.45, RESTU_FACE_DRIFT=.15, RESTU_FG_PARALLAX=1.14;
     const RESTU_CAMERA_SETTLE=1000;
     const RESTU_MS=RESTU_T_LAND+RESTU_AFTER_LAND;
     let restuName=null;
@@ -1970,6 +1975,53 @@
         host.appendChild(restuName);
         void restuName.offsetWidth; restuName.classList.add('show');
       }else if(!show&&restuName){ restuName.remove(); restuName=null }
+    }
+    /* Zoom muka Wira ialah potongan 2D pada kanvas (bukan kamera 3D): susun
+       atur Restu dan latar yang dikunci skrin kekal tepat, cuma gambar akhir
+       dibesarkan. Kanvas FX (rumput/percikan depan) membesar lebih sedikit
+       untuk rasa paralaks. Gelembung kata Wira tidak dibesarkan, cuma
+       dipindah ke kedudukan kepala yang sudah dizoom supaya tetap mudah dibaca. */
+    let restuFadeEl=null, restuCssOn=false, restuHiRes=false;
+    function restuFade(k){
+      if(k<=0&&!restuFadeEl)return;
+      if(!restuFadeEl){
+        restuFadeEl=document.createElement('div');restuFadeEl.className='segelRestuFade';
+        restuFadeEl.style.cssText='position:fixed;inset:0;z-index:2147483600;background:#02060f;pointer-events:none;opacity:0';
+        document.body.appendChild(restuFadeEl);
+      }
+      restuFadeEl.style.opacity=String(Math.max(0,Math.min(1,k)));
+    }
+    function restuCssClear(){
+      if(restuCssOn){ [canvas,fxCanvas].forEach(c=>{c.style.transform='';c.style.transformOrigin=''}); restuCssOn=false }
+      if(restuHiRes){ restuHiRes=false; renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2)) }
+      // Biar hitam sekejap: tirai gelap PARapidLock + video mengambil alih dahulu.
+      const fe=restuFadeEl; restuFadeEl=null; if(fe)setTimeout(()=>fe.remove(),450);
+    }
+    function restuCssFrame(){
+      const a=restuActive, sc=a?.faceScale||1;
+      if(!a||sc<=1.0005){ if(restuCssOn){[canvas,fxCanvas].forEach(c=>{c.style.transform=''});restuCssOn=false} return }
+      const W=host.clientWidth||1, H=host.clientHeight||1;
+      // Potongan 2D membesarkan piksel: render pada resolusi lebih tinggi
+      // sepanjang zoom (<1s) supaya muka Wira kekal tajam, kemudian pulih.
+      if(!restuHiRes){ restuHiRes=true; renderer.setPixelRatio(Math.min((window.devicePixelRatio||1)*(1+RESTU_FACE_ZOOM),4)) }
+      if(!a.faceHead){ const p=proj(hero.position.x,hero.position.y+hero.scale.y*.26); a.faceHead={x:p.x,y:p.y} }
+      const hx=a.faceHead.x, hy=a.faceHead.y, gx=W*.44, gy=H*.6;
+      const k=Math.min(1,(sc-1)/RESTU_FACE_ZOOM);
+      const place=s=>{
+        let tx=(gx-s*hx)*k+(1-k)*(hx-s*hx), ty=(gy-s*hy)*k+(1-k)*(hy-s*hy);
+        tx=Math.min(0,Math.max(W-s*W,tx)); ty=Math.min(0,Math.max(H-s*H,ty));
+        return {s,tx,ty};
+      };
+      const m=place(sc), f=place(1+(sc-1)*RESTU_FG_PARALLAX);
+      canvas.style.transformOrigin='0 0'; canvas.style.transform=`translate(${m.tx}px,${m.ty}px) scale(${m.s})`;
+      fxCanvas.style.transformOrigin='0 0'; fxCanvas.style.transform=`translate(${f.tx}px,${f.ty}px) scale(${f.s})`;
+      restuCssOn=true;
+      if(sayEl.classList.contains('show')){
+        const p=proj(hero.position.x,hero.position.y+hero.scale.y*.42);
+        const px=m.s*p.x+m.tx, py=m.s*p.y+m.ty, w=sayEl.offsetWidth||160;
+        sayEl.style.left=Math.max(8,Math.min(W-w-8,px-w*.28))+'px';
+        sayEl.style.top=Math.max((sayEl.offsetHeight||62)+12,py)+'px';
+      }
     }
     function restuOnce(a,key){ if(a.fired[key])return false; a.fired[key]=true; return true }
     /* Layout sinematik dikira daripada lebar alfa sebenar, bukan kotak kanvas.
@@ -2115,6 +2167,12 @@
       }else restuFx.visible=false;
       a.wide=t>=tHit;
       a.grounded=a.wide||zoom<=1.2;
+      { const tl=t-tLand;
+        const zin=1-Math.pow(1-clamp((tl-RESTU_ZOOM_AT)/RESTU_ZOOM_IN),3);
+        const drift=clamp((tl-RESTU_ZOOM_AT-RESTU_ZOOM_IN)/(RESTU_FADE_AT-RESTU_ZOOM_AT-RESTU_ZOOM_IN));
+        a.faceScale=reduceMotion?1:1+RESTU_FACE_ZOOM*zin+RESTU_FACE_DRIFT*drift;
+        if(typeof restuFade==='function')restuFade(clamp((tl-RESTU_FADE_AT)/RESTU_FADE));
+        if(tl>=RESTU_ZOOM_AT&&restuOnce(a,'face')){ S.shake=Math.max(S.shake,.08) } }
       S.camZoom=zoom; S.camZoomTo=zoom; S.camK=40; S.camFX=t>=tHit?0:x; S.camFY=fy;
       S.par=t<tHit?.72:.35; S.parTo=S.par;
       const fullTeacher=pose===data.preland||pose===data.land;

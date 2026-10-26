@@ -51,7 +51,7 @@ test('real entry completion hides the surprise before handing control to the por
  const s=fixture();s.getActive().state={...s.state,heroPose:s.sandbox.hero.userData.e};s.cancel();
  const playing=s.play();for(let i=0;i<8;i++)await Promise.resolve();
  s.frame(1250);assert.equal(s.bubble.classList.contains('show'),true);
- s.timers.find(t=>t.ms===3000).resolve();await playing;
+ s.timers.find(t=>t.ms===s.endAt).resolve();await playing;
  assert.equal(s.bubble.classList.contains('show'),false);assert.equal(s.bubble.classList.contains('restu-surprise'),false);assert.equal(s.bubble.style.width,'');
 });
 // The foreground canvas is rendered after WebGL. Its transforms need their own

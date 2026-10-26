@@ -58,7 +58,7 @@ for(const cancel of [false,true])test(`an interrupted hop/pet lift finishes with
  const playing=s.play();for(let i=0;i<8;i++)await Promise.resolve();
  assert.equal(s.state.hopT,-1);assert.equal(s.state.heroLift,0);assert.equal(s.state.petFeet,-1.92);
  s.frame(1500);s.applyLayout();
- if(cancel)s.cancel();else s.timers.find(t=>t.ms===3000).resolve();await playing;
+ if(cancel)s.cancel();else s.timers.find(t=>t.ms===s.endAt).resolve();await playing;
  // Execute the real next-tick hop/anchor code, not a second copy of its formula.
  const start=source.indexOf('      S.heroFeet=damp(S.heroFeet,S.heroX,15,fdt);'),end=source.indexOf('      hero.material.opacity=S.heroFade;',start);
  Object.assign(ctx,{fdt:.016,dt:.016,damp:(x,y,k,dt)=>y+(x-y)*Math.exp(-k*dt)});vm.runInNewContext(source.slice(start,end),ctx);

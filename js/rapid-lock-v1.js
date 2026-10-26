@@ -220,7 +220,7 @@
     skipEntry=finish;guard=setTimeout(finish,9000);
     try{Promise.resolve(root.PASegelHost.playRestuEntry()).then(finish,finish)}catch(_){finish()}
   }
-  /* Wira falls into the portal (3 s). Loaded only now, so players who never
+  /* Wira falls into the portal (3 s clip, played at 1.5x ≈ 2 s). Loaded only now, so players who never
      trigger the portal never download it. Sound follows the game mute. */
   function playFall(next,id){
     if(!currentFlow(id))return;
@@ -238,6 +238,8 @@
     v.muted=muted;v.onended=finish;v.onerror=finish;
     if(v.getAttribute('src')!==art('fall'))v.src=art('fall');
     try{v.currentTime=0}catch(_){}
+    // Pemilik 2026-10-26: video jatuh dimainkan 1.5x (≈2s) selepas pudar gelap.
+    try{v.defaultPlaybackRate=1.5;v.playbackRate=1.5}catch(_){}
     guard=setTimeout(finish,6000);
     try{const p=v.play();if(p&&p.catch)p.catch(()=>{
       if(done||!currentFlow(id))return;v.muted=true;

@@ -51,9 +51,9 @@ test('Restu impact particles and trails share the teacher transform and scale af
   assert.equal(s.projectFx({...p,restuToken:-1}).x,a.x,'ordinary battle effects remain unchanged');
  }
 });
-test('completed landing holds 1500ms (0.5s longer than the approved 2.5s version) and the entry promise resolves without another delay',async()=>{
+test('after landing: face zoom then fade, 1130ms total (owner 2026-10-26), and the entry promise resolves without another delay',async()=>{
  const s=fixture();s.getActive().state={...s.state,heroPose:s.sandbox.hero.userData.e};s.cancel();
- assert.equal(s.endAt-s.landAt,1500);assert.equal(s.afterLand,1500);assert.equal(s.endAt,2500+500);
+ assert.equal(s.endAt-s.landAt,1130);assert.equal(s.afterLand,1130);assert.equal(s.endAt,2630);
  let done=false;const playing=s.play().then(()=>{done=true});
  for(let i=0;i<8;i++)await Promise.resolve();
  assert.ok(s.getActive(),'real playRestuEntry started');
@@ -62,7 +62,7 @@ test('completed landing holds 1500ms (0.5s longer than the approved 2.5s version
  s.frame(s.endAt-1);assert.equal(done,false);
  s.timers.find(t=>t.ms===s.endAt).resolve();await playing;
  assert.equal(done,true);assert.equal(s.getActive(),null);assert.equal(s.state.running,false);
- assert.ok(!s.timers.some(t=>t.ms===2500||t.ms===3600||t.ms===4200),'no old tail delay');
+ assert.ok(!s.timers.some(t=>t.ms===2500||t.ms===3000||t.ms===3600||t.ms===4200),'no old tail delay');
 });
 test('layout runs after late frame effects, restores before updates/resize, and cleanup precedes video',()=>{
  assert.ok(source.indexOf('if(restuActive?.grounded)restuApplyLayout(restuActive);')<source.indexOf('renderer.render(scene,camera);'));

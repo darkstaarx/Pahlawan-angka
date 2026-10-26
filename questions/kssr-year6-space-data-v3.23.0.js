@@ -393,18 +393,34 @@ function sectorPath(cx,cy,r,start,angle){
   const [x1,y1]=polar(cx,cy,r,start),[x2,y2]=polar(cx,cy,r,start+angle),large=angle>180?1:0;
   return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${large} 0 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
 }
+/* Carta pai Tahun 6 kini sama gaya dengan Tahun 5 (PAD5Scenes.pie, pemilik
+   2026-10-26: "carta pie yang kaler tu lagi lawa"): cakera tebal berwarna,
+   jalur sisi lebih gelap dan petunjuk warna di kanan. Sudut kekal tepat
+   (sektor dilukis ikut darjah), jadi soalan sudut/kuantiti tidak berubah.
+   Sudut tersembunyi → "?°" dalam petunjuk + tanda "?" pada sektor itu. */
 function pieSvg(sectors,{hideAngle=-1,showValues=false}={}){
-  const cx=150,cy=112,r=86,classes=['y6-pie-a','y6-pie-b','y6-pie-c','y6-pie-d'];
-  let start=0,paths='',texts='';
-  sectors.forEach((s,i)=>{
-    paths+=`<path d="${sectorPath(cx,cy,r,start,s.angle)}" class="${classes[i%classes.length]}"/>`;
-    const mid=start+s.angle/2,[tx,ty]=polar(cx,cy,r*.58,mid);
-    const line1=s.label;
-    const line2=showValues?String(s.value):(i===hideAngle?'?°':`${s.angle}°`);
-    texts+=`<text x="${tx.toFixed(1)}" y="${(ty-3).toFixed(1)}" class="y6-pie-label">${line1}</text><text x="${tx.toFixed(1)}" y="${(ty+13).toFixed(1)}" class="y6-pie-value">${line2}</text>`;
-    start+=s.angle;
-  });
-  return diagramWrap(`<svg viewBox="0 0 300 230" aria-label="carta pai">${paths}<circle cx="${cx}" cy="${cy}" r="3.5" class="y6-accent"/>${texts}</svg>`);
+  const f=n=>Number(n).toFixed(1);
+  const colors=[['#f4bb3a','#c48d1c'],['#4fb4c8','#2f8798'],['#7b6bd6','#5546a8'],['#ef7f65','#c2563f'],['#67c26f','#3f8f47'],['#e46fa8','#b2467c']];
+  const cx=94,cy=70,rx=78,ry=44,t=14,pt=(a,dy=0)=>[cx+rx*Math.cos(a),cy+ry*Math.sin(a)+dy];
+  const txt=(x,y,str,size,fill,anchor='middle')=>`<text x="${f(x)}" y="${f(y)}" style="font:900 ${size}px Nunito,system-ui,sans-serif;fill:${fill};text-anchor:${anchor}">${str}</text>`;
+  let acc=0;
+  const segs=sectors.map((s,i)=>{const a0=-Math.PI/2+acc*Math.PI/180;acc+=s.angle;return {a0,a1:-Math.PI/2+acc*Math.PI/180,c:colors[i%colors.length],s,i}});
+  const band=segs.map(g=>{const lo=Math.max(g.a0,0),hi=Math.min(g.a1,Math.PI);if(hi<=lo)return '';const [x0,y0]=pt(lo),[x1,y1]=pt(hi);
+    return `<path d="M${f(x0)} ${f(y0)} A${rx} ${ry} 0 0 1 ${f(x1)} ${f(y1)} L${f(x1)} ${f(y1+t)} A${rx} ${ry} 0 0 0 ${f(x0)} ${f(y0+t)} Z" fill="${g.c[1]}" stroke="#213b67" stroke-width="1"/>`}).join('');
+  const top=segs.map(g=>{
+    if(g.a1-g.a0>=2*Math.PI-1e-6)return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${g.c[0]}" stroke="#213b67" stroke-width="1.6"/>`;
+    const [x0,y0]=pt(g.a0),[x1,y1]=pt(g.a1);
+    return `<path d="M${cx} ${cy} L${f(x0)} ${f(y0)} A${rx} ${ry} 0 ${g.a1-g.a0>Math.PI?1:0} 1 ${f(x1)} ${f(y1)} Z" fill="${g.c[0]}" stroke="#213b67" stroke-width="1.6" stroke-linejoin="round"/>`}).join('');
+  const mark=hideAngle>=0&&segs[hideAngle]?(()=>{const g=segs[hideAngle],m=(g.a0+g.a1)/2,[x,y]=[cx+rx*.55*Math.cos(m),cy+ry*.55*Math.sin(m)];
+    return `<circle cx="${f(x)}" cy="${f(y-1)}" r="11" fill="#fff" stroke="#213b67" stroke-width="1.6"/>`+txt(x,y+4.5,'?',14,'#213b67')})():'';
+  const lines=segs.map(g=>`${g.s.label} ${showValues?g.s.value:(g.i===hideAngle?'?°':g.s.angle+'°')}`);
+  const longest=Math.max(...lines.map(l=>l.length)),fs=longest>16?11:longest>13?12:13;
+  const gap=sectors.length>4?24:28,h=Math.max(150,30+sectors.length*gap);
+  const legend=segs.map((g,i)=>{const y=30+i*gap,x=186,d=4,dx=d*.55;
+    const sw=`<polygon points="${x},${y-11} ${x+14},${y-11} ${x+14+dx},${y-11+d} ${x+14+dx},${y+3+d} ${x+dx},${y+3+d} ${x},${y+3}" fill="${g.c[1]}" stroke="#4d6c83" stroke-width="1"/><rect x="${x}" y="${y-11}" width="14" height="14" fill="${g.c[0]}" stroke="#36577a" stroke-width="2"/>`;
+    return sw+txt(x+22,y,lines[i],fs,'#243d5e','start')}).join('');
+  const aria='Carta pai: '+segs.map((g,i)=>lines[i]).join(', ');
+  return `<div class="kssrDiagram paU6Scene paD5Scene y6Pie"><svg viewBox="0 0 340 ${h}" role="img" aria-label="${aria}"><rect x="1" y="1" width="338" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><ellipse cx="${cx}" cy="${cy+t+6}" rx="${rx}" ry="${ry}" fill="#2f5ea8" opacity=".08"/>${band}${top}${mark}${legend}</svg></div>`;
 }
 function dataTable(headers,rows){
   return `<div class="y6kDiagram"><table class="y6-table"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
