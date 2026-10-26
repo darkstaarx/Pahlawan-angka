@@ -2,9 +2,9 @@ name: Segel hero and result lifecycle
 on:
   push:
     branches: [main]
-    paths: ['js/segel-demo-v2.1.0.js', 'js/engine/production-journey.js', 'js/rapid-lock-v1.js', 'css/rapid-lock-v1.css', 'audit/restu-cinematic.test.js', 'audit/wira-restu-reaction.test.js', 'audit/restu-layout-timing.test.js', 'audit/restu-background-bubble.test.js', 'audit/restu-grounding.test.js', 'audit/helpers/restu-stage-fixture.cjs', 'audit/fixtures/restu-alpha-metrics.json', 'js/progression.js', 'audit/gembok-xp.test.js', 'audit/segel-*.test.js', '.github/workflows/segel-lifecycle.yml']
+    paths: ['js/segel-demo-v2.1.0.js', 'js/engine/production-journey.js', 'js/rapid-lock-v1.js', 'css/rapid-lock-v1.css', 'audit/restu-cinematic.test.js', 'audit/wira-restu-reaction.test.js', 'audit/restu-layout-timing.test.js', 'audit/restu-background-bubble.test.js', 'audit/restu-grounding.test.js', 'audit/restu-pet-combinations.test.js', 'audit/helpers/restu-pet-fixture.cjs', 'audit/fixtures/restu-pet-metrics.json', 'js/pet-collection-system.js', 'tools/generate-restu-pet-audit.cjs', 'audit/helpers/restu-stage-fixture.cjs', 'audit/fixtures/restu-alpha-metrics.json', 'js/progression.js', 'audit/gembok-xp.test.js', 'audit/segel-*.test.js', '.github/workflows/segel-lifecycle.yml']
   pull_request:
-    paths: ['js/segel-demo-v2.1.0.js', 'js/engine/production-journey.js', 'js/rapid-lock-v1.js', 'css/rapid-lock-v1.css', 'audit/restu-cinematic.test.js', 'audit/wira-restu-reaction.test.js', 'audit/restu-layout-timing.test.js', 'audit/restu-background-bubble.test.js', 'audit/restu-grounding.test.js', 'audit/helpers/restu-stage-fixture.cjs', 'audit/fixtures/restu-alpha-metrics.json', 'js/progression.js', 'audit/gembok-xp.test.js', 'audit/segel-*.test.js', '.github/workflows/segel-lifecycle.yml']
+    paths: ['js/segel-demo-v2.1.0.js', 'js/engine/production-journey.js', 'js/rapid-lock-v1.js', 'css/rapid-lock-v1.css', 'audit/restu-cinematic.test.js', 'audit/wira-restu-reaction.test.js', 'audit/restu-layout-timing.test.js', 'audit/restu-background-bubble.test.js', 'audit/restu-grounding.test.js', 'audit/restu-pet-combinations.test.js', 'audit/helpers/restu-pet-fixture.cjs', 'audit/fixtures/restu-pet-metrics.json', 'js/pet-collection-system.js', 'tools/generate-restu-pet-audit.cjs', 'audit/helpers/restu-stage-fixture.cjs', 'audit/fixtures/restu-alpha-metrics.json', 'js/progression.js', 'audit/gembok-xp.test.js', 'audit/segel-*.test.js', '.github/workflows/segel-lifecycle.yml']
 permissions:
   contents: read
 jobs:
@@ -15,4 +15,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test audit/segel-hero-visibility.test.js audit/segel-result-lifecycle.test.js audit/gembok-xp.test.js audit/rapid-lock.test.js audit/restu-cinematic.test.js audit/wira-restu-reaction.test.js audit/restu-layout-timing.test.js audit/restu-background-bubble.test.js audit/restu-grounding.test.js
+      - run: node --test audit/segel-hero-visibility.test.js audit/segel-result-lifecycle.test.js audit/gembok-xp.test.js audit/rapid-lock.test.js audit/restu-cinematic.test.js audit/wira-restu-reaction.test.js audit/restu-layout-timing.test.js audit/restu-background-bubble.test.js audit/restu-grounding.test.js audit/restu-pet-combinations.test.js

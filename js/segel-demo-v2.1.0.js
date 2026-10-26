@@ -2048,7 +2048,7 @@
     function restuFrame(now){
       const a=restuActive, data=restuLoaded;
       if(!a||!data)return;
-      const t=now-a.started, x=a.x, particleStart=fxParts.length;
+      const t=a.previewAt??(now-a.started), x=a.x, particleStart=fxParts.length;
       // Restu owns the actors until video/PIN: an unfinished attack/rescue hop
       // must not make either character leave the screen-locked arena floor.
       S.hopT=-1;S.heroLift=0;S.petY=GROUND;S.petFeet=GROUND;
@@ -2158,6 +2158,22 @@
       // The rapid-lock owner decides when the question surface may resume.
       S.running=false;
       return result;
+    }
+
+    // Local visual audit only: hold an actual arena frame without creating
+    // learner attempts or changing the production cinematic/video deadline.
+    async function previewRestuFrame(ms=1800){
+      if(!['localhost','127.0.0.1','[::1]'].includes(location.hostname)||!location.pathname.startsWith('/audit/'))return false;
+      cancelRestuEntry();const token=++restuToken;
+      let data;try{data=await Promise.race([loadRestu(),wait(3500).then(()=>null)])}catch(_){return false}
+      if(!data||token!==restuToken)return false;
+      const state={camZoom:S.camZoom,camZoomTo:S.camZoomTo,camPunch:S.camPunch,camFX:S.camFX,camFY:S.camFY,
+        camK:S.camK,par:S.par,parTo:S.parTo,introT:S.introT,running:S.running,introShown,heroLock:S.heroLock,heroPose:hero.userData.e};
+      S.hopT=-1;S.heroLift=0;S.petY=GROUND;S.petFeet=GROUND;S.introT=-1;introShown=false;
+      host.classList.remove('segel-pet-intro','segel-pet-intro-release');
+      const x=Math.max(HERO_HOME+.58,Math.min(SEAL_X-.58,(HERO_HOME+SEAL_X)/2));
+      restuActive={token,started:performance.now(),previewAt:Math.max(0,Math.min(RESTU_MS-1,Number(ms)||1800)),x,state,result:{cancelled:false,failed:false},fired:{}};
+      S.running=true;last=performance.now();resize();return true;
     }
 
     // Bayang dash: empat salinan Wira berwarna biru yang mengekori kedudukannya.
@@ -2981,6 +2997,7 @@
       cancel(){ ++S.lifecycle; cancelRestuEntry(); endPetIntro(); clearHitFx(); stopFinisherVideo(); host.classList.remove('finisher-cutin','finisher-charge','finisher-focus','finisher-math','finisher-release','finisher-dash','finisher-impact','finisher-impact-end'); S.heroFade=1; },
       playRestuEntry,
       cancelRestuEntry,
+      previewRestuFrame,
       setCompanion(config){ return setPetVisual(config); },
       setRescuePet(config){ return setRescuePetVisual(config); },
       setPet(config){ return Promise.all([setPetVisual(config),setRescuePetVisual(config)]); },

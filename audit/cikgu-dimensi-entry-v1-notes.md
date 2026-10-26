@@ -134,3 +134,29 @@ Actual browser continuity still needs playback because local browser control is 
 GitHub only; no Netlify deployment.
 
 Final verification: 113 targeted tests passed; JavaScript syntax and diff checks passed.
+
+## Full companion/target audit (2026-10-26, 3.87.64 draft)
+
+169 independent role/form selections passed 172,800 rendered-frame geometry checks:
+none/fallback and all six species x Asas/Bara, nine viewport shapes, three dome tiers,
+all selected idle/sad animation frames, and four camera beats. The harness executes real
+production petConfig, setPetVisual/setRescuePetVisual, customPetFrames, entry/petUpp,
+pose/layout and camera functions, with actual Three.js projection matrices. It verifies
+separate identities, companion scale/orientation, group gaps, no clipping, pet inside the
+dome, and grounded feet. Evidence uses all 118 logical frames from 59 selected asset files,
+measured with actual sheetFrames/measureAt at 96/512px and locked to SHA-256 hashes.
+Regenerate using `tools/generate-restu-pet-audit.cjs` with the native Canvas module available.
+
+The real-browser preview now selects companion and target independently, including different
+forms of the same species. Its synthetic profiles never write learner storage. A local
+/audit/-only stage hook holds the real landing frame for inspection; production entry still
+uses the unchanged 3000ms deadline. Unchecking the hold runs the real video/PIN sequence.
+
+Browser control became available this session. Visually checked desktop and 390x844 phone
+samples: Kukupat Asas + Keryan Asas; Riya Bara + Bunnis Asas; Keryan Bara + Kumbis Asas;
+Bunnis Bara + Kukupat Asas. The normal animation/video reached guardian PIN with no browser
+console errors. These are representative visual samples, alongside exhaustive matrix checks.
+Screenshot proof is saved in the task's local visualization output folder. Astra reviewed
+without material findings. GitHub only; no Netlify deployment.
+
+Final verification for 3.87.64: 117 targeted tests passed; preview syntax, diff checks and the unchanged 835-asset manifest passed.
