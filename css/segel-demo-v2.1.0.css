@@ -730,11 +730,9 @@ body[data-screen="segelDemo"] .appHeader{display:none}
      proportions. The later fraction stylesheet has narrower mobile rules;
      this higher-specificity selector is the intentional wide override. */
   #segelDemo .segelCard #segelQuestion .segelPrompt .fraction-art{
-    width:min(100%,420px);max-width:100%;max-height:none;margin:12px auto
+    width:min(100%,380px);max-width:100%;margin:10px auto
   }
-  #segelDemo .segelCard #segelQuestion .segelPrompt .fraction-art-turn{
-    max-width:100%;max-height:none
-  }
+  #segelDemo .segelCard #segelQuestion .segelPrompt .fraction-art .fraction-svg{max-height:190px}
   #segelDemo .segelCard #segelQuestion .segelPrompt .paWrittenArithmetic{
     width:min(100%,390px);max-width:100%;margin:12px auto
   }
