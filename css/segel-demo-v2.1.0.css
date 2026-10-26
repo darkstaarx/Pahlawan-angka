@@ -812,6 +812,13 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   #segelDemo .segelCard .question .segelPrompt .paU6Scene{margin:2px auto 9px}
   #segelDemo .segelCard .question .segelPrompt .paU6Scene svg{max-height:151px}
 }
+/* Telefon pendek (cth. 320×568): kecilkan sedikit visual dan teks supaya soalan, rajah dan
+   jawapan muat tanpa skrol dalam kad (2026-10-26). */
+@media (orientation:portrait) and (max-height:600px){
+  #segelDemo .segelCard .question:has(.paU6Scene){font-size:16px;line-height:1.22}
+  #segelDemo .segelCard .question .segelPrompt .paU6Scene{margin:0 auto 6px}
+  #segelDemo .segelCard .question .segelPrompt .paU6Scene svg{max-height:104px}
+}
 @media (prefers-reduced-motion:reduce){
   .paU6Scene svg,.paU6Scene *{animation:none!important;transition:none!important}
 }
