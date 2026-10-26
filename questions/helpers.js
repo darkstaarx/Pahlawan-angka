@@ -391,54 +391,11 @@ function numWords(n){
  let mil=Math.floor(n/1000000),r=n%1000000;return (mil===1?"sejuta":w999(mil)+" juta")+(r?" "+numWords(r):"")
 }
 
-function fractionVisual(num,den){
- let cells='';
- for(let i=0;i<den;i++)cells+=`<div style="flex:1;height:22px;border:1px solid #7c8fb5;background:${i<num?'#7fd6a7':'#e7edff'}"></div>`;
- return `<div style="width:min(240px,92%);display:flex;border-radius:10px;overflow:hidden;margin:0 auto 10px">${cells}</div>`
-}
-function percentVisual(pct){
- let parts=''; let filled=Math.round(pct/10);
- for(let i=0;i<10;i++)parts+=`<div style="flex:1;height:18px;border:1px solid #7c8fb5;background:${i<filled?'#ffd36d':'#e7edff'}"></div>`;
- return `<div style="width:min(260px,96%);display:flex;border-radius:9px;overflow:hidden;margin:0 auto 8px">${parts}</div><div style="font-size:12px;color:#667">Setiap kotak = 10%</div>`
-}
-function barChart(labels,vals){
- let max=Math.max(...vals);
- return `<div style="display:flex;gap:8px;justify-content:center;align-items:flex-end;height:120px;margin:4px 0 10px">${labels.map((l,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:40px;height:${Math.max(16,vals[i]/max*88)}px;background:#8ab4ff;border-radius:8px 8px 0 0"></div><div style="font-size:12px">${l}</div></div>`).join('')}</div>`
-}
-function clockSvg(hour,minute){
- let h=((hour%12)+(minute/60))*30-90,m=minute*6-90,rad=x=>x*Math.PI/180;
- let hx=50+18*Math.cos(rad(h)), hy=50+18*Math.sin(rad(h)), mx=50+26*Math.cos(rad(m)), my=50+26*Math.sin(rad(m));
- const nums=Array.from({length:12},(_,i)=>{const a=(i+1)*30-90,x=50+31*Math.cos(rad(a)),y=50+31*Math.sin(rad(a));return `<text x="${x}" y="${y+2.5}" text-anchor="middle" font-size="7" font-weight="800" fill="#405072">${i+1}</text>`}).join('');
- return `<svg class="clockVisual" viewBox="0 0 100 100" width="112" height="112" role="img" aria-label="Muka jam analog" style="display:block;margin:0 auto 10px"><circle cx="50" cy="50" r="45" fill="#f9fbff" stroke="#405072" stroke-width="4"/>${nums}<line x1="50" y1="50" x2="${hx}" y2="${hy}" stroke="#26344f" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="${mx}" y2="${my}" stroke="#4388e8" stroke-width="3.5" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#26344f"/></svg>`
-}
-function shapeSvg(type){
- let map={triangle:'<polygon points="50,12 88,82 12,82" fill="#ffd36d" stroke="#405072" stroke-width="3"/>',square:'<rect x="18" y="18" width="64" height="64" rx="4" fill="#8ab4ff" stroke="#405072" stroke-width="3"/>',rectangle:'<rect x="12" y="24" width="76" height="52" rx="4" fill="#8fd9a8" stroke="#405072" stroke-width="3"/>',pentagon:'<polygon points="50,10 88,38 74,84 26,84 12,38" fill="#c8a7ef" stroke="#405072" stroke-width="3"/>',circle:'<circle cx="50" cy="50" r="34" fill="#ffb4ca" stroke="#405072" stroke-width="3"/>'};
- return `<svg viewBox="0 0 100 100" width="96" height="96" style="display:block;margin:0 auto 10px">${map[type]||map.square}</svg>`
-}
-function coordGrid(x,y){
- return `<div class="coordVisual" role="img" aria-label="Grid koordinat dengan titik pada ${x}, ${y}" style="font-family:monospace;white-space:pre;line-height:1.15;display:inline-block;text-align:left;background:#fff;padding:8px 10px;border-radius:10px;border:2px solid #8394b2;margin:0 auto 10px">${[4,3,2,1,0].map(r=>`${r} | ${[0,1,2,3,4].map(c=>c===x&&r===y?'●':'·').join(' ')}`).join('\n')}\n    0 1 2 3 4</div>`
-}
 function gcd(a,b){while(b){[a,b]=[b,a%b]}return a}
 function simplify(n,d){let g=gcd(Math.abs(n),Math.abs(d)); return [n/g,d/g]}
 
 function words(n){return numWords(n)}
 
-function shape3DSvg(type){
- const common='stroke="#405072" stroke-width="3" stroke-linejoin="round"';
- const m={
-  cube:`<polygon points="27,35 57,20 82,34 52,49" fill="#b9d6ff" ${common}/><polygon points="27,35 52,49 52,82 27,68" fill="#82aff2" ${common}/><polygon points="52,49 82,34 82,67 52,82" fill="#6e96d5" ${common}/>`,
-  cuboid:`<polygon points="18,39 58,23 87,36 47,52" fill="#b9e8c6" ${common}/><polygon points="18,39 47,52 47,77 18,65" fill="#79c898" ${common}/><polygon points="47,52 87,36 87,61 47,77" fill="#5faa80" ${common}/>`,
-  pyramid:`<polygon points="50,15 19,71 51,86" fill="#ffd48b" ${common}/><polygon points="50,15 83,69 51,86" fill="#e9a951" ${common}/><polygon points="19,71 50,56 83,69 51,86" fill="#f6c36d" ${common}/>`,
-  cylinder:`<ellipse cx="50" cy="27" rx="28" ry="12" fill="#9fe7ef" ${common}/><rect x="22" y="27" width="56" height="49" fill="#71cbd8" ${common}/><ellipse cx="50" cy="76" rx="28" ry="12" fill="#5fb8c5" ${common}/><ellipse cx="50" cy="27" rx="28" ry="12" fill="#baf5fa" ${common}/>`,
-  cone:`<ellipse cx="50" cy="75" rx="29" ry="11" fill="#f1b3cc" ${common}/><path d="M50 15 21 75q29 20 58 0z" fill="#e487b0" ${common}/><path d="M50 15 79 75" fill="none" ${common}/>`
- };
- return `<svg viewBox="0 0 100 100" width="104" height="104" style="display:block;margin:0 auto 8px">${m[type]||m.cube}</svg>`
-}
-function shapeNetSvg(type){
- const cell=(x,y,fill='#9fc5ff')=>`<rect x="${x}" y="${y}" width="22" height="22" fill="${fill}" stroke="#405072" stroke-width="2"/>`;
- if(type==='cube')return `<svg viewBox="0 0 130 100" width="150" height="112" style="display:block;margin:0 auto 8px">${cell(54,10)}${cell(10,32)}${cell(32,32)}${cell(54,32)}${cell(76,32)}${cell(54,54)}</svg>`;
- return `<svg viewBox="0 0 130 100" width="150" height="112" style="display:block;margin:0 auto 8px">${cell(32,20,'#b6e3c2')}${cell(54,20,'#b6e3c2')}${cell(76,20,'#b6e3c2')}${cell(54,42,'#8dcc9f')}${cell(54,64,'#8dcc9f')}${cell(98,20,'#b6e3c2')}</svg>`;
-}
 
 // Shared illustrated counting objects. Numbers and correct answers still come from the question bank.
 function countingObjects(count,kind=null){
@@ -453,32 +410,6 @@ function countingObjects(count,kind=null){
 }
 
 // Phase 3.4 curriculum visuals / assessment helpers.
-function base10Visual(n){
- const h=Math.floor(n/100),t=Math.floor((n%100)/10),o=n%10;
- const group=(count,label,bg)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:94px">${Array.from({length:count},()=>`<span style="width:18px;height:18px;border:2px solid #4a5a76;border-radius:3px;background:${bg};display:inline-block"></span>`).join('')||'<span style="font-weight:900;color:#8090aa">0</span>'}</div><small style="font-weight:900">${label}</small></div>`;
- return `<div style="display:flex;justify-content:center;gap:18px;align-items:flex-end;margin:4px auto 12px">${group(h,'ratus','#ffd27d')}${group(t,'puluh','#87c8ff')}${group(o,'sa','#8ee1aa')}</div>`;
-}
-function numberLineSvg(min,max,step,point=null,options={}){
- const vals=[];for(let v=min;v<=max;v+=step)vals.push(v);
- const W=320,H=74,left=22,right=298,y=34,span=Math.max(1,max-min);
- const ticks=vals.map(v=>{const x=Number((left+(v-min)/span*(right-left)).toFixed(2));return `<line x1="${x}" y1="28" x2="${x}" y2="42" stroke="#405072" stroke-width="2"/><text x="${x}" y="59" text-anchor="middle" font-size="10" fill="#405072">${options.endpointLabelsOnly&&Math.abs(v-min)>1e-8&&Math.abs(v-max)>1e-8?'':tidyDisplay(v)}</text>`}).join('');
- let marker=''; if(point!=null){const x=Number((left+(point-min)/span*(right-left)).toFixed(2));marker=`<circle cx="${x}" cy="${y}" r="6" fill="#ef6f6c"/><path d="M${x} 8 L${x} 24" stroke="#ef6f6c" stroke-width="3"/><text x="${x}" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="#9c3e3b">${options.hidePointValue?'?':tidyDisplay(point)}</text>`}
- return `<svg viewBox="0 0 ${W} ${H}" width="min(330px,98%)" style="display:block;margin:0 auto 10px"><line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#405072" stroke-width="3"/>${ticks}${marker}</svg>`;
-}
-// Same-sized objects and spacing in both sets make the known ten a useful benchmark.
-function dotsEstimateVisual(count){
- const total=Math.max(1,Math.min(32,Math.round(Number(count)||1)));
- const panel=(amount,x,label,known)=>{
-  const dots=Array.from({length:amount},(_,i)=>{
-   const row=Math.floor(i/6),col=i%6;
-   const cx=x+19+col*20+(row%2)*4+((i*7)%3-1)*2;
-   const cy=49+row*18+((i*5)%3-1)*2;
-   return `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#3679c9"/>`;
-  }).join('');
-  return `<g data-estimate-set="${label}"><rect x="${x}" y="4" width="148" height="177" rx="12" fill="#edf5ff" stroke="#8cadd0"/><text x="${x+74}" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#243c59">Set ${label}</text>${dots}<text x="${x+74}" y="168" text-anchor="middle" font-size="13" fill="#243c59">${known?'10 objek':'? objek'}</text></g>`;
- };
- return `<svg role="img" aria-label="Set A mengandungi 10 objek. Anggarkan bilangan objek dalam Set B dengan membandingkan kedua-dua set." viewBox="0 0 312 186" style="display:block;width:100%;max-width:360px;height:auto;margin:4px auto 12px">${panel(10,3,'A',true)}${panel(total,161,'B',false)}</svg>`;
-}
 // Estimate from a known reference, never from a displayed numeral or a rounding rule.
 function d2ReferenceEstimate(mode){
  const modes={
@@ -499,84 +430,17 @@ function d2ReferenceEstimate(mode){
  return q;
 }
 function decimalTenthsVisual(n){return fractionVisual(n,10)}
-function rulerSvg(cm){
- const max=20,W=330,left=20,right=310,y=52,scale=(right-left)/max;
- let ticks='';for(let i=0;i<=max;i++){const x=left+i*scale;const tall=i%5===0?18:11;ticks+=`<line x1="${x}" y1="${y-tall}" x2="${x}" y2="${y}" stroke="#405072" stroke-width="2"/>${i%5===0?`<text x="${x}" y="68" text-anchor="middle" font-size="10">${i}</text>`:''}`}
- const x2=left+cm*scale;
- return `<svg viewBox="0 0 ${W} 80" width="min(340px,98%)" style="display:block;margin:0 auto 10px"><rect x="12" y="24" width="306" height="42" rx="8" fill="#fff4c8" stroke="#a88730" stroke-width="2"/>${ticks}<line x1="${left}" y1="18" x2="${x2}" y2="18" stroke="#ef6f6c" stroke-width="6" stroke-linecap="round"/><circle cx="${left}" cy="18" r="4" fill="#ef6f6c"/><circle cx="${x2}" cy="18" r="4" fill="#ef6f6c"/></svg>`;
-}
-function scaleSvg(grams){
- const max=1000,angle=-120+(grams/max)*240,rad=angle*Math.PI/180,x=70+38*Math.cos(rad),y=70+38*Math.sin(rad);
- let marks='';for(let g=0;g<=1000;g+=100){const a=(-120+(g/max)*240)*Math.PI/180,x1=70+50*Math.cos(a),y1=70+50*Math.sin(a),x2=70+57*Math.cos(a),y2=70+57*Math.sin(a);marks+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#405072" stroke-width="2"/>`}
- return `<svg viewBox="0 0 140 125" width="140" style="display:block;margin:0 auto 10px"><path d="M18 86 A58 58 0 1 1 122 86" fill="#f7fbff" stroke="#405072" stroke-width="4"/>${marks}<line x1="70" y1="70" x2="${x}" y2="${y}" stroke="#ef6f6c" stroke-width="5" stroke-linecap="round"/><circle cx="70" cy="70" r="5" fill="#405072"/><text x="70" y="108" text-anchor="middle" font-size="12" font-weight="800">0–1000 g</text></svg>`;
-}
-function cylinderSvg(ml){
- const max=1000,H=150,top=12,bottom=132,fillH=(ml/max)*(bottom-top),fy=bottom-fillH;
- let marks='';for(let v=0;v<=1000;v+=100){const y=bottom-(v/max)*(bottom-top);marks+=`<line x1="76" y1="${y}" x2="89" y2="${y}" stroke="#405072" stroke-width="2"/>${v%200===0?`<text x="94" y="${y+4}" font-size="9">${v}</text>`:''}`}
- return `<svg viewBox="0 0 130 ${H}" width="130" style="display:block;margin:0 auto 10px"><path d="M40 10 L40 132 Q40 140 58 140 Q76 140 76 132 L76 10" fill="#f8fbff" stroke="#405072" stroke-width="3"/><rect x="43" y="${fy}" width="30" height="${fillH}" fill="#7fcfff" opacity=".8"/>${marks}<text x="58" y="149" text-anchor="middle" font-size="10" font-weight="800">mL</text></svg>`;
-}
-function timelineSvg(sh,sm,eh,em,visibility={}){
- const fmt=visibility.formatTime||((h,m)=>`${h}:${String(m).padStart(2,'0')}`);
- const startLabel=visibility.showStart===false?'?':fmt(sh,sm),endLabel=visibility.showEnd===false?'?':fmt(eh,em);
- return `<svg viewBox="0 0 330 78" width="min(340px,98%)" style="display:block;margin:0 auto 10px"><line x1="42" y1="36" x2="288" y2="36" stroke="#405072" stroke-width="4"/><circle cx="55" cy="36" r="7" fill="#78a9ff"/><circle cx="275" cy="36" r="7" fill="#8bd3a8"/><text x="30" y="64" text-anchor="start" font-size="13" font-weight="800">${startLabel}</text><text x="300" y="64" text-anchor="end" font-size="13" font-weight="800">${endLabel}</text><path d="M135 22 Q165 4 195 22" fill="none" stroke="#f0ae3d" stroke-width="3"/><path d="M190 16 l10 6 -10 6" fill="#f0ae3d"/></svg>`;
-}
 function tallyTable(labels,vals){
  const tally=n=>{let s='';for(let i=0;i<n;i++)s+=(i>0&&i%5===0?' ':'')+'|';return s};
  return `<table style="border-collapse:collapse;margin:6px auto 12px;background:#fff;font-size:14px"><tr><th style="border:2px solid #9aa8c3;padding:6px 10px">Item</th><th style="border:2px solid #9aa8c3;padding:6px 10px">Gundalan</th></tr>${labels.map((l,i)=>`<tr><td style="border:2px solid #9aa8c3;padding:6px 10px;font-weight:800">${l}</td><td style="border:2px solid #9aa8c3;padding:6px 10px;font-family:monospace;font-weight:900;letter-spacing:2px">${tally(vals[i])}</td></tr>`).join('')}</table>`;
 }
-function barChart(labels,vals){
- const max=Math.max(10,Math.ceil(Math.max(...vals)/2)*2),W=330,H=190,left=42,base=154,top=16,plotH=base-top,bw=42,gap=22;
- let grid='';for(let v=0;v<=max;v+=2){const y=base-(v/max)*plotH;grid+=`<line x1="${left}" y1="${y}" x2="318" y2="${y}" stroke="#d8dfed" stroke-width="1"/><text x="34" y="${y+4}" text-anchor="end" font-size="10" fill="#55627a">${v}</text>`}
- let bars='';labels.forEach((l,i)=>{const x=58+i*(bw+gap),h=(vals[i]/max)*plotH,y=base-h;bars+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="5" fill="${['#78a9ff','#8bd3a8','#ffd36d','#f0a4ba'][i%4]}"/><text x="${x+bw/2}" y="174" text-anchor="middle" font-size="11" font-weight="800" fill="#405072">${l}</text>`});
- return `<svg viewBox="0 0 ${W} ${H}" width="min(350px,100%)" style="display:block;margin:0 auto 10px">${grid}<line x1="${left}" y1="${top}" x2="${left}" y2="${base}" stroke="#405072" stroke-width="2"/><line x1="${left}" y1="${base}" x2="318" y2="${base}" stroke="#405072" stroke-width="2"/>${bars}</svg>`;
-}
 function uniqueValues(n,min=2,max=10){const a=[];while(a.length<n){const v=R(min,max);if(!a.includes(v))a.push(v)}return a}
-function fractionVisual(num,den){
- const label=`Satu keseluruhan dibahagi kepada ${den} bahagian sama besar; ${num} bahagian berlorek`;
- /* Gaya rajah dipelbagaikan seperti lembaran sekolah: jalur, bulatan dan
-    petak. Semua bentuk masih mengekalkan bilangan bahagian yang sama besar. */
- const forms=den===2?['bar','circle']:den===4?['bar','circle','square']:['bar'];
- const form=forms[Math.floor(Math.random()*forms.length)];
- if(form==='circle'){
-  const deg=Math.round(num/den*360);
-  return `<div class="fractionVisual" role="img" aria-label="${label}" style="width:92px;height:92px;border:3px solid #516684;border-radius:50%;margin:2px auto 12px;background:conic-gradient(#62c991 0deg ${deg}deg,#edf2ff ${deg}deg 360deg);box-shadow:0 2px 0 #d3daea"></div>`;
- }
- if(form==='square'){
-  let cells='';for(let i=0;i<4;i++)cells+=`<div style="background:${i<num?'#62c991':'#edf2ff'};border:1px solid #516684"></div>`;
-  return `<div class="fractionVisual" role="img" aria-label="${label}" style="width:92px;height:92px;display:grid;grid-template-columns:repeat(2,1fr);margin:2px auto 12px;border:3px solid #516684;box-shadow:0 2px 0 #d3daea">${cells}</div>`;
- }
- let cells='';for(let i=0;i<den;i++)cells+=`<div style="flex:1;height:34px;border-left:${i?'2px':'0'} solid #516684;background:${i<num?'#62c991':'#edf2ff'}"></div>`;
- return `<div class="fractionVisual" role="img" aria-label="${label}" style="width:min(280px,94%);display:flex;border:3px solid #516684;border-radius:10px;overflow:hidden;margin:2px auto 12px;box-shadow:0 2px 0 #d3daea">${cells}</div>`;
-}
-function fractionChoiceBoard(num,den){
- const mini=(kind,n,d,invalid=false)=>{
-  const label=invalid?'bahagian tidak sama besar':`${n}/${d}`;
-  if(kind==='circle'){
-   const deg=Math.round(n/d*360);
-   return `<div role="img" aria-label="${label}" style="width:54px;height:54px;border:2px solid #516684;border-radius:50%;background:conic-gradient(#62c991 0deg ${deg}deg,#edf2ff ${deg}deg 360deg)"></div>`;
-  }
-  if(invalid)return `<div role="img" aria-label="${label}" style="width:74px;height:42px;display:grid;grid-template-columns:1fr 1.7fr;border:2px solid #516684"><i style="background:#62c991;border-right:1px solid #516684"></i><i style="background:#edf2ff"></i></div>`;
-  let cells='';for(let i=0;i<d;i++)cells+=`<i style="background:${i<n?'#62c991':'#edf2ff'};border-left:${i?'1px solid #516684':'0'}"></i>`;
-  return `<div role="img" aria-label="${label}" style="width:74px;height:42px;display:grid;grid-template-columns:repeat(${d},1fr);border:2px solid #516684">${cells}</div>`;
- };
- const wrongD=den===2?4:den,wrongN=den===2?1:(num===den-1?num-1:num+1);
- const otherD=den===2?4:2,otherN=Math.min(otherD-1,Math.max(1,num));
- const choices=[mini('bar',num,den),mini('circle',wrongN,wrongD),mini('bar',1,den,true),mini('bar',otherN,otherD)];
- return `<div role="group" aria-label="Pilihan rajah pecahan" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:230px;margin:0 auto 12px">${choices.map((v,i)=>`<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border:2px solid #c7d2e5;border-radius:10px;background:#f8fbff"><b>${String.fromCharCode(65+i)}</b>${v}</div>`).join('')}</div>`;
-}
 function fractionVisualChoiceSpec(num,den){
  const correct={n:num,d:den,kind:den===4?pick(['bar','circle','square']):pick(['bar','circle']),ok:true};
  const pool=[[1,2],[1,4],[2,4],[3,4]].filter(([n,d])=>n!==num||d!==den);
  const wrong=shuffle(pool).slice(0,2).map(([n,d])=>({n,d,kind:d===4?pick(['bar','circle','square']):pick(['bar','circle']),ok:false}));
  wrong.push({n:num,d:den,kind:'bar',invalid:true,ok:false});
  return shuffle([correct,...wrong]);
-}
-function rectangleMeasureSvg(length,width){
- return `<svg class="geometryVisual" viewBox="0 0 260 130" width="min(290px,94%)" role="img" aria-label="Segi empat tepat berukuran ${length} sentimeter kali ${width} sentimeter" style="display:block;margin:0 auto 10px"><rect x="45" y="25" width="170" height="78" rx="3" fill="#dceaff" stroke="#405072" stroke-width="4"/><text x="130" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#405072">${length} cm</text><text x="228" y="68" text-anchor="middle" font-size="15" font-weight="900" fill="#405072" transform="rotate(90 228 68)">${width} cm</text></svg>`;
-}
-function comparisonBarsSvg(a,b,unit,labelA='A',labelB='B'){
- const max=Math.max(a,b),wa=50+150*a/max,wb=50+150*b/max;
- return `<svg class="measureVisual" viewBox="0 0 280 105" width="min(300px,96%)" role="img" aria-label="Perbandingan ${a} ${unit} dengan ${b} ${unit}" style="display:block;margin:0 auto 10px"><text x="15" y="30" font-size="13" font-weight="900">${labelA}</text><rect x="42" y="14" width="${wa}" height="24" rx="6" fill="#78a9ff"/><text x="${48+wa}" y="31" font-size="12" font-weight="800">${a} ${unit}</text><text x="15" y="78" font-size="13" font-weight="900">${labelB}</text><rect x="42" y="62" width="${wb}" height="24" rx="6" fill="#8bd3a8"/><text x="${48+wb}" y="79" font-size="12" font-weight="800">${b} ${unit}</text></svg>`;
 }
 function fractionWrongChoices(num,den){
  const ans=`${num}/${den}`,cands=[];
@@ -586,7 +450,240 @@ function fractionWrongChoices(num,den){
  let d=2;while(cands.length<3){const n=1,v=`${n}/${d}`;if(v!==ans&&!cands.includes(v))cands.push(v);d++}
  return cands.slice(0,3).map(x=>N(x,'fraction'));
 }
+
+// ===== 2.5D visual kit (pemilik 2026-10-26: "upgrade mana yang guna flat jadi 2.5D") =====
+// Same visual language as PAD5Scenes (Year 5) and the Year 1 paU6Scene: inline SVG on a soft
+// panel, solids drawn as raised slabs (darker side faces under a lighter top face), a white
+// highlight edge and Nunito 900 text. Text always carries inline style because
+// `.paU6Scene svg text` / `.kssrDiagram text` CSS would otherwise override presentation
+// attributes. Values, labels and aria-labels are unchanged from the flat versions, so answers
+// and accessibility text are identical.
+var PA25={
+ ink:'#213b67',text:'#243d5e',soft:'#3d5a80',panel:'#f5f9ff',panelEdge:'#d7e3f1',track:'#e7eef8',trackSide:'#b9c8dc',
+ colors:[['#f4bb3a','#c48d1c'],['#4fb4c8','#2f8798'],['#7b6bd6','#5546a8'],['#ef7f65','#c2563f'],['#67c26f','#3f8f47'],['#e46fa8','#b2467c']],
+ green:['#62c991','#3e9c69'],empty:['#eef3fb','#c3cfe0'],red:['#ef6f6c','#b8433f'],
+ f(n){return Number(n).toFixed(1)},
+ txt(x,y,s,size=14,fill='#243d5e',anchor='middle',extra=''){return `<text x="${PA25.f(x)}" y="${PA25.f(y)}"${extra} style="font:900 ${size}px Nunito,system-ui,sans-serif;fill:${fill};text-anchor:${anchor}">${s}</text>`},
+ scene(w,h,aria,body,cls='',attrs=''){h=Math.ceil(h);return `<div class="kssrDiagram paU6Scene paD5Scene${cls?' '+cls:''}"${attrs}><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${aria}"><rect x="1" y="1" width="${w-2}" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${body}</svg></div>`},
+ poly(pts,fill,stroke='#36577a',w=2){return `<polygon points="${pts.map(([x,y])=>PA25.f(x)+','+PA25.f(y)).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${w}" stroke-linejoin="round"/>`},
+ // Extruded polygon: side faces down-right, then the top face.
+ slab(pts,top,side,depth=7,stroke='#36577a'){
+  const dx=depth*.55,dy=depth;
+  const sides=pts.map((p,i)=>{const q=pts[(i+1)%pts.length];return PA25.poly([p,q,[q[0]+dx,q[1]+dy],[p[0]+dx,p[1]+dy]],side,'#4d6c83',1)}).join('');
+  return sides+PA25.poly(pts,top,stroke);
+ },
+ // Raised box (front face + right side + top lip), used for bars, tiles and rulers.
+ box(x,y,w,h,top,side,depth=6,stroke='#36577a',rx=0){
+  const dx=depth*.55,dy=depth*.55;
+  return PA25.poly([[x+w,y],[x+w+dx,y-dy],[x+w+dx,y+h-dy],[x+w,y+h]],side,'#4d6c83',1)
+   +PA25.poly([[x,y],[x+dx,y-dy],[x+w+dx,y-dy],[x+w,y]],PA25.lighten(top),'#4d6c83',1)
+   +`<rect x="${PA25.f(x)}" y="${PA25.f(y)}" width="${PA25.f(w)}" height="${PA25.f(h)}" rx="${rx}" fill="${top}" stroke="${stroke}" stroke-width="1.6"/>`;
+ },
+ lighten(hex){const n=parseInt(hex.slice(1),16),c=[n>>16,(n>>8)&255,n&255].map(v=>Math.round(v+(255-v)*.35));return '#'+c.map(v=>v.toString(16).padStart(2,'0')).join('')},
+ shine(x1,y1,x2,y2){return `<path d="M${PA25.f(x1)} ${PA25.f(y1)} L${PA25.f(x2)} ${PA25.f(y2)}" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".85"/>`},
+ // Shaded ball/token with a soft floor shadow.
+ ball(cx,cy,r,fill,side){return `<ellipse cx="${PA25.f(cx+r*.15)}" cy="${PA25.f(cy+r*.92)}" rx="${PA25.f(r*.9)}" ry="${PA25.f(r*.3)}" fill="#2f5ea8" opacity=".12"/><circle cx="${PA25.f(cx)}" cy="${PA25.f(cy)}" r="${PA25.f(r)}" fill="${side}" stroke="#36577a" stroke-width="1.4"/><circle cx="${PA25.f(cx-r*.12)}" cy="${PA25.f(cy-r*.14)}" r="${PA25.f(r*.78)}" fill="${fill}"/><circle cx="${PA25.f(cx-r*.38)}" cy="${PA25.f(cy-r*.4)}" r="${PA25.f(r*.22)}" fill="#fff" opacity=".7"/>`},
+ shadow(cx,cy,rx,ry){return `<ellipse cx="${PA25.f(cx)}" cy="${PA25.f(cy)}" rx="${PA25.f(rx)}" ry="${PA25.f(ry)}" fill="#2f5ea8" opacity=".08"/>`},
+ // Thick disc (pie / fraction circle): sectors on the top ellipse, darker band in front.
+ disc(cx,cy,rx,ry,t,parts){
+  const pt=a=>[cx+rx*Math.cos(a),cy+ry*Math.sin(a)];
+  let acc=0;const tot=parts.reduce((a,p)=>a+p.v,0)||1;
+  const segs=parts.map(p=>{const a0=-Math.PI/2+acc/tot*2*Math.PI;acc+=p.v;return {a0,a1:-Math.PI/2+acc/tot*2*Math.PI,c:p.c}});
+  const band=segs.map(s=>{const lo=Math.max(s.a0,0),hi=Math.min(s.a1,Math.PI);if(hi<=lo)return '';const [x0,y0]=pt(lo),[x1,y1]=pt(hi);return `<path d="M${PA25.f(x0)} ${PA25.f(y0)} A${rx} ${ry} 0 0 1 ${PA25.f(x1)} ${PA25.f(y1)} L${PA25.f(x1)} ${PA25.f(y1+t)} A${rx} ${ry} 0 0 0 ${PA25.f(x0)} ${PA25.f(y0+t)} Z" fill="${s.c[1]}" stroke="${PA25.ink}" stroke-width="1"/>`}).join('');
+  const top=segs.map(s=>{if(s.a1-s.a0>=2*Math.PI-1e-6)return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${s.c[0]}" stroke="${PA25.ink}" stroke-width="1.6"/>`;if(s.a1-s.a0<=1e-6)return '';const [x0,y0]=pt(s.a0),[x1,y1]=pt(s.a1);return `<path d="M${cx} ${cy} L${PA25.f(x0)} ${PA25.f(y0)} A${rx} ${ry} 0 ${s.a1-s.a0>Math.PI?1:0} 1 ${PA25.f(x1)} ${PA25.f(y1)} Z" fill="${s.c[0]}" stroke="${PA25.ink}" stroke-width="1.6" stroke-linejoin="round"/>`}).join('');
+  return PA25.shadow(cx,cy+t+6,rx,ry)+band+top;
+ }
+};
+
+function percentVisual(pct){
+ const filled=Math.round(pct/10),x0=26,w=28,y=34,h=30;
+ let cells='';for(let i=0;i<10;i++){const on=i<filled;cells+=PA25.box(x0+i*w,y,w,h,on?'#ffd36d':PA25.empty[0],on?'#d9a93a':PA25.empty[1],7)}
+ return PA25.scene(340,98,`${pct}% daripada 10 kotak, setiap kotak 10%`,cells+PA25.shine(x0+4,y+4,x0+10*w-4,y+4)+PA25.txt(170,90,'Setiap kotak = 10%',12,PA25.soft));
+}
+function clockSvg(hour,minute){
+ let h=((hour%12)+(minute/60))*30-90,m=minute*6-90,rad=x=>x*Math.PI/180;
+ const cx=170,cy=80,r=60,hx=cx+26*Math.cos(rad(h)),hy=cy+26*Math.sin(rad(h)),mx=cx+42*Math.cos(rad(m)),my=cy+42*Math.sin(rad(m));
+ let marks='';for(let i=0;i<60;i++){const a=rad(i*6-90),big=i%5===0,r1=r-(big?9:5);marks+=`<line x1="${PA25.f(cx+r1*Math.cos(a))}" y1="${PA25.f(cy+r1*Math.sin(a))}" x2="${PA25.f(cx+(r-2)*Math.cos(a))}" y2="${PA25.f(cy+(r-2)*Math.sin(a))}" stroke="#7b8fb0" stroke-width="${big?2.4:1}"/>`}
+ const nums=Array.from({length:12},(_,i)=>{const a=rad((i+1)*30-90),x=cx+(r-19)*Math.cos(a),y=cy+(r-19)*Math.sin(a);return PA25.txt(x,y+5,i+1,13,PA25.text)}).join('');
+ const body=PA25.shadow(cx+4,cy+r+8,r*.9,8)
+  +`<circle cx="${cx+5}" cy="${cy+6}" r="${r+7}" fill="#2f5ea8"/><circle cx="${cx}" cy="${cy}" r="${r+7}" fill="#4f83d1" stroke="${PA25.ink}" stroke-width="2"/>`
+  +`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#fbfdff" stroke="${PA25.ink}" stroke-width="2"/><path d="M${cx-r*.7} ${cy-r*.55} A${r*.95} ${r*.95} 0 0 1 ${cx+r*.2} ${cy-r*.93}" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".9"/>`
+  +marks+nums
+  +`<line x1="${cx+2}" y1="${cy+3}" x2="${PA25.f(hx+2)}" y2="${PA25.f(hy+3)}" stroke="#000" stroke-opacity=".15" stroke-width="7" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${PA25.f(hx)}" y2="${PA25.f(hy)}" stroke="#26344f" stroke-width="7" stroke-linecap="round"/>`
+  +`<line x1="${cx+2}" y1="${cy+3}" x2="${PA25.f(mx+2)}" y2="${PA25.f(my+3)}" stroke="#000" stroke-opacity=".15" stroke-width="5" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${PA25.f(mx)}" y2="${PA25.f(my)}" stroke="#4388e8" stroke-width="5" stroke-linecap="round"/>`
+  +`<circle cx="${cx}" cy="${cy}" r="6" fill="#26344f"/><circle cx="${cx-1.5}" cy="${cy-1.5}" r="2" fill="#fff" opacity=".7"/>`;
+ return PA25.scene(340,164,'Muka jam analog',body,'clockVisual');
+}
+function shapeSvg(type){
+ const S={
+  triangle:{pts:[[170,22],[226,112],[114,112]],c:PA25.colors[0]},
+  square:{pts:[[126,26],[214,26],[214,114],[126,114]],c:PA25.colors[1]},
+  rectangle:{pts:[[104,40],[236,40],[236,110],[104,110]],c:PA25.colors[4]},
+  pentagon:{pts:[[170,20],[222,57],[202,114],[138,114],[118,57]],c:PA25.colors[2]}
+ };
+ let body;
+ if(type==='circle')body=`<circle cx="175" cy="77" r="46" fill="#c2567c" stroke="#4d6c83"/><circle cx="170" cy="70" r="46" fill="#ffb4ca" stroke="#36577a" stroke-width="2"/>`+PA25.shine(140,52,176,30);
+ else{const s=S[type]||S.square;body=PA25.slab(s.pts,s.c[0],s.c[1],9)+PA25.shine(s.pts[0][0]+(type==='triangle'?-6:6),s.pts[0][1]+(type==='triangle'?12:6),s.pts[1][0]-(type==='triangle'?20:8),s.pts[1][1]+(type==='triangle'?-14:6))}
+ const names={triangle:'Segi tiga',square:'Segi empat sama',rectangle:'Segi empat tepat',pentagon:'Pentagon',circle:'Bulatan'};
+ return PA25.scene(340,140,names[type]||names.square,PA25.shadow(176,128,70,8)+body);
+}
+function coordGrid(x,y){
+ const ox=110,oy=126,s=26,n=4;let g='';
+ for(let i=0;i<=n;i++){g+=`<line x1="${ox+i*s}" y1="${oy}" x2="${ox+i*s}" y2="${oy-n*s}" stroke="#c9d6e8" stroke-width="1.2"/><line x1="${ox}" y1="${oy-i*s}" x2="${ox+n*s}" y2="${oy-i*s}" stroke="#c9d6e8" stroke-width="1.2"/>`+PA25.txt(ox+i*s,oy+17,i,12,PA25.soft)+PA25.txt(ox-12,oy-i*s+4,i,12,PA25.soft)}
+ const board=PA25.box(ox-4,oy-n*s-4,n*s+8,n*s+8,'#ffffff','#c3cfe0',8,'#9bb0cc');
+ const axes=`<line x1="${ox}" y1="${oy}" x2="${ox+n*s+10}" y2="${oy}" stroke="${PA25.ink}" stroke-width="2.4"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy-n*s-10}" stroke="${PA25.ink}" stroke-width="2.4"/>`;
+ return PA25.scene(340,150,`Grid koordinat dengan titik pada ${x}, ${y}`,board+g+axes+PA25.ball(ox+x*s,oy-y*s,8,'#ff8a87','#c2453f'));
+}
+function shape3DSvg(type){
+ const L='stroke="#36577a" stroke-width="2" stroke-linejoin="round"';
+ const m={
+  cube:`<polygon points="132,58 178,36 214,56 168,78" fill="#cfe2ff" ${L}/><polygon points="132,58 168,78 168,128 132,108" fill="#82aff2" ${L}/><polygon points="168,78 214,56 214,106 168,128" fill="#5f8bd0" ${L}/>`,
+  cuboid:`<polygon points="104,62 172,38 232,58 164,82" fill="#c8eed2" ${L}/><polygon points="104,62 164,82 164,122 104,102" fill="#79c898" ${L}/><polygon points="164,82 232,58 232,98 164,122" fill="#4f9f72" ${L}/>`,
+  pyramid:`<polygon points="170,22 120,106 172,128" fill="#ffd48b" ${L}/><polygon points="170,22 224,102 172,128" fill="#e09a3d" ${L}/>`,
+  cylinder:`<rect x="128" y="44" width="84" height="66" fill="#5fb8c5" stroke="none"/><path d="M128 44 V110 A42 14 0 0 0 212 110 V44" fill="#4aa6b4" ${L}/><path d="M128 44 V110 A42 14 0 0 0 170 124 V58 A42 14 0 0 1 128 44 Z" fill="#71cbd8" stroke="none"/><ellipse cx="170" cy="44" rx="42" ry="14" fill="#baf5fa" ${L}/>`,
+  cone:`<path d="M170 20 L128 108 A42 14 0 0 0 212 108 Z" fill="#d76f9e" ${L}/><path d="M170 20 L128 108 A42 14 0 0 0 170 122 Z" fill="#f1a8c8" stroke="none"/><path d="M170 20 L128 108 A42 14 0 0 0 212 108" fill="none" ${L}/>`
+ };
+ const names={cube:'Kubus',cuboid:'Kuboid',pyramid:'Piramid',cylinder:'Silinder',cone:'Kon'};
+ const shine=type==='cube'?PA25.shine(142,58,176,42):type==='cuboid'?PA25.shine(116,62,170,44):type==='cylinder'?`<path d="M140 52 V100" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>`:'';
+ return PA25.scene(340,146,names[type]||names.cube,PA25.shadow(172,132,62,8)+(m[type]||m.cube)+shine);
+}
+function shapeNetSvg(type){
+ const s=26,cell=(cx,cy,c)=>PA25.box(cx,cy,s,s,c[0],c[1],5);
+ const blue=['#9fc5ff','#5f8bd0'],green=['#b6e3c2','#5aa676'],dark=['#8dcc9f','#4f9f72'];
+ const cells=type==='cube'
+  ?[[157,16,blue],[105,42,blue],[131,42,blue],[157,42,blue],[183,42,blue],[157,68,blue]]
+  :[[118,28,green],[144,28,green],[170,28,green],[196,28,green],[144,54,dark],[144,80,dark]];
+ return PA25.scene(340,124,type==='cube'?'Bentangan kubus':'Bentangan kuboid',cells.map(([x,y,c])=>cell(x,y,c)).join(''));
+}
+function base10Visual(n){
+ const h=Math.floor(n/100),t=Math.floor((n%100)/10),o=n%10;
+ const cube=(x,y,c)=>PA25.box(x,y,9,9,c[0],c[1],4,'#36577a');
+ const plate=(x,y)=>{let g=PA25.box(x,y,36,36,'#ffd27d','#d4a43c',5);for(let i=1;i<10;i++)g+=`<line x1="${x+i*3.6}" y1="${y}" x2="${x+i*3.6}" y2="${y+36}" stroke="#c99a35" stroke-width=".6"/><line x1="${x}" y1="${y+i*3.6}" x2="${x+36}" y2="${y+i*3.6}" stroke="#c99a35" stroke-width=".6"/>`;return g};
+ const rod=(x,y)=>{let g=PA25.box(x,y,9,40,'#87c8ff','#4f95d4',4);for(let i=1;i<10;i++)g+=`<line x1="${x}" y1="${y+i*4}" x2="${x+9}" y2="${y+i*4}" stroke="#4f95d4" stroke-width=".7"/>`;return g};
+ let H='',T='',O='';
+ for(let i=0;i<h;i++)H+=plate(18+(i%3)*40,22+Math.floor(i/3)*42);
+ for(let i=0;i<t;i++)T+=rod(152+(i%5)*14,24+Math.floor(i/5)*46);
+ for(let i=0;i<o;i++)O+=cube(252+(i%3)*14,34+Math.floor(i/3)*14,['#8ee1aa','#4fae74']);
+ const empty=(x)=>PA25.txt(x,64,'0',16,'#8090aa');
+ const rows=Math.max(1,Math.ceil(h/3));
+ const yLab=Math.max(120,22+rows*42+18);
+ return PA25.scene(340,yLab+10,`Blok asas sepuluh: ${h} ratus, ${t} puluh, ${o} sa`,(H||empty(76))+(T||empty(184))+(O||empty(272))+PA25.txt(76,yLab,'ratus',13)+PA25.txt(184,yLab,'puluh',13)+PA25.txt(272,yLab,'sa',13));
+}
+function numberLineSvg(min,max,step,point=null,options={}){
+ const vals=[];for(let v=min;v<=max;v+=step)vals.push(v);
+ const left=26,right=314,y=60,span=Math.max(1,max-min);
+ const X=v=>Number((left+(v-min)/span*(right-left)).toFixed(2));
+ const track=PA25.box(left-8,y-5,right-left+16,10,'#dfe8f5','#9fb2cc',6,'#7b8fb0',4);
+ const ticks=vals.map(v=>{const x=X(v);return `<line x1="${x}" y1="${y-11}" x2="${x}" y2="${y+11}" stroke="${PA25.ink}" stroke-width="2.2" stroke-linecap="round"/>`+PA25.txt(x,y+30,options.endpointLabelsOnly&&Math.abs(v-min)>1e-8&&Math.abs(v-max)>1e-8?'':tidyDisplay(v),12,PA25.text)}).join('');
+ let marker='';
+ if(point!=null){const x=X(point);marker=`<path d="M${x} ${y-8} L${x-9} ${y-24} A11 11 0 1 1 ${x+9} ${y-24} Z" fill="#c2453f" transform="translate(2 2)" opacity=".35"/><path d="M${x} ${y-8} L${x-9} ${y-24} A11 11 0 1 1 ${x+9} ${y-24} Z" fill="#ef6f6c" stroke="#9c3e3b" stroke-width="1.5"/><circle cx="${x-3}" cy="${y-33}" r="3" fill="#fff" opacity=".7"/>`+PA25.txt(x,y-46,options.hidePointValue?'?':tidyDisplay(point),13,'#9c3e3b')}
+ return PA25.scene(340,104,`Garis nombor dari ${tidyDisplay(min)} hingga ${tidyDisplay(max)}${point!=null?(options.hidePointValue?' dengan satu titik bertanda':' dengan titik pada '+tidyDisplay(point)):''}`,track+ticks+marker);
+}
+// Same-sized objects and spacing in both sets make the known ten a useful benchmark.
+// Contract (audit/d2-estimation-reference.test.js): exactly one <circle> per object and exactly
+// two <rect> trays, so the 2.5D shading uses a gradient fill and the panel background is a <path>.
+function dotsEstimateVisual(count){
+ const total=Math.max(1,Math.min(32,Math.round(Number(count)||1)));
+ const panel=(amount,x,label,known)=>{
+  const dots=Array.from({length:amount},(_,i)=>{
+   const row=Math.floor(i/6),col=i%6;
+   const cx=x+19+col*20+(row%2)*4+((i*7)%3-1)*2;
+   const cy=49+row*18+((i*5)%3-1)*2;
+   return `<circle cx="${cx}" cy="${cy}" r="5.6" fill="url(#paEstDot)" stroke="#2e66ad" stroke-width="1"/>`;
+  }).join('');
+  const side=PA25.poly([[x+148,4],[x+154,0],[x+154,177],[x+148,181]],'#b9cbe2','#8cadd0',1)+PA25.poly([[x,4],[x+6,0],[x+154,0],[x+148,4]],'#ffffff','#8cadd0',1);
+  return `<g data-estimate-set="${label}">${side}<rect x="${x}" y="4" width="148" height="177" rx="12" fill="#edf5ff" stroke="#8cadd0"/>${PA25.txt(x+74,26,'Set '+label,15)}${dots}${PA25.txt(x+74,168,known?'10 objek':'? objek',13)}</g>`;
+ };
+ return `<div class="kssrDiagram paU6Scene paD5Scene"><svg role="img" aria-label="Set A mengandungi 10 objek. Anggarkan bilangan objek dalam Set B dengan membandingkan kedua-dua set." viewBox="0 0 330 192"><defs><radialGradient id="paEstDot" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#cfe3ff"/><stop offset=".45" stop-color="#5a9be0"/><stop offset="1" stop-color="#2e66ad"/></radialGradient></defs><path d="M16 1 H314 A15 15 0 0 1 329 16 V176 A15 15 0 0 1 314 191 H16 A15 15 0 0 1 1 176 V16 A15 15 0 0 1 16 1 Z" fill="#f5f9ff" stroke="#d7e3f1"/>${panel(10,3,'A',true)}${panel(total,161,'B',false)}</svg></div>`;
+}
+function rulerSvg(cm){
+ const max=20,left=26,right=306,y=96,scale=(right-left)/max;
+ const body=PA25.box(14,y-36,304,40,'#ffe7a3','#c9a24b',8,'#a88730',6)+PA25.shine(20,y-31,312,y-31);
+ let ticks='';for(let i=0;i<=max;i++){const x=left+i*scale,tall=i%5===0?15:9;ticks+=`<line x1="${PA25.f(x)}" y1="${y-36}" x2="${PA25.f(x)}" y2="${y-36+tall}" stroke="#6b5420" stroke-width="1.8"/>`+(i%5===0?PA25.txt(x,y-6,i,11,'#6b5420'):'')}
+ const x2=left+cm*scale;
+ const obj=PA25.box(left,30,Math.max(4,x2-left),12,'#ef6f6c','#b8433f',6,'#9c3e3b',3);
+ const guides=`<line x1="${left}" y1="44" x2="${left}" y2="${y-36}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/><line x1="${PA25.f(x2)}" y1="44" x2="${PA25.f(x2)}" y2="${y-36}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/>`;
+ return PA25.scene(340,124,'Pembaris 0 hingga 20 cm dengan satu objek diukur',PA25.shadow(166,y+10,150,5)+body+ticks+guides+obj+PA25.txt(318,y+16,'cm',11,'#6b5420','end'));
+}
+function scaleSvg(grams){
+ const max=1000,cx=170,cy=84,angle=-120+(grams/max)*240,rad=angle*Math.PI/180,x=cx+42*Math.cos(rad),y=cy+42*Math.sin(rad);
+ let marks='';for(let g=0;g<=1000;g+=100){const a=(-120+(g/max)*240)*Math.PI/180,x1=cx+50*Math.cos(a),y1=cy+50*Math.sin(a),x2=cx+58*Math.cos(a),y2=cy+58*Math.sin(a);marks+=`<line x1="${PA25.f(x1)}" y1="${PA25.f(y1)}" x2="${PA25.f(x2)}" y2="${PA25.f(y2)}" stroke="${PA25.ink}" stroke-width="2"/>`}
+ const base=PA25.box(108,126,124,18,'#9fb7d6','#5f7da6',8)+PA25.box(150,10,40,10,'#c7d6ea','#7f98bb',6);
+ const dial=`<circle cx="${cx+5}" cy="${cy+6}" r="66" fill="#5f7da6"/><circle cx="${cx}" cy="${cy}" r="66" fill="#c7d6ea" stroke="${PA25.ink}" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="60" fill="#fbfdff" stroke="#7f98bb" stroke-width="1.5"/>`;
+ return PA25.scene(340,156,`Penimbang 0 hingga 1000 g`,PA25.shadow(172,148,80,7)+base+dial+marks+`<line x1="${cx}" y1="${cy}" x2="${PA25.f(x)}" y2="${PA25.f(y)}" stroke="#ef6f6c" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="${PA25.ink}"/>`+PA25.txt(cx-12,cy+26,'0–1000 g',11,PA25.text,'end'));
+}
+function cylinderSvg(ml){
+ const max=1000,top=18,bottom=132,cx=150,rx=26,ry=7,fillH=(ml/max)*(bottom-top),fy=bottom-fillH;
+ let marks='';for(let v=0;v<=1000;v+=100){const y=bottom-(v/max)*(bottom-top);marks+=`<line x1="${cx+rx-12}" y1="${PA25.f(y)}" x2="${cx+rx}" y2="${PA25.f(y)}" stroke="${PA25.ink}" stroke-width="1.6"/>`+(v%200===0?PA25.txt(cx+rx+8,y+4,v,10,PA25.text,'start'):'')}
+ const liquid=fillH>0?`<path d="M${cx-rx} ${PA25.f(fy)} V${bottom} A${rx} ${ry} 0 0 0 ${cx+rx} ${bottom} V${PA25.f(fy)} Z" fill="#59b8ef" opacity=".85"/><ellipse cx="${cx}" cy="${PA25.f(fy)}" rx="${rx}" ry="${ry}" fill="#9ad9ff" stroke="#3f95cc" stroke-width="1"/>`:'';
+ const glass=`<path d="M${cx-rx} ${top} V${bottom} A${rx} ${ry} 0 0 0 ${cx+rx} ${bottom} V${top}" fill="#eef6ff" fill-opacity=".55" stroke="#4d6c83" stroke-width="2"/>`;
+ const rim=`<ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" fill="#f8fbff" fill-opacity=".6" stroke="#4d6c83" stroke-width="2"/><path d="M${cx-rx+6} ${top+10} V${bottom-6}" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>`;
+ const foot=PA25.box(cx-rx-12,bottom+12,2*rx+24,8,'#c7d6ea','#7f98bb',6);
+ return PA25.scene(340,160,'Silinder penyukat 0 hingga 1000 mL',PA25.shadow(cx+4,bottom+24,50,6)+foot+glass+liquid+marks+rim+PA25.txt(cx-rx-10,top+6,'mL',12,PA25.text,'end'));
+}
+function timelineSvg(sh,sm,eh,em,visibility={}){
+ const fmt=visibility.formatTime||((h,m)=>`${h}:${String(m).padStart(2,'0')}`);
+ const startLabel=visibility.showStart===false?'?':fmt(sh,sm),endLabel=visibility.showEnd===false?'?':fmt(eh,em);
+ const y=54;
+ return PA25.scene(340,104,`Garis masa dari ${startLabel} hingga ${endLabel}`,
+  PA25.box(40,y-6,260,12,'#dfe8f5','#9fb2cc',7,'#7b8fb0',5)
+  +PA25.ball(55,y,9,'#8fb9ff','#4f83d1')+PA25.ball(285,y,9,'#9fe0b8','#4fae74')
+  +`<path d="M130 ${y-18} Q170 ${y-40} 210 ${y-18}" fill="none" stroke="#f0ae3d" stroke-width="3.5" stroke-linecap="round"/><path d="M204 ${y-26} l10 8 -12 4" fill="#f0ae3d"/>`
+  +PA25.txt(30,y+34,startLabel,14,PA25.text,'start')+PA25.txt(310,y+34,endLabel,14,PA25.text,'end'));
+}
+function barChart(labels,vals){
+ const max=Math.max(10,Math.ceil(Math.max(...vals)/2)*2),W=340,left=44,base=150,top=18,plotH=base-top,n=labels.length;
+ const bw=Math.min(42,Math.floor(220/n)),gap=Math.max(10,Math.floor((270-n*bw)/Math.max(1,n)));
+ let grid='';for(let v=0;v<=max;v+=2){const y=base-(v/max)*plotH;grid+=`<line x1="${left}" y1="${PA25.f(y)}" x2="324" y2="${PA25.f(y)}" stroke="#dde5f1" stroke-width="1"/>`+PA25.txt(36,y+4,v,10,'#55627a','end')}
+ let bars='';labels.forEach((l,i)=>{const x=left+gap/2+i*(bw+gap),h=(vals[i]/max)*plotH,y=base-h,c=PA25.colors[i%PA25.colors.length];bars+=(h>0?PA25.box(x,y,bw,h,c[0],c[1],10,PA25.ink):'')+PA25.txt(x+bw/2,base+18,l,11,PA25.text)});
+ const floor=PA25.poly([[left,base],[left+5.5,base-5.5],[330,base-5.5],[324,base]],'#c9d6e8','#9fb2cc',1);
+ return PA25.scene(W,176,`Carta palang: ${labels.map((l,i)=>l+' '+vals[i]).join(', ')}`,grid+floor+`<line x1="${left}" y1="${top}" x2="${left}" y2="${base}" stroke="${PA25.ink}" stroke-width="2"/><line x1="${left}" y1="${base}" x2="324" y2="${base}" stroke="${PA25.ink}" stroke-width="2"/>`+bars);
+}
+function fractionVisual(num,den){
+ const label=`Satu keseluruhan dibahagi kepada ${den} bahagian sama besar; ${num} bahagian berlorek`;
+ /* Gaya rajah dipelbagaikan seperti lembaran sekolah: jalur, bulatan dan
+    petak. Semua bentuk masih mengekalkan bilangan bahagian yang sama besar. */
+ const forms=den===2?['bar','circle']:den===4?['bar','circle','square']:['bar'];
+ const form=forms[Math.floor(Math.random()*forms.length)];
+ if(form==='circle'){
+  const parts=Array.from({length:den},(_,i)=>({v:1,c:i<num?PA25.green:PA25.empty}));
+  return PA25.scene(340,128,label,PA25.disc(170,56,72,40,14,parts));
+ }
+ if(form==='square'){
+  let cells='';[[0,0],[1,0],[0,1],[1,1]].forEach(([c,r],i)=>{cells+=PA25.box(126+c*44,18+r*44,44,44,i<num?PA25.green[0]:PA25.empty[0],i<num?PA25.green[1]:PA25.empty[1],9)});
+  return PA25.scene(340,124,label,cells);
+ }
+ const w=Math.min(46,Math.floor(276/den)),x0=170-den*w/2;
+ let cells='';for(let i=0;i<den;i++)cells+=PA25.box(x0+i*w,30,w,40,i<num?PA25.green[0]:PA25.empty[0],i<num?PA25.green[1]:PA25.empty[1],10);
+ return PA25.scene(340,96,label,PA25.shadow(176,84,den*w/2+6,6)+cells+PA25.shine(x0+4,35,x0+den*w-4,35));
+}
+function fractionChoiceBoard(num,den){
+ const mini=(kind,n,d,invalid=false)=>{
+  const label=invalid?'bahagian tidak sama besar':`${n}/${d}`;
+  let body;
+  if(kind==='circle')body=PA25.disc(42,24,30,17,7,Array.from({length:d},(_,i)=>({v:1,c:i<n?PA25.green:PA25.empty})));
+  else if(invalid)body=PA25.box(10,10,24,30,PA25.green[0],PA25.green[1],6)+PA25.box(34,10,40,30,PA25.empty[0],PA25.empty[1],6);
+  else{const w=64/d;body=Array.from({length:d},(_,i)=>PA25.box(10+i*w,10,w,30,i<n?PA25.green[0]:PA25.empty[0],i<n?PA25.green[1]:PA25.empty[1],6)).join('')}
+  return `<svg viewBox="0 0 86 54" width="86" height="54" role="img" aria-label="${label}">${body}</svg>`;
+ };
+ const wrongD=den===2?4:den,wrongN=den===2?1:(num===den-1?num-1:num+1);
+ const otherD=den===2?4:2,otherN=Math.min(otherD-1,Math.max(1,num));
+ const choices=[mini('bar',num,den),mini('circle',wrongN,wrongD),mini('bar',1,den,true),mini('bar',otherN,otherD)];
+ return `<div role="group" aria-label="Pilihan rajah pecahan" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:260px;margin:0 auto 12px">${choices.map((v,i)=>`<div style="display:flex;align-items:center;justify-content:center;gap:4px;padding:6px;border:1px solid #d7e3f1;border-radius:12px;background:#f5f9ff;box-shadow:0 3px 0 #d7e3f1"><b style="font:900 15px Nunito,system-ui,sans-serif;color:#243d5e">${String.fromCharCode(65+i)}</b>${v}</div>`).join('')}</div>`;
+}
+function rectangleMeasureSvg(length,width){
+ return PA25.scene(340,150,`Segi empat tepat berukuran ${length} sentimeter kali ${width} sentimeter`,
+  PA25.shadow(176,128,96,7)+PA25.slab([[86,38],[246,38],[246,112],[86,112]],'#dceaff','#8fb0dc',10)+PA25.shine(92,44,240,44)
+  +PA25.txt(166,28,`${length} cm`,15,PA25.text)+PA25.txt(266,80,`${width} cm`,15,PA25.text,'middle',` transform="rotate(90 266 80)"`),'geometryVisual');
+}
+function comparisonBarsSvg(a,b,unit,labelA='A',labelB='B'){
+ const max=Math.max(a,b),wa=40+170*a/max,wb=40+170*b/max;
+ return PA25.scene(340,118,`Perbandingan ${a} ${unit} dengan ${b} ${unit}`,
+  PA25.txt(28,42,labelA,14,PA25.text)+PA25.box(48,24,wa,26,'#78a9ff','#4a7fd0',9,PA25.ink,4)+PA25.txt(62+wa,43,`${a} ${unit}`,12,PA25.text,'start')
+  +PA25.txt(28,94,labelB,14,PA25.text)+PA25.box(48,76,wb,26,'#8bd3a8','#4fae74',9,PA25.ink,4)+PA25.txt(62+wb,95,`${b} ${unit}`,12,PA25.text,'start'),'measureVisual');
+}
 function fractionSetVisual(selected,total){
- const dots=Array.from({length:total},(_,i)=>`<circle cx="${22+(i%5)*42}" cy="${22+Math.floor(i/5)*42}" r="14" fill="${i<selected?'#62c991':'#e5ebf7'}" stroke="#516684" stroke-width="2"/>`).join('');
- return `<svg class="fractionSetVisual" viewBox="0 0 220 ${total>5?86:46}" width="min(250px,92%)" role="img" aria-label="${selected} daripada ${total} objek dipilih" style="display:block;margin:0 auto 10px">${dots}</svg>`;
+ const rows=Math.ceil(total/5),x0=170-Math.min(5,total)*21+21;
+ const dots=Array.from({length:total},(_,i)=>PA25.ball(x0+(i%5)*42,30+Math.floor(i/5)*42,14,i<selected?PA25.green[0]:'#f1f5fb',i<selected?PA25.green[1]:'#b9c6d8')).join('');
+ return PA25.scene(340,20+rows*42+8,`${selected} daripada ${total} objek dipilih`,dots,'fractionSetVisual');
 }

@@ -3,7 +3,9 @@
 // and symmetry-axis tasks. Pure function; no DOM or Node globals.
 (function () {
   'use strict';
-  var STROKE = '#2b2540', FILL = '#f2ecfb', ACCENT = '#6a52a3';
+  // 2.5D palette shared with the Year 1/5/6 scenes (owner 2026-10-26). Shapes get a darker offset
+  // under-copy (a raised tile) instead of an extrusion, so symmetry outlines stay exact.
+  var STROKE = '#36577a', FILL = '#cfe0f7', SIDE = '#7fa7d6', ACCENT = '#e0752f';
   function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function rad(d) { return d * Math.PI / 180; }
   function regularPoints(sides, cx, cy, r, rotation) {
@@ -13,17 +15,21 @@
   }
   function pointsAttr(pts) { return pts.map(function(p){return p[0].toFixed(2)+','+p[1].toFixed(2);}).join(' '); }
   function shapeMarkup(shape, cx, cy, r) {
-    if (shape.shapeType === 'rectangle') return '<rect x="'+(cx-r)+'" y="'+(cy-r*0.62)+'" width="'+(2*r)+'" height="'+(1.24*r)+'" rx="2" fill="'+FILL+'" stroke="'+STROKE+'" stroke-width="2.5"/>';
-    if (shape.shapeType === 'isosceles_triangle') return '<polygon points="'+pointsAttr([[cx,cy-r],[cx-r*0.9,cy+r*0.72],[cx+r*0.9,cy+r*0.72]])+'" fill="'+FILL+'" stroke="'+STROKE+'" stroke-width="2.5"/>';
-    var sides = Number(shape.sides || 5);
-    return '<polygon points="'+pointsAttr(regularPoints(sides,cx,cy,r,-90))+'" fill="'+FILL+'" stroke="'+STROKE+'" stroke-width="2.5" stroke-linejoin="round"/>';
+    if (shape.shapeType === 'rectangle') return '<rect x="'+(cx-r+3)+'" y="'+(cy-r*0.62+4)+'" width="'+(2*r)+'" height="'+(1.24*r)+'" rx="2" fill="'+SIDE+'"/><rect x="'+(cx-r)+'" y="'+(cy-r*0.62)+'" width="'+(2*r)+'" height="'+(1.24*r)+'" rx="2" fill="'+FILL+'" stroke="'+STROKE+'" stroke-width="2.2"/>';
+    var pts = shape.shapeType === 'isosceles_triangle' ? [[cx,cy-r],[cx-r*0.9,cy+r*0.72],[cx+r*0.9,cy+r*0.72]] : regularPoints(Number(shape.sides || 5),cx,cy,r,-90);
+    return tile(pts);
   }
+  function tile(pts, attrs) {
+    var under = pts.map(function(p){return [p[0]+3,p[1]+4];});
+    return '<polygon points="'+pointsAttr(under)+'" fill="'+SIDE+'"/><polygon '+(attrs||'')+'points="'+pointsAttr(pts)+'" fill="'+FILL+'" stroke="'+STROKE+'" stroke-width="2.2" stroke-linejoin="round"/>';
+  }
+  function panel(w,h) { return '<rect x="1" y="1" width="'+(w-2)+'" height="'+(h-2)+'" rx="14" fill="#f5f9ff" stroke="#d7e3f1"/>'; }
   function polygonMarkup(id, cx, cy, r) {
     var sides = {pentagon:5,hexagon:6,heptagon:7,octagon:8}[id];
     if (!sides) throw new Error('geometry2d renderer: unknown polygon id "'+id+'"');
-    return '<polygon data-polygon-id="'+esc(id)+'" points="'+pointsAttr(regularPoints(sides,cx,cy,r,-90))+'" fill="'+FILL+'" stroke="'+STROKE+'" stroke-width="2.5" stroke-linejoin="round"/>';
+    return tile(regularPoints(sides,cx,cy,r,-90), 'data-polygon-id="'+esc(id)+'" ');
   }
-  function svgOpen(w,h) { return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">'; }
+  function svgOpen(w,h) { return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">'+panel(w,h); }
   function lineForAngle(angle,cx,cy,len) {
     var a=rad(angle), dx=Math.cos(a)*len/2, dy=Math.sin(a)*len/2;
     return [cx-dx,cy-dy,cx+dx,cy+dy];
@@ -38,7 +44,7 @@
     var seq=v.sequence||[], n=seq.length+(v.showQuestionMark?1:0), cell=62, w=Math.max(130,n*cell+12), h=86;
     var body='';
     for(var i=0;i<seq.length;i++) body += '<g data-pattern-index="'+i+'">'+polygonMarkup(seq[i], 38+i*cell, 43, 23)+'</g>';
-    if(v.showQuestionMark) body += '<text x="'+(38+seq.length*cell)+'" y="51" text-anchor="middle" font-size="28" font-family="sans-serif" fill="'+STROKE+'">?</text>';
+    if(v.showQuestionMark) body += '<text x="'+(38+seq.length*cell)+'" y="51" text-anchor="middle" style="font:900 28px Nunito,system-ui,sans-serif;fill:#243d5e">?</text>';
     return '<div class="qsv2-geom2d-pattern">'+svgOpen(w,h)+body+'</svg></div>';
   }
   function renderPatternBuilder(v) {
@@ -52,9 +58,9 @@
     if(candidates){
       for(var i=0;i<candidates.length;i++){
         var c=candidates[i], L=lineForAngle(c.angle,cx,cy,108);
-        body += '<line data-axis-id="'+esc(c.id)+'" data-axis-angle="'+esc(c.angle)+'" x1="'+L[0].toFixed(2)+'" y1="'+L[1].toFixed(2)+'" x2="'+L[2].toFixed(2)+'" y2="'+L[3].toFixed(2)+'" stroke="'+ACCENT+'" stroke-width="1.5" stroke-dasharray="5 3"/>';
+        body += '<line data-axis-id="'+esc(c.id)+'" data-axis-angle="'+esc(c.angle)+'" x1="'+L[0].toFixed(2)+'" y1="'+L[1].toFixed(2)+'" x2="'+L[2].toFixed(2)+'" y2="'+L[3].toFixed(2)+'" stroke="'+ACCENT+'" stroke-width="2.2" stroke-dasharray="6 4" stroke-linecap="round"/>';
         var lx=cx+Math.cos(rad(c.angle))*52, ly=cy+Math.sin(rad(c.angle))*52;
-        body += '<text x="'+lx.toFixed(2)+'" y="'+ly.toFixed(2)+'" font-size="11" font-family="sans-serif" fill="'+STROKE+'">'+esc(c.labelMs.replace('Garis ',''))+'</text>';
+        body += '<text x="'+lx.toFixed(2)+'" y="'+ly.toFixed(2)+'" style="font:900 12px Nunito,system-ui,sans-serif;fill:#243d5e">'+esc(c.labelMs.replace('Garis ',''))+'</text>';
       }
     }
     return '<div class="qsv2-geom2d-symmetry" data-shape-id="'+esc(s.shapeId)+'">'+svgOpen(140,130)+body+'</svg></div>';

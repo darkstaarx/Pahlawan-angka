@@ -7,17 +7,16 @@ const ratioStr=(a,b)=>{const g=gcd(a,b);return (a/g)+':'+(b/g)};
 const pt=()=>({x:rand(0,8),y:rand(0,8)});
 
 function localCoordMap(spec){
- const W=360,H=360,left=34,top=22,right=22,bottom=34,cw=(W-left-right)/8,ch=(H-top-bottom)/8;
- const px=x=>left+x*cw,py=y=>top+(8-y)*ch;
+ // 2.5D (pemilik 2026-10-26): papan grid timbul + penanda bola, gaya sama dengan Tahun 1/5/6.
+ const K=globalThis.PA25,W=340,H=280,left=60,top=28,cell=26,n=8,bottom=top+n*cell;
+ const px=x=>left+x*cell,py=y=>top+(n-y)*cell;
  let g='';
- for(let x=0;x<=8;x++)g+=`<line x1="${px(x)}" y1="${top}" x2="${px(x)}" y2="${H-bottom}" stroke="#d8e2ef" stroke-width="1"/>`;
- for(let y=0;y<=8;y++)g+=`<line x1="${left}" y1="${py(y)}" x2="${W-right}" y2="${py(y)}" stroke="#d8e2ef" stroke-width="1"/>`;
- const points=spec.points.map(p=>`<circle cx="${px(p.x)}" cy="${py(p.y)}" r="7" fill="#ffca62" stroke="#263b5d" stroke-width="2"/><text x="${px(p.x)}" y="${py(p.y)-10}" text-anchor="middle" font-size="11" font-weight="800" fill="#263b5d">${p.label}</text>`).join('');
- const axes=`<line x1="${left}" y1="${py(0)}" x2="${W-right}" y2="${py(0)}" stroke="#526987" stroke-width="2"/><line x1="${left}" y1="${top}" x2="${left}" y2="${py(0)}" stroke="#526987" stroke-width="2"/>`;
- const ticks=[...Array(9)].map((_,x)=>`<text x="${px(x)}" y="${H-20}" text-anchor="middle" font-size="12" fill="#526987">${x}</text>`).join('');
- const yt=[...Array(9)].map((_,y)=>`<text x="16" y="${py(y)+3}" text-anchor="middle" font-size="12" fill="#526987">${y}</text>`).join('');
+ for(let i=0;i<=n;i++)g+=`<line x1="${px(i)}" y1="${top}" x2="${px(i)}" y2="${bottom}" stroke="#c9d6e8" stroke-width="1.1"/><line x1="${left}" y1="${py(i)}" x2="${px(n)}" y2="${py(i)}" stroke="#c9d6e8" stroke-width="1.1"/>`+K.txt(px(i),bottom+17,i,11,K.soft)+K.txt(left-12,py(i)+4,i,11,K.soft);
+ const axes=`<line x1="${left}" y1="${bottom}" x2="${px(n)+10}" y2="${bottom}" stroke="${K.ink}" stroke-width="2.2"/><line x1="${left}" y1="${bottom}" x2="${left}" y2="${top-6}" stroke="${K.ink}" stroke-width="2.2"/>`+K.txt(px(n)+16,bottom+4,'x',12,K.soft)+K.txt(left,top-14,'y',12,K.soft);
+ const points=spec.points.map(p=>K.ball(px(p.x),py(p.y),7,'#ffd36d','#c48d1c')+K.txt(px(p.x),py(p.y)-11,p.label,12,'#263b5d')).join('');
  const legend=spec.points.map(p=>`<span style="display:inline-block;margin-right:9px"><b>${p.label}</b> = ${p.name}</span>`).join('');
- return `<div><svg viewBox="0 0 ${W} ${H}" width="360" height="360" role="img" aria-label="Peta koordinat grid 0 hingga 8 pada kedua-dua paksi" style="display:block;max-width:100%;height:auto;margin:0 auto 5px;background:#f8fbff;border:1px solid #b9c9dc;border-radius:8px">${g}${axes}${points}${ticks}${yt}<text x="${W-20}" y="${H-7}" font-size="12" fill="#526987">x</text><text x="12" y="12" font-size="12" fill="#526987">y</text></svg><div style="font-size:11px;line-height:1.45;text-align:center">${legend}</div></div>`;
+ const board=K.box(left-4,top-4,n*cell+8,n*cell+8,'#ffffff','#c3cfe0',8,'#9bb0cc');
+ return `<div><div class="kssrDiagram"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Peta koordinat grid 0 hingga 8 pada kedua-dua paksi"><rect x="1" y="1" width="${W-2}" height="${H-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${board}${g}${axes}${points}</svg></div><div style="font-size:11px;line-height:1.45;text-align:center">${legend}</div></div>`;
 }
 function coordMapSpec(mode){
  const layouts=[[[1,1],[3,4],[5,1],[6,5],[8,2]],[[1,4],[2,1],[4,3],[7,1],[8,5]],[[1,2],[3,5],[4,1],[6,3],[8,4]],[[1,5],[2,2],[5,4],[7,2],[8,1]]];

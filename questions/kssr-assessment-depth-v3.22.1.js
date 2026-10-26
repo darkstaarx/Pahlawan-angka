@@ -45,39 +45,50 @@ const chooseMode=(id,s,modes)=>{
   return rotate(id,allowed.length?allowed:modes);
 };
 const wrongNums=(ans,step=1,tag='operation')=>[N(ans+step,tag),N(Math.max(0,ans-step),tag),N(ans+step*2,tag)];
+/* 2.5D (pemilik 2026-10-26): visual assessment-depth kini guna kit PA25 dari
+   questions/helpers.js — gaya sama dengan Tahun 1/5/6. Nilai, label dan
+   aria-label kekal; hanya lukisan berubah. */
+const K25=()=>globalThis.PA25;
+const kdDark=hex=>{const n=parseInt(String(hex).replace('#',''),16);if(!isFinite(n))return '#36577a';return '#'+[n>>16,(n>>8)&255,n&255].map(v=>Math.round(v*.7).toString(16).padStart(2,'0')).join('')};
 const numLine=(min,max,value,label='')=>{
-  const w=310,h=72,p=22,range=max-min||1,x=p+(value-min)/range*(w-2*p);
-  const ticks=Array.from({length:6},(_,i)=>{const tx=p+i*(w-2*p)/5,n=Math.round(min+i*range/5),shown=n===value?'':n;return `<g><line x1="${tx}" y1="34" x2="${tx}" y2="42"/><text x="${tx}" y="59">${shown}</text></g>`}).join('');
-  return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" aria-label="garis nombor"><line x1="${p}" y1="38" x2="${w-p}" y2="38" class="kd-line"/>${ticks}<circle cx="${x}" cy="38" r="6" class="kd-accent"/><text x="${x}" y="18" class="kd-label">${label||value}</text></svg></div>`;
+  const K=K25(),left=28,right=312,y=62,range=max-min||1,X=v=>left+(v-min)/range*(right-left),x=X(value);
+  const ticks=Array.from({length:6},(_,i)=>{const tx=left+i*(right-left)/5,n=Math.round(min+i*range/5),shown=n===value?'':n;return `<line x1="${K.f(tx)}" y1="${y-11}" x2="${K.f(tx)}" y2="${y+11}" stroke="${K.ink}" stroke-width="2.2" stroke-linecap="round"/>`+K.txt(tx,y+30,shown,12)}).join('');
+  const pin=`<path d="M${K.f(x)} ${y-8} L${K.f(x-9)} ${y-24} A11 11 0 1 1 ${K.f(x+9)} ${y-24} Z" fill="#3f77bc" stroke="#1f4d86" stroke-width="1.5"/><circle cx="${K.f(x-3)}" cy="${y-33}" r="3" fill="#fff" opacity=".7"/>`;
+  return K.scene(340,104,'garis nombor',K.box(left-8,y-5,right-left+16,10,'#dfe8f5','#9fb2cc',6,'#7b8fb0',4)+ticks+pin+K.txt(x,y-46,label||value,13,'#1c2a43'));
 };
 const fractionStrip=(n,d,color='#5b8def')=>{
-  const w=300,h=68,x0=10,y=14,iw=280/d;
-  let cells='';for(let i=0;i<d;i++)cells+=`<rect x="${x0+i*iw}" y="${y}" width="${iw}" height="38" class="${i<n?'kd-fill':'kd-empty'}"/>`;
-  return `<div class="kssrDiagram" style="--kd-accent:${color}"><svg viewBox="0 0 ${w} ${h}" aria-label="jalur pecahan">${cells}</svg></div>`;
+  const K=K25(),w=Math.min(46,276/d),x0=170-d*w/2;
+  let cells='';for(let i=0;i<d;i++)cells+=K.box(x0+i*w,26,w,40,i<n?color:K.empty[0],i<n?kdDark(color):K.empty[1],10);
+  return K.scene(340,92,'jalur pecahan',K.shadow(176,80,d*w/2+6,6)+cells+K.shine(x0+4,31,x0+d*w-4,31));
 };
 const fractionSet=(n,d)=>{
-  const cols=Math.min(5,d),rows=Math.ceil(d/cols),w=300,h=Math.max(80,rows*48+16),r=13,gap=44,x0=(w-(cols-1)*gap)/2,y0=28;
-  let dots='';for(let i=0;i<d;i++){let c=i%cols,rr=Math.floor(i/cols);dots+=`<circle cx="${x0+c*gap}" cy="${y0+rr*46}" r="${r}" class="${i<n?'kd-fill':'kd-empty'}"/>`}
-  return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" aria-label="kumpulan pecahan">${dots}</svg></div>`;
+  const K=K25(),cols=Math.min(5,d),rows=Math.ceil(d/cols),gap=44,x0=170-(cols-1)*gap/2;
+  let dots='';for(let i=0;i<d;i++){const c=i%cols,rr=Math.floor(i/cols);dots+=K.ball(x0+c*gap,30+rr*44,14,i<n?'#7fa9ef':'#f1f5fb',i<n?'#3f6fae':'#b9c6d8')}
+  return K.scene(340,24+rows*44+8,'kumpulan pecahan',dots);
 };
 const hundredGrid=pct=>{
-  let cells='';for(let i=0;i<100;i++){let x=10+(i%10)*25,y=8+Math.floor(i/10)*18;cells+=`<rect x="${x}" y="${y}" width="22" height="15" rx="2" class="${i<pct?'kd-fill':'kd-empty'}"/>`}
-  return `<div class="kssrDiagram"><svg viewBox="0 0 270 200" aria-label="petak seratus">${cells}</svg></div>`;
+  const K=K25(),x0=50,y0=16,c=22,g=2;
+  let cells='';for(let i=0;i<100;i++){const x=x0+(i%10)*(c+g),y=y0+Math.floor(i/10)*(c*.62+g);cells+=`<rect x="${K.f(x)}" y="${K.f(y)}" width="${c}" height="${K.f(c*.62)}" rx="2" fill="${i<pct?'#5b8def':'#ffffff'}" stroke="${i<pct?'#2f5ea8':'#b9c8dc'}" stroke-width="1"/>`}
+  const W=10*(c+g)+6,H=10*(c*.62+g)+6;
+  return K.scene(340,H+y0+18,'petak seratus',K.box(x0-5,y0-5,W,H,'#eef4fc','#9fb2cc',8,'#7b8fb0',6)+cells);
 };
 const pictograph=(labels,vals,key=1)=>{
-  let rows=labels.map((l,i)=>`<div class="kd-picto-row"><b>${l}</b><span>${'●'.repeat(Math.max(0,Math.round(vals[i]/key)))}</span></div>`).join('');
-  return `<div class="kssrDiagram kd-pictograph">${rows}<small>● = ${key}</small></div>`;
+  const K=K25(),rowH=30,y0=26;
+  const rows=labels.map((l,i)=>{const y=y0+i*rowH,n=Math.max(0,Math.round(vals[i]/key));let icons='';for(let j=0;j<n;j++)icons+=K.ball(120+j*22,y-4,8.5,'#7fa9ef','#3f6fae');return K.txt(20,y,l,13,K.text,'start')+icons}).join('');
+  const h=y0+labels.length*rowH+18;
+  return K.scene(340,h,`Piktograf: ${labels.map((l,i)=>l+' '+vals[i]).join(', ')}; satu ikon = ${key}`,`<line x1="108" y1="12" x2="108" y2="${h-30}" stroke="#d7e3f1" stroke-width="1.5"/>`+rows+K.ball(250,h-16,6.5,'#7fa9ef','#3f6fae')+K.txt(262,h-12,`= ${key}`,12,K.soft,'start'));
 };
 const miniTable=(headers,rows)=>`<div class="kssrDiagram"><table class="kd-table"><thead><tr>${headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 const ruler=(cm,mark)=>{
-  const w=310,h=72,p=18,x=p+(mark/cm)*(w-2*p);let ticks='';
-  for(let i=0;i<=cm;i++){let tx=p+i*(w-2*p)/cm;ticks+=`<line x1="${tx}" y1="28" x2="${tx}" y2="${i%5===0?50:42}" class="kd-line"/><text x="${tx}" y="65">${i%5===0?i:''}</text>`}
-  return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" aria-label="pembaris">${ticks}<path d="M ${x} 9 L ${x-7} 22 L ${x+7} 22 Z" class="kd-accent"/></svg></div>`;
+  const K=K25(),left=26,right=306,y=96,x=left+(mark/cm)*(right-left);let ticks='';
+  for(let i=0;i<=cm;i++){const tx=left+i*(right-left)/cm,tall=i%5===0?15:9;ticks+=`<line x1="${K.f(tx)}" y1="${y-36}" x2="${K.f(tx)}" y2="${y-36+tall}" stroke="#6b5420" stroke-width="1.8"/>`+(i%5===0?K.txt(tx,y-6,i,11,'#6b5420'):'')}
+  const pointer=`<path d="M ${K.f(x)} ${y-40} L ${K.f(x-8)} ${y-56} L ${K.f(x+8)} ${y-56} Z" fill="#3f77bc" stroke="#1f4d86" stroke-width="1.5"/>`;
+  return K.scene(340,122,'pembaris',K.shadow(166,y+10,150,5)+K.box(14,y-36,304,40,'#ffe7a3','#c9a24b',8,'#a88730',6)+K.shine(20,y-31,312,y-31)+ticks+pointer);
 };
 const rectDiagram=(l,w,cut=0)=>{
-  const W=300,H=150;
-  if(!cut)return `<div class="kssrDiagram"><svg viewBox="0 0 ${W} ${H}"><rect x="60" y="28" width="180" height="90" class="kd-shape"/><text x="150" y="140">${l} cm</text><text x="32" y="76">${w} cm</text></svg></div>`;
-  return `<div class="kssrDiagram"><svg viewBox="0 0 ${W} ${H}"><path d="M45 25 H250 V118 H155 V82 H45 Z" class="kd-shape"/><text x="147" y="142">${l} cm</text><text x="18" y="76">${w} cm</text><text x="194" y="78">${cut} cm</text></svg></div>`;
+  const K=K25();
+  if(!cut)return K.scene(340,156,`Segi empat tepat ${l} cm kali ${w} cm`,K.shadow(176,128,96,7)+K.slab([[80,26],[250,26],[250,112],[80,112]],'#dceaff','#8fb0dc',10)+K.shine(86,32,244,32)+K.txt(165,144,`${l} cm`,14)+K.txt(50,74,`${w} cm`,14));
+  return K.scene(340,158,`Bentuk L ${l} cm kali ${w} cm dengan potongan ${cut} cm`,K.shadow(176,130,104,7)+K.slab([[62,24],[268,24],[268,114],[172,114],[172,80],[62,80]],'#dceaff','#8fb0dc',10)+K.shine(68,30,262,30)+K.txt(165,148,`${l} cm`,14)+K.txt(34,56,`${w} cm`,14)+K.txt(210,100,`${cut} cm`,13));
 };
 function separatePoint(point,others,minX,maxX,minY,maxY){
  const candidates=[];for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++)if(!others.some(o=>o.x===x&&o.y===y))candidates.push({x,y});
@@ -85,18 +96,25 @@ function separatePoint(point,others,minX,maxX,minY,maxY){
  return point;
 }
 const coordinateMap=(points,scale=1)=>{
-  const w=300,h=300,p=38,max=6,step=(w-2*p)/max;
-  let grid='';for(let i=0;i<=max;i++){let x=p+i*step,y=h-p-i*step;grid+=`<line x1="${x}" y1="${p}" x2="${x}" y2="${h-p}" class="kd-grid"/><line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}" class="kd-grid"/><text x="${x}" y="${h-14}">${i}</text><text x="18" y="${y+4}">${i}</text>`}
-  let pts=points.map(o=>{let x=p+o.x*step,y=h-p-o.y*step;return `<circle cx="${x}" cy="${y}" r="7" class="kd-accent"/><text x="${x+10}" y="${y-8}" class="kd-label">${o.label}</text>`}).join('');
-  return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Grid koordinat: ${points.map(o=>`${o.label} (${o.x}, ${o.y})`).join('; ')}">${grid}${pts}</svg>${scale!==1?`<small>1 petak = ${scale} km</small>`:''}</div>`;
+  const K=K25(),max=6,step=24,ox=110,oy=166,top=oy-max*step;
+  let grid='';for(let i=0;i<=max;i++){const x=ox+i*step,y=oy-i*step;grid+=`<line x1="${x}" y1="${top}" x2="${x}" y2="${oy}" stroke="#c9d6e8" stroke-width="1.1"/><line x1="${ox}" y1="${y}" x2="${ox+max*step}" y2="${y}" stroke="#c9d6e8" stroke-width="1.1"/>`+K.txt(x,oy+16,i,11,K.soft)+K.txt(ox-11,y+4,i,11,K.soft)}
+  const axes=`<line x1="${ox}" y1="${oy}" x2="${ox+max*step+8}" y2="${oy}" stroke="${K.ink}" stroke-width="2.2"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${top-8}" stroke="${K.ink}" stroke-width="2.2"/>`;
+  const pts=points.map(o=>{const x=ox+o.x*step,y=oy-o.y*step;return K.ball(x,y,7,'#ff8a87','#c2453f')+K.txt(x+10,y-8,o.label,12,'#1c2a43','start')}).join('');
+  const h=oy+(scale!==1?40:26);
+  return K.scene(340,h,`Grid koordinat: ${points.map(o=>`${o.label} (${o.x}, ${o.y})`).join('; ')}`,K.box(ox-4,top-4,max*step+8,max*step+8,'#ffffff','#c3cfe0',8,'#9bb0cc')+grid+axes+pts+(scale!==1?K.txt(ox+max*step/2,oy+34,`1 petak = ${scale} km`,12,K.soft):''));
 };
 const spinner=(parts,win)=>{
-  const w=220,h=190,cx=110,cy=92,r=72;let seg='';
-  for(let i=0;i<parts;i++){const a1=-Math.PI/2+i*2*Math.PI/parts,a2=-Math.PI/2+(i+1)*2*Math.PI/parts,x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2),large=(2*Math.PI/parts)>Math.PI?1:0;seg+=`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z" class="${i<win?'kd-fill':'kd-empty'}"/>`}
-  return `<div class="kssrDiagram"><svg viewBox="0 0 ${w} ${h}" aria-label="roda kebarangkalian">${seg}<circle cx="${cx}" cy="${cy}" r="5" class="kd-accent"/></svg></div>`;
+  const K=K25(),seg=Array.from({length:parts},(_,i)=>({v:1,c:i<win?['#5b8def','#2f5ea8']:K.empty}));
+  const arrow=`<path d="M170 64 L170 30" stroke="${K.ink}" stroke-width="4" stroke-linecap="round"/><path d="M162 36 L170 22 L178 36 Z" fill="${K.ink}"/>`;
+  return K.scene(340,140,'roda kebarangkalian',K.disc(170,64,92,52,14,seg)+arrow+K.ball(170,64,6,'#ffd36d','#c48d1c'));
 };
 const timeBar=(startMin,endMin)=>{
- const fmt=m=>formatClockTime(m,'12','bm');return `<div class="kssrDiagram kd-timebar"><span>${fmt(startMin)}</span><div><i></i></div><span>${fmt(endMin)}</span></div>`;
+ const K=K25(),fmt=m=>formatClockTime(m,'12','bm'),y=48;
+ return K.scene(340,92,`Garis masa dari ${fmt(startMin)} hingga ${fmt(endMin)}`,K.box(40,y-6,260,12,'#9fc0f2','#5b8def',7,'#3f6fae',5)+K.ball(48,y,9,'#8fb9ff','#4f83d1')+K.ball(292,y,9,'#9fe0b8','#4fae74')+K.txt(30,y+32,fmt(startMin),13,K.text,'start')+K.txt(310,y+32,fmt(endMin),13,K.text,'end'));
+};
+const barsCompare=(a,b)=>{
+ const K=K25();
+ return K.scene(340,96,'Dua batang untuk dibandingkan',K.box(30,22,a*1.9,20,'#78a9ff','#4a7fd0',8,K.ink,4)+K.box(30,60,b*1.9,20,'#8bd3a8','#4fae74',8,K.ink,4));
 };
 const makeWrongFractions=(ans,n,d)=>[N(frac(Math.max(1,n-1),d),'fraction'),N(frac(n,d+1),'fraction'),N(frac(n+1,d),'fraction')];
 
@@ -242,7 +260,7 @@ function d1(id,s,shift){
  }
  if(id==='D1.MEASURE'){
   mode=d1ChooseMode(id,s,['length_compare','mass_compare','capacity_compare','ruler_read'],['tool_reason']);
-  if(mode==='length_compare'){let a=R(70,130),b=R(40,65);return depth(Q(`<div class="kssrDiagram kd-bars"><i style="width:${a}px"></i><i style="width:${b}px"></i></div>Batang manakah lebih panjang?`,'batang atas',[N('batang bawah','unit'),N('sama panjang','unit'),N('tidak boleh ditentukan','unit')],'Banding hujung kedua-dua batang.','Tahun 1 · Panjang',true,true),id,mode,'visual','concept',['unit']);}
+  if(mode==='length_compare'){let a=R(70,130),b=R(40,65);return depth(Q(`${barsCompare(a,b)}Batang manakah lebih panjang?`,'batang atas',[N('batang bawah','unit'),N('sama panjang','unit'),N('tidak boleh ditentukan','unit')],'Banding hujung kedua-dua batang.','Tahun 1 · Panjang',true,true),id,mode,'visual','concept',['unit']);}
   if(mode==='mass_compare')return depth(Q(`Antara <b>sebiji tembikai</b> dan <b>sebiji rambutan</b>, yang manakah biasanya lebih berat?`,'tembikai',[N('rambutan','unit'),N('sama berat','unit'),N('tidak boleh dibandingkan','unit')],'Banding jisim objek yang biasa ditemui.','Tahun 1 · Jisim Harian',false,true),id,mode,'story','concept',['unit']);
   if(mode==='capacity_compare')return depth(Q(`Antara <b>baldi</b> dan <b>cawan</b>, yang manakah biasanya boleh mengisi lebih banyak air?`,'baldi',[N('cawan','unit'),N('sama banyak','unit'),N('sudu','unit')],'Banding kapasiti bekas.','Tahun 1 · Isi Padu Cecair',false,true),id,mode,'story','concept',['unit']);
   if(mode==='ruler_read'){const mark=R(2,9);return depth(Q(`${ruler(10,mark)}Panjang yang ditunjukkan pada pembaris ialah?`,`${mark} cm`,[N(`${mark+1} cm`,'unit'),N(`${Math.max(1,mark-1)} cm`,'unit'),N(`${mark} kg`,'unit')],'Baca nombor tepat di bawah penanda.','Tahun 1 · Baca Pembaris',true,true),id,mode,'visual','application',['unit']);}

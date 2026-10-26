@@ -300,93 +300,90 @@ if(window.PAKSSRDepth?.contractStatus&&typeof GRAPH!=='undefined'&&Array.isArray
 }
 
 // ---------- KSSR-style visual helpers ----------
+/* 2.5D (pemilik 2026-10-26: standardkan semua visual rata kepada gaya Tahun 5):
+   panel lembut, kepingan timbul dengan sisi gelap, sorotan putih, teks Nunito 900
+   dengan style sebaris (CSS .y6kDiagram text akan menindih atribut). Kelas
+   y6kDiagram dikekalkan kerana audit dan CSS kad soalan bergantung padanya. */
+const Y6K={
+  f:n=>Number(n).toFixed(1),
+  ink:'#213b67',text:'#243d5e',
+  txt(x,y,s,size=13,fill='#243d5e',anchor='middle'){return `<text x="${Y6K.f(x)}" y="${Y6K.f(y)}" style="font:900 ${size}px Nunito,system-ui,sans-serif;fill:${fill};text-anchor:${anchor}">${s}</text>`},
+  scene(w,h,aria,body,caption=''){h=Math.ceil(h);return `<div class="y6kDiagram kssrDiagram paU6Scene paD5Scene"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${aria}"><rect x="1" y="1" width="${w-2}" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${body}</svg>${caption?`<small>${caption}</small>`:''}</div>`},
+  poly(pts,fill,stroke='#36577a',w=2){return `<polygon points="${pts.map(([x,y])=>Y6K.f(x)+','+Y6K.f(y)).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${w}" stroke-linejoin="round"/>`},
+  slab(pts,top,side,depth=8){const dx=depth*.55,dy=depth;return pts.map((p,i)=>{const q=pts[(i+1)%pts.length];return Y6K.poly([p,q,[q[0]+dx,q[1]+dy],[p[0]+dx,p[1]+dy]],side,'#4d6c83',1)}).join('')+Y6K.poly(pts,top)},
+  shadow(cx,cy,rx,ry){return `<ellipse cx="${Y6K.f(cx)}" cy="${Y6K.f(cy)}" rx="${Y6K.f(rx)}" ry="${Y6K.f(ry)}" fill="#2f5ea8" opacity=".08"/>`},
+  // Raised stick (ray / segment) with a darker under-edge.
+  stick(x1,y1,x2,y2,c='#465b79',w=5){return `<line x1="${Y6K.f(x1+1.5)}" y1="${Y6K.f(y1+2.5)}" x2="${Y6K.f(x2+1.5)}" y2="${Y6K.f(y2+2.5)}" stroke="#000" stroke-opacity=".18" stroke-width="${w}" stroke-linecap="round"/><line x1="${Y6K.f(x1)}" y1="${Y6K.f(y1)}" x2="${Y6K.f(x2)}" y2="${Y6K.f(y2)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`},
+  ball(cx,cy,r,fill,side){return `<ellipse cx="${Y6K.f(cx+r*.15)}" cy="${Y6K.f(cy+r*.92)}" rx="${Y6K.f(r*.9)}" ry="${Y6K.f(r*.3)}" fill="#2f5ea8" opacity=".12"/><circle cx="${Y6K.f(cx)}" cy="${Y6K.f(cy)}" r="${Y6K.f(r)}" fill="${side}" stroke="#36577a" stroke-width="1.4"/><circle cx="${Y6K.f(cx-r*.12)}" cy="${Y6K.f(cy-r*.14)}" r="${Y6K.f(r*.78)}" fill="${fill}"/><circle cx="${Y6K.f(cx-r*.38)}" cy="${Y6K.f(cy-r*.4)}" r="${Y6K.f(r*.22)}" fill="#fff" opacity=".7"/>`},
+  dot(cx,cy,r=5,c='#3f77bc'){return `<circle cx="${Y6K.f(cx)}" cy="${Y6K.f(cy)}" r="${r}" fill="${c}" stroke="#1f4d86" stroke-width="1.2"/><circle cx="${Y6K.f(cx-r*.3)}" cy="${Y6K.f(cy-r*.3)}" r="${r*.3}" fill="#fff" opacity=".7"/>`},
+  // Thick round plate: darker offset disc underneath, face on top.
+  plate(cx,cy,r,face='#fbfdff',side='#9fb7d6'){return Y6K.shadow(cx+4,cy+r+6,r*.9,7)+`<circle cx="${cx+4}" cy="${cy+7}" r="${r}" fill="${side}" stroke="#4d6c83" stroke-width="1"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="${face}" stroke="${Y6K.ink}" stroke-width="2"/>`}
+};
 function diagramWrap(svg,caption=''){
   return `<div class="y6kDiagram">${svg}${caption?`<small>${caption}</small>`:''}</div>`;
 }
 function protractorSvg(deg){
-  const cx=160,cy=158,r=112;
+  const cx=170,cy=150,r=118;
+  // Translucent protractor body as a raised half-disc.
+  const arc=(rr,dy=0)=>`M ${cx-rr} ${cy+dy} A ${rr} ${rr} 0 0 1 ${cx+rr} ${cy+dy}`;
+  let body=Y6K.shadow(cx+4,cy+12,r,8)
+    +`<path d="${arc(r,7)} L ${cx+r} ${cy} A ${r} ${r} 0 0 0 ${cx-r} ${cy} Z" fill="#7fa7d6"/>`
+    +`<path d="${arc(r)} Z" fill="#dcebff" fill-opacity=".9" stroke="${Y6K.ink}" stroke-width="2"/>`
+    +`<path d="${arc(r-30)}" fill="none" stroke="#9fb7d6" stroke-width="1.5"/>`
+    +`<path d="M ${cx-r+14} ${cy-30} A ${r-14} ${r-14} 0 0 1 ${cx-20} ${cy-r+14}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>`;
   let ticks='',labels='';
-  for(let a=0;a<=180;a+=15){
-    const [x1,y1]=polar(cx,cy,r,a),[x2,y2]=polar(cx,cy,a%45===0?r-13:r-8,a);
-    ticks+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" class="y6-tick"/>`;
-    if(a%45===0){
-      const [tx,ty]=polar(cx,cy,r-27,a);
-      labels+=`<text x="${tx.toFixed(1)}" y="${(ty+4).toFixed(1)}">${a}°</text>`;
-    }
+  for(let a=0;a<=180;a+=5){
+    const big=a%45===0,mid=a%15===0,[x1,y1]=polar(cx,cy,r-2,a),[x2,y2]=polar(cx,cy,r-(big?16:mid?11:6),a);
+    ticks+=`<line x1="${Y6K.f(x1)}" y1="${Y6K.f(y1)}" x2="${Y6K.f(x2)}" y2="${Y6K.f(y2)}" stroke="#4d6c83" stroke-width="${big?2:1}"/>`;
+    if(big){const [tx,ty]=polar(cx,cy,r-29,a),lift=(a===0||a===180)?-9:0;labels+=Y6K.txt(tx+(a===0?-4:a===180?4:0),ty+4+lift,a+'°',11,'#35445e')}
   }
-  const [rx,ry]=polar(cx,cy,92,deg);
-  const [ax,ay]=polar(cx,cy,34,deg);
-  const large=deg>180?1:0;
-  return diagramWrap(`<svg viewBox="0 0 320 185" aria-label="rajah protraktor dan sudut">
-   <path d="M 48 158 A 112 112 0 0 1 272 158" class="y6-guide"/>
-   ${ticks}${labels}
-   <line x1="${cx}" y1="${cy}" x2="276" y2="${cy}" class="y6-ray"/>
-   <line x1="${cx}" y1="${cy}" x2="${rx.toFixed(1)}" y2="${ry.toFixed(1)}" class="y6-ray y6-accent-stroke"/>
-   <path d="M ${cx+34} ${cy} A 34 34 0 ${large} 1 ${ax.toFixed(1)} ${ay.toFixed(1)}" class="y6-angle-arc"/>
-   <circle cx="${cx}" cy="${cy}" r="4" class="y6-accent"/>
-  </svg>`);
+  const [rx,ry]=polar(cx,cy,104,deg),[ax,ay]=polar(cx,cy,34,deg),large=deg>180?1:0;
+  const rays=Y6K.stick(cx,cy,cx+r+12,cy,'#465b79',4)+Y6K.stick(cx,cy,rx,ry,'#3f77bc',5);
+  const angleArc=`<path d="M ${cx+34} ${cy} A 34 34 0 ${large} 0 ${Y6K.f(ax)} ${Y6K.f(ay)}" fill="none" stroke="#f0ae3d" stroke-width="3.5" stroke-linecap="round"/>`;
+  return Y6K.scene(340,174,'rajah protraktor dan sudut',body+ticks+labels+angleArc+rays+Y6K.dot(cx,cy,5));
 }
 function regularPolygonSvg(n){
-  const cx=160,cy=110,r=78,pts=[];
-  for(let i=0;i<n;i++){
-    const a=-90+i*360/n, [x,y]=polar(cx,cy,r,-a); // screen polar with clockwise conversion
-    pts.push([x,y]);
-  }
-  const points=pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
+  const cx=170,cy=74,r=58,pts=[];
+  for(let i=0;i<n;i++){const a=-90+i*360/n,[x,y]=polar(cx,cy,r,-a);pts.push([x,y]);}
   const top=pts[0];
-  return diagramWrap(`<svg viewBox="0 0 320 220" aria-label="poligon sekata ${n} sisi">
-   <polygon points="${points}" class="y6-shape"/>
-   <circle cx="${top[0].toFixed(1)}" cy="${top[1].toFixed(1)}" r="5" class="y6-accent"/>
-   <text x="${top[0].toFixed(1)}" y="${(top[1]+29).toFixed(1)}" class="y6-qmark">?°</text>
-   <text x="160" y="207">${n} sisi sama panjang</text>
-  </svg>`);
+  return Y6K.scene(340,176,`poligon sekata ${n} sisi`,
+    Y6K.shadow(cx+5,cy+r+12,r,8)+Y6K.slab(pts,'#cfe0f7','#7fa7d6',9)
+    +`<path d="M ${Y6K.f(pts[n-1][0])} ${Y6K.f(pts[n-1][1])} L ${Y6K.f(top[0])} ${Y6K.f(top[1])}" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`
+    +Y6K.dot(top[0],top[1],5.5)+Y6K.txt(top[0],top[1]+28,'?°',16,'#243a5c')
+    +Y6K.txt(cx,cy+r+34,`${n} sisi sama panjang`,12,'#35445e'));
 }
 function miniAngle(deg,label,x,y){
-  const cx=x+42,cy=y+60,len=43,[rx,ry]=polar(cx,cy,len,deg);
-  return `<g><rect x="${x}" y="${y}" width="84" height="78" rx="9" class="y6-mini-bg"/>
-   <line x1="${cx}" y1="${cy}" x2="${cx+len}" y2="${cy}" class="y6-mini-ray"/>
-   <line x1="${cx}" y1="${cy}" x2="${rx.toFixed(1)}" y2="${ry.toFixed(1)}" class="y6-mini-ray y6-accent-stroke"/>
-   <text x="${x+12}" y="${y+18}" class="y6-mini-label">${label}</text></g>`;
+  const cx=x+44,cy=y+62,len=40,[rx,ry]=polar(cx,cy,len,deg);
+  return `<g>${Y6K.poly([[x+84,y],[x+89,y-4],[x+89,y+74],[x+84,y+78]],'#c3cfe0','#4d6c83',1)}${Y6K.poly([[x,y],[x+5,y-4],[x+89,y-4],[x+84,y]],'#ffffff','#4d6c83',1)}<rect x="${x}" y="${y}" width="84" height="78" rx="4" fill="#f7faff" stroke="#9bb0cc" stroke-width="1.4"/>
+   ${Y6K.stick(cx,cy,cx+len,cy,'#465b79',4)}${Y6K.stick(cx,cy,rx,ry,'#3f77bc',4)}${Y6K.dot(cx,cy,3.5)}
+   ${Y6K.txt(x+12,y+18,label,13,'#243d5e','start')}</g>`;
 }
 function angleChoicePanel(target){
   const pool=uniquePick([30,45,60,75,90,105,120,135,150,165,180],3,[target]);
   const vals=[target,...pool].sort(()=>Math.random()-.5);
   const letters=['A','B','C','D'];
-  const positions=[[18,10],[116,10],[18,102],[116,102]];
+  const positions=[[62,14],[176,14],[62,104],[176,104]];
   let body='';
   vals.forEach((d,i)=>body+=miniAngle(d,letters[i],positions[i][0],positions[i][1]));
   const answer=letters[vals.indexOf(target)];
-  return {html:diagramWrap(`<svg viewBox="0 0 220 194" aria-label="empat rajah sudut">${body}</svg>`),answer,vals};
+  return {html:Y6K.scene(340,196,'empat rajah sudut',body),answer,vals};
 }
 function circleSvg(mode='parts',value=5){
-  const cx=160,cy=105,r=72;
+  const cx=170,cy=86,r=66;
   if(mode==='parts'){
-    return diagramWrap(`<svg viewBox="0 0 320 210" aria-label="bahagian bulatan">
-      <circle cx="${cx}" cy="${cy}" r="${r}" class="y6-circle"/>
-      <line x1="${cx-r}" y1="${cy}" x2="${cx+r}" y2="${cy}" class="y6-diameter"/>
-      <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-r}" class="y6-radius"/>
-      <circle cx="${cx}" cy="${cy}" r="5" class="y6-accent"/>
-      <text x="${cx}" y="${cy+20}">O</text><text x="${cx-r-10}" y="${cy-8}">A</text><text x="${cx+r+10}" y="${cy-8}">B</text><text x="${cx+12}" y="${cy-r-7}">C</text>
-    </svg>`);
+    return Y6K.scene(340,178,'bahagian bulatan',Y6K.plate(cx,cy,r)
+      +Y6K.stick(cx-r,cy,cx+r,cy,'#4f6485',3.5)+Y6K.stick(cx,cy,cx,cy-r,'#4f6485',3.5)+Y6K.dot(cx,cy,5)
+      +Y6K.txt(cx,cy+20,'O',13)+Y6K.txt(cx-r-12,cy-8,'A',13)+Y6K.txt(cx+r+12,cy-8,'B',13)+Y6K.txt(cx+12,cy-r-6,'C',13));
   }
-  return diagramWrap(`<svg viewBox="0 0 320 210" aria-label="bulatan berjari-jari ${value} sentimeter">
-    <circle cx="${cx}" cy="${cy}" r="${r}" class="y6-circle"/>
-    <line x1="${cx}" y1="${cy}" x2="${cx+r}" y2="${cy}" class="y6-radius y6-accent-stroke"/>
-    <circle cx="${cx}" cy="${cy}" r="5" class="y6-accent"/>
-    <text x="${cx+36}" y="${cy-9}">${value} cm</text><text x="${cx}" y="${cy+20}">O</text>
-  </svg>`);
+  return Y6K.scene(340,178,`bulatan berjari-jari ${value} sentimeter`,Y6K.plate(cx,cy,r)
+    +Y6K.stick(cx,cy,cx+r,cy,'#3f77bc',4)+Y6K.dot(cx,cy,5)+Y6K.txt(cx+33,cy-10,`${value} cm`,13)+Y6K.txt(cx,cy+20,'O',13));
 }
 function circleHighlight(part){
-  const cx=160,cy=105,r=72;
-  const radiusClass=part==='jejari'?'y6-highlight':'y6-muted-line';
-  const diamClass=part==='diameter'?'y6-highlight':'y6-muted-line';
-  const centerClass=part==='pusat'?'y6-accent':'y6-muted-dot';
-  return diagramWrap(`<svg viewBox="0 0 320 210" aria-label="rajah bulatan dengan satu bahagian diserlahkan">
-   <circle cx="${cx}" cy="${cy}" r="${r}" class="y6-circle"/>
-   <line x1="${cx-r}" y1="${cy}" x2="${cx+r}" y2="${cy}" class="${diamClass}"/>
-   <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-r}" class="${radiusClass}"/>
-   <circle cx="${cx}" cy="${cy}" r="6" class="${centerClass}"/>
-  </svg>`);
+  const cx=170,cy=86,r=66;
+  const line=(on,x1,y1,x2,y2)=>on?Y6K.stick(x1,y1,x2,y2,'#3f77bc',6):`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#aeb9ca" stroke-width="2.5"/>`;
+  return Y6K.scene(340,178,'rajah bulatan dengan satu bahagian diserlahkan',Y6K.plate(cx,cy,r)
+    +line(part==='diameter',cx-r,cy,cx+r,cy)+line(part==='jejari',cx,cy,cx,cy-r)
+    +(part==='pusat'?Y6K.dot(cx,cy,7):`<circle cx="${cx}" cy="${cy}" r="6" fill="#aeb9ca"/>`));
 }
 function sectorPath(cx,cy,r,start,angle){
   if(angle>=359.999)return `M ${cx-r} ${cy} A ${r} ${r} 0 1 0 ${cx+r} ${cy} A ${r} ${r} 0 1 0 ${cx-r} ${cy} Z`;
@@ -420,24 +417,20 @@ function pieSvg(sectors,{hideAngle=-1,showValues=false}={}){
     const sw=`<polygon points="${x},${y-11} ${x+14},${y-11} ${x+14+dx},${y-11+d} ${x+14+dx},${y+3+d} ${x+dx},${y+3+d} ${x},${y+3}" fill="${g.c[1]}" stroke="#4d6c83" stroke-width="1"/><rect x="${x}" y="${y-11}" width="14" height="14" fill="${g.c[0]}" stroke="#36577a" stroke-width="2"/>`;
     return sw+txt(x+22,y,lines[i],fs,'#243d5e','start')}).join('');
   const aria='Carta pai: '+segs.map((g,i)=>lines[i]).join(', ');
-  return `<div class="kssrDiagram paU6Scene paD5Scene y6Pie"><svg viewBox="0 0 340 ${h}" role="img" aria-label="${aria}"><rect x="1" y="1" width="338" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><ellipse cx="${cx}" cy="${cy+t+6}" rx="${rx}" ry="${ry}" fill="#2f5ea8" opacity=".08"/>${band}${top}${mark}${legend}</svg></div>`;
+  return `<div class="y6kDiagram kssrDiagram paU6Scene paD5Scene y6Pie"><svg viewBox="0 0 340 ${h}" role="img" aria-label="${aria}"><rect x="1" y="1" width="338" height="${h-2}" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/><ellipse cx="${cx}" cy="${cy+t+6}" rx="${rx}" ry="${ry}" fill="#2f5ea8" opacity=".08"/>${band}${top}${mark}${legend}</svg></div>`;
 }
 function dataTable(headers,rows){
   return `<div class="y6kDiagram"><table class="y6-table"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 function bagVisual(red,blue,green=0){
+  const total=red+blue+green,rows=Math.max(1,Math.ceil(total/6)),bottom=46+rows*30;
   let dots='',idx=0;
-  const draw=(count,cls,label)=>{
-    for(let i=0;i<count;i++){
-      const c=idx%5,row=Math.floor(idx/5);idx++;
-      dots+=`<circle cx="${72+c*37}" cy="${55+row*36}" r="11" class="${cls}"/>`;
-    }
-  };
-  draw(red,'y6-ball-red','R');draw(blue,'y6-ball-blue','B');draw(green,'y6-ball-green','G');
-  return diagramWrap(`<svg viewBox="0 0 330 ${Math.max(120,80+Math.ceil(idx/5)*36)}" aria-label="beg guli">
-    <path d="M45 28 Q165 4 285 28 L270 ${65+Math.ceil(idx/5)*36} Q165 ${98+Math.ceil(idx/5)*36} 60 ${65+Math.ceil(idx/5)*36} Z" class="y6-bag"/>
-    ${dots}
-  </svg>`,`Merah ${red} · Biru ${blue}${green?` · Hijau ${green}`:''}`);
+  const draw=(count,c)=>{for(let i=0;i<count;i++){const col=idx%6,row=Math.floor(idx/6);idx++;dots+=Y6K.ball(95+col*30,44+row*30,11,c[0],c[1]);}};
+  draw(red,['#f08a92','#b8434d']);draw(blue,['#7fb0e6','#3f6fae']);draw(green,['#8fd6a6','#3f8f5a']);
+  const bag=`<path d="M58 ${bottom+6} Q170 ${bottom+40} 288 ${bottom+6} L 300 30 Q170 10 46 30 Z" fill="#c9b49a" opacity=".55"/>`
+    +`<path d="M52 ${bottom} Q170 ${bottom+34} 282 ${bottom} L 294 24 Q170 4 40 24 Z" fill="#f4ead9" stroke="#8a6f4e" stroke-width="2.5"/>`
+    +`<path d="M40 24 Q170 4 294 24 Q170 30 40 24 Z" fill="#e2d2b8" stroke="#8a6f4e" stroke-width="2"/>`;
+  return Y6K.scene(340,bottom+58,'beg guli',Y6K.shadow(172,bottom+24,120,8)+bag+dots+Y6K.txt(170,bottom+48,`Merah ${red} · Biru ${blue}${green?` · Hijau ${green}`:''}`,12,'#35445e'));
 }
 
 // ---------- Question generators ----------

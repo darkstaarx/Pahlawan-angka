@@ -48,7 +48,7 @@
   const y5CurriculumJs=`questions/kssr-year5-curriculum-v${Y5_CURRICULUM_VERSION}.js?v=${APP_VERSION}-d5-uasa-4`;
   const d5CompletionJs=`questions/d5/completion-v1.js?v=${APP_VERSION}-d5-uasa-4`;
   const y6Css=`css/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.css?v=${Y6_REPAIR_VERSION}`;
-  const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}-pie2`;
+  const y6Js=`questions/kssr-year6-space-data-v${Y6_REPAIR_VERSION}.js?v=${Y6_REPAIR_VERSION}-pa25`;
   const y6CurriculumJs=`questions/kssr-year6-curriculum-v${Y6_CURRICULUM_VERSION}.js?v=${APP_VERSION}`;
   const y6ExperienceJs=`questions/kssr-year6-experience-v${Y6_EXPERIENCE_VERSION}.js?v=${APP_VERSION}`;
   const y6MoneyRealJs=`questions/kssr-year6-money-real-v${Y6_MONEY_REAL_VERSION}.js?v=${APP_VERSION}`;

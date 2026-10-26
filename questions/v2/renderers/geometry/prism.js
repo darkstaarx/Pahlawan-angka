@@ -32,10 +32,12 @@
 (function () {
   'use strict';
 
-  var STROKE = '#2b2540';
-  var FILL_MAIN = '#e8def8';
-  var FILL_SHADE = '#c9b8ef';
-  var FILL_TOP = '#f4eefc';
+  // 2.5D palette shared with the Year 1/5/6 scenes (owner 2026-10-26). Every solid uses the
+  // same colours so a gallery choice never hints the answer by colour.
+  var STROKE = '#36577a';
+  var FILL_MAIN = '#82aff2';
+  var FILL_SHADE = '#5f8bd0';
+  var FILL_TOP = '#cfe2ff';
 
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -55,7 +57,7 @@
     var front = [[ox, oy - h], [ox + frontW, oy - h], [ox + frontW, oy], [ox, oy]];
     var side = [[ox + frontW, oy - h], [ox + frontW + sk, oy - h - sk], [ox + frontW + sk, oy - sk], [ox + frontW, oy]];
     function poly(pts, fill) {
-      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2.5" stroke-linejoin="round"/>';
+      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2" stroke-linejoin="round"/>';
     }
     return poly(side, FILL_SHADE) + poly(topBack, FILL_TOP) + poly(front, FILL_MAIN);
   }
@@ -67,32 +69,34 @@
     var topQuad = [frontTri[2], backTri[2], backTri[1], frontTri[1]];
     var sideQuad = [frontTri[0], frontTri[1], backTri[1], backTri[0]];
     function poly(pts, fill) {
-      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2.5" stroke-linejoin="round"/>';
+      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2" stroke-linejoin="round"/>';
     }
     return poly(sideQuad, FILL_SHADE) + poly(topQuad, FILL_TOP) + poly(frontTri, FILL_MAIN);
   }
 
   function drawCone() {
     return (
-      '<ellipse cx="60" cy="88" rx="34" ry="12" fill="' + FILL_SHADE + '" stroke="' + STROKE + '" stroke-width="2.5"/>' +
-      '<path d="M 60 20 L 26 88 A 34 12 0 0 0 94 88 Z" fill="' + FILL_MAIN + '" stroke="' + STROKE + '" stroke-width="2.5" stroke-linejoin="round"/>'
+      '<ellipse cx="60" cy="88" rx="34" ry="12" fill="' + FILL_SHADE + '" stroke="' + STROKE + '" stroke-width="2"/>' +
+      '<path d="M 60 20 L 26 88 A 34 12 0 0 0 94 88 Z" fill="' + FILL_MAIN + '" stroke="' + STROKE + '" stroke-width="2" stroke-linejoin="round"/>'
     );
   }
 
   function drawSphere() {
     return (
-      '<circle cx="60" cy="60" r="38" fill="' + FILL_MAIN + '" stroke="' + STROKE + '" stroke-width="2.5"/>' +
+      '<circle cx="60" cy="60" r="38" fill="' + FILL_SHADE + '" stroke="' + STROKE + '" stroke-width="2"/>' +
+      '<circle cx="56" cy="55" r="32" fill="' + FILL_MAIN + '"/>' +
+      '<circle cx="46" cy="44" r="9" fill="#ffffff" opacity="0.55"/>' +
       '<ellipse cx="60" cy="60" rx="38" ry="13" fill="none" stroke="' + STROKE + '" stroke-width="1.5" opacity="0.6"/>'
     );
   }
 
   function drawCylinder() {
     return (
-      '<path d="M 26 34 L 26 86" stroke="' + STROKE + '" stroke-width="2.5"/>' +
-      '<path d="M 94 34 L 94 86" stroke="' + STROKE + '" stroke-width="2.5"/>' +
+      '<path d="M 26 34 L 26 86" stroke="' + STROKE + '" stroke-width="2"/>' +
+      '<path d="M 94 34 L 94 86" stroke="' + STROKE + '" stroke-width="2"/>' +
       '<rect x="26" y="34" width="68" height="52" fill="' + FILL_MAIN + '" stroke="none"/>' +
-      '<ellipse cx="60" cy="86" rx="34" ry="12" fill="' + FILL_SHADE + '" stroke="' + STROKE + '" stroke-width="2.5"/>' +
-      '<ellipse cx="60" cy="34" rx="34" ry="12" fill="' + FILL_TOP + '" stroke="' + STROKE + '" stroke-width="2.5"/>'
+      '<ellipse cx="60" cy="86" rx="34" ry="12" fill="' + FILL_SHADE + '" stroke="' + STROKE + '" stroke-width="2"/>' +
+      '<ellipse cx="60" cy="34" rx="34" ry="12" fill="' + FILL_TOP + '" stroke="' + STROKE + '" stroke-width="2"/>'
     );
   }
 
@@ -100,7 +104,7 @@
     var ox = 25, oy = 88, sk = 22, bw = 60, apex = [60, 18];
     var base = [[ox, oy], [ox + bw, oy], [ox + bw + sk, oy - sk], [ox + sk, oy - sk]];
     function poly(pts, fill) {
-      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2.5" stroke-linejoin="round"/>';
+      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2" stroke-linejoin="round"/>';
     }
     var leftFace = [[ox, oy], apex, [ox + sk, oy - sk]];
     var frontFace = [[ox, oy], [ox + bw, oy], apex];
@@ -111,7 +115,7 @@
   function drawTriangularPyramid() {
     var left = [22, 90], right = [98, 90], back = [60, 55], apex = [58, 15];
     function poly(pts, fill) {
-      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2.5" stroke-linejoin="round"/>';
+      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') + '" fill="' + fill + '" stroke="' + STROKE + '" stroke-width="2" stroke-linejoin="round"/>';
     }
     var faceLeft = [left, apex, back];
     var faceRight = [right, apex, back];
@@ -133,11 +137,14 @@
   function drawSolid(solidId) {
     var drawer = DRAWERS[solidId];
     if (!drawer) throw new Error('geometry renderer: unknown solid id "' + solidId + '"');
-    return svgOpen('0 0 120 120') + drawer() + '</svg>';
+    return svgOpen('0 0 120 120') +
+      '<rect x="1" y="1" width="118" height="118" rx="14" fill="#f5f9ff" stroke="#d7e3f1"/>' +
+      '<ellipse cx="62" cy="100" rx="40" ry="6" fill="#2f5ea8" opacity="0.1"/>' +
+      drawer() + '</svg>';
   }
 
   function renderFigure(fig, index, showMarker) {
-    var marker = showMarker ? '<span class="qsv2-choice-marker" aria-hidden="true" style="position:absolute;top:4px;left:6px;z-index:2;font:900 13px/1 sans-serif;background:#fff;border:2px solid #2b2540;border-radius:999px;padding:3px 6px;color:#2b2540">' + String.fromCharCode(65 + index) + '</span>' : '';
+    var marker = showMarker ? '<span class="qsv2-choice-marker" aria-hidden="true" style="position:absolute;top:4px;left:6px;z-index:2;font:900 13px/1 sans-serif;background:#fff;border:2px solid #36577a;border-radius:999px;padding:3px 6px;color:#243d5e">' + String.fromCharCode(65 + index) + '</span>' : '';
     return (
       '<div class="qsv2-geom-figure" style="position:relative;min-width:0;text-align:center" data-figure-id="' + esc(fig.id) + '" data-solid-id="' + esc(fig.solidId) + '">' +
       marker + drawSolid(fig.solidId) +

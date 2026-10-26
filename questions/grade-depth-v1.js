@@ -11,9 +11,11 @@ function question(id,m,p,a,w,h,d='reasoning',rep='story'){return mark(Q(p,a,w.ma
 const recovery=()=>typeof sess!=='undefined'&&['recover','teach'].includes(sess.mode);
 const wrong=n=>[n+1,Math.max(0,n-1),n+10];
 function line(a,b){
- let ticks='';for(let i=0;i<=10;i++){const x=22+i*27.6;ticks+=`<line x1="${x}" y1="28" x2="${x}" y2="42" stroke="#405072" stroke-width="2"/>`}
- const point=(n,label,color)=>`<circle cx="${22+n*27.6}" cy="34" r="6" fill="${color}"/><text x="${22+n*27.6}" y="16" text-anchor="middle" fill="${color}" font-size="12">${label}</text>`;
- return `<svg viewBox="0 0 320 74" style="display:block;max-width:330px;width:100%;margin:auto" role="img" aria-label="Garis nombor dibahagi kepada sepuluh bahagian sama besar"><line x1="22" y1="34" x2="298" y2="34" stroke="#405072" stroke-width="3"/>${ticks}${point(a,'A','#b34f18')}${point(b,'B','#405072')}<text x="22" y="59" text-anchor="middle">0</text><text x="298" y="59" text-anchor="middle">1</text></svg>`;
+ // 2.5D (pemilik 2026-10-26): trek timbul + pin, gaya sama dengan garis nombor helpers.js.
+ const K=globalThis.PA25,L=26,step=28.8,y=62,X=n=>L+n*step;
+ let ticks='';for(let i=0;i<=10;i++)ticks+=`<line x1="${X(i)}" y1="${y-11}" x2="${X(i)}" y2="${y+11}" stroke="${K.ink}" stroke-width="2.2" stroke-linecap="round"/>`;
+ const pin=(n,label,c,d)=>`<path d="M${X(n)} ${y-8} L${X(n)-9} ${y-24} A11 11 0 1 1 ${X(n)+9} ${y-24} Z" fill="${c}" stroke="${d}" stroke-width="1.5"/>`+K.txt(X(n),y-26,label,11,'#fff');
+ return `<div class="kssrDiagram paU6Scene paD5Scene"><svg viewBox="0 0 340 104" role="img" aria-label="Garis nombor dibahagi kepada sepuluh bahagian sama besar"><rect x="1" y="1" width="338" height="102" rx="15" fill="#f5f9ff" stroke="#d7e3f1"/>${K.box(L-8,y-5,10*step+16,10,'#dfe8f5','#9fb2cc',6,'#7b8fb0',4)}${ticks}${pin(a,'A','#ef7f65','#b34f18')}${pin(b,'B','#5b8def','#2f5ea8')}${K.txt(L,y+30,'0',12)}${K.txt(X(10),y+30,'1',12)}</svg></div>`;
 }
 function decimalD2(id,s){
  const high=!recovery()&&Number(s?.confidence)>=45&&Number(s?.evidence)>=3&&Number(s?.mastery)>=50&&history(id).length%5!==4;
