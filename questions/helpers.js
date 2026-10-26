@@ -605,12 +605,27 @@ function rulerSvg(cm){
  const guides=`<line x1="${left}" y1="44" x2="${left}" y2="${y-36}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/><line x1="${PA25.f(x2)}" y1="44" x2="${PA25.f(x2)}" y2="${y-36}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/>`;
  return PA25.scene(340,124,'Pembaris 0 hingga 20 cm dengan satu objek diukur',PA25.shadow(166,y+10,150,5)+body+ticks+guides+obj+PA25.txt(318,y+16,'cm',11,'#6b5420','end'));
 }
+/* Penimbang gaya buku teks KSSR (pemilik 2026-10-26: "scale tu betul ke follow KSSR style?"):
+   dulang di atas, badan penimbang, dail bulat dengan 0 di atas, nombor setiap 100 g dan
+   jarum bergerak ikut arah jam. Dail meliputi 330° supaya 0 dan nilai maksimum tidak
+   bertindih. Nombor dilukis DI ATAS jarum (dengan halo putih) supaya nombor yang ditunjuk
+   tetap boleh dibaca. Nilai soalan (100–900 g) jatuh tepat pada nombor berlabel. */
+function paDialScale(value,dmax,step,unit,caption){
+ const cx=170,cy=122,r=62,SW=330,ang=x=>(-90+(x/dmax)*SW)*Math.PI/180;
+ let marks='',nums='';
+ const nTicks=Math.round(dmax/(step/2));
+ for(let i=0;i<=nTicks;i++){const x=i*step/2,a=ang(x),big=i%2===0,r1=r-(big?10:6);marks+=`<line x1="${PA25.f(cx+r1*Math.cos(a))}" y1="${PA25.f(cy+r1*Math.sin(a))}" x2="${PA25.f(cx+(r-1.5)*Math.cos(a))}" y2="${PA25.f(cy+(r-1.5)*Math.sin(a))}" stroke="${PA25.ink}" stroke-width="${big?2:1.1}"/>`;
+  if(big){const tr=r-21,lab=String(+x.toFixed(4)),fs=lab.length>=4?8.5:10;nums+=`<text x="${PA25.f(cx+tr*Math.cos(a))}" y="${PA25.f(cy+tr*Math.sin(a)+3.5)}" style="font:900 ${fs}px Nunito,system-ui,sans-serif;fill:#243d5e;text-anchor:middle;paint-order:stroke;stroke:#fbfdff;stroke-width:3px;stroke-linejoin:round">${lab}</text>`}}
+ const v=Math.max(0,Math.min(dmax,value)),a=ang(v),nx=cx+(r-3)*Math.cos(a),ny=cy+(r-3)*Math.sin(a);
+ const pan=`<path d="M106 30 Q172 48 238 30 L233 37 Q172 56 111 37 Z" fill="#7f98bb" stroke="#4d6c83" stroke-width="1"/><ellipse cx="172" cy="30" rx="66" ry="9" fill="#dbe6f4" stroke="#4d6c83" stroke-width="1.6"/>`+PA25.box(165,40,12,14,'#c7d6ea','#7f98bb',5);
+ const body=PA25.box(96,54,148,146,'#f0b84a','#c48d1c',10,'#8a6410',18);
+ const dial=`<circle cx="${cx+3}" cy="${cy+4}" r="${r+6}" fill="#8a6410" opacity=".35"/><circle cx="${cx}" cy="${cy}" r="${r+6}" fill="#fff3d0" stroke="#8a6410" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="#fbfdff" stroke="${PA25.ink}" stroke-width="1.5"/>`;
+ const needle=`<line x1="${cx+1.2}" y1="${cy+2}" x2="${PA25.f(nx+1.2)}" y2="${PA25.f(ny+2)}" stroke="#000" stroke-opacity=".15" stroke-width="3" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${PA25.f(nx)}" y2="${PA25.f(ny)}" stroke="#e0443f" stroke-width="2.4" stroke-linecap="round"/>`;
+ const hub=`<circle cx="${cx}" cy="${cy}" r="5" fill="${PA25.ink}"/>`;
+ return PA25.shadow(174,206,86,6)+body+pan+dial+marks+PA25.txt(cx,cy-12,unit,11,PA25.soft)+needle+nums+hub+(caption?PA25.txt(cx,228,caption,13):'');
+}
 function scaleSvg(grams){
- const max=1000,cx=170,cy=84,angle=-120+(grams/max)*240,rad=angle*Math.PI/180,x=cx+42*Math.cos(rad),y=cy+42*Math.sin(rad);
- let marks='';for(let g=0;g<=1000;g+=100){const a=(-120+(g/max)*240)*Math.PI/180,x1=cx+50*Math.cos(a),y1=cy+50*Math.sin(a),x2=cx+58*Math.cos(a),y2=cy+58*Math.sin(a);marks+=`<line x1="${PA25.f(x1)}" y1="${PA25.f(y1)}" x2="${PA25.f(x2)}" y2="${PA25.f(y2)}" stroke="${PA25.ink}" stroke-width="2"/>`}
- const base=PA25.box(108,126,124,18,'#9fb7d6','#5f7da6',8)+PA25.box(150,10,40,10,'#c7d6ea','#7f98bb',6);
- const dial=`<circle cx="${cx+5}" cy="${cy+6}" r="66" fill="#5f7da6"/><circle cx="${cx}" cy="${cy}" r="66" fill="#c7d6ea" stroke="${PA25.ink}" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="60" fill="#fbfdff" stroke="#7f98bb" stroke-width="1.5"/>`;
- return PA25.scene(340,156,`Penimbang 0 hingga 1000 g`,PA25.shadow(172,148,80,7)+base+dial+marks+`<line x1="${cx}" y1="${cy}" x2="${PA25.f(x)}" y2="${PA25.f(y)}" stroke="#ef6f6c" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="${PA25.ink}"/>`+PA25.txt(cx-12,cy+26,'0–1000 g',11,PA25.text,'end'));
+ return PA25.scene(340,216,'Penimbang berdail 0 hingga 1000 g',paDialScale(grams,1000,100,'g',''));
 }
 function cylinderSvg(ml){
  const max=1000,top=18,bottom=132,cx=150,rx=26,ry=7,fillH=(ml/max)*(bottom-top),fy=bottom-fillH;
