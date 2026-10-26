@@ -81,7 +81,7 @@ const pictograph=(labels,vals,key=1)=>{
 const miniTable=(headers,rows)=>`<div class="kssrDiagram"><table class="kd-table"><thead><tr>${headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 const ruler=(cm,mark)=>{
   const K=K25(),left=26,right=306,y=96,x=left+(mark/cm)*(right-left);let ticks='';
-  for(let i=0;i<=cm;i++){const tx=left+i*(right-left)/cm,tall=i%5===0?15:9;ticks+=`<line x1="${K.f(tx)}" y1="${y-36}" x2="${K.f(tx)}" y2="${y-36+tall}" stroke="#6b5420" stroke-width="1.8"/>`+(i%5===0?K.txt(tx,y-6,i,11,'#6b5420'):'')}
+  for(let i=0;i<=cm*2;i++){const tx=left+i*(right-left)/(cm*2),whole=i%2===0,tall=whole?(i%10===0?16:13):8;ticks+=`<line x1="${K.f(tx)}" y1="${y-36}" x2="${K.f(tx)}" y2="${y-36+tall}" stroke="#6b5420" stroke-width="${whole?1.6:1}"/>`+(whole&&(cm<=20||(i/2)%5===0)?K.txt(tx,y-6,i/2,10,'#6b5420'):'')} // KSSR: nombor setiap cm
   const pointer=`<path d="M ${K.f(x)} ${y-40} L ${K.f(x-8)} ${y-56} L ${K.f(x+8)} ${y-56} Z" fill="#3f77bc" stroke="#1f4d86" stroke-width="1.5"/>`;
   return K.scene(340,122,'pembaris',K.shadow(166,y+10,150,5)+K.box(14,y-36,304,40,'#ffe7a3','#c9a24b',8,'#a88730',6)+K.shine(20,y-31,312,y-31)+ticks+pointer);
 };

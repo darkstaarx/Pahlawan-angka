@@ -596,14 +596,17 @@ function dotsEstimateVisual(count){
  };
  return `<div class="kssrDiagram paU6Scene paD5Scene"><svg role="img" aria-label="Set A mengandungi 10 objek. Anggarkan bilangan objek dalam Set B dengan membandingkan kedua-dua set." viewBox="0 0 330 192"><defs><radialGradient id="paEstDot" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#cfe3ff"/><stop offset=".45" stop-color="#5a9be0"/><stop offset="1" stop-color="#2e66ad"/></radialGradient></defs><path d="M16 1 H314 A15 15 0 0 1 329 16 V176 A15 15 0 0 1 314 191 H16 A15 15 0 0 1 1 176 V16 A15 15 0 0 1 16 1 Z" fill="#f5f9ff" stroke="#d7e3f1"/>${panel(10,3,'A',true)}${panel(total,161,'B',false)}</svg></div>`;
 }
+/* Pembaris gaya buku teks KSSR: nombor pada SETIAP cm (murid membaca hujung objek, bukan
+   mengira garis), tanda setengah cm, dan objek bermula tepat pada tanda 0. */
 function rulerSvg(cm){
- const max=20,left=26,right=306,y=96,scale=(right-left)/max;
- const body=PA25.box(14,y-36,304,40,'#ffe7a3','#c9a24b',8,'#a88730',6)+PA25.shine(20,y-31,312,y-31);
- let ticks='';for(let i=0;i<=max;i++){const x=left+i*scale,tall=i%5===0?15:9;ticks+=`<line x1="${PA25.f(x)}" y1="${y-36}" x2="${PA25.f(x)}" y2="${y-36+tall}" stroke="#6b5420" stroke-width="1.8"/>`+(i%5===0?PA25.txt(x,y-6,i,11,'#6b5420'):'')}
+ const max=20,left=24,right=310,y=100,scale=(right-left)/max;
+ const body=PA25.box(12,y-38,310,44,'#ffe7a3','#c9a24b',8,'#a88730',6)+PA25.shine(18,y-33,316,y-33);
+ let ticks='';
+ for(let i=0;i<=max*2;i++){const x=left+i*scale/2,whole=i%2===0,tall=whole?(i%10===0?17:13):8;ticks+=`<line x1="${PA25.f(x)}" y1="${y-38}" x2="${PA25.f(x)}" y2="${y-38+tall}" stroke="#6b5420" stroke-width="${whole?1.6:1}"/>`;if(whole)ticks+=PA25.txt(x,y-8,i/2,i/2>=10?9:10,'#6b5420')}
  const x2=left+cm*scale;
- const obj=PA25.box(left,30,Math.max(4,x2-left),12,'#ef6f6c','#b8433f',6,'#9c3e3b',3);
- const guides=`<line x1="${left}" y1="44" x2="${left}" y2="${y-36}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/><line x1="${PA25.f(x2)}" y1="44" x2="${PA25.f(x2)}" y2="${y-36}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/>`;
- return PA25.scene(340,124,'Pembaris 0 hingga 20 cm dengan satu objek diukur',PA25.shadow(166,y+10,150,5)+body+ticks+guides+obj+PA25.txt(318,y+16,'cm',11,'#6b5420','end'));
+ const obj=PA25.box(left,28,Math.max(4,x2-left),12,'#ef6f6c','#b8433f',6,'#9c3e3b',3);
+ const guides=`<line x1="${left}" y1="42" x2="${left}" y2="${y-38}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/><line x1="${PA25.f(x2)}" y1="42" x2="${PA25.f(x2)}" y2="${y-38}" stroke="#ef6f6c" stroke-width="1.4" stroke-dasharray="3 3"/>`;
+ return PA25.scene(340,128,'Pembaris 0 hingga 20 cm dengan satu objek diukur',PA25.shadow(166,y+12,150,5)+body+ticks+guides+obj+PA25.txt(318,y+18,'cm',11,'#6b5420','end'));
 }
 /* Penimbang gaya buku teks KSSR (pemilik 2026-10-26: "scale tu betul ke follow KSSR style?"):
    dulang di atas, badan penimbang, dail bulat dengan 0 di atas, nombor setiap 100 g dan
@@ -627,14 +630,16 @@ function paDialScale(value,dmax,step,unit,caption){
 function scaleSvg(grams){
  return PA25.scene(340,216,'Penimbang berdail 0 hingga 1000 g',paDialScale(grams,1000,100,'g',''));
 }
+/* Silinder penyukat gaya KSSR: nombor pada setiap 100 mL supaya bacaan (100–900 mL) jatuh
+   tepat pada nombor, bukan di antara label. */
 function cylinderSvg(ml){
- const max=1000,top=18,bottom=132,cx=150,rx=26,ry=7,fillH=(ml/max)*(bottom-top),fy=bottom-fillH;
- let marks='';for(let v=0;v<=1000;v+=100){const y=bottom-(v/max)*(bottom-top);marks+=`<line x1="${cx+rx-12}" y1="${PA25.f(y)}" x2="${cx+rx}" y2="${PA25.f(y)}" stroke="${PA25.ink}" stroke-width="1.6"/>`+(v%200===0?PA25.txt(cx+rx+8,y+4,v,10,PA25.text,'start'):'')}
+ const max=1000,top=18,bottom=176,cx=150,rx=26,ry=7,fillH=(ml/max)*(bottom-top),fy=bottom-fillH;
+ let marks='';for(let v=0;v<=1000;v+=50){const y=bottom-(v/max)*(bottom-top),big=v%100===0;marks+=`<line x1="${cx+rx-(big?13:7)}" y1="${PA25.f(y)}" x2="${cx+rx}" y2="${PA25.f(y)}" stroke="${PA25.ink}" stroke-width="${big?1.6:1}"/>`+(big?PA25.txt(cx+rx+8,y+3.5,v,10,PA25.text,'start'):'')}
  const liquid=fillH>0?`<path d="M${cx-rx} ${PA25.f(fy)} V${bottom} A${rx} ${ry} 0 0 0 ${cx+rx} ${bottom} V${PA25.f(fy)} Z" fill="#59b8ef" opacity=".85"/><ellipse cx="${cx}" cy="${PA25.f(fy)}" rx="${rx}" ry="${ry}" fill="#9ad9ff" stroke="#3f95cc" stroke-width="1"/>`:'';
  const glass=`<path d="M${cx-rx} ${top} V${bottom} A${rx} ${ry} 0 0 0 ${cx+rx} ${bottom} V${top}" fill="#eef6ff" fill-opacity=".55" stroke="#4d6c83" stroke-width="2"/>`;
  const rim=`<ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" fill="#f8fbff" fill-opacity=".6" stroke="#4d6c83" stroke-width="2"/><path d="M${cx-rx+6} ${top+10} V${bottom-6}" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>`;
  const foot=PA25.box(cx-rx-12,bottom+12,2*rx+24,8,'#c7d6ea','#7f98bb',6);
- return PA25.scene(340,160,'Silinder penyukat 0 hingga 1000 mL',PA25.shadow(cx+4,bottom+24,50,6)+foot+glass+liquid+marks+rim+PA25.txt(cx-rx-10,top+6,'mL',12,PA25.text,'end'));
+ return PA25.scene(340,204,'Silinder penyukat 0 hingga 1000 mL',PA25.shadow(cx+4,bottom+24,50,6)+foot+glass+liquid+marks+rim+PA25.txt(cx-rx-10,top+6,'mL',12,PA25.text,'end'));
 }
 function timelineSvg(sh,sm,eh,em,visibility={}){
  const fmt=visibility.formatTime||((h,m)=>`${h}:${String(m).padStart(2,'0')}`);
