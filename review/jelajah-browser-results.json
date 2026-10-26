@@ -1,0 +1,92 @@
+[
+  {
+    "grade": 1,
+    "resolved": 12,
+    "script": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "miniGameAndCoach": "passed",
+    "storage": "unchanged",
+    "networkWrites": 0
+  },
+  {
+    "grade": 2,
+    "resolved": 12,
+    "script": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "miniGameAndCoach": "passed",
+    "storage": "unchanged",
+    "networkWrites": 0
+  },
+  {
+    "grade": 3,
+    "resolved": 12,
+    "script": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "miniGameAndCoach": "passed",
+    "storage": "unchanged",
+    "networkWrites": 0
+  },
+  {
+    "grade": 4,
+    "resolved": 12,
+    "script": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "miniGameAndCoach": "passed",
+    "storage": "unchanged",
+    "networkWrites": 0
+  },
+  {
+    "grade": 5,
+    "resolved": 12,
+    "script": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "miniGameAndCoach": "passed",
+    "storage": "unchanged",
+    "networkWrites": 0
+  },
+  {
+    "grade": 6,
+    "resolved": 12,
+    "script": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "miniGameAndCoach": "passed",
+    "storage": "unchanged",
+    "networkWrites": 0
+  }
+]

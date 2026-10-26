@@ -1,0 +1,17 @@
+[
+  {
+    "grade": 1,
+    "resolved": 12,
+    "script": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "miniGameAndCoach": "passed",
+    "storage": "unchanged",
+    "networkWrites": 0
+  }
+]

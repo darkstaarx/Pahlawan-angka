@@ -3380,6 +3380,12 @@
     group.dataset.touchReady='1';group.replaceWith(grid);box.classList.add('paLegacyAnswersHidden');
   }
   function drawQuestion(){
+    if(!run?.production&&entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge){
+      run.q=window.PAJelajahBridge.question(run.asked);
+      paintQuestion(run.q,run.q.skill);
+      window.PAJelajahBridge.painted(run);
+      return;
+    }
     if(run&&run.writtenArithmeticPreview){
       run.q=run.writtenArithmeticPreview;
       return paintQuestion(run.q,run.q.skill);
@@ -3563,10 +3569,12 @@
     if(run&&run.production)return respondProduction(option,button);
     const activeRun=run;
     if(!activeRun||activeRun.locked)return;
-    const guestRetry=!!entryMode?.guestDemo;
+    const jelajah=!!(entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge);
+    const guestRetry=!!entryMode?.guestDemo&&!jelajah;
     activeRun.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
+    if(jelajah)window.PAJelajahBridge.resolved(activeRun.asked,correct);
     if(!correct)markWrongAnswer(option,button);
     button.classList.add(correct?'ok':'no');
     const retrying=guestRetry&&!!activeRun.retryOpen;
@@ -3581,7 +3589,7 @@
       $('segelFeedback').textContent=outcome.broken?`Kunci ${outcome.tier.name} pecah!`:'Betul! Kunci retak.';
       paintSeal();
       if(reachedTarget)return celebrate(activeRun);
-      if(stage.allBroken())return celebrate(activeRun);
+      if(stage.allBroken()&&!jelajah)return celebrate(activeRun);
     }else if(sameWrong){
       // A repeated typed/choice value is feedback only. It must not resolve
       // the question or consume the retry; the learner gets another chance.
@@ -3976,6 +3984,12 @@
   }
 
   function finishRun(won,note){
+    if(!run?.production&&entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge){
+      run.locked=true;
+      if(won&&run.asked===12)window.PAJelajahBridge.finished();
+      else window.PAJelajahBridge.failed(note||'Battle demo belum lengkap. Cuba semula.');
+      return;
+    }
     run.locked=true;
     setResultLifecycle(true);
     const t=run.tally, correct=t.own+t.hint, asked=Math.max(1,run.asked);
@@ -4047,6 +4061,7 @@
                missionAnswered:0,coach:null,recoveryFor:null,stretchFor:null}};
     setResultLifecycle(false);
     $('segelDone').hidden=true;
+    if(entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge)run.questionTarget=12;
     stage.reset(entryMode?.guestDemo?run.questionTarget:null);
     stage.armEntry();
     enterWhenRevealed();    // Wira turun sebagai zarah biru, sama seperti portal
