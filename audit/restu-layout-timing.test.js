@@ -51,9 +51,9 @@ test('Restu impact particles and trails share the teacher transform and scale af
   assert.equal(s.projectFx({...p,restuToken:-1}).x,a.x,'ordinary battle effects remain unchanged');
  }
 });
-test('after landing: face zoom then fade, 1130ms total (owner 2026-10-26), and the entry promise resolves without another delay',async()=>{
+test('after landing: gentle face zoom, ~2.4s readable line, then fade, 2530ms total (owner 2026-10-26), and the entry promise resolves without another delay',async()=>{
  const s=fixture();s.getActive().state={...s.state,heroPose:s.sandbox.hero.userData.e};s.cancel();
- assert.equal(s.endAt-s.landAt,1130);assert.equal(s.afterLand,1130);assert.equal(s.endAt,2630);
+ assert.equal(s.endAt-s.landAt,2530);assert.equal(s.afterLand,2530);assert.equal(s.endAt,4030);
  let done=false;const playing=s.play().then(()=>{done=true});
  for(let i=0;i<8;i++)await Promise.resolve();
  assert.ok(s.getActive(),'real playRestuEntry started');

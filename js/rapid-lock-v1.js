@@ -217,6 +217,8 @@
     const reduce=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if(reduce||typeof root.PASegelHost?.playRestuEntry!=='function'){finish();return}
     el.classList.add('pa-restu-entry');document.body.classList.add('pa-restu-cinematic');
+    // Muat video awal semasa sinematik supaya tiada skrin hitam kosong selepas pudar.
+    try{const pv=el.querySelector('.paRapidVideo');if(pv&&art('fall')&&pv.getAttribute('src')!==art('fall')){pv.preload='auto';pv.src=art('fall');pv.load?.()}}catch(_){}
     skipEntry=finish;guard=setTimeout(finish,9000);
     try{Promise.resolve(root.PASegelHost.playRestuEntry()).then(finish,finish)}catch(_){finish()}
   }
@@ -228,7 +230,7 @@
     const box=el.querySelector('[data-step="fall"]'),v=el.querySelector('.paRapidVideo');
     el.querySelector('.paRapidStage').hidden=true;
     let done=false,guard=0;
-    const stop=()=>{done=true;clearTimeout(guard);v.onended=null;v.onerror=null;v.pause();box.hidden=true};
+    const stop=()=>{done=true;clearTimeout(guard);v.onended=null;v.onerror=null;v.onplaying=null;v.pause();v.classList.remove('on');box.hidden=true};
     const finish=()=>{if(done)return;stop();stopPresentation=null;if(currentFlow(id))next()};
     stopPresentation=stop;
     const reduce=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -236,6 +238,8 @@
     box.hidden=false;
     let muted=false;try{muted=typeof paMuted!=='undefined'&&!!paMuted}catch(_){}
     v.muted=muted;v.onended=finish;v.onerror=finish;
+    // Video muncul perlahan dari gelap bila ia benar-benar bermain (bukan muncul penuh serta-merta).
+    v.classList.remove('on');v.onplaying=()=>{if(!done)v.classList.add('on')};
     if(v.getAttribute('src')!==art('fall'))v.src=art('fall');
     try{v.currentTime=0}catch(_){}
     // Pemilik 2026-10-26: video jatuh dimainkan 1.5x (≈2s) selepas pudar gelap.

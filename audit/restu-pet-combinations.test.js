@@ -74,6 +74,6 @@ test('local held preview freezes the real frame and cancels cleanly without chan
  s.sandbox.location={hostname:'127.0.0.1',pathname:'/audit/cikgu-dimensi-entry-preview.html'};
  assert.equal(await s.previewHold(1800),true);s.frame(999999);const pose=s.mesh.material.map,zoom=s.state.camZoom;
  s.frame(1009999);assert.equal(s.mesh.material.map,pose);assert.equal(s.state.camZoom,zoom);assert.equal(s.getActive().previewAt,1800);
- assert.equal(s.endAt,2630);assert.ok(!s.timers.some(t=>t.ms===s.endAt),'held audit frame does not start the normal portal timer');
+ assert.equal(s.endAt,4030);assert.ok(!s.timers.some(t=>t.ms===s.endAt),'held audit frame does not start the normal portal timer');
  s.cancel();assert.equal(s.getActive(),null);assert.equal(s.mesh.visible,false);assert.equal(s.bubble.classList.contains('show'),false);
 });

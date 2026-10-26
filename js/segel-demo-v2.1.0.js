@@ -1944,12 +1944,14 @@
     const RESTU_FACE=900, RESTU_DIVE=350, RESTU_HOLD=130, RESTU_SKY=3.7;
     const RESTU_T_HIT=RESTU_FACE+RESTU_DIVE;
     const RESTU_T_LAND=RESTU_T_HIT+RESTU_HOLD+120;
-    /* Selepas mendarat (pemilik, 2026-10-26): zoom paralaks pantas ke muka
-       Wira semasa "Eh, Cikgu Dimensi!", kemudian skrin pudar gelap dan terus
-       ke video Restu (dimainkan 1.5x). Menggantikan tahanan lebar 1.5s. */
-    const RESTU_ZOOM_AT=250, RESTU_ZOOM_IN=300, RESTU_FADE_AT=820, RESTU_FADE=280;
+    /* Selepas mendarat (pemilik, 2026-10-26): zoom paralaks ke muka Wira semasa
+       "Eh, Cikgu Dimensi!", kemudian skrin pudar gelap ke video Restu (1.5x).
+       Pemilik kemudian: "agak kalut, biar boleh baca lama sikit" → zoom masuk
+       lebih lembut (0.5s ease-in-out), ayat Wira kekal ~2.4s, pudar 0.5s sambil
+       kamera terus hanyut perlahan. */
+    const RESTU_ZOOM_AT=250, RESTU_ZOOM_IN=500, RESTU_FADE_AT=2000, RESTU_FADE=500;
     const RESTU_AFTER_LAND=RESTU_FADE_AT+RESTU_FADE+30;
-    const RESTU_FACE_ZOOM=1.45, RESTU_FACE_DRIFT=.15, RESTU_FG_PARALLAX=1.14;
+    const RESTU_FACE_ZOOM=1.45, RESTU_FACE_DRIFT=.22, RESTU_FG_PARALLAX=1.14;
     const RESTU_CAMERA_SETTLE=1000;
     const RESTU_MS=RESTU_T_LAND+RESTU_AFTER_LAND;
     let restuName=null;
@@ -2168,8 +2170,9 @@
       a.wide=t>=tHit;
       a.grounded=a.wide||zoom<=1.2;
       { const tl=t-tLand;
-        const zin=1-Math.pow(1-clamp((tl-RESTU_ZOOM_AT)/RESTU_ZOOM_IN),3);
-        const drift=clamp((tl-RESTU_ZOOM_AT-RESTU_ZOOM_IN)/(RESTU_FADE_AT-RESTU_ZOOM_AT-RESTU_ZOOM_IN));
+        const zk=clamp((tl-RESTU_ZOOM_AT)/RESTU_ZOOM_IN),zin=zk<.5?4*zk*zk*zk:1-Math.pow(-2*zk+2,3)/2;
+        // Hanyut perlahan berterusan hingga hujung pudar (tiada henti mengejut sebelum video).
+        const drift=clamp((tl-RESTU_ZOOM_AT-RESTU_ZOOM_IN)/(RESTU_FADE_AT+RESTU_FADE-RESTU_ZOOM_AT-RESTU_ZOOM_IN));
         a.faceScale=reduceMotion?1:1+RESTU_FACE_ZOOM*zin+RESTU_FACE_DRIFT*drift;
         if(typeof restuFade==='function')restuFade(clamp((tl-RESTU_FADE_AT)/RESTU_FADE));
         if(tl>=RESTU_ZOOM_AT&&restuOnce(a,'face')){ S.shake=Math.max(S.shake,.08) } }

@@ -374,6 +374,8 @@ composition, lock policy.
 
 ## 8a. Handoff — current status and next work (update this when you finish a step)
 
+**Restu tail pacing (3.87.74, 2026-10-26).** Owner: the end felt rushed ("kalut") and the cut to video abrupt. The Wira face zoom now eases in over 0.5s (ease-in-out), the "Eh, Cikgu Dimensi!" line stays readable ~2.4s, the screen fades to black over 0.5s while the camera keeps drifting, and the Restu video fades in from black (0.45s, `.paRapidVideo.on` on `playing`). The fall video is preloaded when the cinematic starts so there is no empty black gap. Tail after landing 2530ms (RESTU_MS 4030); timing tests updated.
+
 **KSSR measuring tools (3.87.73, 2026-10-26).** Same textbook check for the other tools: `rulerSvg` (Y2 "panjang garisan merah", 2–19 cm) and the assessment-depth ruler now number EVERY cm with half-cm ticks (were every 5 cm, forcing tick counting); `cylinderSvg` numbers every 100 mL (was every 200 mL while answers are any hundred); v2 D3 clock gains minute ticks; v2 ruler and measuring jug gain numbered scales (nice step ≤10 labels, half-step ticks). Shared clockSvg already matched (1–12, minute ticks, short thick hour hand).
 
 **KSSR dial scale (3.87.72, 2026-10-26).** Owner asked whether the weighing scale follows KSSR style — it did not (unnumbered half-dial, pupils had to count ticks for "Jarum penimbang menunjukkan berapa gram?"). `scaleSvg` (helpers.js, via `paDialScale`) and the v2 D3 `scale` renderer now draw the textbook kitchen scale: pan on top, body, round dial with 0 at 12 o'clock, numbered major marks (every 100 g; v2 picks a nice step ≤10 labels), minor half-step ticks, clockwise needle over a 330° sweep (0 and max never coincide), unit above the hub, numbers drawn over the needle with a white halo.
