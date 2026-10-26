@@ -3677,49 +3677,53 @@
     function stopRiser(fade=.04){ const r=riser; riser=null; stopNodes(r,fade) }
     return {
       open(){
-        /* v3 (pemilik: "entrance tu mcm magical fairy sgt"): pembukaan kini
-           BERAT dan gelap — tiada loceng/aura. Magik + "bam" kekal pada
-           junaman dan hentaman. */
+        /* v4 (pemilik: "bunyi macam Marvel flip pages sebelum movie"):
+           gaya montaj halaman komik — kibasan halaman yang makin laju
+           (stereo), timpani bergulung dan kord brass asli yang membesar
+           dari senyap. Semuanya dipotong tepat pada junaman (stopRiser),
+           kemudian magik + "bam" kekal seperti dahulu. Bukan muzik/melodi
+           Marvel; hanya gaya bunyi. */
         musicDown(); stopDrone(.05); stopRiser();
         const ctx=ctxOk(); if(!ctx)return;
         try{
-          const t=ctx.currentTime;
-          // 1. BRAAAM penuh + dentum sub dalam, serentak dengan wajah.
-          braam(ctx,t,1,2.4); sub(ctx,t,70,.9);
-          // 2. Dua pukulan gendang perang mengikut nadi syot wajah.
-          [.38,.66].forEach((d,i)=>{
-            const at=t+d, out=bus(ctx,.75,.45), o=ctx.createOscillator(), g=ctx.createGain();
-            o.type='sine'; o.frequency.setValueAtTime(105-i*8,at); o.frequency.exponentialRampToValueAtTime(42,at+.32);
-            g.gain.setValueAtTime(.0001,at); g.gain.exponentialRampToValueAtTime(.85,at+.008); g.gain.exponentialRampToValueAtTime(.0001,at+.45);
-            o.connect(g).connect(out); o.start(at); o.stop(at+.5);
-            const n=noise(ctx,.12), lp=ctx.createBiquadFilter(), ng=ctx.createGain();
-            lp.type='lowpass'; lp.frequency.value=700;
-            ng.gain.setValueAtTime(.45,at); ng.gain.exponentialRampToValueAtTime(.0001,at+.1);
-            n.connect(lp).connect(ng).connect(out); n.start(at); n.stop(at+.12);
-            setTimeout(()=>{try{out.disconnect()}catch(_){}},2500);
-          });
-          // 3. Dengung gelap satu oktaf lebih rendah, penapis tertutup.
-          const out=bus(ctx,1,.5);
-          out.gain.setValueAtTime(.0001,t); out.gain.exponentialRampToValueAtTime(.34*vol(),t+.4);
-          const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=3;
-          lp.frequency.setValueAtTime(180,t); lp.frequency.exponentialRampToValueAtTime(750,t+.9);
-          lp.connect(out);
-          const nodes=[];
-          [[55,-6],[55,6],[82.4,0],[110,-3]].forEach(([f,det])=>{
+          const t=ctx.currentTime, T=.9, nodes=[];
+          const out=bus(ctx,1,.55);
+          out.gain.setValueAtTime(.75*vol(),t);
+          // 1. Kibasan halaman: letusan hingar pendek, kadar 7→32/saat.
+          const flip=noise(ctx,.06);
+          let at=0;
+          while(at<T-.02){
+            const k=at/T, rate=7+25*k*k, d=.022+Math.random()*.02;
+            const src=ctx.createBufferSource(); src.buffer=flip.buffer;
+            const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=.9; bp.frequency.value=1800+Math.random()*2600;
+            const g=ctx.createGain(), pk=(.18+.32*k)*(.7+Math.random()*.3);
+            g.gain.setValueAtTime(.0001,t+at); g.gain.exponentialRampToValueAtTime(pk,t+at+.004); g.gain.exponentialRampToValueAtTime(.0001,t+at+d);
+            let tail=g;
+            if(ctx.createStereoPanner){ const pn=ctx.createStereoPanner(); pn.pan.value=(Math.random()*2-1)*.7; g.connect(pn); tail=pn }
+            src.connect(bp).connect(g); tail.connect(out);
+            src.start(t+at); src.stop(t+at+d+.01); nodes.push(src);
+            at+=1/rate;
+          }
+          // 2. Kord brass membesar (Dm9 → naik), penapis terbuka bersama crescendo.
+          const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=1.5;
+          lp.frequency.setValueAtTime(300,t); lp.frequency.exponentialRampToValueAtTime(3200,t+T);
+          const sw=ctx.createGain(); sw.gain.setValueAtTime(.0001,t); sw.gain.exponentialRampToValueAtTime(.42,t+T);
+          lp.connect(sw).connect(out);
+          [[73.4,0],[146.8,-5],[146.8,5],[220,0],[293.7,-4],[349.2,4],[440,0],[659.3,0]].forEach(([f,det])=>{
             const o=ctx.createOscillator(), g=ctx.createGain();
-            o.type='sawtooth'; o.frequency.value=f; o.detune.value=det; g.gain.value=.15;
-            o.connect(g).connect(lp); o.start(t); nodes.push(o);
+            o.type='sawtooth'; o.frequency.setValueAtTime(f,t); o.frequency.linearRampToValueAtTime(f*1.06,t+T); o.detune.value=det;
+            g.gain.value=f<100?.16:.075; o.connect(g).connect(lp); o.start(t); nodes.push(o);
           });
-          drone={ctx,out,nodes};
-          // 4. Riser gelap: hingar laluan-rendah + nada rendah menaik sehingga junaman.
-          const rOut=bus(ctx,1,.5), n=noise(ctx,1.6), rl=ctx.createBiquadFilter(), ng=ctx.createGain();
-          rOut.gain.setValueAtTime(.0001,t); rOut.gain.exponentialRampToValueAtTime(.5*vol(),t+.88);
-          rl.type='lowpass'; rl.Q.value=5; rl.frequency.setValueAtTime(150,t); rl.frequency.exponentialRampToValueAtTime(1600,t+.9);
-          ng.gain.value=.8; n.connect(rl).connect(ng).connect(rOut); n.start(t);
-          const so=ctx.createOscillator(), sg=ctx.createGain();
-          so.type='sawtooth'; so.frequency.setValueAtTime(55,t); so.frequency.exponentialRampToValueAtTime(220,t+.9);
-          sg.gain.value=.12; so.connect(sg).connect(rOut); so.start(t);
-          riser={ctx,out:rOut,nodes:[n,so]};
+          // 3. Timpani bergulung, makin kuat.
+          let tt=0;
+          while(tt<T-.03){
+            const k=tt/T, o=ctx.createOscillator(), g=ctx.createGain(), s=t+tt;
+            o.type='sine'; o.frequency.setValueAtTime(92,s); o.frequency.exponentialRampToValueAtTime(58,s+.09);
+            g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.12+.5*k,s+.006); g.gain.exponentialRampToValueAtTime(.0001,s+.12);
+            o.connect(g).connect(out); o.start(s); o.stop(s+.13); nodes.push(o);
+            tt+=.055-.02*k;
+          }
+          riser={ctx,out,nodes};
         }catch(_){}
       },
       dive(){
