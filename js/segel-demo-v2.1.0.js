@@ -3584,6 +3584,7 @@
     const turn=activeRun.asked;
     activeRun.autoTimer=setTimeout(()=>{
       if(!currentRun(activeRun)||!previewShowcase()||!activeRun.autopilot||activeRun.locked||activeRun.asked!==turn)return;
+      if(window.PAAdaptivePreview?.isPanelOpen?.()){queuePreviewAuto(activeRun);return;}
       const q=activeRun.q,bad=q?.wrong?.[0];
       const wrong=(turn===6||turn===8)&&!activeRun.retryOpen&&!!bad;
       const option=wrong?bad:{v:q.answer,tag:'correct',label:q.answer};
@@ -4330,6 +4331,7 @@
       clearTimeout(run?.autoTimer);++demoOpenGeneration;++runGeneration;run=null;entryMode=null;guestCompleted=false;
       setDoneBackLabel(false);
       window.PADemo?.restoreGuest?.();
+      window.PAAdaptivePreview?.stop?.();
       if(typeof goLogin==='function')goLogin();
       else if(typeof screen==='function')screen('login');
       if(finished)window.PADemoWrapup?.open?.({grade});
