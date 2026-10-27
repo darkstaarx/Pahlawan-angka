@@ -1,0 +1,30 @@
+name: Focus Micro Phase 1 — shadow QA
+on:
+  pull_request:
+    paths:
+      - 'js/engine/focus-micro-diagnosis-v1.js'
+      - 'audit/focus-micro-phase1.test.js'
+      - 'docs/focus-v2/PHASE1-MICRO-DIAGNOSIS-20261027.md'
+      - '.github/workflows/focus-micro-phase1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shadow-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test micro-skill evaluator
+        run: node --test audit/focus-micro-phase1.test.js
+      - name: Existing Focus v2 diagnosis oracle
+        run: node audit/focus-v2-diagnosis-shadow.cjs
+      - name: Existing curriculum foundation integrity contract
+        run: node audit/focus-v2-foundation-contract.cjs
+      - name: Existing mini-game routing contract
+        run: node audit/focus-mini-games-router-qa.cjs
