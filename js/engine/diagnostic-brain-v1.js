@@ -590,7 +590,7 @@
   function record(skillId,ok,tag,sec,usedHint,q,mode,value){
     try{
       const d=liveDb();if(!d||d.demoMode)return false;
-      const s=liveSess();if(s?.devBattlefield||s?.demoMode)return false;
+      const s=liveSess();if(s?.devBattlefield||s?.devBankTest||s?.demoMode||/^dev(?:-|$)/.test(String(mode||'')))return false;
       d.diagLog=applyResponse(d.diagLog,{q:{...(q||{}),skill:q?.skill||skillId},meta:liveMeta(skillId),ok,sec,usedHint,mode,value,at:Date.now()});
       return true;
     }catch(_){return false}

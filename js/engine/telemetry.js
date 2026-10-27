@@ -16,6 +16,10 @@
   return true;
  }
  function response(skillId,ok,tag,sec,usedHint,q,mode,value){
+  // DEV Question Bank Tester must never pollute diagnostic logs, rapid lock,
+  // or local telemetry. An opt-in DEV observer may inspect the call separately.
+  const session=typeof sess!=='undefined'?sess:null;
+  if(session?.devBankTest||session?.devBattlefield||/^dev(?:-|$)/.test(String(mode||'')))return false;
   // Diagnostic brain keeps its own per-profile log (docs/PA-DIAGNOSTIC-BRAIN.md).
   try{window.PADiagnostic?.record?.(skillId,ok,tag,sec,usedHint,q,mode,value)}catch(_){}
   // Rapid-guess lock: 3 too-fast wrong first attempts → parent PIN (docs/PA-DIAGNOSTIC-BRAIN.md §5).

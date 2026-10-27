@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Micro Diagnosis Lab — Pahlawan Angka STAGING</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#071322;color:#f5f0df}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 80% -10%,#1c4571 0,transparent 45%),#071322}
+header{padding:15px max(18px,env(safe-area-inset-right));display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #856c4b;background:#0b2038}
+.brand{font-size:15px;font-weight:900;letter-spacing:.03em}.brand small{display:block;color:#d4bb86;font-size:10px;letter-spacing:.12em}
+header a{font-size:12px;color:#fee1a4;text-decoration:none}
+main{width:min(720px,100%);padding:20px 16px 60px;margin:auto;display:grid;gap:14px}
+h1{font-size:clamp(23px,6vw,31px);line-height:1.2;margin:0}
+h2{font-size:17px;margin:0 0 9px;color:#f4d7a2}
+p{line-height:1.55;margin:8px 0 12px;color:#d5e2ed}
+small,.muted{color:#b6c8d6}
+.card{border:1px solid #36526d;background:#112b45;border-radius:16px;padding:17px}
+button,select,input{font:inherit;border-radius:11px;min-height:44px}
+button{cursor:pointer;border:1px solid #deb96b;background:#f6dc9e;color:#102945;padding:10px 15px;font-weight:800}
+button.alt{background:#1e4569;color:#edf4fb;border-color:#7394b0}
+button[aria-pressed=true]{outline:2px solid #f2cb73;outline-offset:2px}
+select,input{width:100%;border:1px solid #c6ab72;background:#fffdf6;color:#16304a;padding:10px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{flex:1}
+.equation{font-weight:900;font-size:clamp(28px,7vw,44px);text-align:center;margin:18px 0}
+.entry{display:flex;gap:8px;align-items:stretch}
+.entry input{min-width:0;flex:1}
+.note{padding:10px 13px;border:1px solid #5a7392;border-radius:12px;background:#173957;color:#ecf4fa}
+.item{margin:9px 0;background:#1a3d5c;border:1px solid #507494;border-radius:11px;padding:12px}
+.item strong{display:block;margin-bottom:4px}
+.item small{display:block}
+details summary{cursor:pointer}
+footer{font-size:12px;color:#b3c5d6;line-height:1.6}
+@media(max-width:440px){.entry{flex-wrap:wrap}.entry button{width:100%}main{padding:17px 13px 50px}.tabs button{font-size:13px}}
+</style>
+</head>
+<body>
+<header><div class="brand">PAHLAWAN ANGKA<small>MICRO DIAGNOSIS · STAGING ONLY</small></div><a href="../index.html">Aplikasi DEV</a></header>
+<main>
+<div><h1>Makmal Otak Adaptif</h1><p>Uji bagaimana enjin mengenal pasti <b>calon kelemahan matematik</b> daripada jawapan. Tiada akaun murid, pangkalan data atau perubahan markah.</p></div>
+<section class="card">
+ <div class="tabs" role="group" aria-label="Kaedah ujian">
+  <button id="choose-auto" type="button">Simulasi</button>
+  <button id="choose-manual" type="button" class="alt">Jawab sendiri</button>
+ </div>
+ <p id="status" class="muted">Memuatkan enjin...</p>
+ <label for="case"><b>Senario ujian</b></label>
+ <select id="case"></select>
+ <p id="description" class="muted"></p>
+</section>
+<section class="card" id="exercise" aria-live="polite"></section>
+<section class="card">
+ <h2>Keputusan enjin sebenar</h2>
+ <div id="report" aria-live="polite"></div>
+</section>
+<details class="card"><summary><b>Apa yang ujian ini tidak buktikan?</b></summary>
+ <p>Jawapan salah tidak membuktikan punca psikologi atau kecuaian. Sistem hanya mencadangkan fakta/kemahiran untuk soalan pengesahan. Pengukuran, perpuluhan dan pecahan tertentu masih memerlukan metadata soalan yang disahkan. Data senario bersifat sintetik.</p>
+</details>
+<footer>Pautan ini ialah alat ujian terasing dalam branch pembangunan, bukan permainan penuh atau laporan murid. Aplikasi production Netlify tidak diubah. Sesi latihan disimpan dalam memori halaman sahaja.</footer>
+</main>
+<script src="../js/engine/focus-micro-diagnosis-v1.js?v=1.1.0-shadow"></script>
+<script src="../js/dev-focus-micro-fixtures-v1.js?v=1.0.1"></script>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const brain=window.PAFocusMicroV1,fixtures=window.PADevMicroFixturesV1;
+if(!brain||!fixtures){$('status').textContent='Enjin diagnosis belum dapat dimuatkan.';return}
+let mode='auto',scenario='table8',index=0,answers=[],correctFeedback=null;
+const append=(p,tag,text,klass)=>{
+ const n=document.createElement(tag);if(text!==undefined&&text!==null)n.textContent=String(text);
+ if(klass)n.className=klass;p.appendChild(n);return n;
+};
+const makeButton=(p,title,cb,klass)=>{
+ const b=append(p,'button',title,klass);b.type='button';b.addEventListener('click',cb);return b;
+};
+for(const [key,c] of Object.entries(fixtures.SCENARIOS)){
+ const o=append($('case'),'option',c.name);o.value=key;
+}
+function reset(){index=0;answers=[];correctFeedback=null}
+function setMode(value){
+ mode=value;reset();
+ $('choose-auto').setAttribute('aria-pressed',String(mode==='auto'));
+ $('choose-manual').setAttribute('aria-pressed',String(mode==='manual'));
+ render();
+}
+$('case').addEventListener('change',()=>{scenario=$('case').value;reset();render()});
+$('choose-auto').addEventListener('click',()=>setMode('auto'));
+$('choose-manual').addEventListener('click',()=>setMode('manual'));
+function showReport(log){
+ const data=brain.evaluate({diagLog:log},{maxFindings:30}),r=$('report');r.replaceChildren();
+ const summary=data.state==='probe_candidates'?'Ada calon untuk disahkan':
+  data.state==='needs_more_evidence'?'Bukti belum mencukupi':'Belum ada calon berdasarkan bukti ini';
+ append(r,'p',summary+'. '+data.evidence.usableRows+' rekod boleh dianalisis.','note');
+ for(const f of data.findings){
+  const item=append(r,'div',null,'item');
+  append(item,'strong',f.label);
+  append(item,'small',(f.status==='probe_candidate'?'PERLU PENGESAHAN':'PERLU LAGI BUKTI')+
+   ' · '+f.id+' · '+f.evidence.failedAttempts+' salah · '+f.evidence.independentContrastEquations+' kawalan betul');
+  append(item,'small','Soalan pengesahan dicadangkan: '+f.nextProbe);
+ }
+ if(data.findings.length===0)append(r,'p','Ini bukan bukti semua kemahiran sudah dikuasai. Enjin tidak membuat andaian tanpa bukti yang mencukupi.','muted');
+ append(r,'p','Status: shadow_read_only · perubahan markah/data murid: 0','muted');
+}
+function render(){
+ const s=fixtures.SCENARIOS[scenario],e=$('exercise');e.replaceChildren();
+ $('case').value=scenario;$('description').textContent=s.description;
+ $('status').textContent=mode==='auto'?'Menggunakan senario sintetik':'Jawapan kau dianalisis dalam memori halaman';
+ if(mode==='auto'){
+  append(e,'h2','Senario dijalankan');
+  const list=append(e,'ol',null);
+  for(const q of s.items)append(list,'li',fixtures.promptOf(q)+'  —  '+(q.shouldPass?'BETUL':'SALAH'));
+  const result=brain.evaluate({diagLog:fixtures.automatic(scenario)});
+  const expected=s.expected;
+  append(e,'p',expected?
+   'Jangkaan: '+expected+' · '+(result.findings.some(f=>f.id===expected&&f.status==='probe_candidate')?'PASS':'Perlu semakan') :
+   'Jangkaan: tidak mengesahkan kelemahan tanpa bukti.');
+  showReport(fixtures.automatic(scenario));return;
+ }
+ append(e,'h2','Soalan '+Math.min(index+1,s.items.length)+' daripada '+s.items.length);
+ if(index>=s.items.length){
+  append(e,'p','Latihan selesai. Keputusan berdasarkan jawapan yang kau beri.');
+  makeButton(e,'Ulang',()=>{reset();render()});
+  showReport(fixtures.toLog(scenario,answers));return;
+ }
+ const q=s.items[index];
+ append(e,'div',fixtures.promptOf(q),'equation');
+ if(correctFeedback!==null){
+  append(e,'p',correctFeedback,'note');
+  makeButton(e,'Soalan seterusnya',()=>{correctFeedback=null;index++;render()});
+ }else{
+  const form=append(e,'form',null,'entry');
+  const input=append(form,'input');input.type='number';input.step='any';input.required=true;input.inputMode='decimal';input.setAttribute('aria-label','Jawapan');
+  const submit=append(form,'button','Semak');submit.type='submit';
+  form.addEventListener('submit',event=>{
+   event.preventDefault();
+   if(input.value.trim()==='')return;
+   const n=Number(input.value),truth=fixtures.answerOf(q);
+   if(!Number.isFinite(n)||truth===null)return;
+   const yes=Math.abs(n-truth)<1e-8;answers.push(yes);
+   correctFeedback=yes?'Betul.':'Belum tepat. Jawapan sebenar: '+truth+'.';
+   render();
+  });
+ }
+ showReport(fixtures.toLog(scenario,answers));
+}
+setMode('auto');
+})();
+</script>
+</body>
+</html>
