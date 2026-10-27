@@ -126,7 +126,7 @@
     ...(extra.context?{context:extra.context}:{})});
   }
   const cat=id=>CATALOG.find(x=>x.id===id);
-  const mul=rows.filter(r=>r.op==='mul'&&r.a>=1&&r.b>=1&&r.a<=12&&r.b<=12);
+  const mul=rows.filter(r=>r.c==='plain'&&r.op==='mul'&&r.a>=1&&r.b>=1&&r.a<=12&&r.b<=12);
   for(const table of [6,7,8,9]){
    const withT=mul.filter(r=>r.a===table||r.b===table);
    offer(cat('mul.table.'+table),withT.filter(r=>r.failed),
@@ -135,8 +135,8 @@
   }
   function exact(id,op,a,b){
    const target=canonical(op,a,b);
-   const sample=rows.filter(r=>r.op===op&&r.family===target);
-   const controls=rows.filter(r=>r.op===op&&r.family!==target);
+   const sample=rows.filter(r=>r.c==='plain'&&r.op===op&&r.family===target);
+   const controls=rows.filter(r=>r.c==='plain'&&r.op===op&&r.family!==target);
    offer(cat(id),sample.filter(r=>r.failed),controls,'EXACT_FACT_NEEDS_FRESH_PROBES',
     {minFailedFamilies:1,extraGate:(fails)=>unique(fails.map(r=>r.day))>=2||
      unique(fails.map(r=>(r.f||'')+'|'+(r.c||'')))>=2});
@@ -145,7 +145,7 @@
   exact('div.fact.56by8','div',56,8);
   exact('add.fact.7plus8','add',7,8);
   exact('sub.fact.15minus7','sub',15,7);
-  const add=rows.filter(r=>r.op==='add'&&Math.max(r.a,r.b)>=10);
+  const add=rows.filter(r=>r.c==='plain'&&r.op==='add'&&Math.max(r.a,r.b)>=10);
   for(const col of [0,1]){
    const target=add.filter(r=>r.carry.includes(col));
    const control=add.filter(r=>!r.carry.includes(col)&&
@@ -153,13 +153,13 @@
    offer(cat(col===0?'add.carry.ones':'add.carry.tens'),
     target.filter(r=>r.failed),control,'CARRY_VS_NO_CARRY');
   }
-  const sub=rows.filter(r=>r.op==='sub'&&Math.max(r.a,r.b)>=10);
+  const sub=rows.filter(r=>r.c==='plain'&&r.op==='sub'&&Math.max(r.a,r.b)>=10);
   const borrowed=sub.filter(r=>r.borrow.cols.length);
   offer(cat('sub.borrow.ones'),borrowed.filter(r=>r.failed&&r.borrow.cols.includes(0)),
     sub.filter(r=>!r.borrow.cols.includes(0)),'BORROW_VS_NO_BORROW');
   offer(cat('sub.borrow.cross_zero'),sub.filter(r=>r.failed&&r.borrow.crossZero),
     borrowed.filter(r=>!r.borrow.crossZero),'ZERO_CROSSING_VS_SIMPLE_BORROW');
-  const div=rows.filter(r=>r.op==='div');
+  const div=rows.filter(r=>r.c==='plain'&&r.op==='div');
   offer(cat('div.remainder'),div.filter(r=>r.failed&&r.remainder),
    div.filter(r=>!r.remainder),'REMAINDER_VS_EXACT_DIVISION');
   // Context contrasts are flags to CHECK, not claims about reading, operation choice or money units.
