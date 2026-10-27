@@ -2,10 +2,12 @@
 (()=>{'use strict';
 const st={grade:2,active:false,db:null,sess:null};
 const grades=[1,2,3,4,5,6];
+const showcasePreview=new URLSearchParams(location.search).get('pa_demo_adaptive_preview')==='1';
 
 function demoScope(grade){
   try{
     const scope=window.PASegelDemo?.guestScope?.(grade);
+    if(showcasePreview)return '12 soalan · 6 sendiri + 6 autopilot';
     if(scope)return `${scope.topics} topik · ${scope.questions} soalan`;
     return grade===1?'8 topik · 12 soalan':grade===2?'9 topik · 14 soalan':'15 soalan';
   }catch(_){return 'Latihan teras'}
@@ -16,7 +18,7 @@ function mount(){
   if(!host||document.getElementById('paDemoButton'))return;
   const button=document.createElement('button');
   button.id='paDemoButton';button.className='btn secondary paDemoButton';button.type='button';
-  button.innerHTML='<b>⚔ Cuba Demo</b><small>Pilih darjah · terus ke battlefield</small>';
+  button.innerHTML=showcasePreview?'<b>⚔ Preview Demo Adaptif</b><small>6 jawab sendiri · 6 autopilot</small>':'<b>⚔ Cuba Demo</b><small>Pilih darjah · terus ke battlefield</small>';
   button.onclick=open;host.appendChild(button);
   const notice=document.createElement('small');notice.className='paDemoNote';notice.textContent='Statistik sesi tanpa nama direkod untuk menambah baik demo. Nama, jawapan dan markah tidak dihantar.';host.appendChild(notice);
   document.body.insertAdjacentHTML('beforeend',`<div id="paDemoOverlay" class="paDemoOverlay hidden" role="dialog" aria-modal="true" aria-labelledby="paDemoTitle"><section class="paDemoCard"><button class="paDemoClose" type="button" onclick="PADemo.close()" aria-label="Tutup">×</button><div class="eyebrow">DEMO BATTLEFIELD</div><h2 id="paDemoTitle">Pilih Darjah</h2><p>Demo ringkas untuk rasa tahap soalan—bukan ujian penuh. Tiada akaun atau progres diperlukan.</p><div class="paDemoGrades" role="radiogroup" aria-label="Pilih darjah">${grades.map(grade=>`<button class="paDemoGrade${grade===2?' active':''}" type="button" role="radio" aria-checked="${grade===2?'true':'false'}" data-demo-grade="${grade}" onclick="PADemo.selectGrade(${grade})"><b>Darjah ${grade}</b><small>${demoScope(grade)}</small></button>`).join('')}</div><button id="paDemoStart" class="btn primary paDemoStart" type="button" onclick="PADemo.start()">Masuk ke Battlefield</button><small class="paDemoNote">Wira dan Aurora akan menanti di pentas Segel.</small></section></div>`);
@@ -51,7 +53,7 @@ function start(){
     console.error('[demo] Segel battlefield is unavailable');
     return;
   }
-  window.openSegelDemo({guestDemo:true});
+  window.openSegelDemo({guestDemo:true,adaptiveShowcase:showcasePreview});
 }
 
 function setParentPin(pin){if(!st.active||!st.db||st.db.parentPin)return false;const next={...st.db,parentPin:pin};localStorage.setItem('pa_coach_v6_full',JSON.stringify(next));st.db.parentPin=pin;return true}
