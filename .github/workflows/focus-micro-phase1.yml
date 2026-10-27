@@ -4,6 +4,10 @@ on:
     paths:
       - 'js/engine/focus-micro-diagnosis-v1.js'
       - 'audit/focus-micro-phase1.test.js'
+      - 'audit/focus-micro-dev.test.js'
+      - 'js/dev-focus-micro-fixtures-v1.js'
+      - 'js/dev-focus-micro-lab-v1.js'
+      - 'index.html'
       - 'docs/focus-v2/PHASE1-MICRO-DIAGNOSIS-20261027.md'
       - '.github/workflows/focus-micro-phase1.yml'
   workflow_dispatch:
@@ -22,6 +26,8 @@ jobs:
           node-version: '24'
       - name: Test micro-skill evaluator
         run: node --test audit/focus-micro-phase1.test.js
+      - name: Test DEV lab fixtures, gates and host wiring
+        run: node --test audit/focus-micro-dev.test.js
       - name: Existing Focus v2 diagnosis oracle
         run: node audit/focus-v2-diagnosis-shadow.cjs
       - name: Existing curriculum foundation integrity contract
