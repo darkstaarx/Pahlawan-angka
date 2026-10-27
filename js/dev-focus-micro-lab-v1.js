@@ -7,7 +7,7 @@ const F=()=>window.PADevMicroFixturesV1, E=()=>window.PAFocusMicroV1;
 const allowed=()=>{try{return typeof isDevMode==='function'&&isDevMode()===true}catch(_){return false}};
 const canUse=()=>allowed()&&F()?.SCENARIOS&&E()?.evaluate;
 let root=null,mode='manual',scenario='table8',answered=[],index=0,feedback=null;
-let watching=false,live=[],serial=0,seen=new WeakSet();
+let watching=false,live=[],serial=0,seen=new WeakSet(),scope='game';
 const add=(p,t,s,cls)=>{
  const n=document.createElement(t);if(s!==undefined&&s!==null)n.textContent=String(s);
  if(cls)n.className=cls;if(p)p.appendChild(n);return n;
@@ -42,10 +42,21 @@ function style(){
  '#paFocusMicroDev .finding b{display:block}',
  '#paFocusMicroDev .finding small{color:#c4d1de}',
  '#paFocusMicroDev ol{padding-left:22px}',
+ '#paMicroGameBadge{position:fixed;z-index:2100000000;left:10px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px);border-radius:999px;min-height:39px;padding:7px 13px;background:#0d304c;color:#fff1c7;border:1px solid #dab676;box-shadow:0 3px 10px #0008;font:700 12px/1.3 system-ui,sans-serif;cursor:pointer}',
  '@media(max-width:400px){#paFocusMicroDev .tabs button{min-width:90px}}'
  ].join('');
 }
-function close(){root?.remove();root=null}
+function close(){root?.remove();root=null;refreshBadge()}
+function refreshBadge(){
+ let badge=document.getElementById('paMicroGameBadge');
+ if(!watching||!allowed()||!live.length){badge?.remove();return}
+ if(!badge){badge=add(document.body,'button',null);badge.id='paMicroGameBadge';badge.type='button';
+  badge.addEventListener('click',()=>{if(allowed()){mode='actual';open()}})}
+ const m=E()?.evaluate({diagLog:live})||{findings:[],evidence:{usableRows:0}};
+ const candidates=m.findings.filter(x=>x.status==='probe_candidate');
+ badge.textContent='DEV DIAG · '+m.evidence.usableRows+' soalan · '+candidates.length+' calon · Lihat';
+ badge.hidden=!!root;
+}
 function reset(){answered=[];index=0;feedback=null}
 function choices(p){
  const sel=add(p,'select',null);sel.setAttribute('aria-label','Pilih senario');
@@ -115,14 +126,32 @@ function auto(p){
 function actual(p){
  const box=add(p,'section',null,'panel');
  add(box,'h3','Pantau DEV Test Skill sebenar');
- add(box,'p','Hanya cubaan pertama daripada Question Bank Tester ketika DEV aktif. Semua tangkapan modul ini disimpan dalam memori halaman, bukan rekod anak.');
+ add(box,'p','Pantau jawapan daripada game sebenar dengan enjin utama kekal mengawal soalan, tahap dan latihan. Micro Diagnosis hanya memerhati; rekod tambahan disimpan dalam memori sahaja.');
  add(box,'p','Untuk selamat, gunakan profil ujian. Gameplay DEV asal mungkin mempunyai kesan simpanan sendiri.','sub');
  const row=add(box,'div',null,'tabs');
- button(row,watching?'Henti pantauan':'Mula pantauan',()=>{watching=!watching;paint()});
- button(row,'Kosongkan',()=>{live=[];seen=new WeakSet();serial=0;paint()},'alt');
- add(box,'p',(watching?'Sedang memantau':'Tidak memantau')+' · '+live.length+' cubaan dirakam');
- add(box,'p','Cara cuba: Mula pantauan → tutup makmal → pilih Darjah dan Skill di Developer Mode → Test Skill → jawab → buka makmal semula.','sub');
- report(p,live,'DEV Test Skill (memori sahaja)');
+ button(row,(watching&&scope==='game'?'Henti':'Mula')+' pantauan game campur',()=>{
+  if(watching&&scope==='game')watching=false;
+  else{watching=true;scope='game';live=[];seen=new WeakSet();serial=0}
+  refreshBadge();paint();
+ });
+ button(row,(watching&&scope==='dev'?'Henti':'Mula')+' pantauan DEV Test Skill',()=>{
+  if(watching&&scope==='dev')watching=false;
+  else{watching=true;scope='dev';live=[];seen=new WeakSet();serial=0}
+  refreshBadge();paint();
+ },'alt');
+ button(row,'Kosongkan',()=>{live=[];seen=new WeakSet();serial=0;refreshBadge();paint()},'alt');
+ add(box,'p',(watching?'Memantau '+(scope==='game'?'game campur':'DEV Test Skill'):'Tidak memantau')+' · '+live.length+' cubaan pertama');
+ add(box,'p',scope==='game'?'Cara cuba: aktifkan pantauan game campur → Tutup → main Kembara / Misi / Coach seperti biasa pada profil ujian. Lihat butang terapung DEV DIAG selepas menjawab.':
+  'Cara cuba: aktifkan pantauan DEV Test Skill → Tutup → Darjah & Skill → Test Skill → jawab → buka makmal.','sub');
+ report(p,live,'Jawapan permainan (memori sahaja)');
+ if(window.PADiagnostic?.analyze){
+  const legacy=window.PADiagnostic.analyze(live,{now:Date.now(),name:'Profil ujian'});
+  const compare=add(p,'section',null,'panel');
+  add(compare,'h3','Diagnostic Brain utama — semakan selari');
+  add(compare,'p',legacy.enough===false?'Belum cukup rekod untuk Diagnostic Brain utama.':'Dapatan utama: '+(legacy.findings?.length||0)+' (ambang lebih ketat).');
+  for(const f of (legacy.findings||[]).slice(0,5))add(compare,'p',(f.text||f.id||'Dapatan')+' · '+(f.confidence||'perlukan semakan'),'sub');
+  add(compare,'p','Hanya untuk perbandingan semasa ujian. Sistem utama masih menentukan semua intervensi; Micro Diagnosis tidak memulakan mini-game.','sub');
+ }
  if(live.length){
   const recent=add(p,'section',null,'panel');add(recent,'h3','Cubaan terkini');
   const list=add(recent,'ol');
@@ -151,17 +180,22 @@ function open(){
 function capture(skillId,ok,tag,sec,hint,q,responseMode){
  if(!watching||!allowed())return;
  try{
-  if(typeof sess==='undefined'||!sess?.devBankTest||!q||typeof q!=='object')return;
+  if(typeof sess==='undefined'||!sess||!q||typeof q!=='object')return;
+  if(scope==='dev'&&!sess.devBankTest||scope==='game'&&!!(sess.devBankTest||sess.demoMode||sess.devBattlefield))return;
   if(seen.has(q)||String(responseMode||'').includes('retry'))return;
   const firstWrong=!ok&&String(responseMode||'').includes('first-attempt');
   const firstCorrect=!!ok&&!String(responseMode||'').includes('first-attempt');
   if(!firstWrong&&!firstCorrect)return;
   seen.add(q);
-  const fac=window.PADiagnostic?.facets?.(q,typeof META!=='undefined'?META[skillId]:null);
+  const meta=typeof META!=='undefined'?META[skillId]:null;
+  const fac=window.PADiagnostic?.facets?.(q,meta);
   if(!fac||!['add','sub','mul','div'].includes(fac.op)||!Array.isArray(fac.operands)||fac.operands.length!==2)return;
-  live.push({id:'dev-micro-live-'+(++serial),s:String(skillId),o:fac.op,a:fac.operands.slice(),
-   t:Date.now(),k:ok?1:0,h:hint?1:0,sec:Number(sec)||0,w:fac.words||3,f:fac.format||'symbolic',c:fac.context||'plain'});
-  if(live.length>120)live.shift();
+  // Reuse the primary brain's normalisation so both readings share the SAME evidence.
+  // This returns new in-memory records without writing db, localStorage or Supabase.
+  live=window.PADiagnostic.applyResponse(live,{q:{...q,skill:q.skill||skillId,
+   token:'micro-live-'+(++serial)},meta,ok,sec,usedHint:!!hint,
+   mode:responseMode,value:undefined,at:Date.now()}).slice(-120);
+  refreshBadge();
  }catch(_){/* Never disrupt battle. */}
 }
 function wrap(){
@@ -178,7 +212,7 @@ function mount(){
  const sec=add(parent,'section',null,'devScenario');
  sec.dataset.microDiagnosisLab='1';
  add(sec,'b','Micro Diagnosis Lab · Phase 1');
- add(sec,'p','Uji sifir 8, fakta 7×8, pinjam merentas sifar dan baki bahagi. Boleh pantau sesi DEV Test Skill.','mut devMiniCopy');
+ add(sec,'p','Uji semua sifir 2–12 dan pantau jawapan dalam gameplay sebenar atau DEV Test Skill — enjin utama tidak diubah.','mut devMiniCopy');
  button(sec,'Buka Makmal Diagnosis',open,'btn devPrimary small');return true;
 }
 function init(){
@@ -188,6 +222,6 @@ function init(){
   .observe(d,{attributes:true,attributeFilter:['class']});
  mount();
 }
-window.PADevFocusMicroLabV1={open,close,mount,status:()=>({watching,captured:live.length,visible:!!root})};
+window.PADevFocusMicroLabV1={open,close,mount,status:()=>({watching,scope,captured:live.length,visible:!!root})};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
