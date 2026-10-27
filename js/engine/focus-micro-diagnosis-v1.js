@@ -113,7 +113,7 @@
    // New successes on the precise same equations can supersede an old suggestion.
    const recovered=rows.filter(r=>r.t>latestFail&&r.independent&&
     failedRows.some(x=>x.family===r.family));
-   if(unique(recovered.map(r=>r.family))>=2)return;
+   if(extra.minFailedFamilies===1?recovered.length>=2:unique(recovered.map(r=>r.family))>=2)return;
    const enough=failedKeys>=(extra.minFailedFamilies||2)&&contrastKeys>=2&&
      (extra.extraGate?extra.extraGate(failedRows,independentContrast):true);
    const status=enough?'probe_candidate':'needs_more_evidence';
@@ -149,7 +149,7 @@
   for(const col of [0,1]){
    const target=add.filter(r=>r.carry.includes(col));
    const control=add.filter(r=>!r.carry.includes(col)&&
-     Math.max(r.a,r.b)>=10**(col+1));
+     Math.max(r.a,r.b)>=10**Math.max(1,col));
    offer(cat(col===0?'add.carry.ones':'add.carry.tens'),
     target.filter(r=>r.failed),control,'CARRY_VS_NO_CARRY');
   }
