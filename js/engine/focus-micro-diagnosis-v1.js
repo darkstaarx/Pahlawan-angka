@@ -39,11 +39,11 @@
  });
  function exactFact(r){
   const {op,a,b}=r;
-  if(op==='mul'&&TABLES.includes(a)&&TABLES.includes(b)){
+  if(op==='mul'&&a>=1&&a<=12&&b>=1&&b<=12&&(TABLES.includes(a)||TABLES.includes(b))){
    const x=Math.min(a,b),y=Math.max(a,b);
    return spec('mul.fact.'+x+'x'+y,'mul.facts','Fakta '+x+' × '+y);
   }
-  if(op==='div'&&TABLES.includes(b)&&a%b===0&&TABLES.includes(a/b)){
+  if(op==='div'&&TABLES.includes(b)&&a%b===0&&a/b>=1&&a/b<=12){
    return spec('div.fact.'+a+'by'+b,'div.facts','Fakta '+a+' ÷ '+b);
   }
   if(op==='add'&&a<=10&&b<=10&&a+b<=20){
