@@ -222,6 +222,14 @@ function init(){
   .observe(d,{attributes:true,attributeFilter:['class']});
  mount();
 }
-window.PADevFocusMicroLabV1={open,close,mount,status:()=>({watching,scope,captured:live.length,visible:!!root})};
+function startMonitoring(kind='game'){
+ if(!canUse())return false;
+ scope=kind==='dev'?'dev':'game';watching=true;live=[];serial=0;seen=new WeakSet();
+ refreshBadge();if(root)paint();return true;
+}
+function stopMonitoring(){watching=false;refreshBadge();if(root)paint()}
+window.PADevFocusMicroLabV1={open,close,mount,startMonitoring,stopMonitoring,
+ status:()=>({watching,scope,captured:live.length,visible:!!root}),
+ inspect:()=>allowed()?{micro:E().evaluate({diagLog:live}),main:window.PADiagnostic?.analyze?.(live,{now:Date.now(),name:'Profil ujian'})||null}:null};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
