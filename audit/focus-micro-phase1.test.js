@@ -11,11 +11,14 @@ const controls=[
  row('mul',3,9,1,T+2),
  row('mul',5,9,1,T+3)
 ];
-test('catalog is a controlled list: 15 observable candidates + four requiring new tags',()=>{
- assert.equal(engine.CATALOG.length,19);
- assert.equal(new Set(engine.CATALOG.map(x=>x.id)).size,19);
- assert.equal(engine.CATALOG.filter(x=>x.status==='diaglog').length,15);
+test('catalog lists all tables 2–12, cross-topic features and deferred tags',()=>{
+ assert.equal(engine.CATALOG.length,22);
+ assert.equal(new Set(engine.CATALOG.map(x=>x.id)).size,22);
+ assert.equal(engine.CATALOG.filter(x=>x.status==='diaglog').length,18);
  assert.equal(engine.CATALOG.filter(x=>x.status==='needs_authored_item_tags').length,4);
+ assert.deepEqual(engine.CATALOG.filter(x=>x.id.startsWith('mul.table.')).map(x=>x.id),
+  Array.from({length:11},(_,i)=>'mul.table.'+(i+2)));
+ assert.deepEqual(Object.keys(engine.FACT_FAMILIES).sort(),['add','div','mul','sub']);
 });
 test('single wrong answer never produces an exact-fact candidate',()=>{
  const x=engine.evaluate({diagLog:[row('mul',8,7,0,T),...controls]});
@@ -126,4 +129,58 @@ test('shadow engine is pure and never routes, changes rewards or alters profile'
  assert.equal(result.mode,'shadow_read_only');
  assert.equal(result.writes,0);
  assert.equal(result.note.includes('routing'),true);
+});
+
+test('table 2 and table 12 are detected with same generic logic',()=>{
+ for(const n of [2,12]){
+  const x=engine.evaluate({diagLog:[
+   row('mul',n,4,0,T),row('mul',n,7,0,T+100),
+   row('mul',3,5,1,T+200),row('mul',6,9,1,T+300)
+  ]},{maxFindings:50});
+  assert.equal(matched(x,'mul.table.'+n).status,'probe_candidate');
+ }
+});
+test('one rule generates exact fact candidates for any multiplication fact, not 7x8 only',()=>{
+ const x=engine.evaluate({diagLog:[
+  row('mul',4,9,0,T),row('mul',9,4,0,T+DAY),
+  row('mul',5,6,1,T+DAY*2),row('mul',3,8,1,T+DAY*3)
+ ]},{maxFindings:50});
+ assert.equal(matched(x,'mul.fact.4x9').status,'probe_candidate');
+ assert.equal(engine._test.exactFact({op:'mul',a:1,b:8}).id,'mul.fact.1x8');
+ assert.equal(engine._test.exactFact({op:'mul',a:14,b:8}),null);
+});
+test('any valid exact division fact can be retested, rather than only 56/8',()=>{
+ const x=engine.evaluate({diagLog:[
+  row('div',48,6,0,T),row('div',48,6,0,T+DAY),
+  row('div',36,6,1,T+DAY*2),row('div',24,6,1,T+DAY*3)
+ ]});
+ assert.equal(matched(x,'div.fact.48by6').status,'probe_candidate');
+ assert.equal(engine._test.exactFact({op:'div',a:8,b:8}).id,'div.fact.8by8');
+ assert.equal(engine._test.exactFact({op:'div',a:100,b:25}),null);
+});
+test('addition and subtraction candidates are created from operands, not enumerated facts',()=>{
+ const add=engine.evaluate({diagLog:[
+  row('add',4,9,0,T),row('add',9,4,0,T+DAY),
+  row('add',2,7,1,T+DAY*2),row('add',5,6,1,T+DAY*3)
+ ]});
+ const sub=engine.evaluate({diagLog:[
+  row('sub',13,6,0,T),row('sub',13,6,0,T+DAY),
+  row('sub',15,7,1,T+DAY*2),row('sub',17,9,1,T+DAY*3)
+ ]});
+ assert.equal(matched(add,'add.fact.4plus9').status,'probe_candidate');
+ assert.equal(matched(sub,'sub.fact.13minus6').status,'probe_candidate');
+});
+test('two wrong answers in separate contexts are not merged into exact plain fact evidence',()=>{
+ const x=engine.evaluate({diagLog:[
+  row('div',48,6,0,T,{c:'money'}),row('div',48,6,0,T+DAY,{c:'measurement'}),
+  row('div',36,6,1,T+2*DAY),row('div',24,6,1,T+3*DAY)
+ ]});
+ assert.equal(matched(x,'div.fact.48by6'),undefined);
+});
+test('a single wrong factor or unusually fast response cannot create a 2-to-12 table candidate',()=>{
+ const x=engine.evaluate({diagLog:[
+  row('mul',12,7,0,T),row('mul',12,9,0,T+100,{sec:.2}),
+  row('mul',3,6,1,T+200),row('mul',4,5,1,T+300)
+ ]},{maxFindings:50});
+ assert.equal(matched(x,'mul.table.12'),undefined);
 });
