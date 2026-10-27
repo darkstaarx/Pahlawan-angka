@@ -3120,6 +3120,20 @@
          hanya MEMANGGIL fungsi produksi yang sudah ada.
   */
   let entryMode=null, demoOpenGeneration=0, runGeneration=0;
+  const previewShowcase=()=>!!(entryMode?.guestDemo&&entryMode?.adaptiveShowcase);
+  function showcaseSkillPlan(grade){
+    let skills=[];
+    try{skills=GRAPH.skills.filter(s=>s.grade===grade&&s.role==='core').sort((a,b)=>a.id.localeCompare(b.id))}catch(_){}
+    if(!skills.length)return guestTopicPlan(grade).slice(0,12);
+    const interesting=skills.filter(s=>/darab|sifir|mult|tolak|sub/i.test((s.id||'')+' '+(s.title||'')));
+    const focus=(interesting[0]||skills[0]).id;
+    const diverse=[], used=new Set();
+    skills.forEach(s=>{const topic=s.domain||String(s.chapter||'');if(!used.has(topic)){used.add(topic);diverse.push(s.id)}});
+    for(const s of skills){if(diverse.length>=6)break;if(!diverse.includes(s.id))diverse.push(s.id)}
+    const first=Array.from({length:6},(_,i)=>diverse[i%diverse.length]);
+    const other=diverse.find(id=>id!==focus)||focus;
+    return [...first,focus,other,focus,focus,other,focus];
+  }
   // {chapter} | {adaptive:true} | {devBattlefield:true,pet} | null
   const currentRun=probe=>!!probe&&run===probe&&probe.generation===runGeneration;
 
@@ -3182,7 +3196,7 @@
       if(scoped.length)return mix(scoped);
     }
     if(entryMode?.guestDemo){
-      const plan=guestTopicPlan(grade);
+      const plan=previewShowcase()?showcaseSkillPlan(grade):guestTopicPlan(grade);
       if(plan.length)return plan;
     }
     let pool=[];
@@ -3397,7 +3411,7 @@
     let goldTier=false;
     try{ goldTier=!!(stage&&stage.activeTier()&&stage.activeTier().key==='emas') }catch(_){}
     const api=window.PADevExperiments;
-    if(goldTier&&!adaptiveId&&api&&typeof api.typedEligible==='function'){
+    if(goldTier&&!adaptiveId&&!previewShowcase()&&api&&typeof api.typedEligible==='function'){
       for(let t=0;t<GOLD_TRIES;t++){
         const candidateId=run.pool[(base+t)%run.pool.length];
         const candidate=makeQuestion(candidateId);
@@ -3440,7 +3454,7 @@
       if(!run.coveredTopics.includes(topic))run.coveredTopics.push(topic);
     }
     const count=entryMode?.guestDemo
-      ? `Soalan ${run.asked+1} / ${run.questionTarget}`
+      ? `Soalan ${run.asked+1} / ${run.questionTarget}${previewShowcase()&&run.autopilot?' · AUTOPILOT':''}`
       : `Soalan ${run.asked+1}`;
     /* Owner (2026-10-24): one question number only, in the question panel. The pill by Wira is gone. */
     $('segelQLabel').textContent=count;
@@ -3486,6 +3500,10 @@
     queueMicrotask(()=>window.PASegelInteractionBridge?.sync?.());
     // Count entry only after a guest question and its answer surface rendered.
     if(entryMode?.guestDemo)window.PADemoFunnel?.track('demo_start');
+    if(previewShowcase()&&run.autopilot){
+      $('segelFeedback').textContent='AUTOPILOT · Contoh fokus latihan, bukan diagnosis anak.';
+      queuePreviewAuto(run);
+    }
   }
 
   function syncQuestionLayout(){
@@ -3559,6 +3577,42 @@
     });
   }
 
+  // Both manual and scripted inputs use the original Segel answer resolver.
+  // Auto actions use the real DOM controls whenever possible.
+  function queuePreviewAuto(activeRun){
+    clearTimeout(activeRun.autoTimer);
+    const turn=activeRun.asked;
+    activeRun.autoTimer=setTimeout(()=>{
+      if(!currentRun(activeRun)||!previewShowcase()||!activeRun.autopilot||activeRun.locked||activeRun.asked!==turn)return;
+      const q=activeRun.q,bad=q?.wrong?.[0];
+      const wrong=(turn===6||turn===8)&&!activeRun.retryOpen&&!!bad;
+      const option=wrong?bad:{v:q.answer,tag:'correct',label:q.answer};
+      const form=$('segelAnswers')?.querySelector('.paTypedAnswer');
+      if(form){
+        const input=form.querySelector('.paTypedInput');
+        if(input){input.value=String(option.v);form.requestSubmit();return}
+      }
+      const choices=[...($('segelAnswers')?.querySelectorAll('button.ans')||[])];
+      const btn=choices.find(b=>String(b.textContent).trim()===String(option.label??option.v).trim());
+      if(btn){btn.click();return}
+      const bridgeButton=$('segelAnswers')?.querySelector('button');
+      if(bridgeButton){respond(option,bridgeButton);return}
+      console.warn('[adaptive-preview] question UI unavailable',q?.skill);
+      finishRun(false,'Autopilot tidak dapat mengakses kawalan jawapan.');
+    },1700);
+  }
+  function offerPreviewAuto(activeRun){
+    activeRun.awaitingAuto=true;
+    $('segelFeedback').textContent='6 soalan pertama selesai. Tengok contoh cara Cikgu Dimensi fokus semula latihan.';
+    const box=$('segelAnswers');box.replaceChildren();
+    const button=document.createElement('button');
+    button.type='button';button.className='ans';button.textContent='Lihat Autopilot · 6 soalan lagi';
+    button.onclick=()=>{
+      if(!currentRun(activeRun)||!activeRun.awaitingAuto)return;
+      activeRun.awaitingAuto=false;activeRun.autopilot=true;drawQuestion();
+    };
+    box.appendChild(button);
+  }
   async function respond(option,button){
     if(run&&run.production)return respondProduction(option,button);
     const activeRun=run;
@@ -3572,7 +3626,10 @@
     const retrying=guestRetry&&!!activeRun.retryOpen;
     const sameWrong=guestRetry&&retrying&&!correct&&String(option.v)===String(activeRun.retryWrongValue);
     const resolveQuestion=!guestRetry||correct||retrying&&!sameWrong;
-    if(resolveQuestion)activeRun.asked++;
+    if(resolveQuestion){
+      if(previewShowcase()&&!activeRun.autopilot&&correct&&!retrying&&!activeRun.usedHint)activeRun.manualClean++;
+      activeRun.asked++;
+    }
     const reachedTarget=activeRun.asked>=activeRun.questionTarget;
     if(correct){
       sfx('correct');activeRun.tally[activeRun.usedHint||retrying?'hint':'own']++;await stage.strike();
@@ -3597,6 +3654,7 @@
       $('segelFeedback').textContent=q_hint(activeRun.q);stage.wrong();
       await wait(520);if(!currentRun(activeRun))return;
       unlockGuestRetryControls(button);setTypedRetryEnabled();activeRun.locked=false;
+      if(previewShowcase()&&activeRun.autopilot)queuePreviewAuto(activeRun);
       return;
     }else{
       // A distinct second wrong answer resolves this question once.
@@ -3604,7 +3662,9 @@
       await wait(520);if(!currentRun(activeRun))return;
     }
     if(reachedTarget)return celebrate(activeRun);
-    await wait(420);if(!currentRun(activeRun))return;activeRun.retryOpen=false;activeRun.retryWrongValue=null;activeRun.locked=false;drawQuestion();
+    await wait(420);if(!currentRun(activeRun))return;activeRun.retryOpen=false;activeRun.retryWrongValue=null;activeRun.locked=false;
+    if(previewShowcase()&&activeRun.asked===6&&!activeRun.autopilot){offerPreviewAuto(activeRun);return}
+    drawQuestion();
   }
 
   async function respondProduction(option,button){
@@ -4004,18 +4064,20 @@
     if(entryMode?.guestDemo)window.PADemoFunnel?.track('demo_complete');
     guestCompleted=!!entryMode?.guestDemo;setDoneBackLabel(guestCompleted);
     // Bintang ikut Unity RescuePayoff.cs: satu bintang asas, +1 pada 80%, +1 pada 100%.
-    const stars=correct===0?0:1+(acc>=80?1:0)+(acc===100?1:0);
+    const previewAcc=previewShowcase()?Math.round((run.manualClean||0)/6*100):acc;
+    const starAcc=previewShowcase()?previewAcc:acc;
+    const stars=correct===0?0:1+(starAcc>=80?1:0)+(starAcc===100?1:0);
 
     $('segelDoneTitle').textContent='BERJAYA!';
     $('segelDoneText').textContent=devSubject(note||`${devPetName()} berjaya diselamatkan!`);
-    $('segelStatCorrect').textContent=`${correct} / ${run.asked}`;
-    $('segelStatAcc').textContent=acc+'%';
+    $('segelStatCorrect').textContent=previewShowcase()?String(run.manualClean||0)+' / 6':String(correct)+' / '+String(run.asked);
+    $('segelStatAcc').textContent=(previewShowcase()?previewAcc:acc)+'%';
     popStars(stars);
-    $('segelCoachSay').textContent=coachLine(t,acc,run.asked);
+    $('segelCoachSay').textContent=previewShowcase()?'Enam soalan pertama kamu jawab sendiri. Enam lagi dijalankan oleh autopilot, bukan markah atau diagnosis kamu.':coachLine(t,acc,run.asked);
     const summary=$('segelDemoSummary');
     if(entryMode?.guestDemo&&summary){
       const grade=(typeof db!=='undefined'&&db&&db.schoolGrade)||1;
-      summary.textContent=`Demo Darjah ${grade} · ${run.asked}/${run.questionTarget} soalan · ${run.coveredTopics.length} topik diteroka. Keputusan ini tidak disimpan.`;
+      summary.textContent=previewShowcase()?'Preview adaptif: 6 soalan sendiri + 6 autopilot. Fokus topik cuma contoh; tiada diagnosis disimpan.':`Demo Darjah ${grade} · ${run.asked}/${run.questionTarget} soalan · ${run.coveredTopics.length} topik diteroka. Keputusan ini tidak disimpan.`;
       summary.hidden=false;
     }else if(summary)summary.hidden=true;
     $('segelDone').hidden=false;
@@ -4034,7 +4096,7 @@
     guestCompleted=false;
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     const pool=skillPool();
-    run={generation:++runGeneration,pool,questionTarget:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],
+    run={generation:++runGeneration,pool,questionTarget:previewShowcase()?12:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],autopilot:false,awaitingAuto:false,manualClean:0,autoTimer:null,
          writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
@@ -4265,7 +4327,7 @@
     if(entryMode?.guestDemo){
       const finished=guestCompleted;
       const grade=Number((typeof db!=='undefined'&&db&&db.schoolGrade)||0)||null;
-      ++demoOpenGeneration;++runGeneration;run=null;entryMode=null;guestCompleted=false;
+      clearTimeout(run?.autoTimer);++demoOpenGeneration;++runGeneration;run=null;entryMode=null;guestCompleted=false;
       setDoneBackLabel(false);
       window.PADemo?.restoreGuest?.();
       if(typeof goLogin==='function')goLogin();
@@ -4302,7 +4364,7 @@
       await boot();await stage.setRescuePet?.(null);stage.reset();stage.resume();stage.enter();
       return stage;
     },
-    clearMode:()=>{++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
+    clearMode:()=>{clearTimeout(run?.autoTimer);++demoOpenGeneration;++runGeneration;run=null;entryMode=null;stage?.cancel?.();return stage?.setPet?.(null)},
     submitInteraction:(choice,button,q)=>{
       if(!entryMode?.guestDemo||!run||run.q!==q||run.locked)return false;
       respond(choice,button);return true;
