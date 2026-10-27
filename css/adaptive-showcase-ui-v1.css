@@ -1,0 +1,56 @@
+/* Preview-only shell: loaded only when ?pa_demo_adaptive_preview=1. */
+#paAdaptivePreviewRoot[hidden],#paAdaptiveDock[hidden],#paAdaptiveSheet[hidden]{display:none!important}
+.paApRoot,.paApSheet{position:fixed;inset:0;z-index:9800;font-family:inherit;color:#faf3e4}
+.paApRoot{display:grid;place-items:center;padding:12px;background:rgba(4,12,25,.95);overflow:auto}
+.paApBackdrop{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 10%,rgba(36,83,134,.4),transparent 68%)}
+.paApHub{position:relative;z-index:1;width:min(440px,100%);max-height:calc(100dvh - 135px - env(safe-area-inset-bottom,0px));overflow-y:auto;overscroll-behavior:contain;border:1px solid #49678a;border-radius:22px;padding:19px 15px 16px;background:linear-gradient(145deg,#132a47,#071426);box-shadow:0 20px 70px #0009}
+.paApHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.paApHeader small,.paApLabel{display:block;color:#e4be74;font-weight:850;letter-spacing:.11em;font-size:10px}.paApHeader h1{margin:5px 0 3px;font-size:26px;line-height:1.1;color:#fff6e4}.paApHeader p{margin:0;color:#b2c5da;font-size:12px}
+.paApX,.paApSheetHead button{min-width:32px;min-height:32px;border:1px solid #527399;border-radius:10px;color:#f7ead4;background:#152c4b;font-size:23px}
+.paApGrades{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin-bottom:13px}
+.paApGrades button{min-height:34px;border:1px solid #415c7c;border-radius:9px;background:#132b4b;color:#d8e6f6;font-size:12px;font-weight:850}
+.paApGrades button[aria-pressed=true]{color:#182b41;background:#f2cb78;border-color:#f2cb78}
+.paApGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.paApTile{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding:12px;border-radius:14px;min-height:92px;text-align:left;color:#f4f0e4;border:1px solid #385473;background:#142942;cursor:pointer}
+.paApTile svg{width:21px;height:21px;color:#c1d7ec}.paApTile span{font-weight:850;font-size:14px}.paApTile small{font-size:11px;color:#a4bad2}
+.paApTile.active{border-color:#f0ca7b;background:#273b51;box-shadow:inset 0 0 0 1px #f0ca7b42}.paApTile.active svg{color:#f0ca7b}
+.paApSummary{margin:11px 0;padding:13px;border:1px solid #395475;border-radius:14px;background:#0b1c33;min-height:114px}
+.paApSummary h2,.paApSheetPanel h2{font-size:18px;margin:5px 0 8px;color:#fff4dc}
+.paApSummary p,.paApSheetPanel p{font-size:12px;line-height:1.5;color:#d9e3ed;margin:6px 0}
+.paApSummary strong,.paApSheetPanel strong{color:#f0cb80}
+.paApInsight{display:grid;gap:5px;padding:10px;border-radius:10px;background:#183252;border:1px solid #315577;margin-top:10px}
+.paApInsight b{font-size:13px;color:#f4d08a}.paApInsight span{font-size:12px;line-height:1.45;color:#e1e7ed}
+.paApProgress{display:flex;align-items:baseline;gap:10px;padding:9px 0}.paApProgress b{color:#f4d08a;font-size:22px}.paApProgress span{color:#bbcee0;font-size:12px}
+.paApLesson{border:1px solid #49698b;border-radius:12px;padding:12px;margin:12px 0;display:grid;gap:5px;background:#112944}
+.paApLesson span{font-size:15px;font-weight:750;color:#c9e0f7}.paApLesson b{font-size:20px;color:#f1d38b}.paApLesson small{font-size:12px;line-height:1.5;color:#d4e2ef}
+.paApNote{color:#e8c78b!important}
+.paApPlay,.paApBackGame{width:100%;min-height:42px;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid #edcd89;border-radius:12px;background:#ebc779;color:#182943;font-weight:900;font-size:14px;cursor:pointer}
+.paApPlay span{font-size:22px}.paApFoot{font-size:10px;line-height:1.45;color:#9eb5cf;margin:10px 2px 0}
+.paApDock{position:fixed;z-index:9850;left:50%;transform:translateX(-50%);bottom:calc(5px + env(safe-area-inset-bottom,0px));width:min(450px,calc(100% - 16px));display:grid;gap:5px;font-family:inherit;pointer-events:auto}
+.paApActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:0 5px}
+.paApActions button{min-height:33px;border:1px solid #d6b871;border-radius:18px;padding:4px 7px;background:#f0cf89;color:#1a324d;font-size:11.5px;font-weight:850;box-shadow:0 4px 12px #0008}
+.paApActions button+button{background:#152b48;color:#f0cf89}
+.paApNav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-radius:17px;background:#08182d;border:1px solid #53698b;box-shadow:0 10px 28px #000b;padding:5px;min-height:57px}
+.paApNav button{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:11px;background:transparent;color:#aabdd2;font-size:10px;cursor:pointer}
+.paApNav button svg{width:19px;height:19px;flex:none}.paApNav button.active{color:#f4cf85;background:#1a324f}
+.paApSheet{z-index:9900;display:grid;align-items:end}
+.paApShade{position:absolute;inset:0;background:#030c18bc}
+.paApSheetPanel{position:relative;margin:0 auto;width:min(450px,100%);max-height:min(66dvh,560px);overflow-y:auto;padding:14px 17px calc(22px + env(safe-area-inset-bottom,0px));border:1px solid #4a7095;border-radius:20px 20px 0 0;background:linear-gradient(#172f4e,#081629);box-shadow:0 -15px 35px #0009}
+.paApSheetHead{display:flex;align-items:center;justify-content:space-between;color:#d8b979;letter-spacing:.09em;font-size:10px;margin-bottom:10px}
+.paApSheetPanel .paApBackGame{margin-top:18px}
+body.paApActive #segelDemo.on .segelStage{flex-basis:34%;min-height:150px}
+body.paApActive #segelDemo.on .segelPanel{padding-bottom:calc(103px + env(safe-area-inset-bottom,0px))}
+body.paApActive #segelDemo.on .segelTop{padding-top:calc(4px + env(safe-area-inset-top,0px))}
+body.paApActive #segelDemo.on .segelBanner{padding:4px 13px}
+body.paApTyping #paAdaptiveDock{visibility:hidden;pointer-events:none}
+@media(max-height:680px){
+.paApHub{padding:12px;max-height:calc(100dvh - 112px)}
+.paApTile{min-height:69px;padding:8px}.paApSummary{min-height:75px;padding:10px}.paApHeader{margin-bottom:8px}
+body.paApActive #segelDemo.on .segelStage{flex-basis:30%;min-height:110px}
+body.paApActive #segelDemo.on .segelPanel{padding-bottom:calc(94px + env(safe-area-inset-bottom,0px))}
+}
+@media(orientation:landscape) and (max-height:530px){
+.paApDock{width:min(360px,calc(100% - 10px));left:auto;right:8px;transform:none}
+.paApHub{max-height:calc(100dvh - 18px);width:min(450px,100%);margin-right:360px}
+body.paApActive #segelDemo.on .segelPanel{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+}
+@media(prefers-reduced-motion:reduce){.paApRoot *, .paApDock *{animation:none!important;transition:none!important}}
