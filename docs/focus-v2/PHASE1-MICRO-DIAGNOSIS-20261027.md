@@ -1,116 +1,73 @@
-# Focus Micro Diagnosis — Phase 1 shadow pilot
+# Focus Micro Diagnosis — Phase 1: generalised, DEV-only pilot
 
-**Branch:** \`feature/focus-micro-diagnosis-phase1-20261027\`
-**Status:** READ-ONLY prototype. **Not registered in the app, not live, not deployed, not connected to Supabase.**
+**Branch:** `feature/focus-micro-diagnosis-phase1-20261027`  
+**PR:** #133 (draft)  
+**Release status:** Shadow + authorised DEV test lab on this branch only. **Not merged, not deployed, no automatic remediation.**
 
-## What was built
+## Architecture decision
 
-- \`js/engine/focus-micro-diagnosis-v1.js\`: deterministic, dependency-free, browser/CommonJS-compatible, pure shadow evaluator of existing \`diagLog\` records.
-- \`audit/focus-micro-phase1.test.js\`: automated test cases for candidate generation, abstention, cross-grade use, mathematics, non-mutation, evidence deduplication, speed/hint/guided exclusions and recovery.
-- No changes to existing production files, gameplay, adaptive routing, learner mastery, cloud schema, PWA registration, UI or rewards.
-- Existing \`diagLog\` stores operations, operands (\`a\`), first-try correctness (\`k\`), context (\`c\`), representation (\`f\`), response time, hint/guided flags, skill and event identity. This supports *provisional retest signals*, **not cognitive root-cause diagnosis**.
+Do not hardcode every multiplication or division fact, and do not create a second live adaptive brain. The pure shadow evaluator accepts first-attempt evidence from existing `diagLog` and infers *retest candidates* conservatively.
 
-## 19 candidate patterns (not 19 proven impairments)
+The algorithm now loops through **tables 2–12** automatically and generates exact-fact IDs from the actual numbers in failed equations:
 
-| Pattern ID | Based on current first-attempt log? | Correct interpretation |
-|---|---|---|
-| \`mul.table.6\` | Yes | Several failed facts involving factor 6 |
-| \`mul.table.7\` | Yes | Several failed facts involving factor 7 |
-| \`mul.table.8\` | Yes | Several failed facts involving factor 8 |
-| \`mul.table.9\` | Yes | Several failed facts involving factor 9 |
-| \`mul.fact.7x8\` | Yes | Retest exact commutative fact 7×8/8×7 |
-| \`div.fact.56by8\` | Yes | Retest 56÷8 (not proof that all division is weak) |
-| \`add.fact.7plus8\` | Yes | Retest 7+8/8+7 |
-| \`sub.fact.15minus7\` | Yes | Retest 15−7 |
-| \`add.carry.ones\` | Yes | Candidate difficulty when ones require carrying |
-| \`add.carry.tens\` | Yes | Candidate difficulty when tens require carrying |
-| \`sub.borrow.ones\` | Yes | Candidate difficulty borrowing at ones |
-| \`sub.borrow.cross_zero\` | Yes | Candidate difficulty borrowing across zero |
-| \`div.remainder\` | Yes | Remainder contexts versus exact-division controls |
-| \`word.context_vs_symbolic\` | Yes, **non-matched** | Contrast needed; cannot distinguish reading vs operation choice |
-| \`money.context_vs_plain\` | Yes, **non-matched** | Contrast needed; cannot distinguish money concepts vs harder arithmetic |
-| \`measurement.cm_to_m\` | **No — pending authored tags** | Must preserve conversion direction/unit metadata |
-| \`time.minutes_to_hours\` | **No — pending authored tags** | Must preserve actual time conversion and representation |
-| \`decimal.column_alignment\` | **No — pending authored tags** | Must preserve column-position evidence and distractor type |
-| \`fraction.unlike_denominators\` | **No — pending authored tags** | Must preserve specific denominators and operations |
+- `mul.fact.4x9` and `mul.fact.7x8` (commutative equations share one identity); factors 1–12 as long as at least one factor is 2–12.
+- `div.fact.48by6`, `div.fact.56by8` and other exact division facts with divisor 2–12 and quotient 1–12.
+- `add.fact.4plus9`, `add.fact.7plus8` and other addition facts with individual addends up to 10.
+- `sub.fact.13minus6`, `sub.fact.15minus7` and other basic subtraction facts with minuend up to 20, subtrahend up to 10 and result up to 10.
 
-Patterns are curriculum/design hypotheses only; **no claim that the Ministry of Education has published their national prevalence**. They can apply to a Year 6 child practising earlier skills; the child's grade is not used as a proxy for mastery.
+Arithmetic fact ID generation is **data-driven**; adding a new combination does not require another source-code case. Arbitrary larger calculations are not automatically labelled as these one-step facts.
 
-## How it decides
+## Other coverage and exclusions
 
-1. Read the latest 600 answer records without modifying them. Exclude malformed/out-of-scope records, guided answers, demo/dev records when marked, and unusually rapid responses. One question token = one encounter.
-2. Derive arithmetic characteristics from **actual logged operands**, not only curriculum topic. Detect carrying and borrowing algorithmically; canonicalise commutative facts (7×8 = 8×7).
-3. Require at least two recorded failures before emitting even a \`needs_more_evidence\` signal.
-4. \`probe_candidate\` requires at least two distinct failed equations (except an exact fact that can be reattempted over separate days/formats), plus independent correct contrast on two *other* equations. For table candidates, failures must involve at least two different partners.
-5. Later correct unaided answers can retire a previous flag. This is a provisional heuristic, **not a psychometrically validated confidence score**.
-6. Output a next-probe **foundation ID** and evidence counts. Do **not** label behaviour or intent, assign diagnoses, lower mastery, or automatically route into a mini-game.
+Static catalog contains 22 entries: 11 multiplication tables and seven other observable feature families (addition carrying, subtraction borrowing, division remainder, word-context contrast and money-context contrast) plus four *deferred* domains. The exact-fact families above are dynamic and are not enumerated in the catalog. These counts describe code capability, not the real question-bank coverage or national weakness rates.
 
-### Example (synthetic only)
+Deferred until authored, verified per-item metadata exists:
 
-\`\`\`js
-const Micro = require('./js/engine/focus-micro-diagnosis-v1.js');
-const result = Micro.evaluate({ diagLog: profile.diagLog });
-// e.g. find id === 'mul.table.8', status === 'probe_candidate',
-// nextProbe === 'mul.facts'. Nobody gets routed by this API.
-\`\`\`
+- centimetre to metre conversion and direction;
+- minute-hour conversion;
+- decimal place-value alignment;
+- unlike-denominator fraction operations.
 
-## Risks and missing prerequisites
+Context matters: measurements, word problems and money are not treated as independent proofs of weakness in plain arithmetic. Unsupported items return insufficient evidence rather than guessed root causes.
 
-- \`diagLog\` does **not** store a guaranteed stable item-family/variant hash or valid matched contrast pair. Different questions with the same numerical fact may not be truly independent. **Do not equate a provisional flag with a confirmed misconception.**
-- A failure on 7×8 can be related to knowledge of 7, knowledge of 8, concept of groups, recall, attention or a misread item. The current shadow module does not disentangle these.
-- Word-story and money comparisons use nonmatched arithmetic examples. They are prompts for **matched contrast design**, not diagnosis of weak reading/money.
-- Current \`focusDiagnosticV1\` tags and Focus v2 learner review already offer richer semantics in some banks. New authoring must extend those contracts rather than create a competing production decision engine.
-- Missing unit/decimal/fraction metadata means \`measurement.cm_to_m\`, \`decimal.column_alignment\`, etc. remain **deferred** even if child results look suggestive.
-- Retest selections are *recommendations* only. Next phase requires fresh independent contrast items and correct remediation-to-transfer gameplay.
-- No private learner data was read or migrated for this change.
+## Evidence and safety contract
 
-## Tests / reproducibility
+1. Only valid first-attempt profile-style records for Year 1–6 skills and simple, recognised operations are eligible; attempts that are obviously too rapid, guided, or marked demo/dev are excluded.
+2. One question/attempt token counts once. Repeated errors require at least two observations. Exact-fact candidates require separated days or distinct forms and two other independently correct control equations.
+3. Table candidates require repeated failures with at least two distinct multiplication partners and independent correct controls excluding the target table.
+4. Retest candidates are **not confirmed misconceptions**, diagnoses of attention or proof of cognitive root causes.
+5. The evaluator is read-only. It never changes student mastery, scores, rewards, routing, existing Supabase data or saved profile state. Cross-grade fundamentals can be probed without assuming mastery by age.
+6. `probe_candidate` is a request for future independent contrast questions, not an instruction to launch a mini-game automatically.
 
-\`\`\`sh
+## Implementation
+
+- `js/engine/focus-micro-diagnosis-v1.js`: pure evaluator; generated fact IDs and generic tables 2–12.
+- `js/dev-focus-micro-fixtures-v1.js`: test-only predefined scenarios plus generated sifir 2–12 scenarios.
+- `js/dev-focus-micro-lab-v1.js`: authorised Developer Mode panel with manual quiz, automatic scenarios and optional in-memory capture of DEV Test Skill first answers.
+- `index.html`: loads the three modules on the experiment branch; access is governed by the existing `isDevMode()` gate.
+- `audit/focus-micro-phase1.test.js`, `audit/focus-micro-dev.test.js`: tests for absence of false labels, cross-grade functionality, generated facts, math, context separation, security gating, and purity.
+- `.github/workflows/focus-micro-phase1.yml`: GitHub Actions runs the two new test suites and three existing Focus/mapping/mini-game regression groups on PR changes.
+
+## Testing in staging / local
+
+Run this branch in an isolated local server or separate staging site. Use a **disposable DEV profile**. Open the existing authorised `DEV` panel, click `Buka Makmal Diagnosis`, then:
+
+1. Choose `Jawab sendiri` to answer fixed diagnostic examples. The timer value attached to the demo is synthetic (8 seconds), not a measurement of a pupil.
+2. Choose `Simulasi automatik` and select *any sifir 2–12*; the scenario generator produces different wrong multiplication facts and correct controls, with candidate output for that table. Also test one wrong answer (must abstain), cross-day exact fact, borrowing across zero, remainder and cm→m (must abstain without unit tags).
+3. Choose `DEV Test sebenar` and `Mula pantauan`; close the lab, run `Test Skill` from the normal DEV Question Bank Tester, then reopen to inspect captured first attempts. Records stay in memory until reset/reload.
+
+The observer delegates to the original telemetry function without changing return values. However, the original game's DEV battles can still have their own state/telemetry effects. Do **not** test using a real child's profile.
+
+## Reproducible CI checks
+
+```sh
 node --test audit/focus-micro-phase1.test.js
-node --test audit/*.test.js
+node --test audit/focus-micro-dev.test.js
 node audit/focus-v2-diagnosis-shadow.cjs
 node audit/focus-v2-foundation-contract.cjs
-\`\`\`
+node audit/focus-mini-games-router-qa.cjs
+```
 
-The 15 specific test bodies were executed in an isolated JavaScript V8 runner with Node \`test\` and assertion shims: **15/15 passed**. This is **not equivalent** to having executed Node CLI or the complete existing suite on a checkout. Prior to any release, rerun the commands above in CI/Work on a full repository checkout and validate a real mobile encounter.
+All five groups passed for the generic engine and DEV scenario changes on GitHub Actions run **40450025761**. This is automated code verification, **not yet an actual visual browser/mobile smoke test** or classroom-validity study. Real item coverage after generator wrappers, independent probe banks, transfer after remediation and full production regression are separate release gates.
 
-## Controlled next step — do not enable routing yet
-
-- Verify generated D1–D6 question tags *after* wrappers and identify the actual coverage of the 15 immediately observable candidates.
-- Add unit direction, decimal columns, fraction operation metadata to authored questions, preserving privacy and the existing Focus v2 schema; do not infer it from arbitrary wrong answer strings.
-- Add a reusable **matched probe bank** for multiplication/equal groups, carry/borrow, unit direction and word-versus-symbolic contrasts. Two independent items per contrast level; no duplicate questions counted.
-- Validate false positive/negative rates with consented, de-identified primary-school pilot responses; have teachers review ambiguous cases. Compare matched transfer accuracy before and after proposed remediation.
-- Gate on browser/Android performance, existing 240-test baseline, school-grade boundaries, profile integrity, Supabase RLS, and no unintended routing. Only then discuss a separately reviewed user-facing rollout.
-
-**Release verdict:** Safe for code review as a standalone shadow experiment; **NO-GO** for automatic remediation, parent diagnosis, live data writes or production release.
-
-
-## DEV Mode Micro Diagnosis Lab (branch-only)
-
-The existing authorised DEV panel now has a Micro Diagnosis Lab. It is loaded from index.html and never changes the production adaptive learner engine.
-
-### How to test on a staging/localhost checkout of this branch
-
-1. Start the site from this branch on localhost or a separate staging deployment, and select a disposable test profile.
-2. Open DEV using the existing authorised unlock, then select Buka Makmal Diagnosis.
-3. Jawab sendiri: answer the fixed arithmetic probe questions, then inspect candidates. Response time in these controlled fixtures is set to eight seconds, **not** measured pupil speed.
-4. Simulasi automatik: select repeated sifir 8, a single wrong answer, 7x8 across days, borrowing across zero, or remainder. The single-error scenario should abstain. The cm-to-m scenario must also abstain without verified item-level conversion metadata.
-5. DEV Test sebenar: activate Mula pantauan, close the lab, choose Darjah and Skill in the existing DEV Question Bank Tester, run Test Skill, and reopen the lab to see first-attempt observations. Only exact arithmetic operands recognised by the existing diagnostic facets can be analysed.
-6. Kosongkan clears the temporary live observations. Reloading also clears them.
-
-The new live observer calls the existing telemetry implementation unchanged. Its extra in-memory capture is allowed only while isDevMode() and sess.devBankTest are active. It does not load actual student history or send additional data to Supabase. **Important:** existing DEV gameplay may still invoke its own persistence path, so do not use a real learner profile for QA.
-
-The module emits only possible probe candidates and insufficient-evidence signals; it never verifies a misconception. A very rapid response may be ignored under existing rules. The correction to the Phase 1 engine explicitly excludes measurement-context division from plain division remainder analysis, preventing a false candidate for 340 cm divided by 100.
-
-### Validation
-
-Run these commands from a complete repository checkout:
-
-    node --test audit/focus-micro-phase1.test.js
-    node --test audit/focus-micro-dev.test.js
-    node audit/focus-v2-diagnosis-shadow.cjs
-    node audit/focus-v2-foundation-contract.cjs
-    node audit/focus-mini-games-router-qa.cjs
-
-All five groups passed GitHub Actions run 40449189414. This confirms Node-based contracts only; a staging browser/mobile visual QA pass is still outstanding. No merge to main or Netlify production deployment was performed.
+**GO** for draft PR review and staging/manual DEV testing; **NO-GO** for production release, automatic learner intervention, parent-facing diagnoses, or any claims that a specific multiplication table is nationally most difficult.
