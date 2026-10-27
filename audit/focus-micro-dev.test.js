@@ -6,13 +6,22 @@ const root=path.resolve(__dirname,'..');
 const engine=require('../js/engine/focus-micro-diagnosis-v1.js');
 const f=require('../js/dev-focus-micro-fixtures-v1.js');
 const report=key=>engine.evaluate({diagLog:f.automatic(key)});
-test('Six DEV fixtures include deterministic data and distinct scenarios',()=>{
- assert.equal(Object.keys(f.SCENARIOS).length,6);
+test('All table 2-12 fixtures plus original edge-case scenarios use deterministic data',()=>{
+ assert.equal(Object.keys(f.SCENARIOS).length,16);
  for(const k of Object.keys(f.SCENARIOS)){
   const rows=f.automatic(k);assert.equal(rows.length,f.SCENARIOS[k].items.length);
   assert(rows.every(x=>x.s==='D6.OPS'&&x.sec===8&&x.t>0));
  }
 });
+
+test('all table 2–12 scenarios generate the appropriate table candidate without special-case code',()=>{
+ for(let n=2;n<=12;n++){
+  const result=report('table'+n);
+  assert.equal(result.findings.find(x=>x.id==='mul.table.'+n)?.status,'probe_candidate',
+   'Expected candidate for sifir '+n);
+ }
+});
+
 test('Sifir 8 scenario: repeated failures with controls generate probe candidate',()=>{
  const x=report('table8');
  assert(x.findings.some(t=>t.id==='mul.table.8'&&t.status==='probe_candidate'));
