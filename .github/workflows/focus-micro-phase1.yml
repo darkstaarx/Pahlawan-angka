@@ -5,6 +5,9 @@ on:
       - 'js/engine/focus-micro-diagnosis-v1.js'
       - 'audit/focus-micro-phase1.test.js'
       - 'audit/focus-micro-dev.test.js'
+      - 'audit/focus-micro-game-integration.test.js'
+      - 'js/engine/diagnostic-brain-v1.js'
+      - 'js/engine/telemetry.js'
       - 'audit/focus-micro-staging-browser.cjs'
       - 'tools/micro-diagnosis-staging.html'
       - 'js/dev-focus-micro-fixtures-v1.js'
@@ -30,6 +33,8 @@ jobs:
         run: node --test audit/focus-micro-phase1.test.js
       - name: Test DEV lab fixtures, gates and host wiring
         run: node --test audit/focus-micro-dev.test.js
+      - name: Verify live mixed game read-only observer and DEV isolation
+        run: node --test audit/focus-micro-game-integration.test.js
       - name: Install browser smoke-test dependency
         run: npm install --no-save --package-lock=false playwright@1.62.1
       - name: Install Chromium
