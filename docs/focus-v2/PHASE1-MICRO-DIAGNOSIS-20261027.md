@@ -84,3 +84,33 @@ The 15 specific test bodies were executed in an isolated JavaScript V8 runner wi
 - Gate on browser/Android performance, existing 240-test baseline, school-grade boundaries, profile integrity, Supabase RLS, and no unintended routing. Only then discuss a separately reviewed user-facing rollout.
 
 **Release verdict:** Safe for code review as a standalone shadow experiment; **NO-GO** for automatic remediation, parent diagnosis, live data writes or production release.
+
+
+## DEV Mode Micro Diagnosis Lab (branch-only)
+
+The existing authorised DEV panel now has a Micro Diagnosis Lab. It is loaded from index.html and never changes the production adaptive learner engine.
+
+### How to test on a staging/localhost checkout of this branch
+
+1. Start the site from this branch on localhost or a separate staging deployment, and select a disposable test profile.
+2. Open DEV using the existing authorised unlock, then select Buka Makmal Diagnosis.
+3. Jawab sendiri: answer the fixed arithmetic probe questions, then inspect candidates. Response time in these controlled fixtures is set to eight seconds, **not** measured pupil speed.
+4. Simulasi automatik: select repeated sifir 8, a single wrong answer, 7x8 across days, borrowing across zero, or remainder. The single-error scenario should abstain. The cm-to-m scenario must also abstain without verified item-level conversion metadata.
+5. DEV Test sebenar: activate Mula pantauan, close the lab, choose Darjah and Skill in the existing DEV Question Bank Tester, run Test Skill, and reopen the lab to see first-attempt observations. Only exact arithmetic operands recognised by the existing diagnostic facets can be analysed.
+6. Kosongkan clears the temporary live observations. Reloading also clears them.
+
+The new live observer calls the existing telemetry implementation unchanged. Its extra in-memory capture is allowed only while isDevMode() and sess.devBankTest are active. It does not load actual student history or send additional data to Supabase. **Important:** existing DEV gameplay may still invoke its own persistence path, so do not use a real learner profile for QA.
+
+The module emits only possible probe candidates and insufficient-evidence signals; it never verifies a misconception. A very rapid response may be ignored under existing rules. The correction to the Phase 1 engine explicitly excludes measurement-context division from plain division remainder analysis, preventing a false candidate for 340 cm divided by 100.
+
+### Validation
+
+Run these commands from a complete repository checkout:
+
+    node --test audit/focus-micro-phase1.test.js
+    node --test audit/focus-micro-dev.test.js
+    node audit/focus-v2-diagnosis-shadow.cjs
+    node audit/focus-v2-foundation-contract.cjs
+    node audit/focus-mini-games-router-qa.cjs
+
+All five groups passed GitHub Actions run 40449189414. This confirms Node-based contracts only; a staging browser/mobile visual QA pass is still outstanding. No merge to main or Netlify production deployment was performed.
