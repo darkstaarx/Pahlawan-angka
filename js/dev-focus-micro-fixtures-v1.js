@@ -9,7 +9,7 @@
 })(typeof window!=='undefined'?window:undefined,function(){
  'use strict';
  const item=(op,a,b,shouldPass=true,extra={})=>Object.freeze({op,a,b,shouldPass,...extra});
- const SCENARIOS=Object.freeze({
+ const BASE_SCENARIOS=Object.freeze({
   table8:Object.freeze({name:'Sifir 8 berulang',description:'Tiga fakta darab 8 salah; tiga fakta darab lain betul.',items:[
    item('mul',8,6,false),item('mul',5,6),item('mul',8,7,false),item('mul',3,9),
    item('mul',8,8,false),item('mul',5,9)
@@ -33,6 +33,25 @@
   units:Object.freeze({name:'cm → m (belum disokong)',description:'Walaupun soalan boleh dijawab, log operasi sahaja tidak membuktikan arah penukaran unit.',items:[
    item('div',340,100,false,{unit:'cm → m'}),item('div',250,100,false,{unit:'cm → m'})
   ],expected:null,deferred:'measurement.cm_to_m'})
+ });
+ // Data-driven demonstration for every sifir 2–12; this generator is only a
+ // DEV fixture, not the production selector or an assertion of pupil weakness.
+ const TABLES=Object.freeze(Array.from({length:11},(_,i)=>i+2));
+ function tableFixture(n){
+  const rest=TABLES.filter(x=>x!==n);
+  const [a,b,c]=rest.slice(0,3);
+  const [d,e,f,g]=rest.slice(-4);
+  return Object.freeze({
+   name:'Sifir '+n+' berulang',
+   description:'Tiga fakta darab '+n+' salah; dua persamaan kawalan lain betul. Data sintetik sahaja.',
+   items:[item('mul',n,a,false),item('mul',d,e,true),item('mul',n,b,false),
+    item('mul',f,g,true),item('mul',n,c,false)],
+   expected:'mul.table.'+n
+  });
+ }
+ const SCENARIOS=Object.freeze({
+  ...BASE_SCENARIOS,
+  ...Object.fromEntries(TABLES.filter(n=>n!==8).map(n=>['table'+n,tableFixture(n)]))
  });
  function answerOf(q){
   if(!q||!['add','sub','mul','div'].includes(q.op)||![q.a,q.b].every(Number.isFinite)||q.b===0&&q.op==='div')return null;
