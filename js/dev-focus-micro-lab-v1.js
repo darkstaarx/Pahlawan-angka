@@ -207,6 +207,7 @@ function wrap(){
 }
 function mount(){
  if(!canUse())return false;
+ wrap(); // Only patch telemetry after developer authentication.
  const parent=document.getElementById('devPanel');if(!parent)return false;
  if(parent.querySelector('[data-micro-diagnosis-lab]'))return true;
  const sec=add(parent,'section',null,'devScenario');
@@ -216,7 +217,7 @@ function mount(){
  button(sec,'Buka Makmal Diagnosis',open,'btn devPrimary small');return true;
 }
 function init(){
- if(!F()||!E())return;wrap();
+ if(!F()||!E())return;
  const d=document.getElementById('devOverlay');
  if(d)new MutationObserver(()=>{if(!d.classList.contains('hidden'))mount();else if(root&&!allowed())close()})
   .observe(d,{attributes:true,attributeFilter:['class']});
@@ -224,6 +225,7 @@ function init(){
 }
 function startMonitoring(kind='game'){
  if(!canUse())return false;
+ wrap();
  scope=kind==='dev'?'dev':'game';watching=true;live=[];serial=0;seen=new WeakSet();
  refreshBadge();if(root)paint();return true;
 }
