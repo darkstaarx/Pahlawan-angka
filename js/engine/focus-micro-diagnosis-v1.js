@@ -10,18 +10,12 @@
  if(root)root.PAFocusMicroV1=api;
 })(typeof window!=='undefined'?window:undefined,function(){
  'use strict';
- const VERSION='1.0.0-shadow';
+ const VERSION='1.1.0-shadow';
  const spec=(id,foundation,label,status='diaglog',nextProbe=foundation)=>
   Object.freeze({id,foundationId:foundation,label,status,nextProbe});
+ const TABLES=Object.freeze(Array.from({length:11},(_,i)=>i+2));
  const CATALOG=Object.freeze([
-  spec('mul.table.6','mul.facts','Fakta darab melibatkan 6'),
-  spec('mul.table.7','mul.facts','Fakta darab melibatkan 7'),
-  spec('mul.table.8','mul.facts','Fakta darab melibatkan 8'),
-  spec('mul.table.9','mul.facts','Fakta darab melibatkan 9'),
-  spec('mul.fact.7x8','mul.facts','Fakta 7 × 8'),
-  spec('div.fact.56by8','div.facts','Fakta 56 ÷ 8'),
-  spec('add.fact.7plus8','add.facts','Fakta 7 + 8'),
-  spec('sub.fact.15minus7','sub.facts','Fakta 15 − 7'),
+  ...TABLES.map(n=>spec('mul.table.'+n,'mul.facts','Fakta darab melibatkan '+n)),
   spec('add.carry.ones','add.regroup','Pengumpulan semula lajur sa'),
   spec('add.carry.tens','add.regroup','Pengumpulan semula lajur puluh'),
   spec('sub.borrow.ones','sub.regroup','Meminjam pada lajur sa'),
@@ -34,6 +28,33 @@
   spec('decimal.column_alignment','number.decimal_place_value','Penjajaran nilai tempat perpuluhan','needs_authored_item_tags'),
   spec('fraction.unlike_denominators','fraction.equal_parts','Pecahan berlainan penyebut','needs_authored_item_tags')
  ]);
+ // Exact arithmetic patterns are NOT enumerated/hardcoded: generated only from
+ // eligible factual equations with repeated failures. Never emit one for a
+ // larger calculation that merely contains a component fact.
+ const FACT_FAMILIES=Object.freeze({
+  mul:Object.freeze({foundation:'mul.facts',prefix:'mul.fact.'}),
+  div:Object.freeze({foundation:'div.facts',prefix:'div.fact.'}),
+  add:Object.freeze({foundation:'add.facts',prefix:'add.fact.'}),
+  sub:Object.freeze({foundation:'sub.facts',prefix:'sub.fact.'})
+ });
+ function exactFact(r){
+  const {op,a,b}=r;
+  if(op==='mul'&&TABLES.includes(a)&&TABLES.includes(b)){
+   const x=Math.min(a,b),y=Math.max(a,b);
+   return spec('mul.fact.'+x+'x'+y,'mul.facts','Fakta '+x+' × '+y);
+  }
+  if(op==='div'&&TABLES.includes(b)&&a%b===0&&TABLES.includes(a/b)){
+   return spec('div.fact.'+a+'by'+b,'div.facts','Fakta '+a+' ÷ '+b);
+  }
+  if(op==='add'&&a<=10&&b<=10&&a+b<=20){
+   const x=Math.min(a,b),y=Math.max(a,b);
+   return spec('add.fact.'+x+'plus'+y,'add.facts','Fakta '+x+' + '+y);
+  }
+  if(op==='sub'&&a<=20&&b<=10&&a-b>=0&&a-b<=10){
+   return spec('sub.fact.'+a+'minus'+b,'sub.facts','Fakta '+a+' − '+b);
+  }
+  return null;
+ }
  const OUTCOMES=new Set([0,1]),OPS=new Set(['add','sub','mul','div']);
  const acceptedGrade=s=>typeof s==='string'&&/^D[1-6](?:\.|$)/.test(s);
  const num=v=>typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=10000000;
@@ -102,7 +123,7 @@
  }
  function evaluate(input={},options={}){
   const rows=rowsFor(input),maxFindings=Number.isInteger(options.maxFindings)?
-   Math.max(0,Math.min(options.maxFindings,19)):10;
+   Math.max(0,Math.min(options.maxFindings,50)):10;
   const findings=[];
   function offer(specification,failedRows,contrastRows,reason,extra={}){
    if(failedRows.length<2)return;
@@ -127,24 +148,33 @@
   }
   const cat=id=>CATALOG.find(x=>x.id===id);
   const mul=rows.filter(r=>r.c==='plain'&&r.op==='mul'&&r.a>=1&&r.b>=1&&r.a<=12&&r.b<=12);
-  for(const table of [6,7,8,9]){
+  for(const table of TABLES){
    const withT=mul.filter(r=>r.a===table||r.b===table);
    offer(cat('mul.table.'+table),withT.filter(r=>r.failed),
     mul.filter(r=>r.a!==table&&r.b!==table),'TABLE_FACTS_REQUIRE_CONTRAST',
     {extraGate:(fails)=>unique(fails.map(r=>r.a===table?r.b:r.a))>=2});
   }
-  function exact(id,op,a,b){
-   const target=canonical(op,a,b);
-   const sample=rows.filter(r=>r.c==='plain'&&r.op===op&&r.family===target);
-   const controls=rows.filter(r=>r.c==='plain'&&r.op===op&&r.family!==target);
-   offer(cat(id),sample.filter(r=>r.failed),controls,'EXACT_FACT_NEEDS_FRESH_PROBES',
-    {minFailedFamilies:1,extraGate:(fails)=>unique(fails.map(r=>r.day))>=2||
-     unique(fails.map(r=>(r.f||'')+'|'+(r.c||'')))>=2});
+  // One algorithm for every exact ×, ÷, + and − basic fact.
+  // Only inspect a repeated failed equation; no prewritten list of numbers.
+  const plain=rows.filter(r=>r.c==='plain'&&['mul','div','add','sub'].includes(r.op));
+  const misses=new Map();
+  for(const r of plain){
+   if(!r.failed)continue;
+   const candidate=exactFact(r);
+   if(!candidate)continue;
+   if(!misses.has(candidate.id))misses.set(candidate.id,{candidate,rows:[]});
+   misses.get(candidate.id).rows.push(r);
   }
-  exact('mul.fact.7x8','mul',7,8);
-  exact('div.fact.56by8','div',56,8);
-  exact('add.fact.7plus8','add',7,8);
-  exact('sub.fact.15minus7','sub',15,7);
+  for(const {candidate,rows:failures} of misses.values()){
+   if(failures.length<2)continue;
+   const op=failures[0].op;
+   const control=plain.filter(r=>r.op===op&&r.family!==failures[0].family);
+   offer(candidate,failures,control,'EXACT_FACT_NEEDS_FRESH_PROBES',{
+    minFailedFamilies:1,
+    extraGate:(fails)=>unique(fails.map(r=>r.day))>=2||
+     unique(fails.map(r=>(r.f||'')+'|'+(r.c||'')))>=2
+   });
+  }
   const add=rows.filter(r=>r.c==='plain'&&r.op==='add'&&Math.max(r.a,r.b)>=10);
   for(const col of [0,1]){
    const target=add.filter(r=>r.carry.includes(col));
@@ -182,5 +212,5 @@
    evidence:{usableRows:rows.length},writes:0,
    note:'Hypotheses only. No score, mastery, focus routing, profile, cloud or rewards changed.'};
  }
- return Object.freeze({VERSION,CATALOG,rowsFor,evaluate,_test:{canonical,columnsAdd,columnsBorrow}});
+ return Object.freeze({VERSION,CATALOG,FACT_FAMILIES,rowsFor,evaluate,_test:{canonical,columnsAdd,columnsBorrow,exactFact}});
 });
