@@ -3619,6 +3619,9 @@
     const activeRun=run;
     if(!activeRun||activeRun.locked)return;
     const guestRetry=!!entryMode?.guestDemo;
+    if(previewShowcase()&&!activeRun.autopilot&&!activeRun.retryOpen){
+      activeRun.previewResponses.push({skill:activeRun.q?.skill||'',correct:option.tag==='correct'&&String(option.v)===String(activeRun.q?.answer),value:String(option.v??'')});
+    }
     activeRun.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
@@ -4097,7 +4100,7 @@
     guestCompleted=false;
     if(typeof resetBattleVictoryAudio==='function')resetBattleVictoryAudio();
     const pool=skillPool();
-    run={generation:++runGeneration,pool,questionTarget:previewShowcase()?12:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],autopilot:false,awaitingAuto:false,manualClean:0,autoTimer:null,
+    run={generation:++runGeneration,pool,questionTarget:previewShowcase()?12:entryMode?.guestDemo?pool.length:MAX_Q,asked:0,locked:false,retryOpen:false,retryWrongValue:null,firstArenaMeta:null,q:null,usedHint:false,coveredTopics:[],autopilot:false,awaitingAuto:false,manualClean:0,autoTimer:null,previewResponses:[],
          writtenArithmeticPreview:entryMode?.writtenArithmeticPreview||null,
          tally:{own:0,hint:0,miss:0},
          /* `coachAdaptive` hanya untuk laluan Kembara: ia yang membenarkan
