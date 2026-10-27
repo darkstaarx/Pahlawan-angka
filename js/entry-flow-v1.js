@@ -32,6 +32,7 @@
     clear(); view('welcome'); window.screen('login');
   }
   async function demo() {
+    if(new URLSearchParams(location.search).get('pa_demo_adaptive_preview')==='1'&&window.PAAdaptivePreview?.open){window.PAAdaptivePreview.open();return;}
     if (cloud()?.user) { write('demo'); await beforeProfiles(); return; }
     // Guests try the demo straight away; no account is needed. Nothing is
     // saved, and registering stays one tap away on the result screen/hub.
