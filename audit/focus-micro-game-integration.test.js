@@ -37,8 +37,9 @@ function send(t,o,a,b,correct,mode='dev'){
 }
 test('DEV bank answers do not enter primary diagnostic or local learning telemetry',()=>{
  const db={diagLog:[],demoMode:false,schoolGrade:5},sess={devBankTest:true,mode:'dev'};
- const window={PADiagnostic:null,PARapidLock:{observe:()=>{throw Error('rapid guard should be skipped')}}};
- const context={window,db,sess,localStorage:{setItem(){throw Error('DEV wrote telemetry')},getItem(){return null}},
+ const writes=[],rapid=[];
+ const window={PADiagnostic:null,PARapidLock:{observe:(...args)=>rapid.push(args)}};
+ const context={window,db,sess,localStorage:{setItem(...args){writes.push(args)},getItem(){return null}},
   sessionStorage:{getItem(){return 'x'},setItem(){}},Date,Math,JSON};
  vm.runInNewContext(read('js/engine/diagnostic-brain-v1.js'),context);
  assert.equal(window.PADiagnostic.record('D5.OPS',false,'fact',8,false,{token:'q',prompt:'8 × 7 = ?'},'dev-first-attempt'),false);
@@ -46,10 +47,14 @@ test('DEV bank answers do not enter primary diagnostic or local learning telemet
  vm.runInNewContext(read('js/engine/telemetry.js'),context);
  assert.equal(window.PATelemetry.response('D5.OPS',false,'fact',8,false,{token:'q',prompt:'8 × 7 = ?'},'dev-first-attempt'),false);
  assert.equal(db.diagLog.length,0);
+ assert.equal(writes.length,0);
+ assert.equal(rapid.length,0);
  sess.devBankTest=false;sess.mode='practice';
  // Normal telemetry path should still be able to run and produce a brain record.
  assert.equal(window.PATelemetry.response('D5.OPS',false,'fact',8,false,{token:'regular',prompt:'8 × 7 = ?'},'practice-first-attempt'),true);
  assert.equal(db.diagLog.length,1);
+ assert.equal(writes.length,1);
+ assert.equal(rapid.length,1);
 });
 test('DEV observer sees first attempts without suppressing original telemetry',()=>{
  const t=labSetup();
