@@ -71,3 +71,33 @@ node audit/focus-mini-games-router-qa.cjs
 All five groups passed for the generic engine and DEV scenario changes on GitHub Actions run **40450025761**. This is automated code verification, **not yet an actual visual browser/mobile smoke test** or classroom-validity study. Real item coverage after generator wrappers, independent probe banks, transfer after remediation and full production regression are separate release gates.
 
 **GO** for draft PR review and staging/manual DEV testing; **NO-GO** for production release, automatic learner intervention, parent-facing diagnoses, or any claims that a specific multiplication table is nationally most difficult.
+
+## 2026-10-27: mixed live-game QA on protected staging
+
+Full-game staging: https://pahlawan-angka-micro-dev-staging-7k027cmoq-tertibteam.vercel.app/index.html
+
+The real game's normal question-generation and adaptive decisions are left in charge. This is an opt-in **observer**, NOT a new intervention or mastery controller. The primary Diagnostic Brain remains the authority.
+
+### Try with a disposable admin test profile
+
+1. Open the protected staging app and log in to Vercel if requested. Supabase Google OAuth allowlisting for this distinct domain has not been independently verified.
+2. Use an authorised admin account and disposable test-child profile only. Normal real-game sessions still follow original persistence rules.
+3. Open authorised DEV Mode (three taps on the version label, where enabled) and choose Micro Diagnosis Lab -> Buka Makmal Diagnosis.
+4. Choose DEV Test sebenar -> Mula pantauan game campur. Close lab and play normal Kembara/Misi/Coach questions.
+5. Tap the DEV DIAG floating indicator after answering to view potential micro-patterns and the primary Diagnostic Brain interpretation of the **same ephemeral answer stream**.
+6. Alternative: choose Mula pantauan DEV Test Skill to observe original single-skill Question Bank Tester questions, without writing new diagnostic history. Changing modes resets observer evidence.
+7. Kosongkan clears observer records; reload also clears them.
+
+### DEV data isolation and architecture
+
+- js/engine/telemetry.js: devBankTest, devBattlefield and dev- mode response events skip primary brain, Rapid Lock and saved response telemetry.
+- js/engine/diagnostic-brain-v1.js: second layer of guarding against DEV response records even when the recorder is called directly.
+- js/dev-focus-micro-lab-v1.js: reuses the primary brain's pure applyResponse to parse first attempts; compares PAFocusMicroV1.evaluate and PADiagnostic.analyze without changing question selection, mastery, rewards or cloud.
+- Existing DEV battles can have **other side effects** unrelated to diagnosis/telemetry. The new guards do not promise to sandbox the whole game. Always use a disposable profile.
+- Normal gameplay on staging can still save ordinary player progress to the existing backend. Do not use a real child profile.
+
+### Validation
+
+GitHub Actions run: https://github.com/darkstaarx/Pahlawan-angka/actions/runs/40454845471 — PASS for micro engine, developer lab, mixed observer + DEV guard, Chromium mobile standalone staging lab, Focus v2, foundation map, mini-game regression.
+
+The full authenticated game's DEV overlay has only been checked by isolated integration tests, not an end-to-end logged-in mobile browser run. This is still a draft PR/staging-only feature. No main merge or Netlify production deployment is authorised.
