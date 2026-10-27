@@ -18,7 +18,7 @@ function patterns(){
  const a=(state()?.previewResponses||[]).filter(x=>!x.correct);
  const map=new Map();
  a.forEach(x=>{let k=x.skill||'unknown';map.set(k,(map.get(k)||0)+1)});
- return [...map].sort((a,b)=>b[1]-a[1]).map(([skill,n])=>({skill,n,title:window.META?.[skill]?.title||skill}));
+ return [...map].sort((a,b)=>b[1]-a[1]).map(([skill,n])=>({skill,n,title:(typeof META!=='undefined'&&META[skill]?.title)||skill}));
 }
 function renderSection(tab){
  const s=state(),done=!!$('segelDone')&&!$('segelDone').hidden;
