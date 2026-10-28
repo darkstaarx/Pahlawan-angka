@@ -40,7 +40,7 @@ async function answer(frame){
   for(let i=0;i<3;i++){console.log('round',grade,i,await fr.evaluate(()=>window.__kekDebug?.()||window.__bengkelDebug?.()||window.__lbDebug?.()||window.__dapurDebug?.()||window.__gudangDebug?.()));await answer(fr);await fr.locator('#check').click().catch(()=>{});await fr.waitForTimeout(350);console.log('manual',await page.evaluate(()=>window.__mgManual));}
   await page.waitForFunction(()=>window.__mgManual?.successes>=3,null,{timeout:30000});
   assert.equal(await page.evaluate(()=>window.__mgStartAuto?.()),true);
-  await fr.locator('.wk-wrap').waitFor({timeout:30000});
+  const next=page.locator('.pa-jelajah-next');await next.click();await fr.locator('.wk-wrap').waitFor({timeout:30000});const before=await fr.evaluate(()=>PAJelajahGameRuntime.state().stepClicks);await fr.waitForTimeout(2500);assert.equal(await fr.evaluate(()=>PAJelajahGameRuntime.state().stepClicks),before,'no advance without click');for(let step=0;step<100&&!await page.evaluate(()=>!!window.__mgDone);step++){await next.click();await fr.waitForTimeout(950);}
   await page.waitForFunction(()=>window.__mgDone?.successes>=3&&window.__mgDone?.workedRounds===2,null,{timeout:60000});
   const worked=await fr.evaluate(()=>window.PAJelajahGameRuntime?.state?.());
   assert.ok((worked?.stepClicks||0)>=2,'autopilot clicked real PAWorked steps');

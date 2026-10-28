@@ -32,16 +32,18 @@
   const roundTypes=new Set(['PA_GUDANG_HARTA_ROUND','PA_KEDAI_KEK_ROUND','PA_BENGKEL_AJAIB_ROUND','PA_LOMBONG_PERMATA_ROUND','PA_DAPUR_RAMUAN_ROUND']);
   const complete=()=>{if(finished)return;finished=true;onComplete({scenario,game:cfg.page,successes,workedRounds});};
   const notifyManual=()=>{if(manualNotified)return;manualNotified=true;options?.onManualComplete?.({scenario,game:cfg.page,successes,startAutopilot});};
-  const drive=()=>{
-    if(!autopilot||finished)return;
-    const rt=frame?.contentWindow?.PAJelajahGameRuntime;if(!rt)return;
-    const st=rt.state?.();
-    if(st?.offer){rt.startWorked();later(drive,350);return}
-    if(st?.worked&&!st?.solved){if(rt.next?.())later(drive,1000);else later(drive,250);return}
+  const next=document.createElement('button');next.type='button';next.className='pa-jelajah-next primary';next.textContent='Seterusnya';next.hidden=true;
+  let roundReady=false;
+  next.onclick=()=>{
+    if(closed||finished||next.disabled)return;
+    const rt=frame.contentWindow?.PAJelajahGameRuntime;if(!rt)return;
+    if(roundReady){if(workedRounds>=2){complete();return}roundReady=false;rt.beginWorked(workedRounds);next.textContent='Seterusnya'}
+    else{const st=rt.state();if(st.offer)rt.startWorked();else if(st.worked&&!st.solved)rt.next();}
+    next.disabled=true;later(()=>{next.disabled=false},800);
   };
   const startAutopilot=()=>{
     if(autopilot||finished||successes<3)return false;autopilot=true;workedRounds=0;
-    frame?.contentWindow?.PAJelajahGameRuntime?.beginWorked?.(0);later(drive,350);return true;
+    frame?.contentWindow?.PAJelajahGameRuntime?.beginWorked?.(0);next.hidden=false;return true;
   };
   const game=cfg.page.split('/').pop().replace(/^jelajah-game-/, '').replace(/\.html$/,'');
   const previous=window.PAFocusMiniGamesLive;
@@ -51,10 +53,10 @@
    const d=e.data;
    if(e.origin!==ORIGIN||e.source!==frame.contentWindow||d?.version!==1||d?.nonce!==nonce||d?.skillId!==cfg.skill)return;
    if(d.type==='PA_MINIGAME_ATTEMPT'&&d.ok===true&&!autopilot&&!d.facets?.guided){const key=String(d.key||'');if(key&&!seen.has(key)){seen.add(key);successes++;if(successes>=3)notifyManual();}}
-   if(autopilot&&roundTypes.has(d.type)&&d.stars===0){workedRounds++;if(workedRounds<2){later(()=>frame.contentWindow.PAJelajahGameRuntime?.beginWorked?.(workedRounds),500);later(drive,850)}else complete();}
+   if(autopilot&&roundTypes.has(d.type)&&d.stars===0){workedRounds++;roundReady=true;next.textContent=workedRounds<2?'Contoh seterusnya':'Selesai';}
   };
-  const cleanup=()=>{closed=true;autopilot=false;timers.forEach(clearTimeout);timers.clear();window.removeEventListener('message',receive);if(window.PAFocusMiniGamesLive===registry)window.PAFocusMiniGamesLive=previous;exit.remove();frame.remove();};
-  window.addEventListener('message',receive);host.append(exit,frame);
+  const cleanup=()=>{closed=true;autopilot=false;timers.forEach(clearTimeout);timers.clear();window.removeEventListener('message',receive);if(window.PAFocusMiniGamesLive===registry)window.PAFocusMiniGamesLive=previous;toolbar.remove();frame.remove();};
+  const toolbar=document.createElement('div');toolbar.className='pa-jelajah-game-toolbar';toolbar.append(exit,next);window.addEventListener('message',receive);host.append(toolbar,frame);
   cleanup.startAutopilot=startAutopilot;
   return cleanup;
  }

@@ -64,3 +64,5 @@ funnel, page-lock and isolation regression suites cover the protected paid paths
 Evidence is stored under `review/`.
 
 Current draft preview: https://6ae1b3f58176648e0d26fa7f--pahlawanangka.netlify.app/demo-jelajah.html
+
+Worked examples now advance only through Seterusnya clicks. There is no timed step advancement; each finished example remains visible until Contoh seterusnya or Selesai is clicked.

@@ -7,3 +7,5 @@
 @media(max-width:380px){#cards strong{font-size:9px}}.learnerReviewCard{background:#112c43;padding:16px;border:1px solid #456076;border-radius:14px;margin-top:15px}.learnerReviewCard p,.learnerReviewCard li{font-size:13px;line-height:1.6}
 
 #parent.jelajahParent{max-width:780px;margin:auto;padding:16px}#parent .parentTabs button.active{background:#edc260;color:#172033}#parent .paDiagCard{margin-top:10px}
+
+.pa-jelajah-game-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 8px}.pa-jelajah-next{font-size:13px;padding:8px 14px;min-height:42px}
