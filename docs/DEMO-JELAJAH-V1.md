@@ -59,3 +59,5 @@ use the existing submitInteraction API; it does not test every bank widget by ha
 manual successes and two guided rounds in each grade. The commercial access,
 funnel, page-lock and isolation regression suites cover the protected paid paths.
 Evidence is stored under `review/`.
+
+Current draft preview: https://6ae1acf6dca0849e12af728f--pahlawanangka.netlify.app/demo-jelajah.html
