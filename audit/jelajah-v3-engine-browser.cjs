@@ -1,0 +1,19 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');const{chromium}=require('playwright');
+(async()=>{const browser=await chromium.launch({executablePath:process.env.PA_BROWSER_PATH,headless:true,args:['--enable-unsafe-swiftshader']});const results=[];try{
+for(let grade=Number(process.env.PA_GRADE_START)||1;grade<=(Number(process.env.PA_GRADE_END)||6);grade++){
+ const ctx=await browser.newContext({viewport:{width:grade===6?320:390,height:844},reducedMotion:'reduce'}),p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.goto('http://127.0.0.1:4173/demo-jelajah.html');await p.evaluate(()=>{window.messages=[];addEventListener('message',e=>messages.push(e.data));localStorage.setItem('pa_coach_v6_full','protected')});await p.getByRole('button',{name:'Darjah '+grade,exact:true}).click();
+ const f=await(await p.locator('main iframe').elementHandle()).contentFrame();await f.waitForFunction(()=>window.PASegelDemo?.state()?.q,{},{timeout:45000});
+ for(let i=0;i<6;i++){await f.waitForFunction(n=>PASegelDemo.state().asked===n&&!PASegelDemo.state().locked,i,{timeout:45000});await f.evaluate(()=>{const r=PASegelDemo.state(),b=document.querySelector('#segelAnswers button')||document.querySelector('#segelQuestion button')||document.createElement('button');PASegelDemo.submitInteraction({v:r.q.answer,tag:'correct'},b,r.q)})}
+ await p.locator('#autopilotDialog').waitFor({timeout:45000});await p.locator('#startAutopilot').click();
+ await p.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Battle selesai'),{},{timeout:120000});
+ const evidence=await p.evaluate(()=>messages);const qs=evidence.filter(x=>x.type==='question'),snap=evidence.find(x=>x.type==='finished').snapshot;
+ assert.equal(qs.length,12);assert.ok(new Set(qs.slice(0,6).map(q=>q.skill)).size>=4);assert.equal(qs[6].skill,qs[7].skill);assert.equal(qs[7].skill,qs[8].skill);assert.equal(snap.profile.diagLog.length,6);assert.ok(snap.reportMarkup.includes('paDiagCard'));
+ await p.locator('[data-card="2"]').click();assert.ok((await p.locator('#activityIntroText').textContent()).includes('latihan campuran'));await p.locator('#activityIntroStart').click();
+ const focus=await(await p.locator('main iframe').elementHandle()).contentFrame();await focus.waitForFunction(()=>window.PASegelDemo?.state()?.q,{},{timeout:45000});
+ const ids=[];for(let i=0;i<6;i++){await focus.waitForFunction(n=>PASegelDemo.state().asked===n&&!PASegelDemo.state().locked,i,{timeout:45000});ids.push(await focus.evaluate(()=>PASegelDemo.state().q.skill));await focus.evaluate(()=>{const r=PASegelDemo.state(),b=document.querySelector('#segelAnswers button')||document.querySelector('#segelQuestion button')||document.createElement('button');PASegelDemo.submitInteraction({v:r.q.answer,tag:'correct'},b,r.q)})}
+ await p.waitForFunction(()=>document.querySelector('#status').textContent.startsWith('Cikgu Dimensi selesai'),{},{timeout:120000});assert.ok(new Set(ids).size>1);
+ await p.locator('[data-card="3"]').click();assert.ok(await p.locator('main .paDiagCard').count());assert.equal(await p.evaluate(()=>localStorage.getItem('pa_coach_v6_full')),'protected');assert.deepEqual(errors,[]);
+ await p.screenshot({path:`review/jelajah-v3-d${grade}.png`});results.push({grade,manualSkills:qs.slice(0,6).map(q=>q.skill),autopilotSkills:qs.slice(6).map(q=>q.skill),focusSkills:ids,shadowRecords:snap.report.total,actualBrain:true});console.log('PASS real engine grade',grade);await ctx.close();
+}fs.writeFileSync(`review/jelajah-v3-engine-${results[0].grade}-${results.at(-1).grade}.json`,JSON.stringify(results,null,2));
+}finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

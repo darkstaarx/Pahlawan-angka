@@ -1,0 +1,176 @@
+[
+  {
+    "grade": 1,
+    "manualSkills": [
+      "D1.DATA",
+      "D1.TIME",
+      "D1.N20",
+      "D1.ADD20",
+      "D1.FRAC",
+      "D1.SHAPE"
+    ],
+    "autopilotSkills": [
+      "D1.PV100",
+      "D1.PV100",
+      "D1.PV100",
+      "D1.N20",
+      "D1.MONEY",
+      "D1.MONEY"
+    ],
+    "focusSkills": [
+      "D1.PV100",
+      "D1.PV100",
+      "D1.N100",
+      "D1.CMP100",
+      "D1.DATA",
+      "D1.ADD100"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true
+  },
+  {
+    "grade": 2,
+    "manualSkills": [
+      "D2.8.1",
+      "D2.5.1",
+      "D2.1.1",
+      "D2.2.1",
+      "D2.3.1",
+      "D2.3.2"
+    ],
+    "autopilotSkills": [
+      "D2.2.1",
+      "D2.2.1",
+      "D2.2.1",
+      "D2.8.1",
+      "D2.5.2",
+      "D2.5.2"
+    ],
+    "focusSkills": [
+      "D2.2.1",
+      "D2.2.1",
+      "D2.3.1",
+      "D2.8.3",
+      "D2.1.6",
+      "D2.2.1"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true
+  },
+  {
+    "grade": 3,
+    "manualSkills": [
+      "D3.DATA",
+      "D3.POSITION",
+      "D3.TIME",
+      "D3.N10000",
+      "D3.ADD10000",
+      "D3.FRAC"
+    ],
+    "autopilotSkills": [
+      "D3.FRAC",
+      "D3.FRAC",
+      "D3.FRAC",
+      "D3.TIME",
+      "D3.MUL",
+      "D3.MUL"
+    ],
+    "focusSkills": [
+      "D3.FRAC",
+      "D3.FRAC",
+      "D3.DATA",
+      "D3.PV10000",
+      "D3.POSITION",
+      "D3.PERCENT"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true
+  },
+  {
+    "grade": 4,
+    "manualSkills": [
+      "D4.DATA",
+      "D4.RATE",
+      "D4.COORD",
+      "D4.TIME",
+      "D4.RATIO",
+      "D4.N100000"
+    ],
+    "autopilotSkills": [
+      "D4.MEASURE",
+      "D4.MEASURE",
+      "D4.MEASURE",
+      "D4.RATE",
+      "D4.ADD",
+      "D4.ADD"
+    ],
+    "focusSkills": [
+      "D4.MEASURE",
+      "D4.MEASURE",
+      "D4.TIME",
+      "D4.PERCENT",
+      "D4.SUB",
+      "D4.PV100000"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true
+  },
+  {
+    "grade": 5,
+    "manualSkills": [
+      "D5.DATA",
+      "D5.RATE",
+      "D5.TIME",
+      "D5.RATIO",
+      "D5.N1000000",
+      "D5.MUL"
+    ],
+    "autopilotSkills": [
+      "D5.DEC",
+      "D5.DEC",
+      "D5.DEC",
+      "D5.MONEY",
+      "D5.DIV",
+      "D5.DIV"
+    ],
+    "focusSkills": [
+      "D5.DEC",
+      "D5.DEC",
+      "D5.MEASURE",
+      "D5.DATA",
+      "D5.N1000000",
+      "D5.DEC"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true
+  },
+  {
+    "grade": 6,
+    "manualSkills": [
+      "D6.PIE",
+      "D6.PROB",
+      "D6.COORD",
+      "D6.TIME",
+      "D6.RATIO",
+      "D6.NUMBERS"
+    ],
+    "autopilotSkills": [
+      "D6.RATIO",
+      "D6.RATIO",
+      "D6.RATIO",
+      "D6.PROB",
+      "D6.PIE",
+      "D6.PIE"
+    ],
+    "focusSkills": [
+      "D6.RATIO",
+      "D6.RATIO",
+      "D6.PERCENT",
+      "D6.DATA_PROBLEM",
+      "D6.CIRCLE",
+      "D6.ANGLE"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true
+  }
+]

@@ -3988,7 +3988,7 @@
   function finishRun(won,note){
     if(!run?.production&&entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge){
       run.locked=true;
-      if(won&&run.asked===12)window.PAJelajahBridge.finished();
+      if(won&&run.asked===(window.PAJelajahBridge.target||12))window.PAJelajahBridge.finished();
       else window.PAJelajahBridge.failed(note||'Battle demo belum lengkap. Cuba semula.');
       return;
     }
@@ -4063,7 +4063,7 @@
                missionAnswered:0,coach:null,recoveryFor:null,stretchFor:null}};
     setResultLifecycle(false);
     $('segelDone').hidden=true;
-    if(entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge)run.questionTarget=12;
+    if(entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge)run.questionTarget=window.PAJelajahBridge.target||12;
     stage.reset(entryMode?.guestDemo?run.questionTarget:null);
     stage.armEntry();
     enterWhenRevealed();    // Wira turun sebagai zarah biru, sama seperti portal

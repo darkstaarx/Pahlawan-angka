@@ -1,29 +1,19 @@
-# Final brief verification — 28 October 2026
+# Real-engine revision verification — 28 October 2026
 
-- Darjah 1–6: original WebGL battle, 12 resolved questions each.
-- Questions 1–6: actual controls, manual wrong answer, original retry and feedback.
-- Questions 7–12: explicit start, Escape cannot strand the tour; preset answers,
-  original written-form validation, hints, visual scaffold, canonical rescue.
-- Original Learning Camp: all six real model interactions, concept check, diagnostic,
-  alternate representation, replacement independent question and transfer passed.
-- Actual standalone games: all six mappings completed exactly two distinct rounds.
-  No promotional-card substitution or mocked completion events.
-- Existing learner localStorage sentinel preserved across battle and teaching.
-- Same skill remains consistent through scenario, actual mini-game route and teacher.
-- Mobile browser sizes 390×844 and 320×844. Physical phone validation belongs to owner.
-- Real current-price sheet opens in-app; closing leaves tour frame/state intact.
-- Dimensi static validation: PASS. Independent code review blockers corrected.
-- Netlify draft development preview only; production NOT deployed.
-- Focused units plus existing paid-access/demo regressions: **49 passed, 0 failed**.
-
-Phone preview (draft deployment):
-<https://6ae16a4a2768e3b827eaa948--pahlawanangka.netlify.app/demo-jelajah.html>
-
-Use this unique draft URL, not the main production domain. The draft artifact
-contains only static application files and no Git metadata or local credentials.
-
-Commands: `node audit/jelajah-final-browser.cjs`,
-`node audit/jelajah-real-games-browser.cjs`, and focused unit/paid/demo regressions.
-
-Known old audit mismatch: `audit/coach-games-v1.js` expects “4 pet”; unchanged
-production uses “4 Teman”. No claim that this unrelated old audit passes.
+- Mobile integration: Darjah 1–6 passed actual-bank mixed first six, scripted
+  answer intentions through real confirmation routing, six focus questions,
+  original diagnostic/parent card markup, no page errors, protected storage.
+  Evidence: jelajah-v3-engine-1-6.json and jelajah-v3-d1 through d6 screenshots.
+- Real mini-game DOM audit: all six grades passed three manual successful rounds
+  plus two PAWorked guided rounds. Darjah 1–2 verified earlier in this revision;
+  Darjah 3–6 repeated after adding shade/field support to the audit solver.
+- 40 regression checks passed: isolation, scenario bounds, original game copying,
+  commercial entitlement/quota protection, funnel privacy, guardian page lock.
+- Landing query aliases and both original CTA entry paths passed.
+- Original signup/pricing offer flow and desktop layout passed.
+- The battle integration audit uses existing submitInteraction for manual answers;
+  it does not claim exhaustive DOM testing of every question-bank interaction.
+- An additional independent reviewer could not run because its usage limit was
+  reached. The implementation was inspected locally and the tests above ran.
+- Netlify production deployment remains 6added09bf3b6b33d6e1d792. Only a separate
+  draft preview is authorized. No production promotion was performed.

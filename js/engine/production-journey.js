@@ -258,7 +258,20 @@
   }
 
   window.PAProductionRuntime={score:realScore,save:realSave,session:realSession};
-  window.PAProductionJourney={open,nextQuestion,firstWrong,resolve,hint,complete,pauseForLearning,resumeFromLearning,restart,close,isActive:()=>!!active,state:()=>active,isCurrent:run=>currentRun(run)&&!run.paused};
+  function simulateResponse(profile,session,q,option,ok){
+    if(!profile?.demoMode||!session?.demoMode||session.jelajahEngine!==true)return null;
+    const previous=active,before=swapDemoState(profile,session);
+    try{
+      session.q=q;session.start=now()-8000;
+      active={id:'guest-simulation',preview:true,profileDb:profile,session,resolvedTokens:{},firstWrongTokens:{},correct:0,firstAttemptQuestions:0,independentCorrect:0};
+      // Same pure encounter builder, with an explicitly isolated output profile.
+      // This never opens a live learner session or enables any persistence.
+      window.PALearnerReview?.beginQuestion?.(q,{grade:profile.schoolGrade,mode:'jelajah-simulation',selectionReason:'isolated-example'});
+      if(!ok)firstWrong(q,option);
+      return recordResolved(q,option,ok,8);
+    }finally{active=previous;swapDemoState(before.db,before.sess)}
+  }
+  window.PAProductionJourney={open,nextQuestion,firstWrong,resolve,hint,complete,pauseForLearning,resumeFromLearning,restart,close,simulateResponse,isActive:()=>!!active,state:()=>active,isCurrent:run=>currentRun(run)&&!run.paused};
   window.openGembok=open;
 })();
 
