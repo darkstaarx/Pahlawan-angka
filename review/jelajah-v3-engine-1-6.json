@@ -14,19 +14,21 @@
       "D1.PV100",
       "D1.PV100",
       "D1.N20",
-      "D1.MONEY",
-      "D1.MONEY"
+      "D1.DATA",
+      "D1.DATA"
     ],
     "focusSkills": [
       "D1.PV100",
       "D1.PV100",
-      "D1.N100",
-      "D1.CMP100",
-      "D1.DATA",
-      "D1.ADD100"
+      "D1.MEASURE",
+      "D1.FRAC",
+      "D1.SUB20",
+      "D1.ADD20"
     ],
     "shadowRecords": 6,
-    "actualBrain": true
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
   },
   {
     "grade": 2,
@@ -42,20 +44,22 @@
       "D2.2.1",
       "D2.2.1",
       "D2.2.1",
-      "D2.8.1",
-      "D2.5.2",
-      "D2.5.2"
+      "D2.8.2",
+      "D2.8.3",
+      "D2.8.3"
     ],
     "focusSkills": [
       "D2.2.1",
       "D2.2.1",
-      "D2.3.1",
-      "D2.8.3",
-      "D2.1.6",
-      "D2.2.1"
+      "D2.2.5",
+      "D2.8.1",
+      "D2.6.1",
+      "D2.6.4"
     ],
     "shadowRecords": 6,
-    "actualBrain": true
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
   },
   {
     "grade": 3,
@@ -71,20 +75,22 @@
       "D3.FRAC",
       "D3.FRAC",
       "D3.FRAC",
-      "D3.TIME",
-      "D3.MUL",
-      "D3.MUL"
+      "D3.PV10000",
+      "D3.DATA",
+      "D3.DATA"
     ],
     "focusSkills": [
       "D3.FRAC",
       "D3.FRAC",
-      "D3.DATA",
-      "D3.PV10000",
-      "D3.POSITION",
-      "D3.PERCENT"
+      "D3.MONEY",
+      "D3.TIME",
+      "D3.MEASURE",
+      "D3.FRAC"
     ],
     "shadowRecords": 6,
-    "actualBrain": true
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
   },
   {
     "grade": 4,
@@ -100,20 +106,22 @@
       "D4.MEASURE",
       "D4.MEASURE",
       "D4.MEASURE",
-      "D4.RATE",
-      "D4.ADD",
-      "D4.ADD"
+      "D4.MONEY",
+      "D4.FRAC",
+      "D4.FRAC"
     ],
     "focusSkills": [
       "D4.MEASURE",
       "D4.MEASURE",
-      "D4.TIME",
-      "D4.PERCENT",
+      "D4.PV100000",
+      "D4.DATA",
       "D4.SUB",
-      "D4.PV100000"
+      "D4.TIME"
     ],
     "shadowRecords": 6,
-    "actualBrain": true
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
   },
   {
     "grade": 5,
@@ -129,20 +137,22 @@
       "D5.DEC",
       "D5.DEC",
       "D5.DEC",
-      "D5.MONEY",
-      "D5.DIV",
-      "D5.DIV"
+      "D5.DATA",
+      "D5.SUB",
+      "D5.SUB"
     ],
     "focusSkills": [
       "D5.DEC",
       "D5.DEC",
-      "D5.MEASURE",
-      "D5.DATA",
-      "D5.N1000000",
-      "D5.DEC"
+      "D5.DIV",
+      "D5.OPS",
+      "D5.MUL",
+      "D5.AREA"
     ],
     "shadowRecords": 6,
-    "actualBrain": true
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
   },
   {
     "grade": 6,
@@ -158,19 +168,21 @@
       "D6.RATIO",
       "D6.RATIO",
       "D6.RATIO",
+      "D6.CIRCLE",
       "D6.PROB",
-      "D6.PIE",
-      "D6.PIE"
+      "D6.PROB"
     ],
     "focusSkills": [
       "D6.RATIO",
       "D6.RATIO",
-      "D6.PERCENT",
       "D6.DATA_PROBLEM",
-      "D6.CIRCLE",
-      "D6.ANGLE"
+      "D6.MEASURE",
+      "D6.PIE",
+      "D6.OPS"
     ],
     "shadowRecords": 6,
-    "actualBrain": true
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
   }
 ]

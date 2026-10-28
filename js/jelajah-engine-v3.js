@@ -39,7 +39,7 @@
  function profileSnapshot(profile,session){return{profile:clone(profile),session:clone(session)}}
  function create(grade,options={}){
   const g=Number(grade)||Number(options.profile?.schoolGrade)||1;
-  const profile=clone(options.profile||(typeof db!=='undefined'?db:root.db)||{});profile.schoolGrade=g;profile.name='Contoh simulasi';profile.demoMode=true;
+  const profile=clone(options.profile||(typeof db!=='undefined'?db:root.db)||{});profile.schoolGrade=g;profile.name='Aiman';profile.demoMode=true;
   profile.diagLog=Array.isArray(profile.diagLog)?profile.diagLog.slice():[];
   const session=clone(options.session||{gembok:true,mode:'gembok',demoMode:true,jelajahEngine:true,coachAdaptive:false,recent:[],responseHistory:[],interventionCooldown:{},confirmSkill:null,confirmRemaining:0,questionToken:0});
   session.demoMode=true;session.jelajahEngine=true;session.coachAdaptive=false;session.gembok=true;session.mode='gembok';session.recent=session.recent||[];session.responseHistory=session.responseHistory||[];
@@ -91,9 +91,13 @@
   function snapshot(){
    const B=root.PADiagnostic,T=root.PATargets;report=B?.analyze?B.analyze(profile.diagLog,{name:profile.name}):{findings:[],strengths:[],total:profile.diagLog.length,enough:false,name:profile.name};
    const plan=T?.plan?T.plan(report,{grade:g}):{steps:[]};
-   const learnerMarkup=withState(profile,session,()=>typeof learnerReviewCard==='function'?learnerReviewCard():'');
+   const parentMarkup=withState(profile,session,()=>{
+    const core=graph().skills.filter(x=>Number(x.grade)===g),rows=learnerDisplayStats();
+    const attempts=rows?.attempts||core.reduce((n,m)=>n+skillAttempts(scoreState(m.id)),0);
+    return parentGlanceMarkup(g,parentPowerSummary(core,attempts));
+   });
    const focusSummary=withState(profile,session,()=>root.PAFocusPractice?.summary?.(profile)||null);
-   return{grade:g,profile:clone(profile),session:clone(session),report:clone(report),plan:clone(plan),focusSummary:clone(focusSummary),reportMarkup:(B?.cardMarkup?B.cardMarkup(report):'')+learnerMarkup};
+   return{grade:g,profile:clone(profile),session:clone(session),report:clone(report),plan:clone(plan),focusSummary:clone(focusSummary),reportMarkup:parentMarkup,detailMarkup:B?.cardMarkup?B.cardMarkup(report):''};
   }
   function restore(state){if(!state)return snapshot();Object.assign(profile,clone(state.profile||{}));Object.assign(session,clone(state.session||{}));report=clone(state.report||null);focusPlan=null;return snapshot()}
   function focus(skill){

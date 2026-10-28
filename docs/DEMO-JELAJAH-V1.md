@@ -21,7 +21,8 @@ Open http://127.0.0.1:4173/demo-jelajah.html. Build before packaging with
   and correct/wrong intentions. `chooseModeAndSkill`, production journey
   `firstWrong`/`recordResolved`, and intervention confirmation choose and validate
   follow-ups. No handwritten demo question bank or invented adaptive percentages.
-- After battle all cards unlock. Completed cards remain replayable.
+- After battle all cards unlock. Completed cards remain replayable. If scripted misses leave seals intact,
+  the original finisher focus/charge/strike sequence plays before rescue.
 - Mini-game opens an explanatory popup, then a copied original production game
   selected for the same simulated weak skill. Three manual successful rounds lead
   to an explicit hand-off to two actual PAWorked / Jom tengok cara rounds.
@@ -29,8 +30,10 @@ Open http://127.0.0.1:4173/demo-jelajah.html. Build before packaging with
   The isolated focus is set to the same weak skill; the real confirmation queue
   starts focused follow-ups, then the actual selector chooses further practice.
   The old Learning Camp UI is not mounted.
-- Otak Pahlawan renders the real diagnostic card and real parent learner-review
-  card from the isolated simulated records. Actual evidence thresholds apply;
+- Otak Pahlawan renders the current parent Ringkasan Anak using the original
+  parentGlanceMarkup / PAParentGlance helpers and parent dashboard stylesheet.
+  Ringkasan and Kemahiran tabs separate the concise summary from diagnostic detail.
+  The obsolete Cara Belajar Sekarang card is not included. Actual evidence thresholds apply;
   short evidence can display Bukti awal rather than an invented diagnosis.
 - Daftar / Beli remains in a reserved compact footer. Offers open the original
   registration/pricing UI in a separate modal.
@@ -60,4 +63,4 @@ manual successes and two guided rounds in each grade. The commercial access,
 funnel, page-lock and isolation regression suites cover the protected paid paths.
 Evidence is stored under `review/`.
 
-Current draft preview: https://6ae1acf6dca0849e12af728f--pahlawanangka.netlify.app/demo-jelajah.html
+Current draft preview: https://6ae1b3f58176648e0d26fa7f--pahlawanangka.netlify.app/demo-jelajah.html

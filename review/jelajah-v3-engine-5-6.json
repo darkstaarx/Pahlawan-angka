@@ -1,0 +1,64 @@
+[
+  {
+    "grade": 5,
+    "manualSkills": [
+      "D5.DATA",
+      "D5.RATE",
+      "D5.TIME",
+      "D5.RATIO",
+      "D5.N1000000",
+      "D5.MUL"
+    ],
+    "autopilotSkills": [
+      "D5.DEC",
+      "D5.DEC",
+      "D5.DEC",
+      "D5.DATA",
+      "D5.SUB",
+      "D5.SUB"
+    ],
+    "focusSkills": [
+      "D5.DEC",
+      "D5.DEC",
+      "D5.DIV",
+      "D5.OPS",
+      "D5.MUL",
+      "D5.AREA"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
+  },
+  {
+    "grade": 6,
+    "manualSkills": [
+      "D6.PIE",
+      "D6.PROB",
+      "D6.COORD",
+      "D6.TIME",
+      "D6.RATIO",
+      "D6.NUMBERS"
+    ],
+    "autopilotSkills": [
+      "D6.RATIO",
+      "D6.RATIO",
+      "D6.RATIO",
+      "D6.CIRCLE",
+      "D6.PROB",
+      "D6.PROB"
+    ],
+    "focusSkills": [
+      "D6.RATIO",
+      "D6.RATIO",
+      "D6.DATA_PROBLEM",
+      "D6.MEASURE",
+      "D6.PIE",
+      "D6.OPS"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
+  }
+]

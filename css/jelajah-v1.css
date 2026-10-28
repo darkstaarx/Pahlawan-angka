@@ -5,3 +5,5 @@
 #cards{gap:4px;padding:0 8px 4px}#cards button{display:block;min-height:30px;height:32px;padding:5px 2px;border-radius:9px;font-size:10px}#cards img,#cards small{display:none!important}#cards strong{font-size:10px;line-height:16px;white-space:nowrap}#cards .done strong:after{content:' ✓'}header{padding:4px 8px;min-height:24px}#status{min-height:25px;padding:4px 9px;font-size:10px}.paDiagCard{padding:14px;border:1px solid #456076;border-radius:14px}.paDiagList{padding-left:18px}.paDiagList li{margin:12px 0;line-height:1.5}
 #engineTip{display:block;font-size:10px;line-height:1.3;color:#c4ecdf;margin-top:3px}
 @media(max-width:380px){#cards strong{font-size:9px}}.learnerReviewCard{background:#112c43;padding:16px;border:1px solid #456076;border-radius:14px;margin-top:15px}.learnerReviewCard p,.learnerReviewCard li{font-size:13px;line-height:1.6}
+
+#parent.jelajahParent{max-width:780px;margin:auto;padding:16px}#parent .parentTabs button.active{background:#edc260;color:#172033}#parent .paDiagCard{margin-top:10px}

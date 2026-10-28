@@ -2931,11 +2931,16 @@
       /* Tiada pengembaraan yang gagal — Aurora sentiasa diselamatkan, cuma
          bintang yang berbeza. Kalau soalan habis sebelum semua segel pecah,
          Wira menghabiskan bakinya di sini. */
-      async forceBreakRest(){
+      async forceBreakRest(showFinisher=false){
         const lifecycle=S.lifecycle;
         while(S.active<stageTiers.length){
           if(lifecycle!==S.lifecycle)return false;
           const s=seals[S.active];
+          if(showFinisher&&S.active===stageTiers.length-1){
+            s.damage=Math.max(s.damage,1-1/s.tier.hits);
+            await this.strike();if(lifecycle!==S.lifecycle)return false;
+            this.hitSeal();await this.waitFinalImpact();return lifecycle===S.lifecycle;
+          }
           s.damage=1; s.broken=true; s.breakT=0;
           if(!reduceMotion)shatter(s);
           popSound(); burst(6,s.tier.color); S.flashT=0; S.shake=.4;
@@ -3898,7 +3903,7 @@
     $('segelTag').style.opacity='0';
     if(!stage.allBroken()){
       toast('SATU TEBASAN LAGI!');
-      await stage.forceBreakRest();
+      await stage.forceBreakRest(!!(entryMode?.guestDemo&&entryMode?.jelajah));
       if(!currentRun(activeRun))return;
     }
     toast(`${devPetName().toUpperCase()} BEBAS!`);

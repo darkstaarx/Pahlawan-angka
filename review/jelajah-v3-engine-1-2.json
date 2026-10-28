@@ -1,0 +1,64 @@
+[
+  {
+    "grade": 1,
+    "manualSkills": [
+      "D1.DATA",
+      "D1.TIME",
+      "D1.N20",
+      "D1.ADD20",
+      "D1.FRAC",
+      "D1.SHAPE"
+    ],
+    "autopilotSkills": [
+      "D1.PV100",
+      "D1.PV100",
+      "D1.PV100",
+      "D1.N20",
+      "D1.DATA",
+      "D1.DATA"
+    ],
+    "focusSkills": [
+      "D1.PV100",
+      "D1.PV100",
+      "D1.MEASURE",
+      "D1.FRAC",
+      "D1.SUB20",
+      "D1.ADD20"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
+  },
+  {
+    "grade": 2,
+    "manualSkills": [
+      "D2.8.1",
+      "D2.5.1",
+      "D2.1.1",
+      "D2.2.1",
+      "D2.3.1",
+      "D2.3.2"
+    ],
+    "autopilotSkills": [
+      "D2.2.1",
+      "D2.2.1",
+      "D2.2.1",
+      "D2.8.2",
+      "D2.8.3",
+      "D2.8.3"
+    ],
+    "focusSkills": [
+      "D2.2.1",
+      "D2.2.1",
+      "D2.2.5",
+      "D2.8.1",
+      "D2.6.1",
+      "D2.6.4"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
+  }
+]

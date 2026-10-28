@@ -7,7 +7,7 @@
   clearTimeout(pending);const index=run.asked,step=scenario.scriptSteps[index-6],hint=document.getElementById('segelHint');
   if(index>=8){hint.disabled=false;hint.click()}hint.disabled=true;
   const snapshot=engine.snapshot(),confirm=snapshot.session.confirmSkill;
-  const reason=index===6?'Contoh murid tersalah dalam simulasi.':confirm?'Sistem sebenar meminta soalan pengesahan untuk kemahiran yang sama.':'Sistem sebenar memilih latihan seterusnya berdasarkan bukti sementara.';
+  const reason=index===6?'Lihat contoh apabila jawapan tersalah.':confirm?'Cuba soalan sejenis untuk lihat bahagian yang belum difahami.':'Latihan seterusnya dipilih mengikut jawapan tadi.';
   document.getElementById('segelFeedback').textContent=reason;
   tell('engine-tip',{text:reason,skill:run.q.skill,reason:confirm?'confirmation':'adaptive'});
   let consumed=false;

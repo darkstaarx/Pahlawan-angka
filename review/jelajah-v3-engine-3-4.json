@@ -1,0 +1,64 @@
+[
+  {
+    "grade": 3,
+    "manualSkills": [
+      "D3.DATA",
+      "D3.POSITION",
+      "D3.TIME",
+      "D3.N10000",
+      "D3.ADD10000",
+      "D3.FRAC"
+    ],
+    "autopilotSkills": [
+      "D3.FRAC",
+      "D3.FRAC",
+      "D3.FRAC",
+      "D3.PV10000",
+      "D3.DATA",
+      "D3.DATA"
+    ],
+    "focusSkills": [
+      "D3.FRAC",
+      "D3.FRAC",
+      "D3.MONEY",
+      "D3.TIME",
+      "D3.MEASURE",
+      "D3.FRAC"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
+  },
+  {
+    "grade": 4,
+    "manualSkills": [
+      "D4.DATA",
+      "D4.RATE",
+      "D4.COORD",
+      "D4.TIME",
+      "D4.RATIO",
+      "D4.N100000"
+    ],
+    "autopilotSkills": [
+      "D4.MEASURE",
+      "D4.MEASURE",
+      "D4.MEASURE",
+      "D4.MONEY",
+      "D4.FRAC",
+      "D4.FRAC"
+    ],
+    "focusSkills": [
+      "D4.MEASURE",
+      "D4.MEASURE",
+      "D4.PV100000",
+      "D4.DATA",
+      "D4.SUB",
+      "D4.TIME"
+    ],
+    "shadowRecords": 6,
+    "actualBrain": true,
+    "originalFinisher": true,
+    "parentGlance": true
+  }
+]

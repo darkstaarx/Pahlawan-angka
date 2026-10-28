@@ -19,3 +19,7 @@
   draft preview is authorized. No production promotion was performed.
 
 Draft deployment: 6ae1acf6dca0849e12af728f. Source commit: f5cb3b5.
+
+Correction: finisher focus sequence verified in all six grades after scripted misses. Parent report now uses the current Ringkasan Anak summary helper and original stylesheet, with Kemahiran detail. Plain BM popups and report tabs passed the 390px browser audit. The old learnerReviewCard is absent.
+
+Full animation (no reduced motion) Darjah 2 passed original finisher focus sequence, battle completion, focus practice and current parent report. Current draft: https://6ae1b3f58176648e0d26fa7f--pahlawanangka.netlify.app/demo-jelajah.html
