@@ -3570,17 +3570,19 @@
     const activeRun=run;
     if(!activeRun||activeRun.locked)return;
     const jelajah=!!(entryMode?.guestDemo&&entryMode?.jelajah&&window.PAJelajahBridge);
-    const guestRetry=!!entryMode?.guestDemo&&!jelajah;
+    const guestRetry=!!entryMode?.guestDemo&&(!jelajah||activeRun.asked<6);
     activeRun.locked=true;
     [...$('segelAnswers').children].forEach(b=>b.disabled=true);
     const correct=option.tag==='correct';
-    if(jelajah)window.PAJelajahBridge.resolved(activeRun.asked,correct);
     if(!correct)markWrongAnswer(option,button);
     button.classList.add(correct?'ok':'no');
     const retrying=guestRetry&&!!activeRun.retryOpen;
     const sameWrong=guestRetry&&retrying&&!correct&&String(option.v)===String(activeRun.retryWrongValue);
     const resolveQuestion=!guestRetry||correct||retrying&&!sameWrong;
-    if(resolveQuestion)activeRun.asked++;
+    if(resolveQuestion){
+      if(jelajah)window.PAJelajahBridge.resolved(activeRun.asked,correct,{value:option.v,hint:activeRun.usedHint||retrying});
+      activeRun.asked++;
+    }
     const reachedTarget=activeRun.asked>=activeRun.questionTarget;
     if(correct){
       sfx('correct');activeRun.tally[activeRun.usedHint||retrying?'hint':'own']++;await stage.strike();

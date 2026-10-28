@@ -1,0 +1,10 @@
+[
+  {
+    "grade": 1,
+    "battle": 12,
+    "autopilotStart": "explicit",
+    "manualWrongRetry": "pass",
+    "realCoach": "pass",
+    "isolation": "pass"
+  }
+]

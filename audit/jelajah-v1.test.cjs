@@ -3,8 +3,9 @@ const {scenarios}=require('../js/jelajah-scenarios-v1.js');
 for(const s of Object.values(scenarios))test(`Darjah ${s.grade}: bounded preset and fresh independent work`,()=>{
  assert.equal(s.questions.length,12);assert.equal(s.script.length,6);assert.equal(s.script.filter(x=>!x).length,4);
  for(const q of s.questions){assert.ok(q.prompt&&q.hint&&q.skill);assert.ok(q.wrong.every(w=>String(w.v)!==q.answer));assert.equal(new Set([q.answer,...q.wrong.map(w=>w.v)]).size,3)}
- for(const q of s.independent)assert.ok(!s.questions.some(b=>b.prompt===q.prompt),'independent item is absent from battle');
- assert.ok(s.diagnostic.alternative&&s.diagnostic.question);assert.notEqual(s.questions[8].prompt,s.questions[6].prompt);
+ assert.equal(new Set(s.questions.map(q=>q.prompt)).size,12);
+ for(const q of s.coachQuestions)assert.ok(!s.questions.some(b=>b.prompt===q.prompt),'independent item is absent from battle');
+ assert.equal(s.coachQuestions.length,4);assert.equal(s.scriptSteps.length,6);assert.ok(s.miniGame.page.startsWith('preview/'));assert.ok(s.misconception);
 });
 test('isolation never touches real learner storage or permits a network write',async()=>{
  let writes=0,requests=0;const real={getItem:()=> 'paid-learner',setItem:()=>writes++};

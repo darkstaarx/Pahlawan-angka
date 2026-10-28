@@ -1,117 +1,133 @@
-# Demo Jelajah V1 — development preview
+# Demo Jelajah V1 — final brief implementation
 
-Base: `origin/main` at `3bee537`. Branch: `codex/demo-jelajah-v1`.
-Production has **not** been deployed. No production entry, commercial gate,
-payment handler, database schema or curriculum/mastery engine was changed.
+Branch: `codex/demo-jelajah-v1`; production base `3bee537`.
+The user's final implementation brief supersedes the earlier tour prototype.
+**Netlify production has NOT been deployed.** A draft development deployment
+may be used for phone review; it does not replace the production site.
 
-## Preview
+## Run locally
 
-From this checkout:
+Phone review: [open the draft preview](https://6ae16a4a2768e3b827eaa948--pahlawanangka.netlify.app/demo-jelajah.html).
+This unique development deployment is separate from the unchanged production URL.
 
 ```powershell
 node tools/build-jelajah-preview.cjs
 node tools/serve-jelajah-preview.cjs
 ```
 
-Open <http://127.0.0.1:4173/demo-jelajah.html>. This is a local development URL.
-The server binds only to localhost. Stop its process to end the preview.
+Open <http://127.0.0.1:4173/demo-jelajah.html>. Root demo query aliases and the
+original embedded/standalone landing CTA enter this grade selector on the local
+preview server. `index.html` and production landing scripts are unchanged.
 
-Local landing-entry fix (28 October 2026): the preview server redirects both
-`/?landing_action=demo` and `/index.html?landing_action=demo` to this tour.
-When serving `/index.html`, it injects a preview-only listener for the original
-embedded landing CTA. No production landing or entry script is edited.
-`node audit/jelajah-landing-entry.cjs` passed both query aliases, standalone and
-embedded landing button clicks, and the real first battlefield question.
+## The playable flow
 
-The build derives `jelajah-runtime.html` and `jelajah-offer.html` from the real
-`index.html`. Rebuild after updating that source. The production entry remains
-unchanged. Do not use `--prod`, merge or release without owner approval.
+Select Darjah 1–6 to enter the original Segel interface. The four compact
+navigation cards sit above it; the actual battlefield/question layout is retained.
+Questions 1–6 use the real correct/wrong feedback, hints, written-answer controls
+where supported, and original guest retry behavior. A wrong answer can be retried.
 
-## What to try
+After question 6, the visitor explicitly selects **Mulakan Autopilot**. Questions
+7–12 show a preset sequence: repeated mistakes, follow-up variation, a simpler
+visual scaffold using the existing Cikgu model, then recovery. The subtle simulation
+label and advance button remain visible. Inputs are inert while autopilot runs,
+including written arithmetic forms. The bridge fills those forms and submits them
+through their existing validation rather than painting fake answer text.
 
-1. Select Darjah 1–6. Other cards initially require a completed battle.
-2. Answer questions 1–6 yourself; each answer resolves one question, including
-   an incorrect answer. This preview deliberately uses fixed examples.
-3. Questions 7–12 run automatically with the fixed pattern
-   wrong, wrong, wrong, correct, wrong, correct. Questions 9–10 show a smaller
-   preset scaffold after repeated errors. The simulation label stays visible.
-4. After the real Wira/Aurora rescue animation, all remaining cards unlock.
-5. Play the original interactive mini-game and Cikgu Dimensi models. Both use
-   the selected scenario below. Each requires a separate model-free question.
-   A wrong response triggers a diagnostic, another representation/context,
-   then a fresh parallel question. Guided completion never claims mastery.
-6. Otak Pahlawan explicitly presents sample analysis of the preset script;
-   answers to the first six questions do not determine that sample.
-7. Completed cards turn grey and remain replayable. Replaying battle preserves
-   unlocked cards. Changing grade starts a fresh tour.
-8. Expand Daftar / Beli. The footer grows outside the play area, keeping both
-   offers available without covering controls. Offers open the existing real
-   registration/pricing flow in a separate tab, with its normal access checks.
+The canonical Wira/Aurora strike, seal progression and rescue finish the mission.
+The three remaining cards unlock. Completed cards show **✓ Selesai**, grey out,
+and remain replayable. Replaying battle retains unlocked cards for that grade.
+Changing grade, refresh or leaving the page resets this temporary guest tour.
 
-## Fixed scenarios
+## Real production activities
 
-| Darjah | Simulated weak topic | Original mini-game |
-| --- | --- | --- |
-| 1 | Addition: make ten | Jambatan Sepuluh |
-| 2 | Division: equal sharing/grouping | Kem Bekalan Sidma |
-| 3 | Money: change | Pasar Baki Sidma |
-| 4 | Equivalent fractions | Dapur Wira |
-| 5 | Multiplication: distribution | Kebun Susunan Bunga |
-| 6 | Symmetry and rotation | Gerbang Simetri |
+| Darjah | Preset skill | Actual mini-game | Scope |
+| --- | --- | --- | --- |
+| 1 | Puluh dan sa (`D1.PV100`) | Gudang Harta Wira | `d1-bina@2`, place-value stages 2–3 |
+| 2 | Addition with regrouping (`D2.2.1`) | Gudang Harta Wira | `d2-tambah@0`, regroup-add target |
+| 3 | Equivalent fractions (`D3.FRAC`) | Kedai Kek | `d3-setara@0` |
+| 4 | Length conversion (`D4.MEASURE`) | Bengkel Ajaib | `d4-panjang@2`, stages 2–3 (m/cm) |
+| 5 | Decimals (`D5.DEC`) | Lombong Permata | `d5-perpuluhan@0` |
+| 6 | Ratios (`D6.RATIO`) | Dapur Ramuan | `d6-nisbah@0` |
 
-These are deliberately selected **foundation remediation examples**, including
-for the later grades. They are not a claim of comprehensive grade coverage,
-real adaptive diagnosis, or an estimate of any child's ability.
+The mapping follows the existing game routers/generators. D3 is narrowed to
+equivalent fractions, and D4 to length conversion, so the battle, game and coach
+teach the same relationship. These are predefined scenarios, not real diagnosis.
 
-## Isolation and original assets
+The mini-game card opens isolated copies of the **actual production HTML pages**,
+with original art, tools, keypad, tasks and success animation. Two distinct successful
+rounds complete the short demo. A narrow current-frame/nonce/skill registry permits
+only this scoped preview launch; no subscription entitlement is changed.
 
-- The actual production Gembok WebGL stage, Wira/Aurora assets, question UI,
-  strike/rescue animations and existing mini-game reducers/renderers are reused.
-- Small Gembok hooks require both explicit guest `jelajah` mode and the preview
-  bridge. Production runs are excluded; normal guest retry behavior is retained.
-- Before any runtime game script, storage is replaced with in-memory storage.
-  Cloud, entry, commercial, telemetry funnel and sync scripts are omitted from
-  the battle runtime. Fetch/XHR permit only same-origin reads; beacon and real
-  service-worker registration are disabled. No actual learner state is read.
-- Parent navigation/completion is memory-only. No demo session writes mastery,
-  currency, rewards, paid entitlements, quotas or real learner evidence.
-- Messages require the current battle iframe, same origin and selected grade.
-  Removing a frame destroys its callbacks; old battles cannot unlock a new tour.
-- `sources/` was not edited.
+Cikgu Dimensi opens the **existing Learning Camp DOM and renderer**, including
+Faham → Bina → Sambung → Cuba → Guna, real manipulative interactions, existing
+character poses and calm teaching models. Two fresh independent questions do not
+appear in battle. Errors trigger a diagnostic question and another representation,
+then a separate replacement question. D4's metre bars use equal centimetre segments;
+fractions use a shared number-line point; ratios use a scaling table.
 
-## Verification
+Otak Pahlawan explicitly says:
+“Contoh laporan berdasarkan simulasi demo. Ini bukan penilaian sebenar anak anda.”
+It separates six manual session answers from the preset script, explains the
+related game and Cikgu support, and gives an illustrative recommendation. It does
+not manufacture mastery percentages or diagnose the visitor.
 
-Automated Chromium used the real WebGL game at 390×844 for Darjah 1–5 and
-320×844 for Darjah 6. `review/jelajah-browser-results.json` records all six
-completed 12-question runs, exact autopilot outcomes, original mini-game and
-coach interactions, wrong-answer diagnostic/fresh checks, grade reset,
-sample analysis, zero network writes and unchanged paid-learner storage sentinels.
-Screenshots are in `review/jelajah-d*-coach.png` and `*-analysis.png`.
+## Registration and pricing
 
-The extra edge run tests a manually incorrect answer, completed-battle replay,
-navigation out of the live replay and footer bounds. It is recorded separately
-in `review/jelajah-edge-results.json`.
-The desktop check also passed at 1365×900, including opening the actual free
-registration entry and the original pricing overlay from the two CTA links.
+The compact bottom-right **Daftar / Beli** pill is always present. It expands into
+Daftar Percuma / Lihat Pakej, collapses on gameplay interaction, respects safe areas,
+and occupies a reserved compact strip outside game controls. The original registration
+and current pricing flow open in an in-app modal. Closing it preserves the live game
+iframe and temporary tour state. No payment/account creation was submitted in tests.
 
-```powershell
-node --test audit/jelajah-v1.test.cjs
-node --test audit/commercial-production-access.test.js audit/demo-session-behaviour.test.js audit/demo-funnel.test.js audit/page-lock-demo-exit.test.js
-# Requires Playwright; PA_BROWSER_PATH may select an installed Chromium.
-node audit/jelajah-v1-browser.cjs
-node audit/jelajah-layout-offers.cjs
-```
+## Isolation and unchanged production boundaries
 
-Results: 8 new focused unit tests and 39 existing access/demo regression tests
-passed. Independent Dimensi teaching validation passed after correction of
-repeated/revealed independent items. Code review found replay relocking; fixed
-by retaining unlock state until grade changes.
+- Battle/coach storage is replaced with in-memory storage before game code loads.
+- Cloud, academic tracking, commercial, entry and sync scripts are omitted from
+  the isolated gameplay runtime. Writes and external fetch/XHR are blocked; beacon
+  and real service-worker registration are disabled there.
+- Mini-game events are consumed only by the scoped demo bridge; no learner-review,
+  mastery, reward, frontier, entitlement or quota write occurs.
+- Production `PACommercial`, feature gates, app entry, paid mini-game pages,
+  curriculum, assets and adaptive engine remain unchanged.
+- Small Segel hooks require explicit guest Jelajah mode and exclude production runs.
+- Stale frames/messages cannot complete the current activity. Timers die when the
+  iframe is removed. Double submissions are blocked by existing run locks.
 
-Known existing audit issue: `node audit/coach-games-v1.js` fails at line 12,
-because it expects `/4 pet/` while the existing reducer says `4 Teman`.
-Both this audit and the mini-game source are byte-identical to `origin/main`;
-this change does not modify them. The browser tests exercise all six actual
-interactive solutions successfully. No live purchase or account creation was
-performed; paid access is covered by existing entitlement/quota regression tests.
+## Verification and limits
 
-Browser automation is a mobile viewport check, not a physical-device test.
+`audit/jelajah-final-browser.cjs` exercises the real WebGL battle for all grades:
+manual wrong-answer retry, twelve resolved questions, explicit autopilot start,
+Escape handling, exact scripted outcomes, original Learning Camp interactions,
+diagnostic/replacement checks, labelled analysis and preserved learner-storage sentinel.
+Mobile viewports: 390×844, with Darjah 6 at 320×844. No physical phone test is claimed.
+
+`audit/jelajah-real-games-browser.cjs` tests actual production mini-game rounds.
+`audit/jelajah-v1.test.cjs` validates scenario contracts, isolation and production gates.
+`audit/jelajah-minigame-v2.test.cjs` validates scoped game mapping/build contracts.
+Existing commercial, demo-session, funnel and page-lock regression tests are retained.
+
+Independent code review and **Dimensi validation: PASS** after correcting the
+autopilot cancel/input paths and mathematical proportions in alternate models.
+
+Final validation: all six 12-question battle/coach runs passed, including written
+arithmetic entry, one wrong manual answer/retry, explicit start, diagnostic support
+and replacement checks. All six real mini-games passed two distinct successful
+rounds through their original UI/validation. The in-app current-price modal opened
+and closed while preserving the tour. Unit/regression counts and the phone preview
+URL are recorded in `review/jelajah-final-verification.md`.
+
+The older `audit/coach-games-v1.js` still has a pre-existing text mismatch: it
+expects `4 pet` while the unchanged production reducer says `4 Teman`. This branch
+does not modify that game or old audit. Report new browser results independently.
+
+## Main changed files
+
+- `js/jelajah-scenarios-v1.js`: six separate fixed scenario packages.
+- `js/jelajah-battle-bridge-v1.js`: scoped stage/autopilot adapter.
+- `js/segel-demo-v2.1.0.js`: guarded guest hooks, preserving manual retries.
+- `js/jelajah-minigame-v2.js`, `tools/build-jelajah-minigames.cjs`: real game adapters.
+- `js/jelajah-coach-v2.js`: original Learning Camp adapter.
+- `demo-jelajah.html`, `js/jelajah-v1.js`, scoped CSS: navigation/state/CTA.
+- Build/server/package tools and focused browser/unit audits.
+
+No unrelated redesign, curriculum overhaul, marketing change or production release.
