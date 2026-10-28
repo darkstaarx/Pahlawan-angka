@@ -27,3 +27,7 @@ Full animation (no reduced motion) Darjah 2 passed original finisher focus seque
 Pacing revision: real mini-game audit now checks that worked step count remains unchanged during an idle pause, then advances each step with the visible Seterusnya button. Remote main was fetched and is already an ancestor of this branch (3bee537); all prior demo commits remain included.
 
 Pacing checks passed for Darjah 1–6: three manual rounds, idle pause without step advancement, user-clicked worked steps and two completed worked examples. The 40 isolation/access/funnel/page-lock regressions also passed.
+
+Paced preview deployment: 6ae1bbb6a46529568116f833; source ed52f36. This draft includes all earlier demo corrections and current origin/main.
+
+Public draft Darjah 2 user-paced worked-example audit passed. Production remains 6added09bf3b6b33d6e1d792.
