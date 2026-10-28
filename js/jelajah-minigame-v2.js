@@ -27,8 +27,7 @@
   const exit=document.createElement('button');exit.type='button';exit.className='pa-jelajah-game-exit';exit.textContent='← Kembali';exit.addEventListener('click',()=>{onExit({scenario,game:cfg.page});cleanup()});
   const seen=new Set(),timers=new Set();let successes=0,workedRounds=0,finished=false,autopilot=false,manualNotified=false,closed=false;
   const later=(fn,ms)=>{const id=setTimeout(()=>{timers.delete(id);if(!closed)fn()},ms);timers.add(id);return id};
-  // The old two-success completion (successes>=2) is intentionally replaced by
-  // three manual rounds before the explicit worked-example hand-off.
+  // Count completed rounds, including real worked help, before the hand-off.
   const roundTypes=new Set(['PA_GUDANG_HARTA_ROUND','PA_KEDAI_KEK_ROUND','PA_BENGKEL_AJAIB_ROUND','PA_LOMBONG_PERMATA_ROUND','PA_DAPUR_RAMUAN_ROUND']);
   const complete=()=>{if(finished)return;finished=true;onComplete({scenario,game:cfg.page,successes,workedRounds});};
   const notifyManual=()=>{if(manualNotified)return;manualNotified=true;options?.onManualComplete?.({scenario,game:cfg.page,successes,startAutopilot});};
@@ -52,8 +51,8 @@
   const receive=e=>{
    const d=e.data;
    if(e.origin!==ORIGIN||e.source!==frame.contentWindow||d?.version!==1||d?.nonce!==nonce||d?.skillId!==cfg.skill)return;
-   if(d.type==='PA_MINIGAME_ATTEMPT'&&d.ok===true&&!autopilot&&!d.facets?.guided){const key=String(d.key||'');if(key&&!seen.has(key)){seen.add(key);successes++;if(successes>=3)notifyManual();}}
-   if(autopilot&&roundTypes.has(d.type)&&d.stars===0){workedRounds++;roundReady=true;next.textContent=workedRounds<2?'Contoh seterusnya':'Selesai';}
+   if(roundTypes.has(d.type)&&!autopilot){const key=String(d.questionKey||'');if(key&&!seen.has(key)){seen.add(key);successes++;if(successes>=3){frame.contentWindow.PAMiniGameFlow?.hold();notifyManual();}}}
+   if(autopilot&&roundTypes.has(d.type)&&d.stars===0&&!seen.has(d.questionKey)){seen.add(d.questionKey);frame.contentWindow.PAMiniGameFlow?.hold();workedRounds++;roundReady=true;next.textContent=workedRounds<2?'Contoh seterusnya':'Selesai';}
   };
   const cleanup=()=>{closed=true;autopilot=false;timers.forEach(clearTimeout);timers.clear();window.removeEventListener('message',receive);if(window.PAFocusMiniGamesLive===registry)window.PAFocusMiniGamesLive=previous;toolbar.remove();frame.remove();};
   const toolbar=document.createElement('div');toolbar.className='pa-jelajah-game-toolbar';toolbar.append(exit,next);window.addEventListener('message',receive);host.append(toolbar,frame);

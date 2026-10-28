@@ -457,7 +457,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </style><link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.16.0"></head><body data-jelajah-production="1">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.17.0"><script src="js/minigame-flow-v1.js?v=1.0.0"></script></head><body data-jelajah-production="1">
 
 <main class="pa-game" id="game" aria-label="Gudang Harta Wira">
   <header class="hud">
@@ -1171,16 +1171,16 @@ function check(){
  else{if(!inp.some(s=>s)){msg('Tekan nombor untuk isi jawapan dulu.','',2400);return}
   const bad=q.form.fields.map((f,i)=>!(inp[i]!==''&&inp[i]!=null&&Math.abs(parseFloat(inp[i])-f.v)<1e-9));ok=!bad.includes(true);
   if(!ok){bad.forEach((x,i)=>$('F'+i).classList.toggle('bad',x));fk=bad.indexOf(true);renderFields();note=q.form.fields.length>1&&bad.includes(false)?'Satu bahagian sudah betul. Semak '+(bad[1]?'baki':'hasil bahagi')+'.':'Belum tepat. Semak semula langkah kamu.'}}
- if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+ if(ok){solved=true;const completedQuestion=q;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
   pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Harta saya selamat!','Tepat sekali!']);$('wiraImg').src=A+(st===3?'wira-penjaga-harta-victory.webp':'wira-penjaga-harta-thumb.webp');$('wira').classList.add('cheer');
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+esc(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
   renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);if((q.rack&&(q.rack.mode==='add'||q.rack.mode==='sub')))drawRack();$('widget').querySelectorAll('.col button,.share button').forEach(b=>b.disabled=true);
   const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=chestIcon(true);sl.classList.add('on','pop')}$('stand').innerHTML=chestIcon(true);$('stand').classList.add('done');
-  $('check').textContent=served%SET===0?'Lihat gudang ✦':'Seterusnya →';
-  setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
+  $('check').textContent=served%SET===0?'Lihat gudang ✦':'Seterusnya →';window.PAMiniGameFlow?.queueNext({question:q,current:()=>q,isSolved:()=>solved,advance:()=>check(),button:document.getElementById('check')});
+  setTimeout(()=>{if(solved&&q===completedQuestion){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
  paAttempt(false),misses++;
  reportProgress('wrong');offerWorked();
- if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
+ if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),1800)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',3800);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));

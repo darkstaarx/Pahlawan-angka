@@ -340,13 +340,13 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 @media (max-height:640px){.tiles.kp{gap:4px}.tiles.kp .tl{min-height:30px;font-size:15px}.qcard{padding:5px 10px 6px}.qcard b{font-size:18px}.banner>div>b{font-size:13px}.lz .dg{font-size:20px}.lz .abox{min-height:30px}.lz .cbox{height:18px}}
 </style>
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.16.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.17.0">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .pa-game .scene{--belt:.62;--aspect:1.04}</style>
 
-<main class="pa-game" id="game" aria-label="Lombong Permata Wira">
+<script src="js/minigame-flow-v1.js?v=1.0.0"></script><main class="pa-game" id="game" aria-label="Lombong Permata Wira">
   <header class="hud">
     <div class="clock"><span class="power" id="power"></span><div><b id="setLbl">Hari 1</b></div></div>
     <div class="title"><small>FOKUS · PERPULUHAN &amp; PERATUS</small><b>Lombong Permata</b></div>
@@ -667,15 +667,15 @@ function check(){
   if(!ok&&q.form.frac&&inp[0]&&inp[1]){const x=+inp[0],y=+inp[1];if(x*F[1].v===y*F[0].v&&x!==F[0].v){msg('Nilainya betul, tetapi belum bentuk termudah. Bahagi lagi.','',4000);sfx(520,.08);return}}
   if(!ok){bad.forEach((x,i)=>$('F'+i).classList.toggle('bad',x));fk=bad.indexOf(true);renderFields();const g=parseFloat(inp[0]),v=F[0].v;
    note=F[0].dec&&g&&v&&[10,100,1000,.1,.01,.001].some(m=>Math.abs(g-v*m)<1e-9)?'Digitnya betul, tetapi titik perpuluhan di tempat yang salah. Semak bilangan tempat perpuluhan.':'Belum tepat. Semak semula langkah kamu.'}}
- if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+ if(ok){solved=true;const completedQuestion=q;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
   pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Permata berkilau!','Tepat sekali!']);$('wiraImg').src=A+(st===3?'wira-pelombong-victory.webp':'wira-pelombong-thumb.webp');$('wira').classList.add('cheer');
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+esc(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
   renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);$('widget').querySelectorAll('button').forEach(b=>b.disabled=true);
   const sl=$('slot'+((served-1)%SET));if(sl){sl.innerHTML=GEM(GCOL[(served-1)%SET]);sl.classList.add('on','pop')}
-  $('check').textContent=served%SET===0?'Lihat troli permata ✦':'Seterusnya →';
-  setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
+  $('check').textContent=served%SET===0?'Lihat troli permata ✦':'Seterusnya →';window.PAMiniGameFlow?.queueNext({question:q,current:()=>q,isSolved:()=>solved,advance:()=>check(),button:document.getElementById('check')});
+  setTimeout(()=>{if(solved&&q===completedQuestion){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
  paAttempt(false),misses++;offerWorked();
- if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
+ if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),1800)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',4200);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
 /* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in gudang-harta.html ----------

@@ -130,3 +130,9 @@
 }
 
 .rpg-dialog>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.rpg-dialog .visual-head h3{font-size:26px;line-height:1.16;letter-spacing:-.035em;margin:6px 0 0}.rpg-dialog .note{margin-bottom:18px}.rpg-dialog .steps li:before{display:none}.rpg-dialog{padding:23px;max-width:min(508px,calc(100vw - 28px))}.rpg-dialog .primary{float:right;margin-bottom:5px}.rpg-dialog:after{content:'';display:block;clear:both}@media(max-width:380px){.rpg-dialog{padding:17px}.rpg-dialog .visual-head h3{font-size:23px}}
+
+.activity-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}.activity-actions .primary{flex:1 1 180px;min-height:48px;border-radius:13px;font-weight:800;text-align:center;padding:12px 16px}
+#buy{border:2px solid #fff0a6;min-height:44px;padding:10px 16px;box-shadow:0 5px 0 #a46f0a,0 0 22px #ffcb3266,0 6px 20px #0007;animation:pa-offer-float 3s ease-in-out infinite}#buy span{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#06164c;color:#ffcb32;font-size:18px}#buy:hover{background:#ffe477;box-shadow:0 5px 0 #a46f0a,0 0 32px #ffcb3299}
+@keyframes pa-offer-float{0%,100%{filter:brightness(1);box-shadow:0 5px 0 #a46f0a,0 0 18px #ffcb3266,0 6px 20px #0007}50%{filter:brightness(1.06);box-shadow:0 5px 0 #a46f0a,0 0 30px #ffcb3299,0 8px 24px #0007}}
+.demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:#071629;color:#ffdb79;font-size:14px;font-weight:800}.demo-loading:before{content:'';width:28px;height:28px;border:3px solid #324765;border-top-color:#ffcb32;border-radius:50%;position:absolute;top:calc(50% - 52px);animation:pa-load-spin 1s linear infinite}@keyframes pa-load-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#buy,.demo-loading:before{animation:none}}

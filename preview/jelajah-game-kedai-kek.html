@@ -359,13 +359,13 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.16.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.17.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .pa-game .scene{--waist:60px;--belt:.62;--aspect:1.09}
 .pa-game .scene .stand{left:calc(var(--ww) * .93)}.pa-game .scene .counter{width:66%}.pa-game .scene .shelf{left:54%;right:4%}
 .pa-game .scene .bubble{top:8px}.pa-game .scene .shopsign{left:4%;transform:rotate(-1.5deg)}</style>
 
-<main class="pa-game" id="game" aria-label="Kedai Kek Wira">
+<script src="js/minigame-flow-v1.js?v=1.0.0"></script><main class="pa-game" id="game" aria-label="Kedai Kek Wira">
   <header class="hud">
     <div class="clock"><span class="power" id="power"></span><div><b id="setLbl">Hari 1</b></div></div>
     <div class="title"><small>KEMAHIRAN FOKUS · PECAHAN</small><b>Kedai Kek</b></div>
@@ -803,15 +803,15 @@ function check(){
   if(r.form){msg(FORM_MSG[r.form],'',4200);sfx(520,.08);return}ok=!!r.ok;
   if(!ok){note=r.swap?'Pengangka dan penyebut tertukar. Penyebut ialah jumlah bahagian sama besar.':r.same?'Nilainya sama, tetapi kira semula bahagian dalam gambar.':'Belum tepat. Semak semula langkah kamu.';
    ORDER().forEach(k=>{const b=$('F_'+k);if(b)b.classList.add('bad')});fk=ORDER()[0];renderFields()}}
- if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+ if(ok){solved=true;const completedQuestion=q;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
   pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Sedapnya!','Tepat macam pesanan saya!']);$('wiraImg').src=A+(st===3?'wira-baker-victory.webp':'wira-baker-thumb.webp');$('wira').classList.add('cheer');
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+T(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
   renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);
   const sl=$('slot'+((served-1)%SET));if(sl){sl.classList.add('on','pop')}$('stand').classList.add('done');
-  $('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Seterusnya →';
-  setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
+  $('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Seterusnya →';window.PAMiniGameFlow?.queueNext({question:q,current:()=>q,isSolved:()=>solved,advance:()=>check(),button:document.getElementById('check')});
+  setTimeout(()=>{if(solved&&q===completedQuestion){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
  paAttempt(false),misses++;offerWorked();
- if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
+ if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),1800)}sel=null;note='Belum tepat. '+q.s}
  msg(note,'bad',3800);
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
 /* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in lombong-permata.html ----------

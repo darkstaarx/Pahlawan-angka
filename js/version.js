@@ -1,6 +1,6 @@
 /* Pahlawan Angka — single source of truth for release version.
    Future releases should bump ONLY this value. */
-globalThis.PA_APP_VERSION='3.87.81';
+globalThis.PA_APP_VERSION='3.87.83';
 
 (function syncVersionUi(){
   if(typeof document==='undefined')return;
@@ -33,7 +33,7 @@ globalThis.PA_APP_VERSION='3.87.81';
    seeks to the last second of the portal video rather than cutting it,
    so returning players still see Wira dissolve into particles. */
 (function loadSegelEntryCinematic(){
-  if(typeof document==='undefined')return;
+  if(typeof document==='undefined'||globalThis.PAJelajahSkipEntrance)return;
   if(document.querySelector('script[data-segel-entry-cinematic]'))return;
   const script=document.createElement('script');
   script.src=`js/segel-entry-cinematic-v1.2.0.js?v=${globalThis.PA_APP_VERSION}`;

@@ -7,7 +7,7 @@
 <title>Arkitek Dimensi · Ruang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800;900&display=swap">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.16.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.17.0">
 <style>
 /* Satu skrin: HUD › pemandangan menara › banner soalan › panel alat › butang.
    Palet ikut Pahlawan Angka: biru malam, emas, kad krim, teks biru gelap. */
@@ -183,7 +183,7 @@ button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .game .scene{--belt:.62}
-.game .panel .picks[style="--n:4"]:only-child{grid-template-columns:repeat(2,minmax(0,1fr))}.game .panel .picks:only-child .pick svg{max-width:110px}</style></head>
+.game .panel .picks[style="--n:4"]:only-child{grid-template-columns:repeat(2,minmax(0,1fr))}.game .panel .picks:only-child .pick svg{max-width:110px}</style><script src="js/minigame-flow-v1.js?v=1.0.0"></script></head>
 <body>
 <main class="game" aria-label="Arkitek Dimensi">
   <header class="hud">
@@ -661,14 +661,14 @@ function check(){
  if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
  const r=isRight();if(r===null){msg('Pilih atau masukkan jawapan dulu.','',2200);return}
  if(!r){paAttempt(false),misses++;offerWorked();msg(wrongMsg(),'bad',3400);petFace('sad');const v=$('pet');v.classList.remove('shake');void v.offsetWidth;v.classList.add('shake');setTimeout(()=>{if(!solved)petFace('idle')},1300);sfx(250,.12);return}
- solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;const entry={q,st,misses,hints,index:served};setLog.push(entry);reportFocusRound(entry);adapt(st);
+ solved=true;const completedQuestion=q;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;const entry={q,st,misses,hints,index:served};setLog.push(entry);reportFocusRound(entry);adapt(st);
  petFace('happy');say(['Terima kasih, Wira!','Tepat sekali!','Menara makin tinggi!'][rnd(0,2)]);$('wiraImg').src=A+(st===3?'wira-arkitek-victory.webp':'wira-arkitek-thumb.webp');$('wira').classList.add('cheer');
  if(q.w.type==='pick')W().querySelector('.pick.on')?.classList.add('right');
  const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+q.ans+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
  raisePart((served-1)%SET);dropHook();if(served%SET===0)setTimeout(()=>$('candi').classList.add('done'),400);
  const sb=$('starsBox');sb.classList.remove('bump');void sb.offsetWidth;sb.classList.add('bump');
- renderTrack(true);$('check').textContent=served%SET===0?'Lihat menara ✦':'Seterusnya →';$('check').classList.add('next');
- setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('pet').className='pet leave'}},1900)}
+ renderTrack(true);$('check').textContent=served%SET===0?'Lihat menara ✦':'Seterusnya →';window.PAMiniGameFlow?.queueNext({question:q,current:()=>q,isSolved:()=>solved,advance:()=>check(),button:document.getElementById('check')});$('check').classList.add('next');
+ setTimeout(()=>{if(solved&&q===completedQuestion){$('bubble').classList.add('hide');$('pet').className='pet leave'}},1900)}
 function adapt(st){const f=q.fam,up=q.nTiers-1;
  if(st===3){clean[f]++;if(clean[f]>=2&&tier[f]<up){tier[f]++;clean[f]=0;setTimeout(()=>msg('Hebat! Tugasan seterusnya lebih mencabar.','',2600),2100)}}
  else{clean[f]=0;if(hints+misses>=2&&tier[f]>0){tier[f]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2100)}}}

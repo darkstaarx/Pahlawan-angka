@@ -176,3 +176,8 @@ html.wk-card-on .pa-game:has(#stationCount.wk-walk)>.scene{display:none}
 /* In the card, the choices look like buttons in every game (Gerai's counter tiles were flat grey). */
 .wk-card .tiles .wk-t:not(.wk-go){background:#fff;color:var(--ink,#4a2a16);border:2.5px solid var(--ink,#4a2a16);border-radius:14px;box-shadow:0 4px 0 var(--ink,#4a2a16);font-weight:900}
 .wk-card .tiles .wk-t:not(.wk-go):active{transform:translateY(2px);box-shadow:0 2px 0 var(--ink,#4a2a16)}
+
+/* A wrong field stays unmistakably red until edited; ring pulses slowly. */
+.pa-error-focus{border-color:#ff1744!important;background:#ffe0e6!important;color:#990026!important;box-shadow:0 0 0 2px #ff174466!important;animation:pa-error-ring 1.2s ease-in-out 3!important}
+@keyframes pa-error-ring{0%,100%{outline:2px solid #ff174433;outline-offset:1px}50%{outline:3px solid #ff1744;outline-offset:4px}}
+@media(prefers-reduced-motion:reduce){.pa-error-focus{animation:none!important;outline:2px solid #ff1744}}

@@ -431,11 +431,11 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
-<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.16.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.17.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
 .pa-game .scene{--belt:.58}.pa-game .scene .rack{left:2%;top:38%;transform:none}</style>
 
-<main class="pa-game" id="game" aria-label="Bengkel Besi Wira">
+<script src="js/minigame-flow-v1.js?v=1.0.0"></script><main class="pa-game" id="game" aria-label="Bengkel Besi Wira">
   <header class="hud">
     <div class="clock"><span class="power" id="power"></span><div><b id="setLbl">Set 1</b></div></div>
     <div class="title"><small>KEMAHIRAN FOKUS · UKURAN</small><b>Bengkel Besi</b></div>
@@ -770,17 +770,17 @@ function check(){
  if(K==='pick'&&sel==null){msg('Pilih satu jawapan dulu.','',2400);return}
  if((K==='read'||K==='pad')&&!ansIn.some(s=>s)){msg('Tekan nombor untuk isi jawapan dulu.','',2400);return}
  const ok=K==='build'?val===q.target:K==='pick'?sel===q.correct:q.fields.every((f,i)=>near(ansIn[i],f.v));
- if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+ if(ok){solved=true;const completedQuestion=q;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
   pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Tepat sekali!','Cantik tempaan ni!']);$('wiraImg').src=A+(st===3?'wira-mekanik-victory.webp':'wira-mekanik-thumb.webp');$('wira').classList.add('cheer');
   const lblAns=q.ans||(K==='build'?nf(q.target)+' '+tool.unit:ans(q.fields));
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+lblAns+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
   renderTrack(true);$('subtitle').textContent='';draw();renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);
-  clang();forgePiece((served-1)%SET);if(q.mode==='isipadu')steam();$('check').textContent=served%SET===0?'Lihat set perisai ✦':'Seterusnya →';
-  setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
+  clang();forgePiece((served-1)%SET);if(q.mode==='isipadu')steam();$('check').textContent=served%SET===0?'Lihat set perisai ✦':'Seterusnya →';window.PAMiniGameFlow?.queueNext({question:q,current:()=>q,isSolved:()=>solved,advance:()=>check(),button:document.getElementById('check')});
+  setTimeout(()=>{if(solved&&q===completedQuestion){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
  paAttempt(false),misses++;offerWorked();
  if(K==='build'){if(q.mode==='jisim'&&cfg.grade>2){const d=(q.target-val)/q.target;$('beam').style.setProperty('--a',(Math.max(-1,Math.min(1,d))*-12).toFixed(1)+'deg');setTimeout(()=>{if(!solved)draw()},1600)}
   msg(val<q.target?'Masih kurang daripada sasaran. Cuba tambah lagi.':'Terlebih daripada sasaran. Cuba kurangkan.','bad',3400)}
- else if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;msg('Belum tepat. '+q.s,'bad',3600)}
+ else if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),1800)}sel=null;msg('Belum tepat. '+q.s,'bad',3600)}
  else{const bad=q.fields.map((f,i)=>!near(ansIn[i],f.v));bad.forEach((x,i)=>$('f'+i).classList.toggle('bad',x));fi=bad.indexOf(true);renderFields();
   msg(q.fields.length>1&&bad.includes(false)?'Satu bahagian sudah betul. Semak nombor '+q.fields.filter((f,i)=>bad[i]).map(f=>f.u).join(' dan ')+'.':'Belum tepat. Semak semula kiraan kamu.','bad',3400)}
  pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
