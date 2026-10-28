@@ -20,8 +20,7 @@
  $('cards').onclick=e=>{const b=e.target.closest('[data-card]');if(b&&!b.disabled)show(Number(b.dataset.card))};$('changeGrade').onclick=entry;
  $('content').onclick=e=>{const report=e.target.closest('[data-report]');if(report){window.tab(report.dataset.report);return}const g=e.target.closest('[data-grade]'),b=e.target.closest('[data-open]');if(g){grade=Number(g.dataset.grade);startBattle()}else if(b)show(Number(b.dataset.open));collapse()};
  $('buy').onclick=()=>{const open=$('offers').hidden;$('offers').hidden=!open;$('buy').setAttribute('aria-expanded',String(open))};
- $('offers').onclick=e=>{const b=e.target.closest('[data-offer]');if(!b)return;collapse();$('offerFrame').src='jelajah-offer.html?mode='+b.dataset.offer;$('offerDialog').showModal()};
- $('closeOffer').onclick=()=>$('offerDialog').close();$('offerDialog').addEventListener('close',()=>$('offerFrame').removeAttribute('src'));
+ $('offers').onclick=e=>{const b=e.target.closest('[data-offer]');if(!b)return;collapse();window.open('jelajah-offer.html?mode='+encodeURIComponent(b.dataset.offer),'_blank','noopener')};
  $('startAutopilot').onclick=()=>{frame?.contentWindow.postMessage({source:'pa-jelajah-controller',type:'start-autopilot',grade},location.origin);$('autopilotDialog').close()};
  $('autopilotDialog').addEventListener('cancel',event=>event.preventDefault());
  $('activityIntro').addEventListener('cancel',event=>event.preventDefault());

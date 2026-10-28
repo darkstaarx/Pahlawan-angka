@@ -9,12 +9,12 @@ const {chromium}=require('playwright');
   assert.equal(await page.locator('#offers button').count(),2);
   assert.ok(await page.evaluate(()=>document.querySelector('main').getBoundingClientRect().bottom<=document.querySelector('footer').getBoundingClientRect().top));
   await page.screenshot({path:'review/jelajah-desktop.png'});
-  await page.getByRole('button',{name:'Lihat Pakej',exact:true}).click();const pricing=await(await page.locator('#offerFrame').elementHandle()).contentFrame();
+  const pricingPromise=page.waitForEvent('popup');await page.getByRole('button',{name:'Lihat Pakej',exact:true}).click();const pricing=await pricingPromise;
   await pricing.getByRole('heading',{name:'Pilih akses untuk keluarga'}).waitFor({timeout:45000});
-  assert.ok(await pricing.locator('#paPricingOverlay').isVisible());await page.locator('#closeOffer').click();await page.locator('#buy').click();
-  await page.getByRole('button',{name:'Daftar Percuma',exact:true}).click();const signup=await(await page.locator('#offerFrame').elementHandle()).contentFrame();
+  assert.ok(await pricing.locator('#paPricingOverlay').isVisible());await pricing.close();await page.locator('#buy').click();
+  const signupPromise=page.waitForEvent('popup');await page.getByRole('button',{name:'Daftar Percuma',exact:true}).click();const signup=await signupPromise;
   await signup.getByText('Daftar Akses Mesra',{exact:true}).waitFor({timeout:45000});
-  await page.locator('#closeOffer').click();assert.equal(await page.locator('[data-grade]').count(),6);
+  await signup.close();assert.equal(await page.locator('[data-grade]').count(),6);
   console.log('PASS desktop layout, original pricing flow and original free registration entry');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});
