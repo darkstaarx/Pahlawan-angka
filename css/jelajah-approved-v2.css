@@ -136,3 +136,5 @@
 @keyframes pa-offer-float{0%,100%{filter:brightness(1);box-shadow:0 5px 0 #a46f0a,0 0 18px #ffcb3266,0 6px 20px #0007}50%{filter:brightness(1.06);box-shadow:0 5px 0 #a46f0a,0 0 30px #ffcb3299,0 8px 24px #0007}}
 .demo-loading{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:#071629;color:#ffdb79;font-size:14px;font-weight:800}.demo-loading:before{content:'';width:28px;height:28px;border:3px solid #324765;border-top-color:#ffcb32;border-radius:50%;position:absolute;top:calc(50% - 52px);animation:pa-load-spin 1s linear infinite}@keyframes pa-load-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#buy,.demo-loading:before{animation:none}}
+
+.jelajah-copy mark{background:#e5f0ff;color:#064591;border-radius:4px;padding:1px 3px;font-weight:800;box-decoration-break:clone;-webkit-box-decoration-break:clone}

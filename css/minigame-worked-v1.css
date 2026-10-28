@@ -181,3 +181,9 @@ html.wk-card-on .pa-game:has(#stationCount.wk-walk)>.scene{display:none}
 .pa-error-focus{border-color:#ff1744!important;background:#ffe0e6!important;color:#990026!important;box-shadow:0 0 0 2px #ff174466!important;animation:pa-error-ring 1.2s ease-in-out 3!important}
 @keyframes pa-error-ring{0%,100%{outline:2px solid #ff174433;outline-offset:1px}50%{outline:3px solid #ff1744;outline-offset:4px}}
 @media(prefers-reduced-motion:reduce){.pa-error-focus{animation:none!important;outline:2px solid #ff1744}}
+
+/* High-contrast worked-help cue: blue button, clear slab arrow, no yellow-on-yellow pulse. */
+#hint.pa-worked-cue{width:auto!important;flex:1!important;display:inline-flex!important;align-items:center;justify-content:center;gap:7px;background:#063d80!important;border-color:#72c9ff!important;color:#fff!important;animation:none!important;box-shadow:0 3px 0 #06164c,0 0 0 2px #9edfff66!important}
+.pa-cue-arrow{display:grid;place-items:center;flex:0 0 34px;width:34px;height:30px;background:#fff8e7;border:1px solid #a2d6ff;border-radius:8px;pointer-events:none;animation:pa-help-beacon 1.4s ease-in-out 3}.pa-cue-arrow svg{display:block;width:29px;height:23px;overflow:visible}.pa-cue-label{min-width:0;line-height:1.25;white-space:normal;pointer-events:none}
+@keyframes pa-help-beacon{0%,100%{box-shadow:0 0 0 1px #84d5ff33}50%{box-shadow:0 0 0 4px #84d5ffaa,0 0 12px #84d5ff88}}
+@media(prefers-reduced-motion:reduce){.pa-cue-arrow{animation:none}}

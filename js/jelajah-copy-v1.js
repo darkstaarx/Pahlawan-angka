@@ -11,6 +11,6 @@ window.PAJelajahCopy={markup(kind,phase,topic='kemahiran ini'){
  return `<div class="rpg-copy pop-in"><div class="visual-head"><div class="prop">${s.icon}</div><div><span class="eyebrow">${s.step}</span><h3>${s.title}</h3></div></div><ol class="steps">${s.points.map((p,i)=>`<li><span class="step-icon" aria-hidden="true">${i+1}</span><p>${tailored(p)}</p></li>`).join('')}</ol><div class="note">${tailored(s.note)}</div></div>`;
  }
  const icon=icons[kind]||icons.mini,points=copy[kind][phase];
- return `<div class="jelajah-copy"><div class="jelajah-copy-icon">${icon}</div><ul>${points.map(p=>`<li>${escape(p.replace('{topik}',topic.toLowerCase()))}</li>`).join('')}</ul></div>`;
+ return `<div class="jelajah-copy"><div class="jelajah-copy-icon">${icon}</div><ul>${points.map(p=>`<li>${escape(p).replace(/kesilapan berulang|Soalan sejenis|mini-game dan latihan|mencuba lagi|latihan seterusnya|Otak Pahlawan/gi,t=>`<mark>${t}</mark>`).replace('{topik}',`<mark>${escape(topic.toLowerCase())}</mark>`)}</li>`).join('')}</ul></div>`;
 }};
 })();
