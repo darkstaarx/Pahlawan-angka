@@ -35,3 +35,5 @@ Public draft Darjah 2 user-paced worked-example audit passed. Production remains
 Production release 3.87.78 explicitly authorized on 28 October 2026. CTA polished to Mulakan Pengembaraan. Real production package preserves the original root, login and pricing; mobile release audit passed at 320/390px, 38 access/isolation/lock/funnel checks passed, asset manifest validated. Offline cache test verifies demo navigation cannot replace the game shell. All earlier six-grade gameplay and paced-worked-example fixes are included.
 
 3.87.79: approved point copy and SVG integrated into pre-autopilot, pre-mini-game, pre-coach and post-activity summaries. Parent report/popup audit passed; 38 access/isolation/funnel/lock checks passed; asset manifest current.
+
+3.87.80: 102 boundary/random coordinate diagrams verified entirely inside their SVG bounds, including C at y=8. GitHub Pages /Pahlawan-angka/ prefix entry, launch of the original mini-game, and all five tracked demo game pages passed. Cream/navy modal colors verified. 40 access/isolation/funnel/page-lock tests and offline-cache checks passed.

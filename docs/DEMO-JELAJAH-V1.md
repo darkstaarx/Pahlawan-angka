@@ -70,3 +70,5 @@ Worked examples now advance only through Seterusnya clicks. There is no timed st
 Production demo: https://pahlawanangka.netlify.app/demo-jelajah.html
 
 Release 3.87.79: owner-approved before/after parent explanations use 2–3 short points and decorative static SVG. Autopilot explicitly explains intentional simulated errors. Copy and SVG style derived from the approved local preview; fun-isometric by Kelvin Adithya, MIT (https://skills.klvn.dev/fun-isometric). Gameplay, mastery isolation and user-paced worked steps are unchanged.
+
+3.87.80: GitHub Pages support uses a relative demo link, a .nojekyll marker, and all five generated isolated mini-game pages are tracked. Rebuild and commit these pages whenever their production sources change. Parent-facing panels follow the approved cream (#fdfaf2), navy (#06164c), royal blue (#0067d9), and gold (#ffcb32) palette. Shared coordinate diagrams expand their axis range for all supplied coordinates instead of clipping points above 6.

@@ -96,7 +96,7 @@ function separatePoint(point,others,minX,maxX,minY,maxY){
  return point;
 }
 const coordinateMap=(points,scale=1)=>{
-  const K=K25(),max=6,step=24,ox=110,oy=166,top=oy-max*step;
+  const K=K25(),max=Math.max(6,...points.flatMap(p=>[Number(p.x)||0,Number(p.y)||0])),step=144/max,ox=110,oy=166,top=oy-max*step;
   let grid='';for(let i=0;i<=max;i++){const x=ox+i*step,y=oy-i*step;grid+=`<line x1="${x}" y1="${top}" x2="${x}" y2="${oy}" stroke="#c9d6e8" stroke-width="1.1"/><line x1="${ox}" y1="${y}" x2="${ox+max*step}" y2="${y}" stroke="#c9d6e8" stroke-width="1.1"/>`+K.txt(x,oy+16,i,11,K.soft)+K.txt(ox-11,y+4,i,11,K.soft)}
   const axes=`<line x1="${ox}" y1="${oy}" x2="${ox+max*step+8}" y2="${oy}" stroke="${K.ink}" stroke-width="2.2"/><line x1="${ox}" y1="${oy}" x2="${ox}" y2="${top-8}" stroke="${K.ink}" stroke-width="2.2"/>`;
   const pts=points.map(o=>{const x=ox+o.x*step,y=oy-o.y*step;return K.ball(x,y,7,'#ff8a87','#c2453f')+K.txt(x+10,y-8,o.label,12,'#1c2a43','start')}).join('');

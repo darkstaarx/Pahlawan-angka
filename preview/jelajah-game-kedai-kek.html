@@ -1,0 +1,995 @@
+<meta name="robots" content="noindex,nofollow" data-jelajah-production="1"><base href="../"><script src="js/jelajah-isolation-v1.js"></script><script>(function(){'use strict';var q=new URLSearchParams(location.search),g=Number(q.get('grade'))||0;document.addEventListener('pointerdown',function(){try{window.parent.postMessage({source:'pa-jelajah',type:'interaction',grade:g},location.origin)}catch(_){}} ,{once:true});document.addEventListener('DOMContentLoaded',function(){var d=document.getElementById('devBtn');if(d){d.hidden=true;d.style.display='none'}var x=document.getElementById('dev');if(x){x.hidden=true;x.style.display='none'}});})();</script><meta charset="utf-8">
+<title>Kedai Kek Wira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800;900&display=swap">
+<style>
+/* Layout: one cosy phone-width stall — market scene on top, cooking-game station below that swaps per step (Ambil → Kira → Serah). Single warm daytime look, both host themes. */
+:root{
+  --sky:#2b4a66;         /* page ground behind the stall */
+  --wood:#9a5f34;        /* stall timber */
+  --wood-dk:#5e3519;
+  --wood-lt:#d79a5c;
+  --paper:#fff6e0;       /* parchment panels */
+  --paper-dk:#f1dcae;
+  --ink:#4a2a16;         /* text on parchment */
+  --ink-soft:#8a6142;
+  --leaf:#4f9a4a;        /* go / correct */
+  --leaf-dk:#2f6a2e;
+  --berry:#d2536b;       /* gentle wrong */
+  --gold:#ffc94a;        /* coins, stars */
+  --gold-dk:#b9801c;
+  --ice:#7fd6f0;         /* Wira accent */
+  --cream:#fffdf6;
+  --f-display:"Baloo 2","Trebuchet MS",Verdana,sans-serif;
+  --f-body:"Nunito","Trebuchet MS",Verdana,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse at 50% 0%,#3d6584,var(--sky) 70%);font-family:var(--f-body);color:var(--ink);-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
+.pa-game{position:relative;width:100%;max-width:470px;height:100%;max-height:940px;margin:0 auto;display:flex;flex-direction:column;background:linear-gradient(180deg,#f7e4bd,#ecd09b);overflow:hidden;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 0 40px #0b1a2a88}
+.pa-game>*{flex:none}
+
+/* ---------- HUD: wooden plank ---------- */
+.hud{position:relative;z-index:6;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:7px 10px 8px;background:repeating-linear-gradient(90deg,transparent 0 118px,#00000018 118px 120px),linear-gradient(180deg,var(--wood-lt),var(--wood) 55%,#82491f);border-bottom:4px solid var(--wood-dk);box-shadow:0 3px 0 #0003}
+.clock{display:flex;align-items:center;gap:7px;background:var(--paper);border:2px solid var(--wood-dk);border-radius:14px;padding:3px 9px 3px 4px;box-shadow:inset 0 -3px 0 var(--paper-dk)}
+.dial{width:30px;height:30px;border-radius:50%;background:conic-gradient(var(--gold) var(--p,25%),#e9cf98 0);display:grid;place-items:center;border:2px solid var(--gold-dk)}
+.dial::after{content:"";width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,#fff6b8,#ffb52e);box-shadow:0 0 6px #ffd35a}
+.clock b{display:block;font:800 13px/1 var(--f-display);color:var(--ink)}
+.clock small{display:block;font:800 10px/1.2 var(--f-body);color:var(--ink-soft)}
+.title{text-align:center;min-width:0}
+.title small{display:block;font:900 8px/1 var(--f-body);letter-spacing:1.1px;white-space:nowrap;color:#ffe9bf;opacity:.9}
+.title b{display:block;font:800 clamp(15px,4.4vw,19px)/1.05 var(--f-display);overflow:hidden;text-overflow:ellipsis;color:#fff4d1;text-shadow:0 2px 0 var(--wood-dk),0 0 1px var(--wood-dk);white-space:nowrap}
+.hud-right{display:flex;align-items:center;gap:6px}
+.till{display:flex;align-items:center;gap:5px;background:var(--paper);border:2px solid var(--wood-dk);border-radius:14px;padding:4px 8px 4px 5px;font:800 13px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums;box-shadow:inset 0 -3px 0 var(--paper-dk)}
+.till img{width:22px;height:auto;display:block;margin:-3px 0}
+.till.bump{animation:bump .5s}
+.icon-btn{width:36px;height:36px;border-radius:12px;border:2px solid var(--wood-dk);background:var(--paper);font-size:16px;cursor:pointer;box-shadow:inset 0 -3px 0 var(--paper-dk)}
+
+/* ---------- Scene ---------- */
+.scene{position:relative;flex:1 1 auto!important;min-height:140px;container-type:size;overflow:hidden;background:#cbb49a url("assets/minigames/kedai-ajaib/pasar-bg.webp") 58% 62%/cover no-repeat}
+.scene::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,#0002);pointer-events:none}
+.tint{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;transition:background 1.2s,opacity 1.2s}
+.awning{position:absolute;top:0;left:-6px;right:-6px;height:46px;z-index:4;background:repeating-linear-gradient(90deg,#e8604f 0 34px,#fff1d6 34px 68px);-webkit-mask:radial-gradient(circle 17px at 17px 29px,#000 98%,transparent) 0 0/34px 46px repeat-x,linear-gradient(#000,#000) 0 0/100% 29px no-repeat;mask:radial-gradient(circle 17px at 17px 29px,#000 98%,transparent) 0 0/34px 46px repeat-x,linear-gradient(#000,#000) 0 0/100% 29px no-repeat;filter:drop-shadow(0 4px 0 #0003)}
+.awning-rod{position:absolute;top:0;left:0;right:0;height:9px;z-index:5;background:linear-gradient(180deg,var(--wood-lt),var(--wood-dk))}
+.sign{position:absolute;z-index:5;top:30px;left:12px;padding:4px 10px 5px;background:linear-gradient(180deg,#a9673a,#7a4422);border:2px solid #f6d48d;border-radius:8px;transform:rotate(-4deg);box-shadow:0 3px 0 #0004}
+.sign b{font:800 13px/1 var(--f-display);color:#ffefb8;letter-spacing:.5px}
+.sign::before,.sign::after{content:"";position:absolute;top:-30px;width:2px;height:30px;background:#5e3519}
+.sign::before{left:16px}.sign::after{right:16px}
+
+.wira{position:absolute;z-index:2;left:4px;bottom:44px;width:clamp(84px,44cqh,122px);animation:breathe 2.6s ease-in-out infinite;transform-origin:50% 100%}
+.wira img{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 3px #0005)}
+.wira.cheer{animation:hop .55s ease 2}
+.counter{position:absolute;z-index:3;left:0;bottom:0;width:62%;height:56px;background:repeating-linear-gradient(90deg,transparent 0 62px,#0000001f 62px 64px),linear-gradient(180deg,#e2a466 0 10px,var(--wood) 10px,#7b4520);border-top:4px solid #f0bf82;border-right:4px solid var(--wood-dk);border-radius:0 10px 0 0;box-shadow:inset 0 10px 0 #ffffff22,0 -2px 0 #0002}
+.counter::after{content:"";position:absolute;left:10px;right:14px;top:22px;height:2px;background:#0000002a;box-shadow:0 18px #0000002a}
+.basket{position:absolute;z-index:4;left:clamp(98px,48cqh,128px);bottom:32px;width:80px;height:54px}
+.basket .bag{position:absolute;inset:auto 0 0 0;height:44px;border-radius:5px 5px 10px 10px;background:linear-gradient(180deg,#e7c287,#c99a5a);border:2px solid #8a5c2b;box-shadow:inset 0 6px 0 #ffffff33}
+.basket .bag::before{content:"";position:absolute;left:8px;right:8px;top:-1px;height:5px;background:repeating-linear-gradient(90deg,#8a5c2b 0 5px,transparent 5px 9px);opacity:.5}
+.basket .in{position:absolute;z-index:1;left:4px;right:4px;bottom:26px;display:flex;justify-content:center;align-items:flex-end;gap:0}
+.basket .in svg{width:34px;height:34px;margin:0 -5px;filter:drop-shadow(0 2px 1px #0004);animation:plop .35s ease}
+.basket.wiggle{animation:wiggle .4s}
+
+.customer{position:absolute;z-index:3;right:-6px;bottom:4px;width:clamp(118px,60cqh,170px);transition:transform .9s cubic-bezier(.3,1.2,.5,1),opacity .4s}
+.customer img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 4px #0004);animation:bob 1.9s ease-in-out infinite}
+.customer.away{transform:translateX(120%);opacity:0}
+.customer.leave{transform:translateX(130%) translateY(-6px);opacity:0;transition:transform .8s ease-in,opacity .8s}
+.customer.sadshake img{animation:shake .45s}
+
+.bubble{position:absolute;z-index:6;right:10px;top:40px;max-width:56%;background:var(--cream);border:3px solid var(--ink);border-radius:18px;padding:7px 11px 8px;box-shadow:0 4px 0 #0003;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .25s;transform-origin:80% 100%}
+.bubble.dim{opacity:.12}
+.bubble.hide{transform:scale(.4);opacity:0}
+.bubble::after{content:"";position:absolute;right:46px;bottom:-14px;width:18px;height:18px;background:var(--cream);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(45deg) skew(8deg,8deg);border-radius:0 0 5px 0}
+.bubble .who{font:900 9.5px/1 var(--f-body);letter-spacing:1px;color:var(--berry);text-transform:uppercase}
+.bubble .say{font:800 12.5px/1.22 var(--f-body);margin-top:3px;text-wrap:balance}
+.bubble .order{display:flex;gap:4px;margin-top:5px}
+.bubble .order span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#fbeacb;border:2px dashed #d7b47e}
+.bubble .order svg{width:27px;height:27px}
+.bubble .cash{display:inline-flex;margin-top:5px}
+
+.wsay{position:absolute;z-index:7;left:8px;top:58px;max-width:44%;background:#eaf9ff;border:3px solid #24577c;border-radius:16px;padding:7px 10px;font:800 12px/1.3 var(--f-body);color:#173a57;box-shadow:0 4px 0 #0003;transform-origin:20% 100%;transition:transform .3s cubic-bezier(.3,1.5,.5,1),opacity .2s}
+.wsay.hide{transform:scale(.4);opacity:0;pointer-events:none}
+.wsay b{display:block;font:900 9px/1 var(--f-body);letter-spacing:1px;color:#2f7bb0;margin-bottom:3px}
+.wsay::after{content:"";position:absolute;left:34px;bottom:-12px;width:14px;height:14px;background:#eaf9ff;border-right:3px solid #24577c;border-bottom:3px solid #24577c;transform:rotate(45deg)}
+
+.stamp{position:absolute;z-index:9;left:50%;top:52%;transform:translate(-50%,-50%) rotate(-10deg) scale(2.4);opacity:0;pointer-events:none;text-align:center;font:800 44px/0.9 var(--f-display);letter-spacing:1px;color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink)}
+.stamp small{display:block;font:900 14px/1.2 var(--f-body);-webkit-text-stroke:0;text-shadow:none;color:var(--ink);background:var(--gold);border:3px solid var(--ink);border-radius:20px;padding:3px 12px;margin:8px auto 0;width:max-content;letter-spacing:.5px}
+.stamp.show{animation:stampIn .55s cubic-bezier(.2,1.6,.4,1) forwards}
+.stamp.hebat{color:#ffd23f}.stamp.bagus{color:#7fe08a}.stamp.ok{color:#8fd3ff}
+.burst{position:absolute;inset:0;z-index:8;pointer-events:none}
+.burst i{position:absolute;left:50%;top:44%;width:10px;height:10px;border-radius:2px;animation:burst 1s ease-out forwards}
+
+/* ---------- Station ---------- */
+
+.banner{margin:8px 12px 0;position:relative;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:6px 12px 7px 7px;background:var(--berry);color:#fff;border-radius:12px;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.banner>div{min-width:0}
+.disc{display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--cream);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:3px 7px 4px}
+.disc b{font:800 9px/1 var(--f-body)!important;letter-spacing:.8px;color:var(--ink-soft)}
+.disc .dots{display:flex;gap:3px}
+.disc .dots i{width:9px;height:9px;border-radius:50%;background:#e6c58c;border:1.5px solid var(--ink)}
+.disc .dots i.done{background:var(--leaf)}
+.disc .dots i.now{background:var(--gold)}
+.disc em{font:800 13px/1 var(--f-display);font-style:normal}
+.banner b{display:block;font:800 16px/1.05 var(--f-display);text-wrap:balance}
+.banner>div>span{display:block;font:700 11.5px/1.3 var(--f-body);opacity:.95;margin-top:2px}
+.banner .tag{position:absolute;right:10px;top:-11px;background:var(--gold);color:var(--ink);border:2px solid var(--ink);border-radius:20px;padding:2px 8px;font:900 9.5px/1.2 var(--f-body);letter-spacing:.8px}
+
+.panel{margin:8px 12px 0;padding:8px 10px 10px;min-height:224px;background:var(--paper);border:3px solid var(--wood-dk);border-radius:16px;box-shadow:inset 0 -5px 0 var(--paper-dk),0 4px 0 #0002}
+.panel-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.panel-h b{font:800 15px/1 var(--f-display)}
+.panel-h small{font:800 10.5px/1.2 var(--f-body);color:var(--ink-soft)}
+
+/* shelf */
+.shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:84px;gap:6px 6px;margin:0 -4px;padding:0 4px;background:repeating-linear-gradient(180deg,transparent 0 40px,var(--wood-lt) 40px 43px,var(--wood) 43px 47px,var(--wood-dk) 47px 49px,transparent 49px 90px)}
+.item{position:relative;z-index:1;appearance:none;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:0;touch-action:manipulation}
+.item .art{width:46px;height:42px;display:grid;place-items:end center;transition:transform .15s}
+.item .art svg{width:42px;height:42px;filter:drop-shadow(0 3px 1px #0003)}
+.item:active .art{transform:scale(.9)}
+.item .tagp{position:relative;font:800 11px/1 var(--f-body);color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:5px 12px 12px 5px;padding:3px 7px 3px 9px;font-variant-numeric:tabular-nums}
+.item .tagp::before{content:"";position:absolute;left:3px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--ink)}
+.item .nm{font:800 10.5px/1.1 var(--f-body);color:var(--ink-soft);text-align:center;white-space:nowrap}
+.item.picked .art{transform:translateY(-4px)}
+.item.picked .art::after{content:"✓";position:absolute;margin:-34px 0 0 38px;width:20px;height:20px;border-radius:50%;background:var(--leaf);color:#fff;font:900 12px/20px var(--f-body);text-align:center;border:2px solid #fff}
+.item.glow .art{animation:glow 1s ease-in-out infinite}
+
+/* receipt + mat */
+.receipt{background:#fff;border-radius:6px;padding:5px 9px 6px;font:700 12px/1.45 var(--f-body);color:var(--ink);border:2px dashed #d9c39a;font-variant-numeric:tabular-nums;position:relative}
+.receipt .row{display:flex;justify-content:space-between;gap:8px}
+.receipt .row svg{width:16px;height:16px;vertical-align:-3px;margin-right:3px}
+.receipt .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));column-gap:14px}
+.receipt .sumline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;border-top:2px dashed #d9c39a;margin-top:3px;padding-top:3px;font-weight:900}
+.receipt .sum{border-top:2px dashed #d9c39a;margin-top:4px;padding-top:4px;font-weight:900}
+.receipt .q{display:inline-block;min-width:44px;text-align:center;background:#fbeacb;border-radius:6px;color:var(--berry)}
+.receipt .paid{color:var(--leaf-dk)}
+.mat{margin-top:7px;min-height:52px;border-radius:12px;background:repeating-linear-gradient(45deg,#3f7d4a 0 6px,#45864f 6px 12px);border:3px solid #2a5a33;box-shadow:inset 0 3px 6px #0004;padding:8px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;position:relative}
+.mat-empty{position:absolute;inset:0;display:grid;place-items:center;color:#cfe8cf;font:800 12px/1.3 var(--f-body);text-align:center;padding:0 20px;pointer-events:none}
+.mat-total{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font:800 12px/1 var(--f-body);color:var(--ink-soft)}
+.mat-total b{font:800 18px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.mat-total button{background:none;border:0;font:800 11.5px/1 var(--f-body);color:var(--ink-soft);text-decoration:underline;cursor:pointer;padding:6px 2px}
+
+.purse{display:flex;justify-content:space-between;align-items:flex-end;gap:4px;margin-top:4px;padding:7px 6px 5px;background:linear-gradient(180deg,#8b5530,#6d3e1f);border-radius:14px;border:3px solid var(--wood-dk);box-shadow:inset 0 4px 0 #ffffff1c}
+.money{appearance:none;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;touch-action:manipulation;flex:1;min-width:0}
+.money small{font:800 10px/1 var(--f-body);color:#ffe7bd;white-space:nowrap}
+.mat .tok{appearance:none;border:0;background:none;padding:0;cursor:pointer;animation:drop .3s cubic-bezier(.3,1.6,.5,1)}
+.cash{display:block;height:auto;max-width:none;filter:drop-shadow(0 2px 1px #0006);transition:transform .1s}
+.money:active .cash{transform:translateY(2px) scale(.94)}
+.cash.c10{width:36px}.cash.c20{width:39px}.cash.c50{width:42px}.cash.n{width:60px}
+.mat .tok .cash.c10{width:30px}.mat .tok .cash.c20{width:33px}.mat .tok .cash.c50{width:36px}.mat .tok .cash.n{width:52px}
+.bubble .order .paid-note{width:auto;padding:0 3px;border-style:solid;border-color:#9fca8e;background:#e6f2d4}
+.bubble .order .paid-note img{width:52px;height:auto;display:block}
+.mat{gap:4px}
+
+.actions{display:flex;gap:9px;margin:9px 12px 0}
+.btn{min-height:48px;border-radius:14px;border:3px solid var(--ink);font:800 16px/1 var(--f-display);cursor:pointer;touch-action:manipulation;box-shadow:0 5px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn.hint{width:34%;background:#eaf9ff;color:#173a57}
+.btn.go{flex:1;background:linear-gradient(180deg,#7ccd6a,var(--leaf));color:#fff;text-shadow:0 2px 0 var(--leaf-dk)}
+.btn.go[disabled]{filter:grayscale(.6) brightness(1.05);opacity:.7;cursor:default}
+
+.devbtn{position:absolute;z-index:7;left:8px;bottom:6px;font:900 11px/1 var(--f-body);color:var(--ink);background:#fff8;border:2px dashed var(--ink);border-radius:10px;padding:5px 8px;cursor:pointer}
+.qtyb{position:absolute;right:-6px;bottom:-6px;background:var(--berry);color:#fff;border:2px solid #fff;border-radius:10px;font:900 10px/1 var(--f-body);padding:2px 4px}
+.bubble .order span{position:relative}
+.basket .in{position:absolute}.basket .qtyb{right:-4px;bottom:-14px;font-size:11px}
+.bubble .order .coupon{width:auto;padding:0 7px;background:#ffe27a;border:2px dashed var(--ink);font:800 15px/1 var(--f-display);color:var(--berry)}
+.receipt .row.dsc{color:var(--berry)}.receipt .row.cost{color:var(--ink-soft)}
+.receipt .items.one{grid-template-columns:1fr}
+.signrow{display:flex;gap:6px;margin:-3px 0 -2px auto}
+.signrow button{min-height:30px;padding:0 10px;border-radius:9px;border:2px solid var(--ink);background:var(--cream);font:800 13px/1 var(--f-display);cursor:pointer;color:var(--ink-soft)}
+.signrow button[data-sign=untung].on{background:var(--leaf);color:#fff;box-shadow:inset 0 -3px 0 var(--leaf-dk)}
+.signrow button[data-sign=rugi].on{background:var(--berry);color:#fff;box-shadow:inset 0 -3px 0 #8f2f43}
+.overlay.dev{z-index:40;align-items:flex-end;padding:0}
+.devsheet{width:100%;background:var(--cream);border-top:4px solid var(--ink);border-radius:18px 18px 0 0;padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:7px;max-height:92%;overflow:auto}
+.devhead{display:flex;justify-content:space-between;align-items:center;font:900 9.5px/1 var(--f-body);letter-spacing:1px;color:var(--berry)}
+.devhead button{border:0;background:none;font-size:18px;cursor:pointer;color:var(--ink)}
+.devsheet>b{font:800 18px/1 var(--f-display)}
+.devsheet>small{font:900 10px/1 var(--f-body);letter-spacing:.8px;color:var(--ink-soft);text-transform:uppercase;margin-top:4px}
+.devrow{display:flex;flex-wrap:wrap;gap:6px}
+.devrow button{flex:1 1 auto;min-height:36px;border-radius:10px;border:2px solid #d7b47e;background:#fbeacb;font:800 13px/1 var(--f-body);cursor:pointer;padding:0 10px;color:var(--ink)}
+.devrow button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.devrow.sims button{font-size:11.5px;flex:1 1 45%}
+.devfoot{display:flex;gap:8px;align-items:center}.devfoot code{flex:1;font:700 12px/1.2 ui-monospace,monospace;color:var(--ink-soft);overflow-wrap:anywhere}.devfoot .btn{min-height:40px;padding:0 18px;font-size:15px}
+.simout{margin:0;font:700 12px/1.4 var(--f-body);color:var(--ink);min-height:1.4em}
+#simGo{min-height:42px;font-size:15px}
+.hearts{display:flex;gap:2px;font-size:13px;letter-spacing:-1px}
+
+/* ---------- Ledger (end of day) ---------- */
+.overlay{position:absolute;inset:0;z-index:30;background:#2a1a0ecc;display:flex;align-items:center;justify-content:center;padding:50px 14px 16px;overflow:auto}
+.ledger{width:100%;background:var(--paper);border:4px solid var(--wood-dk);border-radius:18px;padding:18px 16px 16px;box-shadow:inset 0 -6px 0 var(--paper-dk),0 14px 40px #0008;text-align:center;animation:rise .5s cubic-bezier(.3,1.4,.5,1)}
+.ledger .sun{width:64px;height:64px;margin:-50px auto 4px;border-radius:50%;background:radial-gradient(circle,#ffe58a,#ff9a3d 70%);border:4px solid var(--wood-dk);box-shadow:0 0 0 6px #ffcf7a66}
+.ledger h2{margin:0;font:800 26px/1 var(--f-display);text-wrap:balance}
+.ledger p{margin:6px 0 12px;font:700 12.5px/1.45 var(--f-body);color:var(--ink-soft)}
+.lines{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;border-top:2px dashed #d9c39a;border-bottom:2px dashed #d9c39a;padding:10px 0}
+.tile{display:flex;flex-direction:column;align-items:center;gap:2px;background:#fbeacb;border-radius:12px;padding:6px 2px 4px}
+.tile img{width:44px;height:44px;object-fit:contain}
+.tile .st{font-size:12px;color:var(--gold-dk);letter-spacing:-1px;white-space:nowrap}
+.tile small{font:800 9.5px/1.1 var(--f-body);color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.line{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;padding:7px 2px;border-bottom:2px dashed #d9c39a;font-variant-numeric:tabular-nums}
+.line img{width:42px;height:42px;object-fit:contain}
+.line b{display:block;font:800 13px/1.1 var(--f-display)}
+.line small{display:block;font:700 11px/1.3 var(--f-body);color:var(--ink-soft)}
+.line .st{font-size:15px;color:var(--gold-dk);letter-spacing:-1px;white-space:nowrap}
+.tot{display:flex;justify-content:space-between;gap:10px;margin:12px 2px 14px;font:800 15px/1.2 var(--f-display)}
+.tot span:last-child{font-variant-numeric:tabular-nums}
+.ledger .btn{width:100%}
+
+@keyframes breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.025) translateY(-1px)}}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-16px)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg)}70%{transform:rotate(5deg)}}
+@keyframes plop{from{transform:translateY(-20px) scale(.6)}to{transform:none}}
+@keyframes drop{from{transform:translateY(-14px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+@keyframes bump{40%{transform:scale(1.18)}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 0 #ffd23f)}50%{filter:drop-shadow(0 0 10px #ffd23f) drop-shadow(0 0 4px #fff)}}
+@keyframes stampIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(2.4)}60%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(1)}}
+@keyframes burst{from{transform:translate(0,0) rotate(0);opacity:1}to{transform:translate(var(--x),var(--y)) rotate(540deg);opacity:0}}
+@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:380px){.clock>div{display:none}.clock{padding:3px}.icon-btn{width:32px}.cash.n{width:52px}.cash.c50{width:38px}.till{font-size:12px}}
+@media (max-height:700px){.purse small{display:none}.mat{min-height:44px}.panel{min-height:0}}
+@media (max-height:640px){.scene{min-height:126px}.panel{min-height:0;padding-top:6px}.panel-h{margin-bottom:3px}.panel-h small{display:none}.banner>div>span{display:none}.btn{min-height:44px}.mat{min-height:40px;padding:5px}.purse{padding-top:5px}.purse small{display:none}.actions{margin-top:7px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.power{width:32px;height:32px;border-radius:50%;background:conic-gradient(#53c5b6 var(--p,0%),#e9cf98 0);display:grid;place-items:center;border:2px solid #2c877e;transition:background .5s}
+.power::after{content:"✦";width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;color:#fff;background:radial-gradient(#4d678c,#1c2b53)}
+.power.lit{box-shadow:0 0 12px #ffe777}
+.till img{width:20px;margin:-2px 0}
+.bubble .say{font-size:12.5px}
+.banner>div>b{font-size:14.5px;line-height:1.22}
+.scene{min-height:150px!important}
+.disc .dots i{width:7px;height:7px}
+.wsay.good{background:#e6f2d4;border-color:var(--leaf-dk);color:#1f4d1f}.wsay.good::after{background:#e6f2d4;border-color:var(--leaf-dk)}
+.wsay.bad{background:#fde3e6;border-color:#8f2f43;color:#5a1a28}.wsay.bad::after{background:#fde3e6;border-color:#8f2f43}
+.wsay.good b{color:var(--leaf-dk)}.wsay.bad b{color:var(--berry)}
+.panel.set{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:0;padding:6px 10px 8px}
+.inst{width:100%;display:flex;flex-direction:column;align-items:center;gap:5px}
+.readout{display:flex;align-items:baseline;justify-content:center;gap:8px;font:900 10px/1 var(--f-body);color:var(--ink-soft);letter-spacing:.5px}
+.readout b{font:800 22px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.tiles{display:flex;gap:6px;margin:8px 12px 0}
+.tl{flex:1;min-height:42px;border-radius:12px;border:2px solid var(--ink);background:var(--cream);font:800 14px/1 var(--f-display);color:var(--ink);box-shadow:0 3px 0 var(--ink);cursor:pointer;touch-action:manipulation;white-space:nowrap}
+.tl.plus{background:#e6f2d4}.tl:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.aux{display:flex;justify-content:space-between;margin:5px 14px 0}
+.aux button{background:none;border:0;font:900 11.5px/1 var(--f-body);color:var(--ink-soft);text-decoration:underline;cursor:pointer;padding:4px 2px}
+.aux button:disabled{opacity:.35;cursor:default}
+@media (max-height:700px){.tl{min-height:38px}.scale{height:118px}.vol{height:118px}.ruler{height:40px}}
+@keyframes pegpop{0%{transform:translateY(-14px) scale(1.4)}100%{transform:none}}
+.pa-game.noaux .aux{display:none}
+.qcard{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 12px 16px;border-radius:14px;background:radial-gradient(circle at 30% 20%,#2f5b4a,#1f3f35);border:4px solid #8a5530;box-shadow:inset 0 0 0 2px #ffffff22,0 4px 0 #0003;text-align:center}
+.qcard small{font:900 10px/1 var(--f-body);letter-spacing:1.4px;color:#ffd036}
+.qcard b{font:800 clamp(19px,3.4dvh,26px)/1.25 var(--f-display);color:#fffcf0;font-variant-numeric:tabular-nums;text-wrap:balance}
+.ansrow{display:flex;gap:8px;justify-content:center;width:100%;margin-top:2px}
+.fld{min-width:92px;display:flex;align-items:baseline;justify-content:center;gap:5px;padding:7px 10px;border-radius:10px;border:2px dashed #c9a46a;background:#fff;cursor:pointer;touch-action:manipulation}
+.fld b{font:900 22px/1 var(--f-display);color:var(--ink);min-width:16px;min-height:22px;font-variant-numeric:tabular-nums}
+.fld span{font:900 12px/1 var(--f-body);color:var(--ink-soft)}
+.fld.on{border:2px solid var(--berry);box-shadow:0 0 0 3px #f28fb055}
+.fld.on b:empty::after,.fld.on b::after{content:"";display:inline-block;width:2px;height:20px;margin-left:2px;vertical-align:-3px;background:var(--berry);animation:blink 1s steps(1) infinite}
+.fld.bad{border:2px solid #c0392b;background:#fde3e6}
+.tiles.kp{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.tiles.kp .tl{min-height:36px;font-size:17px}.tiles.kp .tl.del{background:#fde3e6}
+.tiles.pk{flex-wrap:wrap}.tiles.pk .tl{white-space:normal;line-height:1.1;padding:6px 4px;min-height:44px}
+.tl.sel{background:var(--ink);color:#fff}.tl:disabled{opacity:.55;cursor:default}
+.tl.nope{animation:nope .5s}@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (max-height:700px){.tiles.kp .tl{min-height:32px}.qcard{padding:10px 10px 12px}.fld{padding:5px 10px}}
+
+/* ---------- Kedai Kek Wira: kedai kek pastel, gaya Gerai Wirayung ---------- */
+:root{--pink:#f2799c;--pink-lt:#ffd6e1;--pink-dk:#b8456a;--choc:#8a4b2b;--mint:#9fe0c9}
+@keyframes blink{50%{opacity:.25}}
+.scene{background:repeating-linear-gradient(90deg,#ffe9ef 0 22px,#ffdbe5 22px 44px)!important}
+.scene::before{display:none}
+.scene .floor{position:absolute;left:0;right:0;bottom:0;height:30px;background:repeating-linear-gradient(90deg,#c98b57 0 46px,#b97a49 46px 48px),#c98b57;border-top:3px solid #9a5f34}
+.bunting{position:absolute;left:-4px;right:-4px;top:0;height:26px;z-index:1;background:conic-gradient(from 135deg at 50% 0,#f2799c 0 90deg,transparent 0) 0 0/28px 22px repeat-x,conic-gradient(from 135deg at 50% 0,#9fe0c9 0 90deg,transparent 0) 14px 0/28px 18px repeat-x;filter:drop-shadow(0 2px 0 #0001)}
+.bunting::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#b8456a}
+.shopsign{position:absolute;z-index:2;top:22px;left:50%;transform:translateX(-50%) rotate(-1.5deg);padding:4px 12px 5px;background:linear-gradient(180deg,#fff6fa,#ffd6e1);border:3px solid var(--pink-dk);border-radius:12px;box-shadow:0 3px 0 #0002;white-space:nowrap}
+.shopsign b{font:800 13px/1 var(--f-display);color:var(--pink-dk);letter-spacing:.6px}
+.shelf{position:absolute;z-index:1;left:30%;right:4%;top:44%;height:44px;display:flex;align-items:flex-end;justify-content:space-around;padding:0 4px;border-bottom:7px solid #9a5f34;box-shadow:0 5px 0 #0001}
+.shelf .slot{width:17%;max-width:42px;aspect-ratio:1;display:grid;place-items:end center;filter:grayscale(1) opacity(.45);transition:filter .5s}
+.shelf .slot svg{width:100%;height:auto}
+.shelf .slot.on{filter:none}.shelf .slot.pop{animation:pegpop .7s cubic-bezier(.3,1.6,.5,1)}
+.oven{display:none;position:absolute;z-index:1;left:4%;top:30%;width:22%;max-width:86px;aspect-ratio:1/1.05;background:linear-gradient(#dfe7f0,#b9c6d6);border:3px solid #5d6f86;border-radius:10px;box-shadow:0 3px 0 #0002}
+.oven::before{content:"";position:absolute;left:12%;right:12%;top:30%;bottom:14%;border-radius:6px;background:radial-gradient(circle at 50% 70%,#ffcf6b,#e5762f 55%,#7a3a1c);border:3px solid #5d6f86;animation:ovenGlow 2.4s ease-in-out infinite}
+.oven::after{content:"";position:absolute;left:14%;top:9%;width:72%;height:12%;background:radial-gradient(circle,#5d6f86 30%,transparent 34%) 0 50%/25% 100% repeat-x}
+@keyframes ovenGlow{50%{filter:brightness(1.25)}}
+.sprinkle{position:absolute;z-index:1;width:6px;height:2px;border-radius:2px;opacity:.7;animation:fall 7s linear infinite}
+.sprinkle:nth-child(1){left:12%;background:#f2799c}.sprinkle:nth-child(2){left:38%;background:#59c8ff;animation-delay:-2s}.sprinkle:nth-child(3){left:61%;background:#ffd036;animation-delay:-4s}.sprinkle:nth-child(4){left:84%;background:#7ccd6a;animation-delay:-5.5s}
+@keyframes fall{0%{top:-5%;transform:rotate(0)}100%{top:105%;transform:rotate(540deg)}}
+.scene .wira{left:4px;bottom:30px;z-index:2}
+.counter{position:absolute;z-index:3;left:0;bottom:0;width:58%;height:60px;border-radius:0 10px 0 0;background:repeating-linear-gradient(90deg,#fff6fa 0 18px,#ffd6e1 18px 36px)!important;border-top:7px solid #c98b57!important;border-right:3px solid #9a5f34!important;box-shadow:0 -2px 0 #9a5f34}
+.stand{position:absolute;z-index:4;left:clamp(96px,46cqh,128px);bottom:44px;width:62px}
+.stand svg{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 2px #0003)}
+.stand.done svg{animation:hop .55s ease 2}
+.scene .customer{bottom:8px;z-index:3}
+.scene .bubble{top:52px}
+.scene .wsay{top:46px}
+.scene .devbtn{bottom:auto;top:30px;left:6px;background:#fff8}
+
+/* pecahan bertindan */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:-2px 2px;font-variant-numeric:tabular-nums}
+.fr i{font-style:normal;display:block;padding:0 3px;font-size:.86em}
+.fr i:first-child{border-bottom:2px solid currentColor;padding-bottom:1px}
+.fr i:last-child{padding-top:1px}
+.mxw{margin-right:1px}
+.banner b .fr{font-size:12.5px;margin:-4px 2px}
+
+/* model kek */
+.vis{width:100%;display:flex;justify-content:center;align-items:flex-end;gap:10px;flex-wrap:nowrap}
+.vis .m{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.vis .m svg{display:block;height:clamp(104px,21dvh,168px);width:auto;max-width:100%;overflow:visible}
+.vis.n2 .m svg{height:clamp(92px,18dvh,140px)}
+.vis.n3 .m svg,.vis.n4 .m svg{height:clamp(60px,11dvh,92px)}
+.vis .m.wide{width:100%;align-items:center}
+.vis .m.wide svg{height:auto;width:auto;max-width:min(100%,330px);max-height:clamp(60px,15dvh,124px)}
+.vis .m b{font:900 11px/1 var(--f-body);color:var(--ink-soft);letter-spacing:.6px}
+.vis.live [data-i],.vis.live [data-g]{cursor:pointer}
+.vis [data-i]:hover{filter:brightness(1.05)}
+.vis .stack{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;width:min(100%,330px)}
+.vis .stack svg{width:100%;height:auto}
+.cnt{font:900 10px/1 var(--f-body);color:var(--ink-soft);letter-spacing:.5px;text-align:center}
+.cnt b{font:800 18px/1 var(--f-display);color:var(--ink)}
+
+/* jawapan pecahan */
+.ansrow{align-items:center}
+.fst{display:flex;flex-direction:column;align-items:center;gap:0}
+.fst .bar{display:block;width:64px;height:3px;border-radius:2px;background:var(--ink);margin:3px 0}
+.fld.sm{min-width:62px;padding:3px 8px}.fld.sm b{font-size:20px;min-height:20px}
+.fld.whole{min-width:54px;align-self:center}
+.fld.whole b{font-size:24px}
+.fld.ph b:empty::before{content:attr(data-ph);color:#c9a46a;font-size:11px;font-weight:800}
+.ansrow .unit{font:900 14px/1 var(--f-display);color:var(--ink-soft)}
+.ansrow .eq{font:800 20px/1 var(--f-display);color:var(--ink)}
+.tiles.cutter{align-items:stretch}
+.tiles.cutter .tl.mid{flex:1.3;font-size:12px;white-space:nowrap;background:#fff;cursor:default;box-shadow:none;border-style:dashed;display:flex;align-items:center;justify-content:center;gap:5px}
+.tiles.pk .tl .fr i{font-size:.95em}
+.qcard b .fr{font-size:.95em}
+.qcard.lt{background:#fffcf0;border-color:#d7b47e}.qcard.lt b{color:var(--ink)}.qcard.lt small{color:var(--pink-dk)}
+@media (max-height:700px){.vis .m svg{height:clamp(96px,17dvh,124px)}.fld.sm b{font-size:18px}}
+@media (max-height:640px){.vis .m svg{height:96px}.vis.n2 .m svg{height:84px}.vis.n3 .m svg,.vis.n4 .m svg{height:54px}.vis .m.wide svg{max-height:84px}.banner>div>b{font-size:13px}.tiles.kp{gap:4px}.tiles.kp .tl{min-height:30px;font-size:15px}.fld.sm{padding:2px 8px}.fld.sm b{font-size:17px;min-height:17px}.qcard{padding:8px 10px 10px}.qcard b{font-size:18px}.shopsign b{font-size:11px}}
+.ledger .faces{display:flex;justify-content:center;gap:4px;margin:4px 0 14px}.ledger .faces div{display:flex;flex-direction:column;align-items:center;font:900 11px/1.2 var(--f-body);color:var(--gold-dk)}.ledger .faces img{width:48px;height:48px;object-fit:contain}
+.ledger .sun{background:radial-gradient(circle at 50% 40%,#fff,#ffd6e1 60%,#f2799c)!important}
+.fld.sm{padding:2px 8px}.fld.sm b{font-size:19px;min-height:19px}.fst .bar{margin:2px 0}
+.qcard{padding:9px 12px 11px;gap:4px}
+.panel.padk .vis .m svg{height:clamp(80px,14dvh,112px)}.panel.padk .vis .m.wide svg{max-height:clamp(56px,12dvh,100px)}
+.panel.padk .vis.n3 .m svg,.panel.padk .vis.n4 .m svg{height:clamp(52px,9dvh,80px)}
+#question{line-height:1.42!important}
+.banner b .fr{font-size:11.5px;margin:-6px 2px -4px}
+.panel:not(.padk) .vis.n1 .m svg{height:clamp(118px,24dvh,190px)}
+.panel.padk .vis .m.bars svg{max-height:clamp(84px,17dvh,132px)}
+@media (max-height:640px){.panel:not(.padk) .vis.n1 .m svg{height:108px}.panel.padk .vis .m.bars svg{max-height:92px}}
+.qcard b{font-size:clamp(17px,3.1dvh,24px)}
+</style>
+<link rel="stylesheet" href="css/minigame-desktop-shell-v1.css?v=1.0.1">
+<link rel="stylesheet" href="css/minigame-scene-depth-v1.css?v=1.0.1">
+<link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
+<link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.16.0">
+<style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
+.pa-game .scene{--waist:60px;--belt:.62;--aspect:1.09}
+.pa-game .scene .stand{left:calc(var(--ww) * .93)}.pa-game .scene .counter{width:66%}.pa-game .scene .shelf{left:54%;right:4%}
+.pa-game .scene .bubble{top:8px}.pa-game .scene .shopsign{left:4%;transform:rotate(-1.5deg)}</style>
+
+<main class="pa-game" id="game" aria-label="Kedai Kek Wira">
+  <header class="hud">
+    <div class="clock"><span class="power" id="power"></span><div><b id="setLbl">Hari 1</b></div></div>
+    <div class="title"><small>KEMAHIRAN FOKUS · PECAHAN</small><b>Kedai Kek</b></div>
+    <div class="hud-right"><span class="till" aria-label="Bintang dikumpul"><img src="assets/minigames/kedai-kek/bintang.webp" alt=""><span id="stars">0</span></span><button class="icon-btn" id="sound" aria-label="Hidupkan bunyi">🔈</button></div>
+  </header>
+  <section class="scene" aria-label="Kedai kek Wira">
+    <div class="tint" id="tint"></div>
+    <i class="sprinkle"></i><i class="sprinkle"></i><i class="sprinkle"></i><i class="sprinkle"></i>
+    <div class="bunting" aria-hidden="true"></div>
+    <div class="shopsign"><b>KEDAI KEK WIRA</b></div>
+    <div class="oven" aria-hidden="true"></div>
+    <div class="shelf" id="shelf" aria-label="Rak kek siap"></div>
+    <div class="floor" aria-hidden="true"></div>
+    <div class="wira" id="wira"><img id="wiraImg" src="assets/minigames/kedai-kek/wira-idle.webp" alt="Wira"></div>
+    <div class="counter" aria-hidden="true"></div>
+    <div class="stand" id="stand" aria-hidden="true"></div>
+    <div class="customer away" id="visitor"><img id="petImg" src="assets/minigames/kedai-kek/arnab-kek-lapis-idle.webp" alt=""></div>
+    <div class="bubble hide" id="bubble"><div class="who" id="who"></div><div class="say" id="say"></div></div>
+    <div class="wsay hide" id="wsay"><b>WIRA</b><span id="wsayTxt"></span></div>
+    <div class="stamp" id="stamp"></div>
+    <div class="burst" id="burst"></div>
+    <button type="button" class="devbtn" id="devBtn" hidden aria-label="Tukar darjah (ujian)">D2 ▾</button>
+  </section>
+  <div class="banner"><span class="tag" id="mode">POTONG</span>
+    <div class="disc" aria-live="polite"><b id="stageN">PESANAN 1/5</b><span class="dots" id="dots"></span></div>
+    <div><b id="question"></b><span id="subtitle"></span></div></div>
+  <section class="panel set" id="widget"></section>
+  <div class="tiles" id="tiles"></div>
+  <div class="actions"><button class="btn hint" id="hint">Tanya Wira</button><button class="btn go" id="check">Semak</button></div>
+
+  <div class="overlay" id="complete" hidden><div class="ledger">
+    <div class="sun"></div><h2 id="doneTitle">Kedai Tutup!</h2><p id="finishText"></p>
+    <div class="faces" id="faces"></div>
+    <button class="btn go" id="again">Buka kedai esok →</button>
+  </div></div>
+
+  <div class="overlay dev" id="dev" hidden><div class="devsheet" role="dialog" aria-labelledby="devTitle">
+    <div class="devhead"><span>UJIAN SAHAJA · BUANG SEBELUM PRODUKSI</span><button type="button" id="devClose" aria-label="Tutup">✕</button></div>
+    <b id="devTitle">Darjah</b>
+    <div class="devrow" id="devGrades"></div>
+    <small>Mod latihan</small>
+    <div class="devrow" id="devModes"></div>
+    <div class="devfoot"><code id="devHash"></code><button type="button" class="btn go" id="devApply">Guna</button></div>
+    <small>Simulasi router Kemahiran Fokus</small>
+    <div class="devrow sims" id="sims"></div>
+    <p class="simout" id="simOut"></p><button type="button" class="btn go" id="simGo" hidden>Buka kedai ikut pelan →</button>
+    <small>Cuba “Jom tengok cara” (terus ke soalan yang ada langkah)</small>
+    <div class="devrow sims" id="wkTry"></div>
+  </div></div>
+</main>
+
+<script src="js/minigame-dev-gate.js?v=1.0.1"></script>
+<script src="js/minigame-worked-v1.js?v=1.17.0"></script>
+<script src="js/minigame-panel-fit-v1.js?v=1.2.0"></script>
+<script src="js/minigame-wsay-v1.js?v=1.0.0"></script>
+<script src="js/kedai-kek-router.js"></script>
+<script>
+(()=>{
+'use strict';
+/* ---------- pembantu pecahan ----------
+   Nota dalam teks: [3/4] = pecahan, [1 2/3] = nombor bercampur, [□/8] = kotak kosong.  */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1};
+const red=(n,d)=>{const g=gcd(n,d);return[n/g,d/g]};
+const fs=(n,d)=>'['+n+'/'+d+']';
+const ms=(w,n,d)=>'['+w+' '+n+'/'+d+']';
+function vs(N,D){[N,D]=red(N,D);const w=Math.floor(N/D),r=N%D;return r?(w?ms(w,r,D):fs(r,D)):String(w)}
+const dn=v=>String(+(+v).toFixed(3));
+const FR=(n,d)=>({type:'frac',n,d});
+const MX=(N,D,o)=>({type:'mixed',N,D,simp:true,...(o||{})});
+const IMP=(N,D)=>({type:'improper',N,D});
+const INT=(v,unit)=>({type:'int',v,unit});
+const DEC=(v,unit)=>({type:'dec',v,unit});
+function opts(list,correct,max=3){const c=String(correct),L=[...new Set(list.map(String))].filter(x=>x!==c),T=shuffle([c,...shuffle(L).slice(0,max-1)]);return{opts:T.map((l,i)=>({id:'o'+i,label:l})),correct:'o'+T.indexOf(c)}}
+const fv=(N,D)=>{const a=fs(N,D),b=vs(N,D);return a===b?a:a+' = '+b};
+const NAMES={'1/2':['satu perdua','setengah','separuh'],'1/4':['satu perempat','suku'],'2/4':['dua perempat'],'3/4':['tiga perempat']};
+const D1F=[[1,2],[1,4],[2,4],[3,4]];
+const nm=(n,d)=>NAMES[n+'/'+d][0];
+/* pecahan lain yang tidak sama nilai (pengganggu) */
+function near(n,d,cnt=3,maxD=10){const out=new Set();const t=n/d;let guard=0;
+ while(out.size<cnt&&guard++<200){const dd=Math.max(2,Math.min(maxD,d+pick([-2,-1,0,0,1,2]))),nn=Math.max(1,Math.min(dd-1,n+pick([-1,0,1,1,2])));if(Math.abs(nn/dd-t)>1e-9)out.add(fs(nn,dd))}return[...out]}
+/* pecahan wajar a/d dengan penyebut hingga maxD */
+const prop=(minD=2,maxD=10)=>{const d=R(minD,maxD);return[R(1,d-1),d]};
+const propS=(minD=2,maxD=10)=>{let n,d;do{[n,d]=prop(minD,maxD)}while(gcd(n,d)>1);return[n,d]};
+const REL=[[2,4],[2,6],[2,8],[2,10],[3,6],[3,9],[4,8],[5,10]];
+
+const GEN={
+/* ======================= DARJAH 1: ½ dan ¼ ======================= */
+1:{
+ potong:[
+  {arch:'shade_symbol',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d),
+   q:'Letak krim pada '+fs(n,d)+' kek '+C.fl.n+' ini.',s:'Penyebut '+d+': kek dipotong kepada '+d+' bahagian sama besar. Pengangka '+n+': bilangan bahagian yang diberi krim.',a:'Letak krim pada '+n+' daripada '+d+' bahagian.'}}},
+  {arch:'shade_words',f:C=>{const[n,d]=pick(D1F),w=pick(NAMES[n+'/'+d]);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d)+' · '+w,
+   q:'Letak krim pada '+w+' kek ini.',s:w==='suku'?'Suku sama dengan satu perempat: 1 daripada 4 bahagian.':/separuh|setengah|perdua/.test(w)?'Separuh: 1 daripada 2 bahagian sama besar.':'Perempat: kek dibahagi kepada 4 bahagian sama besar.',a:w+' = '+fs(n,d)+'.'}}},
+  {arch:'equal_share_shade',f:C=>{const d=pick([2,4]);return{wk:{t:'read',d,sh:1,label:'untuk seorang'},kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:4},need:{n:d,k:1},ansTxt:fs(1,d),
+   q:'Kek ini dikongsi sama rata oleh '+d+' kawan. Potong kek, kemudian letak krim pada bahagian seorang.',s:d+' kawan: potong kepada '+d+' bahagian sama besar. Seorang dapat 1 bahagian.',a:'Bahagian seorang = '+fs(1,d)+'.'}}},
+  {arch:'shade_parts',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:4},need:{n:d,k:n},ansTxt:fs(n,d),
+   q:C.who+' mahu '+fs(n,d)+' kek. Potong kek sama besar, kemudian letak krim.',s:'Penyebut ialah bilangan potongan sama besar. Pengangka ialah bilangan bahagian berkrim.',a:'Potong '+d+', letak krim pada '+n+'.'}}}],
+ nama:[
+  {arch:'model_symbol',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(n,d)),
+   q:'Apakah pecahan bahagian kek yang berkrim?',s:'Kira semua bahagian (penyebut), kemudian kira bahagian berkrim (pengangka).',a:n+' daripada '+d+' bahagian = '+fs(n,d)+'.'}}},
+  {arch:'model_name',f:C=>{const[n,d]=pick(D1F);return{wk:{t:'read',d,sh:n},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(['satu perdua','satu perempat','dua perempat','tiga perempat']),nm(n,d)),
+   q:'Apakah nama pecahan bahagian yang berkrim?',s:'Perdua: 2 bahagian sama besar. Perempat: 4 bahagian sama besar.',a:n+' daripada '+d+' = '+nm(n,d)+'.'}}},
+  {arch:'unmarked_symbol',f:C=>{const[n,d]=pick(D1F),u=d-n;return{wk:{t:'read',d,sh:n,want:'un',label:'tanpa krim'},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(u,d)),
+   q:'Apakah pecahan bahagian kek TANPA krim?',s:'Kira bahagian yang tidak berkrim sahaja.',a:u+' daripada '+d+' tanpa krim = '+fs(u,d)+'.'}}},
+  {arch:'half_everyday_name',f:C=>{const half=Math.random()<.5,[n,d]=half?[1,2]:[1,4];
+   if(Math.random()<.5){const c=half?pick(['setengah','separuh']):'suku';return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(half?[c,'suku','tiga perempat']:[c,'separuh','dua perempat'],c),
+    q:'Bahagian berkrim ialah '+nm(n,d)+'. Apakah nama lainnya?',s:half?'Separuh dan setengah sama dengan satu perdua.':'Suku sama dengan satu perempat.',a:nm(n,d)+' juga dipanggil '+c+'.'}}
+   const bad=half?'suku':'separuh';return{kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts(half?['setengah','separuh',bad]:['suku','satu perempat',bad],bad),
+    q:'Yang manakah BUKAN nama bagi bahagian berkrim?',s:'Kira bahagian kek dulu: 2 bahagian atau 4 bahagian?',a:'Bahagian berkrim ialah '+nm(n,d)+'. '+up(bad)+' bukan namanya.'}}}],
+ cerita:[
+  {arch:'half_remaining_story',f:C=>{const d=pick([2,4]),k=d===2?1:R(1,3);return{wk:{t:'read',d,eat:k,want:'left',label:'yang tinggal'},kind:'pick',vis:[{t:'round',n:d,eat:range(k),fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(d-k,d)),
+   q:'Kek dipotong '+d+' sama besar. '+C.who+' makan '+k+' bahagian. Apakah pecahan kek yang tinggal?',s:'Kira bahagian yang masih ada di atas pinggan.',a:d+' − '+k+' = '+(d-k)+' bahagian tinggal = '+fs(d-k,d)+'.'}}},
+  {arch:'take_one_action',f:C=>{const k=R(1,3);return{wk:{t:'read',d:4,eat:k,want:'eat',label:'yang kosong (diambil)'},kind:'pick',vis:[{t:'round',n:4,eat:range(k),fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(k,4)),
+   q:C.who+' ambil '+k+' bahagian kek untuk dibawa pulang. Apakah pecahan kek yang diambil?',s:'Kira bahagian yang kosong di pinggan. Kek asal ada 4 bahagian.',a:k+' daripada 4 = '+fs(k,4)+'.'}}},
+  {arch:'two_people_eat',f:C=>{const[a,b]=pick([[1,1],[1,2],[2,1]]),o=C.others[0];return{wk:{t:'parts',d:4,terms:[a,b],left:1},kind:'pick',vis:[{t:'round',n:4,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(4-a-b,4)),
+   q:'Kek dipotong 4 sama besar. '+C.who+' makan '+a+' bahagian dan '+o+' makan '+b+' bahagian. Apakah pecahan kek yang tinggal?',s:'Jumlahkan bahagian yang dimakan, kemudian tolak daripada 4.',a:'4 − '+a+' − '+b+' = '+(4-a-b)+' bahagian = '+fs(4-a-b,4)+'.'}}},
+  {arch:'two_people_receive',f:C=>{const[a,b]=pick([[1,1],[1,2],[2,1]]),o=C.others[0];return{wk:{t:'parts',d:4,terms:[a,b]},kind:'pick',vis:[{t:'round',n:4,fl:C.fl}],...opts(shuffle(D1F.map(x=>fs(...x))).slice(0,3),fs(a+b,4)),
+   q:C.who+' dapat '+a+' bahagian dan '+o+' dapat '+b+' bahagian kek. Apakah pecahan yang mereka terima semuanya?',s:'Kek dipotong 4 sama besar. Tambah bahagian kedua-dua kawan.',a:a+' + '+b+' = '+(a+b)+' bahagian = '+fs(a+b,4)+'.'}}}]},
+
+/* ======================= DARJAH 2: penyebut hingga 10, persepuluh ======================= */
+2:{
+ potong:[
+  {arch:'bar_model',f:C=>{const[n,d]=prop(3,10);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'bar',n:d,fl:C.fl,live:1}],need:{k:n},ansTxt:fs(n,d),
+   q:'Letak krim pada '+fs(n,d)+' kek lapis ini.',s:'Kek lapis sudah dipotong '+d+' sama besar. Letak krim pada '+n+' bahagian.',a:'Letak krim pada '+n+' daripada '+d+' bahagian.'}}},
+  {arch:'verbal_part',f:C=>{const[n,d]=prop(3,10);return{wk:{t:'read',d,sh:n},kind:'shade',vis:[{t:'round',n:1,fl:C.fl,live:1}],cut:{min:1,max:10},need:{n:d,k:n},ansTxt:fs(n,d),
+   q:C.who+' mahu '+fs(n,d)+' kek. Potong kek sama besar, kemudian letak krim.',s:'Penyebut '+d+': potong '+d+' bahagian sama besar.',a:'Potong '+d+', letak krim pada '+n+'.'}}},
+  {arch:'verbal_part',f:C=>{const[n,d]=prop(3,10);return{wk:{t:'read',d,sh:n},kind:'pad',card:d+' bahagian sama besar<br>'+n+' bahagian berkrim',form:FR(n,d),
+   q:'Apakah pecahan bahagian kek yang berkrim?',s:'Penyebut = semua bahagian. Pengangka = bahagian berkrim.',a:n+' daripada '+d+' = '+fs(n,d)+'.'}}},
+  {arch:'missing_part',f:C=>{const d=R(4,10),n=R(1,d-2);return{wk:{t:'read',d,sh:n+1,label:'berkrim sekarang'},kind:'pad',vis:[{t:'round',n:d,sh:n,fl:C.fl}],form:FR(n+1,d),
+   q:'Jika satu lagi bahagian diberi krim, apakah pecahan baharu?',s:'Penyebut tidak berubah. Tambah 1 pada pengangka.',a:fs(n,d)+' + 1 bahagian = '+fs(n+1,d)+'.'}}}],
+ banding:[
+  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);return{wk:{t:'cmp',a,b,d,names:['Kek A','Kek B']},kind:'pick',vis:[{t:'round',n:d,sh:a,fl:C.fl,lab:'KEK A'},{t:'round',n:d,sh:b,fl:C.fl2,lab:'KEK B'}],
+   opts:[{id:'A',label:'Kek A'},{id:'B',label:'Kek B'}],correct:a>b?'A':'B',ansTxt:a>b?'Kek A':'Kek B',
+   q:'Kek manakah lebih banyak krim?',s:'Kedua-dua kek dipotong sama banyak. Banding bilangan bahagian berkrim.',a:'A = '+fs(a,d)+', B = '+fs(b,d)+'.'}}},
+  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);const big=Math.random()<.5,c=big?Math.max(a,b):Math.min(a,b);return{wk:{t:'cmp',a,b,d,big},kind:'pick',...opts([fs(a,d),fs(b,d)],fs(c,d)),
+   q:'Antara '+fs(a,d)+' dengan '+fs(b,d)+', yang manakah lebih '+(big?'besar':'kecil')+'?',s:'Penyebut sama, jadi banding pengangka.',a:(big?'Pengangka lebih besar':'Pengangka lebih kecil')+': '+fs(c,d)+'.'}}},
+  {arch:'object_set',f:C=>{const d=R(3,10),n=R(1,d-1);return{wk:{t:'read',d,sh:n,label:'strawberi'},kind:'pad',vis:[{t:'set',n:d,k:n}],form:FR(n,d),
+   q:'Apakah pecahan buah strawberi di atas dulang?',s:'Penyebut = semua buah. Pengangka = buah strawberi.',a:n+' strawberi daripada '+d+' buah = '+fs(n,d)+'.'}}},
+  {arch:'compare_model',f:C=>{const d=R(4,10);const s=new Set();while(s.size<3)s.add(R(1,d-1));const L=[...s],asc=[...L].sort((x,y)=>x-y),T=asc.map(x=>fs(x,d)).join(', ');
+   const w1=[...L].sort((x,y)=>y-x).map(x=>fs(x,d)).join(', '),w2=[asc[1],asc[0],asc[2]].map(x=>fs(x,d)).join(', ');return{wk:{t:'order',L,d},kind:'pick',...opts([T,w1,w2],T),
+   q:'Susun '+L.map(x=>fs(x,d)).join(', ')+' secara menaik (kecil ke besar).',s:'Penyebut sama. Susun ikut pengangka dari kecil ke besar.',a:'Menaik: '+T+'.'}}}],
+ persepuluh:[
+  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:DEC(n/10),
+   q:'Kek lapis dipotong 10 sama besar. Tulis bahagian berkrim dalam perpuluhan.',s:'1 daripada 10 bahagian = 0.1.',a:n+' persepuluh = 0.'+n+'.'}}},
+  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'read',d:10,sh:n,label:'berisi jus'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:FR(n,10),
+   q:'Jus oren memenuhi '+n+' daripada 10 bahagian botol. Apakah pecahan botol yang berisi jus?',s:'Botol ada 10 bahagian sama besar. Kira bahagian berisi jus.',a:n+' daripada 10 = '+fs(n,10)+'.'}}},
+  {arch:'decimal_to_fraction',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'dec',out:'frac'},kind:'pad',card:'0.'+n+' = [□/10]',form:FR(n,10),
+   q:'Tukar 0.'+n+' kepada pecahan persepuluh.',s:'Digit selepas titik perpuluhan ialah bilangan persepuluh.',a:'0.'+n+' = '+fs(n,10)+'.'}}},
+  {arch:'remaining_part',f:C=>{const n=R(1,9),dec=Math.random()<.5;return{wk:{t:'tenth',n,from:'rest',out:dec?'dec':'frac'},kind:'pad',vis:[{t:'bar',n:10,eat:range(n),fl:C.fl}],form:dec?DEC((10-n)/10):FR(10-n,10),
+   q:C.who+' makan '+(dec?'0.'+n:fs(n,10))+' kek lapis. Apakah '+(dec?'perpuluhan':'pecahan')+' kek yang tinggal?',s:'Satu kek penuh = 10 persepuluh. Tolak bahagian yang dimakan.',a:'10 − '+n+' = '+(10-n)+' persepuluh = '+(dec?'0.'+(10-n):fs(10-n,10))+'.'}}},
+  {arch:'mixed_compare',f:C=>{let a,b;do{a=R(1,9);b=R(1,9)}while(a===b);const c=a>b?fs(a,10):'0.'+b;return{wk:{t:'tenthCmp',a,b},kind:'pick',...opts([fs(a,10),'0.'+b],c),
+   q:'Yang manakah lebih besar: '+fs(a,10)+' atau 0.'+b+'?',s:'Tukar kedua-duanya kepada persepuluh, kemudian banding.',a:fs(a,10)+' = 0.'+a+'. Banding 0.'+a+' dengan 0.'+b+'.'}}}]},
+
+/* ======================= DARJAH 3: setara, permudah, bercampur, tambah tolak ======================= */
+3:{
+ setara:[
+  {arch:'equivalent_fraction_area',f:C=>{const[n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5]]),k=pick([2,3,4,5].filter(k=>d*k<=10));const c=fs(n*k,d*k);
+   const bad=[d*k<10?fs(n*k,d*k+1):fs(n*k,d*k-1),fs(n+1,d+1),fs(n,d*k),fs(n*k+1,d*k)].filter(x=>x!==c);return{wk:{t:'equiv',n,d,k},kind:'pick',vis:[{t:'round',n:d,sh:n,fl:C.fl}],...opts([c,...shuffle(bad).slice(0,2)],c),
+   q:'Rajah menunjukkan '+fs(n,d)+' kek berkrim. Pecahan manakah sama nilai dengannya?',s:'Darab pengangka dan penyebut dengan nombor yang sama.',a:fs(n,d)+' = '+fs(n+' × '+k,d+' × '+k).replace(/\[([^\]]*)\]/,'('+n+' × '+k+')/('+d+' × '+k+')')+' = '+c+'.'}}},
+  {arch:'equivalent_fraction_area',f:C=>{const[n,d]=pick([[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5]]),k=pick([2,3,4,5].filter(k=>d*k<=10));return{wk:{t:'equiv',n,d,k,ask:'shade'},kind:'shade',vis:[{t:'round',n:d,sh:n,fl:C.fl,lab:'KEK A'},{t:'round',n:d*k,fl:C.fl2,lab:'KEK B',live:1}],need:{k:n*k},ansTxt:fs(n,d)+' = '+fs(n*k,d*k),
+   q:'Kek A ada '+fs(n,d)+' berkrim. Letak krim pada kek B supaya sama banyak.',s:'Setiap bahagian kek A sama dengan '+k+' bahagian kek B.',a:n+' × '+k+' = '+n*k+' bahagian.'}}},
+  {arch:'equivalent_fraction_missing_number',f:C=>{const[n,d]=propS(2,5),k=pick([2,3,4,5].filter(k=>d*k<=10)),top=Math.random()<.6;
+   return{wk:{t:'equiv',n,d,k,ask:top?'n':'d'},kind:'pad',card:top?fs(n,d)+' = [□/'+d*k+']':fs(n,d)+' = ['+n*k+'/□]',form:INT(top?n*k:d*k),
+   q:'Apakah nombor dalam kotak?',s:top?'Penyebut '+d+' didarab dengan '+k+'. Buat yang sama pada pengangka.':'Pengangka '+n+' didarab dengan '+k+'. Buat yang sama pada penyebut.',a:(top?n+' × '+k+' = '+n*k:d+' × '+k+' = '+d*k)+'.'}}},
+  {arch:'equivalent_fraction_symbolic',f:C=>{const[n,d]=propS(2,5),k=pick([2,3,4,5].filter(k=>d*k<=10)),c=fs(n*k,d*k);return{wk:{t:'equiv',n,d,k},kind:'pick',...opts([c,...near(n*k,d*k,3,10)],c),
+   q:'Pecahan manakah setara dengan '+fs(n,d)+'?',s:'Pecahan setara: darab atau bahagi pengangka dan penyebut dengan nombor yang sama.',a:'Darab dengan '+k+': '+fs(n,d)+' = '+c+'.'}}}],
+ permudah:[
+  {arch:'simplify_fraction_from_area',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10));return{wk:{t:'simp',N:p*k,D:q*k},kind:'pad',vis:[{t:'round',n:q*k,sh:p*k,fl:C.fl}],form:MX(p,q),
+   q:'Bahagian berkrim ialah '+fs(p*k,q*k)+'. Apakah bentuk termudahnya?',s:'Cari nombor yang boleh membahagi pengangka dan penyebut.',a:fs(p*k,q*k)+' ÷ '+k+' = '+fs(p,q)+'.'}}},
+  {arch:'identify_common_factor_for_simplification',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10)),N=p*k,D=q*k;const L=[k];[2,3,4,5,N,D,1].forEach(x=>{if(x!==k&&!L.includes(x)&&x>1)L.push(x)});
+   return{wk:{t:'simp',N,D,ask:'gcf'},kind:'pick',...opts([k,...shuffle(L.slice(1)).slice(0,2)],k),
+   q:'Untuk memudahkan '+fs(N,D)+' terus kepada bentuk termudah, bahagi pengangka dan penyebut dengan nombor apa?',s:'Cari faktor sepunya TERBESAR bagi '+N+' dan '+D+'.',a:'Faktor sepunya terbesar ialah '+k+'.'}}},
+  {arch:'simplify_fraction_direct',f:C=>{const[p,q]=propS(2,5),k=pick([2,3,4,5].filter(k=>q*k<=10));return{wk:{t:'simp',N:p*k,D:q*k},kind:'pad',card:'Permudahkan '+fs(p*k,q*k),form:MX(p,q),
+   q:'Tulis '+fs(p*k,q*k)+' dalam bentuk termudah.',s:'Bahagi pengangka dan penyebut dengan faktor sepunya terbesar.',a:fs(p*k,q*k)+' ÷ '+k+' = '+fs(p,q)+'.'}}}],
+ bercampur:[
+  {arch:'identify_mixed_number_from_picture',f:C=>{const w=R(1,3),d=R(2,10),n=R(1,d-1);return{wk:{t:'readMixed',w,n,d},kind:'pad',vis:[{t:'bars',w,n,d,fl:C.fl}],form:MX(w*d+n,d,{simp:false}),ansTxt:ms(w,n,d),
+   q:'Rajah menunjukkan kek lapis berkrim. Tulis sebagai nombor bercampur.',s:'Kek penuh = nombor bulat. Kek separa = pecahan.',a:w+' kek penuh dan '+fs(n,d)+' = '+ms(w,n,d)+'.'}}},
+  {arch:'convert_improper_to_mixed',f:C=>{let N,d;do{d=R(2,8);N=R(d+1,3*d-1)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',vis:[{t:'bars',w:Math.floor(N/d),n:N%d,d,fl:C.fl,cnt:1}],form:MX(N,d),
+   q:'Ada '+fs(N,d)+' kek lapis. Tukar kepada nombor bercampur.',s:'Setiap '+d+' bahagian = 1 kek penuh.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
+  {arch:'convert_improper_to_mixed',f:C=>{let N,d;do{d=R(2,10);N=R(d+1,4*d)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',card:fs(N,d)+' = ?',form:MX(N,d),
+   q:'Tukar '+fs(N,d)+' kepada nombor bercampur.',s:'Bahagi pengangka dengan penyebut. Hasil = nombor bulat, baki = pengangka baharu.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
+  {arch:'convert_mixed_to_improper',f:C=>{let w,n,d;do{d=R(2,10);n=R(1,d-1);w=R(1,4)}while(gcd(n,d)>1);const N=w*d+n;return{wk:{t:'toImp',w,n,d},kind:'pad',card:ms(w,n,d)+' = ?',form:IMP(N,d),
+   q:'Tukar '+ms(w,n,d)+' kepada pecahan tak wajar.',s:'Darab nombor bulat dengan penyebut, kemudian tambah pengangka.',a:w+' × '+d+' + '+n+' = '+N+'. Jadi '+ms(w,n,d)+' = '+fs(N,d)+'.'}}}],
+ tambah:[
+  {arch:'add_proper_fractions',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-2);b=R(1,d-1-a)}while(b<1);return{wk:{t:'add',terms:[[a,d],[b,d]],ops:['+']},kind:'pad',vis:[{t:'round',n:d,sh:a,sh2:b,fl:C.fl}],form:MX(a+b,d),
+   q:'Krim strawberi '+fs(a,d)+' dan krim coklat '+fs(b,d)+'. Berapakah pecahan kek yang berkrim?',s:'Penyebut sama: tambah pengangka sahaja.',a:fs(a,d)+' + '+fs(b,d)+' = '+fv(a+b,d)+'.'}}},
+  {arch:'add_proper_fractions',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m+b>=d2);const S=a*m+b;return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:['+']},kind:'pad',card:fs(a,d1)+' + '+fs(b,d2)+' = ?',form:MX(S,d2),
+   q:'Kira '+fs(a,d1)+' + '+fs(b,d2)+'. Beri jawapan dalam bentuk termudah.',s:'Samakan penyebut dulu: tukar '+fs(a,d1)+' kepada pecahan berpenyebut '+d2+'.',a:fs(a,d1)+' + '+fs(b,d2)+' = '+fs(a*m,d2)+' + '+fs(b,d2)+' = '+fv(S,d2)+'.'}}},
+  {arch:'subtract_proper_fractions',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(Math.random()<.4?[[5,5],[7,7],[8,8],[9,9],[10,10],[6,6]]:REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m-b<=0);const S=a*m-b;
+   return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:['−']},kind:'pad',card:fs(a,d1)+' − '+fs(b,d2)+' = ?',form:MX(S,d2),
+   q:'Kira '+fs(a,d1)+' − '+fs(b,d2)+'. Beri jawapan dalam bentuk termudah.',s:d1===d2?'Penyebut sama: tolak pengangka sahaja.':'Samakan penyebut dulu, kemudian tolak pengangka.',a:(d1===d2?'':fs(a,d1)+' − '+fs(b,d2)+' = ')+fs(a*m,d2)+' − '+fs(b,d2)+' = '+fv(S,d2)+'.'}}},
+  {arch:'fraction_operation_context',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m+b>=d2||a*m-b<=0);const add=Math.random()<.5,S=add?a*m+b:a*m-b;
+   return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:[add?'+':'−']},kind:'pad',form:MX(S,d2,{unit:'kg'}),
+   q:add?'Wira guna '+fs(a,d1)+' kg tepung untuk kek dan '+fs(b,d2)+' kg untuk biskut. Berapa kg tepung digunakan semuanya?':'Ada '+fs(a,d1)+' kg gula. Wira guna '+fs(b,d2)+' kg untuk kek. Berapa kg gula yang tinggal?',
+   s:(add?'Tambah':'Tolak')+'. Samakan penyebut dulu.',a:fs(a*m,d2)+(add?' + ':' − ')+fs(b,d2)+' = '+fv(S,d2)+' kg.'}}}]},
+
+/* ======================= DARJAH 4: tak wajar, tambah tiga, operasi bergabung, kuantiti ======================= */
+4:{
+ bercampur:[
+  {arch:'improper_to_mixed',f:C=>{let N,d;do{d=R(2,8);N=R(d+1,3*d-1)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',vis:[{t:'bars',w:Math.floor(N/d),n:N%d,d,fl:C.fl,cnt:1}],form:MX(N,d),
+   q:'Ada '+fs(N,d)+' kek lapis. Tukar kepada nombor bercampur.',s:'Setiap '+d+' bahagian = 1 kek penuh.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
+  {arch:'improper_to_mixed',f:C=>{let N,d;do{d=R(2,10);N=R(d+1,5*d)}while(gcd(N,d)>1);return{wk:{t:'toMixed',N,D:d},kind:'pad',card:fs(N,d)+' = ?',form:MX(N,d),
+   q:'Tukar '+fs(N,d)+' kepada nombor bercampur.',s:'Bahagi pengangka dengan penyebut.',a:N+' ÷ '+d+' = '+Math.floor(N/d)+' baki '+N%d+'. Jadi '+fv(N,d)+'.'}}},
+  {arch:'mixed_to_improper',f:C=>{let w,n,d;do{d=R(2,10);n=R(1,d-1);w=R(1,5)}while(gcd(n,d)>1);const N=w*d+n;return{wk:{t:'toImp',w,n,d},kind:'pad',card:ms(w,n,d)+' = ?',form:IMP(N,d),
+   q:'Tukar '+ms(w,n,d)+' kepada pecahan tak wajar.',s:'Darab nombor bulat dengan penyebut, kemudian tambah pengangka.',a:w+' × '+d+' + '+n+' = '+N+'. Jadi '+ms(w,n,d)+' = '+fs(N,d)+'.'}}}],
+ tambah:[
+  {arch:'fraction_subtract',f:C=>{let d1,d2,a,b,m;do{[d1,d2]=pick(Math.random()<.5?[[6,6],[8,8],[9,9],[10,10]]:REL);m=d2/d1;a=R(1,d1-1);b=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||a*m-b<=0);const S=a*m-b;
+   return{wk:{t:'add',terms:[[a,d1],[b,d2]],ops:['−']},kind:'pad',card:fs(a,d1)+' − '+fs(b,d2)+' = ?',form:MX(S,d2),q:'Kira '+fs(a,d1)+' − '+fs(b,d2)+'. Beri jawapan dalam bentuk termudah.',s:'Samakan penyebut, tolak pengangka, kemudian permudahkan.',a:fs(a*m,d2)+' − '+fs(b,d2)+' = '+fv(S,d2)+'.'}}},
+  {arch:'fraction_add_three',f:C=>{const d=R(4,10),a=R(1,d-1),b=R(1,d-1),c=R(1,d-1),S=a+b+c;return{wk:{t:'add',terms:[[a,d],[b,d],[c,d]],ops:['+','+']},kind:'pad',card:fs(a,d)+' + '+fs(b,d)+' + '+fs(c,d)+' = ?',form:MX(S,d),
+   q:'Kira jumlahnya. Beri jawapan dalam nombor bercampur atau bentuk termudah.',s:'Penyebut sama: tambah ketiga-tiga pengangka. Jika lebih daripada penyebut, tukar kepada nombor bercampur.',a:'Jumlah '+fv(S,d)+'.'}}},
+  {arch:'fraction_add_three',f:C=>{let d1,d2,m,a,b,c;[d1,d2]=pick(REL);m=d2/d1;do{a=R(1,d1-1);b=R(1,d2-1);c=R(1,d2-1)}while(gcd(a,d1)>1||gcd(b,d2)>1||gcd(c,d2)>1);const S=a*m+b+c;return{wk:{t:'add',terms:[[a,d1],[b,d2],[c,d2]],ops:['+','+']},kind:'pad',card:fs(a,d1)+' + '+fs(b,d2)+' + '+fs(c,d2)+' = ?',form:MX(S,d2),
+   q:'Kira jumlahnya dalam bentuk termudah.',s:'Tukar '+fs(a,d1)+' kepada pecahan berpenyebut '+d2+' dulu.',a:fs(a*m,d2)+' + '+fs(b,d2)+' + '+fs(c,d2)+' = '+fv(S,d2)+'.'}}},
+  {arch:'fraction_combined',f:C=>{let d,a,b,c;do{d=R(4,10);a=R(1,d-1);b=R(1,d-1);c=R(1,d-1)}while(a+b-c<=0);const S=a+b-c;return{wk:{t:'add',terms:[[a,d],[b,d],[c,d]],ops:['+','−']},kind:'pad',card:fs(a,d)+' + '+fs(b,d)+' − '+fs(c,d)+' = ?',form:MX(S,d),
+   q:'Kira dari kiri ke kanan. Beri jawapan dalam bentuk termudah.',s:'Tambah dulu, kemudian tolak. Penyebut kekal '+d+'.',a:fs(a,d)+' + '+fs(b,d)+' − '+fs(c,d)+' = '+fv(S,d)+'.'}}}],
+ kuantiti:[
+  {arch:'fraction_quantity',f:C=>{const d=R(2,6),g=R(2,6),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N},kind:'tray',vis:[{t:'tray',d,g,live:1}],need:{k:n},ansTxt:n*g+' biji',
+   q:'Ambil '+fs(n,d)+' daripada '+N+' biji tart untuk '+C.who+'.',s:'Bahagi '+N+' biji kepada '+d+' pinggan sama banyak. Ambil '+n+' pinggan.',a:N+' ÷ '+d+' × '+n+' = '+n*g+' biji.'}}},
+  {arch:'fraction_quantity',f:C=>{const d=R(2,6),g=R(2,6),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N},kind:'pad',vis:[{t:'tray',d,g}],form:INT(n*g,'biji'),
+   q:fs(n,d)+' daripada '+N+' biji kek cawan ialah berapa biji?',s:'Cari '+fs(1,d)+' dulu: '+N+' ÷ '+d+'. Kemudian darab '+n+'.',a:N+' ÷ '+d+' = '+g+'; '+g+' × '+n+' = '+n*g+'.'}}},
+  {arch:'fraction_quantity',f:C=>{const d=R(3,10),g=R(3,12),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N},kind:'pad',card:fs(n,d)+' daripada '+N,form:INT(n*g),
+   q:'Berapakah '+fs(n,d)+' daripada '+N+'?',s:'Bahagi dengan penyebut, kemudian darab dengan pengangka.',a:N+' ÷ '+d+' = '+g+'; '+g+' × '+n+' = '+n*g+'.'}}},
+  {arch:'fraction_quantity',f:C=>{const d=R(3,10),g=R(3,10),n=R(1,d-1),N=d*g;return{wk:{t:'qty',n,d,N,rest:1},kind:'pad',form:INT(N-n*g,'biji'),
+   q:'Kedai Wira buat '+N+' biji kek cawan. '+fs(n,d)+' daripadanya dijual pagi tadi. Berapa biji belum dijual?',s:'Cari bilangan yang dijual dulu, kemudian tolak daripada '+N+'.',a:N+' ÷ '+d+' × '+n+' = '+n*g+' dijual; '+N+' − '+n*g+' = '+(N-n*g)+' biji.'}}}]},
+
+/* ======================= DARJAH 5: darab pecahan ======================= */
+5:{
+ darab:[
+  {arch:'depth_visual_model',f:C=>{const[n,d]=propS(2,6),k=R(2,4);return{wk:{t:'mulW',n,d,k},kind:'pad',vis:Array.from({length:k},()=>({t:'bar',n:d,sh:n,fl:C.fl})),stackVis:1,form:MX(n*k,d),
+   q:'Setiap kek '+fs(n,d)+' berkrim. Berapakah '+fs(n,d)+' × '+k+'?',s:'Kira semua bahagian berkrim, kemudian tulis dengan penyebut '+d+'.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+'.'}}},
+  {arch:'depth_proper_x_whole',f:C=>{const[n,d]=propS(2,10),k=pick([d,2*d,R(2,12)]);return{wk:{t:'mulW',n,d,k},kind:'pad',card:fs(n,d)+' × '+k+' = ?',form:MX(n*k,d),
+   q:'Kira '+fs(n,d)+' × '+k+'. Beri jawapan dalam bentuk termudah.',s:'Darab pengangka dengan '+k+'. Penyebut kekal.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+'.'}}},
+  {arch:'depth_mixed_x_whole',f:C=>{let w,n,d;do{d=R(2,8);n=R(1,d-1);w=R(1,3)}while(gcd(n,d)>1);const k=R(2,5),N=(w*d+n)*k;return{wk:{t:'mulW',n,d,k,w},kind:'pad',card:ms(w,n,d)+' × '+k+' = ?',form:MX(N,d),
+   q:'Kira '+ms(w,n,d)+' × '+k+'.',s:'Tukar '+ms(w,n,d)+' kepada pecahan tak wajar dulu.',a:ms(w,n,d)+' = '+fs(w*d+n,d)+'; '+fs(w*d+n,d)+' × '+k+' = '+fv(N,d)+'.'}}},
+  {arch:'depth_proper_x_whole',f:C=>{const d=pick([2,3,4,5,8]),n=R(1,d-1),k=R(2,8);return{wk:{t:'mulW',n,d,k},kind:'pad',form:MX(n*k,d,{unit:'cawan'}),
+   q:'Satu resipi kek perlukan '+fs(n,d)+' cawan susu. Wira buat '+k+' biji kek. Berapa cawan susu diperlukan?',s:'Darab: '+fs(n,d)+' × '+k+'.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+' cawan.'}}}],
+ darabf:[
+  {arch:'depth_proper_x_proper',f:C=>{const c=R(2,5),b=R(1,c-1),d=R(2,4),n=R(1,d-1);return{wk:{t:'mulF',n,d,c:b,e:c},kind:'pad',vis:[{t:'grid',c,b,d,n,fl:C.fl}],form:MX(n*b,d*c),
+   q:fs(b,c)+' kek berkrim. Ceri ditabur pada '+fs(n,d)+' daripadanya. Berapakah '+fs(n,d)+' × '+fs(b,c)+'?',s:'Kira petak bertabur ceri. Penyebut = semua petak dalam kek.',a:fs(n,d)+' × '+fs(b,c)+' = '+fv(n*b,d*c)+'.'}}},
+  {arch:'depth_proper_x_proper',f:C=>{const[a,b]=propS(2,10),[c,d]=propS(2,10);return{wk:{t:'mulF',n:a,d:b,c,e:d},kind:'pad',card:fs(a,b)+' × '+fs(c,d)+' = ?',form:MX(a*c,b*d),
+   q:'Kira '+fs(a,b)+' × '+fs(c,d)+'. Beri jawapan dalam bentuk termudah.',s:'Darab pengangka dengan pengangka, penyebut dengan penyebut.',a:fs(a+' × '+c,b+' × '+d).replace(/\[[^\]]*\]/,'('+a+' × '+c+')/('+b+' × '+d+')')+' = '+fv(a*c,b*d)+'.'}}},
+  {arch:'depth_mixed_x_proper',f:C=>{let w,n,d;do{d=R(2,8);n=R(1,d-1);w=R(1,3)}while(gcd(n,d)>1);const[c,e]=propS(2,10),N=(w*d+n)*c,D=d*e;return{wk:{t:'mulF',n,d,w,c,e},kind:'pad',card:ms(w,n,d)+' × '+fs(c,e)+' = ?',form:MX(N,D),
+   q:'Kira '+ms(w,n,d)+' × '+fs(c,e)+'.',s:'Tukar nombor bercampur kepada pecahan tak wajar dulu.',a:fs(w*d+n,d)+' × '+fs(c,e)+' = '+fv(N,D)+'.'}}},
+  {arch:'depth_proper_x_proper',f:C=>{const[a,b]=pick([[1,2],[1,3],[2,3],[1,4],[3,4]]),[c,d]=pick([[1,2],[3,4],[2,5],[3,5],[4,5],[1,4]]);return{wk:{t:'mulF',n:a,d:b,c,e:d},kind:'pad',form:MX(a*c,b*d,{unit:'kg'}),
+   q:'Wira ada '+fs(c,d)+' kg tepung. '+fs(a,b)+' daripadanya digunakan untuk tart. Berapa kg tepung digunakan?',s:'"daripada" bermaksud darab: '+fs(a,b)+' × '+fs(c,d)+'.',a:fs(a,b)+' × '+fs(c,d)+' = '+fv(a*c,b*d)+' kg.'}}}]},
+
+/* ======================= DARJAH 6: bahagi, operasi bergabung, masalah ======================= */
+6:{
+ bahagi:[
+  {arch:'y6v2_2_1_1_whole_div_fraction',f:C=>{const W=R(2,4),d=R(2,5);return{wk:{t:'div',W,c:1,e:d},kind:'pad',vis:Array.from({length:W},()=>({t:'round',n:d,fl:C.fl})),form:{...INT(W*d,'keping'),pre:W+' ÷ '+fs(1,d)+' ='},
+   q:'Wira ada '+W+' biji kek. Setiap kek dipotong '+d+' keping sama besar. Berapa keping kek semuanya?',sub:'Setiap keping = '+fs(1,d)+' kek.',s:'Kira keping dalam satu kek dulu, kemudian kira untuk '+W+' kek.',a:W+' ÷ '+fs(1,d)+' = '+W+' × '+d+' = '+W*d+' keping.'}}},
+  {arch:'y6v2_2_1_1_whole_div_fraction',f:C=>{const[n,d]=propS(2,8),W=R(2,9);return{wk:{t:'div',W,c:n,e:d},kind:'pad',card:W+' ÷ '+fs(n,d)+' = ?',form:MX(W*d,n),
+   q:'Kira '+W+' ÷ '+fs(n,d)+'.',s:'Bahagi dengan pecahan = darab dengan salingannya, '+fs(d,n)+'.',a:W+' ÷ '+fs(n,d)+' = '+W+' × '+fs(d,n)+' = '+fv(W*d,n)+'.'}}},
+  {arch:'y6v2_2_1_1_fraction_div_whole',f:C=>{const[n,d]=propS(2,10),W=R(2,6);return{wk:{t:'div',n,d,k:W},kind:'pad',card:fs(n,d)+' ÷ '+W+' = ?',form:MX(n,d*W),
+   q:'Kira '+fs(n,d)+' ÷ '+W+'.',s:'Bahagi dengan '+W+' sama dengan darab '+fs(1,W)+'.',a:fs(n,d)+' × '+fs(1,W)+' = '+fv(n,d*W)+'.'}}},
+  {arch:'y6v2_2_1_1_fraction_div_fraction',f:C=>{/* jawapan nombor bulat (2 atau 3) supaya santai */let c,d,Q;do{[c,d]=propS(3,10);Q=pick([2,3])}while(c*Q>=d);const g=gcd(c*Q,d),a=c*Q/g,b=d/g;return{wk:{t:'div',n:a,d:b,c,e:d},kind:'pad',card:fs(a,b)+' ÷ '+fs(c,d)+' = ?',form:MX(a*d,b*c),
+   q:'Kira '+fs(a,b)+' ÷ '+fs(c,d)+'.',s:'Tukar ÷ kepada × dan terbalikkan pecahan kedua.',a:fs(a,b)+' × '+fs(d,c)+' = '+fv(a*d,b*c)+'.'}}},
+  {arch:'y6v2_2_1_1_mixed_div_fraction',f:C=>{/* nombor bercampur ÷ pecahan = nombor bulat */let c,e,Q;do{[c,e]=propS(2,8);Q=pick([2,3,4])}while(c*Q<=e||(c*Q)%e===0);const g0=gcd(c*Q,e),T=c*Q/g0,d=e/g0,w=Math.floor(T/d),n=T%d,N=(w*d+n)*e,D=d*c;return{wk:{t:'div',w,n,d,c,e},kind:'pad',card:ms(w,n,d)+' ÷ '+fs(c,e)+' = ?',form:MX(N,D),
+   q:'Kira '+ms(w,n,d)+' ÷ '+fs(c,e)+'.',s:'Tukar kepada pecahan tak wajar, kemudian darab dengan salingan.',a:fs(w*d+n,d)+' × '+fs(e,c)+' = '+fv(N,D)+'.'}}},
+  {arch:'y6v2_2_1_1_sharing_story',f:C=>{const[n,d]=pick([[1,2],[1,4],[3,4],[1,3],[2,3],[2,5]]),k=R(2,8),W=n*k/d;if(!Number.isInteger(W))return null;return{wk:{t:'div',W,c:n,e:d},kind:'pad',form:INT(k,'botol'),
+   q:'Wira ada '+W+' ℓ jus oren. Setiap botol memuatkan '+fs(n,d)+' ℓ. Berapa botol penuh boleh diisi?',s:'Bahagi: '+W+' ÷ '+fs(n,d)+'.',a:W+' ÷ '+fs(n,d)+' = '+W+' × '+fs(d,n)+' = '+k+' botol.'}}}],
+ gabung:[
+  {arch:'y6v2_2_4_1_simple',f:C=>{const[n,d]=propS(2,5),b=d*R(2,6),a=R(2,30);return{kind:'pad',card:a+' + '+fs(n,d)+' × '+b+' = ?',form:INT(a+n*b/d),
+   q:'Kira. Ingat: darab dahulu, kemudian tambah.',s:'Kira '+fs(n,d)+' × '+b+' dulu.',a:fs(n,d)+' × '+b+' = '+n*b/d+'; '+a+' + '+n*b/d+' = '+(a+n*b/d)+'.'}}},
+  {arch:'y6v2_2_4_1_bracket',f:C=>{const[n,d]=propS(2,5),a=R(1,9),b=d*R(1,4);return{kind:'pad',card:'('+a+' + '+fs(n,d)+') × '+b+' = ?',form:INT(a*b+n*b/d),
+   q:'Kira. Selesaikan dalam kurungan dahulu.',s:'Kurungan dahulu: '+a+' + '+fs(n,d)+' = '+ms(a,n,d)+'. Kemudian darab '+b+'.',a:'('+ms(a,n,d)+') × '+b+' = '+fs(a*d+n,d)+' × '+b+' = '+(a*b+n*b/d)+'.'}}},
+  {arch:'y6v2_2_4_1_fraction_decimal',f:C=>{const[n,d]=pick([[1,2],[1,4],[3,4],[2,5],[1,5]]),b=d*R(1,4),a=n*b/d+R(2,15),c=R(1,4)+.5,v=a-n*b/d+c;return{kind:'pad',card:a+' − '+fs(n,d)+' × '+b+' + '+dn(c)+' = ?',form:DEC(v),
+   q:'Kira. Darab dahulu, kemudian tolak dan tambah dari kiri.',s:'Mula dengan '+fs(n,d)+' × '+b+'.',a:fs(n,d)+' × '+b+' = '+n*b/d+'; '+a+' − '+n*b/d+' + '+dn(c)+' = '+dn(v)+'.'}}},
+  {arch:'y6v2_2_4_1_unknown',f:C=>{const[n,d]=propS(2,5),b=d*R(1,5),x=R(2,20),T=x+n*b/d;return{kind:'pad',card:'□ + '+fs(n,d)+' × '+b+' = '+T,form:INT(x),
+   q:'Apakah nilai □?',s:'Kira '+fs(n,d)+' × '+b+' dulu, kemudian fikir: berapa tambah hasil itu menjadi '+T+'?',a:fs(n,d)+' × '+b+' = '+n*b/d+'; '+T+' − '+n*b/d+' = '+x+'.'}}}],
+ masalah:[
+  {arch:'y6v2_2_5_1_recipe',f:C=>{const[n,d]=pick([[1,2],[3,4],[2,3],[1,4],[2,5],[3,5]]),k=R(2,8);return{wk:{t:'mulW',n,d,k},kind:'pad',form:MX(n*k,d,{unit:'ℓ'}),
+   q:'Satu resipi kek perlukan '+fs(n,d)+' ℓ susu. Wira buat '+k+' resipi untuk kenduri. Berapa liter susu diperlukan?',s:'Darab '+fs(n,d)+' dengan '+k+'.',a:fs(n,d)+' × '+k+' = '+fv(n*k,d)+' ℓ.'}}},
+  {arch:'y6v2_2_5_1_mixed_context',f:C=>{const d=pick([2,4,5]),n=R(1,d-1),A=d*R(2,6),add=R(1,4)+.5,v=A-A*n/d+add;return{kind:'pad',form:DEC(v,'ℓ'),
+   q:'Tangki susu ada '+A+' ℓ. '+fs(n,d)+' daripadanya digunakan, kemudian Wira tambah '+dn(add)+' ℓ. Berapa liter susu sekarang?',s:'Cari '+fs(n,d)+' daripada '+A+' dulu.',a:fs(n,d)+' × '+A+' = '+A*n/d+'; '+A+' − '+A*n/d+' + '+dn(add)+' = '+dn(v)+' ℓ.'}}},
+  {arch:'y6v2_2_5_1_claim',f:C=>{let n,d,k,rN;do{[n,d]=pick([[3,4],[1,2],[2,3],[1,4],[2,5],[3,5]]);k=R(2,4);rN=(d-(k*n)%d)%d}while(!rN);const tot=(k*n+rN)/d,truth=Math.random()<.5;
+   let ck=k,cr=rN;if(!truth){if(d>2)cr=pick(range(d-1).map(x=>x+1).filter(x=>x!==rN));else ck=k+1}
+   return{kind:'pick',opts:[{id:'Y',label:'Betul'},{id:'N',label:'Salah'}],correct:truth?'Y':'N',ansTxt:truth?'Betul':'Salah',
+   q:C.who+' kata '+tot+' ℓ jus boleh mengisi '+ck+' botol '+fs(n,d)+' ℓ dan berbaki '+fs(cr,d)+' ℓ. Betulkah?',s:'Kira '+fs(n,d)+' × '+ck+' dulu, kemudian tolak daripada '+tot+' ℓ.',a:fs(n,d)+' × '+ck+' = '+fs(n*ck,d)+'; '+tot+' − '+fs(n*ck,d)+' = ?'}}},
+  {arch:'y6v2_2_1_1_error',f:C=>{const W=R(2,6),d=R(2,6),right=W*d;return{kind:'pick',...opts(['Salah, jawapannya '+right,'Betul','Salah, jawapannya '+(W+d)],'Salah, jawapannya '+right),
+   q:'Murid mengira '+W+' ÷ '+fs(1,d)+' = '+fs(1,W*d)+'. Apakah penilaian kamu?',s:'Berapa keping '+fs(1,d)+' ada dalam '+W+' biji kek?',a:W+' ÷ '+fs(1,d)+' = '+W+' × '+d+' = ?'}}}]}
+};
+function range(k){return Array.from({length:k},(_,i)=>i)}
+function up(s){return s[0].toUpperCase()+s.slice(1)}
+/* penjana yang pulangkan null dicuba semula */
+Object.values(GEN).forEach(g=>Object.values(g).forEach(list=>list.forEach(e=>{const f=e.f;e.f=C=>{let r;for(let i=0;i<40&&!r;i++)r=f(C);return r}})));
+
+/* ---------- enjin Kedai Kek ---------- */
+const A='assets/minigames/kedai-kek/';
+const $=id=>document.getElementById(id);
+const devToolsEnabled=window.PAMiniGameDev?.enabled()===true;
+const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
+const FLS=[{n:'coklat',c:'#9a5634',k:'#5e2f17'},{n:'pandan',c:'#8fd16a',k:'#4f8f35'},{n:'vanila',c:'#f6d28b',k:'#c9963f'},{n:'keladi',c:'#c3a3ec',k:'#8059b8'},{n:'oren',c:'#ffb760',k:'#d0782a'}];
+const PINK='#ff8fb1',PINK_K='#d24f7c',CHOC='#7a4426';
+/* [3/4] → pecahan bertindan; [1 2/3] → nombor bercampur */
+const T=s=>String(s==null?'':s).replace(/\[([\d?□]+) ([\d?□]+)\/([\d?□]+)\]|\[([\d?□]+)\/([\d?□]+)\]/g,(m,w,n,d,n2,d2)=>(w?'<span class="mxw">'+w+'</span>':'')+'<span class="fr"><i>'+(w?n:n2)+'</i><i>'+(w?d:d2)+'</i></span>');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MODE_LABEL={potong:'POTONG',nama:'NAMA',cerita:'CERITA',banding:'BANDING',persepuluh:'PERSEPULUH',setara:'SETARA',permudah:'PERMUDAH',bercampur:'BERCAMPUR',tambah:'TAMBAH & TOLAK',kuantiti:'KUANTITI',darab:'DARAB',darabf:'DARAB PECAHAN',bahagi:'BAHAGI',gabung:'BERGABUNG',masalah:'MASALAH'};
+const GRADES={1:{title:'Satu perdua & satu perempat'},2:{title:'Pecahan hingga persepuluh'},3:{title:'Setara, permudah, nombor bercampur'},4:{title:'Tak wajar, tambah tiga, kuantiti'},5:{title:'Darab pecahan'},6:{title:'Bahagi & operasi bergabung'}};
+Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
+const SAYS={potong:'Tolong potong ikut pesanan saya!',nama:'Berapa bahagian kek saya ada krim?',cerita:'Kami kongsi kek ni, tau!',banding:'Saya nak yang lebih banyak krim!',persepuluh:'Kek lapis 10 lapis, sedapnya!',setara:'Sama banyak ke tak ni?',permudah:'Tulis ringkas sikit, Wira.',bercampur:'Banyaknya kek lapis!',tambah:'Campur dua jenis krim!',kuantiti:'Saya nak beli tart!',darab:'Saya nak tempah banyak!',darabf:'Sukat bahan betul-betul!',bahagi:'Kongsi sama rata, ya!',gabung:'Kira ikut tertib, Wira!',masalah:'Untuk kenduri besar!'};
+const TIP={nama:'Kira semua bahagian dulu, itulah penyebut. Kemudian kira bahagian berkrim.',cerita:'Bayangkan kek 4 bahagian. Pangkah bahagian yang dimakan atau diberi, kemudian kira.',banding:'Penyebut sama? Banding pengangka sahaja.',persepuluh:'1 persepuluh = 0.1. Kira berapa persepuluh.',setara:'Darab atau bahagi atas dan bawah dengan nombor yang SAMA.',permudah:'Cuba bahagi atas dan bawah dengan 2, 3 atau 5. Ulang sampai tak boleh lagi.',bercampur:'Berapa kali penyebut masuk dalam pengangka? Itu nombor bulat. Bakinya menjadi pengangka.',tambah:'Samakan penyebut dulu. Kemudian tambah atau tolak pengangka sahaja.',kuantiti:'Cari satu bahagian dulu: bahagi dengan penyebut.',darab:'Darab atas dengan atas, bawah dengan bawah. Nombor bulat boleh ditulis sebagai nombor/1.',darabf:'Darab atas dengan atas, bawah dengan bawah, kemudian permudahkan.',bahagi:'Tukar ÷ kepada ×, kemudian terbalikkan pecahan kedua.',gabung:'Kurungan dulu, kemudian × dan ÷, akhir sekali + dan − dari kiri.',masalah:'Tulis ayat matematik daripada cerita dulu, kemudian kira.',potong:'Kira kepingan sambil sentuh.'};
+
+/* ---------- hash: #d<g>[-mod[@tahap]]  cth #d3-tambah@2-setara ---------- */
+function parseHash(raw){const h=String(raw==null?location.hash.slice(1):raw).toLowerCase().split('?')[0],m=/^d([1-6])((?:-[a-z]+(?:@\d+)?)*)$/.exec(h);
+ if(!m)return{grade:2,modes:GRADES[2].modes,start:{}};const g=+m[1],start={},want=[];
+ m[2].split('-').filter(Boolean).forEach(t=>{const[k,n]=t.split('@');if(GEN[g][k]&&!want.includes(k)){want.push(k);if(n)start[k]=+n}});
+ return{grade:g,modes:want.length?want:GRADES[g].modes,start}}
+let cfg=parseHash();
+const SET=5;
+let tier={},clean={},served=0,streak=0,stars=0,lastPet=[],q=null,solved=false,misses=0,paLast=0,paRound=0,hints=0,hint2=0,setLog=[],sets=1,soundOn=false,ac=null,fbT;
+let shadeSet=new Set(),cutN=1,inp={},fk='n',sel=null,flOrder=[];
+
+/* ---------- bunyi & mesej ---------- */
+function sfx(f=650,d=.08,type='sine'){if(!soundOn)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.25,ac.currentTime+d);g.gain.setValueAtTime(.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const win=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sfx(f,.18,'triangle'),i*100));
+function msg(t,k='',ms=0){$('wsayTxt').innerHTML=T(t);$('wsay').className='wsay '+k;$('bubble').classList.add('hide');clearTimeout(fbT);if(ms)fbT=setTimeout(hideMsg,ms)}
+function hideMsg(){$('wsay').className='wsay hide'}   // the pet speaks once a round: its line does not come back
+function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
+
+/* ---------- lukisan kek (SVG) ---------- */
+const P2=(r,a)=>[(50+r*Math.cos(a)).toFixed(2),(50+r*Math.sin(a)).toFixed(2)];
+const berry=(x,y,s=1)=>'<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 -4 C4 -4 5 0 0 5 C-5 0 -4 -4 0 -4Z" fill="#e8364f" stroke="#8f1d2e" stroke-width="1"/><path d="M-2.5 -4 L0 -6 L2.5 -4" fill="#5cb85c" stroke="#2f6a2e" stroke-width=".8"/></g>';
+function roundSVG(m,st){const n=m.n,R=43,fl=m.fl||FLS[2];let s='<svg viewBox="-4 -4 108 108" role="img" aria-label="Kek '+n+' bahagian"><ellipse cx="50" cy="54" rx="52" ry="50" fill="#fff" stroke="#e3cfa8" stroke-width="2"/><circle cx="50" cy="50" r="'+(R+2)+'" fill="'+fl.k+'"/><circle cx="50" cy="50" r="'+R+'" fill="'+fl.c+'"/>';
+ for(let i=0;i<n;i++){const a0=-Math.PI/2+i*2*Math.PI/n,a1=a0+2*Math.PI/n,am=(a0+a1)/2,eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i),fill=eat?'#fffaf0':sh?PINK:s2?CHOC:'transparent';
+  const d=n===1?'M50 '+(50-R)+' A'+R+' '+R+' 0 1 1 49.99 '+(50-R)+'Z':'M50 50 L'+P2(R,a0).join(' ')+' A'+R+' '+R+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+P2(R,a1).join(' ')+'Z';
+  s+='<path d="'+d+'" data-i="'+i+'" fill="'+fill+'"'+(eat?' stroke="#d7b47e" stroke-dasharray="3 3" stroke-width="1.5"':'')+'/>';
+  if((sh||s2)&&!eat){const[x,y]=n===1?[50,50]:P2(R*.6,am);s+=sh?berry(+x,+y,n>8?.8:1.1):'<circle cx="'+x+'" cy="'+y+'" r="3" fill="#ffd036" stroke="#7a4426" stroke-width="1"/>'}}
+ if(n>1)for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;s+='<line x1="50" y1="50" x2="'+P2(R+2,a)[0]+'" y2="'+P2(R+2,a)[1]+'" stroke="#fffaf2" stroke-width="2.2" pointer-events="none"/>'}
+ return s+'<circle cx="50" cy="50" r="2.2" fill="#fffaf2" pointer-events="none"/></svg>'}
+function barSVG(m,st,y0=0,inner=false){const n=m.n,fl=m.fl||FLS[2],x0=8,W=204,w=W/n;let s='';
+ for(let i=0;i<n;i++){const x=x0+i*w,eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i);
+  if(eat){s+='<rect data-i="'+i+'" x="'+x+'" y="'+(y0+12)+'" width="'+w+'" height="34" fill="#fffaf0" stroke="#d7b47e" stroke-dasharray="3 3"/>';continue}
+  for(let L=0;L<4;L++)s+='<rect x="'+x+'" y="'+(y0+12+L*8.5)+'" width="'+w+'" height="8.5" fill="'+(L%2?'#fff1d6':fl.c)+'" pointer-events="none"/>';
+  if(sh||s2)s+='<path d="M'+x+' '+(y0+10)+' h'+w+' v9 q-'+w/4+' 6 -'+w/2+' 0 t-'+w/2+' 0z" fill="'+(sh?PINK:CHOC)+'" pointer-events="none"/>'+(sh&&w>13?berry(x+w/2,y0+8,w>30?1:.8):'');
+  s+='<rect data-i="'+i+'" x="'+x+'" y="'+(y0+6)+'" width="'+w+'" height="42" fill="transparent"/>'}
+ s+='<rect x="'+x0+'" y="'+(y0+12)+'" width="'+W+'" height="34" fill="none" stroke="'+fl.k+'" stroke-width="2.5" rx="3" pointer-events="none"/>';
+ for(let i=1;i<n;i++)s+='<line x1="'+(x0+i*w)+'" y1="'+(y0+5)+'" x2="'+(x0+i*w)+'" y2="'+(y0+50)+'" stroke="#5e3519" stroke-width="1.6" stroke-dasharray="'+(n>6?'2 2':'none')+'" pointer-events="none"/>';
+ return inner?s:'<svg viewBox="0 0 220 56" role="img" aria-label="Kek lapis '+n+' bahagian"><rect x="2" y="47" width="216" height="6" rx="3" fill="#e3cfa8"/>'+s+'</svg>'}
+function barsSVG(m){const tot=m.w+(m.n?1:0),H=50;let s='<svg viewBox="0 0 220 '+(tot*H+4)+'" role="img" aria-label="Kek lapis">';
+ for(let b=0;b<tot;b++){const full=b<m.w,k=full?m.d:m.n,set={sh:new Set(range(k)),sh2:new Set(),eat:new Set()};s+=barSVG({n:m.d,fl:m.fl},set,b*H-4,true)}return s+'</svg>'}
+function bottleSVG(m){const n=m.n,top=28,bot=122,h=(bot-top)/n;let s='<svg viewBox="0 0 70 128" role="img" aria-label="Botol jus"><path d="M26 2h18v12c0 4 13 8 13 18v88c0 4-3 6-6 6H19c-3 0-6-2-6-6V32c0-10 13-14 13-18z" fill="#f4fbff" stroke="#3a6d8f" stroke-width="3"/>';
+ for(let i=0;i<m.sh;i++)s+='<rect x="15" y="'+(bot-(i+1)*h)+'" width="40" height="'+h+'" fill="#ffad3b" opacity=".9"/>';
+ for(let i=1;i<n;i++)s+='<line x1="15" y1="'+(bot-i*h)+'" x2="'+(i%5?27:33)+'" y2="'+(bot-i*h)+'" stroke="#3a6d8f" stroke-width="1.5"/>';
+ return s+'<rect x="24" y="0" width="22" height="7" rx="2" fill="#f2799c" stroke="#b8456a" stroke-width="2"/></svg>'}
+function setSVG(m){const n=m.n;if(!m.order)m.order=shuffle(range(n).map(i=>i<m.k));let s='<svg viewBox="0 0 '+(n*26+12)+' 46" role="img" aria-label="Dulang buah"><rect x="1" y="30" width="'+(n*26+10)+'" height="12" rx="6" fill="#e3c08a" stroke="#9a5f34" stroke-width="2"/>';
+ m.order.forEach((isB,i)=>{const x=19+i*26;s+=isB?berry(x,20,2.3):'<circle cx="'+x+'" cy="21" r="9" fill="#ffb02e" stroke="#c46f12" stroke-width="2"/><circle cx="'+(x-3)+'" cy="18" r="2" fill="#fff7"/>'});return s+'</svg>'}
+function traySVG(m,st){const d=m.d,g=m.g,cols=d<=3?d:Math.ceil(d/2),rows=Math.ceil(d/cols),PW=72,PH=44;let s='<svg viewBox="0 0 '+(cols*(PW+6)+2)+' '+(rows*(PH+6)+2)+'" role="img" aria-label="Pinggan tart">';
+ for(let p=0;p<d;p++){const cx=(p%cols)*(PW+6)+2,cy=Math.floor(p/cols)*(PH+6)+2,on=st.sh.has(p),per=g<=3?g:Math.ceil(g/2);
+  s+='<rect data-g="'+p+'" x="'+cx+'" y="'+cy+'" width="'+PW+'" height="'+PH+'" rx="12" fill="'+(on?'#fff1b8':'#ffffff')+'" stroke="'+(on?'#d39b14':'#d7b47e')+'" stroke-width="'+(on?3.5:2)+'"/>';
+  for(let t=0;t<g;t++){const r=Math.floor(t/per),c=t%per,inRow=r===Math.floor((g-1)/per)?g-r*per:per,x=cx+PW/2+(c-(inRow-1)/2)*20,y=cy+(g>per?14+r*17:PH/2);
+   s+='<g pointer-events="none"><circle cx="'+x+'" cy="'+y+'" r="8" fill="#e7b46a" stroke="#9a5f34" stroke-width="1.5"/><circle cx="'+x+'" cy="'+y+'" r="4.5" fill="'+PINK+'"/></g>'}}
+ return s+'</svg>'}
+function gridSVG(m){const W=210,H=110,cw=W/m.c,rh=H/m.d;let s='<svg viewBox="0 0 220 120" role="img" aria-label="Model luas"><rect x="5" y="5" width="'+W+'" height="'+H+'" fill="'+m.fl.c+'" stroke="'+m.fl.k+'" stroke-width="3" rx="4"/>';
+ for(let c=0;c<m.c;c++)for(let r=0;r<m.d;r++){const x=5+c*cw,y=5+r*rh,inB=c<m.b,inN=inB&&r<m.n;if(inB)s+='<rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+rh+'" fill="'+(inN?'#ff6f9a':'#ffc2d4')+'"/>';if(inN)s+=berry(x+cw/2,y+rh/2,Math.min(1.4,rh/16))}
+ for(let c=1;c<m.c;c++)s+='<line x1="'+(5+c*cw)+'" y1="5" x2="'+(5+c*cw)+'" y2="'+(5+H)+'" stroke="#5e3519" stroke-width="2"/>';
+ for(let r=1;r<m.d;r++)s+='<line x1="5" y1="'+(5+r*rh)+'" x2="'+(5+W)+'" y2="'+(5+r*rh)+'" stroke="#5e3519" stroke-width="1.2" stroke-dasharray="4 3"/>';
+ return s+'</svg>'}
+function stateOf(m,live){const sh=live?shadeSet:new Set(range(m.sh||0)),sh2=new Set(range(m.sh2||0).map(i=>i+(m.sh||0)));return{sh,sh2,eat:new Set(m.eat||[])}}
+function modelSVG(m,live){const st=stateOf(m,live);if(live&&q.cut)m={...m,n:cutN};
+ return m.t==='round'?roundSVG(m,st):m.t==='bar'?barSVG(m,st):m.t==='bars'?barsSVG(m):m.t==='bottle'?bottleSVG(m):m.t==='set'?setSVG(m):m.t==='tray'?traySVG(m,st):gridSVG(m)}
+const WIDE={bar:1,bars:1,set:1,tray:1,grid:1};
+function visHTML(){const V=q.vis||[];if(!V.length)return '';
+ if(q.stackVis)return '<div class="vis"><div class="stack">'+V.map(m=>modelSVG(m,false)).join('')+'</div></div>';
+ return '<div class="vis n'+V.length+(q.kind==='shade'||q.kind==='tray'?' live':'')+'">'+V.map((m,i)=>'<div class="m'+(WIDE[m.t]?' wide':'')+(m.t==='bars'?' bars':'')+(m.live?' livebox':'')+'" id="m'+i+'">'+modelSVG(m,!!m.live)+(m.lab?'<b>'+m.lab+'</b>':'')+'</div>').join('')+'</div>'}
+function cakeIcon(fl){return '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="35" rx="17" ry="4" fill="#fff" stroke="#d7b47e" stroke-width="1.5"/><rect x="7" y="17" width="26" height="17" rx="4" fill="'+fl.c+'" stroke="'+fl.k+'" stroke-width="2"/><path d="M7 21v-3c0-3 2-4 4-4h18c2 0 4 1 4 4v3c-2 2-4 0-5 2s-3 2-4 0-3-2-4 0-3 2-4 0-3-2-4 0-4 0-5-2z" fill="'+PINK+'" stroke="'+PINK_K+'" stroke-width="1.5"/>'+berry(20,11,1.4)+'</svg>'}
+function drawShelf(lit){$('shelf').innerHTML=flOrder.map((fl,i)=>'<span class="slot'+(i<lit?' on':'')+'" id="slot'+i+'">'+cakeIcon(fl)+'</span>').join('')}
+
+/* ---------- panel ---------- */
+function ansHTML(){const f=q.form;let h='<div class="ansrow" id="ansrow">'+(f.pre?'<span class="eq">'+T(f.pre)+'</span>':'');
+ if(q.card&&!q.vis)h+='';
+ if(f.type==='int'||f.type==='dec')h+='<button type="button" class="fld" data-k="v" id="F_v" aria-label="Jawapan"><b></b></button>';
+ else{if(f.type!=='frac')h+='<button type="button" class="fld whole ph" data-k="w" id="F_w" data-ph="bulat" aria-label="Nombor bulat"><b></b></button>';
+  h+='<div class="fst"><button type="button" class="fld sm" data-k="n" id="F_n" aria-label="Pengangka"><b></b></button><i class="bar"></i><button type="button" class="fld sm" data-k="d" id="F_d" aria-label="Penyebut"><b></b></button></div>'}
+ if(f.unit)h+='<span class="unit">'+f.unit+'</span>';return h+'</div>'}
+const ORDER=()=>q.form.type==='int'||q.form.type==='dec'?['v']:q.form.type==='frac'?['n','d']:['n','d','w'];
+function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className='tiles';box.classList.toggle('padk',K==='pad');
+ let h='';if(q.card)h+='<div class="qcard'+(q.vis?' lt':'')+'"><small>'+(K==='pick'?'PILIH':'KAD RESIPI')+'</small><b>'+T(q.card)+'</b></div>';
+ h+=visHTML();
+ if(K==='shade')h+='<div class="cnt">KRIM <b id="rd">0</b> · <span id="rdN"></span></div>';
+ if(K==='tray')h+='<div class="cnt">DIPILIH <b id="rd">0</b> pinggan · <span id="rdN"></span></div>';
+ if(K==='pad')h+=ansHTML();
+ box.innerHTML=h;
+ if(K==='shade'||K==='tray'){const btn=[];if(q.cut)btn.push('<button type="button" class="tl" data-c="-1">− Potong</button><span class="tl mid" id="cutN"></span><button type="button" class="tl plus" data-c="1">+ Potong</button>');
+  btn.push('<button type="button" class="tl" data-clear="1">↻ Kosong</button>');tl.className='tiles cutter';tl.innerHTML=btn.join('');
+  tl.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(solved)return;const n=Math.max(q.cut.min,Math.min(q.cut.max,cutN+ +b.dataset.c));if(n===cutN)return;cutN=n;shadeSet.clear();hideMsg();sfx(380,.06,'triangle');redraw()});
+  tl.querySelector('[data-clear]').onclick=()=>{if(solved||!shadeSet.size)return;shadeSet.clear();hideMsg();sfx(330,.05);redraw()}}
+ else if(K==='pick'){tl.className='tiles pk';tl.innerHTML=q.opts.map(o=>'<button type="button" class="tl" data-o="'+o.id+'">'+T(o.label)+'</button>').join('');
+  tl.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(solved)return;sel=b.dataset.o;tl.querySelectorAll('[data-o]').forEach(x=>x.classList.toggle('sel',x===b));hideMsg();sfx(480,.05)})}
+ else{const last=q.form.type==='dec'?'.':ORDER().length>1?'⇥':'';tl.className='tiles kp';
+  tl.innerHTML=['1','2','3','4','5','⌫','6','7','8','9','0',last].map(k=>k?'<button type="button" class="tl'+(k==='⌫'?' del':'')+'" data-k="'+k+'" aria-label="'+(k==='⌫'?'Padam':k==='⇥'?'Kotak seterusnya':k)+'">'+k+'</button>':'<span></span>').join('');
+  tl.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>key(b.dataset.k));
+  box.querySelectorAll('.fld').forEach(b=>b.onclick=()=>{if(solved)return;fk=b.dataset.k;renderFields();sfx(500,.03)});renderFields()}
+ redraw()}
+function redraw(){const K=q.kind;if(K!=='shade'&&K!=='tray')return;const i=q.vis.findIndex(m=>m.live),m=q.vis[i],box=$('m'+i);
+ box.innerHTML=modelSVG(m,true)+(m.lab?'<b>'+m.lab+'</b>':'');$('rd').textContent=shadeSet.size;
+ $('rdN').textContent=K==='tray'?m.d+' pinggan':(q.cut?cutN:m.n)+' bahagian';if($('cutN'))$('cutN').innerHTML='<b>'+cutN+'</b>&nbsp;bhg'}
+$('widget').addEventListener('click',e=>{if(!q||solved)return;const live=e.target.closest('.livebox');if(!live)return;
+ const t=e.target.closest(q.kind==='tray'?'[data-g]':'[data-i]');if(!t)return;const i=+(t.dataset.g??t.dataset.i);
+ shadeSet.has(i)?shadeSet.delete(i):shadeSet.add(i);hideMsg();sfx(shadeSet.has(i)?560:420,.05);busy();redraw()});
+function key(k){if(solved||q.kind!=='pad')return;const O=ORDER();if(k==='⇥'){fk=O[(O.indexOf(fk)+1)%O.length];renderFields();return}
+ let s=inp[fk]||'';if(k==='⌫')s=s.slice(0,-1);else if(k==='.'){if(!s.includes('.'))s=(s||'0')+'.'}else if(s.replace('.','').length<6)s=s==='0'?k:s+k;
+ inp[fk]=s;$('ansrow').querySelectorAll('.fld').forEach(x=>x.classList.remove('bad'));hideMsg();renderFields();sfx(440,.03)}
+function renderFields(){if(q.kind!=='pad')return;ORDER().forEach(k=>{const b=$('F_'+k);if(!b)return;b.querySelector('b').textContent=inp[k]||'';b.classList.toggle('on',k===fk&&!solved)})}
+
+/* ---------- semakan ---------- */
+function evalPad(){const f=q.form;
+ if(f.type==='int'||f.type==='dec'){if(!inp.v)return{empty:1};return{ok:Math.abs(parseFloat(inp.v)-f.v)<1e-9}}
+ const wS=inp.w||'',nS=inp.n||'',dS=inp.d||'';if(!wS&&!nS&&!dS)return{empty:1};
+ if(!!nS!==!!dS)return{incomplete:1};const w=wS?parseInt(wS,10):0,n=nS?parseInt(nS,10):0,d=dS?parseInt(dS,10):1;if(dS&&d===0)return{zero:1};
+ const N=w*d+n,D=d;
+ if(f.type==='frac'){if(!wS&&n===f.n&&d===f.d)return{ok:1};return{ok:0,swap:n===f.d&&d===f.n,same:N*f.d===f.n*D}}
+ const eq=N*f.D===f.N*D;if(!eq)return{ok:0,swap:!wS&&n===f.D&&d===f.N};
+ if(f.type==='improper'){if(wS&&w)return{form:'imp'};if(gcd(n,d)>1)return{form:'simp'};return{ok:1}}
+ if(nS&&n>=d&&n>0)return{form:f.N%f.D===0?'whole':'mix'};
+ if(f.simp!==false&&nS&&n>0&&gcd(n,d)>1)return{form:'simp'};
+ return{ok:1}}
+const FORM_MSG={imp:'Nilainya betul! Tetapi soalan minta pecahan tak wajar — kosongkan kotak nombor bulat.',simp:'Nilainya betul! Permudahkan lagi ke bentuk termudah.',mix:'Nilainya betul! Tukar kepada nombor bercampur: pengangka mesti lebih kecil daripada penyebut.',whole:'Nilainya betul! Jawapan ini nombor bulat — tulis dalam kotak bulat sahaja.'};
+function ansText(){if(q.ansTxt)return q.ansTxt;if(q.kind==='pick')return q.opts.find(o=>o.id===q.correct).label;const f=q.form;if(!f)return '';
+ if(f.type==='frac')return fs(f.n,f.d);if(f.type==='improper'){const[n,d]=red(f.N,f.D);return fs(n,d)}
+ if(f.type==='mixed')return(f.simp===false?vs(f.N,f.D):vs(f.N,f.D))+(f.unit?' '+f.unit:'');return dn(f.v)+(f.unit?' '+f.unit:'')}
+/* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
+function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
+ window.parent.postMessage({type:'PA_MINIGAME_ATTEMPT',version:1,nonce,game:'kedai-kek',skillId:p.get('skill')||p.get('pa_origin_skill')||null,key:nonce+':'+paRound,prompt:String(q.q||'').slice(0,200),answer:String(typeof ansText==='function'?ansText():'').slice(0,40),ok:!!ok,first:misses===0,hints:hints|0,ms},location.origin)}catch(e){}}
+function check(){
+ if(solved){if(served%SET===0)setDone();else startRound();sfx(780,.12);return}
+ const K=q.kind;let ok=false,note='';
+ if(K==='pick'){if(sel==null){msg('Pilih satu jawapan dulu.','',2400);return}ok=sel===q.correct}
+ else if(K==='shade'){const n=q.cut?cutN:q.vis.find(m=>m.live).n;ok=(!q.need.n||n===q.need.n)&&shadeSet.size===q.need.k;
+  if(!ok)note=q.need.n&&n!==q.need.n?'Semak potongan: bilangan bahagian sama besar mesti sama dengan penyebut.':shadeSet.size<q.need.k?'Krim belum cukup. Kira semula kepingan berkrim.':'Krim terlebih. Sentuh kepingan untuk buang krim.'}
+ else if(K==='tray'){ok=shadeSet.size===q.need.k;if(!ok)note=shadeSet.size<q.need.k?'Belum cukup pinggan. Ingat: pengangka ialah bilangan pinggan yang diambil.':'Terlebih pinggan. Sentuh pinggan untuk letak semula.'}
+ else{const r=evalPad();if(r.empty){msg('Tekan nombor untuk isi jawapan dulu.','',2400);return}if(r.incomplete){msg('Lengkapkan pengangka dan penyebut.','',2600);return}if(r.zero){msg('Penyebut tidak boleh 0.','',2400);return}
+  if(r.form){msg(FORM_MSG[r.form],'',4200);sfx(520,.08);return}ok=!!r.ok;
+  if(!ok){note=r.swap?'Pengangka dan penyebut tertukar. Penyebut ialah jumlah bahagian sama besar.':r.same?'Nilainya sama, tetapi kira semula bahagian dalam gambar.':'Belum tepat. Semak semula langkah kamu.';
+   ORDER().forEach(k=>{const b=$('F_'+k);if(b)b.classList.add('bad')});fk=ORDER()[0];renderFields()}}
+ if(ok){solved=true;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
+  pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Sedapnya!','Tepat macam pesanan saya!']);$('wiraImg').src=A+(st===3?'wira-baker-victory.webp':'wira-baker-thumb.webp');$('wira').classList.add('cheer');
+  const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+T(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
+  renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);
+  const sl=$('slot'+((served-1)%SET));if(sl){sl.classList.add('on','pop')}$('stand').classList.add('done');
+  $('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Seterusnya →';
+  setTimeout(()=>{if(solved){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
+ paAttempt(false),misses++;offerWorked();
+ if(K==='pick'){const b=$('tiles').querySelector('[data-o="'+sel+'"]');if(b){b.classList.remove('sel');b.classList.add('nope');setTimeout(()=>b.classList.remove('nope'),600)}sel=null;note='Belum tepat. '+q.s}
+ msg(note,'bad',3800);
+ pet('sad');const v=$('visitor');v.classList.remove('sadshake');void v.offsetWidth;v.classList.add('sadshake');setTimeout(()=>{if(!solved)pet('idle')},1300);sfx(250,.1)}
+/* ---------- "Jom tengok cara" (js/minigame-worked-v1.js), as in lombong-permata.html ----------
+   After 3 wrong tries (2 with both hints; fewer for a 2- or 3-choice pick) the hint button
+   offers a worked example: Wira walks the fraction step by step on a board, and the pupil
+   picks each small step. The round ends without stars; the next one is the same kind. */
+let workedOffer=false,repeatNext=null;
+function workedNeed(){const n=q.kind==='pick'&&q.wk?q.opts.length:0;return n&&n<=2?1:n===3?2:3}
+function offerWorked(){if(workedOffer||solved||!workedPlan()||!(misses>=workedNeed()||(misses>=2&&hint2>=2)))return;workedOffer=true;const h=$('hint');h.textContent='Jom tengok cara';h.disabled=false;h.classList.add('wk-offer')}
+/* The worked plan for this round, or null: it must end at the round's own answer. */
+function workedPlan(){const P=window.PAWorked;if(!P||!q.wk)return null;
+ const lab=q.kind==='pick'?q.opts.find(o=>o.id===q.correct).label:null;
+ const plan=P.buildFrac(q.wk,{final:lab!==null?{choices:q.opts.map(o=>o.label),right:lab}:null});if(!plan)return null;
+ if(lab!==null)return plan.finalLabel===lab?plan:null;
+ const v=plan.value,f=q.form;if(!v)return null;
+ if(q.kind==='shade'||q.kind==='tray')return plan;
+ if(!f)return null;
+ const[N,D]=f.type==='frac'?[f.n,f.d]:f.type==='int'||f.type==='dec'?[Math.round(f.v*1000),1000]:[f.N,f.D];
+ if(f.type==='frac'&&!(v.N===f.n&&v.D===f.d))return null;
+ return v.N*D===N*v.D?plan:null}
+const KK_HTML=t=>T(esc(t));
+function startWorked(){
+ const P=window.PAWorked,plan=workedPlan();if(!plan)return;
+ q.worked=true;workedOffer=false;hints++;hideMsg();$('bubble').classList.add('hide');
+ const h=$('hint');h.classList.remove('wk-offer');h.disabled=true;h.textContent='Tanya Wira';$('check').disabled=true;$('check').textContent='Ikut langkah Wira';
+ const box=$('widget'),tl=$('tiles');box.classList.remove('padk');tl.className='tiles wk';$('game').classList.add('wk-on');
+ msg('Jom kira sama-sama, satu langkah demi satu.');
+ box.innerHTML='<div class="wk-wrap"><div class="wk-say" id="wkSay"></div><div class="tiles wk" id="wkInline"></div><div id="wkBoard"></div></div>';
+ P.run(plan,{board:$('wkBoard'),tiles:tl,inline:$('wkInline'),say:$('wkSay')},finishWorked,{html:KK_HTML,onFact:f=>P.reportFact('kedai-kek',f,paRound),onStep:()=>sfx(700,.06),onMiss:()=>sfx(250,.08),onShow:(i,n)=>{h.textContent='Langkah '+(i+1)+'/'+n}})}
+function finishWorked(){
+ if(solved)return;solved=true;served++;streak=0;setLog.push({q,st:0});adapt(1);report(0);
+ repeatNext={mode:q.mode,ti:q.tierIx};
+ hideMsg();$('game').classList.remove('wk-on');pet('happy');$('say').textContent='Sekarang kamu cuba yang serupa!';$('bubble').classList.remove('hide');
+ const s=$('stamp');s.className='stamp ok';s.innerHTML='SIAP!<small>Cara Wira · '+T(esc(ansText()))+'</small>';void s.offsetWidth;s.classList.add('show');
+ renderTrack(true);const sl=$('slot'+((served-1)%SET));if(sl)sl.classList.add('on');$('stand').classList.add('done');
+ $('hint').textContent='Tanya Wira';$('check').disabled=false;$('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Cuba soalan serupa →'}
+function adapt(st){const k=q.mode,up=q.nTiers-1;
+ if(st===3){clean[k]++;if(clean[k]>=2&&tier[k]<up){tier[k]++;clean[k]=0;setTimeout(()=>msg('Hebat! Pesanan seterusnya lebih mencabar.','',2600),2000)}}
+ else{clean[k]=0;if(hints+misses>=2&&tier[k]>0){tier[k]--;setTimeout(()=>msg('Kita cuba yang lebih ringan dulu, ya.','',2600),2000)}}}
+/* laporan pusingan kepada app induk (bila dibuka dalam iframe Kemahiran Fokus) */
+function report(st){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;
+ window.parent.postMessage({type:'PA_KEDAI_KEK_ROUND',version:1,nonce,grade:cfg.grade,skillId:p.get('skill')||null,mode:q.mode,archetypeId:q.arch,questionKey:nonce+':'+served+':'+q.mode,served,tier:q.tierIx+1,prompt:q.q,stars:st,misses,hints,at:Date.now()},location.origin)}catch(e){}}
+
+/* ---------- aliran ---------- */
+/* DEV: a round picked by the 'Cuba Jom tengok cara' buttons is served next. */
+let forcedQ=null;
+function makeQ(){if(forcedQ){const x=forcedQ;forcedQ=null;return x}const rep=repeatNext;repeatNext=null;   // after "Jom tengok cara": the same kind with new numbers
+ const k=rep?rep.mode:cfg.modes[served%cfg.modes.length],gens=GEN[cfg.grade][k];if(tier[k]==null){tier[k]=Math.min(cfg.start[k]||0,gens.length-1);clean[k]=0}
+ const ti=rep?Math.min(rep.ti,gens.length-1):Math.min(tier[k],gens.length-1),p=pick(pets.filter(x=>!lastPet.includes(x.id)));lastPet=[p.id,lastPet[0]];
+ const fl=flOrder[served%SET],C={who:p.who,fl,fl2:FLS[(FLS.indexOf(fl)+2)%FLS.length],others:shuffle(pets.filter(x=>x.id!==p.id).map(x=>x.who))},e=gens[ti];
+ return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,fl,...e.f(C),arch:e.arch}}
+function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
+ $('stageN').textContent='PESANAN '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Hari '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
+const SUB={shade:'Sentuh kepingan kek untuk letak krim.',tray:'Sentuh pinggan untuk ambil tart.',pick:'Pilih satu jawapan.',pad:'Tekan nombor. Sentuh kotak untuk tukar atas/bawah.'};
+function startRound(){if(served%SET===0){flOrder=shuffle(FLS);drawShelf(0)}
+ q=makeQ();solved=false;misses=0;paLast=Date.now();paRound++;hints=0;hint2=0;shadeSet=new Set();cutN=q.cut?1:0;sel=null;inp={};fk=q.form?ORDER()[0]:'n';
+ hideMsg();
+ $('devBtn').hidden=!devToolsEnabled;
+ $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
+ $('question').innerHTML=T(q.q);$('subtitle').innerHTML=T(q.sub||(served<2?(q.kind==='pad'&&q.form&&(q.form.type==='int'||q.form.type==='dec')?'Tekan nombor untuk isi jawapan.':SUB[q.kind]):''));
+ $('wiraImg').src=A+'wira-baker-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';$('stand').className='stand';$('stand').innerHTML=cakeIcon(q.fl);
+ $('check').textContent='Semak';$('check').disabled=false;$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('hint').classList.remove('wk-offer');workedOffer=false;$('game').classList.remove('wk-on');$('bubble').classList.add('hide');
+ const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
+ setTimeout(()=>{$('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
+ $('say').textContent='Wira, saya nak kek '+q.fl.n+'! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ renderTrack();buildPanel()}
+let busyT;function busy(){const w=$('wira');w.classList.remove('cheer');clearTimeout(busyT)}
+function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';const cols=['#ff8fb1','#ffd23f','#9fe0c9','#c3a3ec','#fff'];
+ for(let i=0;i<26;i++){const e=document.createElement('i'),a=Math.random()*Math.PI*2,d=70+Math.random()*120;e.style.setProperty('--x',Math.cos(a)*d+'px');e.style.setProperty('--y',Math.sin(a)*d-30+'px');e.style.background=cols[i%cols.length];e.style.animationDelay=(Math.random()*.15)+'s';if(i%3===0)e.style.borderRadius='50%';b.appendChild(e)}}
+function setDone(){const got=setLog.reduce((a,l)=>a+l.st,0);$('doneTitle').textContent='Hari '+sets+': Kedai Tutup!';
+ $('finishText').textContent='Kamu siapkan '+SET+' pesanan kek dan memperoleh '+got+' daripada '+SET*3+' bintang. Hebat!';try{if(window.parent!==window)window.parent.postMessage({type:'PA_MINIGAME_SET_DONE',version:1},location.origin)}catch(_){}
+ $('faces').innerHTML=setLog.map(l=>'<div><img src="'+A+l.q.pet+'-happy.webp" alt="'+l.q.who+'">'+'★'.repeat(l.st)+'</div>').join('');$('complete').hidden=false;$('again').focus()}
+$('again').onclick=()=>{$('complete').hidden=true;sets++;setLog=[];startRound()};
+$('check').onclick=check;
+
+/* ---------- Tanya Wira: klu 1 strategi, klu 2 langkah dengan jawapan disorok. Jawapan tidak pernah diberi. ---------- */
+const MASK=t=>t.replace(/\d+(?:[.:]\d+)*(?: \d{3})*/g,'?');
+function hideStep(a){a=String(a||'').trim().replace(/\.$/,'');if(!a)return '';
+ const ss=a.split(/(?<=[.;])\s+(?=\S)/),L=ss.pop(),eq=L.split('=');if(eq.length<2)return '';
+ const keep=eq.slice(0,-1);if(keep.length>1&&!/[+−×÷]/.test(keep[keep.length-1]))keep.pop();
+ return [...ss,keep.join('=').trimEnd()+' = '+MASK(eq[eq.length-1].trim().replace(/\[[^\]]*\]/g,'?'))].join(' ')+'.'}
+function hintTwo(){const K=q.kind;
+ if(K==='shade')return q.cut?'Tekan + Potong sehingga bilangan bahagian sama dengan penyebut. Kemudian sentuh kepingan untuk letak krim.':'Sentuh kepingan satu per satu untuk letak krim. Kira sambil sentuh.';
+ if(K==='tray')return 'Setiap pinggan ialah satu bahagian sama banyak. Ambil pinggan mengikut pengangka.';
+ const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
+$('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);$('hint').textContent=hints===1?'Petunjuk lagi':'Petunjuk habis';$('hint').disabled=hints>=2;sfx(620,.1)};
+$('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
+document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if(q.kind==='pad'&&/^[0-9.]$/.test(e.key)){key(e.key);e.preventDefault()}else if(q.kind==='pad'&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(q.kind==='pad'&&e.key==='Tab'){key('⇥');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
+function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
+
+/* ---------- DEV: tukar Darjah (sementara) ---------- */
+let devGrade=cfg.grade,devModes=[...cfg.modes];
+function drawDev(){$('devGrades').innerHTML=[1,2,3,4,5,6].map(g=>'<button type="button" data-g="'+g+'" class="'+(g===devGrade?'on':'')+'">D'+g+'</button>').join('');
+ $('devTitle').textContent='Darjah '+devGrade+' · '+GRADES[devGrade].title;
+ $('devModes').innerHTML=GRADES[devGrade].modes.map(k=>'<button type="button" data-k="'+k+'" class="'+(devModes.includes(k)?'on':'')+'">'+MODE_LABEL[k].toLowerCase()+'</button>').join('');
+ $('devGrades').querySelectorAll('button').forEach(b=>b.onclick=()=>{devGrade=+b.dataset.g;devModes=[...GRADES[devGrade].modes];drawDev()});
+ $('devModes').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;devModes=devModes.includes(k)?devModes.filter(x=>x!==k):[...devModes,k];if(!devModes.length)devModes=[k];drawDev()});
+ $('devHash').textContent='#d'+devGrade+'-'+devModes.join('-')}
+function applyDev(hash){const h=hash?hash.replace('#',''):'d'+devGrade+'-'+devModes.join('-');try{history.replaceState(null,'','#'+h)}catch(e){}cfg=parseHash(h);$('dev').hidden=true;$('complete').hidden=true;resetAll();startRound()}
+const SIMS={
+ 'D1 lemah cerita':{skill:'D1.FRAC',rows:[['two_people_eat','unresolved'],['give_remaining','assisted'],['shade_symbol','independent'],['model_symbol','independent']]},
+ 'D2 lemah persepuluh':{skill:'D2.3.4',rows:[['remaining_part','unresolved'],['filled_bottle','assisted'],['coloured_card','independent']]},
+ 'D3 lemah tambah':{skill:'D3.FRAC',rows:[['add_proper_fractions','unresolved'],['subtract_proper_fractions','assisted'],['simplify_fraction_direct','independent'],['equivalent_fraction_area','independent']]},
+ 'D4 lemah kuantiti':{skill:'D4.FRAC',rows:[['fraction_quantity','unresolved'],['fraction_quantity','assisted'],['improper_to_mixed','independent']]},
+ 'D5 lemah nombor bercampur':{skill:'D5.FRAC',rows:[['depth_mixed_x_whole','unresolved'],['depth_mixed_x_proper','assisted'],['depth_proper_x_whole','independent']]},
+ 'D6 lemah bahagi':{skill:'D6.FRAC',rows:[['y6v2_2_1_1_fraction_div_fraction','unresolved'],['y6v2_2_1_1_mixed_div_fraction','assisted'],['y6v2_2_4_1_simple','independent']]}};
+$('sims').innerHTML=Object.keys(SIMS).map(k=>'<button type="button" data-sim="'+k+'">'+k+'</button>').join('');
+function runSim(key){const s=SIMS[key],Rt=window.PAKedaiKek;if(!Rt){$('simOut').textContent='Router tidak dimuatkan.';return}
+ const plan=Rt.planFor({learnerReviewV1:{encounters:s.rows.map(([a,o],i)=>({skillId:s.skill,archetypeId:a,outcome:o,mode:'practice',questionKey:'q'+i}))}},s.skill);
+ if(!plan){$('simOut').innerHTML='<b>'+s.skill+'</b> → tiada mod kedai kek yang sesuai.';$('simGo').hidden=true;return}
+ $('simOut').innerHTML='<b>'+s.skill+'</b> → '+plan.start.map(m=>MODE_LABEL[m.mode].toLowerCase()+' (T'+(m.start+1)+')').join(', ')+' · #'+plan.hash;$('simGo').hidden=false;$('simGo').onclick=()=>applyDev('#'+plan.hash)}
+/* DEV: jump straight to a round of one worked-example kind and offer "Jom tengok cara" at once. */
+const WK_TRY=[
+ ['Baca model','d1-nama',c=>c.wk?.t==='read'&&c.kind==='pick'],
+ ['Letak krim','d1-potong',c=>c.wk?.t==='read'&&c.kind==='shade'],
+ ['Cerita kek','d1-cerita',c=>c.wk?.t==='parts'],
+ ['Banding','d2-banding',c=>c.wk?.t==='cmp'],
+ ['Susun menaik','d2-banding',c=>c.wk?.t==='order'],
+ ['Persepuluh','d2-persepuluh',c=>c.wk?.t==='tenth'],
+ ['Pecahan setara','d3-setara',c=>c.wk?.t==='equiv'],
+ ['Permudah','d3-permudah',c=>c.wk?.t==='simp'],
+ ['Tak wajar → bercampur','d3-bercampur',c=>c.wk?.t==='toMixed'],
+ ['Bercampur → tak wajar','d3-bercampur',c=>c.wk?.t==='toImp'],
+ ['Tambah / tolak','d3-tambah',c=>c.wk?.t==='add'],
+ ['Tambah tiga','d4-tambah',c=>c.wk?.t==='add'&&c.wk.terms.length===3],
+ ['Pecahan kuantiti','d4-kuantiti',c=>c.wk?.t==='qty'],
+ ['Darab nombor bulat','d5-darab',c=>c.wk?.t==='mulW'],
+ ['Darab pecahan','d5-darabf',c=>c.wk?.t==='mulF'],
+ ['Bahagi pecahan','d6-bahagi',c=>c.wk?.t==='div']];
+function drawWkTry(){const box=$('wkTry');if(!box)return;box.innerHTML=WK_TRY.map((k,i)=>'<button type="button" data-i="'+i+'">'+k[0]+'</button>').join('');
+ box.querySelectorAll('button').forEach(b=>b.onclick=()=>tryWorked(WK_TRY[+b.dataset.i]))}
+function tryWorked([label,hash,test]){
+ try{history.replaceState(null,'','#'+hash)}catch(e){}cfg=parseHash(hash);resetAll();flOrder=shuffle(FLS);
+ let found=null;
+ for(let i=0;i<3000&&!found;i++){const k=cfg.modes[i%cfg.modes.length],n=GEN[cfg.grade][k].length;served=i%cfg.modes.length;tier[k]=Math.floor(i/cfg.modes.length)%n;clean[k]=0;
+  const c=makeQ(),keep=q;q=c;let ok=false;try{ok=!!workedPlan()&&test(c)}catch(_){}q=keep;if(ok)found=c}
+ $('dev').hidden=true;$('complete').hidden=true;served=0;
+ if(!found){msg('DEV: tiada soalan "'+label+'" dijumpai.','bad',3000);return}
+ forcedQ=found;startRound();misses=3;offerWorked();setTimeout(()=>msg('DEV · '+label+': tekan “Jom tengok cara”.','',3500),800)}
+$('devBtn').onclick=()=>{if(!devToolsEnabled)return;devGrade=cfg.grade;devModes=[...cfg.modes];drawDev();drawWkTry();$('simOut').textContent='Pilih satu senario.';$('simGo').hidden=true;$('dev').hidden=false};
+$('devClose').onclick=()=>{$('dev').hidden=true};$('devApply').onclick=()=>applyDev();
+document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>runSim(b.dataset.sim));
+window.addEventListener('hashchange',()=>{cfg=parseHash();resetAll();startRound()});
+window.__kekDebug=()=>q&&{kind:q.kind,arch:q.arch,mode:q.mode,tier:q.tierIx,form:q.form,need:q.need,cut:q.cut,correct:q.correct,live:q.vis&&q.vis.findIndex(m=>m.live),cutN,shaded:shadeSet.size}; // ujian sahaja
+window.__kekGen={GEN,FLS,hideStep,current:()=>q,planFor:x=>{const keep=q;q=x;try{return workedPlan()}finally{q=keep}},showNormal:(t,n=0)=>{tier[cfg.modes[n%cfg.modes.length]]=t;served=n;startRound();return q},hintTwo:()=>hintTwo(),evalPad:()=>evalPad(),setInp:o=>{inp={...o}}}; // ujian sahaja
+
+/* Jelajah-only controller. It exposes only real game state/actions and only when
+   the parent supplied jelajah=1; no synthetic question or worked copy exists. */
+(function(){
+  const qp=new URLSearchParams(location.search);
+  if(qp.get('jelajah')!=='1')return;
+  let stepClicks=0;
+  const right=()=>{try{return window.__wkRight?.()||null}catch(_){return null}};
+  const clickStep=()=>{
+    const r=right();if(!r)return false;
+    let el=null;
+    if(String(r).startsWith('tap:')){const [,row,col]=String(r).split(':');el=document.querySelector('.wk-tap[data-row="'+row+'"][data-col="'+col+'"]')}
+    else if(r==='go')el=document.querySelector('.wk-go:not(:disabled)');
+    else el=[...document.querySelectorAll('.wk-t:not(:disabled)')].find(x=>String(x.dataset.v)===String(r));
+    if(!el)return false;stepClicks++;el.click();return true;
+  };
+  window.PAJelajahGameRuntime={
+    beginWorked:function(index){
+      try{
+        if(solved&&typeof check==='function')check();
+        if(typeof workedPlan==='function'&&workedPlan()){misses=3;offerWorked();return true}
+        if(typeof tryWorked!=='function'||!Array.isArray(WK_TRY))return false;
+        const want=Number(qp.get('grade'))||0,mode=cfg?.modes?.[served%cfg.modes.length],items=WK_TRY.filter(x=>new RegExp('^d'+want+'-').test(String(x[1]))&&(!mode||String(x[1]).includes('-'+mode)));
+        const item=items[(Number(index)||0)%Math.max(1,items.length)]||WK_TRY[(Number(index)||0)%WK_TRY.length];
+        tryWorked(item);return true;
+      }catch(_){return false}
+    },
+    startWorked:function(){const h=document.getElementById('hint');if(!h||h.textContent!=='Jom tengok cara')return false;h.click();return true},
+    next:function(){return clickStep()},
+    state:function(){return {solved:!!solved,worked:!!q?.worked,offer:!!workedOffer,step:right(),stepClicks}}
+  };
+})();
+
+resetAll();startRound();
+})();
+</script>
