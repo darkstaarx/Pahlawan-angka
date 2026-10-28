@@ -39,3 +39,5 @@ Production release 3.87.78 explicitly authorized on 28 October 2026. CTA polishe
 3.87.80: 102 boundary/random coordinate diagrams verified entirely inside their SVG bounds, including C at y=8. GitHub Pages /Pahlawan-angka/ prefix entry, launch of the original mini-game, and all five tracked demo game pages passed. Cream/navy modal colors verified. 40 access/isolation/funnel/page-lock tests and offline-cache checks passed.
 
 Public release verification: both https://pahlawanangka.netlify.app/ and https://darkstaarx.github.io/Pahlawan-angka/ passed the browser audit for landing-to-demo entry, five mini-game URLs, branded dialog and 102 coordinate boundary/random diagrams. GitHub Pages deployment workflow 40686953306 completed successfully for fecad68. Netlify production deployment: 6ae1e887ce6ebc56fe3098df.
+
+3.87.81 compact grade entry: Wira is a 56–68px side illustration beside the title, rather than a separate tall header. All six accessible grade buttons fit in a compact card: 354px high at 320px viewport, 376px at 390px, 356.5px at desktop. Verified no horizontal overflow; original entry, CTA, pricing and explanatory dialogs passed at 320/390px.
