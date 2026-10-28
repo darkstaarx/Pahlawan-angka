@@ -347,7 +347,7 @@ self.addEventListener('fetch',event=>{
       fetch(freshRequest(event.request))
         .then(response=>{
           const copy=response.clone();
-          caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));
+          if(url.pathname===new URL('./',self.registration.scope).pathname||url.pathname===new URL('./index.html',self.registration.scope).pathname)caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));
           return response;
         })
         .catch(()=>caches.match('./index.html'))

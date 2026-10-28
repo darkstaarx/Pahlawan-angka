@@ -6,3 +6,6 @@ supabase/functions/.env
 *.secret.env
 .jelajah-publish/
 preview/jelajah-game-*.html
+
+.production-publish-*/
+.production-stage-path

@@ -1,6 +1,6 @@
 # Demo Jelajah V1 — real gameplay preview
 
-Branch: `codex/demo-jelajah-v1`. Production is not deployed by this work.
+Branch: `codex/demo-jelajah-v1`. Production release approved by the owner on 28 October 2026; release 3.87.78.
 
 ## Run locally
 
@@ -10,7 +10,7 @@ node tools/serve-jelajah-preview.cjs
 ```
 
 Open http://127.0.0.1:4173/demo-jelajah.html. Build before packaging with
-`node tools/package-jelajah-preview.cjs`. Publish only a Netlify draft, never `--prod`.
+`node tools/package-jelajah-preview.cjs`. Use a Netlify draft for future unapproved changes. The 3.87.78 production release is explicitly approved.
 
 ## Flow and source of behavior
 
@@ -66,3 +66,5 @@ Evidence is stored under `review/`.
 Current draft preview: https://6ae1bbb6a46529568116f833--pahlawanangka.netlify.app/demo-jelajah.html
 
 Worked examples now advance only through Seterusnya clicks. There is no timed step advancement; each finished example remains visible until Contoh seterusnya or Selesai is clicked.
+
+Production demo: https://pahlawanangka.netlify.app/demo-jelajah.html

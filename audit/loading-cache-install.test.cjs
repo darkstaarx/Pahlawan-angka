@@ -32,7 +32,7 @@ function harness(version,body,storage=new Storage(),override={}){
  const context={Request:ScopedRequest,Response,URL,Uint8Array,crypto:webcrypto,fetch:net,caches:storage,self,importScripts(){}};
  vm.runInNewContext(source,context);
  async function dispatch(type,request){let promise;events[type]({request,waitUntil(p){promise=p},respondWith(p){promise=p}});return promise}
- return {self,storage,calls,modes,install:()=>dispatch('install'),activate:()=>dispatch('activate'),get:url=>dispatch('fetch',new ScopedRequest(url))};
+ return {self,storage,calls,modes,install:()=>dispatch('install'),activate:()=>dispatch('activate'),navigate:url=>{const request=new ScopedRequest(url);Object.defineProperty(request,'mode',{value:'navigate'});return dispatch('fetch',request)},get:url=>dispatch('fetch',new ScopedRequest(url))};
 }
 (async()=>{
  const a=harness('a','image-a');await a.install();await a.activate();
@@ -41,6 +41,7 @@ function harness(version,body,storage=new Storage(),override={}){
  const b=harness('b','image-a',a.storage);await b.install();await b.activate();
  assert.equal(b.calls.filter(x=>x.endsWith('test.png')).length,0,'unchanged release must not fetch artwork');
  assert(!(await a.storage.keys()).some(x=>x.includes('-va-')),'old app shell should be deleted');
+ const shellCache=await b.storage.open((await b.storage.keys()).find(k=>k!==stable));await shellCache.put(scope+'index.html',new Response('protected-root'));await b.navigate(scope+'demo-jelajah.html');assert.equal(await(await shellCache.match(scope+'index.html')).text(),'protected-root','demo navigation cannot replace offline game shell');await b.navigate(scope+'index.html');assert.equal(await(await shellCache.match(scope+'index.html')).text(),'shell','root navigation still refreshes offline shell');
  const before=b.calls.length;assert.equal(await(await b.get(scope+'assets/test.png?v=new-app')).text(),'image-a');
  assert.equal(b.calls.length,before,'query alias should use verified canonical hash');
  assert.equal(await(await b.get(scope+'assets/test.png?v=another-app')).text(),'image-a');

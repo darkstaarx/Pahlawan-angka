@@ -31,3 +31,5 @@ Pacing checks passed for Darjah 1–6: three manual rounds, idle pause without s
 Paced preview deployment: 6ae1bbb6a46529568116f833; source ed52f36. This draft includes all earlier demo corrections and current origin/main.
 
 Public draft Darjah 2 user-paced worked-example audit passed. Production remains 6added09bf3b6b33d6e1d792.
+
+Production release 3.87.78 explicitly authorized on 28 October 2026. CTA polished to Mulakan Pengembaraan. Real production package preserves the original root, login and pricing; mobile release audit passed at 320/390px, 38 access/isolation/lock/funnel checks passed, asset manifest validated. Offline cache test verifies demo navigation cannot replace the game shell. All earlier six-grade gameplay and paced-worked-example fixes are included.

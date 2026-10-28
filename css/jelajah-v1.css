@@ -9,3 +9,5 @@
 #parent.jelajahParent{max-width:780px;margin:auto;padding:16px}#parent .parentTabs button.active{background:#edc260;color:#172033}#parent .paDiagCard{margin-top:10px}
 
 .pa-jelajah-game-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 8px}.pa-jelajah-next{font-size:13px;padding:8px 14px;min-height:42px}
+
+footer{flex-wrap:wrap}#buy{display:flex;align-items:center;gap:9px;padding:9px 16px;background:linear-gradient(135deg,#ffe18a,#e9b546);border-color:#ffe5a2;color:#172238;font-weight:800;box-shadow:0 3px 12px #0005,inset 0 1px #fff7}#buy:hover{background:#ffe8a2}#buy span{font-size:17px;line-height:1}#offers{flex-basis:100%;justify-content:flex-end}
