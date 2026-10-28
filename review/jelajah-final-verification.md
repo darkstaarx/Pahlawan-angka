@@ -37,3 +37,5 @@ Production release 3.87.78 explicitly authorized on 28 October 2026. CTA polishe
 3.87.79: approved point copy and SVG integrated into pre-autopilot, pre-mini-game, pre-coach and post-activity summaries. Parent report/popup audit passed; 38 access/isolation/funnel/lock checks passed; asset manifest current.
 
 3.87.80: 102 boundary/random coordinate diagrams verified entirely inside their SVG bounds, including C at y=8. GitHub Pages /Pahlawan-angka/ prefix entry, launch of the original mini-game, and all five tracked demo game pages passed. Cream/navy modal colors verified. 40 access/isolation/funnel/page-lock tests and offline-cache checks passed.
+
+Public release verification: both https://pahlawanangka.netlify.app/ and https://darkstaarx.github.io/Pahlawan-angka/ passed the browser audit for landing-to-demo entry, five mini-game URLs, branded dialog and 102 coordinate boundary/random diagrams. GitHub Pages deployment workflow 40686953306 completed successfully for fecad68. Netlify production deployment: 6ae1e887ce6ebc56fe3098df.
