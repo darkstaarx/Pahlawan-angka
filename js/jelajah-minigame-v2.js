@@ -31,18 +31,33 @@
   const roundTypes=new Set(['PA_GUDANG_HARTA_ROUND','PA_KEDAI_KEK_ROUND','PA_BENGKEL_AJAIB_ROUND','PA_LOMBONG_PERMATA_ROUND','PA_DAPUR_RAMUAN_ROUND']);
   const complete=()=>{if(finished)return;finished=true;onComplete({scenario,game:cfg.page,successes,workedRounds});};
   const notifyManual=()=>{if(manualNotified)return;manualNotified=true;options?.onManualComplete?.({scenario,game:cfg.page,successes,startAutopilot});};
-  const next=document.createElement('button');next.type='button';next.className='pa-jelajah-next primary';next.textContent='Seterusnya';next.hidden=true;
-  let roundReady=false;
+  const next=document.createElement('button');next.type='button';next.className='pa-jelajah-next primary btn';next.textContent='Seterusnya';next.hidden=true;
+  const cursor='<svg viewBox="0 0 32 38" aria-hidden="true"><path d="M6 5v25l7-6 5 11 6-3-5-10h10Z" fill="#0067d9" stroke="#06164c" stroke-width="2"/><path d="M3 2v25l7-6 5 11 6-3-5-10h10Z" fill="#fff" stroke="#06164c" stroke-width="2" stroke-linejoin="round"/></svg>';
+  const label=text=>{if(next.dataset.label===text)return;next.dataset.label=text;next.setAttribute('aria-label',text);next.innerHTML='<span>'+text+'</span><span class="pa-click-cursor" aria-hidden="true">'+cursor+'</span>'};
+  let roundReady=false,gameDocument=null;
+  const keyNext=e=>{if(closed||finished||!autopilot||e.key!=='Enter'||e.target!==gameDocument?.body)return;e.preventDefault();e.stopImmediatePropagation();if(!next.hidden&&!next.disabled)next.click();else if(frame.contentWindow?.PAJelajahGameRuntime?.state?.()?.offer)gameDocument.getElementById('hint')?.click()};
+  function sync(){
+    if(closed||finished||!autopilot)return;
+    const doc=frame.contentDocument,rt=frame.contentWindow?.PAJelajahGameRuntime;
+    if(doc&&rt){
+      const check=doc.getElementById('check'),hint=doc.getElementById('hint'),st=rt.state();
+      if(check){check.style.display='none';const card=doc.querySelector('.wk-modal .wk-card');if(card&&!st.solved){if(next.parentNode!==card)card.append(next)}else if(next.parentNode!==check.parentNode)check.after(next)}
+      if(hint)hint.style.setProperty('display',st.offer?'':'none',st.offer?'':'important');
+      next.hidden=!!st.offer;
+      label(roundReady?(workedRounds<2?'Contoh seterusnya':'Selesai'):'Seterusnya');
+    }
+    later(sync,150);
+  }
   next.onclick=()=>{
     if(closed||finished||next.disabled)return;
     const rt=frame.contentWindow?.PAJelajahGameRuntime;if(!rt)return;
-    if(roundReady){if(workedRounds>=2){complete();return}roundReady=false;rt.beginWorked(workedRounds);next.textContent='Seterusnya'}
+    if(roundReady){if(workedRounds>=2){complete();return}roundReady=false;rt.beginWorked(workedRounds)}
     else{const st=rt.state();if(st.offer)rt.startWorked();else if(st.worked&&!st.solved)rt.next();}
     next.disabled=true;later(()=>{next.disabled=false},800);
   };
   const startAutopilot=()=>{
     if(autopilot||finished||successes<3)return false;autopilot=true;workedRounds=0;
-    frame?.contentWindow?.PAJelajahGameRuntime?.beginWorked?.(0);next.hidden=false;return true;
+    gameDocument=frame.contentDocument;gameDocument?.addEventListener('keydown',keyNext,true);frame?.contentWindow?.PAJelajahGameRuntime?.beginWorked?.(0);sync();return true;
   };
   const game=cfg.page.split('/').pop().replace(/^jelajah-game-/, '').replace(/\.html$/,'');
   const previous=window.PAFocusMiniGamesLive;
@@ -52,10 +67,10 @@
    const d=e.data;
    if(e.origin!==ORIGIN||e.source!==frame.contentWindow||d?.version!==1||d?.nonce!==nonce||d?.skillId!==cfg.skill)return;
    if(roundTypes.has(d.type)&&!autopilot){const key=String(d.questionKey||'');if(key&&!seen.has(key)){seen.add(key);successes++;if(successes>=3){frame.contentWindow.PAMiniGameFlow?.hold();notifyManual();}}}
-   if(autopilot&&roundTypes.has(d.type)&&d.stars===0&&!seen.has(d.questionKey)){seen.add(d.questionKey);frame.contentWindow.PAMiniGameFlow?.hold();workedRounds++;roundReady=true;next.textContent=workedRounds<2?'Contoh seterusnya':'Selesai';}
+   if(autopilot&&roundTypes.has(d.type)&&d.stars===0&&!seen.has(d.questionKey)){seen.add(d.questionKey);frame.contentWindow.PAMiniGameFlow?.hold();workedRounds++;roundReady=true;label(workedRounds<2?'Contoh seterusnya':'Selesai');}
   };
-  const cleanup=()=>{closed=true;autopilot=false;timers.forEach(clearTimeout);timers.clear();window.removeEventListener('message',receive);if(window.PAFocusMiniGamesLive===registry)window.PAFocusMiniGamesLive=previous;toolbar.remove();frame.remove();};
-  const toolbar=document.createElement('div');toolbar.className='pa-jelajah-game-toolbar';toolbar.append(exit,next);window.addEventListener('message',receive);host.append(toolbar,frame);
+  const cleanup=()=>{gameDocument?.removeEventListener('keydown',keyNext,true);closed=true;autopilot=false;timers.forEach(clearTimeout);timers.clear();window.removeEventListener('message',receive);if(window.PAFocusMiniGamesLive===registry)window.PAFocusMiniGamesLive=previous;next.remove();toolbar.remove();frame.remove();};
+  const toolbar=document.createElement('div');toolbar.className='pa-jelajah-game-toolbar';toolbar.append(exit);window.addEventListener('message',receive);host.append(toolbar,frame);
   cleanup.startAutopilot=startAutopilot;
   return cleanup;
  }
