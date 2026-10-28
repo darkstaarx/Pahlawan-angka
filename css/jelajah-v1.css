@@ -11,3 +11,5 @@
 .pa-jelajah-game-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 8px}.pa-jelajah-next{font-size:13px;padding:8px 14px;min-height:42px}
 
 footer{flex-wrap:wrap}#buy{display:flex;align-items:center;gap:9px;padding:9px 16px;background:linear-gradient(135deg,#ffe18a,#e9b546);border-color:#ffe5a2;color:#172238;font-weight:800;box-shadow:0 3px 12px #0005,inset 0 1px #fff7}#buy:hover{background:#ffe8a2}#buy span{font-size:17px;line-height:1}#offers{flex-basis:100%;justify-content:flex-end}
+
+.jelajah-copy{margin:10px 0 18px}.jelajah-copy-icon svg{width:54px;height:54px;display:block;margin-bottom:10px}.jelajah-copy ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}.jelajah-copy li{position:relative;padding-left:19px;font-size:14px;line-height:1.5}.jelajah-copy li:before{content:'•';position:absolute;left:0;color:#ffda81;font-weight:800}#activityIntro,#autopilotDialog{max-height:88dvh;overflow:auto}.jelajah-copy+button{margin-top:4px}

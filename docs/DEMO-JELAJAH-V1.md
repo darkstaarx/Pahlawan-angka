@@ -68,3 +68,5 @@ Current draft preview: https://6ae1bbb6a46529568116f833--pahlawanangka.netlify.a
 Worked examples now advance only through Seterusnya clicks. There is no timed step advancement; each finished example remains visible until Contoh seterusnya or Selesai is clicked.
 
 Production demo: https://pahlawanangka.netlify.app/demo-jelajah.html
+
+Release 3.87.79: owner-approved before/after parent explanations use 2–3 short points and decorative static SVG. Autopilot explicitly explains intentional simulated errors. Copy and SVG style derived from the approved local preview; fun-isometric by Kelvin Adithya, MIT (https://skills.klvn.dev/fun-isometric). Gameplay, mastery isolation and user-paced worked steps are unchanged.
