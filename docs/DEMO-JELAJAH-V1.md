@@ -16,6 +16,13 @@ node tools/serve-jelajah-preview.cjs
 Open <http://127.0.0.1:4173/demo-jelajah.html>. This is a local development URL.
 The server binds only to localhost. Stop its process to end the preview.
 
+Local landing-entry fix (28 October 2026): the preview server redirects both
+`/?landing_action=demo` and `/index.html?landing_action=demo` to this tour.
+When serving `/index.html`, it injects a preview-only listener for the original
+embedded landing CTA. No production landing or entry script is edited.
+`node audit/jelajah-landing-entry.cjs` passed both query aliases, standalone and
+embedded landing button clicks, and the real first battlefield question.
+
 The build derives `jelajah-runtime.html` and `jelajah-offer.html` from the real
 `index.html`. Rebuild after updating that source. The production entry remains
 unchanged. Do not use `--prod`, merge or release without owner approval.
