@@ -1,6 +1,6 @@
 // MIT — fun-isometric by Kelvin Adithya. See LICENSE.txt.
 import {VIEWS,poly,ellipse,ring,arc,spark} from './fun.js';
-import {twist,sparkle} from './motions.js';
+import {float,bounce,sparkle} from './motions.js';
 const LINE=5,EXT=VIEWS.right.extrude;
 const glow=(parent,p,r,m,extra={})=>({parent,a:p,p,m,...extra,shapes:[{d:spark(p[0],p[1],r),fill:'white'}]});
 export const search       = {
@@ -9,7 +9,7 @@ export const search       = {
   line: LINE,
   extrude: EXT,
   layers: [
-    { id: 'lens', p: [222, 226], m: twist, shapes: [] },
+    { id: 'lens', p: [222, 226], m: [{...float,k:1.4},{s:bounce.s,k:2}], shapes: [] },
     {
       parent: 'lens',
       tilt: [-20, 28],
