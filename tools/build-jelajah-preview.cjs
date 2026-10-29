@@ -1,7 +1,7 @@
 /* Derive the actual production stage DOM without editing the production entry. */
 const fs=require('node:fs');
 let html=fs.readFileSync('index.html','utf8');
-const excluded=/\/(cloud|commercial-foundation|beta-trust|entry-flow|qsv2-shadow-sync|qsv2-pilot-sync|demo-funnel|demo-wrapup|guardian-onboarding|bug-report|parent-live-runtime)[^/]*\.js/;
+const excluded=/\/(cloud|commercial-foundation|beta-trust|entry-flow|qsv2-shadow-sync|qsv2-pilot-sync|demo-funnel|demo-wrapup|guardian-onboarding|bug-report|parent-live-runtime|hub-topic-search)[^/]*\.js/;
 html=html.replace(/<script\b[^>]*src="([^"]+)"[^>]*><\/script>/g,(tag,src)=>excluded.test(src)?'':tag);
 html=html.replace('<head>','<head><meta name="robots" content="noindex,nofollow"><script>window.PAJelajahSkipEntrance=true;</script><script src="js/jelajah-isolation-v1.js"></script>');
 html=html.replace('</head>','<link rel="stylesheet" href="css/jelajah-runtime-v1.css"></head>');

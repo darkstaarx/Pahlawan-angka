@@ -4,6 +4,7 @@ importScripts('./js/asset-manifest.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3-d4-completion-currency-1-d5-uasa-4-approved-landing-1`;
 const ASSET_CACHE_NAME='pahlawan-angka-assets-v1';
 const APP_SHELL=[
+  './css/hub-topic-search-v1.css','./js/hub-topic-search-v1.js','./js/fun-isometric/search.js','./js/fun-isometric/fun.js','./js/fun-isometric/motions.js',
   './js/auth-boot-v1.js',
   './landing-approved-v1.html','./css/approved-landing-v1.css','./js/approved-landing-v1.js',
   './assets/fx/bunga/bulatan-harmoni/fx-charge-arc-v1.webp','./assets/fx/bunga/bulatan-harmoni/fx-enemy-impact-v1.webp','./assets/fx/bunga/finisher.webp','./assets/fx/bunga/kelopak-pecahan/fx-impact-v1.webp','./assets/fx/bunga/kelopak-pecahan/fx-projectile-v1.webp','./assets/fx/bunga/teorem-mekar/fx-charge-aura-v1.webp','./assets/fx/bunga/teorem-mekar/fx-enemy-bloom-v1.webp','./assets/fx/bunga/teorem-mekar/fx-impact-end-v1.webp',

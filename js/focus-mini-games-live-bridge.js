@@ -26,17 +26,25 @@ function allowedSession(){return typeof db!=='undefined'&&db&&!db.demoMode&&!!wi
 function persist(){if(typeof save==='function')save();window.PACloud?.scheduleSave?.()}
 function resolvePending(correct){if(!run?.pending)return null;const p=run.pending,encounter=window.PALearnerReview?.resolve?.(p.q,{correct:!!correct,usedHint:p.hints>0,hintLevel:p.hints,seconds:0},run.profile)||null;run.pending=null;if(encounter)persist();return encounter}
 function close(){if(!run)return;resolvePending(false);run.node.remove();run=null;document.body.classList.remove('pa-focus-minigame-active');window.PACloud?.syncSaveNow?.()}
-function tryStartFocus(skillId,target=null){
+function tryStartFocus(skillId,target=null,practice=null){
  if(!allowedSession())return false;
  const grade=Number(db.schoolGrade),id=text(skillId),meta=typeof META==='undefined'?null:META[id],game=gameFor(id),router=game?.router();
  if(!game||!meta||Number(meta.grade)!==grade||!router?.planFor)return false;
- const plan=router.planFor(db,id);if(!plan||Number(plan.grade)!==grade||!Array.isArray(plan.start)||!plan.start.length)return false;
+ let plan=router.planFor(practice?{...db,learnerReviewV1:{encounters:[]}}:db,id);if(!plan||Number(plan.grade)!==grade||!Array.isArray(plan.start)||!plan.start.length)return false;
+ if(practice){
+  if(game.id==='gudang-harta'){
+   let routes=plan.start.filter(r=>r.mode===practice.mode);if(!routes.length)return false;
+   if(practice.topic){if(practice.topic!=='bundar')return false;routes=routes.map(r=>{const list=router.ARCH?.[grade]?.[r.mode]||[];const indices=list.map((a,i)=>/round/.test(a)&&i>=(r.min??0)&&i<=r.end?i:-1).filter(i=>i>=0);return indices.length?{...r,min:indices[0],start:indices[0],end:indices[indices.length-1]}:null}).filter(Boolean);if(!routes.length)return false}
+   plan={...plan,start:routes,modes:routes.map(r=>r.mode),hash:'d'+grade+'-'+routes.map(r=>r.mode+(r.start?'@'+r.start:'')).join('-')};
+  }
+ }
  if(run)close();
  const idNonce=nonce(),node=document.createElement('section');node.id='paFocusMiniGameOverlay';node.setAttribute('role','dialog');node.setAttribute('aria-modal','true');node.setAttribute('aria-label',game.title+' · Kemahiran Fokus');
  node.innerHTML='<div class="paFocusMiniGameNav"><b>'+game.title+' · Kemahiran Fokus · Darjah '+grade+'</b><button type="button" id="paFocusMiniGameExit">✕ Kembali</button></div><iframe title="'+game.title+' · Kemahiran Fokus" id="paFocusMiniGameFrame"></iframe><p class="paFocusMiniGameStatus" id="paFocusMiniGameStatus" aria-live="polite">Habiskan satu sesi, Wira!</p>';
  let style=document.getElementById('paFocusMiniGameBridgeStyle');if(!style){style=document.createElement('style');style.id='paFocusMiniGameBridgeStyle';style.textContent=`body.pa-focus-minigame-active{overflow:hidden!important}#paFocusMiniGameOverlay{position:fixed;z-index:2147483000;inset:0;background:#07111feF;display:flex;flex-direction:column;padding:0 max(0px,env(safe-area-inset-left)) env(safe-area-inset-bottom) max(0px,env(safe-area-inset-right));font:700 14px/1.35 system-ui,sans-serif;color:#fff}#paFocusMiniGameOverlay .paFocusMiniGameNav{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 12px;background:#14335c;border-bottom:2px solid #b78b47}#paFocusMiniGameOverlay .paFocusMiniGameNav b{font-size:13px}#paFocusMiniGameOverlay button{border:1px solid #e7d9b7;border-radius:10px;background:#fffcf0;color:#123158;font-weight:900;padding:8px 11px;white-space:nowrap}#paFocusMiniGameOverlay iframe{width:100%;flex:1;min-height:0;border:0;background:#08101d}#paFocusMiniGameOverlay .paFocusMiniGameStatus{margin:0;padding:7px 12px;background:#fffcf0;color:#38567c;font-size:12px;text-align:center}@media (max-height:700px){#paFocusMiniGameOverlay .paFocusMiniGameNav{min-height:40px;padding:3px 10px}#paFocusMiniGameOverlay .paFocusMiniGameNav b{font-size:12px}#paFocusMiniGameOverlay .paFocusMiniGameNav button{padding:5px 9px}#paFocusMiniGameOverlay .paFocusMiniGameStatus{padding:3px 10px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}@media(min-width:720px){#paFocusMiniGameOverlay{padding:14px}#paFocusMiniGameOverlay .paFocusMiniGameNav,#paFocusMiniGameOverlay .paFocusMiniGameStatus{max-width:650px;width:100%;margin-left:auto;margin-right:auto}#paFocusMiniGameOverlay iframe{max-width:650px;margin:0 auto;border-radius:14px;box-shadow:0 8px 32px #0008}}`;document.head.appendChild(style)}
- document.body.append(node);const frame=node.querySelector('#paFocusMiniGameFrame');run={node,frame,nonce:idNonce,grade,skillId:id,profile:db,plan,game,seen:new Set(),pending:null};(window.PAMiniGameExit?window.PAMiniGameExit.guard(node.querySelector('#paFocusMiniGameExit'),frame,close):node.querySelector('#paFocusMiniGameExit').onclick=close);
+ document.body.append(node);const frame=node.querySelector('#paFocusMiniGameFrame');run={node,frame,nonce:idNonce,grade,skillId:id,profile:db,plan,game,practice:!!practice,seen:new Set(),pending:null};(window.PAMiniGameExit?window.PAMiniGameExit.guard(node.querySelector('#paFocusMiniGameExit'),frame,close):node.querySelector('#paFocusMiniGameExit').onclick=close);
  const params=new URLSearchParams({pa_focus_live:'1',skill:id,pa_nonce:idNonce});if(game.id==='gudang-harta'){params.set('focus_limits',JSON.stringify(plan.start.map(x=>({mode:x.mode,min:x.min??0,end:x.end}))));if(target&&target.kind!=='money')params.set('focus_target',JSON.stringify(target))}const [page,hash]=router.url(plan,game.page).split('#');frame.src=page+'?'+params.toString()+(hash?'#'+hash:'');
+ if(practice){node.querySelector('.paFocusMiniGameNav b').textContent=game.title+' · Latihan pilihan · Darjah '+grade;node.querySelector('#paFocusMiniGameStatus').textContent='Latihan pilihan ibu ayah. Main ikut rentak anak.'}
  document.body.classList.add('pa-focus-minigame-active');window.PAFocusPractice?.close?.();return true;
 }
 function questionFrom(m){
@@ -55,7 +63,7 @@ function beginPending(m){
  const row=questionFrom(m);if(!row)return null;
  if(run.pending?.questionKey===row.questionKey)return run.pending;
  resolvePending(false);
- const context={grade:run.grade,mode:'practice',selectionReason:'focus-'+run.game.id,demoMode:false,devMode:false};
+ const context={grade:run.grade,mode:'practice',selectionReason:(run.practice?'parent-search-':'focus-')+run.game.id,demoMode:false,devMode:false};
  if(!window.PALearnerReview.beginQuestion(row.q,context))return null;
  run.pending={...row,hints:0,misses:0};return run.pending;
 }
@@ -81,7 +89,7 @@ function receive(event){
  }else{
   const row=questionFrom(m);if(!row)return;const{q,questionKey}=row;
   run.seen.add(questionKey);
-  const context={grade:run.grade,mode:'practice',selectionReason:'focus-'+run.game.id,demoMode:false,devMode:false};if(!window.PALearnerReview.beginQuestion(q,context))return;
+  const context={grade:run.grade,mode:'practice',selectionReason:(run.practice?'parent-search-':'focus-')+run.game.id,demoMode:false,devMode:false};if(!window.PALearnerReview.beginQuestion(q,context))return;
   const misses=Math.max(0,Math.min(20,Number(m.misses)||0)),hints=Math.max(0,Math.min(20,Number(m.hints)||0));if(misses)window.PALearnerReview.firstWrong(q,{tag:'generic'});if(hints)window.PALearnerReview.hintUsed(q,hints);
   const encounter=window.PALearnerReview.resolve(q,{correct:true,usedHint:hints>0,hintLevel:hints,seconds:0},run.profile);if(!encounter)return;
  }
@@ -89,5 +97,6 @@ function receive(event){
  const status=run.node.querySelector('#paFocusMiniGameStatus');if(status)status.textContent='Bukti latihan direkod: '+run.seen.size+' cabaran '+domain+'. Bintang permainan tidak mengubah mastery.';
 }
 function isActiveFrame(frame,nonce,skillId,gameId='gudang-harta'){return!!run&&run.game.id===gameId&&run.frame.contentWindow===frame&&run.nonce===nonce&&run.skillId===skillId}
-window.addEventListener('message',receive);window.PAFocusMiniGamesLive={tryStartFocus,close,gameFor,isActiveFrame};
+window.addEventListener('message',receive);function tryStartPractice(id,options={}){const cloud=window.PACloud?.state;if(!cloud?.user||!db?.cloudChildId||!cloud.profiles?.some(p=>p.id===db.cloudChildId))return false;return tryStartFocus(id,null,options)}
+window.PAFocusMiniGamesLive={tryStartFocus,tryStartPractice,close,gameFor,isActiveFrame};
 })();
