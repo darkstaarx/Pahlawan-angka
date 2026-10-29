@@ -3,3 +3,5 @@ dialog#paTopicSearch{box-sizing:border-box;width:min(540px,calc(100% - 24px));ma
 @media(max-width:360px){#paTopicSearchFab{right:12px;bottom:calc(78px + env(safe-area-inset-bottom))}dialog#paTopicSearch{padding:17px}#paTopicSearch h2{font-size:22px}}
 
 #paTopicSearchFab.is-dragging{cursor:grabbing}#paTopicSearchFab.is-dragging canvas{opacity:.85}
+
+@media(max-width:419px){body[data-screen="menuV2"] #heroStage{box-sizing:border-box;padding-left:24px}}

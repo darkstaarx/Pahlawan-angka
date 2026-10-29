@@ -5,7 +5,7 @@
  const metadata=()=>typeof META==='undefined'?{}:META;
  const modeNames={bina:'Nilai tempat',banding:'Banding nombor',pola:'Pola nombor',tambah:'Tambah',tolak:'Tolak',darab:'Darab',bahagi:'Bahagi',gabung:'Operasi bergabung',juta:'Nombor hingga juta',perdana:'Nombor perdana',masalah:'Penyelesaian masalah'};
  const aliases={tambah:'addition campur',tolak:'subtraction pinjam',darab:'sifir multiplication kali',bahagi:'division agih',bina:'nilai digit place value',banding:'susun tertib compare',pola:'urutan corak pattern'};
- let dialog,fab,openedProfile,player;
+ let dialog,fab,openedProfile,player,positionFab=()=>{};
  function catalog(p=profile()){
   const grade=Number(p?.schoolGrade);if(!Number.isInteger(grade)||grade<1||grade>6)return[];
   const rows=[],seen=new Set(),meta=metadata(),bridge=window.PAFocusMiniGamesLive;
@@ -48,7 +48,16 @@
   const bounds=()=>({x:Math.max(8,innerWidth-60),y:Math.max(8,innerHeight-60)});
   function place(x,y){const b=bounds();x=Math.max(8,Math.min(b.x,x));y=Math.max(8,Math.min(b.y,y));Object.assign(fab.style,{left:x+'px',top:y+'px',right:'auto',bottom:'auto'});return{x,y}}
   function remember(){const b=bounds(),r=fab.getBoundingClientRect();saved={x:(r.left-8)/Math.max(1,b.x-8),y:(r.top-8)/Math.max(1,b.y-8)};try{localStorage.setItem(key,JSON.stringify(saved))}catch(_){} }
-  function restore(){if(saved){const b=bounds();place(8+saved.x*(b.x-8),8+saved.y*(b.y-8))}}
+  function restore(){
+   if(drag)return;
+   if(saved){const b=bounds();place(8+saved.x*(b.x-8),8+saved.y*(b.y-8));return}
+   const hero=document.querySelector(document.body.dataset.screen==='menuV2'?'#wiraSlot':'#hub .hubHeroCharacter');
+   const r=hero?.getBoundingClientRect();
+   if(r?.width&&r.height)place(r.left-68,r.top+r.height*.48-26);
+  }
+  positionFab=restore;const heroResize=new ResizeObserver(()=>{if(!fab.hidden&&!saved)restore()});
+  for(const el of document.querySelectorAll('#wiraSlot,#hub .hubHeroCharacter'))heroResize.observe(el);
+  addEventListener('scroll',()=>{if(!saved&&!fab.hidden)restore()},{passive:true,capture:true});
   fab.addEventListener('pointerdown',e=>{if(!e.isPrimary||e.button!==0)return;const r=fab.getBoundingClientRect();drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top,moved:false};fab.setPointerCapture(e.pointerId)});
   fab.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.hypot(dx,dy)<8)return;drag.moved=true;fab.classList.add('is-dragging');place(drag.left+dx,drag.top+dy)});
   function finish(e,cancel=false){if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;fab.classList.remove('is-dragging');if(d.moved){suppressUntil=performance.now()+600;if(cancel)place(d.left,d.top);else remember()}if(fab.hasPointerCapture(e.pointerId))fab.releasePointerCapture(e.pointerId)}
@@ -56,10 +65,10 @@
   fab.onclick=e=>{if(e.detail&&performance.now()<suppressUntil){e.preventDefault();return}open()};
   fab.addEventListener('keydown',e=>{if(!e.altKey||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const r=fab.getBoundingClientRect();place(r.left+(e.key==='ArrowRight'?16:e.key==='ArrowLeft'?-16:0),r.top+(e.key==='ArrowDown'?16:e.key==='ArrowUp'?-16:0));remember()});
   fab.setAttribute('aria-description','Seret untuk alih. Alt dan kekunci anak panah juga boleh digunakan.');
-  addEventListener('resize',()=>{if(drag){drag=null;fab.classList.remove('is-dragging')}if(saved)restore();else if(fab.style.left){const r=fab.getBoundingClientRect();place(r.left,r.top)}});restore();
+  addEventListener('resize',()=>{if(drag){drag=null;fab.classList.remove('is-dragging')}restore()});restore();
  }
  function open(){const p=profile();if(!currentAccount(p))return;openedProfile=p;dialog.querySelector('input').value='';dialog.querySelector('.topic-child').textContent=(p.name||p.childName||'Profil anak')+' · Darjah '+p.schoolGrade;dialog.showModal();fab.setAttribute('aria-expanded','true');render();dialog.querySelector('input').focus()}
- function sync(){const visible=['hub','menuV2'].includes(document.body.dataset.screen)&&currentAccount(profile())&&!document.body.classList.contains('pa-focus-minigame-active');fab.hidden=!visible;if(!visible)close();if(dialog.open&&profile()!==openedProfile)close()}
+ function sync(){const visible=['hub','menuV2'].includes(document.body.dataset.screen)&&currentAccount(profile())&&!document.body.classList.contains('pa-focus-minigame-active');fab.hidden=!visible;if(visible)requestAnimationFrame(positionFab);if(!visible)close();if(dialog.open&&profile()!==openedProfile)close()}
  async function init(){
   fab=document.createElement('button');fab.id='paTopicSearchFab';fab.type='button';fab.hidden=true;fab.setAttribute('aria-label','Cari topik latihan');fab.setAttribute('aria-haspopup','dialog');fab.setAttribute('aria-expanded','false');fab.innerHTML='<canvas width="500" height="500" aria-hidden="true"></canvas>';fab.onclick=open;document.body.append(fab);
   dialog=document.createElement('dialog');dialog.id='paTopicSearch';dialog.setAttribute('aria-labelledby','topicSearchTitle');dialog.innerHTML='<header><div><small class="topic-child"></small><h2 id="topicSearchTitle">Nak berlatih topik apa?</h2></div><button class="topic-close" aria-label="Tutup carian">✕</button></header><label for="topicSearchInput">Cari topik</label><input id="topicSearchInput" type="search" placeholder="Contoh: bundar, pecahan, tambah" autocomplete="off"><p class="topic-note">Latihan pilihan ibu ayah. Cari ikut apa yang anak nak cuba hari ini.</p><p class="topic-count" role="status"></p><div class="topic-results"></div>';document.body.append(dialog);dialog.querySelector('.topic-close').onclick=close;dialog.querySelector('input').oninput=render;dialog.addEventListener('close',()=>{fab.setAttribute('aria-expanded','false');if(!fab.hidden)fab.focus()});
