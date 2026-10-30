@@ -8,6 +8,33 @@ UTM source, medium, campaign and content are preserved for the session. Without 
 
 `?pa_tracking_test=1` marks QA data. Local/preview hosts are always QA. Always exclude `is_test` from reporting. Public roles can insert only bounded event fields; they cannot read, update or delete rows or set server timestamps. The primary key deduplicates sessions/stages. No service secret is in the browser.
 
+## Jelajah production flow (from 28 October 2026)
+
+The new production entry is `demo-jelajah.html`, which must load `js/demo-funnel-v1.js`
+before `js/jelajah-v1.js`. The main `index.html` still tracks the site visit.
+Events in the four-stage journey have these precise meanings:
+
+- `website_visit`: the first page visit in that anonymous browser session
+  (deduplicated across landing and Jelajah route).
+- `demo_open`: the Jelajah grade-selection page loaded.
+- `demo_start`: the REAL first manual battle question was painted in
+  `jelajah-runtime.html` and reported by its same-origin battle bridge.
+  Merely selecting a grade does **not** count.
+- `demo_complete`: all four parts were completed and the finale was reached
+  after the example parent report. Completing 12 battle questions alone does
+  **not** count as full-Jelajah completion.
+
+The runtime iframe itself does not load the funnel tracker; the parent controller
+records stage events to avoid duplicate/inconsistent sessions. `demo_open`
+is tracked once per anonymous 30-minute session, even if grades are changed.
+
+**Deployment:** GitHub commits do not auto-publish to Netlify because
+`netlify.toml` has `ignore = "exit 0"`. The publisher must manually release
+an updated production directory or use an approved build hook before production
+funnel measurements reflect this change. Staging URLs are tagged `is_test`.
+
+Regression guard: `node --test audit/jelajah-funnel.test.js audit/demo-funnel.test.js`.
+
 ## Admin reporting (Malaysia time)
 
 ```sql
