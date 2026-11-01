@@ -1,0 +1,41 @@
+/* Demo Jelajah · mobile footer UI (not used in logged-in gameplay). */
+#paJelajahDock[hidden],#paJelajahSheet[hidden]{display:none!important}
+.tour.paJelajahRunning{grid-template-rows:auto auto minmax(0,1fr) auto}
+.tour.paJelajahRunning #cards{display:none!important}
+.tour.paJelajahRunning #status{min-height:25px}
+.tour.paJelajahRunning footer{display:block;min-width:0;padding:5px 9px calc(5px + env(safe-area-inset-bottom,0px));background:#08182c;border-top:1px solid #36516d;box-shadow:0 -4px 14px #0007}
+.tour.paJelajahRunning footer>#buy,.tour.paJelajahRunning footer>#offers{display:none!important}
+#paJelajahDock{display:grid;gap:5px;width:min(450px,100%);margin:auto}
+.paJelajahActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.paJelajahActions a{display:flex;align-items:center;justify-content:center;min-height:34px;border:1px solid #deb967;border-radius:18px;padding:5px 8px;background:#f0ca80;color:#162c44;font-size:12px;font-weight:850;line-height:1.1;text-decoration:none;box-shadow:0 2px 8px #0006}
+.paJelajahActions a+a{background:#17334f;color:#f2d08b}
+.paJelajahTabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:4px;border:1px solid #3e5874;border-radius:15px;background:#0b1c32}
+.paJelajahTabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:48px;padding:3px 1px;border:0;border-radius:10px;background:transparent;color:#c4d2df;font-size:10px}
+.paJelajahTabs svg{width:20px;height:20px;flex:none;display:block}
+.paJelajahTabs button[aria-expanded="true"]{background:#243b54;color:#f1cd84}
+#paJelajahSheet{position:fixed;inset:0;z-index:9999;display:grid;align-items:end;color:#f6eee0;font-family:system-ui,sans-serif}
+.paJelajahSheetBackdrop{position:absolute;inset:0;background:#020b18d1}
+.paJelajahSheetPanel{position:relative;width:min(480px,100%);max-height:min(70dvh,590px);overflow-y:auto;overscroll-behavior:contain;margin:0 auto;padding:15px 17px calc(21px + env(safe-area-inset-bottom,0px));border:1px solid #63829f;border-bottom:0;border-radius:22px 22px 0 0;background:linear-gradient(#17344f,#091b30);box-shadow:0 -10px 45px #0009}
+.paJelajahSheetPanel>header{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;padding:0;border:0;background:transparent}
+.paJelajahSheetPanel header b,.paJelajahEyebrow{color:#e9c682;font-size:11px;letter-spacing:.1em}
+.paJelajahClose{min-width:38px;min-height:38px;padding:0;border:1px solid #6685a3;border-radius:10px;background:#16304e;color:#fff;font-size:25px}
+.paJelajahSheetPanel h2{font-size:21px;margin:6px 0 10px;color:#fff2d7}
+.paJelajahSheetPanel p{margin:6px 0 10px;color:#dae5ef;font-size:13px;line-height:1.5}
+.paJelajahSheetPanel strong{color:#f6d18b}
+.paJelajahJump,.paJelajahReturn{min-height:43px;padding:7px 13px;border:1px solid #d6b574;border-radius:11px;background:#eac67d;color:#11293e;font-size:12px;font-weight:850}
+.paJelajahReturn{width:100%;margin-top:18px}
+.paJelajahJump:disabled{opacity:.55}
+.paJelajahStops{display:grid;gap:7px;margin-top:15px}
+.paJelajahStop{display:grid;grid-template-columns:26px minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px;border:1px solid #375777;border-radius:12px;background:#142d49}
+.paJelajahStop>span{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#243d5b;color:#efd08c;font-size:12px;font-weight:850}
+.paJelajahStop strong{font-size:12px;color:#f5ead8}
+.paJelajahStop small{display:block;margin-top:3px;font-size:10px;color:#a9bfd3}
+.paJelajahStop .paJelajahJump{min-height:36px;padding:6px 10px}
+@media(max-height:620px){
+ .paJelajahActions a{min-height:30px;font-size:11px}
+ .paJelajahTabs button{min-height:42px}
+ .paJelajahTabs svg{width:18px;height:18px}
+ .tour.paJelajahRunning footer{padding-top:3px}
+}
+@media(min-width:700px){.tour.paJelajahRunning footer{padding-left:12px;padding-right:12px}}
+@media(prefers-reduced-motion:reduce){.paJelajahTabs *,#paJelajahSheet *{animation:none!important;transition:none!important}}
