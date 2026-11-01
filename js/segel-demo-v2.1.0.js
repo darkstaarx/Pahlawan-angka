@@ -3261,10 +3261,13 @@
     const fraction=!!f||both,decimal=!!f?both:decimalAnswer||both;
     return{fraction,decimal,typedFraction:!!f,both,expected:fracNumber,
       tenthOnly:!!f&&/pecahan\s+persepuluh|dalam\s+persepuluh/i.test(prompt)&&!both,
-      pad:fraction||decimal};
+      pad:(fraction||decimal)&&fracNumber>=0};
   }
   function segelTypedValueValid(raw,spec){
     if(!raw)return false;
+    // Money, percentages and whole-number inputs retain the existing native
+    // typedMatch parser (RM, sen, %, thousands separators and signed values).
+    if(!spec?.pad)return true;
     if(raw.includes('/')){
       if(!spec?.fraction||!/^\d{1,6}\/\d{1,6}$/.test(raw))return false;
       return Number(raw.split('/')[1])>0;
