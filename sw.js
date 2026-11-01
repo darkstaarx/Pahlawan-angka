@@ -4,6 +4,7 @@ importScripts('./js/asset-manifest.js');
 const CACHE_NAME=`pahlawan-angka-v${self.PA_APP_VERSION}-dev-mini-game-lab-v3-d4-completion-currency-1-d5-uasa-4-approved-landing-1`;
 const ASSET_CACHE_NAME='pahlawan-angka-assets-v1';
 const APP_SHELL=[
+  './demo-jelajah.html','./css/jelajah-floating-cta-v1.css','./js/jelajah-floating-cta-v1.js',
   './css/hub-topic-search-v1.css','./js/hub-topic-search-v1.js','./js/fun-isometric/search.js','./js/fun-isometric/fun.js','./js/fun-isometric/motions.js',
   './js/auth-boot-v1.js',
   './landing-approved-v1.html','./css/approved-landing-v1.css','./js/approved-landing-v1.js',
