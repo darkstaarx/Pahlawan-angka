@@ -70,7 +70,7 @@ test('all nine standalone mini-games use mobile-width standards mode',()=>{
   const html=fs.readFileSync(game,'utf8');
   assert.match(html,/^<!doctype html>/i,game);
   assert.match(html,/<html lang="ms">/,game);
-  assert.match(html,/<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">/,game);
+  assert.match(html,/<meta name="viewport" content="width=device-width,\s*initial-scale=1,\s*viewport-fit=cover">/,game);
   assert.ok(html.indexOf('<head>')>=0,game);
   assert.ok(html.indexOf('</head>')<html.indexOf('<main'),game);
   assert.ok(html.indexOf('<body>')<html.indexOf('<main'),game);
