@@ -702,24 +702,46 @@ function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
 /* ---------- lukisan kek (SVG) ---------- */
 const P2=(r,a)=>[(50+r*Math.cos(a)).toFixed(2),(50+r*Math.sin(a)).toFixed(2)];
 const berry=(x,y,s=1)=>'<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 -4 C4 -4 5 0 0 5 C-5 0 -4 -4 0 -4Z" fill="#e8364f" stroke="#8f1d2e" stroke-width="1"/><path d="M-2.5 -4 L0 -6 L2.5 -4" fill="#5cb85c" stroke="#2f6a2e" stroke-width=".8"/></g>';
-function roundSVG(m,st){const n=m.n,R=43,fl=m.fl||FLS[2];let s='<svg viewBox="-4 -4 108 108" role="img" aria-label="Kek '+n+' bahagian"><ellipse cx="50" cy="54" rx="52" ry="50" fill="#fff" stroke="#e3cfa8" stroke-width="2"/><circle cx="50" cy="50" r="'+(R+2)+'" fill="'+fl.k+'"/><circle cx="50" cy="50" r="'+R+'" fill="'+fl.c+'"/>';
+function roundSVG(m,st){const n=m.n,R=43,fl=m.fl||FLS[2];let s='<svg viewBox="-4 -4 108 108" role="img" aria-label="Kek dilihat dari atas, '+n+' potongan sama besar"><ellipse cx="50" cy="54" rx="52" ry="50" fill="#fff" stroke="#e3cfa8" stroke-width="2"/><circle cx="50" cy="50" r="'+(R+2)+'" fill="'+fl.k+'"/><circle cx="50" cy="50" r="'+R+'" fill="'+fl.c+'"/>';
  for(let i=0;i<n;i++){const a0=-Math.PI/2+i*2*Math.PI/n,a1=a0+2*Math.PI/n,am=(a0+a1)/2,eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i),fill=eat?'#fffaf0':sh?PINK:s2?CHOC:'transparent';
   const d=n===1?'M50 '+(50-R)+' A'+R+' '+R+' 0 1 1 49.99 '+(50-R)+'Z':'M50 50 L'+P2(R,a0).join(' ')+' A'+R+' '+R+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+P2(R,a1).join(' ')+'Z';
   s+='<path d="'+d+'" data-i="'+i+'" fill="'+fill+'"'+(eat?' stroke="#d7b47e" stroke-dasharray="3 3" stroke-width="1.5"':'')+'/>';
   if((sh||s2)&&!eat){const[x,y]=n===1?[50,50]:P2(R*.6,am);s+=sh?berry(+x,+y,n>8?.8:1.1):'<circle cx="'+x+'" cy="'+y+'" r="3" fill="#ffd036" stroke="#7a4426" stroke-width="1"/>'}}
  if(n>1)for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;s+='<line x1="50" y1="50" x2="'+P2(R+2,a)[0]+'" y2="'+P2(R+2,a)[1]+'" stroke="#fffaf2" stroke-width="2.2" pointer-events="none"/>'}
  return s+'<circle cx="50" cy="50" r="2.2" fill="#fffaf2" pointer-events="none"/></svg>'}
-function barSVG(m,st,y0=0,inner=false){const n=m.n,fl=m.fl||FLS[2],x0=8,W=204,w=W/n;let s='';
- for(let i=0;i<n;i++){const x=x0+i*w,eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i);
-  if(eat){s+='<rect data-i="'+i+'" x="'+x+'" y="'+(y0+12)+'" width="'+w+'" height="34" fill="#fffaf0" stroke="#d7b47e" stroke-dasharray="3 3"/>';continue}
-  for(let L=0;L<4;L++)s+='<rect x="'+x+'" y="'+(y0+12+L*8.5)+'" width="'+w+'" height="8.5" fill="'+(L%2?'#fff1d6':fl.c)+'" pointer-events="none"/>';
-  if(sh||s2)s+='<path d="M'+x+' '+(y0+10)+' h'+w+' v9 q-'+w/4+' 6 -'+w/2+' 0 t-'+w/2+' 0z" fill="'+(sh?PINK:CHOC)+'" pointer-events="none"/>'+(sh&&w>13?berry(x+w/2,y0+8,w>30?1:.8):'');
-  s+='<rect data-i="'+i+'" x="'+x+'" y="'+(y0+6)+'" width="'+w+'" height="42" fill="transparent"/>'}
- s+='<rect x="'+x0+'" y="'+(y0+12)+'" width="'+W+'" height="34" fill="none" stroke="'+fl.k+'" stroke-width="2.5" rx="3" pointer-events="none"/>';
- for(let i=1;i<n;i++)s+='<line x1="'+(x0+i*w)+'" y1="'+(y0+5)+'" x2="'+(x0+i*w)+'" y2="'+(y0+50)+'" stroke="#5e3519" stroke-width="1.6" stroke-dasharray="'+(n>6?'2 2':'none')+'" pointer-events="none"/>';
- return inner?s:'<svg viewBox="0 0 220 56" role="img" aria-label="Kek lapis '+n+' bahagian"><rect x="2" y="47" width="216" height="6" rx="3" fill="#e3cfa8"/>'+s+'</svg>'}
-function barsSVG(m){const tot=m.w+(m.n?1:0),H=50;let s='<svg viewBox="0 0 220 '+(tot*H+4)+'" role="img" aria-label="Kek lapis">';
- for(let b=0;b<tot;b++){const full=b<m.w,k=full?m.d:m.n,set={sh:new Set(range(k)),sh2:new Set(),eat:new Set()};s+=barSVG({n:m.d,fl:m.fl},set,b*H-4,true)}return s+'</svg>'}
+/* CPA: every part is viewed FROM ABOVE, not as layers on a side elevation.
+   Exactly n equal-width cake pieces; state-of-the-game st.sh/sh2/eat stays unchanged.
+   A real cake flavour remains on the rim while the selected parts use pink icing. */
+function barSVG(m,st,y0=0,inner=false){
+ const n=m.n,fl=m.fl||FLS[2],x0=8,W=204,w=W/n,y=y0+6,H=39;
+ const top='<ellipse cx="110" cy="'+(y0+50)+'" rx="109" ry="9" fill="#fff7e7" stroke="#d6bd8c" stroke-width="1.5" pointer-events="none"/>'
+   +'<rect x="'+x0+'" y="'+(y+4)+'" width="'+W+'" height="'+H+'" rx="9" fill="'+fl.k+'" pointer-events="none"/>'
+   +'<rect x="'+x0+'" y="'+y+'" width="'+W+'" height="'+H+'" rx="9" fill="'+fl.c+'" pointer-events="none"/>';
+ let s=top;
+ for(let i=0;i<n;i++){
+  const x=x0+i*w,eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i);
+  const colour=eat?'#e9dccd':sh?'#f27fa2':s2?'#90604a':'#fff2db';
+  s+='<rect x="'+(x+.7)+'" y="'+(y+1.5)+'" width="'+Math.max(0,w-1.4)+'" height="'+(H-3)+'" fill="'+colour+'" pointer-events="none"/>';
+  if(eat){
+   s+='<path d="M'+(x+3)+' '+(y+6)+'l'+Math.max(3,w-6)+' '+(H-12)+'" stroke="#b69e82" stroke-width="1.2" stroke-dasharray="3 3" pointer-events="none"/>';
+  }else if(sh||s2){
+   // Small icing decorations are NOT additional fraction parts.
+   if(w>=17)s+='<path d="M'+(x+3)+' '+(y+9)+'q'+(w/2-3)+' -4 '+(w-6)+' 0" fill="none" stroke="#ffffff" stroke-width="2" opacity=".65" pointer-events="none"/>';
+   if(w>=30)s+=berry(x+w/2,y+H*.59,.85);
+  }else if(w>=17)s+='<path d="M'+(x+4)+' '+(y+9)+'h'+Math.max(2,w-8)+'" fill="none" stroke="#ffffff" stroke-width="2" opacity=".7" pointer-events="none"/>';
+  s+='<rect data-i="'+i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+H+'" fill="transparent"/>';
+ }
+ for(let i=1;i<n;i++)s+='<line x1="'+(x0+i*w)+'" y1="'+(y+2)+'" x2="'+(x0+i*w)+'" y2="'+(y+H-2)+'" stroke="#8a5d40" stroke-width="1.35" pointer-events="none"/>';
+ s+='<rect x="'+x0+'" y="'+y+'" width="'+W+'" height="'+H+'" rx="9" fill="none" stroke="'+fl.k+'" stroke-width="3" pointer-events="none"/>';
+ return inner?s:'<svg viewBox="0 0 220 62" role="img" aria-label="Kek pandangan atas, '+n+' potongan sama besar">'+s+'</svg>';
+}
+function barsSVG(m){
+ const tot=m.w+(m.n?1:0),H=58;
+ let s='<svg viewBox="0 0 220 '+(tot*H+4)+'" role="img" aria-label="Kek-kek dilihat dari atas, setiap kek dibahagi sama besar">';
+ for(let b=0;b<tot;b++){const full=b<m.w,k=full?m.d:m.n,set={sh:new Set(range(k)),sh2:new Set(),eat:new Set()};
+  s+=barSVG({n:m.d,fl:m.fl},set,b*H,true)}
+ return s+'</svg>';
+}
 function bottleSVG(m){const n=m.n,top=28,bot=122,h=(bot-top)/n;let s='<svg viewBox="0 0 70 128" role="img" aria-label="Botol jus"><path d="M26 2h18v12c0 4 13 8 13 18v88c0 4-3 6-6 6H19c-3 0-6-2-6-6V32c0-10 13-14 13-18z" fill="#f4fbff" stroke="#3a6d8f" stroke-width="3"/>';
  for(let i=0;i<m.sh;i++)s+='<rect x="15" y="'+(bot-(i+1)*h)+'" width="40" height="'+h+'" fill="#ffad3b" opacity=".9"/>';
  for(let i=1;i<n;i++)s+='<line x1="15" y1="'+(bot-i*h)+'" x2="'+(i%5?27:33)+'" y2="'+(bot-i*h)+'" stroke="#3a6d8f" stroke-width="1.5"/>';
@@ -744,7 +766,7 @@ const WIDE={bar:1,bars:1,set:1,tray:1,grid:1};
 function visHTML(){const V=q.vis||[];if(!V.length)return '';
  if(q.stackVis)return '<div class="vis"><div class="stack">'+V.map(m=>modelSVG(m,false)).join('')+'</div></div>';
  return '<div class="vis n'+V.length+(q.kind==='shade'||q.kind==='tray'?' live':'')+'">'+V.map((m,i)=>'<div class="m'+(WIDE[m.t]?' wide':'')+(m.t==='bars'?' bars':'')+(m.live?' livebox':'')+'" id="m'+i+'">'+modelSVG(m,!!m.live)+(m.lab?'<b>'+m.lab+'</b>':'')+'</div>').join('')+'</div>'}
-function cakeIcon(fl){return '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="35" rx="17" ry="4" fill="#fff" stroke="#d7b47e" stroke-width="1.5"/><rect x="7" y="17" width="26" height="17" rx="4" fill="'+fl.c+'" stroke="'+fl.k+'" stroke-width="2"/><path d="M7 21v-3c0-3 2-4 4-4h18c2 0 4 1 4 4v3c-2 2-4 0-5 2s-3 2-4 0-3-2-4 0-3 2-4 0-3-2-4 0-4 0-5-2z" fill="'+PINK+'" stroke="'+PINK_K+'" stroke-width="1.5"/>'+berry(20,11,1.4)+'</svg>'}
+function cakeIcon(fl){return '<svg viewBox="0 0 40 40" role="img" aria-label="Kek dilihat dari atas"><ellipse cx="20" cy="23" rx="18" ry="14" fill="#fff6e1" stroke="#d7b47e" stroke-width="1.5"/><circle cx="20" cy="20" r="14" fill="'+fl.k+'"/><circle cx="20" cy="20" r="12" fill="'+fl.c+'"/><circle cx="20" cy="20" r="10" fill="'+PINK+'" stroke="#fff1da" stroke-width="1"/>'+berry(20,18,1.1)+'</svg>'}
 function drawShelf(lit){$('shelf').innerHTML=flOrder.map((fl,i)=>'<span class="slot'+(i<lit?' on':'')+'" id="slot'+i+'">'+cakeIcon(fl)+'</span>').join('')}
 
 /* ---------- panel ---------- */
