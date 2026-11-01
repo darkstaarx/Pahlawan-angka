@@ -443,7 +443,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
-<script src="js/minigame-worked-v1.js?v=1.17.3"></script>
+<script src="js/minigame-worked-v1.js?v=1.17.4"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.2.0"></script>
 <script src="js/minigame-wsay-v1.js?v=1.0.0"></script>
 <script src="js/kedai-kek-router.js"></script>
@@ -537,9 +537,9 @@ const GEN={
    const w1=[...L].sort((x,y)=>y-x).map(x=>fs(x,d)).join(', '),w2=[asc[1],asc[0],asc[2]].map(x=>fs(x,d)).join(', ');return{wk:{t:'order',L,d},kind:'pick',...opts([T,w1,w2],T),
    q:'Susun '+L.map(x=>fs(x,d)).join(', ')+' secara menaik (kecil ke besar).',s:'Penyebut sama. Susun ikut pengangka dari kecil ke besar.',a:'Menaik: '+T+'.'}}}],
  persepuluh:[
-  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'frac',out:'dec'},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:DEC(n/10),
+  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'frac',out:'dec',visual:'cake'},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:DEC(n/10),
    q:'Kek ini menunjukkan '+fs(n,10)+' bahagian berkrim. Tukar '+fs(n,10)+' kepada nombor perpuluhan.',s:'Penyebut 10 menunjukkan nilai persepuluh. Digit pertama selepas titik ialah nilai persepuluh.',a:fs(n,10)+' = 0.'+n+'.'}}},
-  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'frac',out:'dec'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:DEC(n/10),
+  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'frac',out:'dec',visual:'bottle'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:DEC(n/10),
    q:'Botol ini berisi '+fs(n,10)+' daripada kapasiti penuh. Tukarkan '+fs(n,10)+' kepada perpuluhan.',s:'Lihat paras jus untuk semak nilai pecahan. Tukarkan penyebut 10 kepada nilai tempat persepuluh.',a:fs(n,10)+' = 0.'+n+' daripada satu botol penuh.'}}},
   {arch:'decimal_to_fraction',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'dec',out:'frac'},kind:'pad',card:'0.'+n+' = [□/10]',form:FR(n,10),
    q:'Tukar 0.'+n+' kepada pecahan persepuluh.',s:'Digit selepas titik perpuluhan ialah bilangan persepuluh.',a:'0.'+n+' = '+fs(n,10)+'.'}}},
