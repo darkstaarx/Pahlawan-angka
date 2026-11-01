@@ -40,10 +40,12 @@
   // Mathematical schema is more informative than a generic "Operasi" domain.
   if(/^(part_whole|change|compare_more|compare_less|multiplicative|multi_step|word)$/.test(text(facets.schema)))return'word';
   if(facets.format==='word'&&/masalah|cerita|ayat|problem/i.test(tags.join(' ')))return'word';
-  for(const t of [facets.context,q.contextId]){const k=key(t);if(contextMap[k]&&contextMap[k]!=='place')return contextMap[k]}
-  const domain=key(meta.domain);if(contextMap[domain]&&contextMap[domain]!=='place')return contextMap[domain];
+  for(const t of [facets.context,q.contextId]){const k=key(t);if(contextMap[k]&&contextMap[k]!=='place'&&contextMap[k]!=='shape')return contextMap[k]}
+  const domain=key(meta.domain);
   const title=tags.join(' ');
+  // A question about area/perimeter must not be swallowed by the broad Ruang domain.
   if(/luas|perimeter|keliling|area/.test(title))return'area';
+  if(contextMap[domain]&&contextMap[domain]!=='place')return contextMap[domain];
   if(/masalah berayat|soalan berayat|cerita matematik/.test(title))return'word';
   if(/nisbah|kadaran|peratus|percent|ratio/.test(title))return'ratio';
   if(/pecahan|perpuluhan|decimal|fraction/.test(title)||q.fractionTask)return'fraction';
