@@ -146,3 +146,37 @@ test('each of the eleven models opens, supports real touch choice, and reaches t
   assert.equal(q.answer,'DO_NOT_REVEAL_739',family);
  }
 });
+
+test('when genuine operands exist the CPA model reflects the current question, not a dummy calculation',()=>{
+ body.dataset.screen='game';
+ const q={facets:{op:'mul',operands:[4,6]},answer:'24'};
+ const cfg=cpa.config(q,{domain:'Operasi'});
+ assert.equal(cfg.kind,'groups');
+ assert.equal(cfg.actual[0],4);assert.equal(cfg.actual[1],6);
+ cpa.open({question:q,meta:{domain:'Operasi'}});
+ const panel=body.children.find(c=>c.className==='paCpaOverlay');
+ const figure=panel.querySelector('.paCpaFigure');
+ assert.equal(figure.children.length,4);
+ assert.equal(figure.children[0].children.filter(c=>c.className==='paCpaDot').length,6);
+ panel.querySelector('.paCpaNext').onclick();
+ panel.querySelector('.paCpaNext').onclick();
+ assert.equal(panel.querySelector('.paCpaEquation').textContent,'4 × 6 = ___');
+ assert.doesNotMatch(panel.querySelector('.paCpaEquation').textContent,/24/);
+ cpa.close();
+
+ const p={facets:{op:'sub',operands:[42,8]},answer:'34'};
+ assert.equal(cpa.config(p,{domain:'Operasi'}).kind,'place');
+ cpa.open({question:p,meta:{domain:'Operasi'}});
+ const place=body.children.find(c=>c.className==='paCpaOverlay');
+ const columns=place.querySelector('.paCpaFigure').children;
+ assert.equal(columns.length,3);
+ assert.equal(columns[0].children[1].textContent,'0');
+ assert.equal(columns[1].children[1].textContent,'4');
+ assert.equal(columns[2].children[1].textContent,'2');
+ place.querySelector('.paCpaNext').onclick();
+ place.querySelector('.paCpaNext').onclick();
+ assert.equal(place.querySelector('.paCpaEquation').textContent,'42 − 8 = ___');
+ cpa.close();
+ const ungrounded=cpa.config({facets:{op:'mul'}},{domain:'Operasi'});
+ assert.equal(ungrounded.actual,null,'unspecified operands must not be invented');
+});
