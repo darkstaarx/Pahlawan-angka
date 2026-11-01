@@ -781,7 +781,7 @@ function barSVG(m,st,y0=0,inner=false){
   }else{
    // Top of real pandan/vanilla cake: baked crumb highlights, not blank tiles.
    if(w>=14)s+='<path d="M'+(x+Math.min(5,w*.18))+' '+(y+7)+'h'+Math.max(2,w-Math.min(10,w*.36))+'" stroke="#fff8de" stroke-width="2.5" stroke-linecap="round" opacity=".65" pointer-events="none"/>';
-   if(w>=29)s+=cakeCrumb(fl,x+w*.55,y+H*.59,w>40?1.14:.72);
+   if(w>=16)s+=cakeCrumb(fl,x+w*.55,y+H*.59,w>40?1.14:w>=28?.72:.43);
   }
   // Single touch target per mathematically equal part, unaffected by decoration.
   s+='<rect data-i="'+i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+H+'" fill="transparent" aria-label="Bahagian '+(i+1)+' daripada '+n+'"/>';
