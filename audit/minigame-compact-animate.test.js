@@ -9,10 +9,10 @@ const bridge=fs.readFileSync('js/focus-mini-games-live-bridge.js','utf8');
 test('all nine real mini-games load shared compact CSS after question focus, no duplicate',()=>{
  for(const path of files){
   const src=fs.readFileSync(path,'utf8');
-  const compact='css/minigame-compact-play-v1.css?v=1.0.0';
+  const compact='css/minigame-compact-play-v1.css?v=1.0.1';
   assert.equal(src.split(compact).length-1,1,path);
   assert.ok(src.indexOf(compact)>src.indexOf('css/minigame-question-focus-v1.css'),path);
-  assert.match(src,/js\/minigame-worked-v1.js\?v=1.17.1/,path);
+  assert.match(src,/js\/minigame-worked-v1.js\?v=1.17.2/,path);
   assert.match(src,/<meta[^>]+name="viewport"/,path);
  }
 });
