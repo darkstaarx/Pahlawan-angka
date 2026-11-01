@@ -1,0 +1,51 @@
+/* Pahlawan Angka • compact Focus gameplay (all 9 mini-games)
+   Only secondary chrome/scene height changes. No 3D/style changes to art,
+   questions, answer targets, navigation logic, progress or timed prompts.
+   The real question card (minigame-question-focus-v1.css) stays full sized. */
+@media (max-width:719px){
+ :is(.pa-game,.game)>.hud{
+   min-height:46px!important;
+   padding:4px 8px!important;
+   gap:6px!important;
+ }
+ :is(.pa-game,.game)>.hud .title small{display:none!important}
+ :is(.pa-game,.game)>.hud .title b{
+   font-size:clamp(15px,4.3vw,19px)!important;
+   line-height:1.1!important;
+ }
+ :is(.pa-game,.game)>.hud .clock,
+ :is(.pa-game,.game)>.hud .chip{padding:2px 6px 2px 3px!important;gap:5px!important}
+ :is(.pa-game,.game)>.hud .clock b,
+ :is(.pa-game,.game)>.hud .chip b{font-size:11px!important}
+ :is(.pa-game,.game)>.hud .ring,
+ :is(.pa-game,.game)>.hud .dial,
+ :is(.pa-game,.game)>.hud .power{width:27px!important;height:27px!important;min-width:27px!important}
+ :is(.pa-game,.game)>.hud .icon-btn,
+ :is(.pa-game,.game)>.hud .icon{width:32px!important;height:32px!important}
+ :is(.pa-game,.game)>.hud .hud-right{gap:5px!important}
+ /* The scene remains 2.5D and legible, but no longer consumes 1/3 of
+    the smartphone while the child needs to read a question. */
+ :is(.pa-game,.game)>.scene{
+   flex:0 0 clamp(110px,20dvh,158px)!important;
+   min-height:0!important;
+ }
+ /* When Wira is teaching, the board needs the vertical space, not the stall.
+    Keep enough scene to recognise Wira and the active visitor. */
+ :is(.pa-game,.game).wk-on>.scene{
+   flex:0 0 clamp(72px,11dvh,103px)!important;
+   min-height:0!important;
+ }
+ :is(.pa-game,.game).wk-on>.banner{
+   margin-top:5px!important;
+   gap:4px!important;
+ }
+ :is(.pa-game,.game).wk-on>.banner>div:last-child{
+   padding:8px 10px!important;
+ }
+ /* Button bar remains reachable, as already required by question-first CSS. */
+ :is(.pa-game,.game)>.actions{margin-top:5px!important}
+}
+@media(max-height:650px) and (max-width:719px){
+ :is(.pa-game,.game)>.scene{flex-basis:clamp(90px,17dvh,125px)!important}
+ :is(.pa-game,.game).wk-on>.scene{flex-basis:clamp(60px,10dvh,85px)!important}
+}
