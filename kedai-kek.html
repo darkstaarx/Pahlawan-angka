@@ -374,6 +374,15 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 .tiles.kp.dual .tl{min-width:0;min-height:38px;padding:0;font-size:clamp(15px,4vw,18px)}
 .tenth-entry{min-width:154px;max-width:min(100%,265px);font-variant-numeric:tabular-nums}
 .tenth-entry b{overflow-wrap:anywhere;text-align:center}
+/* Perbandingan pecahan: dua kek neutral yang SERUPA, krim yang SERUPA. */
+.compare-wrap{width:100%;display:grid;justify-items:center;gap:7px}
+.compare-wrap>.vis{width:100%}
+.compare-legend{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 17px;padding:6px 10px;background:#fff9ed;border:2px solid #c5a77a;border-radius:12px;color:#543c22;font:900 12px/1.2 var(--f-body,system-ui)}
+.compare-legend span{display:inline-flex;align-items:center;gap:6px}
+.compare-legend i{width:18px;height:18px;border:2px solid #825631;border-radius:5px;display:inline-block;flex:none}
+.compare-legend i.cream{background:repeating-linear-gradient(140deg,#f75e96 0 6px,#fffaf4 6px 8px)}
+.compare-legend i.plain{background:#f3d9ac}
+
 
 .pa-game .scene{--waist:60px;--belt:.62;--aspect:1.09}
 .pa-game .scene .stand{left:calc(var(--ww) * .93)}.pa-game .scene .counter{width:66%}.pa-game .scene .shelf{left:54%;right:4%}
@@ -1004,11 +1013,11 @@ function startRound(){if(served%SET===0){flOrder=shuffle(FLS);drawShelf(0)}
  $('devBtn').hidden=!devToolsEnabled;
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
  $('question').innerHTML=T(q.q);$('subtitle').innerHTML=T(q.sub||(served<2?(q.kind==='pad'&&q.form&&(q.form.type==='int'||q.form.type==='dec'||q.form.type==='tenth')?'Tekan nombor untuk isi jawapan.':SUB[q.kind]):''));
- $('wiraImg').src=A+'wira-baker-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';$('stand').className='stand';$('stand').innerHTML=cakeIcon(q.fl);
+ $('wiraImg').src=A+'wira-baker-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';$('stand').className='stand';$('stand').innerHTML=cakeIcon(q.vis?.some(m=>m.compare)?COMPARE_CAKE:q.fl);
  $('check').textContent='Semak';$('check').disabled=false;$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('hint').classList.remove('wk-offer');workedOffer=false;$('game').classList.remove('wk-on');$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
  setTimeout(()=>{$('who').textContent=q.who;if(misses||hints||q.worked||solved)return;   // the pet speaks once, and not after Wira has
- $('say').textContent='Wira, saya nak kek '+q.fl.n+'! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
+ $('say').textContent=q.vis?.some(m=>m.compare)?'Wira, kek mana yang lebih banyak krim?':'Wira, saya nak kek '+q.fl.n+'! '+SAYS[q.mode];$('bubble').classList.remove('hide');sfx(520,.08)},700);
  renderTrack();buildPanel()}
 let busyT;function busy(){const w=$('wira');w.classList.remove('cheer');clearTimeout(busyT)}
 function burst(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const b=$('burst');b.innerHTML='';const cols=['#ff8fb1','#ffd23f','#9fe0c9','#c3a3ec','#fff'];
