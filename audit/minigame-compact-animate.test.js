@@ -12,7 +12,7 @@ test('all nine real mini-games load shared compact CSS after question focus, no 
   const compact='css/minigame-compact-play-v1.css?v=1.0.1';
   assert.equal(src.split(compact).length-1,1,path);
   assert.ok(src.indexOf(compact)>src.indexOf('css/minigame-question-focus-v1.css'),path);
-  assert.match(src,/js\/minigame-worked-v1.js\?v=1.17.2/,path);
+  assert.match(src,path==='kedai-kek.html'?/js\/minigame-worked-v1.js\?v=1.17.3/:/js\/minigame-worked-v1.js\?v=1.17.2/,path);
   assert.match(src,/<meta[^>]+name="viewport"/,path);
  }
 });
