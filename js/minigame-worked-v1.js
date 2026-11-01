@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.17.2';
+  const VERSION='1.17.3';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -659,6 +659,17 @@
     else if(T==='tenth'){
       // n out of 10 parts: n persepuluh = 0.n = n/10; or the part left out of 10.
       const{n,from='model',out:o='dec'}=spec;if(!I(n)||n<1||n>9)return null;const v=from==='rest'?10-n:n,sv=S(o==='dec'?'0.'+v:v);
+      if(from==='frac'){
+        // Year 2 3.3.1: the pupil is converting an ALREADY GIVEN fraction,
+        // not earning credit for counting a cake one piece at a time.
+        row([{model:{n:10,sh:n}}],false);
+        const r=row([{fr:[n,10]},{t:'='},{v:sv}],false);
+        steps.push(P('Penyebut 10 menunjukkan nilai tempat apa?','persepuluh',['sa','perseratus'],
+          {note:'Persepuluh ialah digit pertama selepas titik perpuluhan.'}));
+        steps.push(P(`Tukar ${FS(n,10)} kepada nombor perpuluhan.`,'0.'+n,
+          ['0.0'+n,'0.'+(n===9?8:n+1),'0.'+(n===1?2:n-1)],
+          {showRow:r,set:set(sv),note:`${FS(n,10)} dan 0.${n} menunjukkan nilai yang sama.`}));
+      }
       if(from==='model'){row([{model:{n:10,sh:n}}],false);steps.push(P('Kira bahagian berkrim daripada 10.',n,[n+1,n-1,10-n],{note:`${n} persepuluh.`},{glow:'sh'}))}
       if(from==='rest'){row([{model:{n:10,eat:n}}],false);steps.push(P(`Satu kek = 10 persepuluh. Dimakan ${n}. 10 − ${n} = ?`,v,[v+1,v-1,n],{note:`${v} persepuluh tinggal.`},{glow:'left'}))}
       const r=row(o==='dec'?[{v:sv}]:[{fr:[sv,10]}],from==='dec');
