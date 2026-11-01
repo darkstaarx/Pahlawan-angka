@@ -72,3 +72,17 @@ test('visual animation leaves the fraction answer/telemetry and scoring handlers
  assert.match(cake,/paAttempt\(true\)/);
  assert.match(cake,/shadeSet\.size===q\.need\.k/);
 });
+
+test('active fraction question-mark target is white, thick red, visibly pulsing',()=>{
+ const cake=fs.readFileSync('kedai-kek.html','utf8');
+ assert.match(css,/\.wk-card \.wk-frac \.wk-c\.wk-next/);
+ assert.match(css,/background:#fffdf8!important/);
+ assert.match(css,/border:4px solid #dd3159!important/);
+ assert.match(css,/min-width:clamp\(53px,14vw,70px\)/);
+ assert.match(css,/content:'\?'!important/);
+ assert.match(css,/@keyframes paWkAnswerRing/);
+ assert.match(css,/inset:-10px/);
+ assert.match(css,/animation:paWkAnswerRing 1\.45s ease-in-out infinite/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(cake,/class="compare-legend"/);
+});
