@@ -517,7 +517,7 @@ const GEN={
   {arch:'missing_part',f:C=>{const d=R(4,10),n=R(1,d-2);return{wk:{t:'read',d,sh:n+1,label:'berkrim sekarang'},kind:'pad',vis:[{t:'round',n:d,sh:n,fl:C.fl}],form:FR(n+1,d),
    q:'Jika satu lagi bahagian diberi krim, apakah pecahan baharu?',s:'Penyebut tidak berubah. Tambah 1 pada pengangka.',a:fs(n,d)+' + 1 bahagian = '+fs(n+1,d)+'.'}}}],
  banding:[
-  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);return{wk:{t:'cmp',a,b,d,names:['Kek A','Kek B']},kind:'pick',vis:[{t:'round',n:d,sh:a,fl:C.fl,lab:'KEK A'},{t:'round',n:d,sh:b,fl:C.fl2,lab:'KEK B'}],
+  {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);return{wk:{t:'cmp',a,b,d,names:['Kek A','Kek B']},kind:'pick',vis:[{t:'round',n:d,sh:a,fl:COMPARE_CAKE,compare:1,lab:'KEK A'},{t:'round',n:d,sh:b,fl:COMPARE_CAKE,compare:1,lab:'KEK B'}],
    opts:[{id:'A',label:'Kek A'},{id:'B',label:'Kek B'}],correct:a>b?'A':'B',ansTxt:a>b?'Kek A':'Kek B',
    q:'Kek manakah lebih banyak krim?',s:'Kedua-dua kek dipotong sama banyak. Banding bilangan bahagian berkrim.',a:'A = '+fs(a,d)+', B = '+fs(b,d)+'.'}}},
   {arch:'compare_model',f:C=>{const d=R(3,10);let a,b;do{a=R(1,d-1);b=R(1,d-1)}while(a===b);const big=Math.random()<.5,c=big?Math.max(a,b):Math.min(a,b);return{wk:{t:'cmp',a,b,d,big},kind:'pick',...opts([fs(a,d),fs(b,d)],fs(c,d)),
@@ -679,6 +679,9 @@ const devToolsEnabled=window.PAMiniGameDev?.enabled()===true;
 const pets=[{id:'durian-kerbau',who:'Keryan'},{id:'ketupat-kura',who:'Kukupat'},{id:'arnab-kek-lapis',who:'Bunnis'},{id:'harimau-bunga',who:'Riya'},{id:'kumbang-manggis',who:'Kumbis'}];
 const FLS=[{n:'coklat',c:'#9a5634',k:'#5e2f17'},{n:'pandan',c:'#8fd16a',k:'#4f8f35'},{n:'vanila',c:'#f6d28b',k:'#c9963f'},{n:'keladi',c:'#c3a3ec',k:'#8059b8'},{n:'oren',c:'#ffb760',k:'#d0782a'}];
 const PINK='#ff8fb1',PINK_K='#d24f7c',CHOC='#7a4426';
+/* In comparison rounds, only the AMOUNT of cream may differ.
+   Same neutral cake base, same frosting tone and same plate on A and B. */
+const COMPARE_CAKE=Object.freeze({n:'vanila',c:'#f3d9ac',k:'#a37142'});
 /* [3/4] → pecahan bertindan; [1 2/3] → nombor bercampur */
 const T=s=>String(s==null?'':s).replace(/\[([\d?□]+) ([\d?□]+)\/([\d?□]+)\]|\[([\d?□]+)\/([\d?□]+)\]/g,(m,w,n,d,n2,d2)=>(w?'<span class="mxw">'+w+'</span>':'')+'<span class="fr"><i>'+(w?n:n2)+'</i><i>'+(w?d:d2)+'</i></span>');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -731,7 +734,8 @@ function cakeFlavourMark(fl,x,y,z=1){
 }
 function cakeCrumb(fl,x,y,z=1){const a=cakeLook(fl);return '<g pointer-events="none" opacity=".78" transform="translate('+x+' '+y+') scale('+z+')"><circle cx="-4" cy="1" r="1.4" fill="'+a.dark+'" opacity=".33"/><circle cx="4" cy="-2" r="1.5" fill="'+a.light+'"/><path d="M-1 -4l2 1" stroke="#fff9eb" stroke-width="1.4" stroke-linecap="round"/></g>'}
 function roundSVG(m,st){
- const n=m.n,R=43,fl=m.fl||FLS[2],a=cakeLook(fl);
+ const compare=!!m.compare;
+ const n=m.n,R=43,fl=compare?COMPARE_CAKE:(m.fl||FLS[2]),a=cakeLook(fl);
  let s='<svg viewBox="-4 -4 108 108" role="img" aria-label="Kek dilihat dari atas, '+n+' potongan sama besar">'
   +'<ellipse cx="50" cy="61" rx="51" ry="44" fill="#a58052" opacity=".23" pointer-events="none"/>'
   +'<ellipse cx="50" cy="56" rx="51" ry="46" fill="#fff7e4" stroke="#d7b47e" stroke-width="2" pointer-events="none"/>'
@@ -741,11 +745,19 @@ function roundSVG(m,st){
  for(let i=0;i<n;i++){
   const p=-Math.PI/2+i*2*Math.PI/n,q=p+2*Math.PI/n,am=(p+q)/2;
   const eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i);
-  const fill=eat?'#fffaf0':sh?PINK:s2?CHOC:fl.c;
+  const fill=eat?'#fffaf0':sh?(compare?'#f75e96':PINK):s2?CHOC:fl.c;
   const d=n===1?'M50 '+(50-R)+' A'+R+' '+R+' 0 1 1 49.99 '+(50-R)+'Z':'M50 50 L'+P2(R,p).join(' ')+' A'+R+' '+R+' 0 '+(q-p>Math.PI?1:0)+' 1 '+P2(R,q).join(' ')+'Z';
-  s+='<path d="'+d+'" data-i="'+i+'" aria-label="Bahagian '+(i+1)+' daripada '+n+'" fill="'+fill+'" stroke="'+(eat?'#d7b47e':a.dark)+'" stroke-width="'+(n>10?.75:1.25)+'"'+(eat?' stroke-dasharray="3 3"':'')+'/>';
+  s+='<path d="'+d+'" data-i="'+i+'" aria-label="Bahagian '+(i+1)+' daripada '+n+(compare?(sh?', berkrim':', tanpa krim'):'')+'" fill="'+fill+'" stroke="'+(eat?'#d7b47e':a.dark)+'" stroke-width="'+(n>10?.75:1.25)+'"'+(eat?' stroke-dasharray="3 3"':'')+'/>';
   const pos=P2(R*.63,am),x=+pos[0],y=+pos[1];
   if(eat)continue;
+  if(compare){
+   // No differently coloured toppings or crumbs: the ONLY contrast is cream.
+   if(sh){
+    s+='<path d="M'+(x-7)+' '+(y-4)+'Q'+(x-1)+' '+(y-9)+' '+(x+6)+' '+(y-4)+' M'+(x-6)+' '+(y+2)+'Q'+x+' '+(y-3)+' '+(x+7)+' '+(y+3)+'" fill="none" stroke="#fffdf8" stroke-width="'+(n>6?2:3.3)+'" stroke-linecap="round" pointer-events="none"/>';
+    if(n<=6)s+='<circle cx="'+x+'" cy="'+(y+5)+'" r="2.3" fill="#fff8f2" pointer-events="none"/>';
+   }
+   continue;
+  }
   if(sh||s2){
    if(n<=10)s+='<path d="M'+(x-6)+' '+(y-3)+'Q'+x+' '+(y-8)+' '+(x+6)+' '+(y-3)+' M'+(x-6)+' '+(y+2)+'Q'+x+' '+(y-3)+' '+(x+6)+' '+(y+2)+'" fill="none" stroke="#fff7ef" stroke-width="'+(n>6?1.7:2.7)+'" stroke-linecap="round" pointer-events="none"/>';
    s+=cakeFlavourMark(fl,x,y,n>10?.45:n>6?.72:1.08);
@@ -831,7 +843,8 @@ function modelSVG(m,live){const st=stateOf(m,live);if(live&&q.cut)m={...m,n:cutN
 const WIDE={bar:1,bars:1,set:1,tray:1,grid:1};
 function visHTML(){const V=q.vis||[];if(!V.length)return '';
  if(q.stackVis)return '<div class="vis"><div class="stack">'+V.map(m=>modelSVG(m,false)).join('')+'</div></div>';
- return '<div class="vis n'+V.length+(q.kind==='shade'||q.kind==='tray'?' live':'')+'">'+V.map((m,i)=>'<div class="m'+(WIDE[m.t]?' wide':'')+(m.t==='bars'?' bars':'')+(m.live?' livebox':'')+'" id="m'+i+'">'+modelSVG(m,!!m.live)+(m.lab?'<b>'+m.lab+'</b>':'')+'</div>').join('')+'</div>'}
+ const cakes='<div class="vis n'+V.length+(q.kind==='shade'||q.kind==='tray'?' live':'')+'">'+V.map((m,i)=>'<div class="m'+(WIDE[m.t]?' wide':'')+(m.t==='bars'?' bars':'')+(m.live?' livebox':'')+'" id="m'+i+'">'+modelSVG(m,!!m.live)+(m.lab?'<b>'+m.lab+'</b>':'')+'</div>').join('')+'</div>';
+ return V.length===2&&V.every(m=>m.compare)?'<div class="compare-wrap">'+cakes+'<div class="compare-legend" aria-label="Petunjuk warna krim"><span><i class="cream" aria-hidden="true"></i>Berkrim</span><span><i class="plain" aria-hidden="true"></i>Tanpa krim</span></div></div>':cakes}
 function cakeIcon(fl){const a=cakeLook(fl);return '<svg viewBox="0 0 40 40" role="img" aria-label="Kek '+fl.n+' hiasan kedai, pandangan sisi">'
  +'<ellipse cx="20" cy="35" rx="17" ry="4" fill="#fff7e8" stroke="#d7b47e" stroke-width="1.5" pointer-events="none"/>'
  +'<rect x="7" y="17" width="26" height="17" rx="4" fill="'+fl.c+'" stroke="'+fl.k+'" stroke-width="2"/>'
