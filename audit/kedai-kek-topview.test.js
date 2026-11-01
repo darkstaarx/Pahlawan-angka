@@ -132,7 +132,7 @@ test('all five flavours render as the same 2.5D family, not flat cake recolours'
  assert.equal(round.size,5,'every flavour has unique art');
  assert.equal(bar.size,5,'every flavour has unique cake colouring and decorations');
  assert.equal(shelf.size,5,'every flavour has a distinct bakery decoration');
- assert.equal((source.match(/flOrder=shuffle\(FLS\)/g)||[]).length,1,'the five flavours still rotate normally');
+ assert.ok((source.match(/flOrder=shuffle\(FLS\)/g)||[]).length>=2,'flavours rotate on both a new day and mode reset');
 });
 
 test('visual-only flavour details cannot create new answer targets',()=>{
