@@ -1,0 +1,148 @@
+/* Pahlawan Angka: shared question hierarchy for the nine Focus mini-games.
+   Keep each 2.5D scene, palette and answer mechanics intact. Change only the
+   question banner: compact metadata above a high-contrast parchment prompt.
+   Do not truncate question or instruction text, even on small viewports. */
+:is(.pa-game,.game)>.banner{
+  --pa-q-bg:var(--cream,var(--paper,#fffaf0));
+  --pa-q-ink:var(--ink,#163452);
+  --pa-q-border:var(--gold-dk,var(--wood-dk,#85592a));
+  --pa-q-accent:var(--gold,#ffc94a);
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  align-items:stretch!important;
+  justify-items:stretch;
+  gap:6px!important;
+  padding:8px!important;
+  margin:11px 10px 3px!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible;
+  isolation:isolate;
+}
+/* Mode/tier are secondary metadata, never superimposed over the question. */
+:is(.pa-game,.game)>.banner>.tag{
+  position:absolute!important;
+  top:8px!important;
+  right:8px!important;
+  left:auto!important;
+  max-width:55%;
+  min-height:23px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  white-space:normal;
+  text-align:center;
+  padding:3px 8px!important;
+  line-height:1.12!important;
+  font-size:clamp(9px,2.7vw,11px)!important;
+  box-sizing:border-box;
+  z-index:1;
+}
+:is(.pa-game,.game)>.banner>.disc{
+  grid-column:1;
+  grid-row:1;
+  justify-self:start;
+  align-self:center;
+  display:flex!important;
+  flex-flow:row wrap!important;
+  align-items:center;
+  gap:4px 7px!important;
+  width:auto!important;
+  max-width:calc(100% - 140px);
+  min-height:25px;
+  padding:3px 7px!important;
+  margin:0!important;
+  box-sizing:border-box;
+  border-radius:9px!important;
+}
+:is(.pa-game,.game)>.banner>.disc>b{
+  font-size:10.5px!important;
+  line-height:1.1!important;
+  letter-spacing:.02em!important;
+}
+:is(.pa-game,.game)>.banner>.disc .dots{flex-flow:row nowrap;align-items:center;gap:3px}
+/* Full-width question surface: cream keeps ink contrast consistent in
+   pink bakery, wooden workshop, and deep-navy construction scenes. */
+:is(.pa-game,.game)>.banner>div:last-child{
+  grid-column:1;
+  grid-row:2;
+  display:block;
+  min-width:0;
+  width:100%;
+  margin:0;
+  padding:12px 12px 11px;
+  border-radius:11px;
+  border:2px solid var(--pa-q-border);
+  border-left:5px solid var(--pa-q-border);
+  background:linear-gradient(170deg,#fffdf4 0%,var(--pa-q-bg) 65%,#f3e7ce 100%);
+  color:var(--pa-q-ink);
+  text-align:left;
+  box-shadow:inset 0 1px 0 #fff,0 2px 0 #00000013;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+:is(.pa-game,.game)>.banner>div:last-child> :is(#question,#bTitle,.q){
+  display:block!important;
+  color:var(--pa-q-ink)!important;
+  font-family:var(--f-display,system-ui,sans-serif)!important;
+  font-size:clamp(19px,5.4vw,25px)!important;
+  line-height:1.32!important;
+  font-weight:800!important;
+  text-wrap:pretty;
+  letter-spacing:0!important;
+  text-shadow:none!important;
+  margin:0!important;
+  opacity:1!important;
+  overflow:visible!important;
+}
+:is(.pa-game,.game)>.banner>div:last-child> :is(#subtitle,#bText,.sub){
+  display:block!important;
+  font-family:var(--f-body,system-ui,sans-serif)!important;
+  color:#544733!important;
+  font-size:clamp(12.5px,3.6vw,15px)!important;
+  line-height:1.37!important;
+  font-weight:800!important;
+  margin:5px 0 0!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+:is(.pa-game,.game)>.banner>div:last-child> :is(#subtitle,#bText,.sub):empty{
+  display:none!important;
+}
+/* Gerai Wirayung's #bTitle names a step; #bText contains the real task.
+   The step stays subordinate instead of being mistaken for the question. */
+.pa-game>.banner #bTitle{
+  font-size:clamp(13px,3.6vw,17px)!important;
+  color:#6e4b28!important;
+  letter-spacing:.02em!important;
+}
+.pa-game>.banner #bText{
+  font-size:clamp(17px,4.9vw,23px)!important;
+  line-height:1.35!important;
+  color:var(--pa-q-ink)!important;
+  margin-top:5px!important;
+}
+/* Stacked math fractions inherit the question's readable size.
+   Old short-height overrides must not turn them into tiny superscripts. */
+:is(.pa-game,.game)>.banner #question .fr{
+  font-size:.94em!important;
+  color:inherit!important;
+  vertical-align:middle;
+  margin:0 3px!important;
+}
+:is(.pa-game,.game)>.banner #question .fr i{font-size:.82em!important}
+/* Acknowledge compact phone heights by tightening decoration, not text.
+   The mini-game itself scrolls; the action row remains sticky. */
+@media(max-height:700px){
+ :is(.pa-game,.game)>.banner{gap:5px!important;margin:8px 9px 2px!important;padding:6px!important}
+ :is(.pa-game,.game)>.banner>div:last-child{padding:9px 10px 8px}
+ :is(.pa-game,.game)>.banner>div:last-child> :is(#question,#bTitle,.q){font-size:clamp(18px,5vw,23px)!important;line-height:1.3!important}
+ .pa-game>.banner #bTitle{font-size:14px!important}
+ .pa-game>.banner #bText{font-size:clamp(16px,4.6vw,21px)!important}
+}
+@media(max-width:350px){
+ :is(.pa-game,.game)>.banner>.disc{max-width:calc(100% - 125px)}
+ :is(.pa-game,.game)>.banner>.tag{max-width:57%;padding:3px 5px!important}
+ :is(.pa-game,.game)>.banner>div:last-child{padding:9px 9px 8px}
+}
