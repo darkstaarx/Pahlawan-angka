@@ -9,6 +9,20 @@ Every mini-game that supports Kemahiran Fokus must meet these release requiremen
 5. **Record evidence and show it to parents:** Save question-level attempts, correctness, first errors, clue use, and relevant skill/archetype metadata through the learner-review/backend path. Make that evidence available in the Ibu Bapa Ringkasan report; test the full path from game answer to report.
 6. **Evidence-based focus and progress:** The router and report may identify a specific weakness (for example, bahagi nombor besar) and later say it is improving only when there is enough independent evidence across distinct questions. Never present stars, one session, or clue-assisted success as mastery or as proof that the mini-game caused improvement.
 
+## Question readability (9 Focus mini-games; 1 Nov 2026)
+
+The **question is the primary element**. Use the shared `css/minigame-question-focus-v1.css`, loaded after local question-first styles:
+
+- Put compact mode/progress on the first row, and the actual question on a **full-width cream parchment card** beneath it. No tier badge may overlap the text.
+- At least **18–19 px question text even on short phones**; dark navy/brown ink on light parchment, not small white letters on a saturated pink banner.
+- Instructions stay visible when nonempty; do not use the old height-based `display:none` rule, line clamp or ellipsis. Scrolling is preferable to removing the question.
+- Gerai Wirayung differs: `#bTitle` is a step label; `#bText` is the actual user task, so emphasize `#bText`.
+- Every standalone mini-game requires `<!doctype html>`, `lang="ms"`, and `<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">`. Without viewport metadata mobile browsers may render the entire game at a desktop layout width and scale it down.
+- Keep existing themes/2.5D illustrations, `#question`/subtitle DOM, question builders, input engine, `Tanya Wira`, `Semak`, scoring and diagnostic evidence untouched. Do not fix text contrast by recoloring the entire mini-game.
+- Check at **320×568, 360×640, 390×844** and landscape. Confirm no text overlap, no page-level horizontal scroll, and the action buttons stay reachable. Static checks are not a substitute for a real mobile screenshot.
+
+Regression: `audit/minigame-question-focus.test.js`.
+
 ## DEV-only controls
 
 Grade/mode selectors, router simulations, and question-bank controls are hidden from normal play. They may appear only when the owning Pahlawan Angka app's `isDevMode()` is true, or in the local app after its existing DEV unlock is set. Query-string flags alone must never expose them on the public game URL. Player launch goes through Kemahiran Fokus, which supplies the profile grade and selected skill tag.
