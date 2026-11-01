@@ -3565,6 +3565,7 @@
        sendiri — itulah sebabnya "Ayat matematik <b>10 − 19</b>. Cerita..."
        terpapar sebagai tiga baris dengan noktah terpisah. Satu pembalut
        menjadikan grid itu berisi satu item, jadi teks mengalir seperti biasa. */
+    window.PACPA?.close?.();
     $('segelQuestion').innerHTML='<div class="segelPrompt"></div>';
     const promptNode=$('segelQuestion').firstChild,writtenMarkup=window.PAWrittenArithmetic?.render?.(q,run);
     promptNode.innerHTML=writtenMarkup||q.prompt;
@@ -4263,11 +4264,15 @@
       if(run.production){
         run.usedHint=true;btn.disabled=true;btn.classList.add('used');
         $('segelFeedback').textContent=window.PAProductionJourney?.hint?.()||'Baca semula soalan perlahan-lahan.';
-        [...$('segelAnswers').children].forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});setTypedRetryEnabled();return;
+        [...$('segelAnswers').children].forEach(x=>{if(!x.classList.contains('no'))x.disabled=false});setTypedRetryEnabled();
+        window.PACPA?.open?.({question:run.q,meta:(typeof META!=='undefined'&&run.q.skill)?META[run.q.skill]:{},
+          hint:run.q.hint||'',returnFocus:btn});return;
       }
       run.usedHint=true;
       btn.disabled=true; btn.classList.add('used');
       $('segelFeedback').textContent=run.q.hint||'Baca semula soalan perlahan-lahan.';
+      window.PACPA?.open?.({question:run.q,meta:(typeof META!=='undefined'&&run.q.skill)?META[run.q.skill]:{},
+        hint:run.q.hint||'',returnFocus:btn});
       if(typeof playSfx==='function')try{playSfx('ui')}catch(_){}
     };
   }
