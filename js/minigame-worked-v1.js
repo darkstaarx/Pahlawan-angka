@@ -669,6 +669,7 @@
         steps.push(P(`Tukar ${FS(n,10)} kepada nombor perpuluhan.`,'0.'+n,
           ['0.0'+n,'0.'+(n===9?8:n+1),'0.'+(n===1?2:n-1)],
           {showRow:r,set:set(sv),note:`${FS(n,10)} dan 0.${n} menunjukkan nilai yang sama.`}));
+        out={N:n,D:10,text:'0.'+n,exact:false};
       }else{
       if(from==='model'){row([{model:{n:10,sh:n}}],false);steps.push(P('Kira bahagian berkrim daripada 10.',n,[n+1,n-1,10-n],{note:`${n} persepuluh.`},{glow:'sh'}))}
       if(from==='rest'){row([{model:{n:10,eat:n}}],false);steps.push(P(`Satu kek = 10 persepuluh. Dimakan ${n}. 10 − ${n} = ?`,v,[v+1,v-1,n],{note:`${v} persepuluh tinggal.`},{glow:'left'}))}
