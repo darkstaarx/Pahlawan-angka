@@ -898,6 +898,9 @@
         const pieces=[...model.querySelectorAll('i')];
         model.onclick=null;
         model.onkeydown=null;
+        model.setAttribute('role','img');
+        model.removeAttribute('tabindex');
+        model.removeAttribute('title');
         model.classList.remove('wk-exploded','wk-count-active');
         model.removeAttribute('data-count');
         pieces.forEach(piece=>{
