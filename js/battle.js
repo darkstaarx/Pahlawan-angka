@@ -376,6 +376,11 @@ function resolveAnswer(o,btn,question,ok){
 }
 function closeHintOverlay(){const overlay=document.getElementById('paHintOverlay');if(overlay){overlay.classList.remove('show');battleLater(()=>overlay.remove(),180)}}
 function showHintOverlay(help){
+ // Use the shared CPA scaffold when the real question has a supported topic.
+ // This is teaching only; the existing hint() owns counters and mastery flags.
+ if(window.PACPA?.open?.({question:sess?.q,
+    meta:(typeof META!=='undefined'&&sess?.q)?META[sess.q.skill]:{},
+    hint:help,returnFocus:document.querySelector('.hintBtn')}))return;
  let overlay=document.getElementById('paHintOverlay');if(!overlay){overlay=document.createElement('div');overlay.id='paHintOverlay';overlay.className='paHintOverlay';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','paHintTitle');document.body.appendChild(overlay)}
  const retryCopy=window.PAGameQuestionInteractions?.retryCopy?.(sess?.q)||'Sekarang cuba pilih jawapan sekali lagi.';
  overlay.innerHTML='<section class="paHintPanel"><div class="paHintMark" aria-hidden="true">✦</div><small>PETUNJUK CIKGU DIMENSI</small><h2 id="paHintTitle"></h2><p></p><button type="button" onclick="closeHintOverlay()">Faham, saya cuba</button></section>';
