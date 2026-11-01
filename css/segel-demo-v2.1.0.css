@@ -875,3 +875,40 @@ body[data-screen="segelDemo"] .appHeader{display:none}
   #segelDemo .resultCrest .resultStars i.on::after{animation:none}
   #segelDemo .resultCrest .resultBanner::after,#segelDemo .resultCrest .resultStars i.on::after{display:none}
 }
+
+/* Segel Emas: on-screen number pad only for typed fraction/decimal questions.
+   Compact enough to leave the battle question and feedback visible on phones. */
+#segelDemo #segelAnswers .paSegelKeypadForm{
+  width:100%;display:grid;gap:7px;min-width:0;margin:0;padding:5px 4px 7px
+}
+#segelDemo #segelAnswers .paSegelKeypadForm .paTypedLabel{display:block;font-size:12px;line-height:1.2}
+#segelDemo #segelAnswers .paSegelKeypadForm .paTypedRow{
+  display:grid;grid-template-columns:minmax(0,1fr) 94px;gap:7px;align-items:stretch
+}
+#segelDemo #segelAnswers .paSegelKeypadForm .paTypedInput{
+  min-width:0;width:100%;height:45px;border-radius:11px;font-size:21px;text-align:center;
+  background:#fffdf5;color:#142f4e
+}
+#segelDemo #segelAnswers .paSegelKeypadForm .paTypedSubmit{min-width:0;height:45px;border-radius:11px;padding:0 7px;font-size:15px}
+#segelDemo #segelAnswers .paSegelKeypadForm .paTypedNote{
+  color:#dce5f5;font-size:11px;line-height:1.22;min-height:0;text-align:center
+}
+#segelDemo #segelAnswers .paSegelKeypad{
+  width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px
+}
+#segelDemo #segelAnswers .paSegelKeypad .paSegelKey{
+  min-width:0;min-height:34px;padding:3px 0;touch-action:manipulation;
+  background:#fef7e7;border:2px solid #a88e5b;border-radius:9px;
+  color:#16304e;font-size:19px;font-weight:900;box-shadow:0 2px 0 #6c5332
+}
+#segelDemo #segelAnswers .paSegelKeypad .paSegelKey:active{transform:translateY(2px);box-shadow:none}
+#segelDemo #segelAnswers .paSegelKeypad .paSegelKey:focus-visible{outline:3px solid #5fcdf5;outline-offset:1px}
+#segelDemo #segelAnswers .paSegelKeypad .paSegelKey:disabled{opacity:.5}
+@media (orientation:portrait) and (max-height:680px){
+  #segelDemo #segelAnswers .paSegelKeypadForm{gap:4px;padding:2px}
+  #segelDemo #segelAnswers .paSegelKeypad{gap:3px}
+  #segelDemo #segelAnswers .paSegelKeypad .paSegelKey{min-height:29px;font-size:17px}
+  #segelDemo #segelAnswers .paSegelKeypadForm .paTypedRow{grid-template-columns:minmax(0,1fr) 82px}
+  #segelDemo #segelAnswers .paSegelKeypadForm .paTypedInput,
+  #segelDemo #segelAnswers .paSegelKeypadForm .paTypedSubmit{height:40px}
+}
