@@ -362,6 +362,15 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 <link rel="stylesheet" href="css/minigame-question-first-v1.css?v=1.2.0">
 <link rel="stylesheet" href="css/minigame-worked-v1.css?v=1.19.0">
 <style>/* Question first: waist-up Wira and props for this scene (css/minigame-question-first-v1.css). */
+/* Static gold highlight in guided fraction steps, not a subtle red pulse. */
+.wk-c.wk-next,.wk-box.wk-next{background:#fff4cf!important;border:3px solid #8a601a!important;box-shadow:0 0 0 3px #f1cc67!important;animation:none!important;transform:none!important}
+.wk-c.wk-next:empty::after,.wk-box.wk-next:empty::after{color:#653f0c!important}
+.wk-pickhere .wk-t:not([disabled]){animation:none!important;box-shadow:0 4px 0 var(--ink),0 0 0 2px #cf9e38!important}
+.tiles.kp.dual{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.tiles.kp.dual .tl{min-width:0;min-height:38px;padding:0;font-size:clamp(15px,4vw,18px)}
+.tenth-entry{min-width:154px;max-width:min(100%,265px);font-variant-numeric:tabular-nums}
+.tenth-entry b{overflow-wrap:anywhere;text-align:center}
+
 .pa-game .scene{--waist:60px;--belt:.62;--aspect:1.09}
 .pa-game .scene .stand{left:calc(var(--ww) * .93)}.pa-game .scene .counter{width:66%}.pa-game .scene .shelf{left:54%;right:4%}
 .pa-game .scene .bubble{top:8px}.pa-game .scene .shopsign{left:4%;transform:rotate(-1.5deg)}</style>
@@ -442,6 +451,7 @@ const MX=(N,D,o)=>({type:'mixed',N,D,simp:true,...(o||{})});
 const IMP=(N,D)=>({type:'improper',N,D});
 const INT=(v,unit)=>({type:'int',v,unit});
 const DEC=(v,unit)=>({type:'dec',v,unit});
+const TENTH=n=>({type:'tenth',n,d:10,v:n/10});
 function opts(list,correct,max=3){const c=String(correct),L=[...new Set(list.map(String))].filter(x=>x!==c),T=shuffle([c,...shuffle(L).slice(0,max-1)]);return{opts:T.map((l,i)=>({id:'o'+i,label:l})),correct:'o'+T.indexOf(c)}}
 const fv=(N,D)=>{const a=fs(N,D),b=vs(N,D);return a===b?a:a+' = '+b};
 const NAMES={'1/2':['satu perdua','setengah','separuh'],'1/4':['satu perempat','suku'],'2/4':['dua perempat'],'3/4':['tiga perempat']};
@@ -512,14 +522,14 @@ const GEN={
    const w1=[...L].sort((x,y)=>y-x).map(x=>fs(x,d)).join(', '),w2=[asc[1],asc[0],asc[2]].map(x=>fs(x,d)).join(', ');return{wk:{t:'order',L,d},kind:'pick',...opts([T,w1,w2],T),
    q:'Susun '+L.map(x=>fs(x,d)).join(', ')+' secara menaik (kecil ke besar).',s:'Penyebut sama. Susun ikut pengangka dari kecil ke besar.',a:'Menaik: '+T+'.'}}}],
  persepuluh:[
-  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:DEC(n/10),
-   q:'Kek lapis dipotong 10 sama besar. Tulis bahagian berkrim dalam perpuluhan.',s:'1 daripada 10 bahagian = 0.1.',a:n+' persepuluh = 0.'+n+'.'}}},
-  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'read',d:10,sh:n,label:'berisi jus'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:FR(n,10),
-   q:'Jus oren memenuhi '+n+' daripada 10 bahagian botol. Apakah pecahan botol yang berisi jus?',s:'Botol ada 10 bahagian sama besar. Kira bahagian berisi jus.',a:n+' daripada 10 = '+fs(n,10)+'.'}}},
+  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:TENTH(n),
+   q:'Kek lapis dipotong 10 sama besar. Tulis bahagian berkrim sebagai pecahan atau perpuluhan.',s:'1 daripada 10 bahagian = 1/10 = 0.1.',a:n+' persepuluh = '+fs(n,10)+' = 0.'+n+'.'}}},
+  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'read',d:10,sh:n,label:'berisi jus'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:TENTH(n),
+   q:'Jus oren memenuhi '+n+' daripada 10 bahagian botol. Tulis bahagian berisi jus sebagai pecahan atau perpuluhan.',s:'Botol ada 10 bahagian sama besar. Kira bahagian berisi jus.',a:n+' daripada 10 = '+fs(n,10)+' = 0.'+n+'.'}}},
   {arch:'decimal_to_fraction',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'dec',out:'frac'},kind:'pad',card:'0.'+n+' = [□/10]',form:FR(n,10),
    q:'Tukar 0.'+n+' kepada pecahan persepuluh.',s:'Digit selepas titik perpuluhan ialah bilangan persepuluh.',a:'0.'+n+' = '+fs(n,10)+'.'}}},
-  {arch:'remaining_part',f:C=>{const n=R(1,9),dec=Math.random()<.5;return{wk:{t:'tenth',n,from:'rest',out:dec?'dec':'frac'},kind:'pad',vis:[{t:'bar',n:10,eat:range(n),fl:C.fl}],form:dec?DEC((10-n)/10):FR(10-n,10),
-   q:C.who+' makan '+(dec?'0.'+n:fs(n,10))+' kek lapis. Apakah '+(dec?'perpuluhan':'pecahan')+' kek yang tinggal?',s:'Satu kek penuh = 10 persepuluh. Tolak bahagian yang dimakan.',a:'10 − '+n+' = '+(10-n)+' persepuluh = '+(dec?'0.'+(10-n):fs(10-n,10))+'.'}}},
+  {arch:'remaining_part',f:C=>{const n=R(1,9),dec=Math.random()<.5;return{wk:{t:'tenth',n,from:'rest',out:dec?'dec':'frac'},kind:'pad',vis:[{t:'bar',n:10,eat:range(n),fl:C.fl}],form:TENTH(10-n),
+   q:C.who+' makan '+(dec?'0.'+n:fs(n,10))+' kek lapis. Berapa bahagian yang tinggal? Jawab sebagai pecahan atau perpuluhan.',s:'Satu kek penuh = 10 persepuluh. Tolak bahagian yang dimakan.',a:'10 − '+n+' = '+(10-n)+' persepuluh = '+fs(10-n,10)+' = 0.'+(10-n)+'.'}}},
   {arch:'mixed_compare',f:C=>{let a,b;do{a=R(1,9);b=R(1,9)}while(a===b);const c=a>b?fs(a,10):'0.'+b;return{wk:{t:'tenthCmp',a,b},kind:'pick',...opts([fs(a,10),'0.'+b],c),
    q:'Yang manakah lebih besar: '+fs(a,10)+' atau 0.'+b+'?',s:'Tukar kedua-duanya kepada persepuluh, kemudian banding.',a:fs(a,10)+' = 0.'+a+'. Banding 0.'+a+' dengan 0.'+b+'.'}}}]},
 
@@ -740,13 +750,14 @@ function drawShelf(lit){$('shelf').innerHTML=flOrder.map((fl,i)=>'<span class="s
 /* ---------- panel ---------- */
 function ansHTML(){const f=q.form;let h='<div class="ansrow" id="ansrow">'+(f.pre?'<span class="eq">'+T(f.pre)+'</span>':'');
  if(q.card&&!q.vis)h+='';
- if(f.type==='int'||f.type==='dec')h+='<button type="button" class="fld" data-k="v" id="F_v" aria-label="Jawapan"><b></b></button>';
+ if(f.type==='int'||f.type==='dec'||f.type==='tenth')h+='<button type="button" class="fld'+(f.type==='tenth'?' tenth-entry':'')+'" data-k="v" id="F_v" aria-label="'+(f.type==='tenth'?'Pecahan atau perpuluhan':'Jawapan')+'"><b></b></button>';
  else{if(f.type!=='frac')h+='<button type="button" class="fld whole ph" data-k="w" id="F_w" data-ph="bulat" aria-label="Nombor bulat"><b></b></button>';
   h+='<div class="fst"><button type="button" class="fld sm" data-k="n" id="F_n" aria-label="Pengangka"><b></b></button><i class="bar"></i><button type="button" class="fld sm" data-k="d" id="F_d" aria-label="Penyebut"><b></b></button></div>'}
  if(f.unit)h+='<span class="unit">'+f.unit+'</span>';h+='</div>';
  if(f.type==='frac')h+='<div class="frac-entry-help">Atas: pengangka · Tekan / · Bawah: penyebut</div>';
+ if(f.type==='tenth')h+='<div class="frac-entry-help">Boleh jawab 3/10 atau 0.3</div>';
  return h}
-const ORDER=()=>q.form.type==='int'||q.form.type==='dec'?['v']:q.form.type==='frac'?['n','d']:['n','d','w'];
+const ORDER=()=>['int','dec','tenth'].includes(q.form.type)?['v']:q.form.type==='frac'?['n','d']:['n','d','w'];
 function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className='tiles';box.classList.toggle('padk',K==='pad');
  let h='';if(q.card)h+='<div class="qcard'+(q.vis?' lt':'')+'"><small>'+(K==='pick'?'PILIH':'KAD RESIPI')+'</small><b>'+T(q.card)+'</b></div>';
  h+=visHTML();
@@ -760,8 +771,10 @@ function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className=
   tl.querySelector('[data-clear]').onclick=()=>{if(solved||!shadeSet.size)return;shadeSet.clear();hideMsg();sfx(330,.05);redraw()}}
  else if(K==='pick'){tl.className='tiles pk';tl.innerHTML=q.opts.map(o=>'<button type="button" class="tl" data-o="'+o.id+'">'+T(o.label)+'</button>').join('');
   tl.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{if(solved)return;sel=b.dataset.o;tl.querySelectorAll('[data-o]').forEach(x=>x.classList.toggle('sel',x===b));hideMsg();sfx(480,.05)})}
- else{const last=q.form.type==='dec'?'.':q.form.type==='frac'?'/':ORDER().length>1?'⇥':'';tl.className='tiles kp';
-  tl.innerHTML=['1','2','3','4','5','⌫','6','7','8','9','0',last].map(k=>k?'<button type="button" class="tl'+(k==='⌫'?' del':'')+'" data-k="'+k+'" aria-label="'+(k==='⌫'?'Padam':k==='⇥'?'Kotak seterusnya':k==='/'?'Pergi ke kotak penyebut':k)+'">'+k+'</button>':'<span></span>').join('');
+ else{const dual=q.form.type==='tenth',last=q.form.type==='dec'?'.':q.form.type==='frac'?'/':ORDER().length>1?'⇥':'';
+  const keys=dual?['1','2','3','4','5','','⌫','6','7','8','9','0','.','/']:['1','2','3','4','5','⌫','6','7','8','9','0',last];
+  tl.className='tiles kp'+(dual?' dual':'');
+  tl.innerHTML=keys.map(k=>k?'<button type="button" class="tl'+(k==='⌫'?' del':'')+'" data-k="'+k+'" aria-label="'+(k==='⌫'?'Padam':k==='⇥'?'Kotak seterusnya':k==='/'?(dual?'Garis pecahan':'Pergi ke kotak penyebut'):k==='.'?'Titik perpuluhan':k)+'">'+k+'</button>':'<span></span>').join('');
   tl.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>key(b.dataset.k));
   box.querySelectorAll('.fld').forEach(b=>b.onclick=()=>{if(solved)return;fk=b.dataset.k;renderFields();sfx(500,.03)});renderFields()}
  redraw()}
@@ -772,12 +785,21 @@ $('widget').addEventListener('click',e=>{if(!q||solved)return;const live=e.targe
  const t=e.target.closest(q.kind==='tray'?'[data-g]':'[data-i]');if(!t)return;const i=+(t.dataset.g??t.dataset.i);
  shadeSet.has(i)?shadeSet.delete(i):shadeSet.add(i);hideMsg();sfx(shadeSet.has(i)?560:420,.05);busy();redraw()});
 function key(k){if(solved||q.kind!=='pad')return;const O=ORDER();if(k==='⇥'||k==='/'&&q.form.type==='frac'){fk=k==='/'?'d':O[(O.indexOf(fk)+1)%O.length];renderFields();sfx(500,.03);return}
- let s=inp[fk]||'';if(k==='⌫')s=s.slice(0,-1);else if(k==='.'){if(!s.includes('.'))s=(s||'0')+'.'}else if(s.replace('.','').length<6)s=s==='0'?k:s+k;
+ let s=inp[fk]||'';
+ if(k==='⌫')s=s.slice(0,-1);
+ else if(k==='.'){if(['dec','tenth'].includes(q.form.type)&&!s.includes('.')&&!s.includes('/'))s=(s||'0')+'.'}
+ else if(k==='/'){if(q.form.type==='tenth'&&s&&!s.includes('/')&&!s.includes('.'))s+='/'}
+ else if(/^\d$/.test(k)&&s.replace(/[./]/g,'').length<6)s=s==='0'?k:s+k;
  inp[fk]=s;$('ansrow').querySelectorAll('.fld').forEach(x=>x.classList.remove('bad'));hideMsg();renderFields();sfx(440,.03)}
 function renderFields(){if(q.kind!=='pad')return;ORDER().forEach(k=>{const b=$('F_'+k);if(!b)return;b.querySelector('b').textContent=inp[k]||'';b.classList.toggle('on',k===fk&&!solved)})}
 
 /* ---------- semakan ---------- */
 function evalPad(){const f=q.form;
+ if(f.type==='tenth'){
+  const raw=inp.v||'';if(!raw)return{empty:1};
+  if(raw.includes('/')){if(!/^\d+\/\d+$/.test(raw))return{incomplete:1};const [n,d]=raw.split('/').map(Number);if(d===0)return{zero:1};return{ok:n*10===f.n*d}}
+  if(!/^\d+(?:\.\d+)?$/.test(raw))return{incomplete:1};
+  return{ok:Math.abs(Number(raw)-f.n/10)<1e-9}}
  if(f.type==='int'||f.type==='dec'){if(!inp.v)return{empty:1};return{ok:Math.abs(parseFloat(inp.v)-f.v)<1e-9}}
  const wS=inp.w||'',nS=inp.n||'',dS=inp.d||'';if(!wS&&!nS&&!dS)return{empty:1};
  if(!!nS!==!!dS)return{incomplete:1};const w=wS?parseInt(wS,10):0,n=nS?parseInt(nS,10):0,d=dS?parseInt(dS,10):1;if(dS&&d===0)return{zero:1};
@@ -790,7 +812,7 @@ function evalPad(){const f=q.form;
  return{ok:1}}
 const FORM_MSG={imp:'Nilainya betul! Tetapi soalan minta pecahan tak wajar — kosongkan kotak nombor bulat.',simp:'Nilainya betul! Permudahkan lagi ke bentuk termudah.',mix:'Nilainya betul! Tukar kepada nombor bercampur: pengangka mesti lebih kecil daripada penyebut.',whole:'Nilainya betul! Jawapan ini nombor bulat — tulis dalam kotak bulat sahaja.'};
 function ansText(){if(q.ansTxt)return q.ansTxt;if(q.kind==='pick')return q.opts.find(o=>o.id===q.correct).label;const f=q.form;if(!f)return '';
- if(f.type==='frac')return fs(f.n,f.d);if(f.type==='improper'){const[n,d]=red(f.N,f.D);return fs(n,d)}
+ if(f.type==='tenth')return fs(f.n,10)+' = 0.'+f.n;if(f.type==='frac')return fs(f.n,f.d);if(f.type==='improper'){const[n,d]=red(f.N,f.D);return fs(n,d)}
  if(f.type==='mixed')return(f.simp===false?vs(f.N,f.D):vs(f.N,f.D))+(f.unit?' '+f.unit:'');return dn(f.v)+(f.unit?' '+f.unit:'')}
 /* PA_MINIGAME_ATTEMPT: each answer try → parent telemetry (Diagnostic Brain + Portal Restu). */
 function paAttempt(ok){try{const p=new URLSearchParams(location.search),nonce=p.get('pa_nonce');if(!nonce||window.parent===window)return;const Q=q;if(!Q)return;const now=Date.now(),ms=now-(paLast||now);paLast=now;
@@ -809,7 +831,7 @@ function check(){
  if(ok){solved=true;const completedQuestion=q;const st=misses===0&&hints===0?3:(misses+hints<=2?2:1);paAttempt(true),stars+=st;served++;streak=st===3?streak+1:0;setLog.push({q,st});adapt(st);report(st);
   pet('happy');$('say').textContent=pick(['Terima kasih, Wira!','Sedapnya!','Tepat macam pesanan saya!']);$('wiraImg').src=A+(st===3?'wira-baker-victory.webp':'wira-baker-thumb.webp');$('wira').classList.add('cheer');
   const s=$('stamp'),lbl=st===3?['HEBAT!','hebat']:st===2?['BAGUS!','bagus']:['SIAP!','ok'];s.className='stamp '+lbl[1];s.innerHTML=lbl[0]+'<small>'+'★'.repeat(st)+'☆'.repeat(3-st)+' · '+T(ansText())+(streak>=2?' · 🔥'+streak:'')+'</small>';void s.offsetWidth;s.classList.add('show');burst();win();
-  renderTrack(true);$('subtitle').textContent='';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);
+  renderTrack(true);$('subtitle').textContent=q.form?.type==='tenth'?'Betul! '+q.form.n+'/10 = 0.'+q.form.n+'.':'';renderFields();$('tiles').querySelectorAll('button').forEach(b=>b.disabled=true);
   const sl=$('slot'+((served-1)%SET));if(sl){sl.classList.add('on','pop')}$('stand').classList.add('done');
   $('check').textContent=served%SET===0?'Lihat kedai hari ini ✦':'Seterusnya →';window.PAMiniGameFlow?.queueNext({question:q,current:()=>q,isSolved:()=>solved,advance:()=>check(),button:document.getElementById('check')});
   setTimeout(()=>{if(solved&&q===completedQuestion){$('bubble').classList.add('hide');$('visitor').className='customer leave'}},1800);return}
@@ -832,7 +854,7 @@ function workedPlan(){const P=window.PAWorked;if(!P||!q.wk)return null;
  const v=plan.value,f=q.form;if(!v)return null;
  if(q.kind==='shade'||q.kind==='tray')return plan;
  if(!f)return null;
- const[N,D]=f.type==='frac'?[f.n,f.d]:f.type==='int'||f.type==='dec'?[Math.round(f.v*1000),1000]:[f.N,f.D];
+ const[N,D]=f.type==='frac'||f.type==='tenth'?[f.n,f.d]:f.type==='int'||f.type==='dec'?[Math.round(f.v*1000),1000]:[f.N,f.D];
  if(f.type==='frac'&&!(v.N===f.n&&v.D===f.d))return null;
  return v.N*D===N*v.D?plan:null}
 const KK_HTML=t=>T(esc(t));
@@ -868,13 +890,13 @@ function makeQ(){if(forcedQ){const x=forcedQ;forcedQ=null;return x}const rep=rep
  return{mode:k,tierIx:ti,nTiers:gens.length,pet:p.id,who:p.who,fl,...e.f(C),arch:e.arch}}
 function renderTrack(done){const pos=served%SET,lit=done?(pos||SET):pos;$('dots').innerHTML=Array.from({length:SET},(_,i)=>'<i class="'+(i<lit?'done':i===pos&&!done?'now':'')+'"></i>').join('');
  $('stageN').textContent='PESANAN '+(done?lit:pos+1)+'/'+SET;$('setLbl').textContent='Hari '+sets;$('stars').textContent=stars;$('power').style.setProperty('--p',Math.round(lit/SET*100)+'%');$('power').classList.toggle('lit',lit===SET)}
-const SUB={shade:'Sentuh kepingan kek untuk letak krim.',tray:'Sentuh pinggan untuk ambil tart.',pick:'Pilih satu jawapan.',pad:'Tekan nombor. Tekan / untuk isi penyebut.'};
+const SUB={shade:'Sentuh kepingan kek untuk letak krim.',tray:'Sentuh pinggan untuk ambil tart.',pick:'Pilih satu jawapan.',pad:'Tekan nombor untuk isi jawapan.'};
 function startRound(){if(served%SET===0){flOrder=shuffle(FLS);drawShelf(0)}
  q=makeQ();solved=false;misses=0;paLast=Date.now();paRound++;hints=0;hint2=0;shadeSet=new Set();cutN=q.cut?1:0;sel=null;inp={};fk=q.form?ORDER()[0]:'n';
  hideMsg();
  $('devBtn').hidden=!devToolsEnabled;
  $('devBtn').textContent='D'+cfg.grade+' ▾';$('mode').textContent=MODE_LABEL[q.mode]+' · T'+(q.tierIx+1);
- $('question').innerHTML=T(q.q);$('subtitle').innerHTML=T(q.sub||(served<2?(q.kind==='pad'&&q.form&&(q.form.type==='int'||q.form.type==='dec')?'Tekan nombor untuk isi jawapan.':SUB[q.kind]):''));
+ $('question').innerHTML=T(q.q);$('subtitle').innerHTML=T(q.sub||(served<2?(q.kind==='pad'&&q.form&&(q.form.type==='int'||q.form.type==='dec'||q.form.type==='tenth')?'Tekan nombor untuk isi jawapan.':SUB[q.kind]):''));
  $('wiraImg').src=A+'wira-baker-idle.webp';$('wira').classList.remove('cheer');$('stamp').className='stamp';$('stamp').innerHTML='';$('stand').className='stand';$('stand').innerHTML=cakeIcon(q.fl);
  $('check').textContent='Semak';$('check').disabled=false;$('hint').disabled=false;$('hint').textContent='Tanya Wira';$('hint').classList.remove('wk-offer');workedOffer=false;$('game').classList.remove('wk-on');$('bubble').classList.add('hide');
  const v=$('visitor');v.className='customer away';pet('idle');$('petImg').alt=q.who;requestAnimationFrame(()=>requestAnimationFrame(()=>{v.className='customer'}));
@@ -902,7 +924,7 @@ function hintTwo(){const K=q.kind;
  const st=hideStep(q.a);return st&&/[+−×÷]/.test(st)?st:(TIP[q.mode]||q.s)}
 $('hint').onclick=()=>{if(workedOffer){startWorked();return}if(solved||hints>=2)return;hints++;hint2++;msg(hint2===1?q.s:hintTwo(),'',6500);if(hints>=2){offerWorked(true);if(!workedOffer){$('hint').textContent='Petunjuk habis';$('hint').disabled=true}}else $('hint').textContent='Petunjuk lagi';sfx(620,.1)};
 $('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔈';$('sound').setAttribute('aria-label',soundOn?'Matikan bunyi':'Hidupkan bunyi');sfx(730,.1)};
-document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if(q.kind==='pad'&&(/^[0-9.]$/.test(e.key)||(e.key==='/'&&q.form.type==='frac'))){key(e.key);e.preventDefault()}else if(q.kind==='pad'&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(q.kind==='pad'&&e.key==='Tab'){key('⇥');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
+document.addEventListener('keydown',e=>{if(!q||!$('dev').hidden||!$('complete').hidden)return;if(q.kind==='pad'&&(/^[0-9]$/.test(e.key)||(e.key==='.'&&['dec','tenth'].includes(q.form.type))||(e.key==='/'&&['frac','tenth'].includes(q.form.type)))){key(e.key);e.preventDefault()}else if(q.kind==='pad'&&e.key==='Backspace'){key('⌫');e.preventDefault()}else if(q.kind==='pad'&&e.key==='Tab'){key('⇥');e.preventDefault()}else if(e.key==='Enter'&&document.activeElement.tagName!=='BUTTON'){check();e.preventDefault()}});
 function resetAll(){tier={};clean={};served=0;streak=0;stars=0;setLog=[];sets=1}
 
 /* ---------- DEV: tukar Darjah (sementara) ---------- */
