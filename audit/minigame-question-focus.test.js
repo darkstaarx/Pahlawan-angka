@@ -64,3 +64,16 @@ test('question changes are visual-only; the original response handler remains in
   assert.ok(html.includes('minigame-panel-fit-v1.js'),game);
  }
 });
+
+test('all nine standalone mini-games use mobile-width standards mode',()=>{
+ for(const game of games){
+  const html=fs.readFileSync(game,'utf8');
+  assert.match(html,/^<!doctype html>/i,game);
+  assert.match(html,/<html lang="ms">/,game);
+  assert.match(html,/<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">/,game);
+  assert.ok(html.indexOf('<head>')>=0,game);
+  assert.ok(html.indexOf('</head>')<html.indexOf('<main'),game);
+  assert.ok(html.indexOf('<body>')<html.indexOf('<main'),game);
+  assert.match(html,/<\/body>\s*<\/html>\s*$/,game);
+ }
+});
