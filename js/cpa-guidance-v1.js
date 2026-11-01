@@ -64,7 +64,15 @@
   const task=q?.fractionTask;
   const denominator=Number(task?.d??q?.facets?.denominator);
   const parts=Number.isInteger(denominator)&&denominator>=2&&denominator<=20?denominator:8;
-  return {kind:k,group:GROUPS[k],parts,
+  // Only bind concrete quantities to the real question if generators gave
+  // explicit operands. Do not parse numbers out of arbitrary Malay sentences.
+  const operands=Array.isArray(q?.facets?.operands)?q.facets.operands:null;
+  const actual=operands?.length>=2&&operands.slice(0,2).every(v=>Number.isInteger(v)&&v>=0&&v<=99)
+    ?operands.slice(0,2):null;
+  const useGroups=k==='groups'&&text(q?.facets?.op)==='mul'&&actual&&
+    actual[0]>=1&&actual[0]<=8&&actual[1]>=1&&actual[1]<=8;
+  const usePlace=k==='place'&&actual&&['add','sub'].includes(text(q?.facets?.op));
+  return {kind:k,group:GROUPS[k],parts,actual:useGroups||usePlace?actual:null,
     grounded:Number.isInteger(denominator)&&denominator>=2&&denominator<=20};
  }
  const E=(tag,cls,copy)=>{
@@ -103,16 +111,19 @@
     draw(cfg.parts,'paCpaPiece');
   }else if(kind==='groups'){
     wrap.classList.add('paCpaGroups');
-    for(let i=0;i<3;i++){
+    const groups=cfg.actual?cfg.actual[0]:3,dots=cfg.actual?cfg.actual[1]:4;
+    for(let i=0;i<groups;i++){
       const row=E('div','paCpaGroup');
       const heading=E('small','', 'Kumpulan '+(i+1));row.append(heading);
-      for(let j=0;j<4;j++)row.append(E('span','paCpaDot'));
+      for(let j=0;j<dots;j++)row.append(E('span','paCpaDot'));
       if(stage===0){const button=E('button','paCpaGroupTouch',touched.has(i)?'Dipilih':'Sentuh');button.type='button';button.setAttribute('aria-pressed',String(touched.has(i)));button.onclick=()=>{if(touched.has(i))touched.delete(i);else touched.add(i);paintModel(host,cfg,stage,touched)};row.append(button)}
       wrap.append(row);
     }
   }else if(kind==='place'){
     wrap.classList.add('paCpaPlace');
-    ['Ratus','Puluh','Sa'].forEach((name,i)=>{const box=E('div','paCpaPlaceColumn');box.append(E('b','',name),E('span','paCpaBlock',i===1?'▥':'□'));if(stage===0){const button=E('button','paCpaGroupTouch',touched.has(i)?'Dipilih':'Sentuh');button.type='button';button.onclick=()=>{if(touched.has(i))touched.delete(i);else touched.add(i);paintModel(host,cfg,stage,touched)};box.append(button)}wrap.append(box)});
+    ['Ratus','Puluh','Sa'].forEach((name,i)=>{const box=E('div','paCpaPlaceColumn');
+      const digits=cfg.actual?String(cfg.actual[0]).padStart(3,'0'):null;
+      box.append(E('b','',name),E('span','paCpaBlock',digits?digits[i]:(i===1?'▥':'□')));if(stage===0){const button=E('button','paCpaGroupTouch',touched.has(i)?'Dipilih':'Sentuh');button.type='button';button.onclick=()=>{if(touched.has(i))touched.delete(i);else touched.add(i);paintModel(host,cfg,stage,touched)};box.append(button)}wrap.append(box)});
   }else if(['word','money','ratio','time'].includes(kind)){
     wrap.classList.add('paCpaBars');
     const barNames={word:['Jumlah','Bahagian diketahui','Yang dicari'],money:['Bayaran','Harga','Baki'],ratio:['Kumpulan A','Kumpulan B','Unit sama'],time:['Waktu mula','Tempoh','Waktu akhir']};
@@ -140,6 +151,7 @@
   host.append(E('p','paCpaCaption',
     cfg.kind==='fraction'&&cfg.grounded
       ? 'Model menggunakan '+cfg.parts+' bahagian daripada data soalan. Semak bahagian yang diminta.'
+      : cfg.actual?'Model menggunakan nombor yang diberikan dalam soalan.'
       : 'Model contoh untuk memahami cara. Gunakan nombor sebenar daripada soalan kamu.'));
  }
  function render(){
@@ -152,7 +164,10 @@
   host.querySelector('.paCpaHint').textContent=hint||'Cuba kenal pasti maklumat penting dalam soalan.';
   const visual=host.querySelector('.paCpaModel');
   paintModel(visual,cfg,stage,touched);
-  host.querySelector('.paCpaEquation').textContent=stage===2?cfg.group.equation:'';
+  const liveEquation=cfg.actual&&cfg.kind==='groups'?cfg.actual[0]+' × '+cfg.actual[1]+' = ___'
+    :cfg.actual&&cfg.kind==='place'?cfg.actual[0]+(cfg.actual[1]!==undefined?' '+(text(active.question?.facets?.op)==='sub'?'−':'+')+' '+cfg.actual[1]:'')+' = ___'
+    :cfg.group.equation;
+  host.querySelector('.paCpaEquation').textContent=stage===2?liveEquation:'';
   host.querySelector('.paCpaEquation').hidden=stage!==2;
   const next=host.querySelector('.paCpaNext');
   next.textContent=stage===2?'Kembali kepada soalan':stage===0?'Lihat model →':'Bina ayat →';
@@ -199,7 +214,7 @@
     }
   });
   document.body.append(host);
-  active={host,cfg,stage:0,touched:new Set(),hint,previousFocus};
+  active={host,cfg,question,stage:0,touched:new Set(),hint,previousFocus};
   render();exit.focus({preventScroll:true});
   return true;
  }
