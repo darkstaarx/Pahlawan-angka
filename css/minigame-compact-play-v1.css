@@ -49,3 +49,60 @@
  :is(.pa-game,.game)>.scene{flex-basis:clamp(90px,17dvh,125px)!important}
  :is(.pa-game,.game).wk-on>.scene{flex-basis:clamp(60px,10dvh,85px)!important}
 }
+
+/* "Jom tengok cara": fraction slices physically separate on the model,
+   not as a screen-wide explosion. The original answer tiles and maths
+   semantics are unchanged. Children still choose each worked step. */
+.wk-frac .wk-model{
+  width:min(calc(100% - 22px),318px);
+  height:47px;
+  padding:5px 2px;
+  gap:0;
+  box-sizing:border-box;
+  overflow:visible!important;
+  border:2.5px solid var(--wood-dk,#5e3519);
+  border-radius:10px;
+  background:linear-gradient(#fff9e8,#f3dfb4);
+  box-shadow:0 3px 0 #8d6337,inset 0 2px 0 #fff;
+}
+.wk-frac .wk-model i{
+  min-width:0;
+  border:1.5px solid #80532c!important;
+  border-radius:4px;
+  background:#f7efd9;
+  box-shadow:inset 0 1px 0 #ffffffaf;
+  position:relative;
+  z-index:0;
+}
+.wk-frac .wk-model i.on{
+  background:linear-gradient(#ffbbce,#ed668e)!important;
+  box-shadow:inset 0 3px 0 #ffe3e9,0 1px 2px #6c3b4e4f;
+  z-index:1;
+}
+.wk-frac .wk-model i.eat{
+  background:repeating-linear-gradient(45deg,#eee1d1 0 4px,#dbc9ae 4px 7px)!important;
+  opacity:.65;
+}
+.wk-frac .wk-model.wk-exploded i{
+  animation:paCakeSeparate .46s cubic-bezier(.18,.75,.21,1.01) both!important;
+  animation-delay:calc(var(--slice) * 44ms)!important;
+}
+.wk-frac .wk-model.wk-exploded i.on{
+  box-shadow:inset 0 2px 0 #ffe8ed,0 3px 4px #9d416a55;
+}
+.wk-frac .wk-model.wk-exploded i.wk-glow{
+  outline:2px solid var(--gold-dk,#b9801c);
+  outline-offset:1px;
+}
+@keyframes paCakeSeparate{
+  0%{transform:translate(0,0) scale(1);filter:brightness(1);opacity:.82}
+  65%{transform:translate(var(--dx),-8px) scale(1.035);filter:brightness(1.12);opacity:1}
+  100%{transform:translate(var(--dx),-4px) scale(1);filter:brightness(1);opacity:1}
+}
+@media(prefers-reduced-motion:reduce){
+ .wk-frac .wk-model.wk-exploded i{
+   animation:none!important;
+   transform:none!important;
+   opacity:1!important;
+ }
+}
