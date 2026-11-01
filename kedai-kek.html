@@ -755,7 +755,7 @@ function ansHTML(){const f=q.form;let h='<div class="ansrow" id="ansrow">'+(f.pr
   h+='<div class="fst"><button type="button" class="fld sm" data-k="n" id="F_n" aria-label="Pengangka"><b></b></button><i class="bar"></i><button type="button" class="fld sm" data-k="d" id="F_d" aria-label="Penyebut"><b></b></button></div>'}
  if(f.unit)h+='<span class="unit">'+f.unit+'</span>';h+='</div>';
  if(f.type==='frac')h+='<div class="frac-entry-help">Atas: pengangka · Tekan / · Bawah: penyebut</div>';
- if(f.type==='tenth')h+='<div class="frac-entry-help">Boleh jawab 3/10 atau 0.3</div>';
+ if(f.type==='tenth')h+='<div class="frac-entry-help">Pilih cara jawab: pecahan (/) atau perpuluhan (.)</div>';
  return h}
 const ORDER=()=>['int','dec','tenth'].includes(q.form.type)?['v']:q.form.type==='frac'?['n','d']:['n','d','w'];
 function buildPanel(){const box=$('widget'),tl=$('tiles'),K=q.kind;tl.className='tiles';box.classList.toggle('padk',K==='pad');
