@@ -727,7 +727,7 @@
   function boardHTML(plan,opt={}){
     if(plan.op==='frac'){
       const cell=x=>x&&typeof x==='object'&&'id' in x?`<span class="wk-c wk-fs wk-empty" data-s="${x.id}"></span>`:`<span class="wk-c wk-fs">${esc(x)}</span>`;
-      const model=m=>`<span class="wk-model" style="--p:${m.n}">${[...Array(m.n).keys()].map(i=>{const k=i<(m.eat||0)?'eat':i<(m.eat||0)+(m.sh||0)?'sh':'un';return`<i data-k="${k}" class="${k==='sh'?'on':k==='eat'?'eat':''}"></i>`}).join('')}</span>`;
+      const model=m=>`<span class="wk-model" role="img" aria-label="Model ${m.n} bahagian sama besar. Perhatikan bahagian berkrim." style="--p:${m.n}">${[...Array(m.n).keys()].map(i=>{const k=i<(m.eat||0)?'eat':i<(m.eat||0)+(m.sh||0)?'sh':'un';return`<i data-k="${k}" class="${k==='sh'?'on':k==='eat'?'eat':''}" aria-hidden="true" style="--slice:${i};--dx:${((i-(m.n-1)/2)*2.4).toFixed(2)}px"></i>`}).join('')}</span>`;
       const item=it=>it.fr?`<span class="wk-fr">${cell(it.fr[0])}<i></i>${cell(it.fr[1])}</span>`
         :it.mx?`<span class="wk-mx">${cell(it.mx[0])}<span class="wk-fr">${cell(it.mx[1])}<i></i>${cell(it.mx[2])}</span></span>`
         :it.model?model(it.model):it.tag?`<span class="wk-tag">${cell(it.tag)}</span>`:it.v!==undefined?cell(it.v):`<span class="wk-ft">${esc(it.t)}</span>`;
@@ -884,6 +884,14 @@
       const s=plan.steps[k];shownAt=Date.now();focus(s.kind==='tap'?-1:s.col);say(s.say);cue(s);opt.onShow&&opt.onShow(k,plan.steps.length);
       if(s.pre&&s.pre.pair){el.board.querySelectorAll('.wk-box').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('wk-pair',s.pre.pair.includes(i));c.classList.toggle('wk-target',i===s.pre.hop)})}
       el.board.querySelectorAll('.wk-diff,.wk-grp').forEach(c=>c.classList.remove('wk-diff','wk-grp'));
+      el.board.querySelectorAll('.wk-model').forEach(model=>{
+        // One gentle 2.5D separation per question step, tied to the actual
+        // fraction model. Decoration never changes number or answer state.
+        model.classList.remove('wk-exploded');
+        if(model.closest('.wk-hide'))return;
+        void model.offsetWidth;
+        model.classList.add('wk-exploded');
+      });
       el.board.querySelectorAll('.wk-model i').forEach(c=>{const g=s.pre&&s.pre.glow,k=c.dataset.k;c.classList.toggle('wk-glow',!!g&&(g==='all'||g===k||(g==='left'&&k!=='eat')))});
       if(s.pre&&s.pre.group)s.pre.group.forEach(col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`).forEach(c=>c.classList.add('wk-grp')));
       if(s.pre&&s.pre.diffRows){s.pre.diffRows.forEach(r=>{const c=q(`.wk-pvrow[data-row="${r}"] [data-col="${s.pre.diff}"]`);if(c)c.classList.add('wk-diff')})}
