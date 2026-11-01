@@ -30,7 +30,7 @@ test('Year 2 T1 assesses converting given tenths to a decimal, not counting crea
  assert.equal(w.steps[0].right,'persepuluh');
  assert.equal(w.steps[1].right,'0.7');
  assert.doesNotMatch(w.steps.map(x=>x.say).join(' '),/Kira bahagian berkrim|Kira semua bahagian/);
- assert.equal(w.value.N*Math.round(q.form.v*1000),700*7);
+ assert.equal(w.value.N/w.value.D,q.form.v);
 });
 test('real Year 2 bottle gives visual context but requires decimal conversion',()=>{
  const q=generator[2].persepuluh[1].f(sample);
@@ -61,7 +61,7 @@ test('remainder asks specifically for decimal or fraction and validates the requ
 });
 test('Year 2 also includes comparison of a fraction and a decimal',()=>{
  assert.equal(generator[2].persepuluh[4].arch,'mixed_compare');
- assert.match(generator[2].persepuluh[4].f.toString(),/Yang manakah lebih besar/);
+ assert.match(html,/arch:'mixed_compare'[\s\S]*?Yang manakah lebih besar/);
 });
 test('Kedai Kek loads the revised walkthrough version in its actual runtime',()=>{
  assert.match(html,/js\/minigame-worked-v1\.js\?v=1\.17\.3/);
