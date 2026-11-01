@@ -122,7 +122,7 @@ test('invalid, incomplete, zero-denominator and wrong tenth answers are rejected
   h.api.key('⌫');
   assert.equal(h.inp.v, '0.');
 });
-test('the actual D2 generator uses dual answers only when mathematically appropriate', () => {
+test('D2 asks for the intended representation, while optional dual-input controls remain valid', () => {
   const gen = between('const GEN={', "const A='assets/minigames/kedai-kek/';");
   const context = {
     R: (a, b) => Math.min(b, Math.max(a, 3)),
@@ -130,22 +130,28 @@ test('the actual D2 generator uses dual answers only when mathematically appropr
     FR: (n, d) => ({ type: 'frac', n, d }),
     DEC: v => ({ type: 'dec', v }),
     TENTH: n => ({ type: 'tenth', n, d: 10, v: n/10 }),
-    Math,
+    Math: {random:()=>0.25},
   };
   const GEN = vm.runInNewContext(gen + '\nGEN', context);
   for (const archetype of ['coloured_card', 'filled_bottle', 'remaining_part']) {
     const item = GEN[2].persepuluh.find(t => t.arch === archetype);
     assert.ok(item, archetype);
     const round = item.f({ who: 'Kawan', fl: { n: 'pandan' } });
-    assert.equal(round.form.type, 'tenth', archetype);
-    assert.match(round.q, /pecahan atau perpuluhan/, archetype);
+    assert.equal(round.form.type, 'dec', archetype);
+    assert.match(round.q, /perpuluhan/, archetype);
     const h = padHarness(round.form);
-    const actual = round.form.n;
-    for (const key of '0.' + actual) h.api.key(key);
+    const actual = String(round.form.v);
+    for (const key of actual) h.api.key(key);
     assert.equal(h.api.evalPad().ok, true, archetype);
+    const wrongForm = padHarness(round.form);
+    wrongForm.api.key('3'); wrongForm.api.key('/');wrongForm.api.key('1');wrongForm.api.key('0');
+    assert.notEqual(wrongForm.api.evalPad().ok,true,'fraction must not satisfy decimal-only conversion');
   }
   const convert = GEN[2].persepuluh.find(t => t.arch === 'decimal_to_fraction').f({});
-  assert.equal(convert.form.type, 'frac', 'conversion exercises must require a new representation');
+  assert.equal(convert.form.type, 'frac', 'reverse conversion requires fraction form');
+  const h=padHarness({type:'tenth',n:3,d:10,v:.3});
+  for(const key of '0.3')h.api.key(key);
+  assert.equal(h.api.evalPad().ok,true,'dual format remains supported when explicitly requested');
 });
 test('the worked example stays accessible with the equivalent tenth form', () => {
   assert.match(source, /f\.type==='frac'\|\|f\.type==='tenth'\?\[f\.n,f\.d\]/);
@@ -177,7 +183,7 @@ test('all three real D2 tenth generators still produce the exact guided solution
       q: round, window: { PAWorked },
     });
     assert.ok(plan, 'Guided plan missing: ' + archetype);
-    assert.equal(plan.value.N, round.form.n);
+    assert.equal(plan.value.N, round.form.type==='dec'?Math.round(round.form.v*10):round.form.n);
     assert.equal(plan.value.D, 10);
   }
 });
