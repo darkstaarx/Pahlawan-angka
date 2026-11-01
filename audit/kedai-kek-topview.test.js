@@ -29,8 +29,8 @@ test('rectangular cake is overhead with 10 equal accessible interactive pieces',
  assert.match(svg,/viewBox="0 0 220 62"/);
  assert.match(svg,/Kek pandangan atas, 10 potongan sama besar/);
  assert.equal((svg.match(/data-i="/g)||[]).length,10);
- assert.equal((svg.match(/fill="#f27fa2"/g)||[]).length,3);
- assert.equal((svg.match(/fill="#fff2db"/g)||[]).length,7);
+ assert.equal((svg.match(/fill="#ff8fb1"/g)||[]).length,3);
+ assert.equal((svg.match(/fill="#8fd16a"/g)||[]).length,7);
  assert.doesNotMatch(svg,/y0\+12\+L\*8\.5/);
  const indexes=[...svg.matchAll(/data-i="(\d+)"/g)].map(x=>Number(x[1]));
  assert.deepEqual(indexes,[0,1,2,3,4,5,6,7,8,9]);
@@ -42,10 +42,10 @@ test('rectangular cake is overhead with 10 equal accessible interactive pieces',
 test('top-down model keeps empty, shaded, secondary and eaten parts distinct',()=>{
  const st={sh:new Set([1,2]),sh2:new Set([3]),eat:new Set([0])};
  const svg=art.barSVG({t:'bar',n:5,fl},st);
- assert.equal((svg.match(/fill="#e9dccd"/g)||[]).length,1);
- assert.equal((svg.match(/fill="#f27fa2"/g)||[]).length,2);
- assert.equal((svg.match(/fill="#90604a"/g)||[]).length,1);
- assert.equal((svg.match(/fill="#fff2db"/g)||[]).length,1);
+ assert.equal((svg.match(/fill="#eee4ce"/g)||[]).length,1);
+ assert.equal((svg.match(/fill="#ff8fb1"/g)||[]).length,2);
+ assert.equal((svg.match(/fill="#7a4426"/g)||[]).length,1);
+ assert.equal((svg.match(/fill="#8fd16a"/g)||[]).length,1);
  assert.equal((svg.match(/data-i="/g)||[]).length,5);
 });
 
@@ -63,10 +63,10 @@ test('mixed and improper numbers still show correct full and partial cake counts
  const full=art.barsSVG({t:'bars',w:2,n:3,d:4,fl});
  assert.match(full,/Kek-kek dilihat dari atas/);
  assert.equal((full.match(/data-i="/g)||[]).length,12);
- assert.equal((full.match(/fill="#f27fa2"/g)||[]).length,11);
+ assert.equal((full.match(/fill="#ff8fb1"/g)||[]).length,11);
  const partial=art.barsSVG({t:'bars',w:0,n:2,d:5,fl});
  assert.equal((partial.match(/data-i="/g)||[]).length,5);
- assert.equal((partial.match(/fill="#f27fa2"/g)||[]).length,2);
+ assert.equal((partial.match(/fill="#ff8fb1"/g)||[]).length,2);
 });
 
 test('round cake is already overhead; bottle remains a side-view level measurement',()=>{
@@ -77,7 +77,8 @@ test('round cake is already overhead; bottle remains a side-view level measureme
  assert.match(bottle,/Botol jus/);
  assert.equal((bottle.match(/fill="#ffad3b"/g)||[]).length,3);
  const icon=art.cakeIcon(fl);
- assert.match(icon,/Kek dilihat dari atas/);
+ assert.match(icon,/<rect x="7" y="17" width="26" height="17"/);
+ assert.doesNotMatch(icon,/Kek dilihat dari atas/);
 });
 
 test('real screenshot-inspired Darjah 2 cake question retains dual decimal/fraction answer logic',()=>{
@@ -85,4 +86,16 @@ test('real screenshot-inspired Darjah 2 cake question retains dual decimal/fract
  assert.match(source,/arch:'remaining_part'[\s\S]*?form:TENTH\(10-n\)/);
  const correct="3/10",decimal="0.3";
  assert.equal(Number(correct.split('/')[0])/Number(correct.split('/')[1]),Number(decimal));
+});
+
+test('bakery props stay in the original side/front view while the fraction model is overhead',()=>{
+ const prop=art.cakeIcon(fl),tray=art.barSVG({t:'bar',n:3,fl},states(1));
+ assert.match(prop,/rect x="7" y="17" width="26" height="17"/);
+ assert.match(prop,/M7 21v-3/);
+ assert.doesNotMatch(prop,/Kek pandangan atas/);
+ assert.match(tray,/Kek pandangan atas, 3 potongan sama besar/);
+ assert.equal((tray.match(/data-i="/g)||[]).length,3);
+ assert.equal((tray.match(/fill="#ff8fb1"/g)||[]).length,1);
+ assert.match(tray,/Bahagian 1 daripada 3/);
+ assert.match(tray,/stroke="#d4ad73"/);
 });
