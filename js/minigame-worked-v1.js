@@ -899,6 +899,8 @@
         model.onclick=null;
         model.onkeydown=null;
         model.setAttribute('role','img');
+        if(!model.dataset.originalLabel)model.dataset.originalLabel=model.getAttribute('aria-label')||'Model bahagian kek';
+        model.setAttribute('aria-label',model.dataset.originalLabel);
         model.removeAttribute('tabindex');
         model.removeAttribute('title');
         model.classList.remove('wk-exploded','wk-count-active');
