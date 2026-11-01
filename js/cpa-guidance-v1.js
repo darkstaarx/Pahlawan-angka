@@ -88,9 +88,10 @@
     else cell.addEventListener('click',()=>{
       if(touched.has(i))touched.delete(i);else touched.add(i);
       paintModel(host,cfg,stage,touched);
-      const next=host.querySelector('.paCpaCell:not([disabled])');
+      const next=host.querySelector('.paCpaCell[data-index="'+i+'"]');
+      // Keep keyboard focus on the corresponding rebuilt piece.
+      next?.focus({preventScroll:true});
       // Never derive a correct answer or submit a game response from these taps.
-      if(next&&document.activeElement===document.body)next.focus();
     });
     wrap.append(cell);
    }
@@ -164,7 +165,7 @@
   if(previousFocus?.isConnected&&!previousFocus.disabled)previousFocus.focus({preventScroll:true});
  }
  function open({question,meta={},hint='',returnFocus}={}){
-  if(typeof document==='undefined'||document.body?.dataset.screen==='timeLock')return false;
+  if(typeof document==='undefined'||document.body?.dataset.screen==='timeLock'||window.PARapidLock?.isLocked?.())return false;
   const cfg=config(question,meta);if(!cfg)return false;
   close();
   const previousFocus=returnFocus||document.activeElement;
@@ -199,6 +200,14 @@
   active={host,cfg,stage:0,touched:new Set(),hint,previousFocus};
   render();exit.focus({preventScroll:true});
   return true;
+ }
+ // Time lock and navigation always take precedence over a teaching modal.
+ if(typeof MutationObserver!=='undefined'&&document.body){
+  const watcher=new MutationObserver(()=>{
+   const screen=document.body.dataset.screen;
+   if(active&&screen!=='game'&&screen!=='segelDemo')close();
+  });
+  watcher.observe(document.body,{attributes:true,attributeFilter:['data-screen']});
  }
  window.PACPA={version:VERSION,groups:Object.keys(GROUPS),classify,config,open,close};
 })();
