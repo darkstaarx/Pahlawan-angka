@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.17.3';
+  const VERSION='1.17.4';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -660,10 +660,17 @@
       // n out of 10 parts: n persepuluh = 0.n = n/10; or the part left out of 10.
       const{n,from='model',out:o='dec'}=spec;if(!I(n)||n<1||n>9)return null;const v=from==='rest'?10-n:n,sv=S(o==='dec'?'0.'+v:v);
       if(from==='frac'){
-        // Year 2 3.3.1: the pupil is converting an ALREADY GIVEN fraction,
-        // not earning credit for counting a cake one piece at a time.
-        row([{model:{n:10,sh:n}}],false);
+        // Visual support must NOT disappear when D2's assessed outcome changes
+        // from counting to decimal conversion. Counting is ungraded support.
+        // The number represented by n/10 is still assessed by the next picks.
+        const juice=spec.visual==='bottle';
+        row([{model:{n:10,sh:n,label:juice?'bahagian jus':'bahagian berkrim'}}],false);
         const r=row([{fr:[n,10]},{t:'='},{v:sv}],false);
+        steps.push(G(juice
+          ? 'Lihat model 10 bahagian. Sentuh bahagian berisi jus satu demi satu, kemudian tekan Teruskan.'
+          : 'Lihat kek 10 bahagian sama besar. Sentuh bahagian berkrim satu demi satu, kemudian tekan Teruskan.',
+          {note:'Model membantu kita melihat pengangka dan penyebut. Ini bukan jawapan perpuluhan.'},
+          {glow:'sh'}));
         steps.push(P('Penyebut 10 menunjukkan nilai tempat apa?','persepuluh',['sa','perseratus'],
           {note:'Persepuluh ialah digit pertama selepas titik perpuluhan.'}));
         steps.push(P(`Tukar ${FS(n,10)} kepada nombor perpuluhan.`,'0.'+n,
@@ -740,7 +747,7 @@
   function boardHTML(plan,opt={}){
     if(plan.op==='frac'){
       const cell=x=>x&&typeof x==='object'&&'id' in x?`<span class="wk-c wk-fs wk-empty" data-s="${x.id}"></span>`:`<span class="wk-c wk-fs">${esc(x)}</span>`;
-      const model=m=>`<span class="wk-model" role="img" aria-label="Model ${m.n} bahagian sama besar. Perhatikan bahagian berkrim." style="--p:${m.n}">${[...Array(m.n).keys()].map(i=>{const k=i<(m.eat||0)?'eat':i<(m.eat||0)+(m.sh||0)?'sh':'un';return`<i data-k="${k}" class="${k==='sh'?'on':k==='eat'?'eat':''}" aria-hidden="true" style="--slice:${i};--dx:${((i-(m.n-1)/2)*2.4).toFixed(2)}px"></i>`}).join('')}</span>`;
+      const model=m=>`<span class="wk-model" role="img" aria-label="Model ${m.n} bahagian sama besar. Perhatikan ${esc(m.label||'bahagian berkrim')}." style="--p:${m.n}">${[...Array(m.n).keys()].map(i=>{const k=i<(m.eat||0)?'eat':i<(m.eat||0)+(m.sh||0)?'sh':'un';return`<i data-k="${k}" class="${k==='sh'?'on':k==='eat'?'eat':''}" aria-hidden="true" style="--slice:${i};--dx:${((i-(m.n-1)/2)*2.4).toFixed(2)}px"></i>`}).join('')}</span>`;
       const item=it=>it.fr?`<span class="wk-fr">${cell(it.fr[0])}<i></i>${cell(it.fr[1])}</span>`
         :it.mx?`<span class="wk-mx">${cell(it.mx[0])}<span class="wk-fr">${cell(it.mx[1])}<i></i>${cell(it.mx[2])}</span></span>`
         :it.model?model(it.model):it.tag?`<span class="wk-tag">${cell(it.tag)}</span>`:it.v!==undefined?cell(it.v):`<span class="wk-ft">${esc(it.t)}</span>`;
