@@ -443,7 +443,7 @@ button:focus-visible{outline:3px solid var(--ice);outline-offset:2px}
 </main>
 
 <script src="js/minigame-dev-gate.js?v=1.0.1"></script>
-<script src="js/minigame-worked-v1.js?v=1.17.2"></script>
+<script src="js/minigame-worked-v1.js?v=1.17.3"></script>
 <script src="js/minigame-panel-fit-v1.js?v=1.2.0"></script>
 <script src="js/minigame-wsay-v1.js?v=1.0.0"></script>
 <script src="js/kedai-kek-router.js"></script>
@@ -537,14 +537,14 @@ const GEN={
    const w1=[...L].sort((x,y)=>y-x).map(x=>fs(x,d)).join(', '),w2=[asc[1],asc[0],asc[2]].map(x=>fs(x,d)).join(', ');return{wk:{t:'order',L,d},kind:'pick',...opts([T,w1,w2],T),
    q:'Susun '+L.map(x=>fs(x,d)).join(', ')+' secara menaik (kecil ke besar).',s:'Penyebut sama. Susun ikut pengangka dari kecil ke besar.',a:'Menaik: '+T+'.'}}}],
  persepuluh:[
-  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:TENTH(n),
-   q:'Kek lapis dipotong 10 sama besar. Tulis bahagian berkrim sebagai pecahan atau perpuluhan.',s:'1 daripada 10 bahagian = 1/10 = 0.1.',a:n+' persepuluh = '+fs(n,10)+' = 0.'+n+'.'}}},
-  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'read',d:10,sh:n,label:'berisi jus'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:TENTH(n),
-   q:'Jus oren memenuhi '+n+' daripada 10 bahagian botol. Tulis bahagian berisi jus sebagai pecahan atau perpuluhan.',s:'Botol ada 10 bahagian sama besar. Kira bahagian berisi jus.',a:n+' daripada 10 = '+fs(n,10)+' = 0.'+n+'.'}}},
+  {arch:'coloured_card',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'frac',out:'dec'},kind:'pad',vis:[{t:'bar',n:10,sh:n,fl:C.fl}],form:DEC(n/10),
+   q:'Kek ini menunjukkan '+fs(n,10)+' bahagian berkrim. Tukar '+fs(n,10)+' kepada nombor perpuluhan.',s:'Penyebut 10 menunjukkan nilai persepuluh. Digit pertama selepas titik ialah nilai persepuluh.',a:fs(n,10)+' = 0.'+n+'.'}}},
+  {arch:'filled_bottle',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'frac',out:'dec'},kind:'pad',vis:[{t:'bottle',n:10,sh:n}],form:DEC(n/10),
+   q:'Botol ini berisi '+fs(n,10)+' daripada kapasiti penuh. Tukarkan '+fs(n,10)+' kepada perpuluhan.',s:'Lihat paras jus untuk semak nilai pecahan. Tukarkan penyebut 10 kepada nilai tempat persepuluh.',a:fs(n,10)+' = 0.'+n+' daripada satu botol penuh.'}}},
   {arch:'decimal_to_fraction',f:C=>{const n=R(1,9);return{wk:{t:'tenth',n,from:'dec',out:'frac'},kind:'pad',card:'0.'+n+' = [□/10]',form:FR(n,10),
    q:'Tukar 0.'+n+' kepada pecahan persepuluh.',s:'Digit selepas titik perpuluhan ialah bilangan persepuluh.',a:'0.'+n+' = '+fs(n,10)+'.'}}},
-  {arch:'remaining_part',f:C=>{const n=R(1,9),dec=Math.random()<.5;return{wk:{t:'tenth',n,from:'rest',out:dec?'dec':'frac'},kind:'pad',vis:[{t:'bar',n:10,eat:range(n),fl:C.fl}],form:TENTH(10-n),
-   q:C.who+' makan '+(dec?'0.'+n:fs(n,10))+' kek lapis. Berapa bahagian yang tinggal? Jawab sebagai pecahan atau perpuluhan.',s:'Satu kek penuh = 10 persepuluh. Tolak bahagian yang dimakan.',a:'10 − '+n+' = '+(10-n)+' persepuluh = '+fs(10-n,10)+' = 0.'+(10-n)+'.'}}},
+  {arch:'remaining_part',f:C=>{const n=R(1,9),dec=Math.random()<.5,left=10-n;return{wk:{t:'tenth',n,from:'rest',out:dec?'dec':'frac'},kind:'pad',vis:[{t:'bar',n:10,eat:range(n),fl:C.fl}],form:dec?DEC(left/10):FR(left,10),
+   q:C.who+' makan '+(dec?'0.'+n:fs(n,10))+' kek lapis. Berapa baki kek? Tulis dalam bentuk '+(dec?'perpuluhan':'pecahan persepuluh')+'.',s:'Satu kek penuh ialah 1.0 atau 10/10. Cari baki sebelum menukar kepada bentuk yang diminta.',a:'10 − '+n+' = '+left+' persepuluh = '+fs(left,10)+' = 0.'+left+'.'}}},
   {arch:'mixed_compare',f:C=>{let a,b;do{a=R(1,9);b=R(1,9)}while(a===b);const c=a>b?fs(a,10):'0.'+b;return{wk:{t:'tenthCmp',a,b},kind:'pick',...opts([fs(a,10),'0.'+b],c),
    q:'Yang manakah lebih besar: '+fs(a,10)+' atau 0.'+b+'?',s:'Tukar kedua-duanya kepada persepuluh, kemudian banding.',a:fs(a,10)+' = 0.'+a+'. Banding 0.'+a+' dengan 0.'+b+'.'}}}]},
 
@@ -698,7 +698,7 @@ const MODE_LABEL={potong:'POTONG',nama:'NAMA',cerita:'CERITA',banding:'BANDING',
 const GRADES={1:{title:'Satu perdua & satu perempat'},2:{title:'Pecahan hingga persepuluh'},3:{title:'Setara, permudah, nombor bercampur'},4:{title:'Tak wajar, tambah tiga, kuantiti'},5:{title:'Darab pecahan'},6:{title:'Bahagi & operasi bergabung'}};
 Object.keys(GRADES).forEach(g=>GRADES[g].modes=Object.keys(GEN[g]));
 const SAYS={potong:'Tolong potong ikut pesanan saya!',nama:'Berapa bahagian kek saya ada krim?',cerita:'Kami kongsi kek ni, tau!',banding:'Saya nak yang lebih banyak krim!',persepuluh:'Kek lapis 10 lapis, sedapnya!',setara:'Sama banyak ke tak ni?',permudah:'Tulis ringkas sikit, Wira.',bercampur:'Banyaknya kek lapis!',tambah:'Campur dua jenis krim!',kuantiti:'Saya nak beli tart!',darab:'Saya nak tempah banyak!',darabf:'Sukat bahan betul-betul!',bahagi:'Kongsi sama rata, ya!',gabung:'Kira ikut tertib, Wira!',masalah:'Untuk kenduri besar!'};
-const TIP={nama:'Kira semua bahagian dulu, itulah penyebut. Kemudian kira bahagian berkrim.',cerita:'Bayangkan kek 4 bahagian. Pangkah bahagian yang dimakan atau diberi, kemudian kira.',banding:'Penyebut sama? Banding pengangka sahaja.',persepuluh:'1 persepuluh = 0.1. Kira berapa persepuluh.',setara:'Darab atau bahagi atas dan bawah dengan nombor yang SAMA.',permudah:'Cuba bahagi atas dan bawah dengan 2, 3 atau 5. Ulang sampai tak boleh lagi.',bercampur:'Berapa kali penyebut masuk dalam pengangka? Itu nombor bulat. Bakinya menjadi pengangka.',tambah:'Samakan penyebut dulu. Kemudian tambah atau tolak pengangka sahaja.',kuantiti:'Cari satu bahagian dulu: bahagi dengan penyebut.',darab:'Darab atas dengan atas, bawah dengan bawah. Nombor bulat boleh ditulis sebagai nombor/1.',darabf:'Darab atas dengan atas, bawah dengan bawah, kemudian permudahkan.',bahagi:'Tukar ÷ kepada ×, kemudian terbalikkan pecahan kedua.',gabung:'Kurungan dulu, kemudian × dan ÷, akhir sekali + dan − dari kiri.',masalah:'Tulis ayat matematik daripada cerita dulu, kemudian kira.',potong:'Kira kepingan sambil sentuh.'};
+const TIP={nama:'Kira semua bahagian dulu, itulah penyebut. Kemudian kira bahagian berkrim.',cerita:'Bayangkan kek 4 bahagian. Pangkah bahagian yang dimakan atau diberi, kemudian kira.',banding:'Penyebut sama? Banding pengangka sahaja.',persepuluh:'10 pada penyebut menunjukkan persepuluh. Tukar 7/10 kepada 0.7 dengan nilai tempat, bukan sekadar kira petak.',setara:'Darab atau bahagi atas dan bawah dengan nombor yang SAMA.',permudah:'Cuba bahagi atas dan bawah dengan 2, 3 atau 5. Ulang sampai tak boleh lagi.',bercampur:'Berapa kali penyebut masuk dalam pengangka? Itu nombor bulat. Bakinya menjadi pengangka.',tambah:'Samakan penyebut dulu. Kemudian tambah atau tolak pengangka sahaja.',kuantiti:'Cari satu bahagian dulu: bahagi dengan penyebut.',darab:'Darab atas dengan atas, bawah dengan bawah. Nombor bulat boleh ditulis sebagai nombor/1.',darabf:'Darab atas dengan atas, bawah dengan bawah, kemudian permudahkan.',bahagi:'Tukar ÷ kepada ×, kemudian terbalikkan pecahan kedua.',gabung:'Kurungan dulu, kemudian × dan ÷, akhir sekali + dan − dari kiri.',masalah:'Tulis ayat matematik daripada cerita dulu, kemudian kira.',potong:'Kira kepingan sambil sentuh.'};
 
 /* ---------- hash: #d<g>[-mod[@tahap]]  cth #d3-tambah@2-setara ---------- */
 function parseHash(raw){const h=String(raw==null?location.hash.slice(1):raw).toLowerCase().split('?')[0],m=/^d([1-6])((?:-[a-z]+(?:@\d+)?)*)$/.exec(h);
