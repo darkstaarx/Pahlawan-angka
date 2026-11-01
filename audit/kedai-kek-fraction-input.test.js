@@ -145,7 +145,7 @@ test('D2 asks for the intended representation, while optional dual-input control
     assert.equal(h.api.evalPad().ok, true, archetype);
     const wrongForm = padHarness(round.form);
     wrongForm.api.key('3'); wrongForm.api.key('/');wrongForm.api.key('1');wrongForm.api.key('0');
-    assert.notEqual(wrongForm.api.evalPad().ok,true,'fraction must not satisfy decimal-only conversion');
+    assert.equal(wrongForm.api.evalPad().ok===true,false,'fraction must not satisfy decimal-only conversion');
   }
   const convert = GEN[2].persepuluh.find(t => t.arch === 'decimal_to_fraction').f({});
   assert.equal(convert.form.type, 'frac', 'reverse conversion requires fraction form');
