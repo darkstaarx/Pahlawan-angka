@@ -2,7 +2,7 @@
   'use strict';
   const URL='https://pxxekdeqlxwqwaqvfbnh.supabase.co';
   const KEY='sb_publishable_xVRVgrb4EP6RnFv_p6WI_g_u67xGW6C';
-  const ACTIVE_SCREENS=new Set(['hub','missions','treasure','game','learning','result']);
+  const ACTIVE_SCREENS=new Set(['hub','menuV2','missions','treasure','game','learning','result','segelDemo']);
   const IDLE_AFTER_MS=120000;
   const state={client:null,user:null,childId:null,guardianPin:null,controls:null,timerActive:false,sessionSeconds:0,todayBefore:0,lastTick:0,lastFlush:0,lastLocalSecond:-1,lastInteractionAt:Date.now(),dailySyncInFlight:false,dailySyncPending:false,saveTimer:null,saveInFlight:false,savePending:false,saveWaiters:[],authMode:'login',locked:false,ready:false,needsOnboarding:false};
   const $=id=>document.getElementById(id);
@@ -20,7 +20,9 @@
   const avatarSrc=value=>`assets/avatars/pupils/${avatarId(value)}.webp`;
   const schemaMismatch=error=>{const code=String(error?.code||''),msg=String(error?.message||'').toLowerCase();return ['PGRST202','PGRST204','42703','42883'].includes(code)||/avatar_id.*(column|schema cache)|column.*avatar_id|create_initial_child.*(function|schema cache|not found)/.test(msg)};
   const currentScreen=()=>document.body.dataset.screen||'';
-  const playing=()=>ACTIVE_SCREENS.has(currentScreen())&&!document.hidden&&!state.locked&&(Date.now()-state.lastInteractionAt<IDLE_AFTER_MS);
+  // Guest Jelajah, developer previews and demo profiles never contribute to a child's play time.
+  const countableRun=()=>{const mode=window.segelEntryMode?.();return !sess?.demoMode&&!sess?.devBattlefield&&!db?.demoMode&&!mode?.guestDemo&&!mode?.devBattlefield&&!mode?.writtenArithmeticPreview};
+  const playing=()=>ACTIVE_SCREENS.has(currentScreen())&&!document.hidden&&!state.locked&&countableRun()&&(Date.now()-state.lastInteractionAt<IDLE_AFTER_MS);
   const markInteraction=()=>{const wasIdle=Date.now()-state.lastInteractionAt>=IDLE_AFTER_MS;state.lastInteractionAt=Date.now();if(wasIdle)state.lastTick=performance.now()};
   const formatTime=seconds=>{const mins=Math.floor(Math.max(0,seconds)/60),hrs=Math.floor(mins/60),rest=mins%60;return hrs?`${hrs}:${String(rest).padStart(2,'0')}`:`${String(mins).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`};
   const localDay=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`};
@@ -218,7 +220,7 @@
   }
 
   function ensurePlaySession(){
-    if(!state.user||!state.childId||state.timerActive||state.locked)return;
+    if(!state.user||!state.childId||state.timerActive||state.locked||!countableRun())return;
     state.timerActive=true;state.sessionSeconds=0;state.lastTick=performance.now();state.lastFlush=state.todayBefore;
   }
 
@@ -230,6 +232,8 @@
     rememberLocalSeconds();if(!state.user||!state.childId)return false;
     if(state.dailySyncInFlight){state.dailySyncPending=true;return false;}state.dailySyncInFlight=true;
     const localTotal=Math.floor(state.todayBefore+state.sessionSeconds);
+    // Backgrounding before the first counted second must not create false zero-play rows.
+    if(localTotal<=0){state.dailySyncInFlight=false;return false;}
     const {data,error:readError}=await state.client.from('daily_play_totals').select('active_seconds').eq('child_id',state.childId).eq('play_date',localDay()).maybeSingle();
     if(readError){state.dailySyncInFlight=false;console.warn('Daily timer read failed',readError);return false;}
     const activeSeconds=Math.max(localTotal,Number(data?.active_seconds||0));
@@ -242,7 +246,7 @@
     const now=performance.now();if(!state.lastTick)state.lastTick=now;
     if(playing()&&state.timerActive)state.sessionSeconds+=(now-state.lastTick)/1000;
     state.lastTick=now;rememberLocalSeconds();updateTimer();checkLimit();
-    if(state.timerActive&&state.todayBefore+state.sessionSeconds-state.lastFlush>=120)syncDailyTotal();
+    if(state.timerActive&&state.todayBefore+state.sessionSeconds-state.lastFlush>=30)syncDailyTotal();
   }
 
   function updateTimer(){
