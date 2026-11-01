@@ -158,3 +158,26 @@ test('tutorial highlights are static gold, not red pulsing', () => {
   assert.match(source, /\.wk-c\.wk-next,\.wk-box\.wk-next\{[^}]*#fff4cf/);
   assert.match(source, /\.tiles\.kp\.dual\{grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
 });
+
+test('all three real D2 tenth generators still produce the exact guided solution', () => {
+  const gen = between('const GEN={', "const A='assets/minigames/kedai-kek/';");
+  const GEN = vm.runInNewContext(gen + '\nGEN', {
+    R: (a, b) => Math.min(b, Math.max(a, 3)),
+    fs: (n, d) => '[' + n + '/' + d + ']',
+    FR: (n, d) => ({ type: 'frac', n, d }),
+    DEC: v => ({ type: 'dec', v }),
+    TENTH: n => ({ type: 'tenth', n, d: 10, v: n / 10 }),
+    Math,
+  });
+  const worked = between('function workedPlan(){', 'const KK_HTML=');
+  for (const archetype of ['coloured_card', 'filled_bottle', 'remaining_part']) {
+    const item = GEN[2].persepuluh.find(t => t.arch === archetype);
+    const round = item.f({ who: 'Kawan', fl: { n: 'pandan' } });
+    const plan = vm.runInNewContext(worked + '\nworkedPlan()', {
+      q: round, window: { PAWorked },
+    });
+    assert.ok(plan, 'Guided plan missing: ' + archetype);
+    assert.equal(plan.value.N, round.form.n);
+    assert.equal(plan.value.D, 10);
+  }
+});
