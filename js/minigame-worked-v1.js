@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.17.1';
+  const VERSION='1.17.2';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
@@ -769,6 +769,16 @@
       ${row(A)}${second}<div class="wk-line"></div>
       <div class="wk-row wk-ans"><span class="wk-op">=</span>${cols.map(i=>cell('wk-a'+pt(i),'',i)).join('')}</div></div>`;
   }
+  /* Count only the relevant pieces, in the order a child chooses to count.
+     A cake never has every slice exploded simultaneously. 'left' excludes
+     eaten pieces; missing targeting metadata means no animation. */
+  function fractionCountTargets(kinds,glow){
+    if(!['all','sh','eat','un','left'].includes(glow)||!Array.isArray(kinds))return[];
+    return kinds.reduce((out,kind,i)=>{
+      if(glow==='all'||glow===kind||(glow==='left'&&kind!=='eat'))out.push(i);
+      return out;
+    },[]);
+  }
   /* Run the walkthrough. el = {board, tiles, say, next}; onDone(plan) after the last step. */
   function runCore(plan,el,onDone,opt={}){
     const q=s=>el.board.querySelector(s);let k=0,busy=false;
@@ -885,14 +895,47 @@
       if(s.pre&&s.pre.pair){el.board.querySelectorAll('.wk-box').forEach(c=>{const i=Number(c.dataset.i);c.classList.toggle('wk-pair',s.pre.pair.includes(i));c.classList.toggle('wk-target',i===s.pre.hop)})}
       el.board.querySelectorAll('.wk-diff,.wk-grp').forEach(c=>c.classList.remove('wk-diff','wk-grp'));
       el.board.querySelectorAll('.wk-model').forEach(model=>{
-        // One gentle 2.5D separation per question step, tied to the actual
-        // fraction model. Decoration never changes number or answer state.
-        model.classList.remove('wk-exploded');
+        const pieces=[...model.querySelectorAll('i')];
+        model.onclick=null;
+        model.onkeydown=null;
+        model.classList.remove('wk-exploded','wk-count-active');
+        model.removeAttribute('data-count');
+        pieces.forEach(piece=>{
+          piece.classList.remove('wk-lifted','wk-glow');
+          piece.removeAttribute('data-count');
+        });
         if(model.closest('.wk-hide'))return;
-        void model.offsetWidth;
-        model.classList.add('wk-exploded');
+        const targets=fractionCountTargets(pieces.map(piece=>piece.dataset.k),s.pre?.glow);
+        if(!targets.length)return; // no count prompt: leave all cake pieces at rest
+        model.classList.add('wk-count-active');
+        model.setAttribute('role','button');
+        model.setAttribute('tabindex','0');
+        model.setAttribute('title','Sentuh untuk kira satu kepingan demi satu kepingan');
+        let current=0;
+        const activate=()=>{
+          pieces.forEach(piece=>{
+            piece.classList.remove('wk-lifted','wk-glow');
+            piece.removeAttribute('data-count');
+          });
+          const piece=pieces[targets[current]];
+          // Restart animation ONLY on the current piece; all others stay flat.
+          void piece.offsetWidth;
+          piece.dataset.count=String(current+1);
+          piece.classList.add('wk-lifted','wk-glow');
+          model.setAttribute('aria-label','Kira satu demi satu: '+(current+1)+' kepingan dikira daripada '+targets.length+'. Sentuh untuk kepingan seterusnya.');
+        };
+        activate(); // first visible action = exactly ONE raised slice (count 1)
+        const next=()=>{
+          current=(current+1)%targets.length;
+          activate();
+        };
+        model.onclick=next;
+        model.onkeydown=event=>{
+          if(event.key==='Enter'||event.key===' '){
+            event.preventDefault();next();
+          }
+        };
       });
-      el.board.querySelectorAll('.wk-model i').forEach(c=>{const g=s.pre&&s.pre.glow,k=c.dataset.k;c.classList.toggle('wk-glow',!!g&&(g==='all'||g===k||(g==='left'&&k!=='eat')))});
       if(s.pre&&s.pre.group)s.pre.group.forEach(col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`).forEach(c=>c.classList.add('wk-grp')));
       if(s.pre&&s.pre.diffRows){s.pre.diffRows.forEach(r=>{const c=q(`.wk-pvrow[data-row="${r}"] [data-col="${s.pre.diff}"]`);if(c)c.classList.add('wk-diff')})}
       else if(s.pre){const cells=col=>el.board.querySelectorAll(`.wk-pvrow [data-col="${col}"]`);
@@ -952,5 +995,5 @@
         prompt:`${f.a} ${SIGN[f.op]} ${f.b}`,answer:String(f.answer),ok:!!f.ok,first:true,hints:0,ms:Math.max(0,f.ms|0),
         facets:{op:f.op,operands:[f.a,f.b],guided:true},...(f.ok?{}:{value:String(f.value).slice(0,24)})},location.origin)}catch(_){}
   }
-  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,buildList,reportFact,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,run,card:openCard,_digits:digits,_nf:nf});
+  return Object.freeze({VERSION,PLACE,parse,build,buildPV,buildFrac,buildList,reportFact,buildSeq,buildHops,buildPow10,buildChain,buildLong,runChain,boardHTML,fractionCountTargets,run,card:openCard,_digits:digits,_nf:nf});
 });
