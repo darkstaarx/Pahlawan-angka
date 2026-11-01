@@ -11,7 +11,9 @@ const extract=(begin,end)=>{
  return source.slice(i,j);
 };
 const functions=extract('const P2=(r,a)=>','function drawShelf(lit){');
-const js=functions+'\nreturn {roundSVG,barSVG,barsSVG,bottleSVG,modelSVG,cakeIcon,stateOf};';
+const compareDeclaration=source.match(/const COMPARE_CAKE=Object\.freeze\(\{[^}]+\}\);/)?.[0];
+assert.ok(compareDeclaration,'Comparison cake palette must be present');
+const js=compareDeclaration+'\n'+functions+'\nreturn {roundSVG,barSVG,barsSVG,bottleSVG,modelSVG,cakeIcon,stateOf,visHTML,COMPARE_CAKE};';
 const ctx={
  range:k=>Array.from({length:k},(_,i)=>i),
  shuffle:a=>a,
@@ -154,4 +156,29 @@ test('visual-only flavour details cannot create new answer targets',()=>{
    }
   }
  }
+});
+
+test('compare question uses identical neutral cakes, same pink cream, and a visible legend',()=>{
+ const flavorA={n:'coklat',c:'#9a5634',k:'#5e2f17'};
+ const flavorB={n:'oren',c:'#ffb760',k:'#d0782a'};
+ const cakeA=art.roundSVG({t:'round',n:3,fl:flavorA,compare:1},states(1));
+ const cakeB=art.roundSVG({t:'round',n:3,fl:flavorB,compare:1},states(2));
+ assert.equal((cakeA.match(/fill="#f75e96"/g)||[]).length,1,'cake A has one cream piece');
+ assert.equal((cakeB.match(/fill="#f75e96"/g)||[]).length,2,'cake B has two cream pieces');
+ for(const svg of [cakeA,cakeB]){
+  assert.match(svg,/fill="#f3d9ac"/,'both neutral cake bases identical');
+  assert.doesNotMatch(svg,/fill="#9a5634"|fill="#ffb760"/,'flavors cannot change comparison');
+  assert.match(svg,/berkrim/,'cream pieces are labelled');
+  assert.match(svg,/tanpa krim/,'uncreamed pieces are labelled');
+  assert.equal((svg.match(/data-i="/g)||[]).length,3,'each cake retains three equal pieces');
+ }
+ ctx.q.vis=[{t:'round',n:3,sh:1,fl:flavorA,compare:1,lab:'KEK A'},{t:'round',n:3,sh:2,fl:flavorB,compare:1,lab:'KEK B'}];
+ ctx.q.kind='pick';
+ const html=art.visHTML();
+ assert.match(html,/class="compare-legend"/);
+ assert.match(html,/Berkrim/);
+ assert.match(html,/Tanpa krim/);
+ assert.match(source,/fl:COMPARE_CAKE,compare:1,lab:'KEK A'/);
+ assert.match(source,/fl:COMPARE_CAKE,compare:1,lab:'KEK B'/);
+ assert.match(source,/Wira, kek mana yang lebih banyak krim/);
 });
