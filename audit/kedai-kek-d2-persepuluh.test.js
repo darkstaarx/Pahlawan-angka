@@ -77,6 +77,6 @@ test('Year 2 also includes comparison of a fraction and a decimal',()=>{
  assert.match(html,/arch:'mixed_compare'[\s\S]*?Yang manakah lebih besar/);
 });
 test('Kedai Kek loads the revised walkthrough version in its actual runtime',()=>{
- assert.match(html,/js\/minigame-worked-v1\.js\?v=1\.17\.3/);
+ assert.match(html,/js\/minigame-worked-v1\.js\?v=1\.17\.4/);
  assert.equal(P.VERSION,'1.17.4');
 });
