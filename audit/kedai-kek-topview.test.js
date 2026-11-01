@@ -30,7 +30,7 @@ test('rectangular cake is overhead with 10 equal accessible interactive pieces',
  assert.match(svg,/Kek pandangan atas, 10 potongan sama besar/);
  assert.equal((svg.match(/data-i="/g)||[]).length,10);
  assert.equal((svg.match(/fill="#ff8fb1"/g)||[]).length,3);
- assert.equal((svg.match(/fill="#8fd16a"/g)||[]).length,7);
+ assert.equal((svg.match(/fill="#8fd16a"/g)||[]).length,8); // 7 untopped parts + full cake base
  assert.doesNotMatch(svg,/y0\+12\+L\*8\.5/);
  const indexes=[...svg.matchAll(/data-i="(\d+)"/g)].map(x=>Number(x[1]));
  assert.deepEqual(indexes,[0,1,2,3,4,5,6,7,8,9]);
@@ -45,7 +45,7 @@ test('top-down model keeps empty, shaded, secondary and eaten parts distinct',()
  assert.equal((svg.match(/fill="#eee4ce"/g)||[]).length,1);
  assert.equal((svg.match(/fill="#ff8fb1"/g)||[]).length,2);
  assert.equal((svg.match(/fill="#7a4426"/g)||[]).length,1);
- assert.equal((svg.match(/fill="#8fd16a"/g)||[]).length,1);
+ assert.equal((svg.match(/fill="#8fd16a"/g)||[]).length,2); // base + 1 untopped part
  assert.equal((svg.match(/data-i="/g)||[]).length,5);
 });
 
