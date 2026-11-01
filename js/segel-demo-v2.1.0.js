@@ -3248,28 +3248,28 @@
   function segelAnswerFormat(q,api){
     if(!q||q.fractionTask||q.goldInteraction===true)return null;
     const answer=String(q.answer??'').trim();
-    const f=answer.match(/^(\\d{1,6})\\/(\\d{1,6})$/);
+    const f=answer.match(/^(\d{1,6})\/(\d{1,6})$/);
     if(f&&Number(f[2])===0)return null;
     if(!f&&!api?.typedEligible?.(q))return null;
-    const prompt=String(q.prompt||'').replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').toLowerCase();
+    const prompt=String(q.prompt||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').toLowerCase();
     // The two forms are interchangeable ONLY when the question explicitly
     // permits both; "tukar kepada pecahan/perpuluhan" remains format-specific.
-    const dual=/(?:pecahan\\s+(?:atau|dan)\\s+perpuluhan|perpuluhan\\s+(?:atau|dan)\\s+pecahan)/i.test(prompt);
+    const dual=/(?:pecahan\s+(?:atau|dan)\s+perpuluhan|perpuluhan\s+(?:atau|dan)\s+pecahan)/i.test(prompt);
     const fracNumber=f?Number(f[1])/Number(f[2]):Number(answer);
     const both=dual&&Number.isFinite(fracNumber)&&fracNumber>=0&&fracNumber<=1;
-    const decimalAnswer=!f&&/^-?\\d+(?:,\\d{3})*\\.\\d+$/.test(answer);
+    const decimalAnswer=!f&&/^-?\d+(?:,\d{3})*\.\d+$/.test(answer);
     const fraction=!!f||both,decimal=!!f?both:decimalAnswer||both;
     return{fraction,decimal,typedFraction:!!f,both,expected:fracNumber,
-      tenthOnly:!!f&&/pecahan\\s+persepuluh|dalam\\s+persepuluh/i.test(prompt)&&!both,
+      tenthOnly:!!f&&/pecahan\s+persepuluh|dalam\s+persepuluh/i.test(prompt)&&!both,
       pad:fraction||decimal};
   }
   function segelTypedValueValid(raw,spec){
     if(!raw)return false;
     if(raw.includes('/')){
-      if(!spec?.fraction||!/^\\d{1,6}\\/\\d{1,6}$/.test(raw))return false;
+      if(!spec?.fraction||!/^\d{1,6}\/\d{1,6}$/.test(raw))return false;
       return Number(raw.split('/')[1])>0;
     }
-    return /^-?\\d+(?:\\.\\d+)?$/.test(raw);
+    return /^-?\d+(?:\.\d+)?$/.test(raw);
   }
   function segelTypedValueMatches(q,raw,api,spec){
     if(!segelTypedValueValid(raw,spec))return false;
@@ -3299,7 +3299,7 @@
         if(symbol==='⌫')v=v.slice(0,-1);
         else if(symbol==='/'){if(spec.fraction&&v&&!v.includes('/')&&!v.includes('.'))v+='/'}
         else if(symbol==='.'){if(spec.decimal&&!v.includes('.')&&!v.includes('/'))v=(v||'0')+'.'}
-        else if(v.replace(/[.\\/]/g,'').length<12)v=v==='0'?symbol:v+symbol;
+        else if(v.replace(/[.\/]/g,'').length<12)v=v==='0'?symbol:v+symbol;
         input.value=v;input.classList.remove('needsValue');
         input.dispatchEvent(new Event('input',{bubbles:true}));
       };
