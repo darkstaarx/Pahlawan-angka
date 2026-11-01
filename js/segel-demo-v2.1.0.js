@@ -3245,6 +3245,31 @@
      emas menjadi kebanyakannya taip, bukan semuanya. */
   // Keep numeric boss questions unchanged, but permit explicitly typed fractions
   // on Emas. Never turn an interactive shade/model question into a plain input.
+  // Independent fallback: PADevExperiments is optional and isn't loaded by
+  // some production/Jelajah pages. Keep the safe numeric formats available.
+  function segelSafeTypedSpec(answer){
+    if(typeof answer==='number'&&Number.isFinite(answer))return{kind:'number',value:answer};
+    const a=String(answer??'').replace(/<[^>]*>/g,' ').trim().replace(/\s+/g,'');
+    if(/^-?\d+(?:,\d{3})*(?:\.\d+)?$/.test(a))return{kind:'number',value:Number(a.replace(/,/g,''))};
+    if(/^RM-?\d+(?:,\d{3})*(?:\.\d{1,2})?$/i.test(a))return{kind:'money',value:Number(a.replace(/^RM/i,'').replace(/,/g,''))};
+    if(/^\d+(?:\.\d{1,2})?sen$/i.test(a))return{kind:'money',unit:'sen',value:Number(a.replace(/sen$/i,''))/100};
+    if(/^-?\d+(?:,\d{3})*(?:\.\d+)?%$/.test(a))return{kind:'percent',value:Number(a.replace(/[% ,]/g,''))};
+    return null;
+  }
+  function segelSafeTypedMatch(q,raw){
+    const s=segelSafeTypedSpec(q?.answer);if(!s)return false;
+    let v=String(raw??'').trim().replace(/\s+/g,''),scale=1;
+    if(s.kind==='money'){
+      const rm=/^RM/i.test(v),sen=/sen$/i.test(v);
+      if(rm&&sen)return false;
+      scale=sen||(!rm&&s.unit==='sen')?100:1;
+      v=v.replace(/^RM/i,'').replace(/sen$/i,'');
+    }
+    if(s.kind==='percent')v=v.replace(/%$/,'');
+    v=v.replace(/,/g,'');
+    if(!/^-?\d+(?:\.\d+)?$/.test(v))return false;
+    return Math.abs(Number(v)/scale-s.value)<1e-9;
+  }
   function segelAnswerFormat(q,api){
     if(!q||q.fractionTask||q.goldInteraction===true)return null;
     const answer=String(q.answer??'').trim();
@@ -3316,8 +3341,8 @@
   }
 
   function renderTypedAnswer(q,box){
-    const api=window.PADevExperiments;
-    if(!api||typeof api.typedEligible!=='function'||typeof api.typedMatch!=='function')return false;
+    const api=window.PADevExperiments||{typedEligible:q=>!!segelSafeTypedSpec(q?.answer),typedMatch:segelSafeTypedMatch};
+    if(typeof api.typedEligible!=='function'||typeof api.typedMatch!=='function')return false;
     let tier=null;
     try{ tier=stage&&stage.activeTier() }catch(_){}
     if(!tier||tier.key!=='emas')return false;
