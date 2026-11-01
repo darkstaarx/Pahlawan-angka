@@ -47,8 +47,8 @@ test('a Darjah 2 bottle accepts 4 / 10 with the visible fraction separator', () 
   assert.equal(h.api.evalPad().ok, 1);
 });
 test('other input modes keep their keypad semantics and fraction prompts are explicit', () => {
-  assert.match(source, /q\.form\.type==='frac'\?'\/':ORDER\(\)\.length>1/);
-  assert.match(source, /e\.key==='\/'&&q\.form\.type==='frac'/);
+  assert.match(source, /const keys=dual\?/);
+  assert.match(source, /e\.key==='\/'&&\['frac','tenth'\]\.includes\(q\.form\.type\)/);
   assert.match(source, /Atas: pengangka · Tekan \/ · Bawah: penyebut/);
   const h = padHarness({ type: 'int', v: 13 });
   h.api.key('1'); h.api.key('3');
@@ -91,4 +91,70 @@ test('after two hints the pupil can open guided steps without deliberately answe
   assert.equal(hint.disabled, false);
   api.click();
   assert.equal(opened, 1);
+});
+
+test('Darjah 2 cake and bottle both accept a fraction or an equivalent decimal', () => {
+  for (const n of [1, 3, 4, 9]) {
+    const forms = [n + '/10', '0.' + n, '0.' + n + '0', (n * 2) + '/20'];
+    for (const entered of forms) {
+      const h = padHarness({ type: 'tenth', n, d: 10, v: n / 10 });
+      for (const key of entered) h.api.key(key);
+      assert.equal(h.inp.v, entered);
+      assert.equal(h.api.evalPad().ok, true, entered);
+    }
+  }
+});
+test('invalid, incomplete, zero-denominator and wrong tenth answers are rejected', () => {
+  const cases = [
+    ['', 'empty'], ['3/', 'incomplete'], ['0.', 'incomplete'],
+    ['3/0', 'zero'], ['4/10', 'wrong'], ['0.4', 'wrong'], ['3/9', 'wrong'],
+  ];
+  for (const [entered, reason] of cases) {
+    const h = padHarness({ type: 'tenth', n: 3, d: 10, v: 0.3 });
+    for (const key of entered) h.api.key(key);
+    const result = h.api.evalPad();
+    assert.equal(reason === 'wrong' ? result.ok : result[reason], reason === 'wrong' ? false : 1, entered);
+  }
+  const h = padHarness({ type: 'tenth', n: 3, d: 10 });
+  for (const key of '0.3') h.api.key(key);
+  h.api.key('/');
+  assert.equal(h.inp.v, '0.3', 'mixed separators cannot create malformed input');
+  h.api.key('⌫');
+  assert.equal(h.inp.v, '0.');
+});
+test('the actual D2 generator uses dual answers only when mathematically appropriate', () => {
+  const gen = between('const GEN={', "const A='assets/minigames/kedai-kek/';");
+  const context = {
+    R: (a, b) => Math.min(b, Math.max(a, 3)),
+    fs: (n, d) => '[' + n + '/' + d + ']',
+    FR: (n, d) => ({ type: 'frac', n, d }),
+    DEC: v => ({ type: 'dec', v }),
+    TENTH: n => ({ type: 'tenth', n, d: 10, v: n/10 }),
+    Math,
+  };
+  const GEN = vm.runInNewContext(gen + '\nGEN', context);
+  for (const archetype of ['coloured_card', 'filled_bottle', 'remaining_part']) {
+    const item = GEN[2].persepuluh.find(t => t.arch === archetype);
+    assert.ok(item, archetype);
+    const round = item.f({ who: 'Kawan', fl: { n: 'pandan' } });
+    assert.equal(round.form.type, 'tenth', archetype);
+    assert.match(round.q, /pecahan atau perpuluhan/, archetype);
+    const h = padHarness(round.form);
+    const actual = round.form.n;
+    for (const key of '0.' + actual) h.api.key(key);
+    assert.equal(h.api.evalPad().ok, true, archetype);
+  }
+  const convert = GEN[2].persepuluh.find(t => t.arch === 'decimal_to_fraction').f({});
+  assert.equal(convert.form.type, 'frac', 'conversion exercises must require a new representation');
+});
+test('the worked example stays accessible with the equivalent tenth form', () => {
+  assert.match(source, /f\.type==='frac'\|\|f\.type==='tenth'\?\[f\.n,f\.d\]/);
+  const p = PAWorked.buildFrac({ t: 'read', d: 10, sh: 9, label: 'berisi jus' });
+  assert.equal(p.value.N, 9);
+  assert.equal(p.value.D, 10);
+});
+test('tutorial highlights are static gold, not red pulsing', () => {
+  assert.match(source, /\.wk-c\.wk-next,\.wk-box\.wk-next\{[^}]*animation:none!important/);
+  assert.match(source, /\.wk-c\.wk-next,\.wk-box\.wk-next\{[^}]*#fff4cf/);
+  assert.match(source, /\.tiles\.kp\.dual\{grid-template-columns:repeat\(7,minmax\(0,1fr\)\)/);
 });
