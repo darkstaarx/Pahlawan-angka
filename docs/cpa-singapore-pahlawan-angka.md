@@ -2,6 +2,12 @@
 
 Disemak: 1 November 2026. Status: **penyelidikan dan reka bentuk**, bukan ciri yang telah dibangunkan. Sasaran kurikulum kekal **KSSR Malaysia**; Singapura menjadi rujukan pendekatan pedagogi, bukan pengganti DSKP.
 
+## Status pelaksanaan — 1 Nov 2026 (CPA Guidance v1)
+
+**Sudah di GitHub:** `js/cpa-guidance-v1.js` + `css/cpa-guidance-v1.css` ialah komponen CPA *sama* yang digunakan oleh Petunjuk dalam Battle biasa (`js/battle.js`) dan Segel production/Jelajah (`js/segel-demo-v2.1.0.js`). Ia memilih satu daripada 11 keluarga berdasarkan `q.facets` dan `META`, menawarkan **Buat (interaksi) → Lihat (model) → Kira (ayat berpandukan konsep)**, dan kembali ke soalan aktif. Model pecahan mengambil penyebut apabila tersedia secara eksplisit dalam `q.fractionTask`/`q.facets.denominator`. Semua model lain menggunakan **contoh cara**, dilabel dengan jelas, dan tidak berpura-pura menggambarkan angka jawapan soalan jika operand tiada. Tiada perubahan pada validation, markah, XP, mastery, latihan adaptif atau rekod cubaan. Kiraan petunjuk kekal di pemilik Battle/Segel. `audit/cpa-guidance.test.js` menguji 11 keluarga dan aliran tiga peringkat.
+
+**Belum siap:** 11 alat manipulatif berangka yang benar-benar mengikat setiap operand soalan; pencocokan schema khusus bagi semua keluarga soalan; regresi visual 320–390px dalam browser; migrasi semua mini-game dan Cikgu Dimensi kepada satu enjin. Kedai Kek menggunakan tutorial khusus sedia ada dan bukan diganti dengan model generik. **Belum dideploy ke Netlify** (`netlify.toml` mengabaikan auto-deploy). Status v1 ialah asas reusable + bantuan topik generik dalam battle, bukan 11 tutor penuh yang telah diverifikasi bersama murid.
+
 ## Apa yang disokong sumber
 
 - Singapore MOE, *Using Concrete-Pictorial-Abstract (CPA) Approach* (30 Apr 2025): pengalaman objek → gambar/model → simbol. https://nel.moe.edu.sg/la/numeracy/how-can-you-do-it-/using-concrete-pictorial-abstract--cpa--approach/
