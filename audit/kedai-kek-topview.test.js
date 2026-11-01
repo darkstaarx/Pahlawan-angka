@@ -120,7 +120,7 @@ test('all five flavours render as the same 2.5D family, not flat cake recolours'
   assert.equal((tiny.match(/fill="#ff8fb1"/g)||[]).length,3);
   assert.match(r,/ellipse cx="50" cy="56"/,'2.5D plate under round cake');
   assert.match(b,/ellipse cx="110"/,'same plate+shadow convention for tray');
-  assert.match(r,/cake/i);
+  assert.match(r,/Kek dilihat dari atas/);
   assert.match(icon,/hiasan kedai, pandangan sisi/,'decorative art retains original viewing angle');
   assert.match(r,/pointer-events="none"/);
   assert.match(b,/pointer-events="none"/);
