@@ -83,11 +83,10 @@ test('round cake is already overhead; bottle remains a side-view level measureme
  assert.doesNotMatch(icon,/Kek dilihat dari atas/);
 });
 
-test('real screenshot-inspired Darjah 2 cake question retains dual decimal/fraction answer logic',()=>{
- assert.match(source,/arch:'coloured_card'[\s\S]*?form:TENTH\(n\)/);
- assert.match(source,/arch:'remaining_part'[\s\S]*?form:TENTH\(10-n\)/);
- const correct="3/10",decimal="0.3";
- assert.equal(Number(correct.split('/')[0])/Number(correct.split('/')[1]),Number(decimal));
+test('real Darjah 2 conversion question requires the requested representation',()=>{
+ assert.match(source,/arch:'coloured_card'[\s\S]*?from:'frac',out:'dec'[\s\S]*?form:DEC\(n\/10\)/);
+ assert.match(source,/arch:'remaining_part'[\s\S]*?form:dec\?DEC\(left\/10\):FR\(left,10\)/);
+ assert.equal(Number('3')/10,Number('0.3'),'fractions and decimals remain mathematically equivalent');
 });
 
 test('bakery props stay in the original side/front view while the fraction model is overhead',()=>{
