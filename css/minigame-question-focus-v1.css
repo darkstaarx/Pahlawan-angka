@@ -8,7 +8,7 @@
   --pa-q-border:var(--gold-dk,var(--wood-dk,#85592a));
   --pa-q-accent:var(--gold,#ffc94a);
   display:grid!important;
-  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
   grid-template-rows:auto auto!important;
   align-items:stretch!important;
   justify-items:stretch;
@@ -22,11 +22,12 @@
 }
 /* Mode/tier are secondary metadata, never superimposed over the question. */
 :is(.pa-game,.game)>.banner>.tag{
-  position:absolute!important;
-  top:8px!important;
-  right:8px!important;
-  left:auto!important;
-  max-width:55%;
+  position:static!important;
+  grid-column:2;
+  grid-row:1;
+  align-self:center;
+  justify-self:end;
+  max-width:min(54vw,190px);
   min-height:23px;
   display:inline-flex;
   align-items:center;
@@ -49,7 +50,7 @@
   align-items:center;
   gap:4px 7px!important;
   width:auto!important;
-  max-width:calc(100% - 140px);
+  max-width:100%;
   min-height:25px;
   padding:3px 7px!important;
   margin:0!important;
@@ -65,7 +66,7 @@
 /* Full-width question surface: cream keeps ink contrast consistent in
    pink bakery, wooden workshop, and deep-navy construction scenes. */
 :is(.pa-game,.game)>.banner>div:last-child{
-  grid-column:1;
+  grid-column:1/-1;
   grid-row:2;
   display:block;
   min-width:0;
@@ -142,7 +143,7 @@
  .pa-game>.banner #bText{font-size:clamp(16px,4.6vw,21px)!important}
 }
 @media(max-width:350px){
- :is(.pa-game,.game)>.banner>.disc{max-width:calc(100% - 125px)}
- :is(.pa-game,.game)>.banner>.tag{max-width:57%;padding:3px 5px!important}
+ :is(.pa-game,.game)>.banner>.disc{max-width:100%}
+ :is(.pa-game,.game)>.banner>.tag{max-width:55vw;padding:3px 5px!important}
  :is(.pa-game,.game)>.banner>div:last-child{padding:9px 9px 8px}
 }
