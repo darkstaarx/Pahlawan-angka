@@ -24,10 +24,10 @@ test('all nine real Focus mini-games load one shared question-focus stylesheet',
 
 test('full-width parchment question stays separated from the progress and tier badge',()=>{
  assert.match(css,/grid-template-columns:minmax\(0,1fr\) auto!important/);
- assert.match(css,/>\\.banner>\\.tag\{/);
+ assert.match(css,/>\.banner>\.tag\{/);
  assert.match(css,/position:static!important/);
  assert.match(css,/grid-column:2/);
- assert.match(css,/>\\.banner>\\.disc\{/);
+ assert.match(css,/>\.banner>\.disc\{/);
  assert.match(css,/grid-column:1\/-1/);
  assert.match(css,/grid-row:2/);
  assert.match(css,/background:linear-gradient\(170deg,#fffdf4/);
@@ -36,10 +36,10 @@ test('full-width parchment question stays separated from the progress and tier b
 });
 
 test('instructions and fractions remain readable on short or narrow displays',()=>{
- assert.match(css,/#subtitle,#bText,\\.sub/);
+ assert.match(css,/#subtitle,#bText,\.sub/);
  assert.match(css,/display:block!important/);
  assert.match(css,/line-height:1\.37!important/);
- assert.match(css,/#question \\.fr/);
+ assert.match(css,/#question \.fr/);
  assert.match(css,/@media\(max-height:700px\)/);
  assert.match(css,/@media\(max-width:350px\)/);
  assert.doesNotMatch(css,/line-clamp|text-overflow:ellipsis|max-height:.*px;.*overflow:hidden/);
@@ -49,11 +49,11 @@ test('Gerai Wirayung preserves the task as the main message and Tapak Bina keeps
  const gerai=fs.readFileSync('gerai-wirayung.html','utf8');
  const tapak=fs.readFileSync('tapak-bina.html','utf8');
  assert.match(gerai,/id="bTitle"/);assert.match(gerai,/id="bText"/);
- assert.match(css,/\\.pa-game>\\.banner #bText\{/);
- assert.match(css,/\\.pa-game>\\.banner #bTitle\{/);
+ assert.match(css,/\.pa-game>\.banner #bText\{/);
+ assert.match(css,/\.pa-game>\.banner #bTitle\{/);
  assert.match(tapak,/--navy2:#14335c/);
  assert.match(css,/--pa-q-ink:var\(--ink/);
- assert.doesNotMatch(css,/\\.scene\s*\{|\\.actions\s*\{|\\.tiles\s*\{|\\.panel\s*\{/);
+ assert.doesNotMatch(css,/\.scene\s*\{|\.actions\s*\{|\.tiles\s*\{|\.panel\s*\{/);
 });
 
 test('question changes are visual-only; the original response handler remains in each game',()=>{
