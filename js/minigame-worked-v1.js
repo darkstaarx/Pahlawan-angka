@@ -669,13 +669,14 @@
         steps.push(P(`Tukar ${FS(n,10)} kepada nombor perpuluhan.`,'0.'+n,
           ['0.0'+n,'0.'+(n===9?8:n+1),'0.'+(n===1?2:n-1)],
           {showRow:r,set:set(sv),note:`${FS(n,10)} dan 0.${n} menunjukkan nilai yang sama.`}));
-      }
+      }else{
       if(from==='model'){row([{model:{n:10,sh:n}}],false);steps.push(P('Kira bahagian berkrim daripada 10.',n,[n+1,n-1,10-n],{note:`${n} persepuluh.`},{glow:'sh'}))}
       if(from==='rest'){row([{model:{n:10,eat:n}}],false);steps.push(P(`Satu kek = 10 persepuluh. Dimakan ${n}. 10 − ${n} = ?`,v,[v+1,v-1,n],{note:`${v} persepuluh tinggal.`},{glow:'left'}))}
       const r=row(o==='dec'?[{v:sv}]:[{fr:[sv,10]}],from==='dec');
       if(from==='dec'){row([{t:`0.${n}`}],false);steps.push(P(`0.${n}: digit selepas titik = ?`,n,[n+1,n-1,10-n],{set:set(sv),note:`0.${n} = ${n} persepuluh = ${FS(n,10)}.`}))}
       else steps.push(o==='dec'?P(`${v} persepuluh dalam perpuluhan = ?`,'0.'+v,['0.0'+v,v+'.0','0.'+(10-v)],{showRow:r,set:set(sv),note:`${v} persepuluh = 0.${v}.`}):G(`${v} daripada 10 = ${FS(v,10)}.`,{showRow:r,set:set(sv)}));
-      out={N:v,D:10,text:o==='dec'?'0.'+v:FS(v,10),exact:o!=='dec'}}
+      out={N:v,D:10,text:o==='dec'?'0.'+v:FS(v,10),exact:o!=='dec'}
+      }}
     else if(T==='qty'){
       // n/d of N: find 1/d first (N ÷ d), then n of them; "belum dijual" takes that from N.
       const{n,d,N,rest}=spec;if(![n,d,N].every(I)||N%d)return null;const g=N/d,sg=S(g),sp=S(n*g);
