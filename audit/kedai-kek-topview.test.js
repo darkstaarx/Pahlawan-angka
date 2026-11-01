@@ -99,3 +99,59 @@ test('bakery props stay in the original side/front view while the fraction model
  assert.match(tray,/Bahagian 1 daripada 3/);
  assert.match(tray,/stroke="#d4ad73"/);
 });
+
+test('all five flavours render as the same 2.5D family, not flat cake recolours',()=>{
+ const flavours=[
+  {n:'coklat',c:'#9a5634',k:'#5e2f17'},
+  {n:'pandan',c:'#8fd16a',k:'#4f8f35'},
+  {n:'vanila',c:'#f6d28b',k:'#c9963f'},
+  {n:'keladi',c:'#c3a3ec',k:'#8059b8'},
+  {n:'oren',c:'#ffb760',k:'#d0782a'},
+ ];
+ const round=new Set(),bar=new Set(),shelf=new Set();
+ for(const flavour of flavours){
+  const r=art.roundSVG({t:'round',n:4,fl:flavour},states(2));
+  const b=art.barSVG({t:'bar',n:5,fl:flavour},states(2));
+  const tiny=art.barSVG({t:'bar',n:10,fl:flavour},states(3));
+  const icon=art.cakeIcon(flavour);
+  assert.equal((r.match(/data-i="/g)||[]).length,4);
+  assert.equal((b.match(/data-i="/g)||[]).length,5);
+  assert.equal((tiny.match(/data-i="/g)||[]).length,10);
+  assert.equal((tiny.match(/fill="#ff8fb1"/g)||[]).length,3);
+  assert.match(r,/ellipse cx="50" cy="56"/,'2.5D plate under round cake');
+  assert.match(b,/ellipse cx="110"/,'same plate+shadow convention for tray');
+  assert.match(r,/cake/i);
+  assert.match(icon,/hiasan kedai, pandangan sisi/,'decorative art retains original viewing angle');
+  assert.match(r,/pointer-events="none"/);
+  assert.match(b,/pointer-events="none"/);
+  assert.match(r,/transform="translate\(/,'flavour toppings are drawn on round cake');
+  assert.match(b,/transform="translate\(/,'flavour toppings are drawn on tray');
+  assert.match(icon,/transform="translate\(/,'matching flavour topping is present on prop');
+  round.add(r);bar.add(b);shelf.add(icon);
+ }
+ assert.equal(round.size,5,'every flavour has unique art');
+ assert.equal(bar.size,5,'every flavour has unique cake colouring and decorations');
+ assert.equal(shelf.size,5,'every flavour has a distinct bakery decoration');
+ assert.equal((source.match(/flOrder=shuffle\(FLS\)/g)||[]).length,1,'the five flavours still rotate normally');
+});
+
+test('visual-only flavour details cannot create new answer targets',()=>{
+ const all=[
+ {n:'coklat',c:'#9a5634',k:'#5e2f17'},
+ {n:'pandan',c:'#8fd16a',k:'#4f8f35'},
+ {n:'vanila',c:'#f6d28b',k:'#c9963f'},
+ {n:'keladi',c:'#c3a3ec',k:'#8059b8'},
+ {n:'oren',c:'#ffb760',k:'#d0782a'}
+ ];
+ for(const fl of all){
+  for(const n of [2,3,4,5,8,10]){
+   const st={sh:new Set([0]),sh2:new Set(),eat:new Set()};
+   const shapes=[art.roundSVG({t:'round',n,fl},st),art.barSVG({t:'bar',n,fl},st)];
+   for(const svg of shapes){
+    const parts=[...svg.matchAll(/data-i="(\d+)"/g)].map(m=>Number(m[1]));
+    assert.deepEqual(parts,Array.from({length:n},(_,i)=>i));
+    assert.doesNotMatch(svg,/<(?:path|circle|line)[^>]*data-i="(\d+)"[^>]*pointer-events="none"/);
+   }
+  }
+ }
+});
