@@ -3243,6 +3243,75 @@
      demo. Jawapan yang tidak boleh ditaip dengan selamat — "puluh", "Januari",
      nama bentuk — gagal typedEligible() dan kekal empat pilihan, jadi tahap
      emas menjadi kebanyakannya taip, bukan semuanya. */
+  // Keep numeric boss questions unchanged, but permit explicitly typed fractions
+  // on Emas. Never turn an interactive shade/model question into a plain input.
+  function segelAnswerFormat(q,api){
+    if(!q||q.fractionTask||q.goldInteraction===true)return null;
+    const answer=String(q.answer??'').trim();
+    const f=answer.match(/^(\\d{1,6})\\/(\\d{1,6})$/);
+    if(f&&Number(f[2])===0)return null;
+    if(!f&&!api?.typedEligible?.(q))return null;
+    const prompt=String(q.prompt||'').replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').toLowerCase();
+    // The two forms are interchangeable ONLY when the question explicitly
+    // permits both; "tukar kepada pecahan/perpuluhan" remains format-specific.
+    const dual=/(?:pecahan\\s+(?:atau|dan)\\s+perpuluhan|perpuluhan\\s+(?:atau|dan)\\s+pecahan)/i.test(prompt);
+    const fracNumber=f?Number(f[1])/Number(f[2]):Number(answer);
+    const both=dual&&Number.isFinite(fracNumber)&&fracNumber>=0&&fracNumber<=1;
+    const decimalAnswer=!f&&/^-?\\d+(?:,\\d{3})*\\.\\d+$/.test(answer);
+    const fraction=!!f||both,decimal=!!f?both:decimalAnswer||both;
+    return{fraction,decimal,typedFraction:!!f,both,expected:fracNumber,
+      tenthOnly:!!f&&/pecahan\\s+persepuluh|dalam\\s+persepuluh/i.test(prompt)&&!both,
+      pad:fraction||decimal};
+  }
+  function segelTypedValueValid(raw,spec){
+    if(!raw)return false;
+    if(raw.includes('/')){
+      if(!spec?.fraction||!/^\\d{1,6}\\/\\d{1,6}$/.test(raw))return false;
+      return Number(raw.split('/')[1])>0;
+    }
+    return /^-?\\d+(?:\\.\\d+)?$/.test(raw);
+  }
+  function segelTypedValueMatches(q,raw,api,spec){
+    if(!segelTypedValueValid(raw,spec))return false;
+    if(raw.includes('/')){
+      const [n,d]=raw.split('/').map(Number);
+      if(spec.tenthOnly&&d!==10)return false;
+      return Math.abs(n/d-spec.expected)<1e-9;
+    }
+    if(spec.typedFraction)return spec.decimal&&Math.abs(Number(raw)-spec.expected)<1e-9;
+    return api.typedMatch(q,raw);
+  }
+  function segelAnswerKeypad(form,input,spec){
+    if(!spec.pad)return;
+    const keys=spec.fraction&&spec.decimal
+      ?['1','2','3','⌫','4','5','6','/','7','8','9','.','','0','','']
+      :['1','2','3','4','5','6','7','8','9',spec.fraction?'/':'.','0','⌫'];
+    const pad=document.createElement('div');pad.className='paSegelKeypad';
+    pad.setAttribute('role','group');pad.setAttribute('aria-label','Papan kekunci jawapan');
+    for(const symbol of keys){
+      if(!symbol){pad.appendChild(document.createElement('span'));continue;}
+      const key=document.createElement('button');key.type='button';key.className='paSegelKey';
+      key.textContent=symbol;
+      key.setAttribute('aria-label',symbol==='⌫'?'Padam':symbol==='/'?'Garis pecahan':symbol==='.'?'Titik perpuluhan':'Nombor '+symbol);
+      key.onclick=()=>{
+        if(input.disabled)return;
+        let v=input.value||'';
+        if(symbol==='⌫')v=v.slice(0,-1);
+        else if(symbol==='/'){if(spec.fraction&&v&&!v.includes('/')&&!v.includes('.'))v+='/'}
+        else if(symbol==='.'){if(spec.decimal&&!v.includes('.')&&!v.includes('/'))v=(v||'0')+'.'}
+        else if(v.replace(/[.\\/]/g,'').length<12)v=v==='0'?symbol:v+symbol;
+        input.value=v;input.classList.remove('needsValue');
+        input.dispatchEvent(new Event('input',{bubbles:true}));
+      };
+      pad.appendChild(key);
+    }
+    input.inputMode='none';
+    form.classList.add('paSegelKeypadForm');
+    form.appendChild(pad);
+    const note=form.querySelector('.paTypedNote');
+    if(note)note.textContent=spec.both?'Jawab dengan pecahan (/) atau perpuluhan (.)':spec.fraction?'Gunakan / untuk pecahan':'Gunakan . untuk perpuluhan';
+  }
+
   function renderTypedAnswer(q,box){
     const api=window.PADevExperiments;
     if(!api||typeof api.typedEligible!=='function'||typeof api.typedMatch!=='function')return false;
@@ -3252,7 +3321,8 @@
     // Tugasan interaktif berautor khusus (blok puluh/sa atau pola) menggunakan
     // jambatan jawapan sedia ada pada Emas, bukan input teks generik.
     if(q.goldInteraction===true)return false;
-    if(!api.typedEligible(q))return false;
+    const answerFormat=segelAnswerFormat(q,api);
+    if(!answerFormat)return false;
 
     const form=document.createElement('form');
     form.className='paTypedAnswer'; form.autocomplete='off';
@@ -3273,15 +3343,21 @@
     note.className='paTypedNote';
     note.textContent='Tiada pilihan jawapan · tunjuk apa yang kamu benar-benar tahu';
     row.append(input,button); form.append(label,row,note); box.appendChild(form);
+    segelAnswerKeypad(form,input,answerFormat);
 
     form.onsubmit=e=>{
       e.preventDefault();
       if(run.locked||input.disabled)return;
       const raw=input.value.trim();
-      if(!raw){ input.classList.add('needsValue'); input.focus(); return }
+      if(!segelTypedValueValid(raw,answerFormat)){
+        input.classList.add('needsValue');input.focus();
+        const message=form.querySelector('.paTypedNote');
+        if(message)message.textContent=raw?'Lengkapkan jawapan. Pastikan penyebut bukan 0.':'Masukkan jawapan dahulu.';
+        return;
+      }
       input.classList.remove('needsValue');
       input.disabled=true; button.disabled=true;
-      const ok=api.typedMatch(q,raw);
+      const ok=segelTypedValueMatches(q,raw,api,answerFormat);
       respond(ok?{v:q.answer,tag:'correct',label:q.answer}
                 :{v:raw,tag:(q.wrong&&q.wrong[0]&&q.wrong[0].tag)||'generated',label:raw}, button);
     };
