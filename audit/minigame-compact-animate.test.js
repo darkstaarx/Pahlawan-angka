@@ -36,19 +36,31 @@ test('compact layout does not hide the question or game exit/actions',()=>{
  assert.doesNotMatch(css,/#question\{display:none|#check\{display:none|\.actions\{display:none/);
 });
 
-test('worked model has exactly n visually separable fraction cells; no answer is auto-filled',()=>{
- assert.match(worked,/class="wk-model" role="img"/);
- assert.match(worked,/style="--slice:\$\{i\};--dx:\$\{/);
- assert.match(worked,/wk-exploded/);
- assert.match(worked,/model\.classList\.add\('wk-exploded'\)/);
- assert.match(worked,/model\.closest\('\.wk-hide'\)/);
- assert.match(css,/@keyframes paCakeSeparate/);
- assert.match(css,/animation-delay:calc\(var\(--slice\) \* 44ms\)/);
- assert.match(css,/\.wk-model i\.on/);
- assert.match(css,/background:linear-gradient\(#ffbbce,#ed668e\)/);
+test('counted cake lifts exactly one relevant slice at a time, with a count badge',()=>{
+ const W=require('../js/minigame-worked-v1.js');
+ const tenth=W.buildFrac({t:'tenth',n:7,from:'model',out:'dec'});
+ assert.ok(tenth);assert.equal(tenth.steps[0].pre.glow,'sh');
+ const html=W.boardHTML(tenth);
+ assert.equal((html.match(/data-k="sh"/g)||[]).length,7);
+ assert.equal((html.match(/data-k="un"/g)||[]).length,3);
+ assert.match(html,/role="img"/);
+ assert.deepEqual(W.fractionCountTargets(['sh','sh','sh','sh','sh','sh','sh','un','un','un'],'sh'),[0,1,2,3,4,5,6]);
+ assert.deepEqual(W.fractionCountTargets(['eat','eat','eat','un','un','un','un','un','un','un'],'left'),[3,4,5,6,7,8,9]);
+ assert.deepEqual(W.fractionCountTargets(['eat','eat','eat','un','un'],'eat'),[0,1,2]);
+ assert.deepEqual(W.fractionCountTargets(['sh','un','eat'],'all'),[0,1,2]);
+ assert.deepEqual(W.fractionCountTargets(['sh','un','eat'],undefined),[]);
+ assert.match(worked,/const targets=fractionCountTargets\(pieces\.map\(piece=>piece\.dataset\.k\),s\.pre\?\.glow\)/);
+ assert.match(worked,/pieces\.forEach\(piece=>\{\s*piece\.classList\.remove\('wk-lifted','wk-glow'\)/);
+ assert.match(worked,/const piece=pieces\[targets\[current\]\]/);
+ assert.match(worked,/piece\.dataset\.count=String\(current\+1\)/);
+ assert.match(worked,/piece\.classList\.add\('wk-lifted','wk-glow'\)/);
+ assert.match(worked,/activate\(\); \/\/ first visible action = exactly ONE raised slice/);
+ assert.match(worked,/model\.onclick=next/);
+ assert.match(css,/\.wk-model i\.wk-lifted\{/);
+ assert.match(css,/\.wk-model i\.wk-lifted::after/);
+ assert.match(css,/content:attr\(data-count\)/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
- assert.match(worked,/const model=m=>/);
- assert.doesNotMatch(css,/pointer-events:none!important/);
+ assert.doesNotMatch(css,/\.wk-model\.wk-exploded i\{/);
 });
 
 test('visual animation leaves the fraction answer/telemetry and scoring handlers unchanged',()=>{
