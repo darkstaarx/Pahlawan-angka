@@ -702,18 +702,59 @@ function pet(s){$('petImg').src=A+q.pet+'-'+s+'.webp'}
 /* ---------- lukisan kek (SVG) ---------- */
 const P2=(r,a)=>[(50+r*Math.cos(a)).toFixed(2),(50+r*Math.sin(a)).toFixed(2)];
 const berry=(x,y,s=1)=>'<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 -4 C4 -4 5 0 0 5 C-5 0 -4 -4 0 -4Z" fill="#e8364f" stroke="#8f1d2e" stroke-width="1"/><path d="M-2.5 -4 L0 -6 L2.5 -4" fill="#5cb85c" stroke="#2f6a2e" stroke-width=".8"/></g>';
-function roundSVG(m,st){const n=m.n,R=43,fl=m.fl||FLS[2];let s='<svg viewBox="-4 -4 108 108" role="img" aria-label="Kek dilihat dari atas, '+n+' potongan sama besar"><ellipse cx="50" cy="54" rx="52" ry="50" fill="#fff" stroke="#e3cfa8" stroke-width="2"/><circle cx="50" cy="50" r="'+(R+2)+'" fill="'+fl.k+'"/><circle cx="50" cy="50" r="'+R+'" fill="'+fl.c+'"/>';
- for(let i=0;i<n;i++){const a0=-Math.PI/2+i*2*Math.PI/n,a1=a0+2*Math.PI/n,am=(a0+a1)/2,eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i),fill=eat?'#fffaf0':sh?PINK:s2?CHOC:'transparent';
-  const d=n===1?'M50 '+(50-R)+' A'+R+' '+R+' 0 1 1 49.99 '+(50-R)+'Z':'M50 50 L'+P2(R,a0).join(' ')+' A'+R+' '+R+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+P2(R,a1).join(' ')+'Z';
-  s+='<path d="'+d+'" data-i="'+i+'" fill="'+fill+'"'+(eat?' stroke="#d7b47e" stroke-dasharray="3 3" stroke-width="1.5"':'')+'/>';
-  if((sh||s2)&&!eat){const[x,y]=n===1?[50,50]:P2(R*.6,am);s+=sh?berry(+x,+y,n>8?.8:1.1):'<circle cx="'+x+'" cy="'+y+'" r="3" fill="#ffd036" stroke="#7a4426" stroke-width="1"/>'}}
- if(n>1)for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;s+='<line x1="50" y1="50" x2="'+P2(R+2,a)[0]+'" y2="'+P2(R+2,a)[1]+'" stroke="#fffaf2" stroke-width="2.2" pointer-events="none"/>'}
- return s+'<circle cx="50" cy="50" r="2.2" fill="#fffaf2" pointer-events="none"/></svg>'}
+/* Shared 2.5D cake art: same outline, elevation, cream and flavor marks for
+   top-down math models and 3/4-view bakery decorations. No realism/flat switch. */
+const cakeLook=fl=>({
+ coklat:{light:'#f6cca3',dark:'#633520',accent:'#9e6039'},
+ pandan:{light:'#edffd7',dark:'#327041',accent:'#499e55'},
+ vanila:{light:'#fff9e4',dark:'#9a6929',accent:'#d1a346'},
+ keladi:{light:'#f4e2ff',dark:'#70469a',accent:'#ae85d5'},
+ oren:{light:'#fff5cb',dark:'#a85823',accent:'#eb8b35'}
+}[fl?.n]||{light:'#fff9e4',dark:'#9a6929',accent:'#d1a346'});
+function cakeFlavourMark(fl,x,y,z=1){
+ const a=cakeLook(fl);
+ let art='';
+ switch(fl?.n){
+ case 'coklat':art='<path d="M-5 3 Q-3 -4 0 -1 T5 -4" stroke="'+a.dark+'" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="-3" cy="-3" r="1.4" fill="'+a.light+'"/>';break;
+ case 'pandan':art='<path d="M-6 3 Q-2 -8 1 -2 Q5 -7 6 1 Q0 0 -6 3Z" fill="'+a.accent+'" stroke="'+a.dark+'" stroke-width="1"/><path d="M-3 2L4 -1" stroke="'+a.light+'" stroke-width="1"/>';break;
+ case 'keladi':art='<ellipse cx="-2.7" cy="-2" rx="2.6" ry="4.3" fill="'+a.light+'" stroke="'+a.dark+'" stroke-width=".6" transform="rotate(-35 -2.7 -2)"/><ellipse cx="3" cy="-2" rx="2.6" ry="4.3" fill="'+a.accent+'" stroke="'+a.dark+'" stroke-width=".6" transform="rotate(35 3 -2)"/><circle cx="0" cy="2" r="1.7" fill="#fff3db"/>';break;
+ case 'oren':art='<path d="M-5 3 A6 6 0 0 1 5 -1" stroke="'+a.accent+'" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M-2 1 Q2 -4 4 -2" stroke="'+a.light+'" stroke-width="1.3" fill="none"/>';break;
+ default:art='<circle cx="-4" cy="1" r="2" fill="#fff9ed" stroke="'+a.accent+'" stroke-width=".7"/><circle cx="2" cy="-3" r="1.7" fill="'+a.accent+'"/><circle cx="4" cy="3" r="1.5" fill="#fff9ed"/>';
+ }
+ return '<g pointer-events="none" transform="translate('+x+' '+y+') scale('+z+')">'+art+'</g>';
+}
+function cakeCrumb(fl,x,y,z=1){const a=cakeLook(fl);return '<g pointer-events="none" opacity=".78" transform="translate('+x+' '+y+') scale('+z+')"><circle cx="-4" cy="1" r="1.4" fill="'+a.dark+'" opacity=".33"/><circle cx="4" cy="-2" r="1.5" fill="'+a.light+'"/><path d="M-1 -4l2 1" stroke="#fff9eb" stroke-width="1.4" stroke-linecap="round"/></g>'}
+function roundSVG(m,st){
+ const n=m.n,R=43,fl=m.fl||FLS[2],a=cakeLook(fl);
+ let s='<svg viewBox="-4 -4 108 108" role="img" aria-label="Kek dilihat dari atas, '+n+' potongan sama besar">'
+  +'<ellipse cx="50" cy="61" rx="51" ry="44" fill="#a58052" opacity=".23" pointer-events="none"/>'
+  +'<ellipse cx="50" cy="56" rx="51" ry="46" fill="#fff7e4" stroke="#d7b47e" stroke-width="2" pointer-events="none"/>'
+  +'<circle cx="50" cy="55" r="'+(R+2)+'" fill="'+a.dark+'" stroke="'+fl.k+'" stroke-width="1.6" pointer-events="none"/>'
+  +'<circle cx="50" cy="50" r="'+(R+2)+'" fill="'+fl.k+'" stroke="'+a.dark+'" stroke-width="1.6" pointer-events="none"/>'
+  +'<circle cx="50" cy="50" r="'+R+'" fill="'+fl.c+'" pointer-events="none"/>';
+ for(let i=0;i<n;i++){
+  const p=-Math.PI/2+i*2*Math.PI/n,q=p+2*Math.PI/n,am=(p+q)/2;
+  const eat=st.eat.has(i),sh=st.sh.has(i),s2=st.sh2.has(i);
+  const fill=eat?'#fffaf0':sh?PINK:s2?CHOC:fl.c;
+  const d=n===1?'M50 '+(50-R)+' A'+R+' '+R+' 0 1 1 49.99 '+(50-R)+'Z':'M50 50 L'+P2(R,p).join(' ')+' A'+R+' '+R+' 0 '+(q-p>Math.PI?1:0)+' 1 '+P2(R,q).join(' ')+'Z';
+  s+='<path d="'+d+'" data-i="'+i+'" aria-label="Bahagian '+(i+1)+' daripada '+n+'" fill="'+fill+'" stroke="'+(eat?'#d7b47e':a.dark)+'" stroke-width="'+(n>10?.75:1.25)+'"'+(eat?' stroke-dasharray="3 3"':'')+'/>';
+  const pos=P2(R*.63,am),x=+pos[0],y=+pos[1];
+  if(eat)continue;
+  if(sh||s2){
+   if(n<=10)s+='<path d="M'+(x-6)+' '+(y-3)+'Q'+x+' '+(y-8)+' '+(x+6)+' '+(y-3)+' M'+(x-6)+' '+(y+2)+'Q'+x+' '+(y-3)+' '+(x+6)+' '+(y+2)+'" fill="none" stroke="#fff7ef" stroke-width="'+(n>6?1.7:2.7)+'" stroke-linecap="round" pointer-events="none"/>';
+   s+=cakeFlavourMark(fl,x,y,n>10?.45:n>6?.72:1.08);
+  }else s+=cakeCrumb(fl,x,y,n>8?.62:n>5?.85:1.12);
+ }
+ s+='<circle cx="50" cy="50" r="'+R+'" fill="none" stroke="'+fl.k+'" stroke-width="2.6" pointer-events="none"/>'
+   +'<path d="M24 23 A39 39 0 0 1 76 23" fill="none" stroke="'+a.light+'" stroke-width="2" opacity=".5" pointer-events="none"/>'
+   +'<circle cx="50" cy="50" r="2" fill="#fffaf2" pointer-events="none"/>';
+ return s+'</svg>';
+}
 /* CPA: every part is viewed FROM ABOVE, not as layers on a side elevation.
    Exactly n equal-width cake pieces; state-of-the-game st.sh/sh2/eat stays unchanged.
    A real cake flavour remains on the rim while the selected parts use pink icing. */
 function barSVG(m,st,y0=0,inner=false){
- // Kek yang disentuh sahaja: pandangan atas dulang pandan.
+ // Kek matematik sahaja dilihat dari atas; flavour dan shading ikut semua kek.
  // Potongan tepat sama lebar; setiap data-i kekal satu bahagian bagi engine.
  const n=m.n,fl=m.fl||FLS[2],x0=8,W=204,w=W/n,y=y0+6,H=38;
  const sliceColour=i=>st.eat.has(i)?'#eee4ce':st.sh.has(i)?PINK:st.sh2.has(i)?CHOC:fl.c;
@@ -736,14 +777,11 @@ function barSVG(m,st,y0=0,inner=false){
      s+='<path d="M'+(x+3)+' '+yy+' Q'+(x+w/2)+' '+(yy-5)+' '+(x+w-3)+' '+yy+'" fill="none" stroke="#fff7ef" stroke-width="'+(w>36?4.1:2.5)+'" stroke-linecap="round" opacity=".88" pointer-events="none"/>';
     }
    }
-   if(w>=36)s+=berry(x+w*.5,y+H*.5,.8);
+   if(w>=24)s+=cakeFlavourMark(fl,x+w*.5,y+H*.54,w>=38?1.06:.72);
   }else{
    // Top of real pandan/vanilla cake: baked crumb highlights, not blank tiles.
    if(w>=14)s+='<path d="M'+(x+Math.min(5,w*.18))+' '+(y+7)+'h'+Math.max(2,w-Math.min(10,w*.36))+'" stroke="#fff8de" stroke-width="2.5" stroke-linecap="round" opacity=".65" pointer-events="none"/>';
-   if(w>=29){
-    s+='<circle cx="'+(x+w*.39)+'" cy="'+(y+H*.58)+'" r="1.25" fill="'+fl.k+'" opacity=".3" pointer-events="none"/>'
-      +'<circle cx="'+(x+w*.73)+'" cy="'+(y+H*.71)+'" r="1.4" fill="#fff9e2" opacity=".66" pointer-events="none"/>';
-   }
+   if(w>=29)s+=cakeCrumb(fl,x+w*.55,y+H*.59,w>40?1.14:.72);
   }
   // Single touch target per mathematically equal part, unaffected by decoration.
   s+='<rect data-i="'+i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+H+'" fill="transparent" aria-label="Bahagian '+(i+1)+' daripada '+n+'"/>';
@@ -788,7 +826,13 @@ const WIDE={bar:1,bars:1,set:1,tray:1,grid:1};
 function visHTML(){const V=q.vis||[];if(!V.length)return '';
  if(q.stackVis)return '<div class="vis"><div class="stack">'+V.map(m=>modelSVG(m,false)).join('')+'</div></div>';
  return '<div class="vis n'+V.length+(q.kind==='shade'||q.kind==='tray'?' live':'')+'">'+V.map((m,i)=>'<div class="m'+(WIDE[m.t]?' wide':'')+(m.t==='bars'?' bars':'')+(m.live?' livebox':'')+'" id="m'+i+'">'+modelSVG(m,!!m.live)+(m.lab?'<b>'+m.lab+'</b>':'')+'</div>').join('')+'</div>'}
-function cakeIcon(fl){return '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="35" rx="17" ry="4" fill="#fff" stroke="#d7b47e" stroke-width="1.5"/><rect x="7" y="17" width="26" height="17" rx="4" fill="'+fl.c+'" stroke="'+fl.k+'" stroke-width="2"/><path d="M7 21v-3c0-3 2-4 4-4h18c2 0 4 1 4 4v3c-2 2-4 0-5 2s-3 2-4 0-3-2-4 0-3 2-4 0-3-2-4 0-4 0-5-2z" fill="'+PINK+'" stroke="'+PINK_K+'" stroke-width="1.5"/>'+berry(20,11,1.4)+'</svg>'}
+function cakeIcon(fl){const a=cakeLook(fl);return '<svg viewBox="0 0 40 40" role="img" aria-label="Kek '+fl.n+' hiasan kedai, pandangan sisi">'
+ +'<ellipse cx="20" cy="35" rx="17" ry="4" fill="#fff7e8" stroke="#d7b47e" stroke-width="1.5" pointer-events="none"/>'
+ +'<rect x="7" y="17" width="26" height="17" rx="4" fill="'+fl.c+'" stroke="'+fl.k+'" stroke-width="2"/>'
+ +'<path d="M10 31h20" stroke="'+a.light+'" stroke-width="2" opacity=".8" pointer-events="none"/>'
+ +'<path d="M7 21v-3c0-3 2-4 4-4h18c2 0 4 1 4 4v3c-2 2-4 0-5 2s-3 2-4 0-3-2-4 0-3 2-4 0-3-2-4 0-4 0-5-2z" fill="'+PINK+'" stroke="'+PINK_K+'" stroke-width="1.5"/>'
+ +'<path d="M11 19h17" fill="none" stroke="#fff9ed" opacity=".8" stroke-width="1.5" pointer-events="none"/>'
+ +cakeFlavourMark(fl,20,11,1.04)+'</svg>'}
 function drawShelf(lit){$('shelf').innerHTML=flOrder.map((fl,i)=>'<span class="slot'+(i<lit?' on':'')+'" id="slot'+i+'">'+cakeIcon(fl)+'</span>').join('')}
 
 /* ---------- panel ---------- */
