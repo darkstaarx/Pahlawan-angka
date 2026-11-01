@@ -13,7 +13,7 @@
   if(root)root.PAWorked=api;
 })(typeof window!=='undefined'?window:undefined,function(){
   'use strict';
-  const VERSION='1.17.0';
+  const VERSION='1.17.1';
   const PLACE=['sa','puluh','ratus','ribu','puluh ribu','ratus ribu','juta'],PLACE_=PLACE;
   const SIGN={add:'+',sub:'−',mul:'×',div:'÷'};
   /* Decimals (opt.dp): the numbers come scaled to whole numbers (0.45 → 45 with dp 2); the
