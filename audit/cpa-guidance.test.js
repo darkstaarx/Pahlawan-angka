@@ -110,3 +110,39 @@ test('real runtime and demo load one shared JS and CSS, CSS keeps dialog mobile 
  assert.match(css,/max-height:min\(92dvh,750px\)/);
  assert.match(css,/@media\(max-height:640px\)/);
 });
+
+test('each of the eleven models opens, supports real touch choice, and reaches the abstract prompt',()=>{
+ const keys=[
+  ['place',{facets:{op:'add'}},{domain:'Operasi'}],
+  ['groups',{facets:{op:'mul'}},{domain:'Operasi'}],
+  ['word',{facets:{schema:'part_whole'}},{domain:'Operasi'}],
+  ['fraction',{fractionTask:{d:10}},{domain:'Pecahan'}],
+  ['money',{}, {domain:'Wang'}],
+  ['time',{}, {domain:'Masa'}],
+  ['measure',{}, {domain:'Ukuran'}],
+  ['area',{}, {domain:'Ruang',title:'Luas'}],
+  ['shape',{}, {domain:'Ruang'}],
+  ['ratio',{}, {domain:'Nisbah'}],
+  ['data',{}, {domain:'Data'}],
+ ];
+ body.dataset.screen='game';
+ for(const [family,q,meta] of keys){
+  q.answer='DO_NOT_REVEAL_739';q.prompt='Soalan sebenar murid';
+  assert.equal(cpa.open({question:q,meta}),true,family);
+  const panel=body.children.find(c=>c.className==='paCpaOverlay');
+  assert.ok(panel,family);
+  const model=panel.querySelector('.paCpaModel');
+  assert.ok(model.children.length>1,family);
+  const touch=model.querySelectorAll('button:not([disabled]):not([hidden])');
+  assert.ok(touch.length>0,'Concrete interaction missing: '+family);
+  touch[0].onclick();
+  panel.querySelector('.paCpaNext').onclick();
+  assert.match(panel.querySelector('.paCpaStep').textContent,/LIHAT/,family);
+  panel.querySelector('.paCpaNext').onclick();
+  assert.match(panel.querySelector('.paCpaStep').textContent,/KIRA/,family);
+  assert.ok(panel.querySelector('.paCpaEquation').textContent.length>0,family);
+  assert.doesNotMatch(panel.querySelector('.paCpaEquation').textContent,/DO_NOT_REVEAL_739/,family);
+  cpa.close();
+  assert.equal(q.answer,'DO_NOT_REVEAL_739',family);
+ }
+});
