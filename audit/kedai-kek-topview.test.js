@@ -1,4 +1,4 @@
-# QA — Kedai Kek top-down fraction models
+// QA — Kedai Kek top-down fraction models
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
